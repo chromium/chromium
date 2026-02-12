@@ -182,7 +182,8 @@ import java.util.stream.IntStream;
 @LooperMode(Mode.LEGACY)
 @DisableFeatures({
     ChromeFeatureList.DATA_SHARING,
-    ChromeFeatureList.TAB_STRIP_CLOSE_REFACTOR_ANDROID
+    ChromeFeatureList.TAB_STRIP_CLOSE_REFACTOR_ANDROID,
+    ChromeFeatureList.GLIC
 })
 @EnableFeatures(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
 public class StripLayoutHelperTest {

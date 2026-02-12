@@ -29,4 +29,7 @@ public interface TabStripContextMenuDelegate {
 
     /** Called when the "Name window" menu item is selected. */
     void onNameWindow();
+
+    /** Called when the "Pin Gemini" menu item is selected. */
+    void onPinGlic();
 }

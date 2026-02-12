@@ -3314,6 +3314,12 @@ public class StripLayoutHelper
                                     mMultiInstanceManager.showNameWindowDialog(
                                             NameWindowDialogSource.TAB_STRIP);
                                 }
+
+                                @Override
+                                public void onPinGlic() {
+                                    RecordUserAction.record("Android.TabStripMenu.PinGlic");
+                                    // TODO(crbug.com/483509451): Pin Glic
+                                }
                             });
         }
 

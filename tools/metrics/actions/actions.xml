@@ -4876,6 +4876,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.TabStripMenu.PinGlic">
+  <owner>mklw@google.com</owner>
+  <description>
+    User tapped 'Pin Glic' on the tab strip context menu to pin the Glic button
+    in the tab strip.
+  </description>
+</action>
+
 <action name="Android.TabStripMenu.ReopenClosedEntry">
   <owner>mklw@google.com</owner>
   <description>
