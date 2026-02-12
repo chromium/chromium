@@ -1708,11 +1708,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "composebox-fetch-contextual-suggestions-for-image",
-    "owners": [ "ameurhosni@google.com", "bling-search@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "composebox-fetch-contextual-suggestions-for-multiple-attachments",
     "owners": [ "ameurhosni@google.com", "bling-search@google.com" ],
     "expiry_milestone": 150

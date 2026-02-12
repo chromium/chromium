@@ -202,9 +202,6 @@ extern const char kComposeboxDeepSearchDescription[];
 extern const char kComposeboxDevToolsName[];
 extern const char kComposeboxDevToolsDescription[];
 
-extern const char kComposeboxFetchContextualSuggestionsForImageName[];
-extern const char kComposeboxFetchContextualSuggestionsForImageDescription[];
-
 extern const char
     kComposeboxFetchContextualSuggestionsForMultipleAttachmentsName[];
 extern const char

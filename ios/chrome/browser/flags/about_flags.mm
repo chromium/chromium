@@ -2614,12 +2614,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"gemini-refactored-fre", flag_descriptions::kGeminiRefactoredFREName,
      flag_descriptions::kGeminiRefactoredFREDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiRefactoredFRE)},
-    {"composebox-fetch-contextual-suggestions-for-image",
-     flag_descriptions::kComposeboxFetchContextualSuggestionsForImageName,
-     flag_descriptions::
-         kComposeboxFetchContextualSuggestionsForImageDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kComposeboxFetchContextualSuggestionsForImage)},
     {"composebox-fetch-contextual-suggestions-for-multiple-attachments",
      flag_descriptions::
          kComposeboxFetchContextualSuggestionsForMultipleAttachmentsName,

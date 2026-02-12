@@ -1176,17 +1176,9 @@ CreateInputDataFromAnnotatedPageContent(
 
 // Reloads the displayed suggestions based on the attachments/modeHolder.
 - (void)reloadSuggestions {
-  BOOL shouldRestartAutocomplete = _items.empty;
+  BOOL shouldRestartAutocomplete = _items.count <= 1;
 
-  if (_items.count == 1) {
-    shouldRestartAutocomplete = YES;
-    if (_items.firstItem.type ==
-            ComposeboxInputItemType::kComposeboxInputItemTypeImage &&
-        _modeHolder.mode != ComposeboxMode::kImageGeneration) {
-      shouldRestartAutocomplete =
-          IsComposeboxFetchContextualSuggestionsForImageEnabled();
-    }
-  } else if (_items.count > 1) {
+  if (_items.count > 1) {
     shouldRestartAutocomplete =
         IsComposeboxFetchContextualSuggestionsForMultiAttachmentsEnabled();
   }

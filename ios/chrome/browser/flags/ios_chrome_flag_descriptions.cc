@@ -332,11 +332,6 @@ const char kComposeboxDevToolsDescription[] =
     "Enables development tools for the composebox, allowing simulation of "
     "delays and failures.";
 
-const char kComposeboxFetchContextualSuggestionsForImageName[] =
-    "Enable Composebox Fetch Contextual Suggestions For image attachment";
-const char kComposeboxFetchContextualSuggestionsForImageDescription[] =
-    "Enables showing suggestions for image attachment.";
-
 const char kComposeboxFetchContextualSuggestionsForMultipleAttachmentsName[] =
     "Enable Composebox Fetch Contextual Suggestions For multiple attachments";
 const char

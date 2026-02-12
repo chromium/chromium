@@ -77,13 +77,6 @@ bool IsComposeboxAIMNudgeEnabled();
 // Whether the composebox + menu should show the title.
 bool IsComposeboxMenuTitleEnabled();
 
-// Used to check if we should display contextual suggestions for an image
-// attachment.
-BASE_DECLARE_FEATURE(kComposeboxFetchContextualSuggestionsForImage);
-
-// Whether or not we should display contextual suggestions for an image.
-bool IsComposeboxFetchContextualSuggestionsForImageEnabled();
-
 // Used to check if we should display contextual suggestions for multiple
 // attachments.
 BASE_DECLARE_FEATURE(
