@@ -22,8 +22,6 @@ component("base") {
 
   if (is_win) {
     sources += [
-      "device_info_query_win.cc",
-      "device_info_query_win.h",
       "device_monitor_win.cc",
       "device_monitor_win.h",
       "event_utils_winrt.h",
