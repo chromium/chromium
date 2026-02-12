@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 
+#include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_behavior.h"
