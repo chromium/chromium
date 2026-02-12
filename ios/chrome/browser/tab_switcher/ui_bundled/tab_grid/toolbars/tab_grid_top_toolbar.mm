@@ -111,17 +111,6 @@ CGFloat HorizontalMargin() {
   if (self) {
     [self setupViews];
     [self setButtonsForTraitCollection:self.traitCollection];
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]);
-    __weak TabGridTopToolbar* weakSelf = self;
-    [weakSelf
-        registerForTraitChanges:traits
-                    withHandler:^(id<UITraitEnvironment> traitEnvironment,
-                                  UITraitCollection* previousCollection) {
-                      [weakSelf
-                          setButtonsForTraitCollection:weakSelf
-                                                           .traitCollection];
-                    }];
   }
   return self;
 }
@@ -341,6 +330,18 @@ CGFloat HorizontalMargin() {
           .active = YES;
     }
   }
+
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]);
+  __weak TabGridTopToolbar* weakSelf = self;
+  [weakSelf
+      registerForTraitChanges:traits
+                  withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                UITraitCollection* previousCollection) {
+                    [weakSelf
+                        setButtonsForTraitCollection:weakSelf.traitCollection];
+                  }];
+
   [super didMoveToSuperview];
 }
 
