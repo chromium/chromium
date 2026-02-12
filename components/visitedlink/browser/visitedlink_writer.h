@@ -280,7 +280,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   static bool ReadFileHeader(FILE* hfile,
                              int32_t* num_entries,
                              int32_t* used_count,
-                             uint8_t salt[LINK_SALT_LENGTH]);
+                             LinkSalt& salt);
 
   // Fills *filename with the name of the link database filename
   bool GetDatabaseFileName(base::FilePath* filename);
@@ -345,7 +345,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // Structure is filled with 0s and shared header with salt. The result of
   // allocation is saved into |mapped_region|.
   static bool CreateApartURLTable(int32_t num_entries,
-                                  const uint8_t salt[LINK_SALT_LENGTH],
+                                  LinkSalt salt,
                                   base::MappedReadOnlyRegion* memory);
 
   // unallocates the Fingerprint table

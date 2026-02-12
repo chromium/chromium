@@ -58,7 +58,7 @@ const int32_t VisitedLinkWriter::kFileCurrentVersion = 3;
 // the signature at the beginning of the URL table = "VLnk" (visited links)
 const int32_t VisitedLinkWriter::kFileSignature = 0x6b6e4c56;
 const size_t VisitedLinkWriter::kFileHeaderSize =
-    kFileHeaderSaltOffset + LINK_SALT_LENGTH;
+    kFileHeaderSaltOffset + sizeof(LinkSalt);
 
 // This value should also be the same as the smallest size in the lookup
 // table in NewTableSizeForCount (prime number).
@@ -71,10 +71,8 @@ namespace {
 // Fills the given salt structure with some quasi-random values
 // It is not necessary to generate a cryptographically strong random string,
 // only that it be reasonably different for different users.
-void GenerateSalt(uint8_t (&salt)[LINK_SALT_LENGTH]) {
-  uint64_t randval = base::RandUint64();
-  static_assert(sizeof(salt) == sizeof(randval), "Salt size mismatch");
-  UNSAFE_TODO(memcpy(salt, &randval, sizeof(salt)));
+void GenerateSalt(LinkSalt& salt) {
+  base::RandBytes(salt);
 }
 
 // Opens file on a background thread to not block UI thread.
@@ -148,7 +146,7 @@ struct VisitedLinkWriter::LoadFromFileResult
                      base::MappedReadOnlyRegion hash_table_memory,
                      int32_t num_entries,
                      int32_t used_count,
-                     uint8_t salt[LINK_SALT_LENGTH]);
+                     LinkSalt salt);
 
   LoadFromFileResult(const LoadFromFileResult&) = delete;
   LoadFromFileResult& operator=(const LoadFromFileResult&) = delete;
@@ -157,7 +155,7 @@ struct VisitedLinkWriter::LoadFromFileResult
   base::MappedReadOnlyRegion hash_table_memory;
   int32_t num_entries;
   int32_t used_count;
-  uint8_t salt[LINK_SALT_LENGTH];
+  LinkSalt salt;
 
  private:
   friend class base::RefCountedThreadSafe<LoadFromFileResult>;
@@ -169,13 +167,12 @@ VisitedLinkWriter::LoadFromFileResult::LoadFromFileResult(
     base::MappedReadOnlyRegion hash_table_memory,
     int32_t num_entries,
     int32_t used_count,
-    uint8_t salt[LINK_SALT_LENGTH])
+    LinkSalt salt)
     : file(std::move(file)),
       hash_table_memory(std::move(hash_table_memory)),
       num_entries(num_entries),
-      used_count(used_count) {
-  UNSAFE_TODO(memcpy(this->salt, salt, LINK_SALT_LENGTH));
-}
+      used_count(used_count),
+      salt(salt) {}
 
 VisitedLinkWriter::LoadFromFileResult::~LoadFromFileResult() = default;
 
@@ -201,7 +198,7 @@ VisitedLinkWriter::LoadFromFileResult::~LoadFromFileResult() = default;
 class VisitedLinkWriter::TableBuilder
     : public VisitedLinkDelegate::URLEnumerator {
  public:
-  TableBuilder(VisitedLinkWriter* writer, const uint8_t salt[LINK_SALT_LENGTH]);
+  TableBuilder(VisitedLinkWriter* writer, LinkSalt salt);
 
   TableBuilder(const TableBuilder&) = delete;
   TableBuilder& operator=(const TableBuilder&) = delete;
@@ -230,7 +227,7 @@ class VisitedLinkWriter::TableBuilder
   bool success_;
 
   // Salt for this new table.
-  uint8_t salt_[LINK_SALT_LENGTH];
+  LinkSalt salt_;
 
   // Stores the fingerprints we computed on the background thread.
   VisitedLinkCommon::Fingerprints fingerprints_;
@@ -635,8 +632,8 @@ void VisitedLinkWriter::WriteFullTable() {
   header[2] = table_length_;
   header[3] = used_items_;
   WriteToFile(scoped_file_holder_.get(), 0, header, sizeof(header));
-  WriteToFile(scoped_file_holder_.get(), sizeof(header), salt_,
-              LINK_SALT_LENGTH);
+  WriteToFile(scoped_file_holder_.get(), sizeof(header), salt_.data(),
+              sizeof(salt_));
 
   // Write the hash data.
   WriteToFile(scoped_file_holder_.get(), kFileHeaderSize, hash_table_,
@@ -690,7 +687,7 @@ bool VisitedLinkWriter::LoadApartFromFile(
     return false;
 
   int32_t num_entries, used_count;
-  uint8_t salt[LINK_SALT_LENGTH];
+  LinkSalt salt;
   if (!ReadFileHeader(file_closer.get(), &num_entries, &used_count, salt))
     return false;  // Header isn't valid.
 
@@ -760,7 +757,7 @@ void VisitedLinkWriter::OnTableLoadComplete(
   // Assign the loaded table.
   DCHECK(load_from_file_result->hash_table_memory.region.IsValid() &&
          load_from_file_result->hash_table_memory.mapping.IsValid());
-  UNSAFE_TODO(memcpy(salt_, load_from_file_result->salt, LINK_SALT_LENGTH));
+  salt_ = load_from_file_result->salt;
   mapped_table_memory_ = std::move(load_from_file_result->hash_table_memory);
   hash_table_ = GetHashTableFromMapping(mapped_table_memory_.mapping);
   table_length_ = load_from_file_result->num_entries;
@@ -824,7 +821,7 @@ bool VisitedLinkWriter::InitFromScratch(bool suppress_rebuild) {
 bool VisitedLinkWriter::ReadFileHeader(FILE* file,
                                        int32_t* num_entries,
                                        int32_t* used_count,
-                                       uint8_t salt[LINK_SALT_LENGTH]) {
+                                       LinkSalt& salt) {
   // Get file size.
   // Note that there is no need to seek back to the original location in the
   // file since ReadFromFile() [which is the next call accessing the file]
@@ -869,7 +866,8 @@ bool VisitedLinkWriter::ReadFileHeader(FILE* file,
     return false;  // Bad used item count;
 
   // Read the salt.
-  UNSAFE_TODO(memcpy(salt, &header[kFileHeaderSaltOffset], LINK_SALT_LENGTH));
+  UNSAFE_TODO(
+      memcpy(salt.data(), &header[kFileHeaderSaltOffset], sizeof(salt)));
 
   // This file looks OK from the header's perspective.
   return true;
@@ -909,9 +907,8 @@ bool VisitedLinkWriter::CreateURLTable(int32_t num_entries) {
 // static
 bool VisitedLinkWriter::CreateApartURLTable(
     int32_t num_entries,
-    const uint8_t salt[LINK_SALT_LENGTH],
+    LinkSalt salt,
     base::MappedReadOnlyRegion* memory) {
-  DCHECK(salt);
   DCHECK(memory);
 
   // The table is the size of the table followed by the entries.
@@ -936,7 +933,7 @@ bool VisitedLinkWriter::CreateApartURLTable(
   // Save the header for other processes to read.
   SharedHeader* header = static_cast<SharedHeader*>(memory->mapping.memory());
   header->length = num_entries;
-  UNSAFE_TODO(memcpy(header->salt, salt, LINK_SALT_LENGTH));
+  header->salt = salt;
 
   return true;
 }
@@ -1176,12 +1173,10 @@ bool VisitedLinkWriter::ReadFromFile(FILE* file,
 
 // VisitedLinkTableBuilder ----------------------------------------------------
 
-VisitedLinkWriter::TableBuilder::TableBuilder(
-    VisitedLinkWriter* writer,
-    const uint8_t salt[LINK_SALT_LENGTH])
-    : writer_(writer), success_(true) {
+VisitedLinkWriter::TableBuilder::TableBuilder(VisitedLinkWriter* writer,
+                                              LinkSalt salt)
+    : writer_(writer), success_(true), salt_(salt) {
   fingerprints_.reserve(4096);
-  UNSAFE_TODO(memcpy(salt_, salt, LINK_SALT_LENGTH * sizeof(uint8_t)));
 }
 
 // TODO(brettw): Do we want to try to cancel the request if this happens? It

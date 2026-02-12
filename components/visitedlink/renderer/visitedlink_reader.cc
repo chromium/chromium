@@ -81,7 +81,7 @@ void VisitedLinkReader::UpdateUnpartitionedVisitedLinks(
     const SharedHeader* header =
         static_cast<const SharedHeader*>(header_mapping.memory());
     table_len = header->length;
-    UNSAFE_TODO(memcpy(salt_, header->salt, sizeof(salt_)));
+    salt_ = header->salt;
   }
 
   // Now we know the length, so map the table contents.

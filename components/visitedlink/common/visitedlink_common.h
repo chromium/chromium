@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string_view>
 #include <vector>
 
@@ -27,8 +28,7 @@ class Origin;
 
 namespace visitedlink {
 
-// number of bytes in the salt
-#define LINK_SALT_LENGTH 8
+using LinkSalt = std::array<uint8_t, 8>;
 
 // A multiprocess-safe database of the visited links for the browser. There
 // should be exactly one process that has write access (implemented by
@@ -111,7 +111,7 @@ class VisitedLinkCommon {
     uint32_t length;
 
     // goes into salt_
-    uint8_t salt[LINK_SALT_LENGTH];
+    LinkSalt salt;
 
     // Padding to ensure the Fingerprint table is aligned. Without this, reading
     // from the table causes unaligned reads.
@@ -152,9 +152,8 @@ class VisitedLinkCommon {
   // same algorithm can be re-used by the table rebuilder, so you will have to
   // pass the salt as a parameter. See the non-static version above if you
   // want to use the current class' salt.
-  static Fingerprint ComputeURLFingerprint(
-      std::string_view canonical_url,
-      const uint8_t salt[LINK_SALT_LENGTH]);
+  static Fingerprint ComputeURLFingerprint(std::string_view canonical_url,
+                                           LinkSalt salt);
 
   // Computes the fingerprint of the given VisitedLink using the provided
   // per-origin `salt`.
@@ -191,7 +190,7 @@ class VisitedLinkCommon {
   int32_t table_length_ = 0;
 
   // salt used for each URL when computing the fingerprint
-  uint8_t salt_[LINK_SALT_LENGTH] = {};
+  LinkSalt salt_ = {};
 };
 
 }  // namespace visitedlink
