@@ -1671,7 +1671,7 @@ ServiceTransferCache* RasterDecoderImpl::GetTransferCacheForTest() {
 
 void RasterDecoderImpl::SetUpForRasterCHROMIUMForTest() {
   // Some tests use mock GL which doesn't work with skia. Just use a bitmap
-  // backed surface for OOP raster commands.
+  // backed surface for raster commands.
   auto info = SkImageInfo::MakeN32(10, 10, kPremul_SkAlphaType,
                                    SkColorSpace::MakeSRGB());
   SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
