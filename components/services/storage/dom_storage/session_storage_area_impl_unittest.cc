@@ -134,8 +134,8 @@ TEST_P(SessionStorageAreaImplTest, BasicUsage) {
   mojo::Remote<blink::mojom::StorageArea> storage_area;
   session_storage_area->Bind(storage_area.BindNewPipeAndPassReceiver());
 
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(storage_area.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data =
+      test::GetAllSync(storage_area.get());
   ASSERT_EQ(1ul, data.size());
   EXPECT_TRUE(std::ranges::contains(
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key1"),
@@ -159,8 +159,8 @@ TEST_P(SessionStorageAreaImplTest, ExplicitlyEmptyMap) {
   mojo::Remote<blink::mojom::StorageArea> storage_area;
   session_storage_area->Bind(storage_area.BindNewPipeAndPassReceiver());
 
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(storage_area.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data =
+      test::GetAllSync(storage_area.get());
   ASSERT_EQ(0ul, data.size());
 
   EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
@@ -183,20 +183,20 @@ TEST_P(SessionStorageAreaImplTest, DoubleBind) {
   session_storage_area->Bind(storage_area1.BindNewPipeAndPassReceiver());
 
   // Get data from the first binding.
-  std::vector<blink::mojom::KeyValuePtr> data1;
-  EXPECT_TRUE(test::GetAllSync(storage_area1.get(), &data1));
+  std::vector<blink::mojom::KeyValuePtr> data1 =
+      test::GetAllSync(storage_area1.get());
   ASSERT_EQ(1ul, data1.size());
 
   // Check that we can bind twice and get data from the second binding.
   mojo::Remote<blink::mojom::StorageArea> storage_area2;
   session_storage_area->Bind(storage_area2.BindNewPipeAndPassReceiver());
-  std::vector<blink::mojom::KeyValuePtr> data2;
-  EXPECT_TRUE(test::GetAllSync(storage_area2.get(), &data2));
+  std::vector<blink::mojom::KeyValuePtr> data2 =
+      test::GetAllSync(storage_area2.get());
   ASSERT_EQ(1ul, data2.size());
 
   // Check that we can still get data from the first binding.
-  std::vector<blink::mojom::KeyValuePtr> data3;
-  EXPECT_TRUE(test::GetAllSync(storage_area1.get(), &data3));
+  std::vector<blink::mojom::KeyValuePtr> data3 =
+      test::GetAllSync(storage_area1.get());
   ASSERT_EQ(1ul, data3.size());
 
   EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/0)).Times(1);
@@ -246,8 +246,8 @@ TEST_P(SessionStorageAreaImplTest, Cloning) {
             session_storage_area2->data_map());
 
   // Check map 1 data.
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(storage_area1.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data =
+      test::GetAllSync(storage_area1.get());
   ASSERT_EQ(1ul, data.size());
   EXPECT_TRUE(std::ranges::contains(
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key1"),
@@ -255,7 +255,7 @@ TEST_P(SessionStorageAreaImplTest, Cloning) {
 
   // Check map 2 data.
   data.clear();
-  EXPECT_TRUE(test::GetAllSync(storage_area2.get(), &data));
+  data = test::GetAllSync(storage_area2.get());
   ASSERT_EQ(2ul, data.size());
   EXPECT_TRUE(std::ranges::contains(
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key1"),

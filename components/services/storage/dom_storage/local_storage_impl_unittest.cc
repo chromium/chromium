@@ -253,9 +253,7 @@ class LocalStorageImplTestBase : public testing::Test {
     context()->BindStorageArea(storage_key, area.BindNewPipeAndPassReceiver());
     context()->BindStorageArea(storage_key,
                                dummy_area.BindNewPipeAndPassReceiver());
-    std::vector<uint8_t> result;
-    bool success = test::GetSync(area.get(), key, &result);
-    return success ? std::optional<std::vector<uint8_t>>(result) : std::nullopt;
+    return test::GetSync(area.get(), key);
   }
 
   // Pumps both the main-thread sequence and the background database sequence

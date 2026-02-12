@@ -190,8 +190,8 @@ TEST_P(SessionStorageNamespaceImplTest, MetadataLoad) {
                            storage_area_1.BindNewPipeAndPassReceiver(),
                            namespace_entry1);
 
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(storage_area_1.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data =
+      test::GetAllSync(storage_area_1.get());
   EXPECT_EQ(1ul, data.size());
   EXPECT_TRUE(std::ranges::contains(
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key1"),
@@ -227,8 +227,8 @@ TEST_P(SessionStorageNamespaceImplTest, MetadataLoadWithMapOperations) {
                 StdStringToUint8Vector("data2"), std::nullopt, "");
   commit_loop.Run();
 
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(storage_area_1.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data =
+      test::GetAllSync(storage_area_1.get());
   EXPECT_EQ(2ul, data.size());
   EXPECT_TRUE(std::ranges::contains(
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key1"),
@@ -282,8 +282,8 @@ TEST_P(SessionStorageNamespaceImplTest, CloneBeforeBind) {
                 StdStringToUint8Vector("data2"), std::nullopt, "");
   commit_loop.Run();
 
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(storage_area_2.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data =
+      test::GetAllSync(storage_area_2.get());
   EXPECT_EQ(2ul, data.size());
   EXPECT_TRUE(std::ranges::contains(
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key1"),
@@ -348,15 +348,14 @@ TEST_P(SessionStorageNamespaceImplTest, CloneAfterBind) {
                 StdStringToUint8Vector("data2"), std::nullopt, "");
   commit_loop.Run();
 
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(storage_area_n2_o1.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data =
+      test::GetAllSync(storage_area_n2_o1.get());
   EXPECT_EQ(1ul, data.size());
   EXPECT_TRUE(std::ranges::contains(
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key1"),
                                         StdStringToUint8Vector("data1"))));
 
-  data.clear();
-  EXPECT_TRUE(test::GetAllSync(storage_area_n2_o2.get(), &data));
+  data = test::GetAllSync(storage_area_n2_o2.get());
   EXPECT_EQ(1ul, data.size());
   EXPECT_TRUE(std::ranges::contains(
       data, blink::mojom::KeyValue::New(StdStringToUint8Vector("key2"),
@@ -399,8 +398,8 @@ TEST_P(SessionStorageNamespaceImplTest, RemoveStorageKeyData) {
   namespace_impl->RemoveStorageKeyData(test_storage_key1_, base::DoNothing());
   commit_loop.Run();
 
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(storage_area_1.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data =
+      test::GetAllSync(storage_area_1.get());
   EXPECT_EQ(0ul, data.size());
 
   // Check that the observer was notified.

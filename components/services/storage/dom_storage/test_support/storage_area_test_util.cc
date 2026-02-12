@@ -44,34 +44,30 @@ bool PutSync(blink::mojom::StorageArea* area,
   return success;
 }
 
-bool GetSync(blink::mojom::StorageArea* area,
-             const std::vector<uint8_t>& key,
-             std::vector<uint8_t>* data_out) {
-  bool success = false;
-  base::RunLoop loop;
-  area->Get(key, base::BindLambdaForTesting(
-                     [&](bool success_in, const std::vector<uint8_t>& value) {
-                       success = success_in;
-                       *data_out = std::move(value);
-                       loop.Quit();
-                     }));
-  loop.Run();
-  return success;
+std::optional<std::vector<uint8_t>> GetSync(blink::mojom::StorageArea* area,
+                                            const std::vector<uint8_t>& key) {
+  std::vector<blink::mojom::KeyValuePtr> data = GetAllSync(area);
+  for (const auto& key_value : data) {
+    if (key_value->key == key) {
+      return key_value->value;
+    }
+  }
+  return std::nullopt;
 }
 
-bool GetAllSync(blink::mojom::StorageArea* area,
-                std::vector<blink::mojom::KeyValuePtr>* data_out) {
-  DCHECK(data_out);
+std::vector<blink::mojom::KeyValuePtr> GetAllSync(
+    blink::mojom::StorageArea* area) {
+  std::vector<blink::mojom::KeyValuePtr> data_out;
   base::RunLoop loop;
   area->GetAll(
       /*new_observer=*/mojo::NullRemote(),
       base::BindLambdaForTesting(
           [&](std::vector<blink::mojom::KeyValuePtr> data_in) {
-            *data_out = std::move(data_in);
+            data_out = std::move(data_in);
             loop.Quit();
           }));
   loop.Run();
-  return true;
+  return data_out;
 }
 
 void DeleteSync(blink::mojom::StorageArea* area,

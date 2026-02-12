@@ -118,13 +118,6 @@ void SessionStorageAreaImpl::DeleteAll(
                      std::move(callback)));
 }
 
-void SessionStorageAreaImpl::Get(const std::vector<uint8_t>& key,
-                                 GetCallback callback) {
-  CHECK(IsBound());
-  CHECK(!shared_data_map_->map_locator().session_ids().empty());
-  shared_data_map_->storage_area()->Get(key, std::move(callback));
-}
-
 void SessionStorageAreaImpl::GetAll(
     mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
     GetAllCallback callback) {

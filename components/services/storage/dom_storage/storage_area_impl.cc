@@ -456,28 +456,6 @@ void StorageAreaImpl::DeleteAll(
   std::move(callback).Run();
 }
 
-void StorageAreaImpl::Get(const std::vector<uint8_t>& key,
-                          GetCallback callback) {
-  // TODO(ssid): Remove this method since it is not supported in only keys mode,
-  // crbug.com/764127.
-  if (cache_mode_ == CacheMode::KEYS_ONLY_WHEN_POSSIBLE) {
-    NOTREACHED();
-  }
-  if (!IsMapLoaded() || IsMapUpgradeNeeded()) {
-    LoadMap(base::BindOnce(&StorageAreaImpl::Get,
-                           weak_ptr_factory_.GetWeakPtr(), key,
-                           std::move(callback)));
-    return;
-  }
-
-  auto found = keys_values_map_.find(key);
-  if (found == keys_values_map_.end()) {
-    std::move(callback).Run(false, std::vector<uint8_t>());
-    return;
-  }
-  std::move(callback).Run(true, found->second);
-}
-
 void StorageAreaImpl::GetAll(
     mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
     GetAllCallback callback) {

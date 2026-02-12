@@ -112,12 +112,6 @@ interface StorageArea {
   // will always receive that `AllDeleted()` as its first observed event.
   DeleteAll(string source, pending_remote<StorageAreaObserver>? new_observer) => ();
 
-  // [DEPRECATED] Returns the value of the `key` only if values are
-  // stored in the internal in-memory cache. Fails if the `key` does not exist
-  // or if values are not required to be stored in the cache.
-  // TODO(ssid): Remove this function, crbug.com/764127.
-  Get(array<uint8> key) => (bool success, array<uint8> value);
-
   // Returns all key/value pairs and optionally adds a new StorageAreaObserver
   // which will observe all events on the StorageArea which occur after the
   // returned snapshot.

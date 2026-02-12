@@ -34,12 +34,11 @@ bool PutSync(blink::mojom::StorageArea* area,
              const std::optional<std::vector<uint8_t>>& old_value,
              const std::string& source);
 
-bool GetSync(blink::mojom::StorageArea* area,
-             const std::vector<uint8_t>& key,
-             std::vector<uint8_t>* data_out);
+std::optional<std::vector<uint8_t>> GetSync(blink::mojom::StorageArea* area,
+                                            const std::vector<uint8_t>& key);
 
-bool GetAllSync(blink::mojom::StorageArea* area,
-                std::vector<blink::mojom::KeyValuePtr>* data_out);
+std::vector<blink::mojom::KeyValuePtr> GetAllSync(
+    blink::mojom::StorageArea* area);
 
 // Does a |Delete| call on the area and waits until the response is
 // received.

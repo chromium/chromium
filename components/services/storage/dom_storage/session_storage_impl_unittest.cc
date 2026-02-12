@@ -120,8 +120,7 @@ class SessionStorageImplTest : public base::test::WithFeatureOverride,
                                        area.BindNewPipeAndPassReceiver());
 
     // Use the GetAll interface because Gets are being removed.
-    std::vector<blink::mojom::KeyValuePtr> data;
-    EXPECT_TRUE(test::GetAllSync(area.get(), &data));
+    std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area.get());
     session_storage()->DeleteNamespace(namespace_id, true);
 
     std::vector<uint8_t> key_as_bytes = StringViewToUint8Vector(key);
@@ -172,8 +171,7 @@ TEST_P(SessionStorageImplTest, StartupShutdownSave) {
                                      area_n1.BindNewPipeAndPassReceiver());
 
   // Verify no data.
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area_n1.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area_n1.get());
   EXPECT_EQ(0ul, data.size());
 
   // Put some data.
@@ -182,7 +180,7 @@ TEST_P(SessionStorageImplTest, StartupShutdownSave) {
                             "source1"));
 
   // Verify data is there.
-  EXPECT_TRUE(test::GetAllSync(area_n1.get(), &data));
+  data = test::GetAllSync(area_n1.get());
   EXPECT_EQ(1ul, data.size());
   area_n1.reset();
 
@@ -197,7 +195,7 @@ TEST_P(SessionStorageImplTest, StartupShutdownSave) {
                                      area_n1.BindNewPipeAndPassReceiver());
 
   // The data from before should be here.
-  EXPECT_TRUE(test::GetAllSync(area_n1.get(), &data));
+  data = test::GetAllSync(area_n1.get());
   EXPECT_EQ(1ul, data.size());
   area_n1.reset();
 
@@ -212,7 +210,7 @@ TEST_P(SessionStorageImplTest, StartupShutdownSave) {
                                      area_n1.BindNewPipeAndPassReceiver());
 
   // The data from before should not be here.
-  EXPECT_TRUE(test::GetAllSync(area_n1.get(), &data));
+  data = test::GetAllSync(area_n1.get());
   EXPECT_EQ(0ul, data.size());
 }
 
@@ -250,8 +248,7 @@ TEST_P(SessionStorageImplTest, CloneBeforeBrowserClone) {
                                      area_n2.BindNewPipeAndPassReceiver());
 
   // The data should be in namespace 2.
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area_n2.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area_n2.get());
   EXPECT_EQ(1ul, data.size());
 }
 
@@ -297,15 +294,14 @@ TEST_P(SessionStorageImplTest, Cloning) {
   session_storage()->DeleteNamespace(namespace_id1, true);
 
   // The data from before should be in namespace 2.
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area_n2.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area_n2.get());
   EXPECT_EQ(1ul, data.size());
 
   // Put some data in namespace 2.
   EXPECT_TRUE(test::PutSync(area_n2.get(), StringViewToUint8Vector("key2"),
                             StringViewToUint8Vector("value2"), std::nullopt,
                             "source1"));
-  EXPECT_TRUE(test::GetAllSync(area_n2.get(), &data));
+  data = test::GetAllSync(area_n2.get());
   EXPECT_EQ(2ul, data.size());
 
   // Re-open namespace 1, check that we don't have the extra data.
@@ -314,7 +310,7 @@ TEST_P(SessionStorageImplTest, Cloning) {
                                      area_n1.BindNewPipeAndPassReceiver());
 
   // We should only have the first value.
-  EXPECT_TRUE(test::GetAllSync(area_n1.get(), &data));
+  data = test::GetAllSync(area_n1.get());
   EXPECT_EQ(1ul, data.size());
 }
 
@@ -344,8 +340,8 @@ TEST_P(SessionStorageImplTest, ImmediateCloning) {
     mojo::Remote<blink::mojom::StorageArea> area_n2;
     session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                        area_n2.BindNewPipeAndPassReceiver());
-    std::vector<blink::mojom::KeyValuePtr> data;
-    EXPECT_TRUE(test::GetAllSync(area_n2.get(), &data));
+    std::vector<blink::mojom::KeyValuePtr> data =
+        test::GetAllSync(area_n2.get());
     EXPECT_EQ(0ul, data.size());
   }
 
@@ -366,8 +362,8 @@ TEST_P(SessionStorageImplTest, ImmediateCloning) {
     mojo::Remote<blink::mojom::StorageArea> area_n2;
     session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                        area_n2.BindNewPipeAndPassReceiver());
-    std::vector<blink::mojom::KeyValuePtr> data;
-    EXPECT_TRUE(test::GetAllSync(area_n2.get(), &data));
+    std::vector<blink::mojom::KeyValuePtr> data =
+        test::GetAllSync(area_n2.get());
     EXPECT_EQ(1ul, data.size());
   }
 
@@ -439,8 +435,7 @@ TEST_P(SessionStorageImplTest, Scavenging) {
   session_storage()->CreateNamespace(namespace_id1);
   session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver());
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area_n1.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area_n1.get());
   EXPECT_EQ(1ul, data.size());
   area_n1.reset();
 
@@ -457,7 +452,7 @@ TEST_P(SessionStorageImplTest, Scavenging) {
   session_storage()->CreateNamespace(namespace_id1);
   session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver());
-  EXPECT_TRUE(test::GetAllSync(area_n1.get(), &data));
+  data = test::GetAllSync(area_n1.get());
   EXPECT_EQ(0ul, data.size());
 }
 
@@ -846,8 +841,7 @@ TEST_P(SessionStorageImplTest, DeleteStorage) {
   session_storage()->DeleteStorage(storage_key1, namespace_id1,
                                    base::DoNothing());
 
-  std::vector<blink::mojom::KeyValuePtr> data;
-  ASSERT_TRUE(test::GetAllSync(area.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area.get());
   EXPECT_EQ(0ul, data.size());
 
   // Next, test that it deletes the data even if there isn't a namespace open.
@@ -870,7 +864,7 @@ TEST_P(SessionStorageImplTest, DeleteStorage) {
   session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area.BindNewPipeAndPassReceiver());
   data.clear();
-  EXPECT_TRUE(test::GetAllSync(area.get(), &data));
+  data = test::GetAllSync(area.get());
   EXPECT_EQ(0ul, data.size());
 }
 
@@ -943,8 +937,7 @@ TEST_P(SessionStorageImplTest, PurgeInactiveWrappers) {
   // And make sure caches were actually cleared.
   session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area.BindNewPipeAndPassReceiver());
-  std::vector<blink::mojom::KeyValuePtr> data;
-  ASSERT_TRUE(test::GetAllSync(area.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area.get());
   EXPECT_EQ(0ul, data.size());
 }
 
@@ -962,8 +955,7 @@ TEST_P(SessionStorageImplTest, ClearDiskState) {
                                      area.BindNewPipeAndPassReceiver());
 
   // Verify no data.
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area.get());
   EXPECT_EQ(0ul, data.size());
 
   // Put some data.
@@ -985,7 +977,7 @@ TEST_P(SessionStorageImplTest, ClearDiskState) {
 
   // The data from before should not be here, because SessionStorageImpl
   // clears disk space on open.
-  EXPECT_TRUE(test::GetAllSync(area.get(), &data));
+  data = test::GetAllSync(area.get());
   EXPECT_EQ(0ul, data.size());
 }
 
@@ -1011,8 +1003,7 @@ TEST_P(SessionStorageImplTest, InterruptedCloneWithDelete) {
   session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                      area_n2.BindNewPipeAndPassReceiver());
 
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area_n2.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area_n2.get());
   EXPECT_EQ(0ul, data.size());
 }
 
@@ -1042,8 +1033,7 @@ TEST_P(SessionStorageImplTest, InterruptedCloneChainWithDelete) {
   session_storage()->BindStorageArea(storage_key1, namespace_id3,
                                      area_n3.BindNewPipeAndPassReceiver());
 
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area_n3.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area_n3.get());
   EXPECT_EQ(0ul, data.size());
 }
 
@@ -1082,8 +1072,7 @@ TEST_P(SessionStorageImplTest, InterruptedTripleCloneChain) {
   // Trigger the populated of namespace 2 by deleting namespace 1.
   session_storage()->DeleteNamespace(namespace_id1, false);
 
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area_n4.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area_n4.get());
   EXPECT_EQ(0ul, data.size());
 }
 
@@ -1164,8 +1153,7 @@ TEST_P(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
   EXPECT_EQ(0ul, memory_used);
 
   // Test the values is still there.
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area_n1.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area_n1.get());
   EXPECT_EQ(1ul, data.size());
 
   std::optional<std::vector<uint8_t>> opt_value2 =
@@ -1205,8 +1193,7 @@ TEST_P(SessionStorageImplTest, DeleteWithPersistBeforeBrowserClone) {
                                      area_n2.BindNewPipeAndPassReceiver());
 
   // The data should be in namespace 2.
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area_n2.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area_n2.get());
   EXPECT_EQ(1ul, data.size());
 }
 
@@ -1241,8 +1228,7 @@ TEST_P(SessionStorageImplTest, DeleteWithoutPersistBeforeBrowserClone) {
                                      area_n2.BindNewPipeAndPassReceiver());
 
   // The data should be gone, because the first namespace wasn't saved to disk.
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area_n2.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area_n2.get());
   EXPECT_EQ(0ul, data.size());
 }
 
@@ -1278,8 +1264,7 @@ TEST_P(SessionStorageImplTest, DeleteAfterCloneWithoutMojoClone) {
 
   // The data should be there, as the namespace should clone to all pending
   // namespaces on destruction if it didn't get a 'Clone' from mojo.
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area_n2.get(), &data));
+  std::vector<blink::mojom::KeyValuePtr> data = test::GetAllSync(area_n2.get());
   EXPECT_EQ(1ul, data.size());
 }
 

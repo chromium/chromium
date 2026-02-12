@@ -69,7 +69,6 @@ class MockStorageArea : public mojom::blink::StorageArea {
       const String& source,
       mojo::PendingRemote<mojom::blink::StorageAreaObserver> new_observer,
       DeleteAllCallback callback) override;
-  void Get(const Vector<uint8_t>& key, GetCallback callback) override;
   void GetAll(
       mojo::PendingRemote<mojom::blink::StorageAreaObserver> new_observer,
       GetAllCallback callback) override;

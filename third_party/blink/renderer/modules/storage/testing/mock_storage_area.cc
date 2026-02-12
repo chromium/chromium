@@ -61,10 +61,6 @@ void MockStorageArea::DeleteAll(
   std::move(callback).Run();
 }
 
-void MockStorageArea::Get(const Vector<uint8_t>& key, GetCallback callback) {
-  NOTREACHED();
-}
-
 void MockStorageArea::GetAll(
     mojo::PendingRemote<mojom::blink::StorageAreaObserver> new_observer,
     GetAllCallback callback) {
