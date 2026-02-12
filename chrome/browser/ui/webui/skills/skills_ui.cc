@@ -39,6 +39,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   static constexpr webui::LocalizedString kStrings[] = {
       {"cancel", IDS_CANCEL},
       {"edit", IDS_EDIT2},
+      {"menu", IDS_MENU},
       {"save", IDS_SAVE},
       {"delete", IDS_SKILL_PAGE_USER_SKILLS_DELETE},
       {"add", IDS_ADD},
@@ -72,6 +73,8 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"refineError", IDS_SKILLS_DIALOG_REFINE_ERROR},
       {"accountInfo", IDS_SKILLS_DIALOG_ACCOUNT_INFO},
       {"copyInstructions", IDS_SKILL_PAGE_USER_SKILLS_COPY_INSTRUCTIONS},
+      {"skillCardActionMenuLabel", IDS_SKILL_CARD_ACTION_MENU_LABEL},
+      {"skillAddNewSkillLabel", IDS_ADD_NEW_SKILL_LABEL},
   };
 
   source->AddLocalizedStrings(kStrings);

@@ -12,6 +12,7 @@ import './icons.html.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './card.css.js';
 import {getHtml} from './card.html.js';
@@ -76,6 +77,10 @@ export class SkillCardElement extends CrLitElement {
   accessor saveDisabled: boolean = false;
 
   private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
+
+  protected ariaLabelForSkill_(prefix: string): string {
+    return loadTimeData.getString(prefix) + ' ' + this.skill.name;
+  }
 
   protected isDiscoverCard_(): boolean {
     return this.cardType === CardType.DISCOVER_SKILL_CARD;

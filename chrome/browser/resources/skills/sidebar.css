@@ -41,3 +41,15 @@
   width: 13px;
   vertical-align: middle;
 }
+
+/* HCM */
+@media (forced-colors: active) {
+  .cr-nav-menu-item[selected] {
+    outline: 1px solid Highlight;
+    --iron-icon-fill-color: unset;
+  }
+
+  .cr-nav-menu-item {
+    --iron-icon-fill-color: unset;
+  }
+}
