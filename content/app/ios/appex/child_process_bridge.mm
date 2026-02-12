@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/threading/platform_thread.h"
 #include "content/app/ios/appex/child_process_sandbox.h"
 #include "gpu/ipc/common/ios/be_layer_hierarchy_transport.h"
 #include "sandbox/policy/switches.h"
@@ -166,11 +167,21 @@ extern "C" IOS_INIT_EXPORT void ChildProcessHandleNewConnection(
     bool res =
         base::MachPortRendezvousClientIOS::Initialize(std::move(server_port));
     CHECK(res) << "MachPortRendezvousClient failed";
+    pthread_attr_t attr;
+    DCHECK_EQ(pthread_attr_init(&attr), 0);
+    // iOS default secondary thread stack is 512KB, which is insufficient for
+    // V8 which expects ~984KB (V8_DEFAULT_STACK_SIZE_KB in
+    // v8/src/common/globals.h). Use Chromium's default thread stack size
+    // (1MB on iOS).
+    DCHECK_EQ(pthread_attr_setstacksize(
+                  &attr, base::PlatformThread::GetDefaultThreadStackSize()),
+              0);
     // TODO(dtapuska): For now we create our own main thread, figure out if we
     // can use the ExtensionMain (thread 0) as the main thread but calling
     // CFRunLoopRunInMode seems to crash it so we can't enter a nested event
     // loop with some objects on the stack.
-    pthread_create(&g_main_thread, NULL, RunMain, NULL);
+    DCHECK_EQ(pthread_create(&g_main_thread, &attr, RunMain, NULL), 0);
+    DCHECK_EQ(pthread_attr_destroy(&attr), 0);
   });
   xpc_connection_activate(connection);
   g_connection = connection;
