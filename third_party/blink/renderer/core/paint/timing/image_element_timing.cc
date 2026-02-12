@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -49,24 +48,6 @@ IsExplicitlyRegisteredForElementTiming(const LayoutObject& layout_object) {
 
   return IsExplicitlyRegisteredForElementTiming(element);
 }
-
-bool ContributesToContainerTiming(const Element* element) {
-  if (!RuntimeEnabledFeatures::ContainerTimingEnabled()) {
-    return false;
-  }
-  return (element && ContainerTiming::ContributesToContainerTiming(element));
-}
-
-bool ContributesToContainerTiming(const LayoutObject& layout_object) {
-  const auto* element = DynamicTo<Element>(layout_object.GeneratingNode());
-  return ContributesToContainerTiming(element);
-}
-
-bool NeededForTiming(const LayoutObject& layout_object) {
-  return IsExplicitlyRegisteredForElementTiming(layout_object) ||
-         ContributesToContainerTiming(layout_object);
-}
-
 }  // namespace internal
 
 // static
@@ -94,7 +75,7 @@ ImageElementTiming::ImageElementTiming(LocalDOMWindow& window)
 void ImageElementTiming::NotifyImageFinished(
     const LayoutObject& layout_object,
     const ImageResourceContent* cached_image) {
-  if (!internal::NeededForTiming(layout_object)) {
+  if (!NeededForTiming(layout_object)) {
     return;
   }
 
@@ -128,7 +109,7 @@ void ImageElementTiming::NotifyImagePainted(
     const ImageResourceContent& cached_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
-  if (!internal::NeededForTiming(layout_object)) {
+  if (!NeededForTiming(layout_object)) {
     return;
   }
 
@@ -235,7 +216,7 @@ OptionalPaintTimingCallback ImageElementTiming::TakePaintTimingCallback() {
                 painted_image->identifier, painted_image->intrinsic_size,
                 painted_image->id, painted_image->element);
           }
-          if (internal::ContributesToContainerTiming(painted_image->element)) {
+          if (self->ContributesToContainerTiming(painted_image->element)) {
             self->EnsureContainerTiming();
             self->container_timing_->OnElementPainted(
                 paint_timing_info, painted_image->element, painted_image->rect);
@@ -255,7 +236,7 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
     return;
   }
 
-  if (!internal::NeededForTiming(*layout_object)) {
+  if (!NeededForTiming(*layout_object)) {
     return;
   }
 
@@ -298,6 +279,23 @@ void ImageElementTiming::EnsureContainerTiming() {
   LocalDOMWindow* window = GetSupplementable();
   DCHECK(window);
   container_timing_ = ContainerTiming::From(*window);
+}
+
+bool ImageElementTiming::ContributesToContainerTiming(const Element* element) {
+  return (element && IsContainerTimingEnabled() &&
+          ContainerTiming::ContributesToContainerTiming(element));
+}
+
+bool ImageElementTiming::NeededForTiming(const LayoutObject& layout_object) {
+  const auto* element = DynamicTo<Element>(layout_object.GeneratingNode());
+  return internal::IsExplicitlyRegisteredForElementTiming(element) ||
+         ContributesToContainerTiming(element);
+}
+
+bool ImageElementTiming::IsContainerTimingEnabled() {
+  WindowPerformance* performance =
+      DOMWindowPerformance::performance(*GetSupplementable());
+  return performance ? performance->IsContainerTimingEnabled() : false;
 }
 
 void ImageElementTiming::Trace(Visitor* visitor) const {

@@ -1278,7 +1278,7 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
 }
 
 void WindowPerformance::SetHasContainerTimingChanges() {
-  DCHECK(RuntimeEnabledFeatures::ContainerTimingEnabled());
+  DCHECK(IsContainerTimingEnabled());
 
   has_container_timing_changes_ = true;
   NotifyObserversOfContainerTiming();
@@ -1289,7 +1289,7 @@ void WindowPerformance::PopulateContainerTimingEntries() {
     return;
   }
 
-  DCHECK(RuntimeEnabledFeatures::ContainerTimingEnabled());
+  DCHECK(IsContainerTimingEnabled());
 
   LocalDOMWindow* window = DomWindow();
   if (!window) {
@@ -1397,7 +1397,7 @@ void WindowPerformance::AddContainerTiming(
     const AtomicString& identifier,
     Element* last_painted_element,
     const DOMPaintTimingInfo& first_paint_timing_info) {
-  DCHECK(RuntimeEnabledFeatures::ContainerTimingEnabled());
+  DCHECK(IsContainerTimingEnabled());
   if (!DomWindow()) {
     return;
   }
@@ -1583,6 +1583,19 @@ void WindowPerformance::OnPageScroll() {
 
 bool WindowPerformance::IsAutoscrollActive() {
   return autoscroll_active_;
+}
+
+bool WindowPerformance::IsContainerTimingEnabled() {
+  if (!container_timing_enabled_.has_value()) {
+    auto* context = GetExecutionContext();
+    if (context) {
+      container_timing_enabled_ =
+          RuntimeEnabledFeatures::ContainerTimingEnabled(context);
+    } else {
+      return false;
+    }
+  }
+  return *container_timing_enabled_;
 }
 
 }  // namespace blink

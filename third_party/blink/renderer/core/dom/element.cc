@@ -13301,7 +13301,7 @@ Element* Element::ImplicitAnchorElement() const {
 }
 
 bool Element::RecalcSelfOrAncestorHasContainerTiming() const {
-  DCHECK(RuntimeEnabledFeatures::ContainerTimingEnabled());
+  DCHECK(RuntimeEnabledFeatures::ContainerTimingEnabled(GetExecutionContext()));
   if (IsHTMLElement()) {
     if (FastHasAttribute(html_names::kContainertimingAttr)) {
       return true;
@@ -13317,7 +13317,7 @@ bool Element::RecalcSelfOrAncestorHasContainerTiming() const {
 }
 
 void Element::UpdateDescendantHasContainerTiming(bool has_container_timing) {
-  DCHECK(RuntimeEnabledFeatures::ContainerTimingEnabled());
+  DCHECK(RuntimeEnabledFeatures::ContainerTimingEnabled(GetExecutionContext()));
   Element* element = ElementTraversal::FirstChild(*this);
   while (element) {
     if (element->IsHTMLElement()) {
@@ -13373,7 +13373,7 @@ bool Element::ShouldAdjustContainerTimingForInsert(
 
 void Element::AdjustContainerTimingIfNeededAfterChildrenChanged(
     const ChildrenChange& change) {
-  if (!RuntimeEnabledFeatures::ContainerTimingEnabled()) {
+  if (!RuntimeEnabledFeatures::ContainerTimingEnabled(GetExecutionContext())) {
     return;
   }
 

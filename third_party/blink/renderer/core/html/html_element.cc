@@ -3679,7 +3679,7 @@ void HTMLElement::OnNonceAttrChanged(
 
 void HTMLElement::OnContainerTimingAttrChanged(
     const AttributeModificationParams& params) {
-  if (!RuntimeEnabledFeatures::ContainerTimingEnabled()) {
+  if (!RuntimeEnabledFeatures::ContainerTimingEnabled(GetExecutionContext())) {
     return;
   }
 
@@ -3708,7 +3708,7 @@ void HTMLElement::OnContainerTimingAttrChanged(
 
 void HTMLElement::OnContainerTimingIgnoreAttrChanged(
     const AttributeModificationParams& params) {
-  if (!RuntimeEnabledFeatures::ContainerTimingEnabled()) {
+  if (!RuntimeEnabledFeatures::ContainerTimingEnabled(GetExecutionContext())) {
     return;
   }
   bool had_container_timing_ignore = !params.old_value.IsNull();

@@ -41,7 +41,7 @@ bool TextElementTiming::CanReportToElementTiming() const {
 
 bool TextElementTiming::CanReportToContainerTiming() {
   DCHECK(performance_);
-  if (!RuntimeEnabledFeatures::ContainerTimingEnabled()) {
+  if (!performance_->IsContainerTimingEnabled()) {
     return false;
   }
   EnsureContainerTiming();

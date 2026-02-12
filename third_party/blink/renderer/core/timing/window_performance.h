@@ -91,6 +91,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void PopulateContainerTimingEntries() override;
   void SetHasContainerTimingChanges();
 
+  // Caches the runtime feature flag (and origin trial) to see if
+  // ContainerTiming support is enabled
+  bool IsContainerTimingEnabled();
+
   bool FirstInputDetected() const { return !!first_input_timing_; }
 
   void WillShowModalDialog();
@@ -293,6 +297,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // these interactions.
   bool autoscroll_active_ = false;
 
+  std::optional<bool> container_timing_enabled_;
   bool has_container_timing_changes_ = false;
 
   // Calculate responsiveness metrics and record UKM for them.

@@ -75,7 +75,11 @@ class CORE_EXPORT ImageElementTiming final
  private:
   friend class ImageElementTimingTest;
 
+  bool ContributesToContainerTiming(const Element*);
+  bool NeededForTiming(const LayoutObject&);
+
   void EnsureContainerTiming();
+  bool IsContainerTimingEnabled();
 
   void NotifyImagePaintedInternal(
       Node&,
