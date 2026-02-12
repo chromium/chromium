@@ -134,7 +134,8 @@ def entry_point_method(sb,
                        native,
                        gen_jni_class,
                        output_file,
-                       include_forward_declaration=False):
+                       include_forward_declaration=False,
+                       marker_func_name=None):
   """The method called by JNI, or by multiplexing methods."""
   params = native.params
   cpp_class = native.first_param_cpp_type
@@ -160,6 +161,10 @@ def entry_point_method(sb,
     func_name_full = func_name
 
   with sb.block(after='\n'):
+    if marker_func_name:
+      sb('/* Prevent -Wunused-function warning. */\n')
+      sb(f'{marker_func_name}();\n')
+      sb('\n')
     param_rvalues = [
         _prep_param(sb, native.is_proxy, param) for param in params
     ]
@@ -258,7 +263,9 @@ def entry_point_method(sb,
 
 def natives_macro_definition(sb, jni_mode, jni_obj, gen_jni_class, output_file, *,
                              enable_definition_macros):
-  macro_name = f'DEFINE_JNI_FOR_{jni_obj.java_class.name}'
+  class_name = jni_obj.java_class.name
+  macro_name = f'DEFINE_JNI_FOR_{class_name}'
+  marker_func_name = f'YouForgotToCallMacro_DEFINE_JNI_{class_name}'
   if enable_definition_macros and jni_obj.natives:
     with sb.section(
         'Example signatures (to be implemented by #including file).'):
@@ -270,6 +277,10 @@ def natives_macro_definition(sb, jni_mode, jni_obj, gen_jni_class, output_file, 
           _entry_point_example(sb, native)
           sb('\n')
 
+    with sb.section(f'Triggers a compiler warning if DEFINE_JNI({class_name})'
+                    ' is forgotten (requires -Wunused-function).'):
+      sb(f'static void {marker_func_name}() {{}}\n')
+
     with sb.section('Java to native functions'):
       with sb.cpp_macro(macro_name):
         # Anonymous namespace to scope the "using namespace" declaration.
@@ -278,7 +289,15 @@ def natives_macro_definition(sb, jni_mode, jni_obj, gen_jni_class, output_file, 
           if jni_obj.jni_namespace:
             sb(f'using namespace {jni_obj.jni_namespace};\n')
           for native in jni_obj.natives:
-            entry_point_method(sb, jni_mode, jni_obj, native, gen_jni_class, output_file)
+            entry_point_method(sb,
+                               jni_mode,
+                               jni_obj,
+                               native,
+                               gen_jni_class,
+                               output_file,
+                               marker_func_name=marker_func_name)
+            # Needs to be included only once to be marked as used.
+            marker_func_name = None
   elif enable_definition_macros:
     sb(f'// There are no Java->Native methods.\n')
     sb(f'#define {macro_name}()\n')
