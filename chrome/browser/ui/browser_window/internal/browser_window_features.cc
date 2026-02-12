@@ -817,10 +817,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
               *browser_, browser_, std::move(container_overlay_view_pairs));
     }
 
-    const tabs::TabSearchPosition tab_search_position =
-        tabs::GetTabSearchPosition(browser_view->GetProfile());
-    if (tab_search_position == tabs::TabSearchPosition::kToolbarButton ||
-        tab_search_position == tabs::TabSearchPosition::kVerticalTabstrip) {
+    if (features::HasTabSearchToolbarButton() ||
+        tabs::IsVerticalTabsFeatureEnabled()) {
       tab_search_toolbar_button_controller_ =
           std::make_unique<TabSearchToolbarButtonController>(browser_view);
     }
