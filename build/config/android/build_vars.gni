@@ -4,6 +4,10 @@
 
 import("//build/config/android/config.gni")
 
+if (build_with_chromium) {
+  import("//android_webview/variables.gni")
+}
+
 # Contains useful GN variables that may be used by scripts that take
 # --output-directory as an arg.
 build_vars_file = "$root_build_dir/build_vars.json"
@@ -24,6 +28,13 @@ android_build_vars_json = {
           rebase_path(get_label_info(":foo($android_secondary_abi_toolchain)",
                                      "root_out_dir"),
                       root_build_dir)
+    }
+
+    if (defined(webview_toolchain)) {
+      system_webview_symbols_dir =
+          rebase_path(get_label_info(":foo($webview_toolchain)",
+                                    "root_out_dir"),
+                      root_build_dir) + "/lib.unstripped"
     }
   }
 }
