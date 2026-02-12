@@ -573,7 +573,7 @@ TEST_F(WebAppSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdateDelete) {
       GetAppIdFromWebAppSpecifics(sync_app_to_add);
 
   WebAppSpecifics sync_app_to_update = CreateWebAppSpecificsForTesting(
-      "To Update, Updated", GURL("https://www.to_update.com/"));
+      "To Update", GURL("https://www.to_update.com/"));
 
   syncer::EntityChangeList entity_changes;
 
@@ -1068,8 +1068,8 @@ TEST_F(WebAppSyncBridgeTest, SpecificsProtoWithNewFieldPreserved) {
   // sync_proto.SerializeAsString();
   const char kStartUrl[] = "https://example.com/launchurl";
   const std::string serialized_proto =
-      "\n\035https://example.com/launchurl\022\tTest "
-      "name\030\001\372\265\277\024\005hello";
+      "\n\x1Dhttps://example.com/launchurl\x12\tTest "
+      "name\x18\x1*\x14https://example.com/\xFA\xB5\xBF\x14\x5hello";
   const GURL start_url = GURL(kStartUrl);
   const webapps::AppId app_id =
       GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);

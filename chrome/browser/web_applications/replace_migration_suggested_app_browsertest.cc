@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -175,14 +176,20 @@ IN_PROC_BROWSER_TEST_P(ReplaceMigrationSuggestedAppBrowserTest,
     case WebAppInstallFlow::kSyncInstall: {
       // Create a web app for syncing that is similar to the already installed
       // one.
-      auto app = test::CreateWebApp(start_url, WebAppManagement::kSync);
-      app->SetScope(start_url.GetWithoutFilename());
+      sync_pb::WebAppSpecifics sync_proto;
+      webapps::ManifestId manifest_id =
+          GenerateManifestIdFromStartUrlOnly(start_url);
+      sync_proto.set_start_url(start_url.spec());
+      sync_proto.set_relative_manifest_id(RelativeManifestIdPath(manifest_id));
+      sync_proto.set_scope(start_url.GetWithoutFilename().spec());
+      auto app = test::CreateWebAppFromSyncProto(std::move(sync_proto));
       app->SetName("Test App");
       app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
-      sync_pb::WebAppSpecifics mutable_sync_proto = app->sync_proto();
-      mutable_sync_proto.set_name("Test App");
-      mutable_sync_proto.set_scope(start_url.GetWithoutFilename().spec());
-      app->SetSyncProto(std::move(mutable_sync_proto));
+      app->SetInstallState(
+          proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
+      app->SetDisplayMode(blink::mojom::DisplayMode::kStandalone);
+      proto::os_state::WebAppOsIntegration os_state;
+      app->SetCurrentOsIntegrationStates(os_state);
       app->SetIsFromSyncAndPendingInstallation(
           /*is_from_sync_and_pending_installation=*/true);
 

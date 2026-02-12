@@ -196,24 +196,6 @@ void ApplyManifestMigrationCommand::StartWithLock(
     destination_app->SetStoredTrustedIconSizes(
         IconPurpose::MASKABLE,
         source_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE));
-
-    // Update the metadata in the sync proto as well.
-    sync_pb::WebAppSpecifics mutable_sync_proto = destination_app->sync_proto();
-    mutable_sync_proto.set_name(destination_app->untranslated_name());
-    mutable_sync_proto.clear_icon_infos();
-    for (const apps::IconInfo& manifest_icon :
-         destination_app->manifest_icons()) {
-      *(mutable_sync_proto.add_icon_infos()) =
-          AppIconInfoToSyncProto(manifest_icon);
-    }
-
-    mutable_sync_proto.clear_trusted_icons();
-    for (const apps::IconInfo& trusted_icon :
-         destination_app->trusted_icons()) {
-      *(mutable_sync_proto.add_trusted_icons()) =
-          AppIconInfoToSyncProto(trusted_icon);
-    }
-    destination_app->SetSyncProto(std::move(mutable_sync_proto));
   }
 
   all_apps_lock_->icon_manager().CopyIconsFromOneAppToAnother(
@@ -321,9 +303,7 @@ void ApplyManifestMigrationCommand::SetupDestinationAppUninstallSourceApp() {
     }
 
     // Set the source app's manifest id to be synced.
-    sync_pb::WebAppSpecifics mutable_sync_proto = destination_app->sync_proto();
-    mutable_sync_proto.set_migrated_from_manifest_id(source_manifest_id.spec());
-    destination_app->SetSyncProto(std::move(mutable_sync_proto));
+    destination_app->SetMigratedFromManifestIdInSyncProto(source_manifest_id);
   }
   GetMutableDebugValue().Set("os_integration_set", true);
   const WebApp* source_app =

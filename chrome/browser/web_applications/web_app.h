@@ -79,6 +79,9 @@ class WebApp {
          const GURL& scope,
          std::optional<webapps::AppId> parent_app_id = std::nullopt,
          std::optional<webapps::ManifestId> parent_manifest_id = std::nullopt);
+
+  // Create a web app object from just the incoming sync data.
+  explicit WebApp(const sync_pb::WebAppSpecifics& sync_proto);
   ~WebApp();
 
   // Copyable and move-assignable to support Copy-on-Write with Commit.
@@ -598,6 +601,17 @@ class WebApp {
 
   // CHECK-fails if GURL in |AppInstalledBy| is invalid.
   void AddInstalledByInfo(AppInstalledBy installed_by_data);
+
+  // Functions that set fields directly on the `sync_proto_`.
+  // CHECK-fails if `migrated_from_manifest_id` is invalid.
+  void SetMigratedFromManifestIdInSyncProto(
+      const webapps::ManifestId& migrated_from_manifest_id);
+  void UpdateDefaultUserDisplayModeInSyncProto(
+      sync_pb::WebAppSpecifics::UserDisplayMode display_mode);
+  void UpdateCrOsUserDisplayModeInSyncProto(
+      sync_pb::WebAppSpecifics::UserDisplayMode display_mode);
+  void SetUserPageOrdinal(syncer::StringOrdinal page_ordinal);
+  void SetUserLaunchOrdinal(syncer::StringOrdinal launch_ordinal);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;

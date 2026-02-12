@@ -217,7 +217,7 @@ void ApplyUserDisplayModeSyncMitigations(
       // - Check that it is synced as a browser shortcut.
       // TODO(crbug.com/321617981): Remove when there are sufficiently few
       // pre-M122 CrOS devices in circulation.
-      sync_proto.set_user_display_mode_default(
+      web_app.UpdateDefaultUserDisplayModeInSyncProto(
           sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
       break;
 
@@ -237,7 +237,7 @@ void ApplyUserDisplayModeSyncMitigations(
       if (!is_standalone_averse_app) {
         break;
       }
-      sync_proto.set_user_display_mode_default(
+      web_app.UpdateDefaultUserDisplayModeInSyncProto(
           sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
       break;
     }
@@ -250,8 +250,6 @@ void ApplyUserDisplayModeSyncMitigations(
       // Ignore unknown UserDisplayMode values.
       return;
   }
-
-  web_app.SetSyncProto(std::move(sync_proto));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

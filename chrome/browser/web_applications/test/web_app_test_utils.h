@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
+#include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
@@ -51,6 +52,18 @@ std::unique_ptr<WebApp> CreateWebApp(
     const GURL& start_url = GURL("https://example.com/path"),
     WebAppManagement::Type source_type = WebAppManagement::kSync,
     const GURL& scope = GURL());
+
+// Same as above, but for creating a web app out of a sync_proto. Follow the
+// same warning as `CreateWebApp()` and don't use this directly for
+// installation. Instead, use the utilities in web_app_install_test_util.h. Only
+// sets the fields that need to be specified in the sync_proto to be valid,
+// which is `start_url`, `manifest_id` and `scope` if set. All other fields need
+// to be explicitly set by calling `Set<Field>()` on a web app.
+// By default, the `kSync` source is already set on this web app.
+// Will check fail if the sync proto does not have the start_url and
+// relative_manifest_id unset.
+std::unique_ptr<WebApp> CreateWebAppFromSyncProto(
+    const sync_pb::WebAppSpecifics& sync_proto);
 
 // Do not use this for installation! Instead, use the utilities in
 // web_app_install_test_util.h.

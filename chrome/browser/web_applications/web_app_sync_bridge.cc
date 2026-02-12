@@ -386,9 +386,7 @@ void WebAppSyncBridge::SetUserPageOrdinal(const webapps::AppId& app_id,
     return;
   }
   if (web_app) {
-    sync_pb::WebAppSpecifics mutable_sync_proto = web_app->sync_proto();
-    mutable_sync_proto.set_user_page_ordinal(page_ordinal.ToInternalValue());
-    web_app->SetSyncProto(std::move(mutable_sync_proto));
+    web_app->SetUserPageOrdinal(page_ordinal);
   }
 }
 
@@ -408,10 +406,7 @@ void WebAppSyncBridge::SetUserLaunchOrdinal(
   }
   WebApp* web_app = update->UpdateApp(app_id);
   if (web_app) {
-    sync_pb::WebAppSpecifics mutable_sync_proto = web_app->sync_proto();
-    mutable_sync_proto.set_user_launch_ordinal(
-        launch_ordinal.ToInternalValue());
-    web_app->SetSyncProto(std::move(mutable_sync_proto));
+    web_app->SetUserLaunchOrdinal(launch_ordinal);
   }
 }
 

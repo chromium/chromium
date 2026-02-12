@@ -764,30 +764,6 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
              SK_AlphaOPAQUE);
   web_app.SetDarkModeBackgroundColor(web_app_info.dark_mode_background_color);
 
-  sync_pb::WebAppSpecifics sync_proto = web_app.sync_proto();
-  // Sync proto has already been initialized by setting the start_url and/or
-  // manifest_id above.
-  CHECK(sync_proto.has_start_url());
-  CHECK(sync_proto.has_relative_manifest_id());
-  sync_proto.set_name(base::UTF16ToUTF8(web_app_info.title.value()));
-  sync_proto.clear_theme_color();
-  if (web_app_info.theme_color.has_value()) {
-    sync_proto.set_theme_color(web_app_info.theme_color.value());
-  }
-  sync_proto.clear_scope();
-  if (web_app_info.scope.is_valid()) {
-    sync_proto.set_scope(web_app_info.scope.spec());
-  }
-  sync_proto.clear_icon_infos();
-  for (const apps::IconInfo& icon_info : web_app_info.manifest_icons) {
-    *(sync_proto.add_icon_infos()) = AppIconInfoToSyncProto(icon_info);
-  }
-  sync_proto.clear_trusted_icons();
-  for (const apps::IconInfo& trusted_icon : web_app_info.trusted_icons) {
-    *(sync_proto.add_trusted_icons()) = AppIconInfoToSyncProto(trusted_icon);
-  }
-  web_app.SetSyncProto(std::move(sync_proto));
-
   if (!skip_icons_on_download_failure) {
     SetWebAppProductIconFields(web_app_info, web_app);
     web_app.SetShortcutsMenuInfo(GetShortcutsMenuInfoWithIconSizes(

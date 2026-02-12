@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
   synced_web_app.set_user_display_mode_default(
       sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE);
   synced_web_app.set_theme_color(SK_ColorRED);
-  synced_web_app.set_scope("https://example.com/scope/");
+  synced_web_app.set_scope("https://example.com/");
   synced_web_app.set_relative_manifest_id("manifest-id");
   synced_web_app.set_user_display_mode_cros(
       sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE);

@@ -753,6 +753,15 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
   return web_app;
 }
 
+std::unique_ptr<WebApp> CreateWebAppFromSyncProto(
+    const sync_pb::WebAppSpecifics& sync_proto) {
+  CHECK(sync_proto.has_start_url() && GURL(sync_proto.start_url()).is_valid());
+  CHECK(sync_proto.has_relative_manifest_id());
+  auto web_app = std::make_unique<WebApp>(sync_proto);
+  web_app->AddSource(WebAppManagement::kSync);
+  return web_app;
+}
+
 CreateRandomWebAppParams::CreateRandomWebAppParams() = default;
 CreateRandomWebAppParams::CreateRandomWebAppParams(
     const CreateRandomWebAppParams& other) = default;
@@ -929,25 +938,19 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
   // current platform's value only) so the test expectations are consistent
   // across platforms.
   {
-    // Copy proto, retaining existing fields (including unknown fields).
-    sync_pb::WebAppSpecifics sync_proto = app->sync_proto();
-    sync_proto.set_user_display_mode_default(
+    app->UpdateDefaultUserDisplayModeInSyncProto(
         user_display_modes[random.next_uint(3)]);
-    sync_proto.set_user_display_mode_cros(
+    app->UpdateCrOsUserDisplayModeInSyncProto(
         user_display_modes[random.next_uint(3)]);
-    CHECK(HasCurrentPlatformUserDisplayMode(sync_proto));
+    CHECK(HasCurrentPlatformUserDisplayMode(app->sync_proto()));
 
     if (random.next_bool()) {
-      sync_proto.set_user_launch_ordinal(
-          syncer::StringOrdinal::CreateInitialOrdinal().ToInternalValue());
+      app->SetUserPageOrdinal(syncer::StringOrdinal::CreateInitialOrdinal());
     }
 
     if (random.next_bool()) {
-      sync_proto.set_user_page_ordinal(
-          syncer::StringOrdinal::CreateInitialOrdinal().ToInternalValue());
+      app->SetUserLaunchOrdinal(syncer::StringOrdinal::CreateInitialOrdinal());
     }
-
-    app->SetSyncProto(std::move(sync_proto));
   }
 
   app->SetLastBadgingTime(random.next_time());
@@ -1075,21 +1078,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
   app->SetDisallowedLaunchProtocols(std::move(disallowed_launch_protocols));
 
   app->SetWindowControlsOverlayEnabled(false);
-
-  {
-    // Copy proto, retaining existing fields (including unknown fields).
-    sync_pb::WebAppSpecifics sync_proto = app->sync_proto();
-    sync_proto.set_name("Sync" + name);
-    if (random.next_bool()) {
-      sync_proto.set_theme_color(
-          SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
-    }
-    sync_proto.set_scope(app->scope().spec());
-    for (const apps::IconInfo& icon_info : app->manifest_icons()) {
-      *(sync_proto.add_icon_infos()) = AppIconInfoToSyncProto(icon_info);
-    }
-    app->SetSyncProto(std::move(sync_proto));
-  }
 
   if (random.next_bool()) {
     if (random.next_bool()) {
