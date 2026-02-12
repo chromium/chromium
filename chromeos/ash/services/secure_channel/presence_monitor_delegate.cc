@@ -29,12 +29,10 @@ PresenceMonitorDelegate::PresenceMonitorDelegate(
       ble_scanner_(BleScannerImpl::Factory::Create(bluetooth_helper_.get(),
                                                    ble_synchronizer_.get(),
                                                    bluetooth_adapter_)) {
-  ble_scanner_->AddObserver(this);
+  ble_scanner_observation_.Observe(ble_scanner_.get());
 }
 
-PresenceMonitorDelegate::~PresenceMonitorDelegate() {
-  ble_scanner_->RemoveObserver(this);
-}
+PresenceMonitorDelegate::~PresenceMonitorDelegate() = default;
 
 void PresenceMonitorDelegate::StartMonitoring(
     const multidevice::RemoteDevice& remote_device,

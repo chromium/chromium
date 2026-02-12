@@ -65,9 +65,7 @@ DeviceToDeviceAuthenticator::DeviceToDeviceAuthenticator(
   DCHECK(connection_);
 }
 
-DeviceToDeviceAuthenticator::~DeviceToDeviceAuthenticator() {
-  connection_->RemoveObserver(this);
-}
+DeviceToDeviceAuthenticator::~DeviceToDeviceAuthenticator() = default;
 
 void DeviceToDeviceAuthenticator::Authenticate(
     AuthenticationCallback callback) {
@@ -86,7 +84,7 @@ void DeviceToDeviceAuthenticator::Authenticate(
     return;
   }
 
-  connection_->AddObserver(this);
+  connection_observation_.Observe(connection_);
 
   // Generate a key-pair for this individual session.
   state_ = State::GENERATING_SESSION_KEYS;
@@ -209,7 +207,7 @@ void DeviceToDeviceAuthenticator::Fail(const std::string& error_message,
   PA_LOG(WARNING) << "Authentication failed: " << error_message;
   state_ = State::AUTHENTICATION_FAILURE;
   weak_ptr_factory_.InvalidateWeakPtrs();
-  connection_->RemoveObserver(this);
+  connection_observation_.Reset();
   timer_.reset();
   std::move(callback_).Run(result, nullptr);
 }
@@ -223,7 +221,7 @@ void DeviceToDeviceAuthenticator::Succeed() {
   state_ = State::AUTHENTICATION_SUCCESS;
   NotifyAuthenticationStateChanged(
       mojom::SecureChannelState::kAuthenticationSuccess);
-  connection_->RemoveObserver(this);
+  connection_observation_.Reset();
   std::move(callback_).Run(
       Result::SUCCESS,
       std::make_unique<DeviceToDeviceSecureContext>(

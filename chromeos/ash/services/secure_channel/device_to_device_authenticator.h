@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/services/secure_channel/authenticator.h"
 #include "chromeos/ash/services/secure_channel/connection.h"
 #include "chromeos/ash/services/secure_channel/connection_observer.h"
@@ -174,6 +175,9 @@ class DeviceToDeviceAuthenticator : public Authenticator,
 
   // The derived symmetric keys for the session.
   SessionKeys session_keys_;
+
+  base::ScopedObservation<Connection, ConnectionObserver>
+      connection_observation_{this};
 
   base::WeakPtrFactory<DeviceToDeviceAuthenticator> weak_ptr_factory_{this};
 };

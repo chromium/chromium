@@ -76,12 +76,10 @@ BleScannerImpl::BleScannerImpl(BluetoothHelper* bluetooth_helper,
       ble_synchronizer_(ble_synchronizer),
       adapter_(adapter),
       service_data_provider_(std::make_unique<ServiceDataProvider>()) {
-  adapter_->AddObserver(this);
+  bluetooth_adapter_observation_.Observe(adapter_.get());
 }
 
-BleScannerImpl::~BleScannerImpl() {
-  adapter_->RemoveObserver(this);
-}
+BleScannerImpl::~BleScannerImpl() = default;
 
 void BleScannerImpl::HandleScanRequestChange() {
   if (GetAllDeviceIdPairs().empty()) {

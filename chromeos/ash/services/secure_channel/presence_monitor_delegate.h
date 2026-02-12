@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PRESENCE_MONITOR_DELEGATE_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PRESENCE_MONITOR_DELEGATE_H_
 
+#include "base/scoped_observation.h"
 #include "chromeos/ash/services/secure_channel/ble_scanner.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
 
@@ -58,6 +59,9 @@ class PresenceMonitorDelegate : public BleScanner::Observer {
 
   std::string remote_device_id_;
   std::string local_device_id_;
+
+  base::ScopedObservation<BleScanner, BleScanner::Observer>
+      ble_scanner_observation_{this};
 };
 
 }  // namespace secure_channel

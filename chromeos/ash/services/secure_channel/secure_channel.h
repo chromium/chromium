@@ -8,6 +8,7 @@
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/authenticator.h"
 #include "chromeos/ash/services/secure_channel/connection.h"
@@ -193,6 +194,8 @@ class SecureChannel : public ConnectionObserver,
   std::unique_ptr<PendingMessage> pending_message_;
   int next_sequence_number_ = 0;
   base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observer_list_;
+  base::ScopedObservation<Connection, ConnectionObserver>
+      connection_observation_{this};
   base::WeakPtrFactory<SecureChannel> weak_ptr_factory_{this};
 };
 

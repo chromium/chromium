@@ -61,13 +61,11 @@ PendingNearbyInitiatorConnectionRequest::
           kRequestTypeForLogging,
           delegate),
       bluetooth_adapter_(std::move(bluetooth_adapter)) {
-  bluetooth_adapter_->AddObserver(this);
+  bluetooth_adapter_observation_.Observe(bluetooth_adapter_.get());
 }
 
 PendingNearbyInitiatorConnectionRequest::
-    ~PendingNearbyInitiatorConnectionRequest() {
-  bluetooth_adapter_->RemoveObserver(this);
-}
+    ~PendingNearbyInitiatorConnectionRequest() = default;
 
 void PendingNearbyInitiatorConnectionRequest::HandleBleDiscoveryStateChange(
     mojom::DiscoveryResult discovery_state,

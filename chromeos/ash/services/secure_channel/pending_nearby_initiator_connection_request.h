@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/scoped_observation.h"
 #include "chromeos/ash/services/secure_channel/nearby_initiator_failure_type.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_request_base.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
@@ -83,6 +84,9 @@ class PendingNearbyInitiatorConnectionRequest
                              bool present) override;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
+  base::ScopedObservation<device::BluetoothAdapter,
+                          device::BluetoothAdapter::Observer>
+      bluetooth_adapter_observation_{this};
 };
 
 }  // namespace ash::secure_channel
