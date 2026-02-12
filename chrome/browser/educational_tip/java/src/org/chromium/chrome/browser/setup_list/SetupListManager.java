@@ -18,9 +18,16 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.search_engines.SearchEngineChoiceService;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,8 +64,9 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
     public static final int MAX_SETUP_LIST_ITEMS = 5;
 
     // Order of modules in the setup list.
-    static final List<Integer> BASE_SETUP_LIST_ORDER =
+    public static final List<Integer> BASE_SETUP_LIST_ORDER =
             Arrays.asList(
+                    ModuleType.DEFAULT_BROWSER_PROMO,
                     ModuleType.SIGN_IN_PROMO,
                     ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
                     ModuleType.SAVE_PASSWORDS_PROMO,
@@ -70,6 +78,7 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
     private final Map<Integer, Integer> mModuleRankMap = new HashMap<>();
     private final Map<String, Integer> mKeyToModuleMap = new HashMap<>();
     private Set<String> mCompletedKeys = new HashSet<>();
+    private @Nullable Profile mProfile;
     private final Set<Integer> mModulesAwaitingCompletionAnimation = new HashSet<>();
 
     private static final @ModuleType int TWO_CELL_CONTAINER_MODULE_TYPE =
@@ -142,7 +151,7 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
 
     /** Returns whether the two-cell layout should be shown. This is cached for the session. */
     public boolean shouldShowTwoCellLayout() {
-        return mShouldShowTwoCellLayout;
+        return mShouldShowTwoCellLayout && mRankedModules.size() >= 2;
     }
 
     /** Returns the module type list for the two-cell container. */
@@ -161,18 +170,54 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
         return prefKey != null && mCompletedKeys.contains(prefKey);
     }
 
+    /** Returns whether a module is eligible to be shown in the setup list. */
+    public boolean isModuleEligible(@ModuleType int moduleType) {
+        return mRankedModules.contains(moduleType);
+    }
+
+    private boolean checkIsModuleEligible(@ModuleType int moduleType, @Nullable Profile profile) {
+        if (moduleType == ModuleType.DEFAULT_BROWSER_PROMO) {
+            return !SearchEngineChoiceService.getInstance().isDefaultBrowserPromoSuppressed();
+        }
+
+        if (moduleType == ModuleType.SIGN_IN_PROMO
+                || moduleType == ModuleType.ENHANCED_SAFE_BROWSING_PROMO
+                || moduleType == ModuleType.ADDRESS_BAR_PLACEMENT_PROMO) {
+            return true;
+        }
+
+        // For modules that require a profile or account state.
+        if (profile == null) {
+            return false;
+        }
+
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        boolean isSignedIn =
+                identityManager != null && identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+
+        if (moduleType == ModuleType.SAVE_PASSWORDS_PROMO) {
+            return isSignedIn;
+        }
+
+        if (moduleType == ModuleType.PASSWORD_CHECKUP_PROMO) {
+            SyncService syncService = SyncServiceFactory.getForProfile(profile);
+            return isSignedIn && PasswordManagerHelper.hasChosenToSyncPasswords(syncService);
+        }
+
+        return false;
+    }
+
     /** Returns whether the module type belongs to the currently active setup list view. */
     public boolean isSetupListModule(@ModuleType int moduleType) {
-        if (!isSetupListActive()) return false;
-        if (shouldShowTwoCellLayout()) {
-            return moduleType == TWO_CELL_CONTAINER_MODULE_TYPE;
-        } else {
-            return isBaseSetupListModule(moduleType);
+        if (!isSetupListActive()) {
+            return false;
         }
+        return moduleType == TWO_CELL_CONTAINER_MODULE_TYPE || isBaseSetupListModule(moduleType);
     }
 
     /** Returns whether the given module type is part of the base setup list. */
-    static boolean isBaseSetupListModule(@ModuleType int moduleType) {
+    public static boolean isBaseSetupListModule(@ModuleType int moduleType) {
         return BASE_SETUP_LIST_SET.contains(moduleType);
     }
 
@@ -182,11 +227,14 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
      */
     @Nullable
     public Integer getManualRank(@ModuleType int moduleType) {
-        if (!isSetupListModule(moduleType)) return null;
-
-        if (shouldShowTwoCellLayout()) {
-            return (moduleType == TWO_CELL_CONTAINER_MODULE_TYPE) ? 0 : null;
+        if (!isSetupListActive()) {
+            return null;
         }
+
+        if (shouldShowTwoCellLayout() && moduleType == TWO_CELL_CONTAINER_MODULE_TYPE) {
+            return 0;
+        }
+
         return mModuleRankMap.get(moduleType);
     }
 
@@ -221,10 +269,12 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
             return;
         }
 
+        mProfile = profile;
         mIsPriming = true;
 
         for (int moduleType : BASE_SETUP_LIST_ORDER) {
-            if (SetupListModuleUtils.checkIsTaskCompletedInSystem(moduleType, profile)) {
+            if (!isModuleCompleted(moduleType)
+                    && SetupListModuleUtils.checkIsTaskCompletedInSystem(moduleType, profile)) {
                 SetupListModuleUtils.setModuleCompleted(moduleType);
             }
         }
@@ -247,6 +297,11 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
         // Partition the base order based on individual boolean completion keys.
         SharedPreferencesManager chromeSharedPreferences = ChromeSharedPreferences.getInstance();
         for (int moduleType : BASE_SETUP_LIST_ORDER) {
+            // Filter out modules that are not eligible if the profile is available.
+            if (mProfile != null && !checkIsModuleEligible(moduleType, mProfile)) {
+                continue;
+            }
+
             String prefKey = SetupListModuleUtils.getCompletionKeyForModule(moduleType);
             if (prefKey != null && chromeSharedPreferences.readBoolean(prefKey, false)) {
                 // If the module is completed but still awaiting its animation, keep it in the

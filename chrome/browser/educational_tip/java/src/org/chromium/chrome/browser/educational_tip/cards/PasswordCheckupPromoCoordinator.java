@@ -27,7 +27,6 @@ public class PasswordCheckupPromoCoordinator
      */
     public PasswordCheckupPromoCoordinator(
             Runnable onModuleClickedCallback, EducationTipModuleActionDelegate actionDelegate) {
-        // TODO(crbug.com/469425754): Confirm and add eligibility check
         mOnModuleClickedCallback = onModuleClickedCallback;
         mActionDelegate = actionDelegate;
     }
@@ -62,10 +61,6 @@ public class PasswordCheckupPromoCoordinator
     @Override
     public void onCardClicked() {
         mActionDelegate.showPasswordCheckup();
-
-        // Considered complete if the user clicks on the promo
-        SetupListModuleUtils.setModuleCompleted(ModuleType.PASSWORD_CHECKUP_PROMO);
-
         mOnModuleClickedCallback.run();
     }
 

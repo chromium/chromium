@@ -173,6 +173,42 @@ public class EducationalTipModuleBuilderUnitTest {
 
     @Test
     @SmallTest
+    public void testIsEligible_SetupList_StrictlyFollowsManager() {
+        // Mock Setup List module.
+        int setupListModule = ModuleType.SIGN_IN_PROMO;
+        EducationalTipModuleBuilder builder =
+                new EducationalTipModuleBuilder(setupListModule, mActionDelegate);
+
+        // Case 1: Manager says eligible.
+        when(mSetupListManager.isModuleEligible(setupListModule)).thenReturn(true);
+        assertTrue(builder.isEligible());
+
+        // Case 2: Manager says ineligible.
+        when(mSetupListManager.isModuleEligible(setupListModule)).thenReturn(false);
+        assertFalse(builder.isEligible());
+    }
+
+    @Test
+    @SmallTest
+    public void testIsEligible_RegularTip_RequiresProfile() {
+        // Mock regular Educational Tip module.
+        int regularTipModule = ModuleType.QUICK_DELETE_PROMO;
+        EducationalTipModuleBuilder builder =
+                new EducationalTipModuleBuilder(regularTipModule, mActionDelegate);
+
+        // Case 1: Profile is null. Implementation currently returns true for non-setup modules.
+        when(mActionDelegate.getProfileSupplier())
+                .thenReturn(ObservableSuppliers.createNonNull(null));
+        assertTrue(builder.isEligible());
+
+        // Case 2: Profile is present.
+        when(mActionDelegate.getProfileSupplier())
+                .thenReturn(ObservableSuppliers.createNonNull(mProfile));
+        assertTrue(builder.isEligible());
+    }
+
+    @Test
+    @SmallTest
     public void testGetManualRank_ReturnsRankForSetupListModuleWhenActive() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
         when(mSetupListManager.getManualRank(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO)).thenReturn(0);

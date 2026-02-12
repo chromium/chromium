@@ -64,7 +64,6 @@ public class EnhancedSafeBrowsingPromoCoordinator
     public void onCardClicked() {
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(mActionDelegate.getContext(), SafeBrowsingSettingsFragment.class);
-        SetupListModuleUtils.setModuleCompleted(ModuleType.ENHANCED_SAFE_BROWSING_PROMO);
         mOnModuleClickedCallback.run();
     }
 

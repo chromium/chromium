@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.R;
+import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -25,7 +26,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  * vertically. Used, for example, by the Setup List.
  */
 @NullMarked
-public class EducationalTipModuleTwoCellBuilder implements ModuleProviderBuilder {
+public class EducationalTipModuleTwoCellBuilder
+        implements ModuleProviderBuilder, ModuleConfigChecker {
     private final EducationTipModuleActionDelegate mActionDelegate;
     private final @ModuleType int mModuleType;
 
@@ -65,5 +67,10 @@ public class EducationalTipModuleTwoCellBuilder implements ModuleProviderBuilder
     @Override
     public @Nullable Integer getManualRank() {
         return SetupListModuleUtils.getManualRank(mModuleType);
+    }
+
+    @Override
+    public boolean isEligible() {
+        return SetupListModuleUtils.isSetupListModule(mModuleType);
     }
 }

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.InputContext;
@@ -94,6 +95,10 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
 
     @Override
     public boolean isEligible() {
+        if (SetupListManager.isBaseSetupListModule(mModuleType)) {
+            return SetupListModuleUtils.isModuleEligible(mModuleType);
+        }
+
         return true;
     }
 

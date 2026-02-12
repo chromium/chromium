@@ -82,7 +82,7 @@ public class HomeTipsModulesProviderUnitTest {
 
         HomeTipsModulesProvider.registerTipModules(mActionDelegate, mModuleRegistry);
 
-        List<Integer> setupListModules = SetupListModuleUtils.getRankedModuleTypes();
+        List<Integer> setupListModules = SetupListManager.BASE_SETUP_LIST_ORDER;
         for (@ModuleType int moduleType : setupListModules) {
             verify(mModuleRegistry)
                     .registerModule(eq(moduleType), any(EducationalTipModuleBuilder.class));
@@ -106,12 +106,12 @@ public class HomeTipsModulesProviderUnitTest {
     @Test
     @SmallTest
     public void testGetModulesToRegister_returnsSetupListWhenActive() {
-        Collection<Integer> expectedModules = SetupListModuleUtils.getRankedModuleTypes();
         Collection<Integer> actualModules =
                 HomeTipsModulesProvider.getModuleTypesToRegister(
                         /* isSetupListActive= */ true, /* showTwoCell= */ false);
 
-        assertArrayEquals(expectedModules.toArray(), actualModules.toArray());
+        assertArrayEquals(
+                SetupListManager.BASE_SETUP_LIST_ORDER.toArray(), actualModules.toArray());
     }
 
     @Test

@@ -104,11 +104,14 @@ public class HomeModulesMediator {
         Profile profile = mProfileSupplier.get();
         assert profile != null;
 
-        // 1. Get the sorted list of manually ranked modules
-        List<Integer> manuallyRankedModules = getSortedManuallyRankedModules();
+        // 0. Get the set of currently enabled (eligible) modules.
+        Set<Integer> enabledModuleSet = getFilteredEnabledModuleSet();
+
+        // 1. Get the sorted list of manually ranked modules, filtered by eligibility.
+        List<Integer> manuallyRankedModules = getSortedManuallyRankedModules(enabledModuleSet);
 
         // 2. Create InputContext for segmentation, excluding manually ranked ones
-        InputContext inputContext = createInputContextForSegmentation();
+        InputContext inputContext = createInputContextForSegmentation(enabledModuleSet);
 
         HomeModulesRankingHelper.fetchModulesRank(
                 profile,
@@ -121,7 +124,8 @@ public class HomeModulesMediator {
                     }
                     long durationMs = SystemClock.elapsedRealtime() - segmentationServiceCallTimeMs;
                     List<Integer> modulesToShow =
-                            getCombinedRankedModules(orderedLabels, manuallyRankedModules);
+                            getCombinedRankedModules(
+                                    orderedLabels, manuallyRankedModules, enabledModuleSet);
                     buildModulesAndShow(
                             modulesToShow,
                             moduleDelegate,
@@ -133,15 +137,16 @@ public class HomeModulesMediator {
     /**
      * Returns a sorted list of module types that have manual ranking.
      *
+     * @param enabledModuleSet The set of currently enabled (eligible) modules.
      * @return A list of {@link ModuleType}s, sorted by their manual rank.
      */
     @VisibleForTesting
-    List<Integer> getSortedManuallyRankedModules() {
+    List<Integer> getSortedManuallyRankedModules(Set<Integer> enabledModuleSet) {
         if (mModuleDelegateHost.getTrackingTab() != null) {
             return new ArrayList<>(); // No manual ranking when a tab is tracked
         }
         Map<Integer, Integer> rankMap = new HashMap<>();
-        for (@ModuleType int moduleType : mModuleRegistry.getAllRegisteredModuleTypes()) {
+        for (@ModuleType int moduleType : enabledModuleSet) {
             ModuleProviderBuilder builder = mModuleRegistry.getModuleProviderBuilder(moduleType);
             Integer manualOrder = builder.getManualRank();
             if (manualOrder != null) {
@@ -155,12 +160,13 @@ public class HomeModulesMediator {
     /**
      * Creates an InputContext for the segmentation platform, excluding manually ranked modules.
      *
+     * @param enabledModuleSet The set of currently enabled (eligible) modules.
      * @return An {@link InputContext} containing signals from non-manually ranked modules.
      */
     @VisibleForTesting
-    InputContext createInputContextForSegmentation() {
+    InputContext createInputContextForSegmentation(Set<Integer> enabledModuleSet) {
         InputContext inputContext = new InputContext();
-        for (@ModuleType int moduleType : mModuleRegistry.getAllRegisteredModuleTypes()) {
+        for (@ModuleType int moduleType : enabledModuleSet) {
             ModuleProviderBuilder builder = mModuleRegistry.getModuleProviderBuilder(moduleType);
             if (builder.getManualRank() == null) {
                 inputContext.mergeFrom(builder.createInputContext());
@@ -173,6 +179,11 @@ public class HomeModulesMediator {
     void onModuleViewCreated(@ModuleType int moduleType) {
         Profile profile = mProfileSupplier.get();
         assert profile != null;
+        ModuleProviderBuilder builder = mModuleRegistry.getModuleProviderBuilder(moduleType);
+        if (builder.getManualRank() != null) {
+            return;
+        }
+
         HomeModulesRankingHelper.notifyCardShown(
                 profile, HomeModulesMetricsUtils.getModuleName(moduleType));
 
@@ -185,6 +196,11 @@ public class HomeModulesMediator {
     void onModuleClicked(@ModuleType int moduleType) {
         Profile profile = mProfileSupplier.get();
         assert profile != null;
+        ModuleProviderBuilder builder = mModuleRegistry.getModuleProviderBuilder(moduleType);
+        if (builder.getManualRank() != null) {
+            return;
+        }
+
         HomeModulesRankingHelper.notifyCardInteracted(
                 profile, HomeModulesMetricsUtils.getModuleName(moduleType));
 
@@ -704,10 +720,12 @@ public class HomeModulesMediator {
      */
     @VisibleForTesting
     List<Integer> getCombinedRankedModules(
-            List<String> orderedLabels, List<Integer> manuallyRankedModules) {
+            List<String> orderedLabels,
+            List<Integer> manuallyRankedModules,
+            Set<Integer> enabledModuleSet) {
         List<Integer> combinedList = new ArrayList<>(manuallyRankedModules);
         List<Integer> filteredEnabledModules =
-                filterEnabledModuleList(orderedLabels, getFilteredEnabledModuleSet());
+                filterEnabledModuleList(orderedLabels, enabledModuleSet);
         combinedList.addAll(filteredEnabledModules);
         return combinedList;
     }

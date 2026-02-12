@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserStateProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -38,6 +39,14 @@ public class SetupListModuleUtils {
     /** Returns the module type list for the two-cell container. */
     public static List<Integer> getTwoCellContainerModuleTypes() {
         return SetupListManager.getInstance().getTwoCellContainerModuleTypes();
+    }
+
+    /** Returns the list of module types to be registered with the framework. */
+    public static List<Integer> getModuleTypesForRegistration(boolean showTwoCell) {
+        if (showTwoCell) {
+            return getTwoCellContainerModuleTypes();
+        }
+        return SetupListManager.BASE_SETUP_LIST_ORDER;
     }
 
     /** Returns whether the setup list is active based on the 14-day window. */
@@ -67,6 +76,11 @@ public class SetupListModuleUtils {
     /** Returns whether the given module is completed, using the optimized manager state. */
     public static boolean isModuleCompleted(@ModuleType int moduleType) {
         return SetupListManager.getInstance().isModuleCompleted(moduleType);
+    }
+
+    /** Returns whether the given module is eligible, using the optimized manager state. */
+    public static boolean isModuleEligible(@ModuleType int moduleType) {
+        return SetupListManager.getInstance().isModuleEligible(moduleType);
     }
 
     /**
@@ -106,6 +120,8 @@ public class SetupListModuleUtils {
     public static boolean checkIsTaskCompletedInSystem(
             @ModuleType int moduleType, Profile profile) {
         switch (moduleType) {
+            case ModuleType.DEFAULT_BROWSER_PROMO:
+                return !new DefaultBrowserStateProvider().shouldShowPromo();
             case ModuleType.SIGN_IN_PROMO:
                 IdentityManager identityManager =
                         IdentityServicesProvider.get().getIdentityManager(profile);
@@ -116,6 +132,16 @@ public class SetupListModuleUtils {
                         == SafeBrowsingState.ENHANCED_PROTECTION;
             default:
                 return false;
+        }
+    }
+
+    /** Resets the completion status of all Setup List modules to incomplete for testing. */
+    public static void resetAllModuleCompletionForTesting() {
+        for (int moduleType : SetupListManager.BASE_SETUP_LIST_ORDER) {
+            String individualPrefKey = getCompletionKeyForModule(moduleType);
+            if (individualPrefKey != null) {
+                ChromeSharedPreferences.getInstance().writeBoolean(individualPrefKey, false);
+            }
         }
     }
 

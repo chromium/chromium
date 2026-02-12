@@ -20,13 +20,17 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.setup_list.SetupListCompletable;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Coordinator for the default browser promo card. */
 @NullMarked
-public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvider {
+public class DefaultBrowserPromoCoordinator
+        implements EducationalTipCardProvider, SetupListCompletable {
     // For the default browser promo card specifically, it is triggered only when the user clicks on
     // the bottom sheet, directing them to the default app settings page.
     private final Runnable mOnModuleClickedCallback;
@@ -66,11 +70,16 @@ public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvide
 
     @Override
     public @DrawableRes int getCardImage() {
+        if (SetupListModuleUtils.isSetupListModule(ModuleType.DEFAULT_BROWSER_PROMO)) {
+            return R.drawable.setup_list_default_browser_promo_logo;
+        }
         return R.drawable.default_browser_promo_logo;
     }
 
     @Override
     public void onCardClicked() {
+        // TODO(crbug.com/469425754): Display role manager setting if available. The bottom sheet
+        // will be used as a fallback
         Context context = mActionDelegate.getContext();
         View defaultBrowserBottomSheetView =
                 LayoutInflater.from(context)
@@ -99,6 +108,17 @@ public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvide
             mDefaultBrowserBottomSheetContent.destroy();
             mDefaultBrowserBottomSheetContent = null;
         }
+    }
+
+    // SetupListCompletable implementation.
+    @Override
+    public boolean isComplete() {
+        return SetupListModuleUtils.isModuleCompleted(ModuleType.DEFAULT_BROWSER_PROMO);
+    }
+
+    @Override
+    public @DrawableRes int getCardImageCompletedResId() {
+        return R.drawable.default_browser_promo_completed_logo;
     }
 
     private Intent createBottomSheetOnClickIntent() {

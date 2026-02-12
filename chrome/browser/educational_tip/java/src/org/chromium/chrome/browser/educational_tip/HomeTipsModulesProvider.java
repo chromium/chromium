@@ -63,11 +63,10 @@ public class HomeTipsModulesProvider {
     static Collection<Integer> getModuleTypesToRegister(
             boolean isSetupListActive, boolean showTwoCell) {
         if (isSetupListActive) {
-            // If the "Set Up List" feature is active, return its ranked modules.
-            if (showTwoCell) {
-                return SetupListModuleUtils.getTwoCellContainerModuleTypes();
-            }
-            return SetupListModuleUtils.getRankedModuleTypes();
+            // Register all potential modules to support dynamic reordering and profile-aware
+            // eligibility (priming). Actual visibility is enforced via each builder's isEligible()
+            // check.
+            return SetupListModuleUtils.getModuleTypesForRegistration(showTwoCell);
         } else {
             // Fall back to returning the default Educational Tip modules.
             return EducationalTipModuleUtils.getModuleTypes();

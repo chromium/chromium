@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="62dp"
+    android:height="62dp"
+    android:viewportWidth="62"
+    android:viewportHeight="62">
+    <group>
+        <clip-path
+            android:pathData="M2,2h58v58h-58z"/>
+        <path
+            android:pathData="M60,33.175C60,41.28 60,45.333 58.727,48.547C56.885,53.201 53.201,56.885 48.547,58.727C45.333,60 41.28,60 33.175,60H28.825C20.72,60 16.667,60 13.453,58.727C8.8,56.885 5.115,53.201 3.273,48.547C2,45.333 2,41.28 2,33.175L2,28.825C2,20.72 2,16.667 3.273,13.453C5.115,8.8 8.8,5.115 13.453,3.273C16.667,2 20.72,2 28.825,2L33.175,2C41.28,2 45.333,2 48.547,3.273C53.201,5.115 56.885,8.8 58.727,13.453C60,16.667 60,20.72 60,28.825V33.175Z"
+            android:fillColor="@color/educational_tip_card_logo_color_2"/>
+    </group>
+    <path
+        android:pathData="M27.68,39.252L19.544,31.116L21.38,29.28L27.68,35.616L41.18,22.116L43.016,23.952L27.68,39.252Z"
+        android:fillColor="@color/educational_tip_card_logo_color_6"/>
+</vector>

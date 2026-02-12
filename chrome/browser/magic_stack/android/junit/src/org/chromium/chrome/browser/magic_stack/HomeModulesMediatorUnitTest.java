@@ -757,9 +757,16 @@ public class HomeModulesMediatorUnitTest {
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO))
                 .thenReturn(addressBarBuilder);
 
+        // Define enabled set
+        Set<Integer> enabledSet =
+                Set.of(
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                        ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
+                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
+
         // Case 1: Normal state, verify correct sort order (0, 1, 2) and exclusion of single_tab.
         when(mModuleDelegateHost.getTrackingTab()).thenReturn(null);
-        List<Integer> manuallyRankedModules = mMediator.getSortedManuallyRankedModules();
+        List<Integer> manuallyRankedModules = mMediator.getSortedManuallyRankedModules(enabledSet);
 
         assertEquals(3, manuallyRankedModules.size());
         assertEquals(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER, (int) manuallyRankedModules.get(0));
@@ -770,8 +777,18 @@ public class HomeModulesMediatorUnitTest {
         // Case 2: Tracking a tab, manual ranking should be skipped (returns empty list).
         Tab tab = mock(Tab.class);
         when(mModuleDelegateHost.getTrackingTab()).thenReturn(tab);
-        manuallyRankedModules = mMediator.getSortedManuallyRankedModules();
+        manuallyRankedModules = mMediator.getSortedManuallyRankedModules(enabledSet);
         assertEquals(0, manuallyRankedModules.size());
+
+        // Case 3: Filtering. If ESB is not in the enabled set, it should be excluded.
+        when(mModuleDelegateHost.getTrackingTab()).thenReturn(null);
+        Set<Integer> filteredEnabledSet =
+                Set.of(
+                        ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
+                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
+        manuallyRankedModules = mMediator.getSortedManuallyRankedModules(filteredEnabledSet);
+        assertEquals(2, manuallyRankedModules.size());
+        assertFalse(manuallyRankedModules.contains(ModuleType.ENHANCED_SAFE_BROWSING_PROMO));
     }
 
     @Test
@@ -820,7 +837,14 @@ public class HomeModulesMediatorUnitTest {
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER))
                 .thenReturn(twoCellBuilder);
 
-        InputContext resultContext = mMediator.createInputContextForSegmentation();
+        Set<Integer> enabledSet =
+                Set.of(
+                        ModuleType.SINGLE_TAB,
+                        ModuleType.PRICE_CHANGE,
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                        ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
+
+        InputContext resultContext = mMediator.createInputContextForSegmentation(enabledSet);
 
         // Assertions: Only signals from non-manual modules are present.
         assertEquals(
@@ -847,6 +871,12 @@ public class HomeModulesMediatorUnitTest {
         @ModuleType int moduleType1 = ModuleType.TAB_GROUP_PROMO;
         @ModuleType int moduleType2 = ModuleType.TAB_GROUP_SYNC_PROMO;
 
+        // Mock builders to be segmentation-ranked (null manual rank) so tracking is enabled.
+        ModuleProviderBuilder builder = mock(ModuleProviderBuilder.class);
+        when(builder.getManualRank()).thenReturn(null);
+        when(mModuleRegistry.getModuleProviderBuilder(moduleType1)).thenReturn(builder);
+        when(mModuleRegistry.getModuleProviderBuilder(moduleType2)).thenReturn(builder);
+
         mMediator.onModuleViewCreated(moduleType1);
         assertEquals(1, HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType1));
         assertEquals(
@@ -862,17 +892,29 @@ public class HomeModulesMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testOnModuleViewCreated_SkipsManualModules() {
+        @ModuleType int moduleType = ModuleType.DEFAULT_BROWSER_PROMO;
+
+        // Mock builder to be manually ranked (Setup List style).
+        ModuleProviderBuilder builder = mock(ModuleProviderBuilder.class);
+        when(builder.getManualRank()).thenReturn(0);
+        when(mModuleRegistry.getModuleProviderBuilder(moduleType)).thenReturn(builder);
+
+        mMediator.onModuleViewCreated(moduleType);
+
+        // Verify the impression count was NOT increased for a manual module.
+        assertEquals(
+                INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION,
+                HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType));
+    }
+
+    @Test
+    @SmallTest
     public void testGetFilteredEnabledModuleSet_withRefactorEnabled() {
         FeatureOverrides.newBuilder().enable(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR).apply();
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, false);
 
-        List<Integer> moduleList = List.of(mModuleTypeList[2], mModuleTypeList[0]);
-        // Registers three modules to the ModuleRegistry.
-        for (int i = 0; i < 2; i++) {
-            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
-                    .thenReturn(false);
-        }
         assertEquals(Set.of(), mMediator.getFilteredEnabledModuleSet());
     }
 
@@ -900,8 +942,16 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
                         ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
 
+        Set<Integer> enabledSet =
+                Set.of(
+                        ModuleType.SINGLE_TAB,
+                        ModuleType.PRICE_CHANGE,
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
+
         List<Integer> result =
-                mMediator.getCombinedRankedModules(orderedLabels, manuallyRankedModules);
+                mMediator.getCombinedRankedModules(
+                        orderedLabels, manuallyRankedModules, enabledSet);
 
         assertEquals(4, result.size());
         // Manual modules should be at the start.
@@ -930,9 +980,13 @@ public class HomeModulesMediatorUnitTest {
         when(mModuleRegistry.getModuleProviderBuilder(segmentation1))
                 .thenReturn(segmentationBuilder);
 
+        Set<Integer> enabledSet = Set.of(manual1, manual2, segmentation1);
+
         // Spy on mediator to mock the result of manual sorting.
         mMediator = Mockito.spy(mMediator);
-        doReturn(List.of(manual2, manual1)).when(mMediator).getSortedManuallyRankedModules();
+        doReturn(List.of(manual2, manual1))
+                .when(mMediator)
+                .getSortedManuallyRankedModules(eq(enabledSet));
 
         // Initialize state manually.
         mMediator.setModuleListToShowForTesting(
@@ -963,24 +1017,28 @@ public class HomeModulesMediatorUnitTest {
         mHomeModulesConfigManager.registerModuleEligibilityChecker(
                 ModuleType.ENHANCED_SAFE_BROWSING_PROMO, checker);
 
+        Set<Integer> enabledSet =
+                Set.of(ModuleType.SINGLE_TAB, ModuleType.ENHANCED_SAFE_BROWSING_PROMO);
+
         // 1) Only manual modules, no segmentation modules.
         List<String> orderedLabels = List.of();
         List<Integer> manualModules = List.of(ModuleType.ENHANCED_SAFE_BROWSING_PROMO);
-        List<Integer> result = mMediator.getCombinedRankedModules(orderedLabels, manualModules);
+        List<Integer> result =
+                mMediator.getCombinedRankedModules(orderedLabels, manualModules, enabledSet);
         assertEquals(1, result.size());
         assertEquals(ModuleType.ENHANCED_SAFE_BROWSING_PROMO, (int) result.get(0));
 
         // 2) No manual modules, multiple segmentation modules.
         orderedLabels = List.of("SingleTab");
         manualModules = List.of();
-        result = mMediator.getCombinedRankedModules(orderedLabels, manualModules);
+        result = mMediator.getCombinedRankedModules(orderedLabels, manualModules, enabledSet);
         assertEquals(1, result.size());
         assertEquals(ModuleType.SINGLE_TAB, (int) result.get(0));
 
         // 3) No manual modules, no segmentation modules.
         orderedLabels = List.of();
         manualModules = List.of();
-        result = mMediator.getCombinedRankedModules(orderedLabels, manualModules);
+        result = mMediator.getCombinedRankedModules(orderedLabels, manualModules, enabledSet);
         assertEquals(0, result.size());
     }
 

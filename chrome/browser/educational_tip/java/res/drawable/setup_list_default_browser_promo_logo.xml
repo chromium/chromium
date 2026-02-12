@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="62dp"
+    android:height="62dp"
+    android:viewportWidth="62"
+    android:viewportHeight="62">
+    <group>
+        <clip-path
+            android:pathData="M2,2h58v58h-58z"/>
+        <path
+            android:pathData="M60,33.175C60,41.28 60,45.333 58.727,48.547C56.885,53.201 53.201,56.885 48.547,58.727C45.333,60 41.28,60 33.175,60H28.825C20.72,60 16.667,60 13.453,58.727C8.8,56.885 5.115,53.201 3.273,48.547C2,45.333 2,41.28 2,33.175L2,28.825C2,20.72 2,16.667 3.273,13.453C5.115,8.8 8.8,5.115 13.453,3.273C16.667,2 20.72,2 28.825,2L33.175,2C41.28,2 45.333,2 48.547,3.273C53.201,5.115 56.885,8.8 58.727,13.453C60,16.667 60,20.72 60,28.825V33.175Z"
+            android:fillColor="@color/educational_tip_card_logo_color_2"/>
+    </group>
+    <path
+        android:pathData="M21,15C21,13.895 21.895,13 23,13H35C36.105,13 37,13.895 37,15V47C37,48.105 36.105,49 35,49H23C21.895,49 21,48.105 21,47V15Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="35.5"
+                android:startY="26.886"
+                android:endX="23.003"
+                android:endY="46.629"
+                android:type="linear">
+                <item android:offset="0" android:color="@color/educational_tip_card_logo_color_1"/>
+                <item android:offset="1" android:color="@color/educational_tip_card_logo_color_2"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:pathData="M19,47V15C19,12.791 20.791,11 23,11V13C21.895,13 21,13.895 21,15V47L21.011,47.204C21.113,48.213 21.964,49 23,49H35C36.036,49 36.887,48.213 36.989,47.204L37,47V15C37,13.895 36.105,13 35,13V11C37.209,11 39,12.791 39,15V47C39,49.209 37.209,51 35,51H23C20.791,51 19,49.209 19,47ZM35,11V13H23V11H35Z"
+        android:fillColor="@color/educational_tip_card_logo_color_4"/>
+    <path
+        android:pathData="M38,31m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"
+        android:fillColor="@color/educational_tip_card_logo_color_1"/>
+    <group>
+        <clip-path
+            android:pathData="M26,19h24v24h-24z"/>
+        <path
+            android:pathData="M34,31.075C34,32.175 34.392,33.117 35.175,33.9C35.958,34.683 36.9,35.075 38,35.075C39.1,35.075 40.042,34.683 40.825,33.9C41.608,33.117 42,32.175 42,31.075C42,29.975 41.608,29.033 40.825,28.25C40.042,27.467 39.1,27.075 38,27.075C36.9,27.075 35.958,27.467 35.175,28.25C34.392,29.033 34,29.975 34,31.075ZM38,37.075C38.217,37.075 38.425,37.067 38.625,37.05C38.825,37.033 39.025,37 39.225,36.95L36.875,41C34.358,40.717 32.25,39.642 30.55,37.775C28.85,35.892 28,33.658 28,31.075C28,30.375 28.067,29.7 28.2,29.05C28.333,28.383 28.533,27.75 28.8,27.15L32.8,34.075C33.317,34.975 34.033,35.7 34.95,36.25C35.867,36.8 36.883,37.075 38,37.075ZM38,25.075C36.667,25.075 35.483,25.467 34.45,26.25C33.417,27.017 32.7,28 32.3,29.2L29.95,25.15C30.867,23.917 32.017,22.933 33.4,22.2C34.8,21.45 36.333,21.075 38,21.075C39.65,21.075 41.167,21.442 42.55,22.175C43.933,22.892 45.083,23.858 46,25.075H38ZM47.15,27.075C47.433,27.692 47.642,28.333 47.775,29C47.925,29.667 48,30.358 48,31.075C48,33.658 47.15,35.883 45.45,37.75C43.767,39.617 41.683,40.7 39.2,41L43.2,34.075C43.45,33.642 43.642,33.175 43.775,32.675C43.925,32.158 44,31.625 44,31.075C44,30.292 43.858,29.567 43.575,28.9C43.308,28.217 42.933,27.608 42.45,27.075H47.15Z"
+            android:fillColor="@color/educational_tip_card_logo_color_6"/>
+    </group>
+</vector>

@@ -30,15 +30,22 @@ import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelperJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceClientAndroid;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.regional_capabilities.RegionalProgram;
+import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 import java.util.List;
@@ -58,6 +65,10 @@ public class SetupListManagerUnitTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
     @Mock private SafeBrowsingBridge.Natives mSafeBrowsingBridgeJni;
+    @Mock private RegionalCapabilitiesServiceClientAndroid mRegionalServiceClient;
+    @Mock private SyncService mSyncService;
+    @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperJni;
+    @Mock private SearchEngineChoiceService mSearchEngineChoiceService;
 
     private SharedPreferencesManager mSharedPreferencesManager;
     private static final long ONE_MINUTE_IN_MILLIS = TimeUnit.MINUTES.toMillis(1);
@@ -65,8 +76,74 @@ public class SetupListManagerUnitTest {
     @Before
     public void setUp() {
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        SetupListModuleUtils.resetAllModuleCompletionForTesting();
         FirstRunStatus.setFirstRunTriggeredForTesting(false);
         mSharedPreferencesManager.removeKey(ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP);
+
+        RegionalCapabilitiesServiceClientAndroid.setInstanceForTests(mRegionalServiceClient);
+        when(mRegionalServiceClient.getDeviceProgram()).thenReturn(RegionalProgram.DEFAULT);
+
+        SearchEngineChoiceService.setInstanceForTests(mSearchEngineChoiceService);
+        when(mSearchEngineChoiceService.isDefaultBrowserPromoSuppressed()).thenReturn(false);
+
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+
+        SafeBrowsingBridgeJni.setInstanceForTesting(mSafeBrowsingBridgeJni);
+        when(mSafeBrowsingBridgeJni.getSafeBrowsingState(any()))
+                .thenReturn(SafeBrowsingState.STANDARD_PROTECTION);
+
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        PasswordManagerHelperJni.setInstanceForTesting(mPasswordManagerHelperJni);
+    }
+
+    @Test
+    @SmallTest
+    public void testEligibility_DefaultBrowser() {
+        // Case 1: Ineligible (Search Engine Choice Suppression)
+        when(mSearchEngineChoiceService.isDefaultBrowserPromoSuppressed()).thenReturn(true);
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
+        manager.maybePrimeCompletionStatus(mProfile);
+        assertFalse(manager.getRankedModuleTypes().contains(ModuleType.DEFAULT_BROWSER_PROMO));
+
+        // Case 2: Eligible
+        when(mSearchEngineChoiceService.isDefaultBrowserPromoSuppressed()).thenReturn(false);
+        manager.maybePrimeCompletionStatus(mProfile);
+        assertTrue(manager.getRankedModuleTypes().contains(ModuleType.DEFAULT_BROWSER_PROMO));
+    }
+
+    @Test
+    @SmallTest
+    public void testEligibility_AccountDependentPromos() {
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
+
+        // Initially signed out: Save Passwords and Password Checkup should be hidden.
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+        manager.maybePrimeCompletionStatus(mProfile);
+        assertFalse(manager.getRankedModuleTypes().contains(ModuleType.SAVE_PASSWORDS_PROMO));
+        assertFalse(manager.getRankedModuleTypes().contains(ModuleType.PASSWORD_CHECKUP_PROMO));
+
+        // Sign in: Save Passwords should appear. Password Checkup needs sync.
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mPasswordManagerHelperJni.hasChosenToSyncPasswords(any())).thenReturn(false);
+        manager.maybePrimeCompletionStatus(mProfile);
+        assertTrue(manager.getRankedModuleTypes().contains(ModuleType.SAVE_PASSWORDS_PROMO));
+        assertFalse(manager.getRankedModuleTypes().contains(ModuleType.PASSWORD_CHECKUP_PROMO));
+
+        // Enable Password Sync: Password Checkup should now appear.
+        when(mPasswordManagerHelperJni.hasChosenToSyncPasswords(any())).thenReturn(true);
+        manager.maybePrimeCompletionStatus(mProfile);
+        assertTrue(manager.getRankedModuleTypes().contains(ModuleType.SAVE_PASSWORDS_PROMO));
+        assertTrue(manager.getRankedModuleTypes().contains(ModuleType.PASSWORD_CHECKUP_PROMO));
+
+        // Sign out: Both should disappear.
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+        manager.maybePrimeCompletionStatus(mProfile);
+        assertFalse(manager.getRankedModuleTypes().contains(ModuleType.SAVE_PASSWORDS_PROMO));
+        assertFalse(manager.getRankedModuleTypes().contains(ModuleType.PASSWORD_CHECKUP_PROMO));
     }
 
     @Test
@@ -178,7 +255,11 @@ public class SetupListManagerUnitTest {
     @SmallTest
     public void testGetRankedModuleTypes_ReordersAfterAnimation() {
         SetupListManager.setInstanceForTesting(new SetupListManager());
-        List<Integer> rankedModules = SetupListManager.getInstance().getRankedModuleTypes();
+        SetupListManager manager = SetupListManager.getInstance();
+        manager.maybePrimeCompletionStatus(mProfile); // Ensure we have a primed list
+
+        List<Integer> rankedModules = manager.getRankedModuleTypes();
+        assertFalse("Ranked modules should not be empty", rankedModules.isEmpty());
 
         // Initially, pick the first item.
         int firstModuleType = rankedModules.get(0);
@@ -188,64 +269,44 @@ public class SetupListManagerUnitTest {
         mSharedPreferencesManager.writeBoolean(prefKey, true);
 
         // Notify manager of the change.
-        SetupListManager.getInstance()
-                .onSharedPreferenceChanged(ContextUtils.getAppSharedPreferences(), prefKey);
+        manager.onSharedPreferenceChanged(ContextUtils.getAppSharedPreferences(), prefKey);
 
-        // The item should STILL be at the top and its rank should still be 0 because it's
-        // awaiting animation.
-        assertEquals(
-                firstModuleType,
-                (int) SetupListManager.getInstance().getRankedModuleTypes().get(0));
-        assertEquals(0, (int) SetupListManager.getInstance().getManualRank(firstModuleType));
-        assertTrue(
-                SetupListManager.getInstance()
-                        .isModuleAwaitingCompletionAnimation(firstModuleType));
+        // The item should STILL be at its initial position because it's awaiting animation.
+        assertEquals(firstModuleType, (int) manager.getRankedModuleTypes().get(0));
+        assertEquals(0, (int) manager.getManualRank(firstModuleType));
+        assertTrue(manager.isModuleAwaitingCompletionAnimation(firstModuleType));
 
-        SetupListManager.getInstance().onCompletionAnimationFinished(firstModuleType);
+        manager.onCompletionAnimationFinished(firstModuleType);
 
         // Now the item should be at the end of the list and its rank updated.
-        rankedModules = SetupListManager.getInstance().getRankedModuleTypes();
+        rankedModules = manager.getRankedModuleTypes();
         int expectedRank = rankedModules.size() - 1;
         assertEquals(firstModuleType, (int) rankedModules.get(expectedRank));
-        assertEquals(
-                expectedRank, (int) SetupListManager.getInstance().getManualRank(firstModuleType));
-        assertFalse(
-                SetupListManager.getInstance()
-                        .isModuleAwaitingCompletionAnimation(firstModuleType));
+        assertEquals(expectedRank, (int) manager.getManualRank(firstModuleType));
+        assertFalse(manager.isModuleAwaitingCompletionAnimation(firstModuleType));
     }
 
     @Test
     @SmallTest
-    public void testMaybePrimeCompletionStatus_SilentSync() {
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
-        SafeBrowsingBridgeJni.setInstanceForTesting(mSafeBrowsingBridgeJni);
-        // User is signed in.
+    public void testRefresh_MaxLimit() {
+        // Mock 6 eligible promos.
+        // SIGN_IN will be automatically detected as completed because user is signed in.
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-        // User has Enhanced Safe Browsing enabled.
-        when(mSafeBrowsingBridgeJni.getSafeBrowsingState(any()))
-                .thenReturn(SafeBrowsingState.ENHANCED_PROTECTION);
+        // Ensure other account-dependent promos are eligible.
+        when(mPasswordManagerHelperJni.hasChosenToSyncPasswords(any())).thenReturn(true);
+        when(mRegionalServiceClient.getDeviceProgram()).thenReturn(RegionalProgram.DEFAULT);
 
-        SetupListManager manager = new SetupListManager();
-        SetupListManager.setInstanceForTesting(manager);
-
-        // Sign-in promo should be at index 0 initially (before priming).
-        assertEquals(ModuleType.SIGN_IN_PROMO, (int) manager.getRankedModuleTypes().get(0));
-
-        // Prime the status.
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
         manager.maybePrimeCompletionStatus(mProfile);
 
         List<Integer> rankedModules = manager.getRankedModuleTypes();
-        // Sign-in and ESB should be at the end of the base list.
-        assertEquals(ModuleType.SIGN_IN_PROMO, (int) rankedModules.get(rankedModules.size() - 2));
-        assertEquals(
-                ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
-                (int) rankedModules.get(rankedModules.size() - 1));
+        assertEquals(SetupListManager.MAX_SETUP_LIST_ITEMS, rankedModules.size());
 
-        // Verify they are NOT in the animation set (silent sync).
-        assertFalse(manager.isModuleAwaitingCompletionAnimation(ModuleType.SIGN_IN_PROMO));
+        // The SIGN_IN_PROMO should be pushed out of the Top set because there are 5 other
+        // active eligible items that take priority.
         assertFalse(
-                manager.isModuleAwaitingCompletionAnimation(
-                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO));
+                "Completed Sign In should be pushed out",
+                rankedModules.contains(ModuleType.SIGN_IN_PROMO));
     }
 }

@@ -64,8 +64,6 @@ public class AddressBarPlacementPromoCoordinator
     public void onCardClicked() {
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(mActionDelegate.getContext(), AddressBarSettingsFragment.class);
-        // Considered complete if the user clicks on the promo
-        SetupListModuleUtils.setModuleCompleted(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
 
         mOnModuleClickedCallback.run();
     }

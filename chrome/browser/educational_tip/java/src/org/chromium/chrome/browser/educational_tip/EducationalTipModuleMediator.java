@@ -110,6 +110,13 @@ public class EducationalTipModuleMediator {
     /** Called when the educational tip module is visible to users on the magic stack. */
     void onViewCreated() {
         if (mModuleType == ModuleType.DEFAULT_BROWSER_PROMO) {
+            // For the Setup List version, we notify the system immediately to ensure mutual
+            // exclusion with other surfaces (banners on Messages/Settings pages).
+            if (SetupListModuleUtils.isSetupListModule(getModuleType())) {
+                notifyDefaultBrowserPromoVisible();
+                return;
+            }
+
             if (mTracker.isInitialized()) {
                 boolean shouldDisplay =
                         mTracker.shouldTriggerHelpUi(
@@ -191,6 +198,11 @@ public class EducationalTipModuleMediator {
     /** Called when user clicks the card. */
     private void onCardClicked() {
         mModuleDelegate.onModuleClicked(mModuleType);
+
+        if (SetupListModuleUtils.isSetupListModule(mModuleType)) {
+            // Considered complete if the user clicks on the promo
+            SetupListModuleUtils.setModuleCompleted(mModuleType);
+        }
     }
 
     /** Notifies that the default browser promo is visible. */

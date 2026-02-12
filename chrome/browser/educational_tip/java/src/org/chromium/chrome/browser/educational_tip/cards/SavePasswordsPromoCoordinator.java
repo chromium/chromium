@@ -79,9 +79,6 @@ public class SavePasswordsPromoCoordinator
     @Override
     public void onCardClicked() {
         showInstructionalBottomSheet();
-
-        // Considered complete if the user clicks on the promo
-        SetupListModuleUtils.setModuleCompleted(ModuleType.SAVE_PASSWORDS_PROMO);
         mOnModuleClickedCallback.run();
     }
 
