@@ -8,6 +8,8 @@
 # * comments are allowed, using '#' syntax; and
 # * trailing commas are allowed.
 
+# Whitespace change.
+
 [
   # The following builder groups have been migrated to set their targets in the
   # builders' declarations in //infra/config/subprojects/ci/<builder-group>.star
