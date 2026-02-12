@@ -514,43 +514,6 @@ class ECKEncryptedMediaReportMetricsTest : public EncryptedMediaTestBase,
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
-  void TearDown() override {
-    auto report_metric_entries = ukm_recorder_->GetEntries(
-        Media_EME_CdmMetrics::kEntryName,
-        {
-            Media_EME_CdmMetrics::kCertificateSerialNumberName,
-            Media_EME_CdmMetrics::kDecoderBypassBlockCountName,
-            Media_EME_CdmMetrics::kDecoderCheck1SuccessCountName,
-            Media_EME_CdmMetrics::kDecoderCheck1WarningCountName,
-            Media_EME_CdmMetrics::kDecoderCheck1ErrorCountName,
-            Media_EME_CdmMetrics::kLicenseSdkVersionName,
-            Media_EME_CdmMetrics::kNumberOfOnMessageEventsName,
-            Media_EME_CdmMetrics::kNumberOfUpdateCallsName,
-        });
-
-    // The ReportMetrics functionality only works in v11 and onwards, but verify
-    // that in v10, RecordUkm is not called and the Ukm is not set.
-    if (GetCdmInterfaceVersion() > 10) {
-      EXPECT_EQ(report_metric_entries.size(), 1u);
-
-      EXPECT_EQ(ukm::GetSourceIdType(report_metric_entries[0].source_id),
-                ukm::SourceIdType::CDM_ID);
-
-      // The ClearKey cdm does not report kCertificateSerialNumber or
-      // kDecoderBypassBlockCount, so the entries should not even be set in the
-      // ukm data.
-      EXPECT_THAT(
-          report_metric_entries[0].metrics,
-          UnorderedElementsAre(
-              Pair(Media_EME_CdmMetrics::kLicenseSdkVersionName, 12345),
-              Pair(Media_EME_CdmMetrics::kNumberOfOnMessageEventsName, 1),
-              Pair(Media_EME_CdmMetrics::kNumberOfUpdateCallsName, 1),
-              Pair(Media_EME_CdmMetrics::kDecoderCheck1SuccessCountName, 1)));
-    } else {
-      EXPECT_EQ(report_metric_entries.size(), 0u);
-    }
-  }
-
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EncryptedMediaTestBase::SetUpCommandLine(command_line);
@@ -1301,10 +1264,64 @@ INSTANTIATE_TEST_SUITE_P(CDM_12,
                          Values(12));
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaReportMetricsTest, RecordUkmTest) {
-  RunSimpleEncryptedMediaTest("bear-320x240-av_enc-a.webm",
-                              media::kExternalClearKeyKeySystem, SrcType::SRC,
-                              PlayCount::ONCE);
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+
+  // The ReportMetrics functionality only works in v11 and onwards, so verify
+  // that in v10, RecordUkm is not called and the Cdm Metrics UKM is not set.
+  if (GetCdmInterfaceVersion() > 10) {
+    ukm_recorder_->SetOnAddEntryCallback(Media_EME_CdmMetrics::kEntryName,
+                                         run_loop.QuitClosure());
+    RunSimpleEncryptedMediaTest("bear-320x240-av_enc-a.webm",
+                                media::kExternalClearKeyKeySystem, SrcType::SRC,
+                                PlayCount::ONCE);
+    browser()->tab_strip_model()->CloseWebContentsAt(
+        0, TabCloseTypes::CLOSE_USER_GESTURE);
+    run_loop.Run();
+
+    auto report_metric_entries = ukm_recorder_->GetEntries(
+        Media_EME_CdmMetrics::kEntryName,
+        {
+            Media_EME_CdmMetrics::kCertificateSerialNumberName,
+            Media_EME_CdmMetrics::kDecoderBypassBlockCountName,
+            Media_EME_CdmMetrics::kDecoderCheck1SuccessCountName,
+            Media_EME_CdmMetrics::kDecoderCheck1WarningCountName,
+            Media_EME_CdmMetrics::kDecoderCheck1ErrorCountName,
+            Media_EME_CdmMetrics::kLicenseSdkVersionName,
+            Media_EME_CdmMetrics::kNumberOfOnMessageEventsName,
+            Media_EME_CdmMetrics::kNumberOfUpdateCallsName,
+        });
+
+    ASSERT_EQ(report_metric_entries.size(), 1u);
+
+    EXPECT_EQ(ukm::GetSourceIdType(report_metric_entries[0].source_id),
+              ukm::SourceIdType::CDM_ID);
+
+    // The ClearKey cdm does not report kCertificateSerialNumber or
+    // kDecoderBypassBlockCount, so the entries should not even be set in the
+    // ukm data.
+    EXPECT_THAT(
+        report_metric_entries[0].metrics,
+        UnorderedElementsAre(
+            Pair(Media_EME_CdmMetrics::kLicenseSdkVersionName, 12345),
+            Pair(Media_EME_CdmMetrics::kNumberOfOnMessageEventsName, 1),
+            Pair(Media_EME_CdmMetrics::kNumberOfUpdateCallsName, 1),
+            Pair(Media_EME_CdmMetrics::kDecoderCheck1SuccessCountName, 1)));
+  } else {
+    // Wait for a standard media metric to ensure the reporting pipeline has
+    // flushed.
+    ukm_recorder_->SetOnAddEntryCallback(Media_WebMediaPlayerState::kEntryName,
+                                         run_loop.QuitClosure());
+    RunSimpleEncryptedMediaTest("bear-320x240-av_enc-a.webm",
+                                media::kExternalClearKeyKeySystem, SrcType::SRC,
+                                PlayCount::ONCE);
+    browser()->tab_strip_model()->CloseWebContentsAt(
+        0, TabCloseTypes::CLOSE_USER_GESTURE);
+    run_loop.Run();
+
+    auto report_metric_entries =
+        ukm_recorder_->GetEntries(Media_EME_CdmMetrics::kEntryName, {});
+    EXPECT_EQ(report_metric_entries.size(), 0u);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, InitializeCDMFail) {
