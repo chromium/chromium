@@ -317,6 +317,11 @@ void OmniboxContextMenuController::AddToolItems() {
 }
 
 void OmniboxContextMenuController::AddModelPickerItems() {
+  bool is_aim_popup_open =
+      GetOmniboxController() &&
+      GetOmniboxController()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kAim;
+
   auto model_section_config = GetModelSectionConfig();
   if (omnibox::kShowContextMenuHeaders.Get() && model_section_config &&
       !model_section_config->header().empty()) {
@@ -335,11 +340,13 @@ void OmniboxContextMenuController::AddModelPickerItems() {
       auto_model_config && !auto_model_config->menu_label().empty()
           ? base::UTF8ToUTF16(auto_model_config->menu_label())
           : l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_AUTO_MODEL);
-  AddItemWithIcon(IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO, auto_model_label,
-                  input_state_.active_model ==
-                          omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE
-                      ? check_icon
-                      : auto_model_icon);
+  AddItemWithIcon(
+      IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO, auto_model_label,
+      is_aim_popup_open &&
+              input_state_.active_model ==
+                  omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE
+          ? check_icon
+          : auto_model_icon);
 
   auto regular_model_icon = ui::ImageModel::FromVectorIcon(
       kBoltIcon, ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
@@ -351,7 +358,8 @@ void OmniboxContextMenuController::AddModelPickerItems() {
           : u"";
   AddItemWithIcon(
       IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR, regular_model_label,
-      input_state_.active_model == omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR
+      is_aim_popup_open && input_state_.active_model ==
+                               omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR
           ? check_icon
           : regular_model_icon);
 
@@ -365,7 +373,8 @@ void OmniboxContextMenuController::AddModelPickerItems() {
           : l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_THINKING_3_PRO);
   AddItemWithIcon(
       IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING, thinking_model_label,
-      input_state_.active_model == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
+      is_aim_popup_open && input_state_.active_model ==
+                               omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
           ? check_icon
           : thinking_model_icon);
 
@@ -374,12 +383,13 @@ void OmniboxContextMenuController::AddModelPickerItems() {
   auto pro_no_gen_ui_model_label = base::UTF8ToUTF16(
       pro_no_gen_ui_model_config ? pro_no_gen_ui_model_config->menu_label()
                                  : "");
-  AddItemWithIcon(IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI,
-                  pro_no_gen_ui_model_label,
-                  input_state_.active_model ==
-                          omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI
-                      ? check_icon
-                      : thinking_model_icon);
+  AddItemWithIcon(
+      IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI, pro_no_gen_ui_model_label,
+      is_aim_popup_open &&
+              input_state_.active_model ==
+                  omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI
+          ? check_icon
+          : thinking_model_icon);
 }
 
 std::vector<OmniboxContextMenuController::TabInfo>
