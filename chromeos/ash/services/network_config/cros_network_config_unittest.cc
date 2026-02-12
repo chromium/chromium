@@ -226,8 +226,7 @@ mojom::ConfigPropertiesPtr CreateFakeVpnConfig(std::string name,
                                                mojom::VpnType type) {
   auto vpn = mojom::VPNConfigProperties::New();
   vpn->host = host;
-  vpn->type = mojom::VpnTypeConfig::New();
-  vpn->type->value = type;
+  vpn->type = type;
 
   auto config = mojom::ConfigProperties::New();
   config->name = name;

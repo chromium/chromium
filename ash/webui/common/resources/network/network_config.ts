@@ -1059,7 +1059,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
         const configVpn = configProperties.typeConfig.vpn;
         assert(configVpn);
         configVpn.host = OncMojo.getActiveString(vpn.host);
-        configVpn.type = {value: vpnType};
+        configVpn.type = vpnType;
         if (vpnType === VpnType.kIKEv2) {
           if (!this.isIkev2Supported_()) {
             break;
@@ -1289,11 +1289,11 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
       VPNConfigType {
     const vpn = properties.typeConfig.vpn;
     assert(vpn);
-    if (!!vpn.type && vpn.type.value === VpnType.kIKEv2) {
+    if (vpn.type === VpnType.kIKEv2) {
       return VPNConfigType.IKEV2;
-    } else if (!!vpn.type && vpn.type.value === VpnType.kL2TPIPsec) {
+    } else if (vpn.type === VpnType.kL2TPIPsec) {
       return VPNConfigType.L2TP_IPSEC;
-    } else if (!!vpn.type && vpn.type.value === VpnType.kWireGuard) {
+    } else if (vpn.type === VpnType.kWireGuard) {
       return VPNConfigType.WIREGUARD;
     }
     return VPNConfigType.OPEN_VPN;
@@ -1303,9 +1303,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
       IpsecAuthType {
     const vpn = properties.typeConfig.vpn;
     assert(vpn);
-    if (!vpn.type ||
-        !(vpn.type.value === VpnType.kL2TPIPsec ||
-          vpn.type.value === VpnType.kIKEv2)) {
+    if (!(vpn.type === VpnType.kL2TPIPsec || vpn.type === VpnType.kIKEv2)) {
       // This field will not be used by services other than IPsec-based VPN.
       // Initiate it to "PSK" for simplicity.
       return IpsecAuthType.PSK;
@@ -1402,7 +1400,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
     }
     switch (this.vpnType_) {
       case VPNConfigType.IKEV2:
-        vpn.type = {value: VpnType.kIKEv2};
+        vpn.type = VpnType.kIKEv2;
         if (!vpn.ipSec) {
           this.ipsecAuthType_ = IpsecAuthType.EAP;
           vpn.ipSec = {
@@ -1442,7 +1440,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
         }
         break;
       case VPNConfigType.L2TP_IPSEC:
-        vpn.type = {value: VpnType.kL2TPIPsec};
+        vpn.type = VpnType.kL2TPIPsec;
         if (this.ipsecAuthType_ !== IpsecAuthType.PSK &&
             this.ipsecAuthType_ !== IpsecAuthType.CERT) {
           // This will happen if user changes the VPN type to IKEv2 where the
@@ -1469,7 +1467,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
         }
         break;
       case VPNConfigType.OPEN_VPN:
-        vpn.type = {value: VpnType.kOpenVPN};
+        vpn.type = VpnType.kOpenVPN;
         vpn.openVpn = vpn.openVpn || {
           saveCredentials: false,
           clientCertPkcs11Id: null,
@@ -1484,7 +1482,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
         };
         break;
       case VPNConfigType.WIREGUARD:
-        vpn.type = {value: VpnType.kWireGuard};
+        vpn.type = VpnType.kWireGuard;
         vpn.wireguard = vpn.wireguard || {
           peers: [{
             publicKey: '',
@@ -1518,7 +1516,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
       UserCert: (isIpsec && ipsecAuthIsCert) || isOpenvpn,
     };
 
-    if (vpn.type.value === VpnType.kL2TPIPsec && !vpn.l2tp) {
+    if (vpn.type === VpnType.kL2TPIPsec && !vpn.l2tp) {
       vpn.l2tp = {
         lcpEchoDisabled: false,
         password: '',
@@ -1526,17 +1524,16 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
         username: '',
       };
     }
-    if (vpn.type.value !== VpnType.kL2TPIPsec &&
-        vpn.type.value !== VpnType.kIKEv2) {
+    if (vpn.type !== VpnType.kL2TPIPsec && vpn.type !== VpnType.kIKEv2) {
       vpn.ipSec = null;
     }
-    if (vpn.type.value !== VpnType.kL2TPIPsec) {
+    if (vpn.type !== VpnType.kL2TPIPsec) {
       vpn.l2tp = null;
     }
-    if (vpn.type.value !== VpnType.kOpenVPN) {
+    if (vpn.type !== VpnType.kOpenVPN) {
       vpn.openVpn = null;
     }
-    if (vpn.type.value !== VpnType.kWireGuard) {
+    if (vpn.type !== VpnType.kWireGuard) {
       vpn.wireguard = null;
     }
     this.updateCertError_();
@@ -2039,8 +2036,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
       if (vpnConfig.host) {
         vpnConfig.host = vpnConfig.host.trim();
       }
-      assert(vpnConfig.type);
-      const vpnType = vpnConfig.type.value;
+      const vpnType = vpnConfig.type;
 
       if (vpnType === VpnType.kOpenVPN) {
         this.setOpenVPNProperties_(propertiesToSet);

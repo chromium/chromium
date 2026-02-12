@@ -537,8 +537,7 @@ suite('network-config-vpn', function() {
       assertEquals(kTestVpnName, props.name);
       assertTrue(!!props.typeConfig.vpn);
       assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
-      assertTrue(!!props.typeConfig.vpn.type);
-      assertEquals(VpnType.kIKEv2, props.typeConfig.vpn.type.value);
+      assertEquals(VpnType.kIKEv2, props.typeConfig.vpn.type);
       assertTrue(!!props.typeConfig.vpn.ipSec);
       assertEquals('PSK', props.typeConfig.vpn.ipSec.authenticationType);
       assertEquals(2, props.typeConfig.vpn.ipSec.ikeVersion);
@@ -591,8 +590,7 @@ suite('network-config-vpn', function() {
         assertEquals(kTestVpnName, props.name);
         assertTrue(!!props.typeConfig.vpn);
         assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
-        assertTrue(!!props.typeConfig.vpn.type);
-        assertEquals(VpnType.kIKEv2, props.typeConfig.vpn.type.value);
+        assertEquals(VpnType.kIKEv2, props.typeConfig.vpn.type);
         assertTrue(!!props.typeConfig.vpn.ipSec);
         assertEquals('PSK', props.typeConfig.vpn.ipSec.authenticationType);
         assertEquals(2, props.typeConfig.vpn.ipSec.ikeVersion);
@@ -623,8 +621,7 @@ suite('network-config-vpn', function() {
           assertEquals(kTestVpnName, props.name);
           assertTrue(!!props.typeConfig.vpn);
           assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
-          assertTrue(!!props.typeConfig.vpn.type);
-          assertEquals(VpnType.kIKEv2, props.typeConfig.vpn.type.value);
+          assertEquals(VpnType.kIKEv2, props.typeConfig.vpn.type);
           assertTrue(!!props.typeConfig.vpn.ipSec);
           assertEquals('Cert', props.typeConfig.vpn.ipSec.authenticationType);
           assertEquals(2, props.typeConfig.vpn.ipSec.ikeVersion);
@@ -672,8 +669,7 @@ suite('network-config-vpn', function() {
           assertEquals(kTestVpnName, props.name);
           assertTrue(!!props.typeConfig.vpn);
           assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
-          assertTrue(!!props.typeConfig.vpn.type);
-          assertEquals(VpnType.kIKEv2, props.typeConfig.vpn.type.value);
+          assertEquals(VpnType.kIKEv2, props.typeConfig.vpn.type);
           assertTrue(!!props.typeConfig.vpn.ipSec);
           assertEquals('Cert', props.typeConfig.vpn.ipSec.authenticationType);
           assertEquals(2, props.typeConfig.vpn.ipSec.ikeVersion);
@@ -714,8 +710,7 @@ suite('network-config-vpn', function() {
           assertEquals(kTestVpnName, props.name);
           assertTrue(!!props.typeConfig.vpn);
           assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
-          assertTrue(!!props.typeConfig.vpn.type);
-          assertEquals(VpnType.kIKEv2, props.typeConfig.vpn.type.value);
+          assertEquals(VpnType.kIKEv2, props.typeConfig.vpn.type);
           assertTrue(!!props.typeConfig.vpn.ipSec);
           assertEquals('EAP', props.typeConfig.vpn.ipSec.authenticationType);
           assertEquals(2, props.typeConfig.vpn.ipSec.ikeVersion);
@@ -775,8 +770,7 @@ suite('network-config-vpn', function() {
           assertEquals(kTestVpnName, props.name);
           assertTrue(!!props.typeConfig.vpn);
           assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
-          assertTrue(!!props.typeConfig.vpn.type);
-          assertEquals(VpnType.kIKEv2, props.typeConfig.vpn.type.value);
+          assertEquals(VpnType.kIKEv2, props.typeConfig.vpn.type);
           assertTrue(!!props.typeConfig.vpn.ipSec);
           assertEquals('EAP', props.typeConfig.vpn.ipSec.authenticationType);
           assertEquals(2, props.typeConfig.vpn.ipSec.ikeVersion);
@@ -927,8 +921,7 @@ suite('network-config-vpn', function() {
       assertEquals(kTestVpnName, props.name);
       assertTrue(!!props.typeConfig.vpn);
       assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
-      assertTrue(!!props.typeConfig.vpn.type);
-      assertEquals(VpnType.kL2TPIPsec, props.typeConfig.vpn.type.value);
+      assertEquals(VpnType.kL2TPIPsec, props.typeConfig.vpn.type);
       assertTrue(!!props.typeConfig.vpn.ipSec);
       assertEquals('PSK', props.typeConfig.vpn.ipSec.authenticationType);
       assertEquals(1, props.typeConfig.vpn.ipSec.ikeVersion);
@@ -980,8 +973,7 @@ suite('network-config-vpn', function() {
         assertEquals(kTestVpnName, props.name);
         assertTrue(!!props.typeConfig.vpn);
         assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
-        assertTrue(!!props.typeConfig.vpn.type);
-        assertEquals(VpnType.kL2TPIPsec, props.typeConfig.vpn.type.value);
+        assertEquals(VpnType.kL2TPIPsec, props.typeConfig.vpn.type);
         assertTrue(!!props.typeConfig.vpn.ipSec);
         assertEquals('PSK', props.typeConfig.vpn.ipSec.authenticationType);
         assertEquals(1, props.typeConfig.vpn.ipSec.ikeVersion);
@@ -1016,8 +1008,7 @@ suite('network-config-vpn', function() {
           assertEquals(kTestVpnName, props.name);
           assertTrue(!!props.typeConfig.vpn);
           assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
-          assertTrue(!!props.typeConfig.vpn.type);
-          assertEquals(VpnType.kL2TPIPsec, props.typeConfig.vpn.type.value);
+          assertEquals(VpnType.kL2TPIPsec, props.typeConfig.vpn.type);
           assertTrue(!!props.typeConfig.vpn.ipSec);
           assertEquals('Cert', props.typeConfig.vpn.ipSec.authenticationType);
           assertEquals(1, props.typeConfig.vpn.ipSec.ikeVersion);
@@ -1075,8 +1066,7 @@ suite('network-config-vpn', function() {
         assertEquals(kTestVpnName, props.name);
         assertTrue(!!props.typeConfig.vpn);
         assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
-        assertTrue(!!props.typeConfig.vpn.type);
-        assertEquals(VpnType.kL2TPIPsec, props.typeConfig.vpn.type.value);
+        assertEquals(VpnType.kL2TPIPsec, props.typeConfig.vpn.type);
         assertTrue(!!props.typeConfig.vpn.ipSec);
         assertEquals('Cert', props.typeConfig.vpn.ipSec.authenticationType);
         assertEquals(1, props.typeConfig.vpn.ipSec.ikeVersion);
