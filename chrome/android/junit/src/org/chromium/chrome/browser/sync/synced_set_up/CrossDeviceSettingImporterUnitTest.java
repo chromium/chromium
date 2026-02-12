@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.sync.synced_set_up;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -55,6 +58,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.prefs.CrossDevicePrefTrackerFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.prefs.PrefService;
@@ -69,6 +73,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link CrossDeviceSettingImporter}. */
@@ -365,7 +370,8 @@ public class CrossDeviceSettingImporterUnitTest {
         snackbar.getController().onAction(null);
 
         // Verify that only the local state preference is changed.
-        verify(mLocalPrefService).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
+        verify(mLocalPrefService, atLeastOnce())
+                .setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
         verify(mHomeModulesConfigManager, never()).setPrefAllCardsEnabled(any(Boolean.class));
         assertTrue(
                 "The 'Apply' user action for Omnibox position should be recorded.",
@@ -700,6 +706,51 @@ public class CrossDeviceSettingImporterUnitTest {
                         mCrossDevicePrefTracker, ServiceStatus.AVAILABLE, mProfile, mTab, true);
 
         verify(mSnackbarManager, never()).showSnackbar(any());
+    }
+
+    @Test
+    public void testApplyLocalStateSettings_UpdatesAddressBarPreference() {
+        when(mLocalPrefService.hasPrefPath(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+
+        Map<String, Object> preferencesToApply = new HashMap<>();
+        preferencesToApply.put(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
+        // Local state is currently TOP (false).
+        AtomicBoolean isOmniboxInBottomPosition = new AtomicBoolean(false);
+        doAnswer(
+                        (inv) -> {
+                            isOmniboxInBottomPosition.set(inv.getArgument(1));
+                            return null;
+                        })
+                .when(mLocalPrefService)
+                .setBoolean(any(String.class), anyBoolean());
+        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION))
+                .thenAnswer((inv) -> isOmniboxInBottomPosition.get());
+        // ChromeSharedPref is currently TOP_SETTINGS.
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                        ToolbarPositionAndSource.TOP_SETTINGS);
+
+        initializeCrossDeviceSettingImporter()
+                .askToApplyNtpSettingImportIfNeeded(
+                        preferencesToApply, /* onlyOmniboxPosition= */ true);
+
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
+
+        // Simulate clicking the action button.
+        snackbar.getController().onAction(null);
+
+        // Verify that the local state preference is changed.
+        verify(mLocalPrefService, atLeastOnce())
+                .setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
+
+        // Verify that AddressBarPreference was updated.
+        assertEquals(
+                "Expected toolbar position to be set to BOTTOM_SETTINGS",
+                ToolbarPositionAndSource.BOTTOM_SETTINGS,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
     }
 
     @Test

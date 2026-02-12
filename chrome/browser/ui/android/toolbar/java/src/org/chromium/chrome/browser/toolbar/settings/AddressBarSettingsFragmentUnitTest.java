@@ -245,6 +245,31 @@ public class AddressBarSettingsFragmentUnitTest {
 
     @Test
     @SmallTest
+    public void testComputeToolbarPositionAndSource_prefsDontAgree() {
+        // ChromeSharedPref says TOP
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, ToolbarPositionAndSource.TOP_SETTINGS);
+        // LocalState says BOTTOM.
+        when(mLocalPrefService.hasPrefPath(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+
+        @ToolbarPositionAndSource
+        int result = AddressBarPreference.computeToolbarPositionAndSource();
+
+        // Should return BOTTOM because LocalState is source of truth
+        assertEquals(
+                "Expected computed position to be BOTTOM_SETTINGS",
+                ToolbarPositionAndSource.BOTTOM_SETTINGS,
+                result);
+        // And should have updated ChromeSharedPref
+        assertEquals(
+                "Expected BOTTOM_SETTINGS to have been written to shared preferences manager",
+                ToolbarPositionAndSource.BOTTOM_SETTINGS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
+    }
+
+    @Test
+    @SmallTest
     @Config(sdk = android.os.Build.VERSION_CODES.R)
     public void testFoldable() {
         ShadowPackageManager shadowPackageManager =
