@@ -71,6 +71,11 @@ class TutorialService {
   virtual void LogStartedFromWhatsNewPage(TutorialIdentifier id,
                                           bool iph_link_was_clicked);
 
+  // This can be used to dismiss a help bubble in a region where it could cause
+  // z-fighting. It does not end the tutorial; if the user performs the correct
+  // step the tutorial may still continue.
+  void DismissBubbleInRegion(const gfx::Rect& screen_region);
+
   // Accessors for registries.
   TutorialRegistry* tutorial_registry() { return tutorial_registry_; }
   HelpBubbleFactoryRegistry* bubble_factory_registry() {

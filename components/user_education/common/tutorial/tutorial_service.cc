@@ -16,6 +16,7 @@
 #include "components/user_education/common/tutorial/tutorial.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace user_education {
 
@@ -127,6 +128,15 @@ void TutorialService::LogStartedFromWhatsNewPage(TutorialIdentifier id,
 
   if (description->histograms) {
     description->histograms->RecordStartedFromWhatsNewPage(success);
+  }
+}
+
+void TutorialService::DismissBubbleInRegion(const gfx::Rect& screen_region) {
+  if (currently_displayed_bubble_ &&
+      currently_displayed_bubble_->GetBoundsInScreen().Intersects(
+          screen_region)) {
+    currently_displayed_bubble_->Close(
+        HelpBubble::CloseReason::kProgrammaticallyClosed);
   }
 }
 

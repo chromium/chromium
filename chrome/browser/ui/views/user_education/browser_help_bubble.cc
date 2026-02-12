@@ -17,6 +17,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/help_bubble_webui.h"
 #include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
@@ -167,14 +168,15 @@ void BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(
     return;
   }
 
-  auto* const controller =
-      service->GetFeaturePromoController(base::PassKey<BrowserHelpBubble>());
-  if (!controller) {
-    return;
+  const gfx::Rect bounds = view->GetBoundsInScreen();
+
+  if (auto* const controller = service->GetFeaturePromoController(
+          base::PassKey<BrowserHelpBubble>())) {
+    static_cast<user_education::FeaturePromoControllerCommon*>(controller)
+        ->DismissNonCriticalBubbleInRegion(bounds);
   }
 
-  static_cast<user_education::FeaturePromoControllerCommon*>(controller)
-      ->DismissNonCriticalBubbleInRegion(view->GetBoundsInScreen());
+  service->tutorial_service().DismissBubbleInRegion(bounds);
 }
 
 // static
