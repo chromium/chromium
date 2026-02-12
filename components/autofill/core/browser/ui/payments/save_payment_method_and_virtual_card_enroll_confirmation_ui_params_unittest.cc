@@ -112,6 +112,35 @@ TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
 // attributes are correctly set for virtual card enrollment success.
 TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
      VerifyAttributesForVirtualCardSuccess) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnableWalletBranding);
+
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+          CreateForVirtualCardSuccess();
+
+  EXPECT_TRUE(ui_params.is_success);
+  EXPECT_FALSE(ui_params.should_display_wallet_logo);
+  EXPECT_EQ(
+      ui_params.title_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_TITLE_TEXT));
+  EXPECT_EQ(
+      ui_params.description_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
+  EXPECT_TRUE(ui_params.failure_ok_button_text.empty());
+  EXPECT_TRUE(ui_params.failure_ok_button_accessible_name.empty());
+}
+
+// Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+// attributes are correctly set for virtual card enrollment success when Google
+// Wallet branding is disabled.
+TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
+     VerifyAttributesForVirtualCardSuccess_WalletBrandingDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
+
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           CreateForVirtualCardSuccess();
