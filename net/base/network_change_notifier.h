@@ -52,6 +52,17 @@ class NET_EXPORT NetworkChangeNotifier {
   //
   // New enum values should only be added to the end of the enum and no values
   // should be modified or reused, as this is reported via UMA.
+  //
+  // ***********************************************************
+  // * NOTE THAT CONNECTION TYPE DETECTION IS BEST-EFFORT ONLY *
+  // ***********************************************************
+  //
+  // Most importantly, a value of kNone should never be interpreted to mean that
+  // we are definitively offline, but rather as a hint to mean that it may be a
+  // good idea to retry failed network actions again when the status switches to
+  // online. This is a result of platform APIs often being ambiguous, not having
+  // well-defined transition points from online to offline, and there being a
+  // lot of different possible network configurations.
   enum ConnectionType {
     CONNECTION_UNKNOWN = 0,  // A connection exists, but its type is unknown.
                              // Also used as a default value.

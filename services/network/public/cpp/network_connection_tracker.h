@@ -37,6 +37,11 @@ using NetworkConnectionTrackerAsyncGetter = base::RepeatingCallback<void(
 // network::mojom::NetworkChangeManager and propogates these notifications to
 // its NetworkConnectionObservers registered through
 // AddNetworkConnectionObserver()/RemoveNetworkConnectionObserver().
+//
+// ConnectionType is provided on a best effort basis, and should be used as a
+// hint, rather than the definitive current network state. That includes
+// ConnectionType::kNone. See NetworkChangeNotifier's documentation for more
+// details.
 class COMPONENT_EXPORT(NETWORK_CPP) NetworkConnectionTracker
     : public network::mojom::NetworkChangeManagerClient {
  public:

@@ -7,6 +7,11 @@ module network.mojom;
 import "services/network/public/mojom/network_interface_change_listener.mojom";
 
 // This needs to match the definition of net::ConnectionType.
+//
+// ConnectionType is provided on a best effort basis, and should be used as a
+// hint, rather than the definitive current network state. That includes
+// ConnectionType::kNone. See NetworkChangeNotifier's documentation for more
+// details.
 enum ConnectionType {
   CONNECTION_UNKNOWN = 0,  // A connection exists, but its type is unknown.
                            // Also used as a default value.
