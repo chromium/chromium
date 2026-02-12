@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -30,6 +31,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/browsing_data_test_util.h"
+#include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -100,16 +102,6 @@ class DownloadManagerWaiter : public content::DownloadManager::Observer {
   bool initialized_;
   raw_ptr<content::DownloadManager> download_manager_;
 };
-
-// Check if |file| matches any regex in |ignore_file_patterns|.
-bool ShouldIgnoreFile(const std::string& file,
-                      const std::vector<std::string>& ignore_file_patterns) {
-  for (const std::string& pattern : ignore_file_patterns) {
-    if (RE2::PartialMatch(file, pattern))
-      return true;
-  }
-  return false;
-}
 
 }  // namespace
 
@@ -275,6 +267,7 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
     const std::string& hostname,
     const std::vector<std::string>& ignore_file_patterns,
     bool check_leveldb_content,
+    bool strict_checking,
     base::FilePath user_data_dir) {
   if (user_data_dir.empty()) {
     user_data_dir = g_browser_process->profile_manager()->user_data_dir();
@@ -291,14 +284,26 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
         path.NormalizePathSeparatorsTo('/').AsUTF8Unsafe().substr(
             user_data_dir.AsUTF8Unsafe().length());
 
+    // Ignore LevelDB LOCK files in strict checking mode. These don't contain
+    // data anyway. In non-strict mode, the output when failing to read these
+    // files is just advisory, so they needn't be skipped.
+    auto ignore_file_patterns_copy = ignore_file_patterns;
+    if (strict_checking) {
+      ignore_file_patterns_copy.push_back("LOCK");
+    }
+    if (std::any_of(ignore_file_patterns_copy.begin(),
+                    ignore_file_patterns_copy.end(),
+                    [&file](const std::string& pattern) {
+                      return RE2::PartialMatch(file, pattern);
+                    })) {
+      LOG(INFO) << "Ignored: " << file;
+      continue;
+    }
+
     // Check file name.
     if (file.find(hostname) != std::string::npos) {
-      if (ShouldIgnoreFile(file, ignore_file_patterns)) {
-        LOG(INFO) << "Ignored: " << file;
-      } else {
-        found++;
-        LOG(WARNING) << "Found file name: " << file;
-      }
+      found++;
+      LOG(WARNING) << "Found file name: " << file;
     }
 
     // Check leveldb content.
@@ -311,6 +316,25 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
       std::unique_ptr<leveldb::DB> db;
       std::string db_file = path.DirName().AsUTF8Unsafe();
       auto status = leveldb_env::OpenDB(leveldb_env::Options(), db_file, &db);
+
+      // The database may still be locked. In particular this happens when a
+      // DB is not closed on shutdown (some tasks are skipped for the sake of
+      // performance). Move the LOCK file so that we can open the database,
+      // clear the bookkeeping in `FilesystemImpl`, and try again to open it.
+      // Unfortunately this hack doesn't work on Windows where an open file
+      // can't be moved.
+      bool break_leveldb_locks = strict_checking;
+#if BUILDFLAG(IS_WIN)
+      break_leveldb_locks = false;
+#endif
+      if (!status.ok() && break_leveldb_locks) {
+        base::FilePath lock_file = path.DirName().AppendASCII("LOCK");
+        storage::FilesystemImpl::UnlockFileLocal(lock_file);
+        EXPECT_TRUE(base::ReplaceFile(
+            lock_file, lock_file.AddExtensionASCII("old"), nullptr))
+            << "Failed to move lock file: " << lock_file;
+        status = leveldb_env::OpenDB(leveldb_env::Options(), db_file, &db);
+      }
       if (status.ok()) {
         std::unique_ptr<leveldb::Iterator> it(
             db->NewIterator(leveldb::ReadOptions()));
@@ -323,9 +347,15 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
           }
         }
       } else {
-        // TODO(crbug.com/40784064): Most databases are already open and
-        // the LOCK prevents us from accessing them.
-        LOG(INFO) << "Could not open: " << file << " " << status.ToString();
+        std::string output = base::StrCat(
+            {"Could not open leveldb file: ", file, " - ", status.ToString()});
+        if (break_leveldb_locks) {
+          ADD_FAILURE() << output;
+        } else {
+          // TODO(crbug.com/40784064): Most databases are already open and
+          // the LOCK prevents us from accessing them.
+          LOG(INFO) << output;
+        }
       }
     }
 
@@ -337,15 +367,15 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
       continue;
     std::string content;
     if (!base::ReadFileToString(path, &content)) {
-      LOG(INFO) << "Could not read: " << file;
+      if (strict_checking) {
+        ADD_FAILURE() << "Could not read: " << file;
+      } else {
+        LOG(INFO) << "Could not read: " << file;
+      }
       continue;
     }
     size_t pos = content.find(hostname);
     if (pos != std::string::npos) {
-      if (ShouldIgnoreFile(file, ignore_file_patterns)) {
-        LOG(INFO) << "Ignored: " << file;
-        continue;
-      }
       found++;
       // Print surrounding text of the match.
       std::string partial_content = content.substr(

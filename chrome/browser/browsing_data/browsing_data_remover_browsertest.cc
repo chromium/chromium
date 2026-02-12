@@ -1394,7 +1394,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, StorageRemovedFromDisk) {
         };
         int found = CheckUserDirectoryForString(
             kLocalHost, ignore_file_patterns,
-            /*check_leveldb_content=*/false, user_data_dir);
+            /*check_leveldb_content=*/true, /*strict_checking=*/true,
+            user_data_dir);
         EXPECT_EQ(0, found) << "A non-ignored file contains the hostname.";
       },
       g_browser_process->profile_manager()->user_data_dir());
