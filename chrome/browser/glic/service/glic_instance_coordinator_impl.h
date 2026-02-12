@@ -125,7 +125,8 @@ class GlicInstanceCoordinatorImpl
   void Toggle(BrowserWindowInterface* browser,
               bool prevent_close,
               mojom::InvocationSource source,
-              std::optional<std::string> prompt_suggestion) override;
+              std::optional<std::string> prompt_suggestion,
+              bool auto_send) override;
   void ShowAfterSignIn(base::WeakPtr<Browser> browser) override;
   // Shuts down all hosts. Only call it before destruction of the instance
   // coordinator.
@@ -205,7 +206,8 @@ class GlicInstanceCoordinatorImpl
   void ToggleSidePanel(BrowserWindowInterface* browser,
                        bool prevent_close,
                        glic::mojom::InvocationSource source,
-                       std::optional<std::string> prompt_suggestion);
+                       std::optional<std::string> prompt_suggestion,
+                       bool auto_send);
 
   void CloseFloaty(const CloseOptions& options = {});
 

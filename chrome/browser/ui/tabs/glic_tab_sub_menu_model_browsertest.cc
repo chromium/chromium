@@ -312,7 +312,8 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, SwitchToRecentConversation) {
         browser(),
         /*prevent_close=*/false,
         glic::mojom::InvocationSource::kTopChromeButton,
-        /*prompt_suggestion=*/std::nullopt);
+        /*prompt_suggestion=*/std::nullopt,
+        /*auto_send=*/false);
 
     // Wait for the instance to be shown and associated with the current tab.
     GlicInstance* instance = nullptr;

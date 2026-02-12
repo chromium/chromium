@@ -156,7 +156,8 @@ class GlicInstanceImpl : public GlicInstance,
   bool Toggle(ShowOptions&& options,
               bool prevent_close,
               glic::mojom::InvocationSource source,
-              std::optional<std::string> prompt_suggestion);
+              std::optional<std::string> prompt_suggestion,
+              bool auto_send);
 
   void UnbindEmbedder(EmbedderKey key);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
@@ -316,7 +317,8 @@ class GlicInstanceImpl : public GlicInstance,
       std::optional<EmbedderKey> new_key);
   void ClearActiveEmbedderAndNotifyStateChange();
   void MaybeShowHostUi(GlicUiEmbedder* embedder,
-                       std::optional<std::string> prompt_suggestion);
+                       std::optional<std::string> prompt_suggestion,
+                       bool auto_send);
   void OnBoundTabDestroyed(tabs::TabInterface* tab);
   void OnBoundTabActivated(tabs::TabInterface* tab);
   bool ShouldDoAutomaticActivation() const;
@@ -340,7 +342,8 @@ class GlicInstanceImpl : public GlicInstance,
   void OnTabPinningStatusEvent(tabs::TabInterface* tab,
                                GlicPinningStatusEvent event);
   void NotifyPanelWillOpen(mojom::InvocationSource invocation_source,
-                           std::optional<std::string> prompt_suggestion);
+                           std::optional<std::string> prompt_suggestion,
+                           bool auto_send);
 
   void MaybeShowShortcutToastPromo();
 

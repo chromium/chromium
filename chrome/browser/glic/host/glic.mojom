@@ -1244,6 +1244,10 @@ struct PanelOpeningData {
   // If set, the textbox for user input will be populated with the given string
   // before the panel opens.
   string? prompt_suggestion;
+  // If true and prompt_suggestion is set, the prompt will be automatically
+  // submitted after the panel opens. If prompt is null, this will be forced
+  // to false.
+  bool auto_send;
   // An optional Skill object. If provided, the Gemini app should auto-run it.
   Skill? skill_to_invoke;
   // Up to 3 most recently active conversations, ordered by most recently active

@@ -289,6 +289,7 @@ export function panelOpeningDataToClient(
     invocationSource: panelOpeningData.invocationSource as number,
     conversationId: conversationInfo?.conversationId || undefined,
     promptSuggestion: optionalToClient(panelOpeningData.promptSuggestion),
+    autoSend: panelOpeningData.autoSend && !!panelOpeningData.promptSuggestion,
     recentlyActiveConversations: panelOpeningData.recentlyActiveConversations ?
         panelOpeningData.recentlyActiveConversations.map(
             conversationInfoToClient) :
