@@ -48,14 +48,19 @@ chromium-metrics-reviews@google.com.
   <variant name="Secure" summary="DoH is enabled"/>
 </variants>
 
+<!-- LINT.IfChange(DohProviderId) -->
+
 <variants name="DohProviderId">
   <variant name="CleanBrowsingAdult." summary="CleanBrowsing adult filter."/>
   <variant name="CleanBrowsingFamily." summary="CleanBrowsing family filter."/>
   <variant name="CleanBrowsingSecure." summary="CleanBrowsing secure filter."/>
   <variant name="Cloudflare." summary="Cloudflare."/>
+  <variant name="CloudflareFamily." summary="Cloudflare family filter."/>
+  <variant name="CloudflareSecurity." summary="Cloudflare security filter."/>
   <variant name="Comcast." summary="Comcast."/>
   <variant name="Cox." summary="Cox."/>
   <variant name="Cznic." summary="CZ.NIC ODVR."/>
+  <variant name="DNS4EU." summary="DNS4EU."/>
   <variant name="Dnssb." summary="DNS.SB."/>
   <variant name="Google." summary="Google."/>
   <variant name="GoogleDns64." summary="Google DNS64."/>
@@ -74,6 +79,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Spectrum2."
       summary="Charter Communications/Spectrum DoH endpoint2."/>
 </variants>
+
+<!-- LINT.ThenChange(//net/dns/public/doh_provider_entry.cc:DohProviderId) -->
 
 <variants name="HostType">
   <variant name="" summary="non Google Hosts"/>
