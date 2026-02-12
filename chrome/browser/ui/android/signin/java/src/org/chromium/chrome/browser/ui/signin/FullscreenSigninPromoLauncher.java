@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -14,6 +16,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninConfig;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -53,7 +57,11 @@ public final class FullscreenSigninPromoLauncher {
             return false;
         }
 
-        if (!createAndLaunchActivity(context, profile, signinAndHistorySyncActivityLauncher)) {
+        if (!createAndLaunchActivity(
+                context,
+                profile,
+                signinAndHistorySyncActivityLauncher,
+                SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO)) {
             return false;
         }
 
@@ -82,16 +90,30 @@ public final class FullscreenSigninPromoLauncher {
             Context context,
             Profile profile,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher) {
-        if (!SigninFeatureMap.isEnabled(SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO)) {
+        final SigninManager signinManager =
+                assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile));
+        final boolean shouldDisplayForForcedSigninPolicy =
+                SigninFeatureMap.isEnabled(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+                        && signinManager.isForceSigninEnabled()
+                        && signinManager.isSigninAllowed();
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO)
+                && !shouldDisplayForForcedSigninPolicy) {
             return false;
         }
-        return createAndLaunchActivity(context, profile, signinAndHistorySyncActivityLauncher);
+        return createAndLaunchActivity(
+                context,
+                profile,
+                signinAndHistorySyncActivityLauncher,
+                shouldDisplayForForcedSigninPolicy
+                        ? SigninAccessPoint.FORCED_SIGNIN
+                        : SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
     }
 
     private static boolean createAndLaunchActivity(
             Context context,
             Profile profile,
-            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher) {
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
+            @SigninAccessPoint int accessPoint) {
         FullscreenSigninAndHistorySyncConfig config =
                 new FullscreenSigninAndHistorySyncConfig.Builder(
                                 context.getString(R.string.signin_fre_title),
@@ -102,7 +124,7 @@ public final class FullscreenSigninPromoLauncher {
                         .build();
         @Nullable Intent intent =
                 signinAndHistorySyncActivityLauncher.createFullscreenSigninIntent(
-                        context, profile, config, SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
+                        context, profile, config, accessPoint);
         if (intent == null) {
             return false;
         }
