@@ -15,7 +15,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.View;
 
@@ -24,8 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -38,29 +35,8 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link ViewResourceAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ViewResourceAdapterTest.ShadowCaptureUtils.class})
+@Config(manifest = Config.NONE)
 public class ViewResourceAdapterTest {
-    /**
-     * Mock this out to avoid calling {@link View#draw(Canvas)} on the mocked mView.
-     * Otherwise the GC-related tests would fail because Mockito holds onto a references to the
-     * bitmap forever.
-     */
-    @Implements(CaptureUtils.class)
-    static class ShadowCaptureUtils {
-        @Implementation
-        public static boolean captureCommon(
-                Canvas canvas,
-                View view,
-                Rect dirtyRect,
-                float scale,
-                boolean drawWhileDetached,
-                CaptureObserver observer) {
-            return true;
-        }
-    }
-
     private int mViewWidth;
     private int mViewHeight;
     @Mock private ResourceFactory.Natives mResourceFactoryJni;
@@ -72,6 +48,7 @@ public class ViewResourceAdapterTest {
     public void setup() {
         initMocks(this);
         ResourceFactoryJni.setInstanceForTesting(mResourceFactoryJni);
+        CaptureUtils.setCaptureCommonHookForTesting(() -> true);
 
         mViewWidth = 200;
         mViewHeight = 100;

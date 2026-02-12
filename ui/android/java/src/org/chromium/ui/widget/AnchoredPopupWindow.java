@@ -23,6 +23,7 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -41,6 +42,8 @@ import java.util.function.Supplier;
 public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observer {
     private static final int MIN_TOUCHABLE_HEIGHT_DIP = 50; // 48dp touch target plus 1dp margin.
     private static final int MIN_TOUCHABLE_WIDTH_DIP = 50; // 48dp touch target plus 1dp margin.
+
+    private static @Nullable Runnable sShowHookForTesting;
 
     /** An observer that is notified of AnchoredPopupWindow layout changes. */
     public interface LayoutObserver {
@@ -1193,8 +1196,22 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                 && mPopupSpec.popupRect.width() >= density * MIN_TOUCHABLE_WIDTH_DIP;
     }
 
+    /**
+     * Sets a hook to be called when {@link #showPopupWindow()} is called.
+     *
+     * @param hook The hook to be called.
+     */
+    public static void setShowHookForTesting(@Nullable Runnable hook) {
+        sShowHookForTesting = hook;
+        ResettersForTesting.register(() -> sShowHookForTesting = null);
+    }
+
     @VisibleForTesting
     void showPopupWindow() {
+        if (sShowHookForTesting != null) {
+            sShowHookForTesting.run();
+            return;
+        }
         if (mAnimateFromAnchor && mAnimationStyleId == 0) {
             int animationStyle =
                     calculateAnimationStyle(

@@ -9,11 +9,23 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.View;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 /** Shared stateless capture utility functions. */
 @NullMarked
 public class CaptureUtils {
+    private static @Nullable Supplier<Boolean> sCaptureCommonHookForTesting;
+
+    /** Stubs captureCommon. */
+    public static void setCaptureCommonHookForTesting(Supplier<Boolean> hook) {
+        sCaptureCommonHookForTesting = hook;
+        ResettersForTesting.register(() -> sCaptureCommonHookForTesting = null);
+    }
+
     /** Creates a bitmap with the given size. */
     public static Bitmap createBitmap(int width, int height) {
         return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888, /* hasAlpha= */ true);
@@ -43,6 +55,9 @@ public class CaptureUtils {
             float scale,
             boolean drawWhileDetached,
             CaptureObserver observer) {
+        if (sCaptureCommonHookForTesting != null) {
+            return sCaptureCommonHookForTesting.get();
+        }
         boolean willDraw = drawWhileDetached || view.isAttachedToWindow();
         if (!willDraw) {
             return false;
