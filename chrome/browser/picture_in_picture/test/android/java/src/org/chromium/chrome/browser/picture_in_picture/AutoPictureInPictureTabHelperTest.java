@@ -240,7 +240,6 @@ public class AutoPictureInPictureTabHelperTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445841
     public void testBackToTabFromAutoPip() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
         assertTrue(
