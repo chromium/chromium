@@ -53,11 +53,16 @@ public interface TabWindowManager {
     int MAX_SELECTORS_LEGACY = 3;
 
     // Maximum number of TabModelSelectors since Android S that supports multiple instances of
-    // ChromeTabbedActivity.
+    // ChromeTabbedActivity on low-memory devices.
     int MAX_SELECTORS_S = 5;
 
-    // Maximum number of TabModelSelectors. Set high enough that it is functionally unlimited.
-    int MAX_SELECTORS = 1000;
+    // Maximum number of TabModelSelectors since Android S that supports a higher number of
+    // instances of ChromeTabbedActivity on high-memory devices.
+    int MAX_SELECTORS_20 = 20;
+
+    // Maximum number of TabModelSelectors that is high enough for the number of instances of
+    // ChromeTabbedActivity to be functionally unlimited.
+    int MAX_SELECTORS_1000 = 1000;
 
     // Used when an identifier is required to identify the window of archived tabs.
     String ARCHIVED_WINDOW_TAG = "archived";

@@ -194,12 +194,7 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
 #if BUILDFLAG(IS_ANDROID)
   feature_list_.InitWithFeatures(
       /*enabled_features=*/
-      {// Disable ChromeTabbedActivity instance limit so that the total number
-       // of windows created by the entire test suite won't be limited. See Java
-       // MultiWindowUtils#getMaxInstances() for details.
-       chrome::android::kDisableInstanceLimit,
-
-       // Enable incognito windows on Android.
+      {// Enable incognito windows on Android.
        feed::kAndroidOpenIncognitoAsWindow},
       /*disabled_features=*/{});
 #endif
@@ -280,12 +275,6 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   // test launches an Intent for ChromeTabbedActivity, ChromeTabbedActivity
   // will be shown instead of FirstRunActivity.
   command_line->AppendSwitch("disable-fre");
-
-  // Force DeviceInfo#isDesktop() to be true so that the kDisableInstanceLimit
-  // flag in the constructor can be effective when running tests on an emulator
-  // without "--force-desktop-android". See Java
-  // MultiWindowUtils#getMaxInstances() for details.
-  command_line->AppendSwitch(switches::kForceDesktopAndroid);
 #endif
 }
 

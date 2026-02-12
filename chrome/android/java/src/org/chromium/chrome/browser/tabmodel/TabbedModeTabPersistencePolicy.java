@@ -117,7 +117,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             mOtherWindowTag = null;
         }
         mMergeTabsOnStartup = mergeTabsOnStartup;
-        mMaxSelectors = TabWindowManager.MAX_SELECTORS;
+        mMaxSelectors = TabWindowManager.MAX_SELECTORS_1000;
     }
 
     /**

@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
@@ -606,9 +605,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             // activity is already updated to a "current" time when this method is called. However,
             // we will avoid closing the current instance explicitly to avoid an unexpected outcome
             // if this is not the case.
-            if (ChromeFeatureList.sDisableInstanceLimit.isEnabled()
-                    && isOlderThanSixMonths(lastAccessedTime)
-                    && type != InstanceInfo.Type.CURRENT) {
+            if (isOlderThanSixMonths(lastAccessedTime) && type != InstanceInfo.Type.CURRENT) {
                 closeWindows(
                         Collections.singletonList(i),
                         CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION);
@@ -713,7 +710,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             // or over instance limit, so that we avoid allowing successful creation of the current
             // activity in this scenario.
             if (!isInstanceLimitReached()) {
-                for (int i = 0; i < TabWindowManager.MAX_SELECTORS; ++i) {
+                for (int i = 0; i < TabWindowManager.MAX_SELECTORS_1000; ++i) {
                     if (!MultiInstancePersistentStore.hasInstance(i)) {
                         logNewInstanceId(i);
                         profileType = getProfileType(i, isIncognitoIntent);
@@ -1130,12 +1127,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         RecordHistogram.recordExactLinearHistogram(
                 "Android.MultiInstance.NumActivities",
                 getRunningTabbedActivityCount(),
-                TabWindowManager.MAX_SELECTORS + 1);
+                TabWindowManager.MAX_SELECTORS_1000 + 1);
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             RecordHistogram.recordExactLinearHistogram(
                     "Android.MultiInstance.NumActivities.Incognito",
                     MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ true),
-                    TabWindowManager.MAX_SELECTORS + 1);
+                    TabWindowManager.MAX_SELECTORS_1000 + 1);
         }
     }
 
@@ -1155,13 +1152,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         RecordHistogram.recordExactLinearHistogram(
                 "Android.MultiInstance.NumInstances",
                 MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY),
-                TabWindowManager.MAX_SELECTORS + 1);
+                TabWindowManager.MAX_SELECTORS_1000 + 1);
 
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             RecordHistogram.recordExactLinearHistogram(
                     "Android.MultiInstance.NumInstances.Incognito",
                     MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ false),
-                    TabWindowManager.MAX_SELECTORS + 1);
+                    TabWindowManager.MAX_SELECTORS_1000 + 1);
         }
     }
 
@@ -1537,16 +1534,16 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 RecordHistogram.recordExactLinearHistogram(
                         "Android.MultiInstance.MaxInstanceCount",
                         maxCount,
-                        TabWindowManager.MAX_SELECTORS + 1);
+                        TabWindowManager.MAX_SELECTORS_1000 + 1);
                 RecordHistogram.recordExactLinearHistogram(
                         "Android.MultiInstance.MaxActiveInstanceCount",
                         maxActiveCount,
-                        TabWindowManager.MAX_SELECTORS + 1);
+                        TabWindowManager.MAX_SELECTORS_1000 + 1);
                 if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
                     RecordHistogram.recordExactLinearHistogram(
                             "Android.MultiInstance.MaxInstanceCountIncognito",
                             incognitoMaxCount,
-                            TabWindowManager.MAX_SELECTORS + 1);
+                            TabWindowManager.MAX_SELECTORS_1000 + 1);
                 }
             }
             prefs.writeLong(ChromePreferenceKeys.MULTI_INSTANCE_MAX_COUNT_TIME, current);

@@ -654,7 +654,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void testGetInstanceInfo_closesInstancesOlderThanSixMonths() {
         MultiWindowTestUtils.enableMultiInstance();
 

@@ -99,6 +99,7 @@ import java.util.function.Supplier;
 public class MultiWindowUtils implements ActivityStateListener {
     public static final int INVALID_TASK_ID = MultiInstanceManager.INVALID_TASK_ID;
 
+    private static final int HIGH_INSTANCE_LIMIT_MEMORY_THRESHOLD_MB = 6500;
     public static final String PERSISTENT_STATE_ID = "persistent_state_id";
 
     static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW =
@@ -224,20 +225,16 @@ public class MultiWindowUtils implements ActivityStateListener {
             return TabWindowManager.MAX_SELECTORS_LEGACY;
         }
 
-        if (!ChromeFeatureList.sDisableInstanceLimit.isEnabled()) {
-            return TabWindowManager.MAX_SELECTORS_S;
-        }
-
         if (DeviceInfo.isDesktop()) {
-            return TabWindowManager.MAX_SELECTORS;
+            return TabWindowManager.MAX_SELECTORS_1000;
         }
 
-        int memoryThresholdMb = ChromeFeatureList.sDisableInstanceLimitMemoryThresholdMb.getValue();
         boolean isAboveMemoryThreshold =
                 SysUtils.amountOfPhysicalMemoryKB()
-                        >= memoryThresholdMb * ConversionUtils.KILOBYTES_PER_MEGABYTE;
+                        >= HIGH_INSTANCE_LIMIT_MEMORY_THRESHOLD_MB
+                                * ConversionUtils.KILOBYTES_PER_MEGABYTE;
         if (isAboveMemoryThreshold) {
-            return ChromeFeatureList.sDisableInstanceLimitMaxCount.getValue();
+            return TabWindowManager.MAX_SELECTORS_20;
         }
         return TabWindowManager.MAX_SELECTORS_S;
     }
@@ -1169,20 +1166,20 @@ public class MultiWindowUtils implements ActivityStateListener {
         RecordHistogram.recordExactLinearHistogram(
                 HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW,
                 MultiInstanceManagerApi31.getRunningTabbedActivityCount(),
-                TabWindowManager.MAX_SELECTORS + 1);
+                TabWindowManager.MAX_SELECTORS_1000 + 1);
 
         // Emit histograms for total instance count.
         RecordHistogram.recordExactLinearHistogram(
                 HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW,
                 getInstanceCountWithFallback(PersistedInstanceType.ANY),
-                TabWindowManager.MAX_SELECTORS + 1);
+                TabWindowManager.MAX_SELECTORS_1000 + 1);
 
         // Emit histograms for running Incognito activity count.
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             RecordHistogram.recordExactLinearHistogram(
                     HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_INCOGNITO,
                     getIncognitoInstanceCount(/* activeOnly= */ true),
-                    TabWindowManager.MAX_SELECTORS + 1);
+                    TabWindowManager.MAX_SELECTORS_1000 + 1);
         }
 
         // Emit histograms for total Incognito instance count.
@@ -1190,7 +1187,7 @@ public class MultiWindowUtils implements ActivityStateListener {
             RecordHistogram.recordExactLinearHistogram(
                     HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW_INCOGNITO,
                     getIncognitoInstanceCount(/* activeOnly= */ false),
-                    TabWindowManager.MAX_SELECTORS + 1);
+                    TabWindowManager.MAX_SELECTORS_1000 + 1);
         }
     }
 

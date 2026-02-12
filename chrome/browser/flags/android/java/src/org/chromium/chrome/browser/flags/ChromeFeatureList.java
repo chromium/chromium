@@ -8,7 +8,6 @@ import org.chromium.base.BaseFeatures;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.base.MutableFlagWithSafeDefault;
-import org.chromium.base.MutableIntParamWithSafeDefault;
 import org.chromium.base.MutableParamWithSafeDefault;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
@@ -398,7 +397,6 @@ public abstract class ChromeFeatureList {
     public static final String DESKTOP_UA_ON_CONNECTED_DISPLAY = "DesktopUAOnConnectedDisplay";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DEVICE_AUTHENTICATOR_ANDROIDX = "DeviceAuthenticatorAndroidx";
-    public static final String DISABLE_INSTANCE_LIMIT = "DisableInstanceLimit";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
     public static final String DISPLAY_EDGE_TO_EDGE_FULLSCREEN = "DisplayEdgeToEdgeFullscreen";
     public static final String DISPLAY_WILDCARD_CONTENT_SETTINGS =
@@ -1318,8 +1316,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_RENDER_DRIVEN_SHOW_CONSTRAINT, false);
     public static final MutableFlagWithSafeDefault sControlsVisibilityFromNavigations =
             newMutableFlagWithSafeDefault(CONTROLS_VISIBILITY_FROM_NAVIGATIONS, true);
-    public static final MutableFlagWithSafeDefault sDisableInstanceLimit =
-            newMutableFlagWithSafeDefault(DISABLE_INSTANCE_LIMIT, false);
     // Defaulted to true in native, but since it is being used as a kill switch set the default
     // value pre-native to false as it is safer if the feature needs to be killed via Finch config.
     public static final MutableFlagWithSafeDefault sEmptyTabListAnimationKillSwitch =
@@ -1842,11 +1838,6 @@ public abstract class ChromeFeatureList {
     public static final MutableBooleanParamWithSafeDefault
             sAndroidPinnedTabsSearchBoxSquishAnimation =
                     sAndroidPinnedTabs.newBooleanParam("search_box_squish_animation", true);
-
-    public static final MutableIntParamWithSafeDefault sDisableInstanceLimitMemoryThresholdMb =
-            sDisableInstanceLimit.newIntParam("max_instance_limit_memory_threshold_mb", 6500);
-    public static final MutableIntParamWithSafeDefault sDisableInstanceLimitMaxCount =
-            sDisableInstanceLimit.newIntParam("max_instance_limit", 20);
 
     public static final MutableBooleanParamWithSafeDefault
             sOmniboxAutofocusOnIncognitoNtpNotFirstTab =

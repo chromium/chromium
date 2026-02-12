@@ -588,10 +588,6 @@ inline constexpr char kFwupdDeveloperModeDescription[] =
     "Allows display and installation in UI of unauthenticated firmware by "
     "disabling all checks.";
 
-inline constexpr char kDisableInstanceLimitName[] = "Disable Instance Limit";
-inline constexpr char kDisableInstanceLimitDescription[] =
-    "Disable limit on number of app instances allowed (current limit is 5).";
-
 inline constexpr char kDisplayEdgeToEdgeFullscreenName[] =
     "Enable Display Edge to Edge Fullscreen";
 inline constexpr char kDisplayEdgeToEdgeFullscreenDescription[] =

@@ -157,11 +157,6 @@ class GlicTabEventCollector {
 
 class GlicTabObserverBrowserTest : public PlatformBrowserTest {
  public:
-  GlicTabObserverBrowserTest() {
-#if BUILDFLAG(IS_ANDROID)
-    feature_list_.InitAndEnableFeature(chrome::android::kDisableInstanceLimit);
-#endif
-  }
   ~GlicTabObserverBrowserTest() override = default;
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {

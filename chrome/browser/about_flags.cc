@@ -6388,10 +6388,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAuxiliarySearchHistoryDonationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAuxiliarySearchHistoryDonation)},
 
-    {"disable-instance-limit", flag_descriptions::kDisableInstanceLimitName,
-     flag_descriptions::kDisableInstanceLimitDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDisableInstanceLimit)},
-
     {"change-unfocused-priority",
      flag_descriptions::kChangeUnfocusedPriorityName,
      flag_descriptions::kChangeUnfocusedPriorityDescription, kOsAndroid,

@@ -29,14 +29,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BaseSwitches;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.NullMarked;
@@ -48,7 +46,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTypeTestUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -71,27 +68,11 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures(
-        // Disable ChromeTabbedActivity instance limit so that the total number of
-        // windows created by the entire test suite won't be limited.
-        //
-        // See MultiWindowUtils#getMaxInstances() for the reason:
-        // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=209;drc=0bcba72c5246a910240b311def40233f7d3f15af
-        ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
-@CommandLineFlags.Add({
-    // Force DeviceInfo#isDesktop() to be true so that the DISABLE_INSTANCE_LIMIT
-    // flag in @EnableFeatures can be effective when running tests on an
-    // emulator without "--force-desktop-android".
-    //
-    // See MultiWindowUtils#getMaxInstances() for the reason:
-    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=213;drc=0bcba72c5246a910240b311def40233f7d3f15af
-    BaseSwitches.FORCE_DESKTOP_ANDROID,
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @DoNotBatch(
         reason =
                 "Tests will be flaky if batched as they create/close windows and change window"
-                    + " states in quick succession")
+                        + " states in quick succession")
 @NullMarked
 public class ChromeAndroidTaskIntegrationTest {
 
