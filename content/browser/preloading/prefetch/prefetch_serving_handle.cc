@@ -202,7 +202,8 @@ void PrefetchServingHandle::OnIsolatedCookieCopyStart() {
       base::TimeTicks::Now();
 
   if (GetOnIsolatedCookieCopyStartCallbackForTesting()) {
-    GetOnIsolatedCookieCopyStartCallbackForTesting().Run(*this);  // IN-TEST
+    GetOnIsolatedCookieCopyStartCallbackForTesting().Run(  // IN-TEST
+        GetPrefetchContainer()->GetURL(), GetCurrentURLToServe());
   }
 }
 
