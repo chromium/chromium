@@ -161,6 +161,7 @@ InputStateModel::InputStateModel(
   state_.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
   // the initial model should be the first allowed model.
   state_.active_model = state_.GetDefaultModel();
+  state_.image_gen_upload_active = false;
 
   updateDisabledState();
 }
@@ -271,12 +272,33 @@ void InputStateModel::OnContextChanged() {
   // Update the disabled state based on the new inputs uploaded.
   updateDisabledState();
 
+  if (state_.active_tool == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
+    const auto current_inputs = GetCurrentInputTypes(session_handle_.get());
+    if (std::find(current_inputs.begin(), current_inputs.end(),
+                  omnibox::InputType::INPUT_TYPE_LENS_IMAGE) ==
+        current_inputs.end()) {
+      state_.image_gen_upload_active = false;
+    }
+  }
+
   // Notify subscribers once `state_` is updated.
   notifySubscribers();
 }
 
 void InputStateModel::updateSelectedState(ToolMode tool, ModelMode model) {
   state_.active_model = model;
+  state_.image_gen_upload_active = false;
+
+  // Set `image_gen_upload_active` to true if the active tool is
+  // `TOOL_MODE_IMAGE_GEN` and an image is uploaded.
+  if (tool == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
+    const auto current_inputs = GetCurrentInputTypes(session_handle_.get());
+    if (std::find(current_inputs.begin(), current_inputs.end(),
+                  omnibox::InputType::INPUT_TYPE_LENS_IMAGE) !=
+        current_inputs.end()) {
+      state_.image_gen_upload_active = true;
+    }
+  }
   state_.active_tool = tool;
 
   // Update the disabled state based on the active model, tool, and current

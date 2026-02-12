@@ -285,10 +285,15 @@ GURL AddAimInputStateParamsToEndpointUrl(
   GURL modified_url = GURL(url_to_modify);
   if (search_terms_args.input_state.active_tool !=
       omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
+    // Override IMAGE_GEN tool mode if image gen upload is active.
+    omnibox::ToolMode tool_mode =
+        search_terms_args.input_state.image_gen_upload_active
+            ? omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD
+            : search_terms_args.input_state.active_tool;
     modified_url = net::AppendOrReplaceQueryParameter(
         url_to_modify, "azm",
         base::NumberToString(
-            static_cast<int>(search_terms_args.input_state.active_tool)));
+            static_cast<int>(tool_mode)));
   }
   if (search_terms_args.input_state.active_model !=
       omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
