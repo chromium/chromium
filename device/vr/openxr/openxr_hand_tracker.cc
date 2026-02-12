@@ -69,13 +69,18 @@ OpenXrHandTracker::OpenXrHandTracker(
   locations_.jointCount = joint_locations_buffer_.size();
   locations_.jointLocations = joint_locations_buffer_.data();
 
-  // This is only used if mesh_scale_enabled_ is true, but it doesn't hurt to
-  // initialize it anyway.
-  // Setting `overrideHandScale` to true and `overrideValueInput` to 1 will
-  // scale the hands to the size of the "standard" hand mesh per:
-  // https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XrHandTrackingScaleFB
-  mesh_scale_.overrideHandScale = true;
-  mesh_scale_.overrideValueInput = 1.0f;
+  XrNextChainBuilder next_chain(&locations_);
+  if (mesh_scale_enabled_ && UseRuntimeAnonymization()) {
+    // Setting `overrideHandScale` to true and `overrideValueInput` to 1 will
+    // scale the hands to the size of the "standard" hand mesh per:
+    // https://registry.khronos.org/OpenXR/specs/1.1/html/xrspec.html#XrHandTrackingScaleFB
+    mesh_scale_.overrideHandScale = true;
+    mesh_scale_.overrideValueInput = 1.0f;
+
+    next_chain.Add(&mesh_scale_);
+  }
+
+  ExtendLocationsNextChain(next_chain);
 }
 
 OpenXrHandTracker::~OpenXrHandTracker() {
@@ -106,14 +111,6 @@ XrResult OpenXrHandTracker::Update(XrSpace base_space,
   XrHandJointsLocateInfoEXT locate_info{XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT};
   locate_info.baseSpace = base_space;
   locate_info.time = predicted_display_time;
-
-  void** next = &locations_.next;
-  if (mesh_scale_enabled_ && UseRuntimeAnonymization()) {
-    *next = &mesh_scale_;
-    next = &mesh_scale_.next;
-  }
-
-  ExtendHandTrackingNextChain(next);
 
   XrResult result = extension_helper_->ExtensionMethods().xrLocateHandJointsEXT(
       hand_tracker_, &locate_info, &locations_);

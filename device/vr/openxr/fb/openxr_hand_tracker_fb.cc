@@ -79,8 +79,9 @@ std::optional<GamepadButton> OpenXrHandTrackerFb::GetButton(
   return std::nullopt;
 }
 
-void OpenXrHandTrackerFb::ExtendHandTrackingNextChain(void** next) {
-  *next = &aim_state_;
+void OpenXrHandTrackerFb::ExtendLocationsNextChain(
+    XrNextChainBuilder& next_chain) {
+  next_chain.Add(&aim_state_);
 }
 
 OpenXrHandTrackerFbFactory::OpenXrHandTrackerFbFactory() = default;

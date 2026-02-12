@@ -54,16 +54,17 @@ mojom::XRLightEstimationDataPtr OpenXrLightEstimatorAndroid::GetLightEstimate(
   estimate_info.space = mojo_space_;
   estimate_info.time = frame_time;
 
+  XrLightEstimateANDROID estimate = {XR_TYPE_LIGHT_ESTIMATE_ANDROID};
+  XrNextChainBuilder next_chain(&estimate);
+
   XrDirectionalLightANDROID directional_light = {
       XR_TYPE_DIRECTIONAL_LIGHT_ANDROID};
+  next_chain.Add(&directional_light);
 
   XrSphericalHarmonicsANDROID ambient_harmonics = {
       XR_TYPE_SPHERICAL_HARMONICS_ANDROID};
   ambient_harmonics.kind = XR_SPHERICAL_HARMONICS_KIND_AMBIENT_ANDROID;
-  ambient_harmonics.next = &directional_light;
-
-  XrLightEstimateANDROID estimate = {XR_TYPE_LIGHT_ESTIMATE_ANDROID};
-  estimate.next = &ambient_harmonics;
+  next_chain.Add(&ambient_harmonics);
 
   XrResult result =
       extension_helper_->ExtensionMethods().xrGetLightEstimateANDROID(
