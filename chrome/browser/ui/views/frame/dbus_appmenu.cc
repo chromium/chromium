@@ -25,6 +25,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -149,11 +150,6 @@ constexpr auto kProfilesMenu = std::to_array<DbusAppmenuCommand>(
      {kTagProfileEdit, IDS_PROFILES_MANAGE_BUTTON_LABEL},
      {kTagProfileCreate, IDS_PROFILES_ADD_PROFILE_LABEL}});
 
-constexpr auto kHelpMenu = std::to_array<DbusAppmenuCommand>({
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {IDC_FEEDBACK, IDS_FEEDBACK},
-#endif
-    {IDC_HELP_PAGE_VIA_MENU, IDS_HELP_PAGE}});
 
 void FindMenuItemsForCommandAux(
     ui::MenuModel* menu,
@@ -176,6 +172,18 @@ std::vector<std::pair<ui::MenuModel*, size_t>> FindMenuItemsForCommand(
   std::vector<std::pair<ui::MenuModel*, size_t>> menu_items;
   FindMenuItemsForCommandAux(menu, command, &menu_items);
   return menu_items;
+}
+
+std::vector<DbusAppmenuCommand> BuildHelpMenu(Profile& profile) {
+  std::vector<DbusAppmenuCommand> help_menu;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  help_menu.push_back({IDC_FEEDBACK, IDS_FEEDBACK});
+  if (feedback::ReportUnsafeSiteDialog::IsEnabled(profile)) {
+    help_menu.push_back({IDC_REPORT_UNSAFE_SITE, IDS_REPORT_UNSAFE_SITE});
+  }
+#endif
+  help_menu.push_back({IDC_HELP_PAGE_VIA_MENU, IDS_HELP_PAGE});
+  return help_menu;
 }
 
 }  // namespace
@@ -252,7 +260,7 @@ void DbusAppmenu::Initialize(DbusMenu::InitializedCallback callback) {
   history_menu_ = BuildStaticMenu(IDS_HISTORY_MENU_LINUX, kHistoryMenu);
   BuildStaticMenu(IDS_TOOLS_MENU_LINUX, kToolsMenu);
   profiles_menu_ = BuildStaticMenu(IDS_PROFILES_MENU_NAME, kProfilesMenu);
-  BuildStaticMenu(IDS_HELP_MENU_LINUX, kHelpMenu);
+  BuildStaticMenu(IDS_HELP_MENU_LINUX, BuildHelpMenu(*browser_->profile()));
 
   pref_change_registrar_.Init(browser_->profile()->GetPrefs());
   pref_change_registrar_.Add(
