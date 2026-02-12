@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
@@ -257,7 +258,7 @@ void WebInstallFromUrlCommand::OnInstallDialogCompleted(
   web_app_info_->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
   web_app_info_->installed_by = installed_by_;
-  WebAppInstallFinalizer::FinalizeOptions finalize_options(kInstallSource);
+  FinalizeJobOptions finalize_options(kInstallSource);
   finalize_options.install_state =
       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;
   finalize_options.overwrite_existing_manifest_fields = true;

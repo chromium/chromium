@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
@@ -130,9 +131,8 @@ void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
                                     WebAppInstallInfo& web_app_info);
 
 // Update |options| using |install_params|.
-void ApplyParamsToFinalizeOptions(
-    const WebAppInstallParams& install_params,
-    WebAppInstallFinalizer::FinalizeOptions& options);
+void ApplyParamsToFinalizeOptions(const WebAppInstallParams& install_params,
+                                  FinalizeJobOptions& options);
 
 // Returns whether the home tab icons exist.
 bool HomeTabIconsExistInTabStrip(const WebAppInstallInfo& web_app_info);

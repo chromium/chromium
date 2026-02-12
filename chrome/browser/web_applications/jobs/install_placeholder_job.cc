@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -206,9 +207,8 @@ void InstallPlaceholderJob::FinalizeInstall(
 
   web_app_info->user_display_mode = install_options_.user_display_mode;
 
-  WebAppInstallFinalizer::FinalizeOptions options(
-      ConvertExternalInstallSourceToInstallSource(
-          install_options_.install_source));
+  FinalizeJobOptions options(ConvertExternalInstallSourceToInstallSource(
+      install_options_.install_source));
   // Overwrite fields if we are doing a forced reinstall, because some
   // values (custom name or icon) might have changed.
   options.overwrite_existing_manifest_fields = install_options_.force_reinstall;

@@ -47,7 +47,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -69,6 +68,7 @@
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/features.h"
@@ -131,6 +131,25 @@ bool ShouldInstallOverwriteUserDisplayMode(
   }
 }
 
+FinalizeJobOptions::IwaOptions::IwaOptions(
+    IsolatedWebAppStorageLocation location,
+    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data)
+    : location(std::move(location)),
+      integrity_block_data(std::move(integrity_block_data)) {}
+
+FinalizeJobOptions::IwaOptions::~IwaOptions() = default;
+
+FinalizeJobOptions::IwaOptions::IwaOptions(const IwaOptions&) = default;
+
+FinalizeJobOptions::FinalizeJobOptions(
+    webapps::WebappInstallSource install_surface)
+    : source(ConvertInstallSurfaceToWebAppSource(install_surface)),
+      install_surface(install_surface) {}
+
+FinalizeJobOptions::~FinalizeJobOptions() = default;
+
+FinalizeJobOptions::FinalizeJobOptions(const FinalizeJobOptions&) = default;
+
 std::optional<ApiApprovalState> AdjustFileHandlerUserApproval(
     const WebAppRegistrar& registrar,
     base::optional_ref<const WebApp> existing_app,
@@ -175,11 +194,9 @@ std::optional<ApiApprovalState> AdjustFileHandlerUserApproval(
 // See switch for specific cases being mitigated against.
 // See go/udm-desync#bookmark=id.cg753kjyrruo for design doc.
 // TODO(crbug.com/320771282): Add automated tests.
-void ApplyUserDisplayModeSyncMitigations(
-    const WebAppInstallFinalizer::FinalizeOptions& options,
-    WebApp& web_app) {
-  if (WebAppInstallFinalizer::
-          DisableUserDisplayModeSyncMitigationsForTesting()) {
+void ApplyUserDisplayModeSyncMitigations(const FinalizeJobOptions& options,
+                                         WebApp& web_app) {
+  if (FinalizeInstallJob::DisableUserDisplayModeSyncMitigationsForTesting()) {
     return;
   }
 
@@ -253,24 +270,26 @@ void ApplyUserDisplayModeSyncMitigations(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-FinalizeInstallJob::FinalizeInstallJob(
-    Profile& profile,
-    WebAppProvider& provider,
-    base::Clock* clock,
-    WebAppInstallFinalizer& finalizer,
-    const WebAppInstallInfo& web_app_info,
-    const WebAppInstallFinalizer::FinalizeOptions& options)
+FinalizeInstallJob::FinalizeInstallJob(Profile& profile,
+                                       WebAppProvider& provider,
+                                       base::Clock* clock,
+                                       const WebAppInstallInfo& web_app_info,
+                                       const FinalizeJobOptions& options)
     : profile_(profile),
       provider_(provider),
       clock_(clock),
-      finalizer_(finalizer),
       web_app_info_(web_app_info.Clone()),
       options_(options) {}
 
 FinalizeInstallJob::~FinalizeInstallJob() = default;
 
-void FinalizeInstallJob::Start(
-    WebAppInstallFinalizer::InstallFinalizedCallback callback) {
+void FinalizeInstallJob::Start(InstallFinalizedCallback callback) {
+  if (options_.install_state == proto::InstallState::SUGGESTED_FROM_MIGRATION &&
+      web_app_info_.migration_sources.empty()) {
+    std::move(callback).Run(
+        webapps::AppId(), webapps::InstallResultCode::kNoValidMigrationSource);
+    return;
+  }
   callback_ = std::move(callback);
   webapps::ManifestId manifest_id = web_app_info_.manifest_id();
 
@@ -487,10 +506,10 @@ void FinalizeInstallJob::OnOriginAssociationValidated(
     old_scope = existing_web_app->GetScope();
   }
 
-  CommitCallback commit_callback = base::BindOnce(
-      &WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall,
-      finalizer_->GetWeakPtr(), std::move(callback_), app_id, options_,
-      std::move(old_scope));
+  CommitCallback commit_callback =
+      base::BindOnce(&FinalizeInstallJob::OnDatabaseCommitCompletedForInstall,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_),
+                     app_id, std::move(old_scope));
 
   // Ensure that the pending update info is always reset whenever Finalize*() is
   // called, to ensure that the state of icons on disk or new installs do not
@@ -657,6 +676,93 @@ void FinalizeInstallJob::AdjustAppStateBeforeCommit(const WebApp* existing_app,
           base::DoNothing());
     }
   }
+}
+
+void FinalizeInstallJob::OnDatabaseCommitCompletedForInstall(
+    InstallFinalizedCallback callback,
+    webapps::AppId app_id,
+    std::optional<WebAppScope> old_scope,
+    bool success) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!success) {
+    std::move(callback).Run(webapps::AppId(),
+                            webapps::InstallResultCode::kWriteDataFailed);
+    return;
+  }
+
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  // TODO(dmurph): Verify this check is not needed and remove after
+  // isolation work is done. https://crbug.com/1298130
+  if (!web_app) {
+    std::move(callback).Run(
+        webapps::AppId(),
+        webapps::InstallResultCode::kAppNotInRegistrarAfterCommit);
+    return;
+  }
+  if (old_scope.has_value() && old_scope.value() != web_app->GetScope()) {
+    provider_->registrar_unsafe().NotifyWebAppEffectiveScopeChanged(app_id);
+  }
+
+  provider_->install_manager().NotifyWebAppInstalled(app_id);
+
+  SynchronizeOsOptions synchronize_options;
+  synchronize_options.add_shortcut_to_desktop = options_.add_to_desktop;
+  synchronize_options.add_to_quick_launch_bar =
+      options_.add_to_quick_launch_bar;
+
+  switch (options_.source) {
+    case WebAppManagement::kSystem:
+    case WebAppManagement::kPolicy:
+    case WebAppManagement::kIwaPolicy:
+    case WebAppManagement::kDefault:
+    case WebAppManagement::kOem:
+    case WebAppManagement::kApsDefault:
+    case WebAppManagement::kIwaShimlessRma:
+      synchronize_options.reason = SHORTCUT_CREATION_AUTOMATED;
+      break;
+    case WebAppManagement::kKiosk:
+    case WebAppManagement::kSubApp:
+    case WebAppManagement::kWebAppStore:
+    case WebAppManagement::kOneDriveIntegration:
+    case WebAppManagement::kSync:
+    case WebAppManagement::kUserInstalled:
+    case WebAppManagement::kIwaUserInstalled:
+      synchronize_options.reason = SHORTCUT_CREATION_BY_USER;
+      break;
+  }
+
+  provider_->os_integration_manager().Synchronize(
+      app_id,
+      base::BindOnce(&FinalizeInstallJob::OnInstallHooksFinished,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     app_id),
+      synchronize_options);
+}
+
+void FinalizeInstallJob::OnInstallHooksFinished(
+    InstallFinalizedCallback callback,
+    webapps::AppId app_id) {
+  // Only notify that os hooks were added if the installation was a 'full'
+  // installation.
+  if (provider_->registrar_unsafe().GetInstallState(app_id) ==
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
+    callback = std::move(callback).Then(
+        base::BindOnce(&FinalizeInstallJob::NotifyWebAppInstalledWithOsHooks,
+                       &provider_.get(), app_id));
+  }
+  std::move(callback).Run(app_id,
+                          webapps::InstallResultCode::kSuccessNewInstall);
+}
+
+void FinalizeInstallJob::NotifyWebAppInstalledWithOsHooks(
+    WebAppProvider* provider,
+    webapps::AppId app_id) {
+  provider->install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
+}
+
+bool& FinalizeInstallJob::DisableUserDisplayModeSyncMitigationsForTesting() {
+  static bool disable = false;
+  return disable;
 }
 
 }  // namespace web_app

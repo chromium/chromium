@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/jobs/install_from_info_job.h"
 #include "chrome/browser/web_applications/jobs/install_placeholder_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
@@ -461,7 +462,7 @@ void ExternalAppResolutionCommand::OnLockUpgradedFinalizeInstall(
     std::move(on_lock_upgraded_callback_for_testing_).Run();
   }
 
-  WebAppInstallFinalizer::FinalizeOptions finalize_options(install_surface_);
+  FinalizeJobOptions finalize_options(install_surface_);
   finalize_options.overwrite_existing_manifest_fields =
       install_params_->force_reinstall;
 

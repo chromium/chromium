@@ -8,24 +8,30 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_scope.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace web_app {
 
 FinalizeUpdateJob::FinalizeUpdateJob(WebAppProvider& provider,
-                                     WebAppInstallFinalizer& finalizer,
                                      const WebAppInstallInfo& web_app_info)
     : provider_(provider),
-      finalizer_(finalizer),
       web_app_info_(web_app_info.Clone()),
       app_id_(
           GenerateAppIdFromManifestId(web_app_info_.manifest_id(),
@@ -33,8 +39,7 @@ FinalizeUpdateJob::FinalizeUpdateJob(WebAppProvider& provider,
 
 FinalizeUpdateJob::~FinalizeUpdateJob() = default;
 
-void FinalizeUpdateJob::Start(
-    WebAppInstallFinalizer::InstallFinalizedCallback callback) {
+void FinalizeUpdateJob::Start(InstallFinalizedCallback callback) {
   callback_ = std::move(callback);
   webapps::ManifestId manifest_id = web_app_info_.manifest_id();
   const WebApp* existing_web_app =
@@ -126,8 +131,8 @@ void FinalizeUpdateJob::OnOriginAssociationValidatedForUpdate(
   // This is not reached unless the data obtained from the manifest
   // update process is valid, so an invariant of the system is that
   // icons are valid here.
-  finalizer_->SetWebAppManifestFieldsAndWriteData(
-      web_app_info_, std::move(web_app), std::move(commit_callback),
+  SetWebAppManifestFieldsAndWriteData(
+      std::move(web_app), std::move(commit_callback),
       /*skip_icon_writes_on_download_failure=*/false);
 }
 
@@ -216,6 +221,83 @@ void FinalizeUpdateJob::UpdateIsolationDataAndResetPendingUpdateInfo(
   }
 
   web_app->SetIsolationData(std::move(builder).Build());
+}
+
+void FinalizeUpdateJob::SetWebAppManifestFieldsAndWriteData(
+    std::unique_ptr<WebApp> web_app,
+    CommitCallback commit_callback,
+    bool skip_icon_writes_on_download_failure) {
+  const auto& registrar = provider_->registrar_unsafe();
+  const WebApp* existing_app = registrar.GetAppById(app_id_);
+
+  SetWebAppManifestFields(web_app_info_, *web_app,
+                          skip_icon_writes_on_download_failure);
+  FinalizeInstallJob::AdjustAppStateBeforeCommit(existing_app, *web_app,
+                                                 *provider_);
+
+  auto write_translations_callback = base::BindOnce(
+      &FinalizeUpdateJob::WriteTranslations, weak_ptr_factory_.GetWeakPtr(),
+      app_id_, web_app_info_.translations);
+  auto commit_to_sync_bridge_callback =
+      base::BindOnce(&FinalizeUpdateJob::CommitToSyncBridge,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(web_app));
+  auto on_icon_write_complete_callback =
+      base::BindOnce(std::move(write_translations_callback),
+                     base::BindOnce(std::move(commit_to_sync_bridge_callback),
+                                    std::move(commit_callback)));
+
+  // Do not overwrite the icon data in the DB if icon downloading has failed. We
+  // skip directly to writing translations and then writing the app via the
+  // WebAppSyncBridge.
+  if (skip_icon_writes_on_download_failure) {
+    std::move(on_icon_write_complete_callback).Run(/*success=*/true);
+  } else {
+    IconBitmaps icon_bitmaps = web_app_info_.icon_bitmaps;
+    ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps =
+        web_app_info_.shortcuts_menu_icon_bitmaps;
+    IconsMap other_icon_bitmaps = web_app_info_.other_icon_bitmaps;
+    IconBitmaps trusted_icon_bitmaps = web_app_info_.trusted_icon_bitmaps;
+
+    provider_->icon_manager().WriteData(
+        app_id_, std::move(icon_bitmaps), std::move(trusted_icon_bitmaps),
+        std::move(shortcuts_menu_icon_bitmaps), std::move(other_icon_bitmaps),
+        std::move(on_icon_write_complete_callback));
+  }
+}
+
+void FinalizeUpdateJob::WriteTranslations(
+    const webapps::AppId& app_id,
+    const base::flat_map<std::string, blink::Manifest::TranslationItem>&
+        translations,
+    CommitCallback commit_callback,
+    bool success) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!success) {
+    std::move(commit_callback).Run(success);
+    return;
+  }
+  provider_->translation_manager().WriteTranslations(
+      app_id, translations, std::move(commit_callback));
+}
+
+void FinalizeUpdateJob::CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
+                                           CommitCallback commit_callback,
+                                           bool success) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!success) {
+    std::move(commit_callback).Run(success);
+    return;
+  }
+
+  ScopedRegistryUpdate update =
+      provider_->sync_bridge_unsafe().BeginUpdate(std::move(commit_callback));
+
+  WebApp* app_to_override = update->UpdateApp(app_id_);
+  if (app_to_override) {
+    *app_to_override = std::move(*web_app);
+  } else {
+    update->CreateApp(std::move(web_app));
+  }
 }
 
 }  // namespace web_app

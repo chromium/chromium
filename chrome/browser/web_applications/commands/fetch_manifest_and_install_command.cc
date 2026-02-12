@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
@@ -660,7 +661,7 @@ void FetchManifestAndInstallCommand::OnDialogCompleted(
 
   web_app_info_ = std::move(web_app_info);
 
-  WebAppInstallFinalizer::FinalizeOptions finalize_options(install_surface_);
+  FinalizeJobOptions finalize_options(install_surface_);
 
   finalize_options.install_state =
       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;

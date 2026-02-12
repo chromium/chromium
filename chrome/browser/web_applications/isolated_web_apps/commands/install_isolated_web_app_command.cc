@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -340,9 +341,9 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
                              to_be_installed_version.GetString());
   GetMutableDebugValue().Set("app_title", install_info.title.value());
 
-  WebAppInstallFinalizer::FinalizeOptions options(install_surface_);
+  FinalizeJobOptions options(install_surface_);
 
-  options.iwa_options = WebAppInstallFinalizer::FinalizeOptions::IwaOptions(
+  options.iwa_options = FinalizeJobOptions::IwaOptions(
       *destination_storage_location_, std::move(integrity_block_data_));
 
   lock_->install_finalizer().FinalizeInstall(

@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/web_applications/commands/command_metrics.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
@@ -256,7 +257,7 @@ void InstallAppFromVerifiedManifestCommand::OnInstallInfoParsedFromManifest(
 void InstallAppFromVerifiedManifestCommand::OnAppLockAcquired() {
   CHECK(app_lock_);
   CHECK(app_lock_->IsGranted());
-  WebAppInstallFinalizer::FinalizeOptions finalize_options(install_source_);
+  FinalizeJobOptions finalize_options(install_source_);
   finalize_options.add_to_quick_launch_bar = false;
   finalize_options.overwrite_existing_manifest_fields = false;
 

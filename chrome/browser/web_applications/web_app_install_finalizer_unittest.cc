@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
@@ -154,7 +155,7 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
   // Synchronous version of FinalizeInstall.
   FinalizeInstallResult AwaitFinalizeInstall(
       const WebAppInstallInfo& info,
-      const WebAppInstallFinalizer::FinalizeOptions& options) {
+      const FinalizeJobOptions& options) {
     FinalizeInstallResult result{};
     base::RunLoop run_loop;
     finalizer().FinalizeInstall(
@@ -198,8 +199,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, BasicInstallSucceeds) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
@@ -217,8 +217,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
       GURL("https://foo2.example"));
   info2->title = u"Foo2 Title";
 
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   base::RunLoop run_loop;
   bool callback1_called = false;
@@ -266,8 +265,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
@@ -279,8 +277,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::EXTERNAL_POLICY);
+  FinalizeJobOptions options(webapps::WebappInstallSource::EXTERNAL_POLICY);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
@@ -294,8 +291,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, ManifestUpdateOsIntegrationDefaultApps) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::EXTERNAL_DEFAULT);
   options.install_state = proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
   options.add_to_applications_menu = false;
   options.add_to_quick_launch_bar = false;
@@ -321,8 +317,7 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
   options.install_state = proto::SUGGESTED_FROM_ANOTHER_DEVICE;
   // OS Hooks must be disabled for non-locally installed app.
   options.add_to_applications_menu = false;
@@ -365,8 +360,7 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
   options.add_to_applications_menu = false;
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
@@ -426,7 +420,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoDesktopShortcut) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
+  FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_desktop = false;
 
@@ -441,7 +435,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoQuickLaunchBarShortcut) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
+  FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_quick_launch_bar = false;
 
@@ -457,7 +451,7 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
+  FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
@@ -473,7 +467,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoCreateOsShorcuts) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
+  FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
@@ -489,7 +483,7 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
+  FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
@@ -503,8 +497,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://foo.example"));
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::EXTERNAL_DEFAULT);
   options.install_state = proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
   options.add_to_applications_menu = false;
   options.add_to_quick_launch_bar = false;
@@ -534,8 +527,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallUrlSetInWebAppDB) {
       GURL("https://foo.example"));
   info->title = u"Foo Title";
   info->install_url = GURL("https://foo.example/installer");
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::EXTERNAL_POLICY);
+  FinalizeJobOptions options(webapps::WebappInstallSource::EXTERNAL_POLICY);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
@@ -563,13 +555,12 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
 
   const IsolatedWebAppStorageLocation location(
       IwaStorageUnownedBundle{base::FilePath(FILE_PATH_LITERAL("p"))});
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::EXTERNAL_POLICY);
+  FinalizeJobOptions options(webapps::WebappInstallSource::EXTERNAL_POLICY);
 
   auto integrity_block_data =
       IsolatedWebAppIntegrityBlockData(test::CreateSignatures());
-  options.iwa_options = WebAppInstallFinalizer::FinalizeOptions::IwaOptions(
-      location, integrity_block_data);
+  options.iwa_options =
+      FinalizeJobOptions::IwaOptions(location, integrity_block_data);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
@@ -606,8 +597,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {
   GURL start_url("https://foo.example");
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   auto scope_extension =
       ScopeExtensionInfo::CreateForScope(start_url,
@@ -636,8 +626,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsDenied) {
   GURL start_url("https://foo.example");
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   auto scope_extension =
       ScopeExtensionInfo::CreateForScope(start_url,
@@ -663,8 +652,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateMigrationSourcesApproved) {
   GURL start_url("https://foo.example");
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   proto::WebAppMigrationSource source;
   source.set_manifest_id("https://migration.foo.example/");
@@ -700,8 +688,7 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   GURL start_url("https://foo.example");
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
   options.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
   options.add_to_applications_menu = false;
   options.add_to_desktop = false;
@@ -736,8 +723,7 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   GURL start_url("https://foo.example");
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
   options.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
 
   info->migration_sources = {};
@@ -752,8 +738,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, MigrationSourceChangeSchedulesSync) {
   GURL start_url("https://foo.example");
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
   static_cast<FakeWebAppOriginAssociationManager&>(
       provider().origin_association_manager())
       .SetMigrationSourcesData(
@@ -804,8 +789,7 @@ TEST_P(WebAppInstallFinalizerUnitTestQueriesAndFragments,
   GURL expected_sanitized_start_url(expected_sanitized_start_url_str);
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   auto scope_extension =
       ScopeExtensionInfo::CreateForScope(start_url,

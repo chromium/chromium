@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -39,9 +40,8 @@ namespace web_app {
 
 namespace {
 
-WebAppInstallFinalizer::FinalizeOptions GetFinalizerOptionForSyncInstall() {
-  WebAppInstallFinalizer::FinalizeOptions finalize_options(
-      webapps::WebappInstallSource::SYNC);
+FinalizeJobOptions GetFinalizerOptionForSyncInstall() {
+  FinalizeJobOptions finalize_options(webapps::WebappInstallSource::SYNC);
   finalize_options.overwrite_existing_manifest_fields = true;
   // If app is not locally installed then no OS integration like OS shortcuts.
   finalize_options.install_state =

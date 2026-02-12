@@ -31,6 +31,7 @@
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -842,9 +843,8 @@ void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
     web_app_info.install_url = install_params.install_url;
 }
 
-void ApplyParamsToFinalizeOptions(
-    const WebAppInstallParams& install_params,
-    WebAppInstallFinalizer::FinalizeOptions& options) {
+void ApplyParamsToFinalizeOptions(const WebAppInstallParams& install_params,
+                                  FinalizeJobOptions& options) {
   if (IsChromeOsDataMandatory()) {
     options.chromeos_data.emplace();
     options.chromeos_data->show_in_launcher =

@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -1228,7 +1229,7 @@ class WebAppSyncBridgeTest_UserDisplayModeSplit
       // UDM mitigations mess with the installed local state, disable them so
       // the state matches the intention of the test.
       : disable_user_display_mode_sync_mitigations_for_testing_(
-            &WebAppInstallFinalizer::
+            &FinalizeInstallJob::
                 DisableUserDisplayModeSyncMitigationsForTesting(),
             true)
 #endif  // BUILDFLAG(IS_CHROMEOS)
