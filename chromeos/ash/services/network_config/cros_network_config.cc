@@ -2085,8 +2085,8 @@ std::optional<base::DictValue> GetOncFromConfigProperties(
       type_dict.Set(::onc::vpn::kWireGuard, std::move(wireguard_dict));
     }
 
-    if (vpn.type.has_value()) {
-      SetString(::onc::vpn::kType, MojoVpnTypeToOnc(vpn.type.value()),
+    if (vpn.type) {
+      SetString(::onc::vpn::kType, MojoVpnTypeToOnc(vpn.type->value),
                 &type_dict);
     }
   } else if (properties->type_config->is_wifi()) {

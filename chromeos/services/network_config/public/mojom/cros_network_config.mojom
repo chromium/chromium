@@ -885,6 +885,13 @@ struct PriorityConfig {
   int32 value;
 };
 
+// Wrapper to allow optional VpnType configuration. Note: only configuration of
+// internal VPN types (kOpenVPN and kL2TPIPsec) is supported.
+// TODO(crbug.com/40489779): Remove wrapper once optional enums are supported.
+struct VpnTypeConfig {
+  VpnType value;
+};
+
 struct ProxyLocation {
   string host;
   int32 port;
@@ -1008,6 +1015,7 @@ struct CellularConfigProperties {
 
 struct EthernetConfigProperties {
   // |authentication| will default to "none" if not provided for new configs.
+  // TODO(crbug.com/40489779): Use AuthenticationType here.
   string? authentication;
   EAPConfigProperties? eap;
 };
@@ -1018,9 +1026,8 @@ struct VPNConfigProperties {
   L2TPConfigProperties? l2tp;
   OpenVPNConfigProperties? open_vpn;
   WireGuardConfigProperties? wireguard;
-  // |type| is required for new configs, optional otherwise. Note: Only
-  // configuration of internal VPN types (kOpenVPN and kL2TPIPsec) is supported.
-  VpnType? type;
+  // |type| is required for new configs, optional otherwise.
+  VpnTypeConfig? type;
 };
 
 struct WiFiConfigProperties {
