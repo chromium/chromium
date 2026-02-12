@@ -25,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.HeadlessBrowserControlsStateProvider;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxTabUtils;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionService;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
@@ -179,6 +180,7 @@ public class TabItemPickerCoordinator {
         pageContentExtractionService.getAllCachedTabIds(this::onCachedTabIdsRetrieved);
     }
 
+    @VisibleForTesting
     void onCachedTabIdsRetrieved(long[] cachedTabIds) {
         if (mTabModelSelector == null) return;
 
@@ -199,20 +201,27 @@ public class TabItemPickerCoordinator {
 
         int activeTabCount = 0;
         int cachedTabCount = 0;
+        int backgroundTabCount = 0;
+        boolean allowBackgroundTabContextCapture =
+                ChromeFeatureList.sOnDemandBackgroundTabContextCapture.isEnabled();
         for (Tab tab : allTabs) {
             // TODO(crbug.com/458152854): Allow reloading of tabs.
             boolean isActive = FuseboxTabUtils.isTabActive(tab);
             boolean isCached = mCachedTabIdsSet.contains(tab.getId());
-            if (FuseboxTabUtils.isTabEligibleForAttachment(tab) && (isActive || isCached)) {
+            if (FuseboxTabUtils.isTabEligibleForAttachment(tab)
+                    && (allowBackgroundTabContextCapture || isActive || isCached)) {
                 tabsToShow.add(tab);
                 if (isActive) activeTabCount++;
                 if (isCached) cachedTabCount++;
+                if (!isActive && !isCached) backgroundTabCount++;
             }
         }
         RecordHistogram.recordCount100Histogram(
                 "Android.TabItemPicker.ActiveTabs.Count", activeTabCount);
         RecordHistogram.recordCount100Histogram(
                 "Android.TabItemPicker.CachedTabs.Count", cachedTabCount);
+        RecordHistogram.recordCount100Histogram(
+                "Android.TabItemPicker.BackgroundTabs.Count", backgroundTabCount);
         showEditorUi(tabsToShow);
     }
 

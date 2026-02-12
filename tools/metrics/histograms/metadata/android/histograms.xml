@@ -5879,6 +5879,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabItemPicker.BackgroundTabs.Count" units="count"
+    expires_after="2026-07-19">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Records the number of background tabs that are shown for the tab picker.
+    Recorded when the Tab Picker UI is preparing its list of displayable tabs.
+    These tabs will be lazily loaded after being picked.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabItemPicker.CachedTabs.Count" units="count"
     expires_after="2026-07-19">
   <owner>bbetini@google.com</owner>

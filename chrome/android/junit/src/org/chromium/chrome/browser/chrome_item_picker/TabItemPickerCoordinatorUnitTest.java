@@ -41,8 +41,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionService;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -341,5 +343,51 @@ public class TabItemPickerCoordinatorUnitTest {
         // Cached)
         watcher.assertExpected();
         verify(mTabListEditorController).show(mTabListCaptor.capture(), any(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE)
+    public void testOnCachedTabIdsRetrieved_BackgroundTabsIncludedWithFlag() {
+        when(TabWindowManagerSingleton.getInstance()
+                        .requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
+                .thenReturn(mTabModelSelector);
+        mProfileSupplierImpl.set(mProfile);
+
+        // Active tab (should be included)
+        Tab tabActive = mockTabActiveState(1, true);
+        // Cached tab (should be included)
+        Tab tabCached = mockTabActiveState(2, false);
+        // Background tab (neither active nor cached, should be included due to flag)
+        Tab tabBackground = mockTabActiveState(3, false);
+
+        List<Tab> allTabs = Arrays.asList(tabActive, tabCached, tabBackground);
+        when(mRegularTabModel.getCount()).thenReturn(allTabs.size());
+        when(mRegularTabModel.getTabAt(0)).thenReturn(tabActive);
+        when(mRegularTabModel.getTabAt(1)).thenReturn(tabCached);
+        when(mRegularTabModel.getTabAt(2)).thenReturn(tabBackground);
+        when(mRegularTabModel.iterator()).thenReturn(allTabs.iterator());
+        when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
+
+        long[] cachedIdsInput = new long[] {2L};
+
+        doAnswer(
+                        invocation -> {
+                            Callback<long[]> callback = invocation.getArgument(0);
+                            callback.onResult(cachedIdsInput);
+                            return null;
+                        })
+                .when(mPageContentExtractionService)
+                .getAllCachedTabIds(any());
+
+        mItemPickerCoordinator.showTabItemPicker(mCallback);
+        shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mTabListEditorController).show(mTabListCaptor.capture(), any(), any());
+        List<Tab> shownTabs = mTabListCaptor.getValue();
+
+        assertEquals("Should show 3 tabs", 3, shownTabs.size());
+        assertTrue("Should contain active tab", shownTabs.contains(tabActive));
+        assertTrue("Should contain cached tab", shownTabs.contains(tabCached));
+        assertTrue("Should contain background tab", shownTabs.contains(tabBackground));
     }
 }
