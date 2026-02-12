@@ -4,8 +4,12 @@
 
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 
+#include "base/command_line.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/renderer/platform/graphics/scrollbar_theme_settings.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "ui/native_theme/overlay_scrollbar_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_android.h"
@@ -61,6 +65,17 @@ void WebThemeEngineHelper::DidUpdateRendererPreferences(
 
 const WebThemeEngine::ScrollbarStyle&
 WebThemeEngineHelper::AndroidScrollbarStyle() {
+  if (ScrollbarThemeSettings::DesktopAndroidScrollbarsEnabled()) {
+    DEFINE_STATIC_LOCAL(
+        WebThemeEngine::ScrollbarStyle, desktop_style,
+        ({/*thumb_thickness=*/8,
+          /*scrollbar_margin=*/0,
+          /*color=*/{0.5f, 0.5f, 0.5f, 0.5f},
+          /*fade_out_delay=*/ui::GetOverlayScrollbarFadeDelay(),
+          /*fade_out_duration=*/ui::GetOverlayScrollbarFadeDuration(),
+          /*idle_thickness_scale=*/ui::kOverlayScrollbarIdleThicknessScale}));
+    return desktop_style;
+  }
   DEFINE_STATIC_LOCAL(WebThemeEngine::ScrollbarStyle, style,
                       ({/*thumb_thickness=*/4,
                         /*scrollbar_margin=*/0,

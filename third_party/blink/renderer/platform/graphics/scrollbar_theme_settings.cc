@@ -9,6 +9,7 @@ namespace blink {
 static bool g_mock_scrollbars_enabled = false;
 static bool g_overlay_scrollbars_enabled = false;
 static bool g_fluent_scrollbars_enabled = false;
+static bool g_desktop_android_scrollbars_enabled = false;
 
 void ScrollbarThemeSettings::SetMockScrollbarsEnabled(bool flag) {
   g_mock_scrollbars_enabled = flag;
@@ -32,6 +33,14 @@ void ScrollbarThemeSettings::SetFluentScrollbarsEnabled(bool flag) {
 
 bool ScrollbarThemeSettings::FluentScrollbarsEnabled() {
   return g_fluent_scrollbars_enabled;
+}
+
+void ScrollbarThemeSettings::SetDesktopAndroidScrollbarsEnabled(bool flag) {
+  g_desktop_android_scrollbars_enabled = flag;
+}
+
+bool ScrollbarThemeSettings::DesktopAndroidScrollbarsEnabled() {
+  return g_desktop_android_scrollbars_enabled;
 }
 
 }  // namespace blink

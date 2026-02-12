@@ -280,6 +280,9 @@ class CORE_EXPORT ScrollbarTheme {
   static bool FluentScrollbarsEnabled() {
     return ScrollbarThemeSettings::FluentScrollbarsEnabled();
   }
+  static bool DesktopAndroidScrollbarsEnabled() {
+    return ScrollbarThemeSettings::DesktopAndroidScrollbarsEnabled();
+  }
 
  private:
   // Must be implemented to return the correct theme subclass.

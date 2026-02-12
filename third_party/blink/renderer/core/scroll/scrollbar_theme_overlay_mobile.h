@@ -19,7 +19,7 @@ class CORE_EXPORT ScrollbarThemeOverlayMobile : public ScrollbarThemeOverlay {
   void PaintThumb(GraphicsContext&,
                   const Scrollbar&,
                   const gfx::Rect&) override;
-  bool AllowsHitTest() const override { return false; }
+  bool AllowsHitTest() const override;
   bool IsSolidColor() const override { return true; }
   SkColor4f ThumbColor(const Scrollbar& scrollbar) const override;
   bool UsesNinePatchThumbResource() const override { return false; }
@@ -29,9 +29,7 @@ class CORE_EXPORT ScrollbarThemeOverlayMobile : public ScrollbarThemeOverlay {
  protected:
   ScrollbarThemeOverlayMobile(int thumb_thickness, int scrollbar_margin);
 
-  ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&) const override {
-    NOTREACHED();
-  }
+  ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&) const override;
 
  private:
   Color default_color_;

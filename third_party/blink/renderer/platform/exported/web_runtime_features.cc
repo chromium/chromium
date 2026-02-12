@@ -64,6 +64,10 @@ void WebRuntimeFeatures::EnableFluentScrollbars(bool enable) {
   ScrollbarThemeSettings::SetFluentScrollbarsEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableDesktopAndroidScrollbars(bool enable) {
+  ScrollbarThemeSettings::SetDesktopAndroidScrollbarsEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableLocalNetworkAccessWebRTC(bool enable) {
   RuntimeEnabledFeatures::SetLocalNetworkAccessWebRTCEnabled(enable);
 }

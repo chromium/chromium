@@ -64,9 +64,20 @@ void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
   context.FillRect(rect, color, auto_dark_mode);
 }
 
+bool ScrollbarThemeOverlayMobile::AllowsHitTest() const {
+  return DesktopAndroidScrollbarsEnabled();
+}
+
 SkColor4f ScrollbarThemeOverlayMobile::ThumbColor(
     const Scrollbar& scrollbar) const {
   return scrollbar.ScrollbarThumbColor().value_or(default_color_).toSkColor4f();
+}
+
+ScrollbarPart ScrollbarThemeOverlayMobile::HitTest(
+    const Scrollbar& scrollbar,
+    const gfx::Point& position) const {
+  DCHECK(AllowsHitTest());
+  return ScrollbarThemeOverlay::HitTest(scrollbar, position);
 }
 
 }  // namespace blink

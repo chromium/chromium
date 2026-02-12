@@ -32,6 +32,7 @@ class PLATFORM_EXPORT ScrollbarThemeSettings {
   friend class ScrollbarThemeMacTest;
   friend class WebRuntimeFeatures;
   friend class WebThemeEngineDefault;
+  friend class WebThemeEngineHelper;
 
   static void SetMockScrollbarsEnabled(bool);
   static bool MockScrollbarsEnabled();
@@ -46,6 +47,9 @@ class PLATFORM_EXPORT ScrollbarThemeSettings {
 
   static void SetFluentScrollbarsEnabled(bool);
   static bool FluentScrollbarsEnabled();
+
+  static void SetDesktopAndroidScrollbarsEnabled(bool);
+  static bool DesktopAndroidScrollbarsEnabled();
 };
 
 }  // namespace blink
