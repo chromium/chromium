@@ -122,6 +122,12 @@ bool ShouldAppendBnplSuggestion(const AutofillClient& client,
 // 3. The URL being visited is within the BNPL issuer allowlist.
 bool IsEligibleForBnpl(const AutofillClient& client);
 
+// Determines if Pay Later tab should open initially with the loading spinner to
+// indicate that amount extraction is in progress. Returns true if the AI terms
+// have been seen by the user before.
+bool ShouldStartPayLaterWithLoadingSpinner(
+    const PaymentsDataManager& payments_data_manager);
+
 }  // namespace payments
 
 }  // namespace autofill

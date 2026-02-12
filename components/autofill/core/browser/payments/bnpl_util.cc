@@ -357,4 +357,10 @@ bool IsEligibleForBnpl(const AutofillClient& client) {
       });
 }
 
+bool ShouldStartPayLaterWithLoadingSpinner(
+    const PaymentsDataManager& payments_data_manager) {
+  return payments_data_manager
+      .IsAutofillAmountExtractionAiTermsSeenPrefEnabled();
+}
+
 }  // namespace autofill::payments

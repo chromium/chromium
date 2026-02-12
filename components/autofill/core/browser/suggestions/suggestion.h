@@ -559,6 +559,11 @@ struct Suggestion {
   // build the suggestion's `main_text`.
   std::optional<FieldType> field_by_field_filling_type_used;
 
+  // Used by `SuggestionType::kLoadingThrobber` to determine the size of the
+  // loading suggestion. It represents the number of suggestions (assumed to be
+  // two-line suggestions) expected to load to provide a smoother UI transition.
+  std::optional<int> expected_number_of_suggestions;
+
   // How the suggestion should be handled by the filtration logic, see the enum
   // values doc for details.
   // Now used for filtering manually triggered password suggestions only and

@@ -251,6 +251,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kLoadingThrobber:
       return false;
   }
 }
@@ -671,6 +672,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kLoadingThrobber:
       NOTREACHED();  // Should be handled elsewhere.
   }
 }
@@ -880,6 +882,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kLoadingThrobber:
       NOTREACHED();  // Should be handled elsewhere.
   }
   // Note that some suggestion types return early.
@@ -988,6 +991,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kLoyaltyCardEntry:
     case SuggestionType::kOneTimePasswordEntry:
+    case SuggestionType::kLoadingThrobber:
       return false;
   }
 }

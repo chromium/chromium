@@ -55,6 +55,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -1550,6 +1551,9 @@ class PaymentsSuggestionGeneratorBnplTest
          features::kAutofillEnableBuyNowPayLaterSyncing},
         /*disabled_features=*/{
             features::kAutofillEnableAiBasedAmountExtraction});
+
+    autofill_client().GetPrefs()->SetBoolean(
+        prefs::kAutofillAmountExtractionAiTermsSeen, false);
   }
 
  protected:
@@ -2269,7 +2273,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 
 TEST_F(
     PaymentsSuggestionGeneratorBnplTest,
-    GenerateCreditCardOrCvcFieldSuggestionsSync_PayLaterTabsEnabled_MultipleIssuers) {
+    GenerateCreditCardOrCvcFieldSuggestionsSync_PayLaterTabsEnabled_AiTermsNotSeen_MultipleIssuers) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnablePayNowPayLaterTabs,
@@ -2307,6 +2311,62 @@ TEST_F(
   EXPECT_EQ(suggestions[3].type, SuggestionType::kBnplEntry);
   EXPECT_THAT(suggestions,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
+}
+
+TEST_F(
+    PaymentsSuggestionGeneratorBnplTest,
+    GenerateCreditCardOrCvcFieldSuggestionsSync_PayLaterTabsEnabled_AiTermsSeen_LoadingThrobber) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnablePayNowPayLaterTabs,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableBuyNowPayLaterForKlarna,
+                            features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableAiBasedAmountExtraction},
+      /*disabled_features=*/{});
+
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAmountExtractionAiTermsSeen, true);
+
+  payments_data().AddCreditCard(test::GetCreditCard());
+  payments_data().AddBnplIssuer(
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm));
+  payments_data().AddBnplIssuer(
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplKlarna));
+  payments_data().AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      {}, CREDIT_CARD_NUMBER,
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/true);
+
+  auto loading_throbber_finder = std::find_if(
+      suggestions.begin(), suggestions.end(), [](const Suggestion& s) {
+        return s.type == SuggestionType::kLoadingThrobber;
+      });
+
+  ASSERT_NE(loading_throbber_finder, suggestions.end())
+      << "Expected a Loading Throbber suggestion to be generated.";
+
+  EXPECT_EQ(loading_throbber_finder->acceptability,
+            Suggestion::Acceptability::kUnacceptable);
+
+  // 3 BNPL issuers were added.
+  EXPECT_EQ(loading_throbber_finder->expected_number_of_suggestions, 3u);
+
+  bool has_bnpl_entry = std::any_of(
+      suggestions.begin(), suggestions.end(),
+      [](const Suggestion& s) { return s.type == SuggestionType::kBnplEntry; });
+  EXPECT_FALSE(has_bnpl_entry);
 }
 
 TEST_F(

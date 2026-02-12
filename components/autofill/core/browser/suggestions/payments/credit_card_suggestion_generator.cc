@@ -172,6 +172,8 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
       cards_to_suggest,
       [](const CreditCard& card) { return CreditCard::IsLocalCard(&card); });
 
+  // TODO(crbug.com/477689220) Handle showing disabled issuers when
+  // `is_card_number_field_empty` is `false`, but BNPL is otherwise eligible.
   const bool should_show_bnpl_suggestions =
       payments::ShouldAppendBnplSuggestion(client, is_card_number_field_empty,
                                            trigger_field_type);
@@ -179,11 +181,24 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
   if (should_show_bnpl_suggestions &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs)) {
-    for (const payments::BnplIssuerContext& context :
-         payments::GetSortedBnplIssuerContext(
-             client, /*checkout_amount=*/std::nullopt)) {
-      suggestions.push_back(
-          CreateBnplSuggestion(context, client.GetAppLocale()));
+    const PaymentsDataManager& payments_data_manager =
+        client.GetPersonalDataManager().payments_data_manager();
+    if (payments::ShouldStartPayLaterWithLoadingSpinner(
+            payments_data_manager)) {
+      Suggestion loading_suggestion =
+          Suggestion(SuggestionType::kLoadingThrobber);
+      loading_suggestion.acceptability =
+          Suggestion::Acceptability::kUnacceptable;
+      loading_suggestion.expected_number_of_suggestions =
+          payments_data_manager.GetBnplIssuers().size();
+      suggestions.push_back(std::move(loading_suggestion));
+    } else {
+      for (const payments::BnplIssuerContext& context :
+           payments::GetSortedBnplIssuerContext(
+               client, /*checkout_amount=*/std::nullopt)) {
+        suggestions.push_back(
+            CreateBnplSuggestion(context, client.GetAppLocale()));
+      }
     }
   }
 

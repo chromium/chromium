@@ -1091,6 +1091,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kLoyaltyCardEntry:
     case SuggestionType::kOneTimePasswordEntry:
+    case SuggestionType::kLoadingThrobber:
       return false;
   }
 }

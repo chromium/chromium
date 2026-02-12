@@ -173,8 +173,11 @@ enum class SuggestionType {
   // state. On click the user will be directed to sign in.
   kPendingStateSignin = 65,
 
-  // Next ID: 77
-  kMaxValue = kManageAutofillAiTravel
+  // Throbber suggestion to indicate loading state.
+  kLoadingThrobber = 77,
+
+  // Next ID: 78
+  kMaxValue = kLoadingThrobber
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

@@ -97,6 +97,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kBnplEntry:
     case SuggestionType::kOneTimePasswordEntry:
+    case SuggestionType::kLoadingThrobber:
       return false;
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
       // The hybrid item is reintroduced as a footer.

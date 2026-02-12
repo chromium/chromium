@@ -355,6 +355,7 @@ bool IsPaymentMethodSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kLoadingThrobber:
       return false;
   }
 }
