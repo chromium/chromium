@@ -384,6 +384,14 @@ public class HubToolbarView extends LinearLayout {
                                     HubColors.getPaneSwitcherTabItemHoverColor(
                                             context, colorScheme),
                             color -> updateTabItemBackgroundColor(context, color)));
+
+            mixer.registerBlend(
+                    new SingleHubViewColorBlend(
+                            PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                            colorScheme ->
+                                    HubColors.getPaneSwitcherTabItemFocusColor(
+                                            context, colorScheme),
+                            color -> updateTabItemFocusColor(context, color)));
         }
     }
 
@@ -431,6 +439,20 @@ public class HubToolbarView extends LinearLayout {
             if (tabView != null) {
                 GradientDrawable background = (GradientDrawable) tabView.getBackground();
                 background.setColor(colorStateList);
+            }
+        }
+    }
+
+    private void updateTabItemFocusColor(Context context, @ColorInt int color) {
+        ColorStateList colorStateList = HubColors.generateFocusStrokeColorStateList(color);
+        int strokeWidth =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.hub_pane_switcher_tab_stroke_width);
+        for (int i = 0; i < mPaneSwitcher.getTabCount(); i++) {
+            View tabView = getButtonView(i);
+            if (tabView != null) {
+                GradientDrawable background = (GradientDrawable) tabView.getBackground();
+                background.setStroke(strokeWidth, colorStateList);
             }
         }
     }

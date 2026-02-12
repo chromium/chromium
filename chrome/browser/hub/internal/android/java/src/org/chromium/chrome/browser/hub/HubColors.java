@@ -20,6 +20,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.ValueUtils;
@@ -35,6 +36,8 @@ public final class HubColors {
             new int[][] {new int[] {-android.R.attr.state_enabled}, new int[] {}};
     private static final int[][] HOVERED_STATE =
             new int[][] {new int[] {android.R.attr.state_hovered}};
+    private static final int[][] FOCUSED_STATE =
+            new int[][] {new int[] {android.R.attr.state_focused}};
 
     private HubColors() {}
 
@@ -220,6 +223,12 @@ public final class HubColors {
         }
     }
 
+    /** Returns the hub pane switcher tab item focus color as per the given color scheme. */
+    public static @ColorInt int getPaneSwitcherTabItemFocusColor(
+            Context context, @HubColorScheme int colorScheme) {
+        return IncognitoColors.getColorPrimary(context, colorScheme == HubColorScheme.INCOGNITO);
+    }
+
     /**
      * Adapts the given color to a color state list that supports enabled and disabled states.
      *
@@ -273,26 +282,35 @@ public final class HubColors {
      * Generates a {@link ColorStateList} with a specific color applied when the view is in a
      * hovered state.
      */
-    public static ColorStateList generateHoveredStateColorStateList(Context context, int color) {
+    public static ColorStateList generateHoveredStateColorStateList(
+            Context context, @ColorInt int color) {
         @DimenRes int hoveredAlpha = R.dimen.hub_pane_switcher_tab_item_hover_alpha;
         int hoveredColor = getColorWithAlphaApplied(context, color, hoveredAlpha);
         return new ColorStateList(HOVERED_STATE, new int[] {hoveredColor});
     }
 
+    /**
+     * Generates a {@link ColorStateList} with a specific color applied when the view is in a
+     * focused state.
+     */
+    public static ColorStateList generateFocusStrokeColorStateList(@ColorInt int color) {
+        return new ColorStateList(FOCUSED_STATE, new int[] {color});
+    }
+
     private static ColorStateList generateDisabledAndNormalStatesColorStateList(
-            Context context, int color, int disabledAlpha) {
+            Context context, @ColorInt int color, int disabledAlpha) {
         int[] colors = new int[] {getColorWithAlphaApplied(context, color, disabledAlpha), color};
         return new ColorStateList(DISABLED_AND_NORMAL_STATES, colors);
     }
 
     private static ColorStateList generateDisabledAndNormalStatesColorStateList(
-            int color, int disabledColor) {
+            @ColorInt int color, @ColorInt int disabledColor) {
         int[] colors = new int[] {disabledColor, color};
         return new ColorStateList(DISABLED_AND_NORMAL_STATES, colors);
     }
 
     private static @ColorInt int getColorWithAlphaApplied(
-            Context context, int color, @DimenRes int alphaRes) {
+            Context context, @ColorInt int color, @DimenRes int alphaRes) {
         Resources resources = context.getResources();
         float alpha = ValueUtils.getFloat(resources, alphaRes);
         int alphaScaled = Math.round(alpha * 255);
