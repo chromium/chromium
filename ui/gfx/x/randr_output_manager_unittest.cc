@@ -1,3 +1,7 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #include "ui/gfx/x/randr_output_manager.h"
 
 #include <optional>
@@ -52,11 +56,15 @@ TEST(RandrOutputManagerTest, CalculateDisplayLayoutDiff) {
        {234, gfx::Rect(3450, 1230, 2340, 2000), gfx::Vector2d(100, 96)},
        // Unchanged.
        {345, gfx::Rect(0, 1230, 3450, 3450), gfx::Vector2d(96, 96)},
+       // Unknown.
+       {456, gfx::Rect(5670, 6780, 7890, 7890), gfx::Vector2d(192, 192)},
        // New.
        {{}, gfx::Rect(3450, 3450, 4560, 4560), gfx::Vector2d(192, 192)}});
   auto diff = CalculateDisplayLayoutDiff(current_displays, new_layout);
 
   x11::RandRMonitorLayout expected_new_displays;
+  expected_new_displays.configs.push_back(RandRMonitorConfig(
+      456, gfx::Rect(5670, 6780, 7890, 7890), gfx::Vector2d(192, 192)));
   expected_new_displays.configs.push_back(RandRMonitorConfig(
       {}, gfx::Rect(3450, 3450, 4560, 4560), gfx::Vector2d(192, 192)));
   EXPECT_EQ(diff.new_displays, expected_new_displays);

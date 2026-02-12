@@ -219,7 +219,9 @@ DisplayLayoutDiff CalculateDisplayLayoutDiff(
         current_displays, new_config.id(),
         [](const auto& display) { return display.config.id(); });
     if (current_display_it == current_displays.end()) {
-      LOG(ERROR) << "Ignoring unknown screen_id " << *new_config.id();
+      LOG(WARNING) << "Treating unknown screen_id " << *new_config.id()
+                   << " as a new display.";
+      diff.new_displays.configs.push_back(new_config);
       continue;
     }
     current_display_found[current_display_it - current_displays.begin()] = true;

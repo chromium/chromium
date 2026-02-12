@@ -117,7 +117,9 @@ class COMPONENT_EXPORT(X11) RandROutputManager final {
 
   // Obtains the current RandR layout.
   RandRMonitorLayout GetLayout();
-  // Adjusts outputs to match the specified layout.
+  // Adjusts outputs to match the specified layout. Display ids that don't match
+  // any existing RandR outputs are considered new displays; new displays will
+  // be created for them, but will not necessarily have the specified ID.
   void SetLayout(const RandRMonitorLayout& layout);
 
   // Removes the existing mode from the output and replaces it with the new

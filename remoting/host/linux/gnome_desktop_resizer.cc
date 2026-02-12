@@ -282,7 +282,8 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
     // Relayout() call in DoApplyPreferredMonitorsConfig() will fix it.
     webrtc::DesktopVector position{track.position_x(), track.position_y()};
 
-    if (!track.has_screen_id()) {
+    if (!track.has_screen_id() ||
+        !active_screen_ids.contains(track.screen_id())) {
       stream_manager_->AddVirtualStream(
           screen_resolution,
           base::BindOnce(&GnomeDesktopResizer::OnAddStreamResult,
