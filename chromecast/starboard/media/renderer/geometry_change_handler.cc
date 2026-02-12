@@ -5,6 +5,7 @@
 #include "chromecast/starboard/media/renderer/geometry_change_handler.h"
 
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "chromecast/media/service/video_geometry_setter_service.h"
 #include "ui/display/screen.h"
