@@ -203,6 +203,10 @@ cr-most-visited {
   animation: 300ms ease-in-out fade-in-animation;
 }
 
+:host([reduced-motion-preferred_]) #modules {
+  animation: none;
+}
+
 @keyframes fade-in-animation {
   0% {
     opacity: 0;

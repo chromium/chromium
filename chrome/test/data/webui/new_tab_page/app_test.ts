@@ -2780,4 +2780,34 @@ suite('NewTabPageAppReducedMotionTest', () => {
           assertNotStyle(scrim, 'transition-property', 'none');
         });
   });
+
+  suite('ReducedMotionModules', () => {
+    setup(() => {
+      loadTimeData.overrideValues({
+        modulesEnabled: true,
+      });
+      createSetup();
+    });
+
+    [false, true].forEach(preferred => {
+      test(
+          `modules animation is ${
+              preferred ? '' : 'not '}none when reduced motion is ${
+              preferred ? '' : 'not '}preferred`,
+          async () => {
+            setReducedMotionPreference(preferred);
+            await createAndAppendApp();
+
+            const modules = app.shadowRoot.querySelector('ntp-modules')!;
+            modules.dispatchEvent(
+                new CustomEvent('modules-loaded', {detail: 1}));
+            await microtasksFinished();
+
+            const assertion_fn = preferred ? assertStyle : assertNotStyle;
+            assertion_fn(
+                app.shadowRoot.querySelector('#modules')!, 'animation-name',
+                'none');
+          });
+    });
+  });
 });
