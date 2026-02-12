@@ -81,7 +81,10 @@ class NET_EXPORT HostResolver {
 
     std::string ToString() const;
 
+    // Returns the requested type. HasScheme() must return true to use the first
+    // method, second to use the second.
     const url::SchemeHostPort& AsSchemeHostPort() const;
+    const HostPortPair& AsHostPortPair() const;
 
     bool operator==(const Host& other) const { return host_ == other.host_; }
 

@@ -377,6 +377,14 @@ class MockHostResolverBase : public HostResolver {
     return last_request_network_anonymization_key_;
   }
 
+  // Last observed Host, if any. Unlike `request_full_host(last_id())`, can be
+  // used to get information about resolutions that completed synchronously.
+  // Updated on call to either CreateRequest() or
+  // CreateServiceEndpointRequest().
+  const std::optional<Host>& last_observed_host() const {
+    return last_observed_host_;
+  }
+
   // Returns the SecureDnsPolicy of the last call to Resolve() (or
   // std::nullopt if Resolve() hasn't been called yet).
   SecureDnsPolicy last_secure_dns_policy() const {
@@ -449,6 +457,9 @@ class MockHostResolverBase : public HostResolver {
   bool ondemand_mode_ = false;
   RuleResolver rule_resolver_;
   std::unique_ptr<HostCache> cache_;
+
+  // Most recently resolved host, if any.
+  std::optional<Host> last_observed_host_;
 
   const int initial_cache_invalidation_num_;
   std::map<HostCache::Key, int> cache_invalidation_nums_;

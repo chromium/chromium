@@ -836,6 +836,7 @@ MockHostResolverBase::CreateRequest(
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     std::optional<ResolveHostParameters> optional_parameters) {
+  last_observed_host_ = Host(host);
   return std::make_unique<RequestImpl>(
       Host(std::move(host)), network_anonymization_key, optional_parameters,
       weak_ptr_factory_.GetWeakPtr());
@@ -847,6 +848,7 @@ MockHostResolverBase::CreateRequest(
     const NetworkAnonymizationKey& network_anonymization_key,
     const NetLogWithSource& source_net_log,
     const std::optional<ResolveHostParameters>& optional_parameters) {
+  last_observed_host_ = Host(host);
   return std::make_unique<RequestImpl>(Host(host), network_anonymization_key,
                                        optional_parameters,
                                        weak_ptr_factory_.GetWeakPtr());
@@ -858,6 +860,7 @@ MockHostResolverBase::CreateServiceEndpointRequest(
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     ResolveHostParameters parameters) {
+  last_observed_host_ = host;
   return std::make_unique<ServiceEndpointRequestImpl>(
       std::move(host), network_anonymization_key, parameters,
       weak_ptr_factory_.GetWeakPtr());

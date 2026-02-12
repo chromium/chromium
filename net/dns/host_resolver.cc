@@ -240,6 +240,12 @@ const url::SchemeHostPort& HostResolver::Host::AsSchemeHostPort() const {
   return *scheme_host_port;
 }
 
+const HostPortPair& HostResolver::Host::AsHostPortPair() const {
+  const HostPortPair* host_port_pair = std::get_if<HostPortPair>(&host_);
+  DCHECK(host_port_pair);
+  return *host_port_pair;
+}
+
 HostResolver::HttpsSvcbOptions::HttpsSvcbOptions() = default;
 
 HostResolver::HttpsSvcbOptions::HttpsSvcbOptions(
