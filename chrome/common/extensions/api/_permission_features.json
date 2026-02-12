@@ -854,12 +854,13 @@
     "extension_types": ["extension"],
     "platforms": ["linux", "mac", "win"],
     "allowlist" : [
-      "86D63D90308742AA65B8B29AE2D39FED2D6DC310",  // https://crbug.com/882461 SecureConnect
       "031E5E4A54C39E4F46E11CE643584E9187915908",  // https://crbug.com/882461 SecureConnect
       "349E89FE0296161007623C0B4096B617D7CECD54",  // https://crbug.com/882461 SecureConnect
       "18B761AA5B58FA89E596EB7996B4C92C86775C7F",  // https://crbug.com/882461 SecureConnect
       "2012C0122892D332325339998251D1CC3CAE396A",  // https://crbug.com/882461 SecureConnect
-      "31367E6C4D69B90D866289492A307C205AF8A32F" // b/361094242 Secure Enterprise Browser Extension
+      "86D63D90308742AA65B8B29AE2D39FED2D6DC310",  // Secure Enterprise Browser Extension (Dev)
+      "50B8ECD18A36937668D1FCA9CEEE668BC25C39CC", // Secure Enterprise Browser Extension (Canary)
+      "31367E6C4D69B90D866289492A307C205AF8A32F" // Secure Enterprise Browser Extension (Prod)
     ]
   },
   "imageWriterPrivate": {
