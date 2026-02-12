@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/autofill/android/entity_instance_with_labels.h"
 #include "chrome/browser/autofill/android/entity_type_android.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -72,10 +73,8 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
                                  const jni_zero::JavaRef<jobject>& jEntity);
 
   // Gets information about all entities to be displayed in the management
-  // service. For each entity, returns an instance of
-  // `EntityInstanceWithLabels.java`;
-  base::android::ScopedJavaLocalRef<jobjectArray> GetEntitiesWithLabels(
-      JNIEnv* env);
+  // service.
+  std::vector<EntityInstanceWithLabels> GetEntitiesWithLabels(JNIEnv* env);
 
   // Returns all types of entities that Autofill AI supports.
   std::vector<EntityTypeAndroid> GetWritableEntityTypes(JNIEnv* env);

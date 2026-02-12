@@ -110,6 +110,8 @@ static_library("autofill") {
       "android/entity_data_manager_android.h",
       "android/entity_instance_android.cc",
       "android/entity_instance_android.h",
+      "android/entity_instance_with_labels.cc",
+      "android/entity_instance_with_labels.h",
       "android/entity_metadata_android.cc",
       "android/entity_metadata_android.h",
       "android/entity_type_android.cc",

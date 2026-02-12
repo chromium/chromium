@@ -11,6 +11,7 @@
 #include "base/types/zip.h"
 #include "chrome/browser/autofill/account_setting_service_factory.h"
 #include "chrome/browser/autofill/android/entity_instance_android.h"
+#include "chrome/browser/autofill/android/entity_instance_with_labels.h"
 #include "chrome/browser/autofill/android/entity_type_android.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -30,7 +31,6 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/autofill/android/jni_headers/EntityDataManager_jni.h"
-#include "components/autofill/android/main_autofill_jni_headers/EntityInstanceWithLabels_jni.h"
 
 namespace autofill {
 
@@ -131,7 +131,7 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
           EntityInstance::EntityId(entity_android.guid))));
 }
 
-jni_zero::ScopedJavaLocalRef<jobjectArray>
+std::vector<EntityInstanceWithLabels>
 EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
   // Entity labels should be generated based on other entities of the same
   // type. This is because the disambiguation values of attributes are only
@@ -143,8 +143,8 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
     entities_per_type[entity.type()].push_back(&entity);
   }
 
-  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> j_entities;
-  j_entities.reserve(entities.size());
+  std::vector<EntityInstanceWithLabels> entities_with_labels;
+  entities_with_labels.reserve(entities.size());
   for (const auto& [type, entities_of_type] : entities_per_type) {
     std::vector<EntityLabel> labels =
         GetLabelsForEntities(entities_of_type,
@@ -156,13 +156,13 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
     CHECK_EQ(entities_of_type.size(), labels.size());
 
     for (const auto [entity, label] : base::zip(entities_of_type, labels)) {
-      j_entities.push_back(Java_EntityInstanceWithLabels_Constructor(
-          env, entity->guid().value(), entity->type().GetNameForI18n(),
+      entities_with_labels.emplace_back(
+          entity->guid().value(), entity->type().GetNameForI18n(),
           base::JoinString(label, kLabelSeparator),
-          entity->record_type() == EntityInstance::RecordType::kServerWallet));
+          entity->record_type() == EntityInstance::RecordType::kServerWallet);
     }
   }
-  return base::android::ToJavaArrayOfObjects(env, j_entities);
+  return entities_with_labels;
 }
 
 std::vector<EntityTypeAndroid> EntityDataManagerAndroid::GetWritableEntityTypes(

@@ -38,18 +38,22 @@ public class EntityInstanceWithLabels {
         mStoredInWallet = storedInWallet;
     }
 
-    public String getGuid() {
+    @CalledByNative
+    public @JniType("std::string") String getGuid() {
         return mGuid;
     }
 
-    public String getEntityInstanceLabel() {
+    @CalledByNative
+    public @JniType("std::u16string") String getEntityInstanceLabel() {
         return mEntityInstanceLabel;
     }
 
-    public String getEntityInstanceSubLabel() {
+    @CalledByNative
+    public @JniType("std::u16string") String getEntityInstanceSubLabel() {
         return mEntityInstanceSubLabel;
     }
 
+    @CalledByNative
     public boolean isStoredInWallet() {
         return mStoredInWallet;
     }

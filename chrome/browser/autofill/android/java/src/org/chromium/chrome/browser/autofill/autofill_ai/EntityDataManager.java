@@ -70,8 +70,7 @@ public class EntityDataManager implements Destroyable {
      */
     public List<EntityInstanceWithLabels> getEntitiesWithLabels() {
         ThreadUtils.assertOnUiThread();
-        return java.util.Arrays.asList(
-                EntityDataManagerJni.get().getEntitiesWithLabels(mNativeEntityDataManagerAndroid));
+        return EntityDataManagerJni.get().getEntitiesWithLabels(mNativeEntityDataManagerAndroid);
     }
 
     public List<EntityType> getWritableEntityTypes() {
@@ -131,7 +130,8 @@ public class EntityDataManager implements Destroyable {
 
         void addOrUpdateEntityInstance(long nativeEntityDataManagerAndroid, EntityInstance entity);
 
-        EntityInstanceWithLabels[] getEntitiesWithLabels(long nativeEntityDataManagerAndroid);
+        @JniType("std::vector<EntityInstanceWithLabels>")
+        List<EntityInstanceWithLabels> getEntitiesWithLabels(long nativeEntityDataManagerAndroid);
 
         @JniType("std::vector<autofill::EntityTypeAndroid>")
         List<EntityType> getWritableEntityTypes(long nativeEntityDataManagerAndroid);
