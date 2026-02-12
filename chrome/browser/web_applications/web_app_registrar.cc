@@ -44,6 +44,7 @@
 #include "chrome/browser/web_applications/url_pattern_with_regex_matcher.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -1029,62 +1030,44 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return false;
   }
 
-  if (filter.management_requirement) {
-    auto current_sources = GetAppById(app_id)->GetSources();
-    switch (filter.management_requirement->type) {
-      case WebAppFilter::ManagementRequirement::Type::kHasAny:
-        return current_sources.HasAny(filter.management_requirement->sources);
-      case WebAppFilter::ManagementRequirement::Type::kHasAll:
-        return current_sources.HasAll(filter.management_requirement->sources);
-    }
-  }
-
-  if (filter.install_state_requirement) {
-    return filter.install_state_requirement->Has(install_state.value());
-  }
-
-  // If the `DisplayMode` of a web app is undefined for whatever reason, it
-  // should be launching in a browser tab.
-  DisplayMode display_mode = GetAppEffectiveDisplayMode(app_id);
-  bool opens_in_browser_tab = display_mode == DisplayMode::kBrowser ||
-                              display_mode == DisplayMode::kUndefined;
-  if (filter.opens_in_dedicated_window) {
-    return !opens_in_browser_tab;
-  }
-
-  if (const auto& iwa_filter = filter.isolated_app_filter) {
-    webapps::AppId iwa_app_id;
-    if (IsIsolatedApp(app_id) && !iwa_filter->is_sub_app) {
-      iwa_app_id = app_id;
-    } else if (iwa_filter->is_sub_app && IsIsolatedSubApp(app_id)) {
-      // Point at parent app when performing additional isolated app filters
-      // below (because of isolation_data only being available on the parent).
-      iwa_app_id = GetAppById(app_id)->parent_app_id().value();
-    } else {
-      return false;
-    }
-
-    const WebApp& iwa = CHECK_DEREF(GetAppById(iwa_app_id));
-    bool matches = true;
-    if (iwa_filter->must_be_in_dev_mode) {
-      matches &= iwa.isolation_data()->location().dev_mode();
-    }
-    return matches;
-  }
-
-  if (filter.is_crafted_app) {
-    return !IsDiyApp(app_id);
-  }
-
-  if (filter.launchable_from_install_api) {
-    const WebApp* app = GetAppById(app_id);
-    return (app && app->WasInstalledByUser()) ||
-           GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
-  }
-
-  if (filter.is_app_trusted) {
-    const WebApp* app = GetAppById(app_id);
-    return (app && app->WasInstalledByTrustedSources());
+  if (filter.predicate) {
+    const auto& app = CHECK_DEREF(GetAppById(app_id));
+    return std::visit(
+        absl::Overload{
+            [&](WebAppFilter::SimpleCondition condition) {
+              switch (condition) {
+                case WebAppFilter::SimpleCondition::kIsDiy:
+                  return app.is_diy_app();
+                case WebAppFilter::SimpleCondition::kWasInstalledByUser:
+                  return app.WasInstalledByUser();
+                case WebAppFilter::SimpleCondition::kInstalledByTrustedSource:
+                  return app.WasInstalledByTrustedSources();
+                case WebAppFilter::SimpleCondition::kIsolatedApp:
+                  return IsIsolatedApp(app_id);
+                case WebAppFilter::SimpleCondition::kIsolatedAppDevMode:
+                  return IsIsolatedAppInDevMode(app_id);
+                case WebAppFilter::SimpleCondition::kIsolatedSubApp:
+                  return app.parent_app_id() &&
+                         IsIsolatedApp(*app.parent_app_id());
+                case WebAppFilter::SimpleCondition::kOpensInDedicatedWindow: {
+                  DisplayMode display_mode = GetAppEffectiveDisplayMode(app_id);
+                  return display_mode != DisplayMode::kBrowser &&
+                         display_mode != DisplayMode::kUndefined;
+                }
+              }
+            },
+            [&](const WebAppFilter::ManagementRequirement& requirement) {
+              switch (requirement.type) {
+                case WebAppFilter::ManagementRequirement::Type::kHasAny:
+                  return app.GetSources().HasAny(requirement.sources);
+                case WebAppFilter::ManagementRequirement::Type::kHasAll:
+                  return app.GetSources().HasAll(requirement.sources);
+              }
+            },
+            [&](const WebAppFilter::InstallStateSet& install_states) {
+              return install_states.Has(*install_state);
+            }},
+        *filter.predicate);
   }
 
   return false;
@@ -2224,10 +2207,11 @@ bool WebAppRegistrar::IsIsolatedApp(const webapps::AppId& app_id) const {
   return web_app && web_app->isolation_data().has_value();
 }
 
-bool WebAppRegistrar::IsIsolatedSubApp(const webapps::AppId& app_id) const {
+bool WebAppRegistrar::IsIsolatedAppInDevMode(
+    const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app && web_app->parent_app_id() &&
-         IsIsolatedApp(*web_app->parent_app_id());
+  return web_app && web_app->isolation_data().has_value() &&
+         web_app->isolation_data()->location().dev_mode();
 }
 
 int WebAppRegistrar::CountUserInstalledNotLocallyInstalledApps() const {
