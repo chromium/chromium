@@ -107,16 +107,6 @@ void RecordPrefetchProxyPrefetchMainframeCookiesToCopy(
                            cookie_list_size);
 }
 
-BrowserContext* BrowserContextFromFrameTreeNodeId(
-    FrameTreeNodeId frame_tree_node_id) {
-  WebContents* web_content =
-      WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (!web_content) {
-    return nullptr;
-  }
-  return web_content->GetBrowserContext();
-}
-
 }  // namespace
 
 PrefetchServingHandle::PrefetchServingHandle()
@@ -228,6 +218,10 @@ void PrefetchServingHandle::CopyIsolatedCookies() {
   // We only need to copy cookies if the prefetch used an isolated network
   // context.
   if (!IsIsolatedNetworkContextRequiredToServe()) {
+    return;
+  }
+
+  if (HasIsolatedCookieCopyStarted()) {
     return;
   }
 
@@ -568,15 +562,8 @@ void PrefetchServingHandle::ContinueOnGotPrefetchToServe(
   // network context to the default network context.
   if (!state->cookie_copy_complete_if_required) {
     if (IsValid()) {
-      if (!HasIsolatedCookieCopyStarted()) {
-        // Checks the same `BrowserContext` is used, just in case. We can remove
-        // this `CHECK` e.g. once we remove `frame_tree_node_id` access here.
-        CHECK_EQ(BrowserContextFromFrameTreeNodeId(state->frame_tree_node_id),
-                 GetPrefetchContainer()->request().browser_context());
-
-        // Start the cookie copy for the next redirect hop.
-        CopyIsolatedCookies();
-      }
+      // Start the cookie copy for the next redirect hop if needed.
+      CopyIsolatedCookies();
 
       OnInterceptorCheckCookieCopy();
 

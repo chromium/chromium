@@ -732,12 +732,8 @@ void PrefetchMatchResolver::UnblockForMatch(const PrefetchKey& prefetch_key) {
   // So, the below condition is satisfied.
   CHECK(!serving_handle.HaveDefaultContextCookiesChanged());
 
-  if (!serving_handle.HasIsolatedCookieCopyStarted()) {
-    // Basically, we can assume `PrefetchService` is available as waiting
-    // `PrefetchContainer` is owned by it. But in unit tests, we use invalid
-    // frame tree node id and this `prefetch_service` is not available.
-    serving_handle.CopyIsolatedCookies();
-  }
+  serving_handle.CopyIsolatedCookies();
+
   CHECK(serving_handle);
 
   TRACE_EVENT_END("loading");
