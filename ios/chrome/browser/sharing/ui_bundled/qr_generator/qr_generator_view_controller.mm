@@ -163,9 +163,7 @@ constexpr CGFloat kSymbolSize = 22;
                                                 .bottomAnchor
                                    constant:-8];
 
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
                      withTarget:self.view
                          action:@selector(setNeedsUpdateConstraints)];
 }
