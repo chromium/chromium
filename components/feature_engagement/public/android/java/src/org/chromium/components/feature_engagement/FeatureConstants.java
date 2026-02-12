@@ -355,6 +355,9 @@ public @interface FeatureConstants {
     /** An IPH feature to show on a card menu on the FeedNewTabPage. */
     String FEED_CARD_MENU_FEATURE = "IPH_FeedCardMenu";
 
+    /** Used to track user engagement with the fusebox attachment button. */
+    String FUSEBOX_ATTACHMENT_FEATURE = "IPH_FuseboxAttachment";
+
     /** An IPH feature to prompt users to pull-to-refresh feed. */
     String FEED_SWIPE_REFRESH_FEATURE = "IPH_FeedSwipeRefresh";
 

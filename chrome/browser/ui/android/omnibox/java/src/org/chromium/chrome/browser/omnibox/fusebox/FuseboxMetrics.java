@@ -11,6 +11,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -83,7 +85,8 @@ public class FuseboxMetrics {
                 AiModeActivationSource.COUNT);
     }
 
-    static void notifyAttachmentsPopupToggled(boolean toShowPopup, PropertyModel model) {
+    static void notifyAttachmentsPopupToggled(
+            boolean toShowPopup, PropertyModel model, Tracker tracker) {
         RecordHistogram.recordBooleanHistogram(
                 "Omnibox.MobileFusebox.AttachmentsPopupToggled", toShowPopup);
         if (toShowPopup) {
@@ -92,6 +95,7 @@ public class FuseboxMetrics {
                     notifyAttachmentButtonShown(buttonType);
                 }
             }
+            tracker.notifyEvent(EventConstants.FUSEBOX_ATTACHMENT_POPUP_USED);
         }
 
         sAttachmentsPopupButtonUsedInSession = true;

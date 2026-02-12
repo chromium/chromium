@@ -57,6 +57,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
@@ -70,6 +71,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.RenderWidgetHostView;
@@ -108,6 +110,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private Function<Tab, @Nullable Bitmap> mTabFaviconFactory;
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Tracker mTracker;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
@@ -138,6 +141,7 @@ public class FuseboxMediatorUnitTest {
         LayoutInflater.from(activity).inflate(R.layout.fusebox_layout, viewGroup, true);
 
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
+        TrackerFactory.setTrackerForTests(mTracker);
 
         mContext =
                 new ContextThemeWrapper(
