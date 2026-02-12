@@ -97,8 +97,19 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, StartupAndShutdown) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
+// For now this is disabled on CrOS since BrowserStatusMonitor/
+// AppServiceInstanceRegistryHelper aren't happy with our shutdown deletion
+// order of native windows vs. Browser and aren't tracking the switch over
+// of views on child guest contents properly.
+#define MAYBE_NavigatePage DISABLED_NavigatePage
+#else
+#define MAYBE_NavigatePage NavigatePage
+#endif
+
 // Navigation at chrome/ layer, which hits some focus management paths.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, NavigatePage) {
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_NavigatePage) {
   auto* window = browser()->window();
   ASSERT_TRUE(window);
 
@@ -119,8 +130,18 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, NavigatePage) {
             EvalJs(web_contents, "document.body.textContent"));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
+// For now this is disabled on CrOS since BrowserStatusMonitor/
+// AppServiceInstanceRegistryHelper aren't happy with our shutdown deletion
+// order of native windows vs. Browser and aren't tracking the switch over
+// of views on child guest contents properly.
+#define MAYBE_EnumerateDevToolsTargets DISABLED_EnumerateDevToolsTargets
+#else
+#define MAYBE_EnumerateDevToolsTargets EnumerateDevToolsTargets
+#endif
 // Verify DevTools targets enumeration for browser UI and tabs.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, EnumerateDevToolsTargets) {
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_EnumerateDevToolsTargets) {
   auto* window = browser()->window();
   ASSERT_TRUE(window);
 
@@ -163,8 +184,14 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, EnumerateDevToolsTargets) {
   EXPECT_EQ(page_count, 1);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
+#define MAYBE_FullscreenEnterAndExit DISABLED_FullscreenEnterAndExit
+#else
+#define MAYBE_FullscreenEnterAndExit FullscreenEnterAndExit
+#endif
 // Test entering and exiting fullscreen mode.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, FullscreenEnterAndExit) {
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_FullscreenEnterAndExit) {
   auto* window = browser()->window();
   ASSERT_TRUE(window);
 
@@ -185,8 +212,14 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, FullscreenEnterAndExit) {
   EXPECT_FALSE(window->IsFullscreen());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
+#define MAYBE_TabFullscreenEnterAndExit DISABLED_TabFullscreenEnterAndExit
+#else
+#define MAYBE_TabFullscreenEnterAndExit TabFullscreenEnterAndExit
+#endif
 // Test entering and exiting tab fullscreen mode, including tab switching.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, TabFullscreenEnterAndExit) {
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_TabFullscreenEnterAndExit) {
   auto* window = browser()->window();
   ASSERT_TRUE(window);
 
@@ -249,11 +282,18 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, TabFullscreenEnterAndExit) {
 }
 
 #if BUILDFLAG(ENABLE_SURFACE_EMBED)
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/451876195): Enable this test for CrOS.
+#define MAYBE_SurfaceEmbedRendersRedRect DISABLED_SurfaceEmbedRendersRedRect
+#else
+#define MAYBE_SurfaceEmbedRendersRedRect SurfaceEmbedRendersRedRect
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Verifies that when kSurfaceEmbed is enabled, the WebUI browser (Webium)
 // renders a red rectangle for the tab content. This test will need updated as
 // surface embed support is expanded.
 IN_PROC_BROWSER_TEST_F(WebUIBrowserSurfaceEmbedPixelTest,
-                       SurfaceEmbedRendersRedRect) {
+                       MAYBE_SurfaceEmbedRendersRedRect) {
   // Get the UI WebContents (the embedder/outer frame that contains the <embed>
   // element with the SurfaceEmbedWebPlugin). We need to capture from this
   // WebContents since it has the fully composed view including the plugin's

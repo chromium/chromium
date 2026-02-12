@@ -49,11 +49,7 @@
 #include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/app_service/app_service_proxy.h"  // nogncheck
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"  // nogncheck
-#include "components/app_constants/constants.h"  // nogncheck
-#include "components/services/app_service/public/cpp/instance_registry.h"  // nogncheck
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -160,18 +156,6 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
 }
 
 WebUIBrowserWindow::~WebUIBrowserWindow() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (widget_ && widget_->GetNativeWindow()) {
-    if (auto* proxy =
-            apps::AppServiceProxyFactory::GetForProfile(browser_->profile())) {
-      apps::InstanceParams params(app_constants::kChromeAppId,
-                                  widget_->GetNativeWindow());
-      params.state =
-          std::make_pair(apps::InstanceState::kDestroyed, base::Time::Now());
-      proxy->InstanceRegistry().CreateOrUpdateInstance(std::move(params));
-    }
-  }
-#endif
   browser_->GetFeatures().TearDownPreBrowserWindowDestruction();
   web_view_ = nullptr;
   // We want to destroy the extensions container before the `widget_` since
@@ -277,10 +261,16 @@ void WebUIBrowserWindow::SetZOrderLevel(ui::ZOrderLevel order) {
 }
 
 gfx::NativeWindow WebUIBrowserWindow::GetNativeWindow() const {
-  if (widget_->IsClosed()) {
-    return gfx::NativeWindow();
-  }
+#if BUILDFLAG(IS_CHROMEOS)
+  // Ash ChromeOS has a UaF on widget's aura::Window during browser shutdown.
+  // The window is stored in apps::InstanceRegistry which becomes dangling after
+  // the BrowserWindow is destroyed.
+  // TODO(webium): Fix ChromeOS. Run WebUIBrowserTest.StartupAndShutdown
+  // to verify.
+  return gfx::NativeWindow();
+#else
   return widget_->GetNativeWindow();
+#endif
 }
 
 bool WebUIBrowserWindow::IsOnCurrentWorkspace() const {
