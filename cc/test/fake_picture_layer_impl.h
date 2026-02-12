@@ -57,7 +57,6 @@ class FakePictureLayerImpl : public PictureLayerImpl {
   using PictureLayerImpl::CleanUpTilingsOnActiveLayer;
   using PictureLayerImpl::IsDirectlyCompositedImage;
   using PictureLayerImpl::MinimumContentsScale;
-  using PictureLayerImpl::SanityCheckTilingState;
   using PictureLayerImpl::UpdateDirectlyCompositedImageFromRasterSource;
   using PictureLayerImpl::UpdateRasterSource;
 
