@@ -335,8 +335,7 @@ namespace media {
 // FFmpegDecodingLoop.
 // For more information, see crbug.com/440616500.
 #if BUILDFLAG(ENABLE_FFMPEG)
-BASE_FEATURE(kAudioDecoderAudioFileReader,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAudioDecoderAudioFileReader, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Only used for disabling overlay fullscreen (aka SurfaceView) in Clank.
