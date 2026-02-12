@@ -15,7 +15,6 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
@@ -64,8 +63,8 @@ public class NtpBackgroundImageCoordinator {
         mContext = context;
         mUiConfig = uiConfig;
 
-        FrameLayout backgroundImageLayout =
-                (FrameLayout)
+        NtpBackgroundImageLayout backgroundImageLayout =
+                (NtpBackgroundImageLayout)
                         LayoutInflaterUtils.inflate(
                                 mContext, R.layout.ntp_customization_background_image_layout, null);
 
@@ -159,6 +158,13 @@ public class NtpBackgroundImageCoordinator {
                 getValidatedMatrixForCurrentWindowSize(
                         (Activity) mContext, mBackgroundImageInfo, mOriginalBitmap);
 
+        // 1. Updates the density property to synchronize the bitmap's metadata and prevent
+        // incorrect intrinsic scaling.
+        mPropertyModel.set(
+                NtpBackgroundImageProperties.DENSITY,
+                mContext.getResources().getDisplayMetrics().densityDpi);
+
+        // 2. Then apply the matrix.
         mPropertyModel.set(NtpBackgroundImageProperties.IMAGE_MATRIX, matrixToApply);
     }
 

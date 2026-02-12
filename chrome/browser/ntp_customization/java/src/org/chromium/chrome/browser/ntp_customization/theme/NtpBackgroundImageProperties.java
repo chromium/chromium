@@ -31,7 +31,13 @@ public class NtpBackgroundImageProperties {
     /** The background color. */
     public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
 
+    /**
+     * The system density (DPI) used to synchronize the bitmap's metadata and ensure correct
+     * scaling.
+     */
+    public static final WritableIntPropertyKey DENSITY = new WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
-        BACKGROUND_IMAGE, IMAGE_MATRIX, IMAGE_SCALE_TYPE, BACKGROUND_COLOR,
+        BACKGROUND_IMAGE, IMAGE_MATRIX, IMAGE_SCALE_TYPE, BACKGROUND_COLOR, DENSITY
     };
 }
