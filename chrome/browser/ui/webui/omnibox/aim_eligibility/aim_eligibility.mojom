@@ -22,9 +22,6 @@ struct EligibilityState {
   // Base64 encoded eligibility response proto. Populated if server eligibility
   // checking is enabled.
   string eligibility_response_base64_encoded;
-  // Base64url encoded eligibility response proto. Populated if server
-  // eligibility checking is enabled.
-  string eligibility_response_base64_url_encoded;
   // Source of the eligibility response, e.g., "Server", "Prefs".
   string eligibility_response_source;
   // Base64url encoded searchbox config proto. Populated if server

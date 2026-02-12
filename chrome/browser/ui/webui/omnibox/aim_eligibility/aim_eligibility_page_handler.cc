@@ -73,9 +73,6 @@ AimEligibilityPageHandler::QueryEligibilityState() {
     response.SerializeToString(&response_string);
     state->eligibility_response_base64_encoded =
         base::Base64Encode(response_string);
-    base::Base64UrlEncode(response_string,
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &state->eligibility_response_base64_url_encoded);
     state->eligibility_response_source =
         AimEligibilityService::EligibilityResponseSourceToString(
             aim_eligibility_service_->GetMostRecentResponseSource());
