@@ -162,6 +162,8 @@ class ContextualTasksService : public KeyedService {
   // Returns DataTypeControllerDelegate for the contextual task thread datatype.
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetAiThreadControllerDelegate() = 0;
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetGeminiThreadControllerDelegate() = 0;
 };
 
 }  // namespace contextual_tasks

@@ -180,6 +180,13 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
           syncer::AI_THREAD, dump_stack);
   ai_thread_sync_bridge_ = std::make_unique<AiThreadSyncBridge>(
       std::move(ai_thread_processor), data_type_store_factory);
+
+  auto gemini_thread_processor =
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+          syncer::GEMINI_THREAD, dump_stack);
+  gemini_thread_sync_bridge_ = std::make_unique<GeminiThreadSyncBridge>(
+      std::move(gemini_thread_processor), data_type_store_factory);
+
   auto contextual_task_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::CONTEXTUAL_TASK, dump_stack);
@@ -513,6 +520,12 @@ void ContextualTasksServiceImpl::RemoveObserver(
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 ContextualTasksServiceImpl::GetAiThreadControllerDelegate() {
   return ai_thread_sync_bridge_->change_processor()->GetControllerDelegate();
+}
+
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+ContextualTasksServiceImpl::GetGeminiThreadControllerDelegate() {
+  return gemini_thread_sync_bridge_->change_processor()
+      ->GetControllerDelegate();
 }
 
 void ContextualTasksServiceImpl::SetAiThreadSyncBridgeForTesting(

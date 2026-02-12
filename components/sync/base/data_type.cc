@@ -506,6 +506,9 @@ DataTypeSet AlwaysPreferredUserTypes() {
   if (base::FeatureList::IsEnabled(syncer::kSyncAIThread)) {
     types.Put(AI_THREAD);
   }
+  if (base::FeatureList::IsEnabled(syncer::kSyncGeminiThread)) {
+    types.Put(GEMINI_THREAD);
+  }
   return types;
 }
 

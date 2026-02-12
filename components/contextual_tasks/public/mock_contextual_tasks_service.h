@@ -114,6 +114,10 @@ class MockContextualTasksService : public ContextualTasksService {
               GetAiThreadControllerDelegate,
               (),
               (override));
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
+              GetGeminiThreadControllerDelegate,
+              (),
+              (override));
 };
 
 }  // namespace contextual_tasks

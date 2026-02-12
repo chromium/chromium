@@ -18,6 +18,7 @@
 #include "base/version_info/channel.h"
 #include "components/contextual_tasks/internal/ai_thread_sync_bridge.h"
 #include "components/contextual_tasks/internal/contextual_task_sync_bridge.h"
+#include "components/contextual_tasks/internal/gemini_thread_sync_bridge.h"
 #include "components/contextual_tasks/internal/proto/ai_thread_entity.pb.h"
 #include "components/contextual_tasks/internal/proto/contextual_task_entity.pb.h"
 #include "components/contextual_tasks/public/context_decorator.h"
@@ -105,6 +106,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   void RemoveObserver(ContextualTasksService::Observer* observer) override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetAiThreadControllerDelegate() override;
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetGeminiThreadControllerDelegate() override;
 
   size_t GetTabIdMapSizeForTesting() const;
 
@@ -167,6 +170,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
 
   std::unique_ptr<AiThreadSyncBridge> ai_thread_sync_bridge_;
   std::unique_ptr<ContextualTaskSyncBridge> contextual_task_sync_bridge_;
+  std::unique_ptr<GeminiThreadSyncBridge> gemini_thread_sync_bridge_;
 
   // Barrier to run OnDataStoresLoaded() after both sync bridges have loaded
   // their data.

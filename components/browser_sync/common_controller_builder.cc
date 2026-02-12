@@ -924,30 +924,35 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
         contextual_tasks_service_.value()
             ->GetAiThreadControllerDelegate()
             .get();
-    controllers.push_back(std::make_unique<DataTypeController>(
-        /*type= */ syncer::AI_THREAD,
-        /*delegate_for_full_sync_mode= */
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            delegate),
-        /*delegate_for_transport_mode= */
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            delegate)));
+    if (delegate) {
+      controllers.push_back(std::make_unique<DataTypeController>(
+          /*type= */ syncer::AI_THREAD,
+          /*delegate_for_full_sync_mode= */
+          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+              delegate),
+          /*delegate_for_transport_mode= */
+          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+              delegate)));
+    }
   }
 
   if (!disabled_types.Has(syncer::GEMINI_THREAD) &&
-      base::FeatureList::IsEnabled(syncer::kSyncGeminiThread)) {
-    // TODO(crbug.com/476335087): In CL #4, register the type, i.e. instantiate
-    // the DataTypeController. There is more than one way to go about it,
-    // but one option is:
-    // - Create a trivial implementation of DataTypeSyncBridge which lives in
-    //   your feature's directory. It should have synchronous access to your
-    //   data model (e.g. DualReadingListModel) and be (indirectly) owned by a
-    //   CoolKeyedService (often the model itself).
-    // - Expose CoolKeyedService::GetControllerDelegate() which calls
-    //   bridge->change_processor()->GetControllerDelegate().
-    // - Inject CoolKeyedService in this class and call GetControllerDelegate()
-    //   on it to create the DataTypeController.
-    // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
+      base::FeatureList::IsEnabled(syncer::kSyncGeminiThread) &&
+      contextual_tasks_service_.value()) {
+    syncer::DataTypeControllerDelegate* delegate =
+        contextual_tasks_service_.value()
+            ->GetGeminiThreadControllerDelegate()
+            .get();
+    if (delegate) {
+      controllers.push_back(std::make_unique<DataTypeController>(
+          /*type= */ syncer::GEMINI_THREAD,
+          /*delegate_for_full_sync_mode= */
+          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+              delegate),
+          /*delegate_for_transport_mode= */
+          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+              delegate)));
+    }
   }
 
   if (!disabled_types.Has(syncer::CONTEXTUAL_TASK) &&

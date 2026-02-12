@@ -23,6 +23,8 @@ source_set("internal") {
     "fallback_title_context_decorator.h",
     "favicon_context_decorator.cc",
     "favicon_context_decorator.h",
+    "gemini_thread_sync_bridge.cc",
+    "gemini_thread_sync_bridge.h",
     "history_context_decorator.cc",
     "history_context_decorator.h",
     "pending_context_decorator.cc",
