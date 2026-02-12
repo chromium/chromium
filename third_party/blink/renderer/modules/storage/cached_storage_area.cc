@@ -47,8 +47,7 @@ String PackSource(const KURL& page_url, const String& storage_area_id) {
 void UnpackSource(const String& source,
                   KURL* page_url,
                   String* storage_area_id) {
-  Vector<String> result;
-  source.Split("\n", true, result);
+  Vector<String> result = source.Split('\n');
   DCHECK_EQ(result.size(), 2u);
   *page_url = KURL(result[0]);
   *storage_area_id = result[1];

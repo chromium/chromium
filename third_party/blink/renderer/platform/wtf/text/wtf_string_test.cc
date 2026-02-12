@@ -292,11 +292,11 @@ TEST(StringTest, SplitByChar) {
   EXPECT_EQ("foo", result[0]);
   EXPECT_EQ("bar", result[1]);
 
-  String("").Split(',', true, result);
+  result = String("").Split(',');
   EXPECT_EQ(1u, result.size());
   EXPECT_EQ("", result[0]);
 
-  String("foo,,bar").Split(',', true, result);
+  result = String("foo,,bar").Split(',');
   EXPECT_EQ(3u, result.size());
   EXPECT_EQ("foo", result[0]);
   EXPECT_EQ("", result[1]);
@@ -304,19 +304,7 @@ TEST(StringTest, SplitByChar) {
 }
 
 TEST(StringTest, SplitByString) {
-  Vector<String> result;
-  String("").Split(" ", false, result);
-  EXPECT_EQ(0u, result.size());
-  String("").Split(" ", true, result);
-  EXPECT_EQ(1u, result.size());
-  EXPECT_EQ("", result[0]);
-
-  String("  foo  bar").Split(" ", false, result);
-  EXPECT_EQ(2u, result.size());
-  EXPECT_EQ("foo", result[0]);
-  EXPECT_EQ("bar", result[1]);
-
-  String("  foo  bar").Split(" ", true, result);
+  Vector<String> result = String("  foo  bar").Split(" ");
   EXPECT_EQ(5u, result.size());
   EXPECT_EQ("", result[0]);
   EXPECT_EQ("", result[1]);
@@ -324,17 +312,7 @@ TEST(StringTest, SplitByString) {
   EXPECT_EQ("", result[3]);
   EXPECT_EQ("bar", result[4]);
 
-  String("  foo  bar").Split("  ", false, result);
-  EXPECT_EQ(2u, result.size());
-  EXPECT_EQ("foo", result[0]);
-  EXPECT_EQ("bar", result[1]);
-
-  String("  foo   bar").Split("  ", false, result);
-  EXPECT_EQ(2u, result.size());
-  EXPECT_EQ("foo", result[0]);
-  EXPECT_EQ(" bar", result[1]);
-
-  String("  foo   bar").Split("  ", true, result);
+  result = String("  foo   bar").Split("  ");
   EXPECT_EQ(3u, result.size());
   EXPECT_EQ("", result[0]);
   EXPECT_EQ("foo", result[1]);

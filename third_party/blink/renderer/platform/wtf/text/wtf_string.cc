@@ -307,21 +307,17 @@ String String::NumberToStringFixedWidth(double number,
   return String(converter.ToStringWithFixedWidth(number, decimal_places));
 }
 
-void String::Split(const StringView& separator,
-                   bool allow_empty_entries,
-                   Vector<String>& result) const {
+Vector<String> String::Split(const StringView& separator) const {
   DCHECK(!separator.empty());
-  result = SplitInternal(*this, separator, allow_empty_entries);
+  return SplitInternal(*this, separator, /* allow_empty_entries */ true);
 }
 
-void String::Split(UChar separator,
-                   bool allow_empty_entries,
-                   Vector<String>& result) const {
-  result = SplitInternal(*this, separator, allow_empty_entries);
+Vector<String> String::Split(UChar separator) const {
+  return SplitInternal(*this, separator, /* allow_empty_entries */ true);
 }
 
 Vector<String> String::SplitSkippingEmpty(UChar separator) const {
-  return SplitInternal(*this, separator, false);
+  return SplitInternal(*this, separator, /* allow_empty_entries */ false);
 }
 
 std::string String::Ascii() const {

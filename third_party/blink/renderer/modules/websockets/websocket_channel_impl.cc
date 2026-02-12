@@ -320,7 +320,7 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   if (!protocol.empty()) {
     // Since protocol is already verified and escaped, we can simply split
     // it.
-    protocol.Split(", ", true, protocols);
+    protocols = protocol.Split(", ");
   }
 
   // If the connection needs to be filtered, asynchronously fail. Synchronous

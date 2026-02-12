@@ -444,12 +444,20 @@ class WTF_EXPORT String {
     return StringImpl::CreateUninitialized(length, data);
   }
 
-  void Split(const StringView& separator,
-             bool allow_empty_entries,
-             Vector<String>& result) const;
-  void Split(UChar separator,
-             bool allow_empty_entries,
-             Vector<String>& result) const;
+  // Returns a list of substrings of `this`, separated by `separator`.
+  // This function copies the content of the string. Please consider if
+  // StringView::Split() is applicable.
+  //
+  // `StringView("a, , b").Split(", ")` produces ["a", "", "b"], and
+  // `StringView("").Split(",")` produces [""].
+  Vector<String> Split(const StringView& separator) const;
+  // Returns a list of substrings of `this`, separated by `separator`.
+  // This function copies the content of the string. Please consider if
+  // StringView::Split() is applicable.
+  //
+  // `StringView("a,,b").Split(',')` produces ["a", "", "b"], and
+  // `StringView("").Split(',')` produces [""].
+  Vector<String> Split(UChar separator) const;
   // Returns a list of substrings of `this`, separated by `separator`.
   // This doesn't produce empty substrings.
   // This function copies the content of the string. Please consider if

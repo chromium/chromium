@@ -328,9 +328,9 @@ TEST_F(FrameSerializerTest, Frames) {
   EXPECT_TRUE(IsSerialized("frame_4.png", "image/png"));
 
   // Verify all 3 frame src are rewritten to Content ID URLs.
-  Vector<String> split_string;
-  GetSerializedData("simple_frames.html", "text/html")
-      .Split("<frame src=\"cid:", true, split_string);
+  Vector<String> split_string =
+      GetSerializedData("simple_frames.html", "text/html")
+          .Split("<frame src=\"cid:");
   EXPECT_EQ(split_string.size(), 4u);
 }
 
