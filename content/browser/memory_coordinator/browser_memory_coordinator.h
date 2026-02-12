@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/memory_coordinator/memory_consumer_registry.h"
-#include "content/browser/memory_coordinator/browser_memory_consumer_registry.h"
 #include "content/common/content_export.h"
+#include "content/common/memory_coordinator/memory_consumer_registry.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "content/public/common/child_process_id.h"
@@ -22,7 +22,7 @@ namespace content {
 class ChildMemoryConsumerRegistryHost;
 
 // BrowserMemoryCoordinator is a singleton that owns the
-// BrowserMemoryConsumerRegistry, the ChildMemoryConsumerRegistryHost
+// MemoryConsumerRegistry, the ChildMemoryConsumerRegistryHost
 // instances, and the MemoryCoordinatorPolicyManager.
 class CONTENT_EXPORT BrowserMemoryCoordinator {
  public:
@@ -35,9 +35,9 @@ class CONTENT_EXPORT BrowserMemoryCoordinator {
 
   ~BrowserMemoryCoordinator();
 
-  BrowserMemoryConsumerRegistry& registry() { return registry_.Get(); }
+  MemoryConsumerRegistry& registry() { return registry_.Get(); }
 
-  // Connects a ChildMemoryConsumerRegistry in a child process with the browser
+  // Connects a MemoryConsumerRegistry in a child process with the browser
   // process.
   void Bind(
       ProcessType process_type,
@@ -52,8 +52,8 @@ class CONTENT_EXPORT BrowserMemoryCoordinator {
   void OnHostDisconnected(ChildProcessId child_process_id);
 
   MemoryCoordinatorPolicyManager policy_manager_;
-  base::ScopedMemoryConsumerRegistry<BrowserMemoryConsumerRegistry> registry_{
-      policy_manager_};
+  base::ScopedMemoryConsumerRegistry<MemoryConsumerRegistry> registry_{
+      PROCESS_TYPE_BROWSER, ChildProcessId(), policy_manager_};
 
   absl::flat_hash_map<ChildProcessId,
                       std::unique_ptr<ChildMemoryConsumerRegistryHost>>

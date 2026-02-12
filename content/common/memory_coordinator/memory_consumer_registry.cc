@@ -2,45 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/memory_coordinator/browser_memory_consumer_registry.h"
+#include "content/common/memory_coordinator/memory_consumer_registry.h"
 
 #include <algorithm>
-#include <memory>
-#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "content/public/common/child_process_id.h"
-#include "content/public/common/process_type.h"
 
 namespace content {
 
-// BrowserMemoryConsumerRegistry::ConsumerGroup --------------------------------
+// MemoryConsumerRegistry::ConsumerGroup ---------------------------------------
 
-BrowserMemoryConsumerRegistry::ConsumerGroup::ConsumerGroup(
+MemoryConsumerRegistry::ConsumerGroup::ConsumerGroup(
     base::MemoryConsumerTraits traits)
     : traits_(traits) {}
 
-BrowserMemoryConsumerRegistry::ConsumerGroup::~ConsumerGroup() {
+MemoryConsumerRegistry::ConsumerGroup::~ConsumerGroup() {
   CHECK(memory_consumers_.empty());
 }
 
-void BrowserMemoryConsumerRegistry::ConsumerGroup::ReleaseMemory() {
+void MemoryConsumerRegistry::ConsumerGroup::ReleaseMemory() {
   for (base::RegisteredMemoryConsumer& consumer : memory_consumers_) {
     consumer.ReleaseMemory();
   }
 }
 
-void BrowserMemoryConsumerRegistry::ConsumerGroup::UpdateMemoryLimit(
-    int percentage) {
+void MemoryConsumerRegistry::ConsumerGroup::UpdateMemoryLimit(int percentage) {
   memory_limit_ = percentage;
   for (base::RegisteredMemoryConsumer& consumer : memory_consumers_) {
     consumer.UpdateMemoryLimit(memory_limit_);
   }
 }
 
-void BrowserMemoryConsumerRegistry::ConsumerGroup::AddMemoryConsumer(
+void MemoryConsumerRegistry::ConsumerGroup::AddMemoryConsumer(
     base::RegisteredMemoryConsumer consumer) {
   CHECK(!std::ranges::contains(memory_consumers_, consumer));
   memory_consumers_.push_back(consumer);
@@ -52,44 +47,46 @@ void BrowserMemoryConsumerRegistry::ConsumerGroup::AddMemoryConsumer(
   }
 }
 
-void BrowserMemoryConsumerRegistry::ConsumerGroup::RemoveMemoryConsumer(
+void MemoryConsumerRegistry::ConsumerGroup::RemoveMemoryConsumer(
     base::RegisteredMemoryConsumer consumer) {
   size_t removed = std::erase(memory_consumers_, consumer);
   CHECK_EQ(removed, 1u);
 }
 
-// BrowserMemoryConsumerRegistry -----------------------------------------------
+// MemoryConsumerRegistry ------------------------------------------------------
 
-BrowserMemoryConsumerRegistry::BrowserMemoryConsumerRegistry(
+MemoryConsumerRegistry::MemoryConsumerRegistry(
+    ProcessType process_type,
+    ChildProcessId child_process_id,
     MemoryConsumerGroupController& controller)
-    : controller_(controller) {
-  controller_->AddMemoryConsumerGroupHost(ChildProcessId(), this);
+    : process_type_(process_type),
+      child_process_id_(child_process_id),
+      controller_(controller) {
+  controller_->AddMemoryConsumerGroupHost(child_process_id_, this);
 }
 
-BrowserMemoryConsumerRegistry::~BrowserMemoryConsumerRegistry() {
+MemoryConsumerRegistry::~MemoryConsumerRegistry() {
   NotifyDestruction();
-  controller_->RemoveMemoryConsumerGroupHost(ChildProcessId());
+  controller_->RemoveMemoryConsumerGroupHost(child_process_id_);
   CHECK(consumer_groups_.empty());
 }
 
-void BrowserMemoryConsumerRegistry::UpdateMemoryLimit(
-    std::string_view consumer_id,
-    int percentage) {
+void MemoryConsumerRegistry::UpdateMemoryLimit(std::string_view consumer_id,
+                                               int percentage) {
   auto it = consumer_groups_.find(consumer_id);
   CHECK(it != consumer_groups_.end());
 
   it->second->UpdateMemoryLimit(percentage);
 }
 
-void BrowserMemoryConsumerRegistry::ReleaseMemory(
-    std::string_view consumer_id) {
+void MemoryConsumerRegistry::ReleaseMemory(std::string_view consumer_id) {
   auto it = consumer_groups_.find(consumer_id);
   CHECK(it != consumer_groups_.end());
 
   it->second->ReleaseMemory();
 }
 
-void BrowserMemoryConsumerRegistry::OnMemoryConsumerAdded(
+void MemoryConsumerRegistry::OnMemoryConsumerAdded(
     std::string_view consumer_id,
     base::MemoryConsumerTraits traits,
     base::RegisteredMemoryConsumer consumer) {
@@ -100,8 +97,8 @@ void BrowserMemoryConsumerRegistry::OnMemoryConsumerAdded(
     // First time seeing a consumer with this ID.
     consumer_group = std::make_unique<ConsumerGroup>(traits);
 
-    controller_->OnConsumerGroupAdded(consumer_id, traits, PROCESS_TYPE_BROWSER,
-                                      ChildProcessId());
+    controller_->OnConsumerGroupAdded(consumer_id, traits, process_type_,
+                                      child_process_id_);
   }
 
   CHECK(consumer_group->traits() == traits);
@@ -109,7 +106,7 @@ void BrowserMemoryConsumerRegistry::OnMemoryConsumerAdded(
   consumer_group->AddMemoryConsumer(consumer);
 }
 
-void BrowserMemoryConsumerRegistry::OnMemoryConsumerRemoved(
+void MemoryConsumerRegistry::OnMemoryConsumerRemoved(
     std::string_view consumer_id,
     base::RegisteredMemoryConsumer consumer) {
   auto it = consumer_groups_.find(consumer_id);
@@ -120,7 +117,7 @@ void BrowserMemoryConsumerRegistry::OnMemoryConsumerRemoved(
 
   if (consumer_group.empty()) {
     // Last consumer with this ID.
-    controller_->OnConsumerGroupRemoved(consumer_id, ChildProcessId());
+    controller_->OnConsumerGroupRemoved(consumer_id, child_process_id_);
 
     // Also remove the group.
     consumer_groups_.erase(it);

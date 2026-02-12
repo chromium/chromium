@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/memory_coordinator/browser_memory_consumer_registry.h"
+#include "content/common/memory_coordinator/memory_consumer_registry.h"
 
 #include <map>
 #include <string>
@@ -24,7 +24,6 @@ namespace content {
 namespace {
 
 using ::testing::Mock;
-using ::testing::NiceMock;
 using ::testing::Test;
 
 struct ConsumerEntry {
@@ -39,10 +38,13 @@ const base::MemoryConsumerTraits kTestTraits1{};
 
 }  // namespace
 
-class BrowserMemoryConsumerRegistryTest : public Test,
-                                          public MemoryConsumerGroupController {
+class MemoryConsumerRegistryTest : public Test,
+                                   public MemoryConsumerGroupController {
  protected:
-  BrowserMemoryConsumerRegistry& registry() { return registry_.Get(); }
+  MemoryConsumerRegistryTest()
+      : registry_(PROCESS_TYPE_BROWSER, ChildProcessId(), *this) {}
+
+  MemoryConsumerRegistry& registry() { return registry_.Get(); }
 
   std::vector<ConsumerEntry>& entries() { return entries_; }
 
@@ -77,12 +79,11 @@ class BrowserMemoryConsumerRegistryTest : public Test,
  private:
   base::test::TaskEnvironment task_environment_;
   std::map<ChildProcessId, MemoryConsumerGroupHost*> hosts_;
-  base::ScopedMemoryConsumerRegistry<BrowserMemoryConsumerRegistry> registry_{
-      *this};
+  base::ScopedMemoryConsumerRegistry<MemoryConsumerRegistry> registry_;
   std::vector<ConsumerEntry> entries_;
 };
 
-TEST_F(BrowserMemoryConsumerRegistryTest, AddRemoveConsumer) {
+TEST_F(MemoryConsumerRegistryTest, AddRemoveConsumer) {
   base::MockMemoryConsumer consumer;
 
   registry().AddMemoryConsumer("consumer", kTestTraits1, &consumer);
@@ -103,7 +104,7 @@ TEST_F(BrowserMemoryConsumerRegistryTest, AddRemoveConsumer) {
   ASSERT_EQ(entries().size(), 0u);
 }
 
-TEST_F(BrowserMemoryConsumerRegistryTest, InheritMemoryLimit) {
+TEST_F(MemoryConsumerRegistryTest, InheritMemoryLimit) {
   base::MockMemoryConsumer consumer1;
   base::MockMemoryConsumer consumer2;
 

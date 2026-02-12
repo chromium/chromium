@@ -144,6 +144,8 @@ source_set("common") {
     "media/cdm_info.cc",
     "memory_coordinator/memory_consumer_group_controller.h",
     "memory_coordinator/memory_consumer_group_host.h",
+    "memory_coordinator/memory_consumer_registry.cc",
+    "memory_coordinator/memory_consumer_registry.h",
     "memory_coordinator/memory_coordinator_policy.cc",
     "memory_coordinator/memory_coordinator_policy.h",
     "memory_coordinator/memory_coordinator_policy_manager.cc",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_CONSUMER_REGISTRY_H_
-#define CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_CONSUMER_REGISTRY_H_
+#ifndef CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_CONSUMER_REGISTRY_H_
+#define CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_CONSUMER_REGISTRY_H_
 
 #include <memory>
 #include <string>
@@ -21,17 +21,16 @@
 
 namespace content {
 
-// The MemoryConsumerRegistry implementation that lives in the browser process.
-// It groups consumers with the same ID and registers the group with a
-// MemoryConsumerGroupController. Note that this class only holds locally
-// registered memory consumers.
-class CONTENT_EXPORT BrowserMemoryConsumerRegistry
+// An implementation of MemoryConsumerRegistry that groups consumers with the
+// same ID and registers the group with a MemoryConsumerGroupController.
+class CONTENT_EXPORT MemoryConsumerRegistry
     : public base::MemoryConsumerRegistry,
       public MemoryConsumerGroupHost {
  public:
-  explicit BrowserMemoryConsumerRegistry(
-      MemoryConsumerGroupController& controller);
-  ~BrowserMemoryConsumerRegistry() override;
+  MemoryConsumerRegistry(ProcessType process_type,
+                         ChildProcessId child_process_id,
+                         MemoryConsumerGroupController& controller);
+  ~MemoryConsumerRegistry() override;
 
   // MemoryConsumerGroupHost:
   void UpdateMemoryLimit(std::string_view consumer_id, int percentage) override;
@@ -76,6 +75,8 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
       std::string_view consumer_id,
       base::RegisteredMemoryConsumer consumer) override;
 
+  const ProcessType process_type_;
+  const ChildProcessId child_process_id_;
   const raw_ref<MemoryConsumerGroupController> controller_;
 
   // Contains groups of all MemoryConsumers with the same consumer ID.
@@ -85,4 +86,4 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_CONSUMER_REGISTRY_H_
+#endif  // CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_CONSUMER_REGISTRY_H_

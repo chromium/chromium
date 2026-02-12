@@ -7,8 +7,8 @@
 
 #include "base/memory_coordinator/memory_consumer_registry.h"
 #include "content/child/memory_coordinator/browser_memory_coordinator_bridge.h"
-#include "content/child/memory_coordinator/child_memory_consumer_registry.h"
 #include "content/common/content_export.h"
+#include "content/common/memory_coordinator/memory_consumer_registry.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom-forward.h"
 
@@ -27,7 +27,7 @@ class CONTENT_EXPORT ChildMemoryCoordinator {
 
   ~ChildMemoryCoordinator();
 
-  ChildMemoryConsumerRegistry& registry() { return registry_.Get(); }
+  MemoryConsumerRegistry& registry() { return registry_.Get(); }
   MemoryCoordinatorPolicyManager& policy_manager() { return policy_manager_; }
 
   // Allows connecting this process's global instance with the browser process.
@@ -36,8 +36,8 @@ class CONTENT_EXPORT ChildMemoryCoordinator {
 
  private:
   MemoryCoordinatorPolicyManager policy_manager_;
-  base::ScopedMemoryConsumerRegistry<ChildMemoryConsumerRegistry> registry_{
-      policy_manager_};
+  base::ScopedMemoryConsumerRegistry<MemoryConsumerRegistry> registry_{
+      PROCESS_TYPE_UNKNOWN, ChildProcessId(), policy_manager_};
 
   BrowserMemoryCoordinatorBridge browser_memory_coordinator_bridge_;
 };

@@ -1454,8 +1454,6 @@ source_set("browser") {
     "memory/scheduler_loop_quarantine_web_contents_observer.h",
     "memory/swap_metrics_driver_impl.cc",
     "memory/swap_metrics_driver_impl.h",
-    "memory_coordinator/browser_memory_consumer_registry.cc",
-    "memory_coordinator/browser_memory_consumer_registry.h",
     "memory_coordinator/browser_memory_coordinator.cc",
     "memory_coordinator/browser_memory_coordinator.h",
     "memory_coordinator/child_memory_consumer_registry_host.cc",
