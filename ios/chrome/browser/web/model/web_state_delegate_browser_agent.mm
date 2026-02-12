@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/web/model/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_state_container_view_provider.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
+#import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -337,6 +338,17 @@ void WebStateDelegateBrowserAgent::ContextMenuConfiguration(
       [context_menu_provider_ contextMenuConfigurationForWebState:source
                                                            params:params];
   completion_handler(configuration);
+}
+
+UIContextMenuConfiguration*
+WebStateDelegateBrowserAgent::GetCustomContextMenuConfiguration() {
+  return ios::provider::GetDefaultContextMenuConfiguration();
+}
+
+void WebStateDelegateBrowserAgent::ContextMenuConfigurationLoaded(
+    UIContextMenuConfiguration* configuration,
+    UIContextMenuConfiguration* update) {
+  ios::provider::UpdateContextMenuConfiguration(configuration, update);
 }
 
 void WebStateDelegateBrowserAgent::ContextMenuWillCommitWithAnimator(

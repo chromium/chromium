@@ -47,6 +47,13 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
     id<UnitConversionCommands> unit_conversion_handler,
     id<EnhancedCalendarCommands> enhanced_calendar_handler);
 
+// Returns a default context menu configuration.
+UIContextMenuConfiguration* GetDefaultContextMenuConfiguration();
+
+// Updates the `config` with the `update`.
+void UpdateContextMenuConfiguration(UIContextMenuConfiguration* config,
+                                    UIContextMenuConfiguration* update);
+
 // Returns set of `NSTextCheckingType` representing the intent types that
 // can be handled by the provider, for the given `web_state`.
 NSTextCheckingType GetHandledIntentTypes(web::WebState* web_state);

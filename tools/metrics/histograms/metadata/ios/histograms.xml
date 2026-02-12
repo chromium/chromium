@@ -638,6 +638,16 @@ chromium-metrics-reviews@google.com.
   <summary>Whether the loading of the image preview succeeded.</summary>
 </histogram>
 
+<histogram name="IOS.ContextMenu.UpdateConfigurationResult" enum="Boolean"
+    expires_after="2027-02-08">
+  <owner>justincohen@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    Records the outcome of a context menu update triggered by a long-press
+    gesture. Reported after the DOM element at the gesture point is retrieved.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ContextualPanel.DismissedReason"
     enum="IOSContextualPanelDismissedReason" expires_after="2027-01-31">
   <owner>rkgibson@google.com</owner>
