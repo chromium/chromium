@@ -269,8 +269,8 @@ H264RateController::H264RateController(H264RateControllerSettings settings)
   DCHECK_GT(settings.num_temporal_layers, 0u);
   DCHECK_LE(settings.num_temporal_layers,
             h264_rate_control_util::kMaxNumTemporalLayers);
-  DCHECK_GT(target_fps_, 1.0f);
-  DCHECK_GT(frame_rate_max_, 1.0f);
+  DCHECK_GE(target_fps_, 1.0f);
+  DCHECK_GE(frame_rate_max_, 1.0f);
   // Short-term window is 5 x frame duration with the lowest value limited at
   // 300 ms. The values are chosen arbitrarily.
   base::TimeDelta short_term_window_size = base::Milliseconds(std::max(
