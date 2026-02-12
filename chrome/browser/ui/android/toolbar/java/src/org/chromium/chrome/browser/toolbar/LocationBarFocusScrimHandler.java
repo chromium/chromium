@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
+
+import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -17,6 +20,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
@@ -92,11 +96,19 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
         }
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+        boolean useTransparentScrim =
+                isTablet && OmniboxFeatures.sOmniboxMultimodalInput.isEnabled();
         boolean useLightColor =
                 !isTablet
                         && !mLocationBarDataProvider.isIncognitoBranded()
                         && !ColorUtils.inNightMode(mContext);
-        mScrimModel.set(ScrimProperties.BACKGROUND_COLOR, useLightColor ? mLightScrimColor : null);
+        @ColorInt Integer scrimColor = null;
+        if (useTransparentScrim) {
+            scrimColor = Color.TRANSPARENT;
+        } else if (useLightColor) {
+            scrimColor = mLightScrimColor;
+        }
+        mScrimModel.set(ScrimProperties.BACKGROUND_COLOR, scrimColor);
         mScrimModel.set(
                 ScrimProperties.BOTTOM_MARGIN,
                 mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN));

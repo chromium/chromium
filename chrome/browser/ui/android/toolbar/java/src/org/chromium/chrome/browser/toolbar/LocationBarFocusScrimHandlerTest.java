@@ -16,12 +16,15 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -39,6 +42,8 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for LocationBarFocusScrimHandler. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -55,6 +60,7 @@ public class LocationBarFocusScrimHandlerTest {
     @Mock private ScrimManager mScrimManager;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private BottomControlsStacker mBottomControlsStacker;
+    @Captor private ArgumentCaptor<PropertyModel> mScrimModelCaptor;
 
     LocationBarFocusScrimHandler mScrimHandler;
     private final SettableNonNullObservableSupplier<Integer> mTabStripHeightSupplier =
@@ -130,5 +136,18 @@ public class LocationBarFocusScrimHandlerTest {
                 "Scrim top margin should be updated when tab strip height changes.",
                 newHeight,
                 mScrimHandler.getScrimModelForTesting().get(ScrimProperties.TOP_MARGIN));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    @Config(qualifiers = "sw800dp")
+    public void testTransparentScrim() {
+        doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
+        doReturn(false).when(mNewTabPageDelegate).isLocationBarShown();
+        mScrimHandler.onUrlFocusChange(true);
+        verify(mScrimManager).showScrim(mScrimModelCaptor.capture());
+        assertEquals(
+                Color.TRANSPARENT,
+                (int) mScrimModelCaptor.getValue().get(ScrimProperties.BACKGROUND_COLOR));
     }
 }
