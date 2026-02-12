@@ -47,6 +47,15 @@ class CORE_EXPORT FlexItemIterator {
   // line.
   void NextLine();
 
+  // Returns true if the next item to be processed is in the same line as
+  // `line_idx`.
+  bool HasNextItemInLine(wtf_size_t line_idx) const {
+    DCHECK_LT(line_idx, flex_lines_.size());
+
+    // If there is no next item, then we are at the end of the last line.
+    return line_idx == flex_line_idx_ && next_unstarted_item_;
+  }
+
  private:
   FlexItemData* FindNextItem(const BlockBreakToken* item_break_token = nullptr);
   void AdjustItemIndexForNewLine();
