@@ -2772,9 +2772,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public void clearUrlBarCursorWithoutFocusAnimations() {}
 
         @Override
-        public void selectAll() {}
-
-        @Override
         public void revertChanges() {}
 
         @Override

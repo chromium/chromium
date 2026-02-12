@@ -15,13 +15,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.I
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -159,6 +160,9 @@ public class SearchActivityUnitTest {
     private @Mock UmaActivityObserver mUmaObserver;
     private @Mock Callback<@Nullable String> mSetCustomTabSearchClient;
     private @Mock LocationBarBackgroundDrawable mSearchBoxBackground;
+    private @Mock LocationBarCoordinator mLocationBarCoordinator;
+    private @Mock UrlBarCoordinator mUrlCoordinator;
+    private @Mock StatusCoordinator mStatusCoordinator;
     private MonotonicObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
@@ -181,7 +185,10 @@ public class SearchActivityUnitTest {
         // TemplateUrlService to TemplateUrlServiceFactory#setInstanceForTesting.
         // Some scenarios however require Factory to return null, which isn't currently possible.
         TemplateUrlServiceFactoryJni.setInstanceForTesting(mTemplateUrlFactoryJni);
-        doReturn(mTemplateUrlSvc).when(mTemplateUrlFactoryJni).getTemplateUrlService(any());
+        lenient()
+                .doReturn(mTemplateUrlSvc)
+                .when(mTemplateUrlFactoryJni)
+                .getTemplateUrlService(any());
 
         mProfileSupplier = mActivity.getProfileSupplierForTesting();
 
@@ -195,8 +202,13 @@ public class SearchActivityUnitTest {
                 ContextCompat.getColor(mActivity, R.color.search_suggestion_bg_color));
         mAnchorView.setBackground(anchorViewBackground);
         mActivity.setAnchorViewForTesting(mAnchorView);
+        mActivity.setLocationBarCoordinatorForTesting(mLocationBarCoordinator);
 
-        when(mLocationBar.getBackground()).thenReturn(mSearchBoxBackground);
+        lenient().when(mLocationBar.getBackground()).thenReturn(mSearchBoxBackground);
+        lenient()
+                .when(mLocationBarCoordinator.getStatusCoordinator())
+                .thenReturn(mStatusCoordinator);
+        lenient().when(mLocationBarCoordinator.getUrlBarCoordinator()).thenReturn(mUrlCoordinator);
 
         ShadowSearchActivityUtils.sMockUtils = mUtils;
         WebContentsFactory.setWebContentsForTesting(mWebContents);
@@ -410,11 +422,6 @@ public class SearchActivityUnitTest {
 
     @Test
     public void handleNewIntent_forHubSearch() {
-        LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
-        StatusCoordinator statusCoordinator = mock(StatusCoordinator.class);
-        doReturn(statusCoordinator).when(locationBarCoordinator).getStatusCoordinator();
-        mActivity.setLocationBarCoordinatorForTesting(locationBarCoordinator);
-
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
 
         assertEquals(
@@ -426,16 +433,12 @@ public class SearchActivityUnitTest {
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
 
-        verify(statusCoordinator).setOnStatusIconNavigateBackButtonPress(any());
+        verify(mStatusCoordinator).setOnStatusIconNavigateBackButtonPress(any());
     }
 
     @Test
     public void exitSearchViaCustomBackArrow_HubSearch() {
-        LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
-        StatusCoordinator statusCoordinator = mock(StatusCoordinator.class);
         View view = mock(View.class);
-        doReturn(statusCoordinator).when(locationBarCoordinator).getStatusCoordinator();
-        mActivity.setLocationBarCoordinatorForTesting(locationBarCoordinator);
 
         ArgumentCaptor<OnClickListener> captor = ArgumentCaptor.forClass(OnClickListener.class);
         var histograms =
@@ -447,7 +450,7 @@ public class SearchActivityUnitTest {
                         .build();
 
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
-        verify(statusCoordinator).setOnStatusIconNavigateBackButtonPress(captor.capture());
+        verify(mStatusCoordinator).setOnStatusIconNavigateBackButtonPress(captor.capture());
         OnClickListener listener = captor.getValue();
         listener.onClick(view);
         histograms.assertExpected();
@@ -455,11 +458,6 @@ public class SearchActivityUnitTest {
 
     @Test
     public void cancelHubSearch_onBackKeyPressed() {
-        LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
-        StatusCoordinator statusCoordinator = mock(StatusCoordinator.class);
-        doReturn(statusCoordinator).when(locationBarCoordinator).getStatusCoordinator();
-        mActivity.setLocationBarCoordinatorForTesting(locationBarCoordinator);
-
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
         var histograms =
                 HistogramWatcher.newBuilder()
@@ -850,13 +848,6 @@ public class SearchActivityUnitTest {
     @Test
     @DisableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
     public void finishNativeInitialization_setHubSearchBoxUrlBarElements() {
-        LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
-        UrlBarCoordinator urlBarCoordinator = mock(UrlBarCoordinator.class);
-        StatusCoordinator statusCoordinator = mock(StatusCoordinator.class);
-        doReturn(statusCoordinator).when(locationBarCoordinator).getStatusCoordinator();
-        doReturn(urlBarCoordinator).when(locationBarCoordinator).getUrlBarCoordinator();
-        mActivity.setLocationBarCoordinatorForTesting(locationBarCoordinator);
-
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
 
         setProfile(mProfile);
@@ -864,20 +855,13 @@ public class SearchActivityUnitTest {
 
         String expectedText = mActivity.getResources().getString(R.string.hub_search_empty_hint);
 
-        verify(urlBarCoordinator).setUrlBarHintText(expectedText);
+        verify(mUrlCoordinator).setUrlBarHintText(expectedText);
     }
 
     @Test
     @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
     public void finishNativeInitialization_setHubSearchBoxUrlBarElements_withTabGroups() {
         OmniboxFeatures.sAndroidHubSearchEnableTabGroupStrings.setForTesting(true);
-
-        LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
-        UrlBarCoordinator urlBarCoordinator = mock(UrlBarCoordinator.class);
-        StatusCoordinator statusCoordinator = mock(StatusCoordinator.class);
-        doReturn(statusCoordinator).when(locationBarCoordinator).getStatusCoordinator();
-        doReturn(urlBarCoordinator).when(locationBarCoordinator).getUrlBarCoordinator();
-        mActivity.setLocationBarCoordinatorForTesting(locationBarCoordinator);
 
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
 
@@ -887,7 +871,7 @@ public class SearchActivityUnitTest {
         String expectedText =
                 mActivity.getResources().getString(R.string.hub_search_empty_hint_with_tab_groups);
 
-        verify(urlBarCoordinator).setUrlBarHintText(expectedText);
+        verify(mUrlCoordinator).setUrlBarHintText(expectedText);
     }
 
     @Test
@@ -934,34 +918,40 @@ public class SearchActivityUnitTest {
 
     @Test
     public void onNewIntent_applyQuery() {
+        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+
         var intent = buildTestWidgetIntent(IntentOrigin.SEARCH_WIDGET);
         intent.putExtra(SearchManager.QUERY, "query1");
         mActivity.onNewIntent(intent);
-        verify(mLocationBar)
-                .beginQuery(
-                        eq(IntentOrigin.SEARCH_WIDGET), eq(SearchType.TEXT), eq("query1"), any());
+        verify(mLocationBar).beginQuery(eq(IntentOrigin.SEARCH_WIDGET), eq(SearchType.TEXT), any());
+        verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
+        assertEquals("query1", captor.getValue().getUserText());
+        clearInvocations(mLocationBar, mLocationBarCoordinator);
 
         intent = buildTestWidgetIntent(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET);
         intent.putExtra(SearchManager.QUERY, "query2");
         mActivity.onNewIntent(intent);
         verify(mLocationBar)
                 .beginQuery(
-                        eq(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET),
-                        eq(SearchType.TEXT),
-                        eq("query2"),
-                        any());
+                        eq(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET), eq(SearchType.TEXT), any());
+        verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
+        assertEquals("query2", captor.getValue().getUserText());
+        clearInvocations(mLocationBar, mLocationBarCoordinator);
 
         intent = buildTestWidgetIntent(IntentOrigin.SEARCH_WIDGET);
         intent.putExtra(SearchManager.QUERY, "");
         mActivity.onNewIntent(intent);
-        verify(mLocationBar)
-                .beginQuery(eq(IntentOrigin.SEARCH_WIDGET), eq(SearchType.TEXT), eq(""), any());
+        verify(mLocationBar).beginQuery(eq(IntentOrigin.SEARCH_WIDGET), eq(SearchType.TEXT), any());
+        verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
+        assertEquals("", captor.getValue().getUserText());
+        clearInvocations(mLocationBar, mLocationBarCoordinator);
 
         intent = buildTestServiceIntent(IntentOrigin.CUSTOM_TAB);
         intent.removeExtra(SearchManager.QUERY);
         mActivity.onNewIntent(intent);
-        verify(mLocationBar)
-                .beginQuery(eq(IntentOrigin.CUSTOM_TAB), eq(SearchType.TEXT), eq(null), any());
+        verify(mLocationBar).beginQuery(eq(IntentOrigin.CUSTOM_TAB), eq(SearchType.TEXT), any());
+        verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
+        assertEquals("", captor.getValue().getUserText());
     }
 
     @Test
@@ -1065,19 +1055,19 @@ public class SearchActivityUnitTest {
     @Test
     public void recordNavigationTargetType() {
         setProfile(mProfile);
-        GURL native_url = new GURL(getOriginalNativeNtpUrl());
-        GURL search_url = new GURL("https://google.com");
-        GURL web_url = new GURL("https://abc.xyz");
+        GURL nativeUrl = new GURL(getOriginalNativeNtpUrl());
+        GURL searchUrl = new GURL("https://google.com");
+        GURL webUrl = new GURL("https://abc.xyz");
 
         var variants =
                 Map.of(
-                        native_url, SearchActivity.NavigationTargetType.NATIVE_PAGE,
-                        search_url, SearchActivity.NavigationTargetType.SEARCH,
-                        web_url, SearchActivity.NavigationTargetType.URL);
+                        nativeUrl, SearchActivity.NavigationTargetType.NATIVE_PAGE,
+                        searchUrl, SearchActivity.NavigationTargetType.SEARCH,
+                        webUrl, SearchActivity.NavigationTargetType.URL);
 
         doReturn(true)
                 .when(mTemplateUrlSvc)
-                .isSearchResultsPageFromDefaultSearchProvider(search_url);
+                .isSearchResultsPageFromDefaultSearchProvider(searchUrl);
 
         for (var entry : variants.entrySet()) {
             var type = entry.getValue();
@@ -1140,11 +1130,6 @@ public class SearchActivityUnitTest {
 
     @Test
     public void onTopResumedActivityChanged_finishActivityFocusLostHubSearch() {
-        LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
-        StatusCoordinator statusCoordinator = mock(StatusCoordinator.class);
-        doReturn(statusCoordinator).when(locationBarCoordinator).getStatusCoordinator();
-        mActivity.setLocationBarCoordinatorForTesting(locationBarCoordinator);
-
         doNothing().when(mActivity).super_onTopResumedActivityChanged(anyBoolean());
         var histograms =
                 HistogramWatcher.newBuilder()
@@ -1161,11 +1146,6 @@ public class SearchActivityUnitTest {
 
     @Test
     public void verifySearchBoxColorScheme_toggleIncognitoStatus() {
-        LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
-        StatusCoordinator statusCoordinator = mock(StatusCoordinator.class);
-        doReturn(statusCoordinator).when(locationBarCoordinator).getStatusCoordinator();
-        mActivity.setLocationBarCoordinatorForTesting(locationBarCoordinator);
-
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
 
         // Assert that the search box has the correct color scheme on inflation.

@@ -75,6 +75,23 @@ class UrlBarViewBinder {
             view.setScrollState(state.scrollType, state.scrollToIndex);
             view.setIgnoreTextChangesForAutocomplete(false);
             if (view.hasFocus()) {
+                // NOTE: Selection applied from here MAY be overridden by the OS if the focus came
+                // from the user (and not from software, i.e. requestFocus()).
+                //
+                // When the user focuses the editable field, the OS forcibly takes one of the two
+                // actions:
+                // 1. forcibly places the cursor at the point of click, or
+                // 2. selecting all content (if selectAllOnFocus is set to true)
+                // in both cases overriding the selection supplied by software.
+                //
+                // This is technically sufficient right now:
+                // - When we restore persisted tab editing state - we bring the focus - and
+                //   selection - from software, so the OS does not override our preferences.
+                // - When the user focuses the UrlBar and the content is persisted (LFFs with
+                //   precision devices attached) we presently want to select all content.
+                //
+                // Be careful when extending selection to override OS settings - Android 12 is
+                // particularly sensitive here.
                 int textLength = view.getText().length();
                 Range<Integer> selectionRange;
                 try {
@@ -82,11 +99,7 @@ class UrlBarViewBinder {
                 } catch (IllegalArgumentException rangesDoNotOverlap) {
                     selectionRange = Range.create(textLength, textLength);
                 }
-
                 view.setSelection(selectionRange.getLower(), selectionRange.getUpper());
-                // Move the accessibility focus to the Omnibox.
-                // This ensures the updated field is announced to the user, especially when the user
-                // recently interacted with Refine button.
                 view.requestAccessibilityFocus();
             }
         } else if (UrlBarProperties.TEXT_COLOR.equals(propertyKey)) {

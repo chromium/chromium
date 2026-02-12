@@ -202,13 +202,6 @@ public class UrlBarCoordinator
     }
 
     /**
-     * @see UrlBarMediator#setSelectAllOnFocus(boolean)
-     */
-    public void setSelectAllOnFocus(boolean selectAllOnFocus) {
-        mMediator.setSelectAllOnFocus(selectAllOnFocus);
-    }
-
-    /**
      * @see UrlBarMediator#setUrlDirectionListener(Callback<Integer>)
      */
     public void setUrlDirectionListener(Callback<Integer> listener) {
@@ -220,11 +213,6 @@ public class UrlBarCoordinator
      */
     public void setIsInCct(boolean isInCct) {
         mMediator.setIsInCct(isInCct);
-    }
-
-    /** Selects all of the text of the UrlBar. */
-    public void selectAll() {
-        mUrlBar.selectAll();
     }
 
     @Override
@@ -255,17 +243,6 @@ public class UrlBarCoordinator
     @Override
     public String getTextWithoutAutocomplete() {
         return mUrlBar.getTextWithoutAutocomplete();
-    }
-
-    /**
-     * Sets the selection anchor to startPos and the selection edge to endPos. When startPos is same
-     * as endPos, no text is selected and the cursor moves to startPos/EndPos.
-     *
-     * @param startPos The start position of the selection.
-     * @param endPos The end position of the selection
-     */
-    public void setSelection(int startPos, int endPos) {
-        mUrlBar.setSelection(startPos, endPos);
     }
 
     /** Returns the {@link ViewRectProvider} for the UrlBar. */

@@ -244,6 +244,11 @@ public class UrlBar extends AutocompleteEditText {
         int endPadding = getResources().getDimensionPixelSize(R.dimen.url_bar_end_padding);
         setPaddingRelative(0, verticalPadding, endPadding, verticalPadding);
 
+        // Always select all content if the focus is triggered by the user.
+        // Software triggered focus can apply selection at will, but when focus comes from
+        // the click/touch - the OS overrides.
+        setSelectAllOnFocus(true);
+
         setTextClassifier(TextClassifier.NO_OP);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             setIsHandwritingDelegate(true);

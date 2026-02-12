@@ -3047,16 +3047,15 @@ public class ToolbarManager
             boolean focused, @OmniboxFocusReason int reason, @Nullable String text) {
         if (!mInitializedWithNative) return;
         if (mLocationBar.getOmniboxStub() == null) return;
-        boolean wasFocused = mLocationBar.getOmniboxStub().isUrlBarFocused();
         mLocationBar
                 .getOmniboxStub()
                 .setUrlBarFocus(
                         focused
-                                ? new AutocompleteInput().setUserText(text).setFocusReason(reason)
+                                ? new AutocompleteInput()
+                                        .setUserText(text)
+                                        .setSelection(0, Integer.MAX_VALUE)
+                                        .setFocusReason(reason)
                                 : null);
-        if (wasFocused && focused) {
-            mLocationBar.selectAll();
-        }
     }
 
     /**
