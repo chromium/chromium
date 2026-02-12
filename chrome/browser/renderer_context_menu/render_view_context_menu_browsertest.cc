@@ -1697,7 +1697,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
 
   browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/0,
                                                    TabCloseTypes::CLOSE_NONE);
-  web_app::CloseAndWait(browser());
+  CloseBrowserSynchronously(browser());
   EXPECT_FALSE(web_app::IsBrowserOpen(browser()));
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
 

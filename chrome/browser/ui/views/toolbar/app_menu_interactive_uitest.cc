@@ -302,10 +302,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, DoNotCrashOnBrowserClose) {
   RunTestSequence(
       // Open the App menu.
       PressButton(kToolbarAppMenuButtonElementId),
-      // Close all browsers, ensure the browser process does not crash.
-      Do([]() {
-        ui_test_utils::BrowserDestroyedObserver observer;
-        chrome::CloseAllBrowsers();
-        observer.Wait();
-      }));
+      // Close the browser, ensure the browser process does not crash.
+      Do([this]() { browser()->GetWindow()->Close(); }),
+      WaitForHide(kBrowserViewElementId));
 }
