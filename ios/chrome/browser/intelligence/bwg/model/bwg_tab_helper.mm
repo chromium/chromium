@@ -236,10 +236,8 @@ void BwgTabHelper::SetContextualCueLabel(NSString* cue_label) {
 
 GeminiPageContext* BwgTabHelper::GetPartialPageContext() {
   GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
-  // TODO(crbug.com/467341090): Remove the chain assignment after the migration.
   gemini_page_context.geminiPageContextComputationState =
-      gemini_page_context.BWGPageContextComputationState =
-          ios::provider::BWGPageContextComputationState::kPending;
+      ios::provider::GeminiPageContextComputationState::kPending;
   gemini_page_context.favicon = current_favicon_;
 
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =

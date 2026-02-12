@@ -65,9 +65,6 @@ enum class GeminiPageContextComputationState {
   kPending,
 };
 
-// TODO(crbug.com/467341090): Remove this alias once all callers have migrated.
-using BWGPageContextComputationState = GeminiPageContextComputationState;
-
 // Enum representing the page context attachment state of the BWG experience.
 // This needs to stay in sync with GCRGeminiPageContextAttachmentState (and its
 // SDK counterpart).
