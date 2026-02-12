@@ -413,39 +413,39 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchema(
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeTextParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
+  CHECK(IsText(controls_for_name));
   // Note that this function is used for both <input type=text> and <textarea>.
-  HTMLFormControlElement* element = controls_for_name.front().Get();
-  CHECK(element);
+  auto& element = To<HTMLFormControlElement>(*controls_for_name.front().Get());
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
-  AddTitle(*element, *schema);
-  AddDescription(*element, *schema);
-  required = element->IsRequired();
+  AddTitle(element, *schema);
+  AddDescription(element, *schema);
+  required = element.IsRequired();
   return schema;
 }
 
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeDateParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
-  HTMLFormControlElement* element = controls_for_name.front().Get();
-  CHECK(element);
+  CHECK(IsDate(controls_for_name));
+  auto& element = To<HTMLFormControlElement>(*controls_for_name.front().Get());
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
   schema->SetString("format", "date");
   // Note that the "minimum" and "maximum" fields must contains numbers;
   // they cannot be used for dates.
-  AddTitle(*element, *schema);
-  AddDescription(*element, *schema,
+  AddTitle(element, *schema);
+  AddDescription(element, *schema,
                  "Dates MUST be provided in 'YYYY-MM-DD' format.");
-  required = element->IsRequired();
+  required = element.IsRequired();
   return schema;
 }
 
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeDatetimeLocalParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
-  HTMLFormControlElement* element = controls_for_name.front().Get();
-  CHECK(element);
+  CHECK(IsDatetimeLocal(controls_for_name));
+  auto& element = To<HTMLFormControlElement>(*controls_for_name.front().Get());
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
   // The regex format is based on the valid time microsyntax in HTML:
@@ -455,53 +455,52 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeDatetimeLocalParameterSchema(
   schema->SetString(
       "format",
       "^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]$");
-  AddTitle(*element, *schema);
-  AddDescription(*element, *schema);
-  required = element->IsRequired();
+  AddTitle(element, *schema);
+  AddDescription(element, *schema);
+  required = element.IsRequired();
   return schema;
 }
 
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeMonthParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
-  HTMLFormControlElement* element = controls_for_name.front().Get();
-  CHECK(element);
+  CHECK(IsMonth(controls_for_name));
+  auto& element = To<HTMLFormControlElement>(*controls_for_name.front().Get());
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months
   schema->SetString("format", "^[0-9]{4}-(0[1-9]|1[0-2])$");
-  AddTitle(*element, *schema);
-  AddDescription(*element, *schema);
-  required = element->IsRequired();
+  AddTitle(element, *schema);
+  AddDescription(element, *schema);
+  required = element.IsRequired();
   return schema;
 }
 
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeWeekParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
-  HTMLFormControlElement* element = controls_for_name.front().Get();
-  CHECK(element);
+  CHECK(IsWeek(controls_for_name));
+  auto& element = To<HTMLFormControlElement>(*controls_for_name.front().Get());
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks
   schema->SetString("format", "^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$");
-  AddTitle(*element, *schema);
-  AddDescription(*element, *schema);
-  required = element->IsRequired();
+  AddTitle(element, *schema);
+  AddDescription(element, *schema);
+  required = element.IsRequired();
   return schema;
 }
 
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeTimeParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
-  HTMLFormControlElement* element = controls_for_name.front().Get();
-  CHECK(element);
+  CHECK(IsTime(controls_for_name));
+  auto& element = To<HTMLInputElement>(*controls_for_name.front().Get());
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
-  StepRange range =
-      To<HTMLInputElement>(element)->CreateStepRange(kAnyIsDefaultStep);
+  StepRange range = element.CreateStepRange(kAnyIsDefaultStep);
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#times
   // We cannot use the "time" type from json schema because that accepts
@@ -522,24 +521,21 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeTimeParameterSchema(
     // Allow HH:MM only
     schema->SetString("format", "^([01][0-9]|2[0-3]):[0-5][0-9]$");
   }
-  AddTitle(*element, *schema);
-  AddDescription(*element, *schema);
-  required = element->IsRequired();
+  AddTitle(element, *schema);
+  AddDescription(element, *schema);
+  required = element.IsRequired();
   return schema;
 }
 
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeNumberParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
-  auto* element = DynamicTo<HTMLInputElement>(controls_for_name.front().Get());
-  if (!element) {
-    return nullptr;
-  }
-
+  CHECK(IsNumber(controls_for_name));
+  auto& element = To<HTMLInputElement>(*controls_for_name.front().Get());
   auto schema = std::make_unique<JSONObject>();
   // TODO(crbug.com/475972617): Consider type:integer for matching StepRanges?
   schema->SetString("type", "number");
-  StepRange step_range = element->CreateStepRange(kRejectAny);
+  StepRange step_range = element.CreateStepRange(kRejectAny);
   if (step_range.HasMin()) {
     schema->SetDouble("minimum", step_range.Minimum().ToDouble());
   }
@@ -554,25 +550,22 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeNumberParameterSchema(
       schema->SetDouble("multipleOf", step.ToDouble());
     }
   }
-  AddTitle(*element, *schema);
-  AddDescription(*element, *schema);
-  required = element->IsRequired();
+  AddTitle(element, *schema);
+  AddDescription(element, *schema);
+  required = element.IsRequired();
   return schema;
 }
 
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeSelectParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
-  auto* element = DynamicTo<HTMLSelectElement>(controls_for_name.front().Get());
-  if (!element) {
-    return nullptr;
-  }
-
+  CHECK(IsSelect(controls_for_name));
+  auto& element = To<HTMLSelectElement>(*controls_for_name.front().Get());
   auto schema = std::make_unique<JSONObject>();
 
   auto one_of = std::make_unique<JSONArray>();
   auto enum_array = std::make_unique<JSONArray>();
-  for (HTMLOptionElement& option : element->GetOptionList()) {
+  for (HTMLOptionElement& option : element.GetOptionList()) {
     auto option_object = std::make_unique<JSONObject>();
     option_object->SetString("const", option.value());
     option_object->SetString("title", option.textContent());
@@ -580,7 +573,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeSelectParameterSchema(
     enum_array->PushString(option.value());
   }
 
-  if (element->IsMultiple()) {
+  if (element.IsMultiple()) {
     schema->SetString("type", "array");
     auto items_schema = std::make_unique<JSONObject>();
     items_schema->SetString("type", "string");
@@ -594,10 +587,10 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeSelectParameterSchema(
     schema->SetArray("enum", std::move(enum_array));
   }
 
-  AddTitle(*element, *schema);
-  AddDescription(*element, *schema);
+  AddTitle(element, *schema);
+  AddDescription(element, *schema);
 
-  required = element->IsRequired();
+  required = element.IsRequired();
 
   return schema;
 }
@@ -605,13 +598,11 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeSelectParameterSchema(
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeRangeParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
-  auto* element = DynamicTo<HTMLInputElement>(controls_for_name.front().Get());
-  if (!element) {
-    return nullptr;
-  }
+  CHECK(IsRange(controls_for_name));
+  auto& element = To<HTMLInputElement>(*controls_for_name.front().Get());
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "number");
-  StepRange step_range = element->CreateStepRange(kRejectAny);
+  StepRange step_range = element.CreateStepRange(kRejectAny);
   // Range input types always have a minimum and maximum, either from
   // the attributes or from the default values (0 and 100, respectively).
   schema->SetDouble("minimum", step_range.Minimum().ToDouble());
@@ -623,20 +614,22 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeRangeParameterSchema(
   if (step_range.StepBase().Remainder(step).IsZero()) {
     schema->SetDouble("multipleOf", step.ToDouble());
   }
-  AddTitle(*element, *schema);
-  AddDescription(*element, *schema);
-  required = element->IsRequired();
+  AddTitle(element, *schema);
+  AddDescription(element, *schema);
+  required = element.IsRequired();
   return schema;
 }
 
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeCheckboxParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
+  CHECK(IsCheckbox(controls_for_name));
   if (controls_for_name.size() == 1u) {
     auto schema = std::make_unique<JSONObject>();
-    HTMLFormControlElement* control = controls_for_name.front().Get();
+    auto& control =
+        To<HTMLFormControlElement>(*controls_for_name.front().Get());
     schema->SetString("type", "boolean");
-    required = control->IsRequired();
+    required = control.IsRequired();
     return schema;
   }
 
@@ -672,6 +665,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeCheckboxParameterSchema(
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeRadioParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
+  CHECK(IsRadio(controls_for_name));
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
 
@@ -708,8 +702,8 @@ std::unique_ptr<JSONArray> FormMCPSchema::ComputeOneOfArray(
 std::unique_ptr<JSONObject> FormMCPSchema::ComputeColorParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
-  HTMLFormControlElement* element = controls_for_name.front().Get();
-  CHECK(element);
+  CHECK(IsColor(controls_for_name));
+  auto& element = To<HTMLFormControlElement>(*controls_for_name.front().Get());
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
   // We only support setting color input values to a 6-digit hex rgba value, so
@@ -717,9 +711,9 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeColorParameterSchema(
   // TODO: With the runtime feature ColorInputAcceptsCSSColors enabled, we may
   // support more color syntaxes.
   schema->SetString("format", "^#[0-9a-zA-Z]{6}$");
-  AddTitle(*element, *schema);
-  AddDescription(*element, *schema);
-  required = element->IsRequired();
+  AddTitle(element, *schema);
+  AddDescription(element, *schema);
+  required = element.IsRequired();
   return schema;
 }
 
