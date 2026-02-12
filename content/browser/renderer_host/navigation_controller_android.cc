@@ -127,17 +127,24 @@ NavigationControllerAndroid::NavigationControllerAndroid(
     NavigationControllerImpl* navigation_controller)
     : navigation_controller_(navigation_controller) {
   JNIEnv* env = AttachCurrentThread();
-  obj_.Reset(env, Java_NavigationControllerImpl_create(
-                      env, reinterpret_cast<intptr_t>(this)));
+  obj_ =
+      JavaObjectWeakGlobalRef(env, Java_NavigationControllerImpl_create(
+                                       env, reinterpret_cast<intptr_t>(this)));
 }
 
 NavigationControllerAndroid::~NavigationControllerAndroid() {
-  Java_NavigationControllerImpl_destroy(AttachCurrentThread(), obj_);
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = obj_.get(env);
+  CHECK(!obj.is_null());
+  Java_NavigationControllerImpl_destroy(env, obj);
 }
 
 base::android::ScopedJavaLocalRef<jobject>
 NavigationControllerAndroid::GetJavaObject() {
-  return base::android::ScopedJavaLocalRef<jobject>(obj_);
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = obj_.get(env);
+  CHECK(!obj.is_null());
+  return obj;
 }
 
 bool NavigationControllerAndroid::CanGoBack(JNIEnv* env) {

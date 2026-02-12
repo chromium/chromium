@@ -27,6 +27,9 @@ import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The NavigationControllerImpl Java wrapper to allow communicating with the native
  * NavigationControllerImpl object.
@@ -38,10 +41,18 @@ import org.chromium.url.Origin;
 /* package */ class NavigationControllerImpl implements NavigationController {
     private static final String TAG = "NavigationController";
 
+    // Using ScopedJavaGlobalRef in the owning C++ object to keep the Java object alive consumes an
+    // entry per instance in the finite global ref table. This scales poorly with a large number of
+    // WebContents. As a workaround, the C++ owner uses a JavaObjectWeakGlobalRef and an entry is
+    // kept in the a static map of the native pointer to Java objects to prevent garbage collection.
+    private static final Map<Long, NavigationControllerImpl> sNavigationControllerImpls =
+            new HashMap<>();
+
     private long mNativeNavigationControllerAndroid;
 
     private NavigationControllerImpl(long nativeNavigationControllerAndroid) {
         mNativeNavigationControllerAndroid = nativeNavigationControllerAndroid;
+        sNavigationControllerImpls.put(nativeNavigationControllerAndroid, this);
     }
 
     @CalledByNative
@@ -51,6 +62,9 @@ import org.chromium.url.Origin;
 
     @CalledByNative
     private void destroy() {
+        assert mNativeNavigationControllerAndroid != 0;
+        var removedValue = sNavigationControllerImpls.remove(mNativeNavigationControllerAndroid);
+        assert removedValue != null;
         mNativeNavigationControllerAndroid = 0;
     }
 
