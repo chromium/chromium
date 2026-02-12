@@ -23,6 +23,24 @@ each node today. The implementation lives in
 
 All rectangles are integer enclosures of the underlying floating-point quads.
 
+## Coordinate Space and Units
+
+All geometry is expressed in visual-viewport coordinates in BlinkSpace (device
+pixels), not CSS pixels/DIPs.
+
+Terminology:
+- Layout viewport: the viewport used for layout/scrolling.
+- Visual viewport: what the user actually sees; it can be offset from the layout
+  viewport (e.g. when the mobile toolbar shows/hides during scrolling, or
+  during pinch-zoom).
+
+Browser-side consumers that start from a DIP coordinate (for example
+actor.mojom.ToolTarget.coordinate_dip or JavaScript getBoundingClientRect())
+must convert into APC geometry coordinates before comparing or hit-testing.
+
+For the canonical coordinate space contract, see AIPageContentGeometry in:
+- third_party/blink/public/mojom/content_extraction/ai_page_content.mojom
+
 ## Validation
 
 In debug builds `ValidateBoundingBoxes()` asserts a few invariants:

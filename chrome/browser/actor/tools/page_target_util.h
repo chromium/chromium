@@ -34,10 +34,17 @@ FindLastObservedNodeForActionTargetId(
     const optimization_guide::proto::AnnotatedPageContent* apc,
     const DomNode& target);
 
+// Hit tests `apc` at `target_blink_pixels` and returns the topmost node in the
+// APC at that point.
+//
+// IMPORTANT: `target_blink_pixels` must be provided in the same coordinate
+// space as APC geometry (e.g. Geometry::visible_bounding_box):
+// visual-viewport-relative device pixels ("BlinkSpace"). See
+// optimization_guide::FindNodeAtPoint() for the full coordinate space contract.
 std::optional<optimization_guide::TargetNodeInfo>
 FindLastObservedNodeForActionTargetPoint(
     const optimization_guide::proto::AnnotatedPageContent* apc,
-    const gfx::Point& target_pixels);
+    const gfx::Point& target_blink_pixels);
 
 std::optional<optimization_guide::TargetNodeInfo>
 FindLastObservedNodeForActionTarget(

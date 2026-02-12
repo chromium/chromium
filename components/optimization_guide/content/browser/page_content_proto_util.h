@@ -84,9 +84,25 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
     FrameTokenSet& frame_token_set,
     optimization_guide::AIPageContentResult& page_content);
 
-// Hit test given coordinate with the provided annotated page content and
-// returns the target node and containing document info at the coordinate if
-// there's a match. Returns std::nullopt otherwise.
+// Performs a hit test at `coordinate` against the provided
+// AnnotatedPageContent geometry and
+// returns the topmost target node and containing document info at the
+// coordinate if there's a match.
+//
+// Coordinate space / units:
+// - APC geometry (e.g. Geometry::visible_bounding_box) is produced in the
+//   renderer in the local root's "BlinkSpace" (visual-viewport-relative device
+//   pixels). This means the values are scaled by the device scale factor.
+// - `coordinate` must be provided in that same visual-viewport-relative
+//   device-pixel space. It is *not* a DIP/CSS-pixel coordinate.
+//
+// Callers starting from a DIP coordinate (for example
+// actor.mojom.ToolTarget.coordinate_dip, or JavaScript getBoundingClientRect())
+// should convert from layout-viewport DIPs to visual-viewport BlinkSpace (e.g.
+// apply the appropriate device scale factor and any layout-vs-visual viewport
+// offset) before calling.
+//
+// Returns std::nullopt if no node matches.
 std::optional<optimization_guide::TargetNodeInfo> FindNodeAtPoint(
     const optimization_guide::proto::AnnotatedPageContent&
         annotated_page_content,

@@ -1284,6 +1284,9 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
 bool IsCoordinateInNode(
     const gfx::Point& coordinate,
     const optimization_guide::proto::ContentAttributes& node_attributes) {
+  // `coordinate` is expected to be in the same coordinate space as the APC
+  // geometry in `node_attributes`. See FindNodeAtPoint() in the header for
+  // the canonical coordinate space contract.
   if (!node_attributes.geometry().has_visible_bounding_box()) {
     return false;
   }

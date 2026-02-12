@@ -215,6 +215,14 @@ void ActorToolsTest::GetPageApc() {
 
 gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
                                  std::string_view query) {
+  // getBoundingClientRect() returns CSS pixel coordinates.
+  //
+  // CSS pixels are numerically equal to DIPs only when page zoom is 1.0. If a
+  // caller needs DIP-space values, convert from CSS pixels appropriately first.
+  // Callers that compare this geometry to APC (which uses visual-viewport-
+  // relative device pixels / BlinkSpace) must then convert into APC geometry
+  // coordinates.
+  // See optimization_guide::FindNodeAtPoint() for details.
   double width =
       content::EvalJs(
           &rfh, content::JsReplace(

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      iframe {
+        position: absolute;
+        left: 2px;
+        top: 2px;
+        width: 20px;
+        height: 20px;
+        border: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      This page is intentionally deterministic.
+      It exists only for GlicActorGeneralUiTestHighDPI.
+
+      The iframe and button are positioned so that:
+        - button's top-left is at (2,2) in DIPs/CSS pixels.
+        - button size is 20x20 DIPs.
+      On HighDPI (e.g. DSF=2), (2,2) DIP maps to (4,4) in device pixels.
+      This keeps the coordinate-space mismatch signal while avoiding very tiny
+      render targets that can be unstable in Win headless GPU raster paths.
+    -->
+    <iframe
+      srcdoc="
+        <!doctype html>
+        <html>
+          <head>
+            <meta charset=&quot;utf-8&quot;>
+            <style>
+              html, body { margin: 0; padding: 0; }
+              #clickable {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 20px;
+                height: 20px;
+                margin: 0;
+                padding: 0;
+                border: 0;
+              }
+            </style>
+          </head>
+          <body>
+            <button id=&quot;clickable&quot; aria-label=&quot;clickable&quot;>
+            </button>
+            <script>
+              window.clicked = false;
+              document.getElementById('clickable').addEventListener('click', () => {
+                window.clicked = true;
+              });
+            </script>
+          </body>
+        </html>
+      ">
+    </iframe>
+
+    <script>
+      // The test reads this dict to choose a stable DIP coordinate to click.
+      // (The interactive test operates in DIPs.)
+      window.button_bounds = null;
+      // The test waits for this to become true after clicking the iframe button.
+      // This is scoped to the iframe via `contentWindow.clicked`.
+      // (The iframe defines `window.clicked = true` on click.)
+
+      const iframe = document.querySelector('iframe');
+      iframe.addEventListener('load', () => {
+        const iframe_rect = iframe.getBoundingClientRect();
+        const button_rect =
+          iframe.contentWindow.document.getElementById('clickable')
+            .getBoundingClientRect();
+
+        window.button_bounds = {
+          x: Math.round(iframe_rect.x + button_rect.x),
+          y: Math.round(iframe_rect.y + button_rect.y),
+          width: Math.round(button_rect.width),
+          height: Math.round(button_rect.height),
+        };
+
+      });
+    </script>
+  </body>
+</html>

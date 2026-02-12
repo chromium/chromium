@@ -222,6 +222,12 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
   }
 
   if (std::holds_alternative<gfx::Point>(request_->GetTarget())) {
+    // Coordinate targets are provided in DIPs (view/widget logical pixels)
+    // relative to the local root frame.
+    //
+    // Note: DIPs are not always numerically equal to CSS pixels when page zoom
+    // is not 1.0. This bounds check compares against WebContents::GetSize(),
+    // which is also in DIPs, so it must remain in DIP space.
     const gfx::Point& point = std::get<gfx::Point>(request_->GetTarget());
     gfx::Size content_size = tab->GetContents()->GetSize();
     if (!gfx::Rect(content_size).Contains(point)) {
@@ -231,22 +237,25 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
 
   std::optional<TargetNodeInfo> observed_target_node_info;
   if (std::holds_alternative<gfx::Point>(request_->GetTarget())) {
-    gfx::Point hit_test_target;
+    gfx::Point target_blink_pixels;
 
-    // Convert target coordinate from DIPs to screen pixels.
+    // Convert the tool's `coordinate_dip` into APC geometry coordinates
+    // (visual-viewport-relative BlinkSpace/device pixels) before calling APC
+    // hit testing. See optimization_guide::FindNodeAtPoint() for the canonical
+    // coordinate space contract.
     display::Screen* screen = display::Screen::Get();
     float scale_factor = screen
                              ->GetPreferredScaleFactorForWindow(
                                  tab->GetContents()->GetTopLevelNativeWindow())
                              .value();
-    hit_test_target = gfx::ScaleToRoundedPoint(
+    target_blink_pixels = gfx::ScaleToRoundedPoint(
         std::get<gfx::Point>(request_->GetTarget()), scale_factor);
 
     // TODO(crbug.com/426021822): FindNodeAtPoint does not handle corner cases
     // like clip paths. Need more checks to ensure we don't drop actions
     // unnecessarily.
     observed_target_node_info = FindLastObservedNodeForActionTargetPoint(
-        last_observation, hit_test_target);
+        last_observation, target_blink_pixels);
   } else {
     CHECK(std::holds_alternative<DomNode>(request_->GetTarget()));
     observed_target_node_info = FindLastObservedNodeForActionTargetId(
@@ -293,8 +302,14 @@ void PageTool::Invoke(ToolCallback callback) {
   auto invocation = actor::mojom::ToolInvocation::New();
   invocation->action = request_->ToMojoToolAction(frame);
 
-  // Transform coordinate target from viewport space to widget space for use
-  // within renderer.
+  // For coordinate targets, the model supplies `coordinate_dip` in the local
+  // root's DIP coordinate space (see actor.mojom.ToolTarget.coordinate_dip).
+  //
+  // This invocation is routed to a specific RenderFrameHost. If that frame is
+  // in a different widget (e.g. an OOPIF), we must transform the root DIP point
+  // into that frame's view coordinate space. The transformed coordinate is
+  // still in DIPs; the renderer will later convert DIPs to device pixels
+  // (BlinkSpace) for hit testing via WebFrameWidget::DIPsToBlinkSpace().
   if (std::holds_alternative<gfx::Point>(request_->GetTarget())) {
     PageTarget transformed_target =
         gfx::ToRoundedPoint(frame.GetView()->TransformRootPointToViewCoordSpace(

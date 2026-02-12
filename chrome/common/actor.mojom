@@ -20,6 +20,10 @@ union ToolTarget {
   // An x,y pair representing a location relative to the origin at the top-left
   // corner of the local root frame (i.e. the blink::WebWidget/RenderWidget). In
   // DIP.
+  //
+  // Note: Renderer-side hit testing uses BlinkSpace (device pixels). This
+  // coordinate is converted via WebFrameWidget::DIPsToBlinkSpace() before
+  // performing a hit test.
   gfx.mojom.Point coordinate_dip;
 };
 

@@ -108,14 +108,14 @@ std::optional<TargetNodeInfo> FindLastObservedNodeForActionTargetId(
 
 std::optional<TargetNodeInfo> FindLastObservedNodeForActionTargetPoint(
     const AnnotatedPageContent* apc,
-    const gfx::Point& target_pixels) {
+    const gfx::Point& target_blink_pixels) {
   if (!apc) {
     return std::nullopt;
   }
 
   // TODO(rodneyding): Refactor FindNode* API to include optional target frame
   // document identifier to reduce search space.
-  return optimization_guide::FindNodeAtPoint(*apc, target_pixels);
+  return optimization_guide::FindNodeAtPoint(*apc, target_blink_pixels);
 }
 
 std::optional<optimization_guide::TargetNodeInfo>

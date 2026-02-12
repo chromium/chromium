@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <sstream>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
@@ -20,6 +23,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
@@ -40,6 +44,101 @@ using ClickAction = apc::ClickAction;
 using MultiStep = GlicActorUiTest::MultiStep;
 using apc::AnnotatedPageContent;
 
+struct ApcHitTestSummary {
+  std::string doc_token;
+  std::optional<int64_t> node_key;
+  std::string debug_string;
+};
+
+std::optional<int64_t> GetNodeKeyForDebug(
+    const optimization_guide::proto::ContentNode& node) {
+  // APC does not consistently populate a stable DOM node id for all node types.
+  // `common_ancestor_dom_node_id` is the best available stable identifier for
+  // actionable nodes, and is sufficient for this test's debug assertions.
+  if (node.has_content_attributes() &&
+      node.content_attributes().has_common_ancestor_dom_node_id()) {
+    return node.content_attributes().common_ancestor_dom_node_id();
+  }
+  return std::nullopt;
+}
+
+ApcHitTestSummary SummarizeApcHitTestResult(
+    const optimization_guide::TargetNodeInfo& hit) {
+  std::ostringstream oss;
+  oss << "{doc_token=" << hit.document_identifier.serialized_token();
+
+  std::optional<int64_t> node_key;
+  if (hit.node) {
+    const auto& node = *hit.node;
+    oss << " has_node=1";
+    node_key = GetNodeKeyForDebug(node);
+
+    if (node.has_content_attributes()) {
+      const auto& attrs = node.content_attributes();
+      if (attrs.has_common_ancestor_dom_node_id()) {
+        oss << " common_ancestor_dom_node_id="
+            << attrs.common_ancestor_dom_node_id();
+      }
+      if (attrs.has_label()) {
+        oss << " label=\"" << attrs.label() << "\"";
+      }
+      if (attrs.has_attribute_type()) {
+        oss << " attribute_type=" << static_cast<int>(attrs.attribute_type());
+      }
+      if (attrs.has_geometry() && attrs.geometry().has_visible_bounding_box()) {
+        const auto& vb = attrs.geometry().visible_bounding_box();
+        oss << " visible_bbox=" << vb.x() << "," << vb.y() << " " << vb.width()
+            << "x" << vb.height();
+      }
+    }
+  } else {
+    oss << " has_node=0";
+  }
+
+  oss << "}";
+  return {.doc_token = hit.document_identifier.serialized_token(),
+          .node_key = node_key,
+          .debug_string = oss.str()};
+}
+
+void ExpectApcHitTestResolvesDifferently(const apc::AnnotatedPageContent& apc,
+                                         const gfx::Point& target_dip,
+                                         float dsf,
+                                         gfx::Point& target_blink_pixels) {
+  // Prove APC hit testing uses BlinkSpace/device pixels by hit testing at both
+  // the DIP coordinate and the scaled (DIP*DSF) coordinate.
+  target_blink_pixels = gfx::ScaleToRoundedPoint(target_dip, dsf);
+
+  const std::optional<optimization_guide::TargetNodeInfo> hit_unscaled =
+      optimization_guide::FindNodeAtPoint(apc, target_dip);
+  const std::optional<optimization_guide::TargetNodeInfo> hit_scaled =
+      optimization_guide::FindNodeAtPoint(apc, target_blink_pixels);
+
+  ASSERT_TRUE(hit_unscaled.has_value());
+  ASSERT_TRUE(hit_scaled.has_value());
+
+  const ApcHitTestSummary unscaled_summary =
+      SummarizeApcHitTestResult(*hit_unscaled);
+  const ApcHitTestSummary scaled_summary =
+      SummarizeApcHitTestResult(*hit_scaled);
+
+  // Both hit tests may return a node (e.g. the root/container can cover most of
+  // the viewport), but they should not resolve to the same underlying
+  // observed node/document. If the coordinate space is correct, the
+  // BlinkSpace/device-pixel point should resolve into the iframe document,
+  // while the unscaled DIP coordinate should resolve to a different
+  // node/document.
+  EXPECT_NE(unscaled_summary.doc_token, scaled_summary.doc_token)
+      << "hit_unscaled=" << unscaled_summary.debug_string
+      << " hit_scaled=" << scaled_summary.debug_string;
+
+  if (unscaled_summary.node_key && scaled_summary.node_key) {
+    EXPECT_NE(*unscaled_summary.node_key, *scaled_summary.node_key)
+        << "hit_unscaled=" << unscaled_summary.debug_string
+        << " hit_scaled=" << scaled_summary.debug_string;
+  }
+}
+
 class GlicActorGeneralUiTest : public GlicActorUiTest {
  public:
   MultiStep CheckActorTabDataHasAnnotatedPageContentCache();
@@ -49,6 +148,13 @@ class GlicActorGeneralUiTest : public GlicActorUiTest {
                        tabs::TabHandle& observe_tab_handle,
                        ExpectedErrorResult expected_result = {});
   MultiStep WaitAction(ExpectedErrorResult expected_result = {});
+  MultiStep WaitForTinyTargetIframeLoaded(ui::ElementIdentifier tab_id);
+  StepBuilder CheckDevicePixelRatioIs2(ui::ElementIdentifier tab_id);
+  MultiStep ReadTinyTargetBoundsAndAssertApcHitTest(
+      ui::ElementIdentifier tab_id,
+      gfx::Rect& button_bounds,
+      gfx::Point& target_blink_pixels,
+      float dsf);
 
   MultiStep CreateActorTab(int initiator_tab,
                            int initiator_window,
@@ -105,6 +211,59 @@ MultiStep GlicActorGeneralUiTest::OpenDevToolsWindow() {
     DevToolsWindowTesting::OpenDevToolsWindowSync(contents,
                                                   /*is_docked=*/false);
   }));
+}
+
+MultiStep GlicActorGeneralUiTest::WaitForTinyTargetIframeLoaded(
+    ui::ElementIdentifier tab_id) {
+  return WaitForJsResult(tab_id, "() => window.button_bounds !== null");
+}
+
+GlicActorUiTest::StepBuilder GlicActorGeneralUiTest::CheckDevicePixelRatioIs2(
+    ui::ElementIdentifier tab_id) {
+  return CheckJsResult(tab_id, "() => window.devicePixelRatio", 2);
+}
+
+MultiStep GlicActorGeneralUiTest::ReadTinyTargetBoundsAndAssertApcHitTest(
+    ui::ElementIdentifier tab_id,
+    gfx::Rect& button_bounds,
+    gfx::Point& target_blink_pixels,
+    float dsf) {
+  return Steps(WithElement(
+      tab_id,
+      base::BindLambdaForTesting([this, &button_bounds, &target_blink_pixels,
+                                  dsf](ui::TrackedElement* el) {
+        content::WebContents* contents =
+            AsInstrumentedWebContents(el)->web_contents();
+        content::EvalJsResult rect_result =
+            content::EvalJs(contents, "(() => window.button_bounds)()");
+        const base::DictValue& rect = rect_result.ExtractDict();
+        const std::optional<int> x = rect.FindInt("x");
+        const std::optional<int> y = rect.FindInt("y");
+        const std::optional<int> width = rect.FindInt("width");
+        const std::optional<int> height = rect.FindInt("height");
+        ASSERT_TRUE(x.has_value());
+        ASSERT_TRUE(y.has_value());
+        ASSERT_TRUE(width.has_value());
+        ASSERT_TRUE(height.has_value());
+        button_bounds = gfx::Rect(*x, *y, *width, *height);
+
+        // Keep a deterministic, non-zero DIP origin so unscaled DIP coordinates
+        // and scaled BlinkSpace/device-pixel coordinates resolve differently in
+        // APC hit testing.
+        EXPECT_EQ(button_bounds.origin(), gfx::Point(2, 2));
+        // Keep target geometry large enough to avoid tiny-raster instability in
+        // headless HighDPI environments while preserving coordinate mismatch.
+        EXPECT_EQ(button_bounds.size(), gfx::Size(20, 20));
+
+        const apc::AnnotatedPageContent* cached_apc =
+            actor::ActorTabData::From(
+                GetActorTask()->GetLastActedTabs().begin()->Get())
+                ->GetLastObservedPageContent();
+        ASSERT_TRUE(cached_apc);
+
+        ExpectApcHitTestResolvesDifferently(*cached_apc, button_bounds.origin(),
+                                            dsf, target_blink_pixels);
+      })));
 }
 
 MultiStep GlicActorGeneralUiTest::WaitAction(
@@ -1015,6 +1174,67 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestHighDPI,
       ExecuteAction(std::move(click_provider)),
       CheckJsResult(kNewActorTabId, "() => offscreen_button_clicked"));
   // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestHighDPI,
+                       CoordinatesApplyDeviceScaleFactor_TinyTarget) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  const GURL task_url = embedded_test_server()->GetURL(
+      "/actor/page_with_tiny_iframe_target.html");
+
+  gfx::Rect button_bounds;
+  gfx::Point target_blink_pixels;
+
+  auto click_provider = base::BindLambdaForTesting([&button_bounds, this]() {
+    // Coordinates are provided in DIPs (local-root logical pixels; they are
+    // only equal to CSS pixels when page zoom is 1.0). Click at a stable point
+    // (the top-left corner) so that on HighDPI (2.0x) the DIP coordinate
+    // differs from the physical ("BlinkSpace") coordinate:
+    //   (2,2) DIP -> (4,4) device px.
+    //
+    // This is a regression test for browser-side TOCTOU validation. APC hit
+    // testing uses visual-viewport-relative BlinkSpace/device pixels, while
+    // tool targets are expressed in DIPs. If TOCTOU validation forgets to
+    // convert the DIP coordinate into APC geometry coordinates, it can observe
+    // a different node than the renderer later hits and fail with
+    // kObservedTargetElementChanged. See optimization_guide::FindNodeAtPoint()
+    // for the canonical coordinate space contract.
+    const gfx::Point coordinate = button_bounds.origin();
+    apc::Actions action =
+        actor::MakeClick(tab_handle_, coordinate, apc::ClickAction::LEFT,
+                         apc::ClickAction::SINGLE);
+
+    action.set_task_id(task_id_.value());
+    return EncodeActionProto(action);
+  });
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+      CheckDevicePixelRatioIs2(kNewActorTabId),
+      WaitForTinyTargetIframeLoaded(kNewActorTabId),
+      GetPageContextForActorTab(),
+      ReadTinyTargetBoundsAndAssertApcHitTest(
+          kNewActorTabId, button_bounds, target_blink_pixels, /*dsf=*/2.0f),
+      CheckJsResult(
+          kNewActorTabId,
+          "() => document.querySelector('iframe').contentWindow.clicked",
+          false),
+      ExecuteAction(std::move(click_provider)),
+      // Expected behavior: browser-side TOCTOU validation scales
+      // the DIP point into device pixels before hit testing against
+      // APC. This makes the APC "observed target" consistent with
+      // the renderer-side live DOM hit test and the click succeeds.
+      //
+      // If a regression causes the TOCTOU/APC hit test to use
+      // unscaled DIPs, ExecuteAction will fail with
+      // kObservedTargetElementChanged.
+      WaitForJsResult(
+          kNewActorTabId,
+          "() => document.querySelector('iframe').contentWindow.clicked"));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CloseFloatyShowsToast) {

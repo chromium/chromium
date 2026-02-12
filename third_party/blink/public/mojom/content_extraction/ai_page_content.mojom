@@ -64,6 +64,19 @@ enum AIPageContentAnnotatedRole {
 };
 
 struct AIPageContentGeometry {
+  // All rectangles in this struct are expressed in visual-viewport coordinates
+  // in the local root's BlinkSpace (device pixels). These are not DIPs/CSS
+  // pixels; callers starting from a DIP point must convert from layout-viewport
+  // DIPs to visual-viewport BlinkSpace (e.g. apply the device scale factor and
+  // any layout-vs-visual viewport offset) to compare or hit test against these
+  // bounds.
+  //
+  // Terminology:
+  // - Layout viewport: the viewport used for layout/scrolling.
+  // - Visual viewport: what the user actually sees; can be offset from the
+  //   layout viewport (e.g. when the mobile toolbar shows/hides during
+  //   scrolling, or during pinch-zoom).
+
   // The bounding box of the content node mapped to the viewport ignoring any
   // ancestor clips (including the viewport clip). This can be thought of as the
   // where the element would be relative to the viewport if it "popped out" of
