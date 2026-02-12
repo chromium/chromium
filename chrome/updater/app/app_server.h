@@ -47,7 +47,7 @@ class AppServer : public App {
   void TaskCompleted();
 
   // Returns whether the process is (or recently was) idle.
-  bool IsIdle();
+  bool IsIdle() const;
 
   // Overrides of App.
   void Uninitialize() override;

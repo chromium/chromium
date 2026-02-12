@@ -165,7 +165,7 @@ void AppServer::TaskCompleted() {
       external_constants()->ServerKeepAliveTime());
 }
 
-bool AppServer::IsIdle() {
+bool AppServer::IsIdle() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return tasks_running_ == 0;
 }
