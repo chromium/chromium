@@ -38,7 +38,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
  public:
   IOSurfaceImageBackingFactory(GrContextType gr_context_type,
                                int32_t max_texture_size,
-                               const gles2::FeatureInfo* feature_info,
+                               gles2::FeatureInfo* feature_info,
                                gl::ProgressReporter* progress_reporter,
                                uint32_t texture_target);
   ~IOSurfaceImageBackingFactory() override;
@@ -130,13 +130,11 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
 
   const GrContextType gr_context_type_;
   const int32_t max_texture_size_;
-  const bool angle_texture_usage_;
-
-  base::flat_set<viz::SharedImageFormat> supported_formats_;
+  const raw_ptr<gles2::FeatureInfo> feature_info_ = nullptr;
 
   // Used to notify the watchdog before a buffer allocation in case it takes
   // long.
-  const raw_ptr<gl::ProgressReporter> progress_reporter_;
+  const raw_ptr<gl::ProgressReporter> progress_reporter_ = nullptr;
 
   const uint32_t texture_target_;
 };

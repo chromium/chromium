@@ -46,14 +46,50 @@ bool UsageWillResultInGLWrite(gpu::SharedImageUsageSet usage,
                        SHARED_IMAGE_USAGE_DISPLAY_WRITE));
 }
 
-bool IsFormatSupported(viz::SharedImageFormat format) {
-  return (format == viz::SinglePlaneFormat::kRGBX_8888) ||
-         (format == viz::SinglePlaneFormat::kBGRA_8888) ||
-         (format == viz::SinglePlaneFormat::kBGRX_8888) ||
-         (format == viz::SinglePlaneFormat::kR_8) ||
-         (format == viz::SinglePlaneFormat::kRG_88) ||
-         (format == viz::SinglePlaneFormat::kR_16) ||
-         (format == viz::SinglePlaneFormat::kRG_1616);
+bool IsFormatSupported(viz::SharedImageFormat format,
+                       const gles2::FeatureInfo::FeatureFlags& flags) {
+  // These are assumed to be always supported on Apple.
+  if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+      format == viz::SinglePlaneFormat::kRGBA_4444 ||
+      format == viz::SinglePlaneFormat::kBGR_565 ||
+      format == viz::SinglePlaneFormat::kRGBA_F16 ||
+      // BGRA_1010102 is always supported on Apple but RGBA_1010102 is not.
+      format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+      // Support R_F16 for SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR.
+      format == viz::SinglePlaneFormat::kR_F16 ||
+      format == viz::MultiPlaneFormat::kNV12 ||
+      format == viz::MultiPlaneFormat::kP210 ||
+      format == viz::MultiPlaneFormat::kP410 ||
+      format == viz::MultiPlaneFormat::kP010 ||
+      format == viz::MultiPlaneFormat::kNV12A ||
+      format == viz::MultiPlaneFormat::kNV16 ||
+      format == viz::MultiPlaneFormat::kNV24) {
+    return true;
+  }
+
+  if (format == viz::SinglePlaneFormat::kRGBX_8888) {
+    return !flags.disable_mac_swangle_rgbx;
+  }
+
+  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return flags.ext_texture_format_bgra8888;
+  }
+
+  if (format == viz::SinglePlaneFormat::kBGRX_8888) {
+    return flags.ext_texture_format_bgra8888 && !flags.disable_mac_swangle_rgbx;
+  }
+
+  if (format == viz::SinglePlaneFormat::kR_8 ||
+      format == viz::SinglePlaneFormat::kRG_88) {
+    return flags.ext_texture_rg;
+  }
+
+  if (format == viz::SinglePlaneFormat::kR_16 ||
+      format == viz::SinglePlaneFormat::kRG_1616) {
+    return flags.ext_texture_norm16;
+  }
+
+  return false;
 }
 
 void SetIOSurfaceColorSpace(IOSurfaceRef io_surface,
@@ -131,42 +167,15 @@ constexpr SharedImageUsageSet kSupportedUsage =
 IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
     GrContextType gr_context_type,
     int32_t max_texture_size,
-    const gles2::FeatureInfo* feature_info,
+    gles2::FeatureInfo* feature_info,
     gl::ProgressReporter* progress_reporter,
     uint32_t texture_target)
     : SharedImageBackingFactory(kSupportedUsage),
       gr_context_type_(gr_context_type),
       max_texture_size_(max_texture_size),
-      angle_texture_usage_(feature_info->feature_flags().angle_texture_usage),
+      feature_info_(feature_info),
       progress_reporter_(progress_reporter),
-      texture_target_(texture_target) {
-  for (auto format : feature_info->feature_flags().mappable_formats) {
-    // Add supported single-plane formats.
-    if (format.is_single_plane() && IsFormatSupported(format)) {
-      supported_formats_.insert(format);
-    }
-  }
-
-  // These are assumed to be always supported on Apple.
-  supported_formats_.insert(viz::SinglePlaneFormat::kBGR_565);
-  supported_formats_.insert(viz::SinglePlaneFormat::kRGBA_4444);
-  supported_formats_.insert(viz::SinglePlaneFormat::kRGBA_8888);
-  supported_formats_.insert(viz::SinglePlaneFormat::kRGBA_F16);
-  // BGRA_1010102 is always supported on Apple but RGBA_1010102 is not.
-  supported_formats_.insert(viz::SinglePlaneFormat::kBGRA_1010102);
-
-  // Support R_F16 for SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR.
-  supported_formats_.insert(viz::SinglePlaneFormat::kR_F16);
-
-  // Add supported multi-plane formats.
-  supported_formats_.insert(viz::MultiPlaneFormat::kNV12);
-  supported_formats_.insert(viz::MultiPlaneFormat::kP210);
-  supported_formats_.insert(viz::MultiPlaneFormat::kP410);
-  supported_formats_.insert(viz::MultiPlaneFormat::kP010);
-  supported_formats_.insert(viz::MultiPlaneFormat::kNV12A);
-  supported_formats_.insert(viz::MultiPlaneFormat::kNV16);
-  supported_formats_.insert(viz::MultiPlaneFormat::kNV24);
-}
+      texture_target_(texture_target) {}
 
 IOSurfaceImageBackingFactory::~IOSurfaceImageBackingFactory() = default;
 
@@ -354,7 +363,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
-  if (!supported_formats_.contains(format)) {
+  if (!IsFormatSupported(format, feature_info_->feature_flags())) {
     LOG(ERROR) << "CreateSharedImage: Unable to create SharedImage with format "
                << format.ToString();
     return nullptr;
@@ -402,7 +411,8 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
 
   const bool is_cleared = !pixel_data.empty() || should_clear;
   const bool framebuffer_attachment_angle =
-      for_framebuffer_attachment && angle_texture_usage_;
+      for_framebuffer_attachment &&
+      feature_info_->feature_flags().angle_texture_usage;
 
   auto backing = std::make_unique<IOSurfaceImageBacking>(
       io_surface, mailbox, format, size, color_space, surface_origin,
@@ -434,7 +444,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     return nullptr;
   }
 
-  if (!supported_formats_.contains(format)) {
+  if (!IsFormatSupported(format, feature_info_->feature_flags())) {
     LOG(ERROR) << "CreateSharedImage: Unable to create SharedImage with format "
                << format.ToString();
     return nullptr;
@@ -471,7 +481,8 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
   const bool for_framebuffer_attachment =
       UsageWillResultInGLWrite(usage, gr_context_type_);
   const bool framebuffer_attachment_angle =
-      for_framebuffer_attachment && angle_texture_usage_;
+      for_framebuffer_attachment &&
+      feature_info_->feature_flags().angle_texture_usage;
 
   return std::make_unique<IOSurfaceImageBacking>(
       std::move(io_surface), mailbox, format, size, color_space, surface_origin,
