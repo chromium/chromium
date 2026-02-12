@@ -62,7 +62,8 @@ class AwQuotaManagerBridge;
 class CookieManager;
 
 // The maximum number of prerendering allowed for this BrowserContext.
-inline constexpr int MAX_ALLOWED_PRERENDERING_COUNT = 3;
+inline constexpr int kMaxAllowedPrerenderingCount = 3;
+inline constexpr int kDefaultAllowedPrerenderingCount = 2;
 
 // Lifetime: Profile
 class AwBrowserContext : public content::BrowserContext,
@@ -119,7 +120,8 @@ class AwBrowserContext : public content::BrowserContext,
       const base::android::JavaRef<jobject>& io_thread_client);
 
   int AllowedPrerenderingCount() const;
-  void SetAllowedPrerenderingCount(JNIEnv* const env, int allowed_count);
+  void SetAllowedPrerenderingCount(JNIEnv* const env,
+                                   std::optional<int> allowed_count);
   void WarmUpSpareRenderer(JNIEnv* const env);
 
   // content::BrowserContext implementation.
@@ -303,7 +305,7 @@ class AwBrowserContext : public content::BrowserContext,
 
   // The maximum number of concurrent prerendering attempts that can be
   // triggered by AwContents::StartPrerendering().
-  int allowed_prerendering_count_ = 2;
+  int allowed_prerendering_count_ = kDefaultAllowedPrerenderingCount;
 
   // Enables usage of net::StaleHostResolver. This will not be applied to any
   // in-flight requests, only applied to the requests made afterwards. It should

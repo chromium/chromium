@@ -446,8 +446,9 @@ content::SSLHostStateDelegate* AwBrowserContext::GetSSLHostStateDelegate() {
 }
 
 AwPermissionManager* AwBrowserContext::GetPermissionControllerDelegate() {
-  if (!permission_manager_.get())
+  if (!permission_manager_.get()) {
     permission_manager_ = std::make_unique<AwPermissionManager>(*this);
+  }
   return permission_manager_.get();
 }
 
@@ -810,12 +811,17 @@ int AwBrowserContext::AllowedPrerenderingCount() const {
   return allowed_prerendering_count_;
 }
 
-void AwBrowserContext::SetAllowedPrerenderingCount(JNIEnv* const env,
-                                                   int allowed_count) {
+void AwBrowserContext::SetAllowedPrerenderingCount(
+    JNIEnv* const env,
+    std::optional<int> allowed_count) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK_GT(allowed_count, 0);
+
+  int sanitized_allowed_count =
+      allowed_count.value_or(kDefaultAllowedPrerenderingCount);
+  CHECK_GT(sanitized_allowed_count, 0);
+
   allowed_prerendering_count_ =
-      std::min(allowed_count, MAX_ALLOWED_PRERENDERING_COUNT);
+      std::min(sanitized_allowed_count, kMaxAllowedPrerenderingCount);
 }
 
 void AwBrowserContext::WarmUpSpareRenderer(JNIEnv* const env) {

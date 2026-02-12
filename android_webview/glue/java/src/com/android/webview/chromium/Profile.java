@@ -162,6 +162,18 @@ public class Profile {
         mBrowserContext.getPrefetchManager().cancelPrefetch(prefetchKey);
     }
 
+    /**
+     * @param maxPrerenders The maximum number of prerenders. If null, restores the default.
+     */
+    @UiThread
+    public void setMaxPrerenders(@Nullable Integer maxPrerenders) {
+        if (maxPrerenders != null && maxPrerenders < 0) {
+            Log.w(TAG, "Maximum prerenders can not be negative.");
+            return;
+        }
+        mBrowserContext.setMaxPrerenders(maxPrerenders);
+    }
+
     @UiThread
     public void setSpeculativeLoadingConfig(SpeculativeLoadingConfig speculativeLoadingConfig) {
         mBrowserContext
