@@ -710,12 +710,17 @@ GURL GetUrlForMultimodalSearch(
       turl_service, aim_entrypoint, is_aim_search,
       /*model_mode=*/omnibox::ModelMode::MODEL_MODE_UNSPECIFIED,
       query_start_time, query_text, additional_params);
-  std::string serialized_request_id;
-  CHECK(request_id->SerializeToString(&serialized_request_id));
-  std::string encoded_request_id;
-  base::Base64UrlEncode(serialized_request_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
+  if (request_id) {
+    std::string serialized_request_id;
+    CHECK(request_id->SerializeToString(&serialized_request_id));
+    std::string encoded_request_id;
+    base::Base64UrlEncode(serialized_request_id,
+                          base::Base64UrlEncodePolicy::OMIT_PADDING,
+                          &encoded_request_id);
+    result_url = net::AppendOrReplaceQueryParameter(
+        result_url, kVisualRequestIdQueryParameter, encoded_request_id);
+  }
+
   if (invocation_source.has_value()) {
     // If the invocation source is set, this is a Lens query that is migrated
     // to the common ContextualSearchSessionHandle, which is only used for the
@@ -723,8 +728,6 @@ GURL GetUrlForMultimodalSearch(
     result_url = lens::AppendInvocationSourceParamToURL(
         result_url, *invocation_source, /*is_contextual_tasks=*/true);
   }
-  result_url = net::AppendOrReplaceQueryParameter(
-      result_url, kVisualRequestIdQueryParameter, encoded_request_id);
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kSearchSessionIdParameterKey, search_session_id);
   result_url = net::AppendOrReplaceQueryParameter(

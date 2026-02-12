@@ -3902,6 +3902,54 @@ TEST_F(ComposeboxQueryControllerTest,
       aim_url, kVisualInputTypeQueryParameter, &vit_value));
 }
 
+TEST_F(ComposeboxQueryControllerTest,
+       TranslateTextQuery_DoesNotSendVitOrVsridParam) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Act: Create the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "translate";
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kStandard;
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->lens_overlay_selection_type = lens::TRANSLATE_CHIP;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Assert: Vit param is NOT present.
+  std::string vit_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      search_url, kVisualInputTypeQueryParameter, &vit_value));
+
+  // Assert: Vsrid param is NOT present.
+  std::string vsrid_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(search_url, kRequestIdParameterKey,
+                                          &vsrid_value));
+
+  // Assert: Gsession id is added.
+  std::string gsession_id_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      search_url, kSessionIdQueryParameterKey, &gsession_id_value));
+  EXPECT_EQ(kTestSearchSessionId, gsession_id_value);
+}
+
 TEST_F(ComposeboxQueryControllerTest, MimeTypeToString) {
   EXPECT_EQ(ComposeboxQueryController::MimeTypeToString(lens::MimeType::kPdf),
             "application/pdf");

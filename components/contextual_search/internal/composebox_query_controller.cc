@@ -486,10 +486,14 @@ void ComposeboxQueryController::CreateSearchUrl(
                 : last_active_file->request_id.media_type();
         // If there is only contextual input, create a search url using the
         // vsrid (single-context) parameter.
-        if (search_url_request_info->search_url_type ==
-                SearchUrlType::kStandard ||
-            base::FeatureList::IsEnabled(
-                lens::features::kLensSendVitForSingleContextNextQueries)) {
+        bool is_translate =
+            search_url_request_info->lens_overlay_selection_type ==
+            lens::TRANSLATE_CHIP;
+        if (!is_translate &&
+            (search_url_request_info->search_url_type ==
+                 SearchUrlType::kStandard ||
+             base::FeatureList::IsEnabled(
+                 lens::features::kLensSendVitForSingleContextNextQueries))) {
           // Single-context queries should send the vit parameter if it is a
           // standard (non-AIM) query, or if the flag to send the vit parameter
           // for single context next queries is enabled, and if the media type
@@ -508,8 +512,10 @@ void ComposeboxQueryController::CreateSearchUrl(
             search_url_request_info->aim_entry_point,
             search_url_request_info->query_start_time,
             cluster_info_->search_session_id(),
-            request_id_generator_.GetNextRequestId(
-                lens::RequestIdUpdateMode::kSearchUrl, context_media_type),
+            is_translate ? nullptr
+                         : request_id_generator_.GetNextRequestId(
+                               lens::RequestIdUpdateMode::kSearchUrl,
+                               context_media_type),
             search_url_request_info->invocation_source, lns_surface,
             base::UTF8ToUTF16(search_url_request_info->query_text),
             std::move(search_url_request_info->additional_params)));
