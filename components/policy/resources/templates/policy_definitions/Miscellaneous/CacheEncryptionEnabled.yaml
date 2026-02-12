@@ -12,9 +12,10 @@ owners:
 - valadkevich@google.com
 - cbe-cep-eng@google.com
 future_on:
-- chrome.*
-- chrome_os
 - android
+supported_on:
+- chrome.*:146-
+- chrome_os:146-
 features:
   dynamic_refresh: true
   per_profile: true
