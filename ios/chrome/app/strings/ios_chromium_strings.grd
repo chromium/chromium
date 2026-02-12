@@ -1198,7 +1198,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
         You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>
       <message name="IDS_IOS_SYNC_DATATYPE_IOS_THEME" desc="The label for the sync switch item to sync iOS themes. [iOS only]">
-        Chromium iOS Theme
+        Chromium theme for iPhone and iPad
       </message>
       <message name="IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_HINT_UNO" desc="The information text on how to reset encryption passphrase for sync, shown on the sync encryption settings [Length: 300em] [iOS only]">
         Passphrase encryption doesn’t include payment methods and addresses.
