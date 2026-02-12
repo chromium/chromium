@@ -307,8 +307,7 @@ class SigninViewControllerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(
     SigninViewControllerBrowserTest,
-    // TODO(crbug.com/429624627): Re-enable this test.
-    DISABLED_SignoutOrReauthWithPromptForPersistentErrorState_Reauth) {
+    SignoutOrReauthWithPromptForPersistentErrorState_Reauth) {
   // Setup a primary account in error state.
   AccountInfo primary_account_info = SetPrimaryAccount();
   ASSERT_TRUE(
@@ -329,8 +328,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(signout_confirmation_ui);
 
   // Click "Verify it's you".
-  // Note: This is the cancel action.
-  signout_confirmation_ui->CancelDialogForTesting();
+  signout_confirmation_ui->CancelDialogAndReauthForTesting();
   VerifySignoutPromptHistogram(
       histogram_tester,
       ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton,
@@ -390,9 +388,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(IsSignoutTab(tab));
 }
 
-// https://crbug.com/429624627: Test is flakily crashing.
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
-                       DISABLED_SignoutOrReauthWithPrompt_Cancel) {
+                       SignoutOrReauthWithPrompt_Cancel) {
   // Setup a primary account.
   AccountInfo primary_account_info = SetPrimaryAccount();
   ASSERT_TRUE(

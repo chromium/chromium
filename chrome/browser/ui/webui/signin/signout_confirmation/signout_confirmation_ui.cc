@@ -90,6 +90,11 @@ void SignoutConfirmationUI::CancelDialogForTesting() {
   handler_->Cancel(/*uninstall_account_extensions=*/false);
 }
 
+void SignoutConfirmationUI::CancelDialogAndReauthForTesting() {
+  CHECK(handler_);
+  handler_->PerformReauth();
+}
+
 void SignoutConfirmationUI::CreateSignoutConfirmationHandler(
     mojo::PendingRemote<signout_confirmation::mojom::Page> page,
     mojo::PendingReceiver<signout_confirmation::mojom::PageHandler> receiver) {

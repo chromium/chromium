@@ -80,6 +80,10 @@ class SignoutConfirmationUI
   // to the `handler_`.
   void CancelDialogForTesting();
 
+  // Simulates cancelling the signout confirmation dialog and triggering a
+  // reauth through a direct call to the `handler_`.
+  void CancelDialogAndReauthForTesting();
+
   bool IsHandlerReadyForTesting() { return handler_.get(); }
 
  private:
