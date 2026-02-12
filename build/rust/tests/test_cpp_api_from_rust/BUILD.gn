@@ -18,6 +18,7 @@ source_set("test_cpp_api_from_rust") {
   deps = [
     ":rust_lib_bindings",
     "//base",
+    "//build/rust/crubit:rs_std",
     "//testing/gmock",
     "//testing/gtest",
   ]

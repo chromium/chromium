@@ -44,7 +44,8 @@ template("cpp_api_from_rust") {
   _h_out = "${_rust_target_gen_base}.h"
   _rs_out = "${_rust_target_gen_base}.impl.rs"
 
-  _crubit_support_path_format = "\"fixme/crubit/support/{header}\""
+  _crubit_support_path_format =
+      "\"third_party/rust-toolchain/lib/crubit/support/{header}\""
   _cpp_api_from_rust_exe_path =
       "//third_party/rust-toolchain/bin/cc_bindings_from_rs"
   _rustfmt_exe_path = "//third_party/rust-toolchain/bin/rustfmt"
@@ -149,6 +150,7 @@ template("cpp_api_from_rust") {
     visibility = [ ":$_h_target_name" ]
     deps = [
       ":$_action_target_name",
+      "//build/rust/crubit:cpp_api_from_rust_bindings_rs_deps",
       _rust_target,
     ]
 
@@ -173,6 +175,7 @@ template("cpp_api_from_rust") {
     deps = [
       ":$_action_target_name",
       ":$_rust_impl_target_name",
+      "//build/rust/crubit:cpp_api_from_rust_bindings_cpp_deps",
     ]
     public = [ _h_out ]
   }
