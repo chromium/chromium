@@ -661,7 +661,8 @@ chromium-metrics-reviews@google.com.
   <int value="100228" label="AccessibilityReadAnythingVoiceName"/>
   <int value="100229" label="AccessibilityReadAnythingSpeechRate"/>
   <int value="100230" label="AccessibilityReadAnythingHighlightGranularity"/>
-  <int value="100231" label="AccessibilityReadAnythingHighlightColor"/>
+  <int value="100231"
+      label="(Obsolete) AccessibilityReadAnythingHighlightColor"/>
   <int value="100232" label="PinnedActions"/>
   <int value="100233" label="PinnedSearchCompanionMigrationComplete"/>
   <int value="100234" label="TouchpadInternalSettings"/>

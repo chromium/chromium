@@ -46,11 +46,6 @@ void RegisterReadAnythingProfilePrefs(
       static_cast<int>(
           read_anything::mojom::HighlightGranularity::kDefaultValue),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  // TODO(crbug.com/40927698): Update the default value for this integer
-  // pref to be an enum value, like the ones above
-  registry->RegisterIntegerPref(
-      prefs::kAccessibilityReadAnythingHighlightColor, 0,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterListPref(prefs::kAccessibilityReadAnythingLanguagesEnabled,
                              base::ListValue(),
                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
