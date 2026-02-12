@@ -803,20 +803,22 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   bool supports_p010_for_allocation_and_texturing;
   {
     TRACE_EVENT("gpu,startup", "ui::ozone::IsFormatSupportedForTexturing");
+    auto* surface_factory =
+        ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
     supports_nv12_for_allocation_and_texturing =
-        ui::OzonePlatform::GetInstance()
-            ->GetSurfaceFactoryOzone()
-            ->IsFormatSupportedForTexturing(viz::MultiPlaneFormat::kNV12);
+        surface_factory->IsFormatSupportedForTexturing(
+            viz::MultiPlaneFormat::kNV12);
     supports_p010_for_allocation_and_texturing =
-        ui::OzonePlatform::GetInstance()
-            ->GetSurfaceFactoryOzone()
-            ->IsFormatSupportedForTexturing(viz::MultiPlaneFormat::kP010);
+        surface_factory->IsFormatSupportedForTexturing(
+            viz::MultiPlaneFormat::kP010);
+    auto* gl_ozone = surface_factory->GetCurrentGLOzone();
+    if (gl_ozone) {
+      gpu_feature_info_.supports_nv12_gl_native_pixmap =
+          gl_ozone->CanImportNativePixmap(viz::MultiPlaneFormat::kNV12);
+      gpu_feature_info_.supports_p010_gl_native_pixmap =
+          gl_ozone->CanImportNativePixmap(viz::MultiPlaneFormat::kP010);
+    }
   }
-  std::vector<viz::SharedImageFormat>
-      supported_formats_for_gl_native_pixmap_import =
-          ui::OzonePlatform::GetInstance()
-              ->GetSurfaceFactoryOzone()
-              ->GetSupportedFormatsForGLNativePixmapImport();
 #endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -961,8 +963,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       supports_nv12_for_allocation_and_texturing;
   gpu_feature_info_.supports_p010_for_allocation_and_texturing =
       supports_p010_for_allocation_and_texturing;
-  gpu_feature_info_.supported_formats_for_gl_native_pixmap_import =
-      std::move(supported_formats_for_gl_native_pixmap_import);
   [[maybe_unused]] auto* factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   bool filter_set = false;
@@ -1172,21 +1172,21 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   }
 
 #if BUILDFLAG(IS_OZONE)
-  const std::vector<viz::SharedImageFormat>
-      supported_formats_for_gl_native_pixmap_import =
-          ui::OzonePlatform::GetInstance()
-              ->GetSurfaceFactoryOzone()
-              ->GetSupportedFormatsForGLNativePixmapImport();
+  auto* surface_factory =
+      ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   gpu_feature_info_.supports_nv12_for_allocation_and_texturing =
-      ui::OzonePlatform::GetInstance()
-          ->GetSurfaceFactoryOzone()
-          ->IsFormatSupportedForTexturing(viz::MultiPlaneFormat::kNV12);
+      surface_factory->IsFormatSupportedForTexturing(
+          viz::MultiPlaneFormat::kNV12);
   gpu_feature_info_.supports_p010_for_allocation_and_texturing =
-      ui::OzonePlatform::GetInstance()
-          ->GetSurfaceFactoryOzone()
-          ->IsFormatSupportedForTexturing(viz::MultiPlaneFormat::kP010);
-  gpu_feature_info_.supported_formats_for_gl_native_pixmap_import =
-      std::move(supported_formats_for_gl_native_pixmap_import);
+      surface_factory->IsFormatSupportedForTexturing(
+          viz::MultiPlaneFormat::kP010);
+  auto* gl_ozone = surface_factory->GetCurrentGLOzone();
+  if (gl_ozone) {
+    gpu_feature_info_.supports_nv12_gl_native_pixmap =
+        gl_ozone->CanImportNativePixmap(viz::MultiPlaneFormat::kNV12);
+    gpu_feature_info_.supports_p010_gl_native_pixmap =
+        gl_ozone->CanImportNativePixmap(viz::MultiPlaneFormat::kP010);
+  }
 #endif  // BUILDFLAG(IS_OZONE)
 
   DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);

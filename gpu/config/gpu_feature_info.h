@@ -70,8 +70,9 @@ struct GPU_CONFIG_EXPORT GpuFeatureInfo {
   bool supports_p010_for_allocation_and_texturing = false;
 #if BUILDFLAG(IS_OZONE)
   // SharedImageFormats of native pixmaps that can be imported in GL context.
-  std::vector<viz::SharedImageFormat>
-      supported_formats_for_gl_native_pixmap_import;
+  // TODO(crbug.com/482216427): Move these bools to SharedImageCapabilities
+  bool supports_nv12_gl_native_pixmap = false;
+  bool supports_p010_gl_native_pixmap = false;
 #endif  // BUILDFLAG(IS_OZONE)
 };
 
