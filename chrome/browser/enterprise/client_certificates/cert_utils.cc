@@ -56,13 +56,11 @@ std::unique_ptr<PrivateKeyFactory> CreatePrivateKeyFactory() {
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (features::AreWindowsSoftwareKeysEnabled()) {
-    auto windows_software_key_factory =
-        WindowsSoftwarePrivateKeyFactory::TryCreate();
-    if (windows_software_key_factory) {
-      sub_factories.insert_or_assign(PrivateKeySource::kOsSoftwareKey,
-                                     std::move(windows_software_key_factory));
-    }
+  auto windows_software_key_factory =
+      WindowsSoftwarePrivateKeyFactory::TryCreate();
+  if (windows_software_key_factory) {
+    sub_factories.insert_or_assign(PrivateKeySource::kOsSoftwareKey,
+                                   std::move(windows_software_key_factory));
   }
 #endif  // BUILDFLAG(IS_WIN)
 
