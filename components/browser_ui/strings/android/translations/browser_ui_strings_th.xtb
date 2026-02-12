@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">ให้ Chrome แชร์แท็บล่าสุดกับอุปกรณ์ของคุณเพื่อดูแท็บเหล่านั้นในรายการแอปและผลการค้นหาของอุปกรณ์ คุณเปิดหรือปิดฟีเจอร์นี้ได้ในการตั้งค่า Chrome</translation>
 <translation id="1420688843103859429">ไปข้างหน้าและย้อนกลับด้วยการปัด 2 นิ้วบนทัชแพด</translation>
 <translation id="1432650420699700107">เว็บไซต์สามารถขอเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณได้</translation>
+<translation id="1442081309487427303">เปิดลิงก์โหมดการอ่าน</translation>
 <translation id="1448064542941920355">ลดการซูม</translation>
 <translation id="1464044141348608623">ไม่อนุญาตให้เว็บไซต์ทราบเวลาที่คุณใช้งานอุปกรณ์อยู่</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> เว็บไซต์}other{<ph name="SITE_COUNT" /> เว็บไซต์}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">รับการแจ้งเตือนเคล็ดลับการใช้ Chrome</translation>
 <translation id="1777815584158991902">Bottom Sheet ของฟีดสำรวจ</translation>
 <translation id="1779089405699405702">ตัวถอดรหัสรูปภาพ</translation>
+<translation id="1781533683087883868">ปิดลิงก์โหมดการอ่าน</translation>
 <translation id="1785415724048343560">แนะนำเพื่อประสบการณ์การใช้งานที่ดีที่สุด</translation>
 <translation id="1796588414813960292">ฟีเจอร์ที่ต้องใช้เสียงจะไม่ทำงาน</translation>
 <translation id="1799920918471566157">เคล็ดลับในการใช้ Chrome</translation>
@@ -293,6 +295,7 @@
 <translation id="3903738175795615004">ลากจากด้านบนหรือกดปุ่ม Esc เพื่อออกจากโหมดเต็มหน้าจอ</translation>
 <translation id="3905475044299942653">หยุดการแจ้งเตือนจำนวนมาก</translation>
 <translation id="3922092564198021702">เปิดการตั้งค่าในโทรศัพท์</translation>
+<translation id="3924858949939391676">แสดงลิงก์เมื่อโหมดการอ่านเปิดอยู่</translation>
 <translation id="3933121352599513978">ยุบคำขอที่ไม่ต้องการ (แนะนำ)</translation>
 <translation id="3934905113567851655">บีบเพื่อปรับขนาด</translation>
 <translation id="3955193568934677022">อนุญาตให้เว็บไซต์เล่นเนื้อหาที่ได้รับความคุ้มครอง (แนะนำ)</translation>
@@ -356,6 +359,7 @@
 <translation id="4644713492825682049">ลบและรีเซ็ต</translation>
 <translation id="4645575059429386691">จัดการโดยผู้ปกครอง</translation>
 <translation id="4652266463001779298">ไม่อนุญาต</translation>
+<translation id="4655846733459137112">แตะ "ใช่" เพื่อให้ง่ายต่อการใช้รหัสผ่านนี้เมื่อลงชื่อเข้าใช้ครั้งถัดไป</translation>
 <translation id="4663373278480897665">อนุญาตให้ใช้กล้องถ่ายรูป</translation>
 <translation id="4670064810192446073">เทคโนโลยีความจริงเสมือน (VR)</translation>
 <translation id="4672315773691449562">แตะแอปเบราว์เซอร์แล้วแตะ Chrome</translation>
@@ -462,6 +466,7 @@
 <translation id="5804241973901381774">สิทธิ์</translation>
 <translation id="5817042798620209981">ข้อมูลเว็บไซต์ กล่องโต้ตอบ</translation>
 <translation id="5822675474983796325">Bottom Sheet สำหรับปรับแต่งหน้าแท็บใหม่เปิดอยู่แบบเต็มความสูง</translation>
+<translation id="5826403277762134844">Bottom Sheet แนะนำวิธีบันทึกรหัสผ่านใน Chrome</translation>
 <translation id="5833899990800318936">ไม่อนุญาตให้เว็บไซต์ใช้ JavaScript</translation>
 <translation id="583673505367439042">เว็บไซต์ขอแก้ไขไฟล์และโฟลเดอร์ในอุปกรณ์ของคุณได้</translation>
 <translation id="5844448279347999754">เมื่อเปิด เว็บไซต์จะขอดูข้อความและรูปภาพที่บันทึกไว้ในคลิปบอร์ดได้ เมื่อปิด เว็บไซต์จะดูข้อความหรือรูปภาพที่บันทึกไว้ในคลิปบอร์ดไม่ได้</translation>
@@ -641,6 +646,7 @@
 <translation id="775043444390799886">เพิกถอนสิทธิ์</translation>
 <translation id="7758789811447313947">ธีมสีม่วง</translation>
 <translation id="7759147511335618829">ระบบควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่</translation>
+<translation id="7771089277295008211">ปิด Bottom Sheet แนะนำวิธีบันทึกรหัสผ่านแล้ว</translation>
 <translation id="7781829728241885113">เมื่อวานนี้</translation>
 <translation id="7791543448312431591">เพิ่ม</translation>
 <translation id="780301667611848630">ไม่เป็นไร</translation>
@@ -658,6 +664,7 @@
 <translation id="7940722705963108451">เตือนฉัน</translation>
 <translation id="7948081750384205628">ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">เว็บไซต์ขอดูข้อความและรูปภาพในคลิปบอร์ดของคุณได้</translation>
+<translation id="7958779728312669715">Bottom Sheet แนะนำวิธีบันทึกรหัสผ่านเปิดอยู่ทั้งหมด</translation>
 <translation id="798299424881500862">ธีมสีส้ม</translation>
 <translation id="7986741934819883144">เลือกรายชื่อติดต่อ</translation>
 <translation id="7990211076305263060">เมื่อเปิด เว็บไซต์จะขอใช้ไมโครโฟนของคุณได้ เมื่อปิด เว็บไซต์จะใช้ไมโครโฟนไม่ได้</translation>
@@ -754,6 +761,7 @@
 <translation id="8889294078294184559">ขณะท่องเว็บ เว็บไซต์ต่างๆ สามารถตรวจสอบกับ Chrome และยืนยันด้วยเว็บไซต์ที่เข้าชมก่อนหน้าได้ว่าคุณเป็นคนจริงๆ</translation>
 <translation id="8899807382908246773">โฆษณาที่รบกวน</translation>
 <translation id="8903921497873541725">ขยาย</translation>
+<translation id="8919911527569629802">ลงชื่อเข้าใช้เว็บไซต์ใดก็ได้</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">ไม่ต้องถามอีก</translation>
 <translation id="8926666909099850184">NFC ในอุปกรณ์นี้ปิดอยู่ เปิดได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
@@ -781,6 +789,7 @@
 <translation id="9182556968660520230">ไม่อนุญาตให้เว็บไซต์เล่นเนื้อหาที่มีการคุมครอง</translation>
 <translation id="947156494302904893">เว็บไซต์ที่เข้าชมสามารถยืนยันได้ว่าคุณเป็นคนจริงๆ ไม่ใช่บ็อต</translation>
 <translation id="959682366969460160">จัดระเบียบ</translation>
+<translation id="960590623979248167">แสดงไฮเปอร์ลิงก์</translation>
 <translation id="961930410699694996">อนุญาตให้ใช้ตำแหน่งในครั้งนี้</translation>
 <translation id="967624055006145463">ข้อมูลที่จัดเก็บ</translation>
 <translation id="969975166333045662">บล็อกเว็บไซต์ไม่ให้ใช้เครื่องมือเพิ่มประสิทธิภาพ V8</translation>

@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">പാസ്‍വേഡുകൾ കാണാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="201759455285471444">ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.</translation>
 <translation id="202070562065520783">ഇത് എന്നോട് വിശദീകരിക്കുക</translation>
-<translation id="2023713324775943812">ലഭ്യമാകുമ്പോൾ വിലാസ ബാറിൽ നിന്ന് റീഡിംഗ് മോഡ് ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="2044394949148788042">ടാബ് ഗ്രിഡ് തുറക്കുക</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="HOSTED_DOMAIN" /> ആണ്, അതിന് ചില വിവരങ്ങൾ കാണാനായേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">പുതിയ ഇനം</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">സംരക്ഷിച്ച പാസ്‌വേഡുകളും പാസ്‌കീകളും</translation>
 <translation id="3143515551205905069">സമന്വയം റദ്ദാക്കുക</translation>
 <translation id="3144126448740580210">പൂർത്തിയായി</translation>
+<translation id="3147521114983561406">പാസ്‌കീകൾ നിങ്ങളുടെ Password Manager-ൽ സംരക്ഷിക്കും. അവ അദൃശ്യ ടാബുകളിലും സാധാരണ ടാബുകളിലും ആക്‌സസ് ചെയ്യാനാകും.</translation>
 <translation id="3148052723910099040">റെഗുലർ ടാബ് ഗ്രിഡ്</translation>
 <translation id="3148237711805373460">എന്നെ അവിടേക്ക് കൊണ്ടുപോകുക</translation>
 <translation id="3157387275655328056">വായന ലിസ്റ്റിൽ ചേർക്കുക</translation>
@@ -1860,6 +1860,7 @@
 <translation id="7772032839648071052">പാസ്ഫ്രേസ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="7772948288262733182">വീണ്ടും സ്വാഗതം</translation>
 <translation id="777637629667389858">സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ, Google സേവനങ്ങളിലുടനീളം നിങ്ങളെ പരിരക്ഷിക്കുന്നു.</translation>
+<translation id="7776604279034196531">ലഭ്യമാകുമ്പോൾ വിലാസ ബാറിൽ നിന്ന് റീഡിംഗ് മോഡ് ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="7781829728241885113">ഇന്നലെ</translation>
 <translation id="7788868432173225918">വികസിപ്പിച്ച കാഴ്ച ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
@@ -2097,6 +2098,7 @@
 <translation id="8587001564479545614">വീണ്ടെടുക്കൽ പിൻ സൃഷ്ടിക്കുക</translation>
 <translation id="8588404856427128947">ഓഫാണ്</translation>
 <translation id="8590286732816598906">ടാബ് ഗ്രൂപ്പ്, <ph name="GROUP_TITLE" />, മെനു.</translation>
+<translation id="8593317261815647019">അദൃശ്യ മോഡിന് പുറത്ത് ഒരു പാസ്‌കീ സൃഷ്ടിക്കണോ?</translation>
 <translation id="8600272508328041907">പൂർണ്ണ പേജ് വിവർത്തനത്തിലേക്ക് മാറുക</translation>
 <translation id="860043288473659153">കാർഡിന്റെ ഉടമയുടെ പേര്</translation>
 <translation id="8601611099293226919">Google Lens ഉപയോഗിച്ച് നിങ്ങളുടെ സ്ക്രീൻ തിരയുക</translation>

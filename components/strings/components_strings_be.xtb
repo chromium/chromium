@@ -2790,6 +2790,7 @@
 <translation id="5466018172325111652">Не атрымалі код? Паспрабуйце <ph name="BEGIN_LINK" />атрымаць новы<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Плацежныя праграмы</translation>
 <translation id="5470861586879999274">&amp;Адрабіць змену</translation>
+<translation id="5471158297908124590">Каб змяніць спосабы аплаты, вам трэба пацвердзіць сваю асобу</translation>
 <translation id="5472588168895083535">Адсочванне рухаў рук заблакіравана</translation>
 <translation id="5477756102936130143">Дазволіць перанакіраванне ў плацежныя праграмы, якія падтрымліваюцца</translation>
 <translation id="5479505548832623900">Магчыма, пашырэнне ігнаруе гэтыя правілы.</translation>
@@ -2867,6 +2868,7 @@
 <translation id="5570825185877910964">Абараніць уліковы запіс</translation>
 <translation id="5571083550517324815">З гэтага адраса забраць нельга – выберыце іншы.</translation>
 <translation id="5572434905385510939">22 x 28 цаляў</translation>
+<translation id="5573090972398558474">Ваша арганізацыя заблакіравала гэту старонку ў рэжыме інкогніта.</translation>
 <translation id="5573641252776268565">Змяніць пашпартныя даныя</translation>
 <translation id="5578606540385219379">Пастаўшчыкі паслуг</translation>
 <translation id="5580958916614886209">Праверце месяц заканчэння тэрміну дзеяння і паўтарыце спробу</translation>
@@ -3173,6 +3175,7 @@
 <translation id="6093795393556121384">Ваша картка спраўджана</translation>
 <translation id="6094253940069566294">Змяніць транспартны сродак</translation>
 <translation id="6094290315941448991">Палітыка, зададзеная адміністратарам, адключае запіс экрана, калі на ім паказваецца прыватнае змесціва</translation>
+<translation id="6097297436119286254">Каб запоўніць плацежную інфармацыю, вам трэба пацвердзіць сваю асобу</translation>
 <translation id="6099269767116481177">22 x 29,5 цалі</translation>
 <translation id="6101583188322746099">Дастаўка прадуктаў харчавання</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4297,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 праграма (<ph name="EXAMPLE_APP_1" />)}=2{2 праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# праграма (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# праграм (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Узнікла памылка. Паўтарыце спробу.</translation>
 <translation id="784623644169604270">Няма нядаўніх дзеянняў</translation>
+<translation id="7848926355794727168">Аўтаматычны прагляд</translation>
 <translation id="7853222852810008596">Для гэтай валюты аплата ў растэрміноўку недаступная</translation>
 <translation id="785476343534277563">Студэнцкі спорт</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4523,6 +4527,7 @@
 <translation id="8241707690549784388">Старонка, на якую вы спрабуеце перайсці, выкарыстоўвала ўведзеныя вамі звесткі. Калі вярнуцца на яе, у выніку можа быць паўторна зробленае вамі дзеянне. Працягнуць?</translation>
 <translation id="8241712895048303527">Блакіраваць на гэтым сайце</translation>
 <translation id="8242426110754782860">Працягнуць</translation>
+<translation id="824620968958405573">Задача аўтаматычнага прагляду</translation>
 <translation id="8246482227229072868">Пярсцёнкі</translation>
 <translation id="8248406213705193919">Захаваць рэквізіты карткі ў бяспецы?</translation>
 <translation id="8249296373107784235">Скасаваць</translation>
@@ -4920,6 +4925,7 @@
 <translation id="8897428486789851669">Плаванне</translation>
 <translation id="8899807382908246773">Назойлівая рэклама</translation>
 <translation id="8903921497873541725">Павялічыць маштаб</translation>
+<translation id="8903998444169664879">Каб змяніць налады аплаты, вам трэба пацвердзіць сваю асобу</translation>
 <translation id="890493561996401738">Кнопка "Выдаліць прапанову". Каб выдаліць прапанову, націсніце Enter. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 цаляў</translation>
 <translation id="8914504000324227558">Перазапусціць Chrome</translation>

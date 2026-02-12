@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="201759455285471444">タブグループを開く。</translation>
 <translation id="202070562065520783">この内容を説明</translation>
-<translation id="2023713324775943812">利用可能な場合にアドレスバーからリーディング モードにアクセスできます</translation>
 <translation id="2044394949148788042">タブグリッドを開く</translation>
 <translation id="2044681667265133332">アカウント（<ph name="USER_EMAIL" />）は <ph name="HOSTED_DOMAIN" /> によって管理されており、この組織は一部の情報を見ることができます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新しいアイテム</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">保存済みのパスワードとパスキー</translation>
 <translation id="3143515551205905069">同期をキャンセル</translation>
 <translation id="3144126448740580210">完了</translation>
+<translation id="3147521114983561406">パスキーはパスワード マネージャーに保存されます。パスキーにはシークレット タブと通常のタブからアクセスできます。</translation>
 <translation id="3148052723910099040">通常のタブのグリッド</translation>
 <translation id="3148237711805373460">移動する</translation>
 <translation id="3157387275655328056">リーディング リストに追加</translation>
@@ -1860,6 +1860,7 @@
 <translation id="7772032839648071052">パスフレーズの確認</translation>
 <translation id="7772948288262733182">おかえりなさい</translation>
 <translation id="777637629667389858">ログイン中、すべての Google サービスで保護します。</translation>
+<translation id="7776604279034196531">利用可能な場合にアドレスバーからリーディング モードにアクセスできます</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7788868432173225918">展開されたビューを閉じる</translation>
 <translation id="7791543448312431591">追加</translation>
@@ -2097,6 +2098,7 @@
 <translation id="8587001564479545614">リカバリ PIN の作成</translation>
 <translation id="8588404856427128947">オフ</translation>
 <translation id="8590286732816598906">タブグループ、<ph name="GROUP_TITLE" />、メニュー。</translation>
+<translation id="8593317261815647019">シークレット モード外でパスキーを作成しますか？</translation>
 <translation id="8600272508328041907">ページ全体の翻訳に切り替える</translation>
 <translation id="860043288473659153">カード名義人</translation>
 <translation id="8601611099293226919">Google レンズで画面を検索</translation>

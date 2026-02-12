@@ -240,6 +240,7 @@
 <translation id="1151917987301063366"><ph name="HOST" />에서 센서에 액세스하도록 항상 허용</translation>
 <translation id="1152346050262092795">비밀번호를 다시 입력하여 계정을 인증하세요</translation>
 <translation id="1153636665119721804">Google 고급 보호 프로그램</translation>
+<translation id="1153802775114315167">확장 프로그램 시작하기</translation>
 <translation id="1155816283571436363">휴대전화에 연결하는 중</translation>
 <translation id="1157952955648710254">Google 검색 측면 패널 닫기</translation>
 <translation id="1158080958325422608">Make Uppercase(대문자로 표시)</translation>
@@ -584,6 +585,7 @@
 <translation id="1383876407941801731">검색</translation>
 <translation id="1384849755549338773">다른 언어로 표시되는 웹사이트에서 Google 번역 제공</translation>
 <translation id="1384959399684842514">다운로드 일시중지됨</translation>
+<translation id="1386966479075994683">탭 펼치기</translation>
 <translation id="1388253969141979417">마이크 사용이 허용됨</translation>
 <translation id="1388728792929436380">업데이트가 완료되면 <ph name="DEVICE_TYPE" /> 기기가 다시 시작됩니다.</translation>
 <translation id="1390113502208199250">Chrome Education 업그레이드 기능을 사용하려면 기기를 초기화해야 합니다.</translation>
@@ -2598,6 +2600,7 @@
 <translation id="2727633948226935816">다시 표시하지 않음</translation>
 <translation id="2727712005121231835">실제 크기</translation>
 <translation id="2727744317940422214">죄송합니다. 문제가 발생했습니다. 설명에 의견을 작성하고 #bruschetta라고 표시하여 제출해 주세요. 오류 코드는 <ph name="ERROR" />입니다. 데이터를 지울 수 없습니다. 직접 삭제해야 할 수도 있습니다.</translation>
+<translation id="2729310339366257582">탭 접기</translation>
 <translation id="2729577602370119849">간편한 프린터 액세스 및 관리</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />위치 정확도를 사용하면 무선 신호에 대한 정보(예: Wi-Fi 액세스 포인트, 셀룰러 네트워크 기지국)와 기기 센서 데이터(예: 가속도계 및 자이로스코프)가 더 정확한 기기 위치를 추정하기 위해 사용됩니다. 이는 Android 앱 및 서비스에서 위치 정보 기반 기능을 제공하는 데 사용됩니다. 이를 위해 Google은 이 기기 주변의 기기 센서 및 무선 신호에 대한 정보를 주기적으로 수집하여 크라우드소싱된 무선 신호 위치에 기여합니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google은 이 기기에서 수집된 정보를 사용하여 위치 정확도 및 위치 기반 서비스를 개선하고, Google 서비스를 전반적으로 개선, 제공, 유지 관리합니다. Google은 사용자의 요구사항을 충족하기 위해 Google 및 서드 파티의 적법한 이익에 따라 이 정보를 처리합니다. 이 정보는 개인을 식별하는 데 사용되지 않습니다.<ph name="END_PARAGRAPH2" />
@@ -2778,6 +2781,7 @@
 <translation id="2842013086666334835">"<ph name="NETWORK_ID" />"에 로그인</translation>
 <translation id="2843560154284403323">Linux 설정을 완료하려면 ChromeOS를 업데이트하고 다시 시도하세요.</translation>
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> 확보됨</translation>
+<translation id="2844154481025280030">정책이 구성되었습니다.</translation>
 <translation id="2844169650293029770">USB-C 기기(좌측 전면 포트)</translation>
 <translation id="2844809857160214557">인쇄 작업 보기 및 관리</translation>
 <translation id="2845276301195220700">Google Calendar 관련 작업 더보기</translation>
@@ -3217,6 +3221,7 @@
 <translation id="3151539355209957474">시작 시간</translation>
 <translation id="3151786313568798007">방향</translation>
 <translation id="3152356229013609796">휴대전화의 알림을 보고 닫거나 답장합니다.</translation>
+<translation id="3152545926232662879">무시됨:</translation>
 <translation id="3154754096046236400">개인별 맞춤 AI</translation>
 <translation id="3155163173539279776">Chromium 다시 시작</translation>
 <translation id="3155394504825881014">탭 그룹을 북마크 폴더로 변환</translation>
@@ -4745,6 +4750,7 @@
 <translation id="4169535189173047238">허용 안함</translation>
 <translation id="4170314459383239649">종료 시 삭제</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Gemini와 탭 공유}other{Gemini와 탭 #개 공유}}</translation>
+<translation id="4172944993779635350">"<ph name="URL" />"의 비밀번호가 이 기기에만 저장되었습니다. 다른 기기에서 사용하려면 계정에 저장하세요.</translation>
 <translation id="4173129130568053653">Gemini는 약속 잡기, 장바구니 만들기 또는 사용자가 지정한 기타 작업을 처리하는 데 도움이 됩니다.</translation>
 <translation id="4175137578744761569">연한 보라색 및 흰색</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
@@ -5061,6 +5067,7 @@
 <translation id="4386604394450371010">개요</translation>
 <translation id="4387890294700445764">유출된 비밀번호</translation>
 <translation id="4388650384344483842">8자 이상 입력하세요.</translation>
+<translation id="4388700905120039425">{COUNT,plural, =1{<ph name="URL" />의 비밀번호}other{<ph name="URL" />의 비밀번호({COUNT}개)}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> 외 <ph name="NUMBER_OF_OTHER_SWITCHES" />개</translation>
 <translation id="439266289085815679">블루투스 구성은 <ph name="USER_EMAIL" />님이 관리합니다.</translation>
 <translation id="4392896746540753732">설정 파일 수정</translation>
@@ -5135,6 +5142,7 @@
 <translation id="443031431654216610">숫자만 사용</translation>
 <translation id="4430369329743628066">북마크 추가됨</translation>
 <translation id="4430422687972614133">가상 카드 사용</translation>
+<translation id="4431962107539413562">모든 기기에서 비밀번호 가져오기</translation>
 <translation id="443196770280837407">단축키를 사용하여 Gemini를 엽니다.</translation>
 <translation id="4432621511648257259">비밀번호가 잘못됨</translation>
 <translation id="4434611816075088065">지금은 확인이 필요한 항목이 없습니다</translation>
@@ -5591,6 +5599,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4762849514113423887">비밀번호가 잘못되었습니다. 다시 시도하세요.</translation>
 <translation id="4763408175235639573">페이지를 열었을 때 다음 쿠키가 설정됨</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> 계정은 유효한 Google for Education 계정이 아닙니다. 관리자에게 문의하세요. 관리자인 경우 g.co/workspace/edusignup에서 조직을 설정할 수 있습니다.</translation>
+<translation id="4765053150631027076">{COUNT,plural, =1{"<ph name="URL" />"의 비밀번호 {COUNT}개가 이 기기에만 저장되었습니다. 다른 기기에서 사용하려면 계정에 저장하세요.}other{"<ph name="URL" />"의 비밀번호 {COUNT}개가 이 기기에만 저장되었습니다. 다른 기기에서 사용하려면 계정에 저장하세요.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{기기는 한 달 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}other{기기는 {MONTHS}개월 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}}</translation>
 <translation id="476563889641554689">렌즈로 검색할 영역을 선택하세요.</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{공개 키 및 무결성 블록 확인 중… 1분 미만 남음}=1{공개 키 및 무결성 블록 확인 중… 1분 남음}other{공개 키 및 무결성 블록 확인 중… #분 남음}}</translation>
@@ -5753,6 +5762,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4868284252360267853">현재 이 대화상자에 포커스가 지정되지 않았습니다. Command+Shift+Option A를 눌러 이 대화상자에 포커스를 지정하세요.</translation>
 <translation id="4868351661310357223"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요.</translation>
 <translation id="4869170227080975044">ChromeOS 네트워크 정보를 읽습니다.</translation>
+<translation id="4869175799055761881">사용자가 이 애플리케이션을 설치할 수 없습니다. 개발자에게 문의하세요</translation>
 <translation id="4870724079713069532">File Explorer 또는 다른 앱에서 이 앱이 지원하는 파일을 열고 수정할 수 있습니다. 기본적으로 이 앱에서 열 파일을 관리하려면 <ph name="BEGIN_LINK" />Windows 설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="4870995365819149457">지원되는 링크 일부는 <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 외 1개의 다른 앱에서 계속 열 수 있습니다.</translation>
 <translation id="4871308555310586478">Chrome 웹 스토어에서 설치되지 않았습니다.</translation>
@@ -6063,6 +6073,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512(RSA 암호화 사용)</translation>
 <translation id="5090637338841444533">카메라 위치 추적이 허용되지 않음</translation>
 <translation id="5091636240353511739">PIN 표시</translation>
+<translation id="5093447877601682598">탭 표시줄에 관한 의견 보내기</translation>
 <translation id="5093477827231450397">다른 사이트 광고를 추천하지 않도록 차단한 사이트 목록</translation>
 <translation id="5093569275467863761">시크릿 모드 뒤로-앞으로 캐시 서브프레임: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">파일 앱 또는 다른 앱에서 이 앱이 지원하는 파일을 열고 수정할 수 있습니다. 기본적으로 이 앱에서 열 파일을 관리하려면 <ph name="BEGIN_LINK" />기기에서 기본 앱을 설정하는 방법을 알아보세요<ph name="END_LINK" />.</translation>
@@ -6232,6 +6243,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5203035663139409780">기기에 있는 파일 또는 폴더를 수정할 수 있음</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{확장 프로그램을 보려면 클릭하세요.}other{확장 프로그램을 보려면 클릭하세요.}}</translation>
 <translation id="5204282224596194174"><ph name="USER_EMAIL" />의 비밀번호 복구</translation>
+<translation id="5204584298075822291">탭 접기</translation>
 <translation id="5204673965307125349">기기를 파워워시한 후 다시 시도해 주세요.</translation>
 <translation id="5204967432542742771">비밀번호 입력</translation>
 <translation id="5205484256512407285">전송에 모바일 데이터를 사용하지 않음</translation>
@@ -8654,6 +8666,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6897363604023044284">삭제할 사이트 선택</translation>
 <translation id="6897688156970667447">어두운 곳에서도 잘 보이며 배터리 절약에 도움이 됩니다.</translation>
+<translation id="6897756054229464646">Gemini 사용</translation>
 <translation id="6897972855231767338">게스트로 탐색하는 방법 자세히 알아보기</translation>
 <translation id="6898438890765871056">OneDrive 폴더 열기</translation>
 <translation id="6898440773573063262">이제 키오스크 애플리케이션이 기기에서 자동 실행되도록 설정할 수 있습니다.</translation>
@@ -8896,6 +8909,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7057567173736333354">이미지 설명 작성</translation>
 <translation id="70577934383983846">모든 기기에서 이 비밀번호 사용</translation>
 <translation id="7058024590501568315">숨겨진 네트워크</translation>
+<translation id="7058325593717863084">탭 표시줄에 관한 의견 보내기</translation>
 <translation id="7059858479264779982">자동 실행 설정</translation>
 <translation id="7063129466199351735">바로가기 처리 중...</translation>
 <translation id="7063311912041006059">URL(검색어 자리에 <ph name="SPECIAL_SYMBOL" /> 입력)</translation>
@@ -9075,6 +9089,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7193051357671784796">조직에서 추가한 앱입니다. 설치를 완료하려면 앱을 다시 시작하세요.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" />의 비밀번호가 저장되지 않음</translation>
 <translation id="7193663868864659844">추천 그룹에 관한 의견 보내기</translation>
+<translation id="7194343495483122559">탭 펼치기</translation>
 <translation id="7194873994243265344">파일이 암호화되어 있기 때문에 조직에서 파일을 차단했습니다. 소유자에게 복호화를 요청하세요.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{다운로드 1개 진행 중}other{다운로드 #개 진행 중}}</translation>
 <translation id="7196272782924897510">다른 기기의 패스키를 사용하시겠습니까?</translation>
@@ -9154,6 +9169,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7250616558727237648">공유하려는 기기가 응답하지 않습니다. 다시 시도해 주세요.</translation>
 <translation id="725109152065019550">관리자가 계정에서 외부 저장소를 사용 중지했습니다.</translation>
 <translation id="7251635775446614726">관리자의 메시지: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="725310308981256997">이 페이지에 대해 질문하기</translation>
 <translation id="7253521419891527137">자세히 알아보기(&amp;L)</translation>
 <translation id="7254951428499890870">'<ph name="APP_NAME" />'을(를) 진단 모드로 실행하시겠습니까?</translation>
 <translation id="725497546968438223">북마크 폴더 버튼</translation>
@@ -10643,6 +10659,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8244201515061746038">자동 수정 자세히 알아보기 버튼입니다. 자동 수정 설정 페이지로 이동합니다. 활성화하려면 Enter를, 닫으려면 Esc를 누르세요.</translation>
 <translation id="8244514732452879619">곧 잘 시간입니다</translation>
 <translation id="8246776524656196770">개인 식별 번호(PIN)를 사용해 보안 키를 보호합니다.</translation>
+<translation id="824713170151383793">DevTools 사용</translation>
 <translation id="8247795734638043885">안전하지 않은 파일 다운로드</translation>
 <translation id="8248050856337841185">붙여넣기(&amp;P)</translation>
 <translation id="8248381369318572865">마이크에 액세스하여 음성을 분석합니다.</translation>
@@ -11333,7 +11350,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8707562594602678416">장소</translation>
 <translation id="8708000541097332489">종료 시 삭제</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
-<translation id="8708088555926718398">오류: 카테고리: <ph name="CATEGORY" />, 코드: <ph name="CODE" />, 추가 코드: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">추가 정보</translation>
 <translation id="8709368517685334931">Chrome 웹 스토어에서 이전 색상을 찾을 수 있습니다.</translation>
 <translation id="8710414664106871428">판타지</translation>
@@ -11558,6 +11574,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="885746075120788020">Google 계정을 사용해 로그인할 경우 모든 ChromeOS 기기에서 저장된 환경설정 및 활동을 사용할 수 있습니다. 설정에서 동기화할 항목을 선택하세요</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{앱을 설치하시겠습니까?}other{앱을 설치하시겠습니까?}}</translation>
 <translation id="8858369206579825206">개인 정보 보호 설정</translation>
+<translation id="8858449624332155432">여러 소스의 충돌하는 값으로 구성된 정책입니다.</translation>
 <translation id="8859174528519900719">서브프레임: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">서비스 약관을 로드할 수 없습니다.</translation>
 <translation id="8859662783913000679">부모 계정</translation>

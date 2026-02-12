@@ -125,6 +125,7 @@
 <translation id="1436671784520050284">Ipagpatuloy ang pag-set up</translation>
 <translation id="143681031165817424">Na-save lang sa device na ito ang address</translation>
 <translation id="1445276840641906250">Lahat ng iyong tab sa isang browser</translation>
+<translation id="1447564161241938558">Na-disable ng iyong administrator ang pag-import ng mga password at passkey</translation>
 <translation id="1450170672351507823">Naka-on ang standard na proteksyon. Para sa higit pang seguridad, gamitin ang Pinahusay na proteksyon.</translation>
 <translation id="1455660774629812862">Huwag i-hide</translation>
 <translation id="1456545332132818232">May mga review ng produkto sa <ph name="PRODUCT_NAME" />, <ph name="STARS" /> sa <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
@@ -295,7 +296,6 @@
 <translation id="2015722694326466240">Upang makita ang mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
 <translation id="201759455285471444">I-expand ang grupo ng tab.</translation>
 <translation id="202070562065520783">Ipaliwanag ito sa akin</translation>
-<translation id="2023713324775943812">I-access ang Reading Mode mula sa address bar kapag available</translation>
 <translation id="2044394949148788042">Buksan ang grid ng tab</translation>
 <translation id="2044681667265133332">Ang account na <ph name="USER_EMAIL" /> ay pinapamahalaan ng <ph name="HOSTED_DOMAIN" />, na posibleng makakita ng ilang impormasyon. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">bagong item</translation>
@@ -585,6 +585,7 @@
 <translation id="3140825265190223781">Mga naka-save na password at passkey</translation>
 <translation id="3143515551205905069">Kanselahin ang pag-sync</translation>
 <translation id="3144126448740580210">TAPOS NA</translation>
+<translation id="3147521114983561406">Sine-save ang mga passkey sa iyong password manager. Maa-access ang mga ito sa mga Incognito at karaniwang tab.</translation>
 <translation id="3148052723910099040">Grid ng Regular na Tab</translation>
 <translation id="3148237711805373460">Dalhin ako roon</translation>
 <translation id="3157387275655328056">Idagdag sa Listahan ng Babasahin</translation>
@@ -1860,6 +1861,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7772032839648071052">Kumpirmahin ang passphrase</translation>
 <translation id="7772948288262733182">Maligayang pagbabalik</translation>
 <translation id="777637629667389858">Kapag naka-sign in ka, poprotektahan ka nito sa lahat ng serbisyo ng Google.</translation>
+<translation id="7776604279034196531">I-access ang reading mode mula sa address bar kapag available</translation>
 <translation id="7781829728241885113">Kahapon</translation>
 <translation id="7788868432173225918">I-dismiss ang pinalawak na view</translation>
 <translation id="7791543448312431591">Idagdag</translation>
@@ -2097,6 +2099,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8587001564479545614">Gumawa ng PIN sa pag-recover</translation>
 <translation id="8588404856427128947">Naka-off</translation>
 <translation id="8590286732816598906">Grupo ng tab, <ph name="GROUP_TITLE" />, Menu.</translation>
+<translation id="8593317261815647019">Gumawa ng passkey sa labas ng Incognito?</translation>
 <translation id="8600272508328041907">Lumipat sa buong Pagsasalin ng page</translation>
 <translation id="860043288473659153">Pangalan ng cardholder</translation>
 <translation id="8601611099293226919">Ibahagi ang iyong screen gamit ang Google Lens</translation>
@@ -2235,6 +2238,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="9055291197094969722">Gumawa ng mga grupo ng tab para isaayos ang iyong mga nakabukas na tab at manatiling produktibo</translation>
 <translation id="9055580485132823283">Ide-delete mo ang {password_count} (na) password, {passkey_count} (na) passkey, at ang listahan ng mga site at app na pinili mong hinding-hindi magse-save ng impormasyon sa pag-sign in. Hindi made-delete ang anumang account na ginawa mo para sa mga site at app.</translation>
 <translation id="9057030985451135243">Matuto tungkol sa mga naka-share na grupo ng tab</translation>
+<translation id="9064106978262828592">Nagkaproblema sa pag-export ng iyong data</translation>
 <translation id="9065203028668620118">I-edit</translation>
 <translation id="9066097352053395362">I-hide ang I-edit ang Bookmark</translation>
 <translation id="9070824521421603770">Masa-sign out ka at isasara ang mga tab</translation>

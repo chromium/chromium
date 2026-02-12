@@ -2791,6 +2791,7 @@
 <translation id="5466018172325111652">ඔබේ කේතය නොලැබුණේ ද? <ph name="BEGIN_LINK" />නව කේතය ලබා ගන්න<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">ගෙවීම් යෙදුම්</translation>
 <translation id="5470861586879999274">සංස්කරණය &amp;යළි කරන්න</translation>
+<translation id="5471158297908124590">ගෙවීම් ක්‍රම සංස්කරණය කිරීමට ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="5472588168895083535">අත් ලුහුබැඳීම අවහිර කර ඇත</translation>
 <translation id="5477756102936130143">සහාය දක්වන ගෙවීම් යෙදුම් වෙත හරවා යැවීම සබල කරන්න</translation>
 <translation id="5479505548832623900">දිගුව මගින් නොසලකා හැර ඇති බව පෙනේ.</translation>
@@ -2868,6 +2869,7 @@
 <translation id="5570825185877910964">ගිණුම ආරක්‍ෂා කරන්න</translation>
 <translation id="5571083550517324815">මෙම ලිපිනයෙන් ලබා ගැනීමට නොහැකිය. වෙනත් ලිපිනයක් තෝරන්න.</translation>
 <translation id="5572434905385510939">අඟ 22 x 28</translation>
+<translation id="5573090972398558474">ඔබේ සංවිධානය අප්‍රසිද්ධ ප්‍රකාරයේ මෙම පිටුව අවහිර කර ඇත.</translation>
 <translation id="5573641252776268565">ගමන් බලපත්‍රය සංස්කරණය කරන්න</translation>
 <translation id="5578606540385219379">සේවා සපයන්නන්</translation>
 <translation id="5580958916614886209">ඔබේ කල් ඉකුත් වීමේ මාසය පරික්ෂා කර නැවත උත්සාහ කරන්න</translation>
@@ -3174,6 +3176,7 @@
 <translation id="6093795393556121384">ඔබේ කාඩ්පත සත්‍යාපනය කර ඇත</translation>
 <translation id="6094253940069566294">වාහනය සංස්කරණය කරන්න</translation>
 <translation id="6094290315941448991">රහසිගත අන්තර්ගතය දෘශ්‍යමාන විට පරිපාලක ප්‍රතිපත්තිය තිර පටිගත කිරීම අබල කරයි</translation>
+<translation id="6097297436119286254">ඔබේ ගෙවීම් තතු පිරවීමට ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="6099269767116481177">අඟ 22 x 29.5</translation>
 <translation id="6101583188322746099">සිල්ලර බඩු බෙදා හැරීමේ සේවා</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4297,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{කිසිවක් නැත}=1{1 යෙදුමක් (<ph name="EXAMPLE_APP_1" />)}=2{යෙදුම් 2ක් (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{යෙදුම් #ක් (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{යෙදුම් #ක් (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">දෝෂයක් සිදු විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="784623644169604270">මෑතකාලීන ක්‍රියාකාරකම් නැත</translation>
+<translation id="7848926355794727168">ස්වයංක්‍රීයව පිරික්සන්න</translation>
 <translation id="7853222852810008596">මෙම මුදල් වර්ගයෙන් පසුව ගෙවීම නොමැත</translation>
 <translation id="785476343534277563">පාසල් ක්‍රීඩා</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4523,6 +4527,7 @@
 <translation id="8241707690549784388">ඔබ සොයමින් සිටින පිටුව ඔබ ඇතුළු කළ තොරතුරු භාවිතා කරන ලදි. එම පිටුව වෙත ආපසු යාමෙන් ඔබ ගත් කිසියම් ක්‍රියාමාර්ගයක් නැවත සිදු කෙරෙනු ඇත. ඔබට ඉදිරියට යාමට අවශ්‍යද?</translation>
 <translation id="8241712895048303527">මෙම අඩවිය මත අවහිර කරන්න</translation>
 <translation id="8242426110754782860">ඉදිරියට</translation>
+<translation id="824620968958405573">ස්වයං බ්‍රවුස් කිරීමේ කාර්යය</translation>
 <translation id="8246482227229072868">මුදු</translation>
 <translation id="8248406213705193919">කාඩ්පත සුරක්ෂිතව සුරකින්න ද?</translation>
 <translation id="8249296373107784235">අහෝසි කරන්න</translation>
@@ -4920,6 +4925,7 @@
 <translation id="8897428486789851669">පිහිනීම</translation>
 <translation id="8899807382908246773">ආක්‍රමණශීලී දැන්වීම්</translation>
 <translation id="8903921497873541725">විශාලනය කරන්න</translation>
+<translation id="8903998444169664879">ඔබේ ගෙවීම් සැකසීම් වෙනස් කිරීමට ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="890493561996401738">යෝජනා බොත්තම ඉවත් කරන්න, ඉවත් කිරීමට Enter ඔබන්න, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">අඟ 8 x 10</translation>
 <translation id="8914504000324227558">Chrome නැවත දියත් කරන්න</translation>

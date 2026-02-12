@@ -2790,6 +2790,7 @@
 <translation id="5466018172325111652">നിങ്ങളുടെ കോഡ് ലഭിച്ചില്ലേ? <ph name="BEGIN_LINK" />പുതിയ കോഡ് നേടുക<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">പേയ്‌മെന്റ് ആപ്പുകൾ</translation>
 <translation id="5470861586879999274">&amp;എഡിറ്റുചെയ്യുന്നത് വീണ്ടും ചെയ്യുക</translation>
+<translation id="5471158297908124590">പേയ്‌മെന്റ് രീതികൾ എഡിറ്റ് ചെയ്യാൻ ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="5472588168895083535">കൈകൾ ട്രാക്ക് ചെയ്യൽ ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="5477756102936130143">പിന്തുണയുള്ള പേയ്‌മെന്റ് ആപ്പുകൾക്ക് റീഡയറക്റ്റ് ചെയ്യൽ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="5479505548832623900">വിപുലീകരണം അവഗണിച്ചിരിക്കാൻ സാധ്യതയുണ്ട്.</translation>
@@ -2867,6 +2868,7 @@
 <translation id="5570825185877910964">അക്കൗണ്ട് പരിരക്ഷിക്കുക</translation>
 <translation id="5571083550517324815">ഈ വിലാസത്തിൽ നിന്ന് പിക്ക്അപ്പ് ചെയ്യാൻ കഴിയില്ല. മറ്റൊരു വിലാസം തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="5572434905385510939">22 x 28 ഇഞ്ച്</translation>
+<translation id="5573090972398558474">നിങ്ങളുടെ സ്ഥാപനം അദൃശ്യ മോഡിൽ ഈ പേജ് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു.</translation>
 <translation id="5573641252776268565">പാസ്‌പോർട്ട് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5578606540385219379">സേവന ദാതാക്കൾ</translation>
 <translation id="5580958916614886209">കാലാവധി തീരുന്ന മാസം പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
@@ -3173,6 +3175,7 @@
 <translation id="6093795393556121384">നിങ്ങളുടെ കാർഡ് പരിശോധിച്ചുറപ്പിച്ചു</translation>
 <translation id="6094253940069566294">വാഹനം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6094290315941448991">രഹസ്യാത്മക ഉള്ളടക്കം ദൃശ്യമായിരിക്കുമ്പോൾ അഡ്‌മിൻ നയം സ്ക്രീൻ റെക്കോർഡിംഗ് പ്രവർത്തനരഹിതമാക്കുന്നു</translation>
+<translation id="6097297436119286254">നിങ്ങളുടെ പേയ്‌മെന്റ് വിവരങ്ങൾ പൂരിപ്പിക്കാൻ ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="6099269767116481177">22 x 29.5 ഇഞ്ച്</translation>
 <translation id="6101583188322746099">പലചരക്ക് ഡെലിവറി സേവനങ്ങൾ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4292,6 +4295,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു ആപ്പ് (<ph name="EXAMPLE_APP_1" />)}=2{2 ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ഒരു പിശകുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="784623644169604270">സമീപകാല ആക്റ്റിവിറ്റിയില്ല</translation>
+<translation id="7848926355794727168">ഓട്ടോ ബ്രൗസ്</translation>
 <translation id="7853222852810008596">ഈ കറൻസിയിൽ പിന്നീട് പേ ചെയ്യൽ ലഭ്യമല്ല</translation>
 <translation id="785476343534277563">കോളേജ് സ്പോർട്‌സ്</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4521,6 +4525,7 @@
 <translation id="8241707690549784388">നിങ്ങൾ തിരയുന്ന പേജ് നിങ്ങൾ നൽകിയ വിവരങ്ങൾ ഉപയോഗിക്കുന്നു. ആ പേജിലേയ്‌ക്ക് തിരികെ പോകുന്നത് നിങ്ങളുടെ എല്ലാ പ്രവർത്തനങ്ങളും ആവർത്തിക്കുന്നതിന് ഇടയാക്കാം. തുടരണോ?</translation>
 <translation id="8241712895048303527">ഈ സൈറ്റിൽ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="8242426110754782860">തുടരുക</translation>
+<translation id="824620968958405573">ഓട്ടോ ബ്രൗസ് ടാസ്‌ക്</translation>
 <translation id="8246482227229072868">മോതിരങ്ങൾ</translation>
 <translation id="8248406213705193919">കാർഡ് സുരക്ഷിതമായി സംരക്ഷിക്കണോ?</translation>
 <translation id="8249296373107784235">ഉപേക്ഷിക്കുക</translation>
@@ -4918,6 +4923,7 @@
 <translation id="8897428486789851669">നീന്തൽ</translation>
 <translation id="8899807382908246773">തടസ്സമുണ്ടാക്കുന്ന പരസ്യങ്ങൾ</translation>
 <translation id="8903921497873541725">സൂം ഇന്‍ ചെയ്യുക</translation>
+<translation id="8903998444169664879">പേയ്‌മെന്റ് ക്രമീകരണം മാറ്റാൻ ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="890493561996401738">നിർദ്ദേശ ബട്ടൺ നീക്കം ചെയ്യുക, നീക്കം ചെയ്യാൻ എന്റർ അമർത്തുക, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ഇഞ്ച്</translation>
 <translation id="8914504000324227558">Chrome വീണ്ടും സമാരംഭിക്കുക</translation>

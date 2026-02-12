@@ -657,6 +657,7 @@
 <translation id="2071156619270205202">ဤကတ်သည် ပကတိအသွင်ကတ်နံပါတ်အတွက် သတ်မှတ်ချက်မပြည့်မီပါ။</translation>
 <translation id="2071852865256799872">သင့်အဖွဲ့အစည်းက သင့်ဘရောင်ဇာကို စီမံခန့်ခွဲပြီး <ph name="PROFILE_DOMAIN" /> က သင့်ပရိုဖိုင်ကို စီမံခန့်ခွဲသည်</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">အချက်အလက်ကို စက်တွင်သာ သိမ်းထားသည်</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> ကို ပြန်ဖွင့်ရန်</translation>
 <translation id="2074771604462073334">သင်ဝင်ကြည့်ထားသည်</translation>
 <translation id="2078956195623975415">တေးဂီတ၊ အကဂိမ်း</translation>
@@ -2792,6 +2793,7 @@
 <translation id="5466018172325111652">ကုဒ်မရဘူးလား။ <ph name="BEGIN_LINK" />ကုဒ်အသစ် ရယူရန်<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">ငွေပေးချေသည့် အက်ပ်များ</translation>
 <translation id="5470861586879999274">&amp;တည်းဖြတ်မှု ပြန်လုပ်ရန်</translation>
+<translation id="5471158297908124590">ငွေပေးချေနည်းလမ်းများ တည်းဖြတ်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="5472588168895083535">လက်ကို စောင့်ကြည့်ခြင်း ပိတ်ထားသည်</translation>
 <translation id="5477756102936130143">ပံ့ပိုးထားသော ငွေပေးချေသည့် အက်ပ်များသို့ တစ်ဆင့်ပြန်ညွှန်ပြခြင်းကို ဖွင့်နိုင်သည်</translation>
 <translation id="5479505548832623900">နောက်ဆက်တွဲက လျစ်လျူရှုနိုင်သည်။</translation>
@@ -2869,6 +2871,7 @@
 <translation id="5570825185877910964">အကောင့်ကို ကာကွယ်ရန်</translation>
 <translation id="5571083550517324815">ဤလိပ်စာမှ ပစ္စည်းထုတ်ယူ၍မရပါ။ အခြားလိပ်စာတစ်ခုကို ရွေးပါ။</translation>
 <translation id="5572434905385510939">၂၂ x ၂၈ လက်မ</translation>
+<translation id="5573090972398558474">သင့်အဖွဲ့အစည်းသည် ‘ရုပ်ဖျက်မုဒ်’ တွင် ဤစာမျက်နှာကို ပိတ်ထားသည်။</translation>
 <translation id="5573641252776268565">နိုင်ငံကူးလက်မှတ် တည်းဖြတ်ခြင်း</translation>
 <translation id="5578606540385219379">ဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="5580958916614886209">သင့်ကုန်ဆုံးမည့်လကို ကြည့်ပြီး ပြန်စမ်းကြည့်ပါ</translation>
@@ -3175,6 +3178,7 @@
 <translation id="6093795393556121384">သင့်ကဒ်အား အတည်ပြုစိစစ်ပြီးဖြစ်၏</translation>
 <translation id="6094253940069566294">ယာဉ် တည်းဖြတ်ခြင်း</translation>
 <translation id="6094290315941448991">လျှို့ဝှက်အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် ဖန်သားပြင်ရိုက်ကူးခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
+<translation id="6097297436119286254">သင့်ငွေချေအချက်အလက်တွင် ဖြည့်နိုင်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="6099269767116481177">၂၂ x ၂၉.၅ လက်မ</translation>
 <translation id="6101583188322746099">စားသောက်ကုန် ပို့ဆောင်ရေးဝန်ဆောင်မှု</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4295,6 +4299,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{မရှိ}=1{အက်ပ် ၁ ခု (<ph name="EXAMPLE_APP_1" />)}=2{အက်ပ် ၂ ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />)}other{အက်ပ် # ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />၊ <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">အမှားတစ်ခု ဖြစ်သွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="784623644169604270">မကြာသေးမီက လုပ်ဆောင်ချက် မရှိပါ</translation>
+<translation id="7848926355794727168">အော်တိုဘရောက်စ်</translation>
 <translation id="7853222852810008596">‘နောက်မှပေး’ ကို ဤငွေကြေးဖြင့် မရနိုင်ပါ</translation>
 <translation id="785476343534277563">ကောလိပ်အားကစား</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4525,6 +4530,7 @@
 <translation id="8241707690549784388">သင်က ရိုက်ထည့် အသုံးပြုခဲ့သည့် အချက်အလက်များကို ကြည့်ရှုရနိုင်သည့် စာမျက်နှာပါ။ သင်က ထပ်လုပ်ရန် တစ်ခုခု လုပ်ဆောင်ခဲ့လျှင် ထိုစာမျက်နှာသို့ ပြန်ရောက်သွားနိုင်သည်။ သင်သည် ဆက်ပြီး လုပ်ကိုင်လိုပါသလား?</translation>
 <translation id="8241712895048303527">ဤဝဘ်ဆိုက်တွင် ပိတ်ရန်</translation>
 <translation id="8242426110754782860">ဆက်လက်လုပ်ဆောင်ပါ</translation>
+<translation id="824620968958405573">အော်တိုဘရောက်စ် လုပ်ဆောင်ချက်</translation>
 <translation id="8246482227229072868">လက်စွပ်</translation>
 <translation id="8248406213705193919">ကတ်ကို လုံခြုံစွာသိမ်းမလား။</translation>
 <translation id="8249296373107784235">မလုပ်တော့ပါ</translation>
@@ -4897,6 +4903,7 @@
 <translation id="8858065207712248076">အခြားဝဘ်ဆိုက်များတွင် သင်၏ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> စကားဝှက်ကို ပြန်သုံးထားပါက ၎င်းကို ပြင်ဆင်သတ်မှတ်ရန် Chrome က အကြံပြုပါသည်။</translation>
 <translation id="885906927438988819">စာလုံးပေါင်း မှန်ကန်ပါက <ph name="BEGIN_LINK" />ဝင်းဒိုးကွန်ရက် အမှားရှာဖွေမှုများပြုလုပ်ရန် ကြိုးစားကြည့်ပါ<ph name="END_LINK" />။</translation>
 <translation id="8861126751581835107">ဓာတ်ပုံ၊ ဒစ်ဂျစ်တယ်အနုပညာ</translation>
+<translation id="8861482055962701239">ဤအချက်အလက်ကို သင်၏ Google Wallet တွင် သိမ်း၍မရလိုက်ပါ။ ယင်းအစား ဤစက်ပေါ်ရှိ Chrome တွင် ၎င်းကို သိမ်းလိုက်သည်။ နောက်တစ်ကြိမ် ၎င်းကိုသုံးသည့်အခါ Chrome သည် Wallet တွင် သိမ်းရန် ကမ်းလှမ်းပါမည်။</translation>
 <translation id="8863218129525348270">နောင်တွင် မြန်ဆန်စွာပေးချေနိုင်ရန် သင့်ကတ်ကို စက်တွင် သိမ်းပါ</translation>
 <translation id="8864939224504814334">ဝတ်စုံနှင့် အလုပ်တက်အဝတ်အစား</translation>
 <translation id="8866132857352163524">ဇာတ်ဝင်တေးများ</translation>
@@ -4922,6 +4929,7 @@
 <translation id="8897428486789851669">ရေကူးခြင်း</translation>
 <translation id="8899807382908246773">ကြားဖြတ်ကြော်ငြာများ</translation>
 <translation id="8903921497873541725">ချဲ့ကြည့်ပါ</translation>
+<translation id="8903998444169664879">ငွေပေးချေမှုဆက်တင်များ ပြောင်းရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="890493561996401738">'အကြံပြုချက်' ခလုတ်ကို ဖယ်ရှားခြင်း၊ ဖယ်ရှားရန် Enter ကို နှိပ်ပါ၊ <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">၈ x ၁၀ လက်မ</translation>
 <translation id="8914504000324227558">Chromium ကို အသစ်တစ်ဖန် ပြန်စရန်</translation>

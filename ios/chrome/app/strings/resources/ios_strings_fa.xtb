@@ -125,6 +125,7 @@
 <translation id="1436671784520050284">ادامه راه‌اندازی</translation>
 <translation id="143681031165817424">نشانی فقط در این دستگاه ذخیره می‌شود</translation>
 <translation id="1445276840641906250">همه برگه‌های شما در یک مرورگر</translation>
+<translation id="1447564161241938558">سرپرستتان وارد کردن گذرواژه‌ها و گذرکلیدها را غیرفعال کرده است</translation>
 <translation id="1450170672351507823">«محافظت استاندارد» روشن است. برای امنیت بیشتر، از «محافظت پیشرفته» استفاده کنید.</translation>
 <translation id="1455660774629812862">پنهان نشود</translation>
 <translation id="1456545332132818232">مرورهای محصول درباره <ph name="PRODUCT_NAME" />،‏ <ph name="STARS" /> از <ph name="MAX_STARS" />،‏ <ph name="DOMAIN" /></translation>
@@ -295,7 +296,6 @@
 <translation id="2015722694326466240">برای دیدن گذرنویسه‌ها، اول باید گذرنویسه‌ای برای دستگاه تنظیم کنید.</translation>
 <translation id="201759455285471444">ازهم باز کردن گروه زبانه.</translation>
 <translation id="202070562065520783">این را برایم توضیح بده</translation>
-<translation id="2023713324775943812">وقتی «حالت خواندن» دردسترس است، از نوار نشانی به آن دسترسی پیدا کنید</translation>
 <translation id="2044394949148788042">باز کردن شبکه زبانه</translation>
 <translation id="2044681667265133332">حساب <ph name="USER_EMAIL" /> تحت‌مدیریت <ph name="HOSTED_DOMAIN" /> است. این دامنه ممکن است بتواند برخی اطلاعات را مشاهده کند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">مورد جدید</translation>
@@ -477,7 +477,7 @@
 <translation id="2697530870203420261">نام مستعار نامعتبر است</translation>
 <translation id="269819437389494246">می‌توانید صفحه‌هایی را که از آن‌ها بازدید کرده‌اید ببینید یا آن‌ها را از سابقه حذف کنید</translation>
 <translation id="2704606927547763573">کپی شد</translation>
-<translation id="2708051474374549906">‏محافظت بی‌وقفه و پیش‌نگر دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک که براساس داده‌های مرور ارسالی به Google است</translation>
+<translation id="2708051474374549906">‏محافظت بی‌وقفه و پیش‌کنشی دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک که براساس داده‌های مرور ارسالی به Google است</translation>
 <translation id="2709516037105925701">تکمیل خودکار</translation>
 <translation id="271033894570825754">مجموعه جدید</translation>
 <translation id="2712929214961145009">سن‌سریف</translation>
@@ -585,6 +585,7 @@
 <translation id="3140825265190223781">گذرواژه‌ها و گذرکلیدهای ذخیره‌شده</translation>
 <translation id="3143515551205905069">لغو همگام‌سازی</translation>
 <translation id="3144126448740580210">تمام</translation>
+<translation id="3147521114983561406">گذرکلیدها در مدیر گذرواژه‌تان ذخیره می‌شوند. در زبانه‌های «ناشناس» و معمولی دردسترس هستند.</translation>
 <translation id="3148052723910099040">جدول زبانه معمول</translation>
 <translation id="3148237711805373460">به آنجا هدایت شوم</translation>
 <translation id="3157387275655328056">افزودن به فهرست خواندن</translation>
@@ -1454,7 +1455,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6301104306974789820">دریافت اعلان‌های پیگیری قیمت</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">انتخاب کردن جای نوار نشانی</translation>
-<translation id="6307241780749477694">هویت خود را به‌تأیید برسانید تا به همه گذرواژه‌هایتان در این دستگاه دسترسی داشته باشید</translation>
+<translation id="6307241780749477694">هویت خود را درستی‌سنجی کنید تا به همه گذرواژه‌هایتان در این دستگاه دسترسی داشته باشید</translation>
 <translation id="6316141353357700666">در فهرستی که خواهید دید، گذرواژه موردنظر برای استفاده را انتخاب کنید.</translation>
 <translation id="6321526113093607004">افزودن به نشانک‌ها</translation>
 <translation id="6331836477476466332">یک مرورگر ایمن‌تر و قدرت‌مندتر برای شما</translation>
@@ -1860,6 +1861,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7772032839648071052">تأیید گذرعبارت</translation>
 <translation id="7772948288262733182">بازگشتتان را خوشامد می‌گوییم</translation>
 <translation id="777637629667389858">‏وقتی به سیستم وارد شده باشید، در سراسر سرویس‌های Google از شما محافظت می‌کند.</translation>
+<translation id="7776604279034196531">وقتی که دردسترس است، می‌توانید از نوار نشانی به حالت خواندن دسترسی پیدا کنید</translation>
 <translation id="7781829728241885113">دیروز</translation>
 <translation id="7788868432173225918">بستن نمای ازهم‌بازشده</translation>
 <translation id="7791543448312431591">افزودن</translation>
@@ -2097,6 +2099,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8587001564479545614">پین بازیابی ایجاد کنید</translation>
 <translation id="8588404856427128947">خاموش</translation>
 <translation id="8590286732816598906">گروه زبانه، <ph name="GROUP_TITLE" />، منو.</translation>
+<translation id="8593317261815647019">ایجاد گذرکلید خارج از حالت ناشناس؟</translation>
 <translation id="8600272508328041907">رفتن به ترجمه کامل صفحه</translation>
 <translation id="860043288473659153">نام صاحب کارت</translation>
 <translation id="8601611099293226919">‏جستجوی صفحه با «لنز Google»</translation>

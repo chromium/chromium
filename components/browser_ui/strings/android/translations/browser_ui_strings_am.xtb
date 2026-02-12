@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">በመሣሪያዎ የመተግበሪያ ዝርዝር እና የፍለጋ ውጤቶች ውስጥ እንዲመለከቷቸው Chrome የእርስዎን የቅርብ ጊዜ ትሮች ከመሣሪያዎ ጋር እንዲያጋራ ይፍቀዱ። በChrome ቅንብሮች ውስጥ ይህን ማብራት ወይም ማጥፋት ይችላሉ።</translation>
 <translation id="1420688843103859429">በመዳሰሻ ሰሌዳው ላይ በሁለት ጣቶች በማንሸራተት ወደኋላ እና ወደፊት ያስሱ</translation>
 <translation id="1432650420699700107">ጣቢያዎች በአካባቢያዊ አውታረ መረብዎ ላይ ካለ ማንኛውም መሣሪያ ጋር ለመገናኘት ሊጠይቁ ይችላሉ</translation>
+<translation id="1442081309487427303">የንባብ ሁነታ አገናኞችን አብራ</translation>
 <translation id="1448064542941920355">ማጉላትን ቀንስ</translation>
 <translation id="1464044141348608623">የእርስዎን መሣሪያ በንቃት በሚጠቀሙበት ጊዜ ጣቢያዎች እንዲያውቁ አይፍቀዱ</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ጣቢያ}one{<ph name="SITE_COUNT" /> ጣቢያዎች}other{<ph name="SITE_COUNT" /> ጣቢያዎች}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">የChrome ጠቃሚ ምክሮች ማሳወቂያዎችን ያግኙ</translation>
 <translation id="1777815584158991902">የምግብ የግርጌ ሉህ ያግኙ</translation>
 <translation id="1779089405699405702">ስውር ምስል መፍቻ</translation>
+<translation id="1781533683087883868">የንባብ ሁነታ አገናኞችን አጥፋ</translation>
 <translation id="1785415724048343560">ለምርጥ ተሞክሮ የሚመከር</translation>
 <translation id="1796588414813960292">ድምፅ የሚያስፈልጋቸው ባህሪዎች አይሰሩም</translation>
 <translation id="1799920918471566157">የChrome ጠቃሚ ምክሮች</translation>
@@ -293,6 +295,7 @@
 <translation id="3903738175795615004">ከላይ ይጎትቱ ወይም ከሙሉ ገፅ ዕይታ ለመውጣት Esc ቁልፍን ይጫኑ።</translation>
 <translation id="3905475044299942653">በርካታ ማሳወቂያዎችን ያቁሙ</translation>
 <translation id="3922092564198021702">በስልክዎ ላይ ቅንብሮችን ይክፈቱ</translation>
+<translation id="3924858949939391676">አንዴ የንባብ ሁነታ ከበራ በኋላ አገናኞችን አሳይ</translation>
 <translation id="3933121352599513978">ያልተፈለጉ ጥያቄዎችን ሰብስብ (የሚመከር)</translation>
 <translation id="3934905113567851655">መጠኑን ለመቀየር ይቆንጥጡ</translation>
 <translation id="3955193568934677022">ጥበቃ የሚደረግበትን ይዘት እንዲያጫውቱ ለጣቢያዎች ፍቀድ (የሚመከር)</translation>
@@ -356,6 +359,7 @@
 <translation id="4644713492825682049">ሰርዝ እና ዳግም አስጀምር</translation>
 <translation id="4645575059429386691">በእርስዎ ወላጅ የሚቀናበር</translation>
 <translation id="4652266463001779298">አይፈቀድም</translation>
+<translation id="4655846733459137112">በሚቀጥለው ጊዜ በመለያ ሲገቡ ይህን የይለፍ ቃል በቀላሉ ለመጠቀም አዎ ላይ መታ ያድርጉ</translation>
 <translation id="4663373278480897665">ካሜራ ተፈቅዷል</translation>
 <translation id="4670064810192446073">ምናባዊ እውነታ</translation>
 <translation id="4672315773691449562">የአሳሽ መተግበሪያን መታ ያድርጉ ከዚያም Chrome ላይ መታ ያድርጉ</translation>
@@ -462,6 +466,7 @@
 <translation id="5804241973901381774">ፍቃዶች</translation>
 <translation id="5817042798620209981">የጣቢያ መረጃ፣ መገናኛ</translation>
 <translation id="5822675474983796325">የእርስዎ አዲስ የትር ገፅ የግርጌ ሉህ በሙሉ ቁመት እንደተከፈተ ያብጁ</translation>
+<translation id="5826403277762134844">የይለፍ ቃላትን በChrome ውስጥ ለማስቀመጥ መመሪያ የግርጌ ሉህ</translation>
 <translation id="5833899990800318936">ጣቢያዎች ጃቫስክሪፕትን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="583673505367439042">ጣቢያዎች በመሣሪያዎ ላይ ያሉ ፋይሎችን እና አቃፊዎችን ለማርትዕ መጠየቅ ይችላሉ</translation>
 <translation id="5844448279347999754">ሲበራ፣ ጣቢያዎች ወደ ቅንጥብ ሰሌዳዎ የተቀመጡ ጽሑፎችን እና ምስሎችን ለማየት መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ወደ ቅንጥብ ሰሌዳዎ የተቀመጡ ጽሑፎችን ወይም ምስሎችን ማየት አይችሉም።</translation>
@@ -641,6 +646,7 @@
 <translation id="775043444390799886">ፈቃድን ሻር</translation>
 <translation id="7758789811447313947">ሐምራዊ ገጽታ</translation>
 <translation id="7759147511335618829">የMIDI መሣሪያ ቁጥጥር እና ዳግም ፕሮግራም</translation>
+<translation id="7771089277295008211">የይለፍ ቃላትን አስቀምጥ መመሪያ የግርጌ ሉህ ተዘግቷል</translation>
 <translation id="7781829728241885113">ትናንት</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
@@ -658,6 +664,7 @@
 <translation id="7940722705963108451">አስታውሰኝ</translation>
 <translation id="7948081750384205628">ስለ <ph name="SETTING_TITLE" /> የበለጠ ይወቁ</translation>
 <translation id="7952708427581814389">ጣቢያዎች በቅንጥብ ሰሌዳዎ ላይ ጽሑፍን እና ምስሎችን ለማየት መጠየቅ ይችላሉ</translation>
+<translation id="7958779728312669715">የይለፍ ቃላትን አስቀምጥ መመሪያ የግርጌ ሉህ ሙሉ በሙሉ ተከፍቷል</translation>
 <translation id="798299424881500862">ብርቱካናማ ገጽታ</translation>
 <translation id="7986741934819883144">አንድ እውቂያ ይምረጡ</translation>
 <translation id="7990211076305263060">ሲበራ፣ ጣቢያዎች ማይክሮፎንዎን ለመጠቀም ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ማይክሮፎንዎን መጠቀም አይችሉም።</translation>
@@ -754,6 +761,7 @@
 <translation id="8889294078294184559">ማሰስዎን ሲቀጥሉ እውነተኛ ሰው ሊሆኑ እንደሚችሉ ጣቢያዎች በChrome መፈተሽ እና እርስዎ ከዚህ ቀደም በጎበኙት ጣቢያ ላይ ማረጋገጥ ይችላሉ</translation>
 <translation id="8899807382908246773">ጣልቃ ገቢ ማስታወቂያዎች</translation>
 <translation id="8903921497873541725">አጉላ</translation>
+<translation id="8919911527569629802">ወደ ማንኛውም ድር ጣቢያ ይግቡ</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">ደግመው አይጠይቁ</translation>
 <translation id="8926666909099850184">NFC ለዚህ መሣሪያ ጠፍቷል። በ<ph name="BEGIN_LINK" />Android ቅንበሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
@@ -781,6 +789,7 @@
 <translation id="9182556968660520230">ጣቢያዎች የተጠበቀ ይዘትን እንዲጫወቱ አይፍቀዱ</translation>
 <translation id="947156494302904893">የሚጎበኟቸው ጣቢያዎች እርስዎ ቦት ሳይሆኑ እውነተኛ ሰው እንደሆኑ ማረጋገጥ ይችላሉ</translation>
 <translation id="959682366969460160">ይደራጁ</translation>
+<translation id="960590623979248167">ገጽ አገናኞችን አሳይ</translation>
 <translation id="961930410699694996">አካባቢ ለዚህ ጊዜ ይፈቀዳል</translation>
 <translation id="967624055006145463">የተከማቸ ውሂብ</translation>
 <translation id="969975166333045662">ጣቢያን V8 አትቢን ከመጠቀም ያግዱ።</translation>

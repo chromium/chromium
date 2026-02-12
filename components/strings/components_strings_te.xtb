@@ -651,6 +651,7 @@
 <translation id="2071156619270205202">వర్చువల్ కార్డ్ నంబర్ కోసం ఈ కార్డ్‌కు అర్హత లేదు.</translation>
 <translation id="2071852865256799872">మీ బ్రౌజర్‌ను మీ సంస్థ మేనేజ్ చేస్తోంది, మీ ప్రొఫైల్‌ను <ph name="PROFILE_DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">సమాచారం, డివైజ్‌లో మాత్రమే సేవ్ అవుతుంది</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />‌ను అన్‌బ్లాక్ చేయండి</translation>
 <translation id="2074771604462073334">మీరు సందర్శించారు</translation>
 <translation id="2078956195623975415">మ్యూజిక్ &amp; డ్యాన్స్ గేమ్‌లు</translation>
@@ -699,6 +700,7 @@
 <translation id="2137891579555018930">అనుమతి కోసం వేచి ఉంది...</translation>
 <translation id="213826338245044447">మొబైల్ బుక్‌మార్క్‌లు</translation>
 <translation id="2141000681034340397">మీ ఇన్‌పుట్‌ను ఎడిట్ చేయండి</translation>
+<translation id="2141475438898772664">4 వాయిదాలలో లేదా నెలవారీగా పేమెంట్ చేయండి</translation>
 <translation id="2144171668675205303">యాక్టివ్‌గా ఉన్న టాపిక్‌లు ఏవీ లేవు</translation>
 <translation id="2145193671493396738">ఎకానమీ వార్తలు</translation>
 <translation id="214556005048008348">పేమెంట్‌ను రద్దు చేయండి</translation>
@@ -2786,6 +2788,7 @@
 <translation id="5466018172325111652">మీ కోడ్ అందలేదా? <ph name="BEGIN_LINK" />కొత్త కోడ్‌ను పొందండి<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">పేమెంట్‌ల యాప్‌లు</translation>
 <translation id="5470861586879999274">&amp;సవరించడాన్ని రిపీట్‌ చేయి</translation>
+<translation id="5471158297908124590">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయడానికి ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="5472588168895083535">హ్యాండ్ ట్రాకింగ్ బ్లాక్ అయింది</translation>
 <translation id="5477756102936130143">సపోర్ట్ చేసే పేమెంట్ యాప్‌లకు రీడైరెక్షన్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="5479505548832623900">ఎక్స్‌టెన్షన్ విస్మరించే అవకాశం ఉంది</translation>
@@ -2842,6 +2845,7 @@
 <translation id="5543564889050342791">జూలు, అక్వేరియమ్‌లు &amp; సంరక్షణ కేంద్రాలు</translation>
 <translation id="5543722831081909240">180 డిగ్రీలు</translation>
 <translation id="5544836308113951378">క్రూజ్‌లు &amp; చార్టర్‌లు</translation>
+<translation id="5545314360139398232">తర్వాత పే చేయడానికి <ph name="ISSUER_NAME" />‌ను లింక్ చేయండి</translation>
 <translation id="5547939254150808298">ప్రింటింగ్ &amp; పబ్లిషింగ్</translation>
 <translation id="554815783948612276">ఫోరమ్ &amp; చాట్ ప్రొవైడర్‌లు</translation>
 <translation id="5548606607480005320">భద్రతా చెక్-అప్</translation>
@@ -2863,6 +2867,7 @@
 <translation id="5570825185877910964">ఖాతాను సంరక్షించు</translation>
 <translation id="5571083550517324815">ఈ అడ్రస్‌ నుండి పికప్ చేసుకోవడం సాధ్యం కాదు. వేరే అడ్రస్‌ను ఎంచుకోండి.</translation>
 <translation id="5572434905385510939">22 x 28 అంగుళాలు</translation>
+<translation id="5573090972398558474">మీ సంస్థ, అజ్ఞాత మోడ్‌లో ఈ పేజీని బ్లాక్ చేసింది.</translation>
 <translation id="5573641252776268565">పాస్‌పోర్ట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="5578606540385219379">సర్వీస్ ప్రొవైడర్‌లు</translation>
 <translation id="5580958916614886209">మీ గడువు ముగింపు నెలను చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
@@ -3169,6 +3174,7 @@
 <translation id="6093795393556121384">మీ కార్డ్ ధృవీకరించబడింది</translation>
 <translation id="6094253940069566294">వెహిక‌ల్ వివ‌రాలను ఎడిట్ చేయండి</translation>
 <translation id="6094290315941448991">గోప్యమైన కంటెంట్ కనిపించినప్పుడు, అడ్మినిస్ట్రేటర్ పాలసీ స్క్రీన్ రికార్డింగ్‌ను డిజేబుల్ చేస్తుంది</translation>
+<translation id="6097297436119286254">మీ పేమెంట్ సమాచారాన్ని ఫిల్ చేయడానికి ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="6099269767116481177">22 x 29.5 అంగుళాలు</translation>
 <translation id="6101583188322746099">కిరాణా డెలివరీ సర్వీస్‌లు</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -3687,6 +3693,7 @@
 <translation id="6926216138694948720">టాట్టూలు</translation>
 <translation id="692638818576287323">వాణిజ్యపరమైన వాహనాలు</translation>
 <translation id="6927878187051807444">కెమెరా ఫైల్స్, స్క్రీన్‌షాట్‌లు</translation>
+<translation id="6929949393612835405">మూసివేసి, "<ph name="OPENER_TITLE" />"కు తిరిగి వెళ్లండి</translation>
 <translation id="6930607614725241390">సైడ్ ప్యానెల్‌లో సెర్చ్ చేయండి</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్ వెబ్‌లో సెర్చ్ చేయడానికి మిమ్మల్ని అనుమతిస్తుంది, అదే విధంగా Chrome ఫీచర్‌లను శక్తిమంతం చేస్తుంది<ph name="END_BOLD" /> అంటే అడ్రస్ బార్ నుండి, వెబ్ పేజీలలోని ఇమేజ్‌ల నుండి సెర్చ్ చేయడం వంటివి సులభంగా చేయగలుగుతారు. మీ సెర్చ్ ఇంజిన్ సపోర్ట్ చేయకపోతే, ఏదైనా ఫీచర్ అందుబాటులో లేకపోయే అవకాశం ఉంది.</translation>
 <translation id="6934672428414710184">ఇది మీ Google ఖాతాలో ఉన్న పేరు</translation>
@@ -4290,6 +4297,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ఏదీ వద్దు}=1{1 యాప్ (<ph name="EXAMPLE_APP_1" />)}=2{2 యాప్‌లు (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# యాప్‌లు (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ఎర్రర్ ఏర్పడింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="784623644169604270">ఇటీవలి యాక్టివిటీ ఏదీ లేదు</translation>
+<translation id="7848926355794727168">ఆటోమేటిక్ బ్రౌజింగ్</translation>
 <translation id="7853222852810008596">ఈ కరెన్సీలో తర్వాత పేమెంట్ చేసే ఆప్షన్ అందుబాటులో లేదు</translation>
 <translation id="785476343534277563">కాలేజ్ క్రీడలు</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4519,6 +4527,7 @@
 <translation id="8241707690549784388">మీరు వెతికే పేజీ మీరు ఎంటర్ చేసిన సమాచారాన్ని ఉపయోగించుకుంది. ఆ పేజీకి తిరిగి వెళ్ల‌డం ద్వారా మీరు చేసిన ఏ చర్య అయినా రిపీట్‌ చేయ‌వలసి వస్తుంది. మీరు కొనసాగాలని అనుకుంటున్నారా?</translation>
 <translation id="8241712895048303527">ఈ సైట్‌లో బ్లాక్ చేయండి</translation>
 <translation id="8242426110754782860">కొనసాగు</translation>
+<translation id="824620968958405573">ఆటోమేటిక్ బ్రౌజ్ టాస్క్</translation>
 <translation id="8246482227229072868">రింగ్‌లు</translation>
 <translation id="8248406213705193919">కార్డ్‌ను సురక్షితంగా సేవ్ చేయాలా?</translation>
 <translation id="8249296373107784235">రద్దుచేయి</translation>
@@ -4891,6 +4900,7 @@
 <translation id="8858065207712248076">మీరు మీ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> పాస్‌వర్డ్‌ని ఇతర సైట్‌లలో తిరిగి ఉపయోగించినట్లయితే దీనిని రీసెట్ చేయాల్సిందిగా Chrome సిఫార్సు చేస్తోంది.</translation>
 <translation id="885906927438988819">స్పెల్లింగ్ సరైనది అయితే, <ph name="BEGIN_LINK" />విండోల సమస్య విశ్లేషణలను రన్ చేయడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">ఫోటోగ్రాఫిక్ &amp; డిజిటల్ ఆర్ట్స్</translation>
+<translation id="8861482055962701239">ఈ సమాచారాన్ని మీ Google Walletలో సేవ్ చేయడం సాధ్యపడలేదు. బదులుగా అది, ఈ డివైజ్‌లోని Chromeలో సేవ్ అయింది. తర్వాతిసారి మీరు దీన్ని ఉపయోగించినప్పుడు, Chrome దీన్ని Walletలో సేవ్ చేసే ఆప్షన్‌ను అందిస్తుంది.</translation>
 <translation id="8863218129525348270">తర్వాతిసారి వేగంగా పేమెంట్ చేయడానికి, మీ కార్డ్‌ను మీ పరికరంలో సేవ్ చేయండి</translation>
 <translation id="8864939224504814334">సూట్‌లు &amp; బిజినెస్ సంబంధమైన దుస్తులు</translation>
 <translation id="8866132857352163524">సౌండ్ ట్రాక్‌లు</translation>
@@ -4916,6 +4926,7 @@
 <translation id="8897428486789851669">ఈత</translation>
 <translation id="8899807382908246773">అనుచితమైన యాడ్‌లు</translation>
 <translation id="8903921497873541725">దగ్గరికి జూమ్ చేయి</translation>
+<translation id="8903998444169664879">మీ పేమెంట్ సెట్టింగ్‌లను మార్చడానికి ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="890493561996401738">సూచన బటన్‌ను తీసివేయండి, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />ను తీసివేయడానికి ఎంటర్ నొక్కండి</translation>
 <translation id="8910898109640902752">8 x 10 అం.</translation>
 <translation id="8914504000324227558">Chromeను పునఃప్రారంభించు</translation>

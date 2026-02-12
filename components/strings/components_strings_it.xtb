@@ -2788,6 +2788,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5466018172325111652">Non hai ricevuto il codice? <ph name="BEGIN_LINK" />Ricevi nuovo codice<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">App per pagamenti</translation>
 <translation id="5470861586879999274">&amp;Ripeti modifica</translation>
+<translation id="5471158297908124590">Verifica la tua identità per modificare i metodi di pagamento</translation>
 <translation id="5472588168895083535">Tracciamento delle mani bloccato</translation>
 <translation id="5477756102936130143">Attiva il reindirizzamento alle app di pagamento supportate</translation>
 <translation id="5479505548832623900">Probabilmente ignorate dall'estensione.</translation>
@@ -2865,6 +2866,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5570825185877910964">Proteggi account</translation>
 <translation id="5571083550517324815">Impossibile ritirare dall'indirizzo specificato. Seleziona un indirizzo diverso.</translation>
 <translation id="5572434905385510939">22 x 28 in</translation>
+<translation id="5573090972398558474">La tua organizzazione ha bloccato questa pagina in modalità Incognito.</translation>
 <translation id="5573641252776268565">Modifica passaporto</translation>
 <translation id="5578606540385219379">Fornitori di servizi</translation>
 <translation id="5580958916614886209">Controlla il mese di scadenza e riprova</translation>
@@ -3171,6 +3173,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6093795393556121384">La carta è stata verificata</translation>
 <translation id="6094253940069566294">Modifica veicolo</translation>
 <translation id="6094290315941448991">La policy dell'amministratore disattiva la funzionalità Registrazione dello schermo se sono visibili contenuti riservati</translation>
+<translation id="6097297436119286254">Verifica la tua identità per inserire i tuoi dati di pagamento</translation>
 <translation id="6099269767116481177">22 x 29,5 in</translation>
 <translation id="6101583188322746099">Servizi di consegna alimentari</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4291,6 +4294,7 @@ Ulteriori dettagli:
 <translation id="7844689747373518809">{COUNT,plural, =0{Nessuna}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Si è verificato un errore. Riprova.</translation>
 <translation id="784623644169604270">Nessuna attività recente</translation>
+<translation id="7848926355794727168">Navigazione automatica</translation>
 <translation id="7853222852810008596">Paga dopo non disponibile in questa valuta</translation>
 <translation id="785476343534277563">Sport universitari</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4520,6 +4524,7 @@ Ulteriori dettagli:
 <translation id="8241707690549784388">La pagina a cui stai tentando di accedere utilizzava informazioni inserite da te. Tornando a quella pagina, è possibile che eventuali azioni che hai eseguito vengano ripetute. Continuare?</translation>
 <translation id="8241712895048303527">Blocca su questo sito</translation>
 <translation id="8242426110754782860">Procedi</translation>
+<translation id="824620968958405573">Attività di navigazione automatica</translation>
 <translation id="8246482227229072868">Anelli</translation>
 <translation id="8248406213705193919">Vuoi salvare la carta in modo sicuro?</translation>
 <translation id="8249296373107784235">Interrompi</translation>
@@ -4917,6 +4922,7 @@ Ulteriori dettagli:
 <translation id="8897428486789851669">Nuoto</translation>
 <translation id="8899807382908246773">Annunci invasivi</translation>
 <translation id="8903921497873541725">Aumenta lo zoom</translation>
+<translation id="8903998444169664879">Verifica la tua identità per modificare le impostazioni di pagamento</translation>
 <translation id="890493561996401738">Rimuovi il pulsante Suggerimento, premi INVIO per rimuovere, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
 <translation id="8914504000324227558">Riavvia Chrome</translation>

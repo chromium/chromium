@@ -295,6 +295,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3903738175795615004">Sleep vanaf de bovenkant of druk op Esc om het volledige scherm te sluiten.</translation>
 <translation id="3905475044299942653">Houd veel meldingen tegen</translation>
 <translation id="3922092564198021702">Open Instellingen op je telefoon</translation>
+<translation id="3924858949939391676">Links tonen zodra de leesmodus aanstaat</translation>
 <translation id="3933121352599513978">Ongewenste verzoeken samenvouwen (aanbevolen)</translation>
 <translation id="3934905113567851655">Knijp om het formaat aan te passen</translation>
 <translation id="3955193568934677022">Toestaan dat sites beschermde content afspelen (aanbevolen)</translation>
@@ -358,6 +359,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="4644713492825682049">Verwijderen en resetten</translation>
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
 <translation id="4652266463001779298">Niet toegestaan</translation>
+<translation id="4655846733459137112">Tik op Ja om dit wachtwoord makkelijk te gebruiken als je de volgende keer inlogt</translation>
 <translation id="4663373278480897665">Camera toegestaan</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4672315773691449562">Tik op Browser-app en daarna op Chrome</translation>
@@ -464,6 +466,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="5804241973901381774">Rechten</translation>
 <translation id="5817042798620209981">Site-informatie, dialoogvenster</translation>
 <translation id="5822675474983796325">Blad onderaan voor De pagina Nieuw tabblad aanpassen is op volledige hoogte geopend</translation>
+<translation id="5826403277762134844">Blad onderaan met instructie voor wachtwoorden opslaan in Chrome</translation>
 <translation id="5833899990800318936">Niet toestaan dat sites JavaScript gebruiken</translation>
 <translation id="583673505367439042">Sites kunnen vragen of ze bestanden en mappen op je apparaat mogen bewerken</translation>
 <translation id="5844448279347999754">Als deze optie aanstaat, kunnen sites vragen of ze tekst en afbeeldingen mogen bekijken die op je klembord zijn opgeslagen. Staat de optie uit, dan kunnen sites geen tekst of afbeeldingen bekijken die op je klembord zijn opgeslagen.</translation>
@@ -643,6 +646,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="775043444390799886">Recht intrekken</translation>
 <translation id="7758789811447313947">Paars thema</translation>
 <translation id="7759147511335618829">MIDI-apparaatbediening en -herprogrammering</translation>
+<translation id="7771089277295008211">Blad onderaan met instructie voor wachtwoorden opslaan is gesloten</translation>
 <translation id="7781829728241885113">Gisteren</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
@@ -660,6 +664,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7940722705963108451">Herinner me eraan</translation>
 <translation id="7948081750384205628">Meer informatie over <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Sites kunnen vragen of ze tekst en afbeeldingen op je klembord mogen bekijken</translation>
+<translation id="7958779728312669715">Blad onderaan met instructie voor wachtwoorden opslaan is volledig geopend</translation>
 <translation id="798299424881500862">Oranje thema</translation>
 <translation id="7986741934819883144">Een contact selecteren</translation>
 <translation id="7990211076305263060">Als deze optie aanstaat, kunnen sites om toegang tot je microfoon vragen. Staat de optie uit, dan kunnen sites je microfoon niet gebruiken.</translation>
@@ -756,6 +761,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="8889294078294184559">Terwijl je browst, kunnen sites via Chrome checken en met een eerder bezochte site verifiëren dat je waarschijnlijk een echte persoon bent</translation>
 <translation id="8899807382908246773">Opdringerige advertenties</translation>
 <translation id="8903921497873541725">Inzoomen</translation>
+<translation id="8919911527569629802">Log in bij een website</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Niet meer vragen</translation>
 <translation id="8926666909099850184">NFC staat uit voor dit apparaat. Zet deze functie aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
@@ -783,6 +789,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="9182556968660520230">Niet toestaan dat sites beschermde content afspelen</translation>
 <translation id="947156494302904893">Sites die je bezoekt, kunnen verifiëren dat je een echte persoon bent en geen bot</translation>
 <translation id="959682366969460160">Georganiseerd werken</translation>
+<translation id="960590623979248167">Hyperlinks tonen</translation>
 <translation id="961930410699694996">Locatie deze keer toegestaan</translation>
 <translation id="967624055006145463">Opgeslagen gegevens</translation>
 <translation id="969975166333045662">Blokkeer dat de site V8-optimalisatie gebruikt.</translation>

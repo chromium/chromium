@@ -2791,6 +2791,7 @@
 <translation id="5466018172325111652">Нисте добили кôд? <ph name="BEGIN_LINK" />Преузмите нов кôд<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Апликације за плаћање</translation>
 <translation id="5470861586879999274">&amp;Понови измену</translation>
+<translation id="5471158297908124590">Потврдите идентитет да бисте изменили начине плаћања</translation>
 <translation id="5472588168895083535">Праћење руку је блокирано</translation>
 <translation id="5477756102936130143">Омогући преусмеравање на подржане апликације за плаћање</translation>
 <translation id="5479505548832623900">Додатак ће их вероватно игнорисати.</translation>
@@ -2868,6 +2869,7 @@
 <translation id="5570825185877910964">Заштити налог</translation>
 <translation id="5571083550517324815">Преузимање са ове адресе није могуће. Изаберите другу адресу.</translation>
 <translation id="5572434905385510939">22×28 in</translation>
+<translation id="5573090972398558474">Организација је блокирала ову страницу у режиму без архивирања.</translation>
 <translation id="5573641252776268565">Измените пасош</translation>
 <translation id="5578606540385219379">Добављачи услуга</translation>
 <translation id="5580958916614886209">Проверите месец истека и пробајте поново</translation>
@@ -3174,6 +3176,7 @@
 <translation id="6093795393556121384">Картица је верификована</translation>
 <translation id="6094253940069566294">Измените возило</translation>
 <translation id="6094290315941448991">Смернице администратора онемогућавају снимање екрана када је видљив поверљив садржај</translation>
+<translation id="6097297436119286254">Потврдите идентитет да бисте попунили информације о плаћању</translation>
 <translation id="6099269767116481177">22×29,5 in</translation>
 <translation id="6101583188322746099">Услуге доставе намирница</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4297,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Ниједна}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Дошло је до грешке. Пробајте поново.</translation>
 <translation id="784623644169604270">Нема недавних активности</translation>
+<translation id="7848926355794727168">Аутоматско прегледање</translation>
 <translation id="7853222852810008596">Опција за плаћање касније није доступна у овој валути</translation>
 <translation id="785476343534277563">Факултетски спортови</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4922,6 +4926,7 @@
 <translation id="8897428486789851669">Пливање</translation>
 <translation id="8899807382908246773">Огласи који ометају</translation>
 <translation id="8903921497873541725">Увећавање</translation>
+<translation id="8903998444169664879">Потврдите идентитет да бисте променили подешавања плаћања</translation>
 <translation id="890493561996401738">Дугме Уклони предлог, притисните Enter да бисте уклонили, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8×10 in</translation>
 <translation id="8914504000324227558">Поново покрени Chrome</translation>

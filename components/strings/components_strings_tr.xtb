@@ -2791,6 +2791,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5466018172325111652">Kodunuz gelmedi mi? <ph name="BEGIN_LINK" />Yeni kod al<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Ödeme uygulamaları</translation>
 <translation id="5470861586879999274">Düzenlemeyi &amp;yeniden yap</translation>
+<translation id="5471158297908124590">Ödeme yöntemlerini düzenlemek için kimliğinizi doğrulayın</translation>
 <translation id="5472588168895083535">El takibi engellendi</translation>
 <translation id="5477756102936130143">Desteklenen ödeme uygulamalarına yönlendirmeyi etkinleştir</translation>
 <translation id="5479505548832623900">Uzantı tarafından yoksayılmış olabilir.</translation>
@@ -2868,6 +2869,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5570825185877910964">Hesabı koru</translation>
 <translation id="5571083550517324815">Bu adresten alım yapılamıyor. Farklı bir adres seçin.</translation>
 <translation id="5572434905385510939">22 x 28 inç</translation>
+<translation id="5573090972398558474">Kuruluşunuz gizli modda bu sayfayı engelledi.</translation>
 <translation id="5573641252776268565">Pasaportu düzenleyin</translation>
 <translation id="5578606540385219379">Servis Sağlayıcılar</translation>
 <translation id="5580958916614886209">Son kullanma tarihinin ayını kontrol edip tekrar deneyin</translation>
@@ -3174,6 +3176,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6093795393556121384">Kartınız doğrulandı</translation>
 <translation id="6094253940069566294">Aracı düzenle</translation>
 <translation id="6094290315941448991">Yönetici politikası ekranda gizli içerik varken ekran kaydı almaya izin vermiyor</translation>
+<translation id="6097297436119286254">Ödeme bilgilerinizin doldurulması için kimliğinizi doğrulayın</translation>
 <translation id="6099269767116481177">22 x 29,5 inç</translation>
 <translation id="6101583188322746099">Bakkaliye Sipariş Hizmetleri</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4295,6 +4298,7 @@ Ek ayrıntılar:
 <translation id="7844689747373518809">{COUNT,plural, =0{Yok}=1{1 uygulama (<ph name="EXAMPLE_APP_1" />)}=2{2 uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Hata oluştu. Tekrar deneyin.</translation>
 <translation id="784623644169604270">Yeni etkinlik yok</translation>
+<translation id="7848926355794727168">Otomatik gezinme</translation>
 <translation id="7853222852810008596">Sonra ödeme seçeneği bu para biriminde kullanılamıyor</translation>
 <translation id="785476343534277563">Üniversite Sporları</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4524,6 +4528,7 @@ Ek ayrıntılar:
 <translation id="8241707690549784388">Aradığınız sayfa, girdiğiniz bilgileri kullandı. O sayfaya dönmeniz, gerçekleştirdiğiniz işlemlerin tekrarlanmasına yol açabilir. Devam etmek istiyor musunuz?</translation>
 <translation id="8241712895048303527">Bu sitede engelle</translation>
 <translation id="8242426110754782860">Devam et</translation>
+<translation id="824620968958405573">Otomatik gezinme görevi</translation>
 <translation id="8246482227229072868">Yüzükler</translation>
 <translation id="8248406213705193919">Kart güvenli bir şekilde kaydedilsin mi?</translation>
 <translation id="8249296373107784235">İptal Et</translation>
@@ -4922,6 +4927,7 @@ Ek ayrıntılar:
 <translation id="8897428486789851669">Yüzme</translation>
 <translation id="8899807382908246773">Araya giren reklamlar</translation>
 <translation id="8903921497873541725">Yakınlaştır</translation>
+<translation id="8903998444169664879">Ödeme ayarlarınızı değiştirmek için kimliğinizi doğrulayın</translation>
 <translation id="890493561996401738">Öneriyi Kaldır düğmesi, kaldırmak için Enter tuşuna basın, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inç</translation>
 <translation id="8914504000324227558">Chrome'u Yeniden Başlat</translation>

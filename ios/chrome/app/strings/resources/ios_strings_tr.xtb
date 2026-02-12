@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Şifreleri görmek için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
 <translation id="201759455285471444">Sekme grubunu genişletin.</translation>
 <translation id="202070562065520783">Şunu bana açıkla:</translation>
-<translation id="2023713324775943812">Kullanılabilir olduğunda Okuma Modu'na adres çubuğundan erişin</translation>
 <translation id="2044394949148788042">Sekme ızgarasını açın</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> hesabı, bazı bilgileri görüntüleyebilen <ph name="HOSTED_DOMAIN" /> tarafından yönetiliyor. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="20485545164632846">yeni öğe</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Kayıtlı şifreler ve geçiş anahtarları</translation>
 <translation id="3143515551205905069">Senkronizasyonu iptal et</translation>
 <translation id="3144126448740580210">BİTTİ</translation>
+<translation id="3147521114983561406">Geçiş anahtarları, şifre yöneticinize kaydedilir. Bu anahtarlara gizli ve normal sekmelerden erişilebilir.</translation>
 <translation id="3148052723910099040">Normal sekme ızgarası</translation>
 <translation id="3148237711805373460">Beni oraya götür</translation>
 <translation id="3157387275655328056">Okuma Listesine Ekle</translation>
@@ -786,7 +786,7 @@
 <translation id="3946483119107054883">CSV olarak indir</translation>
 <translation id="3948600256434252210">Gizli modda göz atmak için sağa kaydırabilirsiniz.</translation>
 <translation id="3949712484278252781">Gemini ile sohbetleriniz ya da size ait <ph name="GOOGLE_WORKSPACE_DATA" />, inceleme uzmanları tarafından incelenmez veya üretken yapay zeka modellerini geliştirmek için kullanılmaz.</translation>
-<translation id="3950479158728806902">Daha hızlı oturum açmak için otomatik olarak geçiş anahtarı oluşturun</translation>
+<translation id="3950479158728806902">Daha hızlı oturum açmak için otomatik olarak geçiş anahtarı oluştur</translation>
 <translation id="3950820424414687140">Oturum açın</translation>
 <translation id="3955740319737378355">Bitti</translation>
 <translation id="3955822496205734389">Zayıf şifreleriniz var.</translation>
@@ -1860,6 +1860,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7772032839648071052">Parolayı onayla</translation>
 <translation id="7772948288262733182">Tekrar hoş geldiniz</translation>
 <translation id="777637629667389858">Oturum açtığınızda Google hizmetlerinde korunmanızı sağlar.</translation>
+<translation id="7776604279034196531">Kullanılabilir olduğunda okuma moduna adres çubuğundan erişin</translation>
 <translation id="7781829728241885113">Dün</translation>
 <translation id="7788868432173225918">Genişletilmiş görünümü kapat</translation>
 <translation id="7791543448312431591">Ekle</translation>
@@ -2097,6 +2098,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8587001564479545614">Kurtarma PIN'i oluşturun</translation>
 <translation id="8588404856427128947">Kapalı</translation>
 <translation id="8590286732816598906">Sekme grubu, <ph name="GROUP_TITLE" />, Menü.</translation>
+<translation id="8593317261815647019">Geçiş anahtarı Gizli mod dışında oluşturulsun mu?</translation>
 <translation id="8600272508328041907">Tam sayfa çevirisine geç</translation>
 <translation id="860043288473659153">Kart sahibinin adı</translation>
 <translation id="8601611099293226919">Google Lens ile ekranınızda arama yapın</translation>

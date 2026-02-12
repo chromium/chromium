@@ -2791,6 +2791,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5466018172325111652">Fikk du ingen kode? <ph name="BEGIN_LINK" />Få en ny kode<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Betalingsapper</translation>
 <translation id="5470861586879999274">&amp;Endre likevel</translation>
+<translation id="5471158297908124590">Bekreft at det er deg for å endre betalingsmåter</translation>
 <translation id="5472588168895083535">Håndsporing er blokkert</translation>
 <translation id="5477756102936130143">Aktiver viderekobling til betalingsapper som støttes</translation>
 <translation id="5479505548832623900">Sannsynligvis ignorert av utvidelsen.</translation>
@@ -2868,6 +2869,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5570825185877910964">Beskytt kontoen</translation>
 <translation id="5571083550517324815">Kan ikke hente på denne adressen. Velg en annen adresse.</translation>
 <translation id="5572434905385510939">22 x 28 tommer</translation>
+<translation id="5573090972398558474">Organisasjonen din har blokkert denne siden i inkognitomodus.</translation>
 <translation id="5573641252776268565">Endre passet</translation>
 <translation id="5578606540385219379">Tjenesteleverandører</translation>
 <translation id="5580958916614886209">Kontroller utløpsmåneden, og prøv igjen</translation>
@@ -3174,6 +3176,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6093795393556121384">Kortet er bekreftet</translation>
 <translation id="6094253940069566294">Endre kjøretøyet</translation>
 <translation id="6094290315941448991">På grunn av en administratorregel er skjermopptak deaktivert når konfidensielt innhold er synlig</translation>
+<translation id="6097297436119286254">Bekreft at det er deg for å fylle ut betalingsopplysningene</translation>
 <translation id="6099269767116481177">22 x 29,5 tommer</translation>
 <translation id="6101583188322746099">Levering av dagligvarer</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4297,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7844689747373518809">{COUNT,plural, =0{Ingen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apper (<ph name="EXAMPLE_APP_1" /> og <ph name="EXAMPLE_APP_2" />)}other{# apper (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Det oppsto en feil. Prøv på nytt.</translation>
 <translation id="784623644169604270">Ingen nylig aktivitet</translation>
+<translation id="7848926355794727168">Auto-navigere</translation>
 <translation id="7853222852810008596">Betal senere er ikke tilgjengelig for denne valutaen</translation>
 <translation id="785476343534277563">Studentsport</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4523,6 +4527,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8241707690549784388">Siden du ser etter, brukte informasjon som du anga. Hvis du går tilbake til denne siden, kan det føre til at handlinger som er utført, blir gjentatt. Vil du fortsette?</translation>
 <translation id="8241712895048303527">Blokkér på dette nettstedet</translation>
 <translation id="8242426110754782860">Gå videre</translation>
+<translation id="824620968958405573">Oppgave for auto-navigering</translation>
 <translation id="8246482227229072868">Ringer</translation>
 <translation id="8248406213705193919">Vil du lagre kortet sikkert?</translation>
 <translation id="8249296373107784235">Avbryt</translation>
@@ -4920,6 +4925,7 @@ Mer informasjon:
 <translation id="8897428486789851669">Svømming</translation>
 <translation id="8899807382908246773">Forstyrrende annonser</translation>
 <translation id="8903921497873541725">Zoom inn</translation>
+<translation id="8903998444169664879">Bekreft at det er deg for å endre betalingsinnstillingene</translation>
 <translation id="890493561996401738">Knapp for å fjerne forslag – trykk på Enter for å fjerne. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 tommer</translation>
 <translation id="8914504000324227558">Start Chrome på nytt</translation>

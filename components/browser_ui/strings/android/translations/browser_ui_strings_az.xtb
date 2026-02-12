@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Chrome-un son tabları cihazla paylaşmasına icazə verməklə tətbiq siyahısında və axtarış nəticələrində onları görə bilərsiniz. Bunu istənilən vaxt Chrome ayarlarında aktiv və ya deaktiv edə bilərsiniz.</translation>
 <translation id="1420688843103859429">Taçpeddə iki barmaqla çəkərək geri və irəli hərəkət edin</translation>
 <translation id="1432650420699700107">Saytlar lokal şəbəkənizdəki hər hansı cihaza qoşulmaq istəyə bilər</translation>
+<translation id="1442081309487427303">Oxu rejimi keçidlərini aktiv edin</translation>
 <translation id="1448064542941920355">Zoom'u azaldın</translation>
 <translation id="1464044141348608623">Saytlara cihazınızdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək icazəsi verməyin</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sayt}other{<ph name="SITE_COUNT" /> sayt}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Chrome ipucuları üzrə bildiriş əldə edin</translation>
 <translation id="1777815584158991902">Lentin aşağıdakı vərəqini kəşf edin</translation>
 <translation id="1779089405699405702">Təsvir dekodlaşdırıcısı</translation>
+<translation id="1781533683087883868">Oxu rejimi keçidlərini deaktiv edin</translation>
 <translation id="1785415724048343560">Ən yaxşı təcrübə üçün tövsiyə olunur</translation>
 <translation id="1796588414813960292">Səs tələb edən funksiyalar işləməyəcək</translation>
 <translation id="1799920918471566157">Chrome ipucuları</translation>
@@ -293,6 +295,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="3903738175795615004">Tam ekran rejimindən çıxmaq üçün yuxarıdan sürüşdürün və ya Esc düyməsinə basın.</translation>
 <translation id="3905475044299942653">Çoxlu bildirişləri dayandırın</translation>
 <translation id="3922092564198021702">Telefonda Ayarları açın</translation>
+<translation id="3924858949939391676">Oxu rejimi aktiv olduqdan sonra keçidləri göstərin</translation>
 <translation id="3933121352599513978">Lazımsız sorğuları yığcamlaşdırın (tövsiyə edilir)</translation>
 <translation id="3934905113567851655">Ölçüsünü dəyişdirmək üçün barmaqlarınızı birləşdirin</translation>
 <translation id="3955193568934677022">Saytlara qorunan datanı oxumağa icazə verin (tövsiyə olunur)</translation>
@@ -356,6 +359,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="4644713492825682049">Silin və sıfırlayın</translation>
 <translation id="4645575059429386691">Valideyniniz tərəfindən idarə olunur</translation>
 <translation id="4652266463001779298">İcazə verilmir</translation>
+<translation id="4655846733459137112">Növbəti dəfə daxil olanda bu paroldan asanlıqla istifadə etmək üçün Bəli seçiminə toxunun</translation>
 <translation id="4663373278480897665">Kameraya icazə verildi</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>
 <translation id="4672315773691449562">Brauzer tətbiqinə, sonra Chrome-a toxunun</translation>
@@ -462,6 +466,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="5804241973901381774">İcazələr</translation>
 <translation id="5817042798620209981">Sayt haqqında məlumat, dialoq</translation>
 <translation id="5822675474983796325">Yeni tab səhifəsinin tam hündürlükdə açılmış aşağıdakı vərəqini fərdiləşdirin</translation>
+<translation id="5826403277762134844">Chrome-da parolları yadda saxlamaq üçün aşağıdakı təlimat vərəqi</translation>
 <translation id="5833899990800318936">Saytlara JavaScript icazəsi verməyin</translation>
 <translation id="583673505367439042">Saytlar cihazınızdakı faylları və qovluqları redaktə etmək üçün icazə istəyə bilər</translation>
 <translation id="5844448279347999754">Aktiv ediləndə saytlar mübadilə buferində saxlanmış mətn və şəkilləri görmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar mübadilə buferində saxlanmış mətn və şəkilləri görə bilməz.</translation>
@@ -641,6 +646,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="775043444390799886">İcazəni ləğv edin</translation>
 <translation id="7758789811447313947">Bənövşəyi tema</translation>
 <translation id="7759147511335618829">MIDI cihaz idarəetməsi/təkrar proqramlaşdırma</translation>
+<translation id="7771089277295008211">Parolların yadda saxlanılması üzrə aşağıdakı təlimat vərəqi bağlandı</translation>
 <translation id="7781829728241885113">Dünən</translation>
 <translation id="7791543448312431591">Əlavə etmək</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
@@ -658,6 +664,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="7940722705963108451">Mənə xatırladın</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> haqqında ətraflı məlumat əldə edin</translation>
 <translation id="7952708427581814389">Saytlar mübadilə buferinizdəki mətn və şəkilləri görmək üçün icazə istəyə bilər</translation>
+<translation id="7958779728312669715">Parolları yadda saxlamağa dair aşağıdakı təlimat vərəqi tam açılıb</translation>
 <translation id="798299424881500862">Narıncı tema</translation>
 <translation id="7986741934819883144">Kontakt seçin</translation>
 <translation id="7990211076305263060">Aktiv ediləndə saytlar mikrofondan istifadə icazəsi istəyə bilər. Deaktiv ediləndə saytlar mikrofondan istifadə edə bilməz.</translation>
@@ -754,6 +761,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="8889294078294184559">Baxmağa davam etdikcə saytlar Chrome ilə yoxlanış apara və daxil olduğunuz əvvəlki sayt ilə real insan olduğunuzu təsdiqləyə bilər</translation>
 <translation id="8899807382908246773">İntruziv reklamlar</translation>
 <translation id="8903921497873541725">Zoom</translation>
+<translation id="8919911527569629802">İstənilən veb-sayta daxil olun</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Daha soruşmayın</translation>
 <translation id="8926666909099850184">NFC bu cihazda deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> onu aktiv edin.</translation>
@@ -781,6 +789,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="9182556968660520230">Saytlara qorunan məzmunu göstərmək icazəsi verməyin</translation>
 <translation id="947156494302904893">Daxil olduğunuz saytlar bot yox, real insan olduğunuzu təsdiqləyə bilər</translation>
 <translation id="959682366969460160">Sistemləşdirin</translation>
+<translation id="960590623979248167">Hiperlinkləri göstərin</translation>
 <translation id="961930410699694996">Bu dəfə üçün məkana icazə verilib</translation>
 <translation id="967624055006145463">Yadda saxlanmış data</translation>
 <translation id="969975166333045662">Saytın V8 optimallaşdırıcısından istifadəsini bloklayın.</translation>

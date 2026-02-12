@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Chrome で最近使ったタブをデバイスと共有して、デバイスのアプリリストと検索結果に表示できます。この機能は Chrome の設定でオンまたはオフにできます。</translation>
 <translation id="1420688843103859429">タッチパッドを 2 本の指でスワイプして前後に移動します</translation>
 <translation id="1432650420699700107">サイトがローカル ネットワーク上のデバイスへの接続を要求できるようにする</translation>
+<translation id="1442081309487427303">リーディング モードのリンクをオンにする</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="1464044141348608623">サイトによるデバイスのアクティブ状態の検出を許可しない</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 件のサイト}other{<ph name="SITE_COUNT" /> 件のサイト}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Chrome のヒントの通知を受け取る</translation>
 <translation id="1777815584158991902">Discover フィードのボトムシート</translation>
 <translation id="1779089405699405702">画像デコーダー</translation>
+<translation id="1781533683087883868">リーディング モードのリンクをオフにする</translation>
 <translation id="1785415724048343560">利便性が向上します（推奨）</translation>
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
 <translation id="1799920918471566157">Chrome のおすすめの使い方</translation>
@@ -293,6 +295,7 @@
 <translation id="3903738175795615004">全画面表示を終了するには、上からドラッグするか、Esc キーを押します。</translation>
 <translation id="3905475044299942653">頻繁な通知をブロック</translation>
 <translation id="3922092564198021702">スマートフォンの [設定] を開きます</translation>
+<translation id="3924858949939391676">リーディング モードがオンになったらリンクを表示します</translation>
 <translation id="3933121352599513978">不要なリクエストを閉じる（推奨）</translation>
 <translation id="3934905113567851655">ピンチでサイズを変更</translation>
 <translation id="3955193568934677022">保護されたコンテンツの再生をサイトに許可する（推奨）</translation>
@@ -356,6 +359,7 @@
 <translation id="4644713492825682049">削除してリセット</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4652266463001779298">ブロック</translation>
+<translation id="4655846733459137112">[はい] をタップすると、次回ログイン時にこのパスワードを簡単に使用できます</translation>
 <translation id="4663373278480897665">カメラを使用できます</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
 <translation id="4672315773691449562">[ブラウザアプリ]、[Chrome] をタップします</translation>
@@ -462,6 +466,7 @@
 <translation id="5804241973901381774">権限</translation>
 <translation id="5817042798620209981">サイト情報、ダイアログ</translation>
 <translation id="5822675474983796325">[新しいタブページをカスタマイズ] のボトムシートが画面全体に表示されています</translation>
+<translation id="5826403277762134844">Chrome でのパスワードの保存方法を説明したボトムシート</translation>
 <translation id="5833899990800318936">サイトに JavaScript の使用を許可しない</translation>
 <translation id="583673505367439042">サイトがデバイスのファイルやフォルダの編集を要求できるようにする</translation>
 <translation id="5844448279347999754">オンにすると、サイトはクリップボードに保存されたテキストや画像の参照を要求できます。オフにすると、サイトはクリップボードに保存されたテキストや画像を参照できません。</translation>
@@ -641,6 +646,7 @@
 <translation id="775043444390799886">権限を取り消す</translation>
 <translation id="7758789811447313947">バイオレットのテーマ</translation>
 <translation id="7759147511335618829">MIDI デバイスの操作と再プログラム</translation>
+<translation id="7771089277295008211">パスワードの保存方法を説明したボトムシートが閉じられました</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="780301667611848630">利用しない</translation>
@@ -658,6 +664,7 @@
 <translation id="7940722705963108451">リマインダーの設定</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> の詳細</translation>
 <translation id="7952708427581814389">サイトがクリップボード内のテキストや画像へのアクセスを要求できるようにする</translation>
+<translation id="7958779728312669715">パスワードの保存方法を説明したボトムシートが完全に開かれています</translation>
 <translation id="798299424881500862">オレンジのテーマ</translation>
 <translation id="7986741934819883144">連絡先の選択</translation>
 <translation id="7990211076305263060">オンにすると、サイトはマイクの使用を要求できます。オフにすると、サイトはマイクを使用できません。</translation>
@@ -754,6 +761,7 @@
 <translation id="8889294078294184559">それ以降にアクセスしたサイトは、あなたが実在のユーザーであることを、前にアクセスしたサイトから Chrome を介して確認できます。</translation>
 <translation id="8899807382908246773">煩わしい広告</translation>
 <translation id="8903921497873541725">拡大する</translation>
+<translation id="8919911527569629802">任意のウェブサイトにログインします</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">再表示させない</translation>
 <translation id="8926666909099850184">このデバイスでは NFC がオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
@@ -781,6 +789,7 @@
 <translation id="9182556968660520230">サイトに保護されたコンテンツの再生を許可しない</translation>
 <translation id="947156494302904893">アクセスしたサイトは、あなたが bot ではなく実在のユーザーであることを確認できます</translation>
 <translation id="959682366969460160">タブを整理</translation>
+<translation id="960590623979248167">ハイパーリンクを表示</translation>
 <translation id="961930410699694996">一時的に位置情報を許可しました</translation>
 <translation id="967624055006145463">保存データ</translation>
 <translation id="969975166333045662">V8 オプティマイザーの使用をブロックするサイトを指定します。</translation>

@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">บัตรนี้ไม่มีสิทธิ์ใช้หมายเลขบัตรเสมือน</translation>
 <translation id="2071852865256799872">เบราว์เซอร์ได้รับการจัดการโดยองค์กร และโปรไฟล์ของคุณได้รับการจัดการโดย <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">บันทึกข้อมูลลงในอุปกรณ์เท่านั้น</translation>
 <translation id="2074733626795553847">เลิกบล็อก "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">คุณเข้าชมเมื่อ</translation>
 <translation id="2078956195623975415">เกมเพลงและเกมเต้น</translation>
@@ -2790,6 +2791,7 @@
 <translation id="5466018172325111652">หากไม่ได้รับรหัส ให้<ph name="BEGIN_LINK" />ขอรหัสใหม่<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">แอปการชำระเงิน</translation>
 <translation id="5470861586879999274">&amp;ทำซ้ำการแก้ไข</translation>
+<translation id="5471158297908124590">ยืนยันตัวตนเพื่อแก้ไขวิธีการชำระเงิน</translation>
 <translation id="5472588168895083535">การติดตามการเคลื่อนไหวของมือถูกบล็อก</translation>
 <translation id="5477756102936130143">เปิดใช้การเปลี่ยนเส้นทางไปยังแอปการชำระเงินที่รองรับ</translation>
 <translation id="5479505548832623900">ส่วนขยายอาจไม่สนใจ</translation>
@@ -2867,6 +2869,7 @@
 <translation id="5570825185877910964">ปกป้องบัญชี</translation>
 <translation id="5571083550517324815">ไม่สามารถรับสินค้าจากที่อยู่นี้ โปรดเลือกที่อยู่อื่น</translation>
 <translation id="5572434905385510939">22 x 28 นิ้ว</translation>
+<translation id="5573090972398558474">องค์กรของคุณได้บล็อกหน้านี้ในโหมดไม่ระบุตัวตน</translation>
 <translation id="5573641252776268565">แก้ไขหนังสือเดินทาง</translation>
 <translation id="5578606540385219379">ผู้ให้บริการ</translation>
 <translation id="5580958916614886209">ตรวจสอบเดือนหมดอายุแล้วลองอีกครั้ง</translation>
@@ -3173,6 +3176,7 @@
 <translation id="6093795393556121384">ยืนยันบัตรของคุณแล้ว</translation>
 <translation id="6094253940069566294">แก้ไขยานพาหนะ</translation>
 <translation id="6094290315941448991">นโยบายของผู้ดูแลระบบปิดใช้การบันทึกหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
+<translation id="6097297436119286254">ยืนยันตัวตนเพื่อกรอกข้อมูลการชำระเงิน</translation>
 <translation id="6099269767116481177">22 x 29.5 นิ้ว</translation>
 <translation id="6101583188322746099">บริการจัดส่งของกินของใช้ในครัวเรือน</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4298,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ไม่มี}=1{1 แอป (<ph name="EXAMPLE_APP_1" />)}=2{2 แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">เกิดข้อผิดพลาด โปรดลองอีกครั้ง</translation>
 <translation id="784623644169604270">ไม่มีกิจกรรมล่าสุด</translation>
+<translation id="7848926355794727168">การท่องเว็บอัตโนมัติ</translation>
 <translation id="7853222852810008596">ฟีเจอร์จ่ายทีหลังไม่พร้อมใช้งานในสกุลเงินนี้</translation>
 <translation id="785476343534277563">กีฬาวิทยาลัย</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4523,6 +4528,7 @@
 <translation id="8241707690549784388">หน้าที่คุณกำลังมองหาใช้ข้อมูลที่คุณได้ป้อนไว้แล้ว การกลับไปสู่หน้านั้นอาจทำให้คุณต้องทำซ้ำการดำเนินการใดๆ ที่คุณทำแล้ว คุณต้องการดำเนินการต่อหรือไม่</translation>
 <translation id="8241712895048303527">บล็อกในไซต์นี้</translation>
 <translation id="8242426110754782860">ดำเนินการต่อ</translation>
+<translation id="824620968958405573">งานท่องเว็บอัตโนมัติ</translation>
 <translation id="8246482227229072868">แหวน</translation>
 <translation id="8248406213705193919">บันทึกบัตรไว้อย่างปลอดภัยไหม</translation>
 <translation id="8249296373107784235">ล้มเลิก</translation>
@@ -4896,6 +4902,7 @@
 <translation id="8858065207712248076">Chrome ขอแนะนำให้รีเซ็ตรหัสผ่าน <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> หากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="885906927438988819">หากการสะกดถูกต้อง ให้<ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยเครือข่ายของ Windows<ph name="END_LINK" /></translation>
 <translation id="8861126751581835107">ภาพถ่ายและศิลปะดิจิทัล</translation>
+<translation id="8861482055962701239">บันทึกข้อมูลนี้ลงใน Google Wallet ไม่ได้ แต่บันทึกลงใน Chrome บนอุปกรณ์นี้แทน Chrome จะเสนอให้บันทึกลงใน Wallet เมื่อคุณใช้งานในครั้งถัดไป</translation>
 <translation id="8863218129525348270">โปรดบันทึกบัตรไว้ในอุปกรณ์เพื่อให้ชำระเงินได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="8864939224504814334">ชุทสูทและเครื่องแต่งกายสำหรับธุรกิจ</translation>
 <translation id="8866132857352163524">ซาวด์แทร็ก</translation>
@@ -4921,6 +4928,7 @@
 <translation id="8897428486789851669">ว่ายน้ำ</translation>
 <translation id="8899807382908246773">โฆษณาที่รบกวน</translation>
 <translation id="8903921497873541725">ขยาย</translation>
+<translation id="8903998444169664879">ยืนยันตัวตนเพื่อเปลี่ยนการตั้งค่าการชำระเงิน</translation>
 <translation id="890493561996401738">ปุ่ม "นำคำแนะนำออก" กด Enter เพื่อนำออก <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 นิ้ว</translation>
 <translation id="8914504000324227558">เปิด Chrome ขึ้นใหม่</translation>

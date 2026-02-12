@@ -2791,6 +2791,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5466018172325111652">Vous n'avez pas reçu votre code? <ph name="BEGIN_LINK" />Obtenir un nouveau code<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Applis de paiement</translation>
 <translation id="5470861586879999274">&amp;Rétablir la modification</translation>
+<translation id="5471158297908124590">Confirmez votre identité pour modifier les modes de paiement</translation>
 <translation id="5472588168895083535">Suivi des mains bloqué</translation>
 <translation id="5477756102936130143">Activez la redirection vers les applis de paiement prises en charge</translation>
 <translation id="5479505548832623900">Probablement ignorées par l'extension.</translation>
@@ -2868,6 +2869,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5570825185877910964">Protéger le compte</translation>
 <translation id="5571083550517324815">Impossible d'effectuer un ramassage à partir de cette adresse. Sélectionnez une autre adresse.</translation>
 <translation id="5572434905385510939">22 po x 28 po</translation>
+<translation id="5573090972398558474">Votre organisation a bloqué cette page en mode Navigation privée.</translation>
 <translation id="5573641252776268565">Modifier le passeport</translation>
 <translation id="5578606540385219379">Fournisseurs de services</translation>
 <translation id="5580958916614886209">Vérifiez le mois d'expiration et réessayez</translation>
@@ -3174,6 +3176,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6093795393556121384">Votre carte est validée</translation>
 <translation id="6094253940069566294">Modifier le véhicule</translation>
 <translation id="6094290315941448991">La politique définie par l'administrateur désactive l'enregistrement de l'écran lorsque du contenu confidentiel est visible</translation>
+<translation id="6097297436119286254">Confirmez votre identité pour remplir vos infos de paiement</translation>
 <translation id="6099269767116481177">22 po x 29,5 po</translation>
 <translation id="6101583188322746099">Services de livraison d'épicerie</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4297,7 @@ Détails supplémentaires :
 <translation id="7844689747373518809">{COUNT,plural, =0{Aucune}=1{1 application : <ph name="EXAMPLE_APP_1" />}=2{2 applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# application (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Une erreur est survenue. Réessayez.</translation>
 <translation id="784623644169604270">Aucune activité récente</translation>
+<translation id="7848926355794727168">Navigation automatique</translation>
 <translation id="7853222852810008596">Payer plus tard n'est pas accessible dans cette devise</translation>
 <translation id="785476343534277563">Sports universitaires</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4523,6 +4527,7 @@ Détails supplémentaires :
 <translation id="8241707690549784388">La page que vous recherchez a utilisé de l'information que vous avez envoyée. Si vous revenez sur cette page, chaque action précédemment effectuée sera peut-être répétée. Souhaitez-vous continuer?</translation>
 <translation id="8241712895048303527">Bloquer sur ce site</translation>
 <translation id="8242426110754782860">Continuer</translation>
+<translation id="824620968958405573">Tâche de navigation automatique</translation>
 <translation id="8246482227229072868">Anneaux</translation>
 <translation id="8248406213705193919">Enregistrer la carte en toute sécurité?</translation>
 <translation id="8249296373107784235">Interrompre</translation>
@@ -4920,6 +4925,7 @@ Détails supplémentaires :
 <translation id="8897428486789851669">Natation</translation>
 <translation id="8899807382908246773">Annonces intrusives</translation>
 <translation id="8903921497873541725">Zoom avant</translation>
+<translation id="8903998444169664879">Confirmez votre identité pour modifier vos paramètres des paiements</translation>
 <translation id="890493561996401738">Bouton Supprimer la suggestion, appuyez sur Entrée pour supprimer, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 po</translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>

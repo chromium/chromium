@@ -145,7 +145,7 @@
 <translation id="1554532453982918912">可協助 Chrome 為使用者提供更優質的使用體驗</translation>
 <translation id="1568636008098739136">請讓系統朗讀這頁內容。按住這裡即可編輯這個捷徑。</translation>
 <translation id="1571041387761170095">沒有低強度或重複使用的密碼</translation>
-<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{這部裝置上有 1 個密碼外洩}other{這部裝置上有 # 個密碼外洩}}</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{這部裝置上有 1 組密碼外洩}other{這部裝置上有 # 組密碼外洩}}</translation>
 <translation id="1594635596540195766">下列清單中有 <ph name="SUGGESTIONS_COUNT" /> 個建議項目。</translation>
 <translation id="1598163867407640634">透過 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />，固定的分頁，正在錄製媒體</translation>
@@ -1499,6 +1499,7 @@
 <translation id="7237724030342645845">Google 密碼管理工具已停止運作</translation>
 <translation id="7239496616545081903">隱藏閱讀模式</translation>
 <translation id="72415438529550637">已關閉密碼建議功能。</translation>
+<translation id="724510009481365878">無法列印這個網頁</translation>
 <translation id="7248671827512403053">應用程式</translation>
 <translation id="7253951228444156601">正在檢查密碼…</translation>
 <translation id="7260367682327802201">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置開啟了廣告評估設定，廣告技術公司或許就能在你造訪的網站和使用的應用程式上評估廣告成效。</translation>

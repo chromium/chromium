@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="201759455285471444">Razširitev skupine zavihkov.</translation>
 <translation id="202070562065520783">Pojasni mi to</translation>
-<translation id="2023713324775943812">Dostop do načina za branje v naslovni vrstici, ko je na voljo</translation>
 <translation id="2044394949148788042">Odprite mrežo zavihkov</translation>
 <translation id="2044681667265133332">Račun <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, ki si lahko morda ogleda nekatere podatke. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nov element</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Shranjena gesla in ključi za dostop</translation>
 <translation id="3143515551205905069">Prekliči sinhronizacijo</translation>
 <translation id="3144126448740580210">KONČANO</translation>
+<translation id="3147521114983561406">Ključi za dostop se shranijo v upravitelju gesel. Dostopni so na anonimnih in običajnih zavihkih.</translation>
 <translation id="3148052723910099040">Mreža običajnih zavihkov</translation>
 <translation id="3148237711805373460">Preusmeri me</translation>
 <translation id="3157387275655328056">Dodaj na bralni seznam</translation>
@@ -1860,6 +1860,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7772032839648071052">Potrdi geslo</translation>
 <translation id="7772948288262733182">Znova pozdravljeni</translation>
 <translation id="777637629667389858">Ko ste prijavljeni, vas ščiti v Googlovih storitvah.</translation>
+<translation id="7776604279034196531">Dostop do načina za branje v naslovni vrstici, ko je na voljo</translation>
 <translation id="7781829728241885113">Včeraj</translation>
 <translation id="7788868432173225918">Opusti razširjen pogled</translation>
 <translation id="7791543448312431591">Dodaj</translation>
@@ -2097,6 +2098,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8587001564479545614">Ustvarjanje kode PIN za obnovitev</translation>
 <translation id="8588404856427128947">Izklop</translation>
 <translation id="8590286732816598906">Skupina zavihkov, <ph name="GROUP_TITLE" />, meni.</translation>
+<translation id="8593317261815647019">Želite ustvariti ključ za dostop zunaj anonimnega načina?</translation>
 <translation id="8600272508328041907">Preklop na prevajanje celotnih strani</translation>
 <translation id="860043288473659153">Ime imetnika kartice</translation>
 <translation id="8601611099293226919">Išči po zaslonu z Googlom Lens</translation>
@@ -2234,6 +2236,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="9055291197094969722">Ustvarite skupine zavihkov in organizirajte odprte zavihke za večjo storilnost</translation>
 <translation id="9055580485132823283">Izbrisali boste toliko gesel: {password_count}, toliko ključev za dostop: {passkey_count} ter seznam spletnih mest in aplikacij, za katere ste izbrali, da se podatki za prijavo nikoli ne shranjujejo. Računi, ki ste jih ustvarili za spletna mesta in aplikacije, ne bodo izbrisani.</translation>
 <translation id="9057030985451135243">Več o deljenih skupinah zavihkov</translation>
+<translation id="9064106978262828592">Težave pri izvažanju podatkov</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9066097352053395362">Skrij Uredi zaznamek</translation>
 <translation id="9070824521421603770">Odjavljeni boste in zavihki bodo zaprti</translation>

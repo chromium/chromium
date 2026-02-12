@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہیے۔</translation>
 <translation id="201759455285471444">ٹیب گروپ کو پھیلائیں۔</translation>
 <translation id="202070562065520783">یہ مجھے سمجھائیں</translation>
-<translation id="2023713324775943812">دستیاب ہونے پر ایڈریس بار سے ریڈنگ موڈ تک رسائی حاصل کریں</translation>
 <translation id="2044394949148788042">ٹیب گرڈ کھولیں</translation>
 <translation id="2044681667265133332">اکاؤنٹ <ph name="USER_EMAIL" /> کا نظم <ph name="HOSTED_DOMAIN" /> کے ذریعے کیا جاتا ہے جو کچھ معلومات دیکھنے کے قابل ہو سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">نیا آئٹم</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">محفوظ کردہ پاس ورڈز اور پاس کیز</translation>
 <translation id="3143515551205905069">مطابقت پذیری منسوخ کریں</translation>
 <translation id="3144126448740580210">ہوگیا</translation>
+<translation id="3147521114983561406">پاس کیز آپ کے پاس ورڈ مینیجر میں محفوظ ہو جاتی ہیں۔ وہ پوشیدگی اور ریگولر ٹیبز میں قابل رسائی ہیں۔</translation>
 <translation id="3148052723910099040">ریگولر ٹیب کا گرڈ</translation>
 <translation id="3148237711805373460">مجھے وہاں لے جائیں</translation>
 <translation id="3157387275655328056">پڑھنے کی فہرست میں شامل کریں</translation>
@@ -1860,6 +1860,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7772032839648071052">پاس فریز کی توثیق کریں</translation>
 <translation id="7772948288262733182">پھر سے خوش آمدید</translation>
 <translation id="777637629667389858">‏آپ کے سائن ان ہونے پر، تمام Google سروسز پر آپ کی حفاظت کرتا ہے۔</translation>
+<translation id="7776604279034196531">دستیاب ہونے پر ایڈریس بار سے ریڈنگ موڈ تک رسائی حاصل کریں</translation>
 <translation id="7781829728241885113">گزشتہ کل</translation>
 <translation id="7788868432173225918">توسیع شدہ منظر کو مسترد کریں</translation>
 <translation id="7791543448312431591">شامل کریں</translation>
@@ -2097,6 +2098,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8587001564479545614">‏ایک بازیابی PIN تخلیق کریں</translation>
 <translation id="8588404856427128947">آف ہے</translation>
 <translation id="8590286732816598906">ٹیب گروپ، <ph name="GROUP_TITLE" />، مینیو۔</translation>
+<translation id="8593317261815647019">پوشیدگی سے باہر پاس کی تخلیق کریں؟</translation>
 <translation id="8600272508328041907">مکمل صفحے کے ترجمہ پر سوئچ کریں</translation>
 <translation id="860043288473659153">کارڈ کے حامل کا نام</translation>
 <translation id="8601611099293226919">‏اپنی اسکرین Google لینز کے ذریعے تلاش کریں</translation>

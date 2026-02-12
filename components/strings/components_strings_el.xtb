@@ -2793,6 +2793,7 @@
 <translation id="5466018172325111652">Δεν λάβατε τον κωδικό σας; <ph name="BEGIN_LINK" />Λήψη νέου κωδικού<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Εφαρμογές πληρωμών</translation>
 <translation id="5470861586879999274">&amp;Επανάληψη επεξεργασίας</translation>
+<translation id="5471158297908124590">Επαληθεύστε την ταυτότητά σας, για να επεξεργαστείτε τους τρόπους πληρωμής</translation>
 <translation id="5472588168895083535">Η παρακολούθηση χεριού αποκλείστηκε</translation>
 <translation id="5477756102936130143">Ενεργοποίηση ανακατεύθυνσης σε υποστηριζόμενες εφαρμογές πληρωμής</translation>
 <translation id="5479505548832623900">Πιθανότατα αγνοήθηκαν από την επέκταση.</translation>
@@ -2870,6 +2871,7 @@
 <translation id="5570825185877910964">Προστασία λογαριασμού</translation>
 <translation id="5571083550517324815">Δεν είναι δυνατή η παραλαβή από αυτήν τη διεύθυνση. Επιλέξτε μια άλλη διεύθυνση.</translation>
 <translation id="5572434905385510939">22 x 28 ίντσες</translation>
+<translation id="5573090972398558474">Ο οργανισμός σας έχει αποκλείσει αυτή τη σελίδα σε Κατάσταση ανώνυμης περιήγησης.</translation>
 <translation id="5573641252776268565">Επεξεργασία πληροφοριών διαβατηρίου</translation>
 <translation id="5578606540385219379">Πάροχοι Υπηρεσιών</translation>
 <translation id="5580958916614886209">Ελέγξτε τον μήνα λήξης σας και δοκιμάστε ξανά</translation>
@@ -3176,6 +3178,7 @@
 <translation id="6093795393556121384">Η κάρτα σας επαληθεύτηκε</translation>
 <translation id="6094253940069566294">Επεξεργασία πληροφοριών οχήματος</translation>
 <translation id="6094290315941448991">Η πολιτική διαχειριστή απενεργοποιεί την εγγραφή οθόνης όταν είναι ορατό εμπιστευτικό περιεχόμενο.</translation>
+<translation id="6097297436119286254">Επαληθεύστε την ταυτότητά σας, για να συμπληρώσετε τα στοιχεία πληρωμής</translation>
 <translation id="6099269767116481177">22 x 29,5 ίντσες</translation>
 <translation id="6101583188322746099">Παράδοση ειδών παντοπωλείου</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4298,6 +4301,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Κανένα}=1{1 εφαρμογή (<ph name="EXAMPLE_APP_1" />)}=2{2 εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# εφαρμογές (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Παρουσιάστηκε σφάλμα. Δοκιμάστε ξανά.</translation>
 <translation id="784623644169604270">Δεν υπάρχει πρόσφατη δραστηριότητα</translation>
+<translation id="7848926355794727168">Αυτόματη περιήγηση</translation>
 <translation id="7853222852810008596">Η επιλογή για πληρωμή αργότερα δεν είναι διαθέσιμη σε αυτό το νόμισμα</translation>
 <translation id="785476343534277563">Κολεγιακά αθλήματα</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4527,6 +4531,7 @@
 <translation id="8241707690549784388">Στη σελίδα που αναζητάτε χρησιμοποποιήθηκαν πληροφορίες που καταχωρίσατε. Αν επιστρέψετε σε αυτή τη σελίδα ίσως επαναληφθούν ενέργειες που εκτελέσατε. Θέλετε να συνεχίσετε;</translation>
 <translation id="8241712895048303527">Αποκλεισμός σε αυτόν τον ιστότοπο</translation>
 <translation id="8242426110754782860">Συνέχεια</translation>
+<translation id="824620968958405573">Εργασία αυτόματης περιήγησης</translation>
 <translation id="8246482227229072868">Δαχτυλίδια</translation>
 <translation id="8248406213705193919">Ασφαλής αποθήκευση κάρτας;</translation>
 <translation id="8249296373107784235">Ματαίωση</translation>
@@ -4925,6 +4930,7 @@
 <translation id="8897428486789851669">Κολύμβηση</translation>
 <translation id="8899807382908246773">Παρεμβατικές διαφημίσεις</translation>
 <translation id="8903921497873541725">Μεγέθυνση</translation>
+<translation id="8903998444169664879">Επαληθεύστε την ταυτότητά σας, για να αλλάξετε τις ρυθμίσεις πληρωμών</translation>
 <translation id="890493561996401738">Κατάργηση κουμπιού Πρόταση, πατήστε Enter για κατάργηση, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="8910898109640902752">8 x 10 ίντσες</translation>
 <translation id="8914504000324227558">Επανεκκίνηση του Chrome</translation>

@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">கடவுச்சொற்களைப் பார்க்க, முதலில் உங்கள் சாதனத்தில் கடவுக்குறியீட்டை அமைக்க வேண்டும்.</translation>
 <translation id="201759455285471444">பக்கக் குழுவை விரிவாக்கும்.</translation>
 <translation id="202070562065520783">இதை விவரி</translation>
-<translation id="2023713324775943812">கிடைக்கும்போது முகவரிப் பட்டியில் இருந்து படிக்கும் பயன்முறையை அணுகலாம்</translation>
 <translation id="2044394949148788042">பக்கத்தின் கட்டக் காட்சியைத் திறக்கவும்</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> என்ற கணக்கை <ph name="HOSTED_DOMAIN" /> நிர்வகிக்கிறது, சில தகவல்களை அதனால் பார்க்க முடியலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">புதியது</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">சேமித்த கடவுச்சொற்கள் மற்றும் கடவுச்சாவிகள்</translation>
 <translation id="3143515551205905069">ஒத்திசைவை ரத்துசெய்</translation>
 <translation id="3144126448740580210">முடிந்தது</translation>
+<translation id="3147521114983561406">கடவுச்சாவிகள் உங்கள் Password Managerரில் சேமிக்கப்படும். மறைநிலை பக்கங்களிலும் வழக்கமான பக்கங்களிலும் அவற்றை அணுகலாம்.</translation>
 <translation id="3148052723910099040">வழக்கமான பக்கக் கட்டம்</translation>
 <translation id="3148237711805373460">அங்கு செல்</translation>
 <translation id="3157387275655328056">வாசிப்புப் பட்டியலில் சேர்</translation>
@@ -1860,6 +1860,7 @@
 <translation id="7772032839648071052">கடவுச்சொற்றொடரை உறுதி செய்க</translation>
 <translation id="7772948288262733182">மீண்டும் வரவேற்கிறோம்</translation>
 <translation id="777637629667389858">நீங்கள் உள்நுழைந்திருக்கும்போது Google சேவைகள் முழுவதிலும் உங்களைப் பாதுகாப்பாக வைத்திருக்கிறது.</translation>
+<translation id="7776604279034196531">கிடைக்கும்போது, படிக்கும் பயன்முறையை முகவரிப் பட்டியில் இருந்து அணுகலாம்</translation>
 <translation id="7781829728241885113">நேற்று</translation>
 <translation id="7788868432173225918">விரிவாக்கப்பட்ட காட்சியை மூடும்</translation>
 <translation id="7791543448312431591">சேர்</translation>
@@ -2097,6 +2098,7 @@
 <translation id="8587001564479545614">மீட்டெடுப்புப் பின்னை (PIN) உருவாக்குதல்</translation>
 <translation id="8588404856427128947">ஆஃப்</translation>
 <translation id="8590286732816598906">பக்கக் குழு, <ph name="GROUP_TITLE" />, மெனு.</translation>
+<translation id="8593317261815647019">மறைநிலை மோடுக்கு வெளியே கடவுச்சாவியை உருவாக்கவா?</translation>
 <translation id="8600272508328041907">முழுப் பக்க மொழிபெயர்ப்புக்கு மாற்றுங்கள்</translation>
 <translation id="860043288473659153">கார்டு உரிமையாளரின் பெயர்</translation>
 <translation id="8601611099293226919">திரையில் இருப்பவற்றை Google Lens மூலம் தேடுக</translation>

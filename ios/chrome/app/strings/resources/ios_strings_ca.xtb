@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Per veure les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="201759455285471444">Desplega el grup de pestanyes.</translation>
 <translation id="202070562065520783">Explica-m'ho</translation>
-<translation id="2023713324775943812">Accedeix al mode de lectura des de la barra d'adreces quan estigui disponible</translation>
 <translation id="2044394949148788042">Obre la quadrícula de pestanyes</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> gestiona el compte <ph name="USER_EMAIL" />, així que és possible que vegi algunes dades. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">element nou</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Contrasenyes i claus d'accés desades</translation>
 <translation id="3143515551205905069">Cancel·la la sincronització</translation>
 <translation id="3144126448740580210">FET</translation>
+<translation id="3147521114983561406">Les claus d'accés es desen al teu gestor de contrasenyes. S'hi pot accedir des de les pestanyes d'incògnit i les normals.</translation>
 <translation id="3148052723910099040">Quadrícula de pestanyes normals</translation>
 <translation id="3148237711805373460">Porta-m'hi</translation>
 <translation id="3157387275655328056">Afegeix a la llista de lectura</translation>
@@ -1860,6 +1860,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7772032839648071052">Confirmeu la frase de contrasenya</translation>
 <translation id="7772948288262733182">Et donem la benvinguda de nou</translation>
 <translation id="777637629667389858">Quan tens la sessió iniciada, et protegeix en tots els serveis de Google.</translation>
+<translation id="7776604279034196531">Accedeix al mode de lectura des de la barra d'adreces quan estigui disponible</translation>
 <translation id="7781829728241885113">Ahir</translation>
 <translation id="7788868432173225918">Ignora la visualització ampliada</translation>
 <translation id="7791543448312431591">Afegeix</translation>
@@ -2097,6 +2098,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8587001564479545614">Crea un PIN de recuperació</translation>
 <translation id="8588404856427128947">Desactivada</translation>
 <translation id="8590286732816598906">Grup de pestanyes, <ph name="GROUP_TITLE" />, menú.</translation>
+<translation id="8593317261815647019">Vols crear una clau d'accés fora del mode d'incògnit?</translation>
 <translation id="8600272508328041907">Canvia a la traducció de pàgina completa</translation>
 <translation id="860043288473659153">Nom del titular de la targeta</translation>
 <translation id="8601611099293226919">Fes cerques a la pantalla amb Google Lens</translation>

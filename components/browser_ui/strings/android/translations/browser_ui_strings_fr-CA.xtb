@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Autorisez Chrome à partager vos onglets récents avec votre appareil afin qu'ils s'affichent dans la liste d'applis et dans les résultats de recherche de votre appareil. Vous pouvez activer ou désactiver cette option dans les paramètres de Chrome.</translation>
 <translation id="1420688843103859429">Avancez et reculez en balayant le pavé tactile avec deux doigts</translation>
 <translation id="1432650420699700107">Les sites peuvent demander à se connecter à n'importe quel appareil de votre réseau local</translation>
+<translation id="1442081309487427303">Activer les liens du mode Lecture</translation>
 <translation id="1448064542941920355">Diminuer le zoom</translation>
 <translation id="1464044141348608623">Ne pas autoriser les sites à savoir quand vous utilisez activement votre appareil</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Recevez des notifications de conseils Chrome</translation>
 <translation id="1777815584158991902">Zone de contenu dans le bas de l'écran concernant le flux Découvertes</translation>
 <translation id="1779089405699405702">Décodeur d’image</translation>
+<translation id="1781533683087883868">Désactiver les liens du mode Lecture</translation>
 <translation id="1785415724048343560">Recommandé pour une expérience optimale</translation>
 <translation id="1796588414813960292">Les fonctionnalités qui utilisent des sons ne fonctionneront pas</translation>
 <translation id="1799920918471566157">Astuces de Chrome</translation>
@@ -293,6 +295,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="3903738175795615004">Faites glisser à partir du haut ou appuyez sur la touche Échap pour quitter le mode Plein écran.</translation>
 <translation id="3905475044299942653">Bloquer beaucoup de notifications</translation>
 <translation id="3922092564198021702">Sur votre téléphone, ouvrez Paramètres.</translation>
+<translation id="3924858949939391676">Afficher les liens une fois le mode Lecture activé</translation>
 <translation id="3933121352599513978">Réduire les requêtes indésirables (recommandé)</translation>
 <translation id="3934905113567851655">Pincez l'écran pour effectuer un redimensionnement</translation>
 <translation id="3955193568934677022">Autoriser les sites à lire le contenu protégé (recommandé)</translation>
@@ -356,6 +359,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
 <translation id="4652266463001779298">Non autorisée</translation>
+<translation id="4655846733459137112">Touchez Oui pour utiliser facilement ce mot de passe lors de votre prochaine connexion</translation>
 <translation id="4663373278480897665">La caméra est autorisée</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
 <translation id="4672315773691449562">Toucher l'appli Navigateur, puis Chrome</translation>
@@ -462,6 +466,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5817042798620209981">Informations sur le site, boîte de dialogue</translation>
 <translation id="5822675474983796325">Zone de contenu dans le bas de l'écran de Personnaliser votre page Nouvel onglet ouverte à pleine hauteur</translation>
+<translation id="5826403277762134844">Zone de contenu dans le bas de l'écran contenant des instructions pour enregistrer les mots de passe dans Chrome</translation>
 <translation id="5833899990800318936">Ne pas autoriser les sites à utiliser JavaScript</translation>
 <translation id="583673505367439042">Les sites peuvent demander à modifier les fichiers et les dossiers de votre appareil</translation>
 <translation id="5844448279347999754">Lorsque cette option est activée, les sites peuvent demander à voir le texte et les images enregistrées dans votre presse-papiers. Lorsqu'elle est désactivée, les sites ne peuvent pas voir le texte ni les images enregistrées dans votre presse-papiers.</translation>
@@ -641,6 +646,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="775043444390799886">Révoquer l'autorisation</translation>
 <translation id="7758789811447313947">Thème violet</translation>
 <translation id="7759147511335618829">Contrôler et reprog. app. MIDI</translation>
+<translation id="7771089277295008211">La zone de contenu dans le bas de l'écran contenant les instructions pour enregistrer les mots de passe a été fermée</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="780301667611848630">Non merci</translation>
@@ -658,6 +664,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="7940722705963108451">Me le rappeler</translation>
 <translation id="7948081750384205628">En savoir plus sur <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Les sites peuvent demander à voir le texte et les images de votre presse-papiers</translation>
+<translation id="7958779728312669715">La zone de contenu dans le bas de l'écran contenant les instructions pour enregistrer les mots de passe est entièrement ouverte</translation>
 <translation id="798299424881500862">Thème orange</translation>
 <translation id="7986741934819883144">Sélectionner un contact</translation>
 <translation id="7990211076305263060">Lorsque cette option est activée, les sites peuvent demander à utiliser votre microphone. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre microphone.</translation>
@@ -754,6 +761,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="8889294078294184559">Pendant que vous continuez à les parcourir, les sites peuvent vérifier la probabilité que vous soyez une personne réelle par le biais de Chrome et d'un site que vous avez visité précédemment</translation>
 <translation id="8899807382908246773">Annonces intrusives</translation>
 <translation id="8903921497873541725">Zoom avant</translation>
+<translation id="8919911527569629802">Connectez-vous à n'importe quel site Web</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> sur <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Ne plus afficher ce message</translation>
 <translation id="8926666909099850184">La CCP est désactivée pour cet appareil. Activez-la dans le menu <ph name="BEGIN_LINK" />Paramètres Android<ph name="END_LINK" />.</translation>
@@ -781,6 +789,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="9182556968660520230">Ne pas autoriser les sites à faire jouer du contenu protégé</translation>
 <translation id="947156494302904893">Les sites que vous visitez peuvent vérifier que vous êtes une personne réelle et non un robot</translation>
 <translation id="959682366969460160">Place à l'organisation</translation>
+<translation id="960590623979248167">Afficher les liens hypertextes</translation>
 <translation id="961930410699694996">Emplacement autorisé cette fois</translation>
 <translation id="967624055006145463">Données stockées</translation>
 <translation id="969975166333045662">Empêchez le site d'utiliser l'optimiseur V8.</translation>

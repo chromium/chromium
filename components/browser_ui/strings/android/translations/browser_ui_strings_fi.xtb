@@ -295,6 +295,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3903738175795615004">Poistu koko näytön tilasta vetämällä näytön yläreunasta tai painamalla Esc-näppäintä.</translation>
 <translation id="3905475044299942653">Estä useat ilmoitukset</translation>
 <translation id="3922092564198021702">Avaa puhelimella Asetukset</translation>
+<translation id="3924858949939391676">Näytä linkit, kun lukutila on päällä</translation>
 <translation id="3933121352599513978">Tiivistä ei-toivotut pyynnöt (suositus)</translation>
 <translation id="3934905113567851655">Muuta kokoa nipistämällä</translation>
 <translation id="3955193568934677022">Salli sivustojen toistaa suojattua sisältöä (suositus)</translation>
@@ -358,6 +359,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4644713492825682049">Poista ja nollaa luvat</translation>
 <translation id="4645575059429386691">Vanhempasi hallinnoima</translation>
 <translation id="4652266463001779298">Ei sallittu</translation>
+<translation id="4655846733459137112">Valitse Kyllä, niin voit käyttää salasanaa helposti seuraavalla kirjautumiskerralla</translation>
 <translation id="4663373278480897665">Kamera sallittu</translation>
 <translation id="4670064810192446073">Virtuaalitodellisuus</translation>
 <translation id="4672315773691449562">Valitse Selainsovellus ja sitten Chrome</translation>
@@ -464,6 +466,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5817042798620209981">Sivustotiedot, valintaikkuna</translation>
 <translation id="5822675474983796325">"Muuta Uusi välilehti ‑sivua" -alapaneeli avattu koko näytölle</translation>
+<translation id="5826403277762134844">Ohjealapaneeli salasanojen tallentamisesta Chromeen</translation>
 <translation id="5833899990800318936">Älä salli sivustojen käyttää JavaScriptiä</translation>
 <translation id="583673505367439042">Sivustot saavat muokata laitteen tiedostoja ja kansioita</translation>
 <translation id="5844448279347999754">Kun tämä on päällä, sivustot voivat pyytää leikepöydälle tallennettujen tekstien ja kuvien näkemistä. Kun tämä on pois päältä, sivustot eivät näe leikepöydälle tallennettuja tekstejä tai kuvia.</translation>
@@ -643,6 +646,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="775043444390799886">Peru lupa</translation>
 <translation id="7758789811447313947">Violetti teema</translation>
 <translation id="7759147511335618829">Ohjaus ja uudelleenohjelmointi</translation>
+<translation id="7771089277295008211">Ohjealapaneeli salasanojen tallentamisesta on suljettu</translation>
 <translation id="7781829728241885113">Eilen</translation>
 <translation id="7791543448312431591">Lisää</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
@@ -660,6 +664,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7940722705963108451">Muistuta minua</translation>
 <translation id="7948081750384205628">Lue lisää: <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Sivustot saavat pyytää leikepöydällä olevan tekstin ja kuvien näkemistä</translation>
+<translation id="7958779728312669715">Ohjealapaneeli salasanojen tallentamisesta on avattu kokonaan</translation>
 <translation id="798299424881500862">Oranssi teema</translation>
 <translation id="7986741934819883144">Valitse yhteystieto</translation>
 <translation id="7990211076305263060">Kun tämä on päällä, sivustot voivat pyytää lupaa mikrofonin käyttöön. Kun tämä on pois päältä, sivustot eivät voi käyttää mikrofonia.</translation>
@@ -756,6 +761,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="8889294078294184559">Kun jatkat selaamista, sivustot voivat Chromen avulla tarkistaa edelliseltä avaamasi sivustolta, että olet todennäköisesti oikea ihminen.</translation>
 <translation id="8899807382908246773">Häiritsevät mainokset</translation>
 <translation id="8903921497873541725">Lähennä</translation>
+<translation id="8919911527569629802">Kirjaudu mille tahansa sivustolle</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Älä kysy uudestaan</translation>
 <translation id="8926666909099850184">NFC on pois päältä tällä laitteella. Voit laittaa sen päälle <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />.</translation>
@@ -783,6 +789,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="9182556968660520230">Älä salli sivustojen toistaa suojattua sisältöä</translation>
 <translation id="947156494302904893">Avaamasi sivustot voivat vahvistaa, että olet oikea ihminen etkä botti</translation>
 <translation id="959682366969460160">Järjestä</translation>
+<translation id="960590623979248167">Näytä linkit</translation>
 <translation id="961930410699694996">Sijainti sallittu tällä kertaa</translation>
 <translation id="967624055006145463">Tallennettu data</translation>
 <translation id="969975166333045662">Estä sivustoa käyttämästä V8-optimoijaa.</translation>

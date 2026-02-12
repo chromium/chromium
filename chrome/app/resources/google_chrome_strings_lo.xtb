@@ -119,6 +119,7 @@
 <translation id="2139300032719313227">ຣີສະຕາດ ChromeOS</translation>
 <translation id="2151406531797534936">ກະລຸນາປິດເປີດ Chrome ຄືນໃໝ່ຕອນນີ້ເລີຍ</translation>
 <translation id="2163089732491971196">ເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານ, ກະລຸນາລະບຸລະຫັດຜ່ານຂອງທ່ານ</translation>
+<translation id="2170098639895543546">ເລືອກສິ່ງໃດກໍໄດ້ໃນໜ້າ</translation>
 <translation id="2174917724755363426">ການຕິດຕັ້ງບໍ່ສຳເລັດ. ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການຍົກເລີກ?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">ກວດສອບການອັບເດດຜິດພາດ: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -447,6 +448,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5756509061973259733">ມີໂປຣໄຟລ໌ Chrome ກັບບັນຊີນີ້ຢູ່ອຸປະກອນນີ້ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="5759947850379142561">ເລືອກຂໍ້ຄວາມ ຫຼື ຮູບເພື່ອຊອກຫາດ້ວຍ Google Lens ຫຼື ກົດ Escape ເພື່ອອອກຈາກ Google Lens</translation>
 <translation id="5762867845020858790">ເພີ່ມໂປຣໄຟລ໌ Chrome ໃໝ່ເພື່ອແຍກບຸກມາກ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອອກຈາກກັນ.</translation>
+<translation id="5779427581965287859">ຕັ້ງ Chrome ເປັນຄ່າເລີ່ມຕົ້ນ ແລະ ປັກໝຸດໄວ້ຢູ່ແຖບໜ້າວຽກ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">ບໍ່ສາມາດເປີດໃຊ້ Chrome. ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="5809516625706423866">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້. HTTP 401 ບໍ່ໄດ້ຮັບອະນຸຍາດ. ກະລຸນາກວດສອບການຕັ້ງຄ່າພຣັອກຊີຂອງທ່ານ.</translation>
@@ -697,6 +699,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8162006532256575008">ໃຊ້ Chrome ໂດຍບໍ່ມີບັນຊີ</translation>
 <translation id="8177472873527554730">ບໍ່ພົບເນື້ອຫາໃນໜ້າ</translation>
 <translation id="8221491193165283816">ໂດຍປົກກະຕິແລ້ວທ່ານບລັອກການແຈ້ງເຕືອນ. ເພື່ອອະນຸຍາດໃຫ້ເວັບໄຊນີ້ແຈ້ງເຕືອນທ່ານ, ກະລຸນາຄລິກບ່ອນນີ້.</translation>
+<translation id="8253851811470049684">ເປີດລິ້ງໃນ Chrome ຈາກແອັບໃດກໍໄດ້ ແລະ ເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບເຂົ້າເຖິງໄດ້ຢູ່ແຖບໜ້າວຽກຂອງທ່ານ</translation>
 <translation id="8255190535488645436">Google Chrome ກໍາລັງໃຊ້​ກ້ອງ​ຖ່າຍ​ຮູບ​ ແລະໄມໂຄຣໂຟນຂອງ​ທ່ານ​.</translation>
 <translation id="8267953129876836456">Chrome ພົບຄຳແນະນຳດ້ານຄວາມປອດໄພບາງຢ່າງທີ່ທ່ານຕ້ອງກວດສອບ</translation>
 <translation id="8286862437124483331">Google Chrome ກໍາລັງພະຍາຍາມສະແດງລະຫັດຜ່ານ. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດອັນນີ້.</translation>

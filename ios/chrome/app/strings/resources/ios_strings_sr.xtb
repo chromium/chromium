@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="201759455285471444">Проширите групу картица.</translation>
 <translation id="202070562065520783">Објасни ми ово</translation>
-<translation id="2023713324775943812">Приступите Режиму читања са траке за адресу ако је доступан</translation>
 <translation id="2044394949148788042">Отворите мрежу за картице</translation>
 <translation id="2044681667265133332">Налогом <ph name="USER_EMAIL" /> управља <ph name="HOSTED_DOMAIN" />, који може да прегледа одређене информације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нова ставка</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Сачуване лозинке и приступни кључеви</translation>
 <translation id="3143515551205905069">Откажи синхронизацију</translation>
 <translation id="3144126448740580210">ГОТОВО</translation>
+<translation id="3147521114983561406">Приступни кључеви се чувају у менаџеру лозинки. Доступни су на картицама без архивирања и обичним картицама.</translation>
 <translation id="3148052723910099040">Мрежа уобичајених картица</translation>
 <translation id="3148237711805373460">Води ме тамо</translation>
 <translation id="3157387275655328056">Додај на листу за читање</translation>
@@ -1860,6 +1860,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7772032839648071052">Потврди приступну фразу</translation>
 <translation id="7772948288262733182">Добро дошли назад</translation>
 <translation id="777637629667389858">Кад сте пријављени, штити вас у свим Google услугама.</translation>
+<translation id="7776604279034196531">Приступите режиму за читање са траке за адресу ако је доступан</translation>
 <translation id="7781829728241885113">Јуче</translation>
 <translation id="7788868432173225918">Одбаци проширени приказ</translation>
 <translation id="7791543448312431591">Додај</translation>
@@ -2097,6 +2098,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8587001564479545614">Направите PIN за враћање приступа налогу</translation>
 <translation id="8588404856427128947">Искључено</translation>
 <translation id="8590286732816598906">Група картица, <ph name="GROUP_TITLE" />, мени.</translation>
+<translation id="8593317261815647019">Желите да направите приступни кључ изван режима без архивирања?</translation>
 <translation id="8600272508328041907">Пређите на превод целе странице</translation>
 <translation id="860043288473659153">Име власника картице</translation>
 <translation id="8601611099293226919">Претраживање екрана помоћу Google објектива</translation>

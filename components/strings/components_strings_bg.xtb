@@ -2791,6 +2791,7 @@
 <translation id="5466018172325111652">Не получихте кода си? <ph name="BEGIN_LINK" />Получаване на нов код<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Приложения за плащане</translation>
 <translation id="5470861586879999274">&amp;Възстановяване на редактирането</translation>
+<translation id="5471158297908124590">Потвърдете самоличността си, за да редактирате начините на плащане</translation>
 <translation id="5472588168895083535">Проследяването на ръцете е блокирано</translation>
 <translation id="5477756102936130143">Активиране на пренасочването към поддържани приложения за плащане</translation>
 <translation id="5479505548832623900">Вероятно се пренебрегва от разширението.</translation>
@@ -2868,6 +2869,7 @@
 <translation id="5570825185877910964">Защита на профила</translation>
 <translation id="5571083550517324815">Този адрес за вземане не се поддържа. Изберете друг.</translation>
 <translation id="5572434905385510939">22 x 28 инча</translation>
+<translation id="5573090972398558474">Организацията ви е блокирала тази страница в режим „инкогнито“.</translation>
 <translation id="5573641252776268565">Редактиране на паспорта</translation>
 <translation id="5578606540385219379">Доставчици на услуги</translation>
 <translation id="5580958916614886209">Проверете месеца на валидност и опитайте отново</translation>
@@ -3174,6 +3176,7 @@
 <translation id="6093795393556121384">Картата ви е потвърдена</translation>
 <translation id="6094253940069566294">Редактиране на превозното средство</translation>
 <translation id="6094290315941448991">Записването на екрана, когато се вижда поверително съдържание, е деактивирано чрез администраторско правило</translation>
+<translation id="6097297436119286254">Потвърдете самоличността си, за да се попълнят данните ви за плащане</translation>
 <translation id="6099269767116481177">22 x 29,5 инча</translation>
 <translation id="6101583188322746099">Доставка на хранителни стоки</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4295,6 +4298,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Възникна грешка. Опитайте отново.</translation>
 <translation id="784623644169604270">Няма скорошна активност</translation>
+<translation id="7848926355794727168">Автоматично сърфиране</translation>
 <translation id="7853222852810008596">Плащането по-късно не е налице за тази валута</translation>
 <translation id="785476343534277563">Колежански спортове</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4524,6 +4528,7 @@
 <translation id="8241707690549784388">Страницата, която търсите, използва въведената от вас информация. Ако се върнете на тази страница, действията, които вече сте изпълнили, може да бъдат повторени. Искате ли да продължите?</translation>
 <translation id="8241712895048303527">Блокиране за този сайт</translation>
 <translation id="8242426110754782860">Продължаване</translation>
+<translation id="824620968958405573">Задача за автоматично сърфиране</translation>
 <translation id="8246482227229072868">Пръстени</translation>
 <translation id="8248406213705193919">Да се запази ли картата по сигурен начин?</translation>
 <translation id="8249296373107784235">Прекратяване</translation>
@@ -4921,6 +4926,7 @@
 <translation id="8897428486789851669">Плуване</translation>
 <translation id="8899807382908246773">Натрапчиви реклами</translation>
 <translation id="8903921497873541725">Увеличаване на мащаба</translation>
+<translation id="8903998444169664879">Потвърдете самоличността си, за да промените настройките си за плащане</translation>
 <translation id="890493561996401738">Бутон за премахване на предложенията. Натиснете Enter, за да премахнете – <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 инча</translation>
 <translation id="8914504000324227558">Повторно стартиране на Chrome</translation>

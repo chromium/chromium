@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Dopustite Chromeu da dijeli vaše nedavne kartice s uređajem kako biste ih vidjeli na popisu aplikacija i u rezultatima pretraživanja na uređaju. Tu značajku možete uključiti ili isključiti u postavkama Chromea.</translation>
 <translation id="1420688843103859429">Krećite se unatrag i unaprijed prelaskom dvama prstima na dodirnoj podlozi</translation>
 <translation id="1432650420699700107">Web-lokacije mogu tražiti dopuštenje za povezivanje s bilo kojim uređajem na vašoj lokalnoj mreži</translation>
+<translation id="1442081309487427303">Uključite veze čitačkog načina</translation>
 <translation id="1448064542941920355">Smanjite zumiranje</translation>
 <translation id="1464044141348608623">Ne dopuštaj web-lokacijama da znaju kad aktivno koristite uređaj</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web-lokacija}one{<ph name="SITE_COUNT" /> web-lokacija}few{<ph name="SITE_COUNT" /> web-lokacije}other{<ph name="SITE_COUNT" /> web-lokacija}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Primajte obavijesti sa savjetima za Chrome</translation>
 <translation id="1777815584158991902">Donja tablica feeda Discovera</translation>
 <translation id="1779089405699405702">Dekodiranje slika</translation>
+<translation id="1781533683087883868">Isključite veze čitačkog načina</translation>
 <translation id="1785415724048343560">Preporučuje se za najbolji doživljaj</translation>
 <translation id="1796588414813960292">Značajke kojima je potreban zvuk neće funkcionirati</translation>
 <translation id="1799920918471566157">Savjeti za Chrome</translation>
@@ -293,6 +295,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="3903738175795615004">Povucite od vrha ili pritisnite tipku Esc za izlaz iz prikaza na cijelom zaslonu.</translation>
 <translation id="3905475044299942653">Zaustavljanje mnogo obavijesti</translation>
 <translation id="3922092564198021702">Otvorite Postavke na telefonu</translation>
+<translation id="3924858949939391676">Prikaži veze nakon uključivanja načina za čitanje</translation>
 <translation id="3933121352599513978">Sažmite neželjene zahtjeve (preporučeno)</translation>
 <translation id="3934905113567851655">Spojite prste za promjenu veličine</translation>
 <translation id="3955193568934677022">Web-lokacije mogu reproducirati zaštićeni sadržaj (preporučeno)</translation>
@@ -356,6 +359,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="4644713492825682049">Izbriši i poništi</translation>
 <translation id="4645575059429386691">Upravlja tvoj roditelj</translation>
 <translation id="4652266463001779298">Nije dopušteno</translation>
+<translation id="4655846733459137112">Dodirnite Da da biste jednostavno upotrijebili tu zaporku sljedeći put kad se prijavite</translation>
 <translation id="4663373278480897665">Kamera je dopuštena</translation>
 <translation id="4670064810192446073">Virtualna stvarnost</translation>
 <translation id="4672315773691449562">Dodirnite stavku Aplikacija preglednika, a zatim Chrome</translation>
@@ -462,6 +466,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="5804241973901381774">Dopuštenja</translation>
 <translation id="5817042798620209981">Informacije o web-lokaciji, dijaloški okvir</translation>
 <translation id="5822675474983796325">Prilagodba donje tablice stranice nove kartice otvorena je u punoj visini</translation>
+<translation id="5826403277762134844">Donja tablica s uputama za spremanje zaporki u Chromeu</translation>
 <translation id="5833899990800318936">Ne dopuštaj web-lokacijama korištenje JavaScripta</translation>
 <translation id="583673505367439042">Web-lokacije mogu tražiti dopuštenje za uređivanje datoteka i mapa na vašem uređaju</translation>
 <translation id="5844448279347999754">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje da vide tekst i slike spremljene u vaš međuspremnik. Kad je ta postavka isključena, web-lokacije ne mogu vidjeti tekst ili slike spremljene u međuspremnik.</translation>
@@ -641,6 +646,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="775043444390799886">Opozovi dopuštenje</translation>
 <translation id="7758789811447313947">Ljubičasta tema</translation>
 <translation id="7759147511335618829">Kontrola i reprogr. MIDI uređaja</translation>
+<translation id="7771089277295008211">Zatvorena je donja tablica s uputama za spremanje zaporki</translation>
 <translation id="7781829728241885113">Danas</translation>
 <translation id="7791543448312431591">Dodajte</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -658,6 +664,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="7940722705963108451">Podsjeti me</translation>
 <translation id="7948081750384205628">Saznajte više o postavci <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Web-lokacije mogu tražiti dopuštenje da vide tekst i slike u vašem međuspremniku</translation>
+<translation id="7958779728312669715">Donja tablica s uputama za spremanje zaporki potpuno je otvorena</translation>
 <translation id="798299424881500862">Narančasta tema</translation>
 <translation id="7986741934819883144">Odaberite kontakt</translation>
 <translation id="7990211076305263060">Kada je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu mikrofona. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati vaš mikrofon.</translation>
@@ -754,6 +761,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="8889294078294184559">Tijekom vašeg daljnjeg pregledavanja web-lokacije mogu provjeriti u Chromeu i od prethodne web-lokacije koju ste posjetili dobiti potvrdu da ste vjerojatno stvarna osoba</translation>
 <translation id="8899807382908246773">Ometajući oglasi</translation>
 <translation id="8903921497873541725">Povećaj</translation>
+<translation id="8919911527569629802">Prijavite se na bilo koju web-lokaciju</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Više me ne pitaj</translation>
 <translation id="8926666909099850184">NFC je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
@@ -781,6 +789,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="9182556968660520230">Ne dopuštaj web-lokacijama reproduciranje zaštićenog sadržaja</translation>
 <translation id="947156494302904893">Web-lokacije koje posjećujete mogu potvrditi da ste stvarna osoba, a ne bot</translation>
 <translation id="959682366969460160">Organizirajte se</translation>
+<translation id="960590623979248167">Prikaži hiperveze</translation>
 <translation id="961930410699694996">Lokacija je dopuštena ovaj put</translation>
 <translation id="967624055006145463">Pohranjeni podaci</translation>
 <translation id="969975166333045662">Blokiraj upotrebu alata za optimizaciju V8 na web-lokaciji.</translation>

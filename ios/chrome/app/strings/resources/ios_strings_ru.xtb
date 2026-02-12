@@ -125,6 +125,7 @@
 <translation id="1436671784520050284">Продолжить настройку</translation>
 <translation id="143681031165817424">Адрес сохранен только на этом устройстве</translation>
 <translation id="1445276840641906250">Все вкладки в одном браузере</translation>
+<translation id="1447564161241938558">Администратор запретил импортировать пароли и ключи доступа.</translation>
 <translation id="1450170672351507823">Включена стандартная защита. Для большей безопасности используйте улучшенную защиту.</translation>
 <translation id="1455660774629812862">Не скрывать</translation>
 <translation id="1456545332132818232">Отзывы о товаре "<ph name="PRODUCT_NAME" />". Количество звезд: <ph name="STARS" /> из <ph name="MAX_STARS" />. Домен: <ph name="DOMAIN" />.</translation>
@@ -295,7 +296,6 @@
 <translation id="2015722694326466240">Чтобы просматривать пароли, настройте на устройстве код доступа.</translation>
 <translation id="201759455285471444">Развернуть группу вкладок.</translation>
 <translation id="202070562065520783">Объясни мне</translation>
-<translation id="2023713324775943812">Включать режим чтения в адресной строке, когда он доступен</translation>
 <translation id="2044394949148788042">Откройте сетку таблицы.</translation>
 <translation id="2044681667265133332">Аккаунтом <ph name="USER_EMAIL" /> управляет <ph name="HOSTED_DOMAIN" />. Некоторая ваша информация может быть видна этой организации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">новый продукт</translation>
@@ -585,6 +585,7 @@
 <translation id="3140825265190223781">Сохраненные пароли и ключи доступа</translation>
 <translation id="3143515551205905069">Отмена</translation>
 <translation id="3144126448740580210">ГОТОВО</translation>
+<translation id="3147521114983561406">Ключи доступа сохраняются в менеджере паролей. Они доступны на обычных вкладках и в режиме инкогнито.</translation>
 <translation id="3148052723910099040">Страница обычных вкладок</translation>
 <translation id="3148237711805373460">Открыть</translation>
 <translation id="3157387275655328056">Добавить в список для чтения</translation>
@@ -1540,7 +1541,7 @@
 <translation id="6579867704846662339">Открывайте в режиме инкогнито входящие URL, размещенные в других приложениях.</translation>
 <translation id="6583087784430677195">Чтобы отключить автозаполнение, выберите <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" /> и перейдите в раздел "Автозаполнение паролей".</translation>
 <translation id="6585618849026997638">Добавьте важные для вас страницы в закладки, чтобы легко возвращаться к ним.</translation>
-<translation id="6589001036857939353">Объединение контактов</translation>
+<translation id="6589001036857939353">Объедините данные</translation>
 <translation id="659407965921887085">В этой карточке показывается снижение цен в интернет-магазинах на товары, которые вы отслеживаете.</translation>
 <translation id="6596481460663245319">Искать по изображению в Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 пароль}one{# пароль}few{# пароля}many{# паролей}other{# пароля}}</translation>
@@ -1860,6 +1861,7 @@
 <translation id="7772032839648071052">Подтвердите кодовую фразу</translation>
 <translation id="7772948288262733182">С возвращением!</translation>
 <translation id="777637629667389858">Если вы вошли в аккаунт, защищает вас во всех сервисах Google.</translation>
+<translation id="7776604279034196531">Включать режим чтения в адресной строке, когда он доступен</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7788868432173225918">Свернуть раздел</translation>
 <translation id="7791543448312431591">Добавить</translation>
@@ -2094,9 +2096,10 @@
 <translation id="8571019948162152515">Удалить файл "<ph name="FILENAME" />"?</translation>
 <translation id="8571213806525832805">Последние 4 недели</translation>
 <translation id="8577056989960190117">Автозаполнить поле годом окончания срока действия: <ph name="YEAR" /></translation>
-<translation id="8587001564479545614">Создайте PIN-код для восстановления</translation>
+<translation id="8587001564479545614">Создайте резервный PIN-код</translation>
 <translation id="8588404856427128947">Выключено</translation>
 <translation id="8590286732816598906">Группа вкладок, <ph name="GROUP_TITLE" />, Меню.</translation>
+<translation id="8593317261815647019">Создать ключ доступа не в режиме инкогнито?</translation>
 <translation id="8600272508328041907">Перейдите к переводу всей страницы</translation>
 <translation id="860043288473659153">Имя владельца карты</translation>
 <translation id="8601611099293226919">Искать содержимое экрана с помощью Google Объектива</translation>

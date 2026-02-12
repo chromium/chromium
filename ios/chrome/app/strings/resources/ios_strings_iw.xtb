@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">רוצה להציג את הסיסמאות? תחילה עליך להגדיר קוד גישה במכשיר.</translation>
 <translation id="201759455285471444">הרחבה של קבוצת הכרטיסיות.</translation>
 <translation id="202070562065520783">אשמח לקבל הסבר</translation>
-<translation id="2023713324775943812">פותחים את מצב הקריאה מסרגל הכתובות כשזה אפשרי</translation>
 <translation id="2044394949148788042">פתיחה של תצוגת הכרטיסיות</translation>
 <translation id="2044681667265133332">החשבון <ph name="USER_EMAIL" /> מנוהל על ידי <ph name="HOSTED_DOMAIN" />, שיכול להיות שיש לו גישה לחלק מהמידע. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">פריט חדש</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">סיסמאות ומפתחות גישה שמורים</translation>
 <translation id="3143515551205905069">ביטול סנכרון</translation>
 <translation id="3144126448740580210">סיום</translation>
+<translation id="3147521114983561406">מפתחות הגישה נשמרים במנהל הסיסמאות. אפשר לגשת אליהם בכרטיסיות פרטיות ובכרטיסיות רגילות.</translation>
 <translation id="3148052723910099040">תצוגה רגילה של כרטיסיות</translation>
 <translation id="3148237711805373460">קחו אותי לשם</translation>
 <translation id="3157387275655328056">הוספה לרשימת הקריאה</translation>
@@ -1860,6 +1860,7 @@
 <translation id="7772032839648071052">אישור משפט-סיסמה</translation>
 <translation id="7772948288262733182">ברוך שובך</translation>
 <translation id="777637629667389858">‏אחרי שנכנסת לחשבון, המערכת מגינה עליך בשירותי Google.</translation>
+<translation id="7776604279034196531">ההגדרה הזאת מאפשרת לפתוח את מצב הקריאה מסרגל הכתובות, כשזה אפשרי</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7788868432173225918">סגירת התצוגה המורחבת</translation>
 <translation id="7791543448312431591">הוספה</translation>
@@ -2097,6 +2098,7 @@
 <translation id="8587001564479545614">יצירת קוד אימות לשחזור החשבון</translation>
 <translation id="8588404856427128947">כבוי</translation>
 <translation id="8590286732816598906">קבוצת כרטיסיות, <ph name="GROUP_TITLE" />, תפריט.</translation>
+<translation id="8593317261815647019">ליצור מפתח גישה מחוץ למצב הפרטי?</translation>
 <translation id="8600272508328041907">צריך לעבור לתרגום דף מלא</translation>
 <translation id="860043288473659153">שם בעל הכרטיס</translation>
 <translation id="8601611099293226919">‏חיפוש במסך באמצעות Google Lens</translation>

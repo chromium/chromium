@@ -2142,6 +2142,17 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur "False", l'imp
 <translation id="2466131534462628618">L'authentification de portail captif ignore le proxy</translation>
 <translation id="2467181864598429837">Comportement par défaut du navigateur</translation>
 <translation id="2467896267442150508">Intervalle d'une semaine (au maximum). Si l'heure de début est postérieure à l'heure de fin, l'heure de fin sera décalée au jour suivant.</translation>
+<translation id="2475594733565572760">Cette règle définit le paramètre par défaut pour toutes les fonctionnalités d'IA générative couvertes. Par exemple, si cette règle est définie sur la valeur 1, cette valeur sera le paramètre par défaut pour toutes les fonctionnalités d'IA génératives couvertes. Cela n'aura aucune incidence sur les valeurs de règle définies manuellement. Ce paramètre définira les valeurs par défaut pour les fonctionnalités d'IA générative couvertes dans Chrome. Pour connaître la liste des fonctionnalités couvertes, consultez https://support.google.com/chrome/a?p=generative_ai_settings.
+
+Certaines règles, comme <ph name="GEMINI_SETTINGS_POLICY_NAME" />, n'acceptent que les états "Autorisé" et "Ne pas autoriser". Dans ce cas, si la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> est définie sur 0 ou 1, cette fonctionnalité est activée. Si la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> est définie sur 2, cette fonctionnalité est désactivée. La documentation de chaque fonctionnalité contient plus de détails sur son interaction avec les valeurs de cette règle (par exemple, Gemini dans Chrome : https://support.google.com/chrome/a/?p=gemini_in_chrome). Cela s'applique aux fonctionnalités suivantes : Gemini dans Chrome, Google Lens et le Mode IA, car elles sont soumises à leurs propres garanties et/ou Conditions d'utilisation (https://support.google.com/chrome/a/?p=genai_features_chrome).
+
+0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des retours écrits. Elles pourront également être examinées par des réviseurs humains afin d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les prompts, les entrées, les sorties, les sources et les retours écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Ne pas autoriser la fonctionnalité.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2476249479201711962">Activer l'accès au menu contextuel du moteur de recherche par défaut</translation>
 <translation id="2478756867046106663">Autoriser les sites aux expériences abusives à ouvrir de nouvelles fenêtres ou de nouveaux onglets</translation>
 <translation id="2479760962196319822">Cette règle détermine si les utilisateurs de <ph name="PRODUCT_OS_NAME" /> peuvent stocker des données localement ou non.
@@ -4273,6 +4284,7 @@ Cette règle peut être combinée avec <ph name="POLICY_CLOUD_POLICY_OVERRIDES_P
 <translation id="3927291637826333102">Autoriser les captures d'écran, de fenêtre et d'onglet selon ces origines</translation>
 <translation id="3928726028264020458">Activer les rapports sur les données VPD de l'appareil</translation>
 <translation id="3935592079035695061">Millisecondes depuis minuit.</translation>
+<translation id="3937800910397007337">Forcer la priorité au premier plan pour tous les onglets</translation>
 <translation id="3941289958028934630">Désactiver la lecture vocale sur l'écran de connexion</translation>
 <translation id="3943930334592166130">Cette règle détermine si l'utilisateur est invité ou non à sélectionner un certificat client quand la règle <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> établit une correspondance avec plus d'un certificat.
       Si cette règle est activée, l'utilisateur est invité à sélectionner un certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats.
@@ -6215,6 +6227,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
       * Si vous définissez cette règle sur "Modéré", l'utilisateur ne peut choisir que le mode restreint modéré ou le mode restreint strict sur YouTube (il ne peut pas désactiver le mode restreint).
 
       * Si cette règle est désactivée ou qu'aucune valeur n'est définie, le mode restreint sur YouTube n'est pas appliqué d'office par Chrome. Toutefois, des règles externes comme les règles de YouTube peuvent quand même appliquer d'office le mode restreint.</translation>
+<translation id="5191007233343702012">Utiliser un ordre de priorité standard pour les onglets</translation>
 <translation id="5191476996923842491">Comportement par défaut pour l'écrêtage de la fonction setTimeout().</translation>
 <translation id="519247340330463721">Configurez les règles associées à la navigation sécurisée.</translation>
 <translation id="5192555640439947289">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> demande à l'utilisateur de saisir un mot de passe pour déverrouiller l'appareil arrêté provisoirement ou dont l'écran a été rabattu.
@@ -6434,6 +6447,7 @@ Remarque : Cette règle ne s'applique pas aux mises à niveau HSTS.</translatio
 <translation id="530949964068726932">Masquer les options d'accessibilité dans le menu de la barre d'état système</translation>
 <translation id="5309944663104291505">Ne pas autoriser les applis Web isolées installées d'office et les applis kiosque à utiliser l'API Device Attributes</translation>
 <translation id="5311275381462687162">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour tous les cookies</translation>
+<translation id="5311430612584074035">Forcer la priorité au premier plan pour tous les onglets du profil</translation>
 <translation id="5312253627576569499">Pourcentage d'adaptation du délai d'assombrissement de l'écran en cas d'activité de l'utilisateur lors de la réduction de la luminosité ou peu de temps après la désactivation de l'écran.</translation>
 <translation id="5316856058059940708">Désactiver le grand curseur</translation>
 <translation id="5318185076587284965">Autoriser l'hôte d'accès à distance à utiliser des serveurs de relais</translation>
@@ -6471,6 +6485,15 @@ Les comptes gérés ne peuvent pas rejoindre ni créer de groupe familial, et ne
 <translation id="5345892164332459671">Désactiver le SSO flottant et ne pas déplacer les authentifications des services Web de l'utilisateur vers un nouvel appareil</translation>
 <translation id="5345910753471481870">Ne pas afficher le bouton Google Lens dans le champ de recherche de la page "Nouvel onglet".</translation>
 <translation id="5346587320074666194">Bloquer l'accès aux capteurs sur ces sites</translation>
+<translation id="5347735051291224683">Cette règle permet de définir si le contenu Web en arrière-plan doit être exécuté avec la priorité au premier plan.
+
+Par défaut, le navigateur optimise les ressources en réduisant la priorité du contenu des onglets en arrière-plan. L'activation de cette règle remplace ce comportement. Les onglets en arrière-plan sont donc traités de la même manière que l'onglet actif.
+
+Sachez que forcer l'exécution du contenu en arrière-plan avec la priorité au premier plan peut légèrement affecter la réactivité de l'onglet actif.
+
+Si cette règle est activée, tout le contenu Web s'exécute avec la priorité au premier plan, quel que soit son état de visibilité.
+
+Si cette règle est désactivée ou n'est pas configurée, le navigateur détermine la priorité en fonction de paramètres standards (par exemple, en réduisant la priorité du contenu qui n'est pas visible, qui ne lit pas de contenu audio, qui ne participe pas à des appels vidéo, etc.).</translation>
 <translation id="534836255587440809">Désactiver les clics automatiques sur l'écran de connexion</translation>
 <translation id="5348658899015174540">L'API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permet aux applications Web de capturer plusieurs surfaces à la fois.
       Cette règle déverrouille la propriété <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> pour les applications Web à des origines définies.

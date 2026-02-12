@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Ili uone manenosiri, ni lazima kwanza uweke namba ya siri kwenye kifaa chako.</translation>
 <translation id="201759455285471444">Panua kikundi cha vichupo.</translation>
 <translation id="202070562065520783">Nifafanulie hili</translation>
-<translation id="2023713324775943812">Fikia Hali ya Kusoma kwenye sehemu ya anwani inapopatikana</translation>
 <translation id="2044394949148788042">Fungua gridi ya kichupo</translation>
 <translation id="2044681667265133332">Akaunti ya <ph name="USER_EMAIL" /> inasimamiwa na <ph name="HOSTED_DOMAIN" />, inayoweza kuangalia baadhi ya maelezo. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">kipengee kipya</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Manenosiri na funguo za siri zilizohifadhiwa</translation>
 <translation id="3143515551205905069">Ghairi usawazishaji</translation>
 <translation id="3144126448740580210">IMEKAMILIKA</translation>
+<translation id="3147521114983561406">Funguo za siri huhifadhiwa kwenye kidhibiti chako cha manenosiri. Unaweza kuzifikia katika vichupo vya kawaida na vya Faragha.</translation>
 <translation id="3148052723910099040">Gridi ya Kichupo cha Kawaida</translation>
 <translation id="3148237711805373460">Nipeleke hapo</translation>
 <translation id="3157387275655328056">Ongeza kwenye Orodha ya Kusoma</translation>
@@ -1860,6 +1860,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="7772032839648071052">Thibitisha kaulisiri</translation>
 <translation id="7772948288262733182">Karibu tena</translation>
 <translation id="777637629667389858">Wakati umeingia katika akaunti, hukulinda kwenye huduma zote za Google.</translation>
+<translation id="7776604279034196531">Fikia hali ya kusoma kwenye sehemu ya anwani inapopatikana</translation>
 <translation id="7781829728241885113">Jana</translation>
 <translation id="7788868432173225918">Funga mwonekano uliopanuliwa</translation>
 <translation id="7791543448312431591">Ongeza</translation>
@@ -2097,6 +2098,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="8587001564479545614">Tunga PIN ya kurejesha</translation>
 <translation id="8588404856427128947">Imezimwa</translation>
 <translation id="8590286732816598906">Kikundi cha vichupo, <ph name="GROUP_TITLE" />, Menyu.</translation>
+<translation id="8593317261815647019">Ungependa kubuni ufunguo wa siri nje ya Hali ya faraghani?</translation>
 <translation id="8600272508328041907">Kubadilisha utumie tafsiri ya Ukurasa mzima</translation>
 <translation id="860043288473659153">Jina la mmiliki wa kadi</translation>
 <translation id="8601611099293226919">Tafuta kwenye skrini yako ukitumia Lenzi ya Google</translation>

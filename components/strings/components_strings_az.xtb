@@ -2787,6 +2787,7 @@
 <translation id="5466018172325111652">Kod qəbul etmədiniz? <ph name="BEGIN_LINK" />Yeni kod əldə edin<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Ödəniş tətbiqləri</translation>
 <translation id="5470861586879999274">&amp;Düzəlişi yenidən edin</translation>
+<translation id="5471158297908124590">Ödəniş metodlarını redaktə etmək üçün kimliyinizi doğrulayın</translation>
 <translation id="5472588168895083535">Əl izləmə bloklandı</translation>
 <translation id="5477756102936130143">Dəstəklənən ödəniş tətbiqlərinə yönləndirməni aktivləşdirin</translation>
 <translation id="5479505548832623900">Çox güman ki, artırma tərəfindən nəzərə alınmayıb.</translation>
@@ -2864,6 +2865,7 @@
 <translation id="5570825185877910964">Hesabınızı qoruyun</translation>
 <translation id="5571083550517324815">Bu ünvandan götürmək mümkün deyil. Başqa ünvan seçin.</translation>
 <translation id="5572434905385510939">22 x 28 düym</translation>
+<translation id="5573090972398558474">Təşkilatınız bu səhifəni Anonim rejimdə bloklayıb.</translation>
 <translation id="5573641252776268565">Pasportu redaktə edin</translation>
 <translation id="5578606540385219379">Xidmət təminatçıları</translation>
 <translation id="5580958916614886209">Bitmə ayını yoxlayın və yenidən cəhd edin</translation>
@@ -3170,6 +3172,7 @@
 <translation id="6093795393556121384">Kartlarınız doğrulanıb</translation>
 <translation id="6094253940069566294">Nəqliyyat vasitəsini redaktə edin</translation>
 <translation id="6094290315941448991">Administrator siyasəti məxfi məzmun görünəndə ekranın yazılmasını deaktiv edir</translation>
+<translation id="6097297436119286254">Ödəniş məlumatlarını doldurmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="6099269767116481177">22 x 29,5 düym</translation>
 <translation id="6101583188322746099">Ərzaq çatdırma xidmətləri</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4290,6 +4293,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Heç bir tətbiq}=1{1 tətbiq (<ph name="EXAMPLE_APP_1" />)}=2{2 tətbiq (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# tətbiq (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Xəta baş verdi. Yenidən cəhd edin.</translation>
 <translation id="784623644169604270">Son fəaliyyət yoxdur</translation>
+<translation id="7848926355794727168">Avtonaviqasiya</translation>
 <translation id="7853222852810008596">Sonra ödəyin seçimi bu valyutada əlçatan deyil</translation>
 <translation id="785476343534277563">Kollec İdmanı</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4519,6 +4523,7 @@
 <translation id="8241707690549784388">Baxdığınız səhifə daxil etdiyiniz məlumatı işlədir. Həmin səhifəyə qayıtmaq, etdiyiniz istənilən əməlin təkrarlanmasına səbəb ola bilər. Davam edirsiniz?</translation>
 <translation id="8241712895048303527">Bu saytda blok edin</translation>
 <translation id="8242426110754782860">Davam edin</translation>
+<translation id="824620968958405573">Avtonaviqasiya tapşırığı</translation>
 <translation id="8246482227229072868">Üzüklər</translation>
 <translation id="8248406213705193919">Kartı etibarlı şəkildə saxlayırsınız?</translation>
 <translation id="8249296373107784235">Dayandırın</translation>
@@ -4916,6 +4921,7 @@
 <translation id="8897428486789851669">Üzgüçülük</translation>
 <translation id="8899807382908246773">İntruziv reklamlar</translation>
 <translation id="8903921497873541725">Zoom</translation>
+<translation id="8903998444169664879">Ödəniş ayarlarını dəyişmək üçün kimliyinizi doğrulayın</translation>
 <translation id="890493561996401738">Təklifi Silmə düyməsi, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> təklifini silmək üçün Enter düyməsinə basın</translation>
 <translation id="8910898109640902752">8 x 10 düym</translation>
 <translation id="8914504000324227558">Chrome'u yenidən başladın</translation>

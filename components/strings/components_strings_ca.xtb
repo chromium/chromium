@@ -2791,6 +2791,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5466018172325111652">No has rebut el codi? <ph name="BEGIN_LINK" />Obtén un codi nou<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Aplicacions de pagaments</translation>
 <translation id="5470861586879999274">&amp;Refés la modificació</translation>
+<translation id="5471158297908124590">Verifica la teva identitat per editar les formes de pagament</translation>
 <translation id="5472588168895083535">Seguiment de mans bloquejat</translation>
 <translation id="5477756102936130143">Activa la redirecció a aplicacions de pagaments admeses</translation>
 <translation id="5479505548832623900">És probable que l'extensió les ignori.</translation>
@@ -2868,6 +2869,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5570825185877910964">Protegeix el compte</translation>
 <translation id="5571083550517324815">No es pot fer la recollida en aquesta adreça. Selecciona'n una altra.</translation>
 <translation id="5572434905385510939">22 x 28 polzades</translation>
+<translation id="5573090972398558474">La teva organització ha bloquejat aquesta pàgina en mode d'incògnit.</translation>
 <translation id="5573641252776268565">Edita el passaport</translation>
 <translation id="5578606540385219379">Proveïdors de serveis</translation>
 <translation id="5580958916614886209">Comprova el mes de caducitat i torna-ho a provar</translation>
@@ -3174,6 +3176,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6093795393556121384">La targeta s'ha verificat</translation>
 <translation id="6094253940069566294">Edita el vehicle</translation>
 <translation id="6094290315941448991">La política de l'administrador desactiva la gravació de pantalla quan es mostra contingut confidencial</translation>
+<translation id="6097297436119286254">Verifica la teva identitat per emplenar la informació de pagament</translation>
 <translation id="6099269767116481177">22 x 29,5 polzades</translation>
 <translation id="6101583188322746099">Serveis d'entrega a domicili de queviures</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4295,6 +4298,7 @@ Detalls addicionals:
 <translation id="7844689747373518809">{COUNT,plural, =0{Cap}=1{1 aplicació (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicacions (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplicacions (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">S'ha produït un error. Torna-ho a provar.</translation>
 <translation id="784623644169604270">Sense activitat recent</translation>
+<translation id="7848926355794727168">Navegació automàtica</translation>
 <translation id="7853222852810008596">L'opció Paga més tard no està disponible en aquesta moneda</translation>
 <translation id="785476343534277563">Esports universitaris</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4524,6 +4528,7 @@ Detalls addicionals:
 <translation id="8241707690549784388">La pàgina que busques utilitzava informació que vas introduir. Tornar a aquesta pàgina podria provocar una repetició de qualsevol acció realitzada. Vols continuar?</translation>
 <translation id="8241712895048303527">Bloqueja en aquest lloc web</translation>
 <translation id="8242426110754782860">Continua</translation>
+<translation id="824620968958405573">Tasca de navegació automàtica</translation>
 <translation id="8246482227229072868">Anells</translation>
 <translation id="8248406213705193919">Vols desar la targeta de manera segura?</translation>
 <translation id="8249296373107784235">Cancel·la</translation>
@@ -4921,6 +4926,7 @@ Detalls addicionals:
 <translation id="8897428486789851669">Natació</translation>
 <translation id="8899807382908246773">Anuncis intrusius</translation>
 <translation id="8903921497873541725">Amplia el zoom</translation>
+<translation id="8903998444169664879">Verifica la teva identitat per canviar la configuració de pagament</translation>
 <translation id="890493561996401738">Botó Suprimeix el suggeriment, prem Retorn per suprimir, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 polzades</translation>
 <translation id="8914504000324227558">Torna a iniciar Chrome</translation>

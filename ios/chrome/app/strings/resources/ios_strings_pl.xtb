@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="201759455285471444">Rozwiń grupę kart.</translation>
 <translation id="202070562065520783">Wyjaśnij mi to</translation>
-<translation id="2023713324775943812">Otwieraj Tryb czytania z paska adresu, gdy jest dostępny</translation>
 <translation id="2044394949148788042">Otwieranie siatki kart</translation>
 <translation id="2044681667265133332">Kontem <ph name="USER_EMAIL" /> zarządza domena <ph name="HOSTED_DOMAIN" />, która może wyświetlać niektóre informacje. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nowy element</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Zapisane hasła i klucze dostępu</translation>
 <translation id="3143515551205905069">Anuluj synchronizację</translation>
 <translation id="3144126448740580210">GOTOWE</translation>
+<translation id="3147521114983561406">Klucze dostępu są zapisywane w menedżerze haseł. Są one dostępne na kartach incognito i zwykłych.</translation>
 <translation id="3148052723910099040">Siatka zwykłych kart</translation>
 <translation id="3148237711805373460">Otwórz</translation>
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
@@ -1860,6 +1860,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7772032839648071052">Potwierdź hasło wielowyrazowe</translation>
 <translation id="7772948288262733182">Witamy z powrotem</translation>
 <translation id="777637629667389858">Gdy się zalogujesz, chroni Cię we wszystkich usługach Google.</translation>
+<translation id="7776604279034196531">Otwieraj tryb czytania z paska adresu, gdy jest dostępny</translation>
 <translation id="7781829728241885113">Wczoraj</translation>
 <translation id="7788868432173225918">Zamknij widok rozwinięty</translation>
 <translation id="7791543448312431591">Dodaj</translation>
@@ -2097,6 +2098,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8587001564479545614">Utwórz kod PIN do przywracania</translation>
 <translation id="8588404856427128947">Wyłączono</translation>
 <translation id="8590286732816598906">Grupa kart, <ph name="GROUP_TITLE" />, menu.</translation>
+<translation id="8593317261815647019">Utworzyć klucz dostępu poza trybem incognito?</translation>
 <translation id="8600272508328041907">Przełącz na tłumaczenie całej strony</translation>
 <translation id="860043288473659153">Imię i nazwisko posiadacza karty</translation>
 <translation id="8601611099293226919">Przeszukaj ekran za pomocą Obiektywu Google</translation>
@@ -2234,6 +2236,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="9055291197094969722">Twórz grupy kart, aby porządkować otwarte karty i utrzymywać produktywność</translation>
 <translation id="9055580485132823283">Nastąpi usunięcie {password_count} haseł, {passkey_count} kluczy dostępu oraz listy witryn i aplikacji, w przypadku których nie chcesz zapisywać danych logowania. Konta utworzone przez Ciebie w witrynach i aplikacjach nie zostaną usunięte.</translation>
 <translation id="9057030985451135243">Więcej informacji o udostępnianych grupach kart</translation>
+<translation id="9064106978262828592">Podczas eksportowania danych wystąpił problem</translation>
 <translation id="9065203028668620118">Edytuj</translation>
 <translation id="9066097352053395362">Ukryj opcję Edytuj zakładkę</translation>
 <translation id="9070824521421603770">Nastąpi wylogowanie, a karty zostaną zamknięte</translation>

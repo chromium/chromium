@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">For å se passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="201759455285471444">Vis fanegruppen.</translation>
 <translation id="202070562065520783">Forklar dette for meg</translation>
-<translation id="2023713324775943812">Bruk Lesemodus fra adressefeltet når det er tilgjengelig</translation>
 <translation id="2044394949148788042">Åpne fanerutenettet</translation>
 <translation id="2044681667265133332">Kontoen <ph name="USER_EMAIL" /> administreres av <ph name="HOSTED_DOMAIN" />, som kan se visse typer informasjon. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nytt element</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Lagrede passord og passnøkler</translation>
 <translation id="3143515551205905069">Avbryt synkronisering</translation>
 <translation id="3144126448740580210">FERDIG</translation>
+<translation id="3147521114983561406">Passnøkler lagres i passordlagringen. De er tilgjengelige i inkognito- og vanlige faner.</translation>
 <translation id="3148052723910099040">Rutenett for vanlig fane</translation>
 <translation id="3148237711805373460">Fortsett dit</translation>
 <translation id="3157387275655328056">Legg til i leselisten</translation>
@@ -1860,6 +1860,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7772032839648071052">Bekreft passord</translation>
 <translation id="7772948288262733182">Velkommen tilbake</translation>
 <translation id="777637629667389858">Når du er logget på, blir du beskyttet på alle Google-tjenester.</translation>
+<translation id="7776604279034196531">Bruk lesemodus fra adressefeltet når den er tilgjengelig</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7788868432173225918">Lukk den utvidede visningen</translation>
 <translation id="7791543448312431591">Legg til</translation>
@@ -2097,6 +2098,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8587001564479545614">Opprett en PIN-kode for gjenoppretting</translation>
 <translation id="8588404856427128947">Av</translation>
 <translation id="8590286732816598906">Fanegruppe, <ph name="GROUP_TITLE" />, meny.</translation>
+<translation id="8593317261815647019">Vil du opprette en passnøkkel utenfor Inkognito?</translation>
 <translation id="8600272508328041907">Bytt til oversettelse av hele siden</translation>
 <translation id="860043288473659153">Kortinnehavers navn</translation>
 <translation id="8601611099293226919">Søk på skjermen med Google Lens</translation>

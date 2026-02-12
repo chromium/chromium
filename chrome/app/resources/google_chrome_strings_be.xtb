@@ -119,6 +119,7 @@
 <translation id="2139300032719313227">Перазапусціце Chrome OS</translation>
 <translation id="2151406531797534936">Перазапусціце Chrome</translation>
 <translation id="2163089732491971196">Каб захоўваць даныя Chrome ва Уліковым запісе Google і выкарыстоўваць іх, увядзіце фразу-пароль</translation>
+<translation id="2170098639895543546">Выберыце любы аб’ект на старонцы</translation>
 <translation id="2174917724755363426">Усталяванне не завершана. Вы сапраўды хочаце скасаваць яго?</translation>
 <translation id="2186206192313702726">Google Аб’ектыў</translation>
 <translation id="2190166659037789668">Не ўдалося праверыць наяўнасць абнаўленняў: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -446,6 +447,7 @@
 <translation id="5756509061973259733">Профіль Chrome з такім уліковым запісам ужо існуе на гэтай прыладзе</translation>
 <translation id="5759947850379142561">Выберыце тэкст або відарыс для пошуку з дапамогай Google Аб’ектыва або націсніце Escape, каб закрыць яго</translation>
 <translation id="5762867845020858790">Дадайце новы профіль Chrome, каб захоўваць закладкі, паролі і налады асобна.</translation>
+<translation id="5779427581965287859">Зрабіце Chrome стандартным браўзерам і замацуйце яго на панэлі задач</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не ўдалося запусціць Chrome. Паўтарыце спробу.</translation>
 <translation id="5809516625706423866">Не ўдалося падключыцца да інтэрнэту. Памылка HTTP 401: патрабуецца аўтарызацыя. Праверце налады проксі-сервера.</translation>
@@ -696,6 +698,7 @@
 <translation id="8162006532256575008">Выкарыстоўваць Chrome без уліковага запісу</translation>
 <translation id="8177472873527554730">Не ўдаецца знайсці змесціва на старонцы</translation>
 <translation id="8221491193165283816">Звычайна вы блакіруеце апавяшчэнні. Каб даць дазвол гэтаму сайту на паказ апавяшчэнняў, націсніце тут.</translation>
+<translation id="8253851811470049684">Адкрывайце спасылкі ў Chrome з любой праграмы і трымайце браўзер на панэлі задач</translation>
 <translation id="8255190535488645436">Google Chrome выкарыстоўвае вашу камеру і мікрафон.</translation>
 <translation id="8267953129876836456">У нас ёсць некалькі рэкамендацый па бяспецы пры рабоце ў Chrome</translation>
 <translation id="8286862437124483331">Google Chrome спрабуе паказаць паролі. Каб дазволіць гэта, увядзіце пароль Windows.</translation>

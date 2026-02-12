@@ -2186,6 +2186,17 @@ her zamanki gibi seçim yapması gerekir.</translation>
 <translation id="2466131534462628618">Giriş portalı kimlik doğrulaması, proxy'yi yoksayar</translation>
 <translation id="2467181864598429837">Varsayılan tarayıcı davranışı</translation>
 <translation id="2467896267442150508">En fazla bir haftayı kapsayan zaman aralığı. Başlangıç zamanı bitiş zamanından sonra olursa aralık başa döner.</translation>
+<translation id="2475594733565572760">Bu politika, kapsanan tüm üretken yapay zeka özellikleri için varsayılan ayarı tanımlar. Örneğin, bu politika 1 değeri ayarlanırsa, kapsam dahilindeki tüm üretken yapay zeka özelliklerinin varsayılan ayarı 1 olacaktır. Manuel olarak ayarlanmış herhangi bir politika değeri etkilenmez. Bu ayar, Chrome'da kapsam dahilindeki üretken yapay zeka özellikleri için varsayılan değerleri tanımlar. Kapsam dahilindeki özellikler için https://support.google.com/chrome/a?p=generative_ai_settings adresini ziyaret edin.
+
+Bazı politikalar (ör. <ph name="GEMINI_SETTINGS_POLICY_NAME" />) yalnızca İzin Verildi ve İzin Verme durumlarını destekler. Bu durumda <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikası, 0 veya 1 değerine ayarlanırsa bu özellik etkinleştirilir. <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikası, 2 değerine ayarlanırsa bu özellik devre dışı bırakılır. Her özelliğin belgelerinde, bu politikadaki değerlerle nasıl etkileşime girdiği hakkında daha fazla bilgi yer alır (ör. Chrome'da Gemini - https://support.google.com/chrome/a/?p=gemini_in_chrome). Bu, kendi taahhütlerine ve/veya Hizmet Şartlarına tabi oldukları için Chrome'da Gemini, Google Lens ve AI Modu gibi özelliklerde geçerlidir (https://support.google.com/chrome/a/?p=genai_features_chrome).
+
+0 = Özelliğin kullanılmasına izin verirken Google'ın yapay zeka modellerini iyileştirmek için ilgili verileri kullanmasına izin verir. İlgili veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler yer alabilir. Bu bilgiler, gerçek kişiler tarafından da yapay zeka modellerini iyileştirmek için incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+1 = Özelliğin kullanılmasına izin verir ancak Google'ın kullanıcıların içeriklerini (istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler dahil) kullanarak modelleri iyileştirmesine izin vermez. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
+
+2 = Özelliğe izin vermez.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="2476249479201711962">Varsayılan arama sağlayıcısı içerik menüsüne erişimi etkinleştir</translation>
 <translation id="2478756867046106663">Kötüye kullanım deneyimi yaşatan sitelerin yeni pencere veya sekme açmasına izin ver</translation>
 <translation id="2479760962196319822">Bu politika, <ph name="PRODUCT_OS_NAME" /> kullanıcılarının yerel olarak veri depolayıp depolayamayacağını kontrol eder.
@@ -4378,6 +4389,7 @@ Politika, <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" /
 <translation id="3927291637826333102">Bu kaynakların Masaüstü, Pencere ve Sekme yakalamasına izin ver</translation>
 <translation id="3928726028264020458">Cihazın VPD bilgileri raporlamasını etkinleştir</translation>
 <translation id="3935592079035695061">Gece yarısından bu yana milisaniye.</translation>
+<translation id="3937800910397007337">Tüm sekmeler için ön plan önceliğini zorla</translation>
 <translation id="3941289958028934630">Giriş ekranında sözlü geri bildirimi devre dışı bırak</translation>
 <translation id="3943930334592166130">Bu politika, <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> ile eşleşen birden fazla sertifika olduğunda kullanıcıdan bir istemci sertifikası seçmesinin istenip istenmeyeceğini kontrol eder.
       Bu politika Etkin değerine ayarlanırsa, otomatik seçim politikası birden fazla sertifikayla eşleştiğinde kullanıcıdan bir istemci sertifikası seçmesi istenir.
@@ -6326,6 +6338,7 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
       * Orta Düzey olarak ayarlarsanız kullanıcı YouTube'da yalnızca Orta Düzey Kısıtlı mod'u ve Yüksek Düzey Kısıtlı mod'u seçebilir, ancak Kısıtlı mod'u kapatamaz.
 
       * Kapalı olarak ayarlar veya hiçbir değer ayarlamazsanız Chrome, YouTube'da Kısıtlı mod'u zorunlu tutmaz. Ancak YouTube politikaları gibi harici politikalar Kısıtlı mod'un uygulanmasını zorunlu tutabilir.</translation>
+<translation id="5191007233343702012">Standart sekme önceliklendirmeyi kullan</translation>
 <translation id="5191476996923842491">setTimeout() fonksiyon zaman aşımı için varsayılan davranış.</translation>
 <translation id="519247340330463721">Güvenli Tarama ile ilgili politikaları yapılandırır.</translation>
 <translation id="5192555640439947289">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" />, cihaz askıya alındığında ya da cihazın kapağı kapatıldığında kilidini açmak için kullanıcılardan şifre ister.
@@ -6551,6 +6564,7 @@ Not: Bu politika HSTS yükseltmeleri için geçerli değildir.</translation>
 <translation id="530949964068726932">Sistem tepsisi menüsündeki erişilebilirlik seçeneklerini gizle</translation>
 <translation id="5309944663104291505">Zorunlu yüklenmiş, yalıtılmış web uygulamalarının ve kiosk uygulamalarının Device Attributes API'yi kullanmasına izin verme</translation>
 <translation id="5311275381462687162">Varsayılan eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> çerez davranışı ayarı</translation>
+<translation id="5311430612584074035">Profildeki tüm sekmeler için ön plan önceliğini zorla</translation>
 <translation id="5312253627576569499">Ekran kararmış durumdayken veya kapandıktan hemen sonra bir kullanıcı etkinliği algılandığında, ekran kararma gecikmesinin ölçekleneceği yüzdeyi belirtir</translation>
 <translation id="5316856058059940708">Büyük imleci devre dışı bırak</translation>
 <translation id="5318185076587284965">Uzaktan erişen ana makine tarafından geçiş sunucuları kullanılmasını etkinleştir</translation>
@@ -6588,6 +6602,22 @@ Yönetilen hesaplar, aile gruplarına katılamadığı veya aile grubu oluştura
 <translation id="5345892164332459671">Kayan TOA'yı devre dışı bırak ve kullanıcının web hizmeti kimlik doğrulamalarını yeni cihaza taşıma</translation>
 <translation id="5345910753471481870">Yeni sekme sayfasındaki arama kutusunda Google Lens düğmesini gösterme.</translation>
 <translation id="5346587320074666194">Bu sitelerde sensörlere erişimi engelle</translation>
+<translation id="5347735051291224683">Bu politika, arka plandaki web içeriğinin ön plan önceliğinde çalışmaya zorlanıp zorlanmayacağını
+kontrol eder.
+
+Tarayıcı, varsayılan olarak kaynakları optimize etmek için arka plan sekmelerindeki içeriğin
+önceliğini düşürür. Bu politika etkinleştirildiğinde bu davranış geçersiz
+kılınır ve arka plan sekmeleri, etkin sekme ile aynı şekilde planlanır.
+
+Arka plandaki içeriği ön planda öncelikli olarak çalışmaya zorlamanın, etkin sekmenin
+yanıt verme hızını biraz etkileyebileceğini unutmayın.
+
+Bu politika, Etkin değerine ayarlanırsa tüm web içeriği görünürlük durumundan bağımsız
+olarak ön plan önceliğinde çalışır.
+
+Bu politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa tarayıcı,
+önceliği standart buluşsal yöntemlere (ör. görünmeyen, ses çalmayan, görüntülü görüşmelere
+katılmayan içeriklerin önceliğini düşürme) göre belirler.</translation>
 <translation id="534836255587440809">Giriş ekranında otomatik tıklamayı devre dışı bırak</translation>
 <translation id="5348658899015174540"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API, web uygulamalarının tek seferde birden çok yüzeyi yakalamasına izin verir.
       Bu politika, tanımlanan kaynaklardaki web uygulamaları için <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> özelliğinin kilidini açar.

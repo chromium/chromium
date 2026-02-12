@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Parollara baxmaq üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
 <translation id="201759455285471444">Tab qrupunu genişləndirin.</translation>
 <translation id="202070562065520783">Bunu mənə izah et</translation>
-<translation id="2023713324775943812">Əlçatan olduqda ünvan panelindən Oxu rejiminə daxil olun</translation>
 <translation id="2044394949148788042">Tab torunu açın</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> hesabı <ph name="HOSTED_DOMAIN" /> tərəfindən idarə olunur və o, müəyyən məlumatlara baxa bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">yeni element</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Yadda saxlanılan parol və giriş açarları</translation>
 <translation id="3143515551205905069">Sinxronizasiyanı ləğv edin</translation>
 <translation id="3144126448740580210">TAMAMDIR</translation>
+<translation id="3147521114983561406">Giriş açarları parol menecerində yadda saxlanılır. Onlar Anonim və adi tablarda əlçatandır.</translation>
 <translation id="3148052723910099040">Normal tab toru</translation>
 <translation id="3148237711805373460">Keçin</translation>
 <translation id="3157387275655328056">Oxu Siyahısına əlavə edin</translation>
@@ -1860,6 +1860,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7772032839648071052">Parolu təsdiq edin</translation>
 <translation id="7772948288262733182">Xoş gəlmisiniz</translation>
 <translation id="777637629667389858">Daxil olduqda Google xidmətlərində sizi qoruyur.</translation>
+<translation id="7776604279034196531">Əlçatan olduqda ünvan panelindən oxu rejiminə daxil olun</translation>
 <translation id="7781829728241885113">Dünən</translation>
 <translation id="7788868432173225918">Genişləndirilmiş görünüşü ləğv edin</translation>
 <translation id="7791543448312431591">Əlavə etmək</translation>
@@ -2097,6 +2098,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8587001564479545614">Bərpa PIN-i yaradın</translation>
 <translation id="8588404856427128947">Deaktiv</translation>
 <translation id="8590286732816598906">Tab qrupu, <ph name="GROUP_TITLE" />, Menyu.</translation>
+<translation id="8593317261815647019">Anonim rejimdən kənarda giriş açarı yaradılsın?</translation>
 <translation id="8600272508328041907">Tam səhifə tərcüməsinə dəyişin</translation>
 <translation id="860043288473659153">Kart sahibinin adı</translation>
 <translation id="8601611099293226919">Ekranınızı Google Linza ilə axtarın</translation>

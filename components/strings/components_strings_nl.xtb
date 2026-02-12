@@ -656,6 +656,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2071156619270205202">Deze kaart kan niet worden gebruikt als een virtueel kaartnummer.</translation>
 <translation id="2071852865256799872">Je browser wordt beheerd door je organisatie en je profiel wordt beheerd door <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informatie alleen opgeslagen op het apparaat</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> niet meer blokkeren</translation>
 <translation id="2074771604462073334">Je bezocht deze site</translation>
 <translation id="2078956195623975415">Muziek- en dansgames</translation>
@@ -2785,6 +2786,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5466018172325111652">Heb je de code niet gekregen? <ph name="BEGIN_LINK" />Nieuwe code ophalen<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Betalingsapps</translation>
 <translation id="5470861586879999274">&amp;Opnieuw bewerken</translation>
+<translation id="5471158297908124590">Laat verifiëren dat jij het bent om betaalmethoden te bewerken</translation>
 <translation id="5472588168895083535">Handen volgen geblokkeerd</translation>
 <translation id="5477756102936130143">Omleiding naar ondersteunde betalingsapps aanzetten</translation>
 <translation id="5479505548832623900">Waarschijnlijk genegeerd door de extensie.</translation>
@@ -2862,6 +2864,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5570825185877910964">Account beschermen</translation>
 <translation id="5571083550517324815">Kan niet ophalen van dit adres. Selecteer een ander adres.</translation>
 <translation id="5572434905385510939">22 x 28 inch</translation>
+<translation id="5573090972398558474">Je organisatie heeft deze pagina geblokkeerd in de incognitomodus.</translation>
 <translation id="5573641252776268565">Paspoort bewerken</translation>
 <translation id="5578606540385219379">Serviceproviders</translation>
 <translation id="5580958916614886209">Controleer de vervalmaand en probeer het opnieuw</translation>
@@ -3168,6 +3171,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6093795393556121384">Je pas is geverifieerd</translation>
 <translation id="6094253940069566294">Voertuig bewerken</translation>
 <translation id="6094290315941448991">Op basis van het beheerdersbeleid wordt schermopname uitgezet als er vertrouwelijke content zichtbaar is</translation>
+<translation id="6097297436119286254">Laat verifiëren dat jij het bent om je betalingsgegevens in te vullen</translation>
 <translation id="6099269767116481177">22 x 29,5 inch</translation>
 <translation id="6101583188322746099">Boodschappenbezorgdiensten</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4288,6 +4292,7 @@ Aanvullende informatie:
 <translation id="7844689747373518809">{COUNT,plural, =0{Geen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Er is iets fout gegaan. Probeer het opnieuw.</translation>
 <translation id="784623644169604270">Geen recente activiteit</translation>
+<translation id="7848926355794727168">Automatisch browsen</translation>
 <translation id="7853222852810008596">Later betalen is niet beschikbaar in deze valuta</translation>
 <translation id="785476343534277563">Schoolsporten</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4890,6 +4895,7 @@ Aanvullende informatie:
 <translation id="8858065207712248076">Chrome raadt je aan het wachtwoord voor <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> opnieuw in te stellen als je het voor andere sites hebt hergebruikt.</translation>
 <translation id="885906927438988819">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een Windows-netwerkcontrole uit<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografie en digitale kunst</translation>
+<translation id="8861482055962701239">Kan deze informatie niet opslaan in je Google Wallet. De informatie is opgeslagen in Chrome op dit apparaat. Chrome biedt je aan de informatie op te slaan in Wallet als je het de volgende keer gebruikt.</translation>
 <translation id="8863218129525348270">Sla je kaart op je apparaat op, zodat je de volgende keer sneller kunt betalen</translation>
 <translation id="8864939224504814334">Pakken en zakelijke kleding</translation>
 <translation id="8866132857352163524">Soundtracks</translation>
@@ -4915,6 +4921,7 @@ Aanvullende informatie:
 <translation id="8897428486789851669">Zwemmen</translation>
 <translation id="8899807382908246773">Opdringerige advertenties</translation>
 <translation id="8903921497873541725">Inzoomen</translation>
+<translation id="8903998444169664879">Laat verifiëren dat jij het bent om je betaalinstellingen te wijzigen</translation>
 <translation id="890493561996401738">Suggestieknop verwijderen, druk op Enter om te verwijderen, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inch</translation>
 <translation id="8914504000324227558">Chrome opnieuw starten</translation>

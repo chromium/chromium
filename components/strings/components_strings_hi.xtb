@@ -2791,6 +2791,7 @@
 <translation id="5466018172325111652">क्या आपको कोड नहीं मिला? <ph name="BEGIN_LINK" />नया कोड पाएं<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">पेमेंट ऐप्लिकेशन</translation>
 <translation id="5470861586879999274">&amp;बदलाव को फिर से लागू करें</translation>
+<translation id="5471158297908124590">पेमेंट के तरीके में बदलाव करने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="5472588168895083535">हाथ ट्रैक करने की सुविधा ब्लॉक है</translation>
 <translation id="5477756102936130143">इस्तेमाल किए जा सकने वाले पेमेंट ऐप्लिकेशन पर रीडायरेक्ट करने की सुविधा चालू करें</translation>
 <translation id="5479505548832623900">ऐसा हो सकता है कि एक्सटेंशन ने नीतियों को अनदेखा कर दिया हो.</translation>
@@ -2868,6 +2869,7 @@
 <translation id="5570825185877910964">खाते की सुरक्षा करें</translation>
 <translation id="5571083550517324815">इस पते से पिक अप नहीं किया जा सकता. कोई दूसरा पता चुनें.</translation>
 <translation id="5572434905385510939">22 x 28 इंच</translation>
+<translation id="5573090972398558474">आपके संगठन ने इस पेज को गुप्त मोड में ब्लॉक कर दिया है.</translation>
 <translation id="5573641252776268565">पासपोर्ट की जानकारी में बदलाव करें</translation>
 <translation id="5578606540385219379">सेवा देने वाली कंपनी</translation>
 <translation id="5580958916614886209">अपने क्रेडिट कार्ड की समय सीमा खत्म होने का महीना जांचें और फिर से कोशिश करें</translation>
@@ -3174,6 +3176,7 @@
 <translation id="6093795393556121384">आपका कार्ड सत्‍यापित हो गया है</translation>
 <translation id="6094253940069566294">वाहन की जानकारी में बदलाव करें</translation>
 <translation id="6094290315941448991">एडमिन नीति के तहत, गोपनीय कॉन्टेंट दिखने पर स्क्रीन रिकॉर्डिंग की सुविधा बंद कर दी जाती है</translation>
+<translation id="6097297436119286254">अपनी पहचान की पुष्टि करें, ताकि यह आपके क्रेडिट/डेबिट कार्ड की जानकारी भर सके</translation>
 <translation id="6099269767116481177">22 x 29.5 इंच</translation>
 <translation id="6101583188322746099">किराने का सामान डिलीवर करने वाली सेवाएं</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4295,6 +4298,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{कोई नहीं}=1{एक ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />)}=2{दो ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
 <translation id="784623644169604270">हाल ही में कोई गतिविधि नहीं हुई</translation>
+<translation id="7848926355794727168">ऑटो ब्राउज़</translation>
 <translation id="7853222852810008596">बाद में पेमेंट करने की सुविधा, इस मुद्रा के लिए उपलब्ध नहीं है</translation>
 <translation id="785476343534277563">कॉलेज स्पोर्ट्स</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4524,6 +4528,7 @@
 <translation id="8241707690549784388">आप जिस पेज को ढूंढ रहे हैं उसने आपकी डाली गई जानकारी का इस्तेमाल किया है. उस पेज पर वापस लौटने से आपकी कोई कार्रवाई दोहराई जा सकती है. क्या आप जारी रखना चाहते हैं?</translation>
 <translation id="8241712895048303527">इस साइट पर ब्लॉक करें</translation>
 <translation id="8242426110754782860">आगे बढ़ें</translation>
+<translation id="824620968958405573">ऑटो ब्राउज़ का इस्तेमाल करके टास्क पूरा करने की सुविधा</translation>
 <translation id="8246482227229072868">अंगूठी</translation>
 <translation id="8248406213705193919">क्या आपको कार्ड की जानकारी सुरक्षित तरीके से सेव करनी है?</translation>
 <translation id="8249296373107784235">रद्द करें</translation>
@@ -4922,6 +4927,7 @@
 <translation id="8897428486789851669">तैराकी</translation>
 <translation id="8899807382908246773">परेशान करने वाले विज्ञापन</translation>
 <translation id="8903921497873541725">ज़ूम इन करें</translation>
+<translation id="8903998444169664879">पेमेंट सेटिंग बदलने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="890493561996401738">सुझाव बटन हटाएं, हटाने के लिए Enter दबाएं, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 इंच</translation>
 <translation id="8914504000324227558">Chrome को फिर से लॉन्‍च करें</translation>

@@ -656,6 +656,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2071156619270205202">Kad ini tidak layak untuk nombor kad maya.</translation>
 <translation id="2071852865256799872">Penyemak imbas anda diuruskan oleh organisasi anda dan profil anda diuruskan oleh <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Maklumat disimpan pada peranti sahaja</translation>
 <translation id="2074733626795553847">Nyahsekat <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Anda Lawati</translation>
 <translation id="2078956195623975415">Permainan Muzik &amp; Tarian</translation>
@@ -704,6 +705,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2137891579555018930">Menunggu kebenaran...</translation>
 <translation id="213826338245044447">Penanda Halaman Mudah Alih</translation>
 <translation id="2141000681034340397">Edit input anda</translation>
+<translation id="2141475438898772664">Bayar 4 kali atau secara bulanan</translation>
 <translation id="2144171668675205303">Tiada topik aktif</translation>
 <translation id="2145193671493396738">Berita Ekonomi</translation>
 <translation id="214556005048008348">Batalkan pembayaran</translation>
@@ -2849,6 +2851,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5543564889050342791">Zoo, Akuarium &amp; Rizab</translation>
 <translation id="5543722831081909240">180 darjah</translation>
 <translation id="5544836308113951378">Pelayaran &amp; Carter</translation>
+<translation id="5545314360139398232">Pautkan <ph name="ISSUER_NAME" /> untuk membayar dari semasa ke semasa</translation>
 <translation id="5547939254150808298">Percetakan &amp; Penerbitan</translation>
 <translation id="554815783948612276">Penyedia Forum &amp; Sembang</translation>
 <translation id="5548606607480005320">Semakan keselamatan</translation>
@@ -3696,6 +3699,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6926216138694948720">Seni Badan</translation>
 <translation id="692638818576287323">Kenderaan Komersil</translation>
 <translation id="6927878187051807444">fail kamera dan tangkapan skrin</translation>
+<translation id="6929949393612835405">Tutup dan kembali kepada "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Cari dalam panel sisi</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Enjin carian lalai anda membolehkan anda membuat carian pada web dan menguasakan ciri Chrome<ph name="END_BOLD" /> seperti membuat carian daripada bar alamat dan imej pada halaman web. Ciri mungkin tidak tersedia jika enjin carian anda tidak menyokong ciri tersebut.</translation>
 <translation id="6934672428414710184">Nama ini daripada Google Account anda</translation>
@@ -4903,6 +4907,7 @@ Butiran tambahan:
 <translation id="8858065207712248076">Chrome mengesyorkan penetapan semula kata laluan <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> jika anda menggunakan semula kata laluan itu di tapak lain.</translation>
 <translation id="885906927438988819">Jika ejaan sudah betul, <ph name="BEGIN_LINK" />cuba jalankan Diagnostik Rangkaian Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Seni Fotografi &amp; Digital</translation>
+<translation id="8861482055962701239">Tidak dapat menyimpan maklumat ini pada Google Wallet anda. Kad ini telah disimpan pada Chrome pada peranti ini. Chrome akan menawarkan untuk menyimpan kad tersebut pada Wallet apabila anda menggunakan kad tersebut pada masa hadapan.</translation>
 <translation id="8863218129525348270">Untuk membayar dengan lebih cepat selepas ini, simpan kad anda pada peranti anda</translation>
 <translation id="8864939224504814334">Pakaian Pejabat &amp; Sut</translation>
 <translation id="8866132857352163524">Muzik filem</translation>

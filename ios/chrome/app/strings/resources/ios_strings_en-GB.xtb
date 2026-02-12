@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
 <translation id="201759455285471444">Expand tab group.</translation>
 <translation id="202070562065520783">Explain this to me</translation>
-<translation id="2023713324775943812">Access Reading mode from the address bar when available</translation>
 <translation id="2044394949148788042">Open the tab grid</translation>
 <translation id="2044681667265133332">The account <ph name="USER_EMAIL" /> is managed by <ph name="HOSTED_DOMAIN" />, which may be able to view some information. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">new item</translation>
@@ -332,7 +331,7 @@
 <translation id="2164946989711475905">Sign in…</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2180338296831857171">Delete addresses</translation>
-<translation id="218350106843433823">AutoFill Passwords and Passkeys</translation>
+<translation id="218350106843433823">AutoFill passwords and passkeys</translation>
 <translation id="2184272387334793084">Sign in to get your passwords and more on all your devices</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2188993354115194873">Tap <ph name="BEGIN_BOLD" />Save to Downloads<ph name="END_BOLD" /></translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Saved passwords and passkeys</translation>
 <translation id="3143515551205905069">Cancel sync</translation>
 <translation id="3144126448740580210">DONE</translation>
+<translation id="3147521114983561406">Passkeys get saved to your password manager. They're accessible in Incognito and regular tabs.</translation>
 <translation id="3148052723910099040">Regular tab grid</translation>
 <translation id="3148237711805373460">Take me there</translation>
 <translation id="3157387275655328056">Add to reading list</translation>
@@ -1860,6 +1860,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7772032839648071052">Confirm passphrase</translation>
 <translation id="7772948288262733182">Welcome back</translation>
 <translation id="777637629667389858">When you're signed in, protects you across Google services.</translation>
+<translation id="7776604279034196531">Access reading mode from the address bar when available</translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7788868432173225918">Dismiss expanded view</translation>
 <translation id="7791543448312431591">Add</translation>
@@ -2097,6 +2098,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8587001564479545614">Create a recovery PIN</translation>
 <translation id="8588404856427128947">Off</translation>
 <translation id="8590286732816598906">Tab group, <ph name="GROUP_TITLE" />, menu.</translation>
+<translation id="8593317261815647019">Create a passkey outside of Incognito?</translation>
 <translation id="8600272508328041907">Switch to full page translation</translation>
 <translation id="860043288473659153">Cardholder name</translation>
 <translation id="8601611099293226919">Search your screen with Google Lens</translation>

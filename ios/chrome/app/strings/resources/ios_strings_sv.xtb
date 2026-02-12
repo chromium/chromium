@@ -125,6 +125,7 @@
 <translation id="1436671784520050284">Fortsätt med konfigurationen</translation>
 <translation id="143681031165817424">Adressen har endast sparats på den här enheten</translation>
 <translation id="1445276840641906250">Alla flikarna i en enda webbläsare</translation>
+<translation id="1447564161241938558">Import av lösenord och nycklar har inaktiverats av administratören</translation>
 <translation id="1450170672351507823">Standardskydd är aktiverat. Använd förbättrat skydd för ännu bättre säkerhet.</translation>
 <translation id="1455660774629812862">Dölj inte</translation>
 <translation id="1456545332132818232">Produktrecensioner på <ph name="PRODUCT_NAME" />, <ph name="STARS" /> av <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
@@ -295,7 +296,6 @@
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
 <translation id="201759455285471444">Utöka flikgruppen.</translation>
 <translation id="202070562065520783">Förklara detta för mig</translation>
-<translation id="2023713324775943812">Öppna läsläget från adressfältet när det är tillgängligt</translation>
 <translation id="2044394949148788042">Öppna rutnätet med flikar</translation>
 <translation id="2044681667265133332">Kontot <ph name="USER_EMAIL" /> hanteras av <ph name="HOSTED_DOMAIN" />, som kanska kan se viss information. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nytt objekt</translation>
@@ -585,6 +585,7 @@
 <translation id="3140825265190223781">Sparade lösenord och nycklar</translation>
 <translation id="3143515551205905069">Avbryt synkronisering</translation>
 <translation id="3144126448740580210">KLART</translation>
+<translation id="3147521114983561406">Nycklar sparas i lösenordshanteraren. De är tillgängliga på inkognitoflikar och vanliga flikar.</translation>
 <translation id="3148052723910099040">Rutnät med vanliga flikar</translation>
 <translation id="3148237711805373460">Öppna</translation>
 <translation id="3157387275655328056">Lägg till i läslistan</translation>
@@ -1860,6 +1861,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7772032839648071052">Bekräfta lösenfras</translation>
 <translation id="7772948288262733182">Välkommen tillbaka</translation>
 <translation id="777637629667389858">När du är inloggad skyddas du i alla Googles tjänster.</translation>
+<translation id="7776604279034196531">Öppna läsläget från adressfältet när det är tillgängligt</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7788868432173225918">Stäng utökad vy</translation>
 <translation id="7791543448312431591">Lägg till</translation>
@@ -2097,6 +2099,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8587001564479545614">Skapa en pinkod för återställning</translation>
 <translation id="8588404856427128947">Av</translation>
 <translation id="8590286732816598906">Flikgrupp <ph name="GROUP_TITLE" />, meny.</translation>
+<translation id="8593317261815647019">Vill du skapa en nyckel utanför inkognitoläget?</translation>
 <translation id="8600272508328041907">Byt till översättning av hela sidan</translation>
 <translation id="860043288473659153">Namn på kortinnehavare</translation>
 <translation id="8601611099293226919">Sök på skärmen med Google Lens</translation>

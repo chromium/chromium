@@ -295,6 +295,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="3903738175795615004">Llusgwch o'r brig neu pwyswch y fysell Esc i adael y sgrîn lawn.</translation>
 <translation id="3905475044299942653">Atal llawer o hysbysiadau</translation>
 <translation id="3922092564198021702">Ar eich ffôn, agorwch y Gosodiadau</translation>
+<translation id="3924858949939391676">Dangos dolenni unwaith y bydd y Modd Darllen ymlaen</translation>
 <translation id="3933121352599513978">Crebachu ceisiadau digroeso (argymhellir)</translation>
 <translation id="3934905113567851655">Pinsiwch i newid y maint</translation>
 <translation id="3955193568934677022">Caniatáu i wefannau chwarae cynnwys gwarchodedig (argymhellir)</translation>
@@ -358,6 +359,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="4644713492825682049">Dileu ac ailosod</translation>
 <translation id="4645575059429386691">Rheolir gan dy riant</translation>
 <translation id="4652266463001779298">Ni chaniateir</translation>
+<translation id="4655846733459137112">Tapiwch Ie i ddefnyddio'r cyfrinair hwn yn hawdd y tro nesaf y byddwch yn mewngofnodi</translation>
 <translation id="4663373278480897665">Caniateir camera</translation>
 <translation id="4670064810192446073">Realiti rhithwir</translation>
 <translation id="4672315773691449562">Tapiwch Ap porwr yna tapiwch Chrome</translation>
@@ -464,6 +466,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="5804241973901381774">Caniatadau</translation>
 <translation id="5817042798620209981">Gwybodaeth am y wefan, deialog</translation>
 <translation id="5822675474983796325">Dalen waelod addasu eich tudalen tab newydd wedi'i hagor ar uchder llawn</translation>
+<translation id="5826403277762134844">Dalen waelod gyfarwyddiadol ar gyfer cadw cyfrineiriau yn Chrome</translation>
 <translation id="5833899990800318936">Peidio â chaniatáu i wefannau ddefnyddio JavaScript</translation>
 <translation id="583673505367439042">Gall gwefannau ofyn am olygu ffeiliau a ffolderi ar eich dyfais</translation>
 <translation id="5844448279347999754">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am weld testun a lluniau sydd wedi'u cadw ar eich clipfwrdd. Pan fydd wedi'i ddiffodd, ni all gwefannau weld testun a lluniau sydd wedi'u cadw ar eich clipfwrdd.</translation>
@@ -643,6 +646,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="775043444390799886">Diddymu caniatâd</translation>
 <translation id="7758789811447313947">Thema fioled</translation>
 <translation id="7759147511335618829">Rheoli ac ailraglennu dyfais MIDI</translation>
+<translation id="7771089277295008211">Mae'r ddalen waelod gyfarwyddiadol Cadw cyfrineiriau wedi cau</translation>
 <translation id="7781829728241885113">Ddoe</translation>
 <translation id="7791543448312431591">Ychwanegu</translation>
 <translation id="780301667611848630">Dim diolch</translation>
@@ -660,6 +664,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="7940722705963108451">Atgoffwch fi</translation>
 <translation id="7948081750384205628">Dysgu rhagor am <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Gall gwefannau ofyn am weld testun a lluniau ar eich clipfwrdd</translation>
+<translation id="7958779728312669715">Mae'r ddalen waelod gyfarwyddiadol ar gadw cyfrineiriau wedi'i hagor yn llawn</translation>
 <translation id="798299424881500862">Thema oren</translation>
 <translation id="7986741934819883144">Dewis cyswllt</translation>
 <translation id="7990211076305263060">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael defnyddio'ch meicroffon. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio'ch meicroffon.</translation>
@@ -756,6 +761,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="8889294078294184559">Wrth i chi barhau i bori, gall gwefannau wirio gyda Chrome a chadarnhau gyda gwefan flaenorol rydych wedi ymweld â hi eich bod yn debygol o fod yn berson go iawn</translation>
 <translation id="8899807382908246773">Hysbysebion ymwthiol</translation>
 <translation id="8903921497873541725">Chwyddo</translation>
+<translation id="8919911527569629802">Mewngofnodwch i unrhyw wefan</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Peidiwch â gofyn eto</translation>
 <translation id="8926666909099850184">Mae NFC wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
@@ -783,6 +789,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="9182556968660520230">Peidio â chaniatáu i wefannau chwarae cynnwys gwarchodedig</translation>
 <translation id="947156494302904893">Gall gwefannau rydych yn ymweld â nhw gadarnhau eich bod yn berson go iawn ac nid bot</translation>
 <translation id="959682366969460160">Byddwch yn drefnus</translation>
+<translation id="960590623979248167">Dangos hyperddolenni</translation>
 <translation id="961930410699694996">Caniateir y lleoliad y tro hwn</translation>
 <translation id="967624055006145463">Data a storiwyd</translation>
 <translation id="969975166333045662">Rhwystro gwefan rhag defnyddio optimieiddiwr V8.</translation>

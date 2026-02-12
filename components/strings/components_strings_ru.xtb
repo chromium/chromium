@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">Указанный номер нельзя использовать для виртуальной карты.</translation>
 <translation id="2071852865256799872">Этим браузером управляет ваша организация, а профилем – <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Данные сохранены только на устройстве</translation>
 <translation id="2074733626795553847">Разблокировать тему "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">Посещено</translation>
 <translation id="2078956195623975415">Музыкальные и танцевальные игры</translation>
@@ -2790,6 +2791,7 @@
 <translation id="5466018172325111652">Вам не пришел код? <ph name="BEGIN_LINK" />Получить новый<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Платежные приложения</translation>
 <translation id="5470861586879999274">&amp;Повторить изменения</translation>
+<translation id="5471158297908124590">Чтобы изменить способы оплаты, подтвердите личность.</translation>
 <translation id="5472588168895083535">Отслеживание рук заблокировано</translation>
 <translation id="5477756102936130143">Разрешить переадресацию в поддерживаемые платежные приложения</translation>
 <translation id="5479505548832623900">Вероятно, правила не действуют в этом расширении.</translation>
@@ -2867,6 +2869,7 @@
 <translation id="5570825185877910964">Защитить аккаунт</translation>
 <translation id="5571083550517324815">Этот адрес не поддерживается. Выберите другой.</translation>
 <translation id="5572434905385510939">22 x 28 дюймов</translation>
+<translation id="5573090972398558474">Ваша организация заблокировала эту страницу в режиме инкогнито.</translation>
 <translation id="5573641252776268565">Редактировать паспортные данные</translation>
 <translation id="5578606540385219379">Поставщики услуг</translation>
 <translation id="5580958916614886209">Проверьте месяц в сроке действия карты и повторите попытку</translation>
@@ -3173,6 +3176,7 @@
 <translation id="6093795393556121384">Карта проверена</translation>
 <translation id="6094253940069566294">Редактировать данные о транспортном средстве</translation>
 <translation id="6094290315941448991">Администратор запретил запись видео с экрана, когда показаны конфиденциальные данные.</translation>
+<translation id="6097297436119286254">Чтобы подставить платежные данные, подтвердите личность.</translation>
 <translation id="6099269767116481177">22 x 29,5 дюйма</translation>
 <translation id="6101583188322746099">Службы доставки продуктов</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4298,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Нет}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# приложение (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# приложений (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Произошла ошибка. Повторите попытку.</translation>
 <translation id="784623644169604270">Нет недавних действий.</translation>
+<translation id="7848926355794727168">Автонавигация</translation>
 <translation id="7853222852810008596">Оплата в рассрочку недоступна в этой валюте</translation>
 <translation id="785476343534277563">Студенческий спорт</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4896,6 +4901,7 @@
 <translation id="8858065207712248076">Chrome рекомендует сбросить пароль, используемый в подразделении <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, если вы указывали его на других сайтах.</translation>
 <translation id="885906927438988819">Если все правильно, <ph name="BEGIN_LINK" />воспользуйтесь инструментом "Диагностика сетей Windows"<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Фотография и цифровые искусства</translation>
+<translation id="8861482055962701239">Информацию не удалось сохранить в Google Кошельке. Она добавлена в Chrome на этом устройстве. Браузер предложит сохранить ее в Кошельке при следующем использовании.</translation>
 <translation id="8863218129525348270">Чтобы оплачивать покупки быстрее, сохраните карту на своем устройстве.</translation>
 <translation id="8864939224504814334">Деловая одежда</translation>
 <translation id="8866132857352163524">Саундтреки</translation>
@@ -4921,6 +4927,7 @@
 <translation id="8897428486789851669">Плавание</translation>
 <translation id="8899807382908246773">Навязчивая реклама</translation>
 <translation id="8903921497873541725">Увеличить</translation>
+<translation id="8903998444169664879">Чтобы изменить платежные настройки, подтвердите личность.</translation>
 <translation id="890493561996401738">Кнопка удаления подсказки. Нажмите Ввод, чтобы удалить. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="8910898109640902752">8 x 10 дюймов</translation>
 <translation id="8914504000324227558">Перезапустить Chrome</translation>

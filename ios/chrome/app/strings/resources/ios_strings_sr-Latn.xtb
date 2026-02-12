@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Da biste videli lozinke, prvo morate da podesite šifru na uređaju.</translation>
 <translation id="201759455285471444">Proširite grupu kartica.</translation>
 <translation id="202070562065520783">Objasni mi ovo</translation>
-<translation id="2023713324775943812">Pristupite Režimu čitanja sa trake za adresu ako je dostupan</translation>
 <translation id="2044394949148788042">Otvorite mrežu za kartice</translation>
 <translation id="2044681667265133332">Nalogom <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, koji može da pregleda određene informacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nova stavka</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Sačuvane lozinke i pristupni ključevi</translation>
 <translation id="3143515551205905069">Otkaži sinhronizaciju</translation>
 <translation id="3144126448740580210">GOTOVO</translation>
+<translation id="3147521114983561406">Pristupni ključevi se čuvaju u menadžeru lozinki. Dostupni su na karticama bez arhiviranja i običnim karticama.</translation>
 <translation id="3148052723910099040">Mreža uobičajenih kartica</translation>
 <translation id="3148237711805373460">Vodi me tamo</translation>
 <translation id="3157387275655328056">Dodaj na listu za čitanje</translation>
@@ -1860,6 +1860,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="7772032839648071052">Potvrdi pristupnu frazu</translation>
 <translation id="7772948288262733182">Dobro došli nazad</translation>
 <translation id="777637629667389858">Kad ste prijavljeni, štiti vas u svim Google uslugama.</translation>
+<translation id="7776604279034196531">Pristupite režimu za čitanje sa trake za adresu ako je dostupan</translation>
 <translation id="7781829728241885113">Juče</translation>
 <translation id="7788868432173225918">Odbaci prošireni prikaz</translation>
 <translation id="7791543448312431591">Dodaj</translation>
@@ -2097,6 +2098,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8587001564479545614">Napravite PIN za vraćanje pristupa nalogu</translation>
 <translation id="8588404856427128947">Isključeno</translation>
 <translation id="8590286732816598906">Grupa kartica, <ph name="GROUP_TITLE" />, meni.</translation>
+<translation id="8593317261815647019">Želite da napravite pristupni ključ izvan režima bez arhiviranja?</translation>
 <translation id="8600272508328041907">Pređite na prevod cele stranice</translation>
 <translation id="860043288473659153">Ime vlasnika kartice</translation>
 <translation id="8601611099293226919">Pretraživanje ekrana pomoću Google objektiva</translation>

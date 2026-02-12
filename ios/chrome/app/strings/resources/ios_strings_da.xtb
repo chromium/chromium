@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
 <translation id="201759455285471444">Udvid fanegruppe.</translation>
 <translation id="202070562065520783">Forklar dette til mig</translation>
-<translation id="2023713324775943812">Tilgå Læsetilstand via adresselinjen, når den er tilgængelig</translation>
 <translation id="2044394949148788042">Åbn fanegitteret</translation>
 <translation id="2044681667265133332">Kontoen <ph name="USER_EMAIL" /> administreres af <ph name="HOSTED_DOMAIN" />, som muligvis kan se visse oplysninger. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nyt element</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Gemte adgangskoder og adgangsnøgler</translation>
 <translation id="3143515551205905069">Annuller synkronisering</translation>
 <translation id="3144126448740580210">UDFØR</translation>
+<translation id="3147521114983561406">Adgangsnøgler gemmes i din adgangskodeadministrator. Du kan tilgå dem via inkognitofaner og almindelige faner.</translation>
 <translation id="3148052723910099040">Gitter med almindelige faner</translation>
 <translation id="3148237711805373460">Gå derhen</translation>
 <translation id="3157387275655328056">Føj til læseliste</translation>
@@ -1860,6 +1860,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7772032839648071052">Bekræft adgangssætning</translation>
 <translation id="7772948288262733182">Velkommen tilbage</translation>
 <translation id="777637629667389858">Når du er logget ind, beskyttes du i Google-tjenester.</translation>
+<translation id="7776604279034196531">Tilgå læsetilstand via adresselinjen, når den er tilgængelig</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7788868432173225918">Luk udvidet visning</translation>
 <translation id="7791543448312431591">Tilføj</translation>
@@ -2097,6 +2098,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8587001564479545614">Opret en pinkode til gendannelse</translation>
 <translation id="8588404856427128947">Fra</translation>
 <translation id="8590286732816598906">Fanegruppe, <ph name="GROUP_TITLE" />, Menu.</translation>
+<translation id="8593317261815647019">Vil du oprette en adgangsnøgle uden for inkognitotilstand?</translation>
 <translation id="8600272508328041907">Skift til oversættelse af hele siden</translation>
 <translation id="860043288473659153">Kortholderens navn</translation>
 <translation id="8601611099293226919">Søg på din skærm med Google Lens</translation>

@@ -2791,6 +2791,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5466018172325111652">Non recibiches o código? <ph name="BEGIN_LINK" />Xerar un novo código<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Aplicacións para pagos</translation>
 <translation id="5470861586879999274">&amp;Refacer modificación</translation>
+<translation id="5471158297908124590">Verifica a túa identidade para editar os métodos de pago</translation>
 <translation id="5472588168895083535">O seguimento das mans está bloqueado</translation>
 <translation id="5477756102936130143">Activa a redirección a aplicacións para pagos admitidas</translation>
 <translation id="5479505548832623900">É probable que a extensión as ignore.</translation>
@@ -2868,6 +2869,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5570825185877910964">Protexer conta</translation>
 <translation id="5571083550517324815">Non se pode realizar a recollida neste enderezo. Selecciona un diferente.</translation>
 <translation id="5572434905385510939">22 x 28 polgadas</translation>
+<translation id="5573090972398558474">A túa organización bloqueou o acceso a esta páxina no modo de incógnito.</translation>
 <translation id="5573641252776268565">Editar o pasaporte</translation>
 <translation id="5578606540385219379">Provedores de servizos</translation>
 <translation id="5580958916614886209">Comproba o mes de caducidade e téntao de novo</translation>
@@ -3174,6 +3176,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6093795393556121384">Verificouse a túa tarxeta</translation>
 <translation id="6094253940069566294">Editar o vehículo</translation>
 <translation id="6094290315941448991">A política do administrador desactiva a gravación da pantalla cando nela se mostra contido confidencial</translation>
+<translation id="6097297436119286254">Verifica a túa identidade para completar a túa información de pago</translation>
 <translation id="6099269767116481177">22 x 29,5 polgadas</translation>
 <translation id="6101583188322746099">Servizos de entrega de alimentos</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4297,7 @@ Detalles adicionais:
 <translation id="7844689747373518809">{COUNT,plural, =0{Ningunha}=1{1 aplicación (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicacións (<ph name="EXAMPLE_APP_1" /> e <ph name="EXAMPLE_APP_2" />)}other{# aplicacións (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> e <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Produciuse un erro. Téntao de novo.</translation>
 <translation id="784623644169604270">Ningunha actividade recente</translation>
+<translation id="7848926355794727168">Navegación automática</translation>
 <translation id="7853222852810008596">A opción de pagar máis tarde non está dispoñible nesta moeda</translation>
 <translation id="785476343534277563">Deportes universitarios</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4523,6 +4527,7 @@ Detalles adicionais:
 <translation id="8241707690549784388">A páxina que estás buscando utilizou información que inseriches ti. Se volves a esa páxina é posible que se repita algunha das accións que levaches a cabo. Queres continuar?</translation>
 <translation id="8241712895048303527">Bloquear neste sitio</translation>
 <translation id="8242426110754782860">Continuar</translation>
+<translation id="824620968958405573">Tarefa de navegación automática</translation>
 <translation id="8246482227229072868">Aneis</translation>
 <translation id="8248406213705193919">Queres gardar a tarxeta de forma segura?</translation>
 <translation id="8249296373107784235">Cancelar</translation>
@@ -4920,6 +4925,7 @@ Detalles adicionais:
 <translation id="8897428486789851669">Natación</translation>
 <translation id="8899807382908246773">Anuncios intrusivos</translation>
 <translation id="8903921497873541725">Achegar</translation>
+<translation id="8903998444169664879">Verifica a túa identidade para cambiar a configuración de pago</translation>
 <translation id="890493561996401738">Botón Quitar suxestión, preme Intro para quitala, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10 in</translation>
 <translation id="8914504000324227558">Reiniciar Chrome</translation>

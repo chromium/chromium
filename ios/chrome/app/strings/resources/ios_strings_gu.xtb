@@ -125,6 +125,7 @@
 <translation id="1436671784520050284">સેટઅપ ચાલુ રાખો</translation>
 <translation id="143681031165817424">માત્ર આ ડિવાઇસ પર સરનામું સાચવવામાં આવે છે</translation>
 <translation id="1445276840641906250">તમારા બધા ટૅબ એક જ બ્રાઉઝરમાં</translation>
+<translation id="1447564161241938558">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા પાસવર્ડ અને પાસકીની આયાત કરવાનું બંધ કરવામાં આવ્યું છે</translation>
 <translation id="1450170672351507823">માનક સુરક્ષા ચાલુ છે. વધુ સઘન સુરક્ષા માટે, વધારેલા સંરક્ષણનો ઉપયોગ કરો.</translation>
 <translation id="1455660774629812862">છુપાવશો નહીં</translation>
 <translation id="1456545332132818232"><ph name="PRODUCT_NAME" /> વિશે પ્રોડક્ટ રિવ્યૂ, <ph name="MAX_STARS" />માંથી <ph name="STARS" />, <ph name="DOMAIN" /></translation>
@@ -295,7 +296,6 @@
 <translation id="2015722694326466240">પાસવર્ડ જોવા માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="201759455285471444">ટૅબનું ગ્રૂપ મોટું કરો.</translation>
 <translation id="202070562065520783">મને આ સમજાવો</translation>
-<translation id="2023713324775943812">જ્યારે ઉપલબ્ધ હોય ત્યારે ઍડ્રેસ બારમાંથી વાંચન મોડ ઍક્સેસ કરો</translation>
 <translation id="2044394949148788042">ટૅબ ગ્રિડ ખોલો</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> એકાઉન્ટ, <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે, જે કદાચ અમુક માહિતી જોઈ શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">નવી આઇટમ</translation>
@@ -585,6 +585,7 @@
 <translation id="3140825265190223781">સાચવેલા પાસવર્ડ અને પાસકી</translation>
 <translation id="3143515551205905069">સિંક કરવાનું રદ કરો</translation>
 <translation id="3144126448740580210">થઈ ગયું</translation>
+<translation id="3147521114983561406">પાસકી તમારા Password Managerમાં સાચવવામાં આવે છે. તેમને છૂપા અને નિયમિત ટૅબમાં ઍક્સેસ કરી શકાય છે.</translation>
 <translation id="3148052723910099040">નિયમિત ટૅબ ગ્રિડ</translation>
 <translation id="3148237711805373460">મને ત્યાં લઈ જાઓ</translation>
 <translation id="3157387275655328056">વાંચન સૂચિમાં ઉમેરો</translation>
@@ -1860,6 +1861,7 @@
 <translation id="7772032839648071052">પાસફ્રેઝની પુષ્ટિ કરો</translation>
 <translation id="7772948288262733182">આપનું ફરી સ્વાગત છે</translation>
 <translation id="777637629667389858">તમે સાઇન ઇન હો ત્યારે, તમને સમગ્ર Google સેવાઓમાં સંરક્ષિત કરે છે.</translation>
+<translation id="7776604279034196531">જ્યારે ઉપલબ્ધ હોય ત્યારે ઍડ્રેસ બારમાંથી વાંચન મોડ ઍક્સેસ કરો</translation>
 <translation id="7781829728241885113">ગઈ કાલે</translation>
 <translation id="7788868432173225918">મોટો કરેલો વ્યૂ છોડી દો</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
@@ -2097,6 +2099,7 @@
 <translation id="8587001564479545614">કોઈ રિકવરી પિન બનાવો</translation>
 <translation id="8588404856427128947">બંધ</translation>
 <translation id="8590286732816598906">ટૅબનું ગ્રૂપ, <ph name="GROUP_TITLE" />, મેનૂ.</translation>
+<translation id="8593317261815647019">છૂપા મોડની બહાર પાસકી બનાવીએ?</translation>
 <translation id="8600272508328041907">આખા પેજના અનુવાદ પર સ્વિચ કરો</translation>
 <translation id="860043288473659153">કાર્ડધારકનું નામ</translation>
 <translation id="8601611099293226919">Google Lens વડે તમારી સ્ક્રીન શોધો</translation>
@@ -2234,6 +2237,7 @@
 <translation id="9055291197094969722">તમારા ખુલ્લા ટૅબ ગોઠવવા અને કાર્યક્ષમ રહેવા માટે ટૅબના ગ્રૂપ બનાવો</translation>
 <translation id="9055580485132823283">તમે {password_count} પાસવર્ડ, {passkey_count} પાસકી અને જેના માટે તમે સાઇન-ઇન માહિતી ક્યારેય ન સાચવવાનો વિકલ્પ પસંદ કર્યો છે તેવી સાઇટ અને ઍપની સૂચિ ડિલીટ કરવા જઈ રહ્યાં છો. સાઇટ અને ઍપ માટે તમે બનાવેલું કોઈપણ એકાઉન્ટ ડિલીટ કરવામાં આવશે નહીં.</translation>
 <translation id="9057030985451135243">શેર કરેલા ટૅબના ગ્રૂપ વિશે જાણો</translation>
+<translation id="9064106978262828592">તમારા ડેટાની નિકાસ કરવામાં સમસ્યા આવી</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
 <translation id="9066097352053395362">'બુકમાર્કમાં ફેરફાર કરો' છુપાવો</translation>
 <translation id="9070824521421603770">તમને સાઇન આઉટ કરવામાં આવશે અને ટૅબ બંધ કરવામાં આવશે</translation>

@@ -125,6 +125,7 @@
 <translation id="1436671784520050284">继续设置</translation>
 <translation id="143681031165817424">地址仅保存在此设备上</translation>
 <translation id="1445276840641906250">在一个浏览器中管理所有标签页</translation>
+<translation id="1447564161241938558">您的管理员已禁止导入密码和通行密钥</translation>
 <translation id="1450170672351507823">已开启标准保护。若要进一步提升安全性，请使用增强型保护。</translation>
 <translation id="1455660774629812862">不隐藏</translation>
 <translation id="1456545332132818232"><ph name="PRODUCT_NAME" />的商品评价，<ph name="STARS" /> 星（最高 <ph name="MAX_STARS" /> 星），<ph name="DOMAIN" /></translation>
@@ -295,7 +296,6 @@
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
 <translation id="201759455285471444">展开标签页分组。</translation>
 <translation id="202070562065520783">向我解释</translation>
-<translation id="2023713324775943812">从地址栏中启用阅读模式（如果可用）</translation>
 <translation id="2044394949148788042">打开标签页网格</translation>
 <translation id="2044681667265133332">账号 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，后者或许可以查看某些信息。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新项</translation>
@@ -557,7 +557,7 @@
 <translation id="3032704072014531631">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 将无法再在各项 Google 服务中与您互动</translation>
 <translation id="3034496853223708513"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，也不能再在各项 Google 服务中与您互动</translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
-<translation id="3038136505713492417">请验证您的身份，以便在此设备上使用您的通行密钥</translation>
+<translation id="3038136505713492417">如需在此设备上使用通行密钥，请先验证身份</translation>
 <translation id="3039671569659952257">删除文件夹</translation>
 <translation id="3053332585453689122">将您访问过的网址以及网页内容、下载内容、扩展程序活动和系统信息的少量样本发送至“Google 安全浏览”功能，以检查这些内容是否有害。</translation>
 <translation id="3055102495753300780">信息存储空间</translation>
@@ -585,6 +585,7 @@
 <translation id="3140825265190223781">已保存的密码和通行密钥</translation>
 <translation id="3143515551205905069">取消同步</translation>
 <translation id="3144126448740580210">完成</translation>
+<translation id="3147521114983561406">通行密钥会保存到密码管理工具中。您可以在无痕式标签页和常规标签页中使用它们。</translation>
 <translation id="3148052723910099040">常规标签页网格</translation>
 <translation id="3148237711805373460">立即前往</translation>
 <translation id="3157387275655328056">添加到阅读清单</translation>
@@ -660,7 +661,7 @@
 <translation id="3469117812148449995">密码保存选项</translation>
 <translation id="3472469028191701821">在新标签页中打开</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{涉及 {COUNT} 个网站或应用}other{涉及 {COUNT} 个网站和应用}}</translation>
-<translation id="3474624961160222204">以 <ph name="NAME" /> 的身份继续</translation>
+<translation id="3474624961160222204">以“<ph name="NAME" />”的身份继续</translation>
 <translation id="3476450923187944815">在不同应用中使用保存的密码。</translation>
 <translation id="3485558910355485767">打开新的无痕式窗口</translation>
 <translation id="3488501490964659223">标签页已关闭，而且浏览数据已被删除。您已退出账号</translation>
@@ -1124,7 +1125,7 @@
 <translation id="514154868070499296">字体：<ph name="FONT" /></translation>
 <translation id="5145331760738811130">离开标签页切换器</translation>
 <translation id="5148717509369231739">从 Safari 导入</translation>
-<translation id="5152483358138813104">在不同设备上快速登录</translation>
+<translation id="5152483358138813104">跨设备更快登录</translation>
 <translation id="5155502059906700593">您可以将地址栏移至顶部或底部。</translation>
 <translation id="5157638238828697074">出了点问题。无法打开该应用。</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1135,7 +1136,7 @@
 <translation id="5177141896043341906">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个安全系数低的密码，这可能会给您带来安全风险。</translation>
 <translation id="5181140330217080051">正在下载</translation>
 <translation id="5186185447130319458">不公开</translation>
-<translation id="5189431381114029336">保存您的第一个通行密钥</translation>
+<translation id="5189431381114029336">保存首个通行密钥</translation>
 <translation id="518997337573684769">正在发送崩溃报告…</translation>
 <translation id="519530786644929958">下载失败，无法重试。</translation>
 <translation id="5197255632782567636">互联网</translation>
@@ -1765,7 +1766,7 @@
 <translation id="7445682342344043969">已拦截弹出式窗口</translation>
 <translation id="7451023311965289370">{count,plural, =1{书签已保存至“{title}”}other{书签已保存至“{title}”}}</translation>
 <translation id="7451404862887877229">依次点按“隐私与安全”和“安全浏览”</translation>
-<translation id="7452393099119876789">您只需输入一次 PIN 码。</translation>
+<translation id="7452393099119876789">完成一次验证即可。</translation>
 <translation id="7454057999980797137">州/省/区/县</translation>
 <translation id="7458706065921255639">个性化和关联</translation>
 <translation id="745899714366929493">全天</translation>
@@ -1860,6 +1861,7 @@
 <translation id="7772032839648071052">确认密码</translation>
 <translation id="7772948288262733182">欢迎回来</translation>
 <translation id="777637629667389858">当您登录后，在各种 Google 服务中保护您。</translation>
+<translation id="7776604279034196531">在地址栏中访问阅读模式（如果可用）</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7788868432173225918">关闭展开的视图</translation>
 <translation id="7791543448312431591">添加</translation>
@@ -1924,7 +1926,7 @@
 <translation id="797874245254030665">从任意应用中获取您的密码和通行密钥</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="798299424881500862">橙色主题</translation>
-<translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
+<translation id="7987685713885608670">为提升安全性，请先在设备上将密码加密，然后再保存到 Google 密码管理工具中</translation>
 <translation id="798991908416757345">标签页分组不可用</translation>
 <translation id="7993170188789685695">点按两次即可关闭此通知。</translation>
 <translation id="7996239959906074962">设置…</translation>
@@ -1960,7 +1962,7 @@
 <translation id="809543534949702122">在历史记录中搜索</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{{COUNT} 天后，您未使用的标签页会移至此处}other{{COUNT} 天后，您未使用的标签页会移至此处}}</translation>
 <translation id="8096559642098770318">您可以设置标签页提醒，以便日后再次查看此网站</translation>
-<translation id="8101409298456377967">您可创建、保存和管理您的密码，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="8101409298456377967">您可以创建、保存和管理密码，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">新</translation>
 <translation id="8105368624971345109">关闭</translation>
 <translation id="8106442513853561174">分享精确位置</translation>
@@ -2094,9 +2096,10 @@
 <translation id="8571019948162152515">要删除“<ph name="FILENAME" />”吗？</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8577056989960190117">自动填充失效年份 <ph name="YEAR" /></translation>
-<translation id="8587001564479545614">创建恢复 PIN 码</translation>
+<translation id="8587001564479545614">创建辅助 PIN 码</translation>
 <translation id="8588404856427128947">已关闭</translation>
 <translation id="8590286732816598906">标签页分组，<ph name="GROUP_TITLE" />，菜单。</translation>
+<translation id="8593317261815647019">要在无痕模式以外创建通行密钥吗？</translation>
 <translation id="8600272508328041907">切换为整页翻译</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8601611099293226919">使用 Google 智能镜头搜索您的屏幕上的内容</translation>

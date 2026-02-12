@@ -240,6 +240,7 @@
 <translation id="1151917987301063366"><ph name="HOST" />-д мэдрэгчид хандахыг тогтмол зөвшөөрөх</translation>
 <translation id="1152346050262092795">Бүртгэлээ баталгаажуулахын тулд нууц үгээ дахин оруулна уу.</translation>
 <translation id="1153636665119721804">Google-н дэвшилтэт хамгаалалтын программ</translation>
+<translation id="1153802775114315167">Өргөтгөлүүдийг ашиглаж эхлэх</translation>
 <translation id="1155816283571436363">Таны утастай холбогдож байна</translation>
 <translation id="1157952955648710254">Google Хайлтын хажуугийн самбарыг хаана уу</translation>
 <translation id="1158080958325422608">Том үсэг болгох</translation>
@@ -2775,6 +2776,7 @@
 <translation id="2842013086666334835">"<ph name="NETWORK_ID" />" рүү нэвтрэх</translation>
 <translation id="2843560154284403323">Linux-г тохируулж дуусгахын тулд ChromeOS-г шинэчлээд, дахин оролдоно уу.</translation>
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" />-г сулласан</translation>
+<translation id="2844154481025280030">Бодлогыг тохируулсан.</translation>
 <translation id="2844169650293029770">USB-C төхөөрөмж (урд талын портын зүүн тал)</translation>
 <translation id="2844809857160214557">Хэвлэх ажлуудыг харах болон удирдах</translation>
 <translation id="2845276301195220700">Google Календарийн бусад үйлдэл</translation>
@@ -3214,6 +3216,7 @@
 <translation id="3151539355209957474">Эхлэх цаг</translation>
 <translation id="3151786313568798007">Чиглэл</translation>
 <translation id="3152356229013609796">Утасныхaa мэдэгдлүүдийг харж, хааж мөн тэдгээрт хариу бичнэ үү</translation>
+<translation id="3152545926232662879">Үл хэрэгссэн:</translation>
 <translation id="3154754096046236400">Хувийн хам сэдэв</translation>
 <translation id="3155163173539279776">Chromium-г дахин эхлүүлэх</translation>
 <translation id="3155394504825881014">Табын бүлгийг хавчуургын фолдер болгож хөрвүүлэх</translation>
@@ -5754,6 +5757,7 @@
 <translation id="4868284252360267853">Энэ харилцаг яриаг одоогоор сонгоогүй байна. Энэ харилцан яриаг сонгохын тулд Command-Shift-Option дээр дарна уу.</translation>
 <translation id="4868351661310357223"><ph name="DEVICE_TYPE" /> дээрээ Google Play-с апп, тоглоомууд суулгана уу.</translation>
 <translation id="4869170227080975044">ChromeOS-н сүлжээний мэдээллийг унших</translation>
+<translation id="4869175799055761881">Энэ аппликейшныг хэрэглэгч суулгах боломжгүй. Хөгжүүлэгчтэй холбогдоно уу</translation>
 <translation id="4870724079713069532">Та File Explorer-с энэ аппаар эсвэл бусад аппаар дэмжигдсэн файлуудыг нээх болон засах боломжтой. Энэ аппад өгөгдмөлөөр аль файлуудыг нээхийг хянахын тулд <ph name="BEGIN_LINK" />Windows-н тохиргоо<ph name="END_LINK" /> руу очно уу.</translation>
 <translation id="4870995365819149457">Зарим дэмжигдсэн холбоосыг <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> болон өөр 1 аппад нээх боломжтой хэвээр байна.</translation>
 <translation id="4871308555310586478">Chrome Web Store-оос биш</translation>
@@ -8272,6 +8276,7 @@
 <translation id="6636623428211296678">Доорх бусад тохиргоог судлах эсвэл одоо дуусгах</translation>
 <translation id="6639554308659482635">SQLite санах ой</translation>
 <translation id="6640268266988685324">Нээлттэй таб</translation>
+<translation id="664271268954513498">Бодлогын утга</translation>
 <translation id="6642720633335369752">Нээлттэй бүх аппын цонхыг харахын тулд доороос дээш шудраад удаан дарна уу.</translation>
 <translation id="664290675870910564">Сүлжээ сонгох</translation>
 <translation id="6643016212128521049">Цэвэрлэх</translation>
@@ -8656,6 +8661,7 @@
 <translation id="6896758677409633944">Хуулах</translation>
 <translation id="6897363604023044284">Устгах сайтуудыг сонгох</translation>
 <translation id="6897688156970667447">Бүүдгэр гэрэлтэй үед хэрэгтэй бөгөөд батарейг хэмнэнэ</translation>
+<translation id="6897756054229464646">Gemini-р</translation>
 <translation id="6897972855231767338">Зочноор үзэх талаар нэмэлт мэдээлэл авах</translation>
 <translation id="6898438890765871056">OneDrive-н фолдерыг нээх</translation>
 <translation id="6898440773573063262">Kiosk аппликейшнүүд энэ төхөөрөмж дээр автоматаар ажиллаж эхэлдэг байхаар тохирууллаа</translation>
@@ -9157,6 +9163,7 @@
 <translation id="7250616558727237648">Таны хуваалцаж буй төхөөрөмж хариу өгсөнгүй. Дахин оролдоно уу.</translation>
 <translation id="725109152065019550">Уучлаарай, таны администратор таны дансанд оролтын төхөөрөмжид дата хадгалахыг хаасан.</translation>
 <translation id="7251635775446614726">Таны администратор "<ph name="CUSTOM_MESSAGE" />" гэж хэлж байна</translation>
+<translation id="725310308981256997">Энэ хуудасны талаар асуух уу?</translation>
 <translation id="7253521419891527137">&amp; Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="7254951428499890870">Та "<ph name="APP_NAME" />"-ийг оношлох горимд байхад нь эхлүүлэх гэж байгаадаа итгэлтэй байна уу?</translation>
 <translation id="725497546968438223">Хавчуурганы фолдерын товчлуур</translation>
@@ -10644,6 +10651,7 @@
 <translation id="8244201515061746038">Автоматаар засах нэмэлт мэдээлэл авах товч. Автоматаар засах тохиргооны хуудас руу очно уу. Идэвхжүүлэхийн тулд enter, хаахын тулд escape-г дарна уу.</translation>
 <translation id="8244514732452879619">Гэрэл удахгүй унтарна</translation>
 <translation id="8246776524656196770">Аюулгүй байдлын түлхүүрээ ПИН (Personal Identification Number буюу Хувийн тодорхойлолтын дугаар)-р хамгаалаарай</translation>
+<translation id="824713170151383793">DevTools-р</translation>
 <translation id="8247795734638043885">Аюултай файл татах</translation>
 <translation id="8248050856337841185">&amp; Наах</translation>
 <translation id="8248381369318572865">Микрофондоо нэвтэрч, яриагаа задлан шинжилнэ үү</translation>
@@ -11334,7 +11342,6 @@
 <translation id="8707562594602678416">Газар</translation>
 <translation id="8708000541097332489">Гарахад устга</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
-<translation id="8708088555926718398">Алдаа: Ангилал: <ph name="CATEGORY" />, Код: <ph name="CODE" />, Нэмэлт код: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp; Илүү их мэдээлэл</translation>
 <translation id="8709368517685334931">Та Chrome Веб Дэлгүүрээс хуучин өнгөнүүдийг олох боломжтой</translation>
 <translation id="8710414664106871428">Уран зөгнөлт</translation>
@@ -11557,6 +11564,7 @@
 <translation id="885746075120788020">Таныг Google Бүртгэлээрээ нэвтрэх үед хадгалсан сонголт болон үйл ажиллагаа тань аливаа ChromeOS төхөөрөмж дээр бэлэн байх болно. Та Тохиргоо хэсэгт синк хийх зүйлээ сонгох боломжтой.</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Аппыг суулгах уу?}other{Аппуудыг суулгах уу?}}</translation>
 <translation id="8858369206579825206">Нууцлалын тохиргоо</translation>
+<translation id="8858449624332155432">Бодлогыг олон эх сурвалжийн зөрчилтэй утгуудаар тохируулсан.</translation>
 <translation id="8859174528519900719">Дэд хүрээ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Үйлчилгээний нөхцөлийг ачаалж чадсангүй</translation>
 <translation id="8859662783913000679">Эцэг эхийн бүртгэл</translation>

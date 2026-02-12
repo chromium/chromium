@@ -119,6 +119,7 @@
 <translation id="2139300032719313227">ChromeOS ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2151406531797534936">ਕਿਰਪਾ ਕਰਕੇ ਹੁਣੇ Chrome ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2163089732491971196">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਅਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="2170098639895543546">ਪੰਨੇ 'ਤੇ ਕੁਝ ਵੀ ਚੁਣੋ</translation>
 <translation id="2174917724755363426">ਸਥਾਪਨਾ ਪੂਰੀ ਨਹੀਂ ਹੋਈ। ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਰੱਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">ਅੱਪਡੇਟ ਦੀ ਜਾਂਚ ਸੰਬੰਧੀ ਗੜਬੜੀ: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -447,6 +448,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="5756509061973259733">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਇਸ ਖਾਤੇ ਨਾਲ ਕੋਈ Chrome ਪ੍ਰੋਫਾਈਲ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="5759947850379142561">Google Lens ਨਾਲ ਖੋਜਣ ਲਈ ਕੋਈ ਵੀ ਲਿਖਤ ਜਾਂ ਚਿੱਤਰ ਚੁਣੋ ਜਾਂ Google Lens ਤੋਂ ਬਾਹਰ ਆਉਣ ਲਈ Escape ਦਬਾਓ</translation>
 <translation id="5762867845020858790">ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਸੈਟਿੰਗਾਂ ਨੂੰ ਵੱਖਰਾ ਰੱਖਣ ਲਈ ਇੱਕ ਨਵਾਂ Chrome ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ।</translation>
+<translation id="5779427581965287859">Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਵਜੋਂ ਸੈੱਟ ਕਰੋ ਅਤੇ ਇਸਨੂੰ ਟਾਸਕਬਾਰ 'ਤੇ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome ਨੂੰ ਲਾਂਚ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="5809516625706423866">ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। HTTP 401 ਅਣਅਧਿਕਾਰਿਤ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰੌਕਸੀ ਸੰਰੂਪਣ ਦੀ ਜਾਂਚ ਕਰੋ।</translation>
@@ -697,6 +699,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8162006532256575008">ਖਾਤੇ ਤੋਂ ਬਿਨਾਂ Chrome ਨੂੰ ਵਰਤੋ</translation>
 <translation id="8177472873527554730">ਪੰਨੇ ਵਿੱਚ ਸਮੱਗਰੀ ਨੂੰ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="8221491193165283816">ਆਮ ਤੌਰ 'ਤੇ ਤੁਸੀਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਬਲਾਕ ਕਰਦੇ ਹੋ। ਇਹ ਸਾਈਟ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰ ਸਕੇ, ਇਸ ਲਈ ਇੱਥੇ ਕਲਿੱਕ ਕਰੋ।</translation>
+<translation id="8253851811470049684">ਕਿਸੇ ਵੀ ਐਪ ਤੋਂ Chrome ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ ਅਤੇ ਆਪਣੇ ਟਾਸਕਬਾਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਪਹੁੰਚਯੋਗ ਰੱਖੋ</translation>
 <translation id="8255190535488645436">Google Chrome ਤੁਹਾਡਾ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤ ਰਿਹਾ ਹੈ।</translation>
 <translation id="8267953129876836456">Chrome ਨੂੰ ਤੁਹਾਡੀ ਸਮੀਖਿਆ ਲਈ ਕੁਝ ਸੁਰੱਖਿਆ ਸਿਫ਼ਾਰਸ਼ਾਂ ਮਿਲੀਆਂ ਹਨ</translation>
 <translation id="8286862437124483331">Google Chrome ਪਾਸਵਰਡ ਦਿਖਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ। ਇਸਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ਆਪਣਾ Windows ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ।</translation>

@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">हे कार्ड व्हर्च्युअल कार्ड नंबरसाठी पात्र नाही.</translation>
 <translation id="2071852865256799872">तुमची संस्था तुमचा ब्राउझर व्यवस्थापित करते आणि <ph name="PROFILE_DOMAIN" />तुमची प्रोफाइल व्यवस्थापित करते</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">माहिती फक्त डिव्हाइसवर सेव्ह केली आहे</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> अनब्लॉक करा</translation>
 <translation id="2074771604462073334">तुम्ही भेट दिली आहे</translation>
 <translation id="2078956195623975415">संगीत आणि नृत्याशी संबंधित गेम</translation>
@@ -2790,6 +2791,7 @@
 <translation id="5466018172325111652">तुमचा कोड मिळाला नाही का? <ph name="BEGIN_LINK" />नवीन कोड मिळवा<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">पेमेंट अ‍ॅप्स</translation>
 <translation id="5470861586879999274">&amp;संपादित करा पुन्हा करा</translation>
+<translation id="5471158297908124590">पेमेंट पद्धती संपादित करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="5472588168895083535">हँड ट्रॅकिंग ब्लॉक केले आहे</translation>
 <translation id="5477756102936130143">सपोर्ट असलेल्या पेमेंट अ‍ॅप्सवर रीडिरेक्‍ट करणे सुरू करा</translation>
 <translation id="5479505548832623900">एक्स्टेंशनद्वारे दुर्लक्ष केले जाण्याची शक्यता आहे.</translation>
@@ -2867,6 +2869,7 @@
 <translation id="5570825185877910964">खात्याचे संरक्षण करा</translation>
 <translation id="5571083550517324815">या पत्त्यावरून पिक अप करू शकत नाही. वेगळा पत्ता निवडा.</translation>
 <translation id="5572434905385510939">२२ x २८ इं</translation>
+<translation id="5573090972398558474">तुमच्या संस्थेने हे पेज गुप्त मोडमध्ये ब्लॉक केले आहे.</translation>
 <translation id="5573641252776268565">पासपोर्टसंबंधित माहिती संपादित करा</translation>
 <translation id="5578606540385219379">सेवा पुरवठादार</translation>
 <translation id="5580958916614886209">तुमचा कालबाह्यता महिना तपासा आणि पुन्हा प्रयत्न करा</translation>
@@ -3173,6 +3176,7 @@
 <translation id="6093795393556121384">तुमचे कार्ड सत्यापित केले आहे</translation>
 <translation id="6094253940069566294">वाहनासंबंधित माहिती संपादित करा</translation>
 <translation id="6094290315941448991">गोपनीय आशय दृश्यमान असेल तेव्हा अ‍ॅडमिनिस्ट्रेटर धोरण स्क्रीन रेकॉर्डिंग बंद करते</translation>
+<translation id="6097297436119286254">तुमची पेमेंट माहिती भरण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="6099269767116481177">२२ x २९.५ इं</translation>
 <translation id="6101583188322746099">किराणामाल डिलिव्हरी सेवा</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4295,6 +4299,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{काहीही नाही}=1{एक अ‍ॅप <ph name="EXAMPLE_APP_1" />}=2{२ अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />}other{# अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="7846161022626028328">एरर आली. पुन्हा प्रयत्न करा.</translation>
 <translation id="784623644169604270">कोणतीही अलीकडील अ‍ॅक्टिव्हिटी नाही</translation>
+<translation id="7848926355794727168">ऑटोमॅटिक ब्राउझिंग</translation>
 <translation id="7853222852810008596">या चलनामध्ये नंतर पेमेंट करा उपलब्ध नाही</translation>
 <translation id="785476343534277563">महाविद्यालयीन क्रीडा</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4897,6 +4902,7 @@
 <translation id="8858065207712248076">जर तुम्ही तुमच्या <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> पासवर्डचा इतर साइटवर पुन्हा वापर केला असेल तर Chrome तुम्हाला तो रीसेट करण्याची शिफारस करतो.</translation>
 <translation id="885906927438988819">शब्दलेखन योग्य असल्यास, <ph name="BEGIN_LINK" />Windows नेटवर्क निदान रन करून पहा<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">फोटोग्राफिक आणि डिजिटल आर्ट</translation>
+<translation id="8861482055962701239">ही माहिती तुमच्या Google Wallet मध्ये सेव्ह करता आली नाही. त्याऐवजी ती या डिव्हाइसवरील Chrome मध्ये सेव्ह केली आहे. तुम्ही पुढील वेळी ती वापराल, तेव्हा Chrome ती Wallet मध्ये सेव्ह करण्याची ऑफर देईल.</translation>
 <translation id="8863218129525348270">पुढील वेळेस जलद पेमेंट करण्यासाठी, तुमचे कार्ड तुमच्या डिव्हाइसमध्ये सेव्ह करा</translation>
 <translation id="8864939224504814334">सूट आणि व्यावसायिक पोशाख</translation>
 <translation id="8866132857352163524">साउंडट्रॅक</translation>
@@ -4922,6 +4928,7 @@
 <translation id="8897428486789851669">पोहणे</translation>
 <translation id="8899807382908246773">नको असलेल्या जाहिराती</translation>
 <translation id="8903921497873541725">झूम इन करा</translation>
+<translation id="8903998444169664879">तुमची पेमेंट सेटिंग्ज बदलण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="890493561996401738">सूचना बटण काढा, काढण्यासाठी एंटर प्रेस करा, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">८ x १० इंच</translation>
 <translation id="8914504000324227558">Chrome रीलाँच करा</translation>

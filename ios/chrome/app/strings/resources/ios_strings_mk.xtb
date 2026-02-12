@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">За да ги видите лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="201759455285471444">Прошири ја групата картички.</translation>
 <translation id="202070562065520783">Објасни ми го ова</translation>
-<translation id="2023713324775943812">Пристапувајте до Reading Mode од лентата за адреса кога е достапен</translation>
 <translation id="2044394949148788042">Отворете ја мрежата со картички</translation>
 <translation id="2044681667265133332">Со сметката <ph name="USER_EMAIL" /> управува <ph name="HOSTED_DOMAIN" />, што може да прегледува некои податоци. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нова ставка</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Зачувани лозинки и криптографски клучеви</translation>
 <translation id="3143515551205905069">Откажи ја синхронизацијата</translation>
 <translation id="3144126448740580210">ГОТОВО</translation>
+<translation id="3147521114983561406">Криптографските клучеви се зачувуваат во вашиот Password Manager. До нив може да се пристапи во режимот „Инкогнито“ и во обичните картички.</translation>
 <translation id="3148052723910099040">Мрежа со обични картички</translation>
 <translation id="3148237711805373460">Одведи ме таму</translation>
 <translation id="3157387275655328056">Додај во „Списокот за читање“</translation>
@@ -1860,6 +1860,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7772032839648071052">Потврди лозинка</translation>
 <translation id="7772948288262733182">Добре дојдовте пак</translation>
 <translation id="777637629667389858">Кога сте најавени, ве штити на услугите на Google.</translation>
+<translation id="7776604279034196531">Пристапувајте до „Режимот за читање“ од лентата за адреса кога е достапен</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7788868432173225918">Отфрлање проширен приказ</translation>
 <translation id="7791543448312431591">Додај</translation>
@@ -2097,6 +2098,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8587001564479545614">Создајте PIN за враќање</translation>
 <translation id="8588404856427128947">Исклучена</translation>
 <translation id="8590286732816598906">Група картички, <ph name="GROUP_TITLE" />, мени.</translation>
+<translation id="8593317261815647019">Да се создаде криптографски клуч надвор од режимот „Инкогнито“?</translation>
 <translation id="8600272508328041907">Префрлете на превод на целата страница</translation>
 <translation id="860043288473659153">Име на сопственикот на картичката</translation>
 <translation id="8601611099293226919">Пребарувајте на екранот со Google Lens</translation>

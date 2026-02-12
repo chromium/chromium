@@ -656,6 +656,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2071156619270205202">Tälle kortille ei ole saatavilla virtuaalista korttinumeroa.</translation>
 <translation id="2071852865256799872">Organisaatio ylläpitää selaintasi ja <ph name="PROFILE_DOMAIN" /> ylläpitää profiiliasi</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Tiedot tallennettu vain laitteelle</translation>
 <translation id="2074733626795553847">Kumoa esto: <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Kävit täällä</translation>
 <translation id="2078956195623975415">Musiikki‑ ja tanssipelit</translation>
@@ -2792,6 +2793,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5466018172325111652">Etkö saanut koodia? <ph name="BEGIN_LINK" />Pyydä uusi koodi<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Maksusovellukset</translation>
 <translation id="5470861586879999274">&amp;Toista muokkaus</translation>
+<translation id="5471158297908124590">Vahvista henkilöllisyytesi, jotta voit muokata maksutapoja</translation>
 <translation id="5472588168895083535">Käsien liikkeen seuranta estetty</translation>
 <translation id="5477756102936130143">Ota käyttöön uudelleenohjaus tuettuihin maksusovelluksiin</translation>
 <translation id="5479505548832623900">Laajennus todennäköisesti ohittaa nämä.</translation>
@@ -2869,6 +2871,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5570825185877910964">Suojaa tili</translation>
 <translation id="5571083550517324815">Nouto tästä osoitteesta ei onnistu. Valitse eri osoite.</translation>
 <translation id="5572434905385510939">22 x 28 tuumaa</translation>
+<translation id="5573090972398558474">Organisaatio on estänyt tämän sivun incognito-tilassa.</translation>
 <translation id="5573641252776268565">Muokkaa passia</translation>
 <translation id="5578606540385219379">Palveluntarjoajat</translation>
 <translation id="5580958916614886209">Tarkista vanhentumiskuukausi ja yritä uudelleen.</translation>
@@ -3175,6 +3178,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6093795393556121384">Kortti vahvistettiin.</translation>
 <translation id="6094253940069566294">Muokkaa ajoneuvoa</translation>
 <translation id="6094290315941448991">Järjestelmänvalvojakäytäntö poistaa Näytön tallentajan käytöstä, kun näkyvissä on luottamuksellista sisältöä</translation>
+<translation id="6097297436119286254">Vahvista henkilöllisyytesi, jotta voit täyttää maksutiedot</translation>
 <translation id="6099269767116481177">22 x 29,5 tuumaa</translation>
 <translation id="6101583188322746099">Päivittäistavaratoimitukset</translation>
 <translation id="6104072995492677441">JIS B6 (128 mm x 182 mm)</translation>
@@ -4296,6 +4300,7 @@ Lisätietoja:
 <translation id="7844689747373518809">{COUNT,plural, =0{Ei mitään}=1{1 sovellus (<ph name="EXAMPLE_APP_1" />)}=2{2 sovellusta (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# sovellusta (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Tapahtui virhe. Yritä uudelleen.</translation>
 <translation id="784623644169604270">Ei uutta toimintaa</translation>
+<translation id="7848926355794727168">Automaattiselaus</translation>
 <translation id="7853222852810008596">Maksa myöhemmin ‑vaihtoehto ei ole saatavilla tässä valuutassa</translation>
 <translation id="785476343534277563">Yliopistourheilu</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4899,6 +4904,7 @@ Lisätietoja:
 <translation id="8858065207712248076">Chrome suosittelee organisaation <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> salasanasi vaihtamista, jos olet käyttänyt sitä myös muilla sivustoilla.</translation>
 <translation id="885906927438988819">Jos kirjoitusasu on oikein, <ph name="BEGIN_LINK" />kokeile Windowsin verkon diagnostiikkaa<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Valokuvaaminen ja digitaide</translation>
+<translation id="8861482055962701239">Tietoja ei voitu tallentaa Google Walletiin. Ne on sen sijaan tallennettu Chromeen tällä laitteella. Chrome tarjoutuu tallentamaan tiedot Walletiin seuraavan kerran, kun käytät sitä.</translation>
 <translation id="8863218129525348270">Jos haluat maksaa nopeammin ensi kerralla, tallenna kortti laitteelle</translation>
 <translation id="8864939224504814334">Puvut ja edustusasut</translation>
 <translation id="8866132857352163524">Soundtrackit</translation>
@@ -4924,6 +4930,7 @@ Lisätietoja:
 <translation id="8897428486789851669">Uinti</translation>
 <translation id="8899807382908246773">Häiritsevät mainokset</translation>
 <translation id="8903921497873541725">Lähennä</translation>
+<translation id="8903998444169664879">Vahvista henkilöllisyytesi, jotta voit muuttaa maksuasetuksia</translation>
 <translation id="890493561996401738">Ehdotuksen poistopainike, poista painamalla Enter, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 tuumaa</translation>
 <translation id="8914504000324227558">Käynnistä Chrome uudelleen</translation>

@@ -2787,6 +2787,7 @@
 <translation id="5466018172325111652">குறியீட்டைப் பெறவில்லையா? <ph name="BEGIN_LINK" />புதிய குறியீட்டைப் பெறுங்கள்<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">பேமெண்ட் ஆப்ஸ்</translation>
 <translation id="5470861586879999274">&amp;மீண்டும் திருத்து</translation>
+<translation id="5471158297908124590">பேமெண்ட் முறைகளை மாற்ற, இது நீங்கள்தான் என்பதை உறுதிப்படுத்துங்கள்</translation>
 <translation id="5472588168895083535">கை அசைவு தடுக்கப்பட்டுள்ளது</translation>
 <translation id="5477756102936130143">ஆதரிக்கப்படும் பேமெண்ட் ஆப்ஸிற்குத் திசைதிருப்புவதை ஆன் செய்யும்</translation>
 <translation id="5479505548832623900">நீட்டிப்பு புறக்கணித்துள்ளது போல் தெரிகிறது.</translation>
@@ -2864,6 +2865,7 @@
 <translation id="5570825185877910964">கணக்கைப் பாதுகாத்திடு</translation>
 <translation id="5571083550517324815">இந்த முகவரியிலிருந்து பிக்அப் செய்ய முடியாது. வேறு முகவரியைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="5572434905385510939">22 x 28 இன்ச்</translation>
+<translation id="5573090972398558474">மறைநிலை மோடில் இந்தப் பக்கத்தை அணுகுவதை உங்கள் நிறுவனம் தடுத்துள்ளது.</translation>
 <translation id="5573641252776268565">பாஸ்போர்ட் தகவலை மாற்றுதல்</translation>
 <translation id="5578606540385219379">சேவை வழங்குநர்கள்</translation>
 <translation id="5580958916614886209">காலாவதி மாதத்தைச் சரிபார்த்து, மீண்டும் முயலவும்</translation>
@@ -3170,6 +3172,7 @@
 <translation id="6093795393556121384">கார்டு சரிபார்க்கப்பட்டது</translation>
 <translation id="6094253940069566294">வாகனத் தகவலை மாற்றுதல்</translation>
 <translation id="6094290315941448991">ரகசியமான உள்ளடக்கம் காட்டப்படுவதால் ஸ்கிரீன் ரெக்கார்டிங்கை நிர்வாகக் கொள்கை முடக்கிவிட்டது</translation>
+<translation id="6097297436119286254">உங்கள் பேமெண்ட் தகவலை நிரப்ப, இது நீங்கள்தான் என்பதை உறுதிப்படுத்துங்கள்</translation>
 <translation id="6099269767116481177">22 x 29.5 இன்ச்</translation>
 <translation id="6101583188322746099">மளிகைப் பொருட்களுக்கான டெலிவரி சேவைகள்</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4290,6 +4293,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{எதுவுமில்லை}=1{1 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />)}=2{2 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">பிழை ஏற்பட்டது. மீண்டும் முயலவும்.</translation>
 <translation id="784623644169604270">சமீபத்திய செயல்கள் இல்லை</translation>
+<translation id="7848926355794727168">ஆட்டோ பிரவுஸ்</translation>
 <translation id="7853222852810008596">‘பிறகு பணம் செலுத்துங்கள்’ சேவை இந்த நாணயத்திற்குக் கிடையாது</translation>
 <translation id="785476343534277563">கல்லூரி விளையாட்டுகள்</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4519,6 +4523,7 @@
 <translation id="8241707690549784388">நீங்கள் தேடும் பக்கமானது நீங்கள் உள்ளிட்ட தகவலைப் பயன்படுத்தியது. மீண்டும் அந்த பக்கத்திற்கு திரும்பினால், நீங்கள் செய்த ஏதேனும் செயலை மீண்டும் செய்ய வேண்டியிருக்கலாம். தொடர விரும்புகிறீர்களா?</translation>
 <translation id="8241712895048303527">இந்தத் தளத்தில் தடு</translation>
 <translation id="8242426110754782860">தொடருக</translation>
+<translation id="824620968958405573">ஆட்டோ பிரவுஸ் பணி</translation>
 <translation id="8246482227229072868">மோதிரங்கள்</translation>
 <translation id="8248406213705193919">கார்டைப் பாதுகாப்பாகச் சேமிக்க வேண்டுமா?</translation>
 <translation id="8249296373107784235">கைவிடு</translation>
@@ -4916,6 +4921,7 @@
 <translation id="8897428486789851669">நீச்சல்</translation>
 <translation id="8899807382908246773">குறுக்கிடும் விளம்பரங்கள்</translation>
 <translation id="8903921497873541725">பெரிதாக்கு</translation>
+<translation id="8903998444169664879">பேமெண்ட் அமைப்புகளை மாற்ற, இது நீங்கள்தான் என்பதை உறுதிப்படுத்துங்கள்</translation>
 <translation id="890493561996401738">பரிந்துரை பட்டனை அகற்றுக, அகற்ற Enterரை அழுத்தவும், <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 இன்ச்</translation>
 <translation id="8914504000324227558">Chrome ஐ மீண்டும் தொடங்கு</translation>

@@ -2790,6 +2790,7 @@
 <translation id="5466018172325111652">Кодыңызды алған жоқсыз ба? <ph name="BEGIN_LINK" />Жаңа код алыңыз<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Төлем қолданбалары</translation>
 <translation id="5470861586879999274">&amp;Өзгерту әрекетін қайталау</translation>
+<translation id="5471158297908124590">Төлеу әдістерін өзгерту үшін жеке басыңызды растаңыз.</translation>
 <translation id="5472588168895083535">Қолды бақылау функциясы блокталды</translation>
 <translation id="5477756102936130143">Қолдау көрсетілетін төлем қолданбаларына бағыттау мүмкіндігін қосу</translation>
 <translation id="5479505548832623900">Кеңейтімнің елемеуі әбден мүмкін.</translation>
@@ -2867,6 +2868,7 @@
 <translation id="5570825185877910964">Аккаунтты қорғау</translation>
 <translation id="5571083550517324815">Бұл мекенжайдан таңдалмайды. Басқа мекенжайды таңдаңыз.</translation>
 <translation id="5572434905385510939">22 x 28 дюйм</translation>
+<translation id="5573090972398558474">Ұйымыңыз бұл бетті инкогнито режимінде блоктап қойды.</translation>
 <translation id="5573641252776268565">Паспортты өзгерту</translation>
 <translation id="5578606540385219379">Қызмет провайдерлері</translation>
 <translation id="5580958916614886209">Жарамдылық мерзімі бітетін айды тексеріп, әрекетті қайталаңыз</translation>
@@ -3173,6 +3175,7 @@
 <translation id="6093795393556121384">Картаңыз расталды</translation>
 <translation id="6094253940069566294">Көлік құралын өзгерту</translation>
 <translation id="6094290315941448991">Құпия контент көрініп тұрғанда, әкімші саясаты экранды жазу функциясын өшіреді.</translation>
+<translation id="6097297436119286254">Төлем туралы ақпаратты толтыру үшін жеке басыңызды растаңыз.</translation>
 <translation id="6099269767116481177">22 x 29,5 дюйм</translation>
 <translation id="6101583188322746099">Азық-түлік жеткізу қызметтері</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4293,6 +4296,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Жоқ}=1{1 қолданба (<ph name="EXAMPLE_APP_1" />)}=2{2 қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Қате пайда болды. Қайталап көріңіз.</translation>
 <translation id="784623644169604270">Соңғы іс-әрекеттер жоқ.</translation>
+<translation id="7848926355794727168">Автоматты түрде шолу</translation>
 <translation id="7853222852810008596">Кейін төлеу мүмкіндігі бұл валютада қолжетімді емес</translation>
 <translation id="785476343534277563">Студенттік спорт</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4522,6 +4526,7 @@
 <translation id="8241707690549784388">Ізделіп жатқан бет сіз енгізген ақпаратты пайдаланды. Аталмыш бетке қайту сіз орындаған әрекетті қайталауға себеп болуы мүмкін. Жалғастыру керек пе?</translation>
 <translation id="8241712895048303527">Осы сайтта бөгеу</translation>
 <translation id="8242426110754782860">Жалғастыру</translation>
+<translation id="824620968958405573">Автоматты түрде шолу тапсырмасы</translation>
 <translation id="8246482227229072868">Сақиналар</translation>
 <translation id="8248406213705193919">Картаны қауіпсіз сақтау қажет пе?</translation>
 <translation id="8249296373107784235">Доғару</translation>
@@ -4919,6 +4924,7 @@
 <translation id="8897428486789851669">Жүзу</translation>
 <translation id="8899807382908246773">Мазалайтын жарнамалар</translation>
 <translation id="8903921497873541725">Үлкейту</translation>
+<translation id="8903998444169664879">Төлем параметрлерін өзгерту үшін жеке басыңызды растаңыз.</translation>
 <translation id="890493561996401738">"Ұсынысты өшіру" түймесі: өшіру үшін Enter пернесін басыңыз, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 дюйм</translation>
 <translation id="8914504000324227558">Chrome қолданбасын қайта іске қосу</translation>

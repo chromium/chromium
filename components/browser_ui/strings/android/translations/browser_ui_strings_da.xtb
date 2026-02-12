@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Få Chrome til at dele dine seneste faner med din enhed for at se dem på din enheds appliste og i søgeresultaterne. Du kan slå dette til eller fra i Chrome-indstillingerne.</translation>
 <translation id="1420688843103859429">Naviger frem og tilbage ved at stryge med to fingre på touchpladen</translation>
 <translation id="1432650420699700107">Websites kan anmode om at oprette tilknytning til enhver enhed på dit lokale netværk</translation>
+<translation id="1442081309487427303">Aktivér links i Læsetilstand</translation>
 <translation id="1448064542941920355">Zoom ud</translation>
 <translation id="1464044141348608623">Tillad ikke, at websites ved, hvornår du aktivt bruger din enhed</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> website}one{<ph name="SITE_COUNT" /> website}other{<ph name="SITE_COUNT" /> websites}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Få notifikationer med tips til Chrome</translation>
 <translation id="1777815584158991902">Felt i bunden med Discover-feedet</translation>
 <translation id="1779089405699405702">Værktøj til afkodning af billeder</translation>
+<translation id="1781533683087883868">Deaktiver links i Læsetilstand</translation>
 <translation id="1785415724048343560">Anbefales for at få den bedste oplevelse</translation>
 <translation id="1796588414813960292">Funktioner, der skal bruge lyd, fungerer ikke</translation>
 <translation id="1799920918471566157">Tips til Chrome</translation>
@@ -293,6 +295,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3903738175795615004">Træk fra toppen af skærmen, eller tryk på Esc-tasten for at afslutte fuld skærm.</translation>
 <translation id="3905475044299942653">Sæt en stopper for mange notifikationer</translation>
 <translation id="3922092564198021702">Åbn Indstillinger på din telefon</translation>
+<translation id="3924858949939391676">Vis links, når Læsetilstand er aktiveret</translation>
 <translation id="3933121352599513978">Skjul uønskede anmodninger (anbefales)</translation>
 <translation id="3934905113567851655">Knib fingrene sammen for at tilpasse størrelse</translation>
 <translation id="3955193568934677022">Tillad, at websites afspiller beskyttet indhold (anbefales)</translation>
@@ -356,6 +359,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="4644713492825682049">Slet og gendan</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4652266463001779298">Ikke tilladt</translation>
+<translation id="4655846733459137112">Tryk på Ja for nemt at bruge denne adgangskode, næste gang du logger ind</translation>
 <translation id="4663373278480897665">Der er givet adgang til kameraet</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4672315773691449562">Tryk på Browserapp og derefter på Chrome</translation>
@@ -462,6 +466,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5817042798620209981">Websiteoplysninger, dialogboks</translation>
 <translation id="5822675474983796325">Feltet i bunden med tilpasning af siden Ny fane er åbnet i fuld højde</translation>
+<translation id="5826403277762134844">Feltet i bunden med vejledning i at gemme adgangskoder i Chrome</translation>
 <translation id="5833899990800318936">Tillad ikke, at websites anvender JavaScript</translation>
 <translation id="583673505367439042">Websites kan anmode om tilladelse til at redigere filer og mapper på din enhed</translation>
 <translation id="5844448279347999754">Når dette er slået til, kan websites anmode om tilladelse at se tekst og billeder, der er gemt i din udklipsholder. Når dette er slået fra, kan websites ikke se tekst eller billeder, der er gemt i din udklipsholder.</translation>
@@ -641,6 +646,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="775043444390799886">Tilbagekald tilladelse</translation>
 <translation id="7758789811447313947">Violet tema</translation>
 <translation id="7759147511335618829">Styring/omprogrammering af MIDI</translation>
+<translation id="7771089277295008211">Feltet i bunden med vejledning i at gemme adgangskoder er lukket</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="780301667611848630">Nej tak</translation>
@@ -658,6 +664,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7940722705963108451">Påmind mig</translation>
 <translation id="7948081750384205628">Få flere oplysninger om <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Websites kan anmode om tilladelse til at se tekst og billeder i din udklipsholder</translation>
+<translation id="7958779728312669715">Feltet i bunden med vejledning i at gemme adgangskoder er åbnet helt</translation>
 <translation id="798299424881500862">Orange tema</translation>
 <translation id="7986741934819883144">Vælg en kontakt</translation>
 <translation id="7990211076305263060">Når dette er slået til, kan websites anmode om at anvende din mikrofon. Når dette er slået fra, kan websites ikke anvende din mikrofon.</translation>
@@ -754,6 +761,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="8889294078294184559">Når du derefter bruger nettet, kan websites ved hjælp af Chrome tjekke og verificere via et website, du tidligere har besøgt, at du sandsynligvis er en rigtig person</translation>
 <translation id="8899807382908246773">Påtrængende annoncer</translation>
 <translation id="8903921497873541725">Zoom ind</translation>
+<translation id="8919911527569629802">Log ind på et hvilket som helst website</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Spørg ikke igen</translation>
 <translation id="8926666909099850184">NFC er deaktiveret for denne enhed. Aktivér funktionen i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
@@ -781,6 +789,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="9182556968660520230">Tillad ikke, at websites afspiller beskyttet indhold</translation>
 <translation id="947156494302904893">Websites, du besøger, kan verificere, at du er en rigtig person og ikke en bot</translation>
 <translation id="959682366969460160">Bliv velorganiseret</translation>
+<translation id="960590623979248167">Vis hyperlinks</translation>
 <translation id="961930410699694996">Der er givet adgang til lokation denne gang</translation>
 <translation id="967624055006145463">Lagrede data</translation>
 <translation id="969975166333045662">Bloker websitet, så det ikke kan anvende V8-optimering.</translation>

@@ -2788,6 +2788,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5466018172325111652">Nem kapta meg a kódot? <ph name="BEGIN_LINK" />Igényeljen újat<ph name="END_LINK" />.</translation>
 <translation id="5466818462212249084">Fizetési alkalmazások</translation>
 <translation id="5470861586879999274">&amp;Szerkesztés újra</translation>
+<translation id="5471158297908124590">A fizetési módok szerkesztéséhez igazolja személyazonosságát</translation>
 <translation id="5472588168895083535">Kézmozgás követése letiltva</translation>
 <translation id="5477756102936130143">Engedélyezheti a támogatott fizetési alkalmazásokhoz való átirányítást.</translation>
 <translation id="5479505548832623900">A bővítmény valószínűleg figyelmen kívül hagyja.</translation>
@@ -2865,6 +2866,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5570825185877910964">Fiók védelme</translation>
 <translation id="5571083550517324815">Ezen a címen nem lehetséges az átvétel. Válasszon másik címet.</translation>
 <translation id="5572434905385510939">22 × 28 hüvelyk</translation>
+<translation id="5573090972398558474">Szervezete letiltotta ezt az oldalt inkognitó módban.</translation>
 <translation id="5573641252776268565">Útlevél szerkesztése</translation>
 <translation id="5578606540385219379">Szolgáltatók</translation>
 <translation id="5580958916614886209">Ellenőrizze a lejárati hónapot, majd próbálja újra</translation>
@@ -3171,6 +3173,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6093795393556121384">Kártyáját ellenőriztük</translation>
 <translation id="6094253940069566294">Jármű szerkesztése</translation>
 <translation id="6094290315941448991">Rendszergazdai házirend tiltja felvétel készítését a képernyőről, ha bizalmas tartalom látható rajta.</translation>
+<translation id="6097297436119286254">A fizetési adatok kitöltéséhez igazolja személyazonosságát</translation>
 <translation id="6099269767116481177">22 × 29,5 hüvelyk</translation>
 <translation id="6101583188322746099">Élelmiszer-házhozszállítás</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4292,6 +4295,7 @@ További részletek:
 <translation id="7844689747373518809">{COUNT,plural, =0{Nincs}=1{1 alkalmazás (<ph name="EXAMPLE_APP_1" />)}=2{2 alkalmazás (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# alkalmazás (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Valami hiba történt. Próbálja újra.</translation>
 <translation id="784623644169604270">Nincs tevékenység a közelmúltból</translation>
+<translation id="7848926355794727168">Automatikus böngészés</translation>
 <translation id="7853222852810008596">A későbbi fizetés nem áll rendelkezésre ennél a pénznemnél</translation>
 <translation id="785476343534277563">Egyetemi sportok</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4521,6 +4525,7 @@ További részletek:
 <translation id="8241707690549784388">A keresett oldal a megadott információt használta. Ha visszatér arra az oldalra, akkor lehet, hogy az egyszer már megtett mozdulatok ismétlésre kerülnek. Mégis továbblép?</translation>
 <translation id="8241712895048303527">Letiltás ezen a webhelyen</translation>
 <translation id="8242426110754782860">Folytatás</translation>
+<translation id="824620968958405573">Automatikus böngészési feladat</translation>
 <translation id="8246482227229072868">Körök</translation>
 <translation id="8248406213705193919">Szeretné biztonságosan elmenteni a kártyát?</translation>
 <translation id="8249296373107784235">Megszakítás</translation>
@@ -4920,6 +4925,7 @@ További részletek:
 <translation id="8897428486789851669">Úszás</translation>
 <translation id="8899807382908246773">Tolakodó hirdetések</translation>
 <translation id="8903921497873541725">Nagyítás</translation>
+<translation id="8903998444169664879">A fizetési beállítások módosításához igazolja személyazonosságát</translation>
 <translation id="890493561996401738">Javaslat eltávolítása gomb. Nyomja meg az Entert a következő eltávolításához: <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 hüvelyk</translation>
 <translation id="8914504000324227558">A Chrome újraindítása</translation>

@@ -704,6 +704,7 @@
 <translation id="2137891579555018930">Уруксат күтүлүүдө...</translation>
 <translation id="213826338245044447">Мобилдик кыстармалар</translation>
 <translation id="2141000681034340397">Киргизилген маанини түзөтүү</translation>
+<translation id="2141475438898772664">4 жолу же ай сайын төлөө</translation>
 <translation id="2144171668675205303">Жигердүү темалар жок</translation>
 <translation id="2145193671493396738">Экономикалык жаңылыктар</translation>
 <translation id="214556005048008348">Төлөмдү жокко чыгаруу</translation>
@@ -2790,6 +2791,7 @@
 <translation id="5466018172325111652">Код жөнөтүлгөн жокпу? <ph name="BEGIN_LINK" />Жаңы код алуу<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Төлөм колдонмолору</translation>
 <translation id="5470861586879999274">Түзөтүүнү &amp;кайталоо</translation>
+<translation id="5471158297908124590">Төлөм ыкмаларын түзөтүү үчүн өзүңүздү ырастаңыз</translation>
 <translation id="5472588168895083535">Колдорго көз салуу бөгөттөлдү</translation>
 <translation id="5477756102936130143">Колдоого алынган төлөм колдонмолоруна багыттоо функциясын иштетүү</translation>
 <translation id="5479505548832623900">Кеңейтүү этибарга албаса керек.</translation>
@@ -2846,6 +2848,7 @@
 <translation id="5543564889050342791">Зоопарктар, аквариумдар жана коруктар</translation>
 <translation id="5543722831081909240">180 градус</translation>
 <translation id="5544836308113951378">Круиздер жана чартерлер</translation>
+<translation id="5545314360139398232">Кийинчерээк төлөө үчүн <ph name="ISSUER_NAME" /> байланыштырыңыз</translation>
 <translation id="5547939254150808298">Басып чыгаруу жана жарыялоо</translation>
 <translation id="554815783948612276">Форум жана чат провайдерлери</translation>
 <translation id="5548606607480005320">Коопсуздукту текшерүү</translation>
@@ -2867,6 +2870,7 @@
 <translation id="5570825185877910964">Аккаунттун коопсуздугун коргоо</translation>
 <translation id="5571083550517324815">Бул даректен алып кетүү мүмкүн эмес. Башка дарек тандаңыз.</translation>
 <translation id="5572434905385510939">22 x 28 дюйм</translation>
+<translation id="5573090972398558474">Уюмуңуз бул баракты Жашыруун режимде бөгөттөп койду.</translation>
 <translation id="5573641252776268565">Паспортту түзөтүү</translation>
 <translation id="5578606540385219379">Кызмат көрсөтүүчүлөр</translation>
 <translation id="5580958916614886209">Мөөнөтү аяктоочу айды текшерип, кайталап көрүңүз</translation>
@@ -3173,6 +3177,7 @@
 <translation id="6093795393556121384">Картаңыз текшерилди</translation>
 <translation id="6094253940069566294">Унааны өзгөртүү</translation>
 <translation id="6094290315941448991">Купуя нерселер көрүнүп турганда, Администратордун эрежеси боюнча экрандагыны видеого жаздырып алууга болбойт</translation>
+<translation id="6097297436119286254">Төлөм маалыматын толтуруу үчүн өзүңүздү ырастаңыз</translation>
 <translation id="6099269767116481177">22 x 29,5 дюйм</translation>
 <translation id="6101583188322746099">Азык-түлүк жеткирүү кызматтары</translation>
 <translation id="6104072995492677441">JIS B6 (128mm x 182mm)</translation>
@@ -3691,6 +3696,7 @@
 <translation id="6926216138694948720">Денеге сүрөт тартуу</translation>
 <translation id="692638818576287323">Кесипкөй унаалар</translation>
 <translation id="6927878187051807444">камерага тартылган файлдар жана скриншоттор</translation>
+<translation id="6929949393612835405">Жаап, "<ph name="OPENER_TITLE" />" бөлүмүнө кайтуу</translation>
 <translation id="6930607614725241390">Капталдагы тилкеден издөө</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Издөө каражатыңыз Интернетте издөөгө мүмкүндүк берип, Chrome функцияларын жакшыртат<ph name="END_BOLD" />, мисалы, дарек тилкесинен жана веб-беттердеги сүрөттөрдөн издей аласыз. Издөө каражатыңыз колдоого албаса, бул функция иштебеши мүмкүн.</translation>
 <translation id="6934672428414710184">Бул ысым Google аккаунтуңуздан алынды</translation>
@@ -4293,6 +4299,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Эч бири}=1{1 колдонмо (<ph name="EXAMPLE_APP_1" />)}=2{2 колдонмо (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# колдонмо (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ката кетти. Кайра аракет кылыңыз.</translation>
 <translation id="784623644169604270">Жакында эч кандай аракет болгон жок</translation>
+<translation id="7848926355794727168">Авто серептөө</translation>
 <translation id="7853222852810008596">Бул валютада кийинчерээк төлөөгө болбойт</translation>
 <translation id="785476343534277563">Академиялык спорт</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4522,6 +4529,7 @@
 <translation id="8241707690549784388">Изделип жаткан бет сиз жазган маалыматты колдонгон. Ал бетке кайтып барсаңыз, жасалган аракеттердин бардыгы кайталанышы мүмкүн. Улантасызбы?</translation>
 <translation id="8241712895048303527">Бул сайтта бөгөттөлсүн</translation>
 <translation id="8242426110754782860">Улантуу</translation>
+<translation id="824620968958405573">Авто серептөө тапшырмасы</translation>
 <translation id="8246482227229072868">Шакекчелер</translation>
 <translation id="8248406213705193919">Карта коопсуз сакталсынбы?</translation>
 <translation id="8249296373107784235">Токтотуу</translation>
@@ -4919,6 +4927,7 @@
 <translation id="8897428486789851669">Сүзүү</translation>
 <translation id="8899807382908246773">Тажатма жарнамалар</translation>
 <translation id="8903921497873541725">Чоңойтуу</translation>
+<translation id="8903998444169664879">Төлөм параметрлерин өзгөртүү үчүн өзүңүздү ырастаңыз</translation>
 <translation id="890493561996401738">"Сунушту өчүрүү" баскычы. Өчүрүү үчүн "Enter" баскычын басыңыз, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 дюйм</translation>
 <translation id="8914504000324227558">Chrome'ду кайрадан ишке киргизүү</translation>

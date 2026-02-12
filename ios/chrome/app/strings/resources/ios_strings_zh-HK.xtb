@@ -125,6 +125,7 @@
 <translation id="1436671784520050284">繼續設定</translation>
 <translation id="143681031165817424">地址淨係會儲存喺呢部裝置度</translation>
 <translation id="1445276840641906250">集中在同一個瀏覽器使用所有分頁</translation>
+<translation id="1447564161241938558">系統管理員已停用匯入密碼和密碼金鑰功能</translation>
 <translation id="1450170672351507823">已開啟「標準保護功能」。如要進一步提升安全性，請使用「強化保護功能」。</translation>
 <translation id="1455660774629812862">不要隱藏</translation>
 <translation id="1456545332132818232"><ph name="PRODUCT_NAME" />嘅產品評論，<ph name="MAX_STARS" /> 星入面攞到 <ph name="STARS" /> 星，<ph name="DOMAIN" /></translation>
@@ -295,7 +296,6 @@
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="201759455285471444">打開分頁群組。</translation>
 <translation id="202070562065520783">為我說明</translation>
-<translation id="2023713324775943812">適用時從網址列進入閱讀模式</translation>
 <translation id="2044394949148788042">開啟分頁網格</translation>
 <translation id="2044681667265133332">帳戶 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，管理員可以查看某些資料。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新項目</translation>
@@ -585,6 +585,7 @@
 <translation id="3140825265190223781">已儲存的密碼和密鑰</translation>
 <translation id="3143515551205905069">取消同步處理</translation>
 <translation id="3144126448740580210">完成</translation>
+<translation id="3147521114983561406">密鑰會儲存至密碼管理工具，可以在無痕模式和一般分頁中取用。</translation>
 <translation id="3148052723910099040">一般分頁網格</translation>
 <translation id="3148237711805373460">立即前往</translation>
 <translation id="3157387275655328056">新增至閱讀清單</translation>
@@ -1860,6 +1861,7 @@
 <translation id="7772032839648071052">確認複雜密碼</translation>
 <translation id="7772948288262733182">歡迎回來</translation>
 <translation id="777637629667389858">當你登入帳戶後，保護你在各項 Google 服務中的安全。</translation>
+<translation id="7776604279034196531">適用時從網址列進入閱讀模式</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7788868432173225918">閂埋開咗嘅檢視畫面</translation>
 <translation id="7791543448312431591">新增</translation>
@@ -2097,6 +2099,7 @@
 <translation id="8587001564479545614">建立復原 PIN</translation>
 <translation id="8588404856427128947">閂</translation>
 <translation id="8590286732816598906">分頁群組，<ph name="GROUP_TITLE" />，選單。</translation>
+<translation id="8593317261815647019">要在無痕模式以外建立密鑰嗎？</translation>
 <translation id="8600272508328041907">切換至完整頁面翻譯</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8601611099293226919">使用「Google 智能鏡頭」搜尋螢幕</translation>

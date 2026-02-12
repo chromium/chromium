@@ -2791,6 +2791,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5466018172325111652">Je, hukupokea namba ya kuthibitisha? <ph name="BEGIN_LINK" />Pata namba mpya ya kuthibitisha<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Programu za kulipa</translation>
 <translation id="5470861586879999274">Rudia kuhariri</translation>
+<translation id="5471158297908124590">Thibitisha kuwa ni wewe ili ubadilishe njia za kulipa</translation>
 <translation id="5472588168895083535">Hali ya ufuatiliaji wa mijongeo ya mikono imezuiwa</translation>
 <translation id="5477756102936130143">Ruhusu uelekezaji kwenye programu za kulipa zinazotumika</translation>
 <translation id="5479505548832623900">Huenda zimepuuzwa na kiendelezi.</translation>
@@ -2868,6 +2869,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5570825185877910964">Linda akaunti</translation>
 <translation id="5571083550517324815">Haiwezi kuchukua kutoka kwenye anwani hii. Chagua anwani tofauti.</translation>
 <translation id="5572434905385510939">Inchi 22 x 28</translation>
+<translation id="5573090972398558474">Shirika lako limezuia ukurasa huu katika Hali ya kutumia faraghani.</translation>
 <translation id="5573641252776268565">Badilisha maelezo ya pasipoti</translation>
 <translation id="5578606540385219379">Watoa Huduma</translation>
 <translation id="5580958916614886209">Angalia mwezi kuisha kwa muda wa matumizi halafu ujajibu tena</translation>
@@ -3174,6 +3176,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6093795393556121384">Kadi yako imethibitishwa</translation>
 <translation id="6094253940069566294">Badilisha maelezo ya gari</translation>
 <translation id="6094290315941448991">Sera ya msimamizi huzuia kurekodi skrini wakati maudhui ya siri yanaonekana</translation>
+<translation id="6097297436119286254">Thibitisha kuwa ni wewe ili ujaze maelezo yako ya malipo</translation>
 <translation id="6099269767116481177">Inchi 22 x 29.5</translation>
 <translation id="6101583188322746099">Huduma ya Kukuletea Mahitaji ya Kila Siku Mahali Ulipo</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4293,6 +4296,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7844689747373518809">{COUNT,plural, =0{Hamna}=1{Programu 1 (<ph name="EXAMPLE_APP_1" />)}=2{Programu 2 (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{Programu # (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Hitilafu fulani imetokea. Jaribu tena.</translation>
 <translation id="784623644169604270">Hakuna shughuli za hivi majuzi</translation>
+<translation id="7848926355794727168">Kuvinjari kiotomatiki</translation>
 <translation id="7853222852810008596">Kipengele cha kulipa baadaye hakipatikani katika sarafu hii</translation>
 <translation id="785476343534277563">Michezo ya Vyuo</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4919,6 +4923,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8897428486789851669">Kuogelea</translation>
 <translation id="8899807382908246773">Matangazo yanayokatiza matumizi</translation>
 <translation id="8903921497873541725">Kuza karibu</translation>
+<translation id="8903998444169664879">Thibitisha kuwa ni wewe ili ubadilishe mipangilio yako ya malipo</translation>
 <translation id="890493561996401738">Ondoa kitufe cha Mapendekezo, bofya Enter ili uondoe, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">Inchi 8 x 10</translation>
 <translation id="8914504000324227558">Zindua upya Chrome</translation>

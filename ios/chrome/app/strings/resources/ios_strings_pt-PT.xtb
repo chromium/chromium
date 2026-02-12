@@ -125,6 +125,7 @@
 <translation id="1436671784520050284">Continuar configuração</translation>
 <translation id="143681031165817424">Morada guardada apenas neste dispositivo</translation>
 <translation id="1445276840641906250">Todos os seus separadores num navegador</translation>
+<translation id="1447564161241938558">A importação de palavras-passe e chaves de acesso foi desativada pelo seu administrador</translation>
 <translation id="1450170672351507823">A proteção padrão está ativada. Para desfrutar de ainda mais segurança, use a proteção melhorada.</translation>
 <translation id="1455660774629812862">Não ocultar</translation>
 <translation id="1456545332132818232">Críticas sobre produtos relativas a <ph name="PRODUCT_NAME" />, <ph name="STARS" /> de <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
@@ -295,7 +296,6 @@
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de separadores.</translation>
 <translation id="202070562065520783">Explica-me isto</translation>
-<translation id="2023713324775943812">Aceda ao modo de leitura a partir da barra de endereço, quando disponível</translation>
 <translation id="2044394949148788042">Abra a grelha de separadores</translation>
 <translation id="2044681667265133332">A conta <ph name="USER_EMAIL" /> é gerida por <ph name="HOSTED_DOMAIN" />, que pode ver algumas informações. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">novo item</translation>
@@ -585,6 +585,7 @@
 <translation id="3140825265190223781">Palavras-passe e chaves de acesso guardadas</translation>
 <translation id="3143515551205905069">Cancelar sincronização</translation>
 <translation id="3144126448740580210">CONCLUÍDO</translation>
+<translation id="3147521114983561406">As chaves de acesso são guardadas no seu gestor de palavras-passe. Estão acessíveis nos separadores de navegação anónima e normais.</translation>
 <translation id="3148052723910099040">Grelha de separadores normais</translation>
 <translation id="3148237711805373460">Aceder</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
@@ -1860,6 +1861,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7772032839648071052">Confirmar frase de acesso</translation>
 <translation id="7772948288262733182">Damos-lhe as boas-vindas de volta</translation>
 <translation id="777637629667389858">Quando tem sessão iniciada, obtém proteção nos serviços Google.</translation>
+<translation id="7776604279034196531">Aceda ao modo de leitura a partir da barra de endereço, quando disponível</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7788868432173225918">Ignorar vista expandida</translation>
 <translation id="7791543448312431591">Adicionar</translation>
@@ -2097,6 +2099,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8587001564479545614">Crie um PIN de recuperação</translation>
 <translation id="8588404856427128947">Desativada</translation>
 <translation id="8590286732816598906">Grupo de separadores, <ph name="GROUP_TITLE" />, menu.</translation>
+<translation id="8593317261815647019">Criar uma chave de acesso fora da Navegação anónima?</translation>
 <translation id="8600272508328041907">Mude para a tradução da página inteira</translation>
 <translation id="860043288473659153">Nome do titular do cartão</translation>
 <translation id="8601611099293226919">Pesquisar no ecrã com o Google Lens</translation>

@@ -658,6 +658,7 @@
 <translation id="2071156619270205202">កាតនេះ​មិនមានសិទ្ធិ​សម្រាប់លេខកាត​និម្មិតទេ។</translation>
 <translation id="2071852865256799872">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់​ស្ថាប័នអ្នក ហើយកម្រងព័ត៌មាន​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">បានរក្សាទុកព័ត៌មានទៅក្នុងឧបករណ៍តែប៉ុណ្ណោះ</translation>
 <translation id="2074733626795553847">ឈប់ទប់ស្កាត់ <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">អ្នកបាន​ចូលមើល</translation>
 <translation id="2078956195623975415">ហ្គេម​តន្ត្រី និងរាំ</translation>
@@ -706,6 +707,7 @@
 <translation id="2137891579555018930">កំពុង​រង់ចាំ​ការអនុញ្ញាត...</translation>
 <translation id="213826338245044447">ចំណាំទូរស័ព្ទ</translation>
 <translation id="2141000681034340397">កែការបញ្ចូលរបស់អ្នក</translation>
+<translation id="2141475438898772664">បង់ប្រាក់ចំនួន 4 ដង ឬរាល់ខែ</translation>
 <translation id="2144171668675205303">មិនមានប្រធានបទសកម្មទេ</translation>
 <translation id="2145193671493396738">ព័ត៌មាន​សេដ្ឋកិច្ច</translation>
 <translation id="214556005048008348">បោះបង់​ការបង់ប្រាក់</translation>
@@ -2795,6 +2797,7 @@
 <translation id="5466018172325111652">មិន​បាន​ទទួល​លេខកូដ​របស់​អ្នក​ឬ? <ph name="BEGIN_LINK" />យកលេខកូដថ្មី<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">កម្មវិធី​ទូទាត់ប្រាក់</translation>
 <translation id="5470861586879999274">ធ្វើការកែប្រែវិញ</translation>
+<translation id="5471158297908124590">ផ្ទៀងផ្ទាត់ថាជាអ្នក ដើម្បីកែវិធីបង់ប្រាក់</translation>
 <translation id="5472588168895083535">បាន​ទប់ស្កាត់​ការតាម​ដានដៃ</translation>
 <translation id="5477756102936130143">បើក​ការបញ្ជូន​បន្តទៅ​កម្មវិធី​ទូទាត់ប្រាក់​ដែលអាច​ប្រើបាន</translation>
 <translation id="5479505548832623900">ទំនងជា​មិនត្រូវបាន​អើពើ​ដោយ​កម្មវិធីបន្ថែម។</translation>
@@ -2851,6 +2854,7 @@
 <translation id="5543564889050342791">សួនសត្វ ជលវប្បដ្ឋាន និង​តំបន់​អភិរក្ស</translation>
 <translation id="5543722831081909240">180 ដឺក្រេ</translation>
 <translation id="5544836308113951378">នាវាកម្សាន្ត និង​ការជួល​យានជំនិះ</translation>
+<translation id="5545314360139398232">ភ្ជាប់ <ph name="ISSUER_NAME" /> ដើម្បីបង់ប្រាក់ជាបណ្ដើរៗទៅតាមពេលវេលា</translation>
 <translation id="5547939254150808298">ការបោះពុម្ព និងការបោះផ្សាយ</translation>
 <translation id="554815783948612276">ក្រុមហ៊ុនផ្ដល់​សេវាវេទិកា និងជជែក</translation>
 <translation id="5548606607480005320">ការពិនិត្យ​សុវត្ថិភាព</translation>
@@ -2872,6 +2876,7 @@
 <translation id="5570825185877910964">ការពារ​គណនី</translation>
 <translation id="5571083550517324815">មិនអាចទៅយកពីអាសយដ្ឋាននេះបានទេ។ សូមជ្រើសរើសអាសយដ្ឋានផ្សេង។</translation>
 <translation id="5572434905385510939">22 x 28 in</translation>
+<translation id="5573090972398558474">ស្ថាប័ន​របស់អ្នក​បាន​ទប់ស្កាត់​ទំព័រនេះ​នៅក្នុង​មុខងារ​ឯកជន។</translation>
 <translation id="5573641252776268565">កែ​លិខិត​ឆ្លងដែន</translation>
 <translation id="5578606540385219379">ក្រុមហ៊ុន​ផ្ដល់សេវា</translation>
 <translation id="5580958916614886209">ពិនិត្យមើល​ខែ​ផុត​កំណត់​របស់អ្នក​ រួច​ព្យាយាម​ម្តង​ទៀត​</translation>
@@ -3178,6 +3183,7 @@
 <translation id="6093795393556121384">កាតរបស់អ្នកត្រូវបានផ្ទៀងផ្ទាត់</translation>
 <translation id="6094253940069566294">កែ​យានជំនិះ</translation>
 <translation id="6094290315941448991">គោលការណ៍​របស់អ្នកគ្រប់គ្រង​បិទការថតវីដេអូអេក្រង់ នៅពេលអាច​មើលឃើញខ្លឹមសារ​សម្ងាត់</translation>
+<translation id="6097297436119286254">ផ្ទៀងផ្ទាត់ថាជាអ្នក ដើម្បីបំពេញព័ត៌មាននៃការទូទាត់ប្រាក់របស់អ្នក</translation>
 <translation id="6099269767116481177">22 x 29.5 in</translation>
 <translation id="6101583188322746099">សេវាកម្ម​ដឹកជញ្ជូន​គ្រឿងទេស</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -3696,6 +3702,7 @@
 <translation id="6926216138694948720">សិល្បៈ​លើ​ដង​ខ្លួន</translation>
 <translation id="692638818576287323">យានជំនិះ​ពាណិជ្ជកម្ម</translation>
 <translation id="6927878187051807444">រូបថត​អេក្រង់ និង​ឯកសារ​កាមេរ៉ា</translation>
+<translation id="6929949393612835405">បិទ ហើយត្រឡប់ទៅ "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">ស្វែងរក​នៅក្នុង​ផ្ទាំង​ចំហៀង</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />ម៉ាស៊ីន​ស្វែងរកលំនាំដើម​របស់អ្នក​អាច​ឱ្យ​អ្នក​ស្វែងរកលើ​អ៊ីនធឺណិត និង​បង្កើន​អានុភាព​មុខងារ Chrome<ph name="END_BOLD" /> ដូចជា​ការស្វែងរក​ពី​របារអាសយដ្ឋាន និង​ពី​រូបភាព​នៅលើ​ទំព័រ​បណ្ដាញជាដើម។ អ្នកប្រហែលមិនអាចប្រើមុខងារមួយ​បានទេ ប្រសិនបើ​ម៉ាស៊ីន​ស្វែងរក​របស់អ្នក​មិន​ស្គាល់មុខងារនោះ។</translation>
 <translation id="6934672428414710184">ឈ្មោះ​នេះ​បាន​មកពី​គណនី Google របស់អ្នក</translation>
@@ -4299,6 +4306,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{គ្មាន}=1{កម្មវិធី 1 (<ph name="EXAMPLE_APP_1" />)}=2{កម្មវិធី 2 (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{កម្មវិធី # (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">មាន​បញ្ហា​បានកើតឡើង។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="784623644169604270">គ្មាន​សកម្មភាព​ថ្មីៗ</translation>
+<translation id="7848926355794727168">រុករកស្វ័យប្រវត្តិ</translation>
 <translation id="7853222852810008596">មិនអាចប្រើ "ទូទាត់​ពេលក្រោយ" ជារូបិយប័ណ្ណ​នេះបានទេ</translation>
 <translation id="785476343534277563">កីឡា​មហាវិទ្យាល័យ</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4902,6 +4910,7 @@
 <translation id="8858065207712248076">Chrome ណែនាំឱ្យ​កំណត់​ពាក្យសម្ងាត់ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> របស់អ្នក​ឡើងវិញ ប្រសិនបើ​អ្នកបាន​ប្រើ​វា​ម្តងទៀត​នៅលើ​ទំព័រផ្សេង។</translation>
 <translation id="885906927438988819">ប្រសិនបើ​អក្ខរាវិរុទ្ធគឺត្រឹមត្រូវ <ph name="BEGIN_LINK" />សូមសាកល្បង​ដំណើរការ​ការវិភាគបណ្ដាញ Windows<ph name="END_LINK" />។</translation>
 <translation id="8861126751581835107">សិល្បៈ​ថតរូប និងឌីជីថល</translation>
+<translation id="8861482055962701239">មិនអាចរក្សាទុកព័ត៌មាននេះទៅ Google Wallet របស់អ្នកបានទេ។ វា​ត្រូវបាន​រក្សាទុក​ទៅក្នុង Chrome នៅលើ​ឧបករណ៍នេះ​ជំនួសវិញ។ Chrome នឹងផ្ដល់ការរក្សាទុកវាទៅក្នុង Wallet នៅពេលអ្នកប្រើវាលើកក្រោយ។</translation>
 <translation id="8863218129525348270">ដើម្បី​បង់ប្រាក់​បានកាន់តែលឿន​នៅលើក​ក្រោយ សូមរក្សាទុក​កាតរបស់អ្នក​ទៅក្នុង​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="8864939224504814334">ខោអាវ​ធំ និង​សម្លៀកបំពាក់​ធ្វើការ</translation>
 <translation id="8866132857352163524">បទភ្លេង</translation>
@@ -4927,6 +4936,7 @@
 <translation id="8897428486789851669">កីឡា​ហែលទឹក</translation>
 <translation id="8899807382908246773">ពាណិជ្ជកម្មដែលរំខាន</translation>
 <translation id="8903921497873541725">ពង្រីក</translation>
+<translation id="8903998444169664879">ផ្ទៀងផ្ទាត់ថាជាអ្នក ដើម្បីផ្លាស់ប្ដូរការកំណត់ការបង់ប្រាក់របស់អ្នក</translation>
 <translation id="890493561996401738">ប៊ូតុង​លុប​ការណែនាំ ចុច Enter ដើម្បីលុប, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 អ៊ីង</translation>
 <translation id="8914504000324227558">ដំណើរការ Chrome ឡើងវិញ</translation>

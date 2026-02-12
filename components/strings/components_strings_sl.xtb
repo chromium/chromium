@@ -704,6 +704,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2137891579555018930">Čakanje na dovoljenje …</translation>
 <translation id="213826338245044447">Mobilni zaznamki</translation>
 <translation id="2141000681034340397">Urejanje vnosa</translation>
+<translation id="2141475438898772664">Plačilo v 4 obrokih ali mesečno</translation>
 <translation id="2144171668675205303">Ni aktivnih tem</translation>
 <translation id="2145193671493396738">Gospodarske novice</translation>
 <translation id="214556005048008348">Prekliči plačilo</translation>
@@ -2791,6 +2792,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5466018172325111652">Niste prejeli kode? <ph name="BEGIN_LINK" />Pošiljanje nove kode<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Aplikacije za plačevanje</translation>
 <translation id="5470861586879999274">&amp;Uveljavi urejanje</translation>
+<translation id="5471158297908124590">Če želite urediti plačilna sredstva, potrdite, da ste to vi</translation>
 <translation id="5472588168895083535">Sledenje potezam dlani je blokirano</translation>
 <translation id="5477756102936130143">Omogoči preusmeritev v podprte aplikacije za plačevanje</translation>
 <translation id="5479505548832623900">Razširitev jih bo verjetno prezrla.</translation>
@@ -2847,6 +2849,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5543564889050342791">Živalski vrtovi, akvariji in rezervati</translation>
 <translation id="5543722831081909240">180-stopinjsko</translation>
 <translation id="5544836308113951378">Križarjenja in čarterski promet</translation>
+<translation id="5545314360139398232">Vzpostavite povezavo s ponudnikom <ph name="ISSUER_NAME" /> za plačevanje v določenem časovnem obdobju</translation>
 <translation id="5547939254150808298">Tisk in založništvo</translation>
 <translation id="554815783948612276">Ponudniki storitev foruma in klepeta</translation>
 <translation id="5548606607480005320">Varnostno preverjanje</translation>
@@ -2868,6 +2871,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5570825185877910964">Zaščita računa</translation>
 <translation id="5571083550517324815">Prevzem na tem naslovu ni mogoč. Izberite drugega.</translation>
 <translation id="5572434905385510939">22 x 28 palcev</translation>
+<translation id="5573090972398558474">Vaša organizacija je blokirala to stran v anonimnem načinu.</translation>
 <translation id="5573641252776268565">Urejanje potnega lista</translation>
 <translation id="5578606540385219379">Ponudniki storitev</translation>
 <translation id="5580958916614886209">Preverite mesec poteka veljavnosti in poskusite znova</translation>
@@ -3174,6 +3178,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6093795393556121384">Vaša kartica je preverjena</translation>
 <translation id="6094253940069566294">Urejanje vozila</translation>
 <translation id="6094290315941448991">Pravilnik skrbnika onemogoča snemanje zaslona, če je vidna zaupna vsebina.</translation>
+<translation id="6097297436119286254">Če želite izpolniti podatke za plačilo, potrdite, da ste to vi</translation>
 <translation id="6099269767116481177">22 x 29,5 palcev</translation>
 <translation id="6101583188322746099">Dostava živil iz trgovine</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -3692,6 +3697,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6926216138694948720">Telesna umetnost</translation>
 <translation id="692638818576287323">Komercialna vozila</translation>
 <translation id="6927878187051807444">datoteke fotoaparata in posnetki zaslona</translation>
+<translation id="6929949393612835405">Zapri in se vrni v »<ph name="OPENER_TITLE" />«</translation>
 <translation id="6930607614725241390">Iskanje v stranskem podoknu</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Privzeti iskalnik omogoča iskanje v spletu in se uporablja za Chromove funkcije<ph name="END_BOLD" />, kot je iskanje v naslovni vrstici in s slik na spletnih straneh. Funkcija morda ne bo na voljo, če je vaš iskalnik ne podpira.</translation>
 <translation id="6934672428414710184">To ime je iz vašega računa za Google</translation>
@@ -4295,6 +4301,7 @@ Dodatne podrobnosti:
 <translation id="7844689747373518809">{COUNT,plural, =0{Brez}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}two{# aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacij (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="784623644169604270">Ni nedavne dejavnosti</translation>
+<translation id="7848926355794727168">Samodejno brskanje</translation>
 <translation id="7853222852810008596">Poznejše plačilo ni na voljo v tej valuti</translation>
 <translation id="785476343534277563">Fakultetni športi</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4524,6 +4531,7 @@ Dodatne podrobnosti:
 <translation id="8241707690549784388">Stran, ki jo iščete, je uporabila informacije, ki ste jih vnesli. Z vrnitvijo na to stran se bodo morda ponovila vsa vaša dejanja, ki ste jih opravili. Ali želite nadaljevati?</translation>
 <translation id="8241712895048303527">Blokiraj na tem spletnem mestu</translation>
 <translation id="8242426110754782860">Naprej</translation>
+<translation id="824620968958405573">Opravilo samodejnega brskanja</translation>
 <translation id="8246482227229072868">Obroči</translation>
 <translation id="8248406213705193919">Želite varno shraniti kartico?</translation>
 <translation id="8249296373107784235">Prekini</translation>
@@ -4921,6 +4929,7 @@ Dodatne podrobnosti:
 <translation id="8897428486789851669">Plavanje</translation>
 <translation id="8899807382908246773">Vsiljivi oglasi</translation>
 <translation id="8903921497873541725">Povečaj</translation>
+<translation id="8903998444169664879">Če želite spremeniti nastavitve plačil, potrdite, da ste to vi</translation>
 <translation id="890493561996401738">Gumb za odstranitev predloga, pritisnite Enter za odstranitev <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 palcev</translation>
 <translation id="8914504000324227558">Znova zaženi Chrome</translation>

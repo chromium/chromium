@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">此卡不能建立虛擬卡號。</translation>
 <translation id="2071852865256799872">你的瀏覽器由機構管理，個人檔案則由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">資訊只會儲存到裝置</translation>
 <translation id="2074733626795553847">解除封鎖「<ph name="TOPIC" />」</translation>
 <translation id="2074771604462073334">上次瀏覽：</translation>
 <translation id="2078956195623975415">音樂和舞蹈遊戲</translation>
@@ -2790,6 +2791,7 @@
 <translation id="5466018172325111652">沒有收到驗證碼嗎？<ph name="BEGIN_LINK" />取得新的驗證碼<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">付款應用程式</translation>
 <translation id="5470861586879999274">重做編輯(&amp;R)</translation>
+<translation id="5471158297908124590">驗證身分以編輯付款方法</translation>
 <translation id="5472588168895083535">已封鎖手勢追蹤功能</translation>
 <translation id="5477756102936130143">允許重新導向至支援的付款應用程式</translation>
 <translation id="5479505548832623900">擴充程式可能會忽略政策。</translation>
@@ -2867,6 +2869,7 @@
 <translation id="5570825185877910964">保護帳戶</translation>
 <translation id="5571083550517324815">無法在此地址取貨，請選取其他地址。</translation>
 <translation id="5572434905385510939">22 x 28 吋</translation>
+<translation id="5573090972398558474">你的機構禁止在無痕模式下瀏覽此頁面。</translation>
 <translation id="5573641252776268565">編輯護照</translation>
 <translation id="5578606540385219379">服務供應商</translation>
 <translation id="5580958916614886209">請檢查您的到期月份，然後再試一次</translation>
@@ -3173,6 +3176,7 @@
 <translation id="6093795393556121384">您的卡片已驗證</translation>
 <translation id="6094253940069566294">編輯車輛</translation>
 <translation id="6094290315941448991">當畫面上出現機密內容時，管理員政策就會停用螢幕錄影功能</translation>
+<translation id="6097297436119286254">驗證身分以填入付款資料</translation>
 <translation id="6099269767116481177">22 x 29.5 吋</translation>
 <translation id="6101583188322746099">雜貨送貨服務</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4298,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{無}=1{1 個應用程式 (<ph name="EXAMPLE_APP_1" />)}=2{2 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />)}other{# 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="784623644169604270">沒有近期活動</translation>
+<translation id="7848926355794727168">自動瀏覽</translation>
 <translation id="7853222852810008596">此貨幣不支援稍後付款</translation>
 <translation id="785476343534277563">大專院校運動</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4896,6 +4901,7 @@
 <translation id="8858065207712248076">如果您已在其他網站上重用 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密碼，Chrome 建議您重設密碼。</translation>
 <translation id="885906927438988819">如果拼字正確，請<ph name="BEGIN_LINK" />嘗試執行 Windows 網絡診斷<ph name="END_LINK" />。</translation>
 <translation id="8861126751581835107">攝影和數碼藝術</translation>
+<translation id="8861482055962701239">這項資訊無法儲存到 Google 錢包，因此改存到這部裝置的 Chrome。下次使用時，Chrome 會詢問你是否要儲存至錢包。</translation>
 <translation id="8863218129525348270">將付款卡儲存在裝置上，下次就能更快完成付款程序</translation>
 <translation id="8864939224504814334">套裝和上班服裝</translation>
 <translation id="8866132857352163524">原聲帶</translation>
@@ -4921,6 +4927,7 @@
 <translation id="8897428486789851669">游泳</translation>
 <translation id="8899807382908246773">滋擾性廣告</translation>
 <translation id="8903921497873541725">放大</translation>
+<translation id="8903998444169664879">驗證身分以變更付款設定</translation>
 <translation id="890493561996401738">移除建議按鈕，㩒一下 Enter 鍵就可以移除「<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />」</translation>
 <translation id="8910898109640902752">8 x 10 吋</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>

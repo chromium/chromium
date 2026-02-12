@@ -2791,6 +2791,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5466018172325111652">Kas te ei saanud koodi? <ph name="BEGIN_LINK" />Hankige uus kood<ph name="END_LINK" />.</translation>
 <translation id="5466818462212249084">Makserakendus</translation>
 <translation id="5470861586879999274">&amp;Muuda uuesti</translation>
+<translation id="5471158297908124590">Makseviiside muutmiseks kinnitage oma isik.</translation>
 <translation id="5472588168895083535">Käeliigutuste jälgimine on blokeeritud</translation>
 <translation id="5477756102936130143">Lubage ümbersuunamine toetatud makserakendustesse</translation>
 <translation id="5479505548832623900">Tõenäoliselt laiendus eirab neid.</translation>
@@ -2868,6 +2869,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5570825185877910964">Kaitse kontot</translation>
 <translation id="5571083550517324815">Sellelt aadressilt ei saa kaupa kätte. Valige mõni teine aadress.</translation>
 <translation id="5572434905385510939">22 × 28 tolli</translation>
+<translation id="5573090972398558474">Teie organisatsioon on selle lehe inkognito režiimis blokeerinud.</translation>
 <translation id="5573641252776268565">Passi muutmine</translation>
 <translation id="5578606540385219379">Teenusepakkujad</translation>
 <translation id="5580958916614886209">Kontrollige aegumiskuud ja proovige uuesti</translation>
@@ -3174,6 +3176,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6093795393556121384">Kaart on kinnitatud</translation>
 <translation id="6094253940069566294">Sõiduki muutmine</translation>
 <translation id="6094290315941448991">Administraatori eeskirjad keelavad ekraanikuva salvestamise, kui konfidentsiaalne sisu on nähtaval</translation>
+<translation id="6097297436119286254">Makseteabe täitmiseks kinnitage oma isik.</translation>
 <translation id="6099269767116481177">22 × 29,5 tolli</translation>
 <translation id="6101583188322746099">Toidukaupade kohaletoimetamine</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4295,6 +4298,7 @@ Lisateave:
 <translation id="7844689747373518809">{COUNT,plural, =0{Puudub}=1{1 rakendus (<ph name="EXAMPLE_APP_1" />)}=2{2 rakendust (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# rakendust (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ilmnes viga. Proovige uuesti.</translation>
 <translation id="784623644169604270">Hiljutisi tehinguid ei ole</translation>
+<translation id="7848926355794727168">Automaatne sirvimine</translation>
 <translation id="7853222852810008596">Hiljem maksmine pole selles valuutas saadaval</translation>
 <translation id="785476343534277563">Koolisport</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4524,6 +4528,7 @@ Lisateave:
 <translation id="8241707690549784388">Teie poolt otsitav lehekülg kasutas teie sisestatud andmeid. Sellele leheküljele naasmine võib kaasa tuua kõikide sooritatud tegevuste kordamise. Soovite jätkata?</translation>
 <translation id="8241712895048303527">Blokeeri sellel saidil</translation>
 <translation id="8242426110754782860">Jätka</translation>
+<translation id="824620968958405573">Automaatse sirvimise ülesanne</translation>
 <translation id="8246482227229072868">Sõrmused</translation>
 <translation id="8248406213705193919">Kas soovite kaardi turvaliselt salvestada?</translation>
 <translation id="8249296373107784235">Katkesta</translation>
@@ -4921,6 +4926,7 @@ Lisateave:
 <translation id="8897428486789851669">Ujumine</translation>
 <translation id="8899807382908246773">Sekkuvad reklaamid</translation>
 <translation id="8903921497873541725">Suurendab</translation>
+<translation id="8903998444169664879">Makseseadete muutmiseks kinnitage oma isik.</translation>
 <translation id="890493561996401738">Soovituse eemaldamise nupp, vajutage eemaldamiseks sisestusklahvi, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 tolli</translation>
 <translation id="8914504000324227558">Käivita Chrome uuesti</translation>

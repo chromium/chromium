@@ -2792,6 +2792,7 @@
 <translation id="5466018172325111652">آپ کو اپنا کوڈ موصول نہیں ہوا؟ <ph name="BEGIN_LINK" />نیا کوڈ حاصل کریں<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">ادائیگیوں کی ایپس</translation>
 <translation id="5470861586879999274">ترمییم &amp;دوبارہ کریں</translation>
+<translation id="5471158297908124590">ادائیگیوں کے طریقوں میں ترمیم کرنے کے لیے توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="5472588168895083535">ہینڈ ٹریکنگ مسدود کر دی گئی</translation>
 <translation id="5477756102936130143">تعاون یافتہ ادائیگیوں کی ایپس پر ری ڈائریکشن کو فعال کریں</translation>
 <translation id="5479505548832623900">ہو سکتا ہے کہ ایکسٹینشن نے اسے نظر انداز کر دیا ہو۔</translation>
@@ -2869,6 +2870,7 @@
 <translation id="5570825185877910964">اکاؤنٹ محفوظ کریں</translation>
 <translation id="5571083550517324815">اس پتے سے پِک اپ نہیں کر سکتے۔ کوئی مختلف پتہ منتخب کریں۔</translation>
 <translation id="5572434905385510939">‏‎22 x 28 انچ</translation>
+<translation id="5573090972398558474">آپ کی تنظیم نے اس صفحہ کو پوشیدگی وضع میں مسدود کر دیا ہے۔</translation>
 <translation id="5573641252776268565">پاسپورٹ کی معلومات میں ترمیم کریں</translation>
 <translation id="5578606540385219379">سروس فراہم کنندگان</translation>
 <translation id="5580958916614886209">اپنا اختتامی مہینہ چیک کریں اور دوبارہ کوشش کریں</translation>
@@ -3175,6 +3177,7 @@
 <translation id="6093795393556121384">آپ کے کارڈ کی توثیق ہو گئی ہے</translation>
 <translation id="6094253940069566294">گاڑی میں ترمیم کریں</translation>
 <translation id="6094290315941448991">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین ریکارڈ کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
+<translation id="6097297436119286254">اپنی ادائیگی کی معلومات پُر کرنے کے لیے توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="6099269767116481177">‏‎22 x 29.5 انچ</translation>
 <translation id="6101583188322746099">گروسری ڈیلیوری کی سروسز</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4296,6 +4299,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{کوئی نہیں}=1{1 ایپ (<ph name="EXAMPLE_APP_1" />)}=2{2 ایپس (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ایپس (<ph name="EXAMPLE_APP_1" />، <ph name="EXAMPLE_APP_2" />، <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ایک خرابی پیش آ گئی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="784623644169604270">کوئی حالیہ سرگرمی نہیں ہے</translation>
+<translation id="7848926355794727168">آٹو براؤز</translation>
 <translation id="7853222852810008596">اس کرنسی میں بعد میں ادائیگی کریں دستیاب نہیں ہے</translation>
 <translation id="785476343534277563">کالج کے کھیل</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4525,6 +4529,7 @@
 <translation id="8241707690549784388">آپ جو صفحہ تلاش کر رہے ہیں اس نے آپ کی درج کردہ معلومات کا استعمال کیا۔ اس صفحہ پر واپس جانا کسی ایسی کارروائی کا سبب بن سکتا ہے جسے آپ نے دہرائے جانے کیلئے کیا۔ کیا آپ جاری رکھنا چاہتے ہیں؟</translation>
 <translation id="8241712895048303527">اس سائٹ پر مسدود کریں</translation>
 <translation id="8242426110754782860">آگے بڑھیں</translation>
+<translation id="824620968958405573">آٹو براؤز ٹاسک</translation>
 <translation id="8246482227229072868">رِنگز</translation>
 <translation id="8248406213705193919">کارڈ کو محفوظ طریقے سے محفوظ کریں؟</translation>
 <translation id="8249296373107784235">منسوخ کریں</translation>
@@ -4922,6 +4927,7 @@
 <translation id="8897428486789851669">تیراکی</translation>
 <translation id="8899807382908246773">دخل انداز اشتہارات</translation>
 <translation id="8903921497873541725">زوم ان کریں</translation>
+<translation id="8903998444169664879">اپنی ادائیگیوں کی ترتیبات کو تبدیل کرنے کے لیے توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="890493561996401738">‏تجویز کا بٹن ہٹائیں، ہٹانے کے لیے Enter دبائیں، <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">‏x 10 ‏8 انچ</translation>
 <translation id="8914504000324227558">‏Chrome کو دوبارہ شروع کریں</translation>

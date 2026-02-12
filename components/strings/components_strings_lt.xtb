@@ -656,6 +656,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2071156619270205202">Šiai kortelei negali būti suteiktas virtualios kortelės numeris.</translation>
 <translation id="2071852865256799872">Jūsų naršyklę tvarko jūsų organizacija, o profilį tvarko <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informacija išsaugota tik įrenginyje</translation>
 <translation id="2074733626795553847">Panaikinti blokavimą: „<ph name="TOPIC" />“</translation>
 <translation id="2074771604462073334">Lankėtės</translation>
 <translation id="2078956195623975415">Muzikiniai ir šokių žaidimai</translation>
@@ -704,6 +705,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2137891579555018930">Laukiama leidimo...</translation>
 <translation id="213826338245044447">Žymės mobiliesiems</translation>
 <translation id="2141000681034340397">Redaguoti įvestį</translation>
+<translation id="2141475438898772664">Išsimokėti per keturis kartus arba kas mėnesį</translation>
 <translation id="2144171668675205303">Aktyvių temų nėra</translation>
 <translation id="2145193671493396738">Ekonomikos naujienos</translation>
 <translation id="214556005048008348">Atšaukti mokėjimą</translation>
@@ -2849,6 +2851,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5543564889050342791">Zoologijos sodai, akvariumai ir draustiniai</translation>
 <translation id="5543722831081909240">180 laipsnių</translation>
 <translation id="5544836308113951378">Kruizai ir frachtavimas</translation>
+<translation id="5545314360139398232">Susiekite „<ph name="ISSUER_NAME" />“, kad galėtumėte mokėti dalimis</translation>
 <translation id="5547939254150808298">Spausdinimas ir leidyba</translation>
 <translation id="554815783948612276">Forumų ir pokalbių teikėjai</translation>
 <translation id="5548606607480005320">Saugos patikra</translation>
@@ -2870,6 +2873,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5570825185877910964">Apsaugoti paskyrą</translation>
 <translation id="5571083550517324815">Negalima paimti šiuo adresu. Pasirinkite kitą adresą.</translation>
 <translation id="5572434905385510939">22 x 28 col.</translation>
+<translation id="5573090972398558474">Jūsų organizacija užblokavo šį puslapį inkognito režimu.</translation>
 <translation id="5573641252776268565">Paso redagavimas</translation>
 <translation id="5578606540385219379">Paslaugų teikėjai</translation>
 <translation id="5580958916614886209">Patikrinkite galiojimo pabaigos mėnesį ir bandykite dar kartą</translation>
@@ -3695,6 +3699,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6926216138694948720">Kūno menas</translation>
 <translation id="692638818576287323">Komerciniai automobiliai</translation>
 <translation id="6927878187051807444">fotoaparato failus ir ekrano kopijas</translation>
+<translation id="6929949393612835405">Uždaryti ir grįžti į „<ph name="OPENER_TITLE" />“</translation>
 <translation id="6930607614725241390">Paieška šoniniame skydelyje</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Naudodami numatytąjį paieškos variklį galite ieškoti žiniatinklyje ir naudoti „Chrome“ funkcijas<ph name="END_BOLD" />, pvz., paiešką iš adreso juostos ir vaizdų tinklalapiuose. Funkcija gali būti nepasiekiama, jei paieškos variklis jos nepalaiko.</translation>
 <translation id="6934672428414710184">Šis vardas yra iš jūsų „Google“ paskyros</translation>
@@ -4298,6 +4303,7 @@ Papildoma išsami informacija:
 <translation id="7844689747373518809">{COUNT,plural, =0{Nėra}=1{1 programa („<ph name="EXAMPLE_APP_1" />“)}=2{2 programos („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“)}one{# programa („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“ <ph name="AND_MORE" />)}few{# programos („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“ <ph name="AND_MORE" />)}many{# programos („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“ <ph name="AND_MORE" />)}other{# programų („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“ <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Įvyko klaida. Bandykite dar kartą.</translation>
 <translation id="784623644169604270">Nėra naujausios veiklos</translation>
+<translation id="7848926355794727168">Automatinis naršymas</translation>
 <translation id="7853222852810008596">Galimybė mokėti vėliau nepasiekiama šia valiuta</translation>
 <translation id="785476343534277563">Kolegijų sportas</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4901,6 +4907,7 @@ Papildoma išsami informacija:
 <translation id="8858065207712248076">„Chrome“ rekomenduoja iš naujo nustatyti <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> slaptažodį, jei naudojate jį kitose svetainėse.</translation>
 <translation id="885906927438988819">Jei parašyta tinkamai, <ph name="BEGIN_LINK" />pabandykite paleisti „Windows“ tinklo diagnostiką<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografijos ir skaitmeninis menas</translation>
+<translation id="8861482055962701239">Nepavyko išsaugoti šios informacijos „Google Wallet“. Vietoje to ji išsaugota naršyklėje „Chrome“ šiame įrenginyje. „Chrome“ pasiūlys išsaugoti ją „Wallet“ kitą kartą, kai ją naudosite.</translation>
 <translation id="8863218129525348270">Kad kitą kartą galėtumėte sparčiau atlikti mokėjimą, išsaugokite kortelę įrenginyje</translation>
 <translation id="8864939224504814334">Kostiumai ir verslo drabužiai</translation>
 <translation id="8866132857352163524">Garso takeliai</translation>

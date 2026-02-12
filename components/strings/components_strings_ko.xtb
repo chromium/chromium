@@ -2791,6 +2791,7 @@
 <translation id="5466018172325111652">코드를 받지 못하셨나요? <ph name="BEGIN_LINK" />새 코드 받기<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">결제 앱</translation>
 <translation id="5470861586879999274">수정 다시 실행(&amp;R)</translation>
+<translation id="5471158297908124590">결제 수단을 수정하려면 본인 인증을 진행하세요.</translation>
 <translation id="5472588168895083535">손 추적이 차단됨</translation>
 <translation id="5477756102936130143">지원되는 결제 앱으로 리디렉션 사용 설정</translation>
 <translation id="5479505548832623900">확장 프로그램에 의해 무시되었을 가능성이 높습니다.</translation>
@@ -2868,6 +2869,7 @@
 <translation id="5570825185877910964">계정 보호</translation>
 <translation id="5571083550517324815">이 주소에서 수령할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="5572434905385510939">22x28인치</translation>
+<translation id="5573090972398558474">조직에서 시크릿 모드의 이 페이지를 차단했습니다.</translation>
 <translation id="5573641252776268565">여권 수정</translation>
 <translation id="5578606540385219379">서비스 제공업체</translation>
 <translation id="5580958916614886209">유효기간 월을 확인한 후 다시 시도해 주세요.</translation>
@@ -3174,6 +3176,7 @@
 <translation id="6093795393556121384">카드가 인증되었습니다.</translation>
 <translation id="6094253940069566294">차량 수정</translation>
 <translation id="6094290315941448991">기밀 콘텐츠가 화면에 표시되면 관리자 정책에서 화면 녹화를 사용 중지합니다.</translation>
+<translation id="6097297436119286254">결제 정보를 입력하려면 본인 인증을 진행하세요.</translation>
 <translation id="6099269767116481177">22x29.5인치</translation>
 <translation id="6101583188322746099">식료품 배달 서비스</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4297,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{없음}=1{앱 1개(<ph name="EXAMPLE_APP_1" />)}=2{앱 2개(<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{앱 #개(<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="784623644169604270">최근 활동 없음</translation>
+<translation id="7848926355794727168">자동 탐색</translation>
 <translation id="7853222852810008596">이 통화로는 후불 결제를 사용할 수 없습니다</translation>
 <translation id="785476343534277563">대학 스포츠</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4523,6 +4527,7 @@
 <translation id="8241707690549784388">찾고 있는 페이지에서 사용자가 입력한 정보를 사용했습니다. 해당 페이지로 돌아가면 기존 작업을 반복할 수 있습니다. 계속하시겠습니까?</translation>
 <translation id="8241712895048303527">이 사이트에서 차단</translation>
 <translation id="8242426110754782860">계속</translation>
+<translation id="824620968958405573">자동 탐색 작업</translation>
 <translation id="8246482227229072868">고리</translation>
 <translation id="8248406213705193919">카드 안전하게 저장하기</translation>
 <translation id="8249296373107784235">중단</translation>
@@ -4920,6 +4925,7 @@
 <translation id="8897428486789851669">수영</translation>
 <translation id="8899807382908246773">방해가 되는 광고</translation>
 <translation id="8903921497873541725">확대</translation>
+<translation id="8903998444169664879">결제 설정을 변경하려면 본인 인증을 진행하세요.</translation>
 <translation id="890493561996401738">추천 삭제 버튼, Enter 키를 눌러 삭제, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10인치</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>

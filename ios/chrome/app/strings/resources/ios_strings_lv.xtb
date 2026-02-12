@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Lai skatītu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="201759455285471444">Izvērst ciļņu grupu.</translation>
 <translation id="202070562065520783">Paskaidro man</translation>
-<translation id="2023713324775943812">Piekļūt lasīšanas režīmam no adreses joslas, kad tas ir pieejams</translation>
 <translation id="2044394949148788042">Atveriet ciļņu režģi.</translation>
 <translation id="2044681667265133332">Kontu <ph name="USER_EMAIL" /> pārvalda domēnam <ph name="HOSTED_DOMAIN" /> atbilstošā organizācija, kas, iespējams, var skatīt noteiktu informāciju. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">jauns vienums</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Saglabātās paroles un piekļuves atslēgas</translation>
 <translation id="3143515551205905069">Atcelt sinhronizāciju</translation>
 <translation id="3144126448740580210">GATAVS</translation>
+<translation id="3147521114983561406">Piekļuves atslēgas tiek saglabātas jūsu paroļu pārvaldniekā. Tām var piekļūt inkognito un parastajās cilnēs.</translation>
 <translation id="3148052723910099040">Parasto ciļņu režģis</translation>
 <translation id="3148237711805373460">Pāriet</translation>
 <translation id="3157387275655328056">Pievienot lasīšanas sarakstam</translation>
@@ -1860,6 +1860,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7772032839648071052">Apstipriniet ieejas frāzi</translation>
 <translation id="7772948288262733182">Laipni lūdzam atpakaļ!</translation>
 <translation id="777637629667389858">Kad esat pierakstījies, šī funkcija aizsargā jūsu informāciju Google pakalpojumos.</translation>
+<translation id="7776604279034196531">Piekļūt lasīšanas režīmam no adreses joslas, kad tas ir pieejams</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7788868432173225918">Nerādīt izvērsto skatu</translation>
 <translation id="7791543448312431591">Pievienot</translation>
@@ -2097,6 +2098,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="8587001564479545614">Atkopšanas PIN izveide</translation>
 <translation id="8588404856427128947">Izslēgts</translation>
 <translation id="8590286732816598906">Ciļņu grupa, <ph name="GROUP_TITLE" />, izvēlne.</translation>
+<translation id="8593317261815647019">Vai izveidot piekļuves atslēgu ārpus inkognito režīma?</translation>
 <translation id="8600272508328041907">Pārslēgšanās uz visas lapas tulkošanu</translation>
 <translation id="860043288473659153">Bankas kartes īpašnieka vārds</translation>
 <translation id="8601611099293226919">Meklēšana ekrānā, izmantojot Google Lens</translation>

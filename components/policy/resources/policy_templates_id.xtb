@@ -1738,6 +1738,7 @@ resolver yang terkait dengan resolver sistem terkonfigurasi milik pengguna.</tra
 <translation id="2158741059065130266">Jika kebijakan disetel ke Benar (True), pengguna aplikasi File <ph name="PRODUCT_OS_NAME" /> akan melihat Sampah dan file di bagian File saya dan Download (termasuk turunan yang dibuat oleh pengguna) akan dikirim ke sana saat dihapus.
 
       Jika kebijakan disetel ke Salah (False), file yang sebelumnya berada di sampah akan tetap tersedia dengan menampilkan file tersembunyi dan menemukan direktori .Trash di bagian File saya atau Download.</translation>
+<translation id="215891883000260452">Aktifkan pengumpulan log diagnostik WebRTC untuk origin tertentu</translation>
 <translation id="2159092270572925582">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang diizinkan untuk menampilkan konten campuran (yaitu, konten HTTP di situs HTTPS) yang dapat diblokir (aktif). Daftar tersebut juga dapat menentukan situs yang upgrade konten campurannya yang dapat diblokir secara opsional akan dinonaktifkan.
 
           Jika kebijakan ini tidak disetel, konten campuran yang dapat diblokir akan diblokir dan konten campuran yang dapat diblokir secara opsional akan diupgrade, serta pengguna akan diizinkan untuk menyetel pengecualian guna mengizinkan konten tersebut untuk situs tertentu.
@@ -2225,6 +2226,17 @@ pengguna untuk membuat pilihan seperti biasa.</translation>
 <translation id="2466131534462628618">Autentikasi portal tawanan mengabaikan proxy</translation>
 <translation id="2467181864598429837">Perilaku browser default</translation>
 <translation id="2467896267442150508">Interval waktu paling lama satu minggu. Jika waktu mulai melebihi waktu berakhir, maka intervalnya akan berakhir di hari berikutnya.</translation>
+<translation id="2475594733565572760">Kebijakan ini menentukan setelan default untuk semua fitur AI generatif yang tercakup. Misalnya, jika kebijakan ini disetel ke nilai 1, nilai 1 akan menjadi setelan default untuk semua fitur AI generatif yang tercakup. Kebijakan ini tidak akan memengaruhi nilai kebijakan yang disetel secara manual. Setelan ini akan menentukan setelan default untuk fitur AI generatif yang tercakup di Chrome. Buka https://support.google.com/chrome/a?p=generative_ai_settings untuk melihat daftar fitur yang tercakup.
+
+Beberapa kebijakan, misalnya <ph name="GEMINI_SETTINGS_POLICY_NAME" />, hanya mendukung status Diizinkan dan Jangan izinkan. Dalam hal ini, jika <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> disetel ke 0 atau 1, fitur ini akan diaktifkan. Jika <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> disetel ke 2, fitur ini akan dinonaktifkan. Dokumentasi untuk setiap fitur berisi detail selengkapnya tentang cara fitur tersebut berinteraksi dengan nilai dalam kebijakan ini (misalnya, Gemini di Chrome - https://support.google.com/chrome/a/?p=gemini_in_chrome). Hal ini berlaku untuk fitur berikut: Gemini di Chrome, Google Lens, dan Mode AI karena tunduk kepada jaminan dan/atau persyaratan layanannya sendiri (https://support.google.com/chrome/a/?p=genai_features_chrome).
+
+Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2476249479201711962">Aktifkan akses ke menu konteks penyedia penelusuran default</translation>
 <translation id="2478756867046106663">Izinkan situs dengan pengalaman yang menyesatkan pengguna untuk membuka jendela atau tab baru</translation>
 <translation id="2479760962196319822">Kebijakan ini mengontrol apakah pengguna <ph name="PRODUCT_OS_NAME" /> dapat menyimpan data secara lokal atau tidak.
@@ -2604,6 +2616,13 @@ Sistem hanya akan mengkueri data AAAA ketika perangkat dapat menjangkau host IPv
       Catatan: Sejak M114, aplikasi kios tertentu diizinkan untuk mengganti perilaku kebijakan ini bagi aplikasi mereka untuk kasus penggunaan khusus, seperti penilaian siswa.</translation>
 <translation id="2667894101494585925">Mengaktifkan Pengambilan Panduan Pengoptimalan</translation>
 <translation id="2669157090883237118">Jangan ubah konfigurasi <ph name="PRODUCT_OS_NAME" /> yang direkomendasikan.</translation>
+<translation id="2669314653349044073">Kebijakan ini memungkinkan pengaktifan pengumpulan log diagnostik untuk WebRTC bagi origin tertentu.
+
+Untuk informasi selengkapnya tentang pola input yang valid, lihat https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukan nilai yang diterima untuk kebijakan ini. Kebijakan ini hanya melakukan pencocokan berdasarkan origin, jadi semua jalur di pola URL diabaikan. Skema dan subdomain didukung.
+
+Jika kebijakan ini disetel, pengumpulan log diagnostik akan diaktifkan untuk origin yang cocok dengan pola di daftar.
+
+Jika kebijakan ini tidak disetel, pengumpulan log diagnostik akan dinonaktifkan secara default.</translation>
 <translation id="2672012807430078509">Kontrol yang mengaktifkan NTLM sebagai protokol autentikasi untuk pemasangan SMB</translation>
 <translation id="2673363037046384711">Pengguna akhir dapat mengaktifkan atau menonaktifkan Mode Efisiensi Tinggi.</translation>
 <translation id="2673968385134502798">Game</translation>
@@ -4445,6 +4464,7 @@ Kebijakan ini dapat digabungkan dengan <ph name="POLICY_CLOUD_POLICY_OVERRIDES_P
 <translation id="3927291637826333102">Mengizinkan tangkapan Desktop, Jendela, dan Tab berdasarkan asal berikut</translation>
 <translation id="3928726028264020458">Aktifkan pelaporan info VPD perangkat</translation>
 <translation id="3935592079035695061">Milidetik sejak tengah malam.</translation>
+<translation id="3937800910397007337">Terapkan prioritas latar depan untuk semua tab</translation>
 <translation id="3941289958028934630">Nonaktifkan respons lisan di layar login</translation>
 <translation id="3943930334592166130">Kebijakan ini mengontrol apakah pengguna akan diminta memilih sertifikat klien saat lebih dari satu sertifikat cocok dengan <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Jika kebijakan ini disetel ke Aktif, pengguna akan diminta memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat.
@@ -6462,6 +6482,7 @@ kebijakan ini saat browser berjalan.</translation>
       * Menengah, pengguna hanya dapat memilih Mode Terbatas Menengah atau Ketat di YouTube tetapi tidak dapat menonaktifkan Mode terbatas.
 
       * Nonaktif atau jika tidak ada nilai yang ditetapkan, Chrome tidak akan menerapkan Mode Terbatas di YouTube. Kebijakan eksternal seperti kebijakan YouTube tetap dapat memberlakukan Mode Terbatas.</translation>
+<translation id="5191007233343702012">Gunakan prioritas tab standar</translation>
 <translation id="5191476996923842491">'Perilaku default untuk penundaan minimum fungsi setTimeout().</translation>
 <translation id="519247340330463721">Mengonfigurasi kebijakan terkait Safe Browsing.</translation>
 <translation id="5192555640439947289">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan meminta sandi kepada pengguna untuk membuka kunci perangkat saat perangkat ditangguhkan atau penutupnya ditutup.
@@ -6688,6 +6709,7 @@ Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
 <translation id="530949964068726932">Sembunyikan opsi aksesibilitas di menu area notifikasi</translation>
 <translation id="5309944663104291505">Jangan izinkan Aplikasi Web Terisolasi (IWA) yang diinstal otomatis dan aplikasi kios menggunakan Device Attributes API</translation>
 <translation id="5311275381462687162">Setelan default perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
+<translation id="5311430612584074035">Terapkan prioritas latar depan untuk semua tab di profil</translation>
 <translation id="5312253627576569499">Persentase yang digunakan untuk menskalakan penundaan peredupan layar ketika terdapat aktivitas pengguna saat layar redup atau segera setelah layar dimatikan.</translation>
 <translation id="5316856058059940708">Nonaktifkan kursor besar</translation>
 <translation id="5318185076587284965">Aktifkan penggunaan server relay oleh hosting akses jarak jauh</translation>
@@ -6725,6 +6747,20 @@ Akun terkelola tidak memenuhi syarat untuk bergabung atau membuat grup keluarga,
 <translation id="5345892164332459671">Nonaktifkan SSO Mengambang dan jangan pindahkan autentikasi layanan web pengguna ke perangkat baru</translation>
 <translation id="5345910753471481870">Jangan tampilkan tombol Google Lens di kotak penelusuran pada halaman Tab Baru.</translation>
 <translation id="5346587320074666194">Memblokir akses ke sensor di situs ini</translation>
+<translation id="5347735051291224683">Kebijakan ini mengontrol apakah konten web latar belakang dipaksa berjalan pada
+prioritas latar depan.
+
+Secara default, browser mengoptimalkan resource dengan menurunkan prioritas konten di
+tab latar belakang. Mengaktifkan kebijakan ini akan mengganti perilaku tersebut, sehingga tab latar belakang dijadwalkan dengan cara yang sama seperti tab aktif.
+
+Perhatikan bahwa memaksa konten latar belakang untuk berjalan pada prioritas latar depan dapat sedikit memengaruhi responsivitas tab aktif.
+
+Jika kebijakan ini disetel ke Aktif, semua konten web akan berjalan pada prioritas latar depan
+terlepas dari status visibilitasnya.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, browser akan menentukan prioritas
+berdasarkan heuristik standar (misalnya, menurunkan prioritas konten yang tidak
+terlihat, tidak memutar audio, tidak berpartisipasi dalam panggilan video...).</translation>
 <translation id="534836255587440809">Nonaktifkan klik otomatis di layar login</translation>
 <translation id="5348658899015174540"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API memungkinkan aplikasi web merekam beberapa platform sekaligus.
       Kebijakan ini membuka properti <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> untuk aplikasi web di origin yang ditentukan.

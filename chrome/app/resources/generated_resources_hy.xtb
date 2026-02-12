@@ -240,6 +240,7 @@
 <translation id="1151917987301063366">Միշտ թույլ տալ <ph name="HOST" />-ին օգտագործել տվիչները</translation>
 <translation id="1152346050262092795">Նորից մուտքագրեք ձեր գաղտնաբառը՝ հաշիվը հաստատելու համար։</translation>
 <translation id="1153636665119721804">Google-ի անվտանգության լրացուցիչ կարգավորումների ծրագիր</translation>
+<translation id="1153802775114315167">Սկսեք աշխատանքը ընդլայնումների հետ</translation>
 <translation id="1155816283571436363">Միացում հեռախոսին</translation>
 <translation id="1157952955648710254">Փակել Google Որոնման կողային վահանակը</translation>
 <translation id="1158080958325422608">Դարձնել մեծատառ</translation>
@@ -1981,7 +1982,7 @@
 <translation id="2316433409811863464">Հավելվածի հեռարձակում</translation>
 <translation id="2316709634732130529">Օգտագործել առաջարկված գաղտնաբառը</translation>
 <translation id="2317842250900878657">Կատարված է` <ph name="PROGRESS_PERCENT" />%</translation>
-<translation id="2318143611928805047">Թղթի չափը</translation>
+<translation id="2318143611928805047">Թղթի չափսը</translation>
 <translation id="2318817390901984578">Android հավելվածներն օգտագործելու համար լիցքավորեք ու թարմացրեք <ph name="DEVICE_TYPE" /> սարքը:</translation>
 <translation id="2319072477089403627">Միացում ձեր Android հեռախոսին…</translation>
 <translation id="2319459402137712349">Ընտրեք տեքստային դաշտ՝ ստեղնաշարը բացելու համար։ Կարող եք նաև ընտրել ստեղնաշարի պատկերակը Էկրանի ներքևում։</translation>
@@ -2765,6 +2766,7 @@
 <translation id="2842013086666334835">Մուտք գործեք «<ph name="NETWORK_ID" />» ցանց</translation>
 <translation id="2843560154284403323">Լինուքսի կարգավորումն ավարտելու համար թարմացրեք ChromeOS-ը և նորից փորձեք։</translation>
 <translation id="2843698124892775282">Ազատվել է <ph name="MEMORY_SAVINGS" /> տարածք</translation>
+<translation id="2844154481025280030">Կանոնը կազմաձևված է։</translation>
 <translation id="2844169650293029770">USB-C սարք (առջևի ձախակողմյան միացք)</translation>
 <translation id="2844809857160214557">Դիտեք և կառավարեք տպելու առաջադրանքները</translation>
 <translation id="2845276301195220700">Google Օրացույցի այլ գործողություններ</translation>
@@ -3204,6 +3206,7 @@
 <translation id="3151539355209957474">Մեկնարկի ժամը</translation>
 <translation id="3151786313568798007">Էկրանի դիրքը</translation>
 <translation id="3152356229013609796">Դիտեք և անտեսեք հեռախոսի ծանուցումները, ինչպես նաև պատասխանեք դրանց</translation>
+<translation id="3152545926232662879">Անտեսված է՝</translation>
 <translation id="3154754096046236400">Անձնական համատեքստ</translation>
 <translation id="3155163173539279776">Chromium-ի վերագործարկում</translation>
 <translation id="3155394504825881014">Ներդիրների խումբը վերածեք էջանիշների պանակի</translation>
@@ -5742,6 +5745,7 @@
 <translation id="4868284252360267853">Երկխոսության այս պատուհանը ֆոկուսում չէ։ Սեղմեք Command + Shift + Option + A՝ ուղղելու համար։</translation>
 <translation id="4868351661310357223"><ph name="DEVICE_TYPE" /> սարքում տեղադրեք հավելվածներ ու խաղեր Google Play-ից։</translation>
 <translation id="4869170227080975044">Կարդալ ChromeOS ցանցի մասին տեղեկությունները</translation>
+<translation id="4869175799055761881">Օգտատերը չի կարող տեղադրել այս հավելվածը։ Դիմեք ծրագրավորողին</translation>
 <translation id="4870724079713069532">Դուք կարող եք բացել և փոփոխել աջակցվող ֆայլերն այս հավելվածի միջոցով File Explorer-ից կամ այլ հավելվածներից։ Անցեք <ph name="BEGIN_LINK" />Windows-ի կարգավորումներ<ph name="END_LINK" />՝ նշելու, թե որ ֆայլերը պետք է ըստ կանխադրման բացվեն տվյալ հավելվածով։</translation>
 <translation id="4870995365819149457">Որոշ աջակցվող հղումներ նախկինի պես կբացվեն <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ու ևս 1 հավելվածում։</translation>
 <translation id="4871308555310586478">Chrome Web Store-ից չէ:</translation>
@@ -8259,6 +8263,7 @@
 <translation id="6636623428211296678">Ստորև ծանոթացեք այլ կարգավորումների կամ ավարտեք ստուգումը</translation>
 <translation id="6639554308659482635">SQLite հիշողություն</translation>
 <translation id="6640268266988685324">Բացել ներդիր</translation>
+<translation id="664271268954513498">Կանոնի արժեքը</translation>
 <translation id="6642720633335369752">Հավելվածների բոլոր բաց պատուհանները տեսնելու համար մատը սահեցրեք ներքևից վերև և պահեք։</translation>
 <translation id="664290675870910564">Ցանցի ընտրություն</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
@@ -8643,6 +8648,7 @@
 <translation id="6896758677409633944">Պատճենել</translation>
 <translation id="6897363604023044284">Ընտրել կայքեր՝ մաքրելու համար</translation>
 <translation id="6897688156970667447">Հարմար է վատ լուսավորության դեպքում և տնտեսում է մարտկոցի լիցքը</translation>
+<translation id="6897756054229464646">Gemini-ով</translation>
 <translation id="6897972855231767338">Իմանալ ավելին հյուրի ռեժիմում դիտարկման մասին</translation>
 <translation id="6898438890765871056">Բացել OneDrive պանակը</translation>
 <translation id="6898440773573063262">Այժմ այս սարքի վրա Kiosk ծրագրերը կարելի է կազմաձևել այնպես, որ դրանք ավտոմատ գործարկվեն:</translation>
@@ -9144,6 +9150,7 @@
 <translation id="7250616558727237648">Սարքը չի արձագանքում։ Նորից փորձեք։</translation>
 <translation id="725109152065019550">Ադմինիստրատորն արգելել է արտաքին պահեստի օգտագործումը ձեր հաշվի համար:</translation>
 <translation id="7251635775446614726">Հաղորդագրություն ձեր ադմինիստրատորից․ «<ph name="CUSTOM_MESSAGE" />»։</translation>
+<translation id="725310308981256997">Հարցնե՞լ այս էջի մասին</translation>
 <translation id="7253521419891527137">&amp;Իմանալ ավելին</translation>
 <translation id="7254951428499890870">Գործարկե՞լ «<ph name="APP_NAME" />» հավելվածն ախտորոշման ռեժիմում:</translation>
 <translation id="725497546968438223">Պանակն էջանշելու կոճակ</translation>
@@ -10632,6 +10639,7 @@
 <translation id="8244201515061746038">Ավտոմատ շտկման մասին լրացուցիչ տեղեկությունների կոճակ։ Բացում է ավտոմատ շտկման կարգավորումների էջը։ Ակտիվացնելու համար սեղմեք Enter, իսկ փակելու համար՝ Escape։</translation>
 <translation id="8244514732452879619">Շուտով քնելու ժամն է</translation>
 <translation id="8246776524656196770">Պաշտպանեք անվտանգության բանալին PIN կոդի միջոցով։</translation>
+<translation id="824713170151383793">Ծրագրավորողի գործիքների միջոցով</translation>
 <translation id="8247795734638043885">Ներբեռնել վտանգավոր ֆայլը</translation>
 <translation id="8248050856337841185">&amp;Տեղադրել</translation>
 <translation id="8248381369318572865">Օգտագործել խոսափողը և վերլուծել ձեր խոսքը</translation>
@@ -11322,7 +11330,6 @@
 <translation id="8707562594602678416">Վայրեր</translation>
 <translation id="8708000541097332489">Մաքրել ելնելիս</translation>
 <translation id="870805141700401153">Microsoftի Առանձին կոդի ստորագրում</translation>
-<translation id="8708088555926718398">Սխալ․ կատեգորիա՝ <ph name="CATEGORY" />, կոդ՝ <ph name="CODE" />, լրացուցիչ կոդ՝ <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Լրացուցիչ տեղեկություններ</translation>
 <translation id="8709368517685334931">Ավելի հին գույներ կարող եք գտնել Chrome Web Store-ում</translation>
 <translation id="8710414664106871428">Երևակայական</translation>
@@ -11548,6 +11555,7 @@
 <translation id="885746075120788020">Պահված կարգավորումներն ու գործողությունները հասանելի կլինեն ChromeOS սարքերում, երբ մուտք գործեք Google հաշիվ։ Դուք ցանկացած ժամանակ կարող եք կարգավորումներում ընտրել, թե ինչն եք ուզում համաժամացնել։</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Տեղադրե՞լ հավելվածը}one{Տեղադրե՞լ հավելվածը}other{Տեղադրե՞լ հավելվածները}}</translation>
 <translation id="8858369206579825206">Գաղտնիության կարգավորումներ</translation>
+<translation id="8858449624332155432">Կանոնը կազմաձևված է հակասական արժեքներով, մի քանի աղբյուրներից։</translation>
 <translation id="8859174528519900719">Ենթաշրջանակ՝ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Չհաջողվեց բեռնել օգտագործման պայմանները</translation>
 <translation id="8859662783913000679">Ծնողի հաշիվը</translation>

@@ -2789,6 +2789,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5466018172325111652">Vai nesaņēmāt kodu? <ph name="BEGIN_LINK" />Iegūt jaunu kodu<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Maksājumu lietotnes</translation>
 <translation id="5470861586879999274">&amp;Atcelt labojuma atsaukšanu</translation>
+<translation id="5471158297908124590">Verificējiet savu identitāti, lai varētu rediģēt maksājumu veidus.</translation>
 <translation id="5472588168895083535">Roku kustību izsekošana ir bloķēta</translation>
 <translation id="5477756102936130143">Iespējot novirzīšanu uz atbalstītām maksājumu lietotnēm</translation>
 <translation id="5479505548832623900">Iespējams, paplašinājums ignorē šīs politikas.</translation>
@@ -2866,6 +2867,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5570825185877910964">Aizsargāt kontu</translation>
 <translation id="5571083550517324815">Nevar saņemt sūtījumu šajā adresē. Atlasiet citu adresi.</translation>
 <translation id="5572434905385510939">22 x 28 collas</translation>
+<translation id="5573090972398558474">Jūsu organizācija ir bloķējusi šo lapu inkognito režīmā.</translation>
 <translation id="5573641252776268565">Pases informācijas rediģēšana</translation>
 <translation id="5578606540385219379">Pakalpojumu sniedzēji</translation>
 <translation id="5580958916614886209">Pārbaudiet derīguma termiņa mēnesi un mēģiniet vēlreiz.</translation>
@@ -3172,6 +3174,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6093795393556121384">Jūsu karte ir verificēta.</translation>
 <translation id="6094253940069566294">Transportlīdzekļa informācijas rediģēšana</translation>
 <translation id="6094290315941448991">Ja ekrānā ir redzams konfidenciāls saturs, administratora politika atspējo ekrāna ierakstīšanu</translation>
+<translation id="6097297436119286254">Verificējiet savu identitāti, lai varētu aizpildīt maksājumu informāciju.</translation>
 <translation id="6099269767116481177">22 x 29,5 collas</translation>
 <translation id="6101583188322746099">Pārtikas piegādes pakalpojumi</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4293,6 +4296,7 @@ Papildu informācija:
 <translation id="7844689747373518809">{COUNT,plural, =0{Nav}=1{1 lietotne (<ph name="EXAMPLE_APP_1" />)}=2{2 lietotnes (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}zero{# lietotnes (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}one{# lietotne (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# lietotnes (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Radās kļūda. Mēģiniet vēlreiz.</translation>
 <translation id="784623644169604270">Nav pēdējā laikā veiktu darbību</translation>
+<translation id="7848926355794727168">Automātiska pārlūkošana</translation>
 <translation id="7853222852810008596">Opcija “Maksāt vēlāk” nav pieejama šajā valūtā</translation>
 <translation id="785476343534277563">Augstskolas sports</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4522,6 +4526,7 @@ Papildu informācija:
 <translation id="8241707690549784388">Lapa, ko meklējāt, izmantoja jūsu ievadīto informāciju. Atgriešanās lapā var radīt jebkuras jūsu darbības atkārtojumu. Vai vēlaties turpināt?</translation>
 <translation id="8241712895048303527">Bloķēt šajā vietnē</translation>
 <translation id="8242426110754782860">Turpināt</translation>
+<translation id="824620968958405573">Automātiskas pārlūkošanas uzdevums</translation>
 <translation id="8246482227229072868">Gredzeni</translation>
 <translation id="8248406213705193919">Vai droši saglabāt karti?</translation>
 <translation id="8249296373107784235">Priekšlaikus pārtraukt</translation>
@@ -4920,6 +4925,7 @@ Papildu informācija:
 <translation id="8897428486789851669">Peldēšana</translation>
 <translation id="8899807382908246773">Traucējošas reklāmas</translation>
 <translation id="8903921497873541725">Tuvināt</translation>
+<translation id="8903998444169664879">Verificējiet savu identitāti, lai varētu mainīt maksājumu iestatījumus.</translation>
 <translation id="890493561996401738">Ieteikuma noņemšanas poga, nospiediet ievadīšanas taustiņu, lai noņemtu, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 collas</translation>
 <translation id="8914504000324227558">Atkārtoti palaist pārlūkprogrammu Chrome</translation>

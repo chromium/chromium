@@ -240,6 +240,7 @@
 <translation id="1151917987301063366">Завжди дозволяти хосту <ph name="HOST" /> доступ до датчиків</translation>
 <translation id="1152346050262092795">Щоб підтвердити обліковий запис, введіть свій пароль ще раз.</translation>
 <translation id="1153636665119721804">Програма додаткового захисту Google</translation>
+<translation id="1153802775114315167">Почати роботу з розширеннями</translation>
 <translation id="1155816283571436363">Підключення до телефона</translation>
 <translation id="1157952955648710254">Закрити бічну панель Пошуку Google</translation>
 <translation id="1158080958325422608">Застосувати верхній регістр</translation>
@@ -2781,6 +2782,7 @@
 <translation id="2842013086666334835">Увійдіть у мережу "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">Щоб завершити налаштування Linux, оновіть ОС Chrome і повторіть спробу.</translation>
 <translation id="2843698124892775282">Звільнено <ph name="MEMORY_SAVINGS" /></translation>
+<translation id="2844154481025280030">Правило налаштовано.</translation>
 <translation id="2844169650293029770">Пристрій, під’єднаний до порту USB-C (ліворуч на передній панелі)</translation>
 <translation id="2844809857160214557">Перегляд завдань друку й керування ними</translation>
 <translation id="2845276301195220700">Більше дій для Google Календаря</translation>
@@ -3220,6 +3222,7 @@
 <translation id="3151539355209957474">Час початку</translation>
 <translation id="3151786313568798007">Орієнтація</translation>
 <translation id="3152356229013609796">Переглядайте й закривайте сповіщення з телефона, а також відповідайте на них</translation>
+<translation id="3152545926232662879">Ігнорується:</translation>
 <translation id="3154754096046236400">Персональний контекст</translation>
 <translation id="3155163173539279776">Перезапустити Chromium</translation>
 <translation id="3155394504825881014">Перетворити групу вкладок на папку із закладками</translation>
@@ -5760,6 +5763,7 @@
 <translation id="4868284252360267853">Це вікно не виділено. Щоб виділити його, натисніть Command + Shift + Option + A.</translation>
 <translation id="4868351661310357223">Установлюйте додатки й ігри з Google Play на пристрої <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Переглядати інформацію про мережу ChromeOS</translation>
+<translation id="4869175799055761881">Користувач не може встановити цей додаток. Зв’яжіться з розробником.</translation>
 <translation id="4870724079713069532">Ви можете відкривати й редагувати підтримувані файли в цьому додатку через файловий провідник або інші додатки. Щоб указати, які файли будуть відкриватися в цьому додатку за умовчанням, перейдіть у <ph name="BEGIN_LINK" />налаштування Windows<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Деякі підтримувані посилання все ще відкриватимуться в <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> і ще 1 додатку.</translation>
 <translation id="4871308555310586478">Не з Веб-магазину Chrome.</translation>
@@ -8665,6 +8669,7 @@
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6897363604023044284">Вибрати, дані яких сайтів видалити</translation>
 <translation id="6897688156970667447">Підходить в умовах поганого освітлення й заощаджує заряд акумулятора</translation>
+<translation id="6897756054229464646">За допомогою Gemini</translation>
 <translation id="6897972855231767338">Докладніше про перегляд у режимі гостя</translation>
 <translation id="6898438890765871056">Відкрити папку OneDrive</translation>
 <translation id="6898440773573063262">Тепер на цьому пристрої можна налаштувати автозапуск додатків для терміналів.</translation>
@@ -9167,6 +9172,7 @@
 <translation id="7250616558727237648">Пристрій, на який ви надсилаєте файл, не відповів. Повторіть спробу.</translation>
 <translation id="725109152065019550">На жаль, адміністратор вимкнув зовнішню пам’ять у вашому обліковому записі.</translation>
 <translation id="7251635775446614726">Повідомлення від адміністратора: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="725310308981256997">Запитати про цю сторінку?</translation>
 <translation id="7253521419891527137">&amp;Докладніше</translation>
 <translation id="7254951428499890870">Справді запустити додаток "<ph name="APP_NAME" />" у режимі діагностики?</translation>
 <translation id="725497546968438223">Кнопка "Папка із закладками"</translation>
@@ -10655,6 +10661,7 @@
 <translation id="8244201515061746038">Кнопка "Докладніше про автовиправлення". Перейти на сторінку налаштувань автовиправлення. Щоб підтвердити, натисніть Enter; щоб відхилити, натисніть Escape.</translation>
 <translation id="8244514732452879619">Невдовзі час спати</translation>
 <translation id="8246776524656196770">Захистіть ключ безпеки PIN-кодом (особистим ідентифікаційним номером)</translation>
+<translation id="824713170151383793">За допомогою Інструментів розробника</translation>
 <translation id="8247795734638043885">Завантажити незахищений файл</translation>
 <translation id="8248050856337841185">&amp;Вставити</translation>
 <translation id="8248381369318572865">Дозволити доступ до мікрофона й аналіз мовлення</translation>
@@ -11345,7 +11352,6 @@
 <translation id="8707562594602678416">Місця</translation>
 <translation id="8708000541097332489">Очищати під час виходу</translation>
 <translation id="870805141700401153">Підписання індивідуального коду Microsoft</translation>
-<translation id="8708088555926718398">Помилка: категорія <ph name="CATEGORY" />, код <ph name="CODE" />, додатковий код <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Докладніше</translation>
 <translation id="8709368517685334931">Старі кольори можна знайти у Веб-магазині Chrome</translation>
 <translation id="8710414664106871428">Фентезі</translation>
@@ -11573,6 +11579,7 @@
 <translation id="885746075120788020">Ваші збережені параметри та дії будуть готові на будь-якому пристрої з ОС Chrome, коли ви ввійдете в обліковий запис Google. Ви можете вибрати дані для синхронізації в налаштуваннях.</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Установити додаток?}one{Установити додатки?}few{Установити додатки?}many{Установити додатки?}other{Установити додатки?}}</translation>
 <translation id="8858369206579825206">Налаштування конфіденційності</translation>
+<translation id="8858449624332155432">Налаштоване правило конфліктує зі значеннями з кількох джерел.</translation>
 <translation id="8859174528519900719">Додатковий фрейм: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Не вдалося завантажити Умови використання</translation>
 <translation id="8859662783913000679">Батьківський обліковий запис</translation>

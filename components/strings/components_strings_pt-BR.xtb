@@ -2791,6 +2791,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5466018172325111652">Não recebeu o código? <ph name="BEGIN_LINK" />Gerar outro<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Apps de pagamento</translation>
 <translation id="5470861586879999274">&amp;Refazer editar</translation>
+<translation id="5471158297908124590">Confirme que é você para editar as formas de pagamento</translation>
 <translation id="5472588168895083535">Rastreamento de mãos bloqueado</translation>
 <translation id="5477756102936130143">Ativar o redirecionamento para apps de pagamento compatíveis</translation>
 <translation id="5479505548832623900">Provavelmente ignoradas pela extensão.</translation>
@@ -2868,6 +2869,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5570825185877910964">Proteger conta</translation>
 <translation id="5571083550517324815">Não é possível fazer a retirada nesse endereço. Tente um endereço diferente.</translation>
 <translation id="5572434905385510939">22 x 28 pol.</translation>
+<translation id="5573090972398558474">Sua organização bloqueou esta página no modo de navegação anônima.</translation>
 <translation id="5573641252776268565">Editar passaporte</translation>
 <translation id="5578606540385219379">Provedores de serviços</translation>
 <translation id="5580958916614886209">Verifique o mês de validade e tente novamente</translation>
@@ -3174,6 +3176,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6093795393556121384">Seu cartão foi verificado</translation>
 <translation id="6094253940069566294">Editar veículo</translation>
 <translation id="6094290315941448991">A gravação de tela é desativada pela política do administrador quando há conteúdo protegido visível</translation>
+<translation id="6097297436119286254">Confirme que é você para preencher as informações de pagamento</translation>
 <translation id="6099269767116481177">22 x 29,5 pol.</translation>
 <translation id="6101583188322746099">Serviços de entrega de produtos de mercearia</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4295,6 +4298,7 @@ Mais detalhes:
 <translation id="7844689747373518809">{COUNT,plural, =0{Nenhum}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ocorreu um erro. Tente de novo.</translation>
 <translation id="784623644169604270">Nenhuma atividade recente</translation>
+<translation id="7848926355794727168">Navegação automática</translation>
 <translation id="7853222852810008596">A opção "Pague depois" não está disponível nesta moeda</translation>
 <translation id="785476343534277563">Esportes universitários</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4524,6 +4528,7 @@ Mais detalhes:
 <translation id="8241707690549784388">A página que você está procurando usou as informações inseridas. Voltar à essa página poderá fazer com que todas as ações realizadas antes sejam repetidas. Quer continuar?</translation>
 <translation id="8241712895048303527">Bloquear neste site</translation>
 <translation id="8242426110754782860">Continuar</translation>
+<translation id="824620968958405573">Tarefa de navegação automática</translation>
 <translation id="8246482227229072868">Anéis</translation>
 <translation id="8248406213705193919">Salvar cartão com segurança?</translation>
 <translation id="8249296373107784235">Cancelar</translation>
@@ -4922,6 +4927,7 @@ Mais detalhes:
 <translation id="8897428486789851669">Natação</translation>
 <translation id="8899807382908246773">Anúncios invasivos</translation>
 <translation id="8903921497873541725">Aumentar zoom</translation>
+<translation id="8903998444169664879">Confirme que é você para mudar as configurações de pagamento</translation>
 <translation id="890493561996401738">Botão "Remover sugestão", pressione Enter para remover, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">20 x 25 cm</translation>
 <translation id="8914504000324227558">Reiniciar o Google Chrome</translation>

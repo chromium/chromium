@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Каб убачыць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
 <translation id="201759455285471444">Разгарнуць групу ўкладак.</translation>
 <translation id="202070562065520783">Растлумач гэта мне</translation>
-<translation id="2023713324775943812">Доступ да рэжыму чытання з адраснага радка (пры магчымасці)</translation>
 <translation id="2044394949148788042">Адкрыйце сетку ўкладак</translation>
 <translation id="2044681667265133332">Уліковым запісам <ph name="USER_EMAIL" /> кіруе дамен "<ph name="HOSTED_DOMAIN" />", які можа праглядаць пэўную інфармацыю. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">новы элемент</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Захаваныя паролі і ключы доступу</translation>
 <translation id="3143515551205905069">Скасаваць сінхранізацыю</translation>
 <translation id="3144126448740580210">ГАТОВА</translation>
+<translation id="3147521114983561406">Ключы доступу захоўваюцца ў менеджары пароляў. Імі можна карыстацца як ва ўкладках у рэжыме інкогніта, так і ў звычайных укладках.</translation>
 <translation id="3148052723910099040">Сетка звычайных укладак</translation>
 <translation id="3148237711805373460">Перайсці</translation>
 <translation id="3157387275655328056">Дадаць у спіс чытання</translation>
@@ -1860,6 +1860,7 @@
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
 <translation id="7772948288262733182">З вяртаннем!</translation>
 <translation id="777637629667389858">Калі вы ўвайшлі ва ўліковы запіс, абараняе вас ва ўсіх сэрвісах Google.</translation>
+<translation id="7776604279034196531">Доступ да рэжыму чытання з адраснага радка, калі ён даступны</translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7788868432173225918">Закрыць разгорнуты прагляд</translation>
 <translation id="7791543448312431591">Дадаць</translation>
@@ -2097,6 +2098,7 @@
 <translation id="8587001564479545614">Стварыце рэзервовы PIN-код</translation>
 <translation id="8588404856427128947">Выключаны</translation>
 <translation id="8590286732816598906">Група ўкладак, <ph name="GROUP_TITLE" />, меню.</translation>
+<translation id="8593317261815647019">Стварыць ключ доступу па-за рэжымам інкогніта?</translation>
 <translation id="8600272508328041907">Пераключыцеся ў рэжым "Перакласці ўсю старонку"</translation>
 <translation id="860043288473659153">Імя ўладальніка карткі</translation>
 <translation id="8601611099293226919">Шукаць змесціва экрана з дапамогай Google Аб’ектыва</translation>

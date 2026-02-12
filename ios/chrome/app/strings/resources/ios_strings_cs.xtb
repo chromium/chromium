@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Chcete-li zobrazit hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="201759455285471444">Rozbalit skupinu karet.</translation>
 <translation id="202070562065520783">Vysvětli mi tohle</translation>
-<translation id="2023713324775943812">Přístup k režimu čtení z adresního řádku, když je k dispozici</translation>
 <translation id="2044394949148788042">Otevřít mřížku karet</translation>
 <translation id="2044681667265133332">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="HOSTED_DOMAIN" />, která může mít přístup k některým informacím. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nová položka</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Uložená hesla a přístupové klíče</translation>
 <translation id="3143515551205905069">Zrušit synchronizaci</translation>
 <translation id="3144126448740580210">HOTOVO</translation>
+<translation id="3147521114983561406">Přístupové klíče se ukládají do správce hesel. Jsou dostupné na anonymních i běžných kartách.</translation>
 <translation id="3148052723910099040">Běžná mřížka karet</translation>
 <translation id="3148237711805373460">Přejít</translation>
 <translation id="3157387275655328056">Přidat do seznamu četby</translation>
@@ -1860,6 +1860,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7772032839648071052">Potvrďte heslovou frázi</translation>
 <translation id="7772948288262733182">Vítejte zpět</translation>
 <translation id="777637629667389858">Když jste přihlášeni, chrání vás ve službách Google.</translation>
+<translation id="7776604279034196531">Přístup k režimu čtení z adresního řádku, když je k dispozici</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7788868432173225918">Zavřít rozbalené zobrazení</translation>
 <translation id="7791543448312431591">Přidat</translation>
@@ -2097,6 +2098,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="8587001564479545614">Vytvořte PIN pro obnovení</translation>
 <translation id="8588404856427128947">Vypnuto</translation>
 <translation id="8590286732816598906">Skupina karet, <ph name="GROUP_TITLE" />, nabídka.</translation>
+<translation id="8593317261815647019">Vytvořit přístupový klíč mimo anonymní režim?</translation>
 <translation id="8600272508328041907">Přepněte na překlad celé stránky</translation>
 <translation id="860043288473659153">Jméno držitele karty</translation>
 <translation id="8601611099293226919">Vyhledávat na obrazovce pomocí Google Lens</translation>
