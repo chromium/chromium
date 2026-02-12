@@ -1,6 +1,6 @@
 {
-  "version": "83.12",
-  "log_list_timestamp": "2026-02-10T12:54:26Z",
+  "version": "84.0",
+  "log_list_timestamp": "2026-02-12T12:54:43Z",
   "operators": [
     {
       "name": "Google",
@@ -752,8 +752,8 @@
           "monitoring_url": "https://luoshu2027.trustasia.com/luoshu2027/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2025-12-02T18:30:00Z"
+            "usable": {
+              "timestamp": "2026-02-11T18:30:00Z"
             }
           },
           "temporal_interval": {
