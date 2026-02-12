@@ -6,10 +6,15 @@
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_MOCK_PRIVATE_KEY_H_
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/proto/client_certificates_database.pb.h"
 #include "net/ssl/ssl_private_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if BUILDFLAG(IS_IOS)
+#include <Security/Security.h>
+#endif  // BUILDFLAG(IS_IOS)
 
 namespace client_certificates {
 
@@ -36,6 +41,9 @@ class MockPrivateKey : public PrivateKey {
               (),
               (const, override));
   MOCK_METHOD(base::DictValue, ToDict, (), (const, override));
+#if BUILDFLAG(IS_IOS)
+  MOCK_METHOD(SecKeyRef, GetSecKeyRef, (), (const override));
+#endif  // BUILDFLAG(IS_IOS)
 
  protected:
   ~MockPrivateKey() override;

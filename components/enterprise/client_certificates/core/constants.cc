@@ -24,4 +24,6 @@ const char kKeyDetails[] = "KeyDetails";
 
 const char kCertificate[] = "Certificate";
 
+const int kDaysBeforeExpiration = 7;
+
 }  // namespace client_certificates

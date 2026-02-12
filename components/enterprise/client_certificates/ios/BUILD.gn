@@ -1,0 +1,58 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+assert(enterprise_client_certificates)
+
+source_set("ios") {
+  public = [
+    "certificate_provisioning_service_ios.h",
+    "client_identity_ios.h",
+    "client_identity_ios_error.h",
+  ]
+
+  sources = [
+    "certificate_provisioning_service_ios.mm",
+    "client_identity_ios.mm",
+    "client_identity_ios_error.mm",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/enterprise/client_certificates/core",
+  ]
+
+  deps = [
+    "//components/keyed_service/core",
+    "//components/policy/core/common",
+    "//net",
+  ]
+
+  frameworks = [
+    "CoreFoundation.framework",
+    "Foundation.framework",
+    "Security.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "certificate_provisioning_service_ios_unittest.mm" ]
+
+  deps = [
+    ":ios",
+    "//base",
+    "//base/test:test_support",
+    "//components/enterprise/client_certificates/core",
+    "//components/enterprise/client_certificates/core:test_support",
+    "//components/prefs:test_support",
+    "//crypto",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/boringssl",
+  ]
+}

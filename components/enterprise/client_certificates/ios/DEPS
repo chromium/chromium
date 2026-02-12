@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "certificate_provisioning_service_ios_unittest.mm": [
+    "+crypto",
+    "+third_party/boringssl/src/include",
+  ]
+}
