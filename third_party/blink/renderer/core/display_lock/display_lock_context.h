@@ -118,21 +118,33 @@ class CORE_EXPORT DisplayLockContext final
     //     scroll-marker-group property.
     //   - This is an activatable for a11y lock and a11y is enabled.
     // TODO(400977357): Optimize layout for the scroll-marker-group cases.
-    return !is_locked_ || forced_info_.is_forced(ForcedPhase::kLayout) ||
-           (IsActivatable(DisplayLockActivationReason::kAny) &&
-            ActivatableDisplayLocksForced()) ||
-           (IsAuto() && HasScrollerWithScrollMarkerGroup()) ||
-           ShouldActivateForScreenReader();
+    bool should = !is_locked_ || forced_info_.is_forced(ForcedPhase::kLayout) ||
+                  (IsActivatable(DisplayLockActivationReason::kAny) &&
+                   ActivatableDisplayLocksForced()) ||
+                  (IsAuto() && HasScrollerWithScrollMarkerGroup()) ||
+                  ShouldActivateForScreenReader();
+    // Should only lay out if style recalc is allowed.
+    DCHECK(!should || ShouldStyleChildren());
+    return should;
   }
 
   bool ShouldActivateForScreenReader() const;
   void DidLayoutChildren();
   ALWAYS_INLINE bool ShouldPrePaintChildren() const {
-    return !is_locked_ || forced_info_.is_forced(ForcedPhase::kPrePaint) ||
-           (IsActivatable(DisplayLockActivationReason::kAny) &&
-            ActivatableDisplayLocksForced());
+    bool should = !is_locked_ ||
+                  forced_info_.is_forced(ForcedPhase::kPrePaint) ||
+                  (IsActivatable(DisplayLockActivationReason::kAny) &&
+                   ActivatableDisplayLocksForced());
+    // Should only pre-paint of layout is allowed.
+    DCHECK(!should || ShouldLayoutChildren());
+    return should;
   }
-  ALWAYS_INLINE bool ShouldPaintChildren() const { return !is_locked_; }
+  ALWAYS_INLINE bool ShouldPaintChildren() const {
+    bool should = !is_locked_;
+    // Should only paint if pre-paint is allowed.
+    DCHECK(!should || ShouldPrePaintChildren());
+    return should;
+  }
 
   // Returns true if the last style recalc traversal was blocked at this
   // element.
