@@ -45,6 +45,7 @@ import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,7 +71,9 @@ import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
@@ -88,6 +91,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -96,6 +100,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.ui.test.util.ViewUtils;
@@ -132,6 +137,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     private SigninAndHistorySyncActivity mActivity;
     private BottomSheetSigninAndHistorySyncCoordinator mCoordinator;
+    private PrefService mPrefService;
     private @SigninAccessPoint int mSigninAccessPoint = SigninAccessPoint.NTP_FEED_TOP_PROMO;
 
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
@@ -146,6 +152,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                     // the end of native initialization.
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                     FirstRunStatus.setFirstRunFlowComplete(true);
+                    mPrefService = UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                 });
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
         // Simulate the real HistorySyncHelper's interaction with SyncService to ensure
@@ -179,6 +186,14 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
     }
 
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, true);
+                });
+    }
+
     @Test
     @MediumTest
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
@@ -206,6 +221,27 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         acceptHistorySyncAndVerifyFlowCompletion(
                 /* checkRootDialog= */ true, /* hasSignedIn= */ true);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signInNotAllowed() {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
+                });
+
+        launchSigninFlow(
+                WithAccountSigninMode.SEAMLESS_SIGNIN,
+                HistorySyncConfig.OptInMode.REQUIRED,
+                TestAccounts.AADC_ADULT_ACCOUNT.getId());
+
+        ViewUtils.waitForVisibleView(
+                withText(R.string.signin_account_picker_bottom_sheet_error_title));
+        verify(mDelegate, never()).onFlowComplete(any());
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
     @Test
