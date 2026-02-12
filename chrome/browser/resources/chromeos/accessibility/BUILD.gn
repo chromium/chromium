@@ -29,7 +29,6 @@ group("build") {
     "common:build",
     "enhanced_network_tts:build",
     "select_to_speak:build",
-    "switch_access/mv2:build",
     "switch_access/mv3:build",
   ]
 }

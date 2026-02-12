@@ -2,19 +2,12 @@
 {% if key is defined %}
   "key": "{{key}}",
 {% endif %}
-{% if is_manifest_v3 == '1' %}
   "manifest_version": 3,
   "minimum_chrome_version": "93",
   "background": {
     "service_worker": "switch_access/mv3/switch_access_loader.rollup.js",
     "type": "module"
   },
-{% else %}
-  "manifest_version": 2,
-  "background": {
-    "page": "switch_access/mv2/background.html"
-  },
-{% endif %}
   "name": "__MSG_SWITCH_ACCESS_NAME__",
   "version": "{{set_version}}",
   "description": "__MSG_SWITCH_ACCESS_DESCRIPTION__",
@@ -39,16 +32,10 @@
       "matches": [ "https://docs.google.com/document*",
                    "https://docs.sandbox.google.com/document*" ],
       "all_frames": true,
-{% if is_manifest_v3 == '1' %}
       "js": [
         "switch_access/mv3/gdocs_script.js"
       ],
       "world": "MAIN",
-{% else %}
-      "js": [
-        "common/gdocs_script.js"
-      ],
-{% endif %}
       "run_at": "document_start"
     }
   ]
