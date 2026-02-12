@@ -841,12 +841,17 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mNodeInfoCache.clear();
         mEventDispatcher.clearQueue();
         mAutoDisableAccessibilityHandler.cancelDisableTimer();
-        if (mDelegate.getWebContents() == null) {
+        WebContents webContents = mDelegate.getWebContents();
+        if (webContents == null) {
             deleteEarly();
         } else {
             if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
-            WindowEventObserverManager.from(mDelegate.getWebContents()).removeObserver(this);
-            mDelegate.getWebContents().removeUserData(WebContentsAccessibilityImpl.class);
+            // If the WebContents is destroyed user data will already be cleared so don't worry
+            // about clearing it from either of these locations.
+            if (!webContents.isDestroyed()) {
+                WindowEventObserverManager.from(webContents).removeObserver(this);
+                webContents.removeUserData(WebContentsAccessibilityImpl.class);
+            }
         }
         TraceEvent.end("WebContentsAccessibilityImpl.destroy");
     }

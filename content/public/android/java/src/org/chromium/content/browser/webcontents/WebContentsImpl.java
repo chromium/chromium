@@ -304,6 +304,11 @@ public class WebContentsImpl
             mObserverProxy.webContentsDestroyed();
             mObserverProxy = null;
         }
+        UserDataHost userDataHost = getUserDataHost();
+        if (userDataHost != null) {
+            userDataHost.destroy();
+            mInternalsHolder.set(null);
+        }
         var removedValue = sWebContentsMap.remove(nativeWebContentsAndroid);
         assert removedValue != null;
     }
