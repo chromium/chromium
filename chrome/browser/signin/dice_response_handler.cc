@@ -55,6 +55,8 @@ const char kDiceResponseHeaderHistogram[] = "Signin.DiceResponseHeader";
 const char kDiceTokenFetchResultHistogram[] = "Signin.DiceTokenFetchResult";
 const char kDiceTokenBindingOutcomeHistogram[] =
     "Signin.DiceTokenBindingOutcome";
+const char kDiceEnableSyncHeaderAccountInfoIsPresent[] =
+    "Signin.DiceEnableSyncHeaderAccountInfoIsPresent";
 
 // Used for UMA. Do not reorder, append new values at the end.
 enum DiceResponseHeader {
@@ -382,8 +384,14 @@ void DiceResponseHandler::ProcessEnableSyncHeader(
       return;  // There is already a request in flight with the same parameters.
     }
   }
-  delegate->CompleteChromeSignInAfterGaiaSignin(
-      identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id));
+  AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id);
+  base::UmaHistogramBoolean(kDiceEnableSyncHeaderAccountInfoIsPresent,
+                            !account_info.IsEmpty());
+  if (account_info.IsEmpty()) {
+    return;
+  }
+  delegate->CompleteChromeSignInAfterGaiaSignin(account_info);
 }
 
 void DiceResponseHandler::ProcessDiceSignoutHeader(

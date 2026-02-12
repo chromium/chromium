@@ -1496,6 +1496,19 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.DiceEnableSyncHeaderAccountInfoIsPresent"
+    enum="BooleanPresent" expires_after="2027-02-11">
+  <owner>ahijazi@chromium.org</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether the AccountInfo is Present or Missing when processing a Dice
+    &quot;ENABLE_SYNC&quot; header. Missing AccountInfo can happen during OAuth
+    outages where the previous signin header didn't contain an authorization
+    code.
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceMigration.ForceMigrated" enum="Boolean"
     expires_after="2026-08-18">
   <owner>ankushkush@google.com</owner>

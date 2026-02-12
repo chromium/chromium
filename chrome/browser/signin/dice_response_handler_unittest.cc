@@ -1172,6 +1172,32 @@ TEST_F(DiceResponseHandlerTest,
   EXPECT_EQ(account_info.email, complete_profile_signin_account_info_.email);
 }
 
+// Checks that a ENABLE_SYNC action is ignored when the account info is missing.
+TEST_F(DiceResponseHandlerTest,
+       SigninEnableSyncDiceHeaderWithMissingAccountInfo) {
+  DiceResponseParams dice_params = MakeDiceParams(DiceAction::ENABLE_SYNC);
+  const auto& account_info = dice_params.enable_sync_info->account_info;
+  CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
+      account_info.gaia_id, account_info.email);
+
+  ASSERT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
+
+  auto extended_account_info =
+      identity_manager()->FindExtendedAccountInfoByGaiaId(account_info.gaia_id);
+  ASSERT_TRUE(extended_account_info.IsEmpty());
+
+  base::HistogramTester histogram_tester;
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  // Check that delegate was NOT called to enable sync.
+  EXPECT_TRUE(complete_profile_signin_account_info_.IsEmpty());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.DiceEnableSyncHeaderAccountInfoIsPresent", /*sample=*/0,
+      /*expected_bucket_count=*/1);
+}
+
 TEST_F(DiceResponseHandlerTest, Timeout) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   const auto& account_info = dice_params.signin_info->account_info;
