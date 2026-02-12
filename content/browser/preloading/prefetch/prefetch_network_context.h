@@ -45,11 +45,6 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   void CloseIdleConnections();
 
  private:
-  // Returns a URLLoaderFactory associated with the given |network_context|.
-  static scoped_refptr<network::SharedURLLoaderFactory>
-  CreateNewURLLoaderFactory(network::mojom::NetworkContext* network_context,
-                            const PrefetchRequest& prefetch_request);
-
   // Whether an isolated network context or the default network context should
   // be used.
   const bool use_isolated_network_context_;
