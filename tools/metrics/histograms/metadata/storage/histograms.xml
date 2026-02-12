@@ -1288,36 +1288,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.DomStorage.BatchTaskGrowthSizeBytes2" units="bytes"
-    expires_after="2026-07-12">
-  <owner>annasato@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records the approximate growth in bytes of the leveldb::WriteBatch after
-    processing a single task within
-    AsyncDomStorageDatabase::RunBatchDatabaseTasks. Helps understand if
-    individual tasks contribute significantly to batch size. Recorded for each
-    task in the batch. See crbug.com/40245293.
-  </summary>
-</histogram>
-
-<histogram name="Storage.DomStorage.IterationsToReach{Size}MB2" units="count"
-    expires_after="2026-05-24">
-  <owner>annasato@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records the number of iterations (tasks processed) required for the
-    leveldb::WriteBatch in AsyncDomStorageDatabase::RunBatchDatabaseTasks to
-    first reach an approximate size of {Size} MiB. Recorded at most once per
-    batch. See crbug.com/40245293.
-  </summary>
-  <token key="Size">
-    <variant name="20"/>
-    <variant name="100"/>
-    <variant name="500"/>
-  </token>
-</histogram>
-
 <histogram name="Storage.FileSystemAccess.AttemptToObserveSymlinkOrJunction"
     enum="Boolean" expires_after="2026-08-31">
   <owner>mych@chromium.org</owner>
