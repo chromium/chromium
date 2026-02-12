@@ -98,11 +98,6 @@ void WebStateDelegate::ContextMenuConfiguration(
   completion_handler(nil);
 }
 
-UIContextMenuConfiguration*
-WebStateDelegate::GetCustomContextMenuConfiguration() {
-  return nil;
-}
-
 void WebStateDelegate::ContextMenuWillCommitWithAnimator(
     WebState* source,
     id<UIContextMenuInteractionCommitAnimating> animator) {}

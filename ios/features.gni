@@ -24,5 +24,7 @@ declare_args() {
   block_universal_links_in_off_the_record_mode = true
 
   # Controls whether BEContextMenuConfiguration is used.
-  use_be_deferred_context_menu = true
+  # BrowserEngineKit is currently disallowed. See crbug.com/477987068 for
+  # context.
+  use_be_deferred_context_menu = false
 }

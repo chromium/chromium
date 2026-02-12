@@ -117,15 +117,6 @@ class WebStateDelegate {
       WebState* source,
       const ContextMenuParams& params,
       void (^completion_handler)(UIContextMenuConfiguration*));
-
-  // Returns a custom context menu configuration.
-  virtual UIContextMenuConfiguration* GetCustomContextMenuConfiguration();
-
-  // Called when the context menu configuration is loaded.
-  virtual void ContextMenuConfigurationLoaded(
-      UIContextMenuConfiguration* configuration,
-      UIContextMenuConfiguration* update) {}
-
   // Called when the context menu will commit with animator.
   virtual void ContextMenuWillCommitWithAnimator(
       WebState* source,

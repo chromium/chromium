@@ -103,6 +103,4 @@ BASE_FEATURE(kEnableBEContextMenuConfiguration,
 
 BASE_FEATURE(kIOSDownloadSanitizeFilename, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableContextMenuTimeout, base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace web::features

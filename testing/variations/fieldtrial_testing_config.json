@@ -13730,21 +13730,6 @@
             ]
         }
     ],
-    "IOSContextMenuTimeout": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableContextMenuTimeout"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSCustomFileUploadMenu": [
         {
             "platforms": [

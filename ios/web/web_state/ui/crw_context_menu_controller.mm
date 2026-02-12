@@ -4,6 +4,12 @@
 
 #import "ios/web/web_state/ui/crw_context_menu_controller.h"
 
+#import "ios/web/web_state/ui/buildflags.h"
+
+#if BUILDFLAG(IOS_USE_BE_DEFERRED_CONTEXT_MENU)
+#import <BrowserEngineKit/BrowserEngineKit.h>
+#endif
+
 #import "base/auto_reset.h"
 #import "base/feature_list.h"
 #import "base/values.h"
@@ -14,24 +20,19 @@
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
-#import "ios/web/web_state/ui/buildflags.h"
 #import "ios/web/web_state/ui/crw_context_menu_element_fetcher.h"
 #import "ui/gfx/geometry/rect_f.h"
 #import "ui/gfx/image/image.h"
 
 namespace {
 
-const CGFloat kJavaScriptTimeout = 0.5;
+const CGFloat kJavaScriptTimeout = 1;
 
 // Wrapper around CFRunLoop() to help crash server put all crashes happening
 // while the loop is executed in the same bucket. Marked as `noinline` to
 // prevent clang from optimising the function out in official builds.
 void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
-  if (base::FeatureList::IsEnabled(web::features::kEnableContextMenuTimeout)) {
-    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.5, false);
-  } else {
-    CFRunLoopRun();
-  }
+  CFRunLoopRun();
 }
 
 }  // namespace
@@ -49,6 +50,14 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
 @property(nonatomic, assign) web::WebState* webState;
 
 @property(nonatomic, strong) CRWContextMenuElementFetcher* elementFetcher;
+
+#if BUILDFLAG(IOS_USE_BE_DEFERRED_CONTEXT_MENU)
+- (void)fulfillConfiguration:(BEContextMenuConfiguration*)config
+                  withParams:(const web::ContextMenuParams&)params
+                    location:(CGPoint)location
+                 interaction:(UIContextMenuInteraction*)interaction
+    API_AVAILABLE(ios(17.4));
+#endif
 
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationWithParams:(web::ContextMenuParams)params
@@ -119,29 +128,19 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
 #if BUILDFLAG(IOS_USE_BE_DEFERRED_CONTEXT_MENU)
   if (@available(iOS 17.4, *)) {
     if (base::FeatureList::IsEnabled(
-            web::features::kEnableBEContextMenuConfiguration) &&
-        self.webState && self.webState->GetDelegate()) {
-      UIContextMenuConfiguration* config =
-          self.webState->GetDelegate()->GetCustomContextMenuConfiguration();
-      if (config) {
-        __weak __typeof(self) weakSelf = self;
-        [self.elementFetcher
-            fetchDOMElementAtPoint:locationInWebView
-                 completionHandler:^(const web::ContextMenuParams& params) {
-                   CRWContextMenuController* strongSelf = weakSelf;
-                   if (!strongSelf) {
-                     return;
-                   }
-                   UIContextMenuConfiguration* innerConfig = [strongSelf
-                       contextMenuConfigurationWithParams:params
-                                                 location:location
-                                              interaction:interaction];
-
-                   strongSelf.webState->GetDelegate()
-                       ->ContextMenuConfigurationLoaded(config, innerConfig);
-                 }];
-        return config;
-      }
+            web::features::kEnableBEContextMenuConfiguration)) {
+      BEContextMenuConfiguration* config =
+          [[BEContextMenuConfiguration alloc] init];
+      __weak __typeof(self) weakSelf = self;
+      [self.elementFetcher
+          fetchDOMElementAtPoint:locationInWebView
+               completionHandler:^(const web::ContextMenuParams& params) {
+                 [weakSelf fulfillConfiguration:config
+                                     withParams:params
+                                       location:location
+                                    interaction:interaction];
+               }];
+      return config;
     }
   }
 #endif
@@ -219,6 +218,20 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
 }
 
 #pragma mark - Private
+
+#if BUILDFLAG(IOS_USE_BE_DEFERRED_CONTEXT_MENU)
+- (void)fulfillConfiguration:(BEContextMenuConfiguration*)config
+                  withParams:(const web::ContextMenuParams&)params
+                    location:(CGPoint)location
+                 interaction:(UIContextMenuInteraction*)interaction
+    API_AVAILABLE(ios(17.4)) {
+  UIContextMenuConfiguration* innerConfig =
+      [self contextMenuConfigurationWithParams:params
+                                      location:location
+                                   interaction:interaction];
+  [config fulfillUsingConfiguration:innerConfig];
+}
+#endif
 
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationWithParams:(web::ContextMenuParams)params
