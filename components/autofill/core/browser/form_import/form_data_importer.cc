@@ -246,11 +246,6 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 
 FormDataImporter::~FormDataImporter() = default;
 
-FormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile() = default;
-FormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile(
-    const FormDataImporter::ExtractedAddressProfile& other) = default;
-FormDataImporter::ExtractedAddressProfile::~ExtractedAddressProfile() = default;
-
 void FormDataImporter::ImportAndProcessFormData(
     const FormStructure& submitted_form,
     bool profile_autofill_enabled,
@@ -426,7 +421,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
 
 size_t FormDataImporter::ExtractAddressProfiles(
     const FormStructure& form,
-    std::vector<FormDataImporter::ExtractedAddressProfile>*
+    std::vector<AddressFormDataImporter::ExtractedAddressProfile>*
         extracted_address_profiles) {
   // Create a buffer to collect logging output for the autofill-internals.
   LogManager* log_manager = client_->GetCurrentLogManager();
@@ -678,7 +673,7 @@ FormDataImporter::GetAddressObservedFieldValues(
 bool FormDataImporter::ExtractAddressProfileFromSection(
     base::span<const AutofillField* const> section_fields,
     const GURL& source_url,
-    std::vector<FormDataImporter::ExtractedAddressProfile>*
+    std::vector<AddressFormDataImporter::ExtractedAddressProfile>*
         extracted_address_profiles,
     LogBuffer* import_log_buffer) {
   // Tracks if the form section contains multiple distinct email addresses.
@@ -784,7 +779,7 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // incognito mode.
   DCHECK(!client_->IsOffTheRecord());
 
-  ExtractedAddressProfile extracted_address_profile;
+  AddressFormDataImporter::ExtractedAddressProfile extracted_address_profile;
   extracted_address_profile.profile = candidate_profile;
   extracted_address_profile.url = source_url;
   extracted_address_profile.import_metadata = import_metadata;
@@ -793,7 +788,7 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
 }
 
 bool FormDataImporter::ProcessExtractedAddressProfiles(
-    const std::vector<FormDataImporter::ExtractedAddressProfile>&
+    const std::vector<AddressFormDataImporter::ExtractedAddressProfile>&
         extracted_address_profiles,
     bool allow_prompt,
     ukm::SourceId ukm_source_id) {
@@ -803,7 +798,8 @@ bool FormDataImporter::ProcessExtractedAddressProfiles(
   // import addresses. If it is false, we should not display UI to import
   // addresses due to a possible dialog or bubble conflict.
   bool allow_only_silent_updates = !allow_prompt;
-  for (const ExtractedAddressProfile& candidate : extracted_address_profiles) {
+  for (const AddressFormDataImporter::ExtractedAddressProfile& candidate :
+       extracted_address_profiles) {
     address_profile_save_manager_->ImportProfileFromForm(
         candidate.profile, client_->GetAppLocale(), candidate.url,
         ukm_source_id, allow_only_silent_updates, candidate.import_metadata);

@@ -19,6 +19,13 @@ AddressFormDataImporter::AddressFormDataImporter(AutofillClient* client)
 
 AddressFormDataImporter::~AddressFormDataImporter() = default;
 
+AddressFormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile() =
+    default;
+AddressFormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile(
+    const AddressFormDataImporter::ExtractedAddressProfile& other) = default;
+AddressFormDataImporter::ExtractedAddressProfile::~ExtractedAddressProfile() =
+    default;
+
 void AddressFormDataImporter::RemoveInaccessibleProfileValues(
     AutofillProfile& profile) {
   const FieldTypeSet inaccessible_fields =

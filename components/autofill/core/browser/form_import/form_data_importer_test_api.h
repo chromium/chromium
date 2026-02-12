@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_import/addresses/address_form_data_importer.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
@@ -17,7 +18,8 @@ namespace autofill {
 
 class FormDataImporterTestApi {
  public:
-  using ExtractedAddressProfile = FormDataImporter::ExtractedAddressProfile;
+  using ExtractedAddressProfile =
+      AddressFormDataImporter::ExtractedAddressProfile;
   using ExtractedFormData = FormDataImporter::ExtractedFormData;
 
   explicit FormDataImporterTestApi(FormDataImporter* fdi) : fdi_(*fdi) {}

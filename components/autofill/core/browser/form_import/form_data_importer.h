@@ -129,22 +129,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   payments::PaymentsFormDataImporter& GetPaymentsFormDataImporter();
 
  private:
-  // Defines an extracted address profile, which is a candidate for address
-  // profile import.
-  struct ExtractedAddressProfile {
-    ExtractedAddressProfile();
-    ExtractedAddressProfile(const ExtractedAddressProfile& other);
-    ~ExtractedAddressProfile();
-
-    // The profile that was extracted from the form.
-    AutofillProfile profile{i18n_model_definition::kLegacyHierarchyCountryCode};
-    // The URL the profile was extracted from.
-    GURL url;
-    // Metadata about the import, used for metric collection in
-    // ProfileImportProcess after the user's decision.
-    ProfileImportMetadata import_metadata;
-  };
-
   // Defines data extracted from the form.
   struct ExtractedFormData {
     ExtractedFormData();
@@ -161,7 +145,8 @@ class FormDataImporter : public AddressDataManager::Observer,
     // List of address profiles extracted from the form, which are candidates
     // for importing. The list is empty if none of the address profile fulfill
     // import requirements.
-    std::vector<ExtractedAddressProfile> extracted_address_profiles;
+    std::vector<AddressFormDataImporter::ExtractedAddressProfile>
+        extracted_address_profiles;
     // IBAN extracted from the form, which is a candidate for importing. Present
     // if an IBAN is found in the form.
     std::optional<Iban> extracted_iban;
@@ -180,7 +165,8 @@ class FormDataImporter : public AddressDataManager::Observer,
   // The function returns the number of _complete_ extracted profiles.
   size_t ExtractAddressProfiles(
       const FormStructure& form,
-      std::vector<ExtractedAddressProfile>* extracted_address_profiles);
+      std::vector<AddressFormDataImporter::ExtractedAddressProfile>*
+          extracted_address_profiles);
 
   // Iterates over `section_fields` and builds a map from field type to observed
   // value for that field type.
@@ -205,7 +191,8 @@ class FormDataImporter : public AddressDataManager::Observer,
   bool ExtractAddressProfileFromSection(
       base::span<const AutofillField* const> section_fields,
       const GURL& source_url,
-      std::vector<ExtractedAddressProfile>* extracted_address_profiles,
+      std::vector<AddressFormDataImporter::ExtractedAddressProfile>*
+          extracted_address_profiles,
       LogBuffer* import_log_buffer);
 
   // Returns the extracted card if one was found in the form.
@@ -264,7 +251,8 @@ class FormDataImporter : public AddressDataManager::Observer,
   // prompt can be shown. Returns true if the import of a complete profile is
   // initiated.
   bool ProcessExtractedAddressProfiles(
-      const std::vector<ExtractedAddressProfile>& extracted_address_profiles,
+      const std::vector<AddressFormDataImporter::ExtractedAddressProfile>&
+          extracted_address_profiles,
       bool allow_prompt,
       ukm::SourceId ukm_source_id);
 

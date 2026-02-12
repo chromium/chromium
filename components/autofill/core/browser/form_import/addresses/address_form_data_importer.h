@@ -6,6 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESSES_ADDRESS_FORM_DATA_IMPORTER_H_
 
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -22,9 +24,25 @@ class AddressFormDataImporter {
   AddressFormDataImporter& operator=(const AddressFormDataImporter&) = delete;
   virtual ~AddressFormDataImporter();
 
-  // TODO(crbug.com/481379161): It may be possible to make some of these
-  //    functions private once all other refactoring finishes. Reevaluate at
-  //    that time.
+  // TODO(crbug.com/481379161): It will be possible to make some of these
+  //    functions/structs/etc. private once all other refactoring finishes.
+  //    Reevaluate at that time.
+
+  // Defines an extracted address profile, which is a candidate for address
+  // profile import.
+  struct ExtractedAddressProfile {
+    ExtractedAddressProfile();
+    ExtractedAddressProfile(const ExtractedAddressProfile& other);
+    ~ExtractedAddressProfile();
+
+    // The profile that was extracted from the form.
+    AutofillProfile profile{i18n_model_definition::kLegacyHierarchyCountryCode};
+    // The URL the profile was extracted from.
+    GURL url;
+    // Metadata about the import, used for metric collection in
+    // ProfileImportProcess after the user's decision.
+    ProfileImportMetadata import_metadata;
+  };
 
   // Clears all setting-inaccessible values from `profile`.
   void RemoveInaccessibleProfileValues(AutofillProfile& profile);
