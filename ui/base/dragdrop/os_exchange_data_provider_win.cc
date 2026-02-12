@@ -695,7 +695,7 @@ OSExchangeDataProviderWin::GetVirtualFilenames() const {
 
   // On dragenter scenarios, need a placeholder file path for drag metadata
   // checks without actually creating the temp file.
-  base::FilePath temp_path(FILE_PATH_LITERAL("temp.tmp"));
+  const base::FilePath temp_path(kVirtualFileTempPlaceholderPath);
 
   std::vector<FileInfo> result;
   for (const auto& display_name : display_names.value()) {

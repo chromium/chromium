@@ -10,6 +10,7 @@
 #include "ui/base/clipboard/clipboard_util_win.h"
 
 #include <shellapi.h>
+#include <shldisp.h>  // For IDataObjectAsyncCapability
 #include <wininet.h>  // For INTERNET_MAX_URL_LENGTH.
 #include <wrl/client.h>
 
@@ -23,6 +24,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -45,6 +47,20 @@ namespace {
 
 constexpr STGMEDIUM kNullStorageMedium = {.tymed = TYMED_NULL,
                                           .pUnkForRelease = nullptr};
+
+// Result type for virtual file extraction: pairs of (temp_file_path,
+// display_name).
+using VirtualFileResults =
+    std::vector<std::pair<base::FilePath, base::FilePath>>;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AsyncVirtualFileExtractionError {
+  kCoGetInterfaceAndReleaseStreamFailed = 0,
+  kCoMarshalInterThreadInterfaceInStreamFailed = 1,
+  kSourceStreamSOKWithZeroBytesRead = 2,
+  kMaxValue = kSourceStreamSOKWithZeroBytesRead,
+};
 
 bool HasData(IDataObject* data_object, const ClipboardFormatType& format) {
   FORMATETC format_etc = format.ToFormatEtc();
@@ -278,14 +294,12 @@ base::FilePath WriteFileContentsToTempFile(const base::FilePath& suggested_name,
   return temp_path;
 }
 
-std::vector<
-    std::pair</*temp path*/ base::FilePath, /*display name*/ base::FilePath>>
-WriteAllFileContentsToTempFiles(
+VirtualFileResults WriteAllFileContentsToTempFiles(
     const std::vector<base::FilePath>& display_names,
     const std::vector<HGLOBAL>& memory_backed_contents) {
   DCHECK_EQ(display_names.size(), memory_backed_contents.size());
 
-  std::vector<std::pair<base::FilePath, base::FilePath>> filepaths_and_names;
+  VirtualFileResults filepaths_and_names;
   for (size_t i = 0; i < display_names.size(); i++) {
     base::FilePath temp_path = WriteFileContentsToTempFile(
         display_names[i], memory_backed_contents[i]);
@@ -366,10 +380,34 @@ HGLOBAL CopyFileContentsToHGlobal(IDataObject* data_object, LONG index) {
               content.pstm->Seek(zero_displacement, STREAM_SEEK_SET, nullptr);
         }
 
-        // Copy all data to the file stream.
-        ULARGE_INTEGER max_bytes;
-        max_bytes.QuadPart = std::numeric_limits<uint64_t>::max();
-        hr = content.pstm->CopyTo(stream.Get(), max_bytes, nullptr, nullptr);
+        if (base::FeatureList::IsEnabled(features::kVirtualFileChunkedRead)) {
+          // Read in chunks and write to the destination stream
+          constexpr ULONG kChunkSize = 16 * 1024 * 1024;  // 16 MB
+          auto buffer = std::make_unique<char[]>(kChunkSize);
+          ULONG bytes_read = 0;
+          while (SUCCEEDED(hr = content.pstm->Read(buffer.get(), kChunkSize,
+                                                   &bytes_read)) &&
+                 bytes_read > 0) {
+            ULONG bytes_written = 0;
+            hr = stream->Write(buffer.get(), bytes_read, &bytes_written);
+            if (FAILED(hr) || bytes_written != bytes_read) {
+              hr = E_FAIL;
+              break;
+            }
+          }
+          if (hr == S_OK && bytes_read == 0) {
+            base::UmaHistogramEnumeration(
+                "Clipboard.AsyncVirtualFileExtractionError",
+                AsyncVirtualFileExtractionError::
+                    kSourceStreamSOKWithZeroBytesRead);
+            LOG(WARNING) << "Source stream returned S_OK with zero bytes read.";
+          }
+        } else {
+          // Copy all data to the file stream.
+          ULARGE_INTEGER max_bytes;
+          max_bytes.QuadPart = std::numeric_limits<uint64_t>::max();
+          hr = content.pstm->CopyTo(stream.Get(), max_bytes, nullptr, nullptr);
+        }
 
         if (SUCCEEDED(hr_seek)) {
           // Restore the stream pointer to its original position.
@@ -405,6 +443,41 @@ HGLOBAL CopyFileContentsToHGlobal(IDataObject* data_object, LONG index) {
   ReleaseStgMedium(&content);
 
   return hdata;
+}
+
+// Extracts virtual file contents and writes them to temp files asynchronously
+// on a worker thread.
+VirtualFileResults ExtractVirtualFiles(
+    Microsoft::WRL::ComPtr<IStream> marshaled_data_object_stream,
+    const std::vector<base::FilePath>& display_names) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  // Unmarshal the IDataObject from the stream.
+  Microsoft::WRL::ComPtr<IDataObject> data_object;
+  HRESULT hr = ::CoGetInterfaceAndReleaseStream(
+      marshaled_data_object_stream.Get(), IID_PPV_ARGS(&data_object));
+  // CoGetInterfaceAndReleaseStream already released the stream;
+  // Detach() prevents ComPtr destructor from double-releasing.
+  marshaled_data_object_stream.Detach();
+
+  if (FAILED(hr) || !data_object) {
+    base::UmaHistogramEnumeration(
+        "Clipboard.AsyncVirtualFileExtractionError",
+        AsyncVirtualFileExtractionError::kCoGetInterfaceAndReleaseStreamFailed);
+    LOG(WARNING) << "CoGetInterfaceAndReleaseStream failed: "
+                 << (FAILED(hr) ? hr : E_UNEXPECTED);
+    return {};
+  }
+
+  std::vector<HGLOBAL> memory_backed_contents;
+  memory_backed_contents.reserve(display_names.size());
+  for (size_t i = 0; i < display_names.size(); i++) {
+    memory_backed_contents.push_back(
+        CopyFileContentsToHGlobal(data_object.Get(), static_cast<LONG>(i)));
+  }
+
+  return WriteAllFileContentsToTempFiles(display_names, memory_backed_contents);
 }
 
 std::wstring ConvertString(const char* string) {
@@ -766,12 +839,72 @@ std::optional<std::vector<base::FilePath>> GetVirtualFilenames(
   return ui::GetVirtualFilenames<FILEGROUPDESCRIPTORA>(data_object);
 }
 
+// Checks if the data object supports async operations via
+// IDataObjectAsyncCapability.
+Microsoft::WRL::ComPtr<IDataObjectAsyncCapability>
+GetAsyncCapabilityIfSupported(IDataObject* data_object) {
+  if (!base::FeatureList::IsEnabled(features::kAsyncVirtualFileExtraction)) {
+    return nullptr;
+  }
+
+  Microsoft::WRL::ComPtr<IDataObjectAsyncCapability> async_capability;
+  HRESULT hr = data_object->QueryInterface(IID_PPV_ARGS(&async_capability));
+  if (FAILED(hr)) {
+    return nullptr;
+  }
+
+  BOOL supports_async = FALSE;
+  hr = async_capability->GetAsyncMode(&supports_async);
+  if (FAILED(hr) || !supports_async) {
+    return nullptr;
+  }
+
+  return async_capability;
+}
+
+// Marshals the IDataObject to a stream for cross-thread COM access.
+Microsoft::WRL::ComPtr<IStream> MarshalDataObjectToStream(
+    IDataObject* data_object) {
+  Microsoft::WRL::ComPtr<IStream> marshaled_stream;
+  HRESULT hr = ::CoMarshalInterThreadInterfaceInStream(
+      IID_IDataObject, data_object, &marshaled_stream);
+  if (FAILED(hr) || !marshaled_stream) {
+    base::UmaHistogramEnumeration(
+        "Clipboard.AsyncVirtualFileExtractionError",
+        AsyncVirtualFileExtractionError::
+            kCoMarshalInterThreadInterfaceInStreamFailed);
+    LOG(WARNING) << "CoMarshalInterThreadInterfaceInStream failed: " << hr;
+    return nullptr;
+  }
+  return marshaled_stream;
+}
+
+// Posts the virtual file extraction work to a background thread.
+void PostVirtualFileExtractionTask(
+    Microsoft::WRL::ComPtr<IStream> marshaled_stream,
+    Microsoft::WRL::ComPtr<IDataObjectAsyncCapability> async_capability,
+    const std::vector<base::FilePath>& display_names,
+    base::OnceCallback<void(const VirtualFileResults&)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&ExtractVirtualFiles, marshaled_stream, display_names),
+      base::BindOnce(
+          [](Microsoft::WRL::ComPtr<IDataObjectAsyncCapability> async_cap,
+             base::OnceCallback<void(const VirtualFileResults&)> cb,
+             const VirtualFileResults& result) {
+            if (async_cap) {
+              HRESULT op_result = result.empty() ? E_FAIL : S_OK;
+              DWORD effect = result.empty() ? DROPEFFECT_NONE : DROPEFFECT_COPY;
+              async_cap->EndOperation(op_result, nullptr, effect);
+            }
+            std::move(cb).Run(result);
+          },
+          async_capability, std::move(callback)));
+}
+
 void GetVirtualFilesAsTempFiles(
     IDataObject* data_object,
-    base::OnceCallback<
-        void(const std::vector<std::pair</*temp path*/ base::FilePath,
-                                         /*display name*/ base::FilePath>>&)>
-        callback) {
+    base::OnceCallback<void(const VirtualFileResults&)> callback) {
   // Retrieve the display names of the virtual files.
   std::optional<std::vector<base::FilePath>> display_names =
       GetVirtualFilenames(data_object);
@@ -780,14 +913,29 @@ void GetVirtualFilesAsTempFiles(
     return;
   }
 
-  // Write the file contents to global memory.
-  std::vector<HGLOBAL> memory_backed_contents;
-  for (size_t i = 0; i < display_names.value().size(); i++) {
-    HGLOBAL hdata = CopyFileContentsToHGlobal(data_object, i);
-    memory_backed_contents.push_back(hdata);
+  // Try async extraction if supported.
+  if (auto async_capability = GetAsyncCapabilityIfSupported(data_object)) {
+    async_capability->StartOperation(nullptr);
+
+    if (auto marshaled_stream = MarshalDataObjectToStream(data_object)) {
+      PostVirtualFileExtractionTask(std::move(marshaled_stream),
+                                    std::move(async_capability),
+                                    display_names.value(), std::move(callback));
+      return;
+    }
+
+    // Marshal failed, end the async operation.
+    async_capability->EndOperation(E_FAIL, nullptr, DROPEFFECT_NONE);
   }
 
-  // Queue a task to actually write the temp files on a worker thread.
+  // Fallback: async not supported or marshal failed.
+  // Copy file contents to global memory on the UI thread.
+  std::vector<HGLOBAL> memory_backed_contents;
+  for (size_t i = 0; i < display_names.value().size(); i++) {
+    memory_backed_contents.push_back(CopyFileContentsToHGlobal(data_object, i));
+  }
+
+  // Write the temp files on a worker thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&WriteAllFileContentsToTempFiles, display_names.value(),

@@ -21,12 +21,18 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ui {
+
+// Placeholder path used for virtual file drag metadata on dragenter,
+// before actual temp files are created. See GetVirtualFilenames().
+inline constexpr wchar_t kVirtualFileTempPlaceholderPath[] =
+    FILE_PATH_LITERAL("temp.tmp");
 
 class DataObjectImpl : public DownloadFileObserver,
                        public IDataObject,

@@ -70,6 +70,16 @@ chromium-metrics-reviews@google.com.
              TopLevelStorageAccess and StorageAccess"/>
 </enum>
 
+<!-- LINT.IfChange(AsyncVirtualFileExtractionError) -->
+
+<enum name="AsyncVirtualFileExtractionError">
+  <int value="0" label="CoGetInterfaceAndReleaseStream failed"/>
+  <int value="1" label="CoMarshalInterThreadInterfaceInStream failed"/>
+  <int value="2" label="Source stream returned S_OK with zero bytes read"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/base/clipboard/clipboard_util_win.cc:AsyncVirtualFileExtractionError) -->
+
 <!-- LINT.IfChange(BlobBuildFromStreamResult) -->
 
 <enum name="BlobBuildFromStreamResult">

@@ -439,4 +439,7 @@ BASE_FEATURE(kStringWidthCache, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUseClipboardStrictVirtualFileCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAsyncVirtualFileExtraction, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kVirtualFileChunkedRead, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features

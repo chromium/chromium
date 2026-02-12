@@ -235,6 +235,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Clipboard.AsyncVirtualFileExtractionError"
+    enum="AsyncVirtualFileExtractionError" expires_after="2026-08-04">
+  <owner>dcheng@chromium.org</owner>
+  <owner>src/ui/base/clipboard/OWNERS</owner>
+  <summary>
+    Records errors that occur during async virtual file extraction on Windows.
+    These errors may happen when dragging virtual files (e.g., from Outlook) and
+    the COM marshaling or unmarshaling fails. Recorded when a specific error
+    condition is encountered.
+  </summary>
+</histogram>
+
 <histogram name="Clipboard.Read" enum="ClipboardFormatRead"
     expires_after="2026-05-24">
   <owner>huangdarwin@chromium.org</owner>

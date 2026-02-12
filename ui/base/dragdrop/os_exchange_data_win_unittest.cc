@@ -17,7 +17,9 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_hglobal.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -449,7 +451,7 @@ TEST_F(OSExchangeDataWinTest, FileContents) {
 }
 
 TEST_F(OSExchangeDataWinTest, VirtualFiles) {
-  const base::FilePath kPathPlaceholder(FILE_PATH_LITERAL("temp.tmp"));
+  const base::FilePath kPathPlaceholder(kVirtualFileTempPlaceholderPath);
 
   const std::vector<std::pair<base::FilePath, std::string>>
       kTestFilenamesAndContents = {
@@ -519,6 +521,81 @@ TEST_F(OSExchangeDataWinTest, VirtualFiles) {
       }
     }
   }
+}
+
+TEST_F(OSExchangeDataWinTest, VirtualFilesAsyncChunkedCopy) {
+  const base::FilePath kPathPlaceholder(kVirtualFileTempPlaceholderPath);
+
+  // Create a large file (50MB) to exercise the chunked copy code path.
+  // The chunk size is 16MB, so this will require multiple iterations.
+  constexpr size_t kLargeFileSizeBytes = 50u * 1024u * 1024u;  // 50 MB
+  const std::string large_content(kLargeFileSizeBytes, 'X');
+
+  const std::vector<std::pair<base::FilePath, std::string>>
+      kTestFilenamesAndContents = {
+          {base::FilePath(FILE_PATH_LITERAL("large_file.bin")), large_content},
+      };
+
+  OSExchangeData data;
+  data.provider().SetVirtualFileContentsForTesting(kTestFilenamesAndContents,
+                                                   TYMED_ISTREAM);
+
+  auto* provider = static_cast<OSExchangeDataProviderWin*>(&data.provider());
+  provider->async_operation()->SetAsyncMode(TRUE);
+
+  BOOL is_async = FALSE;
+  EXPECT_EQ(S_OK, provider->async_operation()->GetAsyncMode(&is_async));
+  EXPECT_TRUE(is_async);
+  // Track whether we observe InOperation() returning TRUE at any point,
+  // which verifies StartOperation() was called.
+  bool saw_in_operation_true = false;
+  BOOL in_operation = FALSE;
+
+  std::optional<std::vector<FileInfo>> file_infos = data.GetVirtualFilenames();
+  ASSERT_TRUE(file_infos.has_value());
+  EXPECT_EQ(1u, file_infos.value().size());
+  EXPECT_EQ(kTestFilenamesAndContents[0].first,
+            file_infos.value()[0].display_name);
+  EXPECT_EQ(kPathPlaceholder, file_infos.value()[0].path);
+
+  base::FilePath temp_dir;
+  EXPECT_TRUE(base::GetTempDir(&temp_dir));
+
+  auto callback =
+      base::BindOnce(&OSExchangeDataWinTest::OnGotVirtualFilesAsTempFiles,
+                     base::Unretained(this));
+  OnGotVirtualFilesAsTempFilesCalledChecker checker(this);
+  data.GetVirtualFilesAsTempFiles(std::move(callback));
+
+  // Wait for the async chunked copy to complete, checking InOperation on each
+  // iteration.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    provider->async_operation()->InOperation(&in_operation);
+    if (in_operation) {
+      saw_in_operation_true = true;
+    }
+    return on_got_virtual_files_as_temp_files_called_;
+  }));
+  EXPECT_TRUE(saw_in_operation_true);
+
+  // After async extraction completes, assert EndOperation was called.
+  EXPECT_EQ(S_OK, provider->async_operation()->InOperation(&in_operation));
+  EXPECT_FALSE(in_operation);
+
+  ASSERT_EQ(1u, retrieved_virtual_files_.size());
+  EXPECT_EQ(kTestFilenamesAndContents[0].first,
+            retrieved_virtual_files_[0].display_name);
+  EXPECT_EQ(base::MakeLongFilePath(temp_dir),
+            base::MakeLongFilePath(retrieved_virtual_files_[0].path.DirName()));
+  EXPECT_EQ(kTestFilenamesAndContents[0].first.Extension(),
+            retrieved_virtual_files_[0].path.Extension());
+
+  // Verify the full content was copied correctly despite chunking.
+  std::string read_contents;
+  EXPECT_TRUE(
+      base::ReadFileToString(retrieved_virtual_files_[0].path, &read_contents));
+  EXPECT_EQ(large_content.size(), read_contents.size());
+  EXPECT_EQ(large_content, read_contents);
 }
 
 TEST_F(OSExchangeDataWinTest, VirtualFilesRealFilesPreferred) {
