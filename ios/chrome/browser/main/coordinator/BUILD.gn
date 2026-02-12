@@ -9,10 +9,14 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/main/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/tab_switcher/tab_strip/coordinator",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui:utils",
+    "//ui/base",
   ]
 }
 
@@ -22,6 +26,7 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base/test:test_support",
+    "//ios/chrome/browser/browser_view/ui_bundled:test_support",
     "//ios/chrome/browser/main/ui",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",

@@ -318,7 +318,6 @@
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator_delegate.h"
 #import "ios/chrome/browser/synced_set_up/utils/utils.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
-#import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
@@ -694,7 +693,6 @@ const char kChromeAppStoreUrl[] =
   LensOverlayCoordinator* _lensOverlayCoordinator;
   ToolbarCoordinator* _toolbarCoordinator;
   BrowserOmniboxStateProvider* _browserOmniboxStateProvider;
-  TabStripCoordinator* _tabStripCoordinator;
   SideSwipeCoordinator* _sideSwipeCoordinator;
   raw_ptr<FullscreenController> _fullscreenController;
   // The coordinator that shows the Send Tab To Self UI.
@@ -1266,11 +1264,6 @@ const char kChromeAppStoreUrl[] =
   _urlLoadingNotifierBrowserAgent =
       UrlLoadingNotifierBrowserAgent::FromBrowser(browser);
 
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    _tabStripCoordinator =
-        [[TabStripCoordinator alloc] initWithBrowser:browser];
-  }
-
   _bubblePresenterCoordinator =
       [[BubblePresenterCoordinator alloc] initWithBrowser:browser];
   _bubblePresenterCoordinator.bubblePresenterDelegate = self;
@@ -1350,7 +1343,6 @@ const char kChromeAppStoreUrl[] =
   _viewControllerDependencies.popupMenuCoordinator = self.popupMenuCoordinator;
   _viewControllerDependencies.ntpCoordinator = _NTPCoordinator;
   _viewControllerDependencies.toolbarCoordinator = _toolbarCoordinator;
-  _viewControllerDependencies.tabStripCoordinator = _tabStripCoordinator;
   _viewControllerDependencies.sideSwipeCoordinator = _sideSwipeCoordinator;
   _viewControllerDependencies.bookmarksCoordinator = _bookmarksCoordinator;
   _viewControllerDependencies.fullscreenController = _fullscreenController;
@@ -1412,7 +1404,6 @@ const char kChromeAppStoreUrl[] =
     _omniboxCommandsHandler = HandlerForProtocol(_dispatcher, OmniboxCommands);
   }
 
-  _tabStripCoordinator.baseViewController = viewController;
   _NTPCoordinator.baseViewController = viewController;
   _bubblePresenterCoordinator.baseViewController = viewController;
 
@@ -1434,8 +1425,6 @@ const char kChromeAppStoreUrl[] =
 
   [_bubblePresenterCoordinator stop];
   _bubblePresenterCoordinator = nil;
-
-  _tabStripCoordinator = nil;
 
   [_sideSwipeCoordinator stop];
   _sideSwipeCoordinator = nil;

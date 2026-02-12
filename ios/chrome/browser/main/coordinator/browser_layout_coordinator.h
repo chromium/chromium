@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class BrowserLayoutViewController;
+#import "ios/chrome/browser/main/ui/browser_layout_consumer.h"
 
 // Coordinator that manages the BrowserLayoutViewController.
 @interface BrowserLayoutCoordinator : ChromeCoordinator
@@ -17,7 +18,8 @@
     BrowserLayoutViewController* viewController;
 
 // The BrowserViewController being displayed.
-@property(nonatomic, weak) UIViewController* browserViewController;
+@property(nonatomic, weak)
+    UIViewController<BrowserLayoutConsumer>* browserViewController;
 
 // Initializes this Coordinator with its `browser` and a nil base view
 // controller.

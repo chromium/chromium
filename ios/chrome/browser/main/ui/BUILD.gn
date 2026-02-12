@@ -6,15 +6,22 @@ import("//ios/build/chrome_build.gni")
 
 source_set("ui") {
   sources = [
+    "browser_layout_consumer.h",
     "browser_layout_view_controller.h",
     "browser_layout_view_controller.mm",
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
+    "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui:swift_constants_for_objective_c",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui:utils",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions:transitions_context",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

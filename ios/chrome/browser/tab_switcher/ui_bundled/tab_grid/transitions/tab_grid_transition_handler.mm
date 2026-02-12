@@ -226,19 +226,21 @@
 
 // Creates animation parameters for the transition.
 - (TabGridAnimationParameters*)createAnimationParameters {
-  // Get the "top toolbar height" (everything above the web content area) by
-  // converting the top toolbar's frame into window coordinates and getting its
-  // max Y coordinate (this also includes the tab strip for iPads).
-  UIView* primaryToolbarView =
-      [_layoutGuideCenter referencedViewUnderName:kPrimaryToolbarGuide];
-  CGRect primaryToolbarFrameInWindow =
-      [primaryToolbarView.superview convertRect:primaryToolbarView.frame
-                                         toView:nil];
+  // Get the content area frame.
+  UIView* tabContentView = _browserLayoutViewController.view;
+  NamedGuide* contentAreaGuide =
+      [_browserLayoutViewController contentAreaGuide];
+  CGRect contentAreaFrame =
+      [contentAreaGuide.owningView convertRect:contentAreaGuide.layoutFrame
+                                        toView:tabContentView];
 
+  // Get the "top toolbar height" (everything above the web content area) by
+  // using the `contentAreaFrame.origin.y`. This dynamically handles the
+  // presence of the Tab Strip and Toolbar across different devices.
   BOOL topToolbarHidden = [self shouldHideTopToolbar];
   CGFloat topToolbarHeight =
       topToolbarHidden ? _tabGridViewController.view.safeAreaInsets.top
-                       : CGRectGetMaxY(primaryToolbarFrameInWindow);
+                       : contentAreaFrame.origin.y;
 
   // Get the "bottom toolbar height" (everything below the web content area).
   UIView* bottomToolbarView =
@@ -253,15 +255,6 @@
   // disabled for regular browser NTPs and iPads.
   BOOL scaleTopToolbar =
       !_isRegularBrowserNTP && IsSplitToolbarMode(_activeGrid);
-
-  // Get the content area frame.
-  UIView* tabContentView = _browserLayoutViewController.view;
-  NamedGuide* contentAreaGuide =
-      [_browserLayoutViewController contentAreaGuide];
-  UIView* browserViewControllerView = contentAreaGuide.owningView;
-  CGRect contentAreaFrame = contentAreaGuide.layoutFrame;
-  contentAreaFrame = [browserViewControllerView convertRect:contentAreaFrame
-                                                     toView:tabContentView];
 
   // No top toolbar snapshot for regular browser NTPs for grid to tab
   // animations. `topToolbarHidden` is not directly used here as the screenshot

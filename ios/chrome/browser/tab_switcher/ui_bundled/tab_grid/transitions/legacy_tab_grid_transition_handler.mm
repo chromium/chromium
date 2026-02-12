@@ -222,12 +222,16 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
 
   // Get the frame for the snapshotted content of the active tab.
   NamedGuide* contentAreaGuide = [browserLayoutViewController contentAreaGuide];
-  UIView* tabContentView = contentAreaGuide.owningView;
+  UIView* tabContentView = browserLayoutViewController.view;
 
   CGRect contentArea = contentAreaGuide.layoutFrame;
 
+  CGFloat previousAlpha = tabContentView.alpha;
+  tabContentView.alpha = 1;
   [layout.activeItem populateWithSnapshotsFromView:tabContentView
                                         middleRect:contentArea];
+  tabContentView.alpha = previousAlpha;
+
   layout.expandedRect = [[self.layoutProvider animationViewsContainer]
       convertRect:tabContentView.frame
          fromView:browserLayoutViewController.view];

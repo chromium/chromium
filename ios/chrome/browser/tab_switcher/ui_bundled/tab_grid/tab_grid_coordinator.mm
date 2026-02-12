@@ -398,7 +398,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (UIViewController*)activeViewController {
   if (self.browserLayoutViewController) {
-    return self.browserLayoutViewController.currentBVC;
+    return self.browserLayoutViewController.browserViewController;
   }
   return _viewController;
 }
@@ -576,7 +576,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       CGRect frame = self.browserLayoutViewController.view.frame;
       [self.browserLayoutViewController.view removeFromSuperview];
       [self.browserLayoutViewController removeFromParentViewController];
-
       self.browserLayoutViewController = viewController;
 
       [_viewController addChildViewController:viewController];
@@ -626,7 +625,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
             self.viewController.view.window.windowScene) &&
         !FindNavigatorShouldBePresentedInBrowser(browser)) {
       // It is possible to already have a first responder (for example the
-      [self.browserLayoutViewController.currentBVC becomeFirstResponder];
+
+      [self.browserLayoutViewController
+              .browserViewController becomeFirstResponder];
     }
     if (completion) {
       completion();
@@ -639,7 +640,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   };
 
   _viewController.childViewControllerForStatusBarStyle =
-      self.browserLayoutViewController.currentBVC;
+      self.browserLayoutViewController.browserViewController;
 
   [_viewController contentWillDisappearAnimated:animated];
 
@@ -1821,7 +1822,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                (SnackbarCoordinator*)snackbarCoordinator
                                                 forceBrowserToolbar:
                                                     (BOOL)forceBrowserToolbar {
-  if (!self.browserLayoutViewController.currentBVC) {
+  if (!self.browserLayoutViewController.browserViewController) {
     // The tab grid is being show so use tab grid bottom bar.
     // kTabGridBottomToolbarGuide is stored in the shared layout guide center.
     UIView* tabGridBottomToolbarView = [LayoutGuideCenterForBrowser(nil)
@@ -1830,9 +1831,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 
   if (!forceBrowserToolbar &&
-      self.browserLayoutViewController.currentBVC.presentedViewController) {
+      self.browserLayoutViewController.browserViewController
+          .presentedViewController) {
     UIViewController* presentedViewController =
-        self.browserLayoutViewController.currentBVC.presentedViewController;
+        self.browserLayoutViewController.browserViewController
+            .presentedViewController;
 
     // When the presented view is a navigation controller, return the navigation
     // controller's toolbar height.

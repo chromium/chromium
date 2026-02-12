@@ -150,7 +150,7 @@ UIViewController* GetActiveViewController() {
     active_view_controller =
         base::apple::ObjCCastStrict<BrowserLayoutViewController>(
             active_view_controller)
-            .currentBVC;
+            .browserViewController;
   }
   return active_view_controller;
 }

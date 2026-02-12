@@ -7,7 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_context_provider.h"
+
+@protocol BrowserLayoutConsumer;
 
 // A container view controller that manages the layout of the browser.
 // It is designed to contain an instance of BrowserViewController ("BVC") as a
@@ -16,16 +19,21 @@
 // containing view controller handles forwarding calls to the BVC instance where
 // needed.
 @interface BrowserLayoutViewController
-    : UIViewController <TabGridTransitionContextProvider>
+    : UIViewController <FullscreenUIElement, TabGridTransitionContextProvider>
 
-// The BVC instance being contained. If this is set, the current BVC (if any)
-// will be removed as a child view controller, and the new `currentBVC` will
-// be added as a child and have its view resized to this object's view's bounds.
-@property(nonatomic, weak) UIViewController* currentBVC;
+// The browserViewController instance being contained. If this is set, the
+// current BVC (if any) will be removed as a child view controller, and the new
+// `browserViewController` will be added as a child and have its view resized to
+// this object's view's bounds.
+@property(nonatomic, weak)
+    UIViewController<BrowserLayoutConsumer>* browserViewController;
 
 // YES if the currentBVC is in incognito mode. Is used to set proper background
 // color.
 @property(nonatomic, assign) BOOL incognito;
+
+// The TabStripViewController instance, managed by the container's coordinator.
+@property(nonatomic, weak) UIViewController* tabStripViewController;
 
 @end
 
