@@ -68,6 +68,15 @@ class PasswordStoreInterface : public RefcountedKeyedService {
     virtual void OnLoginsRetained(
         PasswordStoreInterface* store,
         const std::vector<PasswordForm>& retained_passwords) = 0;
+
+    // Notifies the observer that error state of the password store may have
+    // changed. This happens when the store backend receives a notification
+    // from Sync or performs an operation that either reports an error state or
+    // may have resolved an error state. Use `GetError()` to synchronously
+    // receive the last known error state which may be stale on Android!
+    // Will be called from the UI thread. The passed `store` issued the observer
+    // notification in case there might be multiple ones.
+    virtual void OnErrorStateChanged(PasswordStoreInterface* store) {}
   };
 
   // Necessary condition to offer saving passwords.

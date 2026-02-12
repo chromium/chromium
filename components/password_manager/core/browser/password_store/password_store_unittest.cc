@@ -1417,6 +1417,7 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfAdditionReturnsError) {
       }));
   EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
   EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
+  // TODO(crbug.com/483324125): Expect a call to OnErrorStateChanged.
   store->AddLogin(kTestForm);
   WaitForPasswordStore();
 

@@ -491,6 +491,7 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
 #else
   if (!changes.has_value()) {
     // TODO(crbug.com/40260035): Record the silent failure.
+    // TODO(crbug.com/483324125): Call OnErrorStateChanged?
     return;
   }
 #endif
