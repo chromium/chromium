@@ -463,6 +463,7 @@
   margin-top: 16px;
   padding-inline-end: 8px;
   padding-inline-start: 8px;
+  pointer-events: auto;
   /* Do not set width since we are using padding + fitting children content. */
 }
 
