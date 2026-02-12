@@ -84,17 +84,17 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   }> {
     return new Map([
       [
-        ToolMode.kDeepSearch,
-        {
-          id: 'deepSearch',
-          icon: 'composebox:deepSearch',
-        },
-      ],
-      [
         ToolMode.kImageGen,
         {
           id: 'createImages',
           icon: 'composebox:nanoBanana',
+        },
+      ],
+      [
+        ToolMode.kDeepSearch,
+        {
+          id: 'deepSearch',
+          icon: 'composebox:deepSearch',
         },
       ],
       [
