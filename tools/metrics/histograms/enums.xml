@@ -11967,7 +11967,6 @@ from previous Chrome versions.
   <int value="-835242361" label="OmniboxAdaptiveSuggestionsCount:enabled"/>
   <int value="-834661509" label="ModalPermissionPrompts:disabled"/>
   <int value="-834234595" label="BorealisProvision:enabled"/>
-  <int value="-833449894" label="PrivacySandboxAdsNoticeCCT:disabled"/>
   <int value="-833438724" label="AlwaysDrawCompositedToolbarHairline:enabled"/>
   <int value="-833319821" label="AutoRevokeSuspiciousNotification:enabled"/>
   <int value="-833024559" label="AuxiliarySearchDonation:enabled"/>
@@ -13311,7 +13310,6 @@ from previous Chrome versions.
       label="CrOSLateBootCrasSplitAlsaUSBInternal:disabled"/>
   <int value="-367820709" label="PartitionVisitedLinkDatabase:disabled"/>
   <int value="-367474066" label="DialogTouchBar:enabled"/>
-  <int value="-367047011" label="PrivacySandboxAdsNoticeCCT:enabled"/>
   <int value="-366949535" label="KeyboardShortcutViewerApp:enabled"/>
   <int value="-365920680" label="ImageCaptureAPI:disabled"/>
   <int value="-365806433" label="BuiltInModuleAll:disabled"/>
