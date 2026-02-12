@@ -212,6 +212,9 @@ struct TutorialDescription {
     int body_text_id() const { return body_text_id_; }
     int screenreader_text_id() const { return screenreader_text_id_; }
     HelpBubbleArrow arrow() const { return arrow_; }
+    const std::optional<bool>& focus_on_show_hint() const {
+      return focus_on_show_hint_;
+    }
     std::optional<bool> must_remain_visible() const {
       return must_remain_visible_;
     }
@@ -260,6 +263,12 @@ struct TutorialDescription {
     // The positioning of the bubble arrow.
     HelpBubbleArrow arrow_ = HelpBubbleArrow::kNone;
 
+    // Whether a tutorial bubble should receive focus when it is shown. This is
+    // a behavioral hint; how it is actually implemented will depend on the
+    // bubble implementation (for example, bubbles attached to menu items cannot
+    // take focus for system activation reasons).
+    std::optional<bool> focus_on_show_hint_;
+
     // Should the element remain visible through the entire step, this should be
     // set to false for hidden steps and for shown steps that precede hidden
     // steps on the same element. if left empty the interaction sequence will
@@ -285,7 +294,7 @@ struct TutorialDescription {
     // element for naming. The return value is a boolean which controls whether
     // the Interaction Sequence should continue or not. If false is returned
     // the tutorial will abort
-    NameElementsCallback name_elements_callback_ = NameElementsCallback();
+    NameElementsCallback name_elements_callback_;
 
     // Where to search for the step's target element. Default is the context the
     // tutorial started in.
@@ -295,7 +304,7 @@ struct TutorialDescription {
     // bubble associated with this step. Note that a "Next" button won't render:
     // 1. if `next_button_callback` is null
     // 2. if this step is the last step of a tutorial
-    NextButtonCallback next_button_callback_ = NextButtonCallback();
+    NextButtonCallback next_button_callback_;
 
     // Platform-specific properties that can be set for a bubble step. If an
     // extended property evolves to warrant cross-platform support, it should be
@@ -339,6 +348,13 @@ struct TutorialDescription {
 
     BubbleStep& SetBubbleArrow(HelpBubbleArrow arrow) {
       arrow_ = arrow;
+      return *this;
+    }
+
+    // Normally, non-final tutorial bubbles aren't focused, to avoid interfering
+    // with the user's journey through the UI. However, this can be overridden.
+    BubbleStep& SetBubbleFocusOnShow(bool focus_on_show) {
+      focus_on_show_hint_ = focus_on_show;
       return *this;
     }
 
