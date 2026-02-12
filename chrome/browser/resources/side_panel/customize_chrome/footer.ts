@@ -10,7 +10,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
-import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, ManagementNoticeState} from './customize_chrome.mojom-webui.js';
+import type {ManagementNoticeState} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getCss} from './footer.css.js';
 import {getHtml} from './footer.html.js';
@@ -51,20 +51,14 @@ export class FooterElement extends CrLitElement {
   protected accessor checked_: boolean = false;
   protected canShowManagement_: boolean = false;
 
-  private callbackRouter_: CustomizeChromePageCallbackRouter;
-  private pageHandler_: CustomizeChromePageHandlerInterface;
+  private apiProxy_: CustomizeChromeApiProxy =
+      CustomizeChromeApiProxy.getInstance();
   private setFooterSettingsListenerId_: number|null = null;
-
-  constructor() {
-    super();
-    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
-    this.callbackRouter_ = CustomizeChromeApiProxy.getInstance().callbackRouter;
-  }
 
   override connectedCallback() {
     super.connectedCallback();
     this.setFooterSettingsListenerId_ =
-        this.callbackRouter_.setFooterSettings.addListener(
+        this.apiProxy_.callbackRouter.setFooterSettings.addListener(
             (visible: boolean, _: boolean,
              managementNoticeState: ManagementNoticeState) => {
               // Checked if the footer is visible by user choice  or if it is enabled by policy.
@@ -72,13 +66,14 @@ export class FooterElement extends CrLitElement {
               this.managedByPolicy_ = managementNoticeState.enabledByPolicy;
               this.canShowManagement_ = managementNoticeState.canBeShown;
             });
-    this.pageHandler_.updateFooterSettings();
+    this.apiProxy_.handler.updateFooterSettings();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     assert(this.setFooterSettingsListenerId_);
-    this.callbackRouter_.removeListener(this.setFooterSettingsListenerId_);
+    this.apiProxy_.callbackRouter.removeListener(
+        this.setFooterSettingsListenerId_);
   }
 
   private setChecked_(checked: boolean) {
@@ -109,7 +104,7 @@ export class FooterElement extends CrLitElement {
   }
 
   private setFooterVisible_() {
-    this.pageHandler_.setFooterVisible(this.checked_);
+    this.apiProxy_.handler.setFooterVisible(this.checked_);
   }
 }
 

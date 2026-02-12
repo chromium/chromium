@@ -23,7 +23,7 @@ import {getCss} from './appearance.css.js';
 import {getHtml} from './appearance.html.js';
 import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import {NewTabPageType} from './customize_chrome.mojom-webui.js';
-import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
+import type {Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
 export interface AppearanceElement {
@@ -118,66 +118,44 @@ export class AppearanceElement extends AppearanceElementBase {
   protected accessor showEditTheme_: boolean = true;
   protected accessor managedByName_: string = '';
   protected managedByDesc_: string = '';
-  private setThemeEditableId_: number|null = null;
-  private setThemeListenerId_: number|null = null;
-  private attachedTabStateUpdatedId_: number|null = null;
-  private ntpManagedByNameUpdatedId_: number|null = null;
-
-  private callbackRouter_: CustomizeChromePageCallbackRouter;
-  private pageHandler_: CustomizeChromePageHandlerInterface;
-
-
-  constructor() {
-    super();
-    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
-    this.callbackRouter_ = CustomizeChromeApiProxy.getInstance().callbackRouter;
-  }
+  private listenerIds_: number[] = [];
+  private apiProxy_: CustomizeChromeApiProxy =
+      CustomizeChromeApiProxy.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
-    this.setThemeListenerId_ =
-        this.callbackRouter_.setTheme.addListener((theme: Theme) => {
-          this.theme_ = theme;
-        });
-    this.pageHandler_.updateTheme();
 
-    this.attachedTabStateUpdatedId_ =
-        CustomizeChromeApiProxy.getInstance()
-            .callbackRouter.attachedTabStateUpdated.addListener(
-                (newTabPageType: NewTabPageType) => {
-                  this.newTabPageType_ = newTabPageType;
-                });
-    this.pageHandler_.updateAttachedTabState();
+    this.listenerIds_ = [
+      this.apiProxy_.callbackRouter.setTheme.addListener((theme: Theme) => {
+        this.theme_ = theme;
+      }),
+      this.apiProxy_.callbackRouter.attachedTabStateUpdated.addListener(
+          (newTabPageType: NewTabPageType) => {
+            this.newTabPageType_ = newTabPageType;
+          }),
+      this.apiProxy_.callbackRouter.setThemeEditable.addListener(
+          (isThemeEditable: boolean) => {
+            this.showEditTheme_ = isThemeEditable;
+          }),
+      this.apiProxy_.callbackRouter.ntpManagedByNameUpdated.addListener(
+          (name: string, description: string) => {
+            this.managedByName_ = name;
+            this.managedByDesc_ = description;
+          }),
+    ];
 
-    this.setThemeEditableId_ = CustomizeChromeApiProxy.getInstance()
-                                   .callbackRouter.setThemeEditable.addListener(
-                                       (isThemeEditable: boolean) => {
-                                         this.showEditTheme_ = isThemeEditable;
-                                       });
-
-    this.ntpManagedByNameUpdatedId_ =
-        CustomizeChromeApiProxy.getInstance()
-            .callbackRouter.ntpManagedByNameUpdated.addListener(
-                (name: string, description: string) => {
-                  this.managedByName_ = name;
-                  this.managedByDesc_ = description;
-                });
-    this.pageHandler_.updateNtpManagedByName();
+    this.apiProxy_.handler.updateTheme();
+    this.apiProxy_.handler.updateAttachedTabState();
+    this.apiProxy_.handler.updateNtpManagedByName();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    assert(this.setThemeListenerId_);
-    this.callbackRouter_.removeListener(this.setThemeListenerId_);
 
-    assert(this.attachedTabStateUpdatedId_);
-    this.callbackRouter_.removeListener(this.attachedTabStateUpdatedId_);
-
-    assert(this.ntpManagedByNameUpdatedId_);
-    this.callbackRouter_.removeListener(this.ntpManagedByNameUpdatedId_);
-
-    assert(this.setThemeEditableId_);
-    this.callbackRouter_.removeListener(this.setThemeEditableId_);
+    for (const id of this.listenerIds_) {
+      assert(this.apiProxy_.callbackRouter.removeListener(id));
+    }
+    this.listenerIds_ = [];
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -322,12 +300,12 @@ export class AppearanceElement extends AppearanceElementBase {
 
   protected onThirdPartyThemeLinkButtonClick_() {
     if (this.thirdPartyThemeId_) {
-      this.pageHandler_.openThirdPartyThemePage(this.thirdPartyThemeId_);
+      this.apiProxy_.handler.openThirdPartyThemePage(this.thirdPartyThemeId_);
     }
   }
 
   protected onUploadedImageButtonClick_() {
-    this.pageHandler_.chooseLocalCustomBackground();
+    this.apiProxy_.handler.chooseLocalCustomBackground();
   }
 
   protected onSearchedImageButtonClick_() {
@@ -342,14 +320,14 @@ export class AppearanceElement extends AppearanceElementBase {
     if (this.handleClickForManagedThemes_()) {
       return;
     }
-    this.pageHandler_.removeBackgroundImage();
-    this.pageHandler_.setDefaultColor();
+    this.apiProxy_.handler.removeBackgroundImage();
+    this.apiProxy_.handler.setDefaultColor();
     recordCustomizeChromeAction(
         CustomizeChromeAction.SET_CLASSIC_CHROME_THEME_CLICKED);
   }
 
   protected onFollowThemeToggleChange_(e: CustomEvent<boolean>) {
-    this.pageHandler_.setFollowDeviceTheme(e.detail);
+    this.apiProxy_.handler.setFollowDeviceTheme(e.detail);
   }
 
   protected onManagedDialogClosed_() {
@@ -357,7 +335,7 @@ export class AppearanceElement extends AppearanceElementBase {
   }
 
   protected onNewTabPageManageByButtonClicked_() {
-    this.pageHandler_.openNtpManagedByPage();
+    this.apiProxy_.handler.openNtpManagedByPage();
   }
 
   private handleClickForManagedThemes_(): boolean {

@@ -23,7 +23,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './categories.css.js';
 import {getHtml} from './categories.html.js';
 import {CustomizeChromeAction, NtpImageType, recordCustomizeChromeAction, recordCustomizeChromeImageError} from './common.js';
-import type {BackgroundCollection, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
+import type {BackgroundCollection, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -94,15 +94,15 @@ export class CategoriesElement extends CategoriesElementBase {
   protected imageErrorDetectionEnabled_: boolean =
       loadTimeData.getBoolean('imageErrorDetectionEnabled');
 
-  private pageHandler_: CustomizeChromePageHandlerInterface;
+  private apiProxy_: CustomizeChromeApiProxy =
+      CustomizeChromeApiProxy.getInstance();
   private previewImageLoadStartEpoch_: number;
   private setThemeListenerId_: number|null = null;
 
   constructor() {
     super();
-    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
     this.previewImageLoadStartEpoch_ = WindowProxy.getInstance().now();
-    this.pageHandler_.getBackgroundCollections().then(({collections}) => {
+    this.apiProxy_.handler.getBackgroundCollections().then(({collections}) => {
       this.collections_ = collections;
     });
   }
@@ -110,18 +110,16 @@ export class CategoriesElement extends CategoriesElementBase {
   override connectedCallback() {
     super.connectedCallback();
     this.setThemeListenerId_ =
-        CustomizeChromeApiProxy.getInstance()
-            .callbackRouter.setTheme.addListener((theme: Theme) => {
-              this.theme_ = theme;
-            });
-    this.pageHandler_.updateTheme();
+        this.apiProxy_.callbackRouter.setTheme.addListener((theme: Theme) => {
+          this.theme_ = theme;
+        });
+    this.apiProxy_.handler.updateTheme();
     FocusOutlineManager.forDocument(document);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
-        this.setThemeListenerId_!);
+    this.apiProxy_.callbackRouter.removeListener(this.setThemeListenerId_!);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -196,7 +194,7 @@ export class CategoriesElement extends CategoriesElementBase {
     recordCustomizeChromeImageError(NtpImageType.COLLECTIONS);
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     assert(this.collections_[index]);
-    this.pageHandler_
+    this.apiProxy_.handler
         .getReplacementCollectionPreviewImage(this.collections_[index].id)
         .then(({previewImageUrl}) => {
           if (previewImageUrl) {
@@ -238,8 +236,8 @@ export class CategoriesElement extends CategoriesElementBase {
   protected onClassicChromeClick_() {
     recordCustomizeChromeAction(
         CustomizeChromeAction.CATEGORIES_DEFAULT_CHROME_SELECTED);
-    this.pageHandler_.setDefaultColor();
-    this.pageHandler_.removeBackgroundImage();
+    this.apiProxy_.handler.setDefaultColor();
+    this.apiProxy_.handler.removeBackgroundImage();
   }
 
   protected onWallpaperSearchClick_() {
@@ -253,7 +251,8 @@ export class CategoriesElement extends CategoriesElementBase {
         CustomizeChromeAction.CATEGORIES_UPLOAD_IMAGE_SELECTED);
     chrome.metricsPrivate.recordUserAction(
         'NTPRicherPicker.Backgrounds.UploadClicked');
-    const {success} = await this.pageHandler_.chooseLocalCustomBackground();
+    const {success} =
+        await this.apiProxy_.handler.chooseLocalCustomBackground();
     if (success) {
       const announcer = getAnnouncerInstance();
       announcer.announce(this.i18n('updatedToUploadedImage'));
@@ -270,7 +269,7 @@ export class CategoriesElement extends CategoriesElementBase {
   }
 
   protected onChromeWebStoreClick_() {
-    this.pageHandler_.openChromeWebStore();
+    this.apiProxy_.handler.openChromeWebStore();
   }
 
   protected onBackClick_() {

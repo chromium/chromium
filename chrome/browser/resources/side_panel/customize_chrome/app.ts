@@ -30,7 +30,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {AppearanceElement} from './appearance.js';
 import type {CategoriesElement} from './categories.js';
-import type {BackgroundCollection, CustomizeChromePageHandlerInterface, ManagementNoticeState} from './customize_chrome.mojom-webui.js';
+import type {BackgroundCollection, ManagementNoticeState} from './customize_chrome.mojom-webui.js';
 import {ChromeWebStoreCategory, ChromeWebStoreCollection, CustomizeChromeSection, NewTabPageType} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import type {ThemesElement} from './themes.js';
@@ -117,81 +117,31 @@ export class AppElement extends AppElementBase {
   protected accessor showFooter_: boolean = false;
   protected accessor showFooterForManagedBrowser_: boolean = false;
 
-  private scrollToSectionListenerId_: number|null = null;
-  private attachedTabStateUpdatedId_: number|null = null;
-  private setFooterSettingsListenerId_: number|null = null;
-  private setThemeEditableId_: number|null = null;
-  private pageHandler_: CustomizeChromePageHandlerInterface =
-      CustomizeChromeApiProxy.getInstance().handler;
+  private listenerIds_: number[] = [];
+  private apiProxy_: CustomizeChromeApiProxy =
+      CustomizeChromeApiProxy.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
-    this.scrollToSectionListenerId_ =
-        CustomizeChromeApiProxy.getInstance()
-            .callbackRouter.scrollToSection.addListener(
-                (section: CustomizeChromeSection) => {
-                  if (section === CustomizeChromeSection.kWallpaperSearch) {
-                    this.onWallpaperSearchSelect_();
-                    return;
-                  } else if (section === CustomizeChromeSection.kToolbar) {
-                    this.openToolbarCustomizationPage();
-                    chrome.metricsPrivate.recordUserAction(
-                        'Actions.CustomizeToolbarSidePanel' +
-                        '.OpenedFromOutsideCustomizeChrome');
-                    return;
-                  }
-                  const selector = SECTION_TO_SELECTOR[section];
-                  const element = this.shadowRoot.querySelector(selector);
-                  if (!element) {
-                    return;
-                  }
-                  this.page_ = CustomizeChromePage.OVERVIEW;
-                  element.scrollIntoView({behavior: 'auto'});
-                });
 
-    this.attachedTabStateUpdatedId_ =
-        CustomizeChromeApiProxy.getInstance()
-            .callbackRouter.attachedTabStateUpdated.addListener(
-                (newTabPageType: NewTabPageType) => {
-                  if (this.newTabPageType_ === newTabPageType) {
-                    return;
-                  }
+    this.listenerIds_ = [
+      this.apiProxy_.callbackRouter.scrollToSection.addListener(
+          this.onScrollToSection_.bind(this)),
+      this.apiProxy_.callbackRouter.attachedTabStateUpdated.addListener(
+          this.onAttachedTabStateUpdated_.bind(this)),
+      this.apiProxy_.callbackRouter.setThemeEditable.addListener(
+          this.onSetThemeEditable_.bind(this)),
+      this.apiProxy_.callbackRouter.setFooterSettings.addListener(
+          this.onSetFooterSettings_.bind(this)),
+    ];
 
-                  this.newTabPageType_ = newTabPageType;
-
-                  // Since some pages aren't supported in non first party mode,
-                  // change the section back to the overview.
-                  if (!this.isSourceTabFirstPartyNtp_() &&
-                      !this.pageSupportedOnNonFirstPartyNtps()) {
-                    this.page_ = CustomizeChromePage.OVERVIEW;
-                  }
-                });
-    this.pageHandler_.updateAttachedTabState();
-
-    this.setThemeEditableId_ = CustomizeChromeApiProxy.getInstance()
-                                   .callbackRouter.setThemeEditable.addListener(
-                                       (isThemeEditable: boolean) => {
-                                         this.showEditTheme_ = isThemeEditable;
-                                       });
-
-    this.setFooterSettingsListenerId_ =
-        CustomizeChromeApiProxy.getInstance()
-            .callbackRouter.setFooterSettings.addListener(
-                (_: boolean, extensionPolicyEnabled: boolean,
-                 managementNoticeState: ManagementNoticeState) => {
-                  // The footer section should be shown for managed browsers if
-                  // the management notice is shown or if it is disabled by
-                  // the user and can be toggled back on.
-                  this.showFooterForManagedBrowser_ =
-                      managementNoticeState.canBeShown;
-                  this.extensionPolicyEnabled_ = extensionPolicyEnabled;
-                });
-    this.pageHandler_.updateFooterSettings();
+    this.apiProxy_.handler.updateAttachedTabState();
+    this.apiProxy_.handler.updateFooterSettings();
 
     // We wait for load because `scrollIntoView` above requires the page to be
     // laid out.
     window.addEventListener('load', () => {
-      CustomizeChromeApiProxy.getInstance().handler.updateScrollToSection();
+      this.apiProxy_.handler.updateScrollToSection();
       // Install observer to log extension cards impression.
       const extensionsCardSectionObserver =
           new IntersectionObserver(entries => {
@@ -205,7 +155,7 @@ export class AppElement extends AppElementBase {
             threshold: 1.0,
           });
       // Start observing if extension cards are scroll into view.
-      if (this.shadowRoot && this.shadowRoot.querySelector('#extensions')) {
+      if (this.shadowRoot.querySelector('#extensions')) {
         extensionsCardSectionObserver.observe(
             this.shadowRoot.querySelector('#extensions')!);
       }
@@ -215,21 +165,10 @@ export class AppElement extends AppElementBase {
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    assert(this.scrollToSectionListenerId_);
-    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
-        this.scrollToSectionListenerId_);
-
-    assert(this.attachedTabStateUpdatedId_);
-    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
-        this.attachedTabStateUpdatedId_);
-
-    assert(this.setThemeEditableId_);
-    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
-        this.setThemeEditableId_);
-
-    assert(this.setFooterSettingsListenerId_);
-    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
-        this.setFooterSettingsListenerId_);
+    for (const id of this.listenerIds_) {
+      assert(this.apiProxy_.callbackRouter.removeListener(id));
+    }
+    this.listenerIds_ = [];
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -251,6 +190,61 @@ export class AppElement extends AppElementBase {
         CHANGE_CHROME_THEME_BUTTON_ELEMENT_ID,
         ['#appearanceElement', '#editThemeButton']);
   }
+
+  private onScrollToSection_(section: CustomizeChromeSection) {
+    if (section === CustomizeChromeSection.kWallpaperSearch) {
+      this.onWallpaperSearchSelect_();
+      return;
+    }
+
+    if (section === CustomizeChromeSection.kToolbar) {
+      this.openToolbarCustomizationPage();
+      chrome.metricsPrivate.recordUserAction(
+          'Actions.CustomizeToolbarSidePanel' +
+          '.OpenedFromOutsideCustomizeChrome');
+      return;
+    }
+
+    const selector = SECTION_TO_SELECTOR[section];
+    const element = this.shadowRoot.querySelector(selector);
+    if (!element) {
+      return;
+    }
+
+    this.page_ = CustomizeChromePage.OVERVIEW;
+    element.scrollIntoView({behavior: 'auto'});
+  }
+
+
+  private onAttachedTabStateUpdated_(newTabPageType: NewTabPageType) {
+    if (this.newTabPageType_ === newTabPageType) {
+      return;
+    }
+
+    this.newTabPageType_ = newTabPageType;
+
+    // Since some pages aren't supported in non first party mode,
+    // change the section back to the overview.
+    if (!this.isSourceTabFirstPartyNtp_() &&
+        !this.pageSupportedOnNonFirstPartyNtps()) {
+      this.page_ = CustomizeChromePage.OVERVIEW;
+    }
+  }
+
+  private onSetThemeEditable_(isThemeEditable: boolean) {
+    this.showEditTheme_ = isThemeEditable;
+  }
+
+  private onSetFooterSettings_(
+      _: boolean, extensionPolicyEnabled: boolean,
+      managementNoticeState: ManagementNoticeState) {
+    // The footer section should be shown for managed browsers if
+    // the management notice is shown or if it is disabled by
+    // the user and can be toggled back on.
+    this.showFooterForManagedBrowser_ = managementNoticeState.canBeShown;
+    this.extensionPolicyEnabled_ = extensionPolicyEnabled;
+  }
+
 
   protected computeShowFooter_(): boolean {
     return this.footerEnabled_ &&
@@ -313,17 +307,17 @@ export class AppElement extends AppElementBase {
   }
 
   protected onCouponsButtonClick_() {
-    this.pageHandler_.openChromeWebStoreCategoryPage(
+    this.apiProxy_.handler.openChromeWebStoreCategoryPage(
         ChromeWebStoreCategory.kShopping);
   }
 
   protected onWritingButtonClick_() {
-    this.pageHandler_.openChromeWebStoreCollectionPage(
+    this.apiProxy_.handler.openChromeWebStoreCollectionPage(
         ChromeWebStoreCollection.kWritingEssentials);
   }
 
   protected onProductivityButtonClick_() {
-    this.pageHandler_.openChromeWebStoreCategoryPage(
+    this.apiProxy_.handler.openChromeWebStoreCategoryPage(
         ChromeWebStoreCategory.kWorkflowPlanning);
   }
 
@@ -335,7 +329,7 @@ export class AppElement extends AppElementBase {
       return;
     }
 
-    this.pageHandler_.openChromeWebStoreHomePage();
+    this.apiProxy_.handler.openChromeWebStoreHomePage();
   }
 
   protected onToolbarCustomizationButtonClick_() {

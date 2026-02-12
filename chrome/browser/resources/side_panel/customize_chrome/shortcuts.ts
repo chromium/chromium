@@ -18,7 +18,6 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
-import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getCss} from './shortcuts.css.js';
 import {getHtml} from './shortcuts.html.js';
@@ -72,19 +71,13 @@ export class ShortcutsElement extends CrLitElement {
 
   private setMostVisitedSettingsListenerId_: number|null = null;
 
-  private callbackRouter_: CustomizeChromePageCallbackRouter;
-  private pageHandler_: CustomizeChromePageHandlerInterface;
-
-  constructor() {
-    super();
-    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
-    this.callbackRouter_ = CustomizeChromeApiProxy.getInstance().callbackRouter;
-  }
+  private apiProxy_: CustomizeChromeApiProxy =
+      CustomizeChromeApiProxy.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
     this.setMostVisitedSettingsListenerId_ =
-        this.callbackRouter_.setMostVisitedSettings.addListener(
+        this.apiProxy_.callbackRouter.setMostVisitedSettings.addListener(
             (shortcutsTypes: TileType[], shortcutsVisible: boolean,
              shortcutsPersonalVisible: boolean,
              disabledShortcuts: TileType[]) => {
@@ -100,13 +93,14 @@ export class ShortcutsElement extends CrLitElement {
                   shortcutsTypes.includes(TileType.kEnterpriseShortcuts);
               this.initialized_ = true;
             });
-    this.pageHandler_.updateMostVisitedSettings();
+    this.apiProxy_.handler.updateMostVisitedSettings();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     assert(this.setMostVisitedSettingsListenerId_);
-    this.callbackRouter_.removeListener(this.setMostVisitedSettingsListenerId_);
+    this.apiProxy_.callbackRouter.removeListener(
+        this.setMostVisitedSettingsListenerId_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -165,7 +159,7 @@ export class ShortcutsElement extends CrLitElement {
     if (this.shortcutsType_ !== undefined) {
       types.push(this.shortcutsType_);
     }
-    this.pageHandler_.setMostVisitedSettings(
+    this.apiProxy_.handler.setMostVisitedSettings(
         types,
         /* shortcutsVisible= */ this.show_,
         /* shortcutsPersonalVisible= */ this.showPersonalShortcuts_);

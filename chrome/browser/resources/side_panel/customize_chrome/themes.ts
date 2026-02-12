@@ -19,7 +19,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {CustomizeChromeAction, NtpImageType, recordCustomizeChromeAction, recordCustomizeChromeImageError} from './common.js';
-import type {BackgroundCollection, CollectionImage, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
+import type {BackgroundCollection, CollectionImage, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getCss} from './themes.css.js';
 import {getHtml} from './themes.html.js';
@@ -72,31 +72,25 @@ export class ThemesElement extends ThemesElementBase {
   private accessor theme_: Theme|undefined;
   protected accessor themes_: CollectionImage[] = [];
 
-  private callbackRouter_: CustomizeChromePageCallbackRouter;
-  private pageHandler_: CustomizeChromePageHandlerInterface;
+  private apiProxy_: CustomizeChromeApiProxy =
+      CustomizeChromeApiProxy.getInstance();
   private previewImageLoadStartEpoch_: number = -1;
   private setThemeListenerId_: number|null = null;
-
-  constructor() {
-    super();
-    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
-    this.callbackRouter_ = CustomizeChromeApiProxy.getInstance().callbackRouter;
-  }
 
   override connectedCallback() {
     super.connectedCallback();
     this.setThemeListenerId_ =
-        this.callbackRouter_.setTheme.addListener((theme: Theme) => {
+        this.apiProxy_.callbackRouter.setTheme.addListener((theme: Theme) => {
           this.theme_ = theme;
         });
-    this.pageHandler_.updateTheme();
+    this.apiProxy_.handler.updateTheme();
     FocusOutlineManager.forDocument(document);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     assert(this.setThemeListenerId_);
-    this.callbackRouter_.removeListener(this.setThemeListenerId_);
+    this.apiProxy_.callbackRouter.removeListener(this.setThemeListenerId_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -178,7 +172,7 @@ export class ThemesElement extends ThemesElementBase {
     this.themes_ = [];
     if (this.selectedCollection) {
       this.previewImageLoadStartEpoch_ = WindowProxy.getInstance().now();
-      this.pageHandler_.getBackgroundImages(this.selectedCollection.id)
+      this.apiProxy_.handler.getBackgroundImages(this.selectedCollection.id)
           .then(({images}) => {
             this.themes_ = images;
           });
@@ -204,7 +198,7 @@ export class ThemesElement extends ThemesElementBase {
       previewImageUrl,
       collectionId,
     } = theme;
-    this.pageHandler_.setBackgroundImage(
+    this.apiProxy_.handler.setBackgroundImage(
         attribution1, attribution2, attributionUrl, imageUrl, previewImageUrl,
         collectionId);
   }
@@ -219,7 +213,7 @@ export class ThemesElement extends ThemesElementBase {
   }
 
   protected onRefreshDailyToggleChange_(e: CustomEvent<boolean>) {
-    this.pageHandler_.setDailyRefreshCollectionId(
+    this.apiProxy_.handler.setDailyRefreshCollectionId(
         e.detail ? this.selectedCollection!.id : '');
   }
 

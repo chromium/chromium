@@ -14,7 +14,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './cards.css.js';
 import {getHtml} from './cards.html.js';
 import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
-import type {CustomizeChromePageHandlerInterface, ModuleSettings} from './customize_chrome.mojom-webui.js';
+import type {ModuleSettings} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
 export interface CardsElement {
@@ -58,33 +58,29 @@ export class CardsElement extends CrLitElement {
   protected accessor modules_: ModuleSettings[] = [];
   protected accessor show_: boolean = false;
   protected accessor managedByPolicy_: boolean = false;
-  private pageHandler_: CustomizeChromePageHandlerInterface;
+
+  private apiProxy_: CustomizeChromeApiProxy =
+      CustomizeChromeApiProxy.getInstance();
   private setModulesSettingsListenerId_: number|null = null;
   protected accessor initialized_: boolean = false;
-
-  constructor() {
-    super();
-    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
-  }
 
   override connectedCallback() {
     super.connectedCallback();
     this.setModulesSettingsListenerId_ =
-        CustomizeChromeApiProxy.getInstance()
-            .callbackRouter.setModulesSettings.addListener(
-                (modulesSettings: ModuleSettings[], managed: boolean,
-                 visible: boolean) => {
-                  this.show_ = visible;
-                  this.managedByPolicy_ = managed;
-                  this.modules_ = modulesSettings;
-                  this.initialized_ = true;
-                });
-    this.pageHandler_.updateModulesSettings();
+        this.apiProxy_.callbackRouter.setModulesSettings.addListener(
+            (modulesSettings: ModuleSettings[], managed: boolean,
+             visible: boolean) => {
+              this.show_ = visible;
+              this.managedByPolicy_ = managed;
+              this.modules_ = modulesSettings;
+              this.initialized_ = true;
+            });
+    this.apiProxy_.handler.updateModulesSettings();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
+    this.apiProxy_.callbackRouter.removeListener(
         this.setModulesSettingsListenerId_!);
   }
 
@@ -92,7 +88,7 @@ export class CardsElement extends CrLitElement {
     recordCustomizeChromeAction(
         CustomizeChromeAction.SHOW_CARDS_TOGGLE_CLICKED);
     this.show_ = show;
-    this.pageHandler_.setModulesVisible(this.show_);
+    this.apiProxy_.handler.setModulesVisible(this.show_);
   }
 
   protected onShowChange_(e: CustomEvent<boolean>) {
@@ -112,7 +108,7 @@ export class CardsElement extends CrLitElement {
     module.enabled = enabled;
     this.requestUpdate();
     const id = module.id;
-    this.pageHandler_.setModuleDisabled(id, !enabled);
+    this.apiProxy_.handler.setModuleDisabled(id, !enabled);
     const metricBase = `NewTabPage.Modules.${enabled ? 'Enabled' : 'Disabled'}`;
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(metricBase, id);
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(

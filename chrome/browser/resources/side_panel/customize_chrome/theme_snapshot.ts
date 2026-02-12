@@ -10,7 +10,7 @@ import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
+import type {Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getCss} from './theme_snapshot.css.js';
 import {getHtml} from './theme_snapshot.html.js';
@@ -45,20 +45,14 @@ export class ThemeSnapshotElement extends CrLitElement {
   protected accessor theme_: Theme|null = null;
   protected accessor themeType_: CustomizeThemeType|null = null;
 
-  private callbackRouter_: CustomizeChromePageCallbackRouter;
-  private pageHandler_: CustomizeChromePageHandlerInterface;
+  private apiProxy_: CustomizeChromeApiProxy =
+      CustomizeChromeApiProxy.getInstance();
   private setThemeListenerId_: number|null = null;
-
-  constructor() {
-    super();
-    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
-    this.callbackRouter_ = CustomizeChromeApiProxy.getInstance().callbackRouter;
-  }
 
   override connectedCallback() {
     super.connectedCallback();
     this.setThemeListenerId_ =
-        this.callbackRouter_.setTheme.addListener((theme: Theme) => {
+        this.apiProxy_.callbackRouter.setTheme.addListener((theme: Theme) => {
           this.theme_ = theme;
           if (this.theme_) {
             this.style.setProperty(
@@ -66,14 +60,14 @@ export class ThemeSnapshotElement extends CrLitElement {
                 skColorToRgba(this.theme_.backgroundColor));
           }
         });
-    this.pageHandler_.updateTheme();
+    this.apiProxy_.handler.updateTheme();
   }
 
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     assert(this.setThemeListenerId_);
-    this.callbackRouter_.removeListener(this.setThemeListenerId_);
+    this.apiProxy_.callbackRouter.removeListener(this.setThemeListenerId_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
