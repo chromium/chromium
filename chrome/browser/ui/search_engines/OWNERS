@@ -1,1 +1,3 @@
 file://components/search_engines/OWNERS
+
+per-file default_search_extension_controlled*=koretadaniel@chromium.org
