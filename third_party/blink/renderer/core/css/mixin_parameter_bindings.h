@@ -43,14 +43,17 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
   };
 
   MixinParameterBindings(HeapHashMap<String, Binding> bindings,
+                         HeapHashMap<String, Member<CSSVariableData>> locals,
                          const MixinParameterBindings* previous_in_env_chain)
       : bindings_(bindings),
+        locals_(locals),
         parent_mixin_(previous_in_env_chain),
         hash_(ComputeHash()) {}
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(parent_mixin_);
     visitor->Trace(bindings_);
+    visitor->Trace(locals_);
   }
 
   // NOTE: Equality here is only used for the MPC, where false negatives
@@ -62,18 +65,24 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
   bool operator==(const MixinParameterBindings& other) const;
 
   const HeapHashMap<String, Binding>& GetBindings() const { return bindings_; }
+  const HeapHashMap<String, Member<CSSVariableData>>& GetLocals() const {
+    return locals_;
+  }
 
   const MixinParameterBindings* GetParentMixin() const { return parent_mixin_; }
 
   // Returns a hash of all the bindings, mixed with the parents' hash.
   // (We don't hash the CSSSyntaxDefinition, so there may be false positives
   // in weird cases.) The same caveats as operator== apply.
+  //
+  // FIXME locals here and operator==
   unsigned GetHash() const { return hash_; }
 
  private:
   unsigned ComputeHash() const;
 
   HeapHashMap<String, Binding> bindings_;
+  HeapHashMap<String, Member<CSSVariableData>> locals_;
   Member<const MixinParameterBindings> parent_mixin_;
   unsigned hash_;
 };

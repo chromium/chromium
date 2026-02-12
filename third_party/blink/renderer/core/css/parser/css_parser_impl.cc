@@ -1310,11 +1310,6 @@ void CSSParserImpl::EmitDeclarationsRuleIfNeeded(
     // CSSNestedDeclarations; they are effectively shifted to the top instead.
     return;
   }
-  if (rule_type == StyleRule::kMixin) {
-    // We do not accept declarations directly in @mixin; they need to be wrapped
-    // in @result.
-    return;
-  }
   if (start_index == kNotFound) {
     return;
   }
@@ -2527,6 +2522,7 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kMixin, header_start);
     observer_->EndRuleHeader(header_end);
+    observer_->StartRuleBody(stream.Offset());
   }
 
   // Parse the actual block.
@@ -2536,6 +2532,10 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
                        /*parent_rule_for_nesting=*/nullptr,
                        /*nested_declarations_start_index=*/0, &child_rules,
                        /*has_visited_pseudo=*/false);
+
+  if (observer_) {
+    observer_->EndRuleBody(stream.LookAheadOffset());
+  }
 
   return MakeGarbageCollected<StyleRuleMixin>(name, std::move(*parameters),
                                               std::move(child_rules));
@@ -3078,7 +3078,7 @@ void CSSParserImpl::ConsumeBlockContents(
       case kIdentToken: {
         CSSParserTokenStream::State state = stream.Save();
         bool consumed_declaration = false;
-        if (rule_type != StyleRule::kMixin) {
+        {
           CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
           consumed_declaration =
               ConsumeDeclaration(stream, rule_type, has_visited_pseudo);
@@ -3304,13 +3304,13 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
 
   size_t properties_count = parsed_properties_.size();
 
-  bool parsing_descriptor = rule_type == StyleRule::kFontFace ||
-                            rule_type == StyleRule::kFontPaletteValues ||
-                            rule_type == StyleRule::kProperty ||
-                            rule_type == StyleRule::kRoute ||
-                            rule_type == StyleRule::kCounterStyle ||
-                            rule_type == StyleRule::kViewTransition ||
-                            rule_type == StyleRule::kFunction;
+  bool parsing_descriptor =
+      rule_type == StyleRule::kFontFace ||
+      rule_type == StyleRule::kFontPaletteValues ||
+      rule_type == StyleRule::kProperty || rule_type == StyleRule::kRoute ||
+      rule_type == StyleRule::kCounterStyle ||
+      rule_type == StyleRule::kViewTransition ||
+      rule_type == StyleRule::kFunction || rule_type == StyleRule::kMixin;
 
   uint64_t id = parsing_descriptor
                     ? static_cast<uint64_t>(lhs.ParseAsAtRuleDescriptorID())

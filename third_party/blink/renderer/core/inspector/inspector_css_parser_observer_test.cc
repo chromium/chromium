@@ -207,14 +207,23 @@ TEST_F(InspectorCSSParserObserverTest, MixinWithNestedDeclarations) {
   String text = "@mixin --m1() { @result { color: green; } }";
   CSSRuleSourceDataList data = Parse(text);
   ASSERT_EQ(1u, data.size());
-  EXPECT_EQ(" color: green; ", Substring(text, data[0]->rule_body_range));
-  EXPECT_EQ(" color: green; ",
+  EXPECT_EQ(" @result { color: green; } ",
+            Substring(text, data[0]->rule_body_range));
+  EXPECT_EQ(" @result { color: green; } ",
             Substring(text, data[0]->rule_declarations_range));
 
-  ASSERT_EQ(1u, data[0]->child_rules.size());
-  ASSERT_EQ(1u, data[0]->child_rules[0]->property_data.size());
-  EXPECT_EQ("color", data[0]->child_rules[0]->property_data[0].name);
-  EXPECT_EQ("green", data[0]->child_rules[0]->property_data[0].value);
+  // TODO(sesse): Do we really need the extra kStyle rules for mixins?
+  ASSERT_EQ(3u, data[0]->child_rules.size());
+  EXPECT_EQ(StyleRule::kStyle, data[0]->child_rules[0]->type);
+  EXPECT_EQ(StyleRule::kResult, data[0]->child_rules[1]->type);
+  EXPECT_EQ(StyleRule::kStyle, data[0]->child_rules[2]->type);
+
+  CSSRuleSourceData* result_rule = data[0]->child_rules[1];
+  ASSERT_EQ(1u, result_rule->child_rules.size());
+
+  ASSERT_EQ(1u, result_rule->child_rules[0]->property_data.size());
+  EXPECT_EQ("color", result_rule->child_rules[0]->property_data[0].name);
+  EXPECT_EQ("green", result_rule->child_rules[0]->property_data[0].value);
 }
 
 TEST_F(InspectorCSSParserObserverTest, MixinApplyWithNoBlock) {

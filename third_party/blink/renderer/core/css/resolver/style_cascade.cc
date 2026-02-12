@@ -1254,7 +1254,7 @@ StyleCascade::MakeFunctionContextFromMixinAndResolveSubstitutions(
   FunctionContext ctx = {
       .arguments = function_arguments,
       .locals = {},  // Populated by ApplyLocalVariables.
-      .unresolved_locals = {},
+      .unresolved_locals = mixin_parameter_bindings->GetLocals(),
       .local_types = local_types,
       .parent = function_context,
   };

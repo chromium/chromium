@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/mixin_map.h"
 #include "third_party/blink/renderer/core/css/navigation_query.h"
@@ -54,6 +55,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
+#include "third_party/blink/renderer/core/css/style_rule_function_declarations.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
 #include "third_party/blink/renderer/core/css/style_rule_route.h"
@@ -1167,11 +1169,31 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
           MixinParameterBindings::Binding{
               argument_data, parameter.default_value, parameter.type});
     }
+
+    // Collect any locals from the mixin.
+    // TODO(sesse): Support locals wrapped in conditional rules.
+    HeapHashMap<String, Member<CSSVariableData>> locals;
+    for (StyleRuleBase* child_rule : mixin_rule->ChildRules()) {
+      if (StyleRuleFunctionDeclarations* function_declarations =
+              DynamicTo<StyleRuleFunctionDeclarations>(child_rule)) {
+        for (const CSSPropertyValue& value :
+             function_declarations->Properties().Properties()) {
+          const AtomicString& name = value.CustomPropertyName();
+          CSSVariableData* variable_data =
+              To<CSSUnparsedDeclarationValue>(value.Value())
+                  .VariableDataValue();
+
+          locals.insert(name, variable_data);
+        }
+      }
+    }
+
     MixinParameterBindings* mixin_parameter_bindings =
         MakeGarbageCollected<MixinParameterBindings>(
-            bindings, apply_mixins_stack.empty()
-                          ? nullptr
-                          : apply_mixins_stack.back().mixin_parameter_bindings);
+            std::move(bindings), std::move(locals),
+            apply_mixins_stack.empty()
+                ? nullptr
+                : apply_mixins_stack.back().mixin_parameter_bindings);
 
     apply_mixins_stack.push_back(
         ApplyingMixin{.mixin = mixin_rule,

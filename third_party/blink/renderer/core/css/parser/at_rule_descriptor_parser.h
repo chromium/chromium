@@ -46,9 +46,10 @@ class AtRuleDescriptorParser {
   static CSSValue* ParseAtViewTransitionDescriptor(AtRuleDescriptorID,
                                                    CSSParserTokenStream&,
                                                    const CSSParserContext&);
-  static CSSValue* ParseAtFunctionDescriptor(AtRuleDescriptorID,
-                                             CSSParserTokenStream&,
-                                             const CSSParserContext&);
+  static CSSValue* ParseAtFunctionOrMixinDescriptor(StyleRule::RuleType,
+                                                    AtRuleDescriptorID,
+                                                    CSSParserTokenStream&,
+                                                    const CSSParserContext&);
   static CSSValue* ParseAtRouteDescriptor(AtRuleDescriptorID,
                                           CSSParserTokenStream&,
                                           const CSSParserContext&);
