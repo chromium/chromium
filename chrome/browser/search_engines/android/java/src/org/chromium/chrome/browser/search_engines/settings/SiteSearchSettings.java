@@ -12,6 +12,8 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineListCoordinator;
+import org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineListPreference;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -23,13 +25,24 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 @NullMarked
 public class SiteSearchSettings extends ChromeBaseSettingsFragment {
     // TODO(crbug.com/478726836): See if this needs to be added to the search index
+    private static final String CUSTOM_SEARCH_ENGINE_LIST_PREF = "custom_search_engine_item_list";
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
+
+    private @Nullable CustomSearchEngineListCoordinator mSearchEngineCoordinator;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.manage_search_engines_and_site_search));
         SettingsUtils.addPreferencesFromResource(this, R.xml.custom_search_engine_preferences);
+        CustomSearchEngineListPreference customSearchEnginePref =
+                findPreference(CUSTOM_SEARCH_ENGINE_LIST_PREF);
+        if (customSearchEnginePref != null) {
+            if (mSearchEngineCoordinator == null) {
+                mSearchEngineCoordinator = new CustomSearchEngineListCoordinator();
+            }
+            customSearchEnginePref.setOnViewBindListener(mSearchEngineCoordinator::onViewBound);
+        }
     }
 
     @Override
@@ -40,5 +53,11 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
     @Override
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSearchEngineCoordinator = null;
     }
 }
