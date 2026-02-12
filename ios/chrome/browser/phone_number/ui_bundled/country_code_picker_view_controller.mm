@@ -155,9 +155,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       kCountryCodePickerTableViewIdentifier;
   [self loadModel];
 
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-  [self registerForTraitChanges:traits withAction:@selector(updateTitle)];
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                     withAction:@selector(updateTitle)];
 }
 
 #pragma mark - LegacyChromeTableViewController
