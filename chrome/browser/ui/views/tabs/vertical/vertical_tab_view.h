@@ -196,8 +196,6 @@ class VerticalTabView : public views::View,
   bool selected_ = false;
   bool hovered_ = false;
   bool split_ = false;
-  // |collapsed_| represents whether the VerticalTabView itself is collapsed,
-  // which is not the same as if the VerticalTabStripView is collapsed.
   bool collapsed_ = false;
   bool pinned_ = false;
   bool shift_pressed_on_mouse_down_ = false;

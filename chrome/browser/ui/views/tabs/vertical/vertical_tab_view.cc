@@ -216,16 +216,14 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
       collection_node_->RegisterDataChangedCallback(base::BindRepeating(
           &VerticalTabView::OnDataChanged, base::Unretained(this)));
 
-  if (collection_node_->GetController()) {
-    if (auto* state_controller =
-            collection_node_->GetController()->GetStateController()) {
-      collapsed_state_changed_subscription_ =
-          state_controller->RegisterOnCollapseChanged(
-              base::BindRepeating(&VerticalTabView::OnCollapsedStateChanged,
-                                  base::Unretained(this)));
-      collapsed_ = state_controller->IsCollapsed();
-    }
-  }
+  CHECK(collection_node_->GetController());
+  auto* state_controller =
+      collection_node_->GetController()->GetStateController();
+  CHECK(state_controller);
+  collapsed_state_changed_subscription_ =
+      state_controller->RegisterOnCollapseChanged(base::BindRepeating(
+          &VerticalTabView::OnCollapsedStateChanged, base::Unretained(this)));
+  collapsed_ = state_controller->IsCollapsed();
 
   set_context_menu_controller(this);
 }
@@ -641,16 +639,7 @@ const TabRendererData& VerticalTabView::data() const {
 }
 
 views::BubbleBorder::Arrow VerticalTabView::GetAnchorPosition() const {
-  bool vertical_tab_strip_collapsed = false;
-
-  if (collection_node_) {
-    if (VerticalTabStripController* controller =
-            collection_node_->GetController()) {
-      vertical_tab_strip_collapsed = controller->IsCollapsed();
-    }
-  }
-
-  if (pinned_ && !vertical_tab_strip_collapsed) {
+  if (pinned_ && !collapsed_) {
     return views::BubbleBorder::Arrow::TOP_LEFT;
   }
   return views::BubbleBorder::Arrow::LEFT_TOP;
