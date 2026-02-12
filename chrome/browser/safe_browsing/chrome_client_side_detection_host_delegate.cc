@@ -179,8 +179,10 @@ void ChromeClientSideDetectionHostDelegate::MaybeStartGeminiAntiscamProtection(
     // that it will not trigger Gemini Antiscam Protection.
     GetInnerText(base::BindOnce(
         &GeminiAntiscamProtectionService::MaybeStartAntiscamProtection,
-        service->GetWeakPtr(), url, request_type,
-        did_match_high_confidence_allowlist.value_or(true),
+        service->GetWeakPtr(),
+        GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+            web_contents_),
+        url, request_type, did_match_high_confidence_allowlist.value_or(true),
         web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL()));
   }
 }
