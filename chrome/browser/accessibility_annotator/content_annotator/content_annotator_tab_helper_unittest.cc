@@ -6,11 +6,13 @@
 
 #include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/translate/core/common/language_detection_details.h"
@@ -23,8 +25,11 @@ class MockContentAnnotatorService : public ContentAnnotatorService {
  public:
   explicit MockContentAnnotatorService(
       page_content_annotations::PageContentAnnotationsService&
-          page_content_annotations_service)
-      : ContentAnnotatorService(page_content_annotations_service) {}
+          page_content_annotations_service,
+      page_content_annotations::PageContentExtractionService&
+          page_content_extraction_service)
+      : ContentAnnotatorService(page_content_annotations_service,
+                                page_content_extraction_service) {}
   ~MockContentAnnotatorService() override = default;
 
   MOCK_METHOD(void,
@@ -42,9 +47,15 @@ class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
         page_content_annotations::TestPageContentAnnotationsService::Create(
             &optimization_guide_model_provider_, &history_service_);
 
+    page_content_annotations::PageContentExtractionService*
+        page_content_extraction_service = page_content_annotations::
+            PageContentExtractionServiceFactory::GetForProfile(profile());
+    ASSERT_TRUE(page_content_extraction_service);
+
     mock_service_ =
         std::make_unique<testing::StrictMock<MockContentAnnotatorService>>(
-            *page_content_annotations_service_);
+            *page_content_annotations_service_,
+            *page_content_extraction_service);
 
     tab_interface_ = std::make_unique<tabs::MockTabInterface>();
     EXPECT_CALL(*tab_interface_, GetContents())

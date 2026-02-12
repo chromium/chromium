@@ -7,9 +7,11 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "url/gurl.h"
 
@@ -22,11 +24,14 @@ namespace accessibility_annotator {
 class ContentAnnotatorService
     : public KeyedService,
       public page_content_annotations::PageContentAnnotationsService::
-          PageContentAnnotationsObserver {
+          PageContentAnnotationsObserver,
+      public page_content_annotations::PageContentExtractionService::Observer {
  public:
   explicit ContentAnnotatorService(
       page_content_annotations::PageContentAnnotationsService&
-          page_content_annotations_service);
+          page_content_annotations_service,
+      page_content_annotations::PageContentExtractionService&
+          page_content_extraction_service);
   ~ContentAnnotatorService() override;
 
   ContentAnnotatorService(const ContentAnnotatorService&) = delete;
@@ -46,6 +51,13 @@ class ContentAnnotatorService
   virtual void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details);
 
+  // page_content_annotations::PageContentExtractionService::
+  //     Observer:
+  void OnPageContentExtracted(
+      content::Page& page,
+      const optimization_guide::proto::AnnotatedPageContent& page_content)
+      override;
+
  private:
   using CacheIterator =
       base::LRUCache<GURL, ContentClassificationInput>::iterator;
@@ -58,8 +70,18 @@ class ContentAnnotatorService
   // annotation eligibility.
   void MaybeAnnotate(CacheIterator it);
 
+  // `ContentAnnotatorServiceFactory` uses a `DependsOn()` to guarantee that the
+  // `raw_ref`s below outlive `ContentAnnotatorService`.
   const raw_ref<page_content_annotations::PageContentAnnotationsService>
       page_content_annotations_service_;
+
+  const raw_ref<page_content_annotations::PageContentExtractionService>
+      page_content_extraction_service_;
+
+  base::ScopedObservation<
+      page_content_annotations::PageContentExtractionService,
+      page_content_annotations::PageContentExtractionService::Observer>
+      page_content_extraction_service_observation_{this};
 
   // Stores and joins data for URLs that are pending annotation. The cache size
   // is `kContentAnnotatorMaxPendingUrls`. When the cache is full, the last

@@ -13,11 +13,16 @@ namespace accessibility_annotator {
 
 ContentAnnotatorService::ContentAnnotatorService(
     page_content_annotations::PageContentAnnotationsService&
-        page_content_annotations_service)
+        page_content_annotations_service,
+    page_content_annotations::PageContentExtractionService&
+        page_content_extraction_service)
     : page_content_annotations_service_(page_content_annotations_service),
+      page_content_extraction_service_(page_content_extraction_service),
       join_entries_(kContentAnnotatorMaxPendingUrls.Get()) {
   page_content_annotations_service_->AddObserver(
       page_content_annotations::AnnotationType::kContentVisibility, this);
+  page_content_extraction_service_observation_.Observe(
+      &page_content_extraction_service_.get());
 }
 
 ContentAnnotatorService::~ContentAnnotatorService() {
@@ -44,6 +49,13 @@ void ContentAnnotatorService::OnLanguageDetermined(
   CacheIterator it = GetOrCreateJoinEntry(details.url);
   it->second.adopted_language = details.adopted_language;
   MaybeAnnotate(it);
+}
+
+void ContentAnnotatorService::OnPageContentExtracted(
+    content::Page& page,
+    const optimization_guide::proto::AnnotatedPageContent& page_content) {
+  // TODO(crbug.com/463735432): Implement logic to locally
+  // store page title and transformed APC.
 }
 
 ContentAnnotatorService::CacheIterator

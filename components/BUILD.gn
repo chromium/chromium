@@ -739,7 +739,6 @@ test("components_unittests") {
     }
   } else {  #!is_android
     deps += [
-      "//components/accessibility_annotator/content/content_annotator:unit_tests",
       "//components/keep_alive_registry:unit_tests",
       "//components/manta:unit_tests",
       "//components/trusted_vault:unit_tests",
@@ -765,7 +764,10 @@ test("components_unittests") {
   }
 
   if (!is_android && !is_ios && !is_fuchsia && !is_castos) {
-    deps += [ "//components/passage_embeddings/content:unit_tests" ]
+    deps += [
+      "//components/accessibility_annotator/content/content_annotator:unit_tests",
+      "//components/passage_embeddings/content:unit_tests",
+    ]
   }
 
   if (enable_guest_contents) {
