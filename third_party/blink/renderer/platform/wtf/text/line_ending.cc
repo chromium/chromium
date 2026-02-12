@@ -153,7 +153,8 @@ void InternalNormalizeLineEndingsToCRLF(const std::string& from,
 
 void NormalizeLineEndingsToLF(const std::string& from, Vector<char>& result) {
   // Compute the new length. Use byte-spans to avoid unnecessary instances.
-  std::optional<wtf_size_t> new_len = RequiredSizeForLF(base::span(from));
+  std::optional<wtf_size_t> new_len =
+      RequiredSizeForLF(base::as_byte_span(from));
 
   // If no need to fix the string, just copy the string over.
   if (!new_len) {
@@ -163,14 +164,26 @@ void NormalizeLineEndingsToLF(const std::string& from, Vector<char>& result) {
 
   const wtf_size_t old_result_size = result.size();
   result.Grow(old_result_size + *new_len);
-  auto dst = base::span(result).subspan(old_result_size);
+  auto dst = base::as_writable_byte_span(result).subspan(old_result_size);
 
   // Copy and normalize.
-  NormalizeToLF(base::span(from), dst);
+  NormalizeToLF(base::as_byte_span(from), dst);
 }
 
 String NormalizeLineEndingsToLF(const String& src) {
-  return String(src).Replace("\r\n", "\n").Replace('\r', '\n');
+  if (src.empty()) {
+    return src;
+  }
+  return VisitCharacters(src, [&src](auto chars) {
+    std::optional<wtf_size_t> new_length = RequiredSizeForLF(chars);
+    if (!new_length) {
+      return src;
+    }
+    using CharType = decltype(chars)::value_type;
+    StringBuffer<CharType> buffer(*new_length);
+    NormalizeToLF(chars, buffer.Span());
+    return String::Adopt(buffer);
+  });
 }
 
 String NormalizeLineEndingsToCRLF(const String& src) {
