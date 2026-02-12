@@ -245,6 +245,7 @@ source_set("tests") {
     "//base",
     "//base/test:test_support",
     "//components/services/storage/public/cpp",
+    "//components/services/storage/public/cpp:tests",
     "//components/services/storage/public/cpp/filesystem:tests",
     "//components/services/storage/public/mojom",
     "//components/services/storage/public/mojom:tests",

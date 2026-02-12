@@ -11,7 +11,9 @@
 
 #include "base/test/gmock_expected_support.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/public/cpp/compression.h"
 #include "sql/database.h"
+#include "sql/statement.h"
 #include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
 #include "storage/common/database/db_status.h"
@@ -340,6 +342,110 @@ TEST_F(MapEntriesTableTest, CloneEmptyMap) {
            target_entries),
       map_entries_table_->GetMapKeyValues(kSecondMapLocator.map_id().value()));
   EXPECT_TRUE(target_entries.empty());
+}
+
+// Verifies that a large value is compressed when stored and decompressed
+// correctly when read back.
+TEST_F(MapEntriesTableTest, LargeValueStoredCompressed) {
+  std::vector<uint8_t> large_value(1024, 'A');
+  std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> expected_entries{
+      {ToBytes("key"), large_value},
+  };
+  InsertMapEntries(kFirstMapLocator, expected_entries);
+
+  // Verify the value was actually compressed (compression_type != 0).
+  {
+    sql::Statement statement(database_.GetUniqueStatement(
+        "SELECT value_compression_type FROM map_entries WHERE map_id = 1"));
+    ASSERT_TRUE(statement.Step());
+    EXPECT_NE(static_cast<CompressionType>(statement.ColumnInt(0)),
+              CompressionType::kUncompressed);
+  }
+
+  // Verify the decompressed value matches the original.
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+           actual_entries),
+      map_entries_table_->GetMapKeyValues(kFirstMapLocator.map_id().value()));
+  EXPECT_EQ(actual_entries, expected_entries);
+}
+
+// Verifies that small values below the compression threshold are stored
+// uncompressed.
+TEST_F(MapEntriesTableTest, SmallValueStoredUncompressed) {
+  std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> expected_entries{
+      {ToBytes("key"), ToBytes("small")},
+  };
+  InsertMapEntries(kFirstMapLocator, expected_entries);
+
+  // Verify `value_compression_type` is `kUncompressed`.
+  {
+    sql::Statement statement(database_.GetUniqueStatement(
+        "SELECT value_compression_type FROM map_entries WHERE map_id = 1"));
+    ASSERT_TRUE(statement.Step());
+    EXPECT_EQ(static_cast<CompressionType>(statement.ColumnInt(0)),
+              CompressionType::kUncompressed);
+  }
+
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+           actual_entries),
+      map_entries_table_->GetMapKeyValues(kFirstMapLocator.map_id().value()));
+  EXPECT_EQ(actual_entries, expected_entries);
+}
+
+// Verifies that a large value that doesn't compress well is stored
+// uncompressed.
+TEST_F(MapEntriesTableTest, LargeIncompressibleValueStoredUncompressed) {
+  // Create a value that doesn't compress well (sequential byte values).
+  std::vector<uint8_t> incompressible_value(256);
+  for (size_t i = 0; i < incompressible_value.size(); ++i) {
+    incompressible_value[i] = static_cast<uint8_t>(i);
+  }
+  std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> expected_entries{
+      {ToBytes("key"), incompressible_value},
+  };
+  InsertMapEntries(kFirstMapLocator, expected_entries);
+
+  // Verify `value_compression_type` is `kUncompressed`.
+  {
+    sql::Statement statement(database_.GetUniqueStatement(
+        "SELECT value_compression_type FROM map_entries WHERE map_id = 1"));
+    ASSERT_TRUE(statement.Step());
+    EXPECT_EQ(static_cast<CompressionType>(statement.ColumnInt(0)),
+              CompressionType::kUncompressed);
+  }
+
+  // Verify the value reads back correctly regardless of compression decision.
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+           actual_entries),
+      map_entries_table_->GetMapKeyValues(kFirstMapLocator.map_id().value()));
+  EXPECT_EQ(actual_entries, expected_entries);
+}
+
+// Verifies that `GetMapKeyValues()` returns a corruption error when the
+// database contains a corrupt compressed value.
+TEST_F(MapEntriesTableTest, CorruptCompressedDataReturnsError) {
+  std::vector<uint8_t> garbage = ToBytes("this is not valid compressed value!");
+
+  // Insert `garbage` directly with compression type `kZstd`.
+  {
+    sql::Statement insert(database_.GetUniqueStatement(
+        "INSERT INTO map_entries(map_id, key, value, value_compression_type) "
+        "VALUES(?, ?, ?, ?)"));
+    insert.BindInt64(0, kFirstMapLocator.map_id().value());
+    insert.BindBlob(1, ToBytes("key"));
+    insert.BindBlob(2, garbage);
+    insert.BindInt(3, static_cast<int>(CompressionType::kZstd));
+    ASSERT_TRUE(insert.Run());
+  }
+
+  StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
+      result = map_entries_table_->GetMapKeyValues(
+          kFirstMapLocator.map_id().value());
+  ASSERT_FALSE(result.has_value());
+  EXPECT_TRUE(result.error().IsCorruption());
 }
 
 }  // namespace storage

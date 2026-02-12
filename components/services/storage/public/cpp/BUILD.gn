@@ -7,6 +7,7 @@ component("cpp") {
 
   public = [
     "big_io_buffer.h",
+    "compression.h",
     "constants.h",
     "quota_client_callback_wrapper.h",
     "quota_error_or.h",
@@ -14,6 +15,7 @@ component("cpp") {
 
   sources = [
     "big_io_buffer.cc",
+    "compression.cc",
     "constants.cc",
     "quota_client_callback_wrapper.cc",
   ]
@@ -25,7 +27,23 @@ component("cpp") {
     "//components/services/storage/public/cpp/filesystem",
     "//components/services/storage/public/mojom",
     "//net",
+    "//third_party/snappy",
+    "//third_party/zstd:decompress",
   ]
 
+  if (!is_android && !is_fuchsia) {
+    public_deps += [ "//third_party/zstd:compress" ]
+  }
+
   defines = [ "IS_STORAGE_SERVICE_PUBLIC_IMPL" ]
+}
+
+source_set("tests") {
+  testonly = true
+  sources = [ "compression_unittest.cc" ]
+  deps = [
+    ":cpp",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
 }

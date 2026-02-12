@@ -90,6 +90,8 @@ source_set("unittests") {
     "//base/test:test_support",
     "//mojo/core/embedder",
     "//testing/gtest",
+    "//third_party/snappy",
+    "//third_party/zstd:decompress",
     "//url",
   ]
 }

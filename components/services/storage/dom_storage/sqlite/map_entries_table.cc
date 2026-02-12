@@ -4,8 +4,10 @@
 
 #include "components/services/storage/dom_storage/sqlite/map_entries_table.h"
 
+#include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_macros.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
+#include "components/services/storage/public/cpp/compression.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -17,6 +19,7 @@ DbStatus MapEntriesTable::CreateSchema(sql::Database& database) {
       // clang-format off
       "CREATE TABLE map_entries("
         "map_id INTEGER NOT NULL,"
+        "value_compression_type INTEGER NOT NULL,"
         "key BLOB NOT NULL,"
         "value BLOB NOT NULL,"
         "PRIMARY KEY(map_id, key)"
@@ -37,7 +40,8 @@ MapEntriesTable::~MapEntriesTable() = default;
 StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
 MapEntriesTable::GetMapKeyValues(int64_t map_id) {
   constexpr const char kSelectMapEntries[] =
-      "SELECT key, value FROM map_entries WHERE map_id = ?";
+      "SELECT key, value_compression_type, value "
+      "FROM map_entries WHERE map_id = ?";
 
   sql::Statement statement(
       database_->GetCachedStatement(SQL_FROM_HERE, kSelectMapEntries));
@@ -45,8 +49,16 @@ MapEntriesTable::GetMapKeyValues(int64_t map_id) {
 
   std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries;
   while (statement.Step()) {
-    entries.emplace(/*key=*/statement.ColumnBlobAsVector(0),
-                    /*value=*/statement.ColumnBlobAsVector(1));
+    DomStorageDatabase::Key key = statement.ColumnBlobAsVector(0);
+    CompressedValue compressed_value{
+        static_cast<CompressionType>(statement.ColumnInt(1)),
+        statement.ColumnBlobAsVector(2)};
+
+    ASSIGN_OR_RETURN(DomStorageDatabase::Value decompressed_value,
+                     Decompress(std::move(compressed_value)), [] {
+                       return DbStatus::Corruption("decompression failed");
+                     });
+    entries.emplace(std::move(key), std::move(decompressed_value));
   }
   RETURN_UNEXPECTED_ON_ERROR(statement.Succeeded());
   return entries;
@@ -78,7 +90,9 @@ DbStatus MapEntriesTable::UpdateMap(
 
   // Insert or replace entries.
   constexpr const char kInsertOrReplaceEntry[] =
-      "INSERT OR REPLACE INTO map_entries(map_id, key, value) VALUES( ?, ?, ?)";
+      "INSERT OR REPLACE INTO map_entries("
+      "map_id, key, value_compression_type, value"
+      ") VALUES(?, ?, ?, ?)";
 
   sql::Statement insert_statement(
       database_->GetCachedStatement(SQL_FROM_HERE, kInsertOrReplaceEntry));
@@ -86,7 +100,11 @@ DbStatus MapEntriesTable::UpdateMap(
 
   for (const auto& entry : map_update.entries_to_add) {
     insert_statement.BindBlob(1, std::move(entry.key));
-    insert_statement.BindBlob(2, std::move(entry.value));
+
+    CompressedValue compressed = Compress(std::move(entry.value));
+    insert_statement.BindInt(2, static_cast<int>(compressed.type));
+    insert_statement.BindBlob(3, std::move(compressed.data));
+
     RETURN_STATUS_ON_ERROR(insert_statement.Run());
     insert_statement.Reset(/*clear_bound_vars=*/false);
   }
@@ -98,8 +116,9 @@ DbStatus MapEntriesTable::CloneMap(int64_t source_map_id,
   // Copy all key/value pairs from the source map to the target map using a
   // `INSERT...SELECT` statement.
   constexpr const char kCloneMapEntries[] =
-      "INSERT INTO map_entries(map_id, key, value) "
-      "SELECT ?, key, value FROM map_entries WHERE map_id = ?";
+      "INSERT INTO map_entries(map_id, value_compression_type, key, value) "
+      "SELECT ?, value_compression_type, key, value FROM map_entries "
+      "WHERE map_id = ?";
 
   sql::Statement statement(
       database_->GetCachedStatement(SQL_FROM_HERE, kCloneMapEntries));
