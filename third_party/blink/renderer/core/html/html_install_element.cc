@@ -225,11 +225,16 @@ void HTMLInstallElement::OnInstallResult(
     const KURL& manifest_id) {
   switch (result) {
     case mojom::blink::WebInstallServiceResult::kAbortError:
-    // TODO(crbug.com/462493894): Decide how to surface kDataError. For now,
-    // fire promptdismiss for all error cases.
-    // TODO(crbug.com/481519343): Add long-term solution for error handling (a
-    // separate error attribute linked to the install result, etc.).
+      DispatchEvent(
+          *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
+      break;
     case mojom::blink::WebInstallServiceResult::kDataError:
+      // TODO(crbug.com/481519343): Revisit how to best surface this for
+      // <install> as a long-term solution (a separate error attribute linked to
+      // the install result, etc.).
+      // Disable the element to prevent future activations and inform the
+      // developer.
+      HandleInstallDataError();
       DispatchEvent(
           *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
       break;

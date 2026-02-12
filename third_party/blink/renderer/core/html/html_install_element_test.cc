@@ -113,6 +113,13 @@ class MockWebInstallService : public mojom::blink::WebInstallService {
     called_.Clear();
   }
 
+  void RespondWithDataError() {
+    CHECK(callback_);
+    std::move(callback_).Run(mojom::blink::WebInstallServiceResult::kDataError,
+                             KURL());
+    called_.Clear();
+  }
+
   const mojom::blink::InstallOptionsPtr& options() const { return options_; }
 
  private:
@@ -359,6 +366,41 @@ TEST_F(HTMLInstallElementTestBase, ActivationAborted) {
   // AbortError should trigger a `promptdismiss` event.
   web_install_service_.RespondWithAbortError();
   MakeGarbageCollected<WaitForEvent>(element, event_type_names::kPromptdismiss);
+}
+
+// TODO(crbug.com/482088884): Create WebInstallServiceImpl unit tests that
+// include checking more specific data error cases.
+// TODO(crbug.com/475891209): Add a test for invalid installurl case that's
+// similar to DataErrorMakesElementInvalid.
+TEST_F(HTMLInstallElementTestBase, DataErrorMakesElementInvalid) {
+  // Create the element with an invalid installurl.
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  // Use an installurl that has no manifest.
+  element->setAttribute(html_names::kInstallurlAttr,
+                        AtomicString("https://site.example/"));
+  WaitForElementRegistration(element);
+
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  // The `Install` method should be called.
+  web_install_service_.WaitForCall();
+
+  // DataError should trigger a `promptdismiss` event.
+  web_install_service_.RespondWithDataError();
+
+  // Disable the bypass feature before waiting for the event.
+  // This ensures the element's state is correctly evaluated when the DataError
+  // is processed.
+  {
+    ScopedBypassPepcSecurityForTestingForTest scoped_feature(false);
+    MakeGarbageCollected<WaitForEvent>(element,
+                                       event_type_names::kPromptdismiss);
+
+    EXPECT_FALSE(element->IsClickingEnabled());
+    EXPECT_FALSE(element->isValid());
+    EXPECT_EQ(element->invalidReason(), String("install_data_invalid"));
+  }
 }
 
 }  // namespace blink

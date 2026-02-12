@@ -693,6 +693,16 @@ void HTMLPermissionElement::UpdatePermissionStatus() {
   }
 }
 
+void HTMLPermissionElement::HandleInstallDataError() {
+  DisableClickingIndefinitely(DisableReason::kInstallDataError);
+  // TODO(crbug.com/481519343): ValidationChange is not what we normally expect
+  // after an interaction error. Revisit how to best surface this for <install>
+  // as a long-term solution (a separate error attribute linked to the install
+  // result, etc.).
+  MaybeDispatchValidationChangeEvent();
+  return;
+}
+
 // static
 Vector<PermissionDescriptorPtr>
 HTMLPermissionElement::ParsePermissionDescriptorsForTesting(
@@ -715,6 +725,8 @@ String HTMLPermissionElement::DisableReasonToString(DisableReason reason) {
       return "invalid style";
     case DisableReason::kAttributeChanged:
       return "an attribute changed";
+    case DisableReason::kInstallDataError:
+      return "web app installation data error";
     case DisableReason::kUnknown:
       NOTREACHED();
   }
@@ -739,6 +751,8 @@ HTMLPermissionElement::DisableReasonToUserInteractionDeniedReason(
       return UserInteractionDeniedReason::kInvalidStyle;
     case DisableReason::kAttributeChanged:
       return UserInteractionDeniedReason::kAttributeChanged;
+    case DisableReason::kInstallDataError:
+      return UserInteractionDeniedReason::kInstallDataError;
     case DisableReason::kUnknown:
       NOTREACHED();
   }
@@ -760,6 +774,8 @@ AtomicString HTMLPermissionElement::DisableReasonToInvalidReasonString(
       return AtomicString("style_invalid");
     case DisableReason::kAttributeChanged:
       return AtomicString("attribute_changed");
+    case DisableReason::kInstallDataError:
+      return AtomicString("install_data_invalid");
     case DisableReason::kUnknown:
       NOTREACHED();
   }
