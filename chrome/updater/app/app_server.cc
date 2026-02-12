@@ -145,7 +145,7 @@ base::OnceClosure AppServer::ModeCheck() {
 void AppServer::TaskStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++tasks_running_;
-  VLOG(2) << "TaskStarted: Count: " << tasks_running_;
+  VLOG(2) << "TaskStarted. Count: " << tasks_running_;
 }
 
 void AppServer::TaskCompleted() {
