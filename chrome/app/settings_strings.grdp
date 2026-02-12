@@ -691,12 +691,10 @@
     Verify it’s you to autofill sensitive info
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_SUBTITLE" desc="The subtitle of the toggle shown in the settings page that allows managing the authentication requirement before seeings enhanced autofill settings sensitive fields, such as passport number and natinal id card number.">
-    For added protection, always use your fingerprint, face, or other screen lock when you use sensitive info like travel and identity docs  </message>
+    For added protection, always use your fingerprint, face, or other screen lock when you use sensitive info like travel and identity docs
+  </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_SAVED_INFO" desc="Bullet 1 of 2 that appears beneath the 'When on' title. 'Autofill': the user is on the 'enhanced autofill' feature page, but we want to frame this new type of autofill as just 'Autofill'. 'Can offer to save info when you submit forms': we want to convey that the user has the choice, each time a form is submitted, whether they want their info saved to Chrome for the purposes of Autofill. 'Like your driver's license or passport number': Today, supported data types for 'enhanced autofill' include 1) driver's licenses, 2) passports, and 3) vehicles. Eventually we'll support more, but this example needs to mention these types of data and not others.">
     Autofill can offer to save info when you submit forms, like your driver's license or passport number
-  </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE" desc="Bullet 1 of 2 that appears beneath the 'Things to consider' title. The point of this bullet is to convey to the user the types of data that get shared with Google to support this feature. There are 2 data types: 1) 'the page’s URL' and 2) 'content', by which we mean the words, visuals, and layout of the pages the user visits. This notion that Google is considering 'page content' is new. We want to lead with 'To offer suggestions' even though it might be a bit grammatically awkward, because we want to express the need / value before explaining the data that gets shared.">
-    To offer suggestions and improve this feature, the page’s URL and content are shared with Google
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_ENTERPRISE_LOGGING_MANAGED_DISABLED" desc="Text only seen by enterprise users (Google services provided for a company). Users should understand that their content saved with autofill won't be used to improve AI, neither AI features specifically or AI models generally.">
     Your content will not be used to improve AI. Your organization may change these settings at any time.

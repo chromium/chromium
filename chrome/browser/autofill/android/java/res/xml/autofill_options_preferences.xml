@@ -9,16 +9,41 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orderingFromXml="false">
 
-    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-        android:key="autofill_ai_switch"
+    <PreferenceCategory
+        android:id="@+id/autofill_ai_category"
+        android:key="autofill_ai_category"
         android:order="0"
-        app:isPreferenceVisible="false"
-        app:allowDividerBelow="true" />
+        android:title="@string/settings_autofill_ai_page_title"
+        app:isPreferenceVisible="false">
 
-    <org.chromium.chrome.browser.autofill.options.RadioButtonGroupThirdPartyPreference
-        android:key="autofill_third_party_filling"
-        android:order="1"
-        android:selectable="false" />
+        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+            android:id="@+id/autofill_ai_switch"
+            android:key="autofill_ai_switch"
+            android:order="0"
+            android:title="@string/settings_autofill_ai_page_title"
+            android:summary="@string/settings_autofill_ai_description" />
+
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:key="autofill_ai_when_on"
+            android:order="1"
+            android:title="@string/settings_autofill_ai_when_on"
+            android:summary="@string/settings_autofill_ai_when_on_can_fill_difficult_fields"
+            android:icon="@drawable/ic_bar_chart_24dp"
+            app:allowDividerBelow="false" />
+
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:key="autofill_ai_things_to_consider"
+            android:order="2"
+            android:title="@string/settings_autofill_ai_things_to_consider"
+            android:summary="@string/settings_autofill_ai_to_consider_data_usage"
+            android:icon="@drawable/ic_logo_googleg_24dp"
+            app:allowDividerBelow="false" />
+    </PreferenceCategory>
+
+   <org.chromium.chrome.browser.autofill.options.RadioButtonGroupThirdPartyPreference
+       android:key="autofill_third_party_filling"
+       android:order="1"
+       android:selectable="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="third_party_toggle_hint"

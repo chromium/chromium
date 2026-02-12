@@ -85,13 +85,9 @@
   </message>
 
   <!-- Enhanced autofill Page-->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_CAN_FILL_DIFFICULT_FIELDS" desc="Bullet point that appears beneath the 'When on' title when seeing the Enhanced Autofill description page. This string explains one of the advantages users will get from enabling the feature and serves as a way to incentivize the user to do so.">
-    Chromium can autofill difficult fields that standard autofill might miss
-  </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_USE_TO_FILL"  desc="Bullet 2 of 2 that appears beneath the “When on” title. “Later”: this is a two-step feature. 1) data is saved, 2) it becomes valuable to the user later when they want to fill in a form with similar data. “Chromium can ask”: the user has a choice, every time, whether their data is saved and also whether they want to autofill their saved info into forms.">
     Later, Chromium can ask if you want to use saved info to autofill forms for you
   </message>
-
   <!-- Default Browser Page -->
   <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT" desc="The text displayed when Chrome is the default browser">

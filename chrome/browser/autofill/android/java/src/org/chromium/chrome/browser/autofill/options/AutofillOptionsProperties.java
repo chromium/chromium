@@ -24,14 +24,14 @@ class AutofillOptionsProperties {
             new ReadableObjectPropertyKey<>("on_third_party_toggle_changed");
     static final WritableObjectPropertyKey<SpannableString> THIRD_PARTY_TOGGLE_HINT =
             new WritableObjectPropertyKey<>("third_party_toggle_hint");
-    static final WritableBooleanPropertyKey AUTOFILL_AI_SETTING_VISIBLE =
-            new WritableBooleanPropertyKey("autofill_ai_setting_visible");
     static final WritableBooleanPropertyKey AUTOFILL_AI_SETTING_ELIGIBLE =
             new WritableBooleanPropertyKey("autofill_ai_setting_eligible");
     static final WritableBooleanPropertyKey AUTOFILL_AI_SETTING_ON =
             new WritableBooleanPropertyKey("autofill_ai_setting_on");
     static final ReadableObjectPropertyKey<Callback<Boolean>> ON_AUTOFILL_AI_SETTING_TOGGLED =
             new ReadableObjectPropertyKey<>("on_autofill_ai_setting_toggled");
+    static final WritableBooleanPropertyKey AUTOFILL_AI_ENABLED =
+            new WritableBooleanPropertyKey("autofill_ai_enabled");
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -39,10 +39,10 @@ class AutofillOptionsProperties {
                 THIRD_PARTY_TOGGLE_IS_READ_ONLY,
                 ON_THIRD_PARTY_TOGGLE_CHANGED,
                 THIRD_PARTY_TOGGLE_HINT,
-                AUTOFILL_AI_SETTING_VISIBLE,
                 AUTOFILL_AI_SETTING_ELIGIBLE,
                 AUTOFILL_AI_SETTING_ON,
                 ON_AUTOFILL_AI_SETTING_TOGGLED,
+                AUTOFILL_AI_ENABLED,
             };
 
     /**

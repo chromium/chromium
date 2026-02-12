@@ -102,9 +102,6 @@ public class AutofillOptionsCoordinator {
                 new PropertyModel.Builder(AutofillOptionsProperties.ALL_KEYS)
                         .with(ON_THIRD_PARTY_TOGGLE_CHANGED, mMediator::onThirdPartyToggleChanged)
                         .with(
-                                AutofillOptionsProperties.AUTOFILL_AI_SETTING_VISIBLE,
-                                mMediator.shouldShowAutofillAi())
-                        .with(
                                 AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE,
                                 mMediator.isEligibleToAutofillAi())
                         .with(
@@ -113,6 +110,9 @@ public class AutofillOptionsCoordinator {
                         .with(
                                 AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED,
                                 mMediator::onAutofillAiSettingToggled)
+                        .with(
+                                AutofillOptionsProperties.AUTOFILL_AI_ENABLED,
+                                mMediator.isAutofillAiEnabled())
                         .build();
         mMediator.initialize(model, mFragment.getReferrer(), mFragment.getContext());
 

@@ -489,10 +489,10 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
-    public void testAutofillAiToggleVisibleWhenFeatureEnabled() {
+    public void testAutofillAiFeatureVisibleWhenFeatureEnabled() {
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
-        assertTrue(mFragment.getAutofillAiSwitch().isVisible());
+        assertTrue(mFragment.getAutofillAiCategory().isVisible());
     }
 
     @Test
@@ -573,7 +573,7 @@ public class AutofillOptionsTest {
     public void testAutofillAiToggleHiddenWhenFeatureDisabled() {
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
-        assertFalse(mFragment.getAutofillAiSwitch().isVisible());
+        assertFalse(mFragment.getAutofillAiCategory().isVisible());
     }
 
     private ModalDialogManager assertModalNotUsed() {

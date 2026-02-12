@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.IntDef;
 import androidx.fragment.app.Fragment;
+import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
@@ -21,6 +22,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -43,6 +45,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     public static final String PREF_AUTOFILL_THIRD_PARTY_FILLING = "autofill_third_party_filling";
     public static final String PREF_THIRD_PARTY_TOGGLE_HINT = "third_party_toggle_hint";
     public static final String PREF_AUTOFILL_AI_SWITCH = "autofill_ai_switch";
+    public static final String PREF_AUTOFILL_AI_CATEGORY = "autofill_ai_category";
 
     private @AutofillOptionsReferrer int mReferrer;
 
@@ -99,6 +102,10 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         TextMessagePreference hint = findPreference(PREF_THIRD_PARTY_TOGGLE_HINT);
         assert hint != null;
         return hint;
+    }
+
+    @Nullable Preference getAutofillAiCategory() {
+        return findPreference(PREF_AUTOFILL_AI_CATEGORY);
     }
 
     @Override
@@ -199,6 +206,14 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                 @Override
                 public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
                     indexData.removeEntry(getUniqueId(PREF_THIRD_PARTY_TOGGLE_HINT));
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)) {
+                        indexData.addEntryForKey(
+                                getPrefFragmentName(),
+                                PREF_AUTOFILL_AI_SWITCH,
+                                R.string.settings_autofill_ai_page_title,
+                                R.string.settings_autofill_ai_description);
+                    }
                 }
             };
 }

@@ -2474,6 +2474,21 @@
             ]
         }
     ],
+    "AutofillAiM4": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAiWithDataSchema"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAndroidKeyboardAccessoryDynamicPositioning": [
         {
             "platforms": [

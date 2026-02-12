@@ -114,7 +114,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         mModel = model;
         mContext = context;
         updateToggleStateFromPref();
-        mModel.set(AutofillOptionsProperties.AUTOFILL_AI_SETTING_VISIBLE, shouldShowAutofillAi());
+        mModel.set(AutofillOptionsProperties.AUTOFILL_AI_ENABLED, isAutofillAiEnabled());
         mModel.set(
                 AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE, isEligibleToAutofillAi());
         mModel.set(AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON, isAutofillAiOn());
@@ -128,18 +128,18 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
 
     // TODO(crbug.com/467563819): Hide everything related to Autofill AI if the page is accessed via
     // deep-link.
-    boolean shouldShowAutofillAi() {
+    boolean isAutofillAiEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
     }
 
     boolean isEligibleToAutofillAi() {
         @Nullable EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
-        return shouldShowAutofillAi() && manager != null && manager.isEligibleToAutofillAi();
+        return isAutofillAiEnabled() && manager != null && manager.isEligibleToAutofillAi();
     }
 
     boolean isAutofillAiOn() {
         @Nullable EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
-        return shouldShowAutofillAi() && manager != null && manager.getAutofillAiOptInStatus();
+        return isAutofillAiEnabled() && manager != null && manager.getAutofillAiOptInStatus();
     }
 
     void onAutofillAiSettingToggled(boolean isOn) {
