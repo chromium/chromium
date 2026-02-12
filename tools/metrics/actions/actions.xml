@@ -10954,6 +10954,16 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
+<action
+    name="ContextualTasks.BackButton.UserAction.NavigatedFromSidePanelToFullTab">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    The user navigated from the contextual tasks side panel back to the full tab
+    using the back button.
+  </description>
+</action>
+
 <action name="ContextualTasks.TabChange.UserAction{ActionType}">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
