@@ -40,6 +40,7 @@
 #import "components/policy/core/browser/configuration_policy_handler_parameters.h"
 #import "components/policy/core/browser/gen_ai_default_settings_policy_handler.h"
 #import "components/policy/core/browser/incognito/incognito_mode_policy_handler.h"
+#import "components/policy/core/browser/url_list/url_allowlist_policy_handler.h"
 #import "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/policy_constants.h"
@@ -140,9 +141,6 @@ constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kTranslateEnabled,
     translate::prefs::kOfferTranslateEnabled,
     base::Value::Type::BOOLEAN },
-  { policy::key::kURLAllowlist,
-    policy::policy_prefs::kUrlAllowlist,
-    base::Value::Type::LIST},
   { policy::key::kShoppingListEnabled,
     commerce::kShoppingListEnabledPrefName,
     base::Value::Type::BOOLEAN},
@@ -234,6 +232,8 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           enterprise_reporting::CloudProfileReportingPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<policy::NewTabPageLocationPolicyHandler>());
+  handlers->AddHandler(std::make_unique<policy::URLAllowlistPolicyHandler>(
+      policy::key::kURLAllowlist));
   handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(
       policy::key::kURLBlocklist));
 

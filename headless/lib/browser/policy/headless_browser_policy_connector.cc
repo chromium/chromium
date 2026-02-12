@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/headless/policy/headless_mode_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"  // nogncheck http://crbug.com/1227148
+#include "components/policy/core/browser/url_list/url_allowlist_policy_handler.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/common/async_policy_provider.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/common/management/platform_management_service.h"
@@ -57,10 +58,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #endif
 
   handlers->AddHandler(
+      std::make_unique<URLAllowlistPolicyHandler>(key::kURLAllowlist));
+  handlers->AddHandler(
       std::make_unique<URLBlocklistPolicyHandler>(key::kURLBlocklist));
-  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kURLAllowlist, policy_prefs::kUrlAllowlist,
-      base::Value::Type::LIST));
 
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kRemoteDebuggingAllowed,
