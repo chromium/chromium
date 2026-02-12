@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "chrome/browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.h"
 #include "ui/accessibility/ax_tree.h"
@@ -50,8 +51,8 @@ class ViewsAXPlatformTreeManagerLinuxForTesting
   ui::AXPlatformNodeDelegate* RootDelegate() const override {
     // Return a no-op delegate so that ProcessATKEvent() does not early-return.
     // AXPlatformNodeDelegate has no pure virtual methods and safe defaults.
-    static ui::AXPlatformNodeDelegate stub_delegate;
-    return &stub_delegate;
+    static base::NoDestructor<ui::AXPlatformNodeDelegate> stub_delegate;
+    return &*stub_delegate;
   }
 
  private:
@@ -59,7 +60,7 @@ class ViewsAXPlatformTreeManagerLinuxForTesting
 
 // Static instance to keep the stub manager alive for the duration of the test.
 // Only used when ViewsAX is disabled.
-std::unique_ptr<ViewsAXPlatformTreeManagerLinuxForTesting>
+base::NoDestructor<std::unique_ptr<ViewsAXPlatformTreeManagerLinuxForTesting>>
     g_stub_views_manager_for_testing;
 
 }  // namespace
@@ -77,16 +78,16 @@ std::unique_ptr<ui::AXEventRecorder> CreateViewsAXEventRecorderAuraLinux(
   } else {
     // ViewsAX is disabled - use our stub manager that provides a non-null
     // RootDelegate().
-    g_stub_views_manager_for_testing =
+    *g_stub_views_manager_for_testing =
         std::make_unique<ViewsAXPlatformTreeManagerLinuxForTesting>();
-    manager = g_stub_views_manager_for_testing->GetWeakPtr();
+    manager = (*g_stub_views_manager_for_testing)->GetWeakPtr();
   }
 
   return std::make_unique<ui::AXEventRecorderAuraLinux>(manager, pid, selector);
 }
 
 void CleanupViewsAXEventRecorderAuraLinux() {
-  g_stub_views_manager_for_testing.reset();
+  g_stub_views_manager_for_testing->reset();
 }
 
 }  // namespace views

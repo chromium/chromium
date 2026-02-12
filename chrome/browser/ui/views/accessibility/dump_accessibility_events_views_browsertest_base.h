@@ -60,8 +60,6 @@ class DumpAccessibilityEventsViewsTestBase
       std::vector<base::test::FeatureRef>* enabled_features,
       std::vector<base::test::FeatureRef>* disabled_features);
 
-  void BeginRecordingEvents();
-
   // Stops recording, compares events against the expectation file, and
   // reports any differences as test failures.
   void EndTestAndCompareEvents(const std::string& test_name);
@@ -109,6 +107,7 @@ class DumpAccessibilityEventsViewsTestBase
   virtual void OnDiffFailed();
 
  private:
+  void BeginRecordingEvents();
   void SetUpTestWidget();
   base::FilePath GetExpectationFilePath(const std::string& test_name) const;
   std::vector<std::string> CollectEventLogs();

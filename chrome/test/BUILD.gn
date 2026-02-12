@@ -2441,6 +2441,35 @@ if (!is_android) {
     ]
   }
 
+  # Test base class for Views accessibility event tests. Shared by both
+  # browser_tests and interactive_ui_tests.
+  source_set("dump_accessibility_events_views_browsertest_base") {
+    testonly = true
+
+    sources = [
+      "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.cc",
+      "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.h",
+    ]
+
+    if (is_mac) {
+      sources += [ "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base_mac.mm" ]
+    } else if (is_linux) {
+      sources += [ "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base_auralinux.cc" ]
+    }
+
+    deps = [
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/accessibility",
+      "//ui/accessibility:test_support",
+      "//ui/views",
+    ]
+  }
+
   test("browser_tests") {
     use_xvfb = use_xvfb_in_this_config
 
@@ -4391,10 +4420,7 @@ if (!is_android) {
     }
 
     if (is_linux) {
-      sources += [
-        "../browser/ozone_platform_browsertest.cc",
-        "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base_auralinux.cc",
-      ]
+      sources += [ "../browser/ozone_platform_browsertest.cc" ]
       deps += [
         "//ui/linux:linux_ui",
         "//ui/linux:linux_ui_factory",
@@ -4508,7 +4534,6 @@ if (!is_android) {
         "../browser/ui/fullscreen_util_mac_browsertest.cc",
         "../browser/ui/test/test_browser_dialog_mac.h",
         "../browser/ui/test/test_browser_dialog_mac.mm",
-        "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base_mac.mm",
         "../browser/ui/views/frame/browser_frame_view_mac_browsertest.mm",
         "../browser/ui/views/fullscreen_mac_browsertest.cc",
         "../browser/ui/views/web_apps/app_shim_metrics_browsertest.cc",
@@ -4586,7 +4611,6 @@ if (!is_android) {
         "../browser/profiles/profile_window_browsertest.cc",
         "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc",
         "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest.cc",
-        "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.cc",
         "../browser/ui/views/controls/button/button_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/download/bubble/download_bubble_row_list_view_browsertest.cc",
         "../browser/ui/views/download/bubble/download_toolbar_ui_controller_browsertest.cc",
@@ -4597,6 +4621,7 @@ if (!is_android) {
         "../browser/net/nss_context_chromeos_browsertest.cc",
       ]
       deps += [
+        ":dump_accessibility_events_views_browsertest_base",
         "//chrome/browser/default_browser:browser_tests",
         "//chrome/browser/ui/download",
       ]
@@ -11576,6 +11601,7 @@ if (!is_android && !is_chromeos_device) {
 
     deps = [
       ":chrome_test_launcher",
+      ":dump_accessibility_events_views_browsertest_base",
       ":test_support",
       ":test_support_ui",
       ":webrtc_browser_tests_base",
