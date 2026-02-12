@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -12,12 +11,12 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -37,33 +36,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-
-class CircularImageView : public views::ImageView {
-  METADATA_HEADER(CircularImageView, views::ImageView)
-
- public:
-  CircularImageView() = default;
-  CircularImageView(const CircularImageView&) = delete;
-  CircularImageView& operator=(const CircularImageView&) = delete;
-
- private:
-  // views::ImageView:
-  void OnPaint(gfx::Canvas* canvas) override;
-};
-
-void CircularImageView::OnPaint(gfx::Canvas* canvas) {
-  // Display the avatar picture as a circle.
-  gfx::Rect bounds(GetImageBounds());
-  const SkPath circular_mask = SkPath::Circle(
-      SkIntToScalar(bounds.x() + bounds.right()) / 2,
-      SkIntToScalar(bounds.y() + bounds.bottom()) / 2,
-      SkIntToScalar(std::min(bounds.height(), bounds.width())) / 2);
-  canvas->ClipPath(circular_mask, true);
-  ImageView::OnPaint(canvas);
-}
-
-BEGIN_METADATA(CircularImageView)
-END_METADATA
 
 }  // namespace
 

@@ -11,7 +11,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -27,6 +30,25 @@ class StyledLabel;
 namespace password_manager {
 struct PasswordForm;
 }
+
+// A view that displays an image cropped to a circle.
+class CircularImageView : public views::ImageView {
+  METADATA_HEADER(CircularImageView, views::ImageView)
+
+ public:
+  explicit CircularImageView(gfx::Size size = gfx::Size());
+  CircularImageView(const CircularImageView&) = delete;
+  CircularImageView& operator=(const CircularImageView&) = delete;
+  ~CircularImageView() override = default;
+
+  // views::ImageView:
+  void OnPaint(gfx::Canvas* canvas) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+
+ private:
+  gfx::Size size_;
+};
 
 // Returns a label that can be displayed as a footer for Password Manager
 // bubbles on Desktop or in other UI surfaces. `text_message_id` is the message

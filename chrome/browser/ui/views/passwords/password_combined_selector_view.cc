@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/passwords/password_combined_selector_view.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -25,7 +27,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -63,37 +64,6 @@ constexpr int kVerticalPadding = 8;
 // scrollable area.
 constexpr int kMaxVisibleItems = 3;
 constexpr int kItemHeight = 72;
-
-class CircularImageView : public views::ImageView {
-  METADATA_HEADER(CircularImageView, views::ImageView)
-
- public:
-  CircularImageView() = default;
-  CircularImageView(const CircularImageView&) = delete;
-  CircularImageView& operator=(const CircularImageView&) = delete;
-
-  // views::View:
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override {
-    return gfx::Size(kFluxAvatarSize, kFluxAvatarSize);
-  }
-
- private:
-  // views::ImageView:
-  void OnPaint(gfx::Canvas* canvas) override {
-    // Display the avatar picture as a circle.
-    gfx::Rect bounds(GetImageBounds());
-    const SkPath circular_mask = SkPath::Circle(
-        SkIntToScalar(bounds.x() + bounds.right()) / 2,
-        SkIntToScalar(bounds.y() + bounds.bottom()) / 2,
-        SkIntToScalar(std::min(bounds.height(), bounds.width())) / 2);
-    canvas->ClipPath(circular_mask, true);
-    ImageView::OnPaint(canvas);
-  }
-};
-
-BEGIN_METADATA(CircularImageView)
-END_METADATA
 
 class PasswordCombinedSelectorViewWrapper : public views::View {
   METADATA_HEADER(PasswordCombinedSelectorViewWrapper, views::View)
@@ -143,7 +113,8 @@ class PasswordCombinedSelectorRowView : public AccountAvatarFetcherDelegate,
 
     // Icon
     if (is_federated) {
-      auto image_view = std::make_unique<CircularImageView>();
+      auto image_view = std::make_unique<CircularImageView>(
+          gfx::Size(kFluxAvatarSize, kFluxAvatarSize));
       image_view_ = image_view.get();
       gfx::Image image = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
           IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE);
