@@ -67,14 +67,19 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       LoseAllContextsCallback lose_all_contexts_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       gpu::Scheduler* scheduler,
-      int32_t client_id,
       mojo::SharedRemote<viz::mojom::GpuHost> gpu_host);
+
+  struct WebNNReceiversParams {
+    // Indicates whether the provider is operating in incognito mode.
+    const bool is_incognito;
+    const int32_t client_id;
+  };
 
   // Called to add a another WebNNContextProvider receiver to this
   // existing `WebNNContextProviderImpl` instance.
   void BindWebNNContextProvider(
       mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
-      bool is_incognito);
+      const WebNNReceiversParams& params);
 
   enum class WebNNStatus {
     kWebNNGpuDisabled = 0,
@@ -131,7 +136,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       LoseAllContextsCallback lose_all_contexts_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       gpu::Scheduler* scheduler,
-      int32_t client_id,
       mojo::SharedRemote<viz::mojom::GpuHost> gpu_host);
 
   // mojom::WebNNContextProvider
@@ -234,10 +238,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   LoseAllContextsCallback lose_all_contexts_callback_;
 
   // Receivers for the WebNNContextProvider interface.
-  // The context value (a boolean) indicates whether the provider is operating
-  // in incognito mode.
-  mojo::ReceiverSet<mojom::WebNNContextProvider, bool> provider_receivers_
-      GUARDED_BY_CONTEXT(main_sequence_checker_);
+  // The context value indicates the parameters needed by the webnn context.
+  mojo::ReceiverSet<mojom::WebNNContextProvider, WebNNReceiversParams>
+      provider_receivers_ GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   // Lifetime of the scheduler is managed by the GPU service. The GPU service
   // destroys the WebNNContextProviderImpl and all its contexts when it
@@ -251,8 +254,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   // Specifies the thread on which the GPU scheduler should run tasks.
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-
-  const int32_t client_id_;
 
   // The memory tracker from the `shared_context_state_` which is used to create
   // tensors from shared images.
