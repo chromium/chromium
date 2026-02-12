@@ -815,6 +815,12 @@ BASE_FEATURE(kGlicLearnMore, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicUserStatusCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, if GlicUserStatusFetcher receives an error when checking for
+// managed status, and the refresh token is missing, it will retry. This fixes
+// a race condition on sign-in.
+BASE_FEATURE(kGlicUserStatusHandlesRefreshTokenLoss,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicDefaultTabContextSetting, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicDefaultContextPinOnBind, base::FEATURE_ENABLED_BY_DEFAULT);

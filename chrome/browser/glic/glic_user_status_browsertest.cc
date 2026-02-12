@@ -526,6 +526,71 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(IsGlicEnabled());
 }
 
+// Regression test for crbug.com/481357491.
+IN_PROC_BROWSER_TEST_F(
+    GlicUserStatusBrowserTest,
+    EnterpriseSignInRefreshTokenLostAndRecoveredDuringManagedCheck) {
+  RegisterUserStatusHandler(
+      net::HTTP_OK,
+      R"({"isGlicEnabled": true, "isAccessDeniedByAdmin": false})");
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  SetGlicUserStatusUrlForTest();
+
+  // Sign in, but don't provide extended account info. This will leave the
+  // account managed status as pending.
+  identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
+  AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
+      enterpriseAccount.email, signin::ConsentLevel::kSignin);
+  enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  SetGlicCapability(mutator, true);
+  identity_test_env_->UpdateAccountInfoForAccount(account_info);
+  EXPECT_FALSE(GetCachedStatusDict().has_value());
+
+  // Revoke the refresh token. This should cause the managed status check to
+  // fail, and no RPC will be sent.
+  identity_test_env_->RemoveRefreshTokenForAccount(account_info.account_id);
+
+  // Verify no request is sent.
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(300));
+    run_loop.Run();
+    EXPECT_FALSE(GetCachedStatusDict().has_value());
+  }
+
+  // Now, restore the refresh token and provide account info. This should allow
+  // the fetcher to retry and succeed.
+  identity_test_env_->MakeAccountAvailable(account_info.email);
+
+  // Re-apply capabilities, as they are lost when the token is restored.
+  account_info = identity_manager_->FindExtendedAccountInfoByAccountId(
+      account_info.account_id);
+  AccountCapabilitiesTestMutator refreshed_mutator(&account_info.capabilities);
+  SetGlicCapability(refreshed_mutator, true);
+  identity_test_env_->UpdateAccountInfoForAccount(account_info);
+
+  SimulateSuccessfulFetchOfAccountInfo(&enterpriseAccount, &account_info);
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  // Verify Prefs are now set, meaning the RPC was successful.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetCachedStatusDict().has_value(); }));
+
+  std::optional<base::DictValue> cached_dict = GetCachedStatusDict();
+  EXPECT_EQ(cached_dict->FindInt(kUserStatus).value_or(-1),
+            UserStatusCode::ENABLED);
+  EXPECT_EQ(*cached_dict->FindString(kAccountId), GetGaiaIdHashBase64());
+
+  EXPECT_TRUE(IsGlicEnabled());
+}
+
 // It happens that google.com accounts are always considered enterprise
 // accounts, even before extended account info is available.
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,

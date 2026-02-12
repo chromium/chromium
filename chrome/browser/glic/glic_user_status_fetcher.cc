@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/string_escape.h"
@@ -375,6 +376,25 @@ void GlicUserStatusFetcher::UpdateUserStatusWithThrottling() {
 
 void GlicUserStatusFetcher::OnAccountManagedStatusFound() {
   account_managed_status_ = account_managed_status_finder_->GetOutcome();
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  if (account_managed_status_ ==
+          signin::AccountManagedStatusFinderOutcome::kError &&
+      base::FeatureList::IsEnabled(
+          features::kGlicUserStatusHandlesRefreshTokenLoss) &&
+      (!identity_manager ||
+       !identity_manager->HasPrimaryAccountWithRefreshToken(
+           signin::ConsentLevel::kSignin))) {
+    // Fix for suspected cause of https://crbug.com/481357491.
+    // Getting an error at this point means that the refresh token became
+    // unavailable (even though it was when we started). Reset it to pending
+    // again, as this will be properly recognized and handled, by waiting for
+    // the refresh token to be available again.
+    account_managed_status_ =
+        signin::AccountManagedStatusFinderOutcome::kPending;
+  }
+
   account_managed_status_finder_.reset();
   UpdateUserStatus();
 }
