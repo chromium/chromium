@@ -47,6 +47,7 @@ public final class DeviceInfo {
     private static boolean sInitialized;
     private static @Nullable Boolean sIsXrForTesting;
     private static @Nullable Boolean sIsRetailDemoModeForTesting;
+    private static @Nullable Boolean sIsDesktopForTesting;
     private final IDeviceInfo mIDeviceInfo;
     private @Nullable Boolean mIsRetailDemoMode;
     private @Nullable ApplicationInfo mGmsAppInfo;
@@ -190,6 +191,14 @@ public final class DeviceInfo {
         ResettersForTesting.register(() -> sIsRetailDemoModeForTesting = null);
     }
 
+    public static void setIsDesktopForTesting(boolean isDesktop) {
+        sIsDesktopForTesting = isDesktop;
+        ResettersForTesting.register(() -> sIsDesktopForTesting = null);
+        if (sIsNativeLoaded) {
+            sendToNative(getInstance().mIDeviceInfo);
+        }
+    }
+
     private static DeviceInfo getInstance() {
         // Some tests mock out things DeviceInfo is based on, so disable caching in tests to ensure
         // such mocking is not defeated by caching.
@@ -283,8 +292,12 @@ public final class DeviceInfo {
         }
 
         mIDeviceInfo.isDesktop =
-                (BuildConfig.IS_DESKTOP_ANDROID && pm.hasSystemFeature(PackageManager.FEATURE_PC))
-                        || CommandLine.getInstance().hasSwitch(BaseSwitches.FORCE_DESKTOP_ANDROID);
+                (sIsDesktopForTesting != null)
+                        ? sIsDesktopForTesting
+                        : (BuildConfig.IS_DESKTOP_ANDROID
+                                        && pm.hasSystemFeature(PackageManager.FEATURE_PC))
+                                || CommandLine.getInstance()
+                                        .hasSwitch(BaseSwitches.FORCE_DESKTOP_ANDROID);
 
         // Detect whether device is foldable.
         mIDeviceInfo.isFoldable =

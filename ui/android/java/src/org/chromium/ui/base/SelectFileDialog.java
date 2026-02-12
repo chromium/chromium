@@ -36,6 +36,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
@@ -632,10 +633,15 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, types.toArray(new String[0]));
         }
 
+        // Remove Camera intents from the ChooserActivity on desktop. For generic file uploads
+        // (e.g., MIME type */*), the Camera is often included in the app list by default, creating
+        // a confusing experience for desktop users who expect a standard file picker.
         ArrayList<Intent> extraIntents = new ArrayList<>();
-        if (shouldShowImageTypes() && camera != null) extraIntents.add(camera);
-        if (shouldShowVideoTypes() && camcorder != null) extraIntents.add(camcorder);
-        if (shouldShowAudioTypes() && soundRecorder != null) extraIntents.add(soundRecorder);
+        if (!DeviceInfo.isDesktop()) {
+            if (shouldShowImageTypes() && camera != null) extraIntents.add(camera);
+            if (shouldShowVideoTypes() && camcorder != null) extraIntents.add(camcorder);
+            if (shouldShowAudioTypes() && soundRecorder != null) extraIntents.add(soundRecorder);
+        }
 
         // Only accept openable files, as coercing virtual files may yield to a MIME type different
         // than expected.

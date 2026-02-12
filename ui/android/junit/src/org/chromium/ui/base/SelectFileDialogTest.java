@@ -47,6 +47,8 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowMimeTypeMap;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.FileUtilsJni;
 import org.chromium.base.task.AsyncTask;
@@ -1437,5 +1439,121 @@ public class SelectFileDialogTest {
                 new Intent(
                         Intent.ACTION_VIEW,
                         Uri.parse("content://com.android.this_is_not_a_real_extension/xyz")));
+    }
+
+    @Test
+    public void testExternalPickerAllMimeTypeDesktopDoesNotShowCameraIntents() throws Exception {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertTrue(DeviceInfo.isDesktop());
+
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+
+        // Mock camera intent resolution.
+        IntentArgumentMatcher imageCaptureIntentArgumentMatcher =
+                new IntentArgumentMatcher(MediaStore.ACTION_IMAGE_CAPTURE);
+        when(windowAndroid.canResolveActivity(
+                        ArgumentMatchers.argThat(imageCaptureIntentArgumentMatcher)))
+                .thenReturn(true);
+        when(windowAndroid.hasPermission(Manifest.permission.CAMERA)).thenReturn(true);
+
+        // Setup WindowAndroid#showIntent to succeed (and validate the call).
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(Intent.ACTION_CHOOSER);
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                            // On desktop, EXTRA_INITIAL_INTENTS should be null or empty
+                            // because we stop injecting Camera intents.
+                            assertFalse(chooserIntent.hasExtra(Intent.EXTRA_INITIAL_INTENTS));
+                            return true;
+                        })
+                .when(windowAndroid)
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
+
+        selectFileDialog.selectFile(
+                Intent.ACTION_GET_CONTENT,
+                new String[] {"*/*"},
+                /* capture= */ false,
+                /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
+                windowAndroid);
+
+        // We need to run async tasks because GetCameraIntentTask is executed.
+        runAllAsyncTasks();
+    }
+
+    @Test
+    public void testExternalPickerAllMimeTypeNonDesktopShowsCameraIntents() throws Exception {
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertFalse(DeviceInfo.isDesktop());
+
+        // When GetCameraIntentTask is ran it attempts to convert the temporary file on disk to a
+        // content URI. To avoid idiosyncrasies with the Android content stack, just mock a return
+        // URI here as the actual value doesn't matter entirely.
+        FileProviderUtils.setFileProviderUtil(
+                new FileProviderUtils.FileProviderUtil() {
+                    @Override
+                    public Uri getContentUriFromFile(File file) {
+                        Uri.Builder builder = new Uri.Builder();
+                        String fileString = file.toString();
+                        if (fileString.startsWith("/")) {
+                            fileString = fileString.substring(1);
+                        }
+                        builder.scheme("content").authority("org.chromium.test");
+                        for (String path : fileString.split("/")) {
+                            builder.appendPath(path);
+                        }
+                        return builder.build();
+                    }
+                });
+
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+
+        // Mock camera intent resolution.
+        IntentArgumentMatcher imageCaptureIntentArgumentMatcher =
+                new IntentArgumentMatcher(MediaStore.ACTION_IMAGE_CAPTURE);
+        when(windowAndroid.canResolveActivity(
+                        ArgumentMatchers.argThat(imageCaptureIntentArgumentMatcher)))
+                .thenReturn(true);
+        when(windowAndroid.hasPermission(Manifest.permission.CAMERA)).thenReturn(true);
+
+        // Setup WindowAndroid#showIntent to succeed (and validate the call).
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(Intent.ACTION_CHOOSER);
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                            // On non-desktop, EXTRA_INITIAL_INTENTS should be present
+                            // because camera is supported and permitted.
+                            assertTrue(chooserIntent.hasExtra(Intent.EXTRA_INITIAL_INTENTS));
+                            Intent[] extraIntents =
+                                    (Intent[]) chooserIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS);
+                            assertEquals(1, extraIntents.length);
+                            assertEquals(
+                                    MediaStore.ACTION_IMAGE_CAPTURE, extraIntents[0].getAction());
+                            return true;
+                        })
+                .when(windowAndroid)
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
+
+        selectFileDialog.selectFile(
+                Intent.ACTION_GET_CONTENT,
+                new String[] {"*/*"},
+                /* capture= */ false,
+                /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
+                windowAndroid);
+
+        runAllAsyncTasks();
     }
 }
