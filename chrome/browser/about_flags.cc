@@ -4577,6 +4577,25 @@ const FeatureEntry::FeatureVariation
         {"- set_from_flags",
          kDeviceBoundSessionsForRestrictedSitesExperimentIdFromFlags, nullptr}};
 
+const FeatureEntry::FeatureParam
+    kPermissionsGestureGatedPromptsMuteNotifications[] = {
+        {"mute_notifications", "true"}};
+const FeatureEntry::FeatureParam
+    kPermissionsGestureGatedPromptsMuteGeolocation[] = {
+        {"mute_geolocation", "true"}};
+const FeatureEntry::FeatureParam kPermissionsGestureGatedPromptsMuteBoth[] = {
+    {"mute_notifications", "true"},
+    {"mute_geolocation", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kPermissionsGestureGatedPromptsVariations[] = {
+        {"Mute Notifications", kPermissionsGestureGatedPromptsMuteNotifications,
+         nullptr},
+        {"Mute Geolocation", kPermissionsGestureGatedPromptsMuteGeolocation,
+         nullptr},
+        {"Mute Both", kPermissionsGestureGatedPromptsMuteBoth, nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -10435,8 +10454,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"permissions-gesture-gated-prompts",
      flag_descriptions::kPermissionsGestureGatedPromptsName,
      flag_descriptions::kPermissionsGestureGatedPromptsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         permissions::features::kPermissionsGestureGatedPrompts)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         permissions::features::kPermissionsGestureGatedPrompts,
+         kPermissionsGestureGatedPromptsVariations,
+         "PermissionsGestureGatedPrompts")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"enable-task-manager-clank", flag_descriptions::kTaskManagerClankName,
