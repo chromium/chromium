@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 include_rules = [
-    "+chrome/test/base",
     "+components/content_extraction/content/browser",
     "+components/continuous_search/browser",
     "+components/continuous_search/common",

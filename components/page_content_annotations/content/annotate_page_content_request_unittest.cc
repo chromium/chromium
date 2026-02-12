@@ -10,16 +10,17 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
@@ -66,18 +67,20 @@ class TestPageContentExtractionService : public PageContentExtractionService {
   base::OnceClosure quit_closure_;
 };
 
-class AnnotatePageContentRequestTest : public ChromeRenderViewHostTestHarness {
+class AnnotatePageContentRequestTest
+    : public content::RenderViewHostTestHarness {
  public:
   AnnotatePageContentRequestTest()
-      : ChromeRenderViewHostTestHarness(
+      : content::RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    content::RenderViewHostTestHarness::SetUp();
 
     os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
 
-    extraction_service_.emplace(os_crypt_async_.get(), profile()->GetPath());
+    extraction_service_.emplace(os_crypt_async_.get(),
+                                browser_context()->GetPath());
 
     request_ = AnnotatedPageContentRequest::Create(
         web_contents(), extraction_service_.value(),
@@ -101,7 +104,7 @@ class AnnotatePageContentRequestTest : public ChromeRenderViewHostTestHarness {
     request_.reset();
     extraction_service_.reset();
     os_crypt_async_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
+    content::RenderViewHostTestHarness::TearDown();
   }
 
   void SetTriggeringMode(const std::string& mode) {
