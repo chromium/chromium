@@ -11733,13 +11733,6 @@ const FeatureEntry kFeatureEntries[] = {
          blink::features::kEnableDevtoolsDeepLinkViaExtensibilityApi)},
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    {"offer-migration-to-dice-users",
-     flag_descriptions::kOfferMigrationToDiceUsersName,
-     flag_descriptions::kOfferMigrationToDiceUsersDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(switches::kOfferMigrationToDiceUsers)},
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     {"autofill-enable-buy-now-pay-later-for-externally-linked",

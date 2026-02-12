@@ -984,6 +984,15 @@ constexpr char kProfilesDeletedOld[] = "profiles.profiles_deleted";
 inline constexpr char kExplicitBrowserSigninWithoutFeatureEnabled[] =
     "signin.explicit_browser_signin";
 
+// Deprecated 02/2026.
+constexpr char kDiceMigrationDialogShownCount[] =
+    "signin.dice_migration.dialog_shown_count";
+constexpr char kDiceMigrationDialogLastShownTime[] =
+    "signin.dice_migration.dialog_last_shown_time";
+constexpr char kDiceMigrationBackup[] = "signin.dice_migration.backup";
+constexpr char kDiceMigrationRestoredFromBackup[] =
+    "signin.dice_migration.restored_from_backup";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1367,6 +1376,12 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 02/2026.
   registry->RegisterBooleanPref(kExplicitBrowserSigninWithoutFeatureEnabled,
                                 false);
+
+  // Deprecated 02/2026.
+  registry->RegisterIntegerPref(kDiceMigrationDialogShownCount, 0);
+  registry->RegisterTimePref(kDiceMigrationDialogLastShownTime, base::Time());
+  registry->RegisterDictionaryPref(kDiceMigrationBackup);
+  registry->RegisterBooleanPref(kDiceMigrationRestoredFromBackup, false);
 }
 
 }  // namespace

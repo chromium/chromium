@@ -129,16 +129,13 @@ SyncPrefs::SyncPrefs(PrefService* pref_service)
                           base::Unretained(this)));
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers) ||
-      base::FeatureList::IsEnabled(switches::kRollbackDiceMigration)) {
-    // The explicit browser signin pref is used for determining whether some
-    // data types are selected by default. Therefore, upon a change, the
-    // selected types may change.
-    pref_change_registrar_.Add(
-        ::prefs::kExplicitBrowserSignin,
-        base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
-                            base::Unretained(this)));
-  }
+  // The explicit browser signin pref is used for determining whether some data
+  // types are selected by default. Therefore, upon a change, the selected types
+  //  may change.
+  pref_change_registrar_.Add(
+      ::prefs::kExplicitBrowserSignin,
+      base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
+                          base::Unretained(this)));
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 

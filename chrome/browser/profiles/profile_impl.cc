@@ -1116,14 +1116,6 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   arc::ArcServiceLauncher::Get()->MaybeSetProfile(this);
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Revert the DICe migration as early as possible to avoid user-visible theme
-  // changes upon startup.
-  if (base::FeatureList::IsEnabled(switches::kRollbackDiceMigration)) {
-    DiceMigrationService::RevertDiceMigration(GetPrefs());
-  }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
   SimpleDependencyManager::GetInstance()->CreateServices(GetProfileKey());
 
   // Check that the IdentityManager was not created before the browser context

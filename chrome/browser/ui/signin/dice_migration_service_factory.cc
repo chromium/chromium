@@ -8,22 +8,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/signin/dice_migration_service.h"
-#include "components/signin/public/base/signin_switches.h"
-
-namespace {
-
-ProfileSelections BuildDiceMigrationServiceProfileSelections() {
-  return base::FeatureList::IsEnabled(switches::kOfferMigrationToDiceUsers) ||
-                 base::FeatureList::IsEnabled(switches::kForcedDiceMigration)
-             ? ProfileSelections::BuildForRegularProfile()
-             : ProfileSelections::BuildNoProfilesSelected();
-}
-
-}  // namespace
 
 DiceMigrationServiceFactory::DiceMigrationServiceFactory()
     : ProfileKeyedServiceFactory("DiceMigrationService",
-                                 BuildDiceMigrationServiceProfileSelections()) {
+                                 ProfileSelections::BuildForRegularProfile()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

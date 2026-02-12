@@ -2920,12 +2920,6 @@ inline constexpr char kEnforceManagementDisclaimerDescription[] =
     "Every time the primary signed in account changes to a managed account, "
     "the management disclaimer will be shown.";
 
-inline constexpr char kOfferMigrationToDiceUsersName[] =
-    "Offer migration to Dice users";
-inline constexpr char kOfferMigrationToDiceUsersDescription[] =
-    "When enabled, offers the implicitly signed-in users a dialog to migrate "
-    "to explicitly signed-in state.";
-
 inline constexpr char kOmitCorsClientCertName[] =
     "Omit TLS client certificates if credential mode disallows";
 inline constexpr char kOmitCorsClientCertDescription[] =
