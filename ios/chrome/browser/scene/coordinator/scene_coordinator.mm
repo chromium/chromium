@@ -188,6 +188,8 @@ void OnListFamilyMembersResponse(
   // Fetches the Family Link member role asynchronously from KidsManagement API.
   std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
       _familyMembersFetcher;
+  // Navigation View controller for the settings.
+  SettingsNavigationController* _settingsNavigationController;
 }
 
 - (instancetype)initWithSceneCommandsEndpoint:
@@ -276,7 +278,7 @@ void OnListFamilyMembersResponse(
   if (self.isSigninInProgress) {
     return NO;
   }
-  if (self.settingsNavigationController) {
+  if (_settingsNavigationController) {
     return NO;
   }
   if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
@@ -459,10 +461,10 @@ void OnListFamilyMembersResponse(
                                     (id<SafariDataImportUIHandler>)UIHandler {
   // If presented over settings, the base view controller is the top presented
   // view controller. Otherwise, it is the active view controller.
-  BOOL presentOverSettings = self.settingsNavigationController &&
+  BOOL presentOverSettings = _settingsNavigationController &&
                              entryPoint == SafariDataImportEntryPoint::kSetting;
   UIViewController* baseViewController = presentOverSettings
-                                             ? self.settingsNavigationController
+                                             ? _settingsNavigationController
                                              : self.activeViewController;
 
   __weak __typeof(self) weakSelf = self;
@@ -480,10 +482,10 @@ void OnListFamilyMembersResponse(
 
 - (void)createSafetyCheckSettingsWithReferrer:
     (password_manager::PasswordCheckReferrer)referrer {
-  if (self.settingsNavigationController) {
+  if (_settingsNavigationController) {
     return;
   }
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       safetyCheckControllerForBrowser:_regularBrowser.get()
                              delegate:self
                              referrer:referrer];
@@ -515,7 +517,7 @@ void OnListFamilyMembersResponse(
   [self createSafetyCheckSettingsWithReferrer:referrer];
 
   _passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
-      initWithBaseNavigationController:self.settingsNavigationController
+      initWithBaseNavigationController:_settingsNavigationController
                                browser:_regularBrowser.get()
                           reauthModule:nil
                               referrer:referrer];
@@ -525,16 +527,14 @@ void OnListFamilyMembersResponse(
 
 - (void)stopSettingsAnimated:(BOOL)animated
                   completion:(ProceduralBlock)completion {
-  if (self.settingsNavigationController) {
+  if (_settingsNavigationController) {
     // Dismiss the view controller if it is presented.
     UIViewController* presentingViewController =
-        self.settingsNavigationController.presentingViewController;
+        _settingsNavigationController.presentingViewController;
 
     __weak __typeof(self) weakSelf = self;
     ProceduralBlock cleanup = ^{
-      // Cleanup settings.
-      [weakSelf.settingsNavigationController cleanUpSettings];
-      weakSelf.settingsNavigationController = nil;
+      [weakSelf cleanUpSettings];
       if (completion) {
         completion();
       }
@@ -553,7 +553,7 @@ void OnListFamilyMembersResponse(
 
 - (void)presentSettingsFromViewController:
     (UIViewController*)baseViewController {
-  [baseViewController presentViewController:self.settingsNavigationController
+  [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
 }
@@ -593,10 +593,10 @@ void OnListFamilyMembersResponse(
   }
 
   DCHECK(!self.isSigninInProgress);
-  if (self.settingsNavigationController) {
-    DCHECK(self.settingsNavigationController.presentingViewController)
+  if (_settingsNavigationController) {
+    DCHECK(_settingsNavigationController.presentingViewController)
         << base::SysNSStringToUTF8(
-               [self.settingsNavigationController.viewControllers description]);
+               [_settingsNavigationController.viewControllers description]);
     return;
   }
   [self.sceneState.profileState.appState.deferredRunner
@@ -604,53 +604,52 @@ void OnListFamilyMembersResponse(
 
   Browser* browser = _regularBrowser.get();
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       mainSettingsControllerForBrowser:browser
                               delegate:self
               hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot];
-  [baseViewController presentViewController:self.settingsNavigationController
+  [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
 }
 
 - (void)showPrivacySettingsFromViewController:
     (UIViewController*)baseViewController {
-  if (self.settingsNavigationController) {
+  if (_settingsNavigationController) {
     return;
   }
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       privacyControllerForBrowser:_regularBrowser.get()
                          delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
+  [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
 }
 
 - (void)showSafeBrowsingSettingsFromViewController:
     (UIViewController*)baseViewController {
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController showSafeBrowsingSettings];
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showSafeBrowsingSettings];
     return;
   }
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       safeBrowsingControllerForBrowser:_regularBrowser.get()
                               delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
+  [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
 }
 
 - (void)openPriceTrackingNotificationsSettings {
   Browser* browser = _regularBrowser.get();
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       priceNotificationsControllerForBrowser:browser
                                     delegate:self];
-  [self.activeViewController
-      presentViewController:self.settingsNavigationController
-                   animated:YES
-                 completion:nil];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
 }
 
 - (void)openAIMenu {
@@ -724,7 +723,7 @@ void OnListFamilyMembersResponse(
 
 - (void)showPriceTrackingNotificationsSettings {
   CHECK(!self.isSigninInProgress);
-  if (self.settingsNavigationController) {
+  if (_settingsNavigationController) {
     __weak SceneCoordinator* weakSelf = self;
     [self closePresentedViews:NO
                    completion:^{
@@ -781,7 +780,7 @@ void OnListFamilyMembersResponse(
     }
   };
 
-  if (self.settingsNavigationController && !_dismissingSettings) {
+  if (_settingsNavigationController && !_dismissingSettings) {
     _dismissingSettings = YES;
     // `self.signinCoordinator` can be presented on top of the settings, to
     // present the Trusted Vault reauthentication `self.signinCoordinator` has
@@ -948,14 +947,14 @@ void OnListFamilyMembersResponse(
   if (self.currentBrowser->type() == Browser::Type::kIncognito) {
     NOTREACHED();
   }
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
+  if (_settingsNavigationController) {
+    [_settingsNavigationController
         showAccountsSettingsFromViewController:baseViewController
                           skipIfUINotAvailable:NO];
     return;
   }
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
              accountsControllerForBrowser:_regularBrowser.get()
                        baseViewController:baseViewController
                                  delegate:self
@@ -964,18 +963,18 @@ void OnListFamilyMembersResponse(
                            showDoneButton:NO
       signoutDismissalByParentCoordinator:NO];
 
-  [baseViewController presentViewController:self.settingsNavigationController
+  [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
 }
 
 - (void)showGeminiSettings {
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController showGeminiSettings];
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showGeminiSettings];
     return;
   }
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       BWGControllerForBrowser:_regularBrowser.get()
                      delegate:self];
 
@@ -983,7 +982,7 @@ void OnListFamilyMembersResponse(
   while (presenter.presentedViewController) {
     presenter = presenter.presentedViewController;
   }
-  [presenter presentViewController:self.settingsNavigationController
+  [presenter presentViewController:_settingsNavigationController
                           animated:YES
                         completion:nil];
 }
@@ -995,19 +994,19 @@ void OnListFamilyMembersResponse(
   if (!baseViewController) {
     baseViewController = self.activeViewController;
   }
-  if (self.settingsNavigationController) {
+  if (_settingsNavigationController) {
     // Navigate to the Google services settings if the settings dialog is
     // already opened.
-    [self.settingsNavigationController
+    [_settingsNavigationController
         showGoogleServicesSettingsFromViewController:baseViewController];
     return;
   }
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       googleServicesControllerForBrowser:_regularBrowser.get()
                                 delegate:self];
 
-  [baseViewController presentViewController:self.settingsNavigationController
+  [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
 }
@@ -1016,16 +1015,16 @@ void OnListFamilyMembersResponse(
 - (void)showSyncSettingsFromViewController:
     (UIViewController*)baseViewController {
   DCHECK(!self.isSigninInProgress);
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
+  if (_settingsNavigationController) {
+    [_settingsNavigationController
         showSyncSettingsFromViewController:baseViewController];
     return;
   }
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       syncSettingsControllerForBrowser:_regularBrowser.get()
                               delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
+  [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
 }
@@ -1034,8 +1033,8 @@ void OnListFamilyMembersResponse(
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController {
   DCHECK(!self.isSigninInProgress);
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
+  if (_settingsNavigationController) {
+    [_settingsNavigationController
         showSyncPassphraseSettingsFromViewController:baseViewController];
     return;
   }
@@ -1044,10 +1043,10 @@ void OnListFamilyMembersResponse(
     // simultaneous taps. See crbug.com/368310663.
     return;
   }
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       syncPassphraseControllerForBrowser:_regularBrowser.get()
                                 delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
+  [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
 }
@@ -1063,115 +1062,108 @@ void OnListFamilyMembersResponse(
 }
 
 - (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID {
-  if (!self.settingsNavigationController) {
-    self.settingsNavigationController = [SettingsNavigationController
+  if (!_settingsNavigationController) {
+    _settingsNavigationController = [SettingsNavigationController
         credentialImportControllerForBrowser:_regularBrowser.get()
                                     delegate:self
                                         UUID:UUID];
     [self.activeViewController
-        presentViewController:self.settingsNavigationController
+        presentViewController:_settingsNavigationController
                      animated:YES
                    completion:nil];
     return;
   }
 
-  CHECK(self.settingsNavigationController);
-  [self.settingsNavigationController
-      showPasswordManagerForCredentialImport:UUID];
+  CHECK(_settingsNavigationController);
+  [_settingsNavigationController showPasswordManagerForCredentialImport:UUID];
 }
 
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
                               inEditMode:(BOOL)editMode {
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
-        showPasswordDetailsForCredential:credential
-                              inEditMode:editMode];
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showPasswordDetailsForCredential:credential
+                                                         inEditMode:editMode];
     return;
   }
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       passwordDetailsControllerForBrowser:_regularBrowser.get()
                                  delegate:self
                                credential:credential
                                inEditMode:editMode];
-  [self.activeViewController
-      presentViewController:self.settingsNavigationController
-                   animated:YES
-                 completion:nil];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
 }
 
 - (void)showAddressDetails:(autofill::AutofillProfile)address
                 inEditMode:(BOOL)editMode
      offerMigrateToAccount:(BOOL)offerMigrateToAccount {
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
-           showAddressDetails:std::move(address)
-                   inEditMode:editMode
-        offerMigrateToAccount:offerMigrateToAccount];
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showAddressDetails:std::move(address)
+                                           inEditMode:editMode
+                                offerMigrateToAccount:offerMigrateToAccount];
     return;
   }
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       addressDetailsControllerForBrowser:_regularBrowser.get()
                                 delegate:self
                                  address:std::move(address)
                               inEditMode:editMode
                    offerMigrateToAccount:offerMigrateToAccount];
-  [self.activeViewController
-      presentViewController:self.settingsNavigationController
-                   animated:YES
-                 completion:nil];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
 }
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 - (void)showProfileSettingsFromViewController:
     (UIViewController*)baseViewController {
   DCHECK(!self.isSigninInProgress);
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
+  if (_settingsNavigationController) {
+    [_settingsNavigationController
         showProfileSettingsFromViewController:baseViewController];
     return;
   }
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       autofillProfileControllerForBrowser:_regularBrowser.get()
                                  delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
+  [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
 }
 
 - (void)showCreditCardSettings {
   DCHECK(!self.isSigninInProgress);
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController showCreditCardSettings];
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showCreditCardSettings];
     return;
   }
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       autofillCreditCardControllerForBrowser:_regularBrowser.get()
                                     delegate:self];
-  [self.activeViewController
-      presentViewController:self.settingsNavigationController
-                   animated:YES
-                 completion:nil];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
 }
 
 - (void)showCreditCardDetails:(autofill::CreditCard)creditCard
                    inEditMode:(BOOL)editMode {
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController showCreditCardDetails:creditCard
-                                                  inEditMode:editMode];
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showCreditCardDetails:creditCard
+                                              inEditMode:editMode];
     return;
   }
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       autofillCreditCardEditControllerForBrowser:_regularBrowser.get()
                                         delegate:self
                                       creditCard:creditCard
                                       inEditMode:editMode];
-  [self.activeViewController
-      presentViewController:self.settingsNavigationController
-                   animated:YES
-                 completion:nil];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
 }
 
 - (void)showDefaultBrowserSettingsFromViewController:
@@ -1182,39 +1174,37 @@ void OnListFamilyMembersResponse(
   if (!baseViewController) {
     baseViewController = self.activeViewController;
   }
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
+  if (_settingsNavigationController) {
+    [_settingsNavigationController
         showDefaultBrowserSettingsFromViewController:baseViewController
                                         sourceForUMA:source];
     return;
   }
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       defaultBrowserControllerForBrowser:_regularBrowser.get()
                                 delegate:self
                             sourceForUMA:source];
-  [baseViewController presentViewController:self.settingsNavigationController
+  [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
 }
 
 - (void)showAndStartSafetyCheckForReferrer:
     (password_manager::PasswordCheckReferrer)referrer {
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
-        showAndStartSafetyCheckForReferrer:referrer];
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showAndStartSafetyCheckForReferrer:referrer];
     return;
   }
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       safetyCheckControllerForBrowser:_regularBrowser.get()
                              delegate:self
                              referrer:referrer];
 
-  [self.activeViewController
-      presentViewController:self.settingsNavigationController
-                   animated:YES
-                 completion:nil];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
 }
 
 - (void)showSafeBrowsingSettings {
@@ -1222,37 +1212,35 @@ void OnListFamilyMembersResponse(
 }
 
 - (void)showSafeBrowsingSettingsFromPromoInteraction {
-  DCHECK(self.settingsNavigationController);
-  [self.settingsNavigationController
-          showSafeBrowsingSettingsFromPromoInteraction];
+  DCHECK(_settingsNavigationController);
+  [_settingsNavigationController showSafeBrowsingSettingsFromPromoInteraction];
 }
 
 - (void)showPasswordSearchPage {
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController showPasswordSearchPage];
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showPasswordSearchPage];
     return;
   }
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       passwordManagerSearchControllerForBrowser:_regularBrowser.get()
                                        delegate:self];
-  [self.activeViewController
-      presentViewController:self.settingsNavigationController
-                   animated:YES
-                 completion:nil];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
 }
 
 - (void)showContentsSettingsFromViewController:
     (UIViewController*)baseViewController {
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
+  if (_settingsNavigationController) {
+    [_settingsNavigationController
         showContentsSettingsFromViewController:baseViewController];
     return;
   }
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       contentSettingsControllerForBrowser:_regularBrowser.get()
                                  delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
+  [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
 }
@@ -1263,20 +1251,19 @@ void OnListFamilyMembersResponse(
 
 - (void)showNotificationsSettingsAndHighlightClient:
     (std::optional<PushNotificationClientId>)clientID {
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
+  if (_settingsNavigationController) {
+    [_settingsNavigationController
         showNotificationsSettingsAndHighlightClient:clientID];
     return;
   }
 
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       notificationsSettingsControllerForBrowser:_regularBrowser.get()
                                          client:clientID
                                        delegate:self];
-  [self.activeViewController
-      presentViewController:self.settingsNavigationController
-                   animated:YES
-                 completion:nil];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
 }
 
 #pragma mark - Properties
@@ -1394,12 +1381,18 @@ void OnListFamilyMembersResponse(
 }
 
 - (void)settingsWasDismissed {
-  [self.settingsNavigationController cleanUpSettings];
-  self.settingsNavigationController = nil;
+  [self cleanUpSettings];
   [self stopPasswordCheckupCoordinator];
 }
 
 #pragma mark - Private
+
+// Calls `cleanUpSettings` on the SettingsNavigationController before setting
+// it to nil.
+- (void)cleanUpSettings {
+  [_settingsNavigationController cleanUpSettings];
+  _settingsNavigationController = nil;
+}
 
 // Returns YES if incognito mode is disabled.
 - (BOOL)isIncognitoModeDisabled {
@@ -1565,15 +1558,15 @@ void OnListFamilyMembersResponse(
   }
   DCHECK(!self.isSigninInProgress);
 
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
+  if (_settingsNavigationController) {
+    [_settingsNavigationController
         showSavedPasswordsSettingsFromViewController:baseViewController];
     return;
   }
-  self.settingsNavigationController = [SettingsNavigationController
+  _settingsNavigationController = [SettingsNavigationController
       savePasswordsControllerForBrowser:_regularBrowser.get()
                                delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
+  [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
 }
@@ -1642,7 +1635,7 @@ void OnListFamilyMembersResponse(
                                 completion:
                                     (UserFeedbackDataCallback)completion {
   DCHECK(!self.isSigninInProgress);
-  if (self.settingsNavigationController) {
+  if (_settingsNavigationController) {
     return;
   }
 
@@ -1733,11 +1726,11 @@ void OnListFamilyMembersResponse(
     UMA_HISTOGRAM_BOOLEAN("IOS.FeedbackKit.UserFlowStartedSuccess",
                           error == nil);
   } else {
-    self.settingsNavigationController =
+    _settingsNavigationController =
         [SettingsNavigationController userFeedbackControllerForBrowser:browser
                                                               delegate:self
                                                       userFeedbackData:data];
-    [baseViewController presentViewController:self.settingsNavigationController
+    [baseViewController presentViewController:_settingsNavigationController
                                      animated:YES
                                    completion:nil];
   }

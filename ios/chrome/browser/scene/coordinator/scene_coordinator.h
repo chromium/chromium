@@ -56,12 +56,6 @@ enum class WarningType;
 // because the incognito profile is deleted.
 @property(nonatomic, assign) Browser* incognitoBrowser;
 
-// Navigation View controller for the settings.
-// TODO(crbug.com/483418864): This property is temporarily exposed to facilitate
-// migration. It should be private once the migration is complete.
-@property(nonatomic, strong)
-    SettingsNavigationController* settingsNavigationController;
-
 // Returns YES if sign-in is in progress.
 @property(nonatomic, readonly) BOOL isSigninInProgress;
 
