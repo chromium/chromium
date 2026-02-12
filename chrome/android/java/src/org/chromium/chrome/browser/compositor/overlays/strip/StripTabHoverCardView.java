@@ -87,7 +87,6 @@ public class StripTabHoverCardView extends FrameLayout {
         if (hoveredTab == null) return;
         mLastHoveredTabId = hoveredTab.getId();
         mIsShowing = true;
-        updateThumbnail(hoveredTab);
 
         mTitleView.setText(hoveredTab.getTitle());
         String url = hoveredTab.getUrl().getHost();
@@ -103,6 +102,9 @@ public class StripTabHoverCardView extends FrameLayout {
         float[] position = getHoverCardPosition(isSelectedTab, tabX, tabWidth, height, topPadding);
         setX(position[0]);
         setY(position[1]);
+
+        float width = getLayoutParams().width;
+        updateThumbnail(hoveredTab, width);
 
         setVisibility(VISIBLE);
     }
@@ -186,6 +188,7 @@ public class StripTabHoverCardView extends FrameLayout {
         // applicable.
         float hoverCardWidthPx =
                 getContext().getResources().getDimension(R.dimen.tab_hover_card_width);
+
         // Hover card width should be a maximum of 90% of the window width.
         hoverCardWidthPx = Math.min(hoverCardWidthPx, HOVER_CARD_MAX_WIDTH_PERCENT * windowWidthPx);
         float hoverCardWidthDp = hoverCardWidthPx / displayDensity;
@@ -254,17 +257,25 @@ public class StripTabHoverCardView extends FrameLayout {
         setBackground(null);
     }
 
-    private void updateThumbnail(Tab hoveredTab) {
-        var thumbnailSize =
-                new Size(
-                        Math.round(
-                                getContext()
-                                        .getResources()
-                                        .getDimension(R.dimen.tab_hover_card_width)),
-                        Math.round(
-                                getContext()
-                                        .getResources()
-                                        .getDimension(R.dimen.tab_hover_card_thumbnail_height)));
+    private void updateThumbnail(Tab hoveredTab, float hoverCardWidthPx) {
+        float hoverCardDefaultWidthPx =
+                getContext().getResources().getDimension(R.dimen.tab_hover_card_width);
+        float hoverCardThumbnailDefaultHeightPx =
+                getContext().getResources().getDimension(R.dimen.tab_hover_card_thumbnail_height);
+
+        // Update the thumbnail height to maintain the aspect ratio.
+        var thumbnailLayoutParams = mThumbnailView.getLayoutParams();
+        float thumbnailHeightPx = hoverCardThumbnailDefaultHeightPx;
+        if (hoverCardDefaultWidthPx > 0) {
+            thumbnailHeightPx =
+                    hoverCardWidthPx / hoverCardDefaultWidthPx * hoverCardThumbnailDefaultHeightPx;
+        }
+        if (Math.round(thumbnailHeightPx) != thumbnailLayoutParams.height) {
+            thumbnailLayoutParams.height = Math.round(thumbnailHeightPx);
+            mThumbnailView.setLayoutParams(thumbnailLayoutParams);
+        }
+
+        var thumbnailSize = new Size(Math.round(hoverCardWidthPx), Math.round(thumbnailHeightPx));
         assumeNonNull(mTabContentManager);
         mTabContentManager.getTabThumbnailWithCallback(
                 hoveredTab.getId(),

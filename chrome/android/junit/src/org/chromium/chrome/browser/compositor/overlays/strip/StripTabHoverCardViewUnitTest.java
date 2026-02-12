@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -167,6 +168,55 @@ public class StripTabHoverCardViewUnitTest {
                 "Thumbnail image bitmap is incorrect.",
                 mBitmap,
                 ((BitmapDrawable) mThumbnailView.getDrawable()).getBitmap());
+    }
+
+    @Test
+    public void show_ThumbnailScalesWithCardWidth() {
+        // Set window width to be slightly smaller than the default card width.
+        int windowWidth = (int) (mHoverCardWidth - 1);
+        mContext.getResources().getDisplayMetrics().widthPixels = windowWidth;
+        int expectedCardWidth = Math.round(0.9f * windowWidth);
+
+        // Mock getLayoutParams to return the constrained width.
+        // Since show() calls getHoverCardPosition() which calls setLayoutParams(),
+        // and then show() calls getLayoutParams().width, we need to ensure
+        // getLayoutParams() returns the updated width.
+        LayoutParams layoutParams = new LayoutParams(expectedCardWidth, 200);
+        when(mTabHoverCardView.getLayoutParams()).thenReturn(layoutParams);
+
+        var url = JUnitTestGURLs.EXAMPLE_URL;
+        var title = "Tab 1";
+        when(mHoveredTab.getTitle()).thenReturn(title);
+        when(mHoveredTab.getUrl()).thenReturn(url);
+        when(mHoveredTab.getId()).thenReturn(1);
+
+        // Ensure mThumbnailView has layout params to avoid crash.
+        if (mThumbnailView.getLayoutParams() == null) {
+            mThumbnailView.setLayoutParams(new ViewGroup.LayoutParams(0, 0));
+        }
+
+        mTabHoverCardView.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT, 0f);
+
+        float hoverCardDefaultWidthPx =
+                mContext.getResources().getDimension(R.dimen.tab_hover_card_width);
+        float hoverCardThumbnailDefaultHeightPx =
+                mContext.getResources().getDimension(R.dimen.tab_hover_card_thumbnail_height);
+        int expectedThumbnailHeight =
+                Math.round(
+                        (float) expectedCardWidth
+                                / hoverCardDefaultWidthPx
+                                * hoverCardThumbnailDefaultHeightPx);
+
+        // Verify thumbnail layout params height is scaled.
+        assertEquals(
+                "Thumbnail height is incorrect.",
+                expectedThumbnailHeight,
+                mThumbnailView.getLayoutParams().height);
+
+        // Verify TabContentManager is called with the scaled size.
+        verify(mTabContentManager)
+                .getTabThumbnailWithCallback(
+                        eq(1), refEq(new Size(expectedCardWidth, expectedThumbnailHeight)), any());
     }
 
     @Test
