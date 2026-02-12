@@ -8,8 +8,10 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -154,9 +156,13 @@ WebUIToolbarWebView::~WebUIToolbarWebView() = default;
 
 void WebUIToolbarWebView::AddedToWidget() {
   CHECK(web_view_);
-  if (reload_control_.is_initialized()) {
+
+  // If initialization has already started or completed, do not run it again.
+  if (initialization_state_ != InitializationState::kUninitialized) {
     return;
   }
+
+  SetInitializationState(InitializationState::kPending);
 
   // Ensure the browser window interface is associated with the WebContents
   // before the WebUI acts on it.
@@ -223,6 +229,8 @@ void WebUIToolbarWebView::HandleContextMenu(
 }
 
 void WebUIToolbarWebView::OnPageInitialized() {
+  SetInitializationState(InitializationState::kInitialized);
+
   if (features::IsWebUIReloadButtonEnabled() &&
       !reload_control_.is_initialized()) {
     reload_control_.Init();
@@ -233,6 +241,17 @@ void WebUIToolbarWebView::OnPageInitialized() {
 
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {
   return &reload_control_;
+}
+
+void WebUIToolbarWebView::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+  // Transition back to pending if we are already initialized (e.g. reload).
+  if (initialization_state_ == InitializationState::kInitialized) {
+    SetInitializationState(InitializationState::kPending);
+  }
 }
 
 void WebUIToolbarWebView::DidFinishNavigation(
@@ -318,6 +337,19 @@ void WebUIToolbarWebView::RecoverFromRendererCrashOrUnresponsiveness() {
   // continue with the reload anyway.
   web_view_->web_contents()->GetController().Reload(content::ReloadType::NORMAL,
                                                     /*check_for_repost=*/false);
+}
+
+void WebUIToolbarWebView::SetInitializationState(
+    InitializationState new_state) {
+  using State = WebUIToolbarWebView::InitializationState;
+  static const base::NoDestructor<base::StateTransitions<State>> transitions(
+      base::StateTransitions<State>({
+          {State::kUninitialized, {State::kPending}},
+          {State::kPending, {State::kInitialized}},
+          {State::kInitialized, {State::kPending}},
+      }));
+  CHECK(transitions->IsTransitionValid(initialization_state_, new_state));
+  initialization_state_ = new_state;
 }
 
 void WebUIToolbarWebView::SetDidFirstNonEmptyPaintCallbackForTesting(

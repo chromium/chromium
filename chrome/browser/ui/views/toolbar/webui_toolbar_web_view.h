@@ -53,6 +53,8 @@ class WebUIToolbarWebView
       const views::SizeBounds& available_size) const override;
 
   // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFirstVisuallyNonEmptyPaint() override;
@@ -62,6 +64,9 @@ class WebUIToolbarWebView
   void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
   void SetTickClockForTesting(const base::TickClock* clock);
   views::WebView* GetWebViewForTesting() { return web_view_; }
+  bool IsPendingForTesting() const {
+    return initialization_state_ == InitializationState::kPending;
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
@@ -72,8 +77,25 @@ class WebUIToolbarWebView
   // Reloads the WebUI toolbar to recover from crashes or unresponsiveness.
   void RecoverFromRendererCrashOrUnresponsiveness();
 
+  // Tracks the initialization stages.
+  enum class InitializationState {
+    // Created but initialization not yet started.
+    kUninitialized,
+
+    // Initialization started but not yet complete.
+    kPending,
+
+    // WebUI is ready and controls are initialized.
+    kInitialized,
+  };
+
+  void SetInitializationState(InitializationState new_state);
+
   chrome::BrowserCommandController* controller() { return controller_; }
   WebUIToolbarUI* GetWebUIToolbarUI();
+
+  InitializationState initialization_state_ =
+      InitializationState::kUninitialized;
 
   raw_ptr<views::WebView> web_view_ = nullptr;
   const raw_ptr<BrowserWindowInterface> browser_;

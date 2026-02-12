@@ -38,11 +38,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -122,6 +124,22 @@ bool RightClickSplitTabsButton(content::WebContents* web_contents) {
   return content::ExecJs(web_contents, base::StrCat({GetSplitTabsButtonIconJS(),
                                                      kRightClickScript}));
 }
+
+class NavigationCounter : public content::WebContentsObserver {
+ public:
+  explicit NavigationCounter(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    navigation_count_++;
+  }
+
+  size_t navigation_count() const { return navigation_count_; }
+
+ private:
+  size_t navigation_count_ = 0;
+};
 
 }  // namespace
 
@@ -907,4 +925,47 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
                                          "?.getAttribute('iron-icon')"}))
                .ExtractString() == "split-tabs-button:split-scene-left";
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
+                       NoRedundantNavigationOnReparenting) {
+  // 1. Setup: Create the view.
+  auto webui_toolbar_view = std::make_unique<WebUIToolbarWebView>(
+      browser(), browser()->command_controller());
+
+  content::WebContents* web_contents =
+      webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
+  NavigationCounter nav_observer(web_contents);
+
+  // Helper to create a test widget.
+  auto create_widget = [&]() {
+    auto widget = std::make_unique<views::Widget>();
+    views::Widget::InitParams params(
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
+    params.context = browser()->window()->GetNativeWindow();
+    params.bounds = gfx::Rect(0, 0, 100, 100);
+    widget->Init(std::move(params));
+    return widget;
+  };
+
+  // 2. Initial Add: Triggers kUninitialized -> kPending.
+  auto widget1 = create_widget();
+  WebUIToolbarWebView* view_ptr =
+      widget1->GetContentsView()->AddChildView(std::move(webui_toolbar_view));
+  EXPECT_EQ(nav_observer.navigation_count(), 1u);
+  EXPECT_TRUE(view_ptr->IsPendingForTesting());
+
+  // 3. Simulate reparenting: Move to widget2 while in kPending state.
+  // RemoveChildViewT returns a unique_ptr to safely move the view.
+  auto moved_view = widget1->GetContentsView()->RemoveChildViewT(view_ptr);
+
+  auto widget2 = create_widget();
+  widget2->GetContentsView()->AddChildView(std::move(moved_view));
+
+  // 4. Verification: The navigation count must still be 1.
+  EXPECT_EQ(nav_observer.navigation_count(), 1u);
+
+  widget2->CloseNow();
+  widget1->CloseNow();
 }
