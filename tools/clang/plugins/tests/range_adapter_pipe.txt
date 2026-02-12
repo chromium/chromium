@@ -1,0 +1,16 @@
+range_adapter_pipe.cpp:39:5: warning: [chromium-style] Use of operator| with range adaptors is banned.
+  x | closure;
+    ^
+range_adapter_pipe.cpp:49:5: warning: [chromium-style] Use of operator| with range adaptors is banned.
+  x | std::ranges::to<std::vector<int>>();
+    ^
+range_adapter_pipe.cpp:54:5: warning: [chromium-style] Use of operator| with range adaptors is banned.
+  t | std::ranges::to<T>();
+    ^
+range_adapter_pipe.cpp:59:5: warning: [chromium-style] Use of operator| with range adaptors is banned.
+  t | std::ranges::to<std::vector<T>>();
+    ^
+range_adapter_pipe.cpp:64:5: warning: [chromium-style] Use of operator| with range adaptors is banned.
+  t | u;
+    ^
+5 warnings generated.

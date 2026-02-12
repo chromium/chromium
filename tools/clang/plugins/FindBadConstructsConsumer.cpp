@@ -139,6 +139,28 @@ std::string GetAutoReplacementTypeAsString(QualType original_type,
   return result;
 }
 
+// Wrapper visitor to traverse template instantiations for the
+// std::ranges::views::operator| check. This is needed because the default
+// RecursiveASTVisitor does not visit template instantiations, and enabling
+// shouldVisitTemplateInstantiations() on the main visitor would enable it for
+// all checks, which is not desired.
+class StdRangesPipeOperatorVisitor
+    : public RecursiveASTVisitor<StdRangesPipeOperatorVisitor> {
+ public:
+  explicit StdRangesPipeOperatorVisitor(FindBadConstructsConsumer& consumer)
+      : consumer_(consumer) {}
+
+  bool shouldVisitTemplateInstantiations() const { return true; }
+
+  bool VisitCallExpr(CallExpr* call_expr) {
+    consumer_.CheckStdRangesPipeOperator(call_expr);
+    return true;
+  }
+
+ private:
+  FindBadConstructsConsumer& consumer_;
+};
+
 }  // namespace
 
 FindBadConstructsConsumer::FindBadConstructsConsumer(CompilerInstance& instance,
@@ -259,6 +281,9 @@ FindBadConstructsConsumer::FindBadConstructsConsumer(CompilerInstance& instance,
       "  * base::span_with_nul_from_cstring() to make a span with the NUL "
       "terminator\n"
       "  * a string view type instead of a string literal");
+  diag_std_ranges_pipe_operator_ = diagnostic().getCustomDiagID(
+      getErrorLevel(),
+      "[chromium-style] Use of operator| with range adaptors is banned.");
 }
 
 void FindBadConstructsConsumer::Traverse(ASTContext& context) {
@@ -272,6 +297,13 @@ void FindBadConstructsConsumer::Traverse(ASTContext& context) {
         "VisitLayoutObjectMethods in "
         "FindBadConstructsConsumer::Traverse");
     layout_visitor_->VisitLayoutObjectMethods(context);
+  }
+
+  if (options_.check_std_ranges_pipe_operator) {
+    llvm::TimeTraceScope TimeScope(
+        "CheckStdRangesPipeOperator in FindBadConstructsConsumer::Traverse");
+    StdRangesPipeOperatorVisitor visitor(*this);
+    visitor.TraverseDecl(context.getTranslationUnitDecl());
   }
 
   {
@@ -1371,6 +1403,56 @@ void FindBadConstructsConsumer::CheckConstructingSpanFromStringLiteral(
     ReportIfSpellingLocNotIgnored(loc, diag_span_from_string_literal_);
     ReportIfSpellingLocNotIgnored(loc, diag_note_span_from_string_literal1_);
   }
+}
+
+void FindBadConstructsConsumer::CheckStdRangesPipeOperator(
+    CallExpr* call_expr) {
+  // We only care about operator| calls.
+  const auto* op_call = dyn_cast<CXXOperatorCallExpr>(call_expr);
+  if (!op_call || op_call->getOperator() != OO_Pipe) {
+    return;
+  }
+
+  const FunctionDecl* callee = op_call->getDirectCallee();
+  if (!callee) {
+    return;
+  }
+
+  // Check if the operator is defined in std::ranges.
+  // We manually walk the DeclContext to handle inline namespaces (like
+  // std::__1) correctly and robustly.
+  const DeclContext* dc = callee->getDeclContext();
+
+  // Unwrap inline namespaces (e.g. ranges::v1 -> ranges)
+  while (dc && dc->isInlineNamespace()) {
+    dc = dc->getParent();
+  }
+
+  // Check for "ranges" namespace
+  if (!dc || !dc->isNamespace() ||
+      cast<NamespaceDecl>(dc)->getName() != "ranges") {
+    return;
+  }
+
+  // Go up to the parent namespace
+  dc = dc->getParent();
+
+  // Unwrap inline namespaces again (e.g. std::__1 -> std)
+  while (dc && dc->isInlineNamespace()) {
+    dc = dc->getParent();
+  }
+
+  // Check for "std" namespace
+  const NamespaceDecl* std_namespace = instance().getSema().getStdNamespace();
+  if (!std_namespace || !dc || !dc->isNamespace() ||
+      cast<NamespaceDecl>(dc)->getCanonicalDecl() !=
+          std_namespace->getCanonicalDecl()) {
+    return;
+  }
+
+  // It is std::ranges::operator|. Report the error.
+  ReportIfSpellingLocNotIgnored(op_call->getOperatorLoc(),
+                                diag_std_ranges_pipe_operator_);
 }
 
 }  // namespace chrome_checker

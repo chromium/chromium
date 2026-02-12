@@ -91,6 +91,8 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
       options_.check_span_fields = true;
     } else if (arg == "enable-match-profiling") {
       options_.enable_match_profiling = true;
+    } else if (arg == "check-std-ranges-pipe-operator") {
+      options_.check_std_ranges_pipe_operator = true;
     } else {
       llvm::errs() << "Unknown clang plugin argument: " << arg << "\n";
       return false;
