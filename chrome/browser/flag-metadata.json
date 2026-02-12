@@ -6566,7 +6566,7 @@
   {
     "name": "most-visited-tiles-new-scoring",
     "owners": [ "ckitagawa@chromium.org", "fredmello@chromium.org", "huangs@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "multi-calendar-in-quick-settings",
