@@ -22181,7 +22181,11 @@
                     "enable_features": [
                         "DelayLayerTreeViewDeletionOnLocalSwap",
                         "QueueNavigationsWhileWaitingForCommit",
-                        "RenderDocument"
+                        "RenderDocument",
+                        "SkipRendererCancellationThrottle"
+                    ],
+                    "disable_features": [
+                        "RendererCancellationThrottleImprovements"
                     ]
                 }
             ]
