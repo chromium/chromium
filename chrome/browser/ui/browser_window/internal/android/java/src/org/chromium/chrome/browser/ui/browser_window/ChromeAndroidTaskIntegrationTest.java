@@ -390,6 +390,50 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    public void createPendingTask_withInitialBounds_createsTaskWithCorrectBounds() {
+        // Arrange.
+        mFreshCtaTransitTestRule.startOnBlankPage();
+        Profile profile = mFreshCtaTransitTestRule.getProfile(/* incognito= */ false);
+        Rect initialBoundsInDp = new Rect(100, 100, 500, 500);
+        AndroidBrowserWindowCreateParams createParams =
+                AndroidBrowserWindowCreateParamsImpl.create(
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        initialBoundsInDp.left,
+                        initialBoundsInDp.top,
+                        initialBoundsInDp.right,
+                        initialBoundsInDp.bottom,
+                        WindowShowState.DEFAULT);
+        var chromeAndroidTaskTracker =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> assumeNonNull(ChromeAndroidTaskTrackerFactory.getInstance()));
+
+        Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
+
+        // Act.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> chromeAndroidTaskTracker.createPendingTask(createParams, null));
+
+        // Assert.
+        var newActivity = waitForNewTabbedActivity(currentTaskIds);
+        int taskId = newActivity.getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
+        assertNotNull(chromeAndroidTask);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Rect actualBoundsInDp =
+                            ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::getBoundsInDp);
+                    Criteria.checkThat(actualBoundsInDp, Matchers.is(initialBoundsInDp));
+                });
+
+        // Cleanup.
+        newActivity.finishAndRemoveTask();
+    }
+
+    @Test
+    @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* test needs "new window" in app menu */)
     public void close_finishTask() {
         // Arrange

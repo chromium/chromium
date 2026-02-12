@@ -17,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
@@ -42,6 +43,8 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
@@ -51,12 +54,28 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.mojom.WindowShowState;
 
 /** Unit tests for {@link ChromeAndroidTaskTrackerImpl}. */
 @NullMarked
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = ChromeAndroidTaskTrackerImplUnitTest.ShadowDisplayAndroid.class)
 public class ChromeAndroidTaskTrackerImplUnitTest {
+    @Implements(DisplayAndroid.class)
+    static class ShadowDisplayAndroid {
+        private static @Nullable DisplayAndroid sDisplayAndroid;
+
+        public static void setDisplayAndroid(@Nullable DisplayAndroid displayAndroid) {
+            sDisplayAndroid = displayAndroid;
+        }
+
+        @Implementation
+        public static DisplayAndroid getNonMultiDisplay(Context context) {
+            return assumeNonNull(sDisplayAndroid);
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
@@ -71,12 +90,17 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         mContext = spy(ApplicationProvider.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mContext);
 
+        DisplayAndroid mockDisplay = mock(DisplayAndroid.class);
+        when(mockDisplay.getDipScale()).thenReturn(1.0f);
+        ShadowDisplayAndroid.setDisplayAndroid(mockDisplay);
+
         ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
     }
 
     @After
     public void tearDown() {
         mChromeAndroidTaskTracker.removeAllForTesting();
+        ShadowDisplayAndroid.setDisplayAndroid(null);
     }
 
     @Test
@@ -246,7 +270,41 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         verify(mContext).startActivity(any(Intent.class), bundleCaptor.capture());
         Rect capturedBounds =
                 bundleCaptor.getValue().getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
-        assertEquals(mockParams.getInitialBounds(), capturedBounds);
+        assertEquals(mockParams.getInitialBoundsInDp(), capturedBounds);
+    }
+
+    @Test
+    public void createPendingTask_convertsDpToPx() {
+        // Arrange.
+        float dipScale = 2.0f;
+        DisplayAndroid mockDisplay = mock(DisplayAndroid.class);
+        when(mockDisplay.getDipScale()).thenReturn(dipScale);
+        ShadowDisplayAndroid.setDisplayAndroid(mockDisplay);
+
+        Rect boundsInDp = new Rect(10, 20, 800, 600);
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        org.chromium.chrome.browser.ui.browser_window.BrowserWindowType.NORMAL,
+                        boundsInDp,
+                        WindowShowState.DEFAULT);
+
+        // Act.
+        createPendingTaskWithExistingTask(mockParams);
+
+        // Assert.
+        var bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mContext).startActivity(any(Intent.class), bundleCaptor.capture());
+        Rect capturedBounds =
+                bundleCaptor.getValue().getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
+
+        Rect expectedBoundsInPx =
+                new Rect(
+                        (int) (boundsInDp.left * dipScale),
+                        (int) (boundsInDp.top * dipScale),
+                        (int) (boundsInDp.right * dipScale),
+                        (int) (boundsInDp.bottom * dipScale));
+        assertEquals(
+                "Bounds should be converted from Dp to Px.", expectedBoundsInPx, capturedBounds);
     }
 
     @Test

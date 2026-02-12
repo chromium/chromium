@@ -518,7 +518,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         when(mockParams.getWindowType()).thenReturn(windowType);
         Profile mockProfile = mock(Profile.class);
         when(mockParams.getProfile()).thenReturn(mockProfile);
-        when(mockParams.getInitialBounds()).thenReturn(launchBounds);
+        when(mockParams.getInitialBoundsInDp()).thenReturn(launchBounds);
         when(mockParams.getInitialShowState()).thenReturn(showState);
         mockPopupIntentCreator();
 
