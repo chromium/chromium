@@ -87,9 +87,6 @@ class InputStateModel {
   // Helper method to update `disabled_input_types` based on `rule_set_`.
   void UpdateDisabledInputTypes();
 
-  // Gets the input type limits based on the current state.
-  std::map<omnibox::InputType, int> GetInputTypeLimits();
-
   // Helper to check if search content sharing is enabled based on the
   // user preference from enterprise policy.
   bool IsSearchContentSharingEnabled() const;

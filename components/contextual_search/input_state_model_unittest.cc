@@ -281,6 +281,8 @@ class InputStateModelCompatibilityTest : public InputStateModelTest {
     state_.disabled_tools = {};
     state_.disabled_models = {};
     state_.disabled_input_types = {};
+    state_.max_total_inputs = 2;
+    state_.max_instances[omnibox::InputType::INPUT_TYPE_LENS_IMAGE] = 1;
 
     // Create the model *after* the config is set up.
     InputStateModelTest::SetUp();
@@ -354,8 +356,9 @@ TEST_F(InputStateModelCompatibilityTest, SelectImageInput) {
   // Models are not disabled, since they both support images.
   EXPECT_TRUE(new_state.disabled_models.empty());
 
-  // No input types are disabled based on other inputs.
-  EXPECT_TRUE(new_state.disabled_input_types.empty());
+  // Only image input should be disabled since max_instance is 1.
+  EXPECT_THAT(new_state.disabled_input_types,
+              UnorderedElementsAre(omnibox::InputType::INPUT_TYPE_LENS_IMAGE));
 }
 
 TEST_F(InputStateModelCompatibilityTest, SelectTabInput) {
@@ -522,8 +525,43 @@ TEST_F(InputStateModelCompatibilityTest, MaxTotalInputsDisablesInputs) {
   input_state_model_->OnContextChanged();
   const auto& final_state = input_state_model_->get_state_for_testing();
 
-  // Input types should no longer be disabled.
-  EXPECT_TRUE(final_state.disabled_input_types.empty());
+  // Image input should still be disabled due to max_instance.
+  EXPECT_THAT(final_state.disabled_input_types,
+              UnorderedElementsAre(omnibox::InputType::INPUT_TYPE_LENS_IMAGE));
+}
+
+TEST_F(InputStateModelCompatibilityTest,
+       MaxInstancesAndMaxTotalInputsDisablesInputs) {
+  // Simulate adding one image.
+  std::vector<FileInfo> file_infos;
+  file_infos.emplace_back();
+  file_infos.back().mime_type = lens::MimeType::kImage;
+  ON_CALL(session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(testing::Return(file_infos));
+
+  // Trigger an update.
+  input_state_model_->OnContextChanged();
+  const auto& new_state = input_state_model_->get_state_for_testing();
+
+  // Only image input should be disabled.
+  EXPECT_THAT(new_state.disabled_input_types,
+              UnorderedElementsAre(omnibox::InputType::INPUT_TYPE_LENS_IMAGE));
+
+  // Simulate adding a file.
+  file_infos.emplace_back();
+  file_infos.back().mime_type = lens::MimeType::kPdf;
+  ON_CALL(session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(testing::Return(file_infos));
+
+  // Trigger an update.
+  input_state_model_->OnContextChanged();
+  const auto& final_state = input_state_model_->get_state_for_testing();
+
+  // All input types should be disabled.
+  EXPECT_THAT(final_state.disabled_input_types,
+              UnorderedElementsAre(omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
+                                   omnibox::InputType::INPUT_TYPE_LENS_FILE,
+                                   omnibox::InputType::INPUT_TYPE_BROWSER_TAB));
 }
 
 TEST_F(InputStateModelCompatibilityTest, ToolWithAllowAllInputs) {

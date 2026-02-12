@@ -46,6 +46,7 @@ size_t InputState::EstimateMemoryUsage() const {
   if (model_section_config.has_value()) {
     res += omnibox::EstimateMemoryUsage(model_section_config.value());
   }
+  res += base::trace_event::EstimateMemoryUsage(max_instances);
   res += base::trace_event::EstimateMemoryUsage(hint_text);
 
   return res;

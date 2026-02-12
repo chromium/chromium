@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_COMMON_INPUT_STATE_H_
 
 #include <cstddef>
+#include <map>
 #include <optional>
 #include <vector>
 
@@ -49,6 +50,9 @@ struct InputState {
   std::vector<InputTypeConfig> input_type_configs;
   std::optional<SectionConfig> tools_section_config;
   std::optional<SectionConfig> model_section_config;
+  // The max number of inputs of a given type.
+  std::map<InputType, int> max_instances;
+  int max_total_inputs = 0;
   std::string hint_text;
 };
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:InputState)

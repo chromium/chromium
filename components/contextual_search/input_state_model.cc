@@ -32,8 +32,16 @@ void MaybePopulateBrowserTabInputTypeRule(omnibox::SearchboxConfig* config) {
   }
   omnibox::RuleSet* rule_set = config->mutable_rule_set();
 
+  // The default max_instance for tabs is 5.
+  int max_browser_tab_instances = 5;
+
   bool browser_tab_rule_exists = false;
   for (const auto& rule : rule_set->input_type_rules()) {
+    // Until we get browser tab rules, treat browser tab input as image input
+    // for max instance limit purposes.
+    if (rule.input_type() == omnibox::INPUT_TYPE_LENS_IMAGE) {
+      max_browser_tab_instances = rule.max_instance();
+    }
     if (rule.input_type() == omnibox::INPUT_TYPE_BROWSER_TAB) {
       browser_tab_rule_exists = true;
       break;
@@ -44,7 +52,7 @@ void MaybePopulateBrowserTabInputTypeRule(omnibox::SearchboxConfig* config) {
   if (!browser_tab_rule_exists) {
     omnibox::InputTypeRule* new_rule = rule_set->add_input_type_rules();
     new_rule->set_input_type(omnibox::INPUT_TYPE_BROWSER_TAB);
-    new_rule->set_max_instance(5);
+    new_rule->set_max_instance(max_browser_tab_instances);
     new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
     new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_FILE);
     new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
@@ -130,6 +138,14 @@ InputStateModel::InputStateModel(
     }
     if (mutable_config.has_hint_text()) {
       state_.hint_text = mutable_config.hint_text();
+    }
+    if (rule_set_.has_max_total_inputs()) {
+      state_.max_total_inputs = rule_set_.max_total_inputs();
+    }
+    for (const auto& rule : rule_set_.input_type_rules()) {
+      if (rule.has_input_type() && rule.has_max_instance()) {
+        state_.max_instances[rule.input_type()] = rule.max_instance();
+      }
     }
   }
 
@@ -377,16 +393,15 @@ void InputStateModel::UpdateDisabledInputTypes() {
 
   // Check max inputs reached.
   bool global_limit_reached =
-      rule_set_.has_max_total_inputs() && rule_set_.max_total_inputs() > 0 &&
-      current_inputs.size() >=
-          static_cast<size_t>(rule_set_.max_total_inputs());
+      state_.max_total_inputs > 0 &&
+      current_inputs.size() >= static_cast<size_t>(state_.max_total_inputs);
 
   if (global_limit_reached) {
     state_.disabled_input_types = state_.allowed_input_types;
     return;
   }
 
-  std::map<omnibox::InputType, int> limits = GetInputTypeLimits();
+  const auto& limits = state_.max_instances;
   std::map<omnibox::InputType, int> current_input_counts;
   for (const auto& input_type : current_inputs) {
     current_input_counts[input_type]++;
@@ -429,16 +444,6 @@ void InputStateModel::updateDisabledState() {
   UpdateDisabledTools();
   UpdateDisabledModels();
   UpdateDisabledInputTypes();
-}
-
-std::map<omnibox::InputType, int> InputStateModel::GetInputTypeLimits() {
-  std::map<omnibox::InputType, int> limits;
-  for (const auto& rule : rule_set_.input_type_rules()) {
-    if (rule.has_input_type() && rule.has_max_instance()) {
-      limits[rule.input_type()] = rule.max_instance();
-    }
-  }
-  return limits;
 }
 
 std::map<std::string, std::string> InputStateModel::GetAdditionalQueryParams() {
