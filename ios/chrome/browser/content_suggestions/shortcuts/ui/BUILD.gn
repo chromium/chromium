@@ -9,8 +9,6 @@ source_set("ui") {
     "shortcuts_commands.h",
     "shortcuts_config.h",
     "shortcuts_config.mm",
-    "shortcuts_consumer.h",
-    "shortcuts_consumer_source.h",
     "shortcuts_tile_view.h",
     "shortcuts_tile_view.mm",
   ]

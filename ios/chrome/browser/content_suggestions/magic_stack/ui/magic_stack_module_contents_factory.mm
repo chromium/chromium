@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_action_item.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_commands.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_config.h"
-#import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_view.h"
@@ -131,7 +130,6 @@
   for (ShortcutsActionItem* item in shortcutsConfig.shortcutItems) {
     ContentSuggestionsShortcutTileView* view =
         [[ContentSuggestionsShortcutTileView alloc] initWithConfiguration:item];
-    [shortcutsConfig.consumerSource addConsumer:view];
     [shortcutsViews addObject:view];
   }
   UIStackView* shortcutsStackView = [[UIStackView alloc] init];

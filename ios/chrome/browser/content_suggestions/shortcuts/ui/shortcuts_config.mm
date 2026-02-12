@@ -8,20 +8,19 @@
 
 @implementation ShortcutsConfig
 
+#pragma mark - NSCopying
+
+- (instancetype)copyWithZone:(NSZone*)zone {
+  ShortcutsConfig* config = [[super copyWithZone:zone] init];
+  config.shortcutItems = [self.shortcutItems copy];
+  config.commandHandler = self.commandHandler;
+  return config;
+}
+
 #pragma mark - MagicStackModule
 
 - (ContentSuggestionsModuleType)type {
   return ContentSuggestionsModuleType::kShortcuts;
-}
-
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone*)zone {
-  ShortcutsConfig* copy = [[super copyWithZone:zone] init];
-  copy.shortcutItems = self.shortcutItems;
-  copy.consumerSource = self.consumerSource;
-  copy.commandHandler = self.commandHandler;
-  return copy;
 }
 
 @end

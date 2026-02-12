@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_tile_view.h"
 
-#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_action_item.h"
 
@@ -13,14 +12,6 @@
 - (instancetype)initWithConfiguration:(ContentSuggestionsActionItem*)config {
   CHECK([config isKindOfClass:ShortcutsActionItem.class]);
   return [super initWithConfiguration:config];
-}
-
-- (void)shortcutsItemConfigDidChange:(ShortcutsActionItem*)config {
-  ShortcutsActionItem* currentConfig =
-      base::apple::ObjCCastStrict<ShortcutsActionItem>(self.config);
-  if (config.collectionShortcutType == currentConfig.collectionShortcutType) {
-    [self updateConfiguration:config];
-  }
 }
 
 @end

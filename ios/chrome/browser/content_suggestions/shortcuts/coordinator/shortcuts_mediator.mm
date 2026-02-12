@@ -17,8 +17,6 @@
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_action_item.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_commands.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_config.h"
-#import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_consumer.h"
-#import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
@@ -28,14 +26,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 
-@interface ShortcutsConsumerList : CRBProtocolObservers <ShortcutsConsumer>
-@end
-
-@implementation ShortcutsConsumerList
-@end
-
-@interface ShortcutsMediator () <ReadingListModelBridgeObserver,
-                                 ShortcutsConsumerSource>
+@interface ShortcutsMediator () <ReadingListModelBridgeObserver>
 @end
 
 @implementation ShortcutsMediator {
@@ -51,7 +42,6 @@
   //  ShortcutsConfig* _shortcutsConfig;
   raw_ptr<feature_engagement::Tracker> _tracker;
   raw_ptr<signin::IdentityManager> _identityManager;
-  ShortcutsConsumerList* _consumers;
 }
 
 - (instancetype)initWithReadingListModel:(ReadingListModel*)readingListModel
@@ -67,10 +57,7 @@
 
     _shortcutsConfig = [[ShortcutsConfig alloc] init];
     _shortcutsConfig.shortcutItems = [self shortcutItems];
-    _shortcutsConfig.consumerSource = self;
     _shortcutsConfig.commandHandler = self;
-    _consumers = [ShortcutsConsumerList
-        observersWithProtocol:@protocol(ShortcutsConsumer)];
   }
   return self;
 }
@@ -99,12 +86,6 @@
         initWithCollectionShortcutType:NTPCollectionShortcutTypeHistory]
   ];
   return shortcuts;
-}
-
-#pragma mark - ShortcutsConsumerSource
-
-- (void)addConsumer:(id<ShortcutsConsumer>)consumer {
-  [_consumers addObserver:consumer];
 }
 
 #pragma mark - ReadingListModelBridgeObserver
@@ -157,7 +138,7 @@
   _readingListModelIsLoaded = model->loaded();
   if (_readingListItem) {
     _shortcutsConfig.shortcutItems = [self shortcutItems];
-    [_consumers shortcutsItemConfigDidChange:_readingListItem];
+    [self.delegate shortcutsMediatorDidReconfigureItem];
   }
 }
 

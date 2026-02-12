@@ -412,6 +412,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                          withCompletion:completion];
 }
 
+#pragma mark - ShortcutsMediatorDelegate
+
+- (void)shortcutsMediatorDidReconfigureItem {
+  [self.delegate magicStackRankingModel:self
+                     didReconfigureItem:_shortcutsMediator.shortcutsConfig];
+}
+
 #pragma mark - TabResumptionMediatorDelegate
 
 - (void)tabResumptionMediatorDidReceiveItem {

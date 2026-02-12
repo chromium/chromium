@@ -5,13 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SHORTCUTS_UI_SHORTCUTS_TILE_VIEW_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_SHORTCUTS_UI_SHORTCUTS_TILE_VIEW_H_
 
-#import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_action_tile_view.h"
 
 // A tile view displaying a collection shortcut. Accepts a simple icon and
 // optionally supports a badge, for example for reading list new item count.
-@interface ContentSuggestionsShortcutTileView
-    : ContentSuggestionsActionTileView <ShortcutsConsumer>
+@interface ContentSuggestionsShortcutTileView : ContentSuggestionsActionTileView
 
 @end
 

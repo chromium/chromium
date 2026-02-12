@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 @protocol ShortcutsCommands;
-@protocol ShortcutsConsumerSource;
 @class ShortcutsActionItem;
 
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module.h"
@@ -17,10 +16,7 @@
 @interface ShortcutsConfig : MagicStackModule
 
 // List of Shortcuts to show in module.
-@property(nonatomic, strong) NSArray<ShortcutsActionItem*>* shortcutItems;
-
-// Shortcuts model.
-@property(nonatomic, weak) id<ShortcutsConsumerSource> consumerSource;
+@property(nonatomic, copy) NSArray<ShortcutsActionItem*>* shortcutItems;
 
 // Command handler for user actions.
 @property(nonatomic, weak) id<ShortcutsCommands> commandHandler;

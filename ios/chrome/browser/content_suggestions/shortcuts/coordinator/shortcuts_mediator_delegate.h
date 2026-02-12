@@ -11,6 +11,9 @@ enum class ContentSuggestionsModuleType;
 // ShortcutsMediator.
 @protocol ShortcutsMediatorDelegate
 
+// Signals that the ShortcutsMediator did reconfigure the existing item.
+- (void)shortcutsMediatorDidReconfigureItem;
+
 // Logs a user Magic Stack engagement for module `type`.
 - (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
 
