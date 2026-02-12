@@ -526,8 +526,7 @@ bool SharedContextState::InitializeGanesh(
     sk_sp<GrGLInterface> gr_gl_interface(gl::init::CreateGrGLInterface(
         *context_->GetVersionInfo(), progress_reporter));
     if (!gr_gl_interface) {
-      LOG(ERROR) << "OOP raster support disabled: GrGLInterface creation "
-                    "failed.";
+      LOG(ERROR) << "GrGLInterface creation failed.";
       return false;
     }
 
@@ -583,7 +582,7 @@ bool SharedContextState::InitializeGanesh(
   }
 
   if (!gr_context_) {
-    LOG(ERROR) << "OOP raster support disabled: GrContext creation failed.";
+    LOG(ERROR) << "GrContext creation failed.";
     return false;
   }
 
