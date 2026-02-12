@@ -10,8 +10,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -22,6 +20,8 @@
 #include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/distiller_url_fetcher.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace dom_distiller {
@@ -174,7 +174,7 @@ class DistillerImpl : public Distiller {
   // Maps page numbers of pages under distillation to the indices in |pages_|.
   // If a page is |started_pages_| that means it is still waiting for an action
   // (distillation or image fetch) to finish.
-  std::unordered_map<int, size_t> started_pages_index_;
+  absl::flat_hash_map<int, size_t> started_pages_index_;
 
   // The list of pages that are still waiting for distillation to start.
   // This is a map, to make distiller prefer distilling lower page numbers
@@ -183,7 +183,7 @@ class DistillerImpl : public Distiller {
 
   // Set to keep track of which urls are already seen by the distiller. Used to
   // prevent distiller from distilling the same url twice.
-  std::unordered_set<std::string> seen_urls_;
+  absl::flat_hash_set<std::string> seen_urls_;
 
   size_t max_pages_in_article_;
 
