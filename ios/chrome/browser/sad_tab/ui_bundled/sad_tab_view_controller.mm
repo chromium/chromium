@@ -71,10 +71,10 @@
   [self.overscrollActionsController setStyle:style];
   [self updateOverscrollActionsState];
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
-  [self registerForTraitChanges:traits
-                     withAction:@selector(updateOverscrollActionsState)];
+  [self
+      registerForTraitChanges:
+          @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
+                   withAction:@selector(updateOverscrollActionsState)];
 }
 
 - (void)viewDidLayoutSubviews {
