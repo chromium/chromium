@@ -42,7 +42,7 @@ LocalDataSource::LocalDataSource(size_t data_buffer_size_limit,
       poll_rate_(poll_rate),
       data_needs_redacting_(data_needs_redacting),
       is_incremental_(is_incremental),
-      redactor_(nullptr) {}
+      redactor_() {}
 
 inline LocalDataSource::~LocalDataSource() = default;
 
