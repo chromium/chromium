@@ -280,7 +280,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
   // The suspend time should be earlier than the total render frame. If the
   // requested suspension time is equal to the total render frame, the promise
   // will be rejected.
-  const double total_render_duration = total_render_frames_ / sampleRate();
+  double total_render_duration = total_render_frames_ / sampleRate();
   if (total_render_duration <= when) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -296,18 +296,16 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
 
   // Find the sample frame and round up to the nearest render quantum
   // boundary.  This assumes the render quantum is a power of two.
-  const size_t unrounded_frame = when * sampleRate();
-  const size_t frame =
-      GetDeferredTaskHandler().RenderQuantumFrames() *
-      ((unrounded_frame + GetDeferredTaskHandler().RenderQuantumFrames() - 1) /
-       GetDeferredTaskHandler().RenderQuantumFrames());
+  size_t frame = when * sampleRate();
+  frame = GetDeferredTaskHandler().RenderQuantumFrames() *
+          ((frame + GetDeferredTaskHandler().RenderQuantumFrames() - 1) /
+           GetDeferredTaskHandler().RenderQuantumFrames());
 
   // The specified suspend time is in the past; reject the promise.
-  const size_t current_frame = CurrentSampleFrame();
-  if (frame < current_frame) {
-    const size_t current_frame_clamped =
-        std::min(current_frame, static_cast<size_t>(length()));
-    const double current_time_clamped =
+  if (frame < CurrentSampleFrame()) {
+    size_t current_frame_clamped =
+        std::min(CurrentSampleFrame(), static_cast<size_t>(length()));
+    double current_time_clamped =
         std::min(currentTime(), length() / static_cast<double>(sampleRate()));
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
