@@ -121,6 +121,15 @@ void ScrollMostVisitedToRightEdge() {
                         kGREYContentEdgeRight, 0.95, 0.5)];
 }
 
+// Helper function that returns the accessibility ID for the most visited cell
+// at `index`.
+NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
+  return [NSString
+      stringWithFormat:
+          @"%@%d", kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+          index];
+}
+
 }  // namespace
 
 #pragma mark - TestCase
@@ -492,42 +501,10 @@ void ScrollMostVisitedToRightEdge() {
 
 // Tests that the user could use the "Add site" button to pin a site.
 - (void)testMostVisitedPinWithAddSiteButton {
-  NSString* placeholderTextName =
-      l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_NAME);
-  NSString* placeholderTextURL = @"https://example.com";
   NSString* firstTitle = @"First Site";
   NSString* firstUrl = @"https://first_url.com";
-  ScrollMostVisitedToRightEdge();
-  id<GREYMatcher> addSiteButton = grey_accessibilityID([NSString
-      stringWithFormat:
-          @"%@-1",
-          kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix]);
-  [[EarlGrey selectElementWithMatcher:addSiteButton] performAction:grey_tap()];
-  // Verify form elements.
-  [[EarlGrey
-      selectElementWithMatcher:
-          chrome_test_util::HeaderWithAccessibilityLabelId(
-              IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ADD_PINNED_SITE_TITLE)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Fill the "Name" field.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityValue(placeholderTextName),
-                                   grey_kindOfClassName(@"UITextField"), nil)]
-      performAction:grey_replaceText(firstTitle)];
-  // Fill the "URL" field.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityValue(placeholderTextURL),
-                                   grey_kindOfClassName(@"UITextField"), nil)]
-      performAction:grey_replaceText(firstUrl)];
-  // Tap "Add".
-  id<GREYMatcher> saveButton = grey_allOf(
-      grey_ancestor(grey_kindOfClass([UINavigationBar class])),
-      grey_accessibilityLabel(l10n_util::GetNSString(IDS_ADD)),
-      grey_accessibilityTrait(UIAccessibilityTraitButton),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
-  [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
+  GREYAssert([self addPinnedSiteWithTitle:firstTitle URL:firstUrl],
+             @"Add pinned site form not dismissed.");
   // Verify that the site is pinned and snackbar is displayed. Dismiss the
   // snackbar.
   NSString* pinnedLabel = l10n_util::GetNSStringF(
@@ -540,19 +517,13 @@ void ScrollMostVisitedToRightEdge() {
   // Verify that an error message is displayed for invalid input.
   NSString* secondTitle = @"Second Site";
   NSString* secondUrl = @"https://second_url.com";
-  ScrollMostVisitedToRightEdge();
-  [[EarlGrey selectElementWithMatcher:addSiteButton] performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityValue(placeholderTextName),
-                                   grey_kindOfClassName(@"UITextField"), nil)]
-      performAction:grey_replaceText(secondTitle)];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityValue(placeholderTextURL),
-                                   grey_kindOfClassName(@"UITextField"), nil)]
-      performAction:grey_replaceText(firstUrl)];
-  [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
+  id<GREYMatcher> saveButton = grey_allOf(
+      grey_ancestor(grey_kindOfClass([UINavigationBar class])),
+      ButtonWithAccessibilityLabel(l10n_util::GetNSString(IDS_ADD)),
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+  GREYAssertFalse([self addPinnedSiteWithTitle:secondTitle URL:firstUrl],
+                  @"Add pinned site form should not be dismissed when URL is "
+                  @"already pinned.");
   [[EarlGrey
       selectElementWithMatcher:
           grey_text(l10n_util::GetNSString(
@@ -571,7 +542,20 @@ void ScrollMostVisitedToRightEdge() {
           grey_text(l10n_util::GetNSString(
               IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_VALIDATION_FAILED))]
       assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:saveButton]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the "title" field is optional, and the URL will be used as
+  // title.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityValue(secondTitle),
+                                          grey_kindOfClassName(@"UITextField"),
+                                          nil)] performAction:grey_clearText()];
   [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
+  pinnedLabel = l10n_util::GetNSStringF(
+      IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(secondUrl));
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(pinnedLabel)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests the "Edit" action of the Most Visited context menu.
@@ -621,6 +605,128 @@ void ScrollMostVisitedToRightEdge() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Tests that pinned sites can be reordered using drag and drop.
+- (void)testMostVisitedPinnedSiteDragAndDrop {
+  // Pin two sites.
+  NSArray<NSString*>* titles = @[ @"First Site", @"Second Site" ];
+  NSArray<NSString*>* URLs =
+      @[ @"https://first_url.com", @"https://second_url.com" ];
+  for (int i = 0; i < 2; i++) {
+    ScrollMostVisitedToRightEdge();
+    [[EarlGrey selectElementWithMatcher:
+                   grey_accessibilityID(
+                       AccessibilityIdentifierForMostVisitedCellAtIndex(-1))]
+        performAction:grey_tap()];
+    // Fill out form elements.
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_allOf(grey_accessibilityValue(l10n_util::GetNSString(
+                           IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_NAME)),
+                       grey_kindOfClassName(@"UITextField"), nil)]
+        performAction:grey_replaceText(titles[i])];
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(
+                                     grey_accessibilityValue(
+                                         @"https://example.com"),
+                                     grey_kindOfClassName(@"UITextField"), nil)]
+        performAction:grey_replaceText(URLs[i])];
+    id<GREYMatcher> saveButton = grey_allOf(
+        grey_ancestor(grey_kindOfClass([UINavigationBar class])),
+        ButtonWithAccessibilityLabel(l10n_util::GetNSString(IDS_ADD)),
+        grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+    [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+        performAction:grey_tap()];
+  }
+
+  NSMutableArray<NSString*>* tileAccessibilityIDs = [NSMutableArray array];
+  NSMutableArray<NSString*>* pinnedLabels = [NSMutableArray array];
+  for (int i = 0; i < 2; i++) {
+    [tileAccessibilityIDs
+        addObject:AccessibilityIdentifierForMostVisitedCellAtIndex(i)];
+    [pinnedLabels
+        addObject:l10n_util::GetNSStringF(
+                      IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ACCESSIBILITY_LABEL,
+                      base::SysNSStringToUTF16(titles[i]))];
+  }
+  // Verify initial order: "First Site" is displayed at index 0, "Second Site"
+  // is displayed at index 1.
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabel(pinnedLabels[0])]
+      assertWithMatcher:grey_ancestor(
+                            grey_accessibilityID(tileAccessibilityIDs[0]))];
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabel(pinnedLabels[1])]
+      assertWithMatcher:grey_ancestor(
+                            grey_accessibilityID(tileAccessibilityIDs[1]))];
+  // Drag Tile 0 to Tile 1.
+  GREYAssertTrue(chrome_test_util::LongPressCellAndDragToOffsetOf(
+                     tileAccessibilityIDs[0], 0, tileAccessibilityIDs[1], 0,
+                     CGVectorMake(0.5, 0.5)),
+                 @"Source or destination doesn't exist.");
+  GREYWaitForAppToIdle(@"App failed to idle");
+  // Verify new order: "Second Site" is displayed at index 0, "First Site"
+  // is displayed at index 1.
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabel(pinnedLabels[1])]
+      assertWithMatcher:grey_ancestor(
+                            grey_accessibilityID(tileAccessibilityIDs[0]))];
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabel(pinnedLabels[0])]
+      assertWithMatcher:grey_ancestor(
+                            grey_accessibilityID(tileAccessibilityIDs[1]))];
+
+  // Attempt to drag "First Site" to a non-pinned position. Verify that it has
+  // failed.
+  GREYAssertTrue(chrome_test_util::LongPressCellAndDragToOffsetOf(
+                     tileAccessibilityIDs[1], 0,
+                     AccessibilityIdentifierForMostVisitedCellAtIndex(2), 0,
+                     CGVectorMake(0.5, 0.5)),
+                 @"Source or destination doesn't exist.");
+  GREYWaitForAppToIdle(@"App failed to idle");
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabel(pinnedLabels[0])]
+      assertWithMatcher:grey_ancestor(
+                            grey_accessibilityID(tileAccessibilityIDs[1]))];
+}
+
+// Tests pinning 8 sites and verifying the "Add site" button disappears after 8
+// sites are added, and reappears after unpinning one.
+- (void)testMostVisitedPinEightSites {
+  id<GREYMatcher> addSiteButton = grey_accessibilityID(
+      AccessibilityIdentifierForMostVisitedCellAtIndex(-1));
+  // Add 8 pinned sites. Before pinning each, verify that the "Add site" button
+  // is still visible.
+  for (int i = 0; i < 8; ++i) {
+    NSString* title = [NSString stringWithFormat:@"site %d", i];
+    NSString* URL = [NSString stringWithFormat:@"http://page%d.com", i];
+    GREYAssert([self addPinnedSiteWithTitle:title URL:URL],
+               @"Add pinned site form not dismissed.");
+    // Dismiss the snackbar after it appears.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+        performAction:grey_tap()];
+  }
+  // After 8 sites, the "+" button should be gone.
+  ScrollMostVisitedToRightEdge();
+  [[EarlGrey selectElementWithMatcher:addSiteButton]
+      assertWithMatcher:grey_nil()];
+  // Unpin the last site.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     AccessibilityIdentifierForMostVisitedCellAtIndex(7))]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_SUGGESTIONS_UNPIN_SITE)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+      performAction:grey_tap()];
+  // Now the "+" button should be back.
+  ScrollMostVisitedToRightEdge();
+  [[EarlGrey selectElementWithMatcher:addSiteButton]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 #pragma mark - Test utils
 
 - (void)prepareToTestSetUpListInMagicStack {
@@ -659,6 +765,53 @@ void ScrollMostVisitedToRightEdge() {
       grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(pageTitle),
                  grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_longPress()];
+}
+
+// Scrolls all the way to the edge, taps the "Add Site" button, fills out the
+// form and taps the "Add" button, which may be inactive. Returns `NO` if the
+// form is not dismissed at the end of the process, which strongly indicates
+// that the inputs are invalid.
+- (BOOL)addPinnedSiteWithTitle:(NSString*)title URL:(NSString*)URL {
+  ScrollMostVisitedToRightEdge();
+  id<GREYMatcher> addSiteButton = grey_accessibilityID(
+      AccessibilityIdentifierForMostVisitedCellAtIndex(-1));
+  [[EarlGrey selectElementWithMatcher:addSiteButton] performAction:grey_tap()];
+  // Verify form title.
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::HeaderWithAccessibilityLabelId(
+              IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ADD_PINNED_SITE_TITLE)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  id<GREYMatcher> saveButton = grey_allOf(
+      grey_ancestor(grey_kindOfClass([UINavigationBar class])),
+      ButtonWithAccessibilityLabel(l10n_util::GetNSString(IDS_ADD)),
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+  // Fill the "Name" field.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityValue(l10n_util::GetNSString(
+                         IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_NAME)),
+                     grey_kindOfClassName(@"UITextField"), nil)]
+      performAction:grey_replaceText(title)];
+  // Check that "Save" button is disabled when the URL is empty.
+  [[EarlGrey selectElementWithMatcher:saveButton] assertWithMatcher:grey_nil()];
+  // Fill the "URL" field.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityValue(
+                                              @"https://example.com"),
+                                          grey_kindOfClassName(@"UITextField"),
+                                          nil)]
+      performAction:grey_replaceText(URL)];
+  // Tap "Add". Check if that dismisses the form.
+  [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
+  NSError* err;
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::HeaderWithAccessibilityLabelId(
+              IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ADD_PINNED_SITE_TITLE)]
+      assertWithMatcher:grey_nil()
+                  error:&err];
+  return !err;
 }
 
 @end
