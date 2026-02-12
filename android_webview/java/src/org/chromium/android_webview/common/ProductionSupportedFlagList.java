@@ -287,6 +287,10 @@ public final class ProductionSupportedFlagList {
                         + " a field is detected as a COUNTRY when it should be a STATE or vice"
                         + " versa."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_DELAY_APC_FOR_PREDICTIONS,
+                "APC will be delayed by up to 1 second to give Autofill time to generate"
+                        + " predictions."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_DISALLOW_MORE_HYPHEN_LIKE_LABELS,
                 "Disallows labels that only contain em dashes, minuses, fullwidth hyphens and other"
                         + " special characters."),

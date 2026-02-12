@@ -31,10 +31,15 @@ class GlicFormParsingTrackerTest
 
   ~GlicFormParsingTrackerTest() override { DestroyAutofillClient(); }
 
+  base::test::ScopedFeatureList& scoped_feature_list() {
+    return scoped_feature_list_;
+  }
   GlicFormParsingTracker& tracker() { return *tracker_; }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillDelayApcForPredictions};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_unit_test_environment_;
@@ -462,6 +467,22 @@ TEST_F(GlicFormParsingTrackerTest,
       AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
   EXPECT_TRUE(future1.IsReady());
   EXPECT_TRUE(future3.IsReady());
+}
+
+TEST_F(GlicFormParsingTrackerTest, Wait_FeatureDisabled) {
+  scoped_feature_list().Reset();
+  scoped_feature_list().InitAndDisableFeature(
+      features::kAutofillDelayApcForPredictions);
+
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form_id}, base::span<FormGlobalId>());
+
+  // Since the flag is disabled, there should be no waiting.
+  base::test::TestFuture<void> future;
+  tracker().Wait(future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
 }
 
 }  // namespace

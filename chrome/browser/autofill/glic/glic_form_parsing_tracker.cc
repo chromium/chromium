@@ -4,7 +4,9 @@
 
 #include "chrome/browser/autofill/glic/glic_form_parsing_tracker.h"
 
+#include "base/feature_list.h"
 #include "base/timer/timer.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 namespace {
@@ -46,6 +48,11 @@ GlicFormParsingTracker::~GlicFormParsingTracker() = default;
 
 void GlicFormParsingTracker::Wait(base::OnceClosure callback,
                                   base::TimeDelta timeout) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillDelayApcForPredictions)) {
+    std::move(callback).Run();
+    return;
+  }
   callbacks_.push_back(WrapAsTimeoutCallback(std::move(callback), timeout));
 
   // It may happen that forms were parsed before the waiting was requested.
