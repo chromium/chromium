@@ -81,6 +81,19 @@ cr-input:focus-within {
   overflow: hidden;
 }
 
+#textareaWrapper[loading] {
+  background-color: var(--color-sys-surface);
+  border-color: var(--cr-fallback-color-neutral-outline);
+}
+
+/* * Explicitly reset the background on hover when loading.
+ * Prevents the interactive hover state (grey background) from appearing
+ * while the refinement is in progress and the field is effectively disabled.
+ */
+#textareaWrapper[loading]:hover {
+  background-color: var(--color-sys-surface);
+}
+
 #textareaWrapper:focus-within {
   border-color: var(--cr-focus-outline-color);
   box-shadow: 0 0 0 1px var(--cr-focus-outline-color);
@@ -126,8 +139,15 @@ textarea::placeholder {
 .textarea-actions {
   display: flex;
   gap: 0;
-  padding: 0 8px 8px 8px;
+  padding: 8px;
   background-color: transparent;
+}
+
+#instructionsLoader {
+  display: block;
+  width: 100%;
+  height: 90px;
+  box-sizing: border-box;
 }
 
 cr-icon-button {

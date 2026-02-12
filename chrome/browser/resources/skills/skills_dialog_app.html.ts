@@ -47,19 +47,35 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
     <div id="instructionsLabel" class="cr-form-field-label" aria-hidden="true">
       $i18n{instructions}
     </div>
-    <div id="textareaWrapper" ?error="${this.hasRefineError_}">
-      <textarea id="instructionsText" aria-labelledby="instructionsLabel"
-          maxlength="${MAX_PROMPT_CHAR_COUNT}"
-          placeholder="$i18n{instructionsPlaceholder}"
-          .value="${this.skill_.prompt}" @input="${this.onInstructionsInput_}">
-      </textarea>
+    <div id="textareaWrapper" ?error="${this.hasRefineError_}"
+         ?loading="${this.isRefineLoading_}">
+      ${this.isRefineLoading_ ? html`
+        <cr-loading-gradient id="instructionsLoader">
+          <svg width="100%" height="90">
+            <clipPath>
+              <rect x="10" y="14" width="90%" height="12" rx="4"></rect>
+              <rect x="10" y="38" width="90%" height="12" rx="4"></rect>
+              <rect x="10" y="62" width="60%" height="12" rx="4"></rect>
+            </clipPath>
+          </svg>
+        </cr-loading-gradient>
+      ` : html`
+        <textarea id="instructionsText" aria-labelledby="instructionsLabel"
+            maxlength="${MAX_PROMPT_CHAR_COUNT}"
+            placeholder="$i18n{instructionsPlaceholder}"
+            .value="${this.skill_.prompt}"
+            @input="${this.onInstructionsInput_}">
+        </textarea>
+      `}
       <div class="textarea-actions">
         <cr-icon-button id="iconUndo" title="$i18n{undo}"
-            aria-label="$i18n{undo}" ?disabled="${!this.canUndoRefine_}"
+            aria-label="$i18n{undo}"
+            ?disabled="${this.isUndoDisabled_()}"
             @click="${this.onUndoClick_}">
         </cr-icon-button>
         <cr-icon-button id="iconRedo" title="$i18n{redo}"
-            aria-label="$i18n{redo}" ?disabled="${!this.canRedoRefine_}"
+            aria-label="$i18n{redo}"
+            ?disabled="${this.isRedoDisabled_()}"
             @click="${this.onRedoClick_}">
         </cr-icon-button>
         <cr-icon-button id="iconRefine" title="$i18n{refine}"
