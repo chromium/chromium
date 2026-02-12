@@ -346,6 +346,9 @@ class CORE_EXPORT Node : public EventTarget {
   ALWAYS_INLINE bool IsDocumentFragment() const {
     return getNodeType() == kDocumentFragmentNode;
   }
+  ALWAYS_INLINE bool IsProcessingInstruction() const {
+    return getNodeType() == kProcessingInstructionNode;
+  }
   ALWAYS_INLINE bool IsHTMLElement() const {
     return GetElementNamespaceType() == ElementNamespaceType::kHTML;
   }

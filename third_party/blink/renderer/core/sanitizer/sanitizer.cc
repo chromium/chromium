@@ -876,6 +876,9 @@ Sanitizer::Action Sanitizer::ActionForNode(Node* node, Node* root) const {
       // Steps 5.5-5.9 are in the subsequent switch-case, based on |action|.
     }
     case Node::NodeType::kCommentNode:
+    // TODO(nrosenthal): sanitizer for PIs?
+    // Spec: https://github.com/WICG/sanitizer-api/issues/370
+    case Node::NodeType::kProcessingInstructionNode:
       // Step 4: If child implement Comments & config["comments"] is not true:
       return (comments_ == SanitizerBoolWithAbsence::kTrue) ? Action::kKeep
                                                             : Action::kDrop;

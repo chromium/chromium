@@ -132,7 +132,7 @@ void ProcessingInstruction::ProcessAttributesIfNeeded() {
       GetDocument(), fake_html.ToString(), GetDocument().BaseURL(),
       ParserContentPolicy::kDisallowScriptingAndPluginContent);
   const Node* first = fragment->firstChild();
-  if (!first || first->HasNextSibling() || !first->IsElementNode()) {
+  if (!first || !first->IsElementNode()) {
     return;
   }
 

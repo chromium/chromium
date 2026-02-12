@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_TEMPLATE_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
@@ -63,10 +64,8 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
   // This retrieves either a currently-being-parsed declarative shadow root,
   // or the content fragment for a "regular" template
   // element. This should only be used by HTMLConstructionSite.
-  ContainerNode* InsertionTarget() const {
-    return override_insertion_target_ ? override_insertion_target_.Get()
-                                      : content();
-  }
+  ContainerNode* InsertionTarget() const;
+  Node* InsertionNextChild() const;
 
   void SetOverrideInsertionTarget(ContainerNode& target) {
     CHECK(target.IsShadowRoot() || target.IsDocumentFragment());
@@ -75,16 +74,22 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
 
   bool IsShadowRootModeTemplate() const {
     return override_insertion_target_ &&
-           override_insertion_target_->IsShadowRoot();
+           override_insertion_target_->IsShadowRoot() &&
+           !insertion_start_marker_;
   }
+
+  bool BeginPatch(ContainerNode&);
 
  private:
   void CloneNonAttributePropertiesFrom(const Element&,
                                        NodeCloningData&) override;
   void DidMoveToNewDocument(Document& old_document) override;
+  void FinishParsingChildren() override;
   mutable Member<TemplateContentDocumentFragment> content_;
 
   Member<ContainerNode> override_insertion_target_;
+  Member<Node> insertion_start_marker_;
+  Member<Node> insertion_end_marker_;
 };
 
 }  // namespace blink

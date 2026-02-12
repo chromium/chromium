@@ -229,7 +229,7 @@ class HTMLConstructionSite final {
     return parser_content_policy_;
   }
 
-  void FinishedTemplateElement(DocumentFragment* content_fragment);
+  void FinishedTemplateElement(DocumentFragment*);
   bool PreprocessInsertionTask(HTMLConstructionSiteTask&);
 
   static CustomElementDefinition* LookUpCustomElementDefinition(
@@ -285,6 +285,7 @@ class HTMLConstructionSite final {
 
   void ExecuteTask(HTMLConstructionSiteTask&);
   void QueueTask(const HTMLConstructionSiteTask&, bool flush_pending_text);
+  bool SanitizeIfNeeded(HTMLConstructionSiteTask&);
 
   void SetAttributes(Element* element, AtomicHTMLToken* token);
 
