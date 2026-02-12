@@ -17,8 +17,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 public class EducationalTipBottomSheetContent implements BottomSheetContent {
     // TODO(crbug.com/479597724): Implement BottomSheetContent and add relevant tests.
     private final View mContentView;
+    private final Context mContext;
 
-    public EducationalTipBottomSheetContent(View contentView) {
+    public EducationalTipBottomSheetContent(Context context, View contentView) {
+        mContext = context;
         mContentView = contentView;
     }
 
@@ -53,25 +55,22 @@ public class EducationalTipBottomSheetContent implements BottomSheetContent {
 
     @Override
     public @Nullable String getSheetContentDescription(Context context) {
-        // TODO(crbug.com/479597724): Add sheet content description
-        return "";
+        return mContext.getString(
+                R.string.educational_tip_see_more_bottom_sheet_content_description);
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        // TODO(crbug.com/479597724): Add bottom sheet accessibility strings.
-        return R.string.ntp_customization_main_bottom_sheet_closed;
+        return R.string.educational_tip_see_more_bottom_sheet_accessibility_opened;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        // TODO(crbug.com/479597724): Add bottom sheet accessibility strings.
-        return R.string.ntp_customization_main_bottom_sheet_closed;
+        return R.string.educational_tip_see_more_bottom_sheet_accessibility_opened;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        // TODO(crbug.com/479597724): Add bottom sheet accessibility strings.
-        return R.string.ntp_customization_main_bottom_sheet_closed;
+        return R.string.educational_tip_see_more_bottom_sheet_accessibility_closed;
     }
 }

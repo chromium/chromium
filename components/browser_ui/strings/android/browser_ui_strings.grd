@@ -1412,6 +1412,23 @@
         Go to settings
       </message>
 
+      <!-- Setup List "See More" bottom sheet strings -->
+      <message name="IDS_EDUCATIONAL_TIP_SEE_MORE_BOTTOM_SHEET_TITLE" desc="Title for the setup list bottom sheet when set up tasks are still remaining.">
+        Get the most out of Chrome
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_SEE_MORE_BOTTOM_SHEET_DESCRIPTION" desc="Description text for the setup list bottom sheet when set up tasks are still remaining.">
+        Complete these suggested actions below to get the most out of Chrome
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_SEE_MORE_BOTTOM_SHEET_ACCESSIBILITY_CLOSED" desc="Accessibility string that describes that the setup list bottom sheet has closed.">
+        Setup sheet closed
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_SEE_MORE_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the setup list bottom sheet.">
+        Bottom sheet displaying completed and uncompleted set up list tasks
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_SEE_MORE_BOTTOM_SHEET_ACCESSIBILITY_OPENED" desc="Accessibility string that describes that the setup list bottom sheet has fully opened.">
+        Setup sheet opened
+      </message>
+
       <!-- Safety Hub Magic Stack strings -->
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_MODULE_NAME" desc="Title for the Magic Stack card for all Safety Check modules.">
         Safety Check

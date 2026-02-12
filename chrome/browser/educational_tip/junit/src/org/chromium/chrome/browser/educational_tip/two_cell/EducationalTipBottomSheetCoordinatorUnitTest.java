@@ -9,9 +9,15 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_DESCRIPTION;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_TITLE;
+
+import android.content.Context;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,9 +29,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
+import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 import java.util.ArrayList;
@@ -50,10 +58,12 @@ public class EducationalTipBottomSheetCoordinatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
 
+    private Context mContext;
     private EducationalTipBottomSheetCoordinator mEducationalTipBottomSheetCoordinator;
 
     @Before
     public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
         when(mActionDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
     }
@@ -64,8 +74,17 @@ public class EducationalTipBottomSheetCoordinatorUnitTest {
         SetupListModuleUtils.setRankedModuleTypesForTesting(sRankedModuleTypes);
         mEducationalTipBottomSheetCoordinator =
                 new EducationalTipBottomSheetCoordinator(mActionDelegate);
+        PropertyModel model = mEducationalTipBottomSheetCoordinator.getModelForTesting();
         mEducationalTipBottomSheetCoordinator.showBottomSheet();
 
+        Assert.assertEquals(
+                "Bottom sheet title should be default",
+                model.get(BOTTOM_SHEET_TITLE),
+                mContext.getString(R.string.educational_tip_see_more_bottom_sheet_title));
+        Assert.assertEquals(
+                "Bottom sheet description should be set",
+                model.get(BOTTOM_SHEET_DESCRIPTION),
+                mContext.getString(R.string.educational_tip_see_more_bottom_sheet_description));
         verify(mBottomSheetController).requestShowContent(any(), /* animate= */ eq(true));
     }
 }

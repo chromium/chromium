@@ -6,31 +6,55 @@ found in the LICENSE file.
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/educational_tip_setup_list_see_more_bottom_sheet_padding_top"
+    android:paddingBottom="@dimen/educational_tip_setup_list_see_more_bottom_sheet_padding"
+    android:paddingHorizontal="@dimen/educational_tip_setup_list_see_more_bottom_sheet_padding">
+
+    <!-- Drag handlebar -->
+    <ImageView
+        android:id="@+id/drag_handle_bar"
+        android:importantForAccessibility="no"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="@dimen/default_browser_bottom_sheet_drag_handel_bar_height"
+        android:layout_marginVertical="@dimen/default_browser_bottom_sheet_drag_handel_bar_margin_vertical"
+        android:layout_width="@dimen/default_browser_bottom_sheet_drag_handle_bar_width"
+        android:src="@drawable/drag_handlebar"
+        app:tint="@macro/drag_handle_color" />
 
 <!--    TODO(crbug.com/479597724): Implement bottom sheet layout.-->
 
     <ImageView
         android:id="@+id/setup_list_bottom_sheet_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@null"/>
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/educational_tip_setup_list_see_more_bottom_sheet_icon_height"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginVertical="@dimen/educational_tip_setup_list_see_more_bottom_sheet_icon_margin"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/chrome_sync_logo" />
 
     <TextView
         android:id="@+id/setup_list_bottom_sheet_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"/>
 
     <TextView
         android:id="@+id/setup_list_bottom_sheet_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/educational_tip_setup_list_see_more_description_margin_top"
+        android:layout_marginBottom="@dimen/educational_tip_setup_list_see_more_description_margin_bottom"
+        android:gravity="center_horizontal"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 
     <org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetListContainerView
         android:id="@+id/setup_list_bottom_sheet_container_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     </org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetListContainerView>
 </LinearLayout>

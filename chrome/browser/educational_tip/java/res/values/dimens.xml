@@ -41,4 +41,12 @@ found in the LICENSE file.
   <!-- Educational tip instructional bottom sheet dimens -->
   <dimen name="save_passwords_instructional_bottom_sheet_animation_height">250dp</dimen>
   <dimen name="save_passwords_instructional_bottom_sheet_step_vertical_padding">12dp</dimen>
+
+  <!--  Educational tip setup list "See more" bottom sheet-->
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_padding">24dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_padding_top">8dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_icon_margin">16dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_bottom_sheet_icon_height">36dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_description_margin_top">4dp</dimen>
+  <dimen name="educational_tip_setup_list_see_more_description_margin_bottom">24dp</dimen>
 </resources>
