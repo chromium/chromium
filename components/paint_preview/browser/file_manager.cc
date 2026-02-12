@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
@@ -36,7 +37,7 @@ FileManager::~FileManager() = default;
 
 DirectoryKey FileManager::CreateKey(const GURL& url) const {
   uint32_t hash = base::PersistentHash(url.spec());
-  return DirectoryKey{base::HexEncode(&hash, sizeof(uint32_t))};
+  return DirectoryKey{base::HexEncode(base::byte_span_from_ref(hash))};
 }
 
 DirectoryKey FileManager::CreateKey(uint64_t tab_id) const {

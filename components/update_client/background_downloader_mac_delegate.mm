@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "base/apple/foundation_util.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -138,9 +139,8 @@ GURL GURLWithNSURL(NSURL* url) {
 }
 
 base::FilePath URLToFilename(const GURL& url) {
-  uint32_t hash = base::PersistentHash(url.spec());
-  return base::FilePath(
-      base::HexEncode(reinterpret_cast<uint8_t*>(&hash), sizeof(hash)));
+  return base::FilePath(base::HexEncode(
+      base::byte_span_from_ref(base::PersistentHash(url.spec()))));
 }
 
 }  // namespace update_client

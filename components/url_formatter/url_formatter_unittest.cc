@@ -10,6 +10,7 @@
 #include <array>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -624,7 +625,7 @@ TEST(UrlFormatterTest, FormatUrlRoundTripPathEscaped) {
   for (unsigned char test_char = 32; test_char < 128; ++test_char) {
     std::string original_url("http://www.google.com/");
     original_url.push_back('%');
-    original_url.append(base::HexEncode(&test_char, 1));
+    original_url.append(base::HexEncode(base::byte_span_from_ref(test_char)));
 
     GURL url(original_url);
     size_t prefix_len;
@@ -664,7 +665,7 @@ TEST(UrlFormatterTest, FormatUrlRoundTripQueryEscaped) {
   for (unsigned char test_char = 0; test_char < 128; ++test_char) {
     std::string original_url("http://www.google.com/?");
     original_url.push_back('%');
-    original_url.append(base::HexEncode(&test_char, 1));
+    original_url.append(base::HexEncode(base::byte_span_from_ref(test_char)));
 
     GURL url(original_url);
     size_t prefix_len;

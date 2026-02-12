@@ -20,6 +20,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -1404,13 +1405,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
           base::StrCat(
               {"File corrupt: ", current_file_->second->name(), " seq=",
                base::NumberToString(header.record_sequencing_id), " hash=",
-               base::HexEncode(
-                   reinterpret_cast<const uint8_t*>(&header.record_hash),
-                   sizeof(header.record_hash)),
+               base::HexEncode(base::byte_span_from_ref(header.record_hash)),
                " expected=",
                base::HexEncode(
-                   reinterpret_cast<const uint8_t*>(&actual_record_hash),
-                   sizeof(actual_record_hash))})));
+                   base::byte_span_from_ref(actual_record_hash))})));
     }
     return read_result.value().substr(0, header.record_size);
   }
