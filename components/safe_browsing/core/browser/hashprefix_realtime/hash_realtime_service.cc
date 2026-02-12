@@ -376,7 +376,8 @@ void HashRealTimeService::OnGetOhttpKey(
           &HashRealTimeService::OnOhttpComplete, weak_factory_.GetWeakPtr(),
           url, std::move(hash_prefixes_in_request),
           std::move(result_full_hashes), request_start_time,
-          std::move(lookup_completer), key.value(), webui_delegate_token)),
+          base::TimeTicks::Now(), std::move(lookup_completer), key.value(),
+          webui_delegate_token)),
       std::move(pending_receiver));
 }
 
@@ -384,7 +385,8 @@ void HashRealTimeService::OnOhttpComplete(
     const GURL& url,
     const std::vector<std::string>& hash_prefixes_in_request,
     std::vector<V5::FullHash> result_full_hashes,
-    base::TimeTicks request_start_time,
+    base::TimeTicks key_request_start_time,
+    base::TimeTicks hash_request_start_time,
     std::unique_ptr<LookupCompleter> lookup_completer,
     std::string ohttp_key,
     std::optional<int> webui_delegate_token,
@@ -398,17 +400,18 @@ void HashRealTimeService::OnOhttpComplete(
   auto response_body_ptr =
       std::make_unique<std::string>(response_body.value_or(""));
   OnURLLoaderComplete(url, std::move(hash_prefixes_in_request),
-                      std::move(result_full_hashes), request_start_time,
-                      std::move(lookup_completer), std::move(response_body_ptr),
-                      net_error, response_code, webui_delegate_token,
-                      ohttp_client_destructed_early);
+                      std::move(result_full_hashes), key_request_start_time,
+                      hash_request_start_time, std::move(lookup_completer),
+                      std::move(response_body_ptr), net_error, response_code,
+                      webui_delegate_token, ohttp_client_destructed_early);
 }
 
 void HashRealTimeService::OnURLLoaderComplete(
     const GURL& url,
     const std::vector<std::string>& hash_prefixes_in_request,
     std::vector<V5::FullHash> result_full_hashes,
-    base::TimeTicks request_start_time,
+    base::TimeTicks key_request_start_time,
+    base::TimeTicks hash_request_start_time,
     std::unique_ptr<LookupCompleter> lookup_completer,
     std::unique_ptr<std::string> response_body,
     int net_error,
@@ -416,8 +419,25 @@ void HashRealTimeService::OnURLLoaderComplete(
     std::optional<int> webui_delegate_token,
     bool ohttp_client_destructed_early) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::TimeDelta network_time = base::TimeTicks::Now() - request_start_time;
-  base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time", network_time);
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeDelta full_request_duration = now - key_request_start_time;
+  base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time",
+                          full_request_duration);
+  base::TimeDelta hash_request_duration = now - hash_request_start_time;
+  base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time.Hash",
+                          hash_request_duration);
+  if (net_error == net::OK && response_code == net::HTTP_OK && response_body &&
+      !response_body->empty()) {
+    base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time.Success",
+                            full_request_duration);
+    base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time.Hash.Success",
+                            hash_request_duration);
+  } else {
+    base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time.Failure",
+                            full_request_duration);
+    base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time.Hash.Failure",
+                            hash_request_duration);
+  }
   RecordHttpResponseOrErrorCode("SafeBrowsing.HPRT.Network.Result", net_error,
                                 response_code);
   if (net_error == net::ERR_FAILED) {

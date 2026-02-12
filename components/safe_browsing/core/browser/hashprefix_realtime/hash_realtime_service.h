@@ -229,7 +229,8 @@ class HashRealTimeService : public KeyedService {
   void OnOhttpComplete(const GURL& url,
                        const std::vector<std::string>& hash_prefixes_in_request,
                        std::vector<V5::FullHash> result_full_hashes,
-                       base::TimeTicks request_start_time,
+                       base::TimeTicks key_request_start_time,
+                       base::TimeTicks hash_request_start_time,
                        std::unique_ptr<LookupCompleter> lookup_completer,
                        std::string ohttp_key,
                        std::optional<int> webui_delegate_token,
@@ -251,8 +252,10 @@ class HashRealTimeService : public KeyedService {
   //    This method mutates this parameter to include the results from the
   //    server response as well, and then uses the combined results to determine
   //    the most severe threat type.
-  //  - |request_start_time| represents when the request was sent, and is used
-  //    for logging.
+  //  - |key_request_start_time| represents when the key request was sent, and
+  //    is used for logging.
+  //  - |hash_request_start_time| represents when the hash request was sent,
+  //    and is used for logging.
   //  - |lookup_completer| will be called when the method completes and will
   //    respond to the lookup initiator.
   //  - |response_body| is the unparsed response from the server.
@@ -267,7 +270,8 @@ class HashRealTimeService : public KeyedService {
       const GURL& url,
       const std::vector<std::string>& hash_prefixes_in_request,
       std::vector<V5::FullHash> result_full_hashes,
-      base::TimeTicks request_start_time,
+      base::TimeTicks key_request_start_time,
+      base::TimeTicks hash_request_start_time,
       std::unique_ptr<LookupCompleter> lookup_completer,
       std::unique_ptr<std::string> response_body,
       int net_error,
