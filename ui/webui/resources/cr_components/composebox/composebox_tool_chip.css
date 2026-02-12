@@ -40,10 +40,6 @@
   width: 16px;
 }
 
-#toolEnabledButton .tool-icon {
-  padding-top: 3px;
-}
-
 #toolEnabledButton .close-icon {
   opacity: 0;
 }
