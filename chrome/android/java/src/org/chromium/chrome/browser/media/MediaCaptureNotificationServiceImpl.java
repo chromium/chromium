@@ -150,9 +150,14 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                 mSharedPreferences.readStringSet(
                         ChromePreferenceKeys.MEDIA_WEBRTC_NOTIFICATION_IDS, null);
         if (notificationIds == null) return;
-        Iterator<String> iterator = notificationIds.iterator();
-        while (iterator.hasNext()) {
-            mNotificationManager.cancel(NOTIFICATION_NAMESPACE, Integer.parseInt(iterator.next()));
+        // Manual notification cleanup is only required when background media capturing is disabled.
+        // When enabled, the foreground service manages the notification lifecycle.
+        if (!isBackgroundMediaCapturingEnabled()) {
+            Iterator<String> iterator = notificationIds.iterator();
+            while (iterator.hasNext()) {
+                mNotificationManager.cancel(
+                        NOTIFICATION_NAMESPACE, Integer.parseInt(iterator.next()));
+            }
         }
         mSharedPreferences.removeKey(ChromePreferenceKeys.MEDIA_WEBRTC_NOTIFICATION_IDS);
     }
@@ -241,8 +246,12 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                         startOrUpdateForegroundService(latest.first, latest.second);
                     }
                 }
+            } else {
+                // When background media capturing is enabled, the notification lifecycle is managed
+                // by the foreground service. If disabled, we have to cancel the notification
+                // manually.
+                mNotificationManager.cancel(NOTIFICATION_NAMESPACE, notificationId);
             }
-            mNotificationManager.cancel(NOTIFICATION_NAMESPACE, notificationId);
             updateSharedPreferencesEntry(notificationId, true);
         }
     }
