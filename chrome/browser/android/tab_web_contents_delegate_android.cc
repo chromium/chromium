@@ -457,6 +457,9 @@ void TabWebContentsDelegateAndroid::UpdateUserGestureCarryoverInfo(
 content::PictureInPictureResult
 TabWebContentsDelegateAndroid::EnterPictureInPicture(
     content::WebContents* web_contents) {
+  if (!IsPictureInPictureEnabled()) {
+    return content::PictureInPictureResult::kNotSupported;
+  }
   return PictureInPictureWindowManager::GetInstance()
       ->EnterVideoPictureInPicture(web_contents);
 }
