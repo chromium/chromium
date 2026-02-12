@@ -327,9 +327,15 @@ bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {
   // installed - if the user has an extension that can execute script
   // everywhere and has an icon in the toolbar (like the non-ChromeOS version
   // of ChromeVox), then otherwise-restricted sites may not be.
-  // If nay extension has access, we want to properly message that (since
+  // If any extension has access, we want to properly message that (since
   // saying "No extensions can run..." is inaccurate). Other extensions
   // will still be properly attributed in UI.
+
+  // A site is NOT restricted when there are no extensions installed.
+  if (action_ids().empty()) {
+    return false;
+  }
+
   return std::ranges::all_of(action_ids(), [this, url](ActionId id) {
     // action_ids() could include disabled extensions that haven't been removed
     // yet from the set due to race conditions. Thus, we don't consider them in
