@@ -15,7 +15,7 @@ import {getCss} from './page_favicon.css.js';
  * @fileoverview This file provides a custom element displaying a page favicon.
  */
 
-class PageFavicon extends CrLitElement {
+class PageFaviconElement extends CrLitElement {
   static get is() {
     return 'page-favicon';
   }
@@ -85,8 +85,8 @@ class PageFavicon extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'page-favicon': PageFavicon;
+    'page-favicon': PageFaviconElement;
   }
 }
 
-customElements.define(PageFavicon.is, PageFavicon);
+customElements.define(PageFaviconElement.is, PageFaviconElement);

@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {UrlItemGrid} from './url_item_grid.js';
+import type {UrlItemGridElement} from './url_item_grid.js';
 
-export function getHtml(this: UrlItemGrid) {
+export function getHtml(this: UrlItemGridElement) {
   return html`
     <cr-grid>
       ${this.items_.map(item => html`

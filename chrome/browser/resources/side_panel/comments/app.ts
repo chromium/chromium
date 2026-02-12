@@ -8,7 +8,7 @@ import {getHtml} from './app.html.js';
 import type {CommentsApiProxy} from './comments_api_proxy.js';
 import {CommentsApiProxyImpl} from './comments_api_proxy.js';
 
-export class CommentsApp extends CrLitElement {
+export class CommentsAppElement extends CrLitElement {
   private commentsApi_: CommentsApiProxy = CommentsApiProxyImpl.getInstance();
 
   static get is() {
@@ -27,8 +27,8 @@ export class CommentsApp extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'comments-app': CommentsApp;
+    'comments-app': CommentsAppElement;
   }
 }
 
-customElements.define(CommentsApp.is, CommentsApp);
+customElements.define(CommentsAppElement.is, CommentsAppElement);

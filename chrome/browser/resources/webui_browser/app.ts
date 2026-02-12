@@ -27,10 +27,10 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {FullscreenContext, PageHandlerFactory, SecurityIcon} from './browser.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
-import type {ContentRegion} from './content_region.js';
-import type {SidePanel} from './side_panel.js';
+import type {ContentRegionElement} from './content_region.js';
+import type {SidePanelElement} from './side_panel.js';
 import type {TabActivated, TabAdded, TabClosed, TabUpdated} from './tab_strip/events.js';
-import {TabStrip} from './tab_strip/tab_strip.js';
+import {TabStripElement} from './tab_strip/tab_strip.js';
 
 export interface WebuiBrowserAppElement {
   $: {
@@ -38,9 +38,9 @@ export interface WebuiBrowserAppElement {
     appMenuButton: HTMLElement,
     avatarButton: HTMLElement,
     locationIconButton: HTMLElement,
-    contentRegion: ContentRegion,
-    sidePanel: SidePanel,
-    tabstrip: TabStrip,
+    contentRegion: ContentRegionElement,
+    sidePanel: SidePanelElement,
+    tabstrip: TabStripElement,
   };
 }
 
@@ -268,7 +268,7 @@ export class WebuiBrowserAppElement extends CrLitElement {
   }
 
   protected onTabDragMouseDown_(e: MouseEvent) {
-    if (e.target instanceof TabStrip) {
+    if (e.target instanceof TabStripElement) {
       this.$.tabstrip.dragMouseDown(e);
       this.addEventListener('mouseup', this.onTabDragMouseUp_);
       this.addEventListener('mousemove', this.onTabDragMouseMove_);

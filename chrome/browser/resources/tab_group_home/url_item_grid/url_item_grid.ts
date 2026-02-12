@@ -12,7 +12,7 @@ import {ItemEventType} from './url_item_delegate.js';
 import type {UrlItem, UrlItemDelegate} from './url_item_delegate.js';
 import {getHtml} from './url_item_grid.html.js';
 
-export class UrlItemGrid extends CrLitElement {
+export class UrlItemGridElement extends CrLitElement {
   static get is() {
     return 'url-item-grid';
   }
@@ -78,8 +78,8 @@ export class UrlItemGrid extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'url-item-grid': UrlItemGrid;
+    'url-item-grid': UrlItemGridElement;
   }
 }
 
-customElements.define(UrlItemGrid.is, UrlItemGrid);
+customElements.define(UrlItemGridElement.is, UrlItemGridElement);

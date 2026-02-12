@@ -187,7 +187,7 @@ suite('CrLazyRenderInCrViewManagerTest', function() {
     }
   }
 
-  class TestAppLit extends CrLitElement {
+  class TestAppLitElement extends CrLitElement {
     static get is() {
       return 'test-app-lit';
     }
@@ -205,7 +205,7 @@ suite('CrLazyRenderInCrViewManagerTest', function() {
   }
 
   customElements.define(TestApp.is, TestApp);
-  customElements.define(TestAppLit.is, TestAppLit);
+  customElements.define(TestAppLitElement.is, TestAppLitElement);
 
   function setupTest(isLit: boolean) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

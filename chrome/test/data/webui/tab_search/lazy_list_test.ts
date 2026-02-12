@@ -15,9 +15,17 @@ const SAMPLE_ITEM_HEIGHT = 56;
 const SAMPLE_AVAIL_HEIGHT =
     SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT * SAMPLE_ITEM_HEIGHT;
 
-class TestItem extends CrLitElement {
+class TestItemElement extends CrLitElement {
   static get is() {
     return 'test-item';
+  }
+
+  override render() {
+    return html`
+<div style="height: 48px; padding: 4px;">
+  <span>${this.name}</span>
+  <button>click item</button>
+</div>`;
   }
 
   static override get properties() {
@@ -29,14 +37,6 @@ class TestItem extends CrLitElement {
     };
   }
 
-  override render() {
-    return html`
-<div style="height: 48px; padding: 4px;">
-  <span>${this.name}</span>
-  <button>click item</button>
-</div>`;
-  }
-
   override focus() {
     this.shadowRoot.querySelector('button')!.focus();
   }
@@ -44,22 +44,12 @@ class TestItem extends CrLitElement {
   accessor name: string = '';
 }
 
-customElements.define(TestItem.is, TestItem);
+customElements.define(TestItemElement.is, TestItemElement);
 
-class TestApp extends CrLitElement {
+class TestAppElement extends CrLitElement {
   static get is() {
     return 'test-app';
   }
-
-  static override get properties() {
-    return {
-      listItems: {type: Array},
-      restoreFocusElement_: {type: Object},
-    };
-  }
-
-  accessor listItems: Array<{name: string}> = [];
-  private accessor restoreFocusElement_: HTMLElement|null = null;
 
   override render() {
     return html`
@@ -74,20 +64,30 @@ class TestApp extends CrLitElement {
     </lazy-list>`;
   }
 
+  static override get properties() {
+    return {
+      listItems: {type: Array},
+      restoreFocusElement_: {type: Object},
+    };
+  }
+
+  accessor listItems: Array<{name: string}> = [];
+  private accessor restoreFocusElement_: HTMLElement|null = null;
+
   private onRenderedItemsChanged_() {
     this.restoreFocusElement_ = this.shadowRoot.querySelector('[name="Two"]');
   }
 }
 
-customElements.define(TestApp.is, TestApp);
+customElements.define(TestAppElement.is, TestAppElement);
 
 suite('LazyListTest', () => {
   let lazyList: LazyListElement;
-  let testApp: TestApp;
+  let testApp: TestAppElement;
 
   async function setupTest(sampleData: Array<{name: string}>) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testApp = document.createElement('test-app') as TestApp;
+    testApp = document.createElement('test-app') as TestAppElement;
     testApp.style.height = `${SAMPLE_AVAIL_HEIGHT}px`;
     testApp.style.maxHeight = `${SAMPLE_AVAIL_HEIGHT}px`;
     testApp.style.display = 'block';
@@ -102,8 +102,8 @@ suite('LazyListTest', () => {
     await microtasksFinished();
   }
 
-  function queryItems(): NodeListOf<TestItem> {
-    return lazyList.querySelectorAll<TestItem>('test-item');
+  function queryItems(): NodeListOf<TestItemElement> {
+    return lazyList.querySelectorAll<TestItemElement>('test-item');
   }
 
   function getTestItems(count: number): Array<{name: string}> {

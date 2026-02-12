@@ -6,7 +6,7 @@ import 'chrome://tab-group-home/url_item_grid/url_item_grid.js';
 
 import {ItemEventType} from 'chrome://tab-group-home/url_item_grid/url_item_delegate.js';
 import type {UrlItem, UrlItemDelegate} from 'chrome://tab-group-home/url_item_grid/url_item_delegate.js';
-import type {UrlItemGrid} from 'chrome://tab-group-home/url_item_grid/url_item_grid.js';
+import type {UrlItemGridElement} from 'chrome://tab-group-home/url_item_grid/url_item_grid.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -57,7 +57,7 @@ suite('GridRendering', function() {
     {id: 2, title: 'Lit Documentation', url: 'https://lit.dev'},
   ];
 
-  let gridElement: UrlItemGrid;
+  let gridElement: UrlItemGridElement;
   let delegate: TestUrlItemDelegate;
 
   setup(() => {

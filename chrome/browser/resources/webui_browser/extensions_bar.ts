@@ -16,13 +16,18 @@ import {getCss} from './extensions_bar.css.js';
 import type {ExtensionActionInfo} from './extensions_bar.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './extensions_bar.mojom-webui.js';
 
-export class ExtensionsBar extends CrLitElement {
+export class ExtensionsBarElement extends CrLitElement {
   static get is() {
     return 'webui-browser-extensions-bar';
   }
 
   static override get styles() {
     return getCss();
+  }
+
+  // We manage the rendering directly.
+  override render() {
+    return '';
   }
 
   static override get properties() {
@@ -64,11 +69,6 @@ export class ExtensionsBar extends CrLitElement {
         this.actionRemoved.bind(this));
     this.callbackRouter.actionPoppedOut.addListener(
         this.actionPoppedOut.bind(this));
-  }
-
-  // We manage the rendering directly.
-  override render() {
-    return '';
   }
 
   protected override firstUpdated() {
@@ -134,8 +134,8 @@ export class ExtensionsBar extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'webui-browser-extensions-bar': ExtensionsBar;
+    'webui-browser-extensions-bar': ExtensionsBarElement;
   }
 }
 
-customElements.define(ExtensionsBar.is, ExtensionsBar);
+customElements.define(ExtensionsBarElement.is, ExtensionsBarElement);

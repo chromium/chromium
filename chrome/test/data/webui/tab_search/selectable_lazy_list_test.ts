@@ -14,15 +14,9 @@ const SAMPLE_AVAIL_HEIGHT = 336;
 const SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT = 6;
 const SAMPLE_SECTION_CLASS = 'section-title';
 
-class TestApp extends CrLitElement {
+class TestAppElement extends CrLitElement {
   static get is() {
     return 'test-app';
-  }
-
-  static override get properties() {
-    return {
-      maxHeight_: {type: Number},
-    };
   }
 
   override render() {
@@ -46,10 +40,16 @@ class TestApp extends CrLitElement {
     </selectable-lazy-list>`;
   }
 
+  static override get properties() {
+    return {
+      maxHeight_: {type: Number},
+    };
+  }
+
   private accessor maxHeight_: number = SAMPLE_AVAIL_HEIGHT;
 }
 
-customElements.define(TestApp.is, TestApp);
+customElements.define(TestAppElement.is, TestAppElement);
 
 suite('SelectableLazyListTest', () => {
   let selectableList: SelectableLazyListElement;

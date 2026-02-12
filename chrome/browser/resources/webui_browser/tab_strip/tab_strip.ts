@@ -24,13 +24,13 @@ import type {TabElement} from './tab.js';
 import {getCss} from './tab_strip.css.js';
 import {getHtml} from './tab_strip.html.js';
 
-export interface TabStrip {
+export interface TabStripElement {
   $: {
     tabstrip: HTMLElement,
   };
 }
 
-export class TabStrip extends CrLitElement implements TabStripObserver {
+export class TabStripElement extends CrLitElement implements TabStripObserver {
   static get is() {
     return 'webui-browser-tab-strip';
   }
@@ -404,8 +404,8 @@ export class TabStrip extends CrLitElement implements TabStripObserver {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'webui-browser-tab-strip': TabStrip;
+    'webui-browser-tab-strip': TabStripElement;
   }
 }
 
-customElements.define(TabStrip.is, TabStrip);
+customElements.define(TabStripElement.is, TabStripElement);

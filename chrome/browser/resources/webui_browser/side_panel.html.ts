@@ -6,9 +6,9 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {SidePanel} from './side_panel.js';
+import type {SidePanelElement} from './side_panel.js';
 
-export function getHtml(this: SidePanel) {
+export function getHtml(this: SidePanelElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 ${this.showing_ ? html`

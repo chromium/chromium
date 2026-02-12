@@ -80,18 +80,10 @@ suite('cr-page-selector', () => {
   });
 });
 
-class TestPageManager extends CrLitElement {
+class TestPageManagerElement extends CrLitElement {
   static get is() {
     return 'test-page-manager';
   }
-
-  static override get properties() {
-    return {
-      page: {type: String},
-    };
-  }
-
-  accessor page: string = '';
 
   override render() {
     return html`<cr-page-selector has-nested-slots attr-for-selected="path"
@@ -101,12 +93,20 @@ class TestPageManager extends CrLitElement {
       <div id="z" path="z">Page Z</div>
     </cr-page-selector>`;
   }
+
+  static override get properties() {
+    return {
+      page: {type: String},
+    };
+  }
+
+  accessor page: string = '';
 }
 
-customElements.define(TestPageManager.is, TestPageManager);
+customElements.define(TestPageManagerElement.is, TestPageManagerElement);
 
 suite('cr-page-selector nested slots', () => {
-  let element: TestPageManager;
+  let element: TestPageManagerElement;
 
   setup(() => {
     document.body.innerHTML = getTrustedHTML`
@@ -117,7 +117,7 @@ suite('cr-page-selector nested slots', () => {
       </test-page-manager>
     `;
     const manager =
-        document.querySelector<TestPageManager>('test-page-manager');
+        document.querySelector<TestPageManagerElement>('test-page-manager');
     assertTrue(!!manager);
     element = manager;
   });

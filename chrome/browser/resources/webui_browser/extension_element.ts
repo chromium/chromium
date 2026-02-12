@@ -10,7 +10,7 @@ import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mo
 
 import {getCss} from './extension_element.css.js';
 import {getHtml} from './extension_element.html.js';
-import type {ExtensionsBar} from './extensions_bar.js';
+import type {ExtensionsBarElement} from './extensions_bar.js';
 
 export class ExtensionElement extends CrLitElement {
   static get is() {
@@ -35,10 +35,10 @@ export class ExtensionElement extends CrLitElement {
   accessor iconUrl: string = '';
   accessor visible: boolean = false;
 
-  private bar: ExtensionsBar;
+  private bar: ExtensionsBarElement;
   private extensionId: string;
 
-  constructor(extensionId: string, bar: ExtensionsBar) {
+  constructor(extensionId: string, bar: ExtensionsBarElement) {
     super();
     this.extensionId = extensionId;
     this.bar = bar;
