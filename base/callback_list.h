@@ -53,8 +53,8 @@
 //   }
 //
 //   // Automatically deregisters the callback when deleted (e.g. in
-//   // ~MyWidgetListener()).  Unretained(this) is safe here since the
-//   // ScopedClosureRunner does not outlive |this|.
+//   // ~MyWidgetListener()).  Unretained(this) is safe here since
+//   // `foo_subscription_` is a member of `this`.
 //   CallbackListSubscription foo_subscription_ =
 //       MyWidget::Get()->RegisterCallback(
 //           base::BindRepeating(&MyWidgetListener::OnFoo,
