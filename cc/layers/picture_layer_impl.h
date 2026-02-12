@@ -415,6 +415,17 @@ class CC_EXPORT PictureLayerImpl
       float coverage_scale,
       float ideal_contents_scale) override;
 
+  // Returns whether the tile was missing.
+  bool AppendQuadForTile(TilingSetCoverageIterator<PictureLayerTiling> iter,
+                         const AppendQuadsContext& context,
+                         viz::CompositorRenderPass* render_pass,
+                         AppendQuadsData* append_quads_data,
+                         viz::SharedQuadState* shared_quad_state,
+                         const Occlusion& scaled_occlusion,
+                         const gfx::Vector2d& quad_offset,
+                         const gfx::Rect& scaled_viewport_for_tile_priority,
+                         const std::optional<gfx::Rect>& scaled_cull_rect,
+                         const gfx::Rect& scaled_recorded_bounds);
   TilingResolution GetTilingResolutionForDebugBorders(
       const PictureLayerTiling* tiling) const override;
 };
