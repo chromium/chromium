@@ -724,38 +724,35 @@ void ExecutionEngine::SafetyChecksForNextAction() {
 void ExecutionEngine::OnMayActOnTabDecision(
     const url::Origin& evaluated_origin,
     MayActOnUrlBlockReason block_reason) {
-  switch (block_reason) {
-    case MayActOnUrlBlockReason::kAllowed:
-      DidFinishAsyncSafetyChecks(evaluated_origin, /*may_act=*/true);
-      return;
-    case MayActOnUrlBlockReason::kOptimizationGuideBlock:
-      if (IsNavigationGatingEnabled() &&
-          kGlicPromptUserForSensitiveNavigations.Get()) {
-        SendUserConfirmationDialogRequest(
-            evaluated_origin,
-            /*for_sensitive_origin=*/true,
-            /*timer=*/std::nullopt,
-            base::BindOnce(&ExecutionEngine::DidFinishAsyncSafetyChecks,
-                           GetWeakPtr(), evaluated_origin));
-        return;
-      }
-      [[fallthrough]];
-    case MayActOnUrlBlockReason::kExternalProtocol:
-    case MayActOnUrlBlockReason::kIpAddress:
-    case MayActOnUrlBlockReason::kLookalikeDomain:
-    case MayActOnUrlBlockReason::kSafeBrowsing:
-    case MayActOnUrlBlockReason::kTabIsErrorDocument:
-    case MayActOnUrlBlockReason::kUrlNotInAllowlist:
-    case MayActOnUrlBlockReason::kWrongScheme:
-    case MayActOnUrlBlockReason::kEnterprisePolicy:
-    case MayActOnUrlBlockReason::kBlockedByStaticList:
-      DidFinishAsyncSafetyChecks(evaluated_origin, /*may_act=*/false);
+  if (block_reason == MayActOnUrlBlockReason::kOptimizationGuideBlock &&
+      IsNavigationGatingEnabled() &&
+      kGlicPromptUserForSensitiveNavigations.Get()) {
+    auto response_to_result_code = base::BindOnce(
+        [](MayActOnUrlBlockReason block_reason, bool may_continue) {
+          return may_continue
+                     ? mojom::ActionResultCode::kOk
+                     : BlockReasonToResultCode(block_reason,
+                                               /*for_navigation=*/false);
+        },
+        block_reason);
+    SendUserConfirmationDialogRequest(
+        evaluated_origin,
+        /*for_sensitive_origin=*/true,
+        /*timer=*/std::nullopt,
+        std::move(response_to_result_code)
+            .Then(base::BindOnce(&ExecutionEngine::DidFinishAsyncSafetyChecks,
+                                 GetWeakPtr(), evaluated_origin)));
+    return;
   }
+
+  DidFinishAsyncSafetyChecks(
+      evaluated_origin,
+      BlockReasonToResultCode(block_reason, /*for_navigation=*/false));
 }
 
 void ExecutionEngine::DidFinishAsyncSafetyChecks(
     const url::Origin& evaluated_origin,
-    bool may_act) {
+    mojom::ActionResultCode result_code) {
   TRACE_EVENT0("actor", "ExecutionEngine::DidFinishAsyncSafetyChecks");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!action_sequence_.empty());
@@ -793,12 +790,12 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
     return;
   }
 
-  if (!may_act) {
+  if (!IsOk(result_code)) {
     journal_->Log(
         GetNextAction().GetURLForJournal(), task_id, "Act Failed",
         JournalDetailsBuilder().AddError("URL blocked for actions").Build());
     FailedOnTabBeforeToolCreation();
-    CompleteActions(MakeResult(mojom::ActionResultCode::kUrlBlocked,
+    CompleteActions(MakeResult(result_code,
                                /*requires_page_stabilization=*/false,
                                "URL blocked for actions"),
                     next_action_index_);

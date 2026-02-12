@@ -252,32 +252,8 @@ void ActorNavigationThrottle::OnMayActOnUrlResult(
   // usage, consider the action a failure. But we don't consider canceled
   // prerenders to be an error.
   if (execution_engine_ && navigation_handle()->IsInPrimaryMainFrame()) {
-    mojom::ActionResultCode tool_failure_code;
-
-    switch (block_reason) {
-      case MayActOnUrlBlockReason::kExternalProtocol:
-        if (base::FeatureList::IsEnabled(
-                kGlicExternalProtocolActionResultCode)) {
-          tool_failure_code =
-              mojom::ActionResultCode::kExternalProtocolNavigationBlocked;
-          break;
-        }
-        [[fallthrough]];
-      case MayActOnUrlBlockReason::kIpAddress:
-      case MayActOnUrlBlockReason::kLookalikeDomain:
-      case MayActOnUrlBlockReason::kOptimizationGuideBlock:
-      case MayActOnUrlBlockReason::kSafeBrowsing:
-      case MayActOnUrlBlockReason::kTabIsErrorDocument:
-      case MayActOnUrlBlockReason::kUrlNotInAllowlist:
-      case MayActOnUrlBlockReason::kWrongScheme:
-      case MayActOnUrlBlockReason::kEnterprisePolicy:
-      case MayActOnUrlBlockReason::kBlockedByStaticList:
-        tool_failure_code =
-            mojom::ActionResultCode::kTriggeredNavigationBlocked;
-        break;
-      case MayActOnUrlBlockReason::kAllowed:
-        NOTREACHED();
-    }
+    mojom::ActionResultCode tool_failure_code =
+        BlockReasonToResultCode(block_reason, /*for_navigation=*/true);
 
     // As the effect of FailCurrentTool w.r.t. CancelDeferredNavigation is
     // asynchronous, order doesn't matter.

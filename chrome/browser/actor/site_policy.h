@@ -9,6 +9,7 @@
 #include "base/functional/function_ref.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/enterprise_policy_url_checker.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
@@ -90,6 +91,14 @@ base::expected<void, DecisionCallback>
 MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,
                                            Profile* profile,
                                            DecisionCallback callback);
+
+// Expresses the block reason as an action result.
+// A code may be used for multiple cases if they don't need to be distinguished
+// to the client.
+// `for_navigation` indicates if a navigation is being evaluated. This should be
+// false when checking the current page or validating tool parameters.
+mojom::ActionResultCode BlockReasonToResultCode(MayActOnUrlBlockReason reason,
+                                                bool for_navigation);
 
 }  // namespace actor
 

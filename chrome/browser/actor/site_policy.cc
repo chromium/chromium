@@ -387,4 +387,34 @@ MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,
   return base::ok();
 }
 
+mojom::ActionResultCode BlockReasonToResultCode(MayActOnUrlBlockReason reason,
+                                                bool for_navigation) {
+  using mojom::ActionResultCode;
+
+  const ActionResultCode generic_block_code =
+      for_navigation ? ActionResultCode::kTriggeredNavigationBlocked
+                     : ActionResultCode::kUrlBlocked;
+
+  switch (reason) {
+    case MayActOnUrlBlockReason::kAllowed:
+      return ActionResultCode::kOk;
+    case MayActOnUrlBlockReason::kExternalProtocol: {
+      if (base::FeatureList::IsEnabled(kGlicExternalProtocolActionResultCode)) {
+        return ActionResultCode::kExternalProtocolNavigationBlocked;
+      }
+      return generic_block_code;
+    }
+    case MayActOnUrlBlockReason::kIpAddress:
+    case MayActOnUrlBlockReason::kLookalikeDomain:
+    case MayActOnUrlBlockReason::kOptimizationGuideBlock:
+    case MayActOnUrlBlockReason::kSafeBrowsing:
+    case MayActOnUrlBlockReason::kTabIsErrorDocument:
+    case MayActOnUrlBlockReason::kUrlNotInAllowlist:
+    case MayActOnUrlBlockReason::kWrongScheme:
+    case MayActOnUrlBlockReason::kEnterprisePolicy:
+    case MayActOnUrlBlockReason::kBlockedByStaticList:
+      return generic_block_code;
+  }
+}
+
 }  // namespace actor

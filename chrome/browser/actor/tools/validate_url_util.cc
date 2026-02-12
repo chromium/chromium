@@ -18,7 +18,8 @@ namespace {
 mojom::ActionResultPtr UrlCheckToActionResult(MayActOnUrlBlockReason reason) {
   return reason == MayActOnUrlBlockReason::kAllowed
              ? MakeOkResult()
-             : MakeResult(mojom::ActionResultCode::kUrlBlocked);
+             : MakeResult(
+                   BlockReasonToResultCode(reason, /*for_navigation=*/false));
 }
 
 }  // namespace
