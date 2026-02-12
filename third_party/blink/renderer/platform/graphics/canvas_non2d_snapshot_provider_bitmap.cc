@@ -85,7 +85,7 @@ bool CanvasNon2DSnapshotProviderBitmap::IsValid() const {
 
 scoped_refptr<StaticBitmapImage>
 CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
-    base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
     ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
   const bool can_use_lcd_text = info_.alpha_type == kOpaque_SkAlphaType;
   const auto props =

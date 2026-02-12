@@ -71,7 +71,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
     return nullptr;
 
   return provider->DoExternalDrawAndSnapshot(
-      [paint_image](MemoryManagedPaintCanvas& canvas) {
+      [paint_image](cc::PaintCanvas& canvas) {
         cc::PaintFlags paint;
         paint.setBlendMode(SkBlendMode::kSrc);
         canvas.drawImage(paint_image, 0, 0, SkSamplingOptions(), &paint);

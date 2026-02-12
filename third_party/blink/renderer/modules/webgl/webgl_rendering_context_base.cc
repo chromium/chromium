@@ -5686,7 +5686,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
       static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider);
 
   return snapshot_provider_bitmap->DoExternalDrawAndSnapshot(
-      [&](MemoryManagedPaintCanvas& canvas) {
+      [&](cc::PaintCanvas& canvas) {
         if (!image->IsOpaque()) {
           canvas.clear(SkColors::kTransparent);
         }

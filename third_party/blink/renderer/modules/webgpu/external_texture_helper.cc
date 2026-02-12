@@ -50,11 +50,10 @@ bool DrawVideoFrameIntoResourceProvider(
 
   media::PaintCanvasVideoRenderer::PaintParams params;
   params.dest_rect = gfx::RectF(resource_provider->Size());
-  resource_provider->ExternalCanvasDrawHelper(
-      [&](MemoryManagedPaintCanvas& canvas) {
-        video_renderer->Paint(frame.get(), &canvas, media_flags, params,
-                              raster_context_provider);
-      });
+  resource_provider->ExternalCanvasDrawHelper([&](cc::PaintCanvas& canvas) {
+    video_renderer->Paint(frame.get(), &canvas, media_flags, params,
+                          raster_context_provider);
+  });
   return true;
 }
 

@@ -160,7 +160,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // This is supported only by CanvasNon2DResourceProviderSharedImage.
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
+      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
       ImageOrientation orientation) override {
     NOTREACHED();
   }
@@ -691,10 +691,10 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   // Drops the cached snapshot (if any) and invokes `draw_callback` on this
   // instance's canvas.
   void ExternalCanvasDrawHelper(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback);
+      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
+      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
       ImageOrientation orientation) final;
 
   // For WebGpu RecyclableCanvasResource.

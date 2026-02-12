@@ -869,14 +869,14 @@ CanvasResourceProviderSharedImage::GetSharedImageUsageFlags() const {
 }
 
 void CanvasNon2DResourceProviderSharedImage::ExternalCanvasDrawHelper(
-    base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback) {
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   cached_snapshot_.reset();
   draw_callback(Canvas());
 }
 
 scoped_refptr<StaticBitmapImage>
 CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndSnapshot(
-    base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
     ImageOrientation orientation) {
   ExternalCanvasDrawHelper(draw_callback);
   return Snapshot(orientation);

@@ -261,7 +261,7 @@ GPUCanvasContext::PaintRenderingResultsToSnapshot(
                           ? SkColors::kBlack
                           : SkColors::kTransparent;
     return resource_provider->DoExternalDrawAndSnapshot(
-        [color](MemoryManagedPaintCanvas& canvas) { canvas.clear(color); },
+        [color](cc::PaintCanvas& canvas) { canvas.clear(color); },
         ImageOrientationEnum::kDefault);
   }
 
