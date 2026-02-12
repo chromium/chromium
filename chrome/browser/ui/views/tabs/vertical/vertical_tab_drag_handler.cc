@@ -688,6 +688,7 @@ TabSlotView& VerticalTabDragHandlerImpl::GetOrCreateSlotViewForNode(
       default:
         NOTREACHED();
     }
+    slot_view.SetBoundsRect(node.view()->GetLocalBounds());
   };
 
   CHECK(node.view());
@@ -698,8 +699,6 @@ TabSlotView& VerticalTabDragHandlerImpl::GetOrCreateSlotViewForNode(
   }
 
   auto tab_slot_view = std::make_unique<VerticalTabSlotView>(node);
-  tab_slot_view->SetBoundsRect(node.view()->GetLocalBounds());
-
   auto& tab_slot_view_ref = *tab_slot_view.get();
   update_tab_slot_view(tab_slot_view_ref);
 
