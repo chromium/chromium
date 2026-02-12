@@ -10,7 +10,7 @@ import {FileUploadErrorType, FileUploadStatus, InputType, ToolMode as Composebox
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageRemote as SearchboxPageRemote, TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -2894,4 +2894,84 @@ suite('NewTabPageComposeboxTest', () => {
       assertEquals(searchboxHandler.getCallCount('getRecentTabs'), 2);
     });
   });
+
+  test('autocomplete queried when autochip removed', async () => {
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Autocomplete queried once on load.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+    searchboxHandler.reset();
+    searchboxHandler.setPromiseResolveFor(
+        ADD_TAB_CONTEXT_FN, {token: {low: BigInt(1), high: BigInt(2)}});
+
+    const tab = {
+      tabId: 1,
+      title: 'Tab 1',
+      url: 'https://example.com/1',
+      showInCurrentTabChip: true,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: BigInt(1)},
+    } as any as TabInfo;
+
+    // Add autochip.
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tab);
+    await microtasksFinished();
+
+    // Should have cleared matches.
+    assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 1);
+    searchboxHandler.reset();
+
+    // Remove autochip.
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(null);
+    await microtasksFinished();
+
+    // Autocomplete should be queried again when an auto chip is removed.
+    assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 2);
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 2);
+  });
+
+  test('matches cleared when new autochip added', async () => {
+    createComposeboxElement();
+    await microtasksFinished();
+
+    searchboxHandler.reset();
+    searchboxHandler.setPromiseResolveFor(
+        ADD_TAB_CONTEXT_FN, {token: {low: BigInt(1), high: BigInt(2)}});
+
+    const tab = {
+      tabId: 1,
+      title: 'Tab 1',
+      url: 'https://example.com/1',
+      showInCurrentTabChip: true,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: BigInt(1)},
+    } as any as TabInfo;
+
+    // Add valid autochip.
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tab);
+    await microtasksFinished();
+
+    // Should clear matches when a new autochip is added.
+    assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 1);
+  });
+
+  test(
+      'autocomplete not requeried if no autochip to start and updated with null',
+      async () => {
+        createComposeboxElement();
+        await microtasksFinished();
+
+        // Autocomplete queried once on load.
+        assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+        // Remove autochip when none exists.
+        searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(null);
+        await microtasksFinished();
+
+        // Autocomplete should not be queried again when there was no autochip
+        // to start, and an update comes with a null tab.
+        assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+        assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 0);
+      });
 });

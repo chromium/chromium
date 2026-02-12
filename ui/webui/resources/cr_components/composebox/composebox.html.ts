@@ -112,6 +112,8 @@ export function getHtml(this: ComposeboxElement) {
           @model-click="${this.onModelClick_}"
           @get-tab-preview="${this.getTabPreview_}"
           @open-file-dialog="${this.onOpenFileDialog_}"
+          @query-autocomplete="${this.onQueryAutocomplete_}"
+          @clear-autocomplete-matches="${this.clearAutocompleteMatches}"
           @context-menu-container-click="${this.searchboxLayoutMode === 'Compact' ?  nothing : this.focusInput}"
           @context-menu-closed="${this.onContextMenuClosed_}"
           @context-menu-opened="${this.onContextMenuOpened_}"

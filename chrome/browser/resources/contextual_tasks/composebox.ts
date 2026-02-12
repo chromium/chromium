@@ -143,8 +143,6 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   private userDismissedTooltip_: boolean = false;
   private resizeObserver_: ResizeObserver|null = null;
   private tooltipImpressionTimer_: number|null = null;
-  private composeboxShowZps: boolean =
-      loadTimeData.getBoolean('composeboxShowZps');
   private readonly tooltipImpressionDelay_: number =
       loadTimeData.getInteger('composeboxShowOnboardingTooltipImpressionDelay');
 
@@ -256,12 +254,10 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('isZeroState')) {
-      if (this.isZeroState && !this.composeboxShowZps) {
-        // Get zero state autocomplete matches. If `composeboxShowZps` is true
-        // then an autocomplete request will already be being made by
-        // cr-composebox and therefore this isn't needed here. We currently
-        // aren't showing ZPS in all cases (i.e. for context) which is why
-        // this is currently needed.
+      if (this.isZeroState && !this.isSidePanel) {
+        // Get zero state autocomplete matches. In the side panel, we wait for
+        // an update about whether an auto-chip will be added before querying
+        // autocomplete.
         this.$.composebox.queryAutocomplete(/*clearMatches=*/ false);
       }
     }

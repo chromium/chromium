@@ -579,6 +579,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   updateAutoActiveTabContext(tab: TabInfo|null) {
+    const chipPresentBeforeUpdate = this.automaticActiveTabChipToken_;
     // If there is already a suggested tab context, remove it.
     if (this.automaticActiveTabChipToken_) {
       this.onDeleteFile_(new CustomEvent('deleteTabContext', {
@@ -589,20 +590,30 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       this.automaticActiveTabChipToken_ = null;
     }
 
+    // Only query autocomplete if we're replacing the current chip or if we're
+    // adding a new chip. Autocomplete should not be re-queried if there was no
+    // autochip to start, and the current tab cannot be added as an autochip.
     if (!tab) {
-      return;  // No new tab to add, so we're done.
-    }
+      if (chipPresentBeforeUpdate) {
+        this.fire('query-autocomplete', {clearMatches: true});
+      }
+    } else {
+      this.addTabContext_(new CustomEvent('addTabContext', {
+        detail: {
+          id: tab.tabId,
+          title: tab.title,
+          url: tab.url,
+          delayUpload: /*delay_upload=*/ true,
+          replaceAutoActiveTabToken: true,
+          origin: TabUploadOrigin.OTHER,
+        },
+      }));
 
-    this.addTabContext_(new CustomEvent('addTabContext', {
-      detail: {
-        id: tab.tabId,
-        title: tab.title,
-        url: tab.url,
-        delayUpload: /*delay_upload=*/ true,
-        replaceAutoActiveTabToken: true,
-        origin: TabUploadOrigin.OTHER,
-      },
-    }));
+      // TODO(crbug.com/482150500): Correctly query for url based suggestions
+      // when delayed tab is present. Right now, while url-based suggestions are
+      // not set-up, clear the autocomplete matches.
+      this.fire('clear-autocomplete-matches');
+    }
   }
 
   private isMimeTypeAllowed_(
