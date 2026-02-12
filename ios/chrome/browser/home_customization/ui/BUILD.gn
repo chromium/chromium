@@ -79,6 +79,7 @@ source_set("ui") {
     "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/shared/public/snackbar:constants",
     "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/elements/gradient",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/snackbar/ui_bundled/ui",

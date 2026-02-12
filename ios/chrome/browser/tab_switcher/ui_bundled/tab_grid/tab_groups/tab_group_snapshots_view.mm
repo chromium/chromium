@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {

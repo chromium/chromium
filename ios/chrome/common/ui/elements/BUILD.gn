@@ -7,8 +7,6 @@ import("//build/config/ios/ios_sdk.gni")
 
 source_set("elements") {
   sources = [
-    "gradient_view.h",
-    "gradient_view.mm",
     "highlight_button.h",
     "highlight_button.mm",
   ]

@@ -16,10 +16,10 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_search_engine_logo_mediator_provider.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
+#import "ios/chrome/browser/shared/ui/elements/gradient/gradient_view.h"
 #import "ios/chrome/browser/shared/ui/elements/passthrough_stack_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -397,7 +397,7 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
                                       endColor:endColor
                                     startPoint:CGPointMake(0, 0)
                                       endPoint:CGPointMake(0, kGradientEndPoint)
-                                 useEasedCurve:NO];
+                                  gradientType:GradientLayerType::kLinear];
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [self.view insertSubview:gradientView aboveSubview:_scrollView];

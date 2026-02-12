@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/ui/elements/gradient/gradient_view.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -17,7 +18,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_animation.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -447,7 +447,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
                                       endColor:opaqueColor
                                     startPoint:CGPointMake(0.0f, 0.5f)
                                       endPoint:CGPointMake(1.0f, 0.5f)
-                                 useEasedCurve:NO];
+                                  gradientType:GradientLayerType::kLinear];
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
   [_headerView addSubview:gradientView];
 

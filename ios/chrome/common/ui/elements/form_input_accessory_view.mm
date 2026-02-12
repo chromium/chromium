@@ -12,7 +12,6 @@
 #import "base/notreached.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
-#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/background_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 

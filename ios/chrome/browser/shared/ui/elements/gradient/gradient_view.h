@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_COMMON_UI_ELEMENTS_GRADIENT_VIEW_H_
-#define IOS_CHROME_COMMON_UI_ELEMENTS_GRADIENT_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_GRADIENT_GRADIENT_VIEW_H_
+#define IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_GRADIENT_GRADIENT_VIEW_H_
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
+#import "ios/chrome/browser/shared/ui/elements/gradient/gradient_layer.h"
 
 // A UIView showing an axial gradient with two colors.
 @interface GradientView : UIView
@@ -18,7 +20,8 @@
                           endColor:(UIColor*)endColor
                         startPoint:(CGPoint)startPoint
                           endPoint:(CGPoint)endPoint
-                     useEasedCurve:(BOOL)easedCurve NS_DESIGNATED_INITIALIZER;
+                      gradientType:(GradientLayerType)gradientType
+    NS_DESIGNATED_INITIALIZER;
 
 // Initializes the view with a vertical gradient.
 - (instancetype)initWithTopColor:(UIColor*)topColor
@@ -32,4 +35,4 @@
 
 @end
 
-#endif  // IOS_CHROME_COMMON_UI_ELEMENTS_GRADIENT_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_GRADIENT_GRADIENT_VIEW_H_
