@@ -204,11 +204,27 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
         read_anything::ReadAnythingEntryPointController::InvokePageAction(
             browser(), context);
       }),
-      NavigateWebContents(kActiveTab, non_distillable_url_),
-      WaitForWebContentsReady(kActiveTab),
-      // Now should show chip again.
+      WaitForPageActionChipVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
+                       ShowOmniboxChipImmediatelyAfterReadingModeClosed) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
       NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForWebContentsReady(kActiveTab), WaitForPageActionChipVisible());
+      WaitForPageActionChipVisible(), InvokePageAction(),
+      WaitForPageActionChipNotVisible(),
+      // Close RM so the omnibox chip can show again.
+      Do([&]() {
+        auto context = actions::ActionInvocationContext();
+        context.SetProperty(
+            kSidePanelOpenTriggerKey,
+            static_cast<int>(SidePanelOpenTrigger::kPinnedEntryToolbarButton));
+        read_anything::ReadAnythingEntryPointController::InvokePageAction(
+            browser(), context);
+      }),
+      WaitForPageActionChipVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
