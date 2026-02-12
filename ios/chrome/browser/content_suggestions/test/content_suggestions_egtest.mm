@@ -692,7 +692,13 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
 
 // Tests pinning 8 sites and verifying the "Add site" button disappears after 8
 // sites are added, and reappears after unpinning one.
-- (void)testMostVisitedPinEightSites {
+// TODO(crbug.com/483977973): Reenable this test on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testMostVisitedPinEightSites testMostVisitedPinEightSites
+#else
+#define MAYBE_testMostVisitedPinEightSites DISABLED_testMostVisitedPinEightSites
+#endif
+- (void)MAYBE_testMostVisitedPinEightSites {
   id<GREYMatcher> addSiteButton = grey_accessibilityID(
       AccessibilityIdentifierForMostVisitedCellAtIndex(-1));
   // Add 8 pinned sites. Before pinning each, verify that the "Add site" button
