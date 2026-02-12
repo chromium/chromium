@@ -19,13 +19,13 @@ import os
 import sys
 from xml.dom import minidom
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
+import setup_modules
 
-import extract_histograms
-import histogram_configuration_model
-import histogram_paths
-import merge_xml
-import path_util
+import chromium_src.tools.metrics.common.path_util as path_util
+import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
+import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
+import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
+import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 
 ENUMS_XML_TEMPLATE = """<!--
 Copyright 2024 The Chromium Authors

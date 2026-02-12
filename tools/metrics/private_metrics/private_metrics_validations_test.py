@@ -5,7 +5,9 @@
 
 import unittest
 import xml.dom.minidom
-import private_metrics_validations
+import setup_modules
+
+import chromium_src.tools.metrics.private_metrics.private_metrics_validations as private_metrics_validations
 
 
 class EventBasedXmlValidationTest(unittest.TestCase):

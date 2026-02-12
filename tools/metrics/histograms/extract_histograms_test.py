@@ -7,8 +7,10 @@ from parameterized import parameterized  # pylint: disable=import-error
 import unittest
 import xml.dom.minidom
 
-import extract_histograms
-import histogram_configuration_model
+import setup_modules
+
+import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
+import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
 
 TEST_HISTOGRAM_WITH_TOKENS = """
 <histogram-configuration>

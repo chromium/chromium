@@ -14,12 +14,10 @@ from __future__ import print_function
 
 from typing import Dict, List, Tuple
 from xml.dom import minidom
-import sys
-import os
-import logging
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import xml_utils
+import setup_modules
+
+import chromium_src.tools.metrics.common.xml_utils as xml_utils
 
 class Error(Exception):
   pass

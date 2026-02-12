@@ -10,11 +10,10 @@ histograms.xml and enums.xml files that exist.
 """
 
 import os
-import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import path_util
+import setup_modules
 
+import chromium_src.tools.metrics.common.path_util as path_util
 
 _HISTOGRAM_XML_FILE_NAMES = ['histograms.xml', 'histogram_suffixes_list.xml']
 _ENUMS_XML_FILE_NAMES = ['enums.xml']

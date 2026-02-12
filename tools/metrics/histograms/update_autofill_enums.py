@@ -9,20 +9,18 @@
 - Updates enums derived from the Autofill AI schema.
 """
 
-import optparse
 import os
 import re
-import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import path_util
+import setup_modules
+
+import chromium_src.tools.metrics.common.path_util as path_util
+import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
+
+from chromium_src.components.autofill.core.browser.data_model.autofill_ai.entity_schema_parser import parse_entity_schema
 
 AUTOFILL_AI_ENTITY_DIR = \
     'components/autofill/core/browser/data_model/autofill_ai'
-sys.path.append(path_util.GetInputFile(AUTOFILL_AI_ENTITY_DIR))
-from entity_schema_parser import parse_entity_schema
-
-import update_histogram_enum
 
 FIELD_TYPES_PATH = 'components/autofill/core/browser/field_types.h'
 FIELD_PREDICTION_GROUPS_PATH = \

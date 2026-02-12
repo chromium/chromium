@@ -6,15 +6,14 @@
 
 import io
 import logging
-import os
 import sys
 from xml.dom import minidom
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
+import setup_modules
 
-import enums
-import histogram_configuration_model
-import histogram_paths
+import chromium_src.tools.metrics.common.enums as enums
+import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
+import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
 
 
 def _remove_enum_nodes_not_in_list(

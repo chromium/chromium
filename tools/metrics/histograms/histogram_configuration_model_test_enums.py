@@ -2,15 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
 from parameterized import parameterized
-import sys
 import unittest
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import etree_util
+import setup_modules
 
-import histogram_configuration_model
+import chromium_src.tools.metrics.common.etree_util as etree_util
+import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
 
 PRETTY_XML_RIGHT_ENUM_ORDER = """
 <histogram-configuration>

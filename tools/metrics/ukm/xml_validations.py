@@ -2,15 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
 import re
-import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'histograms'))
-import extract_histograms
-import histogram_paths
-import merge_xml
+import setup_modules
 
+import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
+import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
+import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 
 LOCAL_METRIC_RE = re.compile(r'metrics\.([^,]+)')
 INVALID_LOCAL_METRIC_FIELD_ERROR = (

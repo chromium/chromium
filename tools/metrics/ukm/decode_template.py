@@ -4,7 +4,9 @@
 
 """A template for generating hash decoding code."""
 
-import codegen
+import setup_modules
+
+import chromium_src.tools.metrics.ukm.codegen as codegen
 
 HEADER = codegen.Template(basename="ukm_decode.h",
                           file_template="""

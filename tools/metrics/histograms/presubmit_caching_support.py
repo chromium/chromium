@@ -8,7 +8,6 @@ import os
 import pickle
 from typing import Optional, Any, Dict
 
-
 @dataclasses.dataclass(frozen=True)
 class _PresubmitCheckContext:
   """Describes and identifies a context of a specific presubmit check.

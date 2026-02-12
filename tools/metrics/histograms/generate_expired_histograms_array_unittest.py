@@ -7,7 +7,9 @@ import datetime
 import unittest
 import xml.dom.minidom
 
-import generate_expired_histograms_array
+import setup_modules
+
+import chromium_src.tools.metrics.histograms.generate_expired_histograms_array as generate_expired_histograms_array
 
 _EXPECTED_HEADER_FILE_CONTENT = (
 """// Generated from generate_expired_histograms_array.py. Do not edit!

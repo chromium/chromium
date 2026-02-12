@@ -6,7 +6,9 @@ from parameterized import parameterized
 from xml.dom import minidom
 import unittest
 
-import split_xml
+import setup_modules
+
+import chromium_src.tools.metrics.histograms.split_xml as split_xml
 
 class SplitXmlTest(unittest.TestCase):
 

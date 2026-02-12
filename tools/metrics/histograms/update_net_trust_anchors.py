@@ -15,10 +15,10 @@ import json
 import os.path
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import path_util
+import setup_modules
 
-import update_histogram_enum
+import chromium_src.tools.metrics.common.path_util as path_util
+import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
 
 NET_ROOT_CERTS_PATH = 'net/data/ssl/root_stores/root_stores.json'
 

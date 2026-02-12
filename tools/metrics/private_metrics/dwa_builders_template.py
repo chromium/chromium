@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 """Templates for generating builder classes for DWA entries."""
 
-import private_metrics_codegen
+import setup_modules
+
+import chromium_src.tools.metrics.private_metrics.private_metrics_codegen as private_metrics_codegen
 
 HEADER = private_metrics_codegen.Template(basename="dwa_builders.h",
                                           file_template="""\

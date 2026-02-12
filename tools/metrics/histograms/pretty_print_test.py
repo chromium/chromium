@@ -5,7 +5,9 @@
 
 import unittest
 
-import pretty_print
+import setup_modules
+
+import chromium_src.tools.metrics.histograms.pretty_print as pretty_print
 
 
 ORIGINAL_XML = """

@@ -3,12 +3,10 @@
 # found in the LICENSE file.
 # """Model objects for ukm.xml contents."""
 
-import os
-import sys
+import setup_modules
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import models
-import model_shared
+import chromium_src.tools.metrics.common.models as models
+import chromium_src.tools.metrics.common.model_shared as model_shared
 
 
 _ENUMERATION_TYPE = models.ObjectNodeType(

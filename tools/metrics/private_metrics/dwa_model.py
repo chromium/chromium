@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 """Model objects for dwa.xml contents."""
 
-import private_metrics_model_shared
+import setup_modules
+
+import chromium_src.tools.metrics.private_metrics.private_metrics_model_shared as private_metrics_model_shared
 
 DWA_XML_TYPE = private_metrics_model_shared.create_event_based_document_type(
     'dwa-configuration')

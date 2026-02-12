@@ -6,7 +6,9 @@
 import unittest
 import xml.dom.minidom
 
-import generate_allowlist_from_histograms_file
+import setup_modules
+
+import chromium_src.tools.metrics.histograms.generate_allowlist_from_histograms_file as generate_allowlist_from_histograms_file
 
 _EXPECTED_FILE_CONTENT = (
     """// Generated from generate_allowlist_from_histograms_file.py. \

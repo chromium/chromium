@@ -7,17 +7,15 @@
 
 import argparse
 import os
-import sys
 import xml.dom.minidom
 
-import expand_owners
-import histogram_configuration_model
-import histogram_paths
-import populate_enums
+import setup_modules
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import xml_utils
-
+import chromium_src.tools.metrics.common.xml_utils as xml_utils
+import chromium_src.tools.metrics.histograms.expand_owners as expand_owners
+import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
+import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
+import chromium_src.tools.metrics.histograms.populate_enums as populate_enums
 
 def GetElementsByTagName(trees, tag, depth=2):
   """Gets all elements with the specified tag from a set of DOM trees.

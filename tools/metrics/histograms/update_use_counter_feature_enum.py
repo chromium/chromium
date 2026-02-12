@@ -15,8 +15,10 @@ import optparse
 import os
 import sys
 
-from update_histogram_enum import ReadHistogramValues
-from update_histogram_enum import UpdateHistogramEnum
+import setup_modules
+
+from chromium_src.tools.metrics.histograms.update_histogram_enum import ReadHistogramValues
+from chromium_src.tools.metrics.histograms.update_histogram_enum import UpdateHistogramEnum
 
 if __name__ == '__main__':
   web_feature_source = \

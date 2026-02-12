@@ -9,10 +9,12 @@ import re
 import sys
 import xml.dom.minidom
 
-import extract_histograms
-import histogram_configuration_model
-import histogram_paths
-import merge_xml
+import setup_modules
+
+import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
+import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
+import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
+import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 
 
 def _ConstructHistogram(doc, name, histogram_dict):

@@ -5,7 +5,9 @@
 
 import unittest
 
-import private_metrics_model_shared
+import setup_modules
+
+import chromium_src.tools.metrics.private_metrics.private_metrics_model_shared as private_metrics_model_shared
 
 PRETTY_XML = """
 <!-- Comment1 -->

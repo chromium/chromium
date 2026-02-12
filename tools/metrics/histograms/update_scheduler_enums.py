@@ -13,7 +13,9 @@ from __future__ import print_function
 import os
 import sys
 
-from update_histogram_enum import UpdateHistogramEnum
+import setup_modules
+
+from chromium_src.tools.metrics.histograms.update_histogram_enum import UpdateHistogramEnum
 
 XML_FILE = 'tools/metrics/histograms/metadata/navigation/enums.xml'
 ENUM_NAME = 'WebSchedulerTrackedFeature'

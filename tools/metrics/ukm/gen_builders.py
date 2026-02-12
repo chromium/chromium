@@ -13,9 +13,11 @@ entries and metrics.
 import argparse
 import sys
 
-import ukm_model
-import builders_template
-import decode_template
+import setup_modules
+
+import chromium_src.tools.metrics.ukm.ukm_model as ukm_model
+import chromium_src.tools.metrics.ukm.builders_template as builders_template
+import chromium_src.tools.metrics.ukm.decode_template as decode_template
 
 parser = argparse.ArgumentParser(description='Generate UKM entry builders')
 parser.add_argument('--input', help='Path to ukm.xml')

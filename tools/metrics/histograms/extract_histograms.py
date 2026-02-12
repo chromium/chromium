@@ -19,8 +19,9 @@ import sys
 from typing import Optional, TypedDict
 import xml.dom.minidom
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import xml_utils
+import setup_modules
+
+import chromium_src.tools.metrics.common.xml_utils as xml_utils
 
 BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 

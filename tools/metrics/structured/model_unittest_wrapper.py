@@ -5,8 +5,11 @@
 # found in the LICENSE file.
 """Test wrapper/executor for model_unittest.py."""
 
-import sync.model_unittest
 import unittest
+
+import setup_modules
+
+import chromium_src.tools.metrics.structured.sync.model_unittest as model_unittest
 
 # model_unittest.py lives in the sync directory (as the unit test is synced
 # across different repositories). However, cannot run model_unittest.py
@@ -16,7 +19,7 @@ import unittest
 # ModuleNotFoundErrors as it does not know about the sync module.
 
 
-class ModelTest(sync.model_unittest.ModelTest):
+class ModelTest(model_unittest.ModelTest):
   pass
 
 

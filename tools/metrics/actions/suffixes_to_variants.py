@@ -10,8 +10,10 @@ import os
 
 from xml.dom import minidom
 
-import actions_model
-import path_util
+import setup_modules
+
+import chromium_src.tools.metrics.actions.actions_model as actions_model
+import chromium_src.tools.metrics.common.path_util as path_util
 
 ACTIONS_PATH = path_util.GetInputFile('tools/metrics/actions/actions.xml')
 

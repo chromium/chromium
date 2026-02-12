@@ -4,11 +4,11 @@
 """Objects for describing template code that can be generated from dwa.xml."""
 
 import os
-import sys
-import private_metrics_model_shared
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import codegen_shared
+import setup_modules
+
+import chromium_src.tools.metrics.common.codegen_shared as codegen_shared
+import chromium_src.tools.metrics.private_metrics.private_metrics_model_shared as private_metrics_model_shared
 
 
 class EventInfo(codegen_shared.ModelTypeInfo):

@@ -5,11 +5,14 @@
 
 import unittest
 
-import action_utils
-import extract_actions
 from typing import List, Any
 from dataclasses import dataclass
 from parameterized import parameterized
+
+import setup_modules
+
+import chromium_src.tools.metrics.actions.action_utils as action_utils
+import chromium_src.tools.metrics.actions.extract_actions as extract_actions
 
 
 # Empty value to be inserted to |ACTIONS_MOCK|.

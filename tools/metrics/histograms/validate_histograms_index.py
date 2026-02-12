@@ -5,13 +5,11 @@
 """Verify the `histograms_index` file is up-to-date."""
 
 import logging
-import os
 import sys
 
-import histogram_paths
+import setup_modules
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import path_util
+import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
 
 def main():
   exit_code = 0

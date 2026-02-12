@@ -3,16 +3,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
 import sys
 import argparse
 
-import ukm_model
+import setup_modules
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import presubmit_util
-
-
+import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
+import chromium_src.tools.metrics.ukm.ukm_model as ukm_model
 
 def main():
   """Pretty-prints the Chrome UKM events in ukm.xml file.

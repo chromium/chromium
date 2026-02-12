@@ -3,9 +3,11 @@
 # found in the LICENSE file.
 
 import unittest
-import xml_validations
 from xml.dom import minidom
 
+import setup_modules
+
+import chromium_src.tools.metrics.ukm.xml_validations as xml_validations
 
 class UkmXmlValidationTest(unittest.TestCase):
 

@@ -4,16 +4,18 @@
 # found in the LICENSE file.
 
 import unittest
-
-from codegen import EventInfo
-from codegen import MetricInfo
-from builders_template import HEADER as BUILDERS_HEADER_TEMPLATE
-from builders_template import IMPL as BUILDERS_IMPL_TEMPLATE
-from decode_template import HEADER as DECODE_HEADER_TEMPLATE
-from decode_template import IMPL as DECODE_IMPL_TEMPLATE
-import ukm_model
-import gen_builders
 import os
+
+import setup_modules
+
+from chromium_src.tools.metrics.ukm.codegen import EventInfo
+from chromium_src.tools.metrics.ukm.codegen import MetricInfo
+from chromium_src.tools.metrics.ukm.builders_template import HEADER as BUILDERS_HEADER_TEMPLATE
+from chromium_src.tools.metrics.ukm.builders_template import IMPL as BUILDERS_IMPL_TEMPLATE
+from chromium_src.tools.metrics.ukm.decode_template import HEADER as DECODE_HEADER_TEMPLATE
+from chromium_src.tools.metrics.ukm.decode_template import IMPL as DECODE_IMPL_TEMPLATE
+import chromium_src.tools.metrics.ukm.ukm_model as ukm_model
+import chromium_src.tools.metrics.ukm.gen_builders as gen_builders
 
 _FILE_DIR = os.path.dirname(__file__)
 

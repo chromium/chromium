@@ -6,18 +6,18 @@
 
 import argparse
 import logging
-import os
 import re
 import sys
 from typing import List
 import xml.dom.minidom
 
-import extract_histograms
-import histogram_paths
-import merge_xml
+import setup_modules
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import xml_utils
+import chromium_src.tools.metrics.common.xml_utils as xml_utils
+import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
+import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
+import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
+
 
 # The allowlist of namespaces (histogram prefixes, case insensitive) that are
 # split across multiple files.

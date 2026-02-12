@@ -8,8 +8,9 @@ import re
 import sys
 from typing import Any, List
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import models
+import setup_modules
+
+import chromium_src.tools.metrics.common.models as models
 
 _OBSOLETE_TYPE = models.TextNodeType('obsolete', single_line=True)
 _OWNER_TYPE = models.TextNodeType('owner', single_line=True)

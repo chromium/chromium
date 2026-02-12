@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 """A template for generating hash decoding code."""
 
-import private_metrics_codegen
+import setup_modules
+
+import chromium_src.tools.metrics.private_metrics.private_metrics_codegen as private_metrics_codegen
 
 HEADER = private_metrics_codegen.Template(basename="dwa_decode.h",
                                           file_template="""\

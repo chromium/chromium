@@ -6,7 +6,9 @@ from parameterized import parameterized
 import unittest
 import xml.dom.minidom
 
-import actions_model
+import setup_modules
+
+import chromium_src.tools.metrics.actions.actions_model as actions_model
 
 PRETTY_XML = """
 <actions>

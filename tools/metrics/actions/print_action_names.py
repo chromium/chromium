@@ -10,10 +10,10 @@ import argparse
 import os
 import subprocess
 import sys
-import io
 
-sys.path.append(os.path.dirname(__file__))
-import action_utils
+import setup_modules
+
+import chromium_src.tools.metrics.actions.action_utils as action_utils
 
 
 def get_names(xml_content):

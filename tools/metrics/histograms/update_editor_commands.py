@@ -11,18 +11,15 @@ If the file was pretty-printed, the updated version is pretty-printed too.
 from __future__ import print_function
 
 import logging
-import os
 import re
 import sys
-
 from xml.dom import minidom
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-from diff_util import PromptUserToAcceptDiff
-import path_util
+import setup_modules
 
-import histogram_paths
-import histogram_configuration_model
+from chromium_src.tools.metrics.common.diff_util import PromptUserToAcceptDiff
+import chromium_src.tools.metrics.common.path_util as path_util
+import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
 
 # MappedEditingCommands Enum is defined in:
 ENUMS_PATH = 'tools/metrics/histograms/metadata/web_core/enums.xml'

@@ -3,15 +3,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
 import sys
 import argparse
 
-import dkm_model
-import dwa_model
+import setup_modules
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import presubmit_util
+import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
+import chromium_src.tools.metrics.private_metrics.dkm_model as dkm_model
+import chromium_src.tools.metrics.private_metrics.dwa_model as dwa_model
 
 
 def main():

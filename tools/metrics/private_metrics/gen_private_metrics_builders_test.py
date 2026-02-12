@@ -6,12 +6,14 @@
 import os
 import unittest
 
-import private_metrics_codegen
-import dkm_builders_template
-import dkm_model
-import dwa_builders_template
-import dwa_decode_template
-import dwa_model
+import setup_modules
+
+import chromium_src.tools.metrics.private_metrics.private_metrics_codegen as private_metrics_codegen
+import chromium_src.tools.metrics.private_metrics.dkm_builders_template as dkm_builders_template
+import chromium_src.tools.metrics.private_metrics.dkm_model as dkm_model
+import chromium_src.tools.metrics.private_metrics.dwa_builders_template as dwa_builders_template
+import chromium_src.tools.metrics.private_metrics.dwa_decode_template as dwa_decode_template
+import chromium_src.tools.metrics.private_metrics.dwa_model as dwa_model
 
 _FILE_DIR = os.path.dirname(__file__)
 

@@ -6,14 +6,15 @@
 import argparse
 import datetime
 import hashlib
-import logging
 import os
 import re
 import sys
 
-import extract_histograms
-import merge_xml
-import histogram_paths
+import setup_modules
+
+import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
+import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
+import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
 
 _DATE_FILE_RE = re.compile(r".*MAJOR_BRANCH_DATE=(.+).*")
 _CURRENT_MILESTONE_RE = re.compile(r"MAJOR=([0-9]{2,3})\n")

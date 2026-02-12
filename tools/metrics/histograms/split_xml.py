@@ -11,10 +11,12 @@ import os
 import re
 from xml.dom import minidom
 
-import histogram_configuration_model
-import histogram_paths
-import merge_xml
-import path_util
+import setup_modules
+
+import chromium_src.tools.metrics.common.path_util
+import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
+import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
+import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 
 # The top level comment templates that will be formatted and added to each split
 # histograms xml.

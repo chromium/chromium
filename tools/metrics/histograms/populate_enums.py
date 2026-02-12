@@ -5,13 +5,12 @@
 """Functions for populating enums with ukm events."""
 
 from collections import namedtuple
-import os
-import sys
 import xml.dom.minidom
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import codegen_shared
-import xml_utils
+import setup_modules
+
+import chromium_src.tools.metrics.common.codegen_shared as codegen_shared
+import chromium_src.tools.metrics.common.xml_utils as xml_utils
 
 EventDetails = namedtuple("EventDetails", "name hash is_obsolete")
 

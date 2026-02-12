@@ -7,9 +7,10 @@ import argparse
 import os
 import sys
 
-import extract_actions
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import presubmit_util
+import setup_modules
+
+import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
+import chromium_src.tools.metrics.actions.extract_actions as extract_actions
 
 
 def main():

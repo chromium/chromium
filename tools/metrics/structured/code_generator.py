@@ -5,7 +5,9 @@
 into definitions for different targets."""
 
 from abc import ABC, abstractmethod
-from codegen_util import Util
+import setup_modules
+
+from chromium_src.tools.metrics.structured.codegen_util import Util
 
 # Default target if not explicitly specified in the XML.
 DEFAULT_TARGET = "chromium"

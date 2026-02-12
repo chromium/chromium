@@ -4,7 +4,9 @@
 
 """Templates for generating builder classes for UKM entries."""
 
-import codegen
+import setup_modules
+
+import chromium_src.tools.metrics.ukm.codegen as codegen
 
 HEADER = codegen.Template(basename="ukm_builders.h",
                           file_template="""

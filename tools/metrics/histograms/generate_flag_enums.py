@@ -11,17 +11,14 @@ import subprocess
 import sys
 import typing
 
+
+import setup_modules
+
 # Import the shared codegen library for its hashing function, which is the
 # same hashing function as used for flag names.
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, 'common'))
-import codegen_shared
-
-sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir,
-                 os.pardir, 'python', 'google'))
-import path_utils
-
-import pretty_print
+import chromium_src.tools.metrics.common.codegen_shared as codegen_shared
+import chromium_src.tools.metrics.histograms.pretty_print as pretty_print
+import chromium_src.tools.python.google.path_utils as path_utils
 
 
 def get_entries_from_unit_test(outdir: str) -> typing.List[str]:

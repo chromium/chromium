@@ -7,8 +7,9 @@ import logging
 import os
 import unittest
 
-import validate_token
+import setup_modules
 
+import chromium_src.tools.metrics.histograms.validate_token as validate_token
 
 class ValidateTokenTests(unittest.TestCase):
   def test_valid_tokens(self):

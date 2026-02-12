@@ -10,15 +10,13 @@ If the file was pretty-printed, the updated version is pretty-printed too.
 import enum
 import io
 import logging
-import os
 import re
-import sys
 from xml.dom import minidom
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import histogram_configuration_model
-import path_util
+import setup_modules
 
+import chromium_src.tools.metrics.common.path_util as path_util
+import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
 
 class UserError(Exception):
 

@@ -12,15 +12,13 @@ If the file was pretty-printed, the updated version is pretty-printed too.
 from __future__ import print_function
 
 import os.path
-import re
 import sys
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import path_util
 import json
 
-import update_histogram_enum
+import setup_modules
 
+import chromium_src.tools.metrics.common.path_util as path_util
+import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
 
 GPU_DRIVER_BUG_WORKAROUND_PATH = 'gpu/config/gpu_driver_bug_list.json'
 

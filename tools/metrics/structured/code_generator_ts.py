@@ -1,9 +1,11 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-from codegen_util import FileInfo, Util
-from code_generator import (EventTemplateBase, ProjectInfoBase, EventInfoBase,
-                            MetricInfoBase)
+import setup_modules
+
+from chromium_src.tools.metrics.structured.codegen_util import FileInfo, Util
+from chromium_src.tools.metrics.structured.code_generator import (
+    EventTemplateBase, ProjectInfoBase, EventInfoBase, MetricInfoBase)
 
 
 class ProjectInfoTs(ProjectInfoBase):

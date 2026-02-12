@@ -7,11 +7,11 @@ import argparse
 import os
 import sys
 
-from sync import model
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import presubmit_util
+import setup_modules
 
+import chromium_src.tools.metrics.structured.sync.model as model
+import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
 
 def main():
   """Pretty-prints the structured metrics in structured.xml file.

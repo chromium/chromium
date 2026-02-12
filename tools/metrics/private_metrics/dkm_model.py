@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 """Model objects for dkm.xml contents."""
 
-import private_metrics_model_shared
+import setup_modules
+
+import chromium_src.tools.metrics.private_metrics.private_metrics_model_shared as private_metrics_model_shared
 
 DKM_XML_TYPE = private_metrics_model_shared.create_event_based_document_type(
     'dkm-configuration')

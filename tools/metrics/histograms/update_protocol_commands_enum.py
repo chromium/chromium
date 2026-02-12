@@ -11,17 +11,11 @@ import ctypes
 
 from xml.dom import minidom
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import path_util
+import setup_modules
 
-sys.path.append(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'third_party',
-                 'inspector_protocol'))
-import pdl
-
-import update_histogram_enum
-import histogram_paths
-
+import chromium_src.third_party.inspector_protocol.pdl as pdl
+import chromium_src.tools.metrics.common.path_util as path_util
+import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
 
 DEV_ENUMS_XML_PATH = 'tools/metrics/histograms/metadata/dev/enums.xml'
 

@@ -15,14 +15,13 @@ and wrapping text nodes, so we implement our own full custom XML pretty-printer.
 from __future__ import with_statement
 
 import argparse
-import os
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import etree_util
-import presubmit_util
+import setup_modules
 
-import histogram_configuration_model
+import chromium_src.tools.metrics.common.etree_util as etree_util
+import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
+import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
 
 
 class Error(Exception):

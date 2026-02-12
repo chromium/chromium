@@ -6,7 +6,9 @@
 import textwrap
 import unittest
 
-import ukm_model
+import setup_modules
+
+import chromium_src.tools.metrics.ukm.ukm_model as ukm_model
 
 
 PRETTY_XML = """

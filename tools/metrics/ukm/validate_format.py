@@ -4,14 +4,13 @@
 # found in the LICENSE file.
 """Verifies that the UKM XML file is well-formatted."""
 
-import os
 import sys
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import path_util
-
-from xml_validations import UkmXmlValidation
 from xml.dom import minidom
+
+import setup_modules
+
+import chromium_src.tools.metrics.common.path_util as path_util
+from chromium_src.tools.metrics.ukm.xml_validations import UkmXmlValidation
 
 UKM_XML = path_util.GetInputFile('tools/metrics/ukm/ukm.xml')
 

@@ -6,9 +6,11 @@
 import argparse
 import os
 import sys
-
-import extract_histograms
 import xml.dom.minidom
+
+import setup_modules
+
+import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
 
 _SCRIPT_NAME = "generate_allowlist_from_histograms_file.py"
 _FILE = """// Generated from {script_name}. Do not edit!

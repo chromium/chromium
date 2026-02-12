@@ -11,8 +11,10 @@ header and implementation file exposing validator function calls.
 import argparse
 import sys
 
-import code_generator_cpp
-from sync import model
+import setup_modules
+
+import chromium_src.tools.metrics.structured.code_generator_cpp as code_generator_cpp
+from chromium_src.tools.metrics.structured.sync import model
 
 parser = argparse.ArgumentParser(
     description='Generate structured metrics validator')

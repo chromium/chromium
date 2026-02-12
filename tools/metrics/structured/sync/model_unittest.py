@@ -7,8 +7,12 @@
 
 # TODO(crbug.com/40156926): Set up these tests to run on the tryjobs.
 
-import sync.model as model
 import unittest
+
+import setup_modules
+
+import chromium_src.tools.metrics.structured.sync.model as model
+
 
 class ModelTest(unittest.TestCase):
   """Tests for model.py."""

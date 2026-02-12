@@ -11,10 +11,12 @@ header and implementation file exposing builders for those events.
 import argparse
 import sys
 
-import code_generator_cpp
-import code_generator_ts
-from sync import model
-import templates_events as templates
+import setup_modules
+
+import chromium_src.tools.metrics.structured.code_generator_cpp as code_generator_cpp
+import chromium_src.tools.metrics.structured.code_generator_ts as code_generator_ts
+from chromium_src.tools.metrics.structured.sync import model
+import chromium_src.tools.metrics.structured.templates_events as templates
 
 parser = argparse.ArgumentParser(
     description='Generate structured metrics events')

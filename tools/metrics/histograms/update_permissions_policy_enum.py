@@ -13,7 +13,9 @@ from __future__ import print_function
 import os
 import sys
 
-from update_histogram_enum import UpdateHistogramEnum
+import setup_modules
+
+from chromium_src.tools.metrics.histograms.update_histogram_enum import UpdateHistogramEnum
 
 if __name__ == '__main__':
   if len(sys.argv) > 1:

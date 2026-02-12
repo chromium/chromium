@@ -10,12 +10,10 @@ import os
 import shutil
 import sys
 
-sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                 os.pardir, os.pardir, 'python', 'google'))
-import path_utils
+import setup_modules
 
-import diff_util
+import chromium_src.tools.python.google.path_utils as path_utils
+import chromium_src.tools.metrics.common.diff_util as diff_util
 
 
 def DoPresubmit(argv,

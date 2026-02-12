@@ -13,7 +13,9 @@ import textwrap as tw
 import xml.etree.ElementTree as ET
 import re
 
-import sync.model_util as util
+import setup_modules
+
+import chromium_src.tools.metrics.structured.sync.model_util as util
 
 
 # Default key rotation period if not explicitly specified in the XML.

@@ -12,11 +12,13 @@ for those entries and metrics.
 import argparse
 import sys
 
-import dkm_model
-import dkm_builders_template
-import dwa_model
-import dwa_builders_template
-import dwa_decode_template
+import setup_modules
+
+import chromium_src.tools.metrics.private_metrics.dkm_model as dkm_model
+import chromium_src.tools.metrics.private_metrics.dkm_builders_template as dkm_builders_template
+import chromium_src.tools.metrics.private_metrics.dwa_model as dwa_model
+import chromium_src.tools.metrics.private_metrics.dwa_builders_template as dwa_builders_template
+import chromium_src.tools.metrics.private_metrics.dwa_decode_template as dwa_decode_template
 
 parser = argparse.ArgumentParser(
     description='Generate Private Metrics builders')

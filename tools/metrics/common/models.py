@@ -17,7 +17,10 @@ import re
 import xml.etree.ElementTree as ET
 from typing import Callable, Iterable, Tuple, List, Dict, Optional, Set, Union
 from xml.dom import minidom
-import pretty_print_xml
+
+import setup_modules
+
+import chromium_src.tools.metrics.common.pretty_print_xml as pretty_print_xml
 
 # The object representation of the XML node.
 XMLObjectType = Dict

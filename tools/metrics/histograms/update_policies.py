@@ -11,20 +11,13 @@ If the file was pretty-printed, the updated version is pretty-printed too.
 from __future__ import print_function
 
 import os
-import re
 import sys
-
-from ast import literal_eval
-from optparse import OptionParser
 from xml.dom import minidom
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../third_party'))
-import pyyaml
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-from diff_util import PromptUserToAcceptDiff
-import path_util
+import setup_modules
 
-import histogram_configuration_model
+import chromium_src.third_party.pyyaml as pyyaml
+import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
 
 ENUMS_PATH = 'tools/metrics/histograms/metadata/enterprise/enums.xml'
 POLICY_LIST_PATH = 'components/policy/resources/templates/policies.yaml'

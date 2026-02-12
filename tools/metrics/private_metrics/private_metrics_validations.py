@@ -2,18 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
-import sys
 import xml.dom.minidom
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'ukm'))
-import xml_validations
+import setup_modules
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'histograms'))
-import extract_histograms
-import histogram_paths
-import merge_xml
-
+import chromium_src.tools.metrics.ukm.xml_validations as xml_validations
+import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
+import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
+import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 
 class EventBasedXmlValidation(xml_validations.UkmXmlValidation):
   """Validations for the content of event-based Private Metrics configurations.

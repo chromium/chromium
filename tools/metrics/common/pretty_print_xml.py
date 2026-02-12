@@ -21,7 +21,9 @@ from xml.dom import minidom
 
 import xml.etree.ElementTree as ET
 
-import etree_util
+import setup_modules
+
+import chromium_src.tools.metrics.common.etree_util as etree_util
 
 WRAP_COLUMN = 80
 

@@ -9,7 +9,10 @@
 # TODO(crbug.com/40156926): Set up these tests to run on the tryjobs.
 
 import unittest
-from codegen import Util
+
+import setup_modules
+
+from chromium_src.tools.metrics.structured.codegen_util import Util
 
 
 class CodegenTest(unittest.TestCase):

@@ -6,7 +6,9 @@ import os
 import tempfile
 import unittest
 
-import presubmit_caching_support
+import setup_modules
+
+import chromium_src.tools.metrics.histograms.presubmit_caching_support as presubmit_caching_support
 
 
 class DummyResult:

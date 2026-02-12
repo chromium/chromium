@@ -4,15 +4,15 @@
 
 """Functions for extracting emails and components from OWNERS files."""
 
-import extract_histograms
 import json
 import os
 import subprocess
 import sys
 import re
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import xml_utils
+import setup_modules
+
+import chromium_src.tools.metrics.common.xml_utils as xml_utils
 
 _EMAIL_PATTERN = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 _OWNERS = 'OWNERS'

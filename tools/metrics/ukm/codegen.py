@@ -5,12 +5,11 @@
 """Objects for describing template code that can be generated from ukm.xml."""
 
 import os
-import sys
-import ukm_model
+import chromium_src.tools.metrics.ukm.ukm_model as ukm_model
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import codegen_shared
+import setup_modules
 
+import chromium_src.tools.metrics.common.codegen_shared as codegen_shared
 
 class EventInfo(codegen_shared.ModelTypeInfo):
   pass

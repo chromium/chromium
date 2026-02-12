@@ -3,12 +3,11 @@
 # found in the LICENSE file.
 """Model objects for histograms.xml contents."""
 
-import os
 import re
-import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import models
+import setup_modules
+
+import chromium_src.tools.metrics.common.models as models
 
 _OWNER_TYPE = models.TextNodeType('owner', single_line=True)
 # If present, it's intentional that the histogram is currently expired and
