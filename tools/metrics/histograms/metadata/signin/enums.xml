@@ -800,6 +800,7 @@ chromium-metrics-reviews@google.com.
   <int value="85" label="Autotest Private Api"/>
   <int value="86" label="Sync Device Statistics Metrics"/>
   <int value="87" label="Legion Service"/>
+  <int value="88" label="Wallet Passes Service"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->

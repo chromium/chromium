@@ -62,6 +62,9 @@ static_library("base") {
   deps = [
     "//components/contextual_tasks/public:feature_list",
     "//components/prefs",
+
+    # TODO(crbug.com/478783796): Remove once kWalletApiPrivatePassesEnabled launches.
+    "//components/wallet/core/common:features",
     "//crypto",
     "//third_party/boringssl",
     "//third_party/icu:icui18n",
@@ -113,8 +116,11 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
+
+    # TODO(crbug.com/478783796): Remove once kWalletApiPrivatePassesEnabled launches.
     "//components/plus_addresses/core/common:features",
     "//components/prefs",
+    "//components/wallet/core/common:features",
     "//crypto",
     "//google_apis:test_support",
 

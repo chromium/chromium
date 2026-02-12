@@ -170,6 +170,8 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kWebHistoryOAuth2Scope[];
 // OAuth2 scope for Legion.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kLegionAuthScope[];
 
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kWalletPassesOAuth2Scope[];
+
 // Constants for the Chrome Refresh Token Binding.
 inline constexpr std::string_view kTokenBindingAssertionSentinel =
     "DBSC_CHALLENGE_IF_REQUIRED";

@@ -78,8 +78,7 @@ void WalletHttpClientImpl::GetAuthToken(TokenReadyCallback callback) {
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           // TODO(crbug.com/468916773): Replace with wallet auth id
-          signin::OAuthConsumerId::kPaymentsAccessTokenFetcher,
-          &identity_manager_.get(),
+          signin::OAuthConsumerId::kWalletPasses, &identity_manager_.get(),
           base::BindOnce(&WalletHttpClientImpl::OnTokenFetched,
                          weak_ptr_factory_.GetWeakPtr()),
           // The user must be signed in to make requests.
