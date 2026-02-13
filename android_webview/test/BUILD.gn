@@ -326,6 +326,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//android_webview/test:webview_instrumentation_test_utils_java",
     "//android_webview/test/embedded_test_server:aw_net_java_test_support",
     "//base:base_java_test_support_uncommon",
+    "//base/test:public_transit_java",
     "//base/version_info/android:version_constants_java",
     "//components/android_autofill/browser:java",
     "//components/android_autofill/browser/test_support:java",

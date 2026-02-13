@@ -4,21 +4,15 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
-import static org.chromium.ui.test.util.ViewUtils.withEventualExpectedViewState;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +26,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -119,10 +114,7 @@ public class ExtensionToolbarTest {
         // The extension 2 should disappear.
         // TODO(crbug.com/435305159): The content description should be the action name, not the
         // extension name.
-        onView(isRoot())
-                .check(
-                        withEventualExpectedViewState(
-                                withContentDescription("Test Extension 2"), VIEW_GONE | VIEW_NULL));
+        ViewFinder.waitForNoView(withContentDescription("Test Extension 2"));
     }
 
     /**
@@ -216,10 +208,7 @@ public class ExtensionToolbarTest {
         ExtensionTestUtils.uninstallExtension(mProfile, id);
 
         // The extension should disappear from the toolbar.
-        onView(isRoot())
-                .check(
-                        withEventualExpectedViewState(
-                                withContentDescription("Test Extension"), VIEW_GONE | VIEW_NULL));
+        ViewFinder.waitForNoView(withContentDescription("Test Extension"));
 
         // The popup should be gone.
         CriteriaHelper.pollInstrumentationThread(
