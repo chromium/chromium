@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
@@ -115,6 +116,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #include "net/android/http_auth_negotiate_android.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "components/enterprise/platform_auth/url_session_url_loader_bridge.h"
 #endif
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
@@ -1215,6 +1220,22 @@ void NetworkService::AddDurableMessageCollector(
   }
   durable_message_collector_manager_->AddCollector(std::move(receiver));
 }
+
+#if BUILDFLAG(IS_MAC)
+void NetworkService::CreateURLSessionURLLoaderAndStart(
+    const ResourceRequest& request,
+    mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
+    mojo::PendingRemote<mojom::URLLoaderClient> client_remote) {
+  if (use_mock_url_session_url_loader_for_testing_) {
+    CHECK_IS_TEST();
+    enterprise_auth::CreateURLSessionURLLoaderAndStartForTesting(  // IN-TEST
+        request, std::move(loader_receiver), std::move(client_remote));
+  } else {
+    enterprise_auth::CreateURLSessionURLLoaderAndStart(
+        request, std::move(loader_receiver), std::move(client_remote));
+  }
+}
+#endif
 
 std::unique_ptr<DevtoolsDurableMessageWriter>
 NetworkService::MaybeCreateDurableMessageWriter(

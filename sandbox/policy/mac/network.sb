@@ -107,6 +107,9 @@
   ; If the system has a relay configured, system frameworks may call out
   ; to nehelper to access its configuration (https://crbug.com/383306185)
   (global-name "com.apple.nehelper")
+
+  ; Required by the Okta SSO which is performed using URLSession api.
+  (global-name "com.apple.AppSSO.service-xpc")
 )
 
 (allow sysctl-read

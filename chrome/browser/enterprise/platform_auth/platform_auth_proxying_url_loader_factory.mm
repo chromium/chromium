@@ -10,34 +10,24 @@
 #include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/no_destructor.h"
-#include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "chrome/common/pref_names.h"
-#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/enterprise/platform_auth/platform_auth_features.h"
 #include "components/enterprise/platform_auth/url_session_helper.h"
-#include "components/enterprise/platform_auth/url_session_url_loader.h"
-#include "components/enterprise/platform_auth/url_session_url_loader_bridge.h"
-#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "url/gurl.h"
-#include "url/origin.h"
-#include "url/url_constants.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace enterprise_auth {
-
-namespace {
-
-static bool g_use_mock_server_for_testing = false;
-
-}
 
 ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -78,14 +68,19 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
     auto [loader_receiver, target_factory] = factory_builder.Append();
 
     // Cache configured hosts for a quicker lookup later on.
+    // TODO: b/433226247 - Combine this with the lookup above.
     const base::ListValue& configured_hosts_pref =
         g_browser_process->local_state()->GetList(
             prefs::kExtensibleEnterpriseSSOConfiguredHosts);
     base::flat_set<std::string> configured_hosts;
     configured_hosts.reserve(configured_hosts_pref.size());
+    // TODO: b/433226247 - This loop is O(N^2). Consider constructing the
+    // flat_set from a sorted vector if there might ever be more than 10 hosts.
     for (const base::Value& host : configured_hosts_pref) {
       configured_hosts.insert(host.GetString());
     }
+    // TODO: b/433226247 - Refactor ProxyingURLLoaderFactory to use
+    // mojo::MakeSelfOwnedReceiver.
     new ProxyingURLLoaderFactory(
         std::move(loader_receiver), std::move(target_factory),
         std::move(configured_hosts), request_initiator);
@@ -103,15 +98,8 @@ void ProxyingURLLoaderFactory::CreateLoaderAndStart(
     if (intercepted_request_callback_for_testing_) {
       std::move(intercepted_request_callback_for_testing_).Run(request);
     } else {
-      if (g_use_mock_server_for_testing) {
-        CHECK_IS_TEST();
-        enterprise_auth::
-            CreateURLSessionURLLoaderAndStartForTesting(  // IN-TEST
-                request, std::move(loader_receiver), std::move(client));
-      } else {
-        enterprise_auth::CreateURLSessionURLLoaderAndStart(
-            request, std::move(loader_receiver), std::move(client));
-      }
+      content::GetNetworkService()->CreateURLSessionURLLoaderAndStart(
+          request, std::move(loader_receiver), std::move(client));
     }
   } else {
     target_factory_->CreateLoaderAndStart(
@@ -162,16 +150,26 @@ ProxyingURLLoaderFactory::~ProxyingURLLoaderFactory() {
   }
 }
 
+bool ProxyingURLLoaderFactory::ScopedURLSessionOverrideForTesting::
+    instance_exists_ = false;
+
 ProxyingURLLoaderFactory::ScopedURLSessionOverrideForTesting::
     ScopedURLSessionOverrideForTesting() {
   CHECK_IS_TEST();
-  CHECK(!g_use_mock_server_for_testing);
-  g_use_mock_server_for_testing = true;
+  DCHECK(!instance_exists_) << "There should only be one instance of "
+                               "ScopedURLSessionOverrideForTesting";
+  instance_exists_ = true;
+  content::GetNetworkService()->BindTestInterfaceForTesting(  // IN-TEST
+      network_service_test_.BindNewPipeAndPassReceiver());
+  network_service_test_->SetUseMockURLSessionURLLoaderForTesting(  // IN-TEST
+      true);
 }
 
 ProxyingURLLoaderFactory::ScopedURLSessionOverrideForTesting::
     ~ScopedURLSessionOverrideForTesting() {
-  g_use_mock_server_for_testing = false;
+  instance_exists_ = false;
+  network_service_test_->SetUseMockURLSessionURLLoaderForTesting(  // IN-TEST
+      false);
 }
 
 }  // namespace enterprise_auth

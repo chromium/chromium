@@ -48,6 +48,7 @@
 #include "services/network/network_change_manager.h"
 #include "services/network/network_quality_estimator_manager.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/key_pinning.mojom.h"
 #include "services/network/public/mojom/net_log.mojom.h"
@@ -268,6 +269,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void AddDurableMessageCollector(
       mojo::PendingReceiver<mojom::DurableMessageCollector> receiver) override;
 
+#if BUILDFLAG(IS_MAC)
+  void CreateURLSessionURLLoaderAndStart(
+      const ResourceRequest& request,
+      mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
+      mojo::PendingRemote<mojom::URLLoaderClient> client_remote) override;
+#endif
+
   void StartNetLogBounded(base::File file,
                           uint64_t max_total_size,
                           net::NetLogCaptureMode capture_mode,
@@ -394,6 +402,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   GetDurableMessageCollectorManagerForTesting() {
     return durable_message_collector_manager_.get();
   }
+
+#if BUILDFLAG(IS_MAC)
+  inline void SetUseMockURLSessionURLLoaderForTesting(
+      bool use_mock_url_session_url_loader) {
+    use_mock_url_session_url_loader_for_testing_ =
+        use_mock_url_session_url_loader;
+  }
+#endif
 
  private:
   class DelayedDohProbeActivator;
@@ -544,6 +560,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   std::unique_ptr<DevtoolsDurableMessageCollectorManager>
       durable_message_collector_manager_;
+
+#if BUILDFLAG(IS_MAC)
+  bool use_mock_url_session_url_loader_for_testing_{false};
+#endif
 
   base::WeakPtrFactory<NetworkService> weak_factory_{this};
 };

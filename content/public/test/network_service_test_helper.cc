@@ -59,6 +59,7 @@
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
@@ -91,8 +92,9 @@ STATIC_ASSERT_ENUM(
 
 void CrashResolveHost(const std::string& host_to_crash,
                       const std::string& host) {
-  if (host_to_crash == host)
+  if (host_to_crash == host) {
     base::Process::TerminateCurrentProcessImmediately(1);
+  }
 }
 
 class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
@@ -803,6 +805,15 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
                              ->IsHappyEyeballsV3Enabled();
     std::move(callback).Run(enabled);
   }
+
+#if BUILDFLAG(IS_MAC)
+  void SetUseMockURLSessionURLLoaderForTesting(
+      bool use_mock_url_session_url_loader) override {
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->SetUseMockURLSessionURLLoaderForTesting(
+            use_mock_url_session_url_loader);
+  }
+#endif
 
  private:
   void OnMemoryPressure(
