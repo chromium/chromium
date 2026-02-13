@@ -197,7 +197,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
 
     // Request on demand update. Assumes that `RegisterInstaller` has already
     // been called.
-    virtual void RequestUpdate() = 0;
+    virtual void RequestUpdate(bool is_background) = 0;
 
     // Gets the base model component ID.
     virtual std::string GetComponentId() = 0;
@@ -291,9 +291,11 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     kNotRegistered,
     // RegisterInstaller called, waiting for completion.
     kRegistering,
-    // Registration completed and waiting for installation in background.
+    // Registration completed, installation may or may not be happening yet.
+    kRegistered,
+    // Registered and requested on demand update with background priority.
     kBackgroundDownloading,
-    // Registered and requested on demand update.
+    // Registered and requested on demand update with foreground priority.
     kOnDemandDownloading,
     // Component is fully installed.
     kInstalled,

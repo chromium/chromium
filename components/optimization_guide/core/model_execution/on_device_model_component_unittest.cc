@@ -565,7 +565,7 @@ TEST_F(OnDeviceModelComponentTest, InstallAfterEligibleFeatureWasUsed) {
   broker_.GetOrCreateBrokerState().usage_tracker().OnDeviceEligibleFeatureUsed(
       mojom::OnDeviceFeature::kCompose);
   EXPECT_TRUE(WaitUntilInstallerRegistered());
-  EXPECT_TRUE(broker_.component_state().request_update_called());
+  EXPECT_TRUE(broker_.component_state().requested_foreground_update());
 }
 
 TEST_F(OnDeviceModelComponentTest, LogsStatusOnUse) {
@@ -752,7 +752,7 @@ TEST_F(OnDeviceModelComponentTest,
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
-  EXPECT_FALSE(broker_.component_state().request_update_called());
+  EXPECT_TRUE(broker_.component_state().requested_background_update());
   histograms_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
       "InitialInstall.IsBackground",
@@ -768,6 +768,7 @@ TEST_F(OnDeviceModelComponentTest, BackgroundDownloadBlockedOnExperimentFlag) {
 
   EnsurePerformanceClassAvailable();
   ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
+  EXPECT_FALSE(broker_.component_state().requested_background_update());
 }
 
 TEST_F(OnDeviceModelComponentTest,
@@ -803,10 +804,13 @@ TEST_F(OnDeviceModelComponentTest, FeatureUseUpgradesToOnDemand) {
   EnsurePerformanceClassAvailable();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
 
+  EXPECT_TRUE(broker_.component_state().requested_background_update());
+  EXPECT_FALSE(broker_.component_state().requested_foreground_update());
+
   broker_.GetOrCreateBrokerState().usage_tracker().OnDeviceEligibleFeatureUsed(
       mojom::OnDeviceFeature::kCompose);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(broker_.component_state().request_update_called());
+  EXPECT_TRUE(broker_.component_state().requested_foreground_update());
 }
 
 TEST_F(OnDeviceModelComponentTest, FeatureUseSkipsUpdateIfAlreadyInstalled) {
@@ -824,7 +828,7 @@ TEST_F(OnDeviceModelComponentTest, FeatureUseSkipsUpdateIfAlreadyInstalled) {
   broker_.GetOrCreateBrokerState().usage_tracker().OnDeviceEligibleFeatureUsed(
       mojom::OnDeviceFeature::kCompose);
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(broker_.component_state().request_update_called());
+  EXPECT_FALSE(broker_.component_state().requested_foreground_update());
 }
 
 TEST_F(OnDeviceModelComponentTest, UninstallWhileRegistrationPending) {

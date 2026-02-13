@@ -352,8 +352,7 @@ void OnDeviceModelComponentStateManager::InstallerRegistered(
   if (is_already_installed) {
     component_installer_state_ = ComponentInstallerState::kInstalled;
   } else {
-    component_installer_state_ =
-        ComponentInstallerState::kBackgroundDownloading;
+    component_installer_state_ = ComponentInstallerState::kRegistered;
   }
   base::UmaHistogramBoolean(
       "OptimizationGuide.ModelExecution."
@@ -535,13 +534,27 @@ void OnDeviceModelComponentStateManager::UpdateRegistration() {
     return;
   }
 
+  if (component_installer_state_ == ComponentInstallerState::kRegistered) {
+    if (registration_criteria_->get_install_mode() ==
+        ModelInstallMode::kOnDemand) {
+      component_installer_state_ =
+          ComponentInstallerState::kOnDemandDownloading;
+      delegate_->RequestUpdate(/*is_background=*/false);
+    } else {
+      component_installer_state_ =
+          ComponentInstallerState::kBackgroundDownloading;
+      delegate_->RequestUpdate(/*is_background=*/true);
+    }
+    return;
+  }
+
   if (component_installer_state_ ==
       ComponentInstallerState::kBackgroundDownloading) {
     if (registration_criteria_->get_install_mode() ==
         ModelInstallMode::kOnDemand) {
       component_installer_state_ =
           ComponentInstallerState::kOnDemandDownloading;
-      delegate_->RequestUpdate();
+      delegate_->RequestUpdate(/*is_background=*/false);
     }
     return;
   }

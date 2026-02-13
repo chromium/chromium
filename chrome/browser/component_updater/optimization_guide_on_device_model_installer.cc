@@ -154,10 +154,10 @@ OptimizationGuideOnDeviceModelInstallerPolicy::GetOnDeviceModelExtensionId() {
 }
 
 // static
-void OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand() {
+void OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand(
+    OnDemandUpdater::Priority priority) {
   g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
-      GetOnDeviceModelExtensionId(),
-      component_updater::OnDemandUpdater::Priority::FOREGROUND,
+      GetOnDeviceModelExtensionId(), priority,
       base::BindOnce([](update_client::Error error) {
         if (error != update_client::Error::NONE &&
             error != update_client::Error::UPDATE_IN_PROGRESS) {
