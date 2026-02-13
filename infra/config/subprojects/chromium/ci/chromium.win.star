@@ -1005,4 +1005,5 @@ ci.builder(
         short_name = "lxw",
     ),
     contact_team_email = "chrome-build-team@google.com",
+    execution_timeout = 4 * time.hour,
 )
