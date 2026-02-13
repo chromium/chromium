@@ -7,6 +7,7 @@
 #include <thread>
 
 #include "base/compiler_specific.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/ml/chrome_ml.h"
@@ -32,26 +33,45 @@ uint32_t GetTopK(std::optional<uint32_t> top_k) {
 }  // namespace
 
 // Wrapper for the ChromeMLCancel object.
-class SessionAccessor::Canceler : public base::RefCountedThreadSafe<Canceler> {
+class SessionAccessor::Canceler
+    : public base::RefCountedDeleteOnSequence<Canceler> {
  public:
-  DISABLE_CFI_DLSYM
-  explicit Canceler(const ChromeML& chrome_ml) : chrome_ml_(chrome_ml) {
-    cancel_ = chrome_ml_->api().CreateCancel();
+  Canceler(const ChromeML& chrome_ml,
+           scoped_refptr<base::SequencedTaskRunner> task_runner)
+      : base::RefCountedDeleteOnSequence<Canceler>(task_runner),
+        chrome_ml_(chrome_ml),
+        task_runner_(task_runner) {
+    // `Canceler` is deleted on `task_runner_` so `base::Unretained` is safe.
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&SessionAccessor::Canceler::CreateInternal,
+                                  base::Unretained(this)));
   }
 
-  DISABLE_CFI_DLSYM
-  void Cancel() { chrome_ml_->api().CancelExecuteModel(cancel_); }
+  void Cancel() {
+    // `Canceler` is deleted on `task_runner_` so `base::Unretained` is safe.
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&SessionAccessor::Canceler::CancelInternal,
+                                  base::Unretained(this)));
+  }
 
   ChromeMLCancel get() const { return cancel_; }
 
  private:
-  friend class base::RefCountedThreadSafe<Canceler>;
+  friend class base::RefCountedDeleteOnSequence<Canceler>;
+  friend class base::DeleteHelper<Canceler>;
 
   DISABLE_CFI_DLSYM
   virtual ~Canceler() { chrome_ml_->api().DestroyCancel(cancel_); }
 
+  DISABLE_CFI_DLSYM
+  void CreateInternal() { cancel_ = chrome_ml_->api().CreateCancel(); }
+
+  DISABLE_CFI_DLSYM
+  void CancelInternal() { chrome_ml_->api().CancelExecuteModel(cancel_); }
+
   const raw_ref<const ChromeML> chrome_ml_;
   ChromeMLCancel cancel_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 // static
@@ -104,7 +124,8 @@ ChromeMLCancelFn SessionAccessor::Append(
     ChromeMLContextSavedFn context_saved_fn) {
   TRACE_EVENT("optimization_guide", "SessionAccessor::Append");
   DCHECK(context_saved_fn);
-  auto canceler = base::MakeRefCounted<Canceler>(chrome_ml_.get());
+  auto canceler =
+      base::MakeRefCounted<Canceler>(chrome_ml_.get(), task_runner_);
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SessionAccessor::AppendInternal,
                                 base::Unretained(this), std::move(options),
@@ -119,7 +140,8 @@ ChromeMLCancelFn SessionAccessor::Generate(
     ChromeMLExecutionOutputFn output_fn) {
   TRACE_EVENT("optimization_guide", "SessionAccessor::Generate");
   DCHECK(output_fn);
-  auto canceler = base::MakeRefCounted<Canceler>(chrome_ml_.get());
+  auto canceler =
+      base::MakeRefCounted<Canceler>(chrome_ml_.get(), task_runner_);
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SessionAccessor::GenerateInternal, base::Unretained(this),
