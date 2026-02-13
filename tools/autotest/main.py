@@ -286,10 +286,10 @@ def main() -> int:
         build_ok: bool = test_executor.BuildTestTargets(out_dir, targets,
                                                         args.dry_run,
                                                         args.quiet, True)
-      telemetry.RecordMainAttributes(targets, gtest_filter, used_cache, out_dir)
+    telemetry.RecordMainAttributes(targets, gtest_filter, used_cache, out_dir)
 
-      if not build_ok:
-        return 1
+    if not build_ok:
+      return 1
 
   return test_executor.RunTestTargets(out_dir, targets, gtest_filter,
                                       pref_mapping_filter, _extras,
