@@ -65,6 +65,129 @@ inline CharacterRange StrippedMatchedCharactersRange(base::span<CharType> chars,
           static_cast<wtf_size_t>(end + 1 - start)};
 }
 
+template <typename SearchCharacterType, typename MatchCharacterType>
+ALWAYS_INLINE wtf_size_t
+FindInternal(base::span<const SearchCharacterType> search,
+             base::span<const MatchCharacterType> match,
+             wtf_size_t index) {
+  // Optimization: keep a running hash of the strings,
+  // only call equal() if the hashes match.
+
+  wtf_size_t match_length = base::checked_cast<wtf_size_t>(match.size());
+  // delta is the number of additional times to test; delta == 0 means test only
+  // once.
+  wtf_size_t delta =
+      base::checked_cast<wtf_size_t>(search.size() - match.size());
+
+  wtf_size_t search_hash = 0;
+  wtf_size_t match_hash = 0;
+
+  for (size_t i = 0; i < match_length; ++i) {
+    search_hash += search[i];
+    match_hash += match[i];
+  }
+
+  wtf_size_t i = 0;
+  // Keep looping until we match.
+  //
+  // We don't use base::span methods for better performance.
+  const SearchCharacterType* search_data = search.data();
+  while (search_hash != match_hash ||
+         !std::equal(match.begin(), match.end(), search_data)) {
+    if (i == delta) {
+      return kNotFound;
+    }
+    // SAFETY: This function ensures `search_data[match_length]` and
+    // `search_data[0]` are safe.
+    search_hash += UNSAFE_BUFFERS(search_data[match_length]);
+    search_hash -= UNSAFE_BUFFERS(search_data[0]);
+    ++i;
+    UNSAFE_BUFFERS(++search_data);
+  }
+  return index + i;
+}
+
+// Optimized for the most common case where `search` and `match` are LChar.
+template <>
+ALWAYS_INLINE wtf_size_t FindInternal(base::span<const LChar> search,
+                                      base::span<const LChar> match,
+                                      wtf_size_t index) {
+  CHECK_LT(1u, match.size());
+
+  base::span<const LChar> current = search;
+
+  while (current.size() >= match.size()) {
+    base::span<const LChar> search_span =
+        current.first(current.size() - match.size() + 1);
+
+    // SAFETY: Safe because we're staying within the bounds of the span. Did not
+    // use other options (such as std::find) because this is empirically faster
+    // in a hot method.
+    const LChar* p = UNSAFE_BUFFERS(static_cast<const LChar*>(memchr(
+        search_span.data(), match[0], search_span.size() * sizeof(LChar))));
+    if (!p) {
+      return kNotFound;
+    }
+
+    current = current.subspan(static_cast<wtf_size_t>(p - current.data()));
+    CHECK_LE(match.size(), current.size());
+
+    // SAFETY: Safe because we're reading match.size() chars from current and
+    // match and we've just CHECK'd that current is at least as long as match.
+    // Did not use other options because this is empirically faster in a hot
+    // method.
+    if (UNSAFE_BUFFERS(memcmp(current.data(), match.data(),
+                              match.size() * sizeof(LChar))) == 0) {
+      return index + (p - search.data());
+    }
+
+    current = current.subspan(1u);
+  }
+
+  return kNotFound;
+}
+
+inline wtf_size_t Find(const StringView& string,
+                       const StringView& match,
+                       wtf_size_t index) {
+  if (match.IsNull()) [[unlikely]] {
+    return kNotFound;
+  }
+
+  const wtf_size_t match_length = match.length();
+
+  // Optimization: fast case for strings of length 1.
+  if (match_length == 1) {
+    return string.Is8Bit() ? blink::Find(string.Span8(), match[0], index)
+                           : blink::Find(string.Span16(), match[0], index);
+  }
+
+  // Check index & matchLength are in range.
+  if (index > string.length()) {
+    return kNotFound;
+  }
+  const wtf_size_t search_length = string.length() - index;
+  if (match_length > search_length) {
+    return kNotFound;
+  }
+  // If the string to match is the empty string, return `index`. At this point
+  // we know it is <= `string.length()`.
+  if (!match_length) [[unlikely]] {
+    return index;
+  }
+
+  if (string.Is8Bit()) {
+    if (match.Is8Bit()) {
+      return FindInternal(string.Span8().subspan(index), match.Span8(), index);
+    }
+    return FindInternal(string.Span8().subspan(index), match.Span16(), index);
+  }
+  if (match.Is8Bit()) {
+    return FindInternal(string.Span16().subspan(index), match.Span8(), index);
+  }
+  return FindInternal(string.Span16().subspan(index), match.Span16(), index);
+}
+
 }  // namespace blink::internal
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_INTERNAL_H_
