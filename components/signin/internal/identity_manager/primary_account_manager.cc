@@ -713,10 +713,11 @@ void PrimaryAccountManager::SetExplicitBrowserSigninPrefs(
             prefs::kPrimaryAccountSetAfterSigninMigration, true);
       }
 
-      if (access_point == signin_metrics::AccessPoint::kWebSignin) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      if (access_point == signin_metrics::AccessPoint::kWebSignin) {
+        // TODO(crbug.com/475822503): Delete this code once Dice migration is
+        // complete.
         scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
-#endif
         // Reset explicit sign-in prefs for the relevant data types.
         scoped_pref_commit.SetBoolean(
             prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false);
@@ -726,9 +727,10 @@ void PrimaryAccountManager::SetExplicitBrowserSigninPrefs(
             .SetBookmarksExplicitBrowserSignin(current_gaia_id, false);
         break;
       }
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
       scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
 #endif
+
       if (base::FeatureList::IsEnabled(
               switches::kEnablePreferencesAccountStorage)) {
         scoped_pref_commit.SetBoolean(

@@ -1174,6 +1174,8 @@ TEST_F(PrimaryAccountManagerTest,
   }
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// TODO(crbug.com/475822503): Delete this test once Dice migration is complete.
 TEST_F(PrimaryAccountManagerTest,
        ExplicitSigninPrefsClearedWhenImplicitlySigningIn) {
   base::test::ScopedFeatureList feature;
@@ -1211,6 +1213,7 @@ TEST_F(PrimaryAccountManagerTest,
   EXPECT_FALSE(
       SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 class PrimaryAccountManagerWithExplicitSigninForExtensionsTest
