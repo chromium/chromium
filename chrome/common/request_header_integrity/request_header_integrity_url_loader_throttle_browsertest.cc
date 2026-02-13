@@ -12,10 +12,15 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
 #include "build/branding_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -39,6 +44,20 @@
 #define COPYRIGHT_HEADER_NAME "X-Placeholder-4"
 #endif
 
+namespace {
+constexpr char kAddSpeculationRulePrefetchScript[] = R"({
+    const script = document.createElement('script');
+    script.type = 'speculationrules';
+    script.text = `{
+      "prefetch": [{
+        "source": "list",
+        "urls": [$1]
+      }]
+    }`;
+    document.head.appendChild(script);
+  })";
+}  // namespace
+
 class RequestHeaderIntegrityURLLoaderThrottleBrowserTest
     : public InProcessBrowserTest {
  public:
@@ -54,6 +73,10 @@ class RequestHeaderIntegrityURLLoaderThrottleBrowserTest
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+
+    main_thread_task_runner_ =
+        base::SingleThreadTaskRunner::GetCurrentDefault();
+
     host_resolver()->AddRule("*", "127.0.0.1");
 
     server().RegisterRequestHandler(base::BindRepeating(
@@ -113,7 +136,9 @@ class RequestHeaderIntegrityURLLoaderThrottleBrowserTest
 
   // Returns whether a given `header` has been received for a `url`. If
   // `url` has not been observed, fails with ADD_FAILURE() and returns false.
-  bool HasReceivedHeader(const GURL& url, std::string_view header) const {
+  bool HasReceivedHeader(const GURL& url, std::string_view header) {
+    EXPECT_TRUE(main_thread_task_runner_->RunsTasksInCurrentSequence());
+    base::AutoLock auto_lock(lock_);
     auto it = received_headers_.find(url);
     if (it == received_headers_.end()) {
       ADD_FAILURE() << "No navigation for url " << url;
@@ -123,17 +148,37 @@ class RequestHeaderIntegrityURLLoaderThrottleBrowserTest
   }
 
   void WaitForRequest(const GURL& url) {
-    if (received_headers_.contains(url)) {
-      return;
-    }
+    ASSERT_TRUE(main_thread_task_runner_->RunsTasksInCurrentSequence());
     base::RunLoop loop;
-    done_callbacks_.emplace(url, loop.QuitClosure());
+    {
+      base::AutoLock auto_lock(lock_);
+      if (received_headers_.contains(url)) {
+        return;
+      }
+      done_callbacks_.emplace(url, loop.QuitClosure());
+    }
     loop.Run();
+  }
+
+  void StartPrefetch(const GURL& prefetch_url) {
+    std::string script =
+        content::JsReplace(kAddSpeculationRulePrefetchScript, prefetch_url);
+    web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        base::UTF8ToUTF16(script), base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
       const net::test_server::HttpRequest& request) {
+    // This should be called on `EmbeddedTestServer::io_thread_`.
+    EXPECT_FALSE(main_thread_task_runner_->RunsTasksInCurrentSequence());
+    base::AutoLock auto_lock(lock_);
+
     std::string host;
     // Retrieve the host name (without port) from the request headers.
     auto request_iter = request.headers.find("Host");
@@ -225,11 +270,17 @@ class RequestHeaderIntegrityURLLoaderThrottleBrowserTest
   // Test server responding to HTTPS requests in this browser test.
   net::EmbeddedTestServer https_server_;
 
+  // Coordinates member access from the UI thread and the IO thread.
+  base::Lock lock_;
+
   // Stores the observed HTTP Request headers.
-  std::map<GURL, net::test_server::HttpRequest::HeaderMap> received_headers_;
+  std::map<GURL, net::test_server::HttpRequest::HeaderMap> received_headers_
+      GUARDED_BY(lock_);
 
   // For waiting for requests.
-  std::map<GURL, base::OnceClosure> done_callbacks_;
+  std::map<GURL, base::OnceClosure> done_callbacks_ GUARDED_BY(lock_);
+
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 };
 
 IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
@@ -242,9 +293,29 @@ IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
+                       HeadersAddedForGoogleUrlPrefetch) {
+  GURL google_url = GetGoogleUrl();
+  StartPrefetch(google_url);
+  WaitForRequest(google_url);
+  EXPECT_TRUE(HasReceivedHeader(google_url, LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_TRUE(HasReceivedHeader(google_url, VALIDATE_HEADER_NAME));
+  EXPECT_TRUE(HasReceivedHeader(google_url, COPYRIGHT_HEADER_NAME));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
                        HeadersNotAddedForChromium) {
   GURL chromium_url = GetChromiumUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_url));
+  EXPECT_FALSE(HasReceivedHeader(chromium_url, LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_FALSE(HasReceivedHeader(chromium_url, VALIDATE_HEADER_NAME));
+  EXPECT_FALSE(HasReceivedHeader(chromium_url, COPYRIGHT_HEADER_NAME));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
+                       HeadersNotAddedForChromiumPrefetch) {
+  GURL chromium_url = GetChromiumUrl();
+  StartPrefetch(chromium_url);
+  WaitForRequest(chromium_url);
   EXPECT_FALSE(HasReceivedHeader(chromium_url, LASTCHANGE_YEAR_HEADER_NAME));
   EXPECT_FALSE(HasReceivedHeader(chromium_url, VALIDATE_HEADER_NAME));
   EXPECT_FALSE(HasReceivedHeader(chromium_url, COPYRIGHT_HEADER_NAME));
@@ -286,9 +357,29 @@ IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
+                       RedirectFromChromiumToChromiumPrefetch) {
+  StartPrefetch(GetChromiumToChromiumRedirectUrl());
+  GURL target_url = GetChromiumUrl();
+  WaitForRequest(target_url);
+  EXPECT_FALSE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_FALSE(HasReceivedHeader(target_url, VALIDATE_HEADER_NAME));
+  EXPECT_FALSE(HasReceivedHeader(target_url, COPYRIGHT_HEADER_NAME));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
                        RedirectFromChromiumToGoogle) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GetChromiumToGoogleRedirectUrl()));
+  GURL target_url = GetGoogleUrl();
+  WaitForRequest(target_url);
+  EXPECT_TRUE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_TRUE(HasReceivedHeader(target_url, VALIDATE_HEADER_NAME));
+  EXPECT_TRUE(HasReceivedHeader(target_url, COPYRIGHT_HEADER_NAME));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
+                       RedirectFromChromiumToGooglePrefetch) {
+  StartPrefetch(GetChromiumToGoogleRedirectUrl());
   GURL target_url = GetGoogleUrl();
   WaitForRequest(target_url);
   EXPECT_TRUE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
@@ -308,9 +399,29 @@ IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
+                       RedirectFromGoogleToChromiumPrefetch) {
+  StartPrefetch(GetGoogleToChromiumRedirectUrl());
+  GURL target_url = GetChromiumUrl();
+  WaitForRequest(target_url);
+  EXPECT_FALSE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_FALSE(HasReceivedHeader(target_url, VALIDATE_HEADER_NAME));
+  EXPECT_FALSE(HasReceivedHeader(target_url, COPYRIGHT_HEADER_NAME));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
                        RedirectFromGoogleToGoogle) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetGoogleToGoogleRedirectUrl()));
+  GURL target_url = GetGoogleUrl();
+  WaitForRequest(target_url);
+  EXPECT_TRUE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_TRUE(HasReceivedHeader(target_url, VALIDATE_HEADER_NAME));
+  EXPECT_TRUE(HasReceivedHeader(target_url, COPYRIGHT_HEADER_NAME));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
+                       RedirectFromGoogleToGooglePrefetch) {
+  StartPrefetch(GetGoogleToGoogleRedirectUrl());
   GURL target_url = GetGoogleUrl();
   WaitForRequest(target_url);
   EXPECT_TRUE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));

@@ -1792,6 +1792,9 @@ PrefetchService::CreateIsolatedNetworkContext(
     variations::UpdateCorsExemptHeaderForVariations(context_params.get());
     variations::UpdateCorsExemptHeaderForOmniboxAutofocus(context_params.get());
   }
+  GetContentClient()->browser()->UpdateCorsExemptHeaderForPrefetch(
+      context_params.get());
+
   context_params->cookie_manager_params =
       network::mojom::CookieManagerParams::New();
 

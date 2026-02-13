@@ -148,4 +148,18 @@ void RequestHeaderIntegrityURLLoaderThrottle::UpdateCorsExemptHeaders(
   AddRequestIntegrityHeaderNamesToVector(&(params->cors_exempt_header_list));
 }
 
+// static
+void RequestHeaderIntegrityURLLoaderThrottle::
+    ModifyRequestIntegrityHeadersForPrefetch(
+        const GURL& url,
+        std::vector<std::string>& removed_headers,
+        net::HttpRequestHeaders& cors_exempt_headers) {
+  CHECK(IsFeatureEnabled());
+  if (google_util::IsGoogleAssociatedDomainUrl(url)) {
+    AddRequestIntegrityHeaders(&cors_exempt_headers);
+  } else {
+    AddRequestIntegrityHeaderNamesToVector(&removed_headers);
+  }
+}
+
 }  // namespace request_header_integrity

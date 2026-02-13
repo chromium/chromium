@@ -43,6 +43,17 @@ class RequestHeaderIntegrityURLLoaderThrottle
   static bool IsFeatureEnabled();
   static void UpdateCorsExemptHeaders(
       network::mojom::NetworkContextParams* params);
+
+  // Called both for initial requests and upon redirects during prefetching.
+  // - Adds the integrity header names to `removed_headers` in the case where
+  //   the request is redirection from a target domain to a non-target domain
+  //   and already has the integrity headers.
+  // - Adds the integrity headers to `modified_cors_exempt_headers` if the
+  //   request is for a target domain.
+  static void ModifyRequestIntegrityHeadersForPrefetch(
+      const GURL& url,
+      std::vector<std::string>& removed_headers,
+      net::HttpRequestHeaders& modified_cors_exempt_headers);
 };
 
 }  // namespace request_header_integrity

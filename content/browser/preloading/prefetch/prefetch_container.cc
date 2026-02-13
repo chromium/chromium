@@ -816,6 +816,28 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
   }
 
   // ------------------------------------------------------------------------
+  // Embedder headers:
+  {
+    std::vector<std::string> removed_headers;
+    net::HttpRequestHeaders modified_headers;
+    net::HttpRequestHeaders modified_cors_exempt_headers;
+    GetContentClient()->browser()->ModifyRequestHeadersForPrefetch(
+        url, removed_headers, modified_headers, modified_cors_exempt_headers);
+    auto add_embedder_headers = [&](PrefetchUpdateHeadersParams& params) {
+      params.removed_headers.reserve(params.removed_headers.size() +
+                                     removed_headers.size());
+      params.removed_headers.insert(params.removed_headers.end(),
+                                    removed_headers.begin(),
+                                    removed_headers.end());
+      params.modified_headers.MergeFrom(modified_headers);
+      params.modified_cors_exempt_headers.MergeFrom(
+          modified_cors_exempt_headers);
+    };
+    add_embedder_headers(updates_for_resource_request);
+    add_embedder_headers(updates_for_follow_redirect);
+  }
+
+  // ------------------------------------------------------------------------
   // WebContents override (`User-Agent`):
   // TODO(crbug.com/441612842): Support User-Agent overrides, which is applied
   // for the initial request by `MaybeApplyOverrideForUserAgentHeader()`.
@@ -1660,6 +1682,20 @@ void PrefetchContainer::MakeResourceRequest() {
   // [2] `X-Client-Data`:
   if (request().should_append_variations_header()) {
     AddXClientDataHeader(*resource_request.get());
+  }
+
+  // ------------------------------------------------------------------------
+  // [2] Embedder headers:
+  {
+    std::vector<std::string> removed_headers;
+    net::HttpRequestHeaders modified_headers;
+    net::HttpRequestHeaders modified_cors_exempt_headers;
+    GetContentClient()->browser()->ModifyRequestHeadersForPrefetch(
+        resource_request->url, removed_headers, modified_headers,
+        modified_cors_exempt_headers);
+    resource_request->headers.MergeFrom(modified_headers);
+    resource_request->cors_exempt_headers.MergeFrom(
+        modified_cors_exempt_headers);
   }
 
   // TODO(crbug.com/444065296): The following headers are an initial guess.

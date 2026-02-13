@@ -1197,6 +1197,13 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldDisallowCredentialRequest(
       content::WebContents* web_contents) override;
 #endif  //! BUILDFLAG(IS_ANDROID)
+  void ModifyRequestHeadersForPrefetch(
+      const GURL& url,
+      std::vector<std::string>& removed_headers,
+      net::HttpRequestHeaders& modified_headers,
+      net::HttpRequestHeaders& modified_cors_exempt_headers) override;
+  void UpdateCorsExemptHeaderForPrefetch(
+      network::mojom::NetworkContextParams* params) override;
 
   void RecordAssistedLogin(
       content::ContentBrowserClient::AssistedLoginType login_type) override;
