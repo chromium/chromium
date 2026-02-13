@@ -35,18 +35,20 @@ public class EntityEditorCoordinator {
         default void onDelete(EntityInstance entityInstance) {}
     }
 
-    public EntityEditorCoordinator(Activity activity, Delegate delegate, Profile profile) {
+    public EntityEditorCoordinator(
+            Activity activity, Delegate delegate, Profile profile, EntityInstance entityInstance) {
         mMediator =
                 new EntityEditorMediator(
                         activity,
                         delegate,
                         assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile)),
-                        PersonalDataManagerFactory.getForProfile(profile));
+                        PersonalDataManagerFactory.getForProfile(profile),
+                        entityInstance);
         mEditorView = new EntityEditorView(activity);
     }
 
-    public void showEditorDialog(EntityInstance entityInstance) {
-        mEditorModel = mMediator.getEditorModel(entityInstance);
+    public void showEditorDialog() {
+        mEditorModel = mMediator.getEditorModel();
         PropertyModelChangeProcessor.create(
                 mEditorModel, mEditorView, EntityEditorViewBinder::bindEditorDialogView);
         mEditorModel.set(VISIBLE, true);

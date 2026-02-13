@@ -32,7 +32,6 @@ import static org.chromium.chrome.browser.autofill.editors.common.text_field.Tex
 import android.content.Context;
 import android.text.TextUtils;
 
-import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
@@ -58,46 +57,46 @@ class EntityEditorMediator {
     private final Delegate mDelegate;
     private final IdentityManager mIdentityManager;
     private final PersonalDataManager mPersonalDataManager;
-    private @Nullable PropertyModel mEditorModel;
+    private final EntityInstance mEntityInstance;
+    private final PropertyModel mEditorModel;
 
     EntityEditorMediator(
             Context context,
             Delegate delegate,
             IdentityManager identityManager,
-            PersonalDataManager personalDataManager) {
+            PersonalDataManager personalDataManager,
+            EntityInstance entityInstance) {
         mContext = context;
         mDelegate = delegate;
         mIdentityManager = identityManager;
         mPersonalDataManager = personalDataManager;
+        mEntityInstance = entityInstance;
+        mEditorModel = buildEditorModel();
     }
 
-    @EnsuresNonNull("mEditorModel")
-    PropertyModel getEditorModel(EntityInstance entityInstance) {
-        if (mEditorModel == null) {
-            mEditorModel =
-                    new PropertyModel.Builder(EntityEditorProperties.ALL_KEYS)
-                            .with(
-                                    EDITOR_TITLE,
-                                    entityInstance.getEntityType().getAddEntityTypeString())
-                            .with(DONE_RUNNABLE, this::onDone)
-                            .with(CANCEL_RUNNABLE, this::onCancel)
-                            .with(
-                                    DELETE_CONFIRMATION_TITLE,
-                                    entityInstance.getEntityType().getDeleteEntityTypeString())
-                            .with(
-                                    DELETE_CONFIRMATION_TEXT,
-                                    mContext.getString(
-                                            R.string
-                                                    .autofill_ai_entity_editor_delete_local_entity_dialog_text))
-                            .with(
-                                    DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID,
-                                    R.string.autofill_delete_suggestion_button)
-                            .with(DELETE_RUNNABLE, () -> mDelegate.onDelete(entityInstance))
-                            .with(ALLOW_DELETE, entityInstance.getRecordType() == RecordType.LOCAL)
-                            .with(EDITOR_FIELDS, getEditorFields(entityInstance))
-                            .build();
-        }
+    PropertyModel getEditorModel() {
         return mEditorModel;
+    }
+
+    private PropertyModel buildEditorModel() {
+        return new PropertyModel.Builder(EntityEditorProperties.ALL_KEYS)
+                .with(EDITOR_TITLE, mEntityInstance.getEntityType().getAddEntityTypeString())
+                .with(DONE_RUNNABLE, this::onDone)
+                .with(CANCEL_RUNNABLE, this::onCancel)
+                .with(
+                        DELETE_CONFIRMATION_TITLE,
+                        mEntityInstance.getEntityType().getDeleteEntityTypeString())
+                .with(
+                        DELETE_CONFIRMATION_TEXT,
+                        mContext.getString(
+                                R.string.autofill_ai_entity_editor_delete_local_entity_dialog_text))
+                .with(
+                        DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID,
+                        R.string.autofill_delete_suggestion_button)
+                .with(DELETE_RUNNABLE, () -> mDelegate.onDelete(mEntityInstance))
+                .with(ALLOW_DELETE, mEntityInstance.getRecordType() == RecordType.LOCAL)
+                .with(EDITOR_FIELDS, getEditorFields())
+                .build();
     }
 
     private void onCancel() {
@@ -108,22 +107,22 @@ class EntityEditorMediator {
         assumeNonNull(mEditorModel).set(EntityEditorProperties.VISIBLE, false);
     }
 
-    private ListModel<EditorItem> getEditorFields(EntityInstance entityInstance) {
+    private ListModel<EditorItem> getEditorFields() {
         ListModel<EditorItem> editorFields = new ListModel<>();
-        for (AttributeType attributeType : entityInstance.getEntityType().getAttributeTypes()) {
+        for (AttributeType attributeType : mEntityInstance.getEntityType().getAttributeTypes()) {
             switch (attributeType.getDataType()) {
                 case DataType.NAME:
                 case DataType.STATE:
                 case DataType.STRING:
-                    editorFields.add(getTextFieldItem(entityInstance, attributeType));
+                    editorFields.add(getTextFieldItem(mEntityInstance, attributeType));
                     break;
                 case DataType.COUNTRY:
-                    editorFields.add(getCountryDropdownItem(entityInstance, attributeType));
+                    editorFields.add(getCountryDropdownItem(mEntityInstance, attributeType));
                     break;
                     // TODO: crbug.com/476755159 - Implement other data types.
             }
         }
-        maybeAddEntitySourceNoticeItem(editorFields, entityInstance.getRecordType());
+        maybeAddEntitySourceNoticeItem(editorFields, mEntityInstance.getRecordType());
         return editorFields;
     }
 

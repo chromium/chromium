@@ -177,15 +177,13 @@ public class EntityEditorModuleTest {
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
 
         mActivity = Robolectric.setupActivity(TestActivity.class);
-        mCoordinator = new EntityEditorCoordinator(mActivity, mDelegate, mProfile);
-        mContainerView = mCoordinator.getEntityEditorViewForTest().getContainerView();
     }
 
     @Test
     @SmallTest
     public void testShowEditorDialog() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
-        mCoordinator.showEditorDialog(LOCAL_PASSPORT);
+        showEditorDialog(LOCAL_PASSPORT);
         EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
         assertEquals(PASSPORT_TYPE.getAddEntityTypeString(), toolbar.getTitle());
         assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
@@ -195,7 +193,7 @@ public class EntityEditorModuleTest {
     @SmallTest
     public void testClickDoneButton() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
-        mCoordinator.showEditorDialog(LOCAL_PASSPORT);
+        showEditorDialog(LOCAL_PASSPORT);
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         assertFalse(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
@@ -204,7 +202,7 @@ public class EntityEditorModuleTest {
     @SmallTest
     public void testClickCancelButton() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
-        mCoordinator.showEditorDialog(LOCAL_PASSPORT);
+        showEditorDialog(LOCAL_PASSPORT);
         mContainerView.findViewById(R.id.payments_edit_cancel_button).performClick();
         assertFalse(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
@@ -213,7 +211,7 @@ public class EntityEditorModuleTest {
     @SmallTest
     public void testDeleteLocalEntity() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
-        mCoordinator.showEditorDialog(LOCAL_PASSPORT);
+        showEditorDialog(LOCAL_PASSPORT);
         PropertyModel model = mCoordinator.getEditorModelForTest();
         assertTrue(model.get(EntityEditorProperties.ALLOW_DELETE));
         assertEquals(
@@ -234,7 +232,7 @@ public class EntityEditorModuleTest {
     @Test
     @SmallTest
     public void testDeleteWalletEntity() {
-        mCoordinator.showEditorDialog(WALLET_PASSPORT);
+        showEditorDialog(WALLET_PASSPORT);
 
         PropertyModel model = mCoordinator.getEditorModelForTest();
         assertFalse(model.get(EntityEditorProperties.ALLOW_DELETE));
@@ -244,7 +242,7 @@ public class EntityEditorModuleTest {
     @SmallTest
     public void testEditorFields() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
-        mCoordinator.showEditorDialog(LOCAL_PASSPORT);
+        showEditorDialog(LOCAL_PASSPORT);
 
         PropertyModel model = mCoordinator.getEditorModelForTest();
         verifyLocalPassportFields(model.get(EntityEditorProperties.EDITOR_FIELDS));
@@ -254,7 +252,7 @@ public class EntityEditorModuleTest {
     @SmallTest
     public void testLocalEntitySourceNotice() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
-        mCoordinator.showEditorDialog(LOCAL_PASSPORT);
+        showEditorDialog(LOCAL_PASSPORT);
 
         PropertyModel model = mCoordinator.getEditorModelForTest();
         verifySourceNotice(
@@ -266,7 +264,7 @@ public class EntityEditorModuleTest {
     @SmallTest
     public void testWalletEntitySourceNotice() {
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
-        mCoordinator.showEditorDialog(WALLET_PASSPORT);
+        showEditorDialog(WALLET_PASSPORT);
 
         PropertyModel model = mCoordinator.getEditorModelForTest();
         verifySourceNotice(
@@ -274,6 +272,12 @@ public class EntityEditorModuleTest {
                 mActivity
                         .getString(R.string.autofill_ai_wallet_entity_editor_source_notice)
                         .replace("$1", USER_EMAIL));
+    }
+
+    private void showEditorDialog(EntityInstance entityInstance) {
+        mCoordinator = new EntityEditorCoordinator(mActivity, mDelegate, mProfile, entityInstance);
+        mContainerView = mCoordinator.getEntityEditorViewForTest().getContainerView();
+        mCoordinator.showEditorDialog();
     }
 
     private void verifyLocalPassportFields(ListModel<EditorItem> editorFields) {
