@@ -526,6 +526,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, Uninstall) {
   RunTestCase("Uninstall");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, UninstallRaceCondition) {
+  RunTestCase("UninstallRaceCondition");
+}
+
 // Flaky since r621915: https://crbug.com/41435924
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest,
                        DISABLED_UninstallFromDetails) {

@@ -332,6 +332,36 @@ suite('ExtensionManagerUnitTest', function() {
     assertTrue(manager.$.toolbar.isSearchFocused());
   });
 
+  test('UninstallRaceCondition', async () => {
+    assertEquals(0, getExtensions().length);
+
+    const extension = createExtensionInfo({
+      location: chrome.developerPrivate.Location.FROM_STORE,
+      name: 'Alpha',
+      id: 'a'.repeat(32),
+    });
+    simulateExtensionInstall(extension);
+    await microtasksFinished();
+    assertEquals(1, getExtensions().length);
+
+    // Simulate uninstall.
+    service.itemStateChangedTarget.callListeners({
+      event_type: chrome.developerPrivate.EventType.UNINSTALLED,
+      item_id: extension.id,
+    });
+    await microtasksFinished();
+    assertEquals(0, getExtensions().length);
+
+    // Simulate lagging UNLOADED event.
+    // This should NOT add the extension back.
+    service.itemStateChangedTarget.callListeners({
+      event_type: chrome.developerPrivate.EventType.UNLOADED,
+      extensionInfo: extension,
+    });
+    await microtasksFinished();
+    assertEquals(0, getExtensions().length);
+  });
+
   function assertViewActive(tagName: string) {
     assertTrue(!!manager.$.viewManager.querySelector(`${tagName}.active`));
   }

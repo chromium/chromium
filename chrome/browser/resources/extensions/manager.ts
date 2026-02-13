@@ -336,7 +336,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
 
         if (currentIndex >= 0) {
           this.updateItem_(listId, currentIndex, eventData.extensionInfo);
-        } else {
+        } else if (eventData.event_type === EventType.INSTALLED) {
           this.addItem_(listId, eventData.extensionInfo);
         }
 
