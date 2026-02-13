@@ -5247,6 +5247,7 @@ class CheckAndroidTestAnnotations(unittest.TestCase):
         errors = PRESUBMIT.CheckAndroidTestAnnotations(mock_input,
                                                        MockOutputApi())
         self.assertEqual(2, len(errors))
+        self.assertEqual('error', errors[0].type)
         self.assertEqual(2, len(errors[0].items))
         self.assertIn('OneTest.java', errors[0].items[0])
         self.assertIn('TwoTest.java', errors[0].items[1])
@@ -5342,6 +5343,17 @@ class CheckAndroidTestAnnotations(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertEqual(1, len(errors[0].items))
         self.assertIn('OneTest.java', errors[0].items[0])
+
+    def testIgnoreModifiedFiles(self):
+        """Examples of when modified files without @Batch or @DoNotBatch are ignored."""
+        mock_input = MockInputApi()
+        mock_input.files = [
+            MockFile('path/OneTest.java', ['public class OneTest'], action='M'),
+            MockFile('path/TwoTest.java', ['public class TwoTest'], action='M'),
+        ]
+        errors = PRESUBMIT.CheckAndroidTestAnnotations(mock_input,
+                                                       MockOutputApi())
+        self.assertEqual(0, len(errors))
 
 
 class CheckAndroidNullAwayAnnotatedClasses(unittest.TestCase):
