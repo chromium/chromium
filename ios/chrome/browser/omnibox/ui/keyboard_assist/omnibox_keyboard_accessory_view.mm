@@ -94,9 +94,7 @@ constexpr CGFloat kShadowOpacity = 0.12;
     self.templateURLService = templateURLService;
     [self addSubviews];
 
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-    [self registerForTraitChanges:traits
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                        withAction:@selector(updateLensAppearanceOnTraitChange)];
   }
   return self;

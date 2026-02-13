@@ -155,9 +155,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
                   action:@selector(textFieldDidChange:)
         forControlEvents:UIControlEventEditingChanged];
 
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:(traits)
+    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                        withAction:@selector(updateTextProperitesOnTraitChange)];
   }
   return self;

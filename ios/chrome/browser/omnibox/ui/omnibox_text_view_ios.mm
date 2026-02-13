@@ -169,9 +169,7 @@ const CGFloat kVerticalOffset = 1;
 
     self.delegate = self;
 
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:(traits)
+    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                        withAction:@selector(updateTextProperitesOnTraitChange)];
   }
   return self;
