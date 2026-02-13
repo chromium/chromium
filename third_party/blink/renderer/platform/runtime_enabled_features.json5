@@ -2936,10 +2936,6 @@
       status: "experimental",
     },
     {
-      name: "HighlightByLayoutObject",
-      status: "stable",
-    },
-    {
       name: "HighlightPointerEvents",
     },
     {

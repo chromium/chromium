@@ -22,11 +22,7 @@ MarkerRangeMappingContext::DOMToTextContentOffsetMapper::GetMappingUnits(
   const OffsetMapping* const offset_mapping =
       OffsetMapping::GetFor(&layout_object);
   DCHECK(offset_mapping);
-  if (RuntimeEnabledFeatures::HighlightByLayoutObjectEnabled()) {
-    return offset_mapping->GetMappingUnitsForLayoutObject(layout_object);
-  } else {
-    return offset_mapping->GetMappingUnitsForNode(*layout_object.GetNode());
-  }
+  return offset_mapping->GetMappingUnitsForLayoutObject(layout_object);
 }
 
 unsigned

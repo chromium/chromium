@@ -55,10 +55,7 @@ class CORE_EXPORT MarkerRangeMappingContext {
   MarkerRangeMappingContext(const Text& text_node,
                             const LayoutObject& layout_object,
                             const TextOffsetRange& fragment_dom_range)
-      : mapper_(DOMToTextContentOffsetMapper(
-            RuntimeEnabledFeatures::HighlightByLayoutObjectEnabled()
-                ? layout_object
-                : *text_node.GetLayoutObject())),
+      : mapper_(DOMToTextContentOffsetMapper(layout_object)),
         fragment_dom_range_(fragment_dom_range),
         text_length_(text_node.length()) {}
 
