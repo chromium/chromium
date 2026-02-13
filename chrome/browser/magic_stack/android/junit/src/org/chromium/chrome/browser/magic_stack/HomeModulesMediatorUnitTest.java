@@ -78,7 +78,6 @@ public class HomeModulesMediatorUnitTest {
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private ModuleRegistry mModuleRegistry;
     @Mock private ModuleDelegateHost mModuleDelegateHost;
-    @Mock private ModuleConfigChecker mModuleConfigChecker;
     @Mock private HomeModulesRankingHelper.Natives mHomeModulesRankingHelperJniMock;
     @Spy private ModelList mModel;
 
@@ -102,8 +101,8 @@ public class HomeModulesMediatorUnitTest {
         registerModule(2, ModuleType.SAFETY_HUB);
 
         FeatureOverrides.newBuilder().disable(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR).apply();
-        mHomeModulesConfigManager = HomeModulesConfigManager.getInstance();
-        assertEquals(0, mHomeModulesConfigManager.getEnabledModuleSet().size());
+        mHomeModulesConfigManager = new HomeModulesConfigManager();
+        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
         mMediator =
                 new HomeModulesMediator(
                         ObservableSuppliers.createNonNull(mProfile),
@@ -111,7 +110,6 @@ public class HomeModulesMediatorUnitTest {
                         mModuleRegistry,
                         mModuleDelegateHost,
                         mHomeModulesConfigManager);
-        when(mModuleConfigChecker.isEligible()).thenReturn(true);
         HomeModulesRankingHelperJni.setInstanceForTesting(mHomeModulesRankingHelperJniMock);
     }
 
@@ -121,7 +119,6 @@ public class HomeModulesMediatorUnitTest {
             HomeModulesUtils.resetFreshnessCountAsFresh(i);
             HomeModulesUtils.resetFreshnessTimeStampForTesting(i);
         }
-        mHomeModulesConfigManager.cleanupForTesting();
     }
 
     @Test
@@ -563,8 +560,7 @@ public class HomeModulesMediatorUnitTest {
     @SmallTest
     public void testGetFilteredEnabledModuleSet() {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
-        mHomeModulesConfigManager.registerModuleEligibilityChecker(
-                ModuleType.SINGLE_TAB, mModuleConfigChecker);
+        when(mModuleRegistry.getEnabledModuleSet()).thenReturn(Set.of(ModuleType.SINGLE_TAB));
 
         assertTrue(mMediator.getFilteredEnabledModuleSet().contains(ModuleType.SINGLE_TAB));
     }
@@ -574,10 +570,7 @@ public class HomeModulesMediatorUnitTest {
     public void testGetFilteredEnabledModuleSet_AllModules() {
         ChromeFeatureList.sMagicStackAndroidShowAllModules.setForTesting(true);
         Set<Integer> activeModules = HomeModulesMetricsUtils.getAllActiveModulesForTesting();
-        for (@ModuleType int moduleType : activeModules) {
-            mHomeModulesConfigManager.registerModuleEligibilityChecker(
-                    moduleType, mModuleConfigChecker);
-        }
+        when(mModuleRegistry.getEnabledModuleSet()).thenReturn(activeModules);
 
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
         Set<Integer> expectedModuleSet =
@@ -924,15 +917,13 @@ public class HomeModulesMediatorUnitTest {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
 
         // Register mock checkers for the modules we are testing.
-        ModuleConfigChecker checker = mock(ModuleConfigChecker.class);
-        when(checker.isEligible()).thenReturn(true);
-        mHomeModulesConfigManager.registerModuleEligibilityChecker(ModuleType.SINGLE_TAB, checker);
-        mHomeModulesConfigManager.registerModuleEligibilityChecker(
-                ModuleType.PRICE_CHANGE, checker);
-        mHomeModulesConfigManager.registerModuleEligibilityChecker(
-                ModuleType.ENHANCED_SAFE_BROWSING_PROMO, checker);
-        mHomeModulesConfigManager.registerModuleEligibilityChecker(
-                ModuleType.ADDRESS_BAR_PLACEMENT_PROMO, checker);
+        when(mModuleRegistry.getEnabledModuleSet())
+                .thenReturn(
+                        Set.of(
+                                ModuleType.SINGLE_TAB,
+                                ModuleType.PRICE_CHANGE,
+                                ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                                ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
 
         // Segmentation-ranked modules.
         List<String> orderedLabels = List.of("PriceChange", "SingleTab");
@@ -1009,13 +1000,6 @@ public class HomeModulesMediatorUnitTest {
     @SmallTest
     public void testGetCombinedRankedModules_CornerCases() {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
-
-        // Register mock checkers for the modules we are testing.
-        ModuleConfigChecker checker = mock(ModuleConfigChecker.class);
-        when(checker.isEligible()).thenReturn(true);
-        mHomeModulesConfigManager.registerModuleEligibilityChecker(ModuleType.SINGLE_TAB, checker);
-        mHomeModulesConfigManager.registerModuleEligibilityChecker(
-                ModuleType.ENHANCED_SAFE_BROWSING_PROMO, checker);
 
         Set<Integer> enabledSet =
                 Set.of(ModuleType.SINGLE_TAB, ModuleType.ENHANCED_SAFE_BROWSING_PROMO);

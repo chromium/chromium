@@ -12,7 +12,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.R;
-import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -26,8 +25,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * vertically. Used, for example, by the Setup List.
  */
 @NullMarked
-public class EducationalTipModuleTwoCellBuilder
-        implements ModuleProviderBuilder, ModuleConfigChecker {
+public class EducationalTipModuleTwoCellBuilder implements ModuleProviderBuilder {
     private final EducationTipModuleActionDelegate mActionDelegate;
     private final @ModuleType int mModuleType;
 

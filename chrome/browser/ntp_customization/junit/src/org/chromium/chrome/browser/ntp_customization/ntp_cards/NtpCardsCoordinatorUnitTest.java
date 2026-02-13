@@ -33,6 +33,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager.HomeModulesStateListener;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -47,7 +48,7 @@ public class NtpCardsCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private NtpCardsMediator mMediator;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
-
+    @Mock private ModuleRegistry mModuleRegistry;
     @Captor private ArgumentCaptor<HomeModulesStateListener> mListener;
 
     private NtpCardsCoordinator mCoordinator;
@@ -63,7 +64,8 @@ public class NtpCardsCoordinatorUnitTest {
                 new NtpCardsCoordinator(
                         mContext,
                         mBottomSheetDelegate,
-                        ObservableSuppliers.createNonNull(mProfile));
+                        ObservableSuppliers.createNonNull(mProfile),
+                        mModuleRegistry);
     }
 
     @Test

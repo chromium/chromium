@@ -4136,7 +4136,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             mRootUiCoordinator.getBottomSheetController(),
                             profileSupplier,
                             NtpCustomizationCoordinator.BottomSheetType.MAIN,
-                            getWindowAndroid())
+                            getWindowAndroid(),
+                            mModuleRegistrySupplier.get())
                     .showBottomSheet();
             NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
                     NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);

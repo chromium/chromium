@@ -16,7 +16,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
-import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -31,7 +30,7 @@ import java.util.function.Supplier;
 
 /** {@link ModuleProviderBuilder} that builds the Safety Hub Magic Stack module. */
 @NullMarked
-public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
+public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder {
     private final Context mContext;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final TabModelSelector mTabModelSelector;

@@ -65,4 +65,10 @@ public interface ModuleProviderBuilder {
     default InputContext createInputContext() {
         return null;
     }
+
+    /**
+     * Returns whether the module can be built due to special restrictions, like location. This
+     * method should be called after profile is initialized.
+     */
+    boolean isEligible();
 }

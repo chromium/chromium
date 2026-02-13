@@ -129,8 +129,7 @@ public class HomeModulesCoordinatorUnitTest {
         when(mView.findViewById(R.id.home_modules_recycler_view)).thenReturn(mRecyclerView);
         when(mRecyclerView.getContext()).thenReturn(mActivity);
         Set<Integer> enabledModules = Set.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
-        when(mHomeModulesConfigManager.getEnabledModuleSet())
-                .thenReturn(new HashSet<>(enabledModules));
+        when(mModuleRegistry.getEnabledModuleSet()).thenReturn(new HashSet<>(enabledModules));
 
         // Register mock builders for enabled modules to prevent NPE in mediator.
         for (int type : enabledModules) {
@@ -278,7 +277,7 @@ public class HomeModulesCoordinatorUnitTest {
                         ModuleType.SIGN_IN_PROMO,
                         ModuleType.SAVE_PASSWORDS_PROMO,
                         ModuleType.PASSWORD_CHECKUP_PROMO);
-        when(mHomeModulesConfigManager.getEnabledModuleSet())
+        when(mModuleRegistry.getEnabledModuleSet())
                 .thenReturn(new HashSet<>(expectedModuleListBeforeHidingModule));
 
         // Register mock builders for all modules in this test.
@@ -469,25 +468,25 @@ public class HomeModulesCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testOnLongClick() {
-        HomeModulesContextMenuManager mHomeModulesContextMenuManager = mock();
+        HomeModulesContextMenuManager homeModulesContextMenuManager = mock();
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
         mCoordinator.setMediatorForTesting(mMediator);
-        mCoordinator.setHomeModulesContextMenuManagerForTesting(mHomeModulesContextMenuManager);
+        mCoordinator.setHomeModulesContextMenuManagerForTesting(homeModulesContextMenuManager);
         when(mMediator.getModuleProvider(ModuleType.SINGLE_TAB)).thenReturn(mModuleProvider);
         when(mView.getLayoutParams()).thenReturn(mLayoutParams);
 
         mCoordinator.onViewCreated(ModuleType.SINGLE_TAB, mView);
         verify(mView).setOnLongClickListener(mLongClickListenerCaptor.capture());
         mLongClickListenerCaptor.getValue().onLongClick(mView);
-        verify(mHomeModulesContextMenuManager).displayMenu(eq(mView), eq(mModuleProvider));
+        verify(homeModulesContextMenuManager).displayMenu(eq(mView), eq(mModuleProvider));
 
-        reset(mHomeModulesContextMenuManager);
+        reset(homeModulesContextMenuManager);
         verify(mView).setOnCreateContextMenuListener(mOnCreateContextMenuListenerCaptor.capture());
         mOnCreateContextMenuListenerCaptor
                 .getValue()
                 .onCreateContextMenu(
                         mock(ContextMenu.class), mView, mock(ContextMenu.ContextMenuInfo.class));
-        verify(mHomeModulesContextMenuManager).displayMenu(eq(mView), eq(mModuleProvider));
+        verify(homeModulesContextMenuManager).displayMenu(eq(mView), eq(mModuleProvider));
     }
 
     @Test

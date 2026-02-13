@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -215,6 +216,7 @@ public class FeedSurfaceCoordinatorTest {
     @Mock private Tracker mTracker;
     @Mock private ScrollableContainerDelegate mScrollableContainerDelegate;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private ModuleRegistry mModuleRegistry;
     @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mEdgePadAdjusterCaptor;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -645,6 +647,7 @@ public class FeedSurfaceCoordinatorTest {
                 /* viewportView= */ null,
                 mFeedActionDelegate,
                 mTabStripHeightSupplier,
-                mEdgeToEdgeSupplier);
+                mEdgeToEdgeSupplier,
+                mModuleRegistry);
     }
 }

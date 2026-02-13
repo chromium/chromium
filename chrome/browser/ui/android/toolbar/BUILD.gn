@@ -167,6 +167,7 @@ android_library("core_java") {
     "//chrome/browser/incognito:java",
     "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/language/android:java",
+    "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/ntp_customization:java",
     "//chrome/browser/paint_preview/android:java",
     "//chrome/browser/preferences:java",

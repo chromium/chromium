@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -17,8 +18,11 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /** A class which is responsible for registering module builders {@link ModuleProviderBuilder}. */
 @NullMarked
@@ -66,10 +70,51 @@ public class ModuleRegistry {
      */
     public void registerModule(@ModuleType int moduleType, ModuleProviderBuilder builder) {
         mModuleBuildersMap.put(moduleType, builder);
-        if (builder instanceof ModuleConfigChecker) {
-            mHomeModulesConfigManager.registerModuleEligibilityChecker(
-                    moduleType, (ModuleConfigChecker) builder);
+    }
+
+    /**
+     * Returns the set which contains all the module types that are registered and enabled according
+     * to user preference. Note: this function should be called after profile is ready.
+     */
+    @ModuleType
+    public Set<Integer> getEnabledModuleSet() {
+        @ModuleType Set<Integer> enabledModuleList = new HashSet<>();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
+                && !mHomeModulesConfigManager.getPrefAllCardsEnabled()) {
+            return enabledModuleList;
         }
+
+        for (Entry<Integer, ModuleProviderBuilder> entry : mModuleBuildersMap.entrySet()) {
+            ModuleProviderBuilder builder = entry.getValue();
+            if (builder.isEligible()
+                    && mHomeModulesConfigManager.getPrefModuleTypeEnabled(entry.getKey())) {
+                enabledModuleList.add(entry.getKey());
+            }
+        }
+        return enabledModuleList;
+    }
+
+    /** Returns a list of modules that allow users to configure in settings. */
+    @ModuleType
+    public List<Integer> getModuleListShownInSettings() {
+        @ModuleType List<Integer> moduleListShownInSettings = new ArrayList<>();
+        boolean isEducationalTipModuleAdded = false;
+
+        for (Entry<Integer, ModuleProviderBuilder> entry : mModuleBuildersMap.entrySet()) {
+            ModuleProviderBuilder builder = entry.getValue();
+            if (builder.isEligible()) {
+                int moduleType = entry.getKey();
+                if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+                    // All the educational tip modules are controlled by the same preference.
+                    if (isEducationalTipModuleAdded) continue;
+
+                    isEducationalTipModuleAdded = true;
+                }
+
+                moduleListShownInSettings.add(moduleType);
+            }
+        }
+        return moduleListShownInSettings;
     }
 
     /**

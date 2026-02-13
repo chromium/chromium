@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.feed.sections.SectionHeaderViewBinder;
 import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -417,6 +418,7 @@ public class FeedSurfaceCoordinator
      * @param actionDelegate Implements some Feed actions.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
      * @param edgeToEdgeControllerSupplier Supplier for the {@link EdgeToEdgeController} instance.
+     * @param moduleRegistry The instance of {@link ModuleRegistry}.
      */
     public FeedSurfaceCoordinator(
             Activity activity,
@@ -440,7 +442,8 @@ public class FeedSurfaceCoordinator
             @Nullable ViewGroup viewportView,
             FeedActionDelegate actionDelegate,
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
-            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            @Nullable ModuleRegistry moduleRegistry) {
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNtpHeader = ntpHeader;
@@ -519,7 +522,7 @@ public class FeedSurfaceCoordinator
                     NtpCustomizationUtils.createNtpCustomizationButton(
                             mActivity,
                             v -> {
-                                showNtpCustomizationBottomSheet();
+                                showNtpCustomizationBottomSheet(moduleRegistry);
                             });
             mRootView.addView(mNtpCustomizationButton);
         }
@@ -763,14 +766,15 @@ public class FeedSurfaceCoordinator
                 mRecyclerView.getPaddingLeft() >= min_margin ? View.VISIBLE : View.GONE);
     }
 
-    void showNtpCustomizationBottomSheet() {
+    void showNtpCustomizationBottomSheet(@Nullable ModuleRegistry moduleRegistry) {
         NtpCustomizationCoordinatorFactory.getInstance()
                 .create(
                         mActivity,
                         mBottomSheetController,
                         () -> mProfile,
                         NtpCustomizationCoordinator.BottomSheetType.MAIN,
-                        mWindowAndroid)
+                        mWindowAndroid,
+                        moduleRegistry)
                 .showBottomSheet();
         NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
                 NtpCustomizationCoordinator.EntryPointType.NEW_TAB_PAGE);

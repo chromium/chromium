@@ -795,7 +795,7 @@ public class HomeModulesMediator {
             return;
         }
 
-        mEnabledModuleSet = mHomeModulesConfigManager.getEnabledModuleSet();
+        mEnabledModuleSet = mModuleRegistry.getEnabledModuleSet();
     }
 
     void setModuleListToShowForTesting(List<Integer> moduleList) {

@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
@@ -24,7 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** {@link ModuleProviderBuilder} that builds the price change module. */
 @NullMarked
-public class PriceChangeModuleBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
+public class PriceChangeModuleBuilder implements ModuleProviderBuilder {
     private final Context mContext;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final TabModelSelector mTabModelSelector;
@@ -70,8 +69,6 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder, ModuleCo
     public void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
         PriceChangeModuleViewBinder.bind(model, view, propertyKey);
     }
-
-    // ModuleEligibilityChecker implementation:
 
     @Override
     public boolean isEligible() {

@@ -6,22 +6,15 @@ package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettingsPreferenceKey;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Provides information regarding chrome home modules enabled states.
@@ -42,9 +35,6 @@ public class HomeModulesConfigManager {
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final ObserverList<HomeModulesStateListener> mHomepageStateListeners;
 
-    /** A map of <ModuleType, ModuleEligibilityChecker>. */
-    private final Map<Integer, ModuleConfigChecker> mModuleConfigCheckerMap;
-
     /** Static class that implements the initialization-on-demand holder idiom. */
     private static class LazyHolder {
         static HomeModulesConfigManager sInstance = new HomeModulesConfigManager();
@@ -55,15 +45,10 @@ public class HomeModulesConfigManager {
         return LazyHolder.sInstance;
     }
 
-    private HomeModulesConfigManager() {
+    @VisibleForTesting
+    HomeModulesConfigManager() {
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         mHomepageStateListeners = new ObserverList<>();
-        mModuleConfigCheckerMap = new HashMap<>();
-    }
-
-    public void registerModuleEligibilityChecker(
-            @ModuleType int moduleType, ModuleConfigChecker eligibilityChecker) {
-        mModuleConfigCheckerMap.put(moduleType, eligibilityChecker);
     }
 
     /**
@@ -134,59 +119,10 @@ public class HomeModulesConfigManager {
         }
     }
 
-    /**
-     * Returns the set which contains all the module types that are registered and enabled according
-     * to user preference. Note: this function should be called after profile is ready.
-     */
-    @ModuleType
-    public Set<Integer> getEnabledModuleSet() {
-        @ModuleType Set<Integer> enabledModuleList = new HashSet<>();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
-                && !mSharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, true)) {
-            return enabledModuleList;
-        }
-
-        for (Entry<Integer, ModuleConfigChecker> entry : mModuleConfigCheckerMap.entrySet()) {
-            ModuleConfigChecker configChecker = entry.getValue();
-            if (configChecker.isEligible() && getPrefModuleTypeEnabled(entry.getKey())) {
-                enabledModuleList.add(entry.getKey());
-            }
-        }
-        return enabledModuleList;
-    }
-
-    /** Returns a list of modules that allow users to configure in settings. */
-    @ModuleType
-    public List<Integer> getModuleListShownInSettings() {
-        @ModuleType List<Integer> moduleListShownInSettings = new ArrayList<>();
-        boolean isEducationalTipModuleAdded = false;
-
-        for (Entry<Integer, ModuleConfigChecker> entry : mModuleConfigCheckerMap.entrySet()) {
-            ModuleConfigChecker configChecker = entry.getValue();
-            if (configChecker.isEligible()) {
-                int moduleType = entry.getKey();
-                if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
-                    // All the educational tip modules are controlled by the same preference.
-                    if (isEducationalTipModuleAdded) continue;
-
-                    isEducationalTipModuleAdded = true;
-                }
-
-                moduleListShownInSettings.add(moduleType);
-            }
-        }
-        return moduleListShownInSettings;
-    }
-
     /** Sets a mocked instance for testing. */
     public static void setInstanceForTesting(HomeModulesConfigManager instance) {
         var oldValue = LazyHolder.sInstance;
         LazyHolder.sInstance = instance;
         ResettersForTesting.register(() -> LazyHolder.sInstance = oldValue);
-    }
-
-    public void cleanupForTesting() {
-        mModuleConfigCheckerMap.clear();
     }
 }

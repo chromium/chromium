@@ -105,7 +105,8 @@ public class HomePageButtonsMediator {
                                             mBottomSheetController,
                                             mProfileSupplier,
                                             NtpCustomizationCoordinator.BottomSheetType.MAIN,
-                                            mWindowAndroid)
+                                            mWindowAndroid,
+                                            /* moduleRegistry= */ null)
                                     .showBottomSheet();
                             NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
                                     EntryPointType.TOOL_BAR);

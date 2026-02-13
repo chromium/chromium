@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFac
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.auxiliary_search.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
@@ -26,7 +25,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Builder to build the auxiliary search opt in module. */
 @NullMarked
-public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
+public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder {
     private static final String CARD_AVAILABILITY_INPUT_NAME = "auxiliary_search_available";
 
     private final Context mContext;

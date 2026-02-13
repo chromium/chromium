@@ -802,7 +802,8 @@ public class NewTabPage
                         /* viewportView= */ null,
                         actionDelegate,
                         mTabStripHeightSupplier,
-                        edgeToEdgeControllerSupplier);
+                        edgeToEdgeControllerSupplier,
+                        assumeNonNull(mModuleRegistrySupplier).get());
         startupMetricsTracker.registerNtpViewObserver(mFeedSurfaceProvider.getView());
     }
 
@@ -1598,7 +1599,8 @@ public class NewTabPage
                         mBottomSheetController,
                         mTab::getProfile,
                         NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS,
-                        mWindowAndroid)
+                        mWindowAndroid,
+                        assumeNonNull(mModuleRegistrySupplier).get())
                 .showBottomSheet();
     }
 

@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -57,6 +58,7 @@ public class NtpCustomizationCoordinatorUnitTest {
     @Mock private ViewFlipper mViewFlipper;
     @Mock private NtpThemeCoordinator mNtpThemeCoordinator;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ModuleRegistry mModuleRegistry;
 
     private Context mContext;
     private NtpCustomizationCoordinator mNtpCustomizationCoordinator;
@@ -81,7 +83,8 @@ public class NtpCustomizationCoordinatorUnitTest {
                         mBottomSheetController,
                         mock(Supplier.class),
                         MAIN,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mModuleRegistry);
         mNtpCustomizationCoordinator.setViewFlipperForTesting(mViewFlipper);
         mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
     }
@@ -122,7 +125,8 @@ public class NtpCustomizationCoordinatorUnitTest {
                         mBottomSheetController,
                         mock(Supplier.class),
                         NTP_CARDS,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mModuleRegistry);
         assertTrue(
                 mNtpCustomizationCoordinator.getBottomSheetDelegateForTesting().shouldShowAlone());
 
@@ -134,7 +138,8 @@ public class NtpCustomizationCoordinatorUnitTest {
                         mBottomSheetController,
                         mock(Supplier.class),
                         FEED,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mModuleRegistry);
         assertTrue(
                 mNtpCustomizationCoordinator.getBottomSheetDelegateForTesting().shouldShowAlone());
     }
@@ -149,7 +154,8 @@ public class NtpCustomizationCoordinatorUnitTest {
                         mBottomSheetController,
                         mock(Supplier.class),
                         MAIN,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mModuleRegistry);
         mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
         BottomSheetContent bottomSheetContent =
                 mNtpCustomizationCoordinator.initBottomSheetContent(mContentView);
@@ -164,7 +170,8 @@ public class NtpCustomizationCoordinatorUnitTest {
                         mBottomSheetController,
                         mock(Supplier.class),
                         NTP_CARDS,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mModuleRegistry);
         mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
         bottomSheetContent = mNtpCustomizationCoordinator.initBottomSheetContent(mContentView);
         bottomSheetContent.handleBackPress();
@@ -177,7 +184,8 @@ public class NtpCustomizationCoordinatorUnitTest {
                         mBottomSheetController,
                         mock(Supplier.class),
                         FEED,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mModuleRegistry);
         mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
         bottomSheetContent = mNtpCustomizationCoordinator.initBottomSheetContent(mContentView);
         bottomSheetContent.handleBackPress();

@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerViewBinder;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetViewBinder;
@@ -38,7 +39,8 @@ public class NtpCardsCoordinator {
     public NtpCardsCoordinator(
             Context context,
             BottomSheetDelegate delegate,
-            Supplier<@Nullable Profile> profileSupplier) {
+            Supplier<@Nullable Profile> profileSupplier,
+            @Nullable ModuleRegistry moduleRegistry) {
         View view =
                 LayoutInflater.from(context)
                         .inflate(R.layout.ntp_customization_ntp_cards_bottom_sheet, null, false);
@@ -81,7 +83,8 @@ public class NtpCardsCoordinator {
                         bottomSheetPropertyModel,
                         ntpCardsPropertyModel,
                         delegate,
-                        profileSupplier);
+                        profileSupplier,
+                        moduleRegistry);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)) {
             mHomeModulesStateListener =

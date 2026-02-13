@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
@@ -41,6 +42,7 @@ public class NtpCustomizationCoordinatorFactoryUnitTest {
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private Supplier<Profile> mMockProfileSupplier;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ModuleRegistry mModuleRegistry;
 
     private Context mContext;
     private NtpCustomizationCoordinatorFactory mFactory;
@@ -80,7 +82,8 @@ public class NtpCustomizationCoordinatorFactoryUnitTest {
                         mMockBottomSheetController,
                         mMockProfileSupplier,
                         NtpCustomizationCoordinator.BottomSheetType.MAIN,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mModuleRegistry);
 
         // Verifies it was created and is now stored.
         assertNotNull("create() should return a non-null coordinator", coordinator);
@@ -99,7 +102,8 @@ public class NtpCustomizationCoordinatorFactoryUnitTest {
                 mMockBottomSheetController,
                 mMockProfileSupplier,
                 NtpCustomizationCoordinator.BottomSheetType.MAIN,
-                mWindowAndroid);
+                mWindowAndroid,
+                mModuleRegistry);
 
         verify(coordinator).dismissBottomSheet();
         assertNotSame(
@@ -117,7 +121,8 @@ public class NtpCustomizationCoordinatorFactoryUnitTest {
                         mMockBottomSheetController,
                         mMockProfileSupplier,
                         NtpCustomizationCoordinator.BottomSheetType.MAIN,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mModuleRegistry);
         assertNotNull(
                 "Coordinator should be active in the factory", mFactory.getCoordinatorForTesting());
 
@@ -138,7 +143,8 @@ public class NtpCustomizationCoordinatorFactoryUnitTest {
                         mMockBottomSheetController,
                         mMockProfileSupplier,
                         NtpCustomizationCoordinator.BottomSheetType.MAIN,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mModuleRegistry);
 
         // Creates a second coordinator, making the first one stale.
         NtpCustomizationCoordinator coordinator2 =
@@ -147,7 +153,8 @@ public class NtpCustomizationCoordinatorFactoryUnitTest {
                         mMockBottomSheetController,
                         mMockProfileSupplier,
                         NtpCustomizationCoordinator.BottomSheetType.MAIN,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mModuleRegistry);
 
         assertSame(
                 "Factory should hold the latest coordinator",
