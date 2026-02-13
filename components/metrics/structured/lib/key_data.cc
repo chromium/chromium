@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
@@ -25,7 +26,7 @@ namespace metrics::structured {
 namespace {
 
 std::string HashToHex(const uint64_t hash) {
-  return base::HexEncode(&hash, sizeof(uint64_t));
+  return base::HexEncode(base::byte_span_from_ref(hash));
 }
 
 int NowInDays() {

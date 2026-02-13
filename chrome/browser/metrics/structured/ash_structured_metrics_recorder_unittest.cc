@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -76,7 +77,7 @@ constexpr char kValueOne[] = "value one";
 constexpr char kValueTwo[] = "value two";
 
 std::string HashToHex(const uint64_t hash) {
-  return base::HexEncode(&hash, sizeof(uint64_t));
+  return base::HexEncode(base::byte_span_from_ref(hash));
 }
 
 // Make a simple testing proto with one |uma_events| message for each id in

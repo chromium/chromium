@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -62,7 +63,7 @@ constexpr char kValueTwoHash[] = "87CEF12FB15E0B3A";
 constexpr base::TimeDelta kKeyRotationPeriod = base::Days(90);
 
 std::string HashToHex(const uint64_t hash) {
-  return base::HexEncode(&hash, sizeof(uint64_t));
+  return base::HexEncode(base::byte_span_from_ref(hash));
 }
 
 }  // namespace

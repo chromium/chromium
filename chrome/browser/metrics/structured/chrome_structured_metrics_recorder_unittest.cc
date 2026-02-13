@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
@@ -46,7 +47,7 @@ constexpr uint64_t kMetricFiveHash = 8665976921794972190ull;
 constexpr char kProjectFourId[] = "FBBBB6DE2AA74C3C";
 
 std::string HashToHex(const uint64_t hash) {
-  return base::HexEncode(&hash, sizeof(uint64_t));
+  return base::HexEncode(base::byte_span_from_ref(hash));
 }
 
 class TestRecorder : public StructuredMetricsClient::RecordingDelegate {
