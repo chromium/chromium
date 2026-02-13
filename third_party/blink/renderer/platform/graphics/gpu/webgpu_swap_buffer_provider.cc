@@ -316,9 +316,6 @@ WebGPUSwapBufferProvider::ExportCurrentSharedImage(
 bool WebGPUSwapBufferProvider::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
-  front_buffer_shared_image_ = nullptr;
-  front_buffer_sync_token_ = gpu::SyncToken();
-
   gpu::SyncToken sync_token;
 
   scoped_refptr<gpu::ClientSharedImage> shared_image =
@@ -388,6 +385,14 @@ void WebGPUSwapBufferProvider::MailboxReleased(
     scoped_refptr<SwapBuffer> swap_buffer,
     const gpu::SyncToken& sync_token,
     bool lost_resource) {
+  if (provider &&
+      swap_buffer->GetSharedImage() == provider->front_buffer_shared_image_) {
+    // If the swap buffer has been returned by the compositor then it is no
+    // longer being presented, and so is no longer the front buffer.
+    provider->front_buffer_shared_image_ = nullptr;
+    provider->front_buffer_sync_token_ = gpu::SyncToken();
+  }
+
   // Update the SyncToken to ensure that we will wait for it even if we
   // immediately destroy this buffer.
   swap_buffer->SetReleaseSyncToken(sync_token);
