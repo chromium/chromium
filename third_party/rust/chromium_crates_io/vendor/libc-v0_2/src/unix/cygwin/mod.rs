@@ -268,7 +268,7 @@ s! {
     pub struct _uc_fpxreg {
         pub significand: [u16; 4],
         pub exponent: u16,
-        pub padding: [u16; 3],
+        padding: Padding<[u16; 3]>,
     }
 
     pub struct _uc_xmmreg {
@@ -286,7 +286,7 @@ s! {
         pub mxcr_mask: u32,
         pub st: [_uc_fpxreg; 8],
         pub xmm: [_uc_xmmreg; 16],
-        pub padding: [u32; 24],
+        padding: Padding<[u32; 24]>,
     }
 
     #[repr(align(16))]

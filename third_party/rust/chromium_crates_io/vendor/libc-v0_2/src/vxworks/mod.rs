@@ -234,10 +234,10 @@ s! {
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
         pub st_attrib: c_uchar,
-        pub st_reserved1: c_int,
-        pub st_reserved2: c_int,
-        pub st_reserved3: c_int,
-        pub st_reserved4: c_int,
+        st_reserved1: Padding<c_int>,
+        st_reserved2: Padding<c_int>,
+        st_reserved3: Padding<c_int>,
+        st_reserved4: Padding<c_int>,
     }
 
     //b_struct__Timespec.h
@@ -579,9 +579,9 @@ s_no_extra_traits! {
     pub struct sockaddr_storage {
         pub ss_len: c_uchar,
         pub ss_family: crate::sa_family_t,
-        pub __ss_pad1: [c_char; _SS_PAD1SIZE],
-        pub __ss_align: i32,
-        pub __ss_pad2: [c_char; _SS_PAD2SIZE],
+        __ss_pad1: Padding<[c_char; _SS_PAD1SIZE]>,
+        __ss_align: i32,
+        __ss_pad2: Padding<[c_char; _SS_PAD2SIZE]>,
     }
 
     pub union sa_u_t {

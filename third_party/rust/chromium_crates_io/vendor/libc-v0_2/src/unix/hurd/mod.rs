@@ -285,8 +285,8 @@ s! {
     pub struct sockaddr_storage {
         pub ss_len: c_uchar,
         pub ss_family: sa_family_t,
-        pub __ss_padding: [c_char; 122usize],
-        pub __ss_align: __uint32_t,
+        __ss_padding: Padding<[c_char; 122usize]>,
+        __ss_align: __uint32_t,
     }
 
     pub struct sockaddr_at {
@@ -634,8 +634,8 @@ s! {
         pub __shpid: c_int,
         pub __type: c_int,
         pub __flags: c_int,
-        pub __reserved1: c_uint,
-        pub __reserved2: c_uint,
+        __reserved1: Padding<c_uint>,
+        __reserved2: Padding<c_uint>,
     }
 
     pub struct __pthread_condattr {
@@ -3330,8 +3330,8 @@ pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
     __shpid: 0,
     __type: PTHREAD_MUTEX_TIMED as c_int,
     __flags: 0,
-    __reserved1: 0,
-    __reserved2: 0,
+    __reserved1: Padding::uninit(),
+    __reserved2: Padding::uninit(),
 };
 pub const PTHREAD_COND_INITIALIZER: pthread_cond_t = pthread_cond_t {
     __lock: __PTHREAD_SPIN_LOCK_INITIALIZER,

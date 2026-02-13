@@ -33,10 +33,4 @@ pub const S_IXOTH: mode_t = 0o0001;
 extern "C" {
     pub fn stat(pathname: *const c_char, statbuf: *mut stat) -> c_int;
     pub fn fstat(fd: c_int, statbuf: *mut stat) -> c_int;
-    pub fn lstat(pathname: *const c_char, statbuf: *mut stat) -> c_int;
-    pub fn chmod(pathname: *const c_char, mode: mode_t) -> c_int;
-    pub fn fchmod(fd: c_int, mode: mode_t) -> c_int;
-    pub fn mkdir(pathname: *const c_char, mode: mode_t) -> c_int;
-    pub fn mkfifo(pathname: *const c_char, mode: mode_t) -> c_int;
-    pub fn umask(mask: mode_t) -> mode_t;
 }

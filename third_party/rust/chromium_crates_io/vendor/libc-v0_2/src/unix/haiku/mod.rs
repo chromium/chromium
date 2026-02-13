@@ -371,7 +371,7 @@ s! {
     pub struct sem_t {
         pub type_: i32,
         pub named_sem_id: i32, // actually a union with unnamed_sem (i32)
-        pub padding: [i32; 2],
+        padding: Padding<[i32; 2]>,
     }
 
     pub struct ucred {

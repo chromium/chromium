@@ -1,6 +1,7 @@
 //! Header: `uapi/linux/can.h`
 
 pub(crate) mod bcm;
+pub(crate) mod error;
 pub(crate) mod j1939;
 pub(crate) mod raw;
 

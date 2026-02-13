@@ -326,7 +326,7 @@ s! {
 
     pub struct sockaddr_vm {
         pub svm_family: sa_family_t,
-        pub svm_reserved1: c_ushort,
+        svm_reserved1: Padding<c_ushort>,
         pub svm_port: crate::in_port_t,
         pub svm_cid: c_uint,
         pub svm_zero: [u8; 4],
@@ -895,7 +895,7 @@ s! {
         pub totalhigh: c_ulong,
         pub freehigh: c_ulong,
         pub mem_unit: c_uint,
-        pub __reserved: [c_char; 256],
+        __reserved: Padding<[c_char; 256]>,
     }
 
     pub struct sockaddr_un {
@@ -2684,14 +2684,6 @@ pub const B3000000: crate::speed_t = 0o010015;
 pub const B3500000: crate::speed_t = 0o010016;
 pub const B4000000: crate::speed_t = 0o010017;
 
-pub const SO_BINDTODEVICE: c_int = 25;
-pub const SO_TIMESTAMP: c_int = 29;
-pub const SO_MARK: c_int = 36;
-pub const SO_RXQ_OVFL: c_int = 40;
-pub const SO_PEEK_OFF: c_int = 42;
-pub const SO_BUSY_POLL: c_int = 46;
-pub const SO_BINDTOIFINDEX: c_int = 62;
-
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 40;
 
@@ -2840,11 +2832,21 @@ pub const SO_RCVLOWAT: c_int = 18;
 pub const SO_SNDLOWAT: c_int = 19;
 pub const SO_RCVTIMEO: c_int = 20;
 pub const SO_SNDTIMEO: c_int = 21;
+pub const SO_BINDTODEVICE: c_int = 25;
+pub const SO_TIMESTAMP: c_int = 29;
 pub const SO_ACCEPTCONN: c_int = 30;
 pub const SO_SNDBUFFORCE: c_int = 32;
 pub const SO_RCVBUFFORCE: c_int = 33;
+pub const SO_TIMESTAMPNS: c_int = 35;
+pub const SO_MARK: c_int = 36;
 pub const SO_PROTOCOL: c_int = 38;
 pub const SO_DOMAIN: c_int = 39;
+pub const SO_RXQ_OVFL: c_int = 40;
+pub const SO_PEEK_OFF: c_int = 42;
+pub const SO_BUSY_POLL: c_int = 46;
+pub const SO_COOKIE: c_int = 57;
+pub const SO_BINDTOIFINDEX: c_int = 62;
+pub const SO_FUCHSIA_MARK: c_int = 10000;
 
 pub const SA_ONSTACK: c_int = 0x08000000;
 pub const SA_SIGINFO: c_int = 0x00000004;

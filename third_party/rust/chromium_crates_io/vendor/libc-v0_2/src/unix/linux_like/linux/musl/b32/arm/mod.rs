@@ -27,27 +27,30 @@ s! {
         #[cfg(musl32_time64)]
         __st_ctim32: Padding<__c_anonymous_timespec32>,
 
-        #[cfg(not(musl_v1_2_3))]
-        pub st_atime: crate::time_t,
-        #[cfg(not(musl_v1_2_3))]
-        pub st_atime_nsec: c_long,
-        #[cfg(not(musl_v1_2_3))]
-        pub st_mtime: crate::time_t,
-        #[cfg(not(musl_v1_2_3))]
-        pub st_mtime_nsec: c_long,
-        #[cfg(not(musl_v1_2_3))]
-        pub st_ctime: crate::time_t,
-        #[cfg(not(musl_v1_2_3))]
-        pub st_ctime_nsec: c_long,
-
+        #[cfg(musl_v1_2_3)]
         pub st_ino: crate::ino_t,
 
-        #[cfg(musl32_time64)]
-        pub st_atim: crate::timespec,
-        #[cfg(musl32_time64)]
-        pub st_mtim: crate::timespec,
-        #[cfg(musl32_time64)]
-        pub st_ctim: crate::timespec,
+        pub st_atime: crate::time_t,
+        #[cfg(all(musl32_time64, target_endian = "big"))]
+        __pad0: Padding<u32>,
+        pub st_atime_nsec: c_long,
+        #[cfg(all(musl32_time64, target_endian = "little"))]
+        __pad0: Padding<u32>,
+        pub st_mtime: crate::time_t,
+        #[cfg(all(musl32_time64, target_endian = "big"))]
+        __pad1: Padding<u32>,
+        pub st_mtime_nsec: c_long,
+        #[cfg(all(musl32_time64, target_endian = "little"))]
+        __pad1: Padding<u32>,
+        pub st_ctime: crate::time_t,
+        #[cfg(all(musl32_time64, target_endian = "big"))]
+        __pad2: Padding<u32>,
+        pub st_ctime_nsec: c_long,
+        #[cfg(all(musl32_time64, target_endian = "little"))]
+        __pad2: Padding<u32>,
+
+        #[cfg(not(musl_v1_2_3))]
+        pub st_ino: crate::ino_t,
     }
 
     struct __c_anonymous_timespec32 {

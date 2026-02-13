@@ -4,23 +4,6 @@
 
 use super::*;
 use crate::prelude::*;
-use crate::{
-    cpu_set_t,
-    pthread_attr_t,
-    pthread_barrier_t,
-    pthread_barrierattr_t,
-    pthread_cond_t,
-    pthread_condattr_t,
-    pthread_key_t,
-    pthread_mutex_t,
-    pthread_mutexattr_t,
-    pthread_once_t,
-    pthread_rwlock_t,
-    pthread_rwlockattr_t,
-    pthread_spinlock_t,
-    pthread_t,
-    timespec,
-};
 
 // Thread creation attributes
 pub const PTHREAD_CREATE_JOINABLE: c_int = 0;
@@ -40,11 +23,6 @@ pub const PTHREAD_PRIO_PROTECT: c_int = 2;
 // Thread priority constants
 pub const PTHREAD_MIN_PRIORITY: c_int = 0;
 pub const PTHREAD_MAX_PRIORITY: c_int = 255;
-
-// Scheduling policies
-pub const SCHED_OTHER: c_int = 0;
-pub const SCHED_FIFO: c_int = 1;
-pub const SCHED_RR: c_int = 2;
 
 // Initializer constants
 pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = 0xFFFFFFFF;
@@ -117,6 +95,7 @@ extern "C" {
     // Condition variable attributes
     pub fn pthread_condattr_init(attr: *mut pthread_condattr_t) -> c_int;
     pub fn pthread_condattr_destroy(attr: *mut pthread_condattr_t) -> c_int;
+    pub fn pthread_condattr_setclock(attr: *mut pthread_condattr_t, clock_id: clockid_t) -> c_int;
 
     // Thread-local storage
     pub fn pthread_key_create(

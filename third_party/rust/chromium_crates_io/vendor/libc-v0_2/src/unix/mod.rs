@@ -69,7 +69,7 @@ s! {
 
     // linux x32 compatibility
     // See https://sourceware.org/bugzilla/show_bug.cgi?id=16437
-    #[cfg(all(not(target_env = "gnu"), not(target_os = "aix")))]
+    #[cfg(not(target_env = "gnu"))]
     pub struct timespec {
         pub tv_sec: time_t,
         #[cfg(all(musl32_time64, target_endian = "big"))]
@@ -1614,7 +1614,11 @@ extern "C" {
         link_name = "cfgetispeed@GLIBC_2.0"
     )]
     #[cfg_attr(
-        all(target_os = "linux", target_env = "gnu", target_arch = "mips"),
+        all(
+            target_os = "linux",
+            target_env = "gnu",
+            any(target_arch = "mips", target_arch = "mips32r6")
+        ),
         link_name = "cfgetispeed@GLIBC_2.0"
     )]
     #[cfg_attr(
@@ -1642,7 +1646,11 @@ extern "C" {
         link_name = "cfgetispeed@GLIBC_2.36"
     )]
     #[cfg_attr(
-        all(target_os = "linux", target_env = "gnu", target_arch = "mips64"),
+        all(
+            target_os = "linux",
+            target_env = "gnu",
+            any(target_arch = "mips64", target_arch = "mips64r6")
+        ),
         link_name = "cfgetispeed@GLIBC_2.0"
     )]
     #[cfg_attr(
@@ -1707,7 +1715,11 @@ extern "C" {
         link_name = "cfgetospeed@GLIBC_2.0"
     )]
     #[cfg_attr(
-        all(target_os = "linux", target_env = "gnu", target_arch = "mips"),
+        all(
+            target_os = "linux",
+            target_env = "gnu",
+            any(target_arch = "mips", target_arch = "mips32r6")
+        ),
         link_name = "cfgetospeed@GLIBC_2.0"
     )]
     #[cfg_attr(
@@ -1735,7 +1747,11 @@ extern "C" {
         link_name = "cfgetospeed@GLIBC_2.36"
     )]
     #[cfg_attr(
-        all(target_os = "linux", target_env = "gnu", target_arch = "mips64"),
+        all(
+            target_os = "linux",
+            target_env = "gnu",
+            any(target_arch = "mips64", target_arch = "mips64r6")
+        ),
         link_name = "cfgetospeed@GLIBC_2.0"
     )]
     #[cfg_attr(
@@ -1800,7 +1816,11 @@ extern "C" {
         link_name = "cfsetispeed@GLIBC_2.0"
     )]
     #[cfg_attr(
-        all(target_os = "linux", target_env = "gnu", target_arch = "mips"),
+        all(
+            target_os = "linux",
+            target_env = "gnu",
+            any(target_arch = "mips", target_arch = "mips32r6")
+        ),
         link_name = "cfsetispeed@GLIBC_2.0"
     )]
     #[cfg_attr(
@@ -1828,7 +1848,11 @@ extern "C" {
         link_name = "cfsetispeed@GLIBC_2.36"
     )]
     #[cfg_attr(
-        all(target_os = "linux", target_env = "gnu", target_arch = "mips64"),
+        all(
+            target_os = "linux",
+            target_env = "gnu",
+            any(target_arch = "mips64", target_arch = "mips64r6")
+        ),
         link_name = "cfsetispeed@GLIBC_2.0"
     )]
     #[cfg_attr(
@@ -1893,7 +1917,11 @@ extern "C" {
         link_name = "cfsetospeed@GLIBC_2.0"
     )]
     #[cfg_attr(
-        all(target_os = "linux", target_env = "gnu", target_arch = "mips"),
+        all(
+            target_os = "linux",
+            target_env = "gnu",
+            any(target_arch = "mips", target_arch = "mips32r6")
+        ),
         link_name = "cfsetospeed@GLIBC_2.0"
     )]
     #[cfg_attr(
@@ -1921,7 +1949,11 @@ extern "C" {
         link_name = "cfsetospeed@GLIBC_2.36"
     )]
     #[cfg_attr(
-        all(target_os = "linux", target_env = "gnu", target_arch = "mips64"),
+        all(
+            target_os = "linux",
+            target_env = "gnu",
+            any(target_arch = "mips64", target_arch = "mips64r6")
+        ),
         link_name = "cfsetospeed@GLIBC_2.0"
     )]
     #[cfg_attr(
@@ -1973,7 +2005,43 @@ extern "C" {
         link_name = "cfsetospeed@GLIBC_2.16"
     )]
     pub fn cfsetospeed(termios: *mut crate::termios, speed: crate::speed_t) -> c_int;
+    #[cfg_attr(
+        all(
+            target_os = "linux",
+            target_env = "gnu",
+            any(
+                target_arch = "mips",
+                target_arch = "mips32r6",
+                target_arch = "mips64",
+                target_arch = "mips64r6",
+                target_arch = "sparc"
+            ),
+        ),
+        link_name = "tcgetattr@GLIBC_2.0"
+    )]
+    #[cfg_attr(
+        all(target_os = "linux", target_env = "gnu", target_arch = "sparc64"),
+        link_name = "tcgetattr@GLIBC_2.2"
+    )]
     pub fn tcgetattr(fd: c_int, termios: *mut crate::termios) -> c_int;
+    #[cfg_attr(
+        all(
+            target_os = "linux",
+            target_env = "gnu",
+            any(
+                target_arch = "mips",
+                target_arch = "mips32r6",
+                target_arch = "mips64",
+                target_arch = "mips64r6",
+                target_arch = "sparc"
+            ),
+        ),
+        link_name = "tcsetattr@GLIBC_2.0"
+    )]
+    #[cfg_attr(
+        all(target_os = "linux", target_env = "gnu", target_arch = "sparc64"),
+        link_name = "tcsetattr@GLIBC_2.2"
+    )]
     pub fn tcsetattr(fd: c_int, optional_actions: c_int, termios: *const crate::termios) -> c_int;
     pub fn tcflow(fd: c_int, action: c_int) -> c_int;
     pub fn tcflush(fd: c_int, action: c_int) -> c_int;
@@ -2275,7 +2343,11 @@ cfg_if! {
                 link_name = "cfsetspeed@GLIBC_2.0"
             )]
             #[cfg_attr(
-                all(target_os = "linux", target_env = "gnu", target_arch = "mips"),
+                all(
+                    target_os = "linux",
+                    target_env = "gnu",
+                    any(target_arch = "mips", target_arch = "mips32r6")
+                ),
                 link_name = "cfsetspeed@GLIBC_2.0"
             )]
             #[cfg_attr(
@@ -2303,7 +2375,11 @@ cfg_if! {
                 link_name = "cfsetspeed@GLIBC_2.36"
             )]
             #[cfg_attr(
-                all(target_os = "linux", target_env = "gnu", target_arch = "mips64"),
+                all(
+                    target_os = "linux",
+                    target_env = "gnu",
+                    any(target_arch = "mips64", target_arch = "mips64r6")
+                ),
                 link_name = "cfsetspeed@GLIBC_2.0"
             )]
             #[cfg_attr(

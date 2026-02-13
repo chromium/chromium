@@ -3,11 +3,6 @@
 use super::*;
 use crate::prelude::*;
 
-// File position constants
-pub const SEEK_SET: c_int = 0;
-pub const SEEK_CUR: c_int = 1;
-pub const SEEK_END: c_int = 2;
-
 // Buffer size
 pub const BUFSIZ: c_uint = 1024;
 pub const FILENAME_MAX: c_uint = 260;

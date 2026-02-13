@@ -101,7 +101,7 @@ s! {
         pub time_low: u32,
         pub time_mid: u16,
         pub time_hi_and_version: u16,
-        pub clock_seq_hi_and_reserved: u8,
+        clock_seq_hi_and_reserved: Padding<u8>,
         pub clock_seq_low: u8,
         pub node: [u8; 6],
     }
@@ -140,7 +140,7 @@ s! {
         pub st_nlink: crate::nlink_t,
         pub st_dev: crate::dev_t,
         pub st_mode: crate::mode_t,
-        pub st_padding1: u16,
+        st_padding1: Padding<u16>,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
@@ -417,14 +417,14 @@ s! {
         pub ut_line: [c_char; 32],
         pub ut_host: [c_char; 256],
 
-        pub ut_unused: [u8; 16],
+        ut_unused: Padding<[u8; 16]>,
         pub ut_session: u16,
         pub ut_type: u16,
         pub ut_pid: crate::pid_t,
         ut_exit: exit_status,
         ut_ss: crate::sockaddr_storage,
         pub ut_tv: crate::timeval,
-        pub ut_unused2: [u8; 16],
+        ut_unused2: Padding<[u8; 16]>,
     }
 
     pub struct lastlogx {

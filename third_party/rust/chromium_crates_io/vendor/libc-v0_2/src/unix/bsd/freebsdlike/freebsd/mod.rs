@@ -432,7 +432,7 @@ s! {
         pub time_low: u32,
         pub time_mid: u16,
         pub time_hi_and_version: u16,
-        pub clock_seq_hi_and_reserved: u8,
+        clock_seq_hi_and_reserved: Padding<u8>,
         pub clock_seq_low: u8,
         pub node: [u8; _UUID_NODE_LEN],
     }
@@ -559,8 +559,8 @@ s! {
         pub ksw_used: u_int,
         pub ksw_total: u_int,
         pub ksw_flags: c_int,
-        pub ksw_reserved1: u_int,
-        pub ksw_reserved2: u_int,
+        ksw_reserved1: Padding<u_int>,
+        ksw_reserved2: Padding<u_int>,
     }
 
     pub struct nlist {

@@ -84,6 +84,20 @@ s! {
         __unused7: Padding<*mut c_void>,
     }
 
+    pub struct tm {
+        pub tm_sec: c_int,
+        pub tm_min: c_int,
+        pub tm_hour: c_int,
+        pub tm_mday: c_int,
+        pub tm_mon: c_int,
+        pub tm_year: c_int,
+        pub tm_wday: c_int,
+        pub tm_yday: c_int,
+        pub tm_isdst: c_int,
+        pub tm_gmtoff: c_long,
+        pub tm_zone: *const c_char,
+    }
+
     pub struct lconv {
         pub decimal_point: *mut c_char,
         pub thousands_sep: *mut c_char,
@@ -535,6 +549,7 @@ s! {
 
     pub struct ptrace_thread_state {
         pub pts_tid: crate::pid_t,
+        pub pts_name: [c_char; PT_PTS_NAMELEN as usize],
     }
 
     // search.h
@@ -764,6 +779,22 @@ impl siginfo_t {
             value: crate::sigval,
         }
         (*(self as *const siginfo_t).cast::<siginfo_timer>()).value
+    }
+
+    pub unsafe fn si_status(&self) -> c_int {
+        #[repr(C)]
+        struct siginfo_proc {
+            _si_signo: c_int,
+            _si_code: c_int,
+            _si_errno: c_int,
+            _pad: Padding<[c_int; SI_PAD]>,
+            _pid: crate::pid_t,
+            _uid: crate::uid_t,
+            _utime: crate::clock_t,
+            _stime: crate::clock_t,
+            _status: crate::c_int,
+        }
+        (*(self as *const siginfo_t as *const siginfo_proc))._status
     }
 }
 
@@ -1170,7 +1201,7 @@ pub const EVFILT_SIGNAL: i16 = -6;
 pub const EVFILT_TIMER: i16 = -7;
 pub const EVFILT_DEVICE: i16 = -8;
 pub const EVFILT_EXCEPT: i16 = -9;
-
+pub const EVFILT_USER: i16 = -10;
 pub const EV_ADD: u16 = 0x1;
 pub const EV_DELETE: u16 = 0x2;
 pub const EV_ENABLE: u16 = 0x4;
@@ -1186,6 +1217,13 @@ pub const EV_EOF: u16 = 0x8000;
 #[deprecated(since = "0.2.113", note = "Not stable across OS versions")]
 pub const EV_SYSFLAGS: u16 = 0xf800;
 
+pub const NOTE_TRIGGER: u32 = 0x01000000;
+pub const NOTE_FFNOP: u32 = 0x00000000;
+pub const NOTE_FFAND: u32 = 0x40000000;
+pub const NOTE_FFOR: u32 = 0x80000000;
+pub const NOTE_FFCOPY: u32 = 0xc0000000;
+pub const NOTE_FFCTRLMASK: u32 = 0xc0000000;
+pub const NOTE_FFLAGSMASK: u32 = 0x00ffffff;
 pub const NOTE_LOWAT: u32 = 0x00000001;
 pub const NOTE_EOF: u32 = 0x00000002;
 pub const NOTE_OOB: u32 = 0x00000004;
@@ -1498,6 +1536,8 @@ pub const PT_GET_PROCESS_STATE: c_int = 14;
 pub const PT_GET_THREAD_FIRST: c_int = 15;
 pub const PT_GET_THREAD_NEXT: c_int = 16;
 pub const PT_FIRSTMACH: c_int = 32;
+
+pub const PT_PTS_NAMELEN: c_int = 32;
 
 pub const SOCK_CLOEXEC: c_int = 0x8000;
 pub const SOCK_NONBLOCK: c_int = 0x4000;

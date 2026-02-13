@@ -52,9 +52,9 @@ s! {
     pub struct sockaddr_storage {
         pub ss_len: u8,
         pub ss_family: crate::sa_family_t,
-        pub __ss_pad1: [u8; 2],
-        pub __ss_align: i64,
-        pub __ss_pad2: [u8; 116],
+        __ss_pad1: Padding<[u8; 2]>,
+        __ss_align: i64,
+        __ss_pad2: Padding<[u8; 116]>,
     }
 
     pub struct sched_param {

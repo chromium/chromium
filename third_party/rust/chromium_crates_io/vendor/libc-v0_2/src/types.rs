@@ -28,8 +28,8 @@ impl<T: Copy> Padding<T> {
     // when we depend on rustc 1.75.0.
     #[allow(unused)]
     pub(crate) const fn uninit() -> Self {
-        // We can still safely use uninit here, since padding are is something
-        // that can are not meant to be read or written anyways.
+        // We can still safely use uninit here, since padding is something
+        // that is not meant to be read or written anyways.
         Self(MaybeUninit::uninit())
     }
 }

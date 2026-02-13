@@ -74,20 +74,6 @@ s! {
         fds_bits: [i32; FD_SETSIZE as usize / 32],
     }
 
-    pub struct tm {
-        pub tm_sec: c_int,
-        pub tm_min: c_int,
-        pub tm_hour: c_int,
-        pub tm_mday: c_int,
-        pub tm_mon: c_int,
-        pub tm_year: c_int,
-        pub tm_wday: c_int,
-        pub tm_yday: c_int,
-        pub tm_isdst: c_int,
-        pub tm_gmtoff: c_long,
-        pub tm_zone: *mut c_char,
-    }
-
     pub struct msghdr {
         pub msg_name: *mut c_void,
         pub msg_namelen: crate::socklen_t,

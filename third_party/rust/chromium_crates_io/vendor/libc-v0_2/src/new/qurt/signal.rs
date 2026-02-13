@@ -41,12 +41,53 @@ pub const SIG_DFL: sighandler_t = 0 as sighandler_t;
 pub const SIG_IGN: sighandler_t = 1 as sighandler_t;
 pub const SIG_ERR: sighandler_t = !0 as sighandler_t;
 
-// Signal mask operations
-pub const SIG_BLOCK: c_int = 0;
-pub const SIG_UNBLOCK: c_int = 1;
-pub const SIG_SETMASK: c_int = 2;
+// Signal mask operations (QuRT uses different values than Linux)
+pub const SIG_BLOCK: c_int = 1;
+pub const SIG_UNBLOCK: c_int = 2;
+pub const SIG_SETMASK: c_int = 3;
+
+// QuRT-specific signal constants
+pub const POSIX_MSG: c_int = 7;
+pub const POSIX_NOTIF: c_int = 8;
+pub const SIGRTMIN: c_int = 10;
+pub const SIGRTMAX: c_int = 32;
+
+// Notification types (from QuRT signal.h)
+pub const SIGEV_NONE: c_int = 0;
+pub const SIGEV_SIGNAL: c_int = 1;
+pub const SIGEV_THREAD: c_int = 2;
+pub const SA_SIGINFO: c_int = 1;
 
 pub type sighandler_t = size_t;
+
+// Signal structures based on QuRT SDK headers
+s! {
+    pub struct sigval {
+        pub sival_int: c_int,
+        pub sival_ptr: *mut c_void,
+    }
+
+    pub struct sigevent {
+        pub sigev_notify: c_int,
+        pub sigev_signo: c_int,
+        pub sigev_value: sigval,
+        pub sigev_notify_function: Option<extern "C" fn(sigval)>,
+        pub sigev_notify_attributes: *mut pthread_attr_t,
+    }
+
+    pub struct siginfo_t {
+        pub si_signo: c_int,
+        pub si_code: c_int,
+        pub si_value: sigval,
+    }
+
+    pub struct sigaction {
+        pub sa_handler: Option<extern "C" fn(c_int)>,
+        pub sa_mask: sigset_t,
+        pub sa_flags: c_int,
+        pub sa_sigaction: Option<extern "C" fn(c_int, *mut siginfo_t, *mut c_void)>,
+    }
+}
 
 extern "C" {
     pub fn signal(sig: c_int, handler: sighandler_t) -> sighandler_t;
@@ -64,4 +105,13 @@ extern "C" {
     pub fn sigprocmask(how: c_int, set: *const sigset_t, oldset: *mut sigset_t) -> c_int;
     pub fn sigpending(set: *mut sigset_t) -> c_int;
     pub fn sigsuspend(mask: *const sigset_t) -> c_int;
+
+    // QuRT-specific signal functions
+    pub fn sigwait(set: *const sigset_t, sig: *mut c_int) -> c_int;
+    pub fn _sigaction(sig: c_int, act: *const sigaction, oact: *mut sigaction) -> c_int;
+    pub fn sigtimedwait(
+        set: *const sigset_t,
+        info: *mut siginfo_t,
+        timeout: *const timespec,
+    ) -> c_int;
 }

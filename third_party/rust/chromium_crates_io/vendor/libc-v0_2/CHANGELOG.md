@@ -1,5 +1,37 @@
 # Changelog
 
+## [0.2.181](https://github.com/rust-lang/libc/compare/0.2.180...0.2.181) - 2026-02-09
+
+### Added
+- Apple: Add `MADV_ZERO` ([#4924](https://github.com/rust-lang/libc/pull/4924))
+- Redox: Add `makedev`, `major`, and `minor` ([#4928](https://github.com/rust-lang/libc/pull/4928))
+- GLibc: Add `PTRACE_SET_SYSCALL_INFO` ([#4933](https://github.com/rust-lang/libc/pull/4933))
+- OpenBSD: Add more kqueue related constants for ([#4945](https://github.com/rust-lang/libc/pull/4945))
+- Linux: add CAN error types ([#4944](https://github.com/rust-lang/libc/pull/4944))
+- OpenBSD: Add siginfo_t::si_status ([#4946](https://github.com/rust-lang/libc/pull/4946))
+- QNX NTO: Add `max_align_t` ([#4927](https://github.com/rust-lang/libc/pull/4927))
+- Illumos: Add `_CS_PATH` ([#4956](https://github.com/rust-lang/libc/pull/4956))
+- OpenBSD: add `ppoll` ([#4957](https://github.com/rust-lang/libc/pull/4957))
+
+### Fixed
+
+- AIX: Change 'tv_nsec' of 'struct timespec' to type 'c_long' ([#4931](https://github.com/rust-lang/libc/pull/4931))
+- AIX: Use 'struct st_timespec' in 'struct stat{,64}' ([#4931](https://github.com/rust-lang/libc/pull/4931))
+- Glibc: Link old version of `tc{g,s}etattr` ([#4938](https://github.com/rust-lang/libc/pull/4938))
+- Glibc: Link the correct version of `cf{g,s}et{i,o}speed` on mips{32,64}r6 ([#4938](https://github.com/rust-lang/libc/pull/4938))
+- OpenBSD: Fix constness of tm.tm_zone ([#4948](https://github.com/rust-lang/libc/pull/4948))
+- OpenBSD: Fix the definition of `ptrace_thread_state` ([#4947](https://github.com/rust-lang/libc/pull/4947))
+- QuRT: Fix type visibility and defs ([#4932](https://github.com/rust-lang/libc/pull/4932))
+- Redox: Fix dev_t ([#4928](https://github.com/rust-lang/libc/pull/4928))
+- Redox: Fix values for `PTHREAD_MUTEX_{NORMAL, RECURSIVE}` ([#4943](https://github.com/rust-lang/libc/pull/4943))
+- Various: Mark additional fields as private padding ([#4922](https://github.com/rust-lang/libc/pull/4922))
+
+### Changed
+
+- Fuchsia: Update `SO_*` constants ([#4937](https://github.com/rust-lang/libc/pull/4937))
+- Revert "musl: convert inline timespecs to timespec" (resolves build issues on targets only supported by Musl 1.2.3+ ) ([#4958](https://github.com/rust-lang/libc/pull/4958))
+
+
 ## [0.2.180](https://github.com/rust-lang/libc/compare/0.2.179...0.2.180) - 2026-01-08
 
 ### Added

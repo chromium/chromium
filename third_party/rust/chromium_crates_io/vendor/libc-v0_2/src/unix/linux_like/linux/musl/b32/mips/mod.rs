@@ -25,33 +25,42 @@ s! {
         #[cfg(musl32_time64)]
         __st_ctim32: Padding<__c_anonymous_timespec32>,
 
-        #[cfg(not(musl_v1_2_3))]
-        pub st_atime: crate::time_t,
-        #[cfg(not(musl_v1_2_3))]
-        pub st_atime_nsec: c_long,
-        #[cfg(not(musl_v1_2_3))]
-        pub st_mtime: crate::time_t,
-        #[cfg(not(musl_v1_2_3))]
-        pub st_mtime_nsec: c_long,
-        #[cfg(not(musl_v1_2_3))]
-        pub st_ctime: crate::time_t,
-        #[cfg(not(musl_v1_2_3))]
-        pub st_ctime_nsec: c_long,
-
+        #[cfg(musl_v1_2_3)]
         pub st_blksize: crate::blksize_t,
+        #[cfg(musl_v1_2_3)]
         __st_padding3: Padding<c_long>,
+        #[cfg(musl_v1_2_3)]
         pub st_blocks: crate::blkcnt_t,
-        #[cfg(not(musl32_time64))]
+
+        pub st_atime: crate::time_t,
+        #[cfg(all(musl32_time64, target_endian = "big"))]
+        __pad0: Padding<u32>,
+        pub st_atime_nsec: c_long,
+        #[cfg(all(musl32_time64, target_endian = "little"))]
+        __pad0: Padding<u32>,
+        pub st_mtime: crate::time_t,
+        #[cfg(all(musl32_time64, target_endian = "big"))]
+        __pad1: Padding<u32>,
+        pub st_mtime_nsec: c_long,
+        #[cfg(all(musl32_time64, target_endian = "little"))]
+        __pad1: Padding<u32>,
+        pub st_ctime: crate::time_t,
+        #[cfg(all(musl32_time64, target_endian = "big"))]
+        __pad2: Padding<u32>,
+        pub st_ctime_nsec: c_long,
+        #[cfg(all(musl32_time64, target_endian = "little"))]
+        __pad2: Padding<u32>,
+
+        #[cfg(not(musl_v1_2_3))]
+        pub st_blksize: crate::blksize_t,
+        #[cfg(not(musl_v1_2_3))]
+        __st_padding3: Padding<c_long>,
+        #[cfg(not(musl_v1_2_3))]
+        pub st_blocks: crate::blkcnt_t,
+
+        #[cfg(not(musl_v1_2_3))]
         __st_padding4: Padding<[c_long; 14]>,
-
-        #[cfg(musl32_time64)]
-        pub st_atim: crate::timespec,
-        #[cfg(musl32_time64)]
-        pub st_mtim: crate::timespec,
-        #[cfg(musl32_time64)]
-        pub st_ctim: crate::timespec,
-
-        #[cfg(musl32_time64)]
+        #[cfg(musl_v1_2_3)]
         __st_padding4: Padding<[c_long; 2]>,
     }
 

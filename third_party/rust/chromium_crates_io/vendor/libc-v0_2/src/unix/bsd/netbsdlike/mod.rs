@@ -734,6 +734,12 @@ extern "C" {
         param: *mut sched_param,
     ) -> c_int;
     pub fn pipe2(fds: *mut c_int, flags: c_int) -> c_int;
+    pub fn ppoll(
+        fds: *mut crate::pollfd,
+        nfds: crate::nfds_t,
+        ts: *const crate::timespec,
+        sigmask: *const crate::sigset_t,
+    ) -> c_int;
 
     pub fn getgrouplist(
         name: *const c_char,

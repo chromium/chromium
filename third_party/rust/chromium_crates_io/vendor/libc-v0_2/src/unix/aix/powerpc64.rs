@@ -68,16 +68,16 @@ s! {
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
         pub st_ssize: c_int,
-        pub st_atim: crate::timespec,
-        pub st_mtim: crate::timespec,
-        pub st_ctim: crate::timespec,
+        pub st_atim: crate::st_timespec,
+        pub st_mtim: crate::st_timespec,
+        pub st_ctim: crate::st_timespec,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
         pub st_vfstype: c_int,
         pub st_vfs: c_uint,
         pub st_type: c_uint,
         pub st_gen: c_uint,
-        pub st_reserved: [c_uint; 9],
+        st_reserved: Padding<[c_uint; 9]>,
         pub st_padto_ll: c_uint,
         pub st_size: off_t,
     }
@@ -117,7 +117,7 @@ s! {
         pub aio_word2: c_int,
         pub aio_fp: c_int,
         pub aio_handle: *mut aiocb,
-        pub aio_reserved: [c_uint; 2],
+        aio_reserved: Padding<[c_uint; 2]>,
         pub aio_sigev_tid: c_long,
     }
 
@@ -191,7 +191,7 @@ s! {
         pub __ukeys: [c_uint; 2],
         pub __vsx: crate::__vsx_context_t,
         pub __tm: crate::__tm_context_t,
-        pub __reserved: [c_char; 1860],
+        __reserved: Padding<[c_char; 1860]>,
         pub __extctx_magic: c_int,
     }
 
