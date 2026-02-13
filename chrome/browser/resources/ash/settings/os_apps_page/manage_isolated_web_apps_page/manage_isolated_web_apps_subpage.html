@@ -10,5 +10,8 @@
     id="enableIsolatedWebAppsToggleButton"
     class="hr"
     label="$i18n{enableIsolatedWebAppsToggleLabel}"
-    pref="{{prefs.ash.isolated_web_apps_enabled}}">
+    pref="[[syntheticIwaPref_]]"
+    disabled="[[!prefs.profile.isolated_web_app.install.user_install_enabled.value]]"
+    on-settings-boolean-control-change="onIwaToggleChange_"
+    no-set-pref>
 </settings-toggle-button>

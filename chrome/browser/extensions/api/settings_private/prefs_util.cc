@@ -900,6 +900,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // App - Enable Isolated Web Apps
   (*s_allowlist)[::ash::prefs::kIsolatedWebAppsEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::prefs::kIsolatedWebAppUserInstallationEnabled] =
+      settings_api::PrefType::kBoolean;
 
   // App - On-Device Parental Controls
   (*s_allowlist)[::ash::prefs::kOnDeviceAppControlsPin] =
