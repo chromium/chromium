@@ -211,7 +211,7 @@ bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
 
   const gpu::SyncToken& ready_sync_token = mailbox_ref_->sync_token();
   gpu::SyncToken completion_sync_token;
-  if (!resource_provider->OverwriteImage(
+  if (!resource_provider->CopyToBackingSharedImage(
           shared_image_, copy_rect, ready_sync_token, completion_sync_token)) {
     return false;
   }
