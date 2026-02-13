@@ -48,6 +48,9 @@
 
 namespace blink {
 
+static inline constexpr double kMinimumECMADateInMs = -8640000000000000.0;
+static inline constexpr double kMaximumECMADateInMs = 8640000000000000.0;
+
 WTF_EXPORT bool IsLeapYear(int year);
 
 // Returns the number of days from 1970-01-01 to the specified date.

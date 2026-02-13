@@ -92,9 +92,6 @@ namespace blink {
 
 /* Constants */
 
-static const double kMinimumECMADateInMs = -8640000000000000.0;
-static const double kMaximumECMADateInMs = 8640000000000000.0;
-
 // Day of year for the first day of each month, where index 0 is January, and
 // day 0 is January 1.  First for non-leap years, then for leap years.
 static const std::array<std::array<int, 12>, 2> kFirstDayOfMonth = {

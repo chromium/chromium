@@ -371,6 +371,9 @@ void DateComponents::SetMillisecondsSinceMidnightInternal(int ms_in_day) {
 }
 
 bool DateComponents::SetMillisecondsSinceEpochForDateInternal(double ms) {
+  if (ms < kMinimumECMADateInMs || ms > kMaximumECMADateInMs) {
+    return false;
+  }
   year_ = MsToYear(ms);
   int year_day = DayInYear(ms, year_);
   month_ = MonthFromDayInYear(year_day, IsLeapYear(year_));

@@ -2873,9 +2873,6 @@ crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 # `-expected.txt` pathname is too long to check in.
 crbug.com/475042067 external/wpt/webrtc-encoded-transform/idlharness.https.window.html?include=(SFrameDecrypterStream|SFrameEncrypterStream|SFrameSenderTransform|SFrameReceiverTransform|SFrameTransform.\*) [ Failure ]
 
-# [0209/175919.211221:FATAL:third_party/blink/renderer/platform/wtf/date_math.cc:149] DCHECK failed: ms <= kMaximumECMADateInMs (273433370718944788368850944.000000 vs. 8640000000000000.000000).
-crbug.com/483173723 external/wpt/html/semantics/forms/the-input-element/input-valueasnumber.html [ Crash ]
-
 # ====== New tests from wpt-importer added here ======
 crbug.com/483370598 external/wpt/css/css-anchor-position/position-area-overflow-icb-004.html [ Failure ]
 crbug.com/483394574 external/wpt/css/css-highlight-api/painting/custom-highlight-dynamic-viewport-metrics-first-line-001.html [ Failure ]
