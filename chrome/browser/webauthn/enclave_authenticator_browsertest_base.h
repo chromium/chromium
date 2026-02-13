@@ -93,6 +93,7 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
   EnclaveManager& enclave_manager();
 
   void EnableUVKeySupport(bool fake_hardware_backing = false);
+  void DisableUVKeySupport();
   bool IsUVPAA();
   void SetBiometricsEnabled(bool enabled);
   void AddTestPasskeyToModel();

@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webauthn/enclave_authenticator_browsertest_base.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
@@ -922,6 +923,8 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
   std::unique_ptr<ModelObserver> model_observer_;
   raw_ptr<ChromeAuthenticatorRequestDelegate> request_delegate_;
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnCreatePinWhenSystemUvDisabled};
 };
 
 // Parses the string resulting from the Javascript snippets that exercise the
@@ -1120,6 +1123,229 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   dialog_model()->OnGPMPinEntered(u"123456");
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+}
+
+// Regression test for crbug.com/469125044.
+// Tests that the user can set a new PIN if the user doesn't have one and
+// user-verifying keys become unavailable during make credential.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       MakeCredentialUvUnsatisfiable) {
+  // Bootstrap the user with an LSKF and UV so they don't end up with a PIN.
+  SetTrustedVaultRecoverable();
+  EnableUVKeySupport();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMTrustThisComputerCreation);
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
+  dialog_model()->OnGPMTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  // The user should not be prompted for a PIN and the request should succeed.
+  SimulateTrustedVaultKeyRetrieval(/*with_store_keys_lock=*/true);
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+
+  // Disable user verification support. This can happen e.g. if the user
+  // disables Windows Hello or Touch ID.
+  DisableUVKeySupport();
+
+  // Try to make a new credential. The UI should go to the onboarding screen to
+  // avoid surprising the user with a gaia prompt.
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMTrustThisComputerCreation);
+  model_observer()->WaitForStep();
+
+  // Select GPM and go through the steps to create a new PIN.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset);
+  dialog_model()->OnGPMTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMReauthComplete("rapt");
+  model_observer()->WaitForStep();
+
+  histogram_tester_.ExpectBucketCount(
+      "WebAuthentication.Enclave.ChangePinEventsV2",
+      EnclaveChangePinEvent::kFlowStartedFromUnsatisfiableUv, 1);
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+
+  // The PIN should work fine the next time.
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMCreationConfirmed();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+}
+
+// Regression test for crbug.com/469125044.
+// Tests that the user can set a new PIN if the user doesn't have one and
+// user-verifying keys become unavailable during get assertion.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       GetAssertionUvUnsatisfiable) {
+  // Bootstrap the user with an LSKF and UV so they don't end up with a PIN.
+  SetTrustedVaultRecoverable();
+  EnableUVKeySupport();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMTrustThisComputerCreation);
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
+  dialog_model()->OnGPMTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  // The user should not be prompted for a PIN and the request should succeed.
+  SimulateTrustedVaultKeyRetrieval(/*with_store_keys_lock=*/true);
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+
+  // Disable user verification support. This can happen e.g. if the user
+  // disables Windows Hello or Touch ID.
+  DisableUVKeySupport();
+
+  // Try to get an assertion with the credential. The UI should go to the
+  // onboarding screen to avoid surprising the user with a gaia prompt.
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
+  delegate_observer()->WaitForUI();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMTrustThisComputerAssertion);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+
+  // Select GPM and go through the steps to create a new PIN.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset);
+  dialog_model()->OnGPMTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMReauthComplete("rapt");
+  model_observer()->WaitForStep();
+
+  histogram_tester_.ExpectBucketCount(
+      "WebAuthentication.Enclave.ChangePinEventsV2",
+      EnclaveChangePinEvent::kFlowStartedFromUnsatisfiableUv, 1);
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  // The PIN should work fine the next time.
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
+  delegate_observer()->WaitForUI();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+}
+
+// Tests an edge case where:
+// * A user bootstraps without a PIN.
+// * System user verification becomes unavailable.
+// * The user creates a PIN on a new device.
+// * The user starts a get assertion flow.
+// In this case, Chrome should not prompt the user to create a new PIN. Instead,
+// the new PIN should be used.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       GetAssertionUvUnsatisfiableDetectsChangedPin) {
+  // Bootstrap the user with an LSKF and UV so they don't end up with a PIN.
+  SetTrustedVaultRecoverable();
+  EnableUVKeySupport();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMTrustThisComputerCreation);
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
+  dialog_model()->OnGPMTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  // The user should not be prompted for a PIN and the request should succeed.
+  SimulateTrustedVaultKeyRetrieval(/*with_store_keys_lock=*/true);
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+
+  // Disable user verification support. This can happen e.g. if the user
+  // disables Windows Hello or Touch ID.
+  DisableUVKeySupport();
+
+  // Simulate adding a PIN from another device.
+  AuthenticationFactorsResult registration_state_result;
+  registration_state_result.state =
+      AuthenticationFactorsResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
+      "public key", trusted_vault::UsableRecoveryPinMetadata(
+                        EnclaveManager::MakeWrappedPINForTesting(
+                            kSecurityDomainSecret, "123456"),
+                        /*expiry=*/base::Time::Now() + base::Seconds(10000)));
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  // Try to get an assertion with the credential. The UI should go to the
+  // PIN screen, since system biometrics have been disabled.
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
+  delegate_observer()->WaitForUI();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, MakeCredentialWithPrf) {
@@ -3428,44 +3654,17 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 
-  {
-    Profile* const profile = browser()->profile();
-    EnclaveManager second_manager(
-        GetTempDirPath(),
-        IdentityManagerFactory::GetForProfile(browser()->profile()),
-        base::BindRepeating(
-            [](base::WeakPtr<Profile> profile)
-                -> network::mojom::NetworkContext* {
-              if (!profile) {
-                return nullptr;
-              }
-              return profile->GetDefaultStoragePartition()->GetNetworkContext();
-            },
-            profile->GetWeakPtr()),
-        url_loader_factory_.GetSafeWeakWrapper());
-
-    {
-      auto store_keys_lock = second_manager.GetStoreKeysLock();
-      second_manager.StoreKeys(kSyncGaiaId,
-                               {trusted_vault::TrustedVaultKeyAndVersion(
-                                   *security_domain_secret, kSecretVersion)},
-                               /*user_action_trigger=*/std::nullopt);
-    }
-
-    base::test::TestFuture<bool> add_future;
-    second_manager.AddDeviceToAccount(std::nullopt, add_future.GetCallback());
-    EXPECT_TRUE(add_future.Wait());
-    EXPECT_TRUE(add_future.Get());
-
-    base::test::TestFuture<bool> change_future;
-    second_manager.ChangePIN(newpin, "rapt", change_future.GetCallback());
-    EXPECT_TRUE(change_future.Wait());
-    ASSERT_TRUE(change_future.Get());
-
-    // Verify the PIN claim key was redacted.
-    EXPECT_THAT(GetDeviceLog(),
-                testing::HasSubstr("\"pin_claim_key\": \"[redacted]\""));
-  }
+  // Simulate adding a PIN from another device.
+  AuthenticationFactorsResult registration_state_result;
+  registration_state_result.state =
+      AuthenticationFactorsResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
+      "public key", trusted_vault::UsableRecoveryPinMetadata(
+                        EnclaveManager::MakeWrappedPINForTesting(
+                            *security_domain_secret, newpin),
+                        /*expiry=*/base::Time::Now() + base::Seconds(10000)));
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
 
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
   delegate_observer()->WaitForUI();

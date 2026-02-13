@@ -228,6 +228,10 @@ void EnclaveAuthenticatorTestBase::EnableUVKeySupport(
       fake_hardware_backing);
 }
 
+void EnclaveAuthenticatorTestBase::DisableUVKeySupport() {
+  fake_uv_provider_.emplace<crypto::ScopedNullUserVerifyingKeyProvider>();
+}
+
 bool EnclaveAuthenticatorTestBase::IsUVPAA() {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

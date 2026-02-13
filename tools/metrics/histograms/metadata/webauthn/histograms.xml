@@ -284,7 +284,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="WebAuthentication.Enclave.ChangePinEvents"
+<histogram name="WebAuthentication.Enclave.ChangePinEventsV2"
     enum="ChangePinEvent" expires_after="2026-07-12">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>

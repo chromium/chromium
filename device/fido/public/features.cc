@@ -225,4 +225,9 @@ BASE_FEATURE(kWebAuthnHmacSecretMcExtension, base::FEATURE_ENABLED_BY_DEFAULT);
 // Not yet enabled by default.
 BASE_FEATURE(kFedCmInAuthenticator, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_FEATURE(kWebAuthnCreatePinWhenSystemUvDisabled,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

@@ -189,6 +189,11 @@ BASE_DECLARE_FEATURE(kWebAuthnHmacSecretMcExtension);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kFedCmInAuthenticator);
 
+// Prompt the user to set a new PIN when user verification is required to
+// fulfill a GPM passkey operation but no system UV or GPM PIN is available.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnCreatePinWhenSystemUvDisabled);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_PUBLIC_FEATURES_H_

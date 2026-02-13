@@ -15,6 +15,7 @@
 #include "chrome/browser/webauthn/enclave_authenticator_browsertest_base.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -83,6 +84,13 @@ class ModelObserver : public AuthenticatorRequestDialogModel::Observer {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
+std::string GetDeviceLog() {
+  return device_event_log::GetAsString(
+      device_event_log::NEWEST_FIRST, /*format=*/"level",
+      /*types=*/"fido",
+      /*max_level=*/device_event_log::LOG_LEVEL_EVENT, /*max_events=*/0);
+}
+
 }  // namespace
 
 class ChangePinControllerBrowserTest : public EnclaveAuthenticatorTestBase {
@@ -131,17 +139,21 @@ IN_PROC_BROWSER_TEST_F(ChangePinControllerBrowserTest, ChangePin) {
   EXPECT_TRUE(change_pin_future.Get());
 
   histogram_tester.ExpectBucketCount(
-      "WebAuthentication.Enclave.ChangePinEvents",
-      ChangePinControllerImpl::ChangePinEvent::kFlowStartedFromSettings, 1);
+      "WebAuthentication.Enclave.ChangePinEventsV2",
+      EnclaveChangePinEvent::kFlowStartedFromSettings, 1);
   histogram_tester.ExpectBucketCount(
-      "WebAuthentication.Enclave.ChangePinEvents",
-      ChangePinControllerImpl::ChangePinEvent::kReauthCompleted, 1);
+      "WebAuthentication.Enclave.ChangePinEventsV2",
+      EnclaveChangePinEvent::kReauthCompleted, 1);
   histogram_tester.ExpectBucketCount(
-      "WebAuthentication.Enclave.ChangePinEvents",
-      ChangePinControllerImpl::ChangePinEvent::kNewPinEntered, 1);
+      "WebAuthentication.Enclave.ChangePinEventsV2",
+      EnclaveChangePinEvent::kNewPinEntered, 1);
   histogram_tester.ExpectBucketCount(
-      "WebAuthentication.Enclave.ChangePinEvents",
-      ChangePinControllerImpl::ChangePinEvent::kCompletedSuccessfully, 1);
+      "WebAuthentication.Enclave.ChangePinEventsV2",
+      EnclaveChangePinEvent::kCompletedSuccessfully, 1);
+
+  // Verify the PIN claim key was redacted.
+  EXPECT_THAT(GetDeviceLog(),
+              testing::HasSubstr("\"pin_claim_key\": \"[redacted]\""));
 }
 
 IN_PROC_BROWSER_TEST_F(ChangePinControllerBrowserTest,
@@ -191,11 +203,11 @@ IN_PROC_BROWSER_TEST_F(ChangePinControllerBrowserTest,
             AuthenticatorRequestDialogModel::Step::kNotStarted);
 
   histogram_tester.ExpectBucketCount(
-      "WebAuthentication.Enclave.ChangePinEvents",
-      ChangePinControllerImpl::ChangePinEvent::kFlowStartedFromSettings, 1);
+      "WebAuthentication.Enclave.ChangePinEventsV2",
+      EnclaveChangePinEvent::kFlowStartedFromSettings, 1);
   histogram_tester.ExpectBucketCount(
-      "WebAuthentication.Enclave.ChangePinEvents",
-      ChangePinControllerImpl::ChangePinEvent::kReauthCancelled, 1);
+      "WebAuthentication.Enclave.ChangePinEventsV2",
+      EnclaveChangePinEvent::kReauthCancelled, 1);
 }
 
 // Regression test for https://crbug.com/466163490.

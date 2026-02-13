@@ -39,6 +39,8 @@ chromium-metrics-reviews@google.com.
   <int value="7"
       label="Change PIN request failed in enclave. This does not include
              cancellations."/>
+  <int value="8"
+      label="A PIN change request is triggered because the user has no UV"/>
 </enum>
 
 <!-- LINT.IfChange(CombinedSelectorAction) -->

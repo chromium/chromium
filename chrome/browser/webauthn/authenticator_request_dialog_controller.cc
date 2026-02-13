@@ -109,7 +109,6 @@ namespace {
 constexpr int kMaxPriorityGPMCredentialCreations = 2;
 
 using BleStatus = device::FidoRequestHandlerBase::BleStatus;
-using ChangePinEvent = ChangePinControllerImpl::ChangePinEvent;
 using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
 using Step = AuthenticatorRequestDialogModel::Step;
 using TransportAvailabilityInfo =
@@ -546,7 +545,8 @@ void AuthenticatorRequestDialogController::
 
 void AuthenticatorRequestDialogController::OnGPMRecoverSecurityDomainClosed() {
   if (model_->step() == Step::kGPMReauthForPinReset) {
-    ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kReauthCancelled);
+    ChangePinControllerImpl::RecordHistogram(
+        EnclaveChangePinEvent::kReauthCancelled);
   }
   // For modal get requests, fallback to the credential selector if the user
   // dismissed the recovery window. This will ensure the users to have a backup
@@ -602,7 +602,8 @@ void AuthenticatorRequestDialogController::
 void AuthenticatorRequestDialogController::CancelAuthenticatorRequest() {
   if (model_->step() == Step::kGPMChangeArbitraryPin ||
       model_->step() == Step::kGPMChangePin) {
-    ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kNewPinCancelled);
+    ChangePinControllerImpl::RecordHistogram(
+        EnclaveChangePinEvent::kNewPinCancelled);
   }
   if (ui_presentation() == UIPresentation::kAutofill) {
     // Conditional UI requests are never cancelled, they restart silently.
