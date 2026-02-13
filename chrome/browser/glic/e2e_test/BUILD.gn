@@ -73,7 +73,7 @@ test("glic_internal_e2e_interactive_ui_tests") {
     "//third_party/catapult/telemetry/telemetry/bin/",
 
     # Used in WPR command.
-    "//third_party/catapult/web_page_replay_go/deterministic.js",
+    "//third_party/webpagereplay/deterministic.js",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [

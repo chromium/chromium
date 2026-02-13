@@ -89,7 +89,7 @@ If there are missing files or broken request you can try to manually add static 
 Note that this does work well only for static files, as there is currently no way to specify cookies. You will find the $WPR_ARCHIVE in the system_health_{desktop/mobile}.json file. See the catapult instructions on how to install the required go packages.
 
 ```
-go run third_party/catapult/web_page_replay_go/src/httparchive.go add "$WPR_ARCHIVE" "$WPR_ARCHIVE" url1 url2...
+go run third_party/webpagereplay/src/httparchive.go add "$WPR_ARCHIVE" "$WPR_ARCHIVE" url1 url2...
 ```
 
 After updating the archive, go back to the previous replay step and iterate.

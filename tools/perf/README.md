@@ -102,4 +102,4 @@ A helper script to automate various tasks related to the update of
 recordings from live websites, replay those to make sure they work, upload them
 to cloud storage, and finally send a CL to review with the new recordings.
 
-[wpr]: https://github.com/catapult-project/catapult/tree/master/web_page_replay_go
+[wpr]: https://chromium.googlesource.com/webpagereplay/+/HEAD/README.md#running-on-android
