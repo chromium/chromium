@@ -69,7 +69,7 @@ Here is an example of a try job that would evaluate the impact of a [patch CL](h
 
 ### Detailed results
 
-On the Job result page, click the "Analyze benchmark results" link at the top. See the [metrics results UI documentation](https://github.com/catapult-project/catapult/blob/master/docs/metrics-results-ui.md) for more details on reading the results.
+On the Job result page, click the "Analyze benchmark results" link at the top. See the [metrics results UI documentation](https://chromium.googlesource.com/catapult/+/refs/heads/main/docs/metrics-results-ui.md) for more details on reading the results.
 
 ### Traces
 

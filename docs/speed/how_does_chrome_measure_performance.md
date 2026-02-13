@@ -29,7 +29,7 @@ chromium commits and is monitored by several perf sheriff rotations.
 
   * **[What is the perf waterfall?](perf_waterfall.md)** An overview of the
     waterfall that runs the continuous build.
-  * **[How telemetry works](https://github.com/catapult-project/catapult/blob/master/telemetry/README.md)**:
+  * **[How telemetry works](https://chromium.googlesource.com/catapult/+/refs/heads/main/telemetry/README.md)**:
     An overview of telemetry, our performance testing harness.
   * **[How perf bisects work](bisects.md)**: An overview of the bisect bots,
     which narrow down regressions over a CL range to a specific commit.
@@ -43,7 +43,7 @@ chromium commits and is monitored by several perf sheriff rotations.
   * **[How to run on perf trybots](perf_trybots.md)**: Have an unsubmitted
     CL and want to run benchmarks on it? Need to try a variety of hardware and
     operating systems? Use the perf trybots.
-  * **[How to run telemetry locally](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md)**:
+  * **[How to run telemetry locally](https://chromium.googlesource.com/catapult/+/refs/heads/main/telemetry/docs/run_benchmarks_locally.md)**:
     Instructions on running telemetry benchmarks on your local machine.
   * **[List of platforms in the lab](perf_lab_platforms.md)**: Devices,
     configurations, and OSes the chromium.perf lab tests on.

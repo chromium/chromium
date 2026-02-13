@@ -38,7 +38,7 @@ tools/perf/run_benchmark system_health.common_desktop \
 ```
 
 For more information, see the
-[Telemetry documentation](https://github.com/catapult-project/catapult/blob/main/telemetry/docs/run_benchmarks_locally.md)
+[Telemetry documentation](https://chromium.googlesource.com/catapult/+/refs/heads/main/telemetry/docs/run_benchmarks_locally.md)
 or command-line help for tools/perf/run_benchmark.
 
 ### Capture web page replay for new or modified stories

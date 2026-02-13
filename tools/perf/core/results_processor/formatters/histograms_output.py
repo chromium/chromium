@@ -5,7 +5,7 @@
 """Output formatter for HistogramSet Results Format.
 
 Format specification:
-https://github.com/catapult-project/catapult/blob/master/docs/histogram-set-json-format.md
+https://chromium.googlesource.com/catapult/+/refs/heads/main/docs/histogram-set-json-format.md
 """
 
 import json

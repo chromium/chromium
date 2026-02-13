@@ -9,7 +9,7 @@
     to record a trace and attach it to the bug.
   * **Try TraceOnTap** the [TraceOnTap Extension](http://goto.google.com/traceontap)
     makes it easier to record traces and attach them to bugs.
-    [Source code](https://github.com/catapult-project/catapult/tree/master/experimental/trace_on_tap)
+    [Source code](https://chromium.googlesource.com/catapult/+/refs/heads/main/experimental/trace_on_tap/)
 
 ## Investigating janky scroll/animation
 See [this detailed guide](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/debug-janks.md).

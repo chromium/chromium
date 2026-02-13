@@ -41,7 +41,7 @@ The primary power benchmarks are:
 To add a new test case to a power benchmark, contact the owner of the benchmark above that sounds like the best fit.
 
 ## Running the benchmarks locally
-See [this page](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md) for instructions on how to run the benchmarks locally.
+See [this page](https://chromium.googlesource.com/catapult/+/refs/heads/main/telemetry/docs/run_benchmarks_locally.md) for instructions on how to run the benchmarks locally.
 
 ## Seeing power benchmark results
 Enter the platform, benchmark, and metric you care about on [this page](https://chromeperf.appspot.com/report) to see how the power metrics have moved over time.

@@ -23,7 +23,7 @@ execute tests, rather than smaller test harnesses, has yielded several
 advantages: testing what is shipped, improved reliability, and improved
 performance.
 
-[Telemetry framework]: https://github.com/catapult-project/catapult/tree/master/telemetry
+[Telemetry framework]: https://chromium.googlesource.com/catapult/+/refs/heads/main/telemetry/
 
 A subset of the tests, called "pixel tests", grab screen snapshots of the web
 page in order to validate Chromium's rendering architecture end-to-end. Where

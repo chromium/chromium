@@ -20,7 +20,7 @@ automate the Chrome Speed Releasing workflow:
     These bots also support running performance try jobs on unsubmitted CLs.
   * Whether a performance test is run locally or in the lab, right now or last
     year, we want to make it easy to understand and share the results. We
-    develop [data formats](https://github.com/catapult-project/catapult/blob/master/docs/histogram-set-json-format.md)
+    develop [data formats](https://chromium.googlesource.com/catapult/+/refs/heads/main/docs/histogram-set-json-format.md)
     and user interfaces that make it easy to dig deeply into performance
     regressions.
 

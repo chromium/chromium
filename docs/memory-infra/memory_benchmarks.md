@@ -17,7 +17,7 @@ and on how to diagnose regressions.
 *   **Benchmark:** a combination of (one or more) user stories and (one or
     more) metrics.
 
-[Telemetry]: https://github.com/catapult-project/catapult/blob/master/telemetry/README.md
+[Telemetry]: https://chromium.googlesource.com/catapult/+/refs/heads/main/telemetry/README.md
 
 ## System Health
 

@@ -53,7 +53,7 @@ any test that runs on the
     by the dashboard to the end of the revision range for the point you clicked
     on. You can set it to a later commit pos to bisect a larger range.
   * **Story Filter**: This is a flag specific to
-    [telemetry](https://github.com/catapult-project/catapult/blob/master/telemetry/README.md).
+    [telemetry](https://chromium.googlesource.com/catapult/+/refs/heads/main/telemetry/README.md).
     It tells telemetry to only run a specific test case, instead of running all
     the test cases in the suite. This dramatically reduces bisect time for
     large test suites. The dashboard will prefill this box based on the graph

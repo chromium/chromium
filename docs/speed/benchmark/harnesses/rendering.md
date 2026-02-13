@@ -10,7 +10,7 @@ This document provides an overview of the benchmarks used to monitor Chrome’s 
 -   **Page Set** (or story set): A collection of different pages, organized by some shared characteristic (ex. top real world mobile sites)
 -   **Metric**: A process that describes how to collect meaningful data from a Chrome trace and calculate results (ex. cpu time per frame)
 -   **Benchmark**: A combination of a page set and multiple metrics
--   **Telemetry**: The [framework](https://github.com/catapult-project/catapult/blob/master/telemetry/README.md) used for Chrome performance testing, which allows benchmarks to be run and metrics to be collected
+-   **Telemetry**: The [framework](https://chromium.googlesource.com/catapult/+/refs/heads/main/telemetry/README.md) used for Chrome performance testing, which allows benchmarks to be run and metrics to be collected
 
 ## Overview
 
