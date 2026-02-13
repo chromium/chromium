@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.68"
+rust-version = "1.71"
 name = "zmij"
-version = "1.0.19"
+version = "1.0.21"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 exclude = ["*.png"]
@@ -80,7 +80,7 @@ version = "1.8"
 version = "1"
 
 [dev-dependencies.rand]
-version = "0.9"
+version = "0.10"
 
 [dev-dependencies.ryu]
 version = "1"

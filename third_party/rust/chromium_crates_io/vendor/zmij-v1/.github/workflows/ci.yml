@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [nightly, beta, stable, 1.86.0, 1.68.0]
+        rust: [nightly, beta, stable, 1.86.0, 1.71.0]
         arch: [x86_64, aarch64]
         os: [ubuntu]
         include:
@@ -43,9 +43,9 @@ jobs:
       - run: cargo build --tests --features no-panic --release
         if: matrix.rust == 'nightly'
       - run: cargo test
-        if: matrix.rust != '1.68.0'
+        if: matrix.rust != '1.71.0'
       - run: cargo test --release
-        if: matrix.rust != '1.68.0'
+        if: matrix.rust != '1.71.0'
       - run: cargo check
         env:
           RUSTFLAGS: ${{env.RUSTFLAGS}} -Ctarget-cpu=native
@@ -54,11 +54,11 @@ jobs:
         env:
           RUSTFLAGS: ${{env.RUSTFLAGS}} -Ctarget-cpu=native
       - run: cargo test
-        if: matrix.rust != '1.68.0'
+        if: matrix.rust != '1.71.0'
         env:
           RUSTFLAGS: ${{env.RUSTFLAGS}} -Ctarget-cpu=native
       - run: cargo test --release
-        if: matrix.rust != '1.68.0'
+        if: matrix.rust != '1.71.0'
         env:
           RUSTFLAGS: ${{env.RUSTFLAGS}} -Ctarget-cpu=native
       - uses: actions/upload-artifact@v6
@@ -118,7 +118,10 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
-      - uses: dtolnay/rust-toolchain@miri
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2026-02-11 # https://github.com/rust-lang/miri/issues/4855
+          components: miri, rust-src
       - run: cargo miri setup
       - run: cargo miri test --target ${{matrix.target}}
         env:

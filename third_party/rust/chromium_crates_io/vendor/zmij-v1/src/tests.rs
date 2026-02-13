@@ -5,7 +5,11 @@ use num_bigint::BigUint as Uint;
 const _: () = {
     let static_data =
         mem::size_of_val(&crate::POW10_SIGNIFICANDS) + mem::size_of_val(&crate::DIGITS2);
-    assert!(static_data == 10120); // 9.9K
+    if crate::Pow10SignificandsTable::COMPRESS {
+        assert!(static_data == 200);
+    } else {
+        assert!(static_data == 10120); // 9.9K
+    }
 };
 
 #[cfg(target_endian = "little")]
@@ -61,9 +65,11 @@ fn pow10() {
         };
         let hi = u64::try_from(&result >> 64).unwrap();
         let lo = u64::try_from(result & (Uint::from(2_u8).pow(64) - Uint::from(1_u8))).unwrap();
-        assert_eq!(
-            crate::POW10_SIGNIFICANDS.get(DEC_EXP_MIN + i as i32),
-            crate::uint128 { hi, lo },
-        );
+        if !crate::Pow10SignificandsTable::COMPRESS {
+            assert_eq!(
+                crate::POW10_SIGNIFICANDS.get(DEC_EXP_MIN + i as i32),
+                crate::uint128 { hi, lo },
+            );
+        }
     }
 }

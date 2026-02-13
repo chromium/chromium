@@ -1,6 +1,6 @@
 [package]
 name = "zmij"
-version = "1.0.19"
+version = "1.0.21"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["value-formatting", "no-std", "no-std::no-alloc"]
 description = "A double-to-string conversion algorithm based on Schubfach and yy"
@@ -10,7 +10,7 @@ exclude = ["*.png"]
 keywords = ["float"]
 license = "MIT"
 repository = "https://github.com/dtolnay/zmij"
-rust-version = "1.68"
+rust-version = "1.71"
 
 [dependencies]
 no-panic = { version = "0.1.36", optional = true }
@@ -20,7 +20,7 @@ num-bigint = "0.4"
 num_cpus = "1.8"
 num-integer = "0.1"
 opt-level = "1"
-rand = "0.9"
+rand = "0.10"
 ryu = "1"
 
 [target.'cfg(not(miri))'.dev-dependencies]
