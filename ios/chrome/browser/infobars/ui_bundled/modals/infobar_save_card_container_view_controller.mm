@@ -111,7 +111,9 @@ constexpr CGFloat kButtonStackVerticalMargin = 9;
     [view.trailingAnchor constraintEqualToAnchor:saveCardView.trailingAnchor],
     [view.widthAnchor constraintEqualToAnchor:saveCardView.widthAnchor],
 
-    [saveCardView.bottomAnchor constraintEqualToAnchor:_buttonStack.topAnchor],
+    [saveCardView.bottomAnchor
+        constraintEqualToAnchor:_buttonStack.topAnchor
+                       constant:-kButtonStackVerticalMargin],
 
     [view.centerXAnchor constraintEqualToAnchor:_buttonStack.centerXAnchor],
     [view.widthAnchor constraintEqualToAnchor:_buttonStack.widthAnchor

@@ -152,7 +152,9 @@ constexpr CGFloat kButtonStackVerticalMargin = 9;
     [view.trailingAnchor constraintEqualToAnchor:passwordView.trailingAnchor],
     [view.widthAnchor constraintEqualToAnchor:passwordView.widthAnchor],
 
-    [passwordView.bottomAnchor constraintEqualToAnchor:_buttonStack.topAnchor],
+    [passwordView.bottomAnchor
+        constraintEqualToAnchor:_buttonStack.topAnchor
+                       constant:-kButtonStackVerticalMargin],
 
     [view.centerXAnchor constraintEqualToAnchor:_buttonStack.centerXAnchor],
     [view.widthAnchor constraintEqualToAnchor:_buttonStack.widthAnchor
