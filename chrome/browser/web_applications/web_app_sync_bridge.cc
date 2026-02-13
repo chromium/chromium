@@ -88,8 +88,8 @@ ParseManifestIdFromSyncEntity(const sync_pb::WebAppSpecifics& specifics) {
     return base::unexpected(StorageKeyParseResult::kInvalidStartUrl);
   }
 
-  // Set the manifest id first, as ApplySyncDataToApp verifies that the
-  // computed manifest ids match.
+  // Set the manifest id first, as `WebApp::MergeInSyncDataFromApp()` ensures
+  // that the computed manifest ids match.
   webapps::ManifestId manifest_id;
   if (specifics.has_relative_manifest_id()) {
     manifest_id =
@@ -147,62 +147,6 @@ std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   return entity_data;
 }
 
-void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_proto,
-                        WebApp* app) {
-  app->AddSource(WebAppManagement::kSync);
-
-  sync_pb::WebAppSpecifics modified_sync_proto = sync_proto;
-
-  std::string relative_manifest_id_path =
-      RelativeManifestIdPath(app->manifest_id());
-  if (modified_sync_proto.has_relative_manifest_id() &&
-      modified_sync_proto.relative_manifest_id() != relative_manifest_id_path) {
-    modified_sync_proto.set_relative_manifest_id(relative_manifest_id_path);
-    // Record when this happens. When it is rare enough we could remove the
-    // logic here and instead drop incoming sync data with fragment parts in the
-    // manifest_id_path.
-    base::UmaHistogramBoolean("WebApp.ApplySyncDataToApp.ManifestIdMatch",
-                              false);
-  } else {
-    // Record success for comparison.
-    base::UmaHistogramBoolean("WebApp.ApplySyncDataToApp.ManifestIdMatch",
-                              true);
-  }
-
-  // Prevent incoming sync data from clearing recently-added fields in our local
-  // copy. This ensures new sync fields are preserved despite old (pre-M125)
-  // clients incorrectly clearing unknown fields. Any new fields added to the
-  // sync proto should also be added here (if we don't want them to be cleared
-  // by old clients) until this block can be removed. This can be removed when
-  // there are few <M125 clients remaining.
-  if (app->sync_proto().has_user_display_mode_cros() &&
-      !modified_sync_proto.has_user_display_mode_cros()) {
-    modified_sync_proto.set_user_display_mode_cros(
-        app->sync_proto().user_display_mode_cros());
-  }
-  if (app->sync_proto().has_user_display_mode_default() &&
-      !modified_sync_proto.has_user_display_mode_default()) {
-    modified_sync_proto.set_user_display_mode_default(
-        app->sync_proto().user_display_mode_default());
-  }
-
-  // Ensure the current platform's UserDisplayMode is set.
-  // Conditional to avoid clobbering an unknown new UDM with a fallback one.
-  if (!HasCurrentPlatformUserDisplayMode(modified_sync_proto)) {
-    auto udm = ResolvePlatformSpecificUserDisplayMode(modified_sync_proto);
-    SetPlatformSpecificUserDisplayMode(udm, &modified_sync_proto);
-  }
-
-  // Ensure that incoming sync proto that does not have the manifest id of the
-  // source app set does not clear the existing metadata stored on disk.
-  if (app->sync_proto().has_migrated_from_manifest_id() &&
-      !modified_sync_proto.has_migrated_from_manifest_id()) {
-    modified_sync_proto.set_migrated_from_manifest_id(
-        app->sync_proto().migrated_from_manifest_id());
-  }
-  app->SetSyncProto(std::move(modified_sync_proto));
-  CHECK(HasCurrentPlatformUserDisplayMode(app->sync_proto()));
-}
 
 // static
 base::AutoReset<bool>
@@ -686,7 +630,7 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
 
   // Handle EntityChange::ACTION_ADD and EntityChange::ACTION_UPDATE.
   CHECK(change.data().specifics.has_web_app());
-  const sync_pb::WebAppSpecifics& specifics = change.data().specifics.web_app();
+  sync_pb::WebAppSpecifics specifics = change.data().specifics.web_app();
 
   base::expected<webapps::ManifestId, ManifestIdParseResult> manifest_id =
       ValidateManifestIdFromParsableSyncEntity(specifics, existing_web_app);
@@ -700,6 +644,8 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
                                 ManifestIdParseResult::kSuccess);
 
   std::unique_ptr<WebApp> web_app;
+  specifics.set_relative_manifest_id(
+      RelativeManifestIdPath(manifest_id.value()));
 
   if (!existing_web_app) {
     // Any remote entities that don’t exist locally must be written to local
@@ -712,10 +658,8 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
                           base::CompareCase::SENSITIVE)) {
       scope = start_url.GetWithoutFilename();
     }
-    web_app = std::make_unique<WebApp>(manifest_id.value(),
-                                       GURL(specifics.start_url()), scope,
-                                       /*parent_app_id=*/std::nullopt,
-                                       /*parent_manifest_id=*/std::nullopt);
+
+    web_app = std::make_unique<WebApp>(specifics);
 
     // Request a followup sync-initiated install for this stub app to fetch
     // full local data and all the icons.
@@ -736,7 +680,8 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
     web_app = std::make_unique<WebApp>(*existing_web_app);
   }
 
-  ApplySyncDataToApp(specifics, web_app.get());
+  web_app->MergeDataFromSyncSystem(specifics,
+                                   base::PassKey<WebAppSyncBridge>());
 
   if (existing_web_app) {
     if (existing_web_app->user_display_mode() != web_app->user_display_mode()) {

@@ -508,8 +508,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
             webapps::ManifestId(GURL("https://example.com/explicit_id")));
   EXPECT_EQ(web_app->sync_proto().relative_manifest_id(), stripped_manifest_id);
 
+  // The `true` bucket is being measured because the WebAppSyncBridge takes care
+  // of sanitizing inputs.
   histogram_tester.ExpectUniqueSample(
-      "WebApp.ApplySyncDataToApp.ManifestIdMatch", false, 1);
+      "WebApp.ApplySyncDataToApp.ManifestIdMatch", true, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,

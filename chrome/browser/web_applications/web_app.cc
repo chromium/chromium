@@ -20,6 +20,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/to_value_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -27,6 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
@@ -52,6 +54,7 @@
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_scope.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -313,7 +316,10 @@ WebApp::WebApp(const webapps::ManifestId& manifest_id,
 }
 
 WebApp::WebApp(const sync_pb::WebAppSpecifics& sync_proto)
-    : sync_proto_(sync_proto) {
+    : chromeos_data_(IsChromeOsDataMandatory()
+                         ? std::make_optional<WebAppChromeOsData>()
+                         : std::nullopt),
+      sync_proto_(sync_proto) {
   CHECK(sync_proto_.has_start_url() && GURL(sync_proto_.start_url()).is_valid())
       << "Invalid start_url in sync proto: " << sync_proto_.start_url();
   GURL start_url = GURL(sync_proto_.start_url());
@@ -709,53 +715,6 @@ void WebApp::SetRunOnOsLoginMode(RunOnOsLoginMode mode) {
   run_on_os_login_mode_ = mode;
 }
 
-void WebApp::SetSyncProto(sync_pb::WebAppSpecifics sync_proto) {
-  // Verify that the start_url is properly set.
-  CHECK(sync_proto.has_start_url() && GURL(sync_proto.start_url()).is_valid());
-
-  // Sync data must never be set on an app with mismatching manifest_id.
-  // TODO(crbug.com/482337698): See if this can be removed in favor of a
-  // `CHECK(sync_proto.has_relative_manifest_id())`?
-  // There are some `WebAppProtoUtilsTest` that verify that a proto from M85,
-  // that didn't have this field, can be parsed correctly while `SetSyncProto()`
-  // is called. It might be nice to get rid of them, and figure out other ways
-  // to verify backwards compatibility.
-  CHECK(manifest_id().is_valid());
-  std::string relative_manifest_id_path = RelativeManifestIdPath(manifest_id());
-  if (sync_proto.has_relative_manifest_id()) {
-    CHECK_EQ(sync_proto.relative_manifest_id(), relative_manifest_id_path);
-  } else {
-    sync_proto.set_relative_manifest_id(relative_manifest_id_path);
-  }
-  // Clear any invalid less-important fields.
-  if (sync_proto.has_scope() && !GURL(sync_proto.scope()).is_valid()) {
-    DLOG(ERROR) << "SetSyncProto: scope has invalid url: "
-                << sync_proto.scope();
-    sync_proto.clear_scope();
-  }
-  if (!ParseAppIconInfos("SetSyncProto", sync_proto.icon_infos()).has_value()) {
-    sync_proto.clear_icon_infos();
-  }
-  if (sync_proto.has_user_launch_ordinal() &&
-      !syncer::StringOrdinal(sync_proto.user_launch_ordinal()).IsValid()) {
-    sync_proto.clear_user_launch_ordinal();
-  }
-  if (sync_proto.has_user_page_ordinal() &&
-      !syncer::StringOrdinal(sync_proto.user_page_ordinal()).IsValid()) {
-    sync_proto.clear_user_page_ordinal();
-  }
-  if (!ParseAppIconInfos("SetSyncProtoTrustedIcons", sync_proto.trusted_icons())
-           .has_value()) {
-    sync_proto.clear_trusted_icons();
-  }
-  if (sync_proto.has_migrated_from_manifest_id() &&
-      !GURL(sync_proto.migrated_from_manifest_id()).is_valid()) {
-    sync_proto.clear_migrated_from_manifest_id();
-  }
-
-  sync_proto_ = std::move(sync_proto);
-}
-
 void WebApp::SetLaunchQueryParams(
     std::optional<std::string> launch_query_params) {
   launch_query_params_ = std::move(launch_query_params);
@@ -1080,6 +1039,71 @@ void WebApp::SetUserLaunchOrdinal(syncer::StringOrdinal launch_ordinal) {
     return;
   }
   sync_proto_.set_user_launch_ordinal(launch_ordinal.ToInternalValue());
+}
+
+void WebApp::MergeDataFromSyncSystem(
+    const sync_pb::WebAppSpecifics& incoming_sync,
+    base::PassKey<WebAppSyncBridge>) {
+  AddSource(WebAppManagement::kSync);
+
+  sync_pb::WebAppSpecifics modified_sync_proto = incoming_sync;
+
+  // Verify that the start_url is properly set.
+  CHECK(modified_sync_proto.has_start_url() &&
+        GURL(modified_sync_proto.start_url()).is_valid());
+
+  CHECK(manifest_id().is_valid());
+  std::string relative_manifest_id_path = RelativeManifestIdPath(manifest_id());
+
+  // This should be already set by the WebAppSyncBridge.
+  CHECK(modified_sync_proto.has_relative_manifest_id());
+  if (modified_sync_proto.relative_manifest_id() != relative_manifest_id_path) {
+    modified_sync_proto.set_relative_manifest_id(relative_manifest_id_path);
+    // Record when this happens. When it is rare enough we could remove the
+    // logic here and instead drop incoming sync data with fragment parts in
+    // the manifest_id_path.
+    base::UmaHistogramBoolean("WebApp.ApplySyncDataToApp.ManifestIdMatch",
+                              false);
+  } else {
+    // Record success for comparison.
+    base::UmaHistogramBoolean("WebApp.ApplySyncDataToApp.ManifestIdMatch",
+                              true);
+  }
+
+  // Prevent incoming sync data from clearing recently-added fields in our local
+  // copy. This ensures new sync fields are preserved despite old (pre-M125)
+  // clients incorrectly clearing unknown fields. Any new fields added to the
+  // sync proto should also be added here (if we don't want them to be cleared
+  // by old clients) until this block can be removed. This can be removed when
+  // there are few <M125 clients remaining.
+  if (sync_proto_.has_user_display_mode_cros() &&
+      !modified_sync_proto.has_user_display_mode_cros()) {
+    modified_sync_proto.set_user_display_mode_cros(
+        sync_proto_.user_display_mode_cros());
+  }
+  if (sync_proto_.has_user_display_mode_default() &&
+      !modified_sync_proto.has_user_display_mode_default()) {
+    modified_sync_proto.set_user_display_mode_default(
+        sync_proto_.user_display_mode_default());
+  }
+
+  // Ensure the current platform's UserDisplayMode is set.
+  // Conditional to avoid clobbering an unknown new UDM with a fallback one.
+  if (!HasCurrentPlatformUserDisplayMode(modified_sync_proto)) {
+    auto udm = ResolvePlatformSpecificUserDisplayMode(modified_sync_proto);
+    SetPlatformSpecificUserDisplayMode(udm, &modified_sync_proto);
+  }
+
+  // Ensure that incoming sync proto that does not have the manifest id of the
+  // source app set does not clear the existing metadata stored on disk.
+  if (sync_proto_.has_migrated_from_manifest_id() &&
+      !modified_sync_proto.has_migrated_from_manifest_id()) {
+    modified_sync_proto.set_migrated_from_manifest_id(
+        sync_proto_.migrated_from_manifest_id());
+  }
+
+  sync_proto_ = std::move(modified_sync_proto);
+  CHECK(HasCurrentPlatformUserDisplayMode(sync_proto_));
 }
 
 WebApp::ClientData::ClientData() = default;

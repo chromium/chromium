@@ -615,34 +615,29 @@ class ManifestUpdateManagerBrowserTest : public WebAppBrowserTestBase {
   }
 
   webapps::AppId InstallWebAppFromSync(const GURL& start_url) {
-    const webapps::ManifestId manifest_id =
-        GenerateManifestIdFromStartUrlOnly(start_url);
-    const webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
+    const webapps::AppId app_id = GenerateAppIdFromManifestId(
+        GenerateManifestIdFromStartUrlOnly(start_url));
     const GURL scope = GURL("https://example.com/sync_scope");
 
     std::vector<std::unique_ptr<WebApp>> add_synced_apps_data;
     {
-      auto synced_specifics_data =
-          std::make_unique<WebApp>(manifest_id, start_url, scope,
-                                   /*parent_app_id=*/std::nullopt,
-                                   /*parent_manifest_id=*/std::nullopt);
-
-      synced_specifics_data->AddSource(WebAppManagement::kSync);
-      synced_specifics_data->SetUserDisplayMode(
-          mojom::UserDisplayMode::kBrowser);
-      synced_specifics_data->SetName("Name From Sync");
-
       sync_pb::WebAppSpecifics sync_proto;
       sync_proto.set_name("Name From Sync");
       sync_proto.set_theme_color(SK_ColorMAGENTA);
       sync_proto.set_scope(scope.spec());
+      sync_proto.set_start_url(start_url.spec());
 
       apps::IconInfo apps_icon_info = CreateIconInfo(
           /*icon_base_url=*/start_url, IconPurpose::MONOCHROME, 64);
       sync_proto.mutable_icon_infos()->Add(
           AppIconInfoToSyncProto(std::move(apps_icon_info)));
 
-      synced_specifics_data->SetSyncProto(std::move(sync_proto));
+      auto synced_specifics_data = std::make_unique<WebApp>(sync_proto);
+
+      synced_specifics_data->AddSource(WebAppManagement::kSync);
+      synced_specifics_data->SetUserDisplayMode(
+          mojom::UserDisplayMode::kBrowser);
+      synced_specifics_data->SetName("Name From Sync");
 
       add_synced_apps_data.push_back(std::move(synced_specifics_data));
     }

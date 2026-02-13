@@ -1072,8 +1072,8 @@ TEST_F(WebAppSyncBridgeTest, SpecificsProtoWithNewFieldPreserved) {
       "\n\x1Dhttps://example.com/launchurl\x12\tTest "
       "name\x18\x1*\x14https://example.com/\xFA\xB5\xBF\x14\x5hello";
   const GURL start_url = GURL(kStartUrl);
-  const webapps::AppId app_id =
-      GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(
+      GenerateManifestIdFromStartUrlOnly(start_url));
 
   // Parse the proto.
   WebAppSpecifics sync_proto;
@@ -1099,8 +1099,6 @@ TEST_F(WebAppSyncBridgeTest, SpecificsProtoWithNewFieldPreserved) {
   const WebApp* app = fake_provider().registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(app);
 
-  // Clear the fields added due to normalizing the proto in `SetSyncProto` and
-  // `ApplySyncDataToApp`.
   WebAppSpecifics result_proto = app->sync_proto();
   result_proto.clear_relative_manifest_id();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1317,17 +1315,15 @@ TEST_P(WebAppSyncBridgeTest_UserDisplayModeSplit, SyncUpdateToUserDisplayMode) {
     if (local_other_platform_udm()) {
       ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
       WebApp* web_app = update->UpdateApp(app_id);
-      DCHECK(web_app);
-      WebAppSpecifics sync_proto = web_app->sync_proto();
+      CHECK(web_app);
 
       if (IsChromeOs()) {
-        sync_proto.set_user_display_mode_default(
+        web_app->UpdateDefaultUserDisplayModeInSyncProto(
             local_other_platform_udm().value());
       } else {
-        sync_proto.set_user_display_mode_cros(
+        web_app->UpdateCrOsUserDisplayModeInSyncProto(
             local_other_platform_udm().value());
       }
-      web_app->SetSyncProto(std::move(sync_proto));
     }
   }
 

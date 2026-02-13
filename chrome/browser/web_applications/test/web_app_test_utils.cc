@@ -756,7 +756,6 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
 std::unique_ptr<WebApp> CreateWebAppFromSyncProto(
     const sync_pb::WebAppSpecifics& sync_proto) {
   CHECK(sync_proto.has_start_url() && GURL(sync_proto.start_url()).is_valid());
-  CHECK(sync_proto.has_relative_manifest_id());
   auto web_app = std::make_unique<WebApp>(sync_proto);
   web_app->AddSource(WebAppManagement::kSync);
   return web_app;
