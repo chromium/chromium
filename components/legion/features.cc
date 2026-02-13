@@ -12,7 +12,10 @@ BASE_FEATURE(kLegionSeverAttestation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kLegionApiKey{&kLegion, "api-key", ""};
 
-const base::FeatureParam<std::string> kLegionUrl{&kLegion, "url", ""};
+const base::FeatureParam<std::string> kLegionUrl{
+    &kLegion, "url",
+    "privatearatea-pa.googleapis.com/ws/"
+    "mdi.privatearatea.PrivateArateaService.StartNoiseSession"};
 
 const base::FeatureParam<std::string> kLegionProxyServerUrl{&kLegion,
                                                             "proxy-url", ""};
