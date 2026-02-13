@@ -11,10 +11,12 @@
 #include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/types.h"
+#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
@@ -48,22 +50,30 @@ class WebUILoadingUtilSendDataTest
   base::test::TaskEnvironment task_environment_;
 };
 
+class BodyReader : public mojo::DataPipeDrainer::Client {
+ public:
+  explicit BodyReader(mojo::ScopedDataPipeConsumerHandle source)
+      : drainer_(this, std::move(source)) {
+    run_loop_.Run();
+  }
+
+  std::string TakeContent() { return std::move(content_); }
+
+  // mojo::DataPipeDrainer::Client:
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    content_.append(base::as_string_view(data));
+  }
+  void OnDataComplete() override { run_loop_.Quit(); }
+
+ private:
+  mojo::DataPipeDrainer drainer_;
+  base::RunLoop run_loop_;
+  std::string content_;
+};
+
 std::optional<std::string> ReadAllData(network::TestURLLoaderClient& client) {
-  size_t response_size;
-  MojoResult result;
-  result = client.response_body().ReadData(
-      MOJO_READ_DATA_FLAG_QUERY, base::span<uint8_t>(), response_size);
-  if (result != MOJO_RESULT_OK) {
-    return std::nullopt;
-  }
-  std::vector<uint8_t> response_bytes(response_size);
-  result = client.response_body().ReadData(MOJO_READ_DATA_FLAG_ALL_OR_NONE,
-                                           response_bytes, response_size);
-  if (result != MOJO_RESULT_OK) {
-    return std::nullopt;
-  }
-  std::string response_body(response_bytes.begin(), response_bytes.end());
-  return std::make_optional(response_body);
+  BodyReader reader(client.response_body_release());
+  return reader.TakeContent();
 }
 
 }  // namespace
