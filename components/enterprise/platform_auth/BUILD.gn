@@ -14,6 +14,8 @@ component("enterprise_platform_auth") {
     "url_session_test_util.mm",
     "url_session_url_loader.h",
     "url_session_url_loader.mm",
+    "url_session_url_loader_bridge.h",
+    "url_session_url_loader_bridge.mm",
   ]
 
   frameworks = [ "Foundation.framework" ]
