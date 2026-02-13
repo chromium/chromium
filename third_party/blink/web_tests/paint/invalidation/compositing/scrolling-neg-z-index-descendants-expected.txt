@@ -20,13 +20,13 @@
       "drawsContent": false
     },
     {
-      "name": "LayoutBlockFlow (relative positioned, relayout-boundary) DIV id='container'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='container'",
       "bounds": [102, 302],
       "backfaceVisibility": "hidden",
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (relative positioned, relayout-boundary) DIV id='container'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='container'",
       "position": [1, 1],
       "bounds": [100, 300],
       "drawsContent": false,
@@ -34,7 +34,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (relative positioned, relayout-boundary) DIV id='container'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='container'",
       "position": [1, 1],
       "bounds": [100, 430],
       "drawsContent": false,

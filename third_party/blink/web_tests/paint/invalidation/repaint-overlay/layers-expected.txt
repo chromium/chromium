@@ -17,19 +17,19 @@
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (relative positioned, relayout-boundary) DIV id='scrollable'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='scrollable'",
       "bounds": [302, 302],
       "transform": 3
     },
     {
-      "name": "LayoutBlockFlow (relative positioned, relayout-boundary) DIV id='scrollable'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='scrollable'",
       "position": [1, 1],
       "bounds": [300, 300],
       "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "LayoutBlockFlow (relative positioned, relayout-boundary) DIV id='scrollable'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='scrollable'",
       "position": [1, 1],
       "bounds": [795, 1491],
       "drawsContent": false,
