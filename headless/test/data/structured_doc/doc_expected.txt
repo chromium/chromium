@@ -12,6 +12,10 @@
          "type": "NonStruct"
       } ]
    }, {
+      "attributes": [ {
+         "ListNumbering": "Disc",
+         "O": "List"
+      } ],
       "type": "L",
       "~children": [ {
          "type": "LI",

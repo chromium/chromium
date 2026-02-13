@@ -2206,6 +2206,13 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 #else
     SerializeStyleAttributes(node_data);
 #endif
+  } else if (accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
+    // For PDF printing, we need to serialize the list style to distinguish
+    // ordered vs unordered lists in the PDF structure tree.
+    if (RoleValue() == ax::mojom::blink::Role::kListItem &&
+        GetListStyle() != ax::mojom::blink::ListStyle::kNone) {
+      node_data->SetListStyle(GetListStyle());
+    }
   }
 
   if (IsLinked()) {

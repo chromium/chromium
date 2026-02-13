@@ -67,8 +67,23 @@ inline constexpr char kPDFStructureTypeForm[] = "Form";
 // Standard attribute owners from PDF 32000-1:2008 spec, section 14.8.5.2
 // (Attribute owners are kind of like "categories" for structure node
 // attributes.)
+inline constexpr char kPDFListAttributeOwner[] = "List";
 inline constexpr char kPDFPrintFieldAttributeOwner[] = "PrintField";
 inline constexpr char kPDFTableAttributeOwner[] = "Table";
+
+// List Attributes from PDF 32000-1:2008 spec, Table 347
+inline constexpr char kPDFListNumberingAttribute[] = "ListNumbering";
+
+// ListNumbering Attribute values from PDF 32000-1:2008 spec Table 347
+inline constexpr char kPDFListNumberingNone[] = "None";
+inline constexpr char kPDFListNumberingDisc[] = "Disc";
+inline constexpr char kPDFListNumberingCircle[] = "Circle";
+inline constexpr char kPDFListNumberingSquare[] = "Square";
+inline constexpr char kPDFListNumberingDecimal[] = "Decimal";
+inline constexpr char kPDFListNumberingUpperRoman[] = "UpperRoman";
+inline constexpr char kPDFListNumberingLowerRoman[] = "LowerRoman";
+inline constexpr char kPDFListNumberingUpperAlpha[] = "UpperAlpha";
+inline constexpr char kPDFListNumberingLowerAlpha[] = "LowerAlpha";
 
 // Table Attributes from PDF 32000-1:2008 spec, section 14.8.5.7
 inline constexpr char kPDFTableCellColSpanAttribute[] = "ColSpan";

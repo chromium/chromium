@@ -3,7 +3,7 @@
    "type": "Document",
    "~children": [ {
       "attributes": [ {
-         "ListNumbering": "Decimal",
+         "ListNumbering": "Disc",
          "O": "List"
       } ],
       "type": "L",

@@ -117,6 +117,24 @@ void AppendFormFieldDescFromAccessibleName(const ui::AXNode* ax_node,
   }
 }
 
+// Maps AX ListStyle to PDF ListNumbering attribute value.
+const char* GetListNumberingFromListStyle(ax::mojom::ListStyle list_style) {
+  switch (list_style) {
+    case ax::mojom::ListStyle::kDisc:
+      return chrome_pdf::kPDFListNumberingDisc;
+    case ax::mojom::ListStyle::kCircle:
+      return chrome_pdf::kPDFListNumberingCircle;
+    case ax::mojom::ListStyle::kSquare:
+      return chrome_pdf::kPDFListNumberingSquare;
+    case ax::mojom::ListStyle::kNumeric:
+      return chrome_pdf::kPDFListNumberingDecimal;
+    case ax::mojom::ListStyle::kImage:
+    case ax::mojom::ListStyle::kOther:
+    case ax::mojom::ListStyle::kNone:
+      return nullptr;
+  }
+}
+
 // Convert an AXNode into a SkPDF::StructureElementNode in order to make a
 // tagged (accessible) PDF. Returns true on success and false if we don't
 // have enough data to build a valid tree.
@@ -187,9 +205,28 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
     case ax::mojom::Role::kRubyAnnotation:
       tag->fTypeString = chrome_pdf::kPDFStructureTypeRubyText;
       break;
-    case ax::mojom::Role::kList:
+    case ax::mojom::Role::kList: {
       tag->fTypeString = chrome_pdf::kPDFStructureTypeList;
+      // Get the list style from the first list item child to determine
+      // ordered vs unordered list type for the ListNumbering attribute.
+      for (size_t i = 0; i < ax_node->GetUnignoredChildCount(); i++) {
+        const ui::AXNode* child = ax_node->GetUnignoredChildAtIndex(i);
+        if (child->GetRole() == ax::mojom::Role::kListItem) {
+          int list_style_int =
+              child->GetIntAttribute(ax::mojom::IntAttribute::kListStyle);
+          auto list_style = static_cast<ax::mojom::ListStyle>(list_style_int);
+          const char* list_numbering =
+              GetListNumberingFromListStyle(list_style);
+          if (list_numbering) {
+            tag->fAttributes.appendName(chrome_pdf::kPDFListAttributeOwner,
+                                        chrome_pdf::kPDFListNumberingAttribute,
+                                        list_numbering);
+          }
+          break;
+        }
+      }
       break;
+    }
     case ax::mojom::Role::kListMarker:
       tag->fTypeString = chrome_pdf::kPDFStructureTypeListItemLabel;
       break;
