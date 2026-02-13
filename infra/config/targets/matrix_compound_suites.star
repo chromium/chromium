@@ -685,6 +685,9 @@ targets.legacy_matrix_compound_suite(
         # "ondevice_model_benchmark_tests_gpu_submodel_suite": None,
         # "ondevice_model_benchmark_tests_gpu_no_submodel_suite": None,
         # "ondevice_model_benchmark_tests_cpu_no_submodel_suite": None,
+        # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
+        # "litert_e2e_tests_gpu_suite": None,
+        "litert_e2e_tests_cpu_suite": None,
     },
 )
 
@@ -750,6 +753,19 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "ondevice_model_benchmark_tests_cpu_no_submodel_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+            ],
+        ),
+        # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
+        # "litert_e2e_tests_gpu_suite": targets.legacy_matrix_config(
+        #    mixins = [
+        #         "chrome-intelligence-swarming-pool",
+        #         "non-gce",
+        #     ],
+        # ),
+        "litert_e2e_tests_cpu_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
                 "non-gce",
@@ -831,6 +847,19 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "ondevice_model_benchmark_tests_cpu_no_submodel_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+            ],
+        ),
+        # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
+        # "litert_e2e_tests_gpu_suite": targets.legacy_matrix_config(
+        #     mixins = [
+        #         "chrome-intelligence-swarming-pool",
+        #         "non-gce",
+        #     ],
+        # ),
+        "litert_e2e_tests_cpu_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
                 "non-gce",

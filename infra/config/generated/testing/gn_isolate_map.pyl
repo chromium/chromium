@@ -1436,6 +1436,11 @@
     "label": "//chrome:linux_symbols",
     "type": "additional_compile_target",
   },
+  "litert_e2e_tests": {
+    "label": "//components/optimization_guide/internal/testing:litert_e2e_tests",
+    "type": "generated_script",
+    "module_scheme": "flat",
+  },
   "load_library_perf_tests": {
     "label": "//chrome/test:load_library_perf_tests",
     "type": "script",
