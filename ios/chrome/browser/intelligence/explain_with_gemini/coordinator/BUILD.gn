@@ -14,6 +14,8 @@ source_set("coordinator") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_content/model",
     "//ios/chrome/browser/browser_content/ui_bundled:edit_menu_utils",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",

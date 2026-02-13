@@ -2,7 +2,7 @@ include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/browser_content/model/edit_menu_builder.h",
   "+ios/chrome/browser/browser_content/ui_bundled",
-  "+ios/chrome/browser/explain_with_gemini/coordinator",
+  "+ios/chrome/browser/intelligence/explain_with_gemini/coordinator",
   "+ios/chrome/browser/intelligence/features",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/web_selection/model",
