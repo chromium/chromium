@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/scene/coordinator/scene_coordinator.h"
 
+#import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/scoped_observation.h"
@@ -39,6 +40,7 @@
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_factory.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator_delegate.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
@@ -76,8 +78,10 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
+#import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator_delegate.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
@@ -260,6 +264,8 @@ void OnListFamilyMembersResponse(
   [self stopAssistantSheetCoordinator];
   [_tabGridCoordinator stop];
   [_appBarCoordinator stop];
+  self.delegate = nil;
+  self.sceneURLLoadingService = nullptr;
 }
 
 #pragma mark - Public
@@ -927,6 +933,71 @@ void OnListFamilyMembersResponse(
                                          timeout:base::Seconds(2)
                                       completion:base::DoNothing()];
   });
+}
+
+- (void)openURLInNewTab:(OpenNewTabCommand*)command {
+  if (command.inIncognito) {
+    IncognitoReauthSceneAgent* reauthAgent =
+        [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
+    if (reauthAgent.authenticationRequired) {
+      __weak __typeof(self) weakSelf = self;
+      [reauthAgent
+          authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
+            if (success) {
+              [weakSelf openURLInNewTab:command];
+            }
+          }];
+      return;
+    }
+  }
+
+  UrlLoadParams params =
+      UrlLoadParams::InNewTab(command.URL, command.virtualURL);
+  params.SetInBackground(command.inBackground);
+  params.web_params.referrer = command.referrer;
+  params.web_params.extra_headers = [command.extraHeaders copy];
+  params.in_incognito = command.inIncognito;
+  params.append_to = command.appendTo;
+  params.origin_point = command.originPoint;
+  params.from_chrome = command.fromChrome;
+  params.user_initiated = command.userInitiated;
+  params.should_focus_omnibox = command.shouldFocusOmnibox;
+  params.inherit_opener = !command.inBackground;
+  self.sceneURLLoadingService->LoadUrlInNewTab(params);
+}
+
+- (void)openNewWindowWithActivity:(NSUserActivity*)userActivity {
+  if (!base::ios::IsMultipleScenesSupported()) {
+    return;  // silent no-op.
+  }
+
+  ProfileIOS* profile = self.profile;
+  if (!profile) {
+    return;
+  }
+
+  UIWindowSceneActivationRequestOptions* options =
+      [[UIWindowSceneActivationRequestOptions alloc] init];
+  options.requestingScene = self.sceneState.scene;
+  if (@available(iOS 26.0, *)) {
+    // For iOS26 windowing, ensure the new window doesn't fully overlap the
+    // prior window.
+    options.placement = [UIWindowSceneProminentPlacement prominentPlacement];
+  }
+
+  AttachProfileNameToActivity(userActivity, profile->GetProfileName());
+  PrefService* prefs = profile->GetPrefs();
+  if (IsIncognitoModeForced(prefs)) {
+    userActivity = AdaptUserActivityToIncognito(userActivity, true);
+  } else if (IsIncognitoModeDisabled(prefs)) {
+    userActivity = AdaptUserActivityToIncognito(userActivity, false);
+  }
+
+  [UIApplication.sharedApplication
+      requestSceneSessionActivation:nil /* make a new scene */
+                       userActivity:userActivity
+                            options:options
+                       errorHandler:nil];
 }
 
 #pragma mark - SettingsCommands

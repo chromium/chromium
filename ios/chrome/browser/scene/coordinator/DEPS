@@ -8,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/history/ui_bundled",
   "+ios/chrome/browser/incognito_interstitial/ui_bundled",
+  "+ios/chrome/browser/incognito_reauth/ui_bundled",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/mailto_handler/model",
   "+ios/chrome/browser/main/ui",
@@ -18,6 +19,7 @@ include_rules = [
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/tab_switcher/ui_bundled",
+  "+ios/chrome/browser/window_activities/model",
   "+ios/chrome/browser/youtube_incognito/coordinator",
   # keep-sorted end
 ]

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SCENE_COORDINATOR_SCENE_COORDINATOR_H_
 
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/root_coordinator/root_coordinator.h"
@@ -22,6 +23,7 @@ enum class SafariDataImportEntryPoint;
 @class BrowserLayoutViewController;
 @class OpenNewTabCommand;
 @class SceneCoordinator;
+class SceneUrlLoadingService;
 @class SettingsNavigationController;
 @class ShowSigninCommand;
 @class SigninCoordinator;
@@ -58,6 +60,10 @@ enum class WarningType;
 
 // Returns YES if sign-in is in progress.
 @property(nonatomic, readonly) BOOL isSigninInProgress;
+
+// The scene level component for url loading.
+@property(nonatomic, assign) raw_ptr<SceneUrlLoadingService>
+    sceneURLLoadingService;
 
 // Sets the main, inactive, and incognito browsers from the given provider.
 - (void)setBrowsersFromProvider:(id<BrowserProviderInterface>)provider;
@@ -227,6 +233,12 @@ enum class WarningType;
 // for `referrer`.
 - (void)dismissModalsAndShowPasswordCheckupPageForReferrer:
     (password_manager::PasswordCheckReferrer)referrer;
+
+// Opens the `command` URL in a new tab.
+- (void)openURLInNewTab:(OpenNewTabCommand*)command;
+
+// Open a new window with `userActivity`
+- (void)openNewWindowWithActivity:(NSUserActivity*)userActivity;
 
 @end
 

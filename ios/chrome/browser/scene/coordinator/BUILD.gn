@@ -32,6 +32,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/history/ui_bundled:coordinator",
     "//ios/chrome/browser/history/ui_bundled:coordinator_factory",
     "//ios/chrome/browser/incognito_interstitial/ui_bundled:coordinator",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/mailto_handler/model",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
