@@ -6553,5 +6553,71 @@ TEST_F(AIPageContentAgentTest, MultipleInteractionDisabledReasons) {
                   InteractionDisabledReason::kCursorNotAllowed));
 }
 
+TEST_F(AIPageContentAgentTest, ZeroSizeActionableElement) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='zero' style='width: 0; height: 0;' onclick='void(0)'></div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* zero_node = FindNodeBySelector("#zero");
+  // An actionable element with 0 size should still be included in the APC tree
+  // if it is visible, e.g. it doesn't have visibility: hidden.
+  ASSERT_TRUE(zero_node);
+  ASSERT_TRUE(zero_node->content_attributes->geometry);
+  EXPECT_TRUE(
+      zero_node->content_attributes->geometry->outer_bounding_box.IsEmpty());
+  EXPECT_TRUE(
+      zero_node->content_attributes->geometry->visible_bounding_box.IsEmpty());
+}
+
+TEST_F(AIPageContentAgentTest, ZeroSizeNonActionableElement) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='zero' style='width: 0; height: 0;'></div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* zero_node = FindNodeBySelector("#zero");
+  // A non-actionable element with 0 size should be excluded from the APC tree.
+  EXPECT_FALSE(zero_node);
+}
+
+TEST_F(AIPageContentAgentTest, ZeroSizeContainerWithVisibleChild) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='zero' style='width: 0; height: 0; position: fixed;'>"
+      "    <div id='visible' style='width: 10px; height: 10px;'>text</div>"
+      "  </div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* zero_node = FindNodeBySelector("#zero");
+  // A container with 0 size but visible children should be included.
+  ASSERT_TRUE(zero_node);
+  const auto* visible_node = FindNodeBySelector("#visible");
+  ASSERT_TRUE(visible_node);
+
+  // Verify that 'visible' is a child of 'zero' in the APC tree.
+  bool found = false;
+  for (const auto& child : zero_node->children_nodes) {
+    if (child->content_attributes->dom_node_id ==
+        visible_node->content_attributes->dom_node_id) {
+      found = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
+}
+
 }  // namespace
 }  // namespace blink
