@@ -260,6 +260,9 @@ public class LocationBarMediatorTest {
         doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo();
         SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
         doReturn(mUrlBarData).when(mLocationBarDataProvider).getUrlBarData();
+        doReturn(ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false))
+                .when(mLocationBarDataProvider)
+                .getPrimaryColor();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doAnswer(i -> mLocationBarDataProvider.getTab().getUserDataHost())
                 .when(mLocationBarDataProvider)
@@ -447,6 +450,7 @@ public class LocationBarMediatorTest {
                 .when(mPreloadPagesSettingsJni)
                 .getState(eq(mProfile));
         GURL url = JUnitTestGURLs.RED_1;
+        doReturn(url).when(mLocationBarDataProvider).getCurrentGurl();
         mMediator.setUrl(url, null);
         doReturn(true).when(mLocationBarDataProvider).hasTab();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
@@ -917,9 +921,6 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testUpdateColors_default() {
-        final int primaryColor =
-                ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false);
-        doReturn(primaryColor).when(mLocationBarDataProvider).getPrimaryColor();
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
 
         mMediator.updateBrandedColorScheme();
@@ -931,6 +932,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testUpdateColors_setColorScheme() {
+        doReturn(Color.BLACK).when(mLocationBarDataProvider).getPrimaryColor();
         var url = JUnitTestGURLs.BLUE_1;
         UrlBarData urlBarData = UrlBarData.forUrl(url);
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
@@ -1149,7 +1151,7 @@ public class LocationBarMediatorTest {
         verify(mStatusCoordinator).setShouldAnimateIconChanges(false);
         verify(mStatusCoordinator).onUrlFocusChange(false);
         verify(mUrlCoordinator).onUrlFocusChange(false);
-        verify(mUrlCoordinator)
+        verify(mUrlCoordinator, atLeastOnce())
                 .setUrlBarData(urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_ALL);
     }
 

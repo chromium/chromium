@@ -235,6 +235,8 @@ class LocationBarMediator
     // Tracks if the location bar is laid out in a focused state due to an ntp scroll.
     private boolean mIsLocationBarFocusedFromNtpScroll;
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
+    // TODO(https://crbug.com/481357849): Remove this.
+    private boolean mHasEverUpdatedBrandedColorScheme;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -1441,17 +1443,23 @@ class LocationBarMediator
     /** Update visuals to use a correct color scheme depending on the primary color. */
     @VisibleForTesting
     /* package */ void updateBrandedColorScheme() {
-        mBrandedColorScheme =
+        @BrandedColorScheme
+        int newScheme =
                 OmniboxResourceProvider.getBrandedColorScheme(
                         mContext,
                         mLocationBarDataProvider.isIncognitoBranded(),
                         getPrimaryBackgroundColor());
+        if (newScheme == mBrandedColorScheme && mHasEverUpdatedBrandedColorScheme) return;
+        mHasEverUpdatedBrandedColorScheme = true;
+        mBrandedColorScheme = newScheme;
 
         // The delete button only appears when the url bar has focus, so its tint is rather static,
         // and need not be assigned in updateButtonTints().
         mLocationBarLayout.setDeleteButtonTint(
                 ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme));
         mUrlCoordinator.setBrandedColorScheme(mBrandedColorScheme);
+        // This sets spans inside the data object that override the color.
+        updateUrl();
         mStatusCoordinator.setBrandedColorScheme(mBrandedColorScheme);
         if (mAutocompleteCoordinator != null) {
             mAutocompleteCoordinator.updateVisualsForState(mBrandedColorScheme);
