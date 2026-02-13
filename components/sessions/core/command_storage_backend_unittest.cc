@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -18,10 +19,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/session_constants.h"
@@ -123,8 +126,21 @@ class CommandStorageBackendTest : public testing::Test {
     return CommandStorageBackend::FilePathFromTime(type, path, time);
   }
 
-  const base::FilePath& file_path() const { return file_path_; }
+  bool copyTestDataToSessionFile(const std::string& test_data_filename) {
+    base::FilePath test_file_path;
+    if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
+                                &test_file_path)) {
+      return false;
+    }
+    test_file_path = test_file_path.AppendASCII("components")
+                         .AppendASCII("test")
+                         .AppendASCII("data")
+                         .AppendASCII("sessions");
+    test_file_path = test_file_path.AppendASCII(test_data_filename);
+    return base::CopyFile(test_file_path, file_path());
+  }
 
+  const base::FilePath& file_path() const { return file_path_; }
   const base::FilePath& restore_path() const { return restore_path_; }
 
  private:
@@ -709,19 +725,16 @@ TEST_F(CommandStorageBackendTest, UseMarkerWithoutValidMarker) {
   EXPECT_FALSE(GetLastSessionInfo(backend.get()));
 }
 
-// This test moves a previously written file into the expected location and
-// ensures it's read. This is to verify reading hasn't changed in an
-// incompatible manner.
-TEST_F(CommandStorageBackendTest, ReadPreviouslyWrittenData) {
-  base::FilePath test_data_path;
-  ASSERT_TRUE(
-      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_path));
-  test_data_path = test_data_path.AppendASCII("components")
-                       .AppendASCII("test")
-                       .AppendASCII("data")
-                       .AppendASCII("sessions")
-                       .AppendASCII("last_session");
-  struct TestData data[] = {
+TEST_F(CommandStorageBackendTest, ReadSessionFileV1) {
+  // V1 files do not contain markers.
+  // They were used in production prior to commit 223e5cd on 2021-05-25.
+  ASSERT_TRUE(copyTestDataToSessionFile("Session-v1NoMarker"));
+
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  SessionCommands commands = backend->ReadLastSessionCommands().commands;
+
+  ASSERT_EQ(13u, commands.size());
+  struct TestData expected_data[] = {
       {1, "a"},
       {2, "ab"},
       {3, "abc"},
@@ -736,11 +749,56 @@ TEST_F(CommandStorageBackendTest, ReadPreviouslyWrittenData) {
       {12, "abcdefghijkl"},
       {13, "abcdefghijklm"},
   };
+  AssertCommandsEqualsData(expected_data, commands);
+}
 
-  ASSERT_TRUE(base::CopyFile(
-      test_data_path, restore_path().Append(kLegacyCurrentSessionFileName)));
-  scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
-  AssertCommandsEqualsData(data, backend->ReadLastSessionCommands().commands);
+TEST_F(CommandStorageBackendTest, ReadSessionFileV2) {
+  // V2 files are encrypted and do not contain markers.
+  // They could have been written prior to commit 223e5cd on 2021-05-25.
+  // They were never used in production.
+  ASSERT_TRUE(copyTestDataToSessionFile("Session-v2NoMarkerEncrypted"));
+  std::string key_hex =
+      "1D61A221F7A35E0A9432BA41EDEAF28CE33977058295186D0F9C82FB16B2078D";
+  std::vector<uint8_t> key;
+  ASSERT_TRUE(base::HexStringToBytes(key_hex, &key));
+
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend(key);
+  SessionCommands commands = backend->ReadLastSessionCommands().commands;
+
+  ASSERT_EQ(1u, commands.size());
+  struct TestData expected_data = {1, "a"};
+  AssertCommandEqualsData(expected_data, commands[0].get());
+}
+
+TEST_F(CommandStorageBackendTest, ReadSessionFileV3) {
+  // V3 files contain markers.
+  // They have been used in production from early 2021 through at least 2026-02.
+  ASSERT_TRUE(copyTestDataToSessionFile("Session-v3WithMarker"));
+
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  SessionCommands commands = backend->ReadLastSessionCommands().commands;
+
+  ASSERT_EQ(1u, commands.size());
+  struct TestData expected_data = {1, "a"};
+  AssertCommandEqualsData(expected_data, commands[0].get());
+}
+
+TEST_F(CommandStorageBackendTest, ReadSessionFileV4) {
+  // V4 files contain markers and are encrypted.
+  // They have never been used in production, but could have been written from
+  // early 2021 through at least 2026-02.
+  ASSERT_TRUE(copyTestDataToSessionFile("Session-v4WithMarkerEncrypted"));
+  std::string key_hex =
+      "47AD6721D7F681651D568D8A59693BC5E03DE6BD0CBA974305F92532BC2E62AF";
+  std::vector<uint8_t> key;
+  ASSERT_TRUE(base::HexStringToBytes(key_hex, &key));
+
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend(key);
+  SessionCommands commands = backend->ReadLastSessionCommands().commands;
+
+  ASSERT_EQ(1u, commands.size());
+  struct TestData expected_data = {1, "a"};
+  AssertCommandEqualsData(expected_data, commands[0].get());
 }
 
 TEST_F(CommandStorageBackendTest, NewFileOnTruncate) {
