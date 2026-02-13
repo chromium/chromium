@@ -564,15 +564,10 @@ float ShapeResultView::ForEachGraphemeClusters(const StringView& text,
                          : part.GlyphAt(i + 1).character_index +
                                character_index_offset_for_glyph_data);
         }
-        if (RuntimeEnabledFeatures::DeprecateCursorMovementIteratorEnabled()) {
-          graphemes_in_cluster = NumGraphemeClusters(
-              cluster_end >= cluster_start
-                  ? StringView(text, cluster_start, cluster_end - cluster_start)
-                  : StringView(text, cluster_end, cluster_start - cluster_end));
-        } else {
-          graphemes_in_cluster = ShapeResult::CountGraphemesInClusterDeprecated(
-              text.Span16(), cluster_start, cluster_end);
-        }
+        graphemes_in_cluster = NumGraphemeClusters(
+            cluster_end >= cluster_start
+                ? StringView(text, cluster_start, cluster_end - cluster_start)
+                : StringView(text, cluster_end, cluster_start - cluster_end));
         if (!graphemes_in_cluster || !cluster_advance)
           continue;
 

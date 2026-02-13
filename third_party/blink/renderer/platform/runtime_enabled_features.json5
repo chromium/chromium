@@ -1877,10 +1877,6 @@
       name: "DelegatesFocusTextControlInputFix",
       status: "stable",
     },
-    {
-      name: "DeprecateCursorMovementIterator",
-      status: "stable",
-    },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
     // Permissions-Policy setting.
