@@ -2584,15 +2584,15 @@ bool ConsumeBorderShorthand(CSSParserTokenStream& stream,
   if (!result_width && !result_style && !result_color) {
     return false;
   }
-
+  // Fill in any missing properties with the property's default.
   if (!result_width) {
-    result_width = CSSInitialValue::Create();
+    result_width = CSSIdentifierValue::Create(CSSValueID::kMedium);
   }
   if (!result_style) {
-    result_style = CSSInitialValue::Create();
+    result_style = CSSIdentifierValue::Create(CSSValueID::kNone);
   }
   if (!result_color) {
-    result_color = CSSInitialValue::Create();
+    result_color = CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
   }
   return true;
 }

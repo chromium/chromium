@@ -1389,6 +1389,10 @@ bool BorderBottomColor::IsAffectedByCurrentColor(
          style.BorderBottomColor().DependsOnCurrentColor();
 }
 
+const CSSValue* BorderBottomColor::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
+}
+
 const CSSValue* BorderBottomLeftRadius::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -1429,6 +1433,10 @@ const CSSValue* BorderBottomStyle::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSIdentifierValue::Create(style.BorderBottomStyle());
+}
+
+const CSSValue* BorderBottomStyle::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
 void BorderBottomWidth::ApplyInitial(StyleResolverState& state) const {
@@ -1482,6 +1490,10 @@ const CSSValue* BorderBottomWidth::CSSValueFromComputedStyleInternal(
   }
 
   return ZoomAdjustedPixelValue(width, style);
+}
+
+const CSSValue* BorderBottomWidth::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kMedium);
 }
 
 const CSSValue* BorderCollapse::CSSValueFromComputedStyleInternal(
@@ -1724,12 +1736,20 @@ bool BorderLeftColor::IsAffectedByCurrentColor(
          style.BorderLeftColor().DependsOnCurrentColor();
 }
 
+const CSSValue* BorderLeftColor::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
+}
+
 const CSSValue* BorderLeftStyle::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSIdentifierValue::Create(style.BorderLeftStyle());
+}
+
+const CSSValue* BorderLeftStyle::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
 void BorderLeftWidth::ApplyInitial(StyleResolverState& state) const {
@@ -1785,6 +1805,10 @@ const CSSValue* BorderLeftWidth::CSSValueFromComputedStyleInternal(
   return ZoomAdjustedPixelValue(width, style);
 }
 
+const CSSValue* BorderLeftWidth::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kMedium);
+}
+
 const CSSValue* BorderRightColor::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -1831,12 +1855,20 @@ bool BorderRightColor::IsAffectedByCurrentColor(
          style.BorderRightColor().DependsOnCurrentColor();
 }
 
+const CSSValue* BorderRightColor::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
+}
+
 const CSSValue* BorderRightStyle::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSIdentifierValue::Create(style.BorderRightStyle());
+}
+
+const CSSValue* BorderRightStyle::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
 void BorderRightWidth::ApplyInitial(StyleResolverState& state) const {
@@ -1890,6 +1922,10 @@ const CSSValue* BorderRightWidth::CSSValueFromComputedStyleInternal(
   }
 
   return ZoomAdjustedPixelValue(width, style);
+}
+
+const CSSValue* BorderRightWidth::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kMedium);
 }
 
 const CSSValue* BorderStartStartRadius::ParseSingleValue(
@@ -1954,6 +1990,10 @@ bool BorderTopColor::IsAffectedByCurrentColor(
          style.BorderTopColor().DependsOnCurrentColor();
 }
 
+const CSSValue* BorderTopColor::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
+}
+
 const CSSValue* BorderTopLeftRadius::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -1994,6 +2034,10 @@ const CSSValue* BorderTopStyle::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSIdentifierValue::Create(style.BorderTopStyle());
+}
+
+const CSSValue* BorderTopStyle::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
 void BorderTopWidth::ApplyInitial(StyleResolverState& state) const {
@@ -2047,6 +2091,10 @@ const CSSValue* BorderTopWidth::CSSValueFromComputedStyleInternal(
   }
 
   return ZoomAdjustedPixelValue(width, style);
+}
+
+const CSSValue* BorderTopWidth::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kMedium);
 }
 
 namespace {

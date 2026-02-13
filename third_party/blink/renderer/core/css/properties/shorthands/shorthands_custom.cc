@@ -676,7 +676,7 @@ bool BorderBottom::ParseShorthand(
     CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
-      borderBottomShorthand(), important, context, stream, properties);
+      borderBottomShorthand(), important, context, stream, properties, true);
 }
 
 const CSSValue* BorderBottom::CSSValueFromComputedStyleInternal(
@@ -942,7 +942,7 @@ bool BorderLeft::ParseShorthand(
     CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
-      borderLeftShorthand(), important, context, stream, properties);
+      borderLeftShorthand(), important, context, stream, properties, true);
 }
 
 const CSSValue* BorderLeft::CSSValueFromComputedStyleInternal(
@@ -1015,7 +1015,7 @@ bool BorderRight::ParseShorthand(
     CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
-      borderRightShorthand(), important, context, stream, properties);
+      borderRightShorthand(), important, context, stream, properties, true);
 }
 
 const CSSValue* BorderRight::CSSValueFromComputedStyleInternal(
@@ -1099,7 +1099,7 @@ bool BorderTop::ParseShorthand(
     CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
-      borderTopShorthand(), important, context, stream, properties);
+      borderTopShorthand(), important, context, stream, properties, true);
 }
 
 const CSSValue* BorderTop::CSSValueFromComputedStyleInternal(

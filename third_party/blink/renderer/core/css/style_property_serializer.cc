@@ -94,6 +94,26 @@ StringView PlatformEnumToCSSValueString(T e) {
   return GetCSSValueNameAs<StringView>(PlatformEnumToCSSValueID(e));
 }
 
+String SerializeBorderValues(const std::array<String, 3>& values) {
+  static constexpr std::array<const char*, 3> kInitialValues = {
+      "medium",
+      "none",
+      "currentcolor",
+  };
+  StringBuilder result;
+  for (wtf_size_t i = 0; i < values.size(); ++i) {
+    const String& value = values[i];
+    if (value.IsNull() || value == kInitialValues[i]) {
+      continue;
+    }
+    if (!result.empty()) {
+      result.Append(' ');
+    }
+    result.Append(value);
+  }
+  return result.ReleaseString();
+}
+
 }  // namespace
 
 StylePropertySerializer::CSSPropertyValueSetForSerializer::
@@ -538,13 +558,13 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kBorderImage:
       return BorderImagePropertyValue();
     case CSSPropertyID::kBorderTop:
-      return GetShorthandValue(borderTopShorthand());
+      return GetShorthandValueForBorder(borderTopShorthand());
     case CSSPropertyID::kBorderRight:
-      return GetShorthandValue(borderRightShorthand());
+      return GetShorthandValueForBorder(borderRightShorthand());
     case CSSPropertyID::kBorderBottom:
-      return GetShorthandValue(borderBottomShorthand());
+      return GetShorthandValueForBorder(borderBottomShorthand());
     case CSSPropertyID::kBorderLeft:
-      return GetShorthandValue(borderLeftShorthand());
+      return GetShorthandValueForBorder(borderLeftShorthand());
     case CSSPropertyID::kBorderBlock:
       return BorderPropertyValue(borderBlockWidthShorthand(),
                                  borderBlockStyleShorthand(),
@@ -2088,6 +2108,20 @@ String StylePropertySerializer::GetShorthandValue(
   return result.ReleaseString();
 }
 
+String StylePropertySerializer::GetShorthandValueForBorder(
+    const StylePropertyShorthand& shorthand) const {
+  DCHECK_EQ(shorthand.length(), 3u);
+
+  std::array<String, 3> values;
+  for (size_t i = 0; i < shorthand.length(); i++) {
+    const CSSValue* value =
+        property_set_.GetPropertyCSSValue(*shorthand.properties()[i]);
+    values[i] = value->CssText();
+  }
+
+  return SerializeBorderValues(values);
+}
+
 String StylePropertySerializer::GetShorthandValueForRule(
     const StylePropertyShorthand& row_rule_shorthand,
     const StylePropertyShorthand& column_rule_shorthand) const {
@@ -2919,22 +2953,17 @@ String StylePropertySerializer::BorderPropertyValue(
     }
   }
 
-  const StylePropertyShorthand shorthand_properties[3] = {width, style, color};
-  StringBuilder result;
-  for (const auto& shorthand_property : shorthand_properties) {
-    const String value = GetCommonValue(shorthand_property);
+  const std::array<StylePropertyShorthand, 3> shorthands = {width, style,
+                                                            color};
+  std::array<String, 3> values;
+  for (wtf_size_t i = 0; i < shorthands.size(); i++) {
+    String value = GetCommonValue(shorthands[i]);
     if (value.IsNull()) {
       return String();
     }
-    if (value == "initial") {
-      continue;
-    }
-    if (!result.empty()) {
-      result.Append(' ');
-    }
-    result.Append(value);
+    values[i] = std::move(value);
   }
-  return result.empty() ? String() : result.ReleaseString();
+  return SerializeBorderValues(values);
 }
 
 String StylePropertySerializer::BorderImagePropertyValue() const {

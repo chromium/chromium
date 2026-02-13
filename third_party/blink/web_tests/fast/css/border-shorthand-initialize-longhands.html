@@ -1,28 +1,26 @@
 <!DOCTYPE html>
 <html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <body>
-<script src="../../resources/js-test.js"></script>
-<script>
-
-description("This test ensures border shorthand property initializes longhand properties such as border-top-style and border-right-color.");
-
-var div = document.createElement('div');
-shouldBe("div.setAttribute('style', 'border: 1px');div.style.borderTopStyle", "'initial'");
-shouldBe("div.style.borderTopStyle", "'initial'");
-shouldBe("div.style.borderRightStyle", "'initial'");
-shouldBe("div.style.borderBottomStyle", "'initial'");
-shouldBe("div.style.borderLeftStyle", "'initial'");
-
-shouldBe("div.style.borderTopColor", "'initial'");
-shouldBe("div.style.borderRightColor", "'initial'");
-shouldBe("div.style.borderBottomColor", "'initial'");
-shouldBe("div.style.borderLeftColor", "'initial'");
-
-shouldBe("div.setAttribute('style', 'border: solid');div.style.borderTopWidth", "'initial'");
-shouldBe("div.style.borderRightWidth", "'initial'");
-shouldBe("div.style.borderBottomWidth", "'initial'");
-shouldBe("div.style.borderLeftWidth", "'initial'");
-
-</script>
+  <div id="target"></div>
+  <script>
+    test(() => {
+      target.style.border = '1px';
+      assert_equals(target.style.borderTopStyle, 'none');
+      assert_equals(target.style.borderRightStyle, 'none');
+      assert_equals(target.style.borderBottomStyle, 'none');
+      assert_equals(target.style.borderLeftStyle, 'none');
+      assert_equals(target.style.borderTopColor, 'currentcolor');
+      assert_equals(target.style.borderRightColor, 'currentcolor');
+      assert_equals(target.style.borderBottomColor, 'currentcolor');
+      assert_equals(target.style.borderLeftColor, 'currentcolor');
+      target.style.border = 'solid';
+      assert_equals(target.style.borderTopWidth, 'medium');
+      assert_equals(target.style.borderRightWidth, 'medium');
+      assert_equals(target.style.borderBottomWidth, 'medium');
+      assert_equals(target.style.borderLeftWidth, 'medium');
+    }, 'Ensure border shorthand property initializes longhand properties such as border-top-style and border-right-color')
+  </script>
 </body>
 </html>
