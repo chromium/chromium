@@ -30,15 +30,16 @@ namespace blink {
 namespace {
 
 // Transformations of StaticBitmapImages have historically also converted them
-// to kN32_SkColorType. This function very cautiously only lifts this
-// restriction for StaticBitmapImages that are already kRGBA_F16_SkColorType.
-// This caution is a response to issues such as the one described in
+// to N32 format. This function very cautiously only lifts this restriction for
+// StaticBitmapImages that are already viz::SinglePlaneFormat::kRGBA_F16. This
+// caution is a response to issues such as the one described in
 // https://crrev.com/1364046.
-SkColorType GetDestColorType(SkColorType source_color_type) {
-  if (source_color_type == kRGBA_F16_SkColorType) {
-    return kRGBA_F16_SkColorType;
+viz::SharedImageFormat GetDestSharedImageFormat(
+    viz::SharedImageFormat source_format) {
+  if (source_format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return viz::SinglePlaneFormat::kRGBA_F16;
   }
-  return kN32_SkColorType;
+  return GetN32FormatForCanvas();
 }
 
 void FlipSkPixmapInPlace(SkPixmap& pm, bool horizontal) {
@@ -170,8 +171,8 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
         options.dest_color_space.value_or(source->GetColorSpace());
     const auto bm_info = SkImageInfo::Make(
         source_rect.size(),
-        GetDestColorType(
-            viz::ToClosestSkColorType(source->GetSharedImageFormat())),
+        ToClosestSkColorType(
+            GetDestSharedImageFormat(source->GetSharedImageFormat())),
         bm_alpha_type, bm_color_space.ToSkColorSpace());
     if (!bm.tryAllocPixels(bm_info)) {
       return nullptr;
@@ -244,12 +245,9 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   // This path will necessarily premultiply alpha.
   CHECK(options.premultiply_alpha);
 
-  auto source_paint_image = source->PaintImageForCurrentFrame();
-  const auto source_info = source_paint_image.GetSkImageInfo();
-  const auto source_orientation = GetSourceOrientation(source, options);
-
   // Compute the parameters for the blit.
-  const SkColorType dest_color_type = GetDestColorType(source_info.colorType());
+  const auto dest_format =
+      GetDestSharedImageFormat(source->GetSharedImageFormat());
 
   // The spec requires that any pixels not copied from the source be transparent
   // black in the destination image. Thus, it is necessary that the destination
@@ -257,8 +255,8 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   // image before the copy from the source), regardless of whether the source is
   // premul or opaque.
   const SkAlphaType dest_alpha_type = kPremul_SkAlphaType;
-  const auto dest_color_space = options.dest_color_space.value_or(
-      SkColorSpaceToGfxColorSpace(source_info.refColorSpace()));
+  const auto dest_color_space =
+      options.dest_color_space.value_or(source->GetColorSpace());
   SkIRect source_rect;
   SkIRect source_rect_valid;
   SkISize dest_size;
@@ -267,11 +265,12 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
 
   // If `source` is accelerated and there is a context provider, try to use an
   // accelerated SharedImage provider.
+  auto source_paint_image = source->PaintImageForCurrentFrame();
+  const auto source_orientation = GetSourceOrientation(source, options);
   if (source_paint_image.IsTextureBacked() &&
       source->ContextProviderWrapper()) {
     auto resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
-        gfx::Size(dest_size.width(), dest_size.height()),
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
+        gfx::Size(dest_size.width(), dest_size.height()), dest_format,
         dest_alpha_type, dest_color_space,
         CanvasResourceProvider::ShouldInitialize::kNo,
         source->ContextProviderWrapper(), source->GetSharedImage()->usage());
@@ -290,8 +289,9 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   // If unable to create an accelerated snapshot, fall back to software.
   SkSurfaceProps surface_props;
   sk_sp<SkSurface> surface = SkSurfaces::Raster(
-      SkImageInfo::Make(dest_size.width(), dest_size.height(), dest_color_type,
-                        dest_alpha_type, dest_color_space.ToSkColorSpace()),
+      SkImageInfo::Make(dest_size.width(), dest_size.height(),
+                        ToClosestSkColorType(dest_format), dest_alpha_type,
+                        dest_color_space.ToSkColorSpace()),
       &surface_props);
   if (!surface) {
     return nullptr;
