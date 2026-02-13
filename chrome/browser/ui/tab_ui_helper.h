@@ -60,11 +60,6 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   // Returns true if the tab is crashed and false otherwise.
   bool IsCrashed();
 
-  using TitleUpdatedCallbackList =
-      base::RepeatingCallbackList<void(std::u16string)>;
-  base::CallbackListSubscription AddTitleUpdatedCallback(
-      TitleUpdatedCallbackList::CallbackType callback);
-
   // tabs::ContentsObservingTabFeature override:
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidStopLoading() override;
@@ -94,8 +89,6 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   bool was_active_at_least_once_ = false;
   bool created_by_session_restore_ = false;
   bool needs_attention_ = false;
-
-  TitleUpdatedCallbackList title_change_callbacks_;
 
   base::RepeatingClosureList tab_ui_change_callbacks_;
 

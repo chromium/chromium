@@ -130,13 +130,8 @@ bool TabUIHelper::IsCrashed() {
           crashed_status == base::TERMINATION_STATUS_LAUNCH_FAILED);
 }
 
-base::CallbackListSubscription TabUIHelper::AddTitleUpdatedCallback(
-    TitleUpdatedCallbackList::CallbackType callback) {
-  return title_change_callbacks_.Add(std::move(callback));
-}
-
 void TabUIHelper::TitleWasSet(content::NavigationEntry* entry) {
-  title_change_callbacks_.Notify(GetTitle());
+  tab_ui_change_callbacks_.Notify();
 }
 
 void TabUIHelper::DidStopLoading() {

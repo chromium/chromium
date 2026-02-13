@@ -32,16 +32,12 @@ namespace {
 class MockTabUIHelperSubscriber {
  public:
   explicit MockTabUIHelperSubscriber(TabUIHelper* tab_ui_helper) {
-    title_change_subscription_ = tab_ui_helper->AddTitleUpdatedCallback(
-        base::BindRepeating(&::MockTabUIHelperSubscriber::OnTitleChange,
-                            base::Unretained(this)));
     tab_ui_change_subscription_ =
         tab_ui_helper->AddTabUIChangeCallback(base::BindRepeating(
             &MockTabUIHelperSubscriber::OnTabUIChange, base::Unretained(this)));
   }
   ~MockTabUIHelperSubscriber() = default;
 
-  MOCK_METHOD(void, OnTitleChange, (std::u16string updated_title));
   MOCK_METHOD(void, OnTabUIChange, ());
 
  private:
@@ -65,11 +61,11 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, TitleChangeIsNotified) {
   EXPECT_EQ(tab_ui_helper->GetTitle(), u"Title Of Awesomeness");
   auto title_change_waiter =
       std::make_unique<MockTabUIHelperSubscriber>(tab_ui_helper);
-  EXPECT_CALL(*title_change_waiter,
-              OnTitleChange(std::u16string(u"Title Of More Awesomeness")));
+  EXPECT_CALL(*title_change_waiter, OnTabUIChange());
   ASSERT_NE(ui_test_utils::NavigateToURL(
                 browser(), embedded_test_server()->GetURL("/title3.html")),
             nullptr);
+  EXPECT_EQ(tab_ui_helper->GetTitle(), u"Title Of More Awesomeness");
 }
 
 IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, DiscardUiChangeIsNotified) {
