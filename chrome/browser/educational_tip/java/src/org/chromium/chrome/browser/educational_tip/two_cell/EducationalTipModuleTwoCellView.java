@@ -106,6 +106,18 @@ public class EducationalTipModuleTwoCellView extends LinearLayout {
             itemLayout.setOnClickListener(null);
             itemLayout.setClickable(false);
             itemLayout.setForeground(null);
+        } else {
+            int titleColor = getContext().getColor(R.color.default_text_color_list);
+            int descriptionColor = getContext().getColor(R.color.default_text_color_secondary_list);
+            titleView.setTextColor(titleColor);
+            titleView.setPaintFlags(
+                    titleView.getPaintFlags() & ~android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+            descriptionView.setTextColor(descriptionColor);
+            descriptionView.setPaintFlags(
+                    descriptionView.getPaintFlags()
+                            & ~android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+
+            itemLayout.setClickable(true);
         }
     }
 

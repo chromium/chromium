@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -36,6 +37,7 @@ public class EducationalTipModuleMediator {
     private final ModuleDelegate mModuleDelegate;
     private final CallbackController mCallbackController;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final BottomSheetObserver mBottomSheetObserver;
 
     private @Nullable EducationalTipCardProvider mEducationalTipCardProvider;
     private final DefaultBrowserPromoTriggerStateListener mDefaultBrowserPromoTriggerStateListener;
@@ -53,6 +55,11 @@ public class EducationalTipModuleMediator {
         mActionDelegate = actionDelegate;
         mTracker = TrackerFactory.getTrackerForProfile(profile);
         mDefaultBrowserPromoTriggerStateListener = this::removeModule;
+
+        mBottomSheetObserver =
+                EducationalTipModuleUtils.createBottomSheetObserver(
+                        () -> mModuleType == ModuleType.DEFAULT_BROWSER_PROMO, this::updateModule);
+        mActionDelegate.getBottomSheetController().addObserver(mBottomSheetObserver);
 
         mCallbackController = new CallbackController();
     }
@@ -169,6 +176,7 @@ public class EducationalTipModuleMediator {
     }
 
     void destroy() {
+        mActionDelegate.getBottomSheetController().removeObserver(mBottomSheetObserver);
         removeDefaultBrowserPromoTriggerStateListener();
         if (mEducationalTipCardProvider != null) {
             mEducationalTipCardProvider.destroy();

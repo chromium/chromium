@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -58,6 +59,7 @@ public class EducationalTipModuleTwoCellBuilderUnitTest {
     @Mock private Callback<ModuleProvider> mBuildCallback;
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
     @Mock private SetupListManager mSetupListManager;
+    @Mock private BottomSheetController mBottomSheetController;
 
     private Context mContext;
     private EducationalTipModuleTwoCellBuilder mModuleBuilder;
@@ -72,6 +74,7 @@ public class EducationalTipModuleTwoCellBuilderUnitTest {
                                 ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
         mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getContext()).thenReturn(mContext);
+        when(mActionDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
     }
 

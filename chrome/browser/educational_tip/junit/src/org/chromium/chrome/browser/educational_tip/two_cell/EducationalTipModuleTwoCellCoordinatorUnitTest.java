@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.educational_tip.two_cell;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,8 +35,11 @@ import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDeleg
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -55,8 +60,10 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
     @Mock private Profile mProfile;
+    @Mock private BottomSheetController mBottomSheetController;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
+    @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     private Context mContext;
     private NonNullObservableSupplier<Profile> mProfileSupplier;
@@ -68,6 +75,7 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
         when(mActionDelegate.getContext()).thenReturn(mContext);
         mProfileSupplier = ObservableSuppliers.createNonNull(mProfile);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
+        when(mActionDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
     }
 
     @Test
@@ -118,6 +126,72 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
                 R.drawable.address_bar_placement_promo_logo,
                 model.get(EducationalTipModuleTwoCellProperties.ITEM_2_ICON).intValue());
         assertNotNull(model.get(EducationalTipModuleTwoCellProperties.ITEM_2_CLICK_HANDLER));
+    }
+
+    @Test
+    @SmallTest
+    public void testBottomSheetObserver_AddedAndRemoved() {
+        mCoordinator =
+                new EducationalTipModuleTwoCellCoordinator(
+                        MODULE_TYPE, mModuleDelegate, mActionDelegate);
+        verify(mBottomSheetController).addObserver(any());
+        mCoordinator.hideModule();
+        verify(mBottomSheetController).removeObserver(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnClick_ReportsContainerType() {
+        List<Integer> rankedModules =
+                Arrays.asList(
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
+        SetupListModuleUtils.setRankedModuleTypesForTesting(rankedModules);
+        mCoordinator =
+                new EducationalTipModuleTwoCellCoordinator(
+                        MODULE_TYPE, mModuleDelegate, mActionDelegate);
+
+        mCoordinator.showModule();
+        verify(mModuleDelegate).onDataReady(eq(MODULE_TYPE), mPropertyModelCaptor.capture());
+
+        // Simulate click on Slot 1.
+        mPropertyModelCaptor
+                .getValue()
+                .get(EducationalTipModuleTwoCellProperties.ITEM_1_CLICK_HANDLER)
+                .run();
+
+        // verify it reports MODULE_TYPE (container), not ENHANCED_SAFE_BROWSING_PROMO (item).
+        // This is the fix for the NullPointerException crash.
+        verify(mModuleDelegate).onModuleClicked(MODULE_TYPE);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnClick_MarksItemComplete() {
+        List<Integer> rankedModules =
+                Arrays.asList(
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
+        SetupListModuleUtils.setRankedModuleTypesForTesting(rankedModules);
+        mCoordinator =
+                new EducationalTipModuleTwoCellCoordinator(
+                        MODULE_TYPE, mModuleDelegate, mActionDelegate);
+
+        mCoordinator.showModule();
+        verify(mModuleDelegate).onDataReady(eq(MODULE_TYPE), mPropertyModelCaptor.capture());
+
+        // Simulate click on Slot 1 (Enhanced Safe Browsing).
+        mPropertyModelCaptor
+                .getValue()
+                .get(EducationalTipModuleTwoCellProperties.ITEM_1_CLICK_HANDLER)
+                .run();
+
+        // verify it marks the specific item (not the container) as complete.
+        // This is what triggers the internal reordering.
+        String expectedKey =
+                SetupListModuleUtils.getCompletionKeyForModule(
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO);
+        assertTrue(ChromeSharedPreferences.getInstance().readBoolean(expectedKey, false));
     }
 
     @Test

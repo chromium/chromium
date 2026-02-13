@@ -80,6 +80,7 @@ public class DefaultBrowserPromoCoordinator
     public void onCardClicked() {
         // TODO(crbug.com/469425754): Display role manager setting if available. The bottom sheet
         // will be used as a fallback
+        SetupListModuleUtils.setModuleCompleted(ModuleType.DEFAULT_BROWSER_PROMO);
         Context context = mActionDelegate.getContext();
         View defaultBrowserBottomSheetView =
                 LayoutInflater.from(context)
