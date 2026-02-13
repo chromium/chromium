@@ -271,6 +271,12 @@ class PLATFORM_EXPORT Character {
 
   static bool IsVerticalMathCharacter(UChar32);
 
+  // Returns the full-width variant of a half-width character, or the
+  // original code point if no variant exists.
+  // See CSS Text Level 3:
+  // https://drafts.csswg.org/css-text-3/#text-transform
+  static UChar32 FullwidthVariant(UChar32);
+
   // Returns the full-size kana variant of a small kana character, or the
   // original code point if no variant exists.
   // See CSS Text Level 3, Appendix G:

@@ -1955,101 +1955,6 @@ static String DisableNewGeorgianCapitalLetters(const String& text) {
 
 namespace {
 
-UChar32 FullwidthVariant(UChar32 code_point) {
-  // ASCII printable characters (U+0021..U+007E) to full-width (U+FF01..U+FF5E).
-  if (code_point >= 0x21 && code_point <= 0x7E) {
-    return code_point + 0xFEE0;
-  }
-
-  // Half-width Katakana (U+FF61..U+FF9F) to full-width Katakana.
-  // Katakana characters are contiguous, so we can use direct array indexing.
-  if (code_point >= 0xFF61 && code_point <= 0xFF9F) {
-    auto kKatakanaTable = std::to_array<UChar32>(
-        {0x3002, 0x300C, 0x300D, 0x3001, 0x30FB, 0x30F2, 0x30A1, 0x30A3,
-         0x30A5, 0x30A7, 0x30A9, 0x30E3, 0x30E5, 0x30E7, 0x30C3, 0x30FC,
-         0x30A2, 0x30A4, 0x30A6, 0x30A8, 0x30AA, 0x30AB, 0x30AD, 0x30AF,
-         0x30B1, 0x30B3, 0x30B5, 0x30B7, 0x30B9, 0x30BB, 0x30BD, 0x30BF,
-         0x30C1, 0x30C4, 0x30C6, 0x30C8, 0x30CA, 0x30CB, 0x30CC, 0x30CD,
-         0x30CE, 0x30CF, 0x30D2, 0x30D5, 0x30D8, 0x30DB, 0x30DE, 0x30DF,
-         0x30E0, 0x30E1, 0x30E2, 0x30E4, 0x30E6, 0x30E8, 0x30E9, 0x30EA,
-         0x30EB, 0x30EC, 0x30ED, 0x30EF, 0x30F3, 0x3099, 0x309A});
-    size_t index = code_point - 0xFF61;
-    return kKatakanaTable[index];
-  }
-
-  // Half-width Hangul to full-width Hangul mapping.
-  // Hangul characters have gaps, so we need a lookup table.
-  if ((code_point >= 0xFFA0 && code_point <= 0xFFBE) ||
-      (code_point >= 0xFFC2 && code_point <= 0xFFC7) ||
-      (code_point >= 0xFFCA && code_point <= 0xFFCF) ||
-      (code_point >= 0xFFD2 && code_point <= 0xFFD7) ||
-      (code_point >= 0xFFDA && code_point <= 0xFFDC)) {
-    static const struct {
-      UChar32 halfwidth;
-      UChar32 fullwidth;
-    } kHangulTable[] = {
-        {0xFFA0, 0x3164}, {0xFFA1, 0x3131}, {0xFFA2, 0x3132}, {0xFFA3, 0x3133},
-        {0xFFA4, 0x3134}, {0xFFA5, 0x3135}, {0xFFA6, 0x3136}, {0xFFA7, 0x3137},
-        {0xFFA8, 0x3138}, {0xFFA9, 0x3139}, {0xFFAA, 0x313A}, {0xFFAB, 0x313B},
-        {0xFFAC, 0x313C}, {0xFFAD, 0x313D}, {0xFFAE, 0x313E}, {0xFFAF, 0x313F},
-        {0xFFB0, 0x3140}, {0xFFB1, 0x3141}, {0xFFB2, 0x3142}, {0xFFB3, 0x3143},
-        {0xFFB4, 0x3144}, {0xFFB5, 0x3145}, {0xFFB6, 0x3146}, {0xFFB7, 0x3147},
-        {0xFFB8, 0x3148}, {0xFFB9, 0x3149}, {0xFFBA, 0x314A}, {0xFFBB, 0x314B},
-        {0xFFBC, 0x314C}, {0xFFBD, 0x314D}, {0xFFBE, 0x314E}, {0xFFC2, 0x314F},
-        {0xFFC3, 0x3150}, {0xFFC4, 0x3151}, {0xFFC5, 0x3152}, {0xFFC6, 0x3153},
-        {0xFFC7, 0x3154}, {0xFFCA, 0x3155}, {0xFFCB, 0x3156}, {0xFFCC, 0x3157},
-        {0xFFCD, 0x3158}, {0xFFCE, 0x3159}, {0xFFCF, 0x315A}, {0xFFD2, 0x315B},
-        {0xFFD3, 0x315C}, {0xFFD4, 0x315D}, {0xFFD5, 0x315E}, {0xFFD6, 0x315F},
-        {0xFFD7, 0x3160}, {0xFFDA, 0x3161}, {0xFFDB, 0x3162}, {0xFFDC, 0x3163},
-    };
-    for (const auto& entry : kHangulTable) {
-      if (entry.halfwidth == code_point) {
-        return entry.fullwidth;
-      }
-    }
-  }
-
-  // Special character mappings.
-  switch (code_point) {
-    case uchar::kSpace:
-      return uchar::kIdeographicSpace;
-    case 0x00A2:  // Cent sign
-      return 0xFFE0;
-    case 0x00A3:  // Pound sign
-      return 0xFFE1;
-    case 0x00AC:  // Not sign
-      return 0xFFE2;
-    case 0x00AF:  // Macron
-      return 0xFFE3;
-    case 0x00A6:  // Broken bar
-      return 0xFFE4;
-    case uchar::kYenSign:
-      return 0xFFE5;
-    case 0x20A9:  // Won sign
-      return 0xFFE6;
-    case 0x2985:  // Left white parenthesis
-      return 0xFF5F;
-    case 0x2986:  // Right white parenthesis
-      return 0xFF60;
-    case 0xFFE8:  // Halfwidth forms light vertical
-      return 0x2502;
-    case 0xFFE9:  // Halfwidth leftwards arrow
-      return 0x2190;
-    case 0xFFEA:  // Halfwidth upwards arrow
-      return 0x2191;
-    case 0xFFEB:  // Halfwidth rightwards arrow
-      return 0x2192;
-    case 0xFFEC:  // Halfwidth downwards arrow
-      return 0x2193;
-    case 0xFFED:  // Halfwidth black square
-      return uchar::kBlackSquare;
-    case 0xFFEE:  // Halfwidth white circle
-      return uchar::kWhiteCircle;
-  }
-
-  return code_point;
-}
-
 String ApplyFullwidthTransform(const String& text,
                                TextOffsetMap* offset_map,
                                bool preserve_white_space) {
@@ -2071,7 +1976,7 @@ String ApplyFullwidthTransform(const String& text,
     if (code_point == uchar::kSpace && !preserve_white_space) {
       transformed_char = code_point;
     } else {
-      transformed_char = FullwidthVariant(code_point);
+      transformed_char = Character::FullwidthVariant(code_point);
     }
     result.Append(transformed_char);
   }
