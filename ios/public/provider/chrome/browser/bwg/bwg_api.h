@@ -17,6 +17,7 @@ class AuthenticationService;
 @class GeminiPageContext;
 @class GeminiSettingsAction;
 @class GeminiSettingsMetadata;
+@class GeminiStartupConfiguration;
 @protocol BWGGatewayProtocol;
 
 typedef NS_ENUM(NSInteger, GeminiSettingsContext);
@@ -105,6 +106,10 @@ enum class GeminiUIElementType {
   // The zero state element.
   kZeroState,
 };
+
+// Configures Gemini with the given startup configuration.
+void ConfigureWithStartupConfiguration(
+    GeminiStartupConfiguration* startup_configuration);
 
 // Starts the overlay experience with the given configuration.
 void StartBwgOverlay(GeminiConfiguration* gemini_configuration);

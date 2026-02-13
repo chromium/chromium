@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_startup_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
@@ -142,6 +143,16 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       gemini_camera_handler_ = [[GeminiCameraHandler alloc]
           initWithPrefService:browser_->GetProfile()->GetPrefs()];
       bwg_gateway_.cameraHandler = gemini_camera_handler_;
+    }
+
+    if (IsGeminiDynamicSettingsEnabled()) {
+      GeminiStartupConfiguration* config =
+          [[GeminiStartupConfiguration alloc] init];
+      config.authService =
+          AuthenticationServiceFactory::GetForProfile(browser_->GetProfile());
+      config.gateway = bwg_gateway_;
+
+      ios::provider::ConfigureWithStartupConfiguration(config);
     }
   }
 
