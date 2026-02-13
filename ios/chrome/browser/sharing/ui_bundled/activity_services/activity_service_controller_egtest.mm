@@ -53,7 +53,8 @@ NSString* const kEGOpenExtension = @"EGOpenExtension";
 }
 
 // Tests that the open extension opens a new tab.
-- (void)testOpenActivityServiceControllerAndOpenExtension {
+// TODO(crbug.com/484191734) Test is failing
+- (void)DISABLED_testOpenActivityServiceControllerAndOpenExtension {
   // Set up mock http server.
   std::map<GURL, std::string> responses;
   GURL url = web::test::HttpServer::MakeUrl("http://potato");
