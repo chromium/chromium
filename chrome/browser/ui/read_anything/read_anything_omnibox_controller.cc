@@ -84,27 +84,6 @@ void ReadAnythingOmniboxController::Activate(
     // Hide the omnibox entrypoint now that RM is already showing.
     read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
         /*should_show_page_action=*/false, tab_->GetBrowserWindowInterface());
-  } else if (!features::IsImmersiveReadAnythingEnabled()) {
-    // Show the entrypoint again once RM is closed. In immersive mode, do this
-    // in OnReadingModePresenterChanged instead since the presentation state
-    // does not change right away.
-    read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-        /*should_show_page_action=*/true, tab_->GetBrowserWindowInterface());
-  }
-}
-
-void ReadAnythingOmniboxController::OnReadingModePresenterChanged() {
-  if (!features::IsImmersiveReadAnythingEnabled()) {
-    return;
-  }
-
-  auto* read_anything_controller = ReadAnythingController::From(tab_);
-  CHECK(read_anything_controller);
-  // If Reading mode was just closed, show the omnibox entrypoint.
-  if (read_anything_controller->GetPresentationState() ==
-      ReadAnythingController::PresentationState::kInactive) {
-    read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-        /*should_show_page_action=*/true, tab_->GetBrowserWindowInterface());
   }
 }
 

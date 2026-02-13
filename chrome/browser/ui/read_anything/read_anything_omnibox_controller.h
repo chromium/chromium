@@ -34,7 +34,6 @@ class ReadAnythingOmniboxController : public content::WebContentsObserver,
   void Activate(bool active,
                 std::optional<ReadAnythingOpenTrigger> open_trigger) override;
   void OnDestroyed() override;
-  void OnReadingModePresenterChanged() override;
 
   void SetDwellTimeForTesting(base::TimeTicks test_time) {
     candidate_check_triggered_time_ms_ = test_time;
