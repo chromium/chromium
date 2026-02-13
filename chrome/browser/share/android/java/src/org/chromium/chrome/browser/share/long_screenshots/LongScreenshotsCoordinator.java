@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.long_screenshots;
 
 import android.app.Activity;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -27,6 +28,9 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
     private final EntryManager mEntryManager;
     private final Tab mTab;
     private @MonotonicNonNull LongScreenshotsMediator mMediator;
+
+    @SuppressWarnings("StaticFieldLeak")
+    private static @Nullable LongScreenshotsCoordinator sInstanceForTesting;
 
     /**
      * Private internal method to construct a LongScreenshotsCoordinator. Other users of this class
@@ -73,8 +77,14 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController) {
+        if (sInstanceForTesting != null) return sInstanceForTesting;
         return new LongScreenshotsCoordinator(
                 activity, tab, shareUrl, chromeOptionShareCallback, sheetController, null, true);
+    }
+
+    public static void setInstanceForTesting(LongScreenshotsCoordinator instance) {
+        sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     /** Called by tests to create a {@link LongScreenshotsCoordinator}. */

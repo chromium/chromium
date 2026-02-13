@@ -91,7 +91,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             @Nullable Profile profile,
             boolean saveLastUsed,
             ChromeCustomShareAction.@Nullable Provider customActionProvider) {
-        assert (customActionProvider == null || ChooserActionHelper.isSupported())
+        assert (customActionProvider == null || isChooserActionSupported())
                 : "Custom action is not supported.";
 
         recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
@@ -286,6 +286,16 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         return intent;
     }
 
+    private static boolean isChooserActionSupported() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+    }
+
+    private static @Nullable Parcelable newChooserAction(
+            Icon icon, String name, PendingIntent action) {
+        if (!isChooserActionSupported()) return null;
+        return new ChooserAction.Builder(icon, name, action).build();
+    }
+
     /** Helper class for injecting extras into the sharing intents. */
     private static class CustomActionChosenReceiver extends TargetChosenReceiver {
         private final ChromeCustomShareAction.@Nullable Provider mCustomActionProvider;
@@ -307,7 +317,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         @Override
         protected Intent getChooserIntent(WindowAndroid window, Intent sharingIntent) {
             Intent chooserIntent = super.getChooserIntent(window, sharingIntent);
-            if (mCustomActionProvider == null || !ChooserActionHelper.isSupported()) {
+            if (mCustomActionProvider == null || !isChooserActionSupported()) {
                 return chooserIntent;
             }
 
@@ -358,8 +368,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
                                     | PendingIntent.FLAG_ONE_SHOT
                                     | PendingIntent.FLAG_IMMUTABLE);
 
-            Parcelable chooserAction =
-                    ChooserActionHelper.newChooserAction(action.icon, action.label, pendingIntent);
+            Parcelable chooserAction = newChooserAction(action.icon, action.label, pendingIntent);
             mActionsMap.put(action.key, action.runnable);
 
             return chooserAction;
@@ -391,19 +400,6 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         @Override
         public void onCancel() {
             if (mOriginalCallback != null) mOriginalCallback.onCancel();
-        }
-    }
-
-    /** Helper class used to build Android custom action. */
-    @VisibleForTesting
-    public static class ChooserActionHelper {
-        static boolean isSupported() {
-            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
-        }
-
-        static @Nullable Parcelable newChooserAction(Icon icon, String name, PendingIntent action) {
-            if (!isSupported()) return null;
-            return new ChooserAction.Builder(icon, name, action).build();
         }
     }
 }

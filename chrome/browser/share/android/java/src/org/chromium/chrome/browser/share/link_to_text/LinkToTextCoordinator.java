@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.TextFragmentReceiver;
@@ -74,6 +75,8 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private boolean mIncludeOriginInTitle;
     public @RemoteRequestStatus int mRemoteRequestStatus;
 
+    private static @Nullable String sForceSelectorForTesting;
+
     @VisibleForTesting
     LinkToTextCoordinator() {}
 
@@ -125,11 +128,20 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     public void shareLinkToText() {
+        if (sForceSelectorForTesting != null) {
+            onSelectorReady(sForceSelectorForTesting);
+            return;
+        }
         if (mChromeShareExtras.isReshareHighlightedText()) {
             reshareHighlightedText();
         } else {
             startRequestSelector();
         }
+    }
+
+    public static void setForceSelectorForTesting(String selector) {
+        sForceSelectorForTesting = selector;
+        ResettersForTesting.register(() -> sForceSelectorForTesting = null);
     }
 
     @VisibleForTesting
@@ -411,8 +423,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         cleanup();
     }
 
-    @VisibleForTesting
-    public String getTitle() {
+    private String getTitle() {
         if (!mIncludeOriginInTitle) return mTab.getTitle();
         String origin = new GURL(mShareUrl).getOrigin().getSpec();
         return mTab.getContext().getString(R.string.sharing_including_link_title_template, origin);

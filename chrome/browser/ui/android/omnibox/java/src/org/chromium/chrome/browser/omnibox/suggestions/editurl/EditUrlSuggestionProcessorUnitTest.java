@@ -31,8 +31,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -50,7 +48,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProc
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
-import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -73,7 +70,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for the "edit url" omnibox suggestion. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {EditUrlSuggestionProcessorUnitTest.ShadowSadTab.class})
+@Config(manifest = Config.NONE)
 public final class EditUrlSuggestionProcessorUnitTest {
     private static final String TAB_TITLE = "Tab Title";
     private static final String MATCH_TITLE = "Match Title";
@@ -92,17 +89,6 @@ public final class EditUrlSuggestionProcessorUnitTest {
     public static final String ESCAPED_PATH_URL_STRING = "https://pl.wikipedia.org/wiki/Gżegżółka";
     public static final GURL ESCAPED_PATH_URL =
             new GURL("https://pl.wikipedia.org/wiki/G%C5%BCeg%C5%BC%C3%B3%C5%82ka");
-
-    /** Used to simulate sad tabs. */
-    @Implements(SadTab.class)
-    static class ShadowSadTab {
-        public static boolean reportSadTab;
-
-        @Implementation
-        public static boolean isShowing(Tab t) {
-            return reportSadTab;
-        }
-    }
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -247,7 +233,6 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void doesProcessSuggestion_rejectMatchForSadTab() {
-        ShadowSadTab.reportSadTab = true;
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }

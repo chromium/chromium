@@ -19,6 +19,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -59,10 +60,11 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
     }
 
     public static @Nullable SadTab get(Tab tab) {
-        return tab.getUserDataHost().getUserData(USER_DATA_KEY);
+        UserDataHost host = tab.getUserDataHost();
+        return host != null ? host.getUserData(USER_DATA_KEY) : null;
     }
 
-    public static boolean isShowing(Tab tab) {
+    public static boolean isShowing(@Nullable Tab tab) {
         if (tab == null || !tab.isInitialized()) return false;
         SadTab sadTab = get(tab);
         return sadTab != null ? sadTab.isShowing() : false;

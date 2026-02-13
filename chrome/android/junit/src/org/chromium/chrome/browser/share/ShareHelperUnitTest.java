@@ -20,9 +20,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Looper;
-import android.os.Parcelable;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,8 +29,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPendingIntent;
 
@@ -288,7 +284,7 @@ public class ShareHelperUnitTest {
     }
 
     @Test
-    @Config(shadows = {ShadowChooserActionHelper.class})
+    @Config(sdk = 34)  // ChooserAction requires SDK 34+.
     public void shareWithCustomActions() throws SendIntentException {
         String actionKey = "key";
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -422,24 +418,6 @@ public class ShareHelperUnitTest {
                                     Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)),
                             "label",
                             mCallbackHelper::notifyCalled));
-        }
-    }
-
-    /** Test implementation to build a ChooserAction. */
-    @Implements(ShareHelper.ChooserActionHelper.class)
-    static class ShadowChooserActionHelper {
-        @Implementation
-        protected static boolean isSupported() {
-            return true;
-        }
-
-        @Implementation
-        protected static Parcelable newChooserAction(Icon icon, String name, PendingIntent action) {
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(KEY_CHOOSER_ACTION_ICON, icon);
-            bundle.putString(KEY_CHOOSER_ACTION_NAME, name);
-            bundle.putParcelable(KEY_CHOOSER_ACTION_ACTION, action);
-            return bundle;
         }
     }
 }
