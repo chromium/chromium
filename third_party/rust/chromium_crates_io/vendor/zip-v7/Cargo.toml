@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.83.0"
+rust-version = "1.88"
 name = "zip"
-version = "7.3.0"
+version = "7.4.0"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -126,6 +126,7 @@ legacy-zip = ["bitstream-io"]
 lzma = ["dep:lzma-rust2"]
 nt-time = ["dep:nt-time"]
 ppmd = ["dep:ppmd-rust"]
+time = ["dep:time"]
 unreserved = []
 xz = ["dep:lzma-rust2"]
 
@@ -143,7 +144,7 @@ features = ["derive"]
 optional = true
 
 [dependencies.bitstream-io]
-version = "4.5"
+version = "4.9"
 optional = true
 
 [dependencies.bzip2]
@@ -158,7 +159,7 @@ optional = true
 default-features = false
 
 [dependencies.constant_time_eq]
-version = "0.3"
+version = "0.4"
 optional = true
 
 [dependencies.crc32fast]
@@ -200,7 +201,7 @@ default-features = false
 version = "2.7"
 
 [dependencies.nt-time]
-version = "0.10.6"
+version = "0.13"
 optional = true
 default-features = false
 
@@ -209,18 +210,12 @@ version = "0.12"
 optional = true
 
 [dependencies.ppmd-rust]
-version = "1.3"
+version = "1.4"
 optional = true
 
 [dependencies.sha1]
 version = "0.10"
 optional = true
-
-[dependencies.time]
-version = "=0.3.45"
-features = ["std"]
-optional = true
-default-features = false
 
 [dependencies.typed-path]
 version = "0.12"
@@ -243,11 +238,11 @@ default-features = false
 version = "0.1"
 
 [dev-dependencies.clap]
-version = "=4.4.18"
+version = "^4.4.18"
 features = ["derive"]
 
 [dev-dependencies.getrandom]
-version = "0.3"
+version = "0.4"
 default-features = false
 
 [dev-dependencies.rayon]
@@ -257,7 +252,7 @@ version = "1.11"
 version = "3.15"
 
 [dev-dependencies.time]
-version = "=0.3.45"
+version = "0.3.47"
 features = [
     "formatting",
     "macros",
@@ -267,28 +262,28 @@ features = [
 version = "2.5"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies.getrandom]
-version = "0.3"
+version = "0.4"
 optional = true
 default-features = false
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies.time]
-version = "=0.3.45"
-features = ["wasm-bindgen"]
+version = "0.3.47"
+features = ["std"]
 optional = true
 default-features = false
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.getrandom]
-version = "0.3"
+version = "0.4"
 default-features = false
 
 [target.'cfg(target_arch = "wasm32")'.dependencies.getrandom]
-version = "0.3"
+version = "0.4"
 features = ["wasm_js"]
 optional = true
 default-features = false
 
 [target.'cfg(target_arch = "wasm32")'.dependencies.time]
-version = "=0.3.45"
+version = "0.3.47"
 features = [
     "std",
     "wasm-bindgen",
@@ -297,7 +292,7 @@ optional = true
 default-features = false
 
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies.getrandom]
-version = "0.3"
+version = "0.4"
 features = ["wasm_js"]
 default-features = false
 

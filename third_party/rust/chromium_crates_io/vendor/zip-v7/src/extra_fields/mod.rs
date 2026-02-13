@@ -83,7 +83,6 @@ impl TryFrom<u16> for UsedExtraField {
         )
     }
 }
-// AE-x encryption structure
 
 /// Known Extra fields (PKWARE and Third party) mappings
 pub const EXTRA_FIELD_MAPPING: [u16; 58] = [

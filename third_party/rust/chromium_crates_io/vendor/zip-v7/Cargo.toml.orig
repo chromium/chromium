@@ -1,6 +1,6 @@
 [package]
 name = "zip"
-version = "7.3.0"
+version = "7.4.0"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -12,7 +12,7 @@ repository = "https://github.com/zip-rs/zip2.git"
 keywords = ["zip", "archive", "compression"]
 # Any change to rust-version must be reflected also in `README.md` and `.github/workflows/ci.yaml`.
 # The MSRV policy is documented in `README.md`.
-rust-version = "1.83.0"
+rust-version = "1.88"
 categories = ["compression", "filesystem", "parser-implementations"]
 description = """
 Library to support the reading and writing of zip files.
@@ -29,56 +29,51 @@ arbitrary = { version = "1.4", features = ["derive"], optional = true }
 aes = { version = "0.8", optional = true }
 bzip2 = { version = "0.6", default-features = false, optional = true }
 chrono = { version = "^0.4.27", optional = true, default-features = false, features = ["std"] }
-constant_time_eq = { version = "0.3", optional = true }
+constant_time_eq = { version = "0.4", optional = true }
 crc32fast = "1.5"
 flate2 = { version = "1.1", default-features = false, optional = true }
 hmac = { version = "0.12", optional = true, features = ["reset"] }
 indexmap = "2"
 jiff = { version = "0.2.4", optional = true }
 memchr = "2.7"
-nt-time = { version = "0.10.6", default-features = false, optional = true }
-ppmd-rust = { version = "1.3", optional = true }
+nt-time = { version = "0.13", default-features = false, optional = true }
+ppmd-rust = { version = "1.4", optional = true }
 pbkdf2 = { version = "0.12", optional = true }
 sha1 = { version = "0.10", optional = true }
-time = { version = "=0.3.45", default-features = false, optional = true, features = [
-    "std",
-] }
 zeroize = { version = "1.8", optional = true, features = ["zeroize_derive"] }
 zstd = { version = "^0.13.3", optional = true, default-features = false }
 zopfli = { version = "0.8", optional = true }
 deflate64 = { version = "0.1.10", optional = true }
 lzma-rust2 = { version = "0.15", optional = true, default-features = false, features = ["std", "encoder", "optimization", "xz"] }
-bitstream-io = { version = "4.5", optional = true }
+bitstream-io = { version = "4.9", optional = true }
 typed-path = "0.12"
 
 # native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-getrandom = { version = "0.3", default-features = false, optional = true }
-time = { version = "=0.3.45", default-features = false, optional = true, features = [
-    "wasm-bindgen"
-] }
+getrandom = { version = "0.4", default-features = false, optional = true }
+time = { version = "0.3.47", default-features = false, optional = true, features = ["std"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
-getrandom = { version = "0.3", default-features = false }
+getrandom = { version = "0.4", default-features = false }
 
 # wasm32
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-getrandom = { version = "0.3", default-features = false, features = ["wasm_js"], optional = true }
-time = { version = "=0.3.45", default-features = false, optional = true, features = [
+getrandom = { version = "0.4", default-features = false, features = ["wasm_js"], optional = true }
+time = { version = "0.3.47", default-features = false, optional = true, features = [
     "std",
     "wasm-bindgen"
 ] }
 
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies]
-getrandom = { version = "0.3", default-features = false, features = ["wasm_js"] }
+getrandom = { version = "0.4", default-features = false, features = ["wasm_js"] }
 wasm-bindgen-test = "^0.3.56"
 
 [dev-dependencies]
 bencher = "0.1"
-getrandom = { version = "0.3", default-features = false }
+getrandom = { version = "0.4", default-features = false }
 walkdir = "2.5"
-time = { version = "=0.3.45", features = ["formatting", "macros"] }
-clap = { version = "=4.4.18", features = ["derive"] }
+time = { version = "0.3.47", features = ["formatting", "macros"] }
+clap = { version = "^4.4.18", features = ["derive"] }
 tempfile = "3.15"
 rayon = "1.11"
 
@@ -104,6 +99,7 @@ xz = ["dep:lzma-rust2"]
 _bzip2_any = []
 bzip2 = ["dep:bzip2", "bzip2/default", "_bzip2_any"]
 legacy-zip = ["bitstream-io"]
+time = ["dep:time"]
 default = [
     "aes-crypto",
     "bzip2",
