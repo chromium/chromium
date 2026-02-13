@@ -821,6 +821,59 @@ TEST_P(NdkVideoEncoderAcceleratorTest, ResizeOnEncode) {
   ValidateStream(stream);
 }
 
+TEST_P(NdkVideoEncoderAcceleratorTest, EncodeWithTemporalLayers) {
+  auto config = GetDefaultConfig();
+  // Set 2 temporal layers
+  config.spatial_layers.emplace_back();
+  config.spatial_layers[0].width = config.input_visible_size.width();
+  config.spatial_layers[0].height = config.input_visible_size.height();
+  config.spatial_layers[0].bitrate_bps = config.bitrate.target_bps();
+  config.spatial_layers[0].framerate = config.framerate;
+  config.spatial_layers[0].max_qp = 30;
+  config.spatial_layers[0].num_of_temporal_layers = 2;
+
+  const size_t total_frames_count = 10;
+  accelerator_ = MakeNdkAccelerator();
+  EXPECT_CALL(*this, OnRequireBuffer()).WillOnce(Return(false));
+  EXPECT_CALL(*this, OnBufferReady()).WillRepeatedly([this]() {
+    return outputs_.size() < total_frames_count;
+  });
+
+  auto status = accelerator_->Initialize(config, this, NullLog());
+  ASSERT_TRUE(status.is_ok())
+      << EncoderStatusCodeToString(status.code()) << " " << status.message();
+  SetCommandBufferHelper();
+  Run();
+
+  auto duration = base::Milliseconds(16);
+  for (auto frame_index = 0u; frame_index < total_frames_count; frame_index++) {
+    auto timestamp = frame_index * duration;
+    uint32_t color = random_color_.Rand() & 0x00FFFFFF;
+    auto frame =
+        CreateFrame(config.input_visible_size, pixel_format_, timestamp, color);
+    if (GetParam().use_shared_image) {
+      frame = WrapInSharedImageFrame(frame);
+    }
+    bool key_frame = (frame_index == 0);
+    accelerator_->Encode(frame, key_frame);
+  }
+
+  Run();
+  EXPECT_FALSE(error_status_.has_value());
+  EXPECT_GE(outputs_.size(), total_frames_count);
+
+  std::vector<uint8_t> stream;
+  for (auto& output : outputs_) {
+    auto& mapping = id_to_buffer_[output.id]->GetMapping();
+    EXPECT_GE(mapping.size(), output.md.payload_size_bytes);
+    EXPECT_GT(output.md.payload_size_bytes, 0u);
+    auto span =
+        mapping.GetMemoryAsSpan<uint8_t>().first(output.md.payload_size_bytes);
+    stream.insert(stream.end(), span.begin(), span.end());
+  }
+  ValidateStream(stream);
+}
+
 TEST_P(NdkVideoEncoderAcceleratorE2ETest, EncodeAndDecode) {
   auto config = GetDefaultConfig();
   const int total_frames_count = 10;
