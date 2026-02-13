@@ -16,11 +16,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_iterator.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/process_snapshot/process_snapshot_server.h"
 #include "chromeos/ash/experiences/arc/mojom/process.mojom-forward.h"
 #include "chromeos/ash/experiences/arc/process/arc_process.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -192,9 +194,6 @@ class ArcProcessService : public KeyedService,
   // Whether ARC is ready to request its process list.
   bool connection_ready_ = false;
 
-  // True if the ProcessSnapshotServer is currently being observed.
-  bool is_observing_process_snapshot_ = false;
-
   // A FIFO queue of pending requests that were received before getting a recent
   // enough process snapshot.
   std::queue<base::OnceClosure> pending_requests_;
@@ -207,6 +206,13 @@ class ArcProcessService : public KeyedService,
   // nspid lookup from /proc/<PID>/status.
   // To play safe, always modify |nspid_to_pid_| on the blocking pool.
   scoped_refptr<NSPidToPidMap> nspid_to_pid_;
+
+  base::ScopedObservation<ConnectionHolder<mojom::ProcessInstance>,
+                          ConnectionObserver<mojom::ProcessInstance>>
+      arc_bridge_service_observation_{this};
+  base::ScopedObservation<ash::ProcessSnapshotServer,
+                          ash::ProcessSnapshotServer::Observer>
+      process_snapshot_observation_{this};
 
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.

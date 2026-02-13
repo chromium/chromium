@@ -33,7 +33,6 @@
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/mojom/process.mojom.h"
-#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace arc {
@@ -299,14 +298,10 @@ ArcProcessService::ArcProcessService(content::BrowserContext* context,
            base::TaskPriority::USER_VISIBLE})),
       nspid_to_pid_(new NSPidToPidMap()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  arc_bridge_service_->process()->AddObserver(this);
+  arc_bridge_service_observation_.Observe(arc_bridge_service_->process());
 }
 
-ArcProcessService::~ArcProcessService() {
-  arc_bridge_service_->process()->RemoveObserver(this);
-  if (is_observing_process_snapshot_)
-    ash::ProcessSnapshotServer::Get()->RemoveObserver(this);
-}
+ArcProcessService::~ArcProcessService() = default;
 
 // static
 constexpr base::TimeDelta ArcProcessService::kProcessSnapshotRefreshTime;
@@ -433,8 +428,9 @@ bool ArcProcessService::CanUseStaleProcessSnapshot() const {
 }
 
 void ArcProcessService::MaybeStopObservingProcessSnapshots() {
-  if (!is_observing_process_snapshot_)
+  if (!process_snapshot_observation_.IsObserving()) {
     return;
+  }
 
   // We can stop observing the |ash::ProcessSnapshotServer| only if there are no
   // more pending requests, and we have a recent enough
@@ -444,8 +440,7 @@ void ArcProcessService::MaybeStopObservingProcessSnapshots() {
   if (!should_stop_observing)
     return;
 
-  ash::ProcessSnapshotServer::Get()->RemoveObserver(this);
-  is_observing_process_snapshot_ = false;
+  process_snapshot_observation_.Reset();
 }
 
 void ArcProcessService::HandleRequest(base::OnceClosure request) {
@@ -460,9 +455,8 @@ void ArcProcessService::HandleRequest(base::OnceClosure request) {
   // We have a too stale |cached_process_snapshot_|, therefore request a fresher
   // one by observing the |ash::ProcessSnapshotServer|, and add |request| to the
   // pending requests.
-  if (!is_observing_process_snapshot_) {
-    ash::ProcessSnapshotServer::Get()->AddObserver(this);
-    is_observing_process_snapshot_ = true;
+  if (!process_snapshot_observation_.IsObserving()) {
+    process_snapshot_observation_.Observe(ash::ProcessSnapshotServer::Get());
   }
 
   pending_requests_.push(std::move(request));

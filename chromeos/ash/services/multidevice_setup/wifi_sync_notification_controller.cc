@@ -79,18 +79,13 @@ WifiSyncNotificationController::WifiSyncNotificationController(
       device_sync_client_(device_sync_client),
       delegate_notifier_(delegate_notifier) {
   if (pref_service_->GetBoolean(kCanShowWifiSyncAnnouncementPrefName)) {
-    session_manager::SessionManager::Get()->AddObserver(this);
-    base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
-    did_register_session_observers_ = true;
+    session_manager_observation_.Observe(
+        session_manager::SessionManager::Get());
+    power_monitor_observation_.Observe(base::PowerMonitor::GetInstance());
   }
 }
 
-WifiSyncNotificationController::~WifiSyncNotificationController() {
-  if (did_register_session_observers_) {
-    session_manager::SessionManager::Get()->RemoveObserver(this);
-    base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
-  }
-}
+WifiSyncNotificationController::~WifiSyncNotificationController() = default;
 
 void WifiSyncNotificationController::OnSessionStateChanged() {
   TRACE_EVENT0("login",
