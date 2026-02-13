@@ -388,7 +388,8 @@ void JingleSession::SendTransportInfo(
       peer_address_, std::move(*transport_info), session_id_);
   AddPluginAttachments(message.get());
 
-  std::unique_ptr<jingle_xmpp::XmlElement> stanza = message->ToXml();
+  std::unique_ptr<jingle_xmpp::XmlElement> stanza =
+      JingleMessageToXml(*message);
   stanza->AddAttr(kQNameId, GetNextOutgoingId());
 
   auto request = session_manager_->iq_sender()->SendIq(
@@ -488,7 +489,8 @@ void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
     // SESSION_TERMINATE message.
     AddPluginAttachments(message.get());
   }
-  std::unique_ptr<jingle_xmpp::XmlElement> stanza = message->ToXml();
+  std::unique_ptr<jingle_xmpp::XmlElement> stanza =
+      JingleMessageToXml(*message);
   stanza->AddAttr(kQNameId, GetNextOutgoingId());
 
   auto request = session_manager_->iq_sender()->SendIq(

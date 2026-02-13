@@ -102,10 +102,11 @@ void ParseJingleMessageFromXml(const char* message_text,
   std::unique_ptr<XmlElement> source_message(XmlElement::ForStr(message_text));
   ASSERT_TRUE(source_message.get());
 
-  EXPECT_TRUE(JingleMessage::IsJingleMessage(source_message.get()));
+  EXPECT_TRUE(IsJingleMessage(source_message.get()));
 
   std::string error;
-  EXPECT_TRUE(parsed->ParseXml(source_message.get(), &error)) << error;
+  EXPECT_TRUE(JingleMessageFromXml(source_message.get(), parsed, &error))
+      << error;
 }
 
 
@@ -115,12 +116,13 @@ void ParseFormatAndCompare(const char* message_text, JingleMessage* parsed) {
   std::unique_ptr<XmlElement> source_message(XmlElement::ForStr(message_text));
   ASSERT_TRUE(source_message.get());
 
-  EXPECT_TRUE(JingleMessage::IsJingleMessage(source_message.get()));
+  EXPECT_TRUE(IsJingleMessage(source_message.get()));
 
   std::string error;
-  EXPECT_TRUE(parsed->ParseXml(source_message.get(), &error)) << error;
+  EXPECT_TRUE(JingleMessageFromXml(source_message.get(), parsed, &error))
+      << error;
 
-  std::unique_ptr<XmlElement> formatted_message(parsed->ToXml());
+  std::unique_ptr<XmlElement> formatted_message(JingleMessageToXml(*parsed));
   ASSERT_TRUE(formatted_message.get());
   EXPECT_TRUE(VerifyXml(source_message.get(), formatted_message.get(), &error))
       << error;
@@ -499,7 +501,8 @@ TEST(JingleMessageReplyTest, ToXml) {
     } else {
       reply_msg = JingleMessageReply(tests[i].error, tests[i].error_text);
     }
-    std::unique_ptr<XmlElement> reply(reply_msg.ToXml(incoming_message.get()));
+    std::unique_ptr<XmlElement> reply(
+        JingleMessageReplyToXml(reply_msg, incoming_message.get()));
 
     std::unique_ptr<XmlElement> expected(
         XmlElement::ForStr(tests[i].expected_text));
@@ -539,11 +542,11 @@ TEST(JingleMessageTest, ErrorMessage) {
       XmlElement::ForStr(kTestSessionInitiateErrorMessage));
   ASSERT_TRUE(source_message.get());
 
-  EXPECT_FALSE(JingleMessage::IsJingleMessage(source_message.get()));
+  EXPECT_FALSE(IsJingleMessage(source_message.get()));
 
   JingleMessage message;
   std::string error;
-  EXPECT_FALSE(message.ParseXml(source_message.get(), &error));
+  EXPECT_FALSE(JingleMessageFromXml(source_message.get(), &message, &error));
   EXPECT_FALSE(error.empty());
 }
 

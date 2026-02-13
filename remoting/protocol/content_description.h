@@ -11,10 +11,6 @@
 #include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/session_config.h"
 
-namespace jingle_xmpp {
-class XmlElement;
-}  // namespace jingle_xmpp
-
 namespace remoting::protocol {
 
 // ContentDescription used for chromoting sessions. It contains the information
@@ -37,21 +33,9 @@ class ContentDescription {
 
   const JingleAuthentication& authentication() const { return authentication_; }
 
-  jingle_xmpp::XmlElement* ToXml() const;
-
-  static std::unique_ptr<ContentDescription> ParseXml(
-      const jingle_xmpp::XmlElement* element,
-      bool webrtc_transport);
-
  private:
   std::unique_ptr<const CandidateSessionConfig> candidate_config_;
   JingleAuthentication authentication_;
-
-  static bool ParseChannelConfigs(const jingle_xmpp::XmlElement* const element,
-                                  const char tag_name[],
-                                  bool codec_required,
-                                  bool optional,
-                                  std::list<ChannelConfig>* const configs);
 };
 
 }  // namespace remoting::protocol

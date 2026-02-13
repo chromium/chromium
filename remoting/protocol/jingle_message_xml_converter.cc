@@ -82,10 +82,21 @@ const jingle_xmpp::StaticQName kQNameSignature = {kEmptyNamespace, "signature"};
 const jingle_xmpp::StaticQName kQNameSid = {kEmptyNamespace, "sid"};
 const jingle_xmpp::StaticQName kQNameType = {kEmptyNamespace, "type"};
 const jingle_xmpp::StaticQName kQNameUfrag = {kEmptyNamespace, "ufrag"};
+const jingle_xmpp::StaticQName kQNameTransport = {kEmptyNamespace, "transport"};
+const jingle_xmpp::StaticQName kQNameVersion = {kEmptyNamespace, "version"};
+const jingle_xmpp::StaticQName kQNameCodec = {kEmptyNamespace, "codec"};
 
 // Chromoting namespace constants.
 const jingle_xmpp::StaticQName kQNameDescription = {kChromotingXmlNamespace,
                                                     "description"};
+const jingle_xmpp::StaticQName kQNameStandardIce = {kChromotingXmlNamespace,
+                                                    "standard-ice"};
+const jingle_xmpp::StaticQName kQNameControl = {kChromotingXmlNamespace,
+                                                "control"};
+const jingle_xmpp::StaticQName kQNameEvent = {kChromotingXmlNamespace, "event"};
+const jingle_xmpp::StaticQName kQNameVideo = {kChromotingXmlNamespace, "video"};
+const jingle_xmpp::StaticQName kQNameAudio = {kChromotingXmlNamespace, "audio"};
+
 const jingle_xmpp::StaticQName kQNameErrorCode = {kChromotingXmlNamespace,
                                                   "error-code"};
 const jingle_xmpp::StaticQName kQNameErrorDetails = {kChromotingXmlNamespace,
@@ -146,6 +157,24 @@ const NameMapElement<SessionTerminate::Reason> kReasons[] = {
     {SessionTerminate::Reason::kFailedApplication, "failed-application"},
     {SessionTerminate::Reason::kIncompatibleParameters,
      "incompatible-parameters"},
+};
+
+const NameMapElement<ChannelConfig::TransportType> kTransports[] = {
+    {ChannelConfig::TRANSPORT_STREAM, "stream"},
+    {ChannelConfig::TRANSPORT_MUX_STREAM, "mux-stream"},
+    {ChannelConfig::TRANSPORT_DATAGRAM, "datagram"},
+    {ChannelConfig::TRANSPORT_NONE, "none"},
+};
+
+const NameMapElement<ChannelConfig::Codec> kCodecs[] = {
+    {ChannelConfig::CODEC_VERBATIM, "verbatim"},
+    {ChannelConfig::CODEC_VP8, "vp8"},
+    {ChannelConfig::CODEC_VP9, "vp9"},
+    {ChannelConfig::CODEC_H264, "h264"},
+    {ChannelConfig::CODEC_ZIP, "zip"},
+    {ChannelConfig::CODEC_OPUS, "opus"},
+    {ChannelConfig::CODEC_SPEEX, "speex"},
+    {ChannelConfig::CODEC_AV1, "av1"},
 };
 
 // The type names "local" and "stun" are not standard but JingleMessage has
@@ -366,6 +395,79 @@ bool ParseSessionDescription(const XmlElement* element,
   return true;
 }
 
+// Format a channel configuration tag for chromotocol session description,
+// e.g. for video channel:
+//    <video transport="stream" version="1" codec="vp8" />
+XmlElement* FormatChannelConfig(const ChannelConfig& config,
+                                const jingle_xmpp::StaticQName& qname) {
+  XmlElement* result = new XmlElement(qname);
+
+  result->AddAttr(kQNameTransport, ValueToName(kTransports, config.transport));
+
+  if (config.transport != ChannelConfig::TRANSPORT_NONE) {
+    result->AddAttr(kQNameVersion, base::NumberToString(config.version));
+
+    if (config.codec != ChannelConfig::CODEC_UNDEFINED) {
+      result->AddAttr(kQNameCodec, ValueToName(kCodecs, config.codec));
+    }
+  }
+
+  return result;
+}
+
+// Returns false if the element is invalid.
+bool ParseChannelConfig(const XmlElement* element,
+                        bool codec_required,
+                        ChannelConfig* config) {
+  if (!NameToValue(kTransports, element->Attr(kQNameTransport),
+                   &config->transport)) {
+    return false;
+  }
+
+  // Version is not required when transport="none".
+  if (config->transport != ChannelConfig::TRANSPORT_NONE) {
+    if (!base::StringToInt(element->Attr(kQNameVersion), &config->version)) {
+      return false;
+    }
+
+    // Codec is not required when transport="none".
+    if (codec_required) {
+      if (!NameToValue(kCodecs, element->Attr(kQNameCodec), &config->codec)) {
+        return false;
+      }
+    } else {
+      config->codec = ChannelConfig::CODEC_UNDEFINED;
+    }
+  } else {
+    config->version = 0;
+    config->codec = ChannelConfig::CODEC_UNDEFINED;
+  }
+
+  return true;
+}
+
+// Adds the channel configs corresponding to |tag_name|, found in |element|, to
+// |configs|.
+bool ParseChannelConfigs(const XmlElement* const element,
+                         const jingle_xmpp::StaticQName& qname,
+                         bool codec_required,
+                         bool optional,
+                         std::list<ChannelConfig>* const configs) {
+  const XmlElement* child = element->FirstNamed(qname);
+  while (child) {
+    ChannelConfig channel_config;
+    if (ParseChannelConfig(child, codec_required, &channel_config)) {
+      configs->push_back(channel_config);
+    }
+    child = child->NextNamed(qname);
+  }
+  if (optional && configs->empty()) {
+    // If there's no mention of the tag, implicitly assume disabled channel.
+    configs->push_back(ChannelConfig::None());
+  }
+  return true;
+}
+
 struct ContentTags {
   raw_ptr<const XmlElement> content = nullptr;
   raw_ptr<const XmlElement> webrtc_transport = nullptr;
@@ -423,7 +525,7 @@ bool ParseInitiateOrAccept(const XmlElement* jingle_tag,
     return false;
   }
 
-  message->description = ContentDescription::ParseXml(
+  message->description = ContentDescriptionFromXml(
       description_tag, tags.webrtc_transport != nullptr);
   if (!message->description) {
     *error = "Failed to parse content description";
@@ -659,7 +761,8 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
     content_tag->AddAttr(kQNameCreator, "initiator");
 
     if (message.description) {
-      content_tag->AddElement(message.description->ToXml());
+      content_tag->AddElement(
+          ContentDescriptionToXml(*message.description).release());
     }
 
     const JingleTransportInfo* transport_info = nullptr;
@@ -1202,6 +1305,75 @@ bool SessionInfoFromXml(const jingle_xmpp::XmlElement* jingle_element,
   }
 
   return true;
+}
+
+std::unique_ptr<jingle_xmpp::XmlElement> ContentDescriptionToXml(
+    const ContentDescription& description) {
+  auto root = std::make_unique<XmlElement>(kQNameDescription, true);
+
+  if (description.config()->ice_supported()) {
+    root->AddElement(new jingle_xmpp::XmlElement(kQNameStandardIce));
+
+    for (const auto& channel_config : description.config()->control_configs()) {
+      root->AddElement(FormatChannelConfig(channel_config, kQNameControl));
+    }
+
+    for (const auto& channel_config : description.config()->event_configs()) {
+      root->AddElement(FormatChannelConfig(channel_config, kQNameEvent));
+    }
+
+    for (const auto& channel_config : description.config()->video_configs()) {
+      root->AddElement(FormatChannelConfig(channel_config, kQNameVideo));
+    }
+
+    for (const auto& channel_config : description.config()->audio_configs()) {
+      root->AddElement(FormatChannelConfig(channel_config, kQNameAudio));
+    }
+  }
+
+  auto authentication_xml =
+      JingleAuthenticationToXml(description.authentication());
+  if (authentication_xml) {
+    root->AddElement(authentication_xml.release());
+  }
+
+  return root;
+}
+
+std::unique_ptr<ContentDescription> ContentDescriptionFromXml(
+    const jingle_xmpp::XmlElement* element,
+    bool webrtc_transport) {
+  if (element->Name() != kQNameDescription) {
+    LOG(ERROR) << "Invalid description: " << element->Str();
+    return nullptr;
+  }
+  std::unique_ptr<CandidateSessionConfig> config(
+      CandidateSessionConfig::CreateEmpty());
+
+  config->set_webrtc_supported(webrtc_transport);
+
+  if (element->FirstNamed(kQNameStandardIce) != nullptr) {
+    config->set_ice_supported(true);
+    if (!ParseChannelConfigs(element, kQNameControl, false, false,
+                             config->mutable_control_configs()) ||
+        !ParseChannelConfigs(element, kQNameEvent, false, false,
+                             config->mutable_event_configs()) ||
+        !ParseChannelConfigs(element, kQNameVideo, true, false,
+                             config->mutable_video_configs()) ||
+        !ParseChannelConfigs(element, kQNameAudio, true, true,
+                             config->mutable_audio_configs())) {
+      return nullptr;
+    }
+  }
+
+  JingleAuthentication authentication;
+  const XmlElement* child = Authenticator::FindAuthenticatorMessage(element);
+  if (child) {
+    JingleAuthenticationFromXml(child, &authentication);
+  }
+
+  return std::make_unique<ContentDescription>(std::move(config),
+                                              authentication);
 }
 
 }  // namespace remoting::protocol

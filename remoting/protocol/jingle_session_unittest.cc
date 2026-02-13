@@ -29,6 +29,7 @@
 #include "remoting/protocol/connection_tester.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/fake_authenticator.h"
+#include "remoting/protocol/jingle_message_xml_converter.h"
 #include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/network_settings.h"
@@ -660,8 +661,8 @@ TEST_F(JingleSessionTest, CloseWithErrorDetailsAndLocation) {
   ASSERT_EQ(host_signal_strategy_->received_messages().size(), 1U);
   JingleMessage message;
   std::string err;
-  ASSERT_TRUE(message.ParseXml(
-      host_signal_strategy_->received_messages()[0].get(), &err));
+  ASSERT_TRUE(JingleMessageFromXml(
+      host_signal_strategy_->received_messages()[0].get(), &message, &err));
   ASSERT_EQ(message.error_code, ErrorCode::HOST_OVERLOAD);
   ASSERT_EQ(message.error_details, "fake_error_details");
   // Make sure the error location captures the file name and the function name.

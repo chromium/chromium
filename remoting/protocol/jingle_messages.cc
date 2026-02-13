@@ -17,10 +17,6 @@
 #include "remoting/protocol/jingle_message_xml_converter.h"
 #include "remoting/protocol/session_plugin.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-
-using jingle_xmpp::QName;
-using jingle_xmpp::XmlElement;
 
 namespace remoting::protocol {
 
@@ -35,11 +31,6 @@ const NameMapElement<JingleMessage::ActionType> kActionTypes[] = {
 };
 
 }  // namespace
-
-// static
-bool JingleMessage::IsJingleMessage(const jingle_xmpp::XmlElement* stanza) {
-  return remoting::protocol::IsJingleMessage(stanza);
-}
 
 // static
 std::string JingleMessage::GetActionName(ActionType action) {
@@ -87,15 +78,6 @@ void JingleMessage::SetPayload(Payload payload) {
   action_ = ActionFromPayload(payload_);
 }
 
-bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
-                             std::string* error) {
-  return JingleMessageFromXml(stanza, this, error);
-}
-
-std::unique_ptr<jingle_xmpp::XmlElement> JingleMessage::ToXml() const {
-  return JingleMessageToXml(*this);
-}
-
 JingleMessageReply::JingleMessageReply()
     : type(REPLY_RESULT), error_type(NONE) {}
 
@@ -108,21 +90,8 @@ JingleMessageReply::JingleMessageReply(ErrorType error,
 
 JingleMessageReply::~JingleMessageReply() = default;
 
-std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReply::ToXml(
-    const jingle_xmpp::XmlElement* request_stanza) const {
-  return JingleMessageReplyToXml(*this, request_stanza);
-}
-
 IceTransportInfo::IceTransportInfo() = default;
 IceTransportInfo::~IceTransportInfo() = default;
-
-bool IceTransportInfo::ParseXml(const jingle_xmpp::XmlElement* element) {
-  return IceTransportInfoFromXml(element, this);
-}
-
-std::unique_ptr<jingle_xmpp::XmlElement> IceTransportInfo::ToXml() const {
-  return IceTransportInfoToXml(*this);
-}
 
 JabberId::JabberId() = default;
 JabberId::JabberId(const JabberId&) = default;

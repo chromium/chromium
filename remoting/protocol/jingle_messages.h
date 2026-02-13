@@ -18,10 +18,6 @@
 #include "remoting/signaling/signaling_address.h"
 #include "third_party/webrtc/api/candidate.h"
 
-namespace jingle_xmpp {
-class XmlElement;
-}  // namespace jingle_xmpp
-
 namespace remoting::protocol {
 
 class ContentDescription;
@@ -158,11 +154,6 @@ struct IceTransportInfo {
     std::string ufrag;
     std::string password;
   };
-
-  // Caller keeps ownership of |stanza|. |error| is set to debug error
-  // message when parsing fails.
-  bool ParseXml(const jingle_xmpp::XmlElement* stanza);
-  std::unique_ptr<jingle_xmpp::XmlElement> ToXml() const;
 
   std::list<IceCredentials> ice_credentials;
   std::list<NamedCandidate> candidates;
@@ -320,15 +311,7 @@ class JingleMessage {
                 const std::string& sid_value);
   ~JingleMessage();
 
-  // Caller keeps ownership of |stanza|.
-  static bool IsJingleMessage(const jingle_xmpp::XmlElement* stanza);
   static std::string GetActionName(ActionType action);
-
-  // Caller keeps ownership of |stanza|. |error| is set to debug error
-  // message when parsing fails.
-  bool ParseXml(const jingle_xmpp::XmlElement* stanza, std::string* error);
-
-  std::unique_ptr<jingle_xmpp::XmlElement> ToXml() const;
 
   ActionType action() const { return action_; }
   const Payload& payload() const { return payload_; }
@@ -393,12 +376,6 @@ struct JingleMessageReply {
   JingleMessageReply(ErrorType error);
   JingleMessageReply(ErrorType error, const std::string& text);
   ~JingleMessageReply();
-
-  // Formats reply stanza for the specified |request_stanza|. Id and
-  // recepient as well as other information needed to generate a valid
-  // reply are taken from |request_stanza|.
-  std::unique_ptr<jingle_xmpp::XmlElement> ToXml(
-      const jingle_xmpp::XmlElement* request_stanza) const;
 
   ReplyType type;
   ErrorType error_type;

@@ -21,6 +21,7 @@ struct JingleTransportInfo;
 struct Attachment;
 struct JingleAuthentication;
 struct SessionInfo;
+class ContentDescription;
 
 // Converts between JingleMessage and its XML representation.
 std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
@@ -68,6 +69,13 @@ void SessionInfoToXml(const SessionInfo& session_info,
 // Parses SessionInfo from the given Jingle element.
 bool SessionInfoFromXml(const jingle_xmpp::XmlElement* jingle_element,
                         SessionInfo* session_info);
+
+// Converts between ContentDescription and its XML representation.
+std::unique_ptr<jingle_xmpp::XmlElement> ContentDescriptionToXml(
+    const ContentDescription& description);
+std::unique_ptr<ContentDescription> ContentDescriptionFromXml(
+    const jingle_xmpp::XmlElement* element,
+    bool webrtc_transport);
 
 }  // namespace remoting::protocol
 
