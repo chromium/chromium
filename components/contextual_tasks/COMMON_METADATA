@@ -2,4 +2,8 @@ buganizer {
   component_id: 1516765
 }
 
+buganizer_public {
+  component_id: 2029565
+}
+
 team_email: "chrome-contextual-tasks-eng@google.com"
