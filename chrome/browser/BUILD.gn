@@ -6589,8 +6589,6 @@ static_library("browser") {
       "lifetime/application_lifetime_mac.mm",
       "mac/auth_session_request.h",
       "mac/auth_session_request.mm",
-      "mac/bluetooth_utility.h",
-      "mac/bluetooth_utility.mm",
       "mac/chrome_browser_main_extra_parts_mac.h",
       "mac/chrome_browser_main_extra_parts_mac.mm",
       "mac/code_sign_clone_manager.h",
