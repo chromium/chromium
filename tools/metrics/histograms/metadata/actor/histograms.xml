@@ -721,6 +721,30 @@ chromium-metrics-reviews@google.com.
   <token key="ToolRequest" variants="ToolRequest"/>
 </histogram>
 
+<histogram name="Actor.Tools.RevalidationResult" enum="ActionResultCode"
+    expires_after="2027-02-12">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the result code of the tool's revalidation. This occurs when the
+    tool's validation logic is invoked as part of the InitializeTool method, and
+    we need to validate a second time during execution to make sure that we are
+    executing the tool as close to validation as possible.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Tools.TimeOfUseReValidation" enum="TimeOfUseResult"
+    expires_after="2027-02-12">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    The result of Time-Of-Check Time-Of-Use validation performed before a tool
+    is invoked on a DOM element in a Web page. This validation is done a second
+    time when the initial validation was performed as part of InitializeTool and
+    not ExecuteTool.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Tools.TimeOfUseValidation" enum="TimeOfUseResult"
     expires_after="2026-09-17">
   <owner>mfoltz@google.com</owner>

@@ -41,9 +41,6 @@ using blink::WebWidget;
 namespace actor {
 namespace {
 
-constexpr char kTimeOfUseValidationHistogram[] =
-    "Actor.Tools.TimeOfUseValidation";
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -262,17 +259,32 @@ bool ToolBase::EnsureTargetInView() {
 
 mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
     const ResolvedTarget& resolved_target) const {
+  static constexpr char kTimeOfUseValidationHistogram[] =
+      "Actor.Tools.TimeOfUseValidation";
+  static constexpr char kTimeOfUseReValidationHistogram[] =
+      "Actor.Tools.TimeOfUseReValidation";
+  static constexpr char kTimeOfUseValidationJournalName[] =
+      "TimeOfUseValidation";
+  static constexpr char kTimeOfUseReValidationJournalName[] =
+      "TimeOfUseReValidation";
+
   const WebNode& target_node = resolved_target.node;
+
+  const char* histogram_name = is_revalidation_
+                                   ? kTimeOfUseReValidationHistogram
+                                   : kTimeOfUseValidationHistogram;
+  const char* journal_name = is_revalidation_
+                                 ? kTimeOfUseReValidationJournalName
+                                 : kTimeOfUseValidationJournalName;
 
   // For coordinate target, check the observed node matches the live DOM hit
   // test target.
   if (target_->is_coordinate_dip()) {
     if (!observed_target_ || !observed_target_->node_attribute->dom_node_id) {
       journal_->Log(
-          task_id_, "TimeOfUseValidation",
+          task_id_, journal_name,
           JournalDetailsBuilder().AddError("No valid APC node").Build());
-      UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
-                              TimeOfUseResult::kNoValidApcNode);
+      UmaHistogramEnumeration(histogram_name, TimeOfUseResult::kNoValidApcNode);
       // TODO(crbug.com/445210509): return error for no apc found.
       return MakeOkResult();
     }
@@ -282,7 +294,7 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
 
     if (observed_target_node.IsNull()) {
       journal_->Log(
-          task_id_, "TimeOfUseValidation",
+          task_id_, journal_name,
           JournalDetailsBuilder()
               .Add("coordinate_dip",
                    base::ToString(target_->get_coordinate_dip()))
@@ -305,7 +317,7 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
     // which includes shadow host elements.
     if (!observed_target_node.ContainsViaFlatTree(&target_node)) {
       journal_->Log(
-          task_id_, "TimeOfUseValidation",
+          task_id_, journal_name,
           JournalDetailsBuilder()
               .Add("coordinate_dip",
                    base::ToString(target_->get_coordinate_dip()))
@@ -315,7 +327,7 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
               .Add("observed_target", NodeToDebugString(observed_target_node))
               .AddError("Wrong Node At Location")
               .Build());
-      UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
+      UmaHistogramEnumeration(histogram_name,
                               TimeOfUseResult::kWrongNodeAtCoordinate);
       if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
         return MakeResult(
@@ -341,7 +353,7 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
     // Include shadow host element as the hit test would land on those. Also
     // check if the hit element was pulled in via a Web Components slot.
     if (!target_node.ContainsViaFlatTree(&hit_element)) {
-      journal_->Log(task_id_, "TimeOfUseValidation",
+      journal_->Log(task_id_, journal_name,
                     JournalDetailsBuilder()
                         .Add("target_id", target_node.GetDomNodeId())
                         .Add("hit_node_id", hit_element.GetDomNodeId())
@@ -350,8 +362,7 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
                         .AddError("Node covered by another node")
                         .Build());
       UmaHistogramEnumeration(
-          kTimeOfUseValidationHistogram,
-          TimeOfUseResult::kTargetNodeInteractionPointObscured);
+          histogram_name, TimeOfUseResult::kTargetNodeInteractionPointObscured);
       if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
         return MakeResult(
             mojom::ActionResultCode::kTargetNodeInteractionPointObscured,
@@ -364,17 +375,16 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
 
     if (!observed_target_ || !observed_target_->node_attribute->dom_node_id) {
       journal_->Log(
-          task_id_, "TimeOfUseValidation",
+          task_id_, journal_name,
           JournalDetailsBuilder().AddError("No valid APC node").Build());
-      UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
-                              TimeOfUseResult::kNoValidApcNode);
+      UmaHistogramEnumeration(histogram_name, TimeOfUseResult::kNoValidApcNode);
       // TODO(crbug.com/445210509): return error for no apc found.
       return MakeOkResult();
     }
 
     if (!observed_target_->node_attribute->geometry) {
       journal_->Log(
-          task_id_, "TimeOfUseValidation",
+          task_id_, journal_name,
           JournalDetailsBuilder()
               .Add("obs_node_id",
                    *observed_target_->node_attribute->dom_node_id)
@@ -383,7 +393,7 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
               .Build());
       // TODO(crbug.com/418280472): return error after retry for failed task
       // is landed.
-      UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
+      UmaHistogramEnumeration(histogram_name,
                               TimeOfUseResult::kTargetNodeMissingGeometry);
       return MakeOkResult();
     }
@@ -394,7 +404,7 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
         observed_target_->node_attribute->geometry->outer_bounding_box;
     if (!observed_bounds.Contains(
             gfx::ToFlooredPoint(resolved_target.widget_point))) {
-      journal_->Log(task_id_, "TimeOfUseValidation",
+      journal_->Log(task_id_, journal_name,
                     JournalDetailsBuilder()
                         .Add("resolved_target_point",
                              gfx::ToFlooredPoint(resolved_target.widget_point))
@@ -403,14 +413,13 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
                         .Build());
       // TODO(crbug.com/418280472): return error after retry for failed task
       // is landed.
-      UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
+      UmaHistogramEnumeration(histogram_name,
                               TimeOfUseResult::kTargetPointOutsideBoundingBox);
       return MakeOkResult();
     }
   }
 
-  UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
-                          TimeOfUseResult::kValid);
+  UmaHistogramEnumeration(histogram_name, TimeOfUseResult::kValid);
   return MakeOkResult();
 }
 
