@@ -147,7 +147,10 @@ class PressureServiceForDedicatedWorkerTest
         &worker_service_, blink::DedicatedWorkerToken(), rfh->GetProcess(),
         rfh->GetGlobalId(), rfh->GetGlobalId(), rfh->GetStorageKey(),
         rfh->GetStorageKey().origin(), rfh->GetIsolationInfoForSubresources(),
-        rfh->BuildClientSecurityState(), /*creator_coep_reporter=*/nullptr,
+        rfh->BuildClientSecurityState(),
+        rfh->policy_container_host()->policies(),
+        /*creator_coep_reporter=*/nullptr,
+        /*network_restrictions_id=*/std::nullopt,
         mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost>(),
         net::StorageAccessApiStatus::kNone);
     mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =

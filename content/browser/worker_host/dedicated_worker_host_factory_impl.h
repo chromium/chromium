@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WORKER_HOST_DEDICATED_WORKER_HOST_FACTORY_IMPL_H_
 
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
@@ -33,6 +34,9 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
 
   // `creator_client_security_state` specifies the client security state of
   // the creator frame or worker. Must not be nullptr.
+  // `creator_policies` specifies the security policies of the creator.
+  // `creator_network_restrictions_id` specifies the network restrictions of
+  // the creator as per its connection allowlists.
   DedicatedWorkerHostFactoryImpl(
       int worker_process_id,
       DedicatedWorkerCreator creator,
@@ -40,7 +44,10 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
       const blink::StorageKey& creator_storage_key,
       const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr creator_client_security_state,
-      base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter);
+      const PolicyContainerPolicies& creator_policies,
+      base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
+      const std::optional<base::UnguessableToken>&
+          creator_network_restrictions_id);
 
   DedicatedWorkerHostFactoryImpl(const DedicatedWorkerHostFactoryImpl&) =
       delete;
@@ -79,7 +86,12 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   // `CreateWorkerHostAndStartScriptLoad()` is called. Nullptr afterwards.
   network::mojom::ClientSecurityStatePtr creator_client_security_state_;
 
+  // The policies of the creator context.
+  const PolicyContainerPolicies creator_policies_;
+
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter_;
+
+  const std::optional<base::UnguessableToken> creator_network_restrictions_id_;
 };
 
 }  // namespace content

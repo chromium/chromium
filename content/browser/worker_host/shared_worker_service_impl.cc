@@ -428,6 +428,10 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
          worker_origin == host->instance().storage_key().origin())
       << worker_origin << " and " << host->instance().storage_key().origin()
       << " should be the same.";
+
+  // TODO(crbug.com/447954811): Pass worker_network_restrictions_id and
+  // creator_network_restrictions_id so subresources and script fetch
+  // can be restricted based on connection allowlist.
   WorkerScriptFetcher::CreateAndStart(
       worker_process_host->GetDeprecatedID(), host->token(),
       host->instance().url(), creator, &creator,
@@ -445,6 +449,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       SharedWorkerDevToolsAgentHost::GetFor(host), host->GetDevToolsToken(),
       host->instance().DoesRequireCrossSiteRequestForCookies(),
       storage_access_api_status,
+      /*worker_network_restrictions_id=*/std::nullopt,
+      /*creator_network_restrictions_id=*/std::nullopt, std::nullopt,
       base::BindOnce(&SharedWorkerServiceImpl::StartWorker,
                      weak_factory_.GetWeakPtr(), weak_host, message_port,
                      std::move(cloned_outside_fetch_client_settings_object)));

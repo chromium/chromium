@@ -524,6 +524,9 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
   if (dip_reporter_) {
     dip_reporter_->Clone(dip_reporter.InitWithNewPipeAndPassReceiver());
   }
+
+  // TODO(crbug.com/447954811): Pass network_restrictions_id so script fetch
+  // can be restricted based on connection allowlist.
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           GetProcessHost(), origin, GetStorageKey().ToPartialNetIsolationInfo(),
@@ -533,6 +536,7 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
                   ToOriginatingProcess(GetProcessHost()->GetID()), origin),
           /*devtools_observer=*/mojo::NullRemote(),
           mojo::Clone(worker_client_security_state_),
+          /*network_restrictions_id=*/std::nullopt,
           /*debug_tag=*/
           "SharedWorkerHost::CreateNetworkFactoryForSubresource",
           instance_.DoesRequireCrossSiteRequestForCookies(),

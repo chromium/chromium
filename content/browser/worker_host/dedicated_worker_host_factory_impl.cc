@@ -51,14 +51,19 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
     const blink::StorageKey& creator_storage_key,
     const net::IsolationInfo& isolation_info,
     network::mojom::ClientSecurityStatePtr creator_client_security_state,
-    base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter)
+    const PolicyContainerPolicies& creator_policies,
+    base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
+    const std::optional<base::UnguessableToken>&
+        creator_network_restrictions_id)
     : worker_process_id_(worker_process_id),
       creator_(creator),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_storage_key_(creator_storage_key),
       isolation_info_(isolation_info),
       creator_client_security_state_(std::move(creator_client_security_state)),
-      creator_coep_reporter_(std::move(creator_coep_reporter)) {
+      creator_policies_(creator_policies.Clone()),
+      creator_coep_reporter_(std::move(creator_coep_reporter)),
+      creator_network_restrictions_id_(creator_network_restrictions_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(creator_client_security_state_);
 }
@@ -126,7 +131,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       service, token, worker_process_host, creator_,
       ancestor_render_frame_host_id_, creator_storage_key_, renderer_origin,
       isolation_info_, std::move(creator_client_security_state_),
-      std::move(creator_coep_reporter_),
+      creator_policies_, std::move(creator_coep_reporter_),
+      creator_network_restrictions_id_,
       pending_remote_host.InitWithNewPipeAndPassReceiver(),
       storage_access_api_status);
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker;

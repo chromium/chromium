@@ -16,7 +16,9 @@
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/security/dip/document_isolation_policy_reporter.h"
+#include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
@@ -102,6 +104,9 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   //   must be specified.
   // - `creator_client_security_state` specifies the client security state of
   //   the creator frame or worker. It must not be nullptr.
+  // - `creator_policies` specifies the security policies of the creator.
+  // - `creator_network_restrictions_id` specifies the network restrictions of
+  //    the creator as per its connection allowlists.
   DedicatedWorkerHost(
       DedicatedWorkerServiceImpl* service,
       const blink::DedicatedWorkerToken& token,
@@ -112,7 +117,10 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       const url::Origin& renderer_origin,
       const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr creator_client_security_state,
+      const PolicyContainerPolicies& creator_policies,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
+      const std::optional<base::UnguessableToken>&
+          creator_network_restrictions_id,
       mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host,
       net::StorageAccessApiStatus storage_access_api_status);
 
@@ -133,6 +141,19 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   DedicatedWorkerCreator GetCreator() const { return creator_; }
   const std::optional<GURL>& GetFinalResponseURL() const {
     return final_response_url_;
+  }
+
+  const base::UnguessableToken& network_restrictions_id() const {
+    return network_restrictions_id_;
+  }
+
+  const std::optional<base::UnguessableToken>& creator_network_restrictions_id()
+      const {
+    return creator_network_restrictions_id_;
+  }
+
+  const PolicyContainerPolicies& creator_policies() const {
+    return creator_policies_;
   }
 
   void CreateContentSecurityNotifier(
@@ -440,6 +461,16 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // been granted storage access when the dedicated worker was created, which
   // also grants storage access to the dedicated worker.
   net::StorageAccessApiStatus storage_access_api_status_;
+
+  // Nonce used to restrict network traffic for this worker.
+  const base::UnguessableToken network_restrictions_id_;
+
+  // Nonce used to restrict network traffic for the main script fetch of this
+  // worker.
+  const std::optional<base::UnguessableToken> creator_network_restrictions_id_;
+
+  // The policies of the creator context. Used for inheritance.
+  const PolicyContainerPolicies creator_policies_;
 
   base::WeakPtrFactory<DedicatedWorkerHost> weak_factory_{this};
 };

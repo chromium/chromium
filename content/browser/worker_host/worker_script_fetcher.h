@@ -146,6 +146,11 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       const base::UnguessableToken& devtools_worker_token,
       bool require_cross_site_request_for_cookies,
       net::StorageAccessApiStatus storage_access_api_status,
+      const std::optional<base::UnguessableToken>&
+          worker_network_restrictions_id,
+      const std::optional<base::UnguessableToken>&
+          creator_network_restrictions_id,
+      std::optional<PolicyContainerPolicies> creator_policies,
       CompletionCallback callback);
 
   // Creates a loader factory bundle. Must be called on the UI thread. For
@@ -214,6 +219,11 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       DevToolsAgentHostImpl* devtools_agent_host,
       const base::UnguessableToken& devtools_worker_token,
       bool require_cross_site_request_for_cookies,
+      const std::optional<base::UnguessableToken>&
+          worker_network_restrictions_id,
+      const std::optional<base::UnguessableToken>&
+          creator_network_restrictions_id,
+      std::optional<PolicyContainerPolicies> creator_policies,
       WorkerScriptFetcher::CompletionCallback callback);
 
   void Start(std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles);

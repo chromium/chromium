@@ -24,6 +24,7 @@
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
+#include "content/browser/worker_host/network_restrictions_worker_throttle.h"
 #include "content/browser/worker_host/worker_script_loader.h"
 #include "content/browser/worker_host/worker_script_loader_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -127,6 +128,7 @@ void DidCreateScriptLoader(
     const network::mojom::ClientSecurityStatePtr& client_security_state,
     std::optional<GlobalRenderFrameHostId> ancestor_render_frame_host_id,
     const GURL& initial_request_url,
+    std::optional<PolicyContainerPolicies> creator_policies,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
     const network::URLLoaderCompletionStatus* completion_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -170,9 +172,19 @@ void DidCreateScriptLoader(
     // TODO(crbug.com/41478971): Pass the PolicyContainerPolicies. It can
     // be built from the
     // `main_script_load_params.response_head->parsed_headers`.
+    PolicyContainerPolicies policies;
+    if (final_response_url.SchemeIsLocal() && creator_policies) {
+      policies.connection_allowlists =
+          std::move(creator_policies->connection_allowlists);
+    } else {
+      policies.connection_allowlists =
+          main_script_load_params->response_head->parsed_headers
+              ->connection_allowlists;
+    }
+
     std::move(callback).Run(std::make_optional<WorkerScriptFetcherResult>(
         std::move(subresource_loader_factories),
-        std::move(main_script_load_params), PolicyContainerPolicies(),
+        std::move(main_script_load_params), std::move(policies),
         final_response_url));
   } else {
     std::move(callback).Run(std::nullopt);
@@ -245,6 +257,10 @@ void WorkerScriptFetcher::CreateAndStart(
     const base::UnguessableToken& devtools_worker_token,
     bool require_cross_site_request_for_cookies,
     net::StorageAccessApiStatus storage_access_api_status,
+    const std::optional<base::UnguessableToken>& worker_network_restrictions_id,
+    const std::optional<base::UnguessableToken>&
+        creator_network_restrictions_id,
+    std::optional<PolicyContainerPolicies> creator_policies,
     CompletionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(client_security_state);
@@ -368,7 +384,8 @@ void WorkerScriptFetcher::CreateAndStart(
       std::move(blob_url_loader_factory),
       std::move(url_loader_factory_override), devtools_agent_host,
       devtools_worker_token, require_cross_site_request_for_cookies,
-      std::move(callback));
+      worker_network_restrictions_id, creator_network_restrictions_id,
+      std::move(creator_policies), std::move(callback));
 }
 
 void WorkerScriptFetcher::CreateScriptLoader(
@@ -391,6 +408,10 @@ void WorkerScriptFetcher::CreateScriptLoader(
     DevToolsAgentHostImpl* devtools_agent_host,
     const base::UnguessableToken& devtools_worker_token,
     bool require_cross_site_request_for_cookies,
+    const std::optional<base::UnguessableToken>& worker_network_restrictions_id,
+    const std::optional<base::UnguessableToken>&
+        creator_network_restrictions_id,
+    std::optional<PolicyContainerPolicies> creator_policies,
     WorkerScriptFetcher::CompletionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(devtools_agent_host);
@@ -452,7 +473,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
             /*dip_reporter*/ mojo::NullRemote(),
             std::move(url_loader_network_observer),
             std::move(devtools_observer), client_security_state.Clone(),
-            /*debug_tag=*/"CreateScriptLoader",
+            creator_network_restrictions_id, /*debug_tag=*/"CreateScriptLoader",
             require_cross_site_request_for_cookies,
             /*is_for_service_worker=*/false);
     // We are sure the URLLoaderFactory made with the param is only used within
@@ -518,6 +539,14 @@ void WorkerScriptFetcher::CreateScriptLoader(
           nullptr /* navigation_ui_data */, frame_tree_node_id,
           /*navigation_id=*/std::nullopt);
 
+  if (worker_network_restrictions_id && creator_policies) {
+    if (auto throttle = NetworkRestrictionsWorkerThrottle::Create(
+            factory_process->GetStoragePartition(),
+            *worker_network_restrictions_id, creator_policies->Clone())) {
+      throttles.push_back(std::move(throttle));
+    }
+  }
+
   // Create a BrowserContext getter using |service_worker_context|.
   // This context is aware of shutdown and safely returns a nullptr
   // instead of a destroyed BrowserContext in that case.
@@ -536,7 +565,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
                      std::move(subresource_loader_factories),
                      std::move(client_security_state),
                      ancestor_render_frame_host.GetGlobalId(),
-                     initial_request_url));
+                     initial_request_url, std::move(creator_policies)));
   script_fetcher->Start(std::move(throttles));
 }
 

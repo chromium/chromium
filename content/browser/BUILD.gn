@@ -2522,6 +2522,8 @@ source_set("browser") {
     "worker_host/dedicated_worker_hosts_for_document.h",
     "worker_host/dedicated_worker_service_impl.cc",
     "worker_host/dedicated_worker_service_impl.h",
+    "worker_host/network_restrictions_worker_throttle.cc",
+    "worker_host/network_restrictions_worker_throttle.h",
     "worker_host/shared_worker_connector_impl.cc",
     "worker_host/shared_worker_connector_impl.h",
     "worker_host/shared_worker_content_settings_proxy_impl.cc",

@@ -83,7 +83,10 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     const url::Origin& renderer_origin,
     const net::IsolationInfo& isolation_info,
     network::mojom::ClientSecurityStatePtr creator_client_security_state,
+    const PolicyContainerPolicies& creator_policies,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
+    const std::optional<base::UnguessableToken>&
+        creator_network_restrictions_id,
     mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host,
     net::StorageAccessApiStatus storage_access_api_status)
     : service_(service),
@@ -105,7 +108,10 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       code_cache_host_receivers_(GetProcessHost()
                                      ->GetStoragePartition()
                                      ->GetGeneratedCodeCacheContext()),
-      storage_access_api_status_(storage_access_api_status) {
+      storage_access_api_status_(storage_access_api_status),
+      network_restrictions_id_(base::UnguessableToken::Create()),
+      creator_network_restrictions_id_(creator_network_restrictions_id),
+      creator_policies_(creator_policies.Clone()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(worker_process_host_);
   DCHECK(worker_process_host_->IsInitializedAndNotDead());
@@ -398,7 +404,8 @@ void DedicatedWorkerHost::StartScriptLoad(
       storage_partition_impl, partition_domain,
       DedicatedWorkerDevToolsAgentHost::GetFor(this), token_.value(),
       /*require_cross_site_request_for_cookies=*/false,
-      storage_access_api_status,
+      storage_access_api_status, network_restrictions_id_,
+      creator_network_restrictions_id_, creator_policies_.Clone(),
       base::BindOnce(&DedicatedWorkerHost::DidStartScriptLoad,
                      weak_factory_.GetWeakPtr()));
 }
@@ -649,7 +656,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
                     kPotentiallyPermit
               : network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
           ancestor_render_frame_host->GetCookieSettingOverrides(),
-          /*network_restrictions_id=*/std::nullopt,
+          network_restrictions_id_,
           "DedicatedWorkerHost::CreateNetworkFactoryForSubresources");
 
   RenderFrameHost* frame = nullptr;
@@ -827,7 +834,8 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
           worker_process_host_->GetDeprecatedID(), /*creator=*/token_,
           ancestor_render_frame_host_id_, GetStorageKey(), isolation_info_,
-          worker_client_security_state_->Clone(), creator_coep_reporter),
+          worker_client_security_state_->Clone(), creator_policies_,
+          creator_coep_reporter, network_restrictions_id_),
       std::move(receiver));
 }
 

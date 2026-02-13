@@ -14591,7 +14591,8 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
           /*creator=*/GetGlobalId(),
           /*ancestor_render_frame_host_id=*/GetGlobalId(), GetStorageKey(),
           isolation_info_, BuildClientSecurityState(),
-          /*creator_coep_reporter=*/coep_reporter),
+          policy_container_host()->policies(),
+          /*creator_coep_reporter=*/coep_reporter, GetNetworkRestrictionsID()),
       std::move(receiver));
 }
 

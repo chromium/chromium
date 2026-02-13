@@ -287,6 +287,7 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
     network::mojom::ClientSecurityStatePtr client_security_state,
+    const std::optional<base::UnguessableToken>& network_restrictions_id,
     std::string_view debug_tag,
     bool require_cross_site_request_for_cookies,
     bool is_for_service_worker) {
@@ -317,7 +318,7 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       network::mojom::TrustTokenOperationPolicyVerdict::kPotentiallyPermit,
       net::CookieSettingOverrides(), debug_tag,
       require_cross_site_request_for_cookies, is_for_service_worker,
-      /*TODO(crbug.com/447954811): network_restrictions_id*/ std::nullopt);
+      network_restrictions_id);
 }
 
 // static

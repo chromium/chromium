@@ -880,6 +880,8 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
          factory_type == ContentBrowserClient::URLLoaderFactoryType::
                              kServiceWorkerSubResource);
 
+  // TODO(crbug.com/447954811): Pass network_restrictions_id so script fetch
+  // can be restricted based on connection allowlist.
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           rph, origin, isolation_info, std::move(coep_reporter),
@@ -889,6 +891,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
                   ToOriginatingProcess(rph->GetID()), origin),
           NetworkServiceDevToolsObserver::MakeSelfOwned(devtools_worker_token),
           std::move(client_security_state),
+          /*network_restrictions_id=*/std::nullopt,
           "EmbeddedWorkerInstance::CreateFactoryBundle",
           /*require_cross_site_request_for_cookies=*/false,
           /*is_for_service_worker=*/true);

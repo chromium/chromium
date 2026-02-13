@@ -108,6 +108,7 @@ class URLLoaderFactoryParamsHelper {
           url_loader_network_observer,
       mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
       network::mojom::ClientSecurityStatePtr client_security_state,
+      const std::optional<base::UnguessableToken>& network_restrictions_id,
       std::string_view debug_tag,
       bool require_cross_site_request_for_cookies,
       bool is_for_service_worker);

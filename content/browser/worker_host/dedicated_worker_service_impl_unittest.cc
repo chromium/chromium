@@ -56,7 +56,8 @@ class MockDedicatedWorker
             render_frame_host_id, blink::StorageKey::CreateFirstParty(origin),
             net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
             network::mojom::ClientSecurityState::New(),
-            coep_reporter->GetWeakPtr()),
+            PolicyContainerPolicies(), coep_reporter->GetWeakPtr(),
+            /*network_restrictions_id=*/std::nullopt),
         factory_.BindNewPipeAndPassReceiver());
 
     factory_->CreateWorkerHostAndStartScriptLoad(
