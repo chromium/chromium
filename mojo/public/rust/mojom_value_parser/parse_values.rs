@@ -63,23 +63,26 @@ fn skip_to_alignment(data: &mut ParserData, alignment: usize) -> ParsingResult<(
     }
 }
 
-/// Check if the parsed keys for a map have duplicates, and error out if so
-fn check_for_duplicate_keys(offset: usize, keys: &[MojomValue]) -> ParsingResult<()> {
+/// Check if the parsed keys for a map have duplicates, and error out if so.
+///
+/// This function promises not to mutate `keys` if it returns `Ok()`.
+/// FOR_RELEASE: Get itertools approved and use that instead.
+fn check_for_duplicate_keys(offset: usize, keys: &mut [MojomValue]) -> ParsingResult<()> {
     // Check by inserting the keys into a hashset.
     // insert returns false if the value was already present.
     // Note that inserting references still compares the underlying values.
     let mut unique_keys = std::collections::HashSet::new();
-    let mut dup = MojomValue::Bool(false);
-    let dup_exists = keys.iter().any(|item| {
+    let mut dup_idx = 0;
+    let dup_exists = keys.iter().enumerate().any(|(idx, item)| {
         if !unique_keys.insert(item) {
-            dup = item.clone();
+            dup_idx = idx;
             true
         } else {
             false
         }
     });
     if dup_exists {
-        Err(ParsingError::duplicate_map_key(offset, dup))
+        Err(ParsingError::duplicate_map_key(offset, std::mem::take(&mut keys[dup_idx])))
     } else {
         Ok(())
     }
@@ -357,7 +360,7 @@ fn parse_map(
     };
     let [keys, values] = parsed_fields.try_into().unwrap();
     match (keys, values) {
-        (MojomValue::Array(keys), MojomValue::Array(values)) => {
+        (MojomValue::Array(mut keys), MojomValue::Array(values)) => {
             if keys.len() != values.len() {
                 return Err(ParsingError::mismatched_map(
                     initial_bytes_parsed,
@@ -367,7 +370,7 @@ fn parse_map(
             }
             // Map bodies are 24 bytes, and the key array immediately follows them.
             let key_offset = initial_bytes_parsed + 24;
-            check_for_duplicate_keys(key_offset, &keys)?;
+            check_for_duplicate_keys(key_offset, &mut keys)?;
             let map_val = keys.into_iter().zip(values).collect();
             Ok(MojomValue::Map(map_val))
         }
@@ -457,7 +460,8 @@ where
     // by index. We have to provide dummy values since rust won't allow
     // uninitialized memory.
     let mut ret_names: Vec<String> = vec![String::new(); num_elements_in_value];
-    let mut ret_values: Vec<MojomValue> = vec![MojomValue::Invalid; num_elements_in_value];
+    let mut ret_values: Vec<MojomValue> =
+        (0..num_elements_in_value).map(|_| MojomValue::Invalid).collect();
 
     for (index, struct_ref_element) in fields.enumerate() {
         // Make sure we're at the right alignment for this field

@@ -188,22 +188,28 @@ impl<T: MojomParse, const N: usize> TryFrom<MojomValue> for [T; N] {
     type Error = anyhow::Error;
 
     fn try_from(value: MojomValue) -> anyhow::Result<Self> {
-        // FOR_RELEASE: Don't clone here, it's just for the error message
-        if let MojomValue::Array(v) = value.clone() {
-            let vec_of_t: Vec<T> = v.into_iter().map(T::try_from).collect::<anyhow::Result<_>>()?;
-            let arr_of_t: [T; N] = Self::try_from(vec_of_t).or(Err(anyhow::anyhow!(
-                "Wrong number of values to construct {} from this MojomValue: {:?}",
-                std::any::type_name::<Self>(),
-                value
-            )))?;
-            Ok(arr_of_t)
-        } else {
+        let MojomValue::Array(v) = value else {
             anyhow::bail!(
                 "Cannot construct a value of type {} from this MojomValue: {:?}",
                 std::any::type_name::<Self>(),
                 value
             );
-        }
+        };
+
+        if v.len() != N {
+            anyhow::bail!(
+                "Wrong number of values to construct {} from this MojomValue: {:?}",
+                std::any::type_name::<Self>(),
+                MojomValue::Array(v)
+            )
+        };
+
+        // FOR_RELEASE: Get itertools approved and use collect_array here.
+        let vec_of_t: Vec<T> = v.into_iter().map(T::try_from).collect::<anyhow::Result<_>>()?;
+        // Unwrap will succeed because we just checked the length above.
+        // We can't just use `unwrap` because `T` may not be `Debug`.
+        let arr_of_t: [T; N] = Self::try_from(vec_of_t).unwrap_or_else(|_| unreachable!());
+        Ok(arr_of_t)
     }
 }
 

@@ -1,6 +1,9 @@
 {% macro declare_union(name, union) -%}
 
-#[derive(Debug, PartialEq, Clone, MojomParse)]
+#[derive(Debug, PartialEq, MojomParse)]
+{% if union|should_derive_clone %}
+#[derive(Clone)]
+{% endif %}
 pub enum {{name}} {
 {%- for field in union.fields %}
   {{field.name}}({{field.kind|to_rust_type}}),

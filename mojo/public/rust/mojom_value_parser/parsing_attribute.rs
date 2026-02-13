@@ -109,28 +109,31 @@ fn derive_mojomparse_struct(
             impl TryFrom<MojomValue> for #name {
                 type Error = ::anyhow::Error;
 
-                fn try_from(value : MojomValue) -> ::anyhow::Result<Self> {
-                    // FOR_RELEASE: Don't clone here
-                    if let MojomValue::Struct(_field_names, fields) = value.clone() {
-                        // Try to extract all the field values at once
-                        let fields : [MojomValue; #num_fields] = fields.try_into()
-                        .or(Err(::anyhow::anyhow!(
-                                "Wrong number of fields to construct a value of type {} from MojomValue {:?}",
-                                    std::any::type_name::<#name>(),
-                                    value)))?;
-                        let [#(#field_idents),*] = fields;
-                        return Ok(Self {
-                            #(#from_mojom_value_fields),*
-                        })
-                    } else {
+                fn try_from(value: MojomValue) -> ::anyhow::Result<Self> {
+                    let MojomValue::Struct(field_names, fields) = value else {
                         ::anyhow::bail!(
                             "Cannot construct a value of type {} from non-struct MojomValue {:?}",
                             std::any::type_name::<#name>(),
                             value
                         );
-                    }
+                    };
+
+                    if fields.len() != #num_fields {
+                        ::anyhow::bail!(
+                            "Wrong number of fields to construct a value of type {} from MojomValue {:?}",
+                            std::any::type_name::<#name>(),
+                            MojomValue::Struct(field_names, fields)
+                        )
+                    };
+
+                    // Try to extract all the field values at once
+                    let fields: [MojomValue; #num_fields] = fields.try_into().unwrap();
+                    let [#(#field_idents),*] = fields;
+                    return Ok(Self {
+                        #(#from_mojom_value_fields),*
+                    })
                 }
-            }
+            };
         };
     };
 }
@@ -203,21 +206,20 @@ fn derive_mojomparse_union(
                 type Error = ::anyhow::Error;
 
                 fn try_from(value : MojomValue) -> ::anyhow::Result<Self> {
-                    // FOR_RELEASE: Don't clone here
-                    if let MojomValue::Union(discriminant, boxed_value) = value.clone() {
-                        match discriminant {
-                            #(#from_mojom_value_branches)*
-                            _ => ::anyhow::bail!(
-                                     "Invalid discriminant to construct a value of type {} from MojomValue {:?}",
-                                     std::any::type_name::<#name>(),
-                                     value)
-                        }
-                    } else {
+                    let MojomValue::Union(discriminant, boxed_value) = value else {
                         ::anyhow::bail!(
                             "Cannot construct a value of type {} from non-union MojomValue {:?}",
                             std::any::type_name::<#name>(),
                             value
                         );
+                    };
+
+                    match discriminant {
+                        #(#from_mojom_value_branches)*
+                        discriminant => ::anyhow::bail!(
+                                    "Invalid discriminant to construct a value of type {} from MojomValue {:?}",
+                                    std::any::type_name::<#name>(),
+                                    MojomValue::Union(discriminant, boxed_value))
                     }
                 }
             }

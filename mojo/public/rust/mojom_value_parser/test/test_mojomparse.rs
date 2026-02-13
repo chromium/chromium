@@ -155,8 +155,8 @@ impl TestType {
         );
 
         // Test conversion to/from MojomValues
-        expect_eq!(mojom_val, rust_val.clone().into());
-        expect_eq!(rust_val, mojom_val.clone().try_into().unwrap());
+        expect_eq!(&mojom_val, &rust_val.clone().into());
+        expect_eq!(rust_val, mojom_val.try_into().unwrap());
     }
 }
 
@@ -564,15 +564,17 @@ fn test_mojomparse() {
         f3: FourIntsIntermixed { a: 9, b: 10, c: 11, d: 12 },
         c: 15,
     };
-    let once_nested_mojom_val = once_nested_mojom(
-        four_ints_mojom(1, 2, 3, 4),
-        13,
-        14,
-        four_ints_reversed_mojom(5, 6, 7, 8),
-        four_ints_intermixed_mojom(9, 10, 11, 12),
-        15,
-    );
-    ONCE_NESTED_TY.validate_mojomparse(once_nested_val.clone(), once_nested_mojom_val.clone());
+    let once_nested_mojom_val = || {
+        once_nested_mojom(
+            four_ints_mojom(1, 2, 3, 4),
+            13,
+            14,
+            four_ints_reversed_mojom(5, 6, 7, 8),
+            four_ints_intermixed_mojom(9, 10, 11, 12),
+            15,
+        )
+    };
+    ONCE_NESTED_TY.validate_mojomparse(once_nested_val.clone(), once_nested_mojom_val());
 
     TWICE_NESTED_TY.validate_mojomparse(
         TwiceNested {
@@ -582,7 +584,7 @@ fn test_mojomparse() {
             b: 21,
             c: 22,
         },
-        twice_nested_mojom(once_nested_mojom_val, 16, four_ints_mojom(17, 18, 19, 20), 21, 22),
+        twice_nested_mojom(once_nested_mojom_val(), 16, four_ints_mojom(17, 18, 19, 20), 21, 22),
     );
 
     TEN_BOOLS_AND_A_BYTE_TY.validate_mojomparse(
@@ -634,21 +636,25 @@ fn test_bad_conversion() {
 
     let four_ints_intermixed = four_ints_intermixed_mojom(10, 400, -20, -5);
 
-    let once_nested = once_nested_mojom(
-        four_ints_mojom(1, 2, 3, 4),
-        13,
-        14,
-        four_ints_reversed_mojom(5, 6, 7, 8),
-        four_ints_intermixed_mojom(9, 10, 11, 12),
-        15,
-    );
+    let once_nested = || {
+        once_nested_mojom(
+            four_ints_mojom(1, 2, 3, 4),
+            13,
+            14,
+            four_ints_reversed_mojom(5, 6, 7, 8),
+            four_ints_intermixed_mojom(9, 10, 11, 12),
+            15,
+        )
+    };
 
     let twice_nested =
-        twice_nested_mojom(once_nested.clone(), 16, four_ints_mojom(17, 18, 19, 20), 21, 22);
+        twice_nested_mojom(once_nested(), 16, four_ints_mojom(17, 18, 19, 20), 21, 22);
 
-    let ten_bools_byte = ten_bools_and_a_byte_mojom(
-        true, false, true, false, true, 200, false, true, false, true, false,
-    );
+    let ten_bools_byte = || {
+        ten_bools_and_a_byte_mojom(
+            true, false, true, false, true, 200, false, true, false, true, false,
+        )
+    };
     let ten_bools_bytes = ten_bools_and_two_bytes_mojom(
         true, false, true, false, true, 50000, false, true, false, true, false,
     );
@@ -658,16 +664,16 @@ fn test_bad_conversion() {
     // TODO(crbug.com/456214728) Replace with matchers from the googletest crate
     // if we switch to it.
     expect_true!(FourInts::try_from(four_ints_reversed).is_err());
-    expect_true!(FourInts::try_from(once_nested).is_err());
+    expect_true!(FourInts::try_from(once_nested()).is_err());
     expect_true!(FourInts::try_from(empty).is_err());
 
     expect_true!(TenBoolsAndAByte::try_from(ten_bools_bytes).is_err());
     expect_true!(TenBoolsAndAByte::try_from(four_ints_intermixed).is_err());
 
     expect_true!(OnceNested::try_from(twice_nested).is_err());
-    expect_true!(OnceNested::try_from(ten_bools_byte.clone()).is_err());
+    expect_true!(OnceNested::try_from(ten_bools_byte()).is_err());
 
-    expect_true!(Empty::try_from(ten_bools_byte).is_err());
+    expect_true!(Empty::try_from(ten_bools_byte()).is_err());
     expect_true!(Empty::try_from(four_ints).is_err());
 }
 
@@ -1364,9 +1370,8 @@ fn test_arrays() {
     let array_val = array_int16_mojom(vec![]);
     expect_true!(FourInts::try_from(array_val).is_err());
 
-    let empty_val = empty_mojom();
-    expect_true!(<Vec<i16>>::try_from(empty_val.clone()).is_err());
-    expect_true!(<[u64; 3]>::try_from(empty_val.clone()).is_err());
+    expect_true!(<Vec<i16>>::try_from(empty_mojom()).is_err());
+    expect_true!(<[u64; 3]>::try_from(empty_mojom()).is_err());
 
     ARRAYS_TY.validate_mojomparse(
         Arrays {

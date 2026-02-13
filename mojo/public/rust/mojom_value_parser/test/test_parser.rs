@@ -31,7 +31,7 @@ use rust_gtest_interop::prelude::*;
 // //mojo/public/cpp/bindings/tests/validation_test_input_parser.h
 fn validate_parsing<T>(value: T, data: &str) -> anyhow::Result<()>
 where
-    T: MojomParse + PartialEq + std::fmt::Debug + Clone,
+    T: MojomParse + PartialEq + std::fmt::Debug,
 {
     // We have to compute this eagerly since `value ` will get consumed by the test
     let err_str = format!("\nRust value: {value:?}\nWire Data: {data}");
@@ -65,7 +65,7 @@ where
 /// Check that we correctly fail to parse mismatching data.
 fn validate_parsing_failure<T>(data: &str) -> anyhow::Result<()>
 where
-    T: MojomParse + PartialEq + std::fmt::Debug + Clone,
+    T: MojomParse + PartialEq + std::fmt::Debug,
 {
     let wire_data = validation_parser::parse(data).map_err(anyhow::Error::msg)?.data;
     expect_true!(parse_single_value_for_testing(wire_data.as_ref(), T::wire_type()).is_err());

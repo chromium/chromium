@@ -61,6 +61,11 @@ def _MojomTypeToRustType(ty: mojom.Kind) -> str:
   return _mojom_primitive_type_to_rust_type[ty]
 
 
+def _ShouldDeriveClone(ty: mojom.Kind) -> bool:
+  '''We derive clone as a convenience to the user, but we can't do so if the
+     type contains any handles, since those can't be copied.'''
+  return not mojom.ContainsHandlesOrInterfaces(ty)
+
 class Generator(generator.Generator):
 
   def __init__(self, *args, **kwargs):
@@ -79,7 +84,10 @@ class Generator(generator.Generator):
 
     Called by the @UseJinja decorator.
     '''
-    return {"to_rust_type": _MojomTypeToRustType}
+    return {
+        "to_rust_type": _MojomTypeToRustType,
+        "should_derive_clone": _ShouldDeriveClone
+    }
 
   @UseJinja("module.tmpl")
   def _GenerateModule(self):

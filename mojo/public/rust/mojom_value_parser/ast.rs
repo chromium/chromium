@@ -58,7 +58,7 @@ pub enum MojomType {
 // FOR_RELEASE: For the first iteration of the parser where we don't worry
 // about trying to be zero-copy, we just have this type own all its data.
 // We should migrate to a view type when we figure out how.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Ord, Eq, Hash, Default)]
+#[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Hash, Default)]
 pub enum MojomValue {
     /// This value is only produced during parsing/deparsing to serve as a
     /// default value in vectors where we take elements individually.

@@ -4,7 +4,10 @@
 
 {# FOR_RELEASE: Figure out which of these derives are actually necessary
    (both for structs and for enums/unions) #}
-#[derive(Debug, PartialEq, Clone, MojomParse)]
+#[derive(Debug, PartialEq, MojomParse)]
+{% if struct|should_derive_clone %}
+#[derive(Clone)]
+{% endif %}
 {{pub}}struct {{name}} {
 {%- for field in struct.fields %}
   {{pub}}{{field.name}}: {{field.kind|to_rust_type}},
