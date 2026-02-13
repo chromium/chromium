@@ -282,16 +282,17 @@ _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
          ),
         explanation=
         ('Usage of IS_DESKTOP_ANDROID build flag or DeviceInfo.isDesktop() '
-         'is discouraged. Use system affordances to determine feature '
-         'availablility. Refer to https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/device_form_factor.md for guidelines. '
+         'is discouraged. Use system affordances (see guidelines link below) to determine feature '
+         'availablility. '
          'To request an exception, file a bug at '
          'https://b.corp.google.com/issues/new?component=1753515&template=2172655'
-         'Once approved, use centralized util DeviceInfo.isDesktop() '
+         ' . Once approved, use centralized util DeviceInfo.isDesktop() '
          'instead of direct build flag or PackageManager.FEATURE_PC checks. '
          'Allowances may be granted to only the directories below: '
          '[build/, chrome/, components/, extensions/, infra/, tools/] '
          'Note: in particular we need to avoid components shared with '
-         'WebView.', ),
+         'WebView. Refer to https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/device_form_factor.md for guidelines. ',
+         ),
         treat_as_error=False,
         surface_as_gerrit_lint=True,
     ),
