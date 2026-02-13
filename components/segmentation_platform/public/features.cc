@@ -184,7 +184,7 @@ BASE_FEATURE(kDefaultBrowserPromoPropensityModel,
 
 BASE_FEATURE(kAppBundlePromoEphemeralCard,
 #if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif

@@ -10,6 +10,7 @@
 #include "components/segmentation_platform/embedder/default_model/default_model_test_base.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
+#include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #include "components/segmentation_platform/public/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -94,10 +95,17 @@ TEST_F(EphemeralHomeModuleBackendTest, ExecuteModelWithInput) {
 #if BUILDFLAG(IS_IOS)
   size_t input_size = registry_->all_cards_input_size();
   size_t output_size = registry_->all_output_labels().size();
-  ExpectExecutionWithInput(
-      std::vector<float>(input_size, 0), /*expected_error=*/false,
-      /*expected_result=*/
-      std::vector<float>(output_size, kNotShownResultValue));
+  std::vector<float> expected_result(output_size, kNotShownResultValue);
+  // App Bundle Promo card is visible when passed a 0 (below impression limit
+  // threshold.
+  int index = registry_->get_label_index(kAppBundlePromoEphemeralModule);
+  if (index != -1) {
+    expected_result[index] =
+        EphemeralHomeModuleRankToScore(EphemeralHomeModuleRank::kTop);
+  }
+  ExpectExecutionWithInput(std::vector<float>(input_size, 0),
+                           /*expected_error=*/false,
+                           /*expected_result=*/expected_result);
 #elif BUILDFLAG(IS_ANDROID)
   ExpectExecutionWithInput(
       std::vector<float>(22, 0), /*expected_error=*/false,

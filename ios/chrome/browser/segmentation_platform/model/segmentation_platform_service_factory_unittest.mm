@@ -127,6 +127,16 @@ void ConfigureForEnhancedSafeBrowsingModule(
       segmentation_platform::processing::ProcessedValue::FromFloat(0.0f));
 }
 
+// Sets signals relevant for the App Bundle ephemeral module.
+void ConfigureForAppBundleModule(scoped_refptr<InputContext> input_context,
+                                 bool enable = true) {
+  float count = enable ? features::kMaxAppBundleAppsInstalled.Get()
+                       : features::kMaxAppBundleAppsInstalled.Get() + 1;
+  input_context->metadata_args.emplace(
+      segmentation_platform::kAppBundleAppsInstalledCount,
+      segmentation_platform::processing::ProcessedValue::FromFloat(count));
+}
+
 // Observer that waits for service initialization.
 class WaitServiceInitializedObserver : public ServiceProxy::Observer {
  public:
@@ -416,7 +426,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(4u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(5u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -429,6 +439,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
   ConfigureForLensModule(input_context, false);
   ConfigureForEnhancedSafeBrowsingModule(input_context, false);
   ConfigureForSendTabModule(input_context, false);
+  ConfigureForAppBundleModule(input_context, false);
 
   std::vector<std::string> result = {
       segmentation_platform::kPriceTrackingNotificationPromo};
@@ -446,7 +457,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(4u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(5u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -459,6 +470,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
   ConfigureForPriceTrackingModule(input_context, false);
   ConfigureForEnhancedSafeBrowsingModule(input_context, false);
   ConfigureForSendTabModule(input_context, false);
+  ConfigureForAppBundleModule(input_context, false);
 
   std::vector<std::string> result = {
       segmentation_platform::kLensEphemeralModuleSearchVariation};
@@ -476,7 +488,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(4u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(5u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -489,6 +501,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
   ConfigureForPriceTrackingModule(input_context, false);
   ConfigureForLensModule(input_context, false);
   ConfigureForSendTabModule(input_context, false);
+  ConfigureForAppBundleModule(input_context, false);
 
   std::vector<std::string> result = {
       segmentation_platform::kEnhancedSafeBrowsingEphemeralModule};
@@ -505,7 +518,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(4u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(5u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -516,6 +529,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
   ConfigureForLensModule(input_context, true);
   ConfigureForEnhancedSafeBrowsingModule(input_context, true);
   ConfigureForSendTabModule(input_context, true);
+  ConfigureForAppBundleModule(input_context, true);
 
   // The highest priority card should be returned first. In this case, Price
   // Tracking takes precedence over others.
