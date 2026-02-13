@@ -1029,18 +1029,20 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return false;
   }
 
-  if (filter.management_requirement) {
-    auto current_sources = GetAppById(app_id)->GetSources();
-    switch (filter.management_requirement->type) {
-      case WebAppFilter::ManagementRequirement::Type::kHasAny:
-        return current_sources.HasAny(filter.management_requirement->sources);
-      case WebAppFilter::ManagementRequirement::Type::kHasAll:
-        return current_sources.HasAll(filter.management_requirement->sources);
-    }
+  if (filter.is_app_eligible_for_manifest_update) {
+    return true;
   }
 
-  if (filter.install_state_requirement) {
-    return filter.install_state_requirement->Has(install_state.value());
+  if (filter.is_app_surfaceable_to_user) {
+    return install_state != proto::SUGGESTED_FROM_MIGRATION;
+  }
+
+  if (install_state == proto::SUGGESTED_FROM_MIGRATION) {
+    return filter.is_app_suggested_from_migration;
+  }
+
+  if (install_state == proto::SUGGESTED_FROM_ANOTHER_DEVICE) {
+    return filter.is_suggested_app;
   }
 
   // If the `DisplayMode` of a web app is undefined for whatever reason, it
@@ -1048,6 +1050,10 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
   DisplayMode display_mode = GetAppEffectiveDisplayMode(app_id);
   bool opens_in_browser_tab = display_mode == DisplayMode::kBrowser ||
                               display_mode == DisplayMode::kUndefined;
+  if (filter.opens_in_browser_tab) {
+    return opens_in_browser_tab;
+  }
+
   if (filter.opens_in_dedicated_window) {
     return !opens_in_browser_tab;
   }
@@ -1069,11 +1075,48 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     if (iwa_filter->must_be_in_dev_mode) {
       matches &= iwa.isolation_data()->location().dev_mode();
     }
+    if (iwa_filter->must_be_policy_installed) {
+      matches &= IsInstalledByPolicy(iwa_app_id);
+    }
+    if (iwa_filter->must_be_user_installed) {
+      matches &=
+          iwa.GetSources().Has(web_app::WebAppManagement::kIwaUserInstalled);
+    }
+    if (iwa_filter->must_have_no_external_management) {
+      matches &=
+          !iwa.GetSources().HasAny({web_app::WebAppManagement::kKiosk,
+                                    web_app::WebAppManagement::kIwaShimlessRma,
+                                    web_app::WebAppManagement::kIwaPolicy});
+    }
     return matches;
   }
 
   if (filter.is_crafted_app) {
     return !IsDiyApp(app_id);
+  }
+
+  if (filter.is_crafted_app_and_opens_in_dedicated_window) {
+    return !IsDiyApp(app_id) &&
+           GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
+  }
+
+  if (filter.is_diy_with_os_shortcut) {
+    const WebApp* app = GetAppById(app_id);
+    return app && app->is_diy_app() &&
+           install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
+  }
+
+  if (filter.displays_badge_on_os || filter.supports_os_notifications) {
+    return install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
+  }
+
+  if (filter.installed_in_chrome) {
+    return install_state == proto::INSTALLED_WITH_OS_INTEGRATION ||
+           install_state == proto::INSTALLED_WITHOUT_OS_INTEGRATION;
+  }
+
+  if (filter.installed_in_os) {
+    return install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
   }
 
   if (filter.launchable_from_install_api) {
@@ -1085,6 +1128,11 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
   if (filter.is_app_trusted) {
     const WebApp* app = GetAppById(app_id);
     return (app && app->WasInstalledByTrustedSources());
+  }
+
+  if (filter.is_valid_migration_source) {
+    return install_state == proto::INSTALLED_WITH_OS_INTEGRATION &&
+           !IsInstalledByPolicy(app_id);
   }
 
   return false;

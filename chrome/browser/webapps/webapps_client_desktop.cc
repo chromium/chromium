@@ -100,8 +100,7 @@ bool CheckNewWebAppConflictsWithExistingInstallation(
   std::optional<AppId> non_diy_extended_scope_app_id =
       provider->registrar_unsafe().FindBestAppWithUrlInScope(
           start_url,
-          web_app::WebAppFilter::IsCraftedApp() &
-              web_app::WebAppFilter::OpensInDedicatedWindow(),
+          web_app::WebAppFilter::IsCraftedAppAndOpensInDedicatedWindow(),
           {.exclude_scope_extensions = false});
   if (non_diy_extended_scope_app_id) {
     return true;

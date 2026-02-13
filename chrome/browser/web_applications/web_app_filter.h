@@ -10,8 +10,6 @@
 #include <variant>
 
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
-#include "chrome/browser/web_applications/web_app_management_type.h"
 
 namespace web_app {
 
@@ -43,6 +41,8 @@ class WebAppFilter {
   static WebAppFilter IsIsolatedWebAppWithOnlyUserManagement();
   // Only consider crafted web apps (not DIY apps).
   static WebAppFilter IsCraftedApp();
+  // Only consider crafted web apps that are set to open in a dedicated window.
+  static WebAppFilter IsCraftedAppAndOpensInDedicatedWindow();
   // Only consider apps that are not installed on this device, but are suggested
   // from other devices.
   static WebAppFilter IsSuggestedApp();
@@ -117,17 +117,11 @@ class WebAppFilter {
  private:
   friend class WebAppRegistrar;
 
-  using InstallStateSet = base::EnumSet<proto::InstallState,
-                                        proto::InstallState_MIN,
-                                        proto::InstallState_MAX>;
-
-  struct ManagementRequirement {
-    enum class Type { kHasAny, kHasAll } type;
-    WebAppManagementTypes sources;
-  };
-
   struct IsolatedWebAppFilter {
     bool must_be_in_dev_mode = false;
+    bool must_be_user_installed = false;
+    bool must_have_no_external_management = false;
+    bool must_be_policy_installed = false;
     bool is_sub_app = false;
   };
 
@@ -138,26 +132,25 @@ class WebAppFilter {
     LeafFilter(LeafFilter&&) noexcept;
     LeafFilter& operator=(LeafFilter&&) noexcept;
 
-    // TODO(crbug.com/463757344): Wrap this in an std::variant<>.
-    std::optional<ManagementRequirement> management_requirement;
-    std::optional<InstallStateSet> install_state_requirement;
-
+    bool opens_in_browser_tab = false;
     bool opens_in_dedicated_window = false;
     std::optional<IsolatedWebAppFilter> isolated_app_filter;
     bool is_crafted_app = false;
+    bool is_suggested_app = false;
+    bool displays_badge_on_os = false;
+    bool supports_os_notifications = false;
+    bool installed_in_chrome = false;
+    bool installed_in_os = false;
+    bool is_diy_with_os_shortcut = false;
     bool launchable_from_install_api = false;
+    bool is_crafted_app_and_opens_in_dedicated_window = false;
     bool is_app_trusted = false;
     bool is_isolated_apps_including_uninstalling = false;
+    bool is_app_suggested_from_migration = false;
+    bool is_app_surfaceable_to_user = false;
+    bool is_valid_migration_source = false;
+    bool is_app_eligible_for_manifest_update = false;
   };
-
-  static WebAppFilter HasSource(WebAppManagement::Type source);
-  static WebAppFilter HasAnySource(WebAppManagementTypes sources);
-  static WebAppFilter HasAllSources(WebAppManagementTypes sources);
-
-  static WebAppFilter InstallStateIs(proto::InstallState state);
-  static WebAppFilter InstallStateIsAnyOf(InstallStateSet states);
-
-  static WebAppFilter IsInRegistrar();
 
   struct BinaryOp {
     enum class Op {
