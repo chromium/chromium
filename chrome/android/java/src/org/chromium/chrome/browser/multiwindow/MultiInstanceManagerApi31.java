@@ -89,6 +89,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
@@ -161,17 +162,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
         // Check if instance limit has changed and update SharedPrefs.
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        int maxInstances = getMaxInstances();
         int prevInstanceLimit =
-                prefs.readInt(
-                        ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_LIMIT, mMaxInstances);
-        if (mMaxInstances > prevInstanceLimit) {
+                prefs.readInt(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_LIMIT, maxInstances);
+        if (maxInstances > prevInstanceLimit) {
             // Reset SharedPrefs for instance limit downgrade if limit has increased.
             prefs.writeBoolean(
                     ChromePreferenceKeys.MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED, false);
             prefs.writeBoolean(
                     ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN, false);
         }
-        prefs.writeInt(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_LIMIT, mMaxInstances);
+        prefs.writeInt(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_LIMIT, maxInstances);
     }
 
     @Override
@@ -736,7 +737,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         int id = INVALID_WINDOW_ID;
         boolean newInstanceIdAllocated = false;
         @InstanceAllocationType int allocationType = InstanceAllocationType.INVALID_INSTANCE;
-        for (int i = 0; i < mMaxInstances; ++i) {
+        for (int i = 0; i < getMaxInstances(); ++i) {
             int persistedTaskId = MultiInstancePersistentStore.readTaskId(i);
             if (persistedTaskId != INVALID_TASK_ID) {
                 continue;
@@ -1718,7 +1719,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         int instanceCount =
                 MultiWindowUtils.getInstanceCountWithFallback(
                         MultiInstanceManager.PersistedInstanceType.ACTIVE);
-        return instanceCount >= mMaxInstances;
+        return instanceCount >= getMaxInstances();
+    }
+
+    private int getMaxInstances() {
+        return Objects.requireNonNullElse(MultiWindowUtils.sMaxInstancesForTesting, mMaxInstances);
     }
 
     @Override

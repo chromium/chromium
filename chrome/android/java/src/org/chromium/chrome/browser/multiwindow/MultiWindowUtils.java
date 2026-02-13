@@ -114,10 +114,11 @@ public class MultiWindowUtils implements ActivityStateListener {
             "Android.MultiInstance.PersistAcrossReboots.IdVerification";
     static final String OPEN_ADJACENTLY_PARAM = "open_adjacently";
 
+    static @Nullable Integer sMaxInstancesForTesting;
+
     private static MultiWindowUtils sInstance = new MultiWindowUtils();
     protected static @Nullable Supplier<Activity> sActivitySupplierForTesting;
 
-    private static @Nullable Integer sMaxInstancesForTesting;
     private static @Nullable Integer sIncognitoInstanceCountForTesting;
     private static @Nullable Integer sInstanceCountForTesting;
     private static @Nullable Boolean sMultiInstanceApi31EnabledForTesting;
