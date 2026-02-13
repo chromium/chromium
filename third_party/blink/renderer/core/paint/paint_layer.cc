@@ -1261,9 +1261,6 @@ PaintLayer* PaintLayer::HitTestLayer(
       !layout_object.ChildLayoutBlockedByDisplayLock()) [[unlikely]] {
     // Skip if we need layout. This should never happen. See crbug.com/1423308
     // and crbug.com/330051489.
-
-    // TODO(crbug.com/478682594): Remove when done investigating.
-    layout_object.DumpForBug478682594();
     return nullptr;
   }
 
