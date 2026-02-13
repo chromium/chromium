@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
@@ -30,10 +29,10 @@ namespace autofill {
 
 namespace {
 
-using ::base::test::EqualsProto;
 using ::base::test::RunOnceCallback;
 using ::base::test::RunOnceCallbackRepeatedly;
 using ::testing::_;
+using ::testing::Truly;
 using GetUnmaskedPassCallback =
     ::wallet::WalletHttpClient::GetUnmaskedPassCallback;
 using ::wallet::PrivatePass;
@@ -258,14 +257,13 @@ TEST_P(WalletPassAccessManagerImplTest,
 TEST_P(WalletPassAccessManagerImplTest, SaveWalletEntityInstance) {
   EntityInstance unmasked_entity = GetServerEntityInstance(GetParam());
 
-  // Expect that no ID is provided to the upsert call.
-  PrivatePass expected_upsert_pass;
-  ASSERT_FALSE(expected_upsert_pass.has_pass_id());
-
   PrivatePass masked_pass = CreatePassWithNumber(GetParam(), kMaskedValue);
   masked_pass.set_pass_id("updated-id");
   EXPECT_CALL(mock_http_client(),
-              UpsertPrivatePass(EqualsProto(expected_upsert_pass), _))
+              UpsertPrivatePass(Truly([](const PrivatePass& pass) {
+                                  return !pass.has_pass_id();
+                                }),
+                                _))
       .WillOnce(RunOnceCallback<1>(std::move(masked_pass)));
   base::test::TestFuture<std::optional<EntityInstance>> save_result;
   access_manager().SaveWalletEntityInstance(unmasked_entity,
@@ -289,13 +287,14 @@ TEST_P(WalletPassAccessManagerImplTest, SaveWalletEntityInstance) {
 TEST_P(WalletPassAccessManagerImplTest, UpdateWalletEntityInstance) {
   EntityInstance unmasked_entity = GetServerEntityInstance(GetParam());
 
-  PrivatePass expected_upsert_pass;
-  expected_upsert_pass.set_pass_id(unmasked_entity.guid().value());
-
   PrivatePass masked_pass = CreatePassWithNumber(GetParam(), kMaskedValue);
   masked_pass.set_pass_id("updated-id");
   EXPECT_CALL(mock_http_client(),
-              UpsertPrivatePass(EqualsProto(expected_upsert_pass), _))
+              UpsertPrivatePass(Truly([&](const PrivatePass& pass) {
+                                  return pass.pass_id() ==
+                                         unmasked_entity.guid().value();
+                                }),
+                                _))
       .WillOnce(RunOnceCallback<1>(std::move(masked_pass)));
   base::test::TestFuture<std::optional<EntityInstance>> update_result;
   access_manager().UpdateWalletEntityInstance(unmasked_entity,

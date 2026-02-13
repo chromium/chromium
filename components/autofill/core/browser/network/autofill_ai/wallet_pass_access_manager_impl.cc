@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/network/autofill_ai/private_pass_conversion_util.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/proto/private_pass.pb.h"
 
@@ -31,13 +32,6 @@ namespace {
 
 using ::wallet::PrivatePass;
 using WalletRequestError = ::wallet::WalletHttpClient::WalletRequestError;
-
-PrivatePass EntityInstanceToPrivatePass(const EntityInstance& entity) {
-  PrivatePass pass;
-  pass.set_pass_id(entity.guid().value());
-  // TODO(crbug.com/478783796): Convert `entity.attributes()`.
-  return pass;
-}
 
 // Attempts to extract the pass number from the `response` and constructs an
 // `AttributeInstance` of the corresponding `AttributeType`.

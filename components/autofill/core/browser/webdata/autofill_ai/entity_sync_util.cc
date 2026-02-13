@@ -99,35 +99,6 @@ sync_pb::Any AnyWrapProto(const google::protobuf::MessageLite& m) {
   return any;
 }
 
-// Serializes metadata related to `EntityInstance` into
-// `ChromeValuablesMetadata`.
-sync_pb::Any SerializeChromeValuablesMetadata(const EntityInstance& entity) {
-  ChromeValuablesMetadata metadata;
-  for (const AttributeInstance& attribute : entity.attributes()) {
-    switch (attribute.type().data_type()) {
-      case AttributeType::DataType::kName: {
-        for (FieldType field_type : attribute.type().field_subtypes()) {
-          ChromeValuablesMetadataEntry& entry =
-              *metadata.add_metadata_entries();
-          entry.set_attribute_type(attribute.type().name_as_string());
-          entry.set_field_type(field_type);
-          entry.set_value(base::UTF16ToUTF8(attribute.GetRawInfo(field_type)));
-          entry.set_verification_status(
-              static_cast<int>(attribute.GetVerificationStatus(field_type)));
-        }
-        break;
-      }
-      case AttributeType::DataType::kCountry:
-      case AttributeType::DataType::kDate:
-      case AttributeType::DataType::kState:
-      case AttributeType::DataType::kString:
-        // Nothing to serialize here as the structure is trivial.
-        break;
-    }
-  }
-  return AnyWrapProto(metadata);
-}
-
 // Deserializes data in `serialized_metadata` and extends pre-populated
 // `attributes` with the information that was serialized. Notably, only
 // attributes with equivalent information will be "enriched" to prevent stale
@@ -318,7 +289,7 @@ sync_pb::AutofillValuableSpecifics GetFlightReservationSpecifics(
                             arrival_airport, flight_reservation);
 
   *specifics.mutable_serialized_chrome_valuables_metadata() =
-      SerializeChromeValuablesMetadata(entity);
+      AnyWrapProto(SerializeChromeValuablesMetadata(entity));
   return specifics;
 }
 
@@ -378,7 +349,7 @@ sync_pb::AutofillValuableSpecifics GetVehicleInformationSpecifics(
   SET_OR_CLEAR_STRING_FIELD(entity, kVehicleOwner, owner_name, vehicle);
 
   *specifics.mutable_serialized_chrome_valuables_metadata() =
-      SerializeChromeValuablesMetadata(entity);
+      AnyWrapProto(SerializeChromeValuablesMetadata(entity));
   return specifics;
 }
 
@@ -440,6 +411,38 @@ sync_pb::AutofillValuableSpecifics GetPassportSpecifics(
 #undef SET_OR_CLEAR_STRING_FIELD
 
 }  // namespace
+
+ChromeValuablesMetadata SerializeChromeValuablesMetadata(
+    const EntityInstance& entity) {
+  ChromeValuablesMetadata metadata;
+  for (const AttributeInstance& attribute : entity.attributes()) {
+    switch (attribute.type().data_type()) {
+      case AttributeType::DataType::kName: {
+        for (FieldType field_type : attribute.type().field_subtypes()) {
+          ChromeValuablesMetadataEntry& entry =
+              *metadata.add_metadata_entries();
+          entry.set_attribute_type(attribute.type().name_as_string());
+          entry.set_field_type(field_type);
+          entry.set_value(base::UTF16ToUTF8(attribute.GetRawInfo(field_type)));
+          entry.set_verification_status(
+              static_cast<int>(attribute.GetVerificationStatus(field_type)));
+        }
+        break;
+      }
+      case AttributeType::DataType::kCountry:
+      case AttributeType::DataType::kDate:
+        // TODO(crbug.com/436174974): Implement serialization of those
+        // DataType's.
+        NOTIMPLEMENTED();
+        break;
+      case AttributeType::DataType::kState:
+      case AttributeType::DataType::kString:
+        // Nothing to serialize here as the structure is trivial.
+        break;
+    }
+  }
+  return metadata;
+}
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
     const EntityInstance& entity,
