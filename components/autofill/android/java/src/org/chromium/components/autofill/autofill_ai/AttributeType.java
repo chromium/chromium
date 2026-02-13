@@ -11,6 +11,8 @@ import org.jni_zero.JniType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.FieldType;
 
+import java.util.Objects;
+
 /** Represents information of an Autofill AI attribute type. */
 @JNINamespace("autofill")
 @NullMarked
@@ -52,5 +54,21 @@ public class AttributeType {
 
     public @FieldType int getFieldType() {
         return mFieldType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o instanceof AttributeType that) {
+            return mTypeName == that.mTypeName;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mTypeName);
     }
 }

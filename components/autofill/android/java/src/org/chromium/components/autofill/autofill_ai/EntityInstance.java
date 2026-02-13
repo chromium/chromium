@@ -25,7 +25,7 @@ public class EntityInstance {
     private final String mGUID;
     private final @RecordType int mRecordType;
     private final EntityType mEntityType;
-    private final Map<Integer, AttributeInstance> mAttributes = new HashMap<>();
+    private final Map<AttributeType, AttributeInstance> mAttributes = new HashMap<>();
     private final EntityMetadata mMetadata;
 
     /** Builder for the {@link EntityInstance}. */
@@ -96,9 +96,9 @@ public class EntityInstance {
         mEntityType = entityType;
         mMetadata = metadata;
         for (AttributeInstance attribute : attributes) {
-            assert !mAttributes.containsKey(attribute.getAttributeType().getTypeName())
+            assert !mAttributes.containsKey(attribute.getAttributeType())
                     : "Duplicate attribute: " + attribute.getAttributeType().getTypeName();
-            mAttributes.put(attribute.getAttributeType().getTypeName(), attribute);
+            mAttributes.put(attribute.getAttributeType(), attribute);
         }
     }
 
@@ -123,8 +123,8 @@ public class EntityInstance {
         return new ArrayList<>(mAttributes.values());
     }
 
-    public @Nullable AttributeInstance getAttribute(@AttributeTypeName int attributeTypeName) {
-        return mAttributes.get(attributeTypeName);
+    public @Nullable AttributeInstance getAttribute(AttributeType attributeType) {
+        return mAttributes.get(attributeType);
     }
 
     @CalledByNative

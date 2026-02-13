@@ -159,8 +159,7 @@ class EntityEditorMediator {
     }
 
     private String getStringAttribute(EntityInstance entityInstance, AttributeType attributeType) {
-        @Nullable AttributeInstance attribute =
-                entityInstance.getAttribute(attributeType.getTypeName());
+        @Nullable AttributeInstance attribute = entityInstance.getAttribute(attributeType);
         String attributeValue = "";
         if (attribute != null) {
             assert attribute.getAttributeValue() instanceof AttributeInstance.StringValue;
