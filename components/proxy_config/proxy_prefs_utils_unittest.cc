@@ -130,41 +130,67 @@ TEST(ProxyPrefsUtilsTest, ProxyOverrideRuleProxyFromString) {
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+namespace {
+
+void SetAffiliationPrefs(TestingPrefServiceSimple& prefs,
+                         bool affiliated,
+                         int enabled_for_all_users) {
+  prefs.SetBoolean(prefs::kProxyOverrideRulesAffiliation, affiliated);
+  prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers,
+                   enabled_for_all_users);
+}
+
+void VerifyUnaffiliatedRestriction(TestingPrefServiceSimple& prefs,
+                                   bool expected_restricted) {
+  // Unaffiliated: restricted if `expected_restricted` is true.
+  SetAffiliationPrefs(prefs, /*affiliated=*/false, /*enabled_for_all_users=*/0);
+  EXPECT_EQ(ProxyOverrideRulesAllowed(&prefs), !expected_restricted);
+
+  // Unaffiliated but enabled by policy: always allowed.
+  SetAffiliationPrefs(prefs, /*affiliated=*/false, /*enabled_for_all_users=*/1);
+  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs));
+
+  // Affiliated: always allowed.
+  SetAffiliationPrefs(prefs, /*affiliated=*/true, /*enabled_for_all_users=*/0);
+  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs));
+}
+
+}  // namespace
+
 TEST(ProxyPrefsUtilsTest, ProxyOverrideRulesAllowed) {
   TestingPrefServiceSimple prefs;
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(prefs.registry());
 
+  // If `kProxyOverrideRules` is not managed by policy or controlled by an
+  // extension, it is always allowed.
+  SetAffiliationPrefs(prefs, /*affiliated=*/false, /*enabled_for_all_users=*/0);
+  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs));
+
+  // Scenario 1: `kProxyOverrideRules` is controlled by an extension.
+  // Affiliation is checked, but scope is ignored.
+  prefs.SetExtensionPref(prefs::kProxyOverrideRules,
+                         base::Value(base::Value::Type::LIST));
+
+  prefs.SetInteger(prefs::kProxyOverrideRulesScope,
+                   policy::POLICY_SCOPE_MACHINE);
+  VerifyUnaffiliatedRestriction(prefs, /*expected_restricted=*/true);
+
+  prefs.SetInteger(prefs::kProxyOverrideRulesScope, policy::POLICY_SCOPE_USER);
+  VerifyUnaffiliatedRestriction(prefs, /*expected_restricted=*/true);
+
+  // Scenario 2: `kProxyOverrideRules` is managed by policy.
+  prefs.SetManagedPref(prefs::kProxyOverrideRules,
+                       base::Value(base::Value::Type::LIST));
+
   // If rules are set at the machine scope, they are always allowed.
   prefs.SetInteger(prefs::kProxyOverrideRulesScope,
                    policy::POLICY_SCOPE_MACHINE);
-  for (bool affiliation : {true, false}) {
-    for (int enabled_for_all_users : {0, 1}) {
-      prefs.SetBoolean(prefs::kProxyOverrideRulesAffiliation, affiliation);
-      prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers,
-                       enabled_for_all_users);
-      EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs));
-    }
-  }
+  VerifyUnaffiliatedRestriction(prefs, /*expected_restricted=*/false);
 
-  // If rules are set at the user scope, they are always allowed for affiliated
+  // If rules are set at the user scope, they are restricted for unaffiliated
   // users.
   prefs.SetInteger(prefs::kProxyOverrideRulesScope, policy::POLICY_SCOPE_USER);
-  prefs.SetBoolean(prefs::kProxyOverrideRulesAffiliation, true);
-  for (int enabled_for_all_users : {0, 1}) {
-    prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers,
-                     enabled_for_all_users);
-    EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs));
-  }
-
-  // If rules are set at the user scope for an unaffiliated user, they are only
-  // allowed when `kEnableProxyOverrideRulesForAllUsers` is set to 1.
-  prefs.SetBoolean(prefs::kProxyOverrideRulesAffiliation, false);
-
-  prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers, 0);
-  EXPECT_FALSE(ProxyOverrideRulesAllowed(&prefs));
-
-  prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers, 1);
-  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs));
+  VerifyUnaffiliatedRestriction(prefs, /*expected_restricted=*/true);
 }
 #endif
 
