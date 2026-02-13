@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/byte_size.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -110,6 +112,21 @@ DownloadResponseHandler::DownloadResponseHandler(
   base::UmaHistogramMemoryKB(
       "Download.Memory.UrlChainSizeKb.CreateResponseHandler",
       ComputeUrlChainByteSize(url_chain_));
+
+  // Download.Memory.UrlChainLength.CreateResponseHandler shows that the URL
+  // chain length never exceeds 14, whereas
+  // Download.Memory.UrlChainSizeKb.CreateResponseHandler shows that the URL
+  // chain size exceeds ~2MiB in 0.3% of cases. This suggests that single URLs
+  // can be very large. Generate a dump when a single large URL is found, to
+  // understand under what conditions this happens.
+  //
+  // TODO(crbug.com/476408124): Remove after the issue is fixed.
+  for (const auto& url : url_chain_) {
+    if (base::ByteSize(url.EstimateMemoryUsage()) > base::MiBU(2)) {
+      DEBUG_ALIAS_FOR_CSTR(url_spec, url.possibly_invalid_spec().c_str(), 1024);
+      base::debug::DumpWithoutCrashing();
+    }
+  }
 }
 
 DownloadResponseHandler::~DownloadResponseHandler() = default;
