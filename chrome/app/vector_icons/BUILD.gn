@@ -47,6 +47,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "browser_tools_update.icon",
     "browser_tools_update_chrome_refresh.icon",
     "cast_chrome_refresh.icon",
+    "check.icon",
     "chevron_right.icon",
     "chevron_right_chrome_refresh.icon",
     "chromium_minimize.icon",
