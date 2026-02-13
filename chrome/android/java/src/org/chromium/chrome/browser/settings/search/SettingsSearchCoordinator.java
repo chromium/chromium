@@ -322,15 +322,20 @@ public class SettingsSearchCoordinator
     public void onAccessibilityStateChanged(
             AccessibilityState.State oldAccessibilityState,
             AccessibilityState.State newAccessibilityState) {
+        if (mActivity.isFinishing() || mActivity.isDestroyed()) return;
+
         if (!oldAccessibilityState.equals(newAccessibilityState)) {
             if (mIndexData != null) {
                 mIndexData.setNeedsIndexing();
                 initIndex();
-            }
-            if (mFragmentState != FS_SETTINGS) {
+
                 EditText queryEdit = mActivity.findViewById(R.id.search_query);
-                queryEdit.requestFocus();
-                onQueryUpdated(queryEdit.getText().toString());
+                if (queryEdit == null) return;
+
+                if (mFragmentState != FS_SETTINGS) {
+                    queryEdit.requestFocus();
+                    onQueryUpdated(queryEdit.getText().toString());
+                }
             }
         }
     }
