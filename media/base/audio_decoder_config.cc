@@ -56,7 +56,9 @@ void AudioDecoderConfig::Initialize(AudioCodec codec,
   Initialize(codec, sample_format, channel_layout_config.channel_layout(),
              samples_per_second, extra_data, encryption_scheme, seek_preroll,
              codec_delay);
-  SetChannelsForDiscrete(channel_layout_config.channels());
+  if (channel_layout_config.channel_layout() == CHANNEL_LAYOUT_DISCRETE) {
+    SetChannelsForDiscrete(channel_layout_config.channels());
+  }
 }
 
 void AudioDecoderConfig::Initialize(AudioCodec codec,

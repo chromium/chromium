@@ -610,6 +610,7 @@ source_set("unit_tests") {
     "audio_bus_unittest.cc",
     "audio_codecs_unittest.cc",
     "audio_converter_unittest.cc",
+    "audio_decoder_config_unittest.cc",
     "audio_discard_helper_unittest.cc",
     "audio_fifo_unittest.cc",
     "audio_glitch_info_unittest.cc",
