@@ -18,8 +18,6 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/web_applications/extension_status_utils.h"
-#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
@@ -47,11 +45,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -63,7 +63,6 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 using extensions::Extension;
 using extensions::Manifest;
 using extensions::mojom::ManifestLocation;
-using web_app::WebAppFilter;
 
 namespace {
 
@@ -313,7 +312,8 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     RunTest(manifest, web_app_url, kInstallReplacementWebApp,
             true /* from_webstore */);
     EXPECT_TRUE(provider->registrar_unsafe().AppMatches(
-        web_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
+        web_app_id,
+        web_app::WebAppFilter::InstalledInOperatingSystemForTesting()));
     EXPECT_EQ(1, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
@@ -321,7 +321,8 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     RunTest(std::move(manifest), web_app_url, kInstallReplacementWebApp,
             true /* from_webstore */);
     EXPECT_TRUE(provider->registrar_unsafe().AppMatches(
-        web_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
+        web_app_id,
+        web_app::WebAppFilter::InstalledInOperatingSystemForTesting()));
     EXPECT_EQ(2, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
   }
