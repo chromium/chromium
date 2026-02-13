@@ -145,9 +145,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor presentationState_: number|undefined = undefined;
 
   isImmersiveMode(): boolean {
-    // The kInImmersiveOverlay enum value is 3 in ReadAnythingPresentationState.
-    // See chrome/common/read_anything/read_anything.mojom.
-    return this.presentationState_ === 3;
+    return this.presentationState_ ===
+        chrome.readingMode.inImmersiveOverlayPresentationState;
   }
 
   constructor() {

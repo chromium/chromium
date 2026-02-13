@@ -122,6 +122,38 @@ suite('Toolbar', () => {
         const moreButton = getButton('more');
         assertTrue(!!moreButton);
       });
+
+      suite('tab index', () => {
+        setup(() => {
+          toolbar.isImmersiveMode = true;
+          assertEquals(toolbar.$.toolbarContainer.tabIndex, 0);
+        });
+
+        test('is -1 after Tab keydown', () => {
+          stubAnimationFrame();
+          toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
+          assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
+        });
+
+        test('is reset after closing reading mode', async () => {
+          stubAnimationFrame();
+          toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
+          assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
+          toolbar.presentationState = 1;
+          await microtasksFinished();
+          assertEquals(toolbar.$.toolbarContainer.tabIndex, 0);
+        });
+
+        test('is reset after opening reading mode in side panel', async () => {
+          toolbar.isImmersiveMode = true;
+          stubAnimationFrame();
+          toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
+          assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
+          toolbar.presentationState = 2;
+          await microtasksFinished();
+          assertEquals(toolbar.$.toolbarContainer.tabIndex, 0);
+        });
+      });
     });
   });
 

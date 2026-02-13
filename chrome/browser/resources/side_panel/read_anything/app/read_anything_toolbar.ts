@@ -203,6 +203,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private constructorTime_: number = 0;
   private currentFocusId_: string = '';
   private windowResizeCallback_: () => void = () => {};
+  private toolbarContainerBlurCallback_: () => void = () => {};
   // The previous speech active status so we can track when it changes.
   private wasSpeechActive_: boolean = false;
   private spinnerDebouncerCallbackHandle_?: number;
@@ -211,6 +212,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // Corresponds to UI setup being complete on the toolbar when
   // connectedCallback has finished executing.
   private isSetupComplete_: boolean = false;
+
+  isReadingModeInactive(): boolean {
+    return this.presentationState ===
+        chrome.readingMode.inHiddenPresentationState;
+  }
+
+  isReadingModeInSidePanel(): boolean {
+    return this.presentationState ===
+        chrome.readingMode.inSidePanelPresentationState;
+  }
 
   constructor() {
     super();
@@ -237,6 +248,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     this.windowResizeCallback_ = this.maybeUpdateMoreOptions_.bind(this);
     window.addEventListener('resize', this.windowResizeCallback_);
+    if (this.isImmersiveEnabled_) {
+      this.toolbarContainerBlurCallback_ =
+          this.onToolbarContainerBlur_.bind(this);
+      this.$.toolbarContainer.addEventListener(
+          'blur', this.toolbarContainerBlurCallback_);
+    }
 
     this.loadFontsStylesheet();
     this.initializeMenuButtons_();
@@ -246,6 +263,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   override disconnectedCallback() {
     if (this.windowResizeCallback_) {
       window.removeEventListener('resize', this.windowResizeCallback_);
+    }
+    if (this.isImmersiveEnabled_) {
+      this.$.toolbarContainer.removeEventListener(
+          'blur', this.toolbarContainerBlurCallback_);
     }
     if (this.spinnerDebouncerCallbackHandle_ !== undefined) {
       clearTimeout(this.spinnerDebouncerCallbackHandle_);
@@ -258,6 +279,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (changedProperties.has('isSpeechActive') ||
         changedProperties.has('isAudioCurrentlyPlaying')) {
       this.onSpeechPlayingStateChanged_();
+    }
+
+    if (changedProperties.has('presentationState') &&
+        (this.isReadingModeInSidePanel() || this.isReadingModeInactive())) {
+      this.$.toolbarContainer.tabIndex = 0;
     }
   }
 
@@ -962,6 +988,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   protected shouldDisableGranularityNavButtons_(): boolean {
     return !this.isReadAloudPlayable ||
         (this.isImmersiveEnabled_ && !this.isSpeechActive);
+  }
+
+  protected onToolbarContainerBlur_() {
+    if (this.isImmersiveEnabled_) {
+      this.$.toolbarContainer.tabIndex = -1;
+    }
   }
 }
 

@@ -138,6 +138,8 @@
   font-style: normal;
   font-weight: var(--immersive-menu-font-weight);
   line-height: var(--immersive-menu-font-line-height);
+  outline: none;
+  border: none;
 }
 
 .announce-block {

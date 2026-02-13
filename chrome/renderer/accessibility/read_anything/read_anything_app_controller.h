@@ -251,6 +251,7 @@ class ReadAnythingAppController
   int LineFocusStaticLine() const;
   int LineFocusCursorLine() const;
   int MaxLineWidth() const;
+  int InHiddenPresentationState() const;
   int InSidePanelPresentationState() const;
   int InImmersiveOverlayPresentationState() const;
   int DistillationTypeScreen2x() const;

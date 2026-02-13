@@ -11,6 +11,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
   return html`<!--_html_template_start_-->
 <div id="toolbarContainer" class="${this.getToolbarContainerClass_()}"
     role="toolbar" aria-label="i18n{readingModeReadAloudToolbarLabel}"
+    tabindex="${this.isImmersiveEnabled_ ? 0 : -1}"
     @keydown="${this.onToolbarKeyDown_}"
     @reset-toolbar="${this.onResetToolbar_}"
     @toolbar-overflow="${this.onToolbarOverflow_}">

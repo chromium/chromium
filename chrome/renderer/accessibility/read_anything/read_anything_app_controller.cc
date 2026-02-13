@@ -1253,6 +1253,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("lineFocusCursorLine",
                    &ReadAnythingAppController::LineFocusCursorLine)
       .SetProperty("maxLineWidth", &ReadAnythingAppController::MaxLineWidth)
+      .SetProperty("inHiddenPresentationState",
+                   &ReadAnythingAppController::InHiddenPresentationState)
       .SetProperty("inSidePanelPresentationState",
                    &ReadAnythingAppController::InSidePanelPresentationState)
       .SetProperty(
@@ -1675,6 +1677,11 @@ int ReadAnythingAppController::LineFocusCursorLine() const {
 
 int ReadAnythingAppController::MaxLineWidth() const {
   return a11y::kMaxLineWidth;
+}
+
+int ReadAnythingAppController::InHiddenPresentationState() const {
+  return std::to_underlying(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
 }
 
 int ReadAnythingAppController::InSidePanelPresentationState() const {

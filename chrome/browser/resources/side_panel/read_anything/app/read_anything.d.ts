@@ -67,7 +67,7 @@ declare namespace chrome {
     let sepiaLightTheme: number;
     let sepiaDarkTheme: number;
     let undefinedPresentationState: number;
-    let hiddenPresentationState: number;
+    let inHiddenPresentationState: number;
     let inSidePanelPresentationState: number;
     let inImmersiveOverlayPresentationState: number;
     let autoHighlighting: number;
