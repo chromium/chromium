@@ -200,6 +200,22 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
   }
 
   is_keyboard_visible_ = is_visible;
+  // If the floaty is expanded or temporarily hidden, the floaty should not be
+  // re-shown on keyboard updates.
+  if (last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded ||
+      is_floaty_temporarily_hidden_) {
+    return;
+  }
+
+  // Ensures that the floaty visibility is updated properly on a keyboard
+  // update.
+  CGFloat offset =
+      GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
+  if (is_keyboard_visible_) {
+    ios::provider::UpdateOverlayOffsetWithOpacity(offset, kFloatyHiddenOpacity);
+  } else {
+    ios::provider::UpdateOverlayOffsetWithOpacity(offset, kFloatyShownOpacity);
+  }
 }
 
 void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
@@ -256,6 +272,40 @@ CGFloat GeminiBrowserAgent::GetFloatyOffsetFromFullscreenController(
       (fully_expanded_bottom_toolbar_height * controller->GetProgress()) -
       kFloatyIntrinsicPaddingCorrection;
   return offset;
+}
+
+void GeminiBrowserAgent::ForceShowFloatyIfInvoked() {
+  if (!fullscreen_controller_ || !is_floaty_invoked_) {
+    return;
+  }
+
+  fullscreen_controller_->ExitFullscreen();
+  CGFloat offset =
+      GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
+  ios::provider::UpdateOverlayOffsetWithOpacity(offset, kFloatyShownOpacity);
+  is_floaty_temporarily_hidden_ = false;
+}
+
+bool GeminiBrowserAgent::ShouldShowFloatyForSource(
+    gemini::FloatyUpdateSource source) {
+  bool is_source_query_response =
+      source == gemini::FloatyUpdateSource::ForcedFromQueryResponse;
+
+  // Re-show the floaty if a user receives a query response.
+  return is_floaty_temporarily_hidden_ ? !is_source_query_response
+                                       : is_source_query_response;
+}
+
+GeminiPageContext* GeminiBrowserAgent::CreateGeminiPageContext(
+    ios::provider::GeminiPageContextComputationState computation_state,
+    std::unique_ptr<optimization_guide::proto::PageContext>
+        page_context_proto) {
+  GeminiPageContext* page_context = [[GeminiPageContext alloc] init];
+  page_context.geminiPageContextComputationState = computation_state;
+  page_context.uniquePageContext = std::move(page_context_proto);
+  page_context.favicon = FetchPageFavicon();
+  ApplyUserPrefsToPageContext(page_context);
+  return page_context;
 }
 
 void GeminiBrowserAgent::UpdateForTraitCollection(
@@ -539,10 +589,7 @@ void GeminiBrowserAgent::HideFloatyIfInvoked(
 void GeminiBrowserAgent::ShowFloatyIfInvoked(
     bool animated,
     gemini::FloatyUpdateSource source) {
-  bool force_show_floaty =
-      source == gemini::FloatyUpdateSource::ForcedFromQueryResponse;
-  if ((!is_floaty_invoked_ || !is_floaty_temporarily_hidden_) &&
-      !force_show_floaty) {
+  if (!is_floaty_invoked_ || !ShouldShowFloatyForSource(source)) {
     return;
   }
 
@@ -570,14 +617,13 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
   RecordGeminiViewStateHiddenToShown(last_shown_view_state_);
   RecordFloatyShownFromSource(source);
   is_floaty_temporarily_hidden_ = false;
-  fullscreen_controller_->ExitFullscreen();
 
-  CGFloat offset =
-      GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
+  base::WeakPtr<GeminiBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
   [UIView animateWithDuration:kFloatyAnimationDuration
                    animations:^{
-                     ios::provider::UpdateOverlayOffsetWithOpacity(
-                         offset, kFloatyShownOpacity);
+                     if (weak_ptr) {
+                       weak_ptr->ForceShowFloatyIfInvoked();
+                     }
                    }];
 }
 
@@ -660,7 +706,8 @@ void GeminiBrowserAgent::FullscreenProgressUpdated(
   }
 
   // Avoids fullscreen updates while the keyboard is being used with the
-  // floaty.
+  // floaty. Happens when the omnibox is in the bottom toolbar and the omnibox
+  // is minimized as part of the keyboard being displayed.
   if (last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded &&
       is_keyboard_visible_) {
     return;
@@ -712,6 +759,19 @@ void GeminiBrowserAgent::PresentFloatyWithState(
     ios::provider::GeminiPageContextComputationState computation_state,
     gemini::EntryPoint entry_point,
     UIImage* image_attachment) {
+  // If floaty is invoked, update the persisted floaty instead of restarting the
+  // Gemini instance.
+  if (IsGeminiCopresenceEnabled() && is_floaty_invoked_) {
+    GeminiPageContext* pageContext = CreateGeminiPageContext(
+        computation_state, std::move(page_context_proto));
+    if (image_attachment) {
+      ios::provider::AttachImage(image_attachment);
+    }
+    ios::provider::UpdatePageContext(pageContext);
+    ForceShowFloatyIfInvoked();
+    return;
+  }
+
   SetSessionCommandHandlers();
   [gemini_page_state_change_handler_
       setBaseViewController:base_view_controller];
@@ -754,11 +814,8 @@ void GeminiBrowserAgent::PresentFloatyWithState(
 
   // Set the page context itself and page context computation/attachment state
   // for the current web state.
-  config.pageContext = [[GeminiPageContext alloc] init];
-  config.pageContext.geminiPageContextComputationState = computation_state;
-  config.pageContext.uniquePageContext = std::move(page_context_proto);
-  config.pageContext.favicon = FetchPageFavicon();
-  ApplyUserPrefsToPageContext(config.pageContext);
+  config.pageContext =
+      CreateGeminiPageContext(computation_state, std::move(page_context_proto));
   if (IsGeminiCopresenceEnabled()) {
     config.initialBottomOffset =
         GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
