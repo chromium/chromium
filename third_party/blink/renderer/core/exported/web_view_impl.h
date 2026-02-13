@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_VIEW_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_VIEW_IMPL_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -800,6 +801,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void UpdateInspectorDeviceScaleFactorOverride();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Additional Windowing Controls API helpers.
   void WasMaximized();
   void WasMinimized();
   void WasRestored();
@@ -809,6 +811,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
     kMinimize,
     kRestore,
   };
+  void PostDelayedRejectionForAWCPromise(uint64_t id);
+  void RejectAWCPromise(uint64_t id);
   void HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType type);
 #endif
 
@@ -1030,11 +1034,19 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // All the registered observers.
   base::ObserverList<WebViewObserver> observers_;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  std::optional<
-      std::pair<WindowShowStateChangeType, WindowingControlsChangeCallback>>
-      window_show_state_change_callback_;
-  std::optional<std::pair<bool, WindowingControlsChangeCallback>>
-      set_resizable_change_callback_;
+  struct WindowShowStateCallbackData {
+    uint64_t id;
+    WindowShowStateChangeType requested_action;
+    WindowingControlsChangeCallback callback;
+  };
+  std::optional<WindowShowStateCallbackData> window_show_state_change_callback_;
+
+  struct SetResizableCallbackData {
+    uint64_t id;
+    bool requested_resizable;
+    WindowingControlsChangeCallback callback;
+  };
+  std::optional<SetResizableCallbackData> set_resizable_change_callback_;
 #endif
 };
 

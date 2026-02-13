@@ -353,7 +353,8 @@ class WebViewTest : public testing::Test {
   }
 
   std::string base_url_{"http://www.test.com/"};
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   frame_test_helpers::WebViewHelper web_view_helper_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
 };
@@ -7120,6 +7121,9 @@ class WebViewTestAdditionalWindowingControls : public WebViewTest {
     web_view_impl_ = web_view_helper_.Initialize();
   }
   WebViewImpl* WebView() { return web_view_impl_; }
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -7207,8 +7211,6 @@ TEST_F(WebViewTestAdditionalWindowingControls,
 }
 
 TEST_F(WebViewTestAdditionalWindowingControls, SetResizableCallbackCalled) {
-  using ui::mojom::blink::WindowShowState;
-
   const std::vector<bool> values_to_test = {true, false};
   for (const bool value_to_test : values_to_test) {
     base::MockOnceCallback<void(bool)> set_resizable_callback;
@@ -7217,6 +7219,53 @@ TEST_F(WebViewTestAdditionalWindowingControls, SetResizableCallbackCalled) {
     WebView()->SetResizable(value_to_test, set_resizable_callback.Get());
     WebView()->OnResizableChanged(/*new_resizable=*/value_to_test);
   }
+}
+
+TEST_F(WebViewTestAdditionalWindowingControls, WindowShowStateChangeTimeout) {
+  using ui::mojom::blink::WindowShowState;
+  static constexpr base::TimeDelta kWindowShowStateChangeTimeout =
+      base::Seconds(5);
+
+  {
+    base::MockOnceCallback<void(bool)> maximize_callback;
+    EXPECT_CALL(maximize_callback, Run(false));
+    WebView()->Maximize(maximize_callback.Get());
+    FastForwardBy(kWindowShowStateChangeTimeout + base::Seconds(1));
+    WebView()->OnWindowShowStateChanged(
+        /*old_state=*/WindowShowState::kNormal,
+        /*new_state=*/WindowShowState::kMaximized);
+  }
+  {
+    base::MockOnceCallback<void(bool)> minimize_callback;
+    EXPECT_CALL(minimize_callback, Run(false));
+    WebView()->Minimize(minimize_callback.Get());
+    FastForwardBy(kWindowShowStateChangeTimeout + base::Seconds(1));
+    WebView()->OnWindowShowStateChanged(
+        /*old_state=*/WindowShowState::kMaximized,
+        /*new_state=*/WindowShowState::kMinimized);
+  }
+  {
+    base::MockOnceCallback<void(bool)> restore_callback;
+    EXPECT_CALL(restore_callback, Run(false));
+    WebView()->Restore(restore_callback.Get());
+    FastForwardBy(kWindowShowStateChangeTimeout + base::Seconds(1));
+    WebView()->OnWindowShowStateChanged(
+        /*old_state=*/WindowShowState::kMinimized,
+        /*new_state=*/WindowShowState::kMaximized);
+  }
+}
+
+TEST_F(WebViewTestAdditionalWindowingControls, SetResizableTimeout) {
+  static constexpr base::TimeDelta kWindowShowStateChangeTimeout =
+      base::Seconds(10);
+  WebView()->SetResizable(/*resizable=*/false, base::DoNothing());
+  WebView()->OnResizableChanged(/*new_resizable=*/false);
+
+  base::MockOnceCallback<void(bool)> set_resizable_callback;
+  EXPECT_CALL(set_resizable_callback, Run(false));
+  WebView()->SetResizable(/*resizable=*/true, set_resizable_callback.Get());
+  FastForwardBy(kWindowShowStateChangeTimeout + base::Seconds(1));
+  WebView()->OnResizableChanged(/*new_resizable=*/true);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
