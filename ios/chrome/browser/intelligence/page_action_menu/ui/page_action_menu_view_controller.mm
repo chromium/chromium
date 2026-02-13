@@ -834,14 +834,14 @@ const CGFloat kDividerWidth = 1.0;
 // Registers for trait collection changes to handle device orientation updates.
 - (void)setupTraitChangeHandling {
   __weak PageActionMenuViewController* weakSelf = self;
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
-  [self registerForTraitChanges:traits
-                    withHandler:^(id<UITraitEnvironment> traitEnvironment,
-                                  UITraitCollection* previousCollection) {
-                      [weakSelf updateLensAvailability:traitEnvironment
-                                                           .traitCollection];
-                    }];
+  [self
+      registerForTraitChanges:
+          @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
+                  withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                UITraitCollection* previousCollection) {
+                    [weakSelf updateLensAvailability:traitEnvironment
+                                                         .traitCollection];
+                  }];
 }
 
 // Creates UI view for a single feature row based on the provided feature data.
