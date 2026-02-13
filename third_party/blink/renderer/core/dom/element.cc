@@ -7221,16 +7221,16 @@ CustomElementRegistry* Element::customElementRegistry() const {
   if (!RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
     return nullptr;
   }
-  // TODO(crbug.com/429140221) Need to evaluate if storing registry
-  // in element whenever needed is too memory consuming. For now
-  // we'll take the naive approach and assume an element using its tree
-  // scope's registry if not explicitly set.
-  if (const ElementRareDataVector* data = RareData()) {
-    if (data->HasCustomElementRegistrySet()) {
-      return data->GetCustomElementRegistry();
+  // If scoped registry is not exercised at all in the document,
+  // we can avoid the rare data lookup and just return the tree scope's
+  // registry.
+  if (GetDocument().ScopedCustomElementRegistryUsed()) {
+    if (const ElementRareDataVector* data = RareData()) {
+      if (data->HasCustomElementRegistrySet()) {
+        return data->GetCustomElementRegistry();
+      }
     }
   }
-
   return GetTreeScope().customElementRegistry();
 }
 
@@ -7246,6 +7246,7 @@ void Element::SetCustomElementRegistry(CustomElementRegistry* registry,
     EnsureRareData().ClearCustomElementRegistry();
   } else {
     data_ = EnsureRareData().SetCustomElementRegistry(registry);
+    GetDocument().SetScopedCustomElementRegistryUsed();
   }
 }
 
