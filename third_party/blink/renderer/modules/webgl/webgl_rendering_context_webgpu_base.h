@@ -1524,6 +1524,13 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
       bound_textures_;
 
   Member<WebGLBuffer> array_buffer_binding_;
+  Member<WebGLBuffer> copy_read_buffer_binding_;
+  Member<WebGLBuffer> copy_write_buffer_binding_;
+  Member<WebGLBuffer> pixel_pack_buffer_binding_;
+  Member<WebGLBuffer> pixel_unpack_buffer_binding_;
+  Member<WebGLBuffer> transform_feedback_buffer_binding_;
+  Member<WebGLBuffer> uniform_buffer_binding_;
+
   // TODO(413078308): This reference should live in the VAO instead.
   Member<WebGLBuffer> element_array_buffer_binding_;
 

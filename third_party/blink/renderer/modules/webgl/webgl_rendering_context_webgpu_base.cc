@@ -622,17 +622,26 @@ void WebGLRenderingContextWebGPUBase::bindBuffer(GLenum target,
     case GL_ARRAY_BUFFER:
       array_buffer_binding_ = buffer;
       break;
+    case GL_COPY_READ_BUFFER:
+      copy_read_buffer_binding_ = buffer;
+      break;
+    case GL_COPY_WRITE_BUFFER:
+      copy_write_buffer_binding_ = buffer;
+      break;
     case GL_ELEMENT_ARRAY_BUFFER:
       element_array_buffer_binding_ = buffer;
       break;
-    case GL_COPY_READ_BUFFER:
-    case GL_COPY_WRITE_BUFFER:
     case GL_PIXEL_PACK_BUFFER:
+      pixel_pack_buffer_binding_ = buffer;
+      break;
     case GL_PIXEL_UNPACK_BUFFER:
+      pixel_unpack_buffer_binding_ = buffer;
+      break;
     case GL_TRANSFORM_FEEDBACK_BUFFER:
+      transform_feedback_buffer_binding_ = buffer;
+      break;
     case GL_UNIFORM_BUFFER:
-      // TODO(413078308): Implement WebGL2 buffer bindings.
-      NOTIMPLEMENTED();
+      uniform_buffer_binding_ = buffer;
       break;
   }
 }
@@ -3775,9 +3784,18 @@ bool WebGLRenderingContextWebGPUBase::IsGPUDeviceDestroyed() {
 void WebGLRenderingContextWebGPUBase::Trace(Visitor* visitor) const {
   visitor->Trace(draw_framebuffer_binding_);
   visitor->Trace(read_framebuffer_binding_);
+
   visitor->Trace(array_buffer_binding_);
+  visitor->Trace(copy_read_buffer_binding_);
+  visitor->Trace(copy_write_buffer_binding_);
+  visitor->Trace(pixel_pack_buffer_binding_);
+  visitor->Trace(pixel_unpack_buffer_binding_);
+  visitor->Trace(transform_feedback_buffer_binding_);
+  visitor->Trace(uniform_buffer_binding_);
   visitor->Trace(element_array_buffer_binding_);
+
   visitor->Trace(program_binding_);
+
   for (size_t texture_type_idx = 0; texture_type_idx < bound_textures_.size();
        texture_type_idx++) {
     for (size_t texture_unit_idx = 0;
@@ -3786,6 +3804,7 @@ void WebGLRenderingContextWebGPUBase::Trace(Visitor* visitor) const {
       visitor->Trace(bound_textures_[texture_type_idx][texture_unit_idx]);
     }
   }
+
   WebGLContextObjectSupport::Trace(visitor);
   CanvasRenderingContext::Trace(visitor);
 }
