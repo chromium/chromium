@@ -18992,18 +18992,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="IOSCollaborationInitShareAndManage">
+<action name="IOSCollaborationInitShareOrManage">
   <owner>lpromero@google.com</owner>
   <owner>gambard@chromium.org</owner>
   <description>
     Reported when trying to share a tab group or manage it, if already shared.
   </description>
-</action>
-
-<action name="IOSCollaborationInitShareOrManage">
-  <owner>lpromero@google.com</owner>
-  <owner>gambard@chromium.org</owner>
-  <description>TODO(crbug.com/483957682): Write the description.</description>
 </action>
 
 <action name="IOSCollaborationShowDeleteDialog">
