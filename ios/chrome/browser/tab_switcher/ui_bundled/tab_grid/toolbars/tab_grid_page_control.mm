@@ -639,7 +639,6 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
     UIGlassEffect* glassEffect =
         [UIGlassEffect effectWithStyle:UIGlassEffectStyleRegular];
     glassEffect.interactive = YES;
-    glassEffect.tintColor = TabGridGlassButtonTintColor();
     UIVisualEffectView* backgroundView =
         [[UIVisualEffectView alloc] initWithEffect:glassEffect];
     backgroundView.frame = CGRectMake(0, 0, kOverallWidth, kSegmentHeight);

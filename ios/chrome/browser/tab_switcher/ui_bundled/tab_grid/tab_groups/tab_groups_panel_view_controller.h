@@ -37,11 +37,11 @@
 @property(nonatomic, weak) id<TabGroupsPanelViewControllerUIDelegate>
     UIDelegate;
 
-// Whether the collection view is scrolled to the top.
-@property(nonatomic, readonly, getter=isScrolledToTop) BOOL scrolledToTop;
+// The remaining distance to scroll to the top, in point.
+@property(nonatomic, readonly) CGFloat remainingScrollDistanceTop;
 
-// Whether the collection view is scrolled to the bottom.
-@property(nonatomic, readonly, getter=isScrolledToBottom) BOOL scrolledToBottom;
+// The remaining distance to scroll to the bottom, in point.
+@property(nonatomic, readonly) CGFloat remainingScrollDistanceBottom;
 
 // The insets to set on the collection view.
 // Setting content insets on the collection view is a workaround. Indeed,

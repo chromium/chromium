@@ -335,12 +335,12 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 
 #pragma mark - Public
 
-- (BOOL)isScrolledToTop {
-  return IsScrollViewScrolledToTop(self.collectionView);
+- (CGFloat)remainingScrollDistanceTop {
+  return RemainingScrollDistanceToTop(self.collectionView);
 }
 
-- (BOOL)isScrolledToBottom {
-  return IsScrollViewScrolledToBottom(self.collectionView);
+- (CGFloat)remainingScrollDistanceBottom {
+  return RemainingScrollDistanceToBottom(self.collectionView);
 }
 
 - (BOOL)isGridScrollsToTopEnabled {

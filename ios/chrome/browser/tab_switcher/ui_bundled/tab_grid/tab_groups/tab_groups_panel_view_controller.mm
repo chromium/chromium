@@ -153,12 +153,12 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
 
 #pragma mark Public
 
-- (BOOL)isScrolledToTop {
-  return IsScrollViewScrolledToTop(_collectionView);
+- (CGFloat)remainingScrollDistanceTop {
+  return RemainingScrollDistanceToTop(_collectionView);
 }
 
-- (BOOL)isScrolledToBottom {
-  return IsScrollViewScrolledToBottom(_collectionView);
+- (CGFloat)remainingScrollDistanceBottom {
+  return RemainingScrollDistanceToBottom(_collectionView);
 }
 
 - (void)setContentInsets:(UIEdgeInsets)contentInsets {

@@ -268,8 +268,10 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 }
 
 - (void)gridViewControllerDidScroll {
-  _bottomGradient.hidden = self.gridViewController.scrolledToBottom;
-  _topToolbarBackground.hidden = self.gridViewController.scrolledToTop;
+  _bottomGradient.hidden =
+      self.gridViewController.remainingScrollDistanceBottom <= 0;
+  _topToolbarBackground.hidden =
+      self.gridViewController.remainingScrollDistanceTop <= 0;
 }
 
 #pragma mark - UIViewController

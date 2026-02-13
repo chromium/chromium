@@ -366,7 +366,7 @@ CGFloat HorizontalMargin() {
     buttonConfiguration.image = image;
     button = [UIButton buttonWithConfiguration:buttonConfiguration
                                  primaryAction:nil];
-    button.tintColor = TabGridGlassButtonTintColor();
+    button.tintColor = UIColor.clearColor;
   } else {
     button = [UIButton systemButtonWithPrimaryAction:nil];
     button.tintColor = UIColor.whiteColor;
