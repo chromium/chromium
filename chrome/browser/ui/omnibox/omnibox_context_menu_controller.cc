@@ -111,6 +111,8 @@ OmniboxContextMenuController::ContextType CommandIdToEnum(int command_id) {
       return OmniboxContextMenuController::ContextType::kThinkingModel;
     case IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR:
       return OmniboxContextMenuController::ContextType::kRegularModel;
+    case IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI:
+      return OmniboxContextMenuController::ContextType::kProNoGenUiModel;
     default:
       // There is no command id for tabs due to there being multiple
       // tabs that would have the same command id.
@@ -366,6 +368,18 @@ void OmniboxContextMenuController::AddModelPickerItems() {
       input_state_.active_model == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
           ? check_icon
           : thinking_model_icon);
+
+  auto* pro_no_gen_ui_model_config =
+      GetModelConfig(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI);
+  auto pro_no_gen_ui_model_label = base::UTF8ToUTF16(
+      pro_no_gen_ui_model_config ? pro_no_gen_ui_model_config->menu_label()
+                                 : "");
+  AddItemWithIcon(IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI,
+                  pro_no_gen_ui_model_label,
+                  input_state_.active_model ==
+                          omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI
+                      ? check_icon
+                      : thinking_model_icon);
 }
 
 std::vector<OmniboxContextMenuController::TabInfo>
@@ -638,6 +652,8 @@ omnibox::ModelMode OmniboxContextMenuController::GetModelModeForCommandId(
       return omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
     case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING:
       return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
+    case IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
     default:
       NOTREACHED();
   }
@@ -812,6 +828,15 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
                                    /*via_context_menu=*/true);
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         break;
+      case IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI:
+        if (use_input_state_model) {
+          composebox_handler->SetActiveModelMode(
+              omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI);
+        }
+        GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
+                                   /*via_context_menu=*/true);
+        base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
+        break;
       default:
         NOTREACHED();
     }
@@ -914,7 +939,8 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
       }
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO:
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR:
-      case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING: {
+      case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING:
+      case IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI: {
         const bool model_enabled =
             IsModelEnabled(GetModelModeForCommandId(command_id));
         if (model_enabled) {
@@ -972,7 +998,8 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
       command_id == IDC_OMNIBOX_CONTEXT_CANVAS ||
       command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO ||
       command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR ||
-      command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING) {
+      command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING ||
+      command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI) {
     auto* browser_window_interface =
         webui::GetBrowserWindowInterface(web_contents_.get());
     if (!browser_window_interface) {
@@ -1000,7 +1027,8 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
       return IsToolVisible(GetToolModeForCommandId(command_id));
     } else if (command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO ||
                command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR ||
-               command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING) {
+               command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING ||
+               command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI) {
       return IsModelVisible(GetModelModeForCommandId(command_id));
     }
   }

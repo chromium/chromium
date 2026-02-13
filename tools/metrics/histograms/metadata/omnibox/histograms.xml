@@ -78,12 +78,13 @@ chromium-metrics-reviews@google.com.
   <variant name=".File" summary=""/>
   <variant name=".Image" summary=""/>
   <variant name=".ImageGen" summary=""/>
+  <variant name=".ProNoGenUiModel" summary=""/>
   <variant name=".RegularModel" summary=""/>
   <variant name=".Tab" summary=""/>
   <variant name=".ThinkingModel" summary=""/>
 </variants>
 
-<!-- LINT.ThenChange(chrome/browser/ui/omnibox/omnibox_context_menu_controller.h:ContextType) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/omnibox/omnibox_context_menu_controller.h:ContextType) -->
 
 <variants name="DsePreloadTriggerType">
   <variant name=".OnPress" summary="on-press trigger"/>

@@ -109,6 +109,9 @@ GURL GetBaseSearchUrl(TemplateURLService* turl_service,
     } else {
       result_url = net::AppendOrReplaceQueryParameter(
           result_url, "udm", kAimUdmQueryParameterValue);
+      if (model_mode == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI) {
+        result_url = net::AppendOrReplaceQueryParameter(result_url, "arv", "1");
+      }
     }
   } else {
     std::string udm_value = query_text.empty()

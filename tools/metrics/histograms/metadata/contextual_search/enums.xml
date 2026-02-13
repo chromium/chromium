@@ -44,6 +44,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="GeminiRegular"/>
   <int value="2" label="GeminiPro"/>
   <int value="3" label="GeminiProAutoroute"/>
+  <int value="4" label="GeminiProNoGenUi"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ModelMode) -->
