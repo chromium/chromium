@@ -257,10 +257,7 @@ public class AutoPictureInPictureTabHelperTest {
                     pipActivity.onPictureInPictureModeChanged(false, config);
                 });
 
-        // Wait for the PictureInPictureActivity to be destroyed.
-        CriteriaHelper.pollUiThread(
-                () -> pipActivity == null || pipActivity.isDestroyed(),
-                "PictureInPictureActivity was not closed.");
+        waitForPipWindowToClose(pipActivity);
 
         // Now that the activity is gone, verify the C++ state.
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
@@ -456,10 +453,7 @@ public class AutoPictureInPictureTabHelperTest {
         // lifecycle (onPictureInPictureModeChanged).
         ThreadUtils.runOnUiThreadBlocking(() -> pipActivity.finish());
 
-        // Wait for the PiP activity to be destroyed.
-        CriteriaHelper.pollUiThread(
-                () -> pipActivity == null || pipActivity.isDestroyed(),
-                "PictureInPictureActivity was not closed.");
+        waitForPipWindowToClose(pipActivity);
 
         // Verify that the dismiss count is now 1.
         assertDismissCount(
@@ -485,10 +479,7 @@ public class AutoPictureInPictureTabHelperTest {
         // Switch back to the original tab, which should auto-close the PiP window.
         switchToTab(originalTab);
 
-        // Wait for the PiP activity to be destroyed.
-        CriteriaHelper.pollUiThread(
-                () -> pipActivity == null || pipActivity.isDestroyed(),
-                "PictureInPictureActivity was not closed.");
+        waitForPipWindowToClose(pipActivity);
 
         // Verify that the dismiss count is still 0.
         assertDismissCount(
@@ -522,10 +513,7 @@ public class AutoPictureInPictureTabHelperTest {
         // lifecycle (onPictureInPictureModeChanged).
         ThreadUtils.runOnUiThreadBlocking(() -> pipActivity.finish());
 
-        // Wait for the PiP activity to be destroyed.
-        CriteriaHelper.pollUiThread(
-                () -> pipActivity == null || pipActivity.isDestroyed(),
-                "PictureInPictureActivity was not closed.");
+        waitForPipWindowToClose(pipActivity);
 
         // Verify that the dismiss count is still 0.
         assertDismissCount(
@@ -768,10 +756,16 @@ public class AutoPictureInPictureTabHelperTest {
         // Simulate clicking the hide button.
         ThreadUtils.runOnUiThreadBlocking(pipActivity::triggerHideActionForTesting);
 
-        // Wait for the PictureInPictureActivity to be destroyed.
+        waitForPipWindowToClose(pipActivity);
+    }
+
+    /** Waits for the PictureInPictureActivity to be destroyed. */
+    private void waitForPipWindowToClose(PictureInPictureActivity pipActivity) {
         CriteriaHelper.pollUiThread(
                 () -> pipActivity == null || pipActivity.isDestroyed(),
-                "PictureInPictureActivity was not closed.");
+                "PictureInPictureActivity was not closed.",
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /** Asserts that the dismiss count for the given URL is the expected value. */
