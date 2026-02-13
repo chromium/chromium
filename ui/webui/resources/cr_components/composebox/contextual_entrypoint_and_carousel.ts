@@ -359,7 +359,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.eventTracker_.add(
         window.matchMedia('(width <= 264px)'), 'change',
         (e: MediaQueryListEvent) => {
-          this.showContextMenuDescription_ = !e.matches;
+          this.showContextMenuDescription_ =
+              !e.matches && this.contextMenuDescriptionEnabled_;
         });
   }
 
