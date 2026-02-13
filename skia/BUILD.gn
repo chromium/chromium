@@ -53,6 +53,7 @@ rust_static_library("bridge_rust_side") {
     ":skia_config",
     "//build/config/compiler:no_chromium_code",
   ]
+  no_clippy = true  # TODO(https://crbug.com/472355480)
 }
 
 # External-facing config for dependent code.
@@ -634,6 +635,7 @@ rust_static_library("rust_common_ffi") {
     ":skia_config",
     "//build/config/compiler:no_chromium_code",
   ]
+  no_clippy = true  # TODO(https://crbug.com/472355480)
 }
 
 source_set("rust_common_ffi_cpp") {
@@ -670,6 +672,7 @@ rust_static_library("rust_png_ffi") {
     ":skia_config",
     "//build/config/compiler:no_chromium_code",
   ]
+  no_clippy = true  # TODO(https://crbug.com/472355480)
 }
 
 source_set("rust_png_ffi_cpp") {
