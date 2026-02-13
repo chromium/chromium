@@ -23,6 +23,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_manager.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/ash/components/telemetry_extension/diagnostics/diagnostics_service_ash.h"
+#include "chromeos/ash/components/telemetry_extension/diagnostics/mojo_utils.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
@@ -139,17 +140,15 @@ void OsDiagnosticsGetRoutineUpdateFunction::RunIfAllowed() {
     return;
   }
 
-  auto cb =
-      base::BindOnce(&OsDiagnosticsGetRoutineUpdateFunction::OnResult, this);
-
-  GetRemoteService()->GetRoutineUpdate(
+  GetService()->GetRoutineUpdate(
       params->request.id,
       converters::diagnostics::ConvertRoutineCommand(params->request.command),
-      /* include_output= */ true, std::move(cb));
+      /*include_output=*/true,
+      base::BindOnce(&OsDiagnosticsGetRoutineUpdateFunction::OnResponse, this));
 }
 
-void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
-    crosapi::mojom::DiagnosticsRoutineUpdatePtr ptr) {
+void OsDiagnosticsGetRoutineUpdateFunction::OnResponse(
+    ash::cros_healthd::mojom::RoutineUpdatePtr ptr) {
   if (!ptr) {
     // |ptr| should never be null, otherwise Mojo validation will fail.
     // However it's safer to handle it in case of API changes.
@@ -160,12 +159,18 @@ void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
   cx_diag::GetRoutineUpdateResponse result;
   result.progress_percent = ptr->progress_percent;
 
-  if (ptr->output.has_value() && !ptr->output.value().empty()) {
-    result.output = std::move(ptr->output);
+  std::string output_str;
+  if (ptr->output.is_valid()) {
+    output_str =
+        ash::converters::diagnostics::MojoUtils::GetStringFromMojoHandle(
+            std::move(ptr->output));
+  }
+  if (!output_str.empty()) {
+    result.output = std::move(output_str);
   }
 
   switch (ptr->routine_update_union->which()) {
-    case crosapi::mojom::DiagnosticsRoutineUpdateUnion::Tag::
+    case ash::cros_healthd::mojom::RoutineUpdateUnion::Tag::
         kNoninteractiveUpdate: {
       auto& routine_update =
           ptr->routine_update_union->get_noninteractive_update();
@@ -174,7 +179,7 @@ void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
       result.status_message = std::move(routine_update->status_message);
       break;
     }
-    case crosapi::mojom::DiagnosticsRoutineUpdateUnion::Tag::kInteractiveUpdate:
+    case ash::cros_healthd::mojom::RoutineUpdateUnion::Tag::kInteractiveUpdate:
       // Routine is waiting for user action. Set the status to waiting.
       result.status = cx_diag::RoutineStatus::kWaitingUserAction;
       result.status_message = "Waiting for user action. See user_message";

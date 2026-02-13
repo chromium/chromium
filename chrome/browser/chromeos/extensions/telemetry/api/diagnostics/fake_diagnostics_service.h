@@ -31,12 +31,6 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
   mojo::PendingRemote<crosapi::mojom::DiagnosticsService>
   BindNewPipeAndPassRemote();
 
-  // crosapi::health::mojom::DiagnosticsService overrides.
-  void GetRoutineUpdate(int32_t id,
-                        crosapi::mojom::DiagnosticsRoutineCommandEnum command,
-                        bool include_output,
-                        GetRoutineUpdateCallback callback) override;
-
   // Sets the return value for |Run*Routine|.
   void SetRunRoutineResponse(
       crosapi::mojom::DiagnosticsRunRoutineResponsePtr expected_response);

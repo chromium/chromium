@@ -69,21 +69,4 @@ void DiagnosticsServiceAsh::OnDisconnect() {
   service_.reset();
 }
 
-void DiagnosticsServiceAsh::GetRoutineUpdate(
-    int32_t id,
-    crosapi::mojom::DiagnosticsRoutineCommandEnum command,
-    bool include_output,
-    GetRoutineUpdateCallback callback) {
-  GetService()->GetRoutineUpdate(
-      id, converters::diagnostics::Convert(command), include_output,
-      base::BindOnce(
-          [](crosapi::mojom::DiagnosticsService::GetRoutineUpdateCallback
-                 callback,
-             cros_healthd::mojom::RoutineUpdatePtr ptr) {
-            std::move(callback).Run(
-                converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-          },
-          std::move(callback)));
-}
-
 }  // namespace ash

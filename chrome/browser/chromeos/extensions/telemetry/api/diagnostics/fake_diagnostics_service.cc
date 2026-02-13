@@ -44,21 +44,6 @@ FakeDiagnosticsService::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-void FakeDiagnosticsService::GetRoutineUpdate(
-    int32_t id,
-    crosapi::DiagnosticsRoutineCommandEnum command,
-    bool include_output,
-    GetRoutineUpdateCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("id", id);
-  actual_passed_parameters_.Set("command", static_cast<int32_t>(command));
-  actual_passed_parameters_.Set("include_output", include_output);
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), routine_update_response_->Clone()));
-}
-
 void FakeDiagnosticsService::SetRunRoutineResponse(
     crosapi::DiagnosticsRunRoutineResponsePtr response) {
   run_routine_response_ = std::move(response);

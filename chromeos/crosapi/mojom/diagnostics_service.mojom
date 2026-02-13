@@ -24,25 +24,7 @@ import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
 interface DiagnosticsService {
   // GetAvailableRoutines@0 was removed.
-
-  // Sends commands to an existing routine. Also returns status information for
-  // the routine.
-  //
-  // The request:
-  // * |id| - specifies which routine the command will be sent to. This must be
-  //          the same id that was returned from the RunSomeRoutine function
-  //          call used to create the routine.
-  // * |command| - command to send the routine.
-  // * |include_output| - whether or not the response should include any output
-  //                      accumulated from the routine.
-  //
-  // The response:
-  // * |routine_update| - status information for the specified routine. See
-  //                      cros_healthd_diagnostics.mojom for the structure.
-  GetRoutineUpdate@1(int32 id, DiagnosticsRoutineCommandEnum command,
-                   bool include_output)
-      => (DiagnosticsRoutineUpdate routine_update);
-
+  // GetRoutineUpdate@1 was removed.
   // RunBatteryCapacityRoutine@2 was removed.
   // RunBatteryHealthRoutine@3 was removed.
   // RunSmartctlCheckRoutine@4 was removed.

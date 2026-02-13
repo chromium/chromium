@@ -51,11 +51,6 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
  private:
   void OnDisconnect();
 
-  void GetRoutineUpdate(int32_t id,
-                        crosapi::mojom::DiagnosticsRoutineCommandEnum command,
-                        bool include_output,
-                        GetRoutineUpdateCallback callback) override;
-
   // Pointer to real implementation.
   mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService> service_;
 

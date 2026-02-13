@@ -22,14 +22,14 @@ chromeos::api::os_diagnostics::RoutineStatus ConvertRoutineStatus(
 chromeos::api::os_diagnostics::RoutineStatus ConvertRoutineStatus(
     ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum status);
 
-crosapi::mojom::DiagnosticsRoutineCommandEnum ConvertRoutineCommand(
+ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum ConvertRoutineCommand(
     chromeos::api::os_diagnostics::RoutineCommandType commandType);
 
 ash::cros_healthd::mojom::AcPowerStatusEnum ConvertAcPowerStatusRoutineType(
     chromeos::api::os_diagnostics::AcPowerStatus routineType);
 
 chromeos::api::os_diagnostics::UserMessageType ConvertRoutineUserMessage(
-    crosapi::mojom::DiagnosticsRoutineUserMessageEnum userMessage);
+    ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum userMessage);
 
 ash::cros_healthd::mojom::DiskReadRoutineTypeEnum ConvertDiskReadRoutineType(
     chromeos::api::os_diagnostics::DiskReadRoutineType routineType);

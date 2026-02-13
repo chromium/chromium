@@ -83,7 +83,7 @@ class OsDiagnosticsGetRoutineUpdateFunction
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult(crosapi::mojom::DiagnosticsRoutineUpdatePtr ptr);
+  void OnResponse(ash::cros_healthd::mojom::RoutineUpdatePtr ptr);
 };
 
 class DiagnosticsApiRunRoutineFunctionBase : public DiagnosticsApiFunctionBase {

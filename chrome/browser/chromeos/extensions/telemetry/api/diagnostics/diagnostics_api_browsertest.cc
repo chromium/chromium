@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -152,36 +153,34 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetRoutineUpdateNonInteractiveSuccess) {
-  // Configure FakeDiagnosticsService.
+  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
+
+  SetExpectedLastPassedParameters(
+      base::DictValue()
+          .Set("id", 123456)
+          .Set("command",
+               static_cast<int32_t>(
+                   crosapi::DiagnosticsRoutineCommandEnum::kGetStatus))
+          .Set("include_output", true));
+
+  // Set up FakeCrosHealthd's response to a GetRoutineUpdate request.
   {
     auto nonInteractiveRoutineUpdate =
-        crosapi::DiagnosticsNonInteractiveRoutineUpdate::New();
+        ash::cros_healthd::mojom::NonInteractiveRoutineUpdate::New();
     nonInteractiveRoutineUpdate->status =
-        crosapi::DiagnosticsRoutineStatusEnum::kReady;
+        ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady;
     nonInteractiveRoutineUpdate->status_message = "Routine ran by Google.";
 
     auto routineUpdateUnion =
-        crosapi::DiagnosticsRoutineUpdateUnion::NewNoninteractiveUpdate(
+        ash::cros_healthd::mojom::RoutineUpdateUnion::NewNoninteractiveUpdate(
             std::move(nonInteractiveRoutineUpdate));
 
-    auto response = crosapi::DiagnosticsRoutineUpdate::New();
+    auto response = ash::cros_healthd::mojom::RoutineUpdate::New();
     response->progress_percent = 87;
     response->routine_update_union = std::move(routineUpdateUnion);
 
-    // Set the return value for a call to GetAvailableRoutines.
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    fake_service_impl->SetRoutineUpdateResponse(std::move(response));
-
-    // Set the expected passed parameters.
-    fake_service_impl->SetExpectedLastPassedParameters(
-        base::DictValue()
-            .Set("id", 123456)
-            .Set("command",
-                 static_cast<int32_t>(
-                     crosapi::DiagnosticsRoutineCommandEnum::kGetStatus))
-            .Set("include_output", true));
-
-    SetServiceForTesting(std::move(fake_service_impl));
+    ash::cros_healthd::FakeCrosHealthd::Get()
+        ->SetGetRoutineUpdateResponseForTesting(response);
   }
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -205,40 +204,39 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
+
+  EXPECT_TRUE(ash::cros_healthd::FakeCrosHealthd::Get()
+                  ->DidExpectedDiagnosticsParametersMatch());
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetRoutineUpdateInteractiveSuccess) {
-  // Configure FakeDiagnosticsService.
+  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
+
+  SetExpectedLastPassedParameters(
+      base::DictValue()
+          .Set("id", 654321)
+          .Set("command", static_cast<int32_t>(
+                              crosapi::DiagnosticsRoutineCommandEnum::kRemove))
+          .Set("include_output", true));
+
+  // Set up FakeCrosHealthd's response to a GetRoutineUpdate request.
   {
     auto interactiveRoutineUpdate =
-        crosapi::DiagnosticsInteractiveRoutineUpdate::New();
-    interactiveRoutineUpdate->user_message =
-        crosapi::DiagnosticsRoutineUserMessageEnum::kUnplugACPower;
+        ash::cros_healthd::mojom::InteractiveRoutineUpdate::New();
+    interactiveRoutineUpdate->user_message = ash::cros_healthd::mojom::
+        DiagnosticRoutineUserMessageEnum::kUnplugACPower;
 
     auto routineUpdateUnion =
-        crosapi::DiagnosticsRoutineUpdateUnion::NewInteractiveUpdate(
+        ash::cros_healthd::mojom::RoutineUpdateUnion::NewInteractiveUpdate(
             std::move(interactiveRoutineUpdate));
 
-    auto response = crosapi::DiagnosticsRoutineUpdate::New();
+    auto response = ash::cros_healthd::mojom::RoutineUpdate::New();
     response->progress_percent = 50;
-    response->output = "routine is running...";
     response->routine_update_union = std::move(routineUpdateUnion);
 
-    // Set the return value for a call to GetAvailableRoutines.
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    fake_service_impl->SetRoutineUpdateResponse(std::move(response));
-
-    // Set the expected passed parameters.
-    fake_service_impl->SetExpectedLastPassedParameters(
-        base::DictValue()
-            .Set("id", 654321)
-            .Set("command",
-                 static_cast<int32_t>(
-                     crosapi::DiagnosticsRoutineCommandEnum::kRemove))
-            .Set("include_output", true));
-
-    SetServiceForTesting(std::move(fake_service_impl));
+    ash::cros_healthd::FakeCrosHealthd::Get()
+        ->SetGetRoutineUpdateResponseForTesting(response);
   }
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -254,7 +252,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         chrome.test.assertEq(
           {
             progress_percent: 50,
-            output: "routine is running...",
             status: "waiting_user_action",
             status_message: "Waiting for user action. See user_message",
             user_message: "unplug_ac_power"
@@ -264,6 +261,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
+
+  EXPECT_TRUE(ash::cros_healthd::FakeCrosHealthd::Get()
+                  ->DidExpectedDiagnosticsParametersMatch());
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,

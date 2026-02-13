@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
@@ -343,17 +344,17 @@ cx_diag::RoutineStatus ConvertRoutineStatus(
   NOTREACHED();
 }
 
-crosapi::DiagnosticsRoutineCommandEnum ConvertRoutineCommand(
+ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum ConvertRoutineCommand(
     cx_diag::RoutineCommandType commandType) {
   switch (commandType) {
     case cx_diag::RoutineCommandType::kCancel:
-      return crosapi::DiagnosticsRoutineCommandEnum::kCancel;
+      return ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kCancel;
     case cx_diag::RoutineCommandType::kRemove:
-      return crosapi::DiagnosticsRoutineCommandEnum::kRemove;
+      return ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove;
     case cx_diag::RoutineCommandType::kResume:
-      return crosapi::DiagnosticsRoutineCommandEnum::kContinue;
+      return ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kContinue;
     case cx_diag::RoutineCommandType::kStatus:
-      return crosapi::DiagnosticsRoutineCommandEnum::kGetStatus;
+      return ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kGetStatus;
     case cx_diag::RoutineCommandType::kNone:
       break;
   }
@@ -374,16 +375,23 @@ ash::cros_healthd::mojom::AcPowerStatusEnum ConvertAcPowerStatusRoutineType(
 }
 
 cx_diag::UserMessageType ConvertRoutineUserMessage(
-    crosapi::DiagnosticsRoutineUserMessageEnum userMessage) {
+    ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum userMessage) {
   switch (userMessage) {
-    case crosapi::DiagnosticsRoutineUserMessageEnum::kUnknown:
+    case ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kUnknown:
       return cx_diag::UserMessageType::kUnknown;
-    case crosapi::DiagnosticsRoutineUserMessageEnum::kUnplugACPower:
+    case ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::
+        kUnplugACPower:
       return cx_diag::UserMessageType::kUnplugAcPower;
-    case crosapi::DiagnosticsRoutineUserMessageEnum::kPlugInACPower:
+    case ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::
+        kPlugInACPower:
       return cx_diag::UserMessageType::kPlugInAcPower;
-    case crosapi::DiagnosticsRoutineUserMessageEnum::kPressPowerButton:
+    case ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::
+        kPressPowerButton:
       return cx_diag::UserMessageType::kPressPowerButton;
+    case ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::
+        kCheckLedColor:
+      NOTIMPLEMENTED();
+      return cx_diag::UserMessageType::kUnknown;
   }
   NOTREACHED();
 }

@@ -222,25 +222,28 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertRoutineStatus) {
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertRoutineCommand) {
   EXPECT_EQ(ConvertRoutineCommand(cx_diag::RoutineCommandType::kCancel),
-            crosapi::DiagnosticsRoutineCommandEnum::kCancel);
+            ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kCancel);
   EXPECT_EQ(ConvertRoutineCommand(cx_diag::RoutineCommandType::kRemove),
-            crosapi::DiagnosticsRoutineCommandEnum::kRemove);
+            ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove);
   EXPECT_EQ(ConvertRoutineCommand(cx_diag::RoutineCommandType::kResume),
-            crosapi::DiagnosticsRoutineCommandEnum::kContinue);
+            ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kContinue);
   EXPECT_EQ(ConvertRoutineCommand(cx_diag::RoutineCommandType::kStatus),
-            crosapi::DiagnosticsRoutineCommandEnum::kGetStatus);
+            ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kGetStatus);
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertRoutineUserMessage) {
   EXPECT_EQ(ConvertRoutineUserMessage(
-                crosapi::DiagnosticsRoutineUserMessageEnum::kUnplugACPower),
+                ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::
+                    kUnplugACPower),
             cx_diag::UserMessageType::kUnplugAcPower);
   EXPECT_EQ(ConvertRoutineUserMessage(
-                crosapi::DiagnosticsRoutineUserMessageEnum::kPlugInACPower),
+                ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::
+                    kPlugInACPower),
             cx_diag::UserMessageType::kPlugInAcPower);
   EXPECT_EQ(ConvertRoutineUserMessage(
-                crosapi::DiagnosticsRoutineUserMessageEnum::kPressPowerButton),
+                ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::
+                    kPressPowerButton),
             cx_diag::UserMessageType::kPressPowerButton);
 }
 
