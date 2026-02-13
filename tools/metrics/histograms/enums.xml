@@ -24265,14 +24265,6 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//chrome/browser/ui/read_anything/read_anything_enums.h:ReadAnythingOpenTrigger) -->
 
-<enum name="ReadingListContextMenuActions">
-  <int value="0" label="New Tab"/>
-  <int value="1" label="New Incognito Tab"/>
-  <int value="2" label="Copy Link"/>
-  <int value="3" label="View Offline"/>
-  <int value="4" label="Cancel"/>
-</enum>
-
 <enum name="ReadingListDownloadStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>
