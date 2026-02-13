@@ -100,6 +100,9 @@ InputStateModel::InputStateModel(
     // Initialize allowed tools, models, inputs in `state_`.
     state_.allowed_tools.reserve(rule_set_.allowed_tools().size());
     for (const auto& tool : rule_set_.allowed_tools()) {
+      if (tool == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
+        continue;
+      }
       state_.allowed_tools.push_back(static_cast<omnibox::ToolMode>(tool));
     }
     state_.allowed_models.reserve(rule_set_.allowed_models().size());
