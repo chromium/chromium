@@ -16,7 +16,7 @@ option optimize_for = LITE_RUNTIME;
 // retrieve.
 // Note, that this message is designed not to carry the actual one time token,
 // but only a reference to it.
-message OneTimeTokenBackendTickle {
+message OneTimeTokenBackendNotification {
   oneof one_time_token_reference {
     // Reference to a gmail message that contains the One Time Password.
     GmailMessageReference gmail_one_time_password = 1;

@@ -8,7 +8,7 @@ option java_multiple_files = true;
 option java_package = "org.chromium.components.sharing_message.proto";
 
 import "click_to_call_message.proto";
-import "one_time_token_backend_tickle.proto";
+import "one_time_token_backend_notification.proto";
 import "optimization_guide_push_notification.proto";
 import "peer_connection_messages.proto";
 import "remote_copy_message.proto";
@@ -42,7 +42,7 @@ message SharingMessage {
     DiscoveryRequest discovery_request = 13;
     WebRtcSignalingMessage web_rtc_signaling_frame = 14;
     OptimizationGuidePushNotification optimization_guide_push_notification = 16;
-    OneTimeTokenBackendTickle one_time_token_backend_tickle = 17;
+    OneTimeTokenBackendNotification one_time_token_backend_notification = 17;
   }
 
   oneof ack_channel_configuration {

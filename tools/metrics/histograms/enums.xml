@@ -25240,7 +25240,7 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="OptimizationGuidePushNotification"/>
   <int value="12" label="SendTabToSelfPushNotification"/>
   <int value="13" label="DesktopToMobilePromoPushNotification"/>
-  <int value="14" label="OneTimeTokenBackendTickle"/>
+  <int value="14" label="OneTimeTokenBackendNotification"/>
 </enum>
 
 <enum name="SharingScreenshotAction">

@@ -146,8 +146,8 @@ sharing_message::MessageType SharingPayloadCaseToMessageType(
         kOptimizationGuidePushNotification:
       return sharing_message::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION;
     case components_sharing_message::SharingMessage::
-        kOneTimeTokenBackendTickle:
-      return sharing_message::ONE_TIME_TOKEN_BACKEND_TICKLE;
+        kOneTimeTokenBackendNotification:
+      return sharing_message::ONE_TIME_TOKEN_BACKEND_NOTIFICATION;
   }
   // For proto3 enums unrecognized enum values are kept when parsing, and a new
   // payload case received over the network would not default to
