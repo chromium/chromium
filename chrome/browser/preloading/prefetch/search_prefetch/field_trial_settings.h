@@ -10,6 +10,9 @@
 #include "base/time/time.h"
 
 class GURL;
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 BASE_DECLARE_FEATURE(kSearchPrefetchServicePrefetching);
 
@@ -82,7 +85,9 @@ bool IsNoVarySearchDiskCacheEnabled();
 bool CacheAliasLoaderDryRunModeEnabled();
 
 // Whether to enable beacon tracking for search prefetch.
-bool IsSearchPrefetchBeaconLoggingEnabled(const GURL& url);
+bool IsSearchPrefetchBeaconLoggingEnabled(
+    const GURL& url,
+    content::BrowserContext* browser_context);
 
 // Allows the omnibox search prefetch in Incognito.
 //

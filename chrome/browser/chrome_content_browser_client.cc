@@ -8834,6 +8834,7 @@ std::vector<std::unique_ptr<content::KeepAliveRequestTracker>>
 ChromeContentBrowserClient::MaybeCreateKeepAliveRequestTracker(
     const network::ResourceRequest& request,
     std::optional<ukm::SourceId> ukm_source_id,
+    content::BrowserContext* browser_context,
     content::KeepAliveRequestTracker::IsContextDetachedCallback
         is_context_detached_callback) {
   // Do not need to track non-keepalive requests.
@@ -8849,7 +8850,7 @@ ChromeContentBrowserClient::MaybeCreateKeepAliveRequestTracker(
   }
   std::unique_ptr<SearchPrefetchKeepAliveRequestTracker> search_tracker =
       SearchPrefetchKeepAliveRequestTracker::MaybeCreateKeepAliveRequestTracker(
-          request);
+          request, browser_context);
   if (search_tracker) {
     trackers.push_back(std::move(search_tracker));
   }

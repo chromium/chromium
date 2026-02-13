@@ -446,6 +446,7 @@ KeepAliveURLLoader::KeepAliveURLLoader(
           GetContentClient()->browser()->MaybeCreateKeepAliveRequestTracker(
               resource_request,
               ukm_source_id,
+              storage_partition->browser_context(),
               base::BindRepeating(&KeepAliveURLLoader::IsContextDetached,
                                   // `this` owns `request_trackers_`, so it is
                                   // safe to use.
@@ -1070,6 +1071,7 @@ void KeepAliveURLLoader::AttemptRetryIfAllowed() {
   request_trackers_ =
       GetContentClient()->browser()->MaybeCreateKeepAliveRequestTracker(
           resource_request_, ukm_source_id_,
+          storage_partition_->browser_context(),
           base::BindRepeating(&KeepAliveURLLoader::IsContextDetached,
                               // `this` owns `request_trackers_`, so it is
                               // safe to use.
