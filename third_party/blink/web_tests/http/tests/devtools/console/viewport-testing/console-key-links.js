@@ -130,6 +130,7 @@ import * as Console from 'devtools/panels/console/console.js';
     await TestRunner.evaluateInPagePromise(expression);
     await ConsoleTestRunner.waitForConsoleMessagesPromise(expectedCount);
     await ConsoleTestRunner.waitForPendingViewportUpdates();
+    await TestRunner.waitForPendingLiveLocationUpdates();
   }
 
   function press(key) {

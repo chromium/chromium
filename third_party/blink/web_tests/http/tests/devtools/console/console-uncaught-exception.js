@@ -20,7 +20,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   ConsoleTestRunner.addConsoleViewSniffer(addMessage, true);
   TestRunner.evaluateInPage('loadIframe()');
-  function addMessage(viewMessage) {
+  async function addMessage(viewMessage) {
+    await TestRunner.waitForPendingLiveLocationUpdates();
     if (viewMessage.element().deepTextContent().indexOf('setTimeout') !== -1)
       ConsoleTestRunner.expandConsoleMessages(onExpanded);
   }
