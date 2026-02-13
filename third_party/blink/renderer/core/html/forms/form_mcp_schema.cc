@@ -448,16 +448,44 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeDatetimeLocalParameterSchema(
     const ControlVector& controls_for_name,
     bool& required) {
   CHECK(IsDatetimeLocal(controls_for_name));
-  auto& element = To<HTMLFormControlElement>(*controls_for_name.front().Get());
+  auto& element =
+      To<HTMLInputElement>(controls_for_name.front()->ToHTMLElement());
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
+  StepRange range = element.CreateStepRange(kAnyIsDefaultStep);
+  // The format is "yyyy-MM-ddThh:mm" followed by optional ":ss" or ":ss.SSS".
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#local-dates-and-times
   // We cannot use the "date-time" type from json schema because that accepts
-  // seconds and timezone which are not valid for <input type=datetime-local>.
-  schema->SetString(
-      "format",
-      "^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]$");
+  // timezone which is not valid for <input type=datetime-local>.
+  //
+  // We vary the regexp according to 'step' to increase the likelihood of
+  // correctly adhere to the step range, but full validation would be a lot more
+  // complicated to express.
+  if (range.Step() < 1000) {
+    // Allow fractional seconds
+    schema->SetString("format",
+                      "^"
+                      "[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}"  // yyyy-MM-dd
+                      "T([01][0-9]|2[0-3]):[0-5][0-9]"     // Thh:mm
+                      "(:[0-5][0-9](\\.[0-9]{1,3})?)?"     // :ss (or :ss.SSS)
+                      "$");
+  } else if (range.Step() < 60000) {
+    // Allow seconds
+    schema->SetString("format",
+                      "^"
+                      "[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}"  // yyyy-MM-dd
+                      "T([01][0-9]|2[0-3]):[0-5][0-9]"     // Thh:mm
+                      "(:[0-5][0-9])?"                     // :ss
+                      "$");
+  } else {
+    // Allow hh:mm only
+    schema->SetString("format",
+                      "^"
+                      "[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}"  // yyyy-MM-dd
+                      "T([01][0-9]|2[0-3]):[0-5][0-9]"     // Thh:mm
+                      "$");
+  }
   AddTitle(element, *schema);
   AddDescription(element, *schema);
   required = element.IsRequired();
@@ -471,6 +499,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeMonthParameterSchema(
   auto& element = To<HTMLFormControlElement>(*controls_for_name.front().Get());
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
+  // The format is "yyyy-MM".
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months
   schema->SetString("format", "^[0-9]{4}-(0[1-9]|1[0-2])$");
@@ -487,6 +516,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeWeekParameterSchema(
   auto& element = To<HTMLFormControlElement>(*controls_for_name.front().Get());
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
+  // The format is "yyyy-Www".
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks
   schema->SetString("format", "^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$");
@@ -505,13 +535,15 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeTimeParameterSchema(
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
   StepRange range = element.CreateStepRange(kAnyIsDefaultStep);
+  // The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS".
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#times
   // We cannot use the "time" type from json schema because that accepts
   // timezone which is not valid for <input type=time>.
   //
-  // The regexp is modify to increase the likelihood of correctly adhere to the
-  // step range, but full validation would be a lot more complicated to express.
+  // We vary the regexp according to 'step' to increase the likelihood of
+  // correctly adhere to the step range, but full validation would be a lot more
+  // complicated to express.
   if (range.Step() < 1000) {
     // Allow fractional seconds
     schema->SetString(

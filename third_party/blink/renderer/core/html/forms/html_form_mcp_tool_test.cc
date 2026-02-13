@@ -1697,6 +1697,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_DatetimeLocalInput) {
       R"HTML(
     <form id="form" toolname="mytool" tooldescription="perform task">
       <input name="datetime1" type="datetime-local">
+      <input name="datetime2" type="datetime-local" step="1">
+      <input name="datetime3" type="datetime-local" step="0.001">
     </form>
   )HTML");
 
@@ -1711,6 +1713,14 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_DatetimeLocalInput) {
          "datetime1": {
            "type": "string",
            "format": "^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]$"
+         },
+         "datetime2": {
+           "type": "string",
+           "format": "^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$"
+         },
+         "datetime3": {
+           "type": "string",
+           "format": "^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9](\\.[0-9]{1,3})?)?$"
          }
       },
       "required": []
