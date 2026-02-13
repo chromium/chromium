@@ -182,7 +182,7 @@ TEST(StarboardConversionsTest, ReturnsNulloptForInvalidVideoConfig) {
   // Dolby Vision is paired with a bad profile.
   EXPECT_EQ(
       ToStarboardVideoSampleInfo(VideoDecoderConfig(
-          VideoCodec::kDolbyVision, VideoCodecProfile::VVCPROFILE_MAIN10,
+          VideoCodec::kDolbyVision, VideoCodecProfile::HEVCPROFILE_MAIN,
           VideoDecoderConfig::AlphaMode::kIsOpaque,
           VideoColorSpace(1, 1, 1, gfx::ColorSpace::RangeID::LIMITED),
           VideoTransformation(), gfx::Size(1920, 1080), gfx::Rect(1920, 1080),
