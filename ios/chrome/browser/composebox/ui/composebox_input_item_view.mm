@@ -51,9 +51,8 @@ const CGFloat kTrailingMargin = 8.0;
     [self setupConstraints];
   }
 
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-  [self registerForTraitChanges:traits withAction:@selector(updateGradient)];
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withAction:@selector(updateGradient)];
 
   return self;
 }
