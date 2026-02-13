@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -172,8 +171,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   // In non-immersive mode, the bookmark visibility cannot be changed because
   // the toolbar is invisible. In immersive mode, the bookmark visibility should
   // be able to change because the toolbar cannot be permanently hidden.
-  EXPECT_EQ(chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR),
-            base::FeatureList::IsEnabled(features::kImmersiveFullscreen));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
 
   if (ImmersiveModeController::From(browser())->IsEnabled()) {
     // Move mouse to the upper border of the browser window and the toolbar

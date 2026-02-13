@@ -3446,11 +3446,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "enable-immersive-fullscreen-toolbar",
-    "owners": [ "bur@chromium.org", "chrome-mac-dev@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "enable-input-event-logging",
     "owners": [ "hcutts@chromium.org", "chromeos-tango@google.com" ],
     // Used to attach input device debugging information to feedback reports.

@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -54,8 +53,7 @@ class ScopedAlwaysShowToolbar {
 class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
  public:
   ImmersiveModeControllerMacInteractiveTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kImmersiveFullscreen, tabs::kVerticalTabs}, {});
+    scoped_feature_list_.InitWithFeatures({tabs::kVerticalTabs}, {});
   }
 
   ImmersiveModeControllerMacInteractiveTest(

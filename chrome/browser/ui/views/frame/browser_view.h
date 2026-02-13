@@ -249,16 +249,14 @@ class BrowserView : public BrowserWindow,
     return tab_overlay_view_.get();
   }
 
-  // Returns if this browser view will use immersive fullscreen mode, based
-  // on the state of the two relevant base::Features, as well as the type of
-  // browser this is a view for.
+  // Returns if this browser view will use immersive fullscreen mode, based on
+  // the type of browser this is a view for.
   bool UsesImmersiveFullscreenMode() const;
 
   // Returns if this browser view will use immersive fullscreen tabbed mode.
   // In tabbed mode the tab strip is contained within the window's titlebar. In
   // non-tabbed mode the tab strip is positioned below the titlebar.
-  // The return value is determined based on the state of
-  // `features::kImmersiveFullscreen` as well as the type of browser.
+  // The return value is determined by the type of browser.
   bool UsesImmersiveFullscreenTabbedMode() const;
 #endif
 

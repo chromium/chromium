@@ -226,7 +226,6 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -1268,18 +1267,15 @@ std::vector<ContentsContainerView*> BrowserView::GetContentsContainerViews() {
 
 #if BUILDFLAG(IS_MAC)
 bool BrowserView::UsesImmersiveFullscreenMode() const {
-  const bool is_pwa =
-      base::FeatureList::IsEnabled(features::kImmersiveFullscreenPWAs) &&
-      GetIsWebAppType();
+  const bool is_pwa = GetIsWebAppType();
   const bool is_tabbed_window = GetSupportsTabStrip();
-  return base::FeatureList::IsEnabled(features::kImmersiveFullscreen) &&
-         (is_pwa || is_tabbed_window);
+  return is_pwa || is_tabbed_window;
 }
 
 bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
-  return (GetSupportsTabStrip() &&
-          base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) &&
-         !GetIsWebAppType();
+  const bool is_pwa = GetIsWebAppType();
+  const bool is_tabbed_window = GetSupportsTabStrip();
+  return is_tabbed_window && !is_pwa;
 }
 #endif
 

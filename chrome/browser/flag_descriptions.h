@@ -6318,11 +6318,6 @@ inline constexpr char kUseXpsForPrintingFromPdfDescription[] =
 
 // Mac -------------------------------------------------------------------------
 
-inline constexpr char kImmersiveFullscreenName[] =
-    "Immersive Fullscreen Toolbar";
-inline constexpr char kImmersiveFullscreenDescription[] =
-    "Automatically hide and show the toolbar in fullscreen.";
-
 inline constexpr char kMacAccessibilityAPIMigrationName[] =
     "Mac A11y API Migration";
 inline constexpr char kMacAccessibilityAPIMigrationDescription[] =

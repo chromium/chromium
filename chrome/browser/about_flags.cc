@@ -6099,10 +6099,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRetryGetVideoCaptureDeviceInfosName,
      flag_descriptions::kRetryGetVideoCaptureDeviceInfosDescription, kOsMac,
      FEATURE_VALUE_TYPE(features::kRetryGetVideoCaptureDeviceInfos)},
-    {"enable-immersive-fullscreen-toolbar",
-     flag_descriptions::kImmersiveFullscreenName,
-     flag_descriptions::kImmersiveFullscreenDescription, kOsMac,
-     FEATURE_VALUE_TYPE(features::kImmersiveFullscreen)},
 #endif  // BUILDFLAG(IS_MAC)
     {"enable-web-payments-experimental-features",
      flag_descriptions::kWebPaymentsExperimentalFeaturesName,

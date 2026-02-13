@@ -92,7 +92,6 @@
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"

@@ -619,7 +619,7 @@ bool TabDragController::CanRestoreFullscreenWindowDuringDrag() const {
   // On macOS in immersive fullscreen mode restoring the window moves the tab
   // strip between widgets breaking a number of assumptions during the drag.
   // Disable window restoration during a drag while in immersive fullscreen.
-  return !base::FeatureList::IsEnabled(features::kImmersiveFullscreen);
+  return false;
 #else
   return true;
 #endif

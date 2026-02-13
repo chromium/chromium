@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -151,10 +150,6 @@ class DownloadBubbleInteractiveUiTest
   DownloadBubbleInteractiveUiTest()
       : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHDownloadEsbPromoFeature})) {
-#if BUILDFLAG(IS_MAC)
-    // TODO(chlily): Add test coverage for immersive fullscreen disabled on Mac.
-    test_features_.InitWithFeatures({features::kImmersiveFullscreen}, {});
-#endif  // BUILDFLAG(IS_MAC)
   }
 
   void SetUpInProcessBrowserTestFixture() override {

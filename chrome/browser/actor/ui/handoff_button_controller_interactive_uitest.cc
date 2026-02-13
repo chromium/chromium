@@ -64,9 +64,6 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
             {features::kGlicHandoffButtonHideWhenOmniboxPopupOpened, {}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiHandoffButtonName, "true"}}},
-#if BUILDFLAG(IS_MAC)
-            {features::kImmersiveFullscreen, {}},
-#endif  // BUILDFLAG(IS_MAC)
         },
         /*disabled_features=*/{
 #if BUILDFLAG(ENABLE_GLIC)

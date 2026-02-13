@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
-#include "chrome/common/chrome_features.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/remote_cocoa/app_shim/features.h"
 #include "ui/gfx/geometry/insets.h"

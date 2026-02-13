@@ -78,7 +78,6 @@
 #include "chrome/browser/ui/views/tabs/z_orderable_tab_container_element.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/crash/core/common/crash_key.h"

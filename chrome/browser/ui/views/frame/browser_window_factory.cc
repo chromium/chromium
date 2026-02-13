@@ -27,10 +27,6 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/common/chrome_features.h"
-#endif
-
 // static
 std::unique_ptr<BrowserWindow, BrowserWindowDeleter>
 BrowserWindow::CreateBrowserWindow(Browser* browser,

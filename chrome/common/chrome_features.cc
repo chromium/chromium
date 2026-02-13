@@ -1326,18 +1326,6 @@ BASE_FEATURE(kHttpsFirstModeIncognito, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kHttpsFirstModeIncognitoNewSettings,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_MAC)
-// Enables immersive fullscreen. The tab strip and toolbar are placed underneath
-// the titlebar. The tab strip and toolbar can auto hide and reveal.
-BASE_FEATURE(kImmersiveFullscreen, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables immersive fullscreen mode for PWA windows. PWA windows will use
-// immersive fullscreen mode if and only if both this and kImmersiveFullscreen
-// are enabled. PWA windows currently do not use ImmersiveFullscreenTabs even if
-// the feature is enabled.
-BASE_FEATURE(kImmersiveFullscreenPWAs, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC)
-
 #if !BUILDFLAG(IS_ANDROID)
 // A feature that controls whether Instant uses a spare renderer.
 BASE_FEATURE(kInstantUsesSpareRenderer, base::FEATURE_DISABLED_BY_DEFAULT);
