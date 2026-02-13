@@ -481,7 +481,13 @@ BASE_FEATURE(kGlicLocaleFiltering, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the Glic FRE dialog is displayed in the same window as the
 // main app.
-BASE_FEATURE(kGlicUnifiedFreScreen, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicUnifiedFreScreen,
+#if !BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else  // Android only supports the unified FRE.
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Controls the bugfix where the unified FRE synchronizes cookies to the wrong
 // storage partition.
@@ -504,10 +510,22 @@ BASE_FEATURE(kGlic, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicDetached, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the Glic feature uses multiple instances or not.
-BASE_FEATURE(kGlicMultiInstance, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicMultiInstance,
+#if !BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else  // Android only supports multi instance.
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Controls whether Glic warms up WebContents instead of a full instance.
-BASE_FEATURE(kGlicWebContentsWarming, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicWebContentsWarming,
+#if !BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else  // Android does not support instance warming, only web contents warming.
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Controls desired min width for the side panel. Not guaranteed to be respected
 // if user manually resizes.
