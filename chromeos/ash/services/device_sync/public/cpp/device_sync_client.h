@@ -31,7 +31,7 @@ namespace device_sync {
 // Provides clients access to the DeviceSync API.
 class DeviceSyncClient {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the DeviceSyncClient is ready, i.e. local device metadata
     // and synced devices are available.
@@ -44,7 +44,7 @@ class DeviceSyncClient {
     virtual void OnNewDevicesSynced() {}
 
    protected:
-    virtual ~Observer() = default;
+    ~Observer() override = default;
   };
 
   using FindEligibleDevicesCallback =
@@ -120,7 +120,7 @@ class DeviceSyncClient {
 
  private:
   bool is_ready_ = false;
-  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace device_sync

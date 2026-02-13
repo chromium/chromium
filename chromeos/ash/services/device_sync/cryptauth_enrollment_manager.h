@@ -23,7 +23,7 @@ namespace device_sync {
 // from the failure.
 class CryptAuthEnrollmentManager {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when an enrollment attempt is started.
     virtual void OnEnrollmentStarted() {}
@@ -32,7 +32,8 @@ class CryptAuthEnrollmentManager {
     // attempt.
     virtual void OnEnrollmentFinished(bool success) {}
 
-    virtual ~Observer() = default;
+   protected:
+    ~Observer() override = default;
   };
 
   CryptAuthEnrollmentManager();
@@ -94,7 +95,7 @@ class CryptAuthEnrollmentManager {
   void NotifyEnrollmentFinished(bool success);
 
  private:
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace device_sync

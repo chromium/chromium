@@ -67,7 +67,7 @@ class FakeCryptAuthGCMManager : public CryptAuthGCMManager {
   // The registration id obtained from the last successful registration.
   std::string registration_id_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace device_sync

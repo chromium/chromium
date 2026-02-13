@@ -16,12 +16,12 @@ namespace device_sync {
 // has been synced, and updates this cache when a new sync occurs.
 class RemoteDeviceProvider {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnSyncDeviceListChanged() {}
 
    protected:
-    virtual ~Observer() = default;
+    ~Observer() override = default;
   };
 
   RemoteDeviceProvider();
@@ -37,7 +37,7 @@ class RemoteDeviceProvider {
   void NotifyObserversDeviceListChanged();
 
  private:
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace device_sync

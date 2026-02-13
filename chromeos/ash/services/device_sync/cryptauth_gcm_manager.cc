@@ -12,18 +12,6 @@ namespace ash {
 
 namespace device_sync {
 
-CryptAuthGCMManager::Observer::~Observer() {}
-
-void CryptAuthGCMManager::Observer::OnGCMRegistrationResult(bool success) {}
-
-void CryptAuthGCMManager::Observer::OnReenrollMessage(
-    const std::optional<std::string>& session_id,
-    const std::optional<CryptAuthFeatureType>& feature_type) {}
-
-void CryptAuthGCMManager::Observer::OnResyncMessage(
-    const std::optional<std::string>& session_id,
-    const std::optional<CryptAuthFeatureType>& feature_type) {}
-
 // static.
 void CryptAuthGCMManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kCryptAuthGCMRegistrationId,

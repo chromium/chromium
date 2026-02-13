@@ -112,7 +112,7 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
   base::TimeTicks gcm_registration_start_timestamp_;
 
   // List of observers.
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<CryptAuthGCMManagerImpl> weak_ptr_factory_{this};
 };

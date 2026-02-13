@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/observer_list_types.h"
 #include "chromeos/ash/services/device_sync/cryptauth_feature_type.h"
 
 class PrefRegistrySimple;
@@ -22,13 +23,11 @@ namespace device_sync {
 // local device to resync the remote device list when this list changes.
 class CryptAuthGCMManager {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer();
-
     // Called when a gcm registration attempt finishes with the |success| of the
     // attempt.
-    virtual void OnGCMRegistrationResult(bool success);
+    virtual void OnGCMRegistrationResult(bool success) {}
 
     // Called when a GCM message is received to re-enroll the device with
     // CryptAuth.
@@ -39,7 +38,7 @@ class CryptAuthGCMManager {
     //                 BatchNotifyGroupDevices requests and null otherwise.
     virtual void OnReenrollMessage(
         const std::optional<std::string>& session_id,
-        const std::optional<CryptAuthFeatureType>& feature_type);
+        const std::optional<CryptAuthFeatureType>& feature_type) {}
 
     // Called when a GCM message is received to sync down new devices from
     // CryptAuth.
@@ -50,16 +49,19 @@ class CryptAuthGCMManager {
     //                 BatchNotifyGroupDevices requests and null otherwise.
     virtual void OnResyncMessage(
         const std::optional<std::string>& session_id,
-        const std::optional<CryptAuthFeatureType>& feature_type);
-  };
+        const std::optional<CryptAuthFeatureType>& feature_type) {}
 
-  virtual ~CryptAuthGCMManager() {}
+   protected:
+    ~Observer() override = default;
+  };
 
   // Registers the prefs used by the manager to the given |pref_service|.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Check if registration ID is deprecated.
   static bool IsRegistrationIdDeprecated(const std::string& registration_id);
+
+  virtual ~CryptAuthGCMManager() = default;
 
   // Starts listening to incoming GCM messages. If GCM registration is completed
   // after this function is called, then messages will also be handled properly.

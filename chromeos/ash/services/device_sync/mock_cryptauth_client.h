@@ -105,12 +105,15 @@ class MockCryptAuthClient : public CryptAuthClient {
 
 class MockCryptAuthClientFactory : public CryptAuthClientFactory {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called with the new instance when it is requested from the factory,
     // allowing expectations to be set. Ownership of |client| will be taken by
     // the caller of CreateInstance().
     virtual void OnCryptAuthClientCreated(MockCryptAuthClient* client) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   // Represents the type of mock instances to create.
@@ -137,7 +140,7 @@ class MockCryptAuthClientFactory : public CryptAuthClientFactory {
   const MockType mock_type_;
 
   // Observers of the factory.
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace device_sync
