@@ -105,6 +105,81 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, SetPlayAPISearchEngine) {
       SearchEngineType::SEARCH_ENGINE_OTHER, 1);
 }
 
+TEST_F(TemplateUrlServiceAndroidUnitTest, RemoveSearchEngine) {
+  const std::u16string keyword = u"chromium";
+  TemplateURLData data;
+  data.SetShortName(u"Delete Test");
+  data.SetKeyword(keyword);
+  data.SetURL("http://chromium.org/search/delete");
+  template_url_service().Add(std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(template_url_service().GetTemplateURLForKeyword(keyword));
+
+  EXPECT_TRUE(
+      template_url_service_android().RemoveSearchEngine(env(), keyword));
+  EXPECT_FALSE(template_url_service().GetTemplateURLForKeyword(keyword));
+}
+
+TEST_F(TemplateUrlServiceAndroidUnitTest,
+       DeleteSearchEngineFailed_DefaultProvider) {
+  const TemplateURL* default_provider =
+      template_url_service().GetDefaultSearchProvider();
+  ASSERT_TRUE(default_provider);
+
+  std::u16string default_keyword = default_provider->keyword();
+  // Delete search engine failed since it is the default search engine.
+  EXPECT_FALSE(template_url_service_android().RemoveSearchEngine(
+      env(), default_keyword));
+  EXPECT_TRUE(template_url_service().GetTemplateURLForKeyword(default_keyword));
+}
+
+TEST_F(TemplateUrlServiceAndroidUnitTest, EditSearchEngine) {
+  const std::u16string keyword = u"chromium";
+  TemplateURLData data;
+  data.SetShortName(u"Edit Test");
+  data.SetKeyword(keyword);
+  data.SetURL("http://chromium.org/search/edit");
+  template_url_service().Add(std::make_unique<TemplateURL>(data));
+
+  ASSERT_TRUE(template_url_service().GetTemplateURLForKeyword(keyword));
+
+  const std::u16string new_short_name = u"New Edit Test";
+  const std::u16string new_keyword = u"new_chromium";
+  const std::string new_url = "http://chromium.org/search/edit_new";
+
+  EXPECT_TRUE(template_url_service_android().EditSearchEngine(
+      env(), keyword, new_short_name, new_keyword, new_url));
+
+  TemplateURL* t_url =
+      template_url_service().GetTemplateURLForKeyword(new_keyword);
+  ASSERT_TRUE(t_url);
+  EXPECT_EQ(t_url->short_name(), new_short_name);
+  EXPECT_EQ(t_url->url(), new_url);
+
+  EXPECT_FALSE(template_url_service().GetTemplateURLForKeyword(keyword));
+}
+
+TEST_F(TemplateUrlServiceAndroidUnitTest,
+       EditSearchEngineFailed_PrepopulatedEngine) {
+  const std::u16string keyword = u"chromium";
+  TemplateURLData data;
+  data.SetShortName(u"Edit Test");
+  data.SetKeyword(keyword);
+  data.SetURL("http://chromium.org/search/edit");
+  data.prepopulate_id = 1;
+  template_url_service().Add(std::make_unique<TemplateURL>(data));
+
+  ASSERT_TRUE(template_url_service().GetTemplateURLForKeyword(keyword));
+
+  const std::u16string new_short_name = u"New Edit Test";
+  const std::u16string new_keyword = u"new_chromium";
+  const std::string new_url = "http://chromium.org/search/edit_new";
+
+  // EditSearchEngine should fail if we try to edit the url of a prepopulated
+  // engine.
+  EXPECT_FALSE(template_url_service_android().EditSearchEngine(
+      env(), keyword, new_short_name, new_keyword, new_url));
+}
+
 TEST_F(TemplateUrlServiceAndroidUnitTest, FilterUserSelectableTemplateUrls) {
   struct InputEngine {
     std::u16string_view keyword;

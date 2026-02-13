@@ -99,6 +99,20 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       const base::android::JavaRef<jstring>&
           jimage_translate_target_language_param_key);
 
+  // Removes the search engine with the given keyword. Returns true if the
+  // search engine was successfully removed, false if the search engine was not
+  // found or if it is the default search engine.
+  bool RemoveSearchEngine(JNIEnv* env, const std::u16string& keyword);
+
+  // Edits the search engine with the given keyword. Returns true if the search
+  // engine was successfully edited, false if the search engine was not found or
+  // try to edit the url of prepopulated search engines.
+  bool EditSearchEngine(JNIEnv* env,
+                        const std::u16string& keyword,
+                        const std::u16string& short_name,
+                        const std::u16string& new_keyword,
+                        const std::string& search_url);
+
   // Adds a custom search engine, sets |jkeyword| as its short_name and keyword,
   // and sets its date_created as |age_in_days| days before the current time.
   base::android::ScopedJavaLocalRef<jstring> AddSearchEngineForTesting(

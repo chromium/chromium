@@ -446,6 +446,48 @@ bool TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
       new_play_api_turl_data);
 }
 
+bool TemplateUrlServiceAndroid::RemoveSearchEngine(
+    JNIEnv* env,
+    const std::u16string& keyword) {
+  TemplateURL* template_url =
+      template_url_service_->GetTemplateURLForKeyword(keyword);
+  if (!template_url) {
+    return false;
+  }
+
+  if (template_url_service_->GetDefaultSearchProvider() == template_url) {
+    return false;
+  }
+
+  template_url_service_->Remove(template_url);
+  return true;
+}
+
+bool TemplateUrlServiceAndroid::EditSearchEngine(
+    JNIEnv* env,
+    const std::u16string& keyword,
+    const std::u16string& short_name,
+    const std::u16string& new_keyword,
+    const std::string& search_url) {
+  TemplateURL* template_url =
+      template_url_service_->GetTemplateURLForKeyword(keyword);
+  if (!template_url) {
+    return false;
+  }
+
+  // If the template url is prepopulated, we are only allowed to edit the
+  // short name and keyword.
+  if (template_url->prepopulate_id() != 0) {
+    if (search_url != template_url->url()) {
+      return false;
+    }
+  }
+
+  template_url_service_->ResetTemplateURL(template_url, short_name, new_keyword,
+                                          search_url);
+  return true;
+}
+
 base::android::ScopedJavaLocalRef<jstring>
 TemplateUrlServiceAndroid::AddSearchEngineForTesting(
     JNIEnv* env,
