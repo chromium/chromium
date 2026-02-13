@@ -6981,6 +6981,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "omnibox-hide-contextual-group-headers",
+    "owners": ["mfacey@chromium.org", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "omnibox-hide-suggestion-group-headers",
     "owners": ["khalidpeer@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 150

@@ -18055,6 +18055,7 @@ from previous Chrome versions.
   <int value="1296878388" label="PermissionPredictions:disabled"/>
   <int value="1296958520" label="hide-active-apps-from-shelf"/>
   <int value="1297007123" label="ServiceWorkerBypassFetchHandler:enabled"/>
+  <int value="1297044322" label="HideContextualGroupHeaders:disabled"/>
   <int value="1297133130"
       label="AndroidTabDeclutterArchiveDuplicateTabs:enabled"/>
   <int value="1297446192" label="UseScreen2xV2:disabled"/>
@@ -19194,6 +19195,7 @@ from previous Chrome versions.
   <int value="1691568199" label="AndroidSpellCheckerNonLowEnd:disabled"/>
   <int value="1691853573" label="PersonalizationHub:enabled"/>
   <int value="1691935745" label="AccessibilityBounceKeys:disabled"/>
+  <int value="1692704282" label="HideContextualGroupHeaders:enabled"/>
   <int value="1692847616" label="ArcEnableWebAppShare:enabled"/>
   <int value="1692995109" label="CCTPageInsightsHub:disabled"/>
   <int value="1693094211" label="FilesNG:disabled"/>
