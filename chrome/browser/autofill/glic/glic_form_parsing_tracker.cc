@@ -89,6 +89,7 @@ void GlicFormParsingTracker::OnAutofillManagerStateChanged(
     absl::erase_if(form_parsing_status_, [local_frame_token](const auto& pair) {
       return pair.first.frame_token == local_frame_token;
     });
+    MaybeNotifyGlic();
   }
 }
 
