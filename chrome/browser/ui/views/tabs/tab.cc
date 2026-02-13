@@ -89,6 +89,7 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -924,6 +925,10 @@ bool Tab::IsValid() const {
 
 const TabRendererData& Tab::data() const {
   return data_;
+}
+
+views::BubbleBorder::Arrow Tab::GetAnchorPosition() const {
+  return views::BubbleBorder::Arrow::TOP_LEFT;
 }
 
 void Tab::ActiveStateChanged() {

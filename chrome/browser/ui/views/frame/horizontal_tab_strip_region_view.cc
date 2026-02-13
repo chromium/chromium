@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -116,7 +118,9 @@ void UpdateBorderInsetsIfNeeded(views::View* view,
   }
 }
 
-std::unique_ptr<TabStrip> CreateTabStrip(BrowserView* browser_view) {
+std::unique_ptr<TabStrip> CreateTabStrip(
+    TabStripRegionView* tab_strip_region_view,
+    BrowserView* browser_view) {
   std::unique_ptr<TabMenuModelFactory> tab_menu_model_factory;
   if (browser_view && browser_view->browser()->app_controller()) {
     tab_menu_model_factory =
@@ -126,7 +130,12 @@ std::unique_ptr<TabStrip> CreateTabStrip(BrowserView* browser_view) {
   auto tabstrip_controller = std::make_unique<BrowserTabStripController>(
       browser_view->browser()->GetTabStripModel(), browser_view,
       std::move(tab_menu_model_factory));
-  auto tab_strip = std::make_unique<TabStrip>(std::move(tabstrip_controller));
+
+  std::unique_ptr<TabHoverCardController> hover_card_controller(
+      std::make_unique<TabHoverCardController>(tab_strip_region_view,
+                                               browser_view->browser()));
+  auto tab_strip = std::make_unique<TabStrip>(std::move(tabstrip_controller),
+                                              std::move(hover_card_controller));
   return tab_strip;
 }
 
@@ -208,7 +217,7 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
   GetViewAccessibility().SetIsMultiselectable(true);
 
-  tab_strip_ = AddChildView(CreateTabStrip(browser_view));
+  tab_strip_ = AddChildView(CreateTabStrip(this, browser_view));
   BrowserWindowInterface* const browser = browser_view->browser();
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {

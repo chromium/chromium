@@ -18,6 +18,7 @@
 class BrowserView;
 class TabCollectionNode;
 class TabGroup;
+class TabHoverCardController;
 
 namespace tabs {
 class TabInterface;
@@ -39,6 +40,7 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
   VerticalTabStripController(TabStripModel* model,
                              BrowserView* browser_view,
                              VerticalTabDragHandler& drag_handler,
+                             TabHoverCardController* hover_card_controller,
                              std::unique_ptr<TabMenuModelFactory>
                                  menu_model_factory_override = nullptr);
   VerticalTabStripController(const VerticalTabStripController&) = delete;
@@ -75,6 +77,10 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
 
   VerticalTabDragHandler& GetDragHandler() { return drag_handler_.get(); }
 
+  TabHoverCardController* GetHoverCardController() {
+    return hover_card_controller_.get();
+  }
+
   // Notifies BrowserCommandController that the tab with keyboard focus has
   // changed.
   void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab);
@@ -107,6 +113,7 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
   raw_ptr<TabStripModel> model_;
   raw_ptr<BrowserView> browser_view_;
   const raw_ref<VerticalTabDragHandler> drag_handler_;
+  raw_ptr<TabHoverCardController> hover_card_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_CONTROLLER_H_

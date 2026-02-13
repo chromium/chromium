@@ -383,7 +383,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(
     HoverCardAnchorTarget* anchor_target,
     const InitParams& params)
     : BubbleDialogDelegateView(anchor_target->GetAnchorView(),
-                               views::BubbleBorder::TOP_LEFT,
+                               anchor_target->GetAnchorPosition(),
                                views::BubbleBorder::STANDARD_SHADOW),
       tab_style_(TabStyle::Get()),
       bubble_params_(params) {

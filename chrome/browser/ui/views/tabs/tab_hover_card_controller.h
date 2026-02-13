@@ -30,13 +30,15 @@ class ImageSkia;
 class HoverCardAnchorTarget;
 class TabHoverCardBubbleView;
 class TabHoverCardThumbnailObserver;
-class TabStrip;
+class TabStripRegionView;
+class BrowserWindowInterface;
 
 // Controls how hover cards are shown and hidden for tabs.
 class TabHoverCardController : public views::ViewObserver,
                                public TabResourceUsageCollector::Observer {
  public:
-  explicit TabHoverCardController(TabStrip* tab_strip);
+  TabHoverCardController(TabStripRegionView* tab_strip,
+                         BrowserWindowInterface* browser_window_interface);
   ~TabHoverCardController() override;
 
   bool IsHoverCardVisible() const;
@@ -55,6 +57,9 @@ class TabHoverCardController : public views::ViewObserver,
       bool disable_animations_for_testing) {
     disable_animations_for_testing_ = disable_animations_for_testing;
   }
+
+ protected:
+  TabHoverCardController();  // For testing only
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, ShowWrongTabDoesntCrash);
@@ -158,7 +163,8 @@ class TabHoverCardController : public views::ViewObserver,
   base::TimeTicks last_mouse_exit_timestamp_;
 
   raw_ptr<HoverCardAnchorTarget> target_tab_ = nullptr;
-  const raw_ptr<TabStrip> tab_strip_;
+  const raw_ptr<TabStripRegionView> tab_strip_;
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
   raw_ptr<TabHoverCardBubbleView> hover_card_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       hover_card_observation_{this};

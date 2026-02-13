@@ -79,7 +79,9 @@ class TabStrip : public views::View,
   METADATA_HEADER(TabStrip, views::View)
 
  public:
-  explicit TabStrip(std::unique_ptr<TabStripController> controller);
+  TabStrip(std::unique_ptr<TabStripController> tab_strip_controller,
+           std::unique_ptr<TabHoverCardController> hover_card_controller);
+
   TabStrip(const TabStrip&) = delete;
   TabStrip& operator=(const TabStrip&) = delete;
   ~TabStrip() override;
