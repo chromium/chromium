@@ -4,13 +4,19 @@
 
 #include "chrome/browser/ui/tab_ui_helper.h"
 
+#include <optional>
+
+#include "base/byte_size.h"
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/process/kill.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -51,6 +57,11 @@ const TabUIHelper* TabUIHelper::From(const tabs::TabInterface* tab) {
 // static
 TabUIHelper* TabUIHelper::From(tabs::TabInterface* tab) {
   return Get(tab->GetUnownedUserDataHost());
+}
+
+base::CallbackListSubscription TabUIHelper::AddTabUIChangeCallback(
+    base::RepeatingClosure callback) {
+  return tab_ui_change_callbacks_.Add(std::move(callback));
 }
 
 std::u16string TabUIHelper::GetTitle() const {
@@ -142,6 +153,13 @@ void TabUIHelper::OnVisibilityChanged(content::Visibility visiblity) {
   }
 }
 
+void TabUIHelper::WasDiscarded() {
+  // Notify observers that the tab should update its UI to show discard status.
+  if (ShouldShowDiscardStatus()) {
+    tab_ui_change_callbacks_.Notify();
+  }
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void TabUIHelper::PrimaryPageChanged(content::Page& page) {
   if (tab().IsSplit()) {
@@ -151,3 +169,28 @@ void TabUIHelper::PrimaryPageChanged(content::Page& page) {
   }
 }
 #endif
+
+bool TabUIHelper::ShouldShowDiscardStatus() {
+  content::WebContents* const web_contents = tab().GetContents();
+  std::optional<mojom::LifecycleUnitDiscardReason> discard_reason =
+      memory_saver::GetDiscardReason(web_contents);
+
+  // Only show discard status for tabs that were proactively discarded or
+  // suggested by the PerformanceDetectionManager to prevent confusion to users
+  // on why a tab was discarded. Also, the favicon discard animation may use
+  // resources so the animation should be limited to prevent performance issues.
+  return memory_saver::IsURLSupported(web_contents->GetURL()) &&
+         web_contents->WasDiscarded() && discard_reason.has_value() &&
+         (discard_reason.value() ==
+              mojom::LifecycleUnitDiscardReason::PROACTIVE ||
+          discard_reason.value() ==
+              mojom::LifecycleUnitDiscardReason::SUGGESTED);
+}
+
+std::optional<base::ByteSize> TabUIHelper::GetDiscardedMemorySavings() {
+  content::WebContents* const web_contents = tab().GetContents();
+  return web_contents->WasDiscarded()
+             ? std::make_optional(
+                   memory_saver::GetDiscardedMemorySavings(web_contents))
+             : std::nullopt;
+}

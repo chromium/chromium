@@ -7,9 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -24,34 +26,33 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/page_transition_types.h"
 
 namespace {
-class MockTabUiHelperSubscriber {
+class MockTabUIHelperSubscriber {
  public:
-  explicit MockTabUiHelperSubscriber(TabUIHelper* tab_ui_helper) {
+  explicit MockTabUIHelperSubscriber(TabUIHelper* tab_ui_helper) {
     title_change_subscription_ = tab_ui_helper->AddTitleUpdatedCallback(
-        base::BindRepeating(&::MockTabUiHelperSubscriber::OnTitleChange,
+        base::BindRepeating(&::MockTabUIHelperSubscriber::OnTitleChange,
                             base::Unretained(this)));
+    tab_ui_change_subscription_ =
+        tab_ui_helper->AddTabUIChangeCallback(base::BindRepeating(
+            &MockTabUIHelperSubscriber::OnTabUIChange, base::Unretained(this)));
   }
-  ~MockTabUiHelperSubscriber() = default;
+  ~MockTabUIHelperSubscriber() = default;
 
   MOCK_METHOD(void, OnTitleChange, (std::u16string updated_title));
+  MOCK_METHOD(void, OnTabUIChange, ());
 
  private:
   base::CallbackListSubscription title_change_subscription_;
+  base::CallbackListSubscription tab_ui_change_subscription_;
 };
 }  // namespace
 
-class TabUIHelperBrowserTest : public InProcessBrowserTest {
+class TabUIHelperBrowserTest
+    : public MemorySaverBrowserTestMixin<InProcessBrowserTest> {
  public:
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, TitleChangeIsNotified) {
@@ -63,12 +64,36 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, TitleChangeIsNotified) {
   TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface);
   EXPECT_EQ(tab_ui_helper->GetTitle(), u"Title Of Awesomeness");
   auto title_change_waiter =
-      std::make_unique<MockTabUiHelperSubscriber>(tab_ui_helper);
+      std::make_unique<MockTabUIHelperSubscriber>(tab_ui_helper);
   EXPECT_CALL(*title_change_waiter,
               OnTitleChange(std::u16string(u"Title Of More Awesomeness")));
   ASSERT_NE(ui_test_utils::NavigateToURL(
                 browser(), embedded_test_server()->GetURL("/title3.html")),
             nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, DiscardUiChangeIsNotified) {
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), GetURL()), nullptr);
+  ASSERT_TRUE(AddTabAtIndex(1, GetURL(), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->SelectTabAt(0);
+  ForceRefreshMemoryMetricsAndWait();
+  tabs::TabInterface* const tab_interface =
+      browser()->tab_strip_model()->GetTabAtIndex(1);
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface);
+
+  // The tab shouldn't show discard UI and have any memory savings since
+  // the tab isn't discarded yet.
+  EXPECT_FALSE(tab_ui_helper->ShouldShowDiscardStatus());
+  EXPECT_FALSE(tab_ui_helper->GetDiscardedMemorySavings().has_value());
+
+  // Discarding the tab should trigger a UI change.
+  auto tab_ui_change_waiter =
+      std::make_unique<MockTabUIHelperSubscriber>(tab_ui_helper);
+  EXPECT_CALL(*tab_ui_change_waiter, OnTabUIChange());
+  TryDiscardTabAt(1);
+  ASSERT_TRUE(tab_interface->GetContents()->WasDiscarded());
+  EXPECT_TRUE(tab_ui_helper->ShouldShowDiscardStatus());
+  EXPECT_TRUE(tab_ui_helper->GetDiscardedMemorySavings().has_value());
 }
 
 class TabUIHelperWithPrerenderingTest : public InProcessBrowserTest {

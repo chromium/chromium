@@ -151,24 +151,9 @@ TabRendererData TabRendererData::FromTabInterface(tabs::TabInterface* tab) {
   data.should_themify_favicon =
       entry && favicon::ShouldThemifyFaviconForEntry(entry);
 
-  std::optional<mojom::LifecycleUnitDiscardReason> discard_reason =
-      memory_saver::GetDiscardReason(contents);
-
-  // Only show discard status for tabs that were proactively discarded or
-  // suggested by the PerformanceDetectionManager to prevent confusion to users
-  // on why a tab was discarded. Also, the favicon discard animation may use
-  // resources so the animation should be limited to prevent performance issues.
-  data.should_show_discard_status =
-      memory_saver::IsURLSupported(contents->GetURL()) &&
-      contents->WasDiscarded() && discard_reason.has_value() &&
-      (discard_reason.value() == mojom::LifecycleUnitDiscardReason::PROACTIVE ||
-       discard_reason.value() == mojom::LifecycleUnitDiscardReason::SUGGESTED);
-
-  if (contents->WasDiscarded()) {
-    data.discarded_memory_savings =
-        memory_saver::GetDiscardedMemorySavings(contents);
-  }
-
+  data.should_show_discard_status = tab_ui_helper->ShouldShowDiscardStatus();
+  data.discarded_memory_savings =
+      tab_ui_helper->GetDiscardedMemorySavings().value_or(base::ByteSize());
   if (const auto* const resource_tab_helper =
           TabResourceUsageTabHelper::From(tab)) {
     data.tab_resource_usage = resource_tab_helper->resource_usage();
