@@ -31,7 +31,7 @@ SqlEntryImpl::~SqlEntryImpl() {
     return;
   }
 
-  if (doomed_) {
+  if (doomed()) {
     backend_->ReleaseDoomedEntry(*this);
     return;
   }
@@ -67,7 +67,7 @@ SqlEntryImpl::~SqlEntryImpl() {
 }
 
 void SqlEntryImpl::Doom() {
-  if (doomed_ || !backend_) {
+  if (doomed() || !backend_) {
     return;
   }
   backend_->DoomActiveEntry(*this);
@@ -509,8 +509,8 @@ void SqlEntryImpl::UpdateLastUsed() {
   last_used_modified_ = true;
 }
 
-void SqlEntryImpl::MarkAsDoomed() {
-  doomed_ = true;
+bool SqlEntryImpl::doomed() const {
+  return db_handle_->doomed();
 }
 
 }  // namespace disk_cache

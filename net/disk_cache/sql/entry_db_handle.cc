@@ -59,4 +59,14 @@ bool EntryDbHandle::IsFinished() const {
   return data_.has_value();
 }
 
+void EntryDbHandle::MarkAsDoomed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  doomed_ = true;
+}
+
+bool EntryDbHandle::doomed() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return doomed_;
+}
+
 }  // namespace disk_cache

@@ -76,12 +76,14 @@ class SqlPersistentStore::BackendShard {
       const std::optional<MemoryEntryDataHints>& new_hints,
       scoped_refptr<net::IOBuffer> head_buffer,
       int64_t header_size_delta,
+      bool doomed_new_entry,
       ResIdOrErrorCallback callback);
   void WriteEntryData(const CacheEntryKey& key,
                       const ResIdOrTime& res_id_or_last_used_time,
                       int64_t old_body_end,
                       EntryWriteBuffer buffer,
                       bool truncate,
+                      bool doomed_new_entry,
                       ResIdOrErrorCallback callback);
   void ReadEntryData(const CacheEntryKey& key,
                      ResId res_id,

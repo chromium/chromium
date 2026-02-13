@@ -587,22 +587,24 @@ void SqlBackendImpl::HandleDoomActiveEntryOperation(
 
 void SqlBackendImpl::DoomActiveEntryInternal(SqlEntryImpl& entry,
                                              CompletionOnceCallback callback) {
+  const auto& db_handle = entry.db_handle();
+
   // Mark the entry as doomed internally.
-  entry.MarkAsDoomed();
+  db_handle->MarkAsDoomed();
   // Move it from the active_entries_ map to the doomed_entries_ set.
   ReleaseActiveEntry(entry);
   doomed_entries_.emplace(entry);
 
-  const auto& db_handle = entry.db_handle();
-
-  if (db_handle->IsInitialState()) {
-    // If the entry hasn't been written to the DB, no further processing is
-    // needed.
+  if (db_handle->IsInitialState() || db_handle->IsCreatingState()) {
+    // If the entry hasn't been written to the DB (IsInitialState()), no further
+    // processing is needed.
+    // If the entry is being created (IsCreatingState()) by
+    // WriteEntryDataAndMetadata() or WriteEntryData(), a new entry will be
+    // written to the DB with doomed=true.
     std::move(callback).Run(net::OK);
     return;
   }
 
-  CHECK(db_handle->IsFinished());
   if (db_handle->GetError().has_value()) {
     // Fail the operation for entries that previously failed a speculative
     // creation or optimistic write.
@@ -1092,7 +1094,7 @@ void SqlBackendImpl::HandleWriteEntryDataAndMetadataOperation(
   const auto optional_res_id = db_handle->GetResId();
   store_->WriteEntryDataAndMetadata(
       key, optional_res_id, old_body_end, std::move(buffer), last_used,
-      new_hints, std::move(head_buffer), header_size_delta,
+      new_hints, std::move(head_buffer), header_size_delta, db_handle->doomed(),
       std::move(callback)
           .Then(OnceClosureWithBoundArgs(
               std::move(pop_in_flight_entry_modification)))
@@ -1204,7 +1206,7 @@ void SqlBackendImpl::HandleWriteEntryDataOperation(
       db_handle->GetResId().has_value()
           ? SqlPersistentStore::ResIdOrTime(*db_handle->GetResId())
           : SqlPersistentStore::ResIdOrTime(last_used),
-      old_body_end, std::move(buffer), truncate,
+      old_body_end, std::move(buffer), truncate, db_handle->doomed(),
       std::move(callback)
           .Then(OnceClosureWithBoundArgs(
               std::move(pop_in_flight_entry_modification)))
@@ -1241,7 +1243,7 @@ void SqlBackendImpl::HandleOptimisticWriteEntryDataOperation(
       optional_res_id.has_value()
           ? SqlPersistentStore::ResIdOrTime(*optional_res_id)
           : SqlPersistentStore::ResIdOrTime(last_used),
-      old_body_end, std::move(buffer), truncate,
+      old_body_end, std::move(buffer), truncate, db_handle->doomed(),
       base::BindOnce(
           &SqlBackendImpl::OnOptimisticWriteFinished,
           weak_factory_.GetWeakPtr(), key, optional_res_id, std::move(callback),

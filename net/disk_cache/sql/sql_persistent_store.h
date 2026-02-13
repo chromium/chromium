@@ -342,6 +342,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // `new_hints`: Optional new hints to set.
   // `head_buffer`: Optional new header data.
   // `header_size_delta`: The change in header size.
+  // `doomed_new_entry`: If true, the entry is marked as doomed (deleted) upon
+  //                     creation. This parameter is only used when creating a
+  //                     new entry.
   // `callback`: Invoked with the result of the operation. Returns the resource
   //             ID on success, or an error code on failure.
   void WriteEntryDataAndMetadata(
@@ -353,6 +356,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       const std::optional<MemoryEntryDataHints>& new_hints,
       scoped_refptr<net::IOBuffer> head_buffer,
       int64_t header_size_delta,
+      bool doomed_new_entry,
       ResIdOrErrorCallback callback);
 
   // Writes data to an entry's body. This can be used to write new data,
@@ -369,6 +373,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // `truncate`: If true, the entry's body will be truncated to the end of this
   //             write. Otherwise, the body size will grow if the write extends
   //             past the current end.
+  // `doomed_new_entry`: If true, the entry is marked as doomed (deleted) upon
+  //                     creation. This parameter is only used when creating a
+  //                     new entry.
   // `callback`: Invoked with the result of the operation. Returns the resource
   //             ID on success, or an error code on failure.
   void WriteEntryData(const CacheEntryKey& key,
@@ -376,6 +383,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                       int64_t old_body_end,
                       EntryWriteBuffer buffer,
                       bool truncate,
+                      bool doomed_new_entry,
                       ResIdOrErrorCallback callback);
 
   // Reads data from an entry's body.

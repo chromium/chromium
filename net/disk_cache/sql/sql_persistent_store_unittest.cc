@@ -311,7 +311,7 @@ class SqlPersistentStoreTest : public testing::Test {
         key, res_id, /*old_body_end=*/std::nullopt,
         EntryWriteBuffer(/*buffer=*/nullptr, /*size=*/0, /*offset=*/0),
         last_used, new_hints, std::move(buffer), header_size_delta,
-        future.GetCallback());
+        /*doomed_new_entry=*/false, future.GetCallback());
     auto result = future.Take();
     return result.error_or(SqlPersistentStore::Error::kOk);
   }
@@ -324,7 +324,8 @@ class SqlPersistentStoreTest : public testing::Test {
                                            bool truncate) {
     base::test::TestFuture<SqlPersistentStore::ResIdOrError> future;
     store_->WriteEntryData(key, res_id, old_body_end, std::move(buffer),
-                           truncate, future.GetCallback());
+                           truncate, /*doomed_new_entry=*/false,
+                           future.GetCallback());
     auto result = future.Take();
     return result.error_or(SqlPersistentStore::Error::kOk);
   }
@@ -2071,7 +2072,8 @@ TEST_P(SqlPersistentStoreWriteEntryTest, Success) {
   base::test::TestFuture<SqlPersistentStore::ResIdOrError> future;
   store_->WriteEntryDataAndMetadata(
       kKey, res_id, old_body_end, std::move(write_buffer), kTime, hints,
-      head_buffer, header_size_delta, future.GetCallback());
+      head_buffer, header_size_delta, /*doomed_new_entry=*/false,
+      future.GetCallback());
   ASSERT_TRUE(future.Get().has_value());
 
   // Verify.
@@ -2118,7 +2120,8 @@ TEST_P(SqlPersistentStoreWriteEntryTest, SuccessCreateNew) {
   // Passing nullopt res_id to create a new entry.
   store_->WriteEntryDataAndMetadata(
       kKey, /*res_id=*/std::nullopt, old_body_end, std::move(write_buffer),
-      kTime, hints, head_buffer, header_size_delta, future.GetCallback());
+      kTime, hints, head_buffer, header_size_delta, /*doomed_new_entry=*/false,
+      future.GetCallback());
   ASSERT_TRUE(future.Get().has_value());
   const auto res_id = future.Get().value();
 
@@ -2146,6 +2149,58 @@ TEST_P(SqlPersistentStoreWriteEntryTest, SuccessCreateNew) {
                                        head_data.size());
 }
 
+TEST_P(SqlPersistentStoreWriteEntryTest, SuccessCreateNewDoomed) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  std::optional<int64_t> old_body_end;
+  EntryWriteBuffer write_buffer;
+  int64_t expected_body_end = 0;
+  std::string body_data;
+  SetupBody(old_body_end, write_buffer, expected_body_end, body_data);
+
+  scoped_refptr<net::IOBuffer> head_buffer;
+  int64_t header_size_delta = 0;
+  std::string head_data;
+  SetupHeader(head_buffer, header_size_delta, head_data);
+
+  auto hints = SetupHints();
+
+  const base::Time kTime = base::Time::Now();
+
+  base::test::TestFuture<SqlPersistentStore::ResIdOrError> future;
+  // Passing nullopt res_id to create a new entry with doomed_new_entry=true.
+  store_->WriteEntryDataAndMetadata(
+      kKey, /*res_id=*/std::nullopt, old_body_end, std::move(write_buffer),
+      kTime, hints, head_buffer, header_size_delta, /*doomed_new_entry=*/true,
+      future.GetCallback());
+  ASSERT_TRUE(future.Get().has_value());
+  const auto res_id = future.Get().value();
+
+  // The entry count should not increase.
+  EXPECT_EQ(GetEntryCount(), 0);
+
+  // Verify the entry exists but is doomed.
+  auto details = GetResourceEntryDetails(kKey);
+  ASSERT_TRUE(details.has_value());
+  EXPECT_TRUE(details->doomed);
+  EXPECT_EQ(details->last_used, kTime);
+  EXPECT_EQ(details->head_data, head_data);
+  EXPECT_EQ(details->body_end, expected_body_end);
+  if (has_body()) {
+    CheckBlobData(res_id, {{0, body_data}});
+  } else {
+    CheckBlobData(res_id, {});
+  }
+
+  // Verify in-memory stats (should be 0 as it's doomed).
+  EXPECT_EQ(GetSizeOfAllEntries(), 0);
+
+  // Verify OpenEntry fails.
+  auto result = OpenEntry(kKey);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_FALSE(result->has_value());
+}
+
 TEST_P(SqlPersistentStoreWriteEntryTest, NonExistentEntry) {
   CreateAndInitStore();
   const CacheEntryKey kKey("non-existent");
@@ -2167,7 +2222,8 @@ TEST_P(SqlPersistentStoreWriteEntryTest, NonExistentEntry) {
   base::test::TestFuture<SqlPersistentStore::ResIdOrError> future;
   store_->WriteEntryDataAndMetadata(
       kKey, res_id, old_body_end, std::move(write_buffer), base::Time::Now(),
-      hints, head_buffer, header_size_delta, future.GetCallback());
+      hints, head_buffer, header_size_delta, /*doomed_new_entry=*/false,
+      future.GetCallback());
   ASSERT_EQ(future.Get().error(), SqlPersistentStore::Error::kNotFound);
 }
 
@@ -2193,7 +2249,8 @@ TEST_P(SqlPersistentStoreWriteEntryTest, DoomedEntry) {
   base::test::TestFuture<SqlPersistentStore::ResIdOrError> future;
   store_->WriteEntryDataAndMetadata(
       kKey, res_id, old_body_end, std::move(write_buffer), base::Time::Now(),
-      hints, head_buffer, header_size_delta, future.GetCallback());
+      hints, head_buffer, header_size_delta, /*doomed_new_entry=*/false,
+      future.GetCallback());
   ASSERT_EQ(future.Get().error(), SqlPersistentStore::Error::kNotFound);
 }
 
@@ -2218,7 +2275,7 @@ void SqlPersistentStoreWriteEntryTest::HeaderChangeTest(
   store_->WriteEntryDataAndMetadata(
       kKey, res_id, std::nullopt, EntryWriteBuffer(), kInitialTime,
       std::nullopt, initial_buffer, initial_header.size(),
-      future.GetCallback());
+      /*doomed_new_entry=*/false, future.GetCallback());
   ASSERT_TRUE(future.Get().has_value());
 
   // Verify in-memory stats.
@@ -2245,7 +2302,7 @@ void SqlPersistentStoreWriteEntryTest::HeaderChangeTest(
   future.Clear();
   store_->WriteEntryDataAndMetadata(
       kKey, res_id, old_body_end, std::move(write_buffer), kNewTime, hints,
-      new_head_buffer, delta, future.GetCallback());
+      new_head_buffer, delta, /*doomed_new_entry=*/false, future.GetCallback());
   ASSERT_TRUE(future.Get().has_value());
 
   // Verify.
@@ -2328,7 +2385,8 @@ TEST_P(SqlPersistentStoreWriteEntryTest,
   base::test::TestFuture<SqlPersistentStore::ResIdOrError> future;
   store_->WriteEntryDataAndMetadata(
       kKey, res_id, old_body_end, std::move(write_buffer), kNewTime, hints,
-      head_buffer, header_size_delta, future.GetCallback());
+      head_buffer, header_size_delta, /*doomed_new_entry=*/false,
+      future.GetCallback());
   ASSERT_EQ(future.Get().error(), SqlPersistentStore::Error::kInvalidData);
 
   // Verify that `ResultWithCorruption` UMA was recorded in the histogram.
@@ -2402,7 +2460,8 @@ TEST_P(SqlPersistentStoreWriteEntryTest,
   base::test::TestFuture<SqlPersistentStore::ResIdOrError> future;
   store_->WriteEntryDataAndMetadata(
       kKey, res_id, old_body_end, std::move(write_buffer), kNewTime, hints,
-      head_buffer, header_size_delta, future.GetCallback());
+      head_buffer, header_size_delta, /*doomed_new_entry=*/false,
+      future.GetCallback());
   ASSERT_EQ(future.Get().error(), SqlPersistentStore::Error::kBodyEndMismatch);
 
   // Verify that `ResultWithCorruption` UMA was recorded in the histogram.
@@ -2456,7 +2515,8 @@ TEST_P(SqlPersistentStoreWriteEntryTest, MultipleBuffers) {
   base::test::TestFuture<SqlPersistentStore::ResIdOrError> future;
   store_->WriteEntryDataAndMetadata(
       kKey, res_id, /*old_body_end=*/0, std::move(write_buffer), kTime, hints,
-      head_buffer, header_size_delta, future.GetCallback());
+      head_buffer, header_size_delta, /*doomed_new_entry=*/false,
+      future.GetCallback());
   ASSERT_TRUE(future.Get().has_value());
 
   // Verify.
@@ -3314,7 +3374,8 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataCreatesNew) {
   base::test::TestFuture<SqlPersistentStore::ResIdOrError> future;
   store_->WriteEntryData(kKey, kTime, /*old_body_end=*/0,
                          EntryWriteBuffer(write_buffer, kData.size(), 0),
-                         /*truncate=*/false, future.GetCallback());
+                         /*truncate=*/false, /*doomed_new_entry=*/false,
+                         future.GetCallback());
 
   auto result = future.Take();
   ASSERT_TRUE(result.has_value());
@@ -3327,6 +3388,44 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataCreatesNew) {
   EXPECT_EQ(details->last_used, kTime);
 
   CheckBlobData(res_id, {{0, kData}});
+}
+
+TEST_F(SqlPersistentStoreTest, WriteEntryDataCreatesNewDoomed) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const std::string kData = "more data";
+  auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>(kData);
+  const base::Time kTime = base::Time::Now();
+
+  base::test::TestFuture<SqlPersistentStore::ResIdOrError> future;
+  store_->WriteEntryData(kKey, kTime, /*old_body_end=*/0,
+                         EntryWriteBuffer(write_buffer, kData.size(), 0),
+                         /*truncate=*/false, /*doomed_new_entry=*/true,
+                         future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  SqlPersistentStore::ResId res_id = *result;
+
+  // The entry count should not increase.
+  EXPECT_EQ(GetEntryCount(), 0);
+
+  // Verify the entry exists but is doomed.
+  auto details = GetResourceEntryDetails(kKey);
+  ASSERT_TRUE(details.has_value());
+  EXPECT_TRUE(details->doomed);
+  EXPECT_EQ(details->body_end, static_cast<int64_t>(kData.size()));
+  EXPECT_EQ(details->last_used, kTime);
+
+  CheckBlobData(res_id, {{0, kData}});
+
+  // Verify in-memory stats (should be 0 as it's doomed).
+  EXPECT_EQ(GetSizeOfAllEntries(), 0);
+
+  // Verify OpenEntry fails.
+  auto open_result = OpenEntry(kKey);
+  ASSERT_TRUE(open_result.has_value());
+  EXPECT_FALSE(open_result->has_value());
 }
 
 TEST_F(SqlPersistentStoreTest, SparseRead) {
@@ -3794,7 +3893,7 @@ TEST_F(SqlPersistentStoreTest,
       kKey, res_id, /*old_body_end=*/std::nullopt,
       EntryWriteBuffer(/*buffer=*/nullptr, /*size=*/0, /*offset=*/0),
       base::Time::Now(), /*new_hints=*/std::nullopt, /*head_buffer=*/nullptr,
-      /*header_size_delta=*/0,
+      /*header_size_delta=*/0, /*doomed_new_entry=*/false,
       base::BindLambdaForTesting(
           [&](SqlPersistentStore::ResIdOrError) { callback_run = true; }));
   store_.reset();
@@ -3815,6 +3914,7 @@ TEST_F(SqlPersistentStoreTest,
       kKey, res_id, /*old_body_end=*/std::nullopt,
       EntryWriteBuffer(/*buffer=*/nullptr, /*size=*/0, /*offset=*/0),
       base::Time::Now(), /*new_hints=*/std::nullopt, buffer, buffer->size(),
+      /*doomed_new_entry=*/false,
       base::BindLambdaForTesting(
           [&](SqlPersistentStore::ResIdOrError) { callback_run = true; }));
   store_.reset();
@@ -3833,7 +3933,7 @@ TEST_F(SqlPersistentStoreTest, WriteDataCallbackNotRunOnStoreDestruction) {
   store_->WriteEntryData(
       kKey, res_id, /*old_body_end=*/0,
       EntryWriteBuffer(std::move(write_buffer), kData.size(), 0),
-      /*truncate=*/false,
+      /*truncate=*/false, /*doomed_new_entry=*/false,
       base::BindLambdaForTesting(
           [&](SqlPersistentStore::ResIdOrError) { callback_run = true; }));
   store_.reset();

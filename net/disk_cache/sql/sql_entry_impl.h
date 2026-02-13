@@ -100,11 +100,7 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
     return new_hints_;
   }
 
-  // Marks the entry as doomed. This is called by the backend when an
-  // active entry is doomed.
-  void MarkAsDoomed();
-
-  bool doomed() const { return doomed_; }
+  bool doomed() const;
 
   // Updates the `last_used_` timestamp to the current time.
   void UpdateLastUsed();
@@ -175,9 +171,6 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   // since the entry was opened. This is used in the destructor to determine if
   // the header needs to be persisted to storage.
   std::optional<int64_t> previous_header_size_in_storage_;
-
-  // True if this entry has been marked for deletion.
-  bool doomed_ = false;
 
   // Buffers data for stream 1 writes.
   EntryWriteBuffer write_buffer_;

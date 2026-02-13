@@ -59,6 +59,11 @@ class NET_EXPORT_PRIVATE EntryDbHandle
   // Returns true if the ResId has been set or an error has occurred.
   bool IsFinished() const;
 
+  // Marks the entry as doomed. This is called by the backend when an
+  // active entry is doomed.
+  void MarkAsDoomed();
+  bool doomed() const;
+
  private:
   friend class base::RefCounted<EntryDbHandle>;
   ~EntryDbHandle();
@@ -68,6 +73,9 @@ class NET_EXPORT_PRIVATE EntryDbHandle
       data_;
 
   State state_;
+
+  // True if this entry has been marked for deletion.
+  bool doomed_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -3160,5 +3160,113 @@ TEST_F(SqlBackendImplTest, CreateIteratorFlushesBuffers) {
   entry_from_iter->Close();
 }
 
+// Tests a race condition where Doom runs while a WriteData operation
+// is pending (blocked by another operation) and the entry is in 'Creating'
+// state.
+TEST_F(SqlBackendImplTest, AsyncDoomEntryAndWrite) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "250"}});
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+
+  const std::string kKey = "my-key";
+
+  // Create an entry.
+  disk_cache::EntryResult create_result =
+      backend->CreateEntry(kKey, net::HIGHEST, base::DoNothing());
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  auto db_handle = static_cast<SqlEntryImpl*>(entry)->db_handle();
+
+  // Start an exclusive operation (CalculateSizeOfAllEntries).
+  // This will block subsequent operations.
+  net::TestInt64CompletionCallback cb_calculate;
+  EXPECT_EQ(backend->CalculateSizeOfAllEntries(cb_calculate.callback()),
+            net::ERR_IO_PENDING);
+
+  // Doom the entry.
+  entry->Doom();
+
+  // Write data to the entry.
+  // Since it is larger than kSqlDiskCacheMaxWriteBufferSizePerEntry, the task
+  // for writing to the DB (WriteData) is queued.
+  const int kDataSize = 1024;
+  auto kData = std::string(kDataSize, 'a');
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(kData);
+  EXPECT_EQ(
+      entry->WriteData(1, 0, buffer.get(), kDataSize, base::DoNothing(), false),
+      kDataSize);
+  EXPECT_TRUE(db_handle->IsCreatingState());
+
+  // The CalculateSizeOfAllEntries should complete.
+  EXPECT_GE(cb_calculate.WaitForResult(), 0);
+
+  // Verify that the data is readable.
+  ReadAndVerifyData(entry, kData);
+
+  entry->Close();
+
+  // Verify that the entry is not found.
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, cb_open.callback()));
+  EXPECT_THAT(open_result.net_error(), IsError(net::ERR_FAILED));
+}
+
+// Tests a race condition where Doom runs while a WriteEntryDataAndMetadata
+// operation is pending (blocked by another operation) and the entry is in
+// 'Creating' state.
+TEST_F(SqlBackendImplTest, AsyncDoomEntryAndFlushBuffer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "250"}});
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+
+  const std::string kKey = "my-key";
+
+  // Create an entry.
+  disk_cache::EntryResult create_result =
+      backend->CreateEntry(kKey, net::HIGHEST, base::DoNothing());
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  auto db_handle = static_cast<SqlEntryImpl*>(entry)->db_handle();
+
+  // Start an exclusive operation (CalculateSizeOfAllEntries).
+  // This will block subsequent operations.
+  net::TestInt64CompletionCallback cb_calculate;
+  EXPECT_EQ(backend->CalculateSizeOfAllEntries(cb_calculate.callback()),
+            net::ERR_IO_PENDING);
+
+  // Doom the entry.
+  entry->Doom();
+
+  // Calling CreateIterator() queues the task for writing to the DB
+  // (WriteEntryDataAndMetadata).
+  auto iter = backend->CreateIterator();
+  EXPECT_TRUE(db_handle->IsCreatingState());
+
+  // The CalculateSizeOfAllEntries should complete.
+  EXPECT_GE(cb_calculate.WaitForResult(), 0);
+
+  TestEntryResultCompletionCallback cb_iter;
+  EntryResult iter_res = iter->OpenNextEntry(cb_iter.callback());
+
+  // The iterator shouldn't see the entry.
+  iter_res = cb_iter.GetResult(std::move(iter_res));
+  ASSERT_THAT(iter_res.net_error(), IsError(net::ERR_FAILED));
+
+  entry->Close();
+
+  // Verify that the entry is not found.
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, cb_open.callback()));
+  EXPECT_THAT(open_result.net_error(), IsError(net::ERR_FAILED));
+}
+
 }  // namespace
 }  // namespace disk_cache

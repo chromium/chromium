@@ -179,10 +179,12 @@ void SqlPersistentStore::WriteEntryDataAndMetadata(
     const std::optional<MemoryEntryDataHints>& new_hints,
     scoped_refptr<net::IOBuffer> head_buffer,
     int64_t header_size_delta,
+    bool doomed_new_entry,
     ResIdOrErrorCallback callback) {
   GetShard(key).WriteEntryDataAndMetadata(
       key, res_id, old_body_end, std::move(buffer), last_used, new_hints,
-      std::move(head_buffer), header_size_delta, std::move(callback));
+      std::move(head_buffer), header_size_delta, doomed_new_entry,
+      std::move(callback));
 }
 
 void SqlPersistentStore::WriteEntryData(
@@ -191,9 +193,10 @@ void SqlPersistentStore::WriteEntryData(
     int64_t old_body_end,
     EntryWriteBuffer buffer,
     bool truncate,
+    bool doomed_new_entry,
     ResIdOrErrorCallback callback) {
   GetShard(key).WriteEntryData(key, res_id_or_last_used_time, old_body_end,
-                               std::move(buffer), truncate,
+                               std::move(buffer), truncate, doomed_new_entry,
                                std::move(callback));
 }
 

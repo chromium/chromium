@@ -80,6 +80,7 @@ class SqlPersistentStore::Backend {
       const std::optional<MemoryEntryDataHints>& new_hints,
       scoped_refptr<net::IOBuffer> head_buffer,
       int64_t header_size_delta,
+      bool doomed_new_entry,
       base::TimeTicks start_time);
   ResIdOrErrorAndStoreStatus WriteEntryData(
       const CacheEntryKey& key,
@@ -87,6 +88,7 @@ class SqlPersistentStore::Backend {
       int64_t old_body_end,
       EntryWriteBuffer buffer,
       bool truncate,
+      bool doomed_new_entry,
       base::TimeTicks start_time);
   ReadResultOrError ReadEntryData(const CacheEntryKey& key,
                                   ResId res_id,
@@ -189,6 +191,7 @@ class SqlPersistentStore::Backend {
       const std::optional<MemoryEntryDataHints>& new_hints,
       scoped_refptr<net::IOBuffer> head_buffer,
       int64_t header_size_delta,
+      bool doomed_new_entry,
       bool& corruption_detected);
   ResIdOrError WriteEntryDataInternal(
       const CacheEntryKey& key,
@@ -196,6 +199,7 @@ class SqlPersistentStore::Backend {
       int64_t old_body_end,
       EntryWriteBuffer buffer,
       bool truncate,
+      bool doomed_new_entry,
       bool& corruption_detected);
   ReadResultOrError ReadEntryDataInternal(const CacheEntryKey& key,
                                           ResId res_id,
