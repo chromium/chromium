@@ -739,16 +739,6 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
   // (unless changed by something like z-index on the pseudo-elements).
   auto& root_object = root->GetLayoutObject();
   auto& root_style = root_object.StyleRef();
-  if (element_ && (root_object.GetNode() != *element_) &&
-      (root_style.ViewTransitionScope() == EViewTransitionScope::kAuto)) {
-    // Having "view-transition-scope: auto" on a descendant of the scoped
-    // element halts propagation of tag discovery into the descendant's subtree.
-    // If the scoped element itself has "view-transition-scope: auto", the tag
-    // discovery process proceeds normally.
-    // TODO(crbug.com/478214441): Handle "view-transition-scope: auto" on an
-    // element with "display: contents".
-    return;
-  }
 
   const auto& view_transition_name = root_style.ViewTransitionName();
   AtomicString current_name;
@@ -796,6 +786,13 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
   // children can have outer tree scope.
   PaintLayerPaintOrderIterator child_iterator(root, kAllChildren);
   while (auto* child = child_iterator.Next()) {
+    // View-transition-scope: auto is not confined to elements with directly
+    // corresponding paint layers. Scan the DOM elements for containment
+    // within the interval including checking elements with "display: contents".
+    if (HasContainmentBoundary(root, child)) {
+      continue;
+    }
+
     // Note that both 'contain' and 'nearest' contain descendant names, per
     // https://www.w3.org/TR/css-view-transitions-2/#nearest-containing-group-name
     AddTransitionElementsFromCSSRecursive(
@@ -896,6 +893,29 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
     elements.push_back(element);
   }
   return true;
+}
+
+bool ViewTransitionStyleTracker::HasContainmentBoundary(
+    PaintLayer* root,
+    PaintLayer* child) const {
+  auto& root_object = root->GetLayoutObject();
+  auto& child_object = child->GetLayoutObject();
+  Node* node = child_object.GetNode();
+  if (!node) {
+    return false;
+  }
+  Node* root_node = root_object.GetNode();
+  while (node != root_node) {
+    if (Element* element = DynamicTo<Element>(node)) {
+      if (element != element_ &&
+          element->GetComputedStyle()->ViewTransitionScope() ==
+              EViewTransitionScope::kAuto) {
+        return true;
+      }
+    }
+    node = FlatTreeTraversal::Parent(*node);
+  }
+  return false;
 }
 
 AtomicString ViewTransitionStyleTracker::ComputeContainingGroupName(

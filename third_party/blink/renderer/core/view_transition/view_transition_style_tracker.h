@@ -260,6 +260,15 @@ class ViewTransitionStyleTracker
 
   bool NeedsSnapshotForCapture() const;
 
+  // Determines if there is an element with view-transition-scope: auto between
+  // the child's node and the root node (non-inclusive). The check needs to be
+  // more exhaustive than checking paint layers since v-t-s can be on elements
+  // that do not create a paint layer, as well as elements with
+  // "display: contents", which will not even have a layout object. The search
+  // is non-inclusive of the root because a v-t-s on the scoped element itself
+  // does not terminate tag discovery.
+  bool HasContainmentBoundary(PaintLayer* root, PaintLayer* child) const;
+
   struct ElementData : public GarbageCollected<ElementData> {
     void Trace(Visitor* visitor) const;
 
