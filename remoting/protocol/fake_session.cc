@@ -109,7 +109,7 @@ void FakeSession::Close(ErrorCode error,
 }
 
 void FakeSession::SendTransportInfo(
-    std::unique_ptr<jingle_xmpp::XmlElement> transport_info) {
+    std::unique_ptr<JingleTransportInfo> transport_info) {
   if (!peer_) {
     return;
   }
@@ -126,8 +126,8 @@ void FakeSession::SendTransportInfo(
 }
 
 void FakeSession::ProcessTransportInfo(
-    std::unique_ptr<jingle_xmpp::XmlElement> transport_info) {
-  transport_->ProcessTransportInfo(transport_info.get());
+    std::unique_ptr<JingleTransportInfo> transport_info) {
+  transport_->ProcessTransportInfo(*transport_info);
 }
 
 void FakeSession::AddPlugin(SessionPlugin* plugin) {

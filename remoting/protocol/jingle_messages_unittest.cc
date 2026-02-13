@@ -371,10 +371,10 @@ TEST(JingleMessageTest, IceTransportInfo) {
 
   EXPECT_EQ(message.action(), ActionType::kTransportInfo);
 
-  IceTransportInfo transport_info;
-  EXPECT_TRUE(transport_info.ParseXml(message.transport_info_legacy.get()));
-  EXPECT_EQ(transport_info.ice_credentials.size(), 2U);
-  EXPECT_EQ(transport_info.candidates.size(), 2U);
+  auto* transport_info = std::get_if<JingleTransportInfo>(&message.payload());
+  ASSERT_TRUE(transport_info);
+  EXPECT_EQ(transport_info->ice_credentials.size(), 2U);
+  EXPECT_EQ(transport_info->candidates.size(), 2U);
 }
 
 TEST(JingleMessageTest, SessionTerminate) {

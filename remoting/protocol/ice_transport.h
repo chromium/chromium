@@ -54,7 +54,7 @@ class IceTransport : public Transport,
   // Transport interface.
   void Start(Authenticator* authenticator,
              SendTransportInfoCallback send_transport_info_callback) override;
-  bool ProcessTransportInfo(jingle_xmpp::XmlElement* transport_info) override;
+  bool ProcessTransportInfo(const JingleTransportInfo& transport_info) override;
 
  private:
   typedef std::map<std::string, raw_ptr<IceTransportChannel, CtnExperimental>>
@@ -111,7 +111,7 @@ class IceTransport : public Transport,
   std::list<IceTransportInfo::IceCredentials> pending_remote_ice_credentials_;
   std::list<IceTransportInfo::NamedCandidate> pending_remote_candidates_;
 
-  std::unique_ptr<IceTransportInfo> pending_transport_info_message_;
+  std::unique_ptr<JingleTransportInfo> pending_transport_info_message_;
   base::OneShotTimer transport_info_timer_;
 
   // Pending channel creations to be executed after network settings are

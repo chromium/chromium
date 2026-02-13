@@ -15,7 +15,6 @@
 #include "remoting/protocol/stream_channel_factory.h"
 #include "remoting/protocol/stream_message_pipe_adapter.h"
 #include "remoting/protocol/transport_context.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting::protocol {
 
@@ -53,33 +52,27 @@ void IceTransport::Start(
 }
 
 bool IceTransport::ProcessTransportInfo(
-    jingle_xmpp::XmlElement* transport_info_xml) {
-  IceTransportInfo transport_info;
-  if (!transport_info.ParseXml(transport_info_xml)) {
-    return false;
-  }
-
-  for (auto it = transport_info.ice_credentials.begin();
-       it != transport_info.ice_credentials.end(); ++it) {
-    auto channel = channels_.find(it->channel);
+    const JingleTransportInfo& transport_info) {
+  for (const auto& credentials : transport_info.ice_credentials) {
+    auto channel = channels_.find(credentials.channel);
     if (channel != channels_.end()) {
-      channel->second->SetRemoteCredentials(it->ufrag, it->password);
+      channel->second->SetRemoteCredentials(credentials.ufrag,
+                                            credentials.password);
     } else {
       // Transport info was received before the channel was created.
       // This could happen due to messages being reordered on the wire.
-      pending_remote_ice_credentials_.push_back(*it);
+      pending_remote_ice_credentials_.push_back(credentials);
     }
   }
 
-  for (auto it = transport_info.candidates.begin();
-       it != transport_info.candidates.end(); ++it) {
-    auto channel = channels_.find(it->name);
+  for (const auto& candidate : transport_info.candidates) {
+    auto channel = channels_.find(candidate.name);
     if (channel != channels_.end()) {
-      channel->second->AddRemoteCandidate(it->candidate);
+      channel->second->AddRemoteCandidate(candidate.candidate);
     } else {
       // Transport info was received before the channel was created.
       // This could happen due to messages being reordered on the wire.
-      pending_remote_candidates_.push_back(*it);
+      pending_remote_candidates_.push_back(candidate);
     }
   }
 
@@ -198,7 +191,7 @@ void IceTransport::EnsurePendingTransportInfoMessage() {
             transport_info_timer_.IsRunning());
 
   if (!pending_transport_info_message_) {
-    pending_transport_info_message_ = std::make_unique<IceTransportInfo>();
+    pending_transport_info_message_ = std::make_unique<JingleTransportInfo>();
     // Delay sending the new candidates in case we get more candidates
     // that we can send in one message.
     transport_info_timer_.Start(FROM_HERE,
@@ -210,10 +203,7 @@ void IceTransport::EnsurePendingTransportInfoMessage() {
 void IceTransport::SendTransportInfo() {
   DCHECK(pending_transport_info_message_);
 
-  std::unique_ptr<jingle_xmpp::XmlElement> transport_info_xml =
-      pending_transport_info_message_->ToXml();
-  pending_transport_info_message_.reset();
-  send_transport_info_callback_.Run(std::move(transport_info_xml));
+  send_transport_info_callback_.Run(std::move(pending_transport_info_message_));
 }
 
 void IceTransport::OnChannelError(int error) {

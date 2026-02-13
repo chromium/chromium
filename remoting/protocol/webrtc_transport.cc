@@ -36,7 +36,6 @@
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_audio_module.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 #include "third_party/webrtc/api/audio/builtin_audio_processing_builder.h"
 #include "third_party/webrtc/api/audio_codecs/audio_decoder_factory_template.h"
 #include "third_party/webrtc/api/audio_codecs/audio_encoder_factory_template.h"
@@ -52,9 +51,6 @@
 #if !defined(NDEBUG)
 #include "base/command_line.h"
 #endif
-
-using jingle_xmpp::QName;
-using jingle_xmpp::XmlElement;
 
 namespace remoting::protocol {
 
@@ -100,10 +96,6 @@ base::TimeDelta data_channel_state_polling_interval =
 // TODO(sergeyu): Remove this flag.
 const char kDisableAuthenticationSwitchName[] = "disable-authentication";
 #endif
-
-bool IsValidSessionDescriptionType(webrtc::SdpType type) {
-  return type == webrtc::SdpType::kOffer || type == webrtc::SdpType::kAnswer;
-}
 
 void UpdateCodecParameters(SdpMessage& sdp_message, bool incoming) {
   // Update SDP format to use 160kbps stereo for opus codec.
@@ -507,10 +499,11 @@ void WebrtcTransport::Start(
   }
 }
 
-bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
+bool WebrtcTransport::ProcessTransportInfo(
+    const JingleTransportInfo& transport_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (transport_info->Name() != QName(kTransportNamespace, "transport")) {
+  if (transport_info.xml_namespace != kTransportNamespace) {
     return false;
   }
 
@@ -518,9 +511,9 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     return false;
   }
 
-  XmlElement* session_description = transport_info->FirstNamed(
-      QName(kTransportNamespace, "session-description"));
-  if (session_description) {
+  if (transport_info.session_description) {
+    const SessionDescription& session_description =
+        *transport_info.session_description;
     webrtc::PeerConnectionInterface::SignalingState expected_state =
         transport_context_->role() == TransportRole::CLIENT
             ? webrtc::PeerConnectionInterface::kStable
@@ -530,26 +523,35 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
       return false;
     }
 
-    std::string type_string =
-        session_description->Attr(QName(std::string(), "type"));
-    std::optional<webrtc::SdpType> maybe_type =
-        webrtc::SdpTypeFromString(type_string);
-    std::string raw_sdp = session_description->BodyText();
-    if (!maybe_type.has_value() ||
-        !IsValidSessionDescriptionType(*maybe_type) || raw_sdp.empty()) {
+    webrtc::SdpType sdp_type;
+    std::string type_string;
+    switch (session_description.type) {
+      case SessionDescription::Type::kOffer:
+        sdp_type = webrtc::SdpType::kOffer;
+        type_string = "offer";
+        break;
+      case SessionDescription::Type::kAnswer:
+        sdp_type = webrtc::SdpType::kAnswer;
+        type_string = "answer";
+        break;
+      default:
+        LOG(ERROR) << "Incorrect session description format.";
+        return false;
+    }
+
+    if (session_description.sdp.empty()) {
       LOG(ERROR) << "Incorrect session description format.";
       return false;
     }
 
-    SdpMessage sdp_message(raw_sdp);
+    SdpMessage sdp_message(session_description.sdp);
 
-    std::optional<std::vector<uint8_t>> signature = base::Base64Decode(
-        session_description->Attr(QName(std::string(), "signature")));
     crypto::hmac::HmacVerifier verifier(crypto::hash::kSha256, hmac_key_);
     verifier.Update(base::as_byte_span(type_string));
     verifier.Update(base::byte_span_from_cstring(" "));
     verifier.Update(base::as_byte_span(sdp_message.NormalizedForSignature()));
-    if (!signature || !verifier.Finish(*signature)) {
+    if (session_description.signature.empty() ||
+        !verifier.Finish(session_description.signature)) {
       static constexpr char kErrorDetails[] =
           "Received session-description with invalid signature.";
       bool ignore_error = false;
@@ -570,7 +572,7 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     webrtc::SdpParseError error;
     std::unique_ptr<webrtc::SessionDescriptionInterface>
         webrtc_session_description(webrtc::CreateSessionDescription(
-            *maybe_type, sdp_message.ToString(), &error));
+            sdp_type, sdp_message.ToString(), &error));
     if (!webrtc_session_description) {
       LOG(ERROR) << "Failed to parse the session description: "
                  << error.description << " line: " << error.line;
@@ -580,10 +582,9 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     {
       ScopedAllowThreadJoinForWebRtcTransport allow_wait;
       peer_connection()->SetRemoteDescription(
-          SetSessionDescriptionObserver::Create(
-              base::BindOnce(&WebrtcTransport::OnRemoteDescriptionSet,
-                             weak_factory_.GetWeakPtr(),
-                             *maybe_type == webrtc::SdpType::kOffer)),
+          SetSessionDescriptionObserver::Create(base::BindOnce(
+              &WebrtcTransport::OnRemoteDescriptionSet,
+              weak_factory_.GetWeakPtr(), sdp_type == webrtc::SdpType::kOffer)),
           webrtc_session_description.release());
     }
 
@@ -594,40 +595,25 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     UpdateBitrates();
   }
 
-  XmlElement* candidate_element;
-  QName candidate_qname(kTransportNamespace, "candidate");
-  for (candidate_element = transport_info->FirstNamed(candidate_qname);
-       candidate_element;
-       candidate_element = candidate_element->NextNamed(candidate_qname)) {
-    std::string candidate_str = candidate_element->BodyText();
-    std::string sdp_mid =
-        candidate_element->Attr(QName(std::string(), "sdpMid"));
-    std::string sdp_mlineindex_str =
-        candidate_element->Attr(QName(std::string(), "sdpMLineIndex"));
-    int sdp_mlineindex;
-    if (candidate_str.empty() || sdp_mid.empty() ||
-        !base::StringToInt(sdp_mlineindex_str, &sdp_mlineindex)) {
+  for (const auto& candidate : transport_info.candidates) {
+    if (!candidate.sdp_m_line_index) {
       LOG(ERROR) << "Failed to parse incoming candidates.";
-      return false;
-    }
-
-    webrtc::SdpParseError error;
-    std::unique_ptr<webrtc::IceCandidate> candidate(webrtc::CreateIceCandidate(
-        sdp_mid, sdp_mlineindex, candidate_str, &error));
-    if (!candidate) {
-      LOG(ERROR) << "Failed to parse incoming candidate: " << error.description
-                 << " line: " << error.line;
       return false;
     }
 
     if (peer_connection()->signaling_state() ==
         webrtc::PeerConnectionInterface::kStable) {
-      if (!peer_connection()->AddIceCandidate(candidate.get())) {
+      webrtc::IceCandidate webrtc_candidate(
+          candidate.name, *candidate.sdp_m_line_index, candidate.candidate);
+      if (!peer_connection()->AddIceCandidate(&webrtc_candidate)) {
         LOG(ERROR) << "Failed to add incoming ICE candidate.";
         return false;
       }
     } else {
-      pending_incoming_candidates_.push_back(std::move(candidate));
+      pending_incoming_candidates_.push_back(
+          std::make_unique<webrtc::IceCandidate>(candidate.name,
+                                                 *candidate.sdp_m_line_index,
+                                                 candidate.candidate));
     }
   }
 
@@ -821,13 +807,18 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   }
 
   // Format and send the session description to the peer.
-  std::unique_ptr<XmlElement> transport_info(
-      new XmlElement(QName(kTransportNamespace, "transport"), true));
-  XmlElement* offer_tag =
-      new XmlElement(QName(kTransportNamespace, "session-description"));
-  transport_info->AddElement(offer_tag);
-  offer_tag->SetAttr(QName(std::string(), "type"), description->type());
-  offer_tag->SetBodyText(description_sdp);
+  auto transport_info = std::make_unique<JingleTransportInfo>();
+  transport_info->xml_namespace = kTransportNamespace;
+
+  SessionDescription session_description;
+  if (description->GetType() == webrtc::SdpType::kOffer) {
+    session_description.type = SessionDescription::Type::kOffer;
+  } else if (description->GetType() == webrtc::SdpType::kAnswer) {
+    session_description.type = SessionDescription::Type::kAnswer;
+  } else {
+    NOTREACHED();
+  }
+  session_description.sdp = description_sdp;
 
   crypto::hmac::HmacSigner signer(crypto::hash::kSha256, hmac_key_);
   signer.Update(base::as_byte_span(description->type()));
@@ -836,8 +827,8 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   std::array<uint8_t, crypto::hash::kSha256Size> digest;
   signer.Finish(digest);
 
-  offer_tag->SetAttr(QName(std::string(), "signature"),
-                     base::Base64Encode(digest));
+  session_description.signature.assign(digest.begin(), digest.end());
+  transport_info->session_description = std::move(session_description);
 
   send_transport_info_callback_.Run(std::move(transport_info));
 
@@ -1011,22 +1002,10 @@ void WebrtcTransport::OnIceGatheringChange(
 void WebrtcTransport::OnIceCandidate(const webrtc::IceCandidate* candidate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  std::unique_ptr<XmlElement> candidate_element(
-      new XmlElement(QName(kTransportNamespace, "candidate")));
-  std::string candidate_str = candidate->ToString();
-  if (candidate_str.empty()) {
-    LOG(ERROR) << "Failed to serialize local candidate.";
-    return;
-  }
-  candidate_element->SetBodyText(candidate_str);
-  candidate_element->SetAttr(QName(std::string(), "sdpMid"),
-                             candidate->sdp_mid());
-  candidate_element->SetAttr(
-      QName(std::string(), "sdpMLineIndex"),
-      base::NumberToString(candidate->sdp_mline_index()));
-
   EnsurePendingTransportInfoMessage();
-  pending_transport_info_message_->AddElement(candidate_element.release());
+  pending_transport_info_message_->candidates.emplace_back(
+      candidate->sdp_mid(), candidate->candidate(),
+      candidate->sdp_mline_index());
 }
 
 void WebrtcTransport::OnIceSelectedCandidatePairChanged(
@@ -1235,8 +1214,8 @@ void WebrtcTransport::EnsurePendingTransportInfoMessage() {
             transport_info_timer_.IsRunning());
 
   if (!pending_transport_info_message_) {
-    pending_transport_info_message_ = std::make_unique<XmlElement>(
-        QName(kTransportNamespace, "transport"), true);
+    pending_transport_info_message_ = std::make_unique<JingleTransportInfo>();
+    pending_transport_info_message_->xml_namespace = kTransportNamespace;
 
     // Delay sending the new candidates in case we get more candidates
     // that we can send in one message.

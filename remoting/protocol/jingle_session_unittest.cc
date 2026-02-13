@@ -93,8 +93,7 @@ class FakeTransport : public Transport {
     return send_transport_info_callback_;
   }
 
-  const std::vector<std::unique_ptr<jingle_xmpp::XmlElement>>&
-  received_messages() {
+  const std::vector<std::unique_ptr<JingleTransportInfo>>& received_messages() {
     return received_messages_;
   }
 
@@ -109,9 +108,10 @@ class FakeTransport : public Transport {
     send_transport_info_callback_ = send_transport_info_callback;
   }
 
-  bool ProcessTransportInfo(jingle_xmpp::XmlElement* transport_info) override {
+  bool ProcessTransportInfo(
+      const JingleTransportInfo& transport_info) override {
     received_messages_.push_back(
-        std::make_unique<jingle_xmpp::XmlElement>(*transport_info));
+        std::make_unique<JingleTransportInfo>(transport_info));
     if (on_message_callback_) {
       on_message_callback_.Run();
     }
@@ -120,7 +120,7 @@ class FakeTransport : public Transport {
 
  private:
   SendTransportInfoCallback send_transport_info_callback_;
-  std::vector<std::unique_ptr<jingle_xmpp::XmlElement>> received_messages_;
+  std::vector<std::unique_ptr<JingleTransportInfo>> received_messages_;
   base::RepeatingClosure on_message_callback_;
 };
 
@@ -159,12 +159,12 @@ class FakePlugin : public SessionPlugin {
   std::vector<Attachment> incoming_messages_;
 };
 
-std::unique_ptr<jingle_xmpp::XmlElement> CreateTransportInfo(
+std::unique_ptr<JingleTransportInfo> CreateTransportInfo(
     const std::string& id) {
-  std::unique_ptr<jingle_xmpp::XmlElement> result(
-      jingle_xmpp::XmlElement::ForStr(
-          "<transport xmlns='google:remoting:ice'/>"));
-  result->AddAttr(kQNameId, id);
+  auto result = std::make_unique<JingleTransportInfo>();
+  result->xml_namespace = "google:remoting:ice";
+  // Store the ID in the channel name so it can be verified in the test.
+  result->ice_credentials.emplace_back(id, "ufrag", "password");
   return result;
 }
 
@@ -427,8 +427,12 @@ TEST_F(JingleSessionTest, ConnectWithOutOfOrderIqs) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(client_transport_.received_messages().size(), 2U);
-  EXPECT_EQ("1", client_transport_.received_messages()[0]->Attr(kQNameId));
-  EXPECT_EQ("2", client_transport_.received_messages()[1]->Attr(kQNameId));
+  EXPECT_EQ(
+      "1",
+      client_transport_.received_messages()[0]->ice_credentials[0].channel);
+  EXPECT_EQ(
+      "2",
+      client_transport_.received_messages()[1]->ice_credentials[0].channel);
 }
 
 // Verify that out-of-order messages are handled correctly when the session is
@@ -449,7 +453,9 @@ TEST_F(JingleSessionTest, ConnectWithOutOfOrderIqsDestroyOnFirstMessage) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(client_transport_.received_messages().size(), 1U);
-  EXPECT_EQ("1", client_transport_.received_messages()[0]->Attr(kQNameId));
+  EXPECT_EQ(
+      "1",
+      client_transport_.received_messages()[0]->ice_credentials[0].channel);
 }
 
 // Verify that connection is terminated when single-step auth fails.
@@ -587,7 +593,9 @@ TEST_F(JingleSessionTest, TransportInfoDuringAuthentication) {
   // Verify that transport-info that the first transport-info message was
   // received.
   ASSERT_EQ(client_transport_.received_messages().size(), 1U);
-  EXPECT_EQ("1", client_transport_.received_messages()[0]->Attr(kQNameId));
+  EXPECT_EQ(
+      "1",
+      client_transport_.received_messages()[0]->ice_credentials[0].channel);
 }
 
 TEST_F(JingleSessionTest, TestSessionPlugin) {

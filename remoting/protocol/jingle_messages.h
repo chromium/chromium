@@ -130,6 +130,7 @@ struct JingleAuthentication {
 struct IceTransportInfo {
   IceTransportInfo();
   ~IceTransportInfo();
+  // TODO: joedow - Replace this with webrtc::IceCandidate post-chromotocol.
   struct NamedCandidate {
     NamedCandidate();
     NamedCandidate(const std::string& name,
@@ -175,8 +176,13 @@ struct JingleTransportInfo {
   JingleTransportInfo& operator=(JingleTransportInfo&&);
   ~JingleTransportInfo();
 
+  // TODO: joedow - Remove this field when we no longer support chromotocol.
+  std::string xml_namespace;
+
   std::vector<IceTransportInfo::IceCredentials> ice_credentials;
   std::vector<IceTransportInfo::NamedCandidate> candidates;
+
+  std::optional<SessionDescription> session_description;
 };
 
 struct HostAttributesAttachment {
@@ -222,6 +228,7 @@ struct SessionInitiate {
   ~SessionInitiate();
 
   std::optional<JingleAuthentication> authentication;
+  std::optional<JingleTransportInfo> transport_info;
 };
 
 struct SessionAccept {
@@ -233,6 +240,7 @@ struct SessionAccept {
   ~SessionAccept();
 
   std::optional<JingleAuthentication> authentication;
+  std::optional<JingleTransportInfo> transport_info;
 };
 
 struct SessionInfo {
@@ -324,7 +332,6 @@ class JingleMessage {
   std::vector<Attachment> attachments;
 
   // Legacy XML-based payloads, maintained for backward compatibility.
-  std::unique_ptr<jingle_xmpp::XmlElement> transport_info_legacy;
   std::unique_ptr<jingle_xmpp::XmlElement> info_legacy;
 
   // Value from the <reason> tag if it is present in the

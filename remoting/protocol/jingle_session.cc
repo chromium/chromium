@@ -380,13 +380,12 @@ void JingleSession::SetTransport(Transport* transport) {
 }
 
 void JingleSession::SendTransportInfo(
-    std::unique_ptr<jingle_xmpp::XmlElement> transport_info) {
+    std::unique_ptr<JingleTransportInfo> transport_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(state_, AUTHENTICATED);
 
   auto message = std::make_unique<JingleMessage>(
-      peer_address_, JingleTransportInfo(), session_id_);
-  message->transport_info_legacy = std::move(transport_info);
+      peer_address_, std::move(*transport_info), session_id_);
   AddPluginAttachments(message.get());
 
   std::unique_ptr<jingle_xmpp::XmlElement> stanza = message->ToXml();
@@ -696,7 +695,7 @@ void JingleSession::OnSessionInfo(std::unique_ptr<JingleMessage> message,
 
 void JingleSession::OnTransportInfo(std::unique_ptr<JingleMessage> message,
                                     ReplyCallback reply_callback) {
-  if (!message->transport_info_legacy) {
+  if (!std::holds_alternative<JingleTransportInfo>(message->payload())) {
     std::move(reply_callback).Run(JingleMessageReply::BAD_REQUEST);
     return;
   }
@@ -707,7 +706,7 @@ void JingleSession::OnTransportInfo(std::unique_ptr<JingleMessage> message,
   } else if (state_ == AUTHENTICATED) {
     std::move(reply_callback)
         .Run(transport_->ProcessTransportInfo(
-                 message->transport_info_legacy.get())
+                 std::get<JingleTransportInfo>(message->payload()))
                  ? JingleMessageReply::NONE
                  : JingleMessageReply::BAD_REQUEST);
   } else {
@@ -863,7 +862,7 @@ void JingleSession::OnAuthenticated() {
   for (auto& message : messages_to_process) {
     std::move(message.reply_callback)
         .Run(transport_->ProcessTransportInfo(
-                 message.message->transport_info_legacy.get())
+                 std::get<JingleTransportInfo>(message.message->payload()))
                  ? JingleMessageReply::NONE
                  : JingleMessageReply::BAD_REQUEST);
     if (!self) {

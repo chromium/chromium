@@ -23,6 +23,8 @@
 #include "remoting/base/compound_buffer.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/fake_authenticator.h"
+#include "remoting/protocol/jingle_message_xml_converter.h"
+#include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/message_channel_factory.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/message_serialization.h"
@@ -187,18 +189,23 @@ class WebrtcTransportTest : public testing::Test {
   void ProcessTransportInfo(
       std::unique_ptr<WebrtcTransport>* target_transport,
       bool normalize_line_endings,
-      std::unique_ptr<jingle_xmpp::XmlElement> transport_info) {
+      std::unique_ptr<JingleTransportInfo> transport_info) {
     ASSERT_TRUE(target_transport);
 
     // Reformat the message to normalize line endings by removing CR symbol.
     if (normalize_line_endings) {
-      std::string xml = transport_info->Str();
-      base::ReplaceChars(xml, "\r", std::string(), &xml);
-      transport_info.reset(jingle_xmpp::XmlElement::ForStr(xml));
+      std::unique_ptr<jingle_xmpp::XmlElement> xml =
+          JingleTransportInfoToXml(*transport_info);
+      std::string xml_str = xml->Str();
+      base::ReplaceChars(xml_str, "\r", std::string(), &xml_str);
+      std::unique_ptr<jingle_xmpp::XmlElement> normalized_xml(
+          jingle_xmpp::XmlElement::ForStr(xml_str));
+      transport_info = std::make_unique<JingleTransportInfo>();
+      EXPECT_TRUE(JingleTransportInfoFromXml(normalized_xml.get(),
+                                             transport_info.get()));
     }
 
-    EXPECT_TRUE(
-        (*target_transport)->ProcessTransportInfo(transport_info.get()));
+    EXPECT_TRUE((*target_transport)->ProcessTransportInfo(*transport_info));
   }
 
   void InitializeConnection() {

@@ -120,7 +120,7 @@ class WebrtcTransport : public Transport,
   // Transport implementations.
   void Start(Authenticator* authenticator,
              SendTransportInfoCallback send_transport_info_callback) override;
-  bool ProcessTransportInfo(jingle_xmpp::XmlElement* transport_info) override;
+  bool ProcessTransportInfo(const JingleTransportInfo& transport_info) override;
 
   // SessionOptionsProvider implementations.
   const SessionOptions& session_options() const override;
@@ -263,7 +263,7 @@ class WebrtcTransport : public Transport,
 
   bool want_ice_restart_ = false;
 
-  std::unique_ptr<jingle_xmpp::XmlElement> pending_transport_info_message_;
+  std::unique_ptr<JingleTransportInfo> pending_transport_info_message_;
   base::OneShotTimer transport_info_timer_;
   // Timer that closes the transport after the ICE connection has become
   // disconnected for the specified timeout.
