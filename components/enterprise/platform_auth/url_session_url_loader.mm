@@ -19,9 +19,51 @@
 #include "components/enterprise/platform_auth/url_session_helper.h"
 #include "components/enterprise/platform_auth/url_session_test_util.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "net/base/apple/url_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_version.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "url/origin.h"
+#include "url/scheme_host_port.h"
+
+// Helper class to enforce same-origin policies on redirects.
+// URLSession's block-based API does not expose redirect handling, so a
+// delegate must be used.
+@interface URLSessionRedirectEnforcer : NSObject <NSURLSessionTaskDelegate>
+- (instancetype)initWithAllowedOrigin:(url::Origin)origin;
+@end
+
+@implementation URLSessionRedirectEnforcer {
+  url::Origin _allowedOrigin;
+}
+
+- (instancetype)initWithAllowedOrigin:(url::Origin)origin {
+  if (self = [super init]) {
+    _allowedOrigin = std::move(origin);
+  }
+  return self;
+}
+
+- (void)URLSession:(NSURLSession*)session
+                          task:(NSURLSessionTask*)task
+    willPerformHTTPRedirection:(NSHTTPURLResponse*)response
+                    newRequest:(NSURLRequest*)request
+             completionHandler:(void (^)(NSURLRequest*))completionHandler {
+  const GURL newUrl = net::GURLWithNSURL(request.URL);
+  if (!_allowedOrigin.IsSameOriginWith(newUrl)) {
+    // Stops the redirect and returns to the original handler with the redirect
+    // response.
+    LOG_POLICY(ERROR, EXTENSIBLE_SSO)
+        << "[OktaEnterpriseSSO] URLSession request blocked due to "
+           "cross-origin redirect.";
+    completionHandler(nil);
+  } else {
+    // Let the redirect through.
+    completionHandler(request);
+  }
+}
+
+@end
 
 namespace enterprise_auth {
 
@@ -62,9 +104,9 @@ void URLSessionURLLoader::CreateAndStartForTesting(  // IN-TEST
 
   url_session_test_util::ResponseConfig config;
   config.body = kTestServerResponseBody;
-  NSURLSession* session_override =
-      url_session_test_util::GetTestURLSessionForConfig(std::move(config));
-  url_loader->OverrideURLSessionForTesting(session_override);  // IN-TEST
+  url_loader->SetAttachProtocolCallbackForTesting(  // IN-TEST
+      base::BindOnce(url_session_test_util::AttachProtocolToSessionForTesting,
+                     std::move(config)));
 
   url_loader->Start(request, std::move(loader), std::move(client_info));
 }
@@ -96,15 +138,42 @@ void URLSessionURLLoader::Start(
     return;
   }
 
+  if (!request.request_initiator.has_value()) {
+    LOG_POLICY(ERROR, EXTENSIBLE_SSO)
+        << "[OktaEnterpriseSSO] URLSessionURLLoader expects the caller to "
+           "verify that |request| "
+           "contains a valid |request_initiator|.";
+    OnRequestFailed(SSORequestFailReason::kOther);
+    return;
+  }
+
+  if (!request.request_initiator->IsSameOriginWith(request.url)) {
+    LOG_POLICY(ERROR, EXTENSIBLE_SSO)
+        << "[OktaEnterpriseSSO] URLSessionURLLoader cross origin request "
+           "attempted.";
+    OnRequestFailed(SSORequestFailReason::kCorsViolation);
+    return;
+  }
+
+  request_initiator_ = request.request_initiator.value();
+
   NSURLRequest* ns_request =
       url_session_helper::ConvertResourceRequest(request, timeout);
-  NSURLSession* session = nil;
-  if (nsurl_session_override_for_testing_) {
+  // To enforce same-origin policies on redirects, we must create a specific
+  // session with a delegate that intercepts redirects.
+  // Ephemeral session acts like a default session but doesn't write anything
+  // to disk.
+  URLSessionRedirectEnforcer* bridge = [[URLSessionRedirectEnforcer alloc]
+      initWithAllowedOrigin:request.request_initiator.value()];
+  NSURLSessionConfiguration* config =
+      [NSURLSessionConfiguration ephemeralSessionConfiguration];
+  if (attach_protocol_callback_for_testing_) {
     CHECK_IS_TEST();
-    session = nsurl_session_override_for_testing_;
-  } else {
-    session = [NSURLSession sharedSession];
+    std::move(attach_protocol_callback_for_testing_).Run(config);
   }
+  NSURLSession* session = [NSURLSession sessionWithConfiguration:config
+                                                        delegate:bridge
+                                                   delegateQueue:nil];
 
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
@@ -119,20 +188,23 @@ void URLSessionURLLoader::Start(
             LOG_POLICY(ERROR, EXTENSIBLE_SSO)
                 << "[OktaEnterpriseSSO] URLSession request failed with code: "
                 << error.code;
-            SSORequestFailReason reason = error.code == NSURLErrorTimedOut
-                                              ? SSORequestFailReason::kTimeout
-                                              : SSORequestFailReason::kOsError;
+            const SSORequestFailReason reason =
+                error.code == NSURLErrorTimedOut
+                    ? SSORequestFailReason::kTimeout
+                    : SSORequestFailReason::kOsError;
             task_runner->PostTask(
                 FROM_HERE, base::BindOnce(&URLSessionURLLoader::OnRequestFailed,
                                           weak_ptr, reason));
           } else if (!response) {
+            // Happens when the redirect is interrupted.
             LOG_POLICY(ERROR, EXTENSIBLE_SSO)
-                << "[OktaEnterpriseSSO] URLSession request didn't fail but "
-                   "didn't return a response";
+                << "[OktaEnterpriseSSO] URLSession completion handler received "
+                   "no error but response was nil. This was most likely caused "
+                   "by a blocked corss-origin redirect.";
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(&URLSessionURLLoader::OnRequestFailed, weak_ptr,
-                               SSORequestFailReason::kOther));
+                               SSORequestFailReason::kCorsViolation));
           } else {
             task_runner->PostTask(
                 FROM_HERE,
@@ -155,9 +227,27 @@ void URLSessionURLLoader::OnRequestComplete(NSURLResponse* response,
   }
 
   // |response| is guarenteed to be valid.
-  auto head = url_session_helper::ConvertNSURLResponse(response);
+  auto head =
+      url_session_helper::ConvertNSURLResponse(response, request_initiator_);
+  if (!head) {
+    // If the conversion failed that means that CORS headers didn't match
+    // expectations.
+    OnRequestFailed(SSORequestFailReason::kCorsViolation);
+    return;
+  }
   head->request_start = request_start_;
   head->response_start = base::TimeTicks::Now();
+
+  if (head->headers->response_code() >= 300 &&
+      head->headers->response_code() < 400) {
+    // It might be the case that interrupted redirect returns the redirect
+    // response.
+    LOG_POLICY(ERROR, EXTENSIBLE_SSO)
+        << "[OktaEnterpriseSSO] URLSession request blocked due to "
+           "cross-origin redirect.";
+    OnRequestFailed(SSORequestFailReason::kCorsViolation);
+    return;
+  }
 
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   if (ns_data && ns_data.length > 0) {
@@ -243,21 +333,16 @@ void URLSessionURLLoader::DisconnectAndDelete() {
 }
 
 void URLSessionURLLoader::RecordSuccessMetrics() {
-  base::UmaHistogramBoolean("Enterprise.ExtensibleEnterpriseSSO.Okta.Result",
-                            true);
+  base::UmaHistogramBoolean(kOktaResultHistogram, true);
   base::TimeDelta duration = base::TimeTicks::Now() - request_start_;
-  base::UmaHistogramTimes(
-      "Enterprise.ExtensibleEnterpriseSSO.Okta.Success.Duration", duration);
+  base::UmaHistogramTimes(kOktaSuccessDurationHistogram, duration);
 }
 
 void URLSessionURLLoader::RecordFailureMetrics(SSORequestFailReason reason) {
-  base::UmaHistogramBoolean("Enterprise.ExtensibleEnterpriseSSO.Okta.Result",
-                            false);
-  base::UmaHistogramEnumeration(
-      "Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Reason", reason);
+  base::UmaHistogramBoolean(kOktaResultHistogram, false);
+  base::UmaHistogramEnumeration(kOktaFailureReasonHistogram, reason);
   base::TimeDelta duration = base::TimeTicks::Now() - request_start_;
-  base::UmaHistogramTimes(
-      "Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Duration", duration);
+  base::UmaHistogramTimes(kOktaFailureDurationHistogram, duration);
 }
 
 // We let URLSession follow redirects and only get the final result.

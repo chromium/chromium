@@ -19,21 +19,6 @@ BASE_FEATURE_PARAM(std::string,
                    "accept,accept-language,content-type,user-agent,x-okta-user-"
                    "agent-extended");
 
-// Allowlist for response headers on the Okta SSO URL request.
-// Header names must be lowercase. The list is comma-separated.
-// If this list is empty all response headers will be allowed.
-BASE_FEATURE_PARAM(
-    std::string,
-    kOktaSsoResponseHeadersAllowlist,
-    &kOktaSSO,
-    "OktaSsoResponseHeadersAllowlist",
-    "accept-ch,access-control-allow-credentials,access-control-allow-headers,"
-    "access-control-allow-origin,cache-control,challengerequest,content-"
-    "security-policy,content-security-policy-report-only,content-type,date,"
-    "expires,referrer-policy,server,strict-transport-security,vary,www-"
-    "authenticate,x-content-type-options,x-okta-request-id,x-rate-limit-limit,"
-    "x-rate-limit-remaining,x-robots-tag");
-
 // Fixed request headers appended to the Okta SSO URL request.
 // Format: list of pipe-separated pairs. Values within a pair are
 // semicolon-separated.

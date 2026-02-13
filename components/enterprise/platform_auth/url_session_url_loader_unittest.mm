@@ -37,6 +37,7 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 using testing::_;
 using MockClient = testing::NiceMock<network::MockURLLoaderClient>;
@@ -45,15 +46,9 @@ using url_session_test_util::ResponseConfig;
 namespace {
 
 constexpr char kBody[] = "payload";
-constexpr std::string_view kOktaResultHistogram =
-    "Enterprise.ExtensibleEnterpriseSSO.Okta.Result";
-constexpr std::string_view kOktaSuccessDurationHistogram =
-    "Enterprise.ExtensibleEnterpriseSSO.Okta.Success.Duration";
-constexpr std::string_view kOktaFailureDurationHistogram =
-    "Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Duration";
-constexpr std::string_view kOktaFailureReasonHistogram =
-    "Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Reason";
 
+constexpr char kInitiator[] = "https://foobar.example.com";
+constexpr char kAccessControlAllowOrigin[] = "Access-Control-Allow-Origin";
 constexpr char kSsoRequestURL[] =
     "https://foobar.example.com/idp/idx/authenticators/sso_extension/"
     "transactions/123/verify";
@@ -77,18 +72,21 @@ class URLSessionURLLoaderTest : public testing::Test {
   // Should be called at most once per test instance.
   // The behaviour of the network is controlled by the url used, see the
   // anonymous namespace for details.
-  void StartRequest(const std::string& url,
-                    ResponseConfig&& response_config,
-                    std::string_view method = "POST",
+  void StartRequest(ResponseConfig&& response_config,
+                    const network::ResourceRequest& request,
                     base::TimeDelta timeout = base::TimeDelta::Max()) {
     CreateURLSessionURLLoader(std::move(response_config));
-
-    network::ResourceRequest request;
-    request.url = GURL(url);
-    request.method = method;
-
     url_loader_->Start(request, loader_remote_.BindNewPipeAndPassReceiver(),
                        std::move(client_remote_), timeout);
+  }
+
+  void StartRequest(ResponseConfig&& response_config,
+                    base::TimeDelta timeout = base::TimeDelta::Max()) {
+    network::ResourceRequest request;
+    request.url = GURL(kSsoRequestURL);
+    request.method = "POST";
+    request.request_initiator = url::Origin::Create(request.url);
+    StartRequest(std::move(response_config), request, timeout);
   }
 
   void WaitForLoaderToDisconnectAndDestroy() {
@@ -111,23 +109,12 @@ class URLSessionURLLoaderTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   const std::string kTooBigPayload;
 
-  static constexpr URLSessionURLLoader::SSORequestFailReason
-      kFailReasonTimeout = URLSessionURLLoader::SSORequestFailReason::kTimeout;
-  static constexpr URLSessionURLLoader::SSORequestFailReason
-      kFailReasonResponseTooBig =
-          URLSessionURLLoader::SSORequestFailReason::kResponseTooBig;
-  static constexpr URLSessionURLLoader::SSORequestFailReason
-      kFailReasonOSError = URLSessionURLLoader::SSORequestFailReason::kOsError;
-  static constexpr URLSessionURLLoader::SSORequestFailReason kFailReasonOther =
-      URLSessionURLLoader::SSORequestFailReason::kOther;
-
  private:
   void CreateURLSessionURLLoader(ResponseConfig&& response_config) {
     URLSessionURLLoader* instance = new URLSessionURLLoader();
-    NSURLSession* session_override =
-        url_session_test_util::GetTestURLSessionForConfig(
-            std::move(response_config));
-    instance->OverrideURLSessionForTesting(session_override);
+    instance->SetAttachProtocolCallbackForTesting(
+        base::BindOnce(url_session_test_util::AttachProtocolToSessionForTesting,
+                       std::move(response_config)));
     url_loader_ = instance->weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -145,6 +132,7 @@ class URLSessionURLLoaderTest : public testing::Test {
 TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithBody) {
   ResponseConfig config;
   config.body = kBody;
+  config.headers = {{kAccessControlAllowOrigin, kInitiator}};
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _))
@@ -163,16 +151,19 @@ TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithBody) {
                   &network::URLLoaderCompletionStatus::error_code, net::OK)))
       .Times(1);
 
-  StartRequest(kSsoRequestURL, std::move(config));
+  StartRequest(std::move(config));
   WaitForLoaderToDisconnectAndDestroy();
 
-  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, true, 1);
-  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 1);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, true, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 1);
 }
 
 TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithEmptyBody) {
   ResponseConfig config;
   config.body = "";
+  config.headers = {{kAccessControlAllowOrigin, kInitiator}};
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _))
@@ -187,17 +178,22 @@ TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithEmptyBody) {
                   &network::URLLoaderCompletionStatus::error_code, net::OK)))
       .Times(1);
 
-  StartRequest(kSsoRequestURL, std::move(config));
+  StartRequest(std::move(config));
   WaitForLoaderToDisconnectAndDestroy();
 
-  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, true, 1);
-  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kOktaFailureReasonHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, true, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithNoBody) {
   ResponseConfig config;
+  config.headers = {{kAccessControlAllowOrigin, kInitiator}};
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _))
@@ -212,18 +208,23 @@ TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithNoBody) {
                   &network::URLLoaderCompletionStatus::error_code, net::OK)))
       .Times(1);
 
-  StartRequest(kSsoRequestURL, std::move(config));
+  StartRequest(std::move(config));
   WaitForLoaderToDisconnectAndDestroy();
 
-  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, true, 1);
-  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kOktaFailureReasonHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, true, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, RejectsTooBigBodies) {
   ResponseConfig config;
   config.body = kTooBigPayload;
+  config.headers = {{kAccessControlAllowOrigin, kInitiator}};
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnComplete(testing::Field(
@@ -231,14 +232,18 @@ TEST_F(URLSessionURLLoaderTest, RejectsTooBigBodies) {
                                net::ERR_FILE_TOO_BIG)))
       .Times(1);
 
-  StartRequest(kSsoRequestURL, std::move(config));
+  StartRequest(std::move(config));
   WaitForLoaderToDisconnectAndDestroy();
 
-  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, false, 1);
-  histogram_tester_.ExpectUniqueSample(kOktaFailureReasonHistogram,
-                                       kFailReasonResponseTooBig, 1);
-  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaFailureReasonHistogram,
+      URLSessionURLLoader::SSORequestFailReason::kResponseTooBig, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, DestroysItselfOnDisconnect) {
@@ -253,16 +258,20 @@ TEST_F(URLSessionURLLoaderTest, DestroysItselfOnDisconnect) {
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
   EXPECT_CALL(mock_client, OnComplete(_)).Times(0);
 
-  StartRequest(kSsoRequestURL, std::move(config));
+  StartRequest(std::move(config));
   EXPECT_TRUE(started_future.Wait());
 
   DisconnectAndWaitForLoadersDestruction();
   EXPECT_TRUE(stopped_future.Wait());
 
-  histogram_tester_.ExpectTotalCount(kOktaResultHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kOktaFailureReasonHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectTotalCount(URLSessionURLLoader::kOktaResultHistogram,
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, HandlesErrorGently) {
@@ -275,14 +284,18 @@ TEST_F(URLSessionURLLoaderTest, HandlesErrorGently) {
                                net::ERR_FAILED)))
       .Times(1);
 
-  StartRequest(kSsoRequestURL, std::move(config));
+  StartRequest(std::move(config));
   WaitForLoaderToDisconnectAndDestroy();
 
-  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, false, 1);
-  histogram_tester_.ExpectUniqueSample(kOktaFailureReasonHistogram,
-                                       kFailReasonOSError, 1);
-  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaFailureReasonHistogram,
+      URLSessionURLLoader::SSORequestFailReason::kOsError, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, RequestCanceledOnDestruction) {
@@ -297,15 +310,19 @@ TEST_F(URLSessionURLLoaderTest, RequestCanceledOnDestruction) {
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
   EXPECT_CALL(mock_client, OnComplete(_)).Times(0);
 
-  StartRequest(kSsoRequestURL, std::move(config));
+  StartRequest(std::move(config));
   EXPECT_TRUE(started_future.Wait());
   DisconnectAndWaitForLoadersDestruction();
   EXPECT_TRUE(cancel_future.Wait());
 
-  histogram_tester_.ExpectTotalCount(kOktaResultHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kOktaFailureReasonHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectTotalCount(URLSessionURLLoader::kOktaResultHistogram,
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, WorksWithoutReceiver) {
@@ -313,6 +330,7 @@ TEST_F(URLSessionURLLoaderTest, WorksWithoutReceiver) {
 
   ResponseConfig config;
   config.body = kBody;
+  config.headers = {{kAccessControlAllowOrigin, kInitiator}};
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _))
@@ -331,13 +349,17 @@ TEST_F(URLSessionURLLoaderTest, WorksWithoutReceiver) {
                   &network::URLLoaderCompletionStatus::error_code, net::OK)))
       .Times(1);
 
-  StartRequest(kSsoRequestURL, std::move(config));
+  StartRequest(std::move(config));
   WaitForLoaderToDisconnectAndDestroy();
 
-  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, true, 1);
-  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kOktaFailureReasonHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, true, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, Timeout) {
@@ -352,18 +374,144 @@ TEST_F(URLSessionURLLoaderTest, Timeout) {
                                net::ERR_TIMED_OUT)))
       .Times(1);
 
-  StartRequest(kSsoRequestURL, std::move(config), "POST", base::Seconds(1));
+  StartRequest(std::move(config), base::Seconds(1));
   WaitForLoaderToDisconnectAndDestroy();
 
-  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, false, 1);
-  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
-  histogram_tester_.ExpectUniqueSample(kOktaFailureReasonHistogram,
-                                       kFailReasonTimeout, 1);
-  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 1);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaFailureReasonHistogram,
+      URLSessionURLLoader::SSORequestFailReason::kTimeout, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 1);
+}
+
+TEST_F(URLSessionURLLoaderTest, ExpectsRequestInitiator) {
+  ResponseConfig config;
+  config.body = kBody;
+  config.headers = {{kAccessControlAllowOrigin, kInitiator}};
+
+  MockClient& mock_client = GetMockClient();
+  EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
+  EXPECT_CALL(mock_client, OnComplete(testing::Field(
+                               &network::URLLoaderCompletionStatus::error_code,
+                               net::ERR_FAILED)))
+      .Times(1);
+
+  network::ResourceRequest request;
+  request.url = GURL(kSsoRequestURL);
+  request.method = "POST";
+  StartRequest(std::move(config), request);
+  WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaFailureReasonHistogram,
+      URLSessionURLLoader::SSORequestFailReason::kOther, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 1);
+}
+
+TEST_F(URLSessionURLLoaderTest, BlocksCrossOriginRequest) {
+  ResponseConfig config;
+  config.body = kBody;
+  config.headers = {{kAccessControlAllowOrigin, kInitiator}};
+
+  MockClient& mock_client = GetMockClient();
+  EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
+  EXPECT_CALL(mock_client, OnComplete(testing::Field(
+                               &network::URLLoaderCompletionStatus::error_code,
+                               net::ERR_FAILED)))
+      .Times(1);
+
+  network::ResourceRequest request;
+  request.url = GURL(kSsoRequestURL);
+  request.method = "POST";
+  request.request_initiator = url::Origin::Create(
+      GURL("https://not.initiator.com/idp/idx/authenticators/sso_extension/"
+           "transactions/123/verify"));
+  StartRequest(std::move(config), request);
+  WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaFailureReasonHistogram,
+      URLSessionURLLoader::SSORequestFailReason::kCorsViolation, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 1);
+}
+
+TEST_F(URLSessionURLLoaderTest, AllowsSameOriginRedirects) {
+  ResponseConfig config;
+  config.redirect_url = "https://foobar.example.com/redirect";
+  config.headers = {{kAccessControlAllowOrigin, kInitiator}};
+
+  MockClient& mock_client = GetMockClient();
+  EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _))
+      .Times(1)
+      .WillOnce([&](auto head, auto body, auto) {
+        std::string received_body;
+        ASSERT_TRUE(body.is_valid());
+        ASSERT_TRUE(
+            mojo::BlockingCopyToString(std::move(body), &received_body));
+        EXPECT_EQ("redirect", received_body);
+        ASSERT_TRUE(head->headers);
+      });
+  EXPECT_CALL(mock_client,
+              OnComplete(testing::Field(
+                  &network::URLLoaderCompletionStatus::error_code, net::OK)))
+      .Times(1);
+
+  StartRequest(std::move(config));
+  WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, true, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 0);
+}
+
+TEST_F(URLSessionURLLoaderTest, BlocksCrossOriginRedirects) {
+  ResponseConfig config;
+  config.redirect_url = "https://redirect.example.com";
+  config.headers = {{kAccessControlAllowOrigin, kInitiator}};
+
+  MockClient& mock_client = GetMockClient();
+  EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
+  EXPECT_CALL(mock_client, OnComplete(testing::Field(
+                               &network::URLLoaderCompletionStatus::error_code,
+                               net::ERR_FAILED)))
+      .Times(1);
+
+  StartRequest(std::move(config));
+  WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaFailureReasonHistogram,
+      URLSessionURLLoader::SSORequestFailReason::kCorsViolation, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 1);
 }
 
 TEST_F(URLSessionURLLoaderTest, FailsForNonSSORequests) {
   ResponseConfig config;
+  config.headers = {{kAccessControlAllowOrigin, kInitiator}};
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
@@ -373,14 +521,71 @@ TEST_F(URLSessionURLLoaderTest, FailsForNonSSORequests) {
       .Times(1);
 
   // Using GET method to signify this is an invalid request.
-  StartRequest(kSsoRequestURL, std::move(config), "GET");
+  network::ResourceRequest request;
+  request.url = GURL(kSsoRequestURL);
+  request.method = "GET";
+  request.request_initiator = url::Origin::Create(request.url);
+  StartRequest(std::move(config), request);
   WaitForLoaderToDisconnectAndDestroy();
 
-  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, false, 1);
-  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
-  histogram_tester_.ExpectUniqueSample(kOktaFailureReasonHistogram,
-                                       kFailReasonOther, 1);
-  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 1);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaFailureReasonHistogram,
+      URLSessionURLLoader::SSORequestFailReason::kOther, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 1);
+}
+
+TEST_F(URLSessionURLLoaderTest, FailsForMissingAccessControlAllowOriginHeader) {
+  ResponseConfig config;
+
+  MockClient& mock_client = GetMockClient();
+  EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
+  EXPECT_CALL(mock_client, OnComplete(testing::Field(
+                               &network::URLLoaderCompletionStatus::error_code,
+                               net::ERR_FAILED)))
+      .Times(1);
+
+  StartRequest(std::move(config));
+  WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaFailureReasonHistogram,
+      URLSessionURLLoader::SSORequestFailReason::kCorsViolation, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 1);
+}
+
+TEST_F(URLSessionURLLoaderTest, AccessControlAllowOriginHeaderMismatch) {
+  ResponseConfig config;
+  config.headers = {{kAccessControlAllowOrigin, "https://not.initiator.com"}};
+
+  MockClient& mock_client = GetMockClient();
+  EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
+  EXPECT_CALL(mock_client, OnComplete(testing::Field(
+                               &network::URLLoaderCompletionStatus::error_code,
+                               net::ERR_FAILED)))
+      .Times(1);
+
+  StartRequest(std::move(config));
+  WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      URLSessionURLLoader::kOktaFailureReasonHistogram,
+      URLSessionURLLoader::SSORequestFailReason::kCorsViolation, 1);
+  histogram_tester_.ExpectTotalCount(
+      URLSessionURLLoader::kOktaFailureDurationHistogram, 1);
 }
 
 }  // namespace enterprise_auth

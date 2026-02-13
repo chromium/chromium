@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "components/enterprise/platform_auth/url_session_url_loader.h"
@@ -97,17 +98,48 @@ static const char kConfigKey = 0;
     return;
   }
 
+  if (config->redirect_url.has_value()) {
+    NSString* locationString =
+        [NSString stringWithUTF8String:config->redirect_url.value().c_str()];
+    NSURL* redirectURL = [NSURL URLWithString:locationString];
+
+    config->redirect_url.reset();
+    config->body = "redirect";
+
+    // Create the 302 Redirect response
+    NSHTTPURLResponse* response =
+        [[NSHTTPURLResponse alloc] initWithURL:self.request.URL
+                                    statusCode:302
+                                   HTTPVersion:@"HTTP/1.1"
+                                  headerFields:@{@"Location" : locationString}];
+
+    // Create the new request the client should follow
+    NSMutableURLRequest* newRequest = [self.request mutableCopy];
+    [newRequest setURL:redirectURL];
+    [self.client URLProtocol:self
+        wasRedirectedToRequest:newRequest
+              redirectResponse:response];
+    [self.client URLProtocolDidFinishLoading:self];
+    return;
+  }
+
   NSData* data = nil;
   if (config->body.has_value()) {
     data = [NSData dataWithBytes:config->body.value().c_str()
                           length:config->body.value().size()];
   }
 
+  NSMutableDictionary* headers = [[NSMutableDictionary alloc] init];
+  for (const auto& [key, value] : config->headers) {
+    [headers setValue:(base::SysUTF8ToNSString(value))
+               forKey:(base::SysUTF8ToNSString(key))];
+  }
+
   NSHTTPURLResponse* response =
       [[NSHTTPURLResponse alloc] initWithURL:self.request.URL
                                   statusCode:200
                                  HTTPVersion:@"HTTP/1.1"
-                                headerFields:nil];
+                                headerFields:headers];
 
   [self.client URLProtocol:self
         didReceiveResponse:response
@@ -134,7 +166,9 @@ namespace url_session_test_util {
 // class association mechanism.
 // ResponseConfig is wrapped with an Objective-C holder, which then is
 // associated with the protocol class.
-NSURLSession* GetTestURLSessionForConfig(ResponseConfig&& config) {
+void AttachProtocolToSessionForTesting(
+    ResponseConfig&& config,
+    NSURLSessionConfiguration* session_config) {
   Class base_class = [PlatformAuthStubNSURLProtocol class];
 
   // The class name has to be unique.
@@ -152,11 +186,7 @@ NSURLSession* GetTestURLSessionForConfig(ResponseConfig&& config) {
   // single base class.
   objc_setAssociatedObject(unique_subclass, &kConfigKey, holder,
                            OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
-  NSURLSessionConfiguration* session_config =
-      [NSURLSessionConfiguration ephemeralSessionConfiguration];
   session_config.protocolClasses = @[ unique_subclass ];
-  return [NSURLSession sessionWithConfiguration:session_config];
 }
 
 }  // namespace url_session_test_util
