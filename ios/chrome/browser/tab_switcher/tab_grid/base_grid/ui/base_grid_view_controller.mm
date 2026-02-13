@@ -986,12 +986,16 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 - (void)collectionView:(UICollectionView*)collectionView
     performDropWithCoordinator:
         (id<UICollectionViewDropCoordinator>)coordinator {
+  id<UICollectionViewDropItem> dropItem = coordinator.items.firstObject;
+  NSIndexPath* sourceIndexPath = dropItem.sourceIndexPath;
+  // Check for a valid sourceIndexPath so that a URL that has not yet been
+  // created as a tab isn't dropped into another tab/group.
+  // [self.dragDropHandler dropItemFromProvider:toIndex:placeholderContext:]
+  // will handle this case further down in the method and load the URL.
   if (IsTabGridDragAndDropEnabled() &&
       coordinator.proposal.intent ==
           UICollectionViewDropIntentInsertIntoDestinationIndexPath &&
-      coordinator.items.count == 1) {
-    id<UICollectionViewDropItem> dropItem = coordinator.items.firstObject;
-    NSIndexPath* sourceIndexPath = dropItem.sourceIndexPath;
+      coordinator.items.count == 1 && sourceIndexPath) {
     NSIndexPath* destinationIndexPath = coordinator.destinationIndexPath;
 
     self.dragEndAtNewIndex = YES;
