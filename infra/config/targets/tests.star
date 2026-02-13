@@ -1802,17 +1802,6 @@ targets.tests.gtest_test(
     binary = "media_unittests",
 )
 
-targets.tests.gtest_test(
-    name = "media_unittests_skia_graphite_metal",
-    args = [
-        "--test-launcher-bot-mode",
-        "--enable-features=SkiaGraphite",
-        "--skia-graphite-backend=metal",
-        "--use-gpu-in-tests",
-    ],
-    binary = "media_unittests",
-)
-
 targets.tests.isolated_script_test(
     name = "memory.leak_detection",
     args = [

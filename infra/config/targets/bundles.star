@@ -5278,7 +5278,6 @@ targets.bundle(
         "liburlpattern_unittests",
         "media_unittests",
         "media_unittests_skia_graphite_dawn",
-        "media_unittests_skia_graphite_metal",
         "midi_unittests",
         "mojo_unittests",
         "native_theme_unittests",
@@ -5374,12 +5373,6 @@ targets.bundle(
             ],
         ),
         "media_unittests_skia_graphite_dawn": targets.mixin(
-            args = [
-                "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
-            ],
-        ),
-        "media_unittests_skia_graphite_metal": targets.mixin(
             args = [
                 "--test-launcher-bot-mode",
                 "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
