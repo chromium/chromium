@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_framer.h"
@@ -17,6 +18,20 @@
 namespace quic {
 
 namespace {
+
+auto QuicFrameDataAsByteSpan(const QuicStreamFrame& frame) {
+  // SAFETY: `frame.data_buffer` points to a valid, contiguous memory region of
+  // size `frame.data_length` bytes.
+  return UNSAFE_BUFFERS(
+      base::as_bytes(base::span(frame.data_buffer, frame.data_length)));
+}
+
+auto QuicFrameDataAsByteSpan(const QuicCryptoFrame& frame) {
+  // SAFETY: `frame.data_buffer` points to a valid, contiguous memory region of
+  // size `frame.data_length` bytes.
+  return UNSAFE_BUFFERS(
+      base::as_bytes(base::span(frame.data_buffer, frame.data_length)));
+}
 
 class QuicPacketPrinter : public QuicFramerVisitorInterface {
  public:
@@ -78,7 +93,7 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
   bool OnStreamFrame(const QuicStreamFrame& frame) override {
     *output_ << "OnStreamFrame: " << frame;
     *output_ << "         data: { "
-             << base::HexEncode(frame.data_buffer, frame.data_length) << " }\n";
+             << base::HexEncode(QuicFrameDataAsByteSpan(frame)) << " }\n";
     if (session_) {
       *output_ << "If this is an HTTP frame, headers and body "
                   "will be printed out by HTTP decoder."
@@ -90,7 +105,7 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
   bool OnCryptoFrame(const QuicCryptoFrame& frame) override {
     *output_ << "OnCryptoFrame: " << frame;
     *output_ << "         data: { "
-             << base::HexEncode(frame.data_buffer, frame.data_length) << " }\n";
+             << base::HexEncode(QuicFrameDataAsByteSpan(frame)) << " }\n";
     return true;
   }
   bool OnAckFrameStart(QuicPacketNumber largest_acked,

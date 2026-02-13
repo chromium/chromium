@@ -40,7 +40,7 @@ MATCHER_P(HexEq, hexStr, "") {
     return true;
 
   // Print hex string (easier to read than default GTest representation)
-  *result_listener << "a.k.a. 0x" << base::HexEncode(arg.data(), arg.size());
+  *result_listener << "a.k.a. 0x" << base::HexEncode(base::as_byte_span(arg));
   return std::ranges::equal(base::as_byte_span(arg),
                             base::span<const uint8_t>(bytes));
 }
