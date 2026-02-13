@@ -118,6 +118,10 @@ class ChromeTranslateClient
                        bool triggered_from_menu) override;
   bool IsTranslatableURL(const GURL& url) override;
 
+  // Performs a one-time undo of the translation and shows the translation
+  // bubble.
+  void UndoTranslate();
+
   // TranslateDriver::LanguageDetectionObserver implementation.
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;

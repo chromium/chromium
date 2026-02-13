@@ -144,6 +144,7 @@ void TranslateOverlayTabHelper::TranslateStepObserver::OnTranslateStepChanged(
       break;
     case translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE:
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
+    case translate::TranslateStep::TRANSLATE_STEP_AFTER_UNDO:
       break;
   }
 }

@@ -164,6 +164,7 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
       }
       break;
     case translate::TRANSLATE_STEP_NEVER_TRANSLATE:
+    case translate::TRANSLATE_STEP_AFTER_UNDO:
       // Not supported.
       break;
   }

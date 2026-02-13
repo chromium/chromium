@@ -37,6 +37,7 @@ TranslateBubbleModelImpl::TranslateStepToViewState(
     translate::TranslateStep step) {
   switch (step) {
     case translate::TRANSLATE_STEP_BEFORE_TRANSLATE:
+    case translate::TRANSLATE_STEP_AFTER_UNDO:
       return TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE;
     case translate::TRANSLATE_STEP_TRANSLATING:
       return TranslateBubbleModel::VIEW_STATE_TRANSLATING;

@@ -82,6 +82,7 @@
     case translate::TranslateStep::TRANSLATE_STEP_TRANSLATING:
       break;
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
+    case translate::TranslateStep::TRANSLATE_STEP_AFTER_UNDO:
       NOTREACHED() << "Should not be presenting Banner in this TranslateStep";
   }
   [self dismissOverlay];
@@ -123,6 +124,7 @@
       return l10n_util::GetNSString(
           IDS_IOS_TRANSLATE_INFOBAR_ON_ERROR_BANNER_TITLE);
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
+    case translate::TranslateStep::TRANSLATE_STEP_AFTER_UNDO:
       NOTREACHED() << "Should not be presenting Banner in this TranslateStep";
   }
 }
@@ -150,6 +152,7 @@
       return l10n_util::GetNSString(
           IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_TRY_AGAIN_ACTION);
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
+    case translate::TranslateStep::TRANSLATE_STEP_AFTER_UNDO:
       NOTREACHED() << "Translate infobar should not be presenting anything in "
                       "this state.";
   }
