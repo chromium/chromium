@@ -10,11 +10,11 @@
  * #css_wrapper_metadata_end */
 
 .page-title {
-  font-weight: 700;
+  font-weight: 400;
   font-size: 14px;
   line-height: 20px;
   margin: 0;
-  color: var(--color-sys-on-surface-subtle);
+  color: var(--cr-primary-text-color);
 }
 
 .headline {
