@@ -819,12 +819,15 @@ suite('ContentController', () => {
       assertEquals(imageData.height, canvas.height);
       assertEquals(imageData.scale.toString(), canvas.style.zoom);
       assertTrue(drewImage);
+      assertTrue(receivedContentChange);
     });
 
     test('does nothing if element is missing', async () => {
       await contentController.onImageDownloaded(nodeId);
       await microtasksFinished();
+
       assertFalse(drewImage);
+      assertFalse(receivedContentChange);
     });
 
     test('does nothing if element is not a canvas', async () => {
@@ -835,6 +838,7 @@ suite('ContentController', () => {
       await microtasksFinished();
 
       assertFalse(drewImage);
+      assertFalse(receivedContentChange);
     });
   });
 
@@ -896,6 +900,20 @@ suite('ContentController', () => {
       assertEquals('', figure.style.display);
       assertFalse(nodeStore.areNodesAllHidden(
           [ReadAloudNode.createFromAxNode(textId)!]));
+      assertTrue(receivedContentChange);
+    });
+
+    test('notifies of content change with readability', async () => {
+      chrome.readingMode.imagesFeatureEnabled = true;
+      chrome.readingMode.imagesEnabled = false;
+      chrome.readingMode.activeDistillationMethod =
+          chrome.readingMode.distillationTypeReadability;
+      contentController.setState(ContentType.HAS_CONTENT);
+      receivedContentChange = false;
+
+      contentController.updateImages(shadowRoot);
+      await microtasksFinished();
+
       assertTrue(receivedContentChange);
     });
   });

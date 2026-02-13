@@ -578,6 +578,7 @@ export class ContentController {
         premultiplyAlpha: 'premultiply',
       });
       context.drawImage(bitmap, 0, 0);
+      this.listeners_.forEach(l => l.onContentChange());
     }
   }
 
@@ -586,16 +587,17 @@ export class ContentController {
       return;
     }
 
-    if (isDistilledByReadability()) {
-      this.updateImagesForReadability(root);
-    } else {
-      this.updateImagesForAxTree(root);
+    const imagesUpdated = isDistilledByReadability() ?
+        this.updateImagesForReadability_(root) :
+        this.updateImagesForAxTree_(root);
+    if (imagesUpdated) {
+      this.listeners_.forEach(l => l.onContentChange());
     }
   }
 
-  updateImagesForAxTree(shadowRoot: ParentNode) {
+  private updateImagesForAxTree_(shadowRoot: ParentNode): boolean {
     if (!chrome.readingMode.imagesFeatureEnabled) {
-      return;
+      return false;
     }
 
     const imagesEnabled = chrome.readingMode.imagesEnabled;
@@ -604,24 +606,17 @@ export class ContentController {
     }
     // There is some strange issue where the HTML css application does not work
     // on canvases.
-    const canvases = shadowRoot.querySelectorAll('canvas');
-    const figures = shadowRoot.querySelectorAll('figure');
+    const canvases = shadowRoot.querySelectorAll<HTMLElement>('canvas, figure');
     for (const canvas of canvases) {
       canvas.style.display = imagesEnabled ? '' : 'none';
       this.markTextNodesHiddenIfImagesHidden_(canvas);
     }
-    for (const canvas of figures) {
-      canvas.style.display = imagesEnabled ? '' : 'none';
-      this.markTextNodesHiddenIfImagesHidden_(canvas);
-    }
-    if (canvases.length > 0 || figures.length > 0) {
-      this.listeners_.forEach(l => l.onContentChange());
-    }
+    return canvases.length > 0;
   }
 
-  updateImagesForReadability(container: ParentNode) {
+  private updateImagesForReadability_(container: ParentNode): boolean {
     if (!isDistilledByReadability()) {
-      return;
+      return false;
     }
 
     // If chrome.readingMode.imagesFeatureEnabled is disabled, hide images also.
@@ -633,6 +628,8 @@ export class ContentController {
     for (const element of images) {
       element.style.display = imagesEnabled ? '' : 'none';
     }
+
+    return images.length > 0;
   }
 
   private async markTextNodesHiddenIfImagesHidden_(node: Node) {
