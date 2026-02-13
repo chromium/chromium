@@ -129,23 +129,8 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // Adds a set of URLs to the table.
   void AddURLs(const std::vector<GURL>& urls);
 
-  // See DeleteURLs.
-  class URLIterator {
-   public:
-    // HasNextURL must return true when this is called. Returns the next URL
-    // then advances the iterator. Note that the returned reference is only
-    // valid until the next call of NextURL.
-    virtual const GURL& NextURL() = 0;
-
-    // Returns true if still has URLs to be iterated.
-    virtual bool HasNextURL() const = 0;
-
-   protected:
-    virtual ~URLIterator() = default;
-  };
-
   // Deletes the specified URLs from |rows| from the table.
-  void DeleteURLs(URLIterator* iterator);
+  void DeleteURLs(const std::vector<GURL>& urls);
 
   // Clears the visited links table by deleting the file from disk. Used as
   // part of history clearing.

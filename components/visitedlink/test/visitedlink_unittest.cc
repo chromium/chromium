@@ -112,54 +112,6 @@ void TestVisitedLinkDelegate::AddVisitedLinkForRebuild(
   rebuild_links_.push_back(link);
 }
 
-class TestURLIterator : public VisitedLinkWriter::URLIterator {
- public:
-  explicit TestURLIterator(const URLs& urls);
-
-  const GURL& NextURL() override;
-  bool HasNextURL() const override;
-
- private:
-  URLs::const_iterator iterator_;
-  URLs::const_iterator end_;
-};
-
-TestURLIterator::TestURLIterator(const URLs& urls)
-    : iterator_(urls.begin()), end_(urls.end()) {}
-
-const GURL& TestURLIterator::NextURL() {
-  return *(iterator_++);
-}
-
-bool TestURLIterator::HasNextURL() const {
-  return iterator_ != end_;
-}
-
-class TestVisitedLinkIterator
-    : public PartitionedVisitedLinkWriter::VisitedLinkIterator {
- public:
-  explicit TestVisitedLinkIterator(const std::vector<VisitedLink>& links);
-
-  const VisitedLink& NextVisitedLink() override;
-  bool HasNextVisitedLink() const override;
-
- private:
-  std::vector<VisitedLink>::const_iterator iterator_;
-  std::vector<VisitedLink>::const_iterator end_;
-};
-
-TestVisitedLinkIterator::TestVisitedLinkIterator(
-    const std::vector<VisitedLink>& links)
-    : iterator_(links.begin()), end_(links.end()) {}
-
-const VisitedLink& TestVisitedLinkIterator::NextVisitedLink() {
-  return *(iterator_++);
-}
-
-bool TestVisitedLinkIterator::HasNextVisitedLink() const {
-  return iterator_ != end_;
-}
-
 }  // namespace
 
 class TrackingVisitedLinkEventListener
@@ -410,8 +362,7 @@ TEST_F(VisitedLinkTest, BigDelete) {
     urls_to_delete.push_back(url);
   }
 
-  TestURLIterator iterator(urls_to_delete);
-  writer_->DeleteURLs(&iterator);
+  writer_->DeleteURLs(urls_to_delete);
   writer_->DebugValidate();
 
   Reload();
@@ -532,8 +483,7 @@ TEST_F(VisitedLinkTest, Rebuild) {
   writer_->AddURL(TestURL(kTestCount));
   URLs urls_to_delete;
   urls_to_delete.push_back(TestURL(kTestCount));
-  TestURLIterator iterator(urls_to_delete);
-  writer_->DeleteURLs(&iterator);
+  writer_->DeleteURLs(urls_to_delete);
 
   // Wait for the rebuild to complete. The task will terminate the message
   // loop when the rebuild is done. There's no chance that the rebuild will
@@ -589,8 +539,7 @@ TEST_F(VisitedLinkTest, Listener) {
   // Delete an URL.
   URLs urls_to_delete;
   urls_to_delete.push_back(TestURL(0));
-  TestURLIterator iterator(urls_to_delete);
-  writer_->DeleteURLs(&iterator);
+  writer_->DeleteURLs(urls_to_delete);
 
   // ... and all of the remaining ones.
   writer_->DeleteAllURLs();
@@ -940,8 +889,7 @@ TEST_F(PartitionedVisitedLinkTest, AddAndDelete) {
 
   // Delete that link and ensure it isn't in the hashtable.
   std::vector<VisitedLink> links_to_delete = {link_0};
-  TestVisitedLinkIterator iterator(links_to_delete);
-  partitioned_writer_->DeleteVisitedLinks(&iterator);
+  partitioned_writer_->DeleteVisitedLinks(links_to_delete);
   EXPECT_FALSE(partitioned_writer_->IsVisited(link_0, salt_0.value()));
 }
 
@@ -972,8 +920,7 @@ TEST_F(PartitionedVisitedLinkTest, AddAndDeleteSelfLink) {
   // self-links are not enabled, requesting to delete a link which has never
   // been added to the hashtable in the first place is a no-op).
   std::vector<VisitedLink> links_to_delete = {link, self_link};
-  TestVisitedLinkIterator iterator(links_to_delete);
-  partitioned_writer_->DeleteVisitedLinks(&iterator);
+  partitioned_writer_->DeleteVisitedLinks(links_to_delete);
   EXPECT_FALSE(partitioned_writer_->IsVisited(link, salt.value()));
   EXPECT_FALSE(
       partitioned_writer_->IsVisited(self_link, self_link_salt.value()));
@@ -1206,8 +1153,7 @@ TEST_F(PartitionedVisitedLinkTest, Listener) {
   VisitedLink link_0 = {TestURL(0), net::SchemefulSite(TestURL(0)),
                         url::Origin::Create(TestURL(0))};
   std::vector<VisitedLink> links_to_delete = {link_0};
-  TestVisitedLinkIterator iterator(links_to_delete);
-  partitioned_writer_->DeleteVisitedLinks(&iterator);
+  partitioned_writer_->DeleteVisitedLinks(links_to_delete);
   // Verify that PartitionedVisitedLinkWriter::Listener::Reset(false) was called
   // when the single link was deleted.
   EXPECT_EQ(2, listener->reset_count());

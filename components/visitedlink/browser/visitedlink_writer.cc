@@ -425,17 +425,17 @@ std::optional<uint64_t> VisitedLinkWriter::GetOrAddOriginSalt(
   return it->second;
 }
 
-void VisitedLinkWriter::DeleteURLs(URLIterator* urls) {
-  if (!urls->HasNextURL())
+void VisitedLinkWriter::DeleteURLs(const std::vector<GURL>& urls) {
+  if (urls.empty()) {
     return;
+  }
 
   listener_->Reset(false);
 
   if (table_builder_.get() || table_is_loading_from_file_) {
     // A rebuild or load is in progress, save this deletion in the temporary
     // list so it can be added once rebuild is complete.
-    while (urls->HasNextURL()) {
-      const GURL& url(urls->NextURL());
+    for (const auto& url : urls) {
       if (!url.is_valid())
         continue;
 
@@ -460,8 +460,7 @@ void VisitedLinkWriter::DeleteURLs(URLIterator* urls) {
 
   // Compute the deleted URLs' fingerprints and delete them
   std::set<Fingerprint> deleted_fingerprints;
-  while (urls->HasNextURL()) {
-    const GURL& url(urls->NextURL());
+  for (const auto& url : urls) {
     if (!url.is_valid())
       continue;
     deleted_fingerprints.insert(ComputeURLFingerprint(url.spec(), salt_));

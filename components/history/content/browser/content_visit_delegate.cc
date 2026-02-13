@@ -22,46 +22,6 @@
 namespace history {
 namespace {
 
-// URLIterator from std::vector<GURL>
-class URLIteratorFromURLs : public visitedlink::VisitedLinkWriter::URLIterator {
- public:
-  explicit URLIteratorFromURLs(const std::vector<GURL>& urls)
-      : itr_(urls.begin()), end_(urls.end()) {}
-
-  URLIteratorFromURLs(const URLIteratorFromURLs&) = delete;
-  URLIteratorFromURLs& operator=(const URLIteratorFromURLs&) = delete;
-
-  // visitedlink::VisitedLinkWriter::URLIterator implementation.
-  const GURL& NextURL() override { return *(itr_++); }
-  bool HasNextURL() const override { return itr_ != end_; }
-
- private:
-  std::vector<GURL>::const_iterator itr_;
-  std::vector<GURL>::const_iterator end_;
-};
-
-// Creates a VisitedLinkIterator from std::vector<VisitedLink>. Allows us to
-// efficiently delete a list of VisitedLinks from the partitioned hashtable.
-class VisitedLinkIteratorFromLinks
-    : public visitedlink::PartitionedVisitedLinkWriter::VisitedLinkIterator {
- public:
-  explicit VisitedLinkIteratorFromLinks(const std::vector<VisitedLink>& links)
-      : itr_(links.begin()), end_(links.end()) {}
-
-  VisitedLinkIteratorFromLinks(const VisitedLinkIteratorFromLinks&) = delete;
-  VisitedLinkIteratorFromLinks& operator=(const VisitedLinkIteratorFromLinks&) =
-      delete;
-
-  // visitedlink::PartitionedVisitedLinkWriter::VisitedLinkIterator
-  // implementation.
-  const VisitedLink& NextVisitedLink() override { return *(itr_++); }
-  bool HasNextVisitedLink() const override { return itr_ != end_; }
-
- private:
-  std::vector<VisitedLink>::const_iterator itr_;
-  std::vector<VisitedLink>::const_iterator end_;
-};
-
 // IterateUrlsDBTask bridge HistoryBackend::URLEnumerator to
 // visitedlink::VisitedLinkDelegate::URLEnumerator.
 class IterateUrlsDBTask : public HistoryDBTask {
@@ -224,8 +184,7 @@ void ContentVisitDelegate::DeleteURLs(const std::vector<GURL>& urls) {
   // Not all callers of DeleteURLs will have partitioning disabled. We should
   // only delete URLs when the unpartitioned table is available.
   if (visitedlink_writer_) {
-    URLIteratorFromURLs iterator(urls);
-    visitedlink_writer_->DeleteURLs(&iterator);
+    visitedlink_writer_->DeleteURLs(urls);
   }
 }
 
@@ -250,8 +209,7 @@ void ContentVisitDelegate::DeleteVisitedLinks(
   // Not all callers of DeleteVisitedLinks will have partitioning enabled. We
   // should only delete visited links when the partitioned table is available.
   if (partitioned_writer_) {
-    VisitedLinkIteratorFromLinks iterator(links);
-    partitioned_writer_->DeleteVisitedLinks(&iterator);
+    partitioned_writer_->DeleteVisitedLinks(links);
   }
 }
 

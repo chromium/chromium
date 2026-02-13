@@ -671,8 +671,8 @@ void PartitionedVisitedLinkWriter::DeleteAllVisitedLinks() {
 }
 
 void PartitionedVisitedLinkWriter::DeleteVisitedLinks(
-    VisitedLinkIterator* links) {
-  if (!links->HasNextVisitedLink()) {
+    const std::vector<VisitedLink>& links) {
+  if (links.empty()) {
     return;
   }
 
@@ -686,9 +686,8 @@ void PartitionedVisitedLinkWriter::DeleteVisitedLinks(
   if (table_builder_.get()) {
     // A build is in progress, save this deletion in the temporary
     // list so it can be deleted once the build is complete.
-    while (links->HasNextVisitedLink()) {
+    for (const auto& link : links) {
       // Obtain the next link we want to delete from the hashtable.
-      const VisitedLink& link(links->NextVisitedLink());
       if (!link.IsValid()) {
         continue;
       }
@@ -716,8 +715,7 @@ void PartitionedVisitedLinkWriter::DeleteVisitedLinks(
 
   // Compute the deleted URLs' fingerprints and delete them.
   std::set<Fingerprint> deleted_fingerprints;
-  while (links->HasNextVisitedLink()) {
-    const VisitedLink& link(links->NextVisitedLink());
+  for (const auto& link : links) {
     if (!link.IsValid()) {
       continue;
     }

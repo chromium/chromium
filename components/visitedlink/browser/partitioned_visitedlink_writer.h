@@ -93,23 +93,8 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   // Adds a VisitedLink to the hashtable.
   void AddVisitedLink(const VisitedLink& link);
 
-  // See DeleteURLs.
-  class VisitedLinkIterator {
-   public:
-    // HasNextVisitedLink must return true when this is called. Returns the next
-    // VisitedLink then advances the iterator. Note that the returned reference
-    // is only valid until the next call of NextVisitedLink.
-    virtual const VisitedLink& NextVisitedLink() = 0;
-
-    // Returns true if still has VisitedLinks to be iterated.
-    virtual bool HasNextVisitedLink() const = 0;
-
-   protected:
-    virtual ~VisitedLinkIterator() = default;
-  };
-
   // Deletes the specified VisitedLinks from the hashtable.
-  void DeleteVisitedLinks(VisitedLinkIterator* iterator);
+  void DeleteVisitedLinks(const std::vector<VisitedLink>& links);
 
   // Clears all VisitedLinks from the hashtable.
   void DeleteAllVisitedLinks();
