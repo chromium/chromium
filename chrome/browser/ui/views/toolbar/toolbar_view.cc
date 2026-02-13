@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
@@ -1170,6 +1171,14 @@ views::View* ToolbarView::GetAnchorView(
 views::BubbleAnchor ToolbarView::GetBubbleAnchor(
     std::optional<actions::ActionId> action_id) {
   if (views::View* view = GetAnchorView(action_id)) {
+    // In app windows the location bar view may exist but not be drawn. Avoid
+    // anchoring bubbles to a non-drawn view (e.g. on Ozone/Wayland) and always
+    // return a valid view anchor by falling back to the contents view.
+    if (!view->IsDrawn() && browser_view_) {
+      auto* top_container = browser_view_->top_container();
+      CHECK(top_container);
+      return top_container;
+    }
     return view;
   }
   return nullptr;
