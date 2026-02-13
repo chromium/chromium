@@ -549,7 +549,7 @@ export class ComposeboxElement extends I18nMixinLit
     return this.$.context.getAutomaticActiveTabChipElement();
   }
 
-  protected initializeState_(
+  protected async initializeState_(
       text: string = '', files: ContextualUpload[] = [],
       mode: ToolMode = ToolMode.kUnspecified,
       model: ModelMode = ModelMode.kUnspecified,
@@ -561,7 +561,9 @@ export class ComposeboxElement extends I18nMixinLit
     if (this.showZps && files.length === 0) {
       this.queryAutocomplete_(/* clearMatches= */ false);
     }
-    this.inputState_ = inputState;
+    this.inputState_ = inputState ?
+        inputState :
+        (await this.searchboxHandler_.getInputState()).state;
     if (files.length > 0) {
       this.$.context.setContextFiles(files);
     }
@@ -570,6 +572,8 @@ export class ComposeboxElement extends I18nMixinLit
     }
     if (model !== ModelMode.kUnspecified) {
       this.searchboxHandler_.setActiveModelMode(model);
+    } else if (this.inputState_ && this.inputState_.allowedModels.length > 0) {
+      this.searchboxHandler_.setActiveModelMode(this.inputState_.allowedModels[0]!);
     }
     this.updateInputPlaceholder_();
   }
