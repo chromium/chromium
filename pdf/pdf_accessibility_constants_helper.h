@@ -17,7 +17,7 @@ namespace chrome_pdf {
 ax::mojom::Role AXRoleFromPdfTagType(PdfTagType tag_type);
 
 // Returns the PDF tag type string-to-enum map.
-const base::fixed_flat_map<std::string_view, PdfTagType, 36>&
+const base::fixed_flat_map<std::string_view, PdfTagType, 38>&
 GetPdfTagTypeMap();
 
 // Given a string containing a PDF tag type, such as "H1", returns the

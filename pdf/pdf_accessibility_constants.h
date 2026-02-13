@@ -52,6 +52,10 @@ inline constexpr char kPDFStructureTypeSpan[] = "Span";
 inline constexpr char kPDFStructureTypeLink[] = "Link";
 inline constexpr char kPDFStructureTypeCode[] = "Code";
 
+// Table 338 in PDF 32000-1:2008 spec, section 14.8.4.4.2
+inline constexpr char kPDFStructureTypeRuby[] = "Ruby";
+inline constexpr char kPDFStructureTypeRubyText[] = "RT";
+
 // Table 340 in PDF 32000-1:2008 spec, section 14.8.5
 inline constexpr char kPDFStructureTypeFigure[] = "Figure";
 inline constexpr char kPDFStructureTypeFormula[] = "Formula";
@@ -134,6 +138,8 @@ enum class PdfTagType {
   kTD,
   kSpan,
   kLink,
+  kRuby,
+  kRT,
   kFigure,
   kFormula,
   kForm,

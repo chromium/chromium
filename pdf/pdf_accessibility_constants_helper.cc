@@ -47,6 +47,8 @@ constexpr auto kAXRoleFromPdfTagTypeMap =
         {PdfTagType::kTD, ax::mojom::Role::kCell},
         {PdfTagType::kSpan, ax::mojom::Role::kStaticText},
         {PdfTagType::kLink, ax::mojom::Role::kLink},
+        {PdfTagType::kRuby, ax::mojom::Role::kRuby},
+        {PdfTagType::kRT, ax::mojom::Role::kRubyAnnotation},
         {PdfTagType::kFigure, ax::mojom::Role::kFigure},
         {PdfTagType::kFormula, ax::mojom::Role::kMath},
         {PdfTagType::kForm, ax::mojom::Role::kForm},
@@ -88,6 +90,8 @@ constexpr auto kStringToPdfTagTypeMap =
          {kPDFStructureTypeTableCell, PdfTagType::kTD},
          {kPDFStructureTypeSpan, PdfTagType::kSpan},
          {kPDFStructureTypeLink, PdfTagType::kLink},
+         {kPDFStructureTypeRuby, PdfTagType::kRuby},
+         {kPDFStructureTypeRubyText, PdfTagType::kRT},
          {kPDFStructureTypeFigure, PdfTagType::kFigure},
          {kPDFStructureTypeFormula, PdfTagType::kFormula},
          {kPDFStructureTypeForm, PdfTagType::kForm}});
@@ -105,7 +109,7 @@ ax::mojom::Role AXRoleFromPdfTagType(PdfTagType tag_type) {
   return ax::mojom::Role::kGenericContainer;
 }
 
-const base::fixed_flat_map<std::string_view, PdfTagType, 36>&
+const base::fixed_flat_map<std::string_view, PdfTagType, 38>&
 GetPdfTagTypeMap() {
   return kStringToPdfTagTypeMap;
 }

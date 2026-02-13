@@ -1,0 +1,25 @@
+{
+   "lang": "ja",
+   "type": "Document",
+   "~children": [ {
+      "type": "NonStruct",
+      "~children": [ {
+         "type": "Ruby",
+         "~children": [ {
+            "type": "NonStruct"
+         }, {
+            "type": "RT",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         }, {
+            "type": "NonStruct"
+         }, {
+            "type": "RT",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         } ]
+      } ]
+   } ]
+}

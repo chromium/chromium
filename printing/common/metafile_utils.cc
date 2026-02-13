@@ -181,6 +181,12 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
     case ax::mojom::Role::kStrong:
       tag->fTypeString = chrome_pdf::kPDFStructureTypeStrong;
       break;
+    case ax::mojom::Role::kRuby:
+      tag->fTypeString = chrome_pdf::kPDFStructureTypeRuby;
+      break;
+    case ax::mojom::Role::kRubyAnnotation:
+      tag->fTypeString = chrome_pdf::kPDFStructureTypeRubyText;
+      break;
     case ax::mojom::Role::kList:
       tag->fTypeString = chrome_pdf::kPDFStructureTypeList;
       break;

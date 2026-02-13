@@ -1210,7 +1210,8 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   // in the PDF should appear in the PDF's structured tree.
   bool ignore = IsIgnored();
   if (accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
-    if (node_data->role == ax::mojom::blink::Role::kStaticText) {
+    if (node_data->role == ax::mojom::blink::Role::kStaticText ||
+        node_data->role == ax::mojom::blink::Role::kRubyAnnotation) {
       ignore = false;
     }
   }
