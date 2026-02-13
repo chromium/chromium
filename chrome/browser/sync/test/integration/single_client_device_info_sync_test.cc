@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/testing/metrics_consent_override.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
@@ -811,14 +813,15 @@ IN_PROC_BROWSER_TEST_P(
                               FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
-                       PRE_ShouldRecordDeviceStatisticsMetrics) {
+IN_PROC_BROWSER_TEST_P(
+    SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
+    PRE_ShouldRecordDeviceStatisticsMetricsWithPrimaryAccount) {
   // Simulate that the primary account has two other devices.
   InjectDeviceInfoEntityToServer(1);
   InjectDeviceInfoEntityToServer(2);
 
   // Sign in, to ensure that during startup of the following test, there is
-  // already a signed=in user.
+  // already a primary account.
   ASSERT_TRUE(SetupSync());
 }
 
@@ -828,14 +831,15 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
 // Android.
 #if defined(ADDRESS_SANITIZER) || \
     (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_ShouldRecordDeviceStatisticsMetrics \
-  DISABLED_ShouldRecordDeviceStatisticsMetrics
+#define MAYBE_ShouldRecordDeviceStatisticsMetricsWithPrimaryAccount \
+  DISABLED_ShouldRecordDeviceStatisticsMetricsWithPrimaryAccount
 #else
-#define MAYBE_ShouldRecordDeviceStatisticsMetrics \
-  ShouldRecordDeviceStatisticsMetrics
+#define MAYBE_ShouldRecordDeviceStatisticsMetricsWithPrimaryAccount \
+  ShouldRecordDeviceStatisticsMetricsWithPrimaryAccount
 #endif
-IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
-                       MAYBE_ShouldRecordDeviceStatisticsMetrics) {
+IN_PROC_BROWSER_TEST_P(
+    SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
+    MAYBE_ShouldRecordDeviceStatisticsMetricsWithPrimaryAccount) {
   // Note: On Android 10 (API level 29), setting the metrics consent override
   // causes the test setup to time out, see crbug.com/483394870, so this test
   // cannot run.
@@ -908,5 +912,119 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
       /*sample=*/2,
       /*expected_bucket_count=*/1, FROM_HERE);
 }
+
+// On ChromeOS, there is always a primary account, so this test doesn't apply.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(
+    SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
+    PRE_ShouldRecordDeviceStatisticsMetricsWithoutPrimaryAccount) {
+  // Simulate that the account has two other devices. (Note that the FakeServer
+  // doesn't actually know anything about accounts, so it'll return those
+  // devices also for the non-primary account that's set up below.)
+  InjectDeviceInfoEntityToServer(1);
+  InjectDeviceInfoEntityToServer(2);
+
+  // Sign in, to ensure that during startup of the following test, there is
+  // already a signed-in (but non-primary) account.
+  ASSERT_TRUE(SetupClients());
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile(0));
+  signin::AccountAvailabilityOptionsBuilder options =
+      signin::AccountAvailabilityOptionsBuilder().WithGaiaId(
+          GetClient(0)->GetGaiaIdForAccount(SyncTestAccount::kDefaultAccount));
+  signin::MakeAccountAvailable(identity_manager,
+                               options.Build(GetClient(0)->GetEmailForAccount(
+                                   SyncTestAccount::kDefaultAccount)));
+}
+
+// TODO(crbug.com/465716865): Figure out why this test sometimes times out on
+// ASan.
+// TODO(crbug.com/483936092): signin::MakeAccountAvailable() (needed by the PRE_
+// test) doesn't work on Android.
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_ANDROID)
+#define MAYBE_ShouldRecordDeviceStatisticsMetricsWithoutPrimaryAccount \
+  DISABLED_ShouldRecordDeviceStatisticsMetricsWithoutPrimaryAccount
+#else
+#define MAYBE_ShouldRecordDeviceStatisticsMetricsWithoutPrimaryAccount \
+  ShouldRecordDeviceStatisticsMetricsWithoutPrimaryAccount
+#endif
+IN_PROC_BROWSER_TEST_P(
+    SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
+    MAYBE_ShouldRecordDeviceStatisticsMetricsWithoutPrimaryAccount) {
+  // Note: On Android 10 (API level 29), setting the metrics consent override
+  // causes the test setup to time out, see crbug.com/483394870, so this test
+  // cannot run.
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_R) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  base::HistogramTester histograms;
+
+  ASSERT_TRUE(SetupClients());
+
+  // Wait for the statistics requests to finish and metrics be recorded.
+  // Note that the DeviceStatisticsTracker also gets instantiated in the default
+  // profile (which is not used in SyncTests except on Android), so there will
+  // be two samples in total.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+#if BUILDFLAG(IS_ANDROID)
+    constexpr size_t kExpectedCount = 1;
+#else   // BUILDFLAG(IS_ANDROID)
+    constexpr size_t kExpectedCount = 2;
+#endif  // BUILDFLAG(IS_ANDROID)
+    return histograms.GetAllSamples("Sync.DeviceStatistics.Outcome.Overall")
+               .size() == kExpectedCount;
+  }));
+
+  // Note: Since the default profile doesn't have any signed-in accounts, it
+  // shouldn't have started any requests, so there should be only one request.
+  // On Android, where the default profile is used, this histogram may get
+  // recorded before the test body, and thus before the HistogramTester is
+  // instantiated.
+#if !BUILDFLAG(IS_ANDROID)
+  histograms.ExpectUniqueSample("Sync.DeviceStatistics.RequestsStartedCount",
+                                /*sample=*/1, /*expected_bucket_count=*/1,
+                                FROM_HERE);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  histograms.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      syncer::DeviceStatisticsTracker::RequestsCompletedSuccess::kAllSucceeded,
+      /*expected_bucket_count=*/1, FROM_HERE);
+
+#if BUILDFLAG(IS_ANDROID)
+  histograms.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall",
+      syncer::DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNANonPrimaryYes,
+      /*expected_bucket_count=*/1, FROM_HERE);
+#else
+  // Note: We'd expect a single sample in the `kPrimaryYesNonPrimaryNA` bucket
+  // here, but since this histogram also gets recorded in the (unused) default
+  // profile, there is an additional `kNoAccounts` sample.
+  EXPECT_THAT(
+      histograms.GetAllSamples("Sync.DeviceStatistics.Outcome.Overall"),
+      ElementsAre(
+          base::Bucket(
+              syncer::DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+                  kPrimaryNANonPrimaryYes,
+              1),
+          base::Bucket(syncer::DeviceStatisticsTracker::
+                           AccountsHaveOtherDevicesSummary::kNoAccounts,
+                       1)));
+#endif
+
+  histograms.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
+      "NumberOfAdditionalClients",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1, FROM_HERE);
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

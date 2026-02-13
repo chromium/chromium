@@ -38,11 +38,7 @@ DeviceStatisticsRequestImpl::DeviceStatisticsRequestImpl(
       user_agent_(user_agent) {
   CHECK(identity_manager_);
   CHECK(url_loader_factory_);
-
-  // This class must only be used if there is a primary account (though it's
-  // allowed that `account` isn't the primary one). If this ever changes, also
-  // update the network traffic annotation.
-  CHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  CHECK(identity_manager_->HasAccountWithRefreshToken(account.account_id));
 }
 
 DeviceStatisticsRequestImpl::~DeviceStatisticsRequestImpl() = default;
@@ -92,10 +88,11 @@ void DeviceStatisticsRequestImpl::AccessTokenFetchComplete(
         semantics {
           sender: "Chrome Sync"
           description:
-            "Chrome sends this on profile startup, to collect metrics on both "
-            "the primary and any non-primary accounts."
+            "Chrome sends this on profile startup, and periodically once per "
+            "day, to collect metrics on all signed-in accounts."
           trigger:
-            "Sign-in to Chrome, or profile startup while already signed-in."
+            "Profile startup while already signed-in, and periodically once "
+            "per day."
           data: "The user identifier."
           destination: GOOGLE_OWNED_SERVICE
           internal {
@@ -109,18 +106,17 @@ void DeviceStatisticsRequestImpl::AccessTokenFetchComplete(
           user_data {
             type: ACCESS_TOKEN
           }
-          last_reviewed: "2025-12-15"
+          last_reviewed: "2026-02-10"
         }
         policy {
           cookies_allowed: NO
           setting:
             "Users can disable these requests by turning off 'Help improve "
-            "Chrome's features and performance' in Chrome settings, or by "
-            "signing out of Chrome."
+            "Chrome's features and performance' in Chrome settings."
           chrome_policy {
-            SyncDisabled {
+            MetricsReportingEnabled {
               policy_options {mode: MANDATORY}
-              SyncDisabled: true
+              MetricsReportingEnabled: false
             }
           }
         })");
