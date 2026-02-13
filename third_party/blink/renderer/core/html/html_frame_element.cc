@@ -68,7 +68,7 @@ FrameEdgeInfo HTMLFrameElement::EdgeInfo() const {
 void HTMLFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kFrameborderAttr) {
-    frame_border_ = StringToInt(params.new_value).value_or(0);
+    frame_border_ = StringToIntLoose(params.new_value).value_or(0);
     frame_border_set_ = !params.new_value.IsNull();
     if (auto* frame_set = DynamicTo<HTMLFrameSetElement>(parentNode()))
       frame_set->DirtyEdgeInfoAndFullPaintInvalidation();

@@ -300,7 +300,7 @@ bool MediaFragmentURIParser::ParseNPTTime(std::string_view time_string,
   // npt-ss        =   2DIGIT      ; 0-59
 
   String digits1 = CollectDigits(time_string, offset);
-  int value1 = StringToInt(digits1).value_or(0);
+  int value1 = StringToIntLoose(digits1).value_or(0);
   if (offset >= time_string.size() || time_string[offset] == ',') {
     time = value1;
     return true;
@@ -329,7 +329,7 @@ bool MediaFragmentURIParser::ParseNPTTime(std::string_view time_string,
     return false;
   }
   String digits2 = CollectDigits(time_string, offset);
-  int value2 = StringToInt(digits2).value_or(0);
+  int value2 = StringToIntLoose(digits2).value_or(0);
   if (digits2.length() != 2)
     return false;
 
@@ -358,7 +358,7 @@ bool MediaFragmentURIParser::ParseNPTTime(std::string_view time_string,
     String digits3 = CollectDigits(time_string, offset);
     if (digits3.length() != 2)
       return false;
-    value3 = StringToInt(digits3).value_or(0);
+    value3 = StringToIntLoose(digits3).value_or(0);
     if (value2 > 59 || value3 > 59) {
       return false;
     }

@@ -382,11 +382,11 @@ std::optional<uint32_t> StringToUintStrict(const StringView& input) {
   return ok ? std::optional<uint32_t>(value) : std::nullopt;
 }
 
-std::optional<int32_t> StringToInt(const StringView& input) {
+std::optional<int32_t> StringToIntLoose(const StringView& input) {
   return StringToInt(input, NumberParsingOptions::Loose());
 }
 
-std::optional<uint32_t> StringToUint(const StringView& input) {
+std::optional<uint32_t> StringToUintLoose(const StringView& input) {
   return StringToUint(input, NumberParsingOptions::Loose());
 }
 

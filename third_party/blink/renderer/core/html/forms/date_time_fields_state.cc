@@ -37,7 +37,8 @@ static unsigned GetNumberFromFormControlState(const FormControlState& state,
   if (index >= state.ValueSize()) {
     return DateTimeFieldsState::kEmptyValue;
   }
-  return StringToUint(state[index]).value_or(DateTimeFieldsState::kEmptyValue);
+  return StringToUintLoose(state[index])
+      .value_or(DateTimeFieldsState::kEmptyValue);
 }
 
 static DateTimeFieldsState::AMPMValue GetAMPMFromFormControlState(

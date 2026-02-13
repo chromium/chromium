@@ -356,7 +356,7 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
 
   ScopedFreezeAXCache freeze(cache);
 
-  AXID ax_id = StringToInt(in_id).value_or(0);
+  AXID ax_id = StringToIntLoose(in_id).value_or(0);
   AXObject* ax_object = cache.ObjectFromAXID(ax_id);
 
   if (!ax_object || ax_object->IsDetached())
@@ -368,7 +368,7 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
   AddChildren(*ax_object, /* follow_ignored */ true, *out_nodes, cache);
 
   for (const auto& child : **out_nodes) {
-    nodes_requested_.insert(StringToInt(child->getNodeId()).value_or(0));
+    nodes_requested_.insert(StringToIntLoose(child->getNodeId()).value_or(0));
   }
 
   return protocol::Response::Success();

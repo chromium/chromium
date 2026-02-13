@@ -155,7 +155,7 @@ void HTMLIFrameElement::CollectStyleForPresentationAttribute(
     // LocalFrame border doesn't really match the HTML4 spec definition for
     // iframes. It simply adds a presentational hint that the border should be
     // off if set to zero.
-    if (!StringToInt(value).value_or(0)) {
+    if (!StringToIntLoose(value).value_or(0)) {
       // Add a rule that nulls out our border width.
       for (CSSPropertyID property_id :
            {CSSPropertyID::kBorderTopWidth, CSSPropertyID::kBorderBottomWidth,

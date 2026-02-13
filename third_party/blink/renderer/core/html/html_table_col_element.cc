@@ -75,7 +75,7 @@ void HTMLTableColElement::ParseAttribute(
     if (!params.new_value.empty()) {
       if (GetLayoutObject() && GetLayoutObject()->IsLayoutTableCol()) {
         auto* col = To<LayoutBox>(GetLayoutObject());
-        int new_width = StringToInt(Width()).value_or(0);
+        int new_width = StringToIntLoose(Width()).value_or(0);
         if (new_width != col->StitchedSize().width) {
           col->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
               layout_invalidation_reason::kAttributeChanged);

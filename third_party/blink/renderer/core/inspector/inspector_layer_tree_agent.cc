@@ -333,7 +333,7 @@ static const cc::Layer* FindLayerById(const cc::Layer* root, int layer_id) {
 protocol::Response InspectorLayerTreeAgent::LayerById(
     const String& layer_id,
     const cc::Layer*& result) {
-  auto id = StringToInt(layer_id);
+  auto id = StringToIntLoose(layer_id);
   if (!id) {
     return protocol::Response::ServerError("Invalid layer id");
   }

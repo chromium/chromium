@@ -583,7 +583,7 @@ void InternalPopupMenu::SetValueAndClosePopup(int num_value,
   DCHECK(popup_);
   DCHECK(owner_element_);
   if (!string_value.empty()) {
-    auto result = StringToInt(string_value);
+    auto result = StringToIntLoose(string_value);
     int list_index = result.value_or(0);
     DCHECK(result.has_value());
 
@@ -626,7 +626,7 @@ void InternalPopupMenu::SetValueAndClosePopup(int num_value,
 
 void InternalPopupMenu::SetValue(const String& value) {
   DCHECK(owner_element_);
-  auto result = StringToInt(value);
+  auto result = StringToIntLoose(value);
   int list_index = result.value_or(0);
   DCHECK(result.has_value());
   owner_element_->ProvisionalSelectionChanged(list_index);

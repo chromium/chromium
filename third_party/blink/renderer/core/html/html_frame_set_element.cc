@@ -139,7 +139,7 @@ void HTMLFrameSetElement::ParseAttribute(
     DirtyEdgeInfo();
   } else if (name == html_names::kBorderAttr) {
     if (!value.IsNull()) {
-      border_ = StringToInt(value).value_or(0);
+      border_ = StringToIntLoose(value).value_or(0);
     } else {
       border_.reset();
     }

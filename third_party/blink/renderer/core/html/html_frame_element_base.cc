@@ -122,9 +122,9 @@ void HTMLFrameElementBase::ParseAttribute(
   } else if (name == html_names::kNameAttr) {
     frame_name_ = value;
   } else if (name == html_names::kMarginwidthAttr) {
-    SetMarginWidth(StringToInt(value).value_or(0));
+    SetMarginWidth(StringToIntLoose(value).value_or(0));
   } else if (name == html_names::kMarginheightAttr) {
-    SetMarginHeight(StringToInt(value).value_or(0));
+    SetMarginHeight(StringToIntLoose(value).value_or(0));
   } else if (name == html_names::kScrollingAttr) {
     // https://html.spec.whatwg.org/multipage/rendering.html#the-page:
     // If [the scrolling] attribute's value is an ASCII

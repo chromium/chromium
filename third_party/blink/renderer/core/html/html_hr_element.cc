@@ -105,7 +105,7 @@ void HTMLHRElement::CollectStyleForPresentationAttribute(
                          dark_gray_value);
     }
   } else if (name == html_names::kSizeAttr) {
-    int size = StringToInt(value).value_or(0);
+    int size = StringToIntLoose(value).value_or(0);
     if (size <= 1) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kBorderBottomWidth, 0,

@@ -328,7 +328,7 @@ void DetectFrameworkVersions(Document& document,
               String(content).Substring(drupal_prefix_length);
           String trimmed =
               version_string.Substring(0, version_string.find(" "));
-          std::optional<int> version = StringToInt(trimmed);
+          std::optional<int> version = StringToIntLoose(trimmed);
           result.detected_versions[JavaScriptFramework::kDrupal] =
               version.has_value() ? ((*version & 0xff) << 8)
                                   : kNoFrameworkVersionDetected;

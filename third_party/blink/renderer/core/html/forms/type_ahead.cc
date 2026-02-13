@@ -110,7 +110,7 @@ int TypeAhead::HandleEvent(const KeyboardEvent& event,
   }
 
   if (match_mode & kMatchIndex) {
-    int index = StringToInt(buffer_.ToString()).value_or(0);
+    int index = StringToIntLoose(buffer_.ToString()).value_or(0);
     if (index > 0 && index <= option_count) {
       return index - 1;
     }

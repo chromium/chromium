@@ -659,7 +659,7 @@ bool KURL::SetPort(const String& input) {
   if (parsed_port.empty()) {
     return false;
   }
-  auto port_value = StringToUint(parsed_port);
+  auto port_value = StringToUintLoose(parsed_port);
   if (!port_value || *port_value > UINT16_MAX) {
     return false;
   }

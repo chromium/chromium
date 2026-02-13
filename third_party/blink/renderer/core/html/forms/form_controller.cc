@@ -104,7 +104,7 @@ FormControlState FormControlState::Deserialize(
   if (index >= state_vector.size()) {
     return FormControlState(kTypeFailure);
   }
-  unsigned value_size = StringToUint(state_vector[index++]).value_or(0);
+  unsigned value_size = StringToUintLoose(state_vector[index++]).value_or(0);
   if (!value_size) {
     return FormControlState();
   }
@@ -159,7 +159,7 @@ std::unique_ptr<SavedFormState> SavedFormState::Deserialize(
   if (index >= state_vector.size()) {
     return nullptr;
   }
-  wtf_size_t item_count = StringToUint(state_vector[index++]).value_or(0);
+  wtf_size_t item_count = StringToUintLoose(state_vector[index++]).value_or(0);
   if (!item_count) {
     return nullptr;
   }

@@ -164,6 +164,9 @@ WTF_EXPORT std::optional<uint32_t> HexStringToUint(const StringView& input,
 WTF_EXPORT std::optional<uint64_t> HexStringToUint64(const StringView& input,
                                                      NumberParsingOptions);
 
+// The following StringTo*Strict() and StringTo*Loose() exist for a historical
+// reason. We should not use them for new code.
+
 // The following StringToFooStrict functions accept:
 //  - leading '+'
 //  - leading Unicode whitespace
@@ -179,7 +182,7 @@ WTF_EXPORT std::optional<uint64_t> HexStringToUint64(const StringView& input,
 WTF_EXPORT std::optional<int32_t> StringToIntStrict(const StringView& input);
 WTF_EXPORT std::optional<uint32_t> StringToUintStrict(const StringView& input);
 
-// The following StringToFoo() functions accept:
+// The following StringToFooLoose() functions accept:
 //  - leading '+'
 //  - leading Unicode whitespace
 //  - trailing garbage
@@ -191,8 +194,8 @@ WTF_EXPORT std::optional<uint32_t> StringToUintStrict(const StringView& input);
 // We can use these functions to implement a Web Platform feature only if the
 // input string is already valid according to the specification of the
 // feature.
-WTF_EXPORT std::optional<int32_t> StringToInt(const StringView& input);
-WTF_EXPORT std::optional<uint32_t> StringToUint(const StringView& input);
+WTF_EXPORT std::optional<int32_t> StringToIntLoose(const StringView& input);
+WTF_EXPORT std::optional<uint32_t> StringToUintLoose(const StringView& input);
 
 // StringToDouble() and StringToFloat() functions accept:
 //  - leading '+'

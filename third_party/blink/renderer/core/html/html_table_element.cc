@@ -455,7 +455,7 @@ void HTMLTableElement::ParseAttribute(
     if (!params.new_value.empty()) {
       padding_ =
           std::max(0, std::min((int32_t)std::numeric_limits<uint16_t>::max(),
-                               StringToInt(params.new_value).value_or(0)));
+                               StringToIntLoose(params.new_value).value_or(0)));
     } else {
       padding_ = 1;
     }

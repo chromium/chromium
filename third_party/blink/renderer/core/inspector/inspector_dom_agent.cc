@@ -2961,7 +2961,7 @@ Node* InspectorDOMAgent::NodeForPath(const String& path) {
       IncludeWhitespace();
   for (wtf_size_t i = 0; i < path_tokens.size() - 1; i += 2) {
     const StringView& index_value = path_tokens[i];
-    auto result = StringToUint(index_value);
+    auto result = StringToUintLoose(index_value);
     wtf_size_t child_number = result.value_or(0);
     Node* child;
     const StringView& child_name = path_tokens[i + 1];

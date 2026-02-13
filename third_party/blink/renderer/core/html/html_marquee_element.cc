@@ -170,7 +170,7 @@ void HTMLMarqueeElement::setScrollDelay(unsigned value) {
 }
 
 int HTMLMarqueeElement::loop() const {
-  auto loop = StringToInt(FastGetAttribute(html_names::kLoopAttr));
+  auto loop = StringToIntLoose(FastGetAttribute(html_names::kLoopAttr));
   if (!loop || *loop <= 0) {
     return kDefaultLoopLimit;
   }
