@@ -1422,6 +1422,8 @@ crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.tentative.html [ Failure ]
 crbug.com/40781325 external/wpt/css/mediaqueries/at-custom-media-basic.html [ Failure ]
 
+crbug.com/484218877 external/wpt/css/css-highlight-api/painting/custom-highlight-dynamic-viewport-metrics-first-line-001.html [ Failure ]
+
 # ====== Style team owned tests to here ======
 
 # Tests only passing with RunSnapshotPostLayoutStateSteps enabled
@@ -2871,7 +2873,6 @@ crbug.com/475042067 external/wpt/webrtc-encoded-transform/idlharness.https.windo
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/483370598 external/wpt/css/css-anchor-position/position-area-overflow-icb-004.html [ Failure ]
-crbug.com/483394574 external/wpt/css/css-highlight-api/painting/custom-highlight-dynamic-viewport-metrics-first-line-001.html [ Failure ]
 crbug.com/483107905 external/wpt/css/css-inline/baseline-shift/baseline-shift-bottom-svg.html [ Failure ]
 crbug.com/483107905 external/wpt/css/css-inline/baseline-shift/baseline-shift-bottom.html [ Failure ]
 crbug.com/483107905 external/wpt/css/css-inline/baseline-shift/baseline-shift-center-svg.html [ Failure ]
