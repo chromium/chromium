@@ -4055,6 +4055,10 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
 }
 
 void WebGLRenderingContextWebGPUBase::Destroy() {
+  if (swap_buffers_) {
+    swap_buffers_->Neuter();
+  }
+
   if (context_) {
     DCHECK(display_ != EGL_NO_DISPLAY);
     driver_egl_.fn.eglMakeCurrentFn(EGL_NO_DISPLAY, EGL_NO_CONTEXT,
