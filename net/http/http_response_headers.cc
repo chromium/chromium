@@ -512,7 +512,7 @@ void HttpResponseHeaders::RemoveHeader(std::string_view name) {
 }
 
 void HttpResponseHeaders::RemoveHeaders(
-    const std::unordered_set<std::string>& header_names) {
+    const std::vector<std::string>& header_names) {
   // Copy up to the null byte.  This just copies the status line.
   std::string new_raw_headers(raw_headers_.c_str());
   new_raw_headers.push_back('\0');

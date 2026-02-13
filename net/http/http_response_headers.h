@@ -11,7 +11,6 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <unordered_set>
 #include <vector>
 
 #include "base/byte_count.h"
@@ -180,7 +179,7 @@ class NET_EXPORT HttpResponseHeaders
   void RemoveHeader(std::string_view name);
 
   // Removes all instances of particular headers.
-  void RemoveHeaders(const std::unordered_set<std::string>& header_names);
+  void RemoveHeaders(const std::vector<std::string>& header_names);
 
   // Removes a particular header line. The header name is compared
   // case-insensitively.

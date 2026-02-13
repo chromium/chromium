@@ -10,7 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
-#include <unordered_set>
+#include <vector>
 
 #include "base/byte_count.h"
 #include "base/pickle.h"
@@ -2214,10 +2214,10 @@ TEST_P(RemoveHeadersTest, RemoveHeaders) {
   HeadersToRaw(&orig_headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(orig_headers);
 
-  std::unordered_set<std::string> to_remove;
+  std::vector<std::string> to_remove;
   for (auto* header : test.to_remove) {
     if (header)
-      to_remove.insert(header);
+      to_remove.push_back(header);
   }
   parsed->RemoveHeaders(to_remove);
 
