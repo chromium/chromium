@@ -3743,7 +3743,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.MultiWindowMode.{WindowingMode}.Duration" units="ms"
+<histogram name="Android.MultiWindowMode.{WindowingMode}.Duration2" units="ms"
     expires_after="2026-10-15">
   <owner>rathomas@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>

@@ -572,16 +572,16 @@ public final class ChromePreferenceKeys {
     // Start timestamp of 1-day period for measuring the duration of disjoint time spent in various
     // windowing modes.
     public static final String MULTI_WINDOW_MODE_CYCLE_START_TIME =
-            "Chrome.MultiWindowMode.CycleStartTime";
+            "Chrome.MultiWindowMode.CycleStartTime3";
     // Start timestamp of the current windowing mode.
-    public static final KeyPrefix MULTI_WINDOW_MODE_START_TIME2 =
-            new KeyPrefix("Chrome.MultiWindowMode.StartTime2.*");
+    public static final KeyPrefix MULTI_WINDOW_MODE_START_TIME =
+            new KeyPrefix("Chrome.MultiWindowMode.StartTime3.*");
     // Tracks window IDs of activities in a given windowing mode.
     public static final KeyPrefix MULTI_WINDOW_MODE_ACTIVITIES =
-            new KeyPrefix("Chrome.MultiWindowMode.Activities.*");
+            new KeyPrefix("Chrome.MultiWindowMode.Activities3.*");
     // Aggregated duration of time spent in a given windowing mode.
     public static final KeyPrefix MULTI_WINDOW_MODE_DURATION_MS =
-            new KeyPrefix("Chrome.MultiWindowMode.DurationMs.*");
+            new KeyPrefix("Chrome.MultiWindowMode.DurationMs3.*");
 
     public static final String NOTIFICATIONS_CHANNELS_VERSION = "channels_version_key";
     public static final String NOTIFICATIONS_LAST_SHOWN_NOTIFICATION_TYPE =
@@ -1297,7 +1297,7 @@ public final class ChromePreferenceKeys {
                 MULTI_WINDOW_MODE_ACTIVITIES.pattern(),
                 MULTI_WINDOW_MODE_CYCLE_START_TIME,
                 MULTI_WINDOW_MODE_DURATION_MS.pattern(),
-                MULTI_WINDOW_MODE_START_TIME2.pattern(),
+                MULTI_WINDOW_MODE_START_TIME.pattern(),
                 NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY,
                 NOTIFICATION_PERMISSION_REQUEST_COUNT,
                 NTP_LOCATION_POLICY_ENABLED,
