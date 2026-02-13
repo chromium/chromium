@@ -51,12 +51,11 @@
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/autofill/model/address_normalizer_factory.h"
 #import "ios/chrome/browser/autofill/model/autocomplete_history_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/autofill/model/ios_account_setting_service_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_cache_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_executor_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
@@ -364,14 +363,7 @@ translate::TranslateDriver* ChromeAutofillClientIOS::GetTranslateDriver() {
 
 GeoIpCountryCode ChromeAutofillClientIOS::GetVariationConfigCountryCode()
     const {
-  variations::VariationsService* variation_service =
-      GetApplicationContext()->GetVariationsService();
-  // Retrieves the country code from variation service and converts it to upper
-  // case.
-  return GeoIpCountryCode(
-      variation_service
-          ? base::ToUpperASCII(variation_service->GetLatestCountry())
-          : std::string());
+  return GeoIpCountryCode(autofill::GetCountryCodeFromVariations());
 }
 
 void ChromeAutofillClientIOS::ShowAutofillSettings(
@@ -460,10 +452,7 @@ bool ChromeAutofillClientIOS::IsAutofillProfileEnabled() const {
 }
 
 bool ChromeAutofillClientIOS::IsWalletStorageEnabled() const {
-  autofill::AccountSettingService* setting_service =
-      IOSAccountSettingServiceFactory::GetForProfile(profile_);
-  return setting_service &&
-         setting_service->IsWalletPrivacyContextualSurfacingEnabled();
+  return autofill::IsWalletStorageEnabled(profile_);
 }
 
 bool ChromeAutofillClientIOS::IsAutocompleteEnabled() const {

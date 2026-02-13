@@ -1,0 +1,26 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_AI_UTIL_H_
+#define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_AI_UTIL_H_
+
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+
+class ProfileIOS;
+
+namespace autofill {
+
+// Returns the country code from the variations service.
+// If the variations service is not available, an empty string is returned.
+const std::string GetCountryCodeFromVariations();
+
+// Returns whether the wallet storage is enabled for the profile.
+bool IsWalletStorageEnabled(ProfileIOS* profile);
+
+// Returns YES if the Autofill AI action can be performed for the given profile.
+bool CanPerformAutofillAiAction(ProfileIOS* profile, AutofillAiAction action);
+
+}  // namespace autofill
+
+#endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_AI_UTIL_H_

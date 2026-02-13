@@ -10,7 +10,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/strike_database/strike_database.h"
-#import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -18,21 +18,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
-
-namespace {
-
-// Return the latest country code from the chrome variation service.
-// If the variation service is not available, an empty string is returned.
-const std::string GetCountryCodeFromVariations() {
-  variations::VariationsService* variation_service =
-      GetApplicationContext()->GetVariationsService();
-
-  return variation_service
-             ? base::ToUpperASCII(variation_service->GetLatestCountry())
-             : std::string();
-}
-
-}  // namespace
 
 // static
 autofill::EntityDataManager* IOSAutofillEntityDataManagerFactory::GetForProfile(
@@ -77,5 +62,5 @@ IOSAutofillEntityDataManagerFactory::BuildServiceInstanceFor(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       autofill::StrikeDatabaseFactory::GetForProfile(profile),
       /*accessibility_annotator_data_adapter=*/nullptr,
-      autofill::GeoIpCountryCode(GetCountryCodeFromVariations()));
+      autofill::GeoIpCountryCode(autofill::GetCountryCodeFromVariations()));
 }
