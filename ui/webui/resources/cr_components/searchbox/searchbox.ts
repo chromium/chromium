@@ -1211,7 +1211,7 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected onContextMenuClosed_() {
     this.contextMenuOpened_ = false;
-    this.focusInput();
+    this.blur();
   }
 
   protected onContextMenuOpened_() {
