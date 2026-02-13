@@ -8,6 +8,7 @@
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
@@ -44,7 +45,9 @@ bool IsIwaUnmanagedInstallEnabled(Profile* profile) {
   }
 
   return base::FeatureList::IsEnabled(
-      features::kIsolatedWebAppUnmanagedInstall);
+             features::kIsolatedWebAppUnmanagedInstall) &&
+         profile->GetPrefs()->GetBoolean(
+             prefs::kIsolatedWebAppUserInstallationEnabled);
 }
 
 }  // namespace web_app
