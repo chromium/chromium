@@ -6137,5 +6137,24 @@
       "helmut@januschka.com"
     ],
     "expires": "Feb 1, 2027"
+  },
+  {
+    "prefix": "dom_storage_sqlite",
+    "owners": [
+      "evanstade@microsoft.com",
+      "stevebe@microsoft.com",
+      "rahsin@microsoft.com",
+      "chrome-storage-team@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/webstorage",
+      "storage/domstorage"
+    ],
+    "args": ["--enable-features=DomStorageSqlite"],
+    "expires": "Aug 13, 2026"
   }
 ]
