@@ -370,8 +370,8 @@ class WTF_EXPORT StringView {
   // Returns a list of substrings of `this`, separated by `separator`.
   // This doesn't produce empty substrings.
   //
-  // `StringView(" a  b").Split(' ')` produces ["a", "b"], and
-  // `StringView("").Split(',')` produces an empty list.
+  // `StringView(" a  b").SplitSkippingEmpty(' ')` produces ["a", "b"], and
+  // `StringView("").SplitSkippingEmpty(',')` produces an empty list.
   Vector<StringView> SplitSkippingEmpty(UChar separator) const;
 
  private:
