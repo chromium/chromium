@@ -74,8 +74,6 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
   // Returns a hash of all the bindings, mixed with the parents' hash.
   // (We don't hash the CSSSyntaxDefinition, so there may be false positives
   // in weird cases.) The same caveats as operator== apply.
-  //
-  // FIXME locals here and operator==
   unsigned GetHash() const { return hash_; }
 
  private:

@@ -1166,12 +1166,19 @@ unsigned MixinParameterBindings::ComputeHash() const {
     hash = HashInts(hash, HashInts(key.Impl()->GetHash(),
                                    value.value ? value.value->Hash() : 5678));
   }
+  for (const auto& [key, value] : locals_) {
+    hash =
+        HashInts(hash, HashInts(key.Impl()->GetHash() ^ 4321, value->Hash()));
+  }
   return hash;
 }
 
 bool MixinParameterBindings::operator==(
     const MixinParameterBindings& other) const {
   if (bindings_ != other.bindings_) {
+    return false;
+  }
+  if (locals_ != other.locals_) {
     return false;
   }
   return base::ValuesEquivalent(parent_mixin_, other.parent_mixin_);

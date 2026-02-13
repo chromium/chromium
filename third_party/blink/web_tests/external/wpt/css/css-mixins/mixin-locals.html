@@ -32,6 +32,27 @@
 
 
   <style>
+    @mixin --m1b() {
+      --my-color: blue;
+      @result {
+        color: var(--my-color);
+      }
+    }
+    #e1b {
+      color: red;
+      @apply --m1b;
+    }
+  </style>
+  <div><div id="e1b">This text should be blue (not green).</div></div>
+  <script>
+    test(() => {
+      let e1b = document.getElementById('e1b');
+      assert_equals(getComputedStyle(e1b).color, 'rgb(0, 0, 255)');
+    }, 'Mixin is not cached if locals are different');
+  </script>
+
+
+  <style>
     @mixin --m2() {
       --my-color: var(--real-color);
       --real-color: green;
