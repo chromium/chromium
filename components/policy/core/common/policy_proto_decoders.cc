@@ -217,6 +217,12 @@ void DecodeProtoFields(
       reasons.Append(reason);
     }
 
+    base::DictValue risk_levels;
+    for (const auto& risk_level : policy.risk_levels()) {
+      risk_levels.Set(risk_level.provider(),
+                      base::Value(risk_level.risk_level()));
+    }
+
     VLOG_POLICY(2, POLICY_PROCESSING) << base::StringPrintf(
         "ExtensionInstallPolicy - %s - version:%s action: %s, reasons: %s",
         policy.extension_id(), policy.extension_version(), action.DebugString(),
@@ -225,6 +231,7 @@ void DecodeProtoFields(
     base::Value policy_value(base::Value::Type::DICT);
     policy_value.GetDict().Set("action", std::move(action));
     policy_value.GetDict().Set("reasons", std::move(reasons));
+    policy_value.GetDict().Set("risk_levels", std::move(risk_levels));
 
     if (!extension_id_to_policy_value.contains(policy.extension_id())) {
       extension_id_to_policy_value.emplace(

@@ -52,6 +52,30 @@ base::ListValue ReasonsToListValue(const base::ListValue* reasons) {
   return result;
 }
 
+base::DictValue RiskLevelsToValue(const base::DictValue* risk_levels) {
+  if (!risk_levels) {
+    return base::DictValue();
+  }
+  base::DictValue result;
+  for (const auto [provider_name, risk_level] : *risk_levels) {
+    switch (risk_level.GetInt()) {
+      case em::RiskLevel::RISK_LEVEL_LOW:
+        result.Set(provider_name, "low");
+        break;
+      case em::RiskLevel::RISK_LEVEL_MEDIUM:
+        result.Set(provider_name, "medium");
+        break;
+      case em::RiskLevel::RISK_LEVEL_HIGH:
+        result.Set(provider_name, "high");
+        break;
+      default:
+        result.Set(provider_name, "unknown");
+        break;
+    }
+  }
+  return result;
+}
+
 std::string LevelToString(policy::PolicyLevel level) {
   static_assert(policy::POLICY_LEVEL_MAX == 1);
   switch (level) {
@@ -148,6 +172,9 @@ base::DictValue ExtensionInstallPoliciesValueProvider::GetValues() {
               .Set("action", ActionToString(action))
               .Set("reasons",
                    ReasonsToListValue(value.GetDict().FindList("reasons")));
+      if (auto* risk_levels = value.GetDict().FindDict("risk_levels")) {
+        policy_value_dict.Set("risk_levels", RiskLevelsToValue(risk_levels));
+      }
       // TODO(nicolaso): Show actual extension names instead of IDs.
       base::DictValue policy_dict =
           base::DictValue()

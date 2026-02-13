@@ -5392,6 +5392,25 @@ message DeviceStateRetrievalInfo {
   optional bool has_initial_state = 1;
 }
 
+// Bucketed risk level for an extension/app.
+enum RiskLevel {
+  // Risk level not specified.
+  RISK_LEVEL_UNSPECIFIED = 0;
+  // Extension that represents a low risk.
+  RISK_LEVEL_LOW = 1;
+  // Extension that represents a medium risk.
+  RISK_LEVEL_MEDIUM = 2;
+  // Extension that represents a high risk.
+  RISK_LEVEL_HIGH = 3;
+}
+
+message ProviderRiskLevel {
+  // The provider of the risk level.
+  optional string provider = 1;
+  // The risk level of the extension.
+  optional RiskLevel risk_level = 2;
+}
+
 message ExtensionInstallPolicy {
   enum Action {
     ACTION_UNSPECIFIED = 0;
@@ -5409,6 +5428,7 @@ message ExtensionInstallPolicy {
   optional string extension_version = 2;
   optional Action action = 3;
   repeated Reason reasons = 4;
+  repeated ProviderRiskLevel risk_levels = 5;
 }
 
 message ExtensionInstallPolicies {

@@ -279,6 +279,7 @@ TEST_F(PolicyProtoDecodersTest, ExtensionInstallPolicies) {
           ->GetDict();
   version_dict.Set("action", 0);
   version_dict.Set("reasons", base::ListValue());
+  version_dict.Set("risk_levels", base::DictValue());
 
   base::DictValue expected_policy_value2;
   base::DictValue& version_dict2 =
@@ -286,6 +287,7 @@ TEST_F(PolicyProtoDecodersTest, ExtensionInstallPolicies) {
           ->GetDict();
   version_dict2.Set("action", 1);
   version_dict2.Set("reasons", base::ListValue());
+  version_dict2.Set("risk_levels", base::DictValue());
 
   base::DictValue expected_policy_value3;
   base::DictValue& version_dict3 =
@@ -296,12 +298,15 @@ TEST_F(PolicyProtoDecodersTest, ExtensionInstallPolicies) {
   expected_reasons.Append(1);
   expected_reasons.Append(2);
   version_dict3.Set("reasons", std::move(expected_reasons));
+  version_dict3.Set("risk_levels", base::DictValue().Set(
+                                       "acme", em::RiskLevel::RISK_LEVEL_HIGH));
 
   base::DictValue& version_dict4 =
       expected_policy_value1.Set(kExtension1Version2, base::DictValue())
           ->GetDict();
   version_dict4.Set("action", 0);
   version_dict4.Set("reasons", base::ListValue());
+  version_dict4.Set("risk_levels", base::DictValue());
 
   expected_policy_map_.Set(kExtensionId1, POLICY_LEVEL_MANDATORY,
                            POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
@@ -338,6 +343,9 @@ TEST_F(PolicyProtoDecodersTest, ExtensionInstallPolicies) {
     policy->set_action(em::ExtensionInstallPolicy::ACTION_BLOCK);
     policy->add_reasons(em::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY);
     policy->add_reasons(em::ExtensionInstallPolicy::REASON_RISK_SCORE);
+    em::ProviderRiskLevel* risk_level = policy->add_risk_levels();
+    risk_level->set_provider("acme");
+    risk_level->set_risk_level(em::RiskLevel::RISK_LEVEL_HIGH);
   }
   {
     em::ExtensionInstallPolicy* policy =
