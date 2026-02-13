@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -61,12 +62,14 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
   // when the user switches among multiple NTPs without a change in the most
   // recent tab.
   bool ShouldThrottleRetrieval(const GURL& current_url);
+  void OnVisibilityChanged();
 
   mojo::Receiver<action_chips::mojom::ActionChipsHandler> receiver_;
   mojo::Remote<action_chips::mojom::Page> page_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebUI> web_ui_;
   std::unique_ptr<ActionChipsGenerator> action_chips_generator_;
+  PrefChangeRegistrar pref_change_registrar_;
 
   std::optional<GURL> last_processed_url_;
 
