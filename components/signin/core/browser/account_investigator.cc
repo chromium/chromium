@@ -268,11 +268,6 @@ void AccountInvestigator::SharedCookieJarReport(
     SignedInAccountRelationReport(signed_in_accounts, signed_out_accounts,
                                   type);
   }
-
-  // IsShared is defined as true if the local cookie jar contains at least one
-  // signed out account and a stable age of less than one day.
-  signin_metrics::LogIsShared(
-      signed_out_count >= 1 && stable_age < base::Days(1), type);
 }
 
 void AccountInvestigator::SignedInAccountRelationReport(

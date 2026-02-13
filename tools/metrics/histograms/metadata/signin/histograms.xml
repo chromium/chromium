@@ -2329,16 +2329,6 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.IsShared{AccountInvestigationReportingType}"
-    enum="BooleanIsShared" expires_after="2024-08-18">
-  <owner>droger@chromium.org</owner>
-  <owner>skym@chromium.org</owner>
-  <summary>
-    Current best guess if this device is shared between multiple users.
-    {AccountInvestigationReportingType}
-  </summary>
-</histogram>
-
 <histogram name="Signin.ListAccountsFailure" enum="GoogleServiceAuthError"
     expires_after="never">
 <!-- expires-never: ListAccounts calls are used to monitor the accounts in the

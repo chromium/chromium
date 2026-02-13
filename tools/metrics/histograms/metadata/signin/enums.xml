@@ -246,11 +246,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="New opt-in"/>
 </enum>
 
-<enum name="BooleanIsShared">
-  <int value="0" label="Not Shared"/>
-  <int value="1" label="Is Shared"/>
-</enum>
-
 <enum name="BooleanSignoutFromManagedAccount">
   <int value="0" label="Cancel sign-out"/>
   <int value="1" label="Continue with sign-out"/>

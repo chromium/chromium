@@ -135,8 +135,6 @@ class AccountInvestigatorTest : public testing::Test {
       histogram_tester.ExpectTotalCount(
           base::StrCat({kRelationHistogramName, suffix_[type]}), 0);
     }
-    histogram_tester.ExpectUniqueSample("Signin.IsShared" + suffix_[type],
-                                        is_shared, 1);
   }
 
  private:

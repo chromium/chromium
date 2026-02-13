@@ -369,10 +369,6 @@ void LogAccountRelation(const AccountRelation relation,
       static_cast<int>(AccountRelation::HISTOGRAM_COUNT));
 }
 
-void LogIsShared(const bool is_shared, const ReportingType type) {
-  INVESTIGATOR_HISTOGRAM_BOOLEAN("Signin.IsShared", type, is_shared);
-}
-
 void LogSignedInCookiesCountsPerPrimaryAccountType(int signed_in_accounts_count,
                                                    bool primary_syncing,
                                                    bool primary_managed) {
