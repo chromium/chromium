@@ -196,8 +196,8 @@ IdentityRequestAccountPtr ParseAccount(const base::DictValue& account,
   auto* given_name = account.FindString(webid::kAccountGivenNameKey);
   auto* picture = account.FindString(webid::kAccountPictureKey);
   auto* approved_clients = account.FindList(webid::kAccountApprovedClientsKey);
-  auto* potentially_approved_origin_hashes =
-      account.FindList(webid::kPotentiallyApprovedOriginHashes);
+  auto* potentially_approved_site_hashes =
+      account.FindList(webid::kPotentiallyApprovedSiteHashes);
   std::vector<std::string> account_hints;
   auto* hints = account.FindList(webid::kHintsKey);
   if (hints) {
@@ -281,11 +281,11 @@ IdentityRequestAccountPtr ParseAccount(const base::DictValue& account,
     webid::RecordApprovedClientsSize(approved_clients->size());
   }
 
-  std::vector<std::string> potentially_approved_origin_hashes_vector;
-  if (IsEmbedderInitiatedLoginEnabled() && potentially_approved_origin_hashes) {
-    for (const base::Value& entry : *potentially_approved_origin_hashes) {
+  std::vector<std::string> potentially_approved_site_hashes_vector;
+  if (IsEmbedderInitiatedLoginEnabled() && potentially_approved_site_hashes) {
+    for (const base::Value& entry : *potentially_approved_site_hashes) {
       if (entry.is_string()) {
-        potentially_approved_origin_hashes_vector.push_back(entry.GetString());
+        potentially_approved_site_hashes_vector.push_back(entry.GetString());
       }
     }
   }
@@ -294,7 +294,7 @@ IdentityRequestAccountPtr ParseAccount(const base::DictValue& account,
       *id, display_identifier, display_name, *email, *name,
       given_name ? *given_name : "", picture ? GURL(*picture) : GURL(),
       phone ? *phone : "", username ? *username : "",
-      std::move(potentially_approved_origin_hashes_vector),
+      std::move(potentially_approved_site_hashes_vector),
       std::move(account_hints), std::move(domain_hints), std::move(labels),
       approved_value,
       /*browser_trusted_login_state=*/LoginState::kSignUp);
@@ -967,19 +967,19 @@ IdpNetworkRequestManager::AccountsResponse::operator=(
     const IdpNetworkRequestManager::AccountsResponse&) = default;
 
 std::vector<IdentityRequestAccountPtr>
-IdpNetworkRequestManager::AccountsResponse::PotentialAccountsForOrigin(
-    const url::Origin& origin) const {
-  std::string salted_origin(origin_salt + origin.Serialize());
-  auto hash = crypto::hash::Sha256(salted_origin);
-  std::string hashed_origin = base::HexEncode(hash);
+IdpNetworkRequestManager::AccountsResponse::PotentialAccountsForSite(
+    const std::string& site) const {
+  std::string salted_site(origin_salt + site);
+  auto hash = crypto::hash::Sha256(salted_site);
+  std::string hashed_site = base::HexEncode(hash);
 
   std::vector<IdentityRequestAccountPtr> result;
   for (const auto& account : accounts) {
-    bool found = std::ranges::any_of(
-        account->potentially_approved_origin_hashes,
-        [&hashed_origin](const auto& a) -> bool {
-          return base::ToUpperASCII(hashed_origin) == base::ToUpperASCII(a);
-        });
+    bool found = std::ranges::any_of(account->potentially_approved_site_hashes,
+                                     [&hashed_site](const auto& a) -> bool {
+                                       return base::ToUpperASCII(hashed_site) ==
+                                              base::ToUpperASCII(a);
+                                     });
     if (found) {
       result.push_back(account);
     }

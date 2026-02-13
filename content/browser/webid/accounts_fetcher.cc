@@ -455,8 +455,7 @@ void AccountsFetcher::OnFetchDataForIdpSucceeded(
   std::vector<IdentityRequestDialogDisclosureField> disclosure_fields =
       GetDisclosureFields(idp_info->provider->fields);
 
-  const std::string idp_for_display =
-      webid::FormatUrlForDisplay(idp_config_url);
+  const std::string idp_for_display = webid::FormatUrlToSite(idp_config_url);
   idp_info->data = base::MakeRefCounted<IdentityProviderData>(
       idp_for_display, idp_info->metadata,
       ClientMetadata{client_metadata.terms_of_service_url,
@@ -666,7 +665,7 @@ void AccountsFetcher::OnIdpMismatch(
     base::TimeTicks accounts_fetched_time,
     std::unique_ptr<IdentityProviderInfo> idp_info) {
   const std::string idp_for_display =
-      webid::FormatUrlForDisplay(idp_info->provider->config->config_url);
+      webid::FormatUrlToSite(idp_info->provider->config->config_url);
   idp_info->data = base::MakeRefCounted<IdentityProviderData>(
       idp_for_display, idp_info->metadata,
       ClientMetadata{GURL(), GURL(), GURL(), gfx::Image()},

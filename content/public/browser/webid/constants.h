@@ -16,8 +16,8 @@ inline constexpr char kAccountUsernameKey[] = "username";
 inline constexpr char kAccountGivenNameKey[] = "given_name";
 inline constexpr char kAccountPictureKey[] = "picture";
 inline constexpr char kAccountApprovedClientsKey[] = "approved_clients";
-inline constexpr char kPotentiallyApprovedOriginHashes[] =
-    "potentially_approved_origin_hashes";
+inline constexpr char kPotentiallyApprovedSiteHashes[] =
+    "potentially_approved_site_hashes";
 inline constexpr char kHintsKey[] = "login_hints";
 inline constexpr char kDomainHintsKey[] = "domain_hints";
 inline constexpr char kLabelsKey[] = "labels";

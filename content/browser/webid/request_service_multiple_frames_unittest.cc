@@ -251,7 +251,7 @@ class RequestServiceMultipleFramesTest : public RenderViewHostImplTestHarness {
         GURL(),                      // picture
         "(403) 293-3421",            // phone
         "@kenr",                     // username
-        std::vector<std::string>(),  // potentially_approved_origin_hashes
+        std::vector<std::string>(),  // potentially_approved_site_hashes
         std::vector<std::string>(),  // login_hints
         std::vector<std::string>(),  // domain_hints
         std::vector<std::string>()   // labels

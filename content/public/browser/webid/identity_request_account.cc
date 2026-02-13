@@ -21,7 +21,7 @@ IdentityRequestAccount::IdentityRequestAccount(
     const GURL& picture,
     const std::string& phone,
     const std::string& username,
-    std::vector<std::string> potentially_approved_origin_hashes,
+    std::vector<std::string> potentially_approved_site_hashes,
     std::vector<std::string> login_hints,
     std::vector<std::string> domain_hints,
     std::vector<std::string> labels,
@@ -37,8 +37,8 @@ IdentityRequestAccount::IdentityRequestAccount(
       picture{picture},
       phone{phone},
       username{username},
-      potentially_approved_origin_hashes(
-          std::move(potentially_approved_origin_hashes)),
+      potentially_approved_site_hashes(
+          std::move(potentially_approved_site_hashes)),
       login_hints(std::move(login_hints)),
       domain_hints(std::move(domain_hints)),
       labels(std::move(labels)),

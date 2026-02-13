@@ -110,11 +110,12 @@ void IdentityCredentialSourceImpl::OnAccountsFetchCompleted(
     base::TimeTicks,
     std::vector<AccountsFetcher::Result> results) {
   std::vector<scoped_refptr<IdentityRequestAccount>> accounts;
+  std::string site =
+      FormatUrlToSite(render_frame_host().GetLastCommittedOrigin().GetURL());
   for (const auto& result : results) {
     if (result.accounts.has_value()) {
       auto potentially_sign_in_accounts =
-          result.accounts->PotentialAccountsForOrigin(
-              render_frame_host().GetLastCommittedOrigin());
+          result.accounts->PotentialAccountsForSite(site);
       accounts.insert(accounts.end(), potentially_sign_in_accounts.begin(),
                       potentially_sign_in_accounts.end());
     }

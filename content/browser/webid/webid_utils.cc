@@ -377,7 +377,7 @@ std::string GetDisconnectConsoleErrorMessage(
   }
 }
 
-std::string FormatUrlForDisplay(const GURL& url) {
+std::string FormatUrlToSite(const GURL& url) {
   // We do not use url_formatter::FormatUrlForSecurityDisplay() directly because
   // our UI intentionally shows only the eTLD+1, as it makes for a shorter text
   // that is also clearer to users. The identity provider's well-known file is

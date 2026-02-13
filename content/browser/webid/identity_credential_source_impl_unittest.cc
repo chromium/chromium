@@ -101,8 +101,9 @@ TEST_F(IdentityCredentialSourceImplTest, SuccessfulFetching) {
       IdentityRequestAccount>(
       kAccountId, "test@example.com", "Test User", "test@example.com",
       "Test User", "Test", GURL(), "", "",
+      /*the original string is fc432178f9155c4e24762de5b9505f2eexample.com*/
       std::vector<std::string>{
-          "622df46ad930842236c692ab72b62ae312b3b0164141f29b7bfdeb8e219b1043"},
+          "870f48f3c28efb5dbf46d14881d802a4c34141a36ef9e66d28cec211b1969f7d"},
       std::vector<std::string>(), std::vector<std::string>(),
       std::vector<std::string>(),
       content::IdentityRequestAccount::LoginState::kSignIn);
@@ -195,8 +196,9 @@ TEST_F(IdentityCredentialSourceImplTest, FilterOutSignupAccount) {
       IdentityRequestAccount>(
       kAccountIdSignIn, "test@example.com", "Test User", "test@example.com",
       "Test User", "Test", GURL(), "", "",
+      /*the original string is fc432178f9155c4e24762de5b9505f2eexample.com*/
       std::vector<std::string>{
-          "622df46ad930842236c692ab72b62ae312b3b0164141f29b7bfdeb8e219b1043"},
+          "870f48f3c28efb5dbf46d14881d802a4c34141a36ef9e66d28cec211b1969f7d"},
       std::vector<std::string>(), std::vector<std::string>(),
       std::vector<std::string>());
 

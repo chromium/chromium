@@ -89,7 +89,7 @@ CONTENT_EXPORT std::string GetDisconnectConsoleErrorMessage(
     DisconnectStatus disconnect_status_for_metrics);
 
 // Returns the eTLD+1 for a given url. For localhost, returns the host.
-std::string FormatUrlForDisplay(const GURL& url);
+std::string FormatUrlToSite(const GURL& url);
 
 // Returns true if the user has used FedCM to login to the RP via the IdP
 // account or if the IdP has third party cookies access. For the former, if

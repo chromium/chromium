@@ -76,7 +76,7 @@ class CONTENT_EXPORT IdentityRequestAccount
       const GURL& picture,
       const std::string& phone,
       const std::string& username,
-      std::vector<std::string> potentially_approved_origin_hashes,
+      std::vector<std::string> potentially_approved_site_hashes,
       std::vector<std::string> login_hints,
       std::vector<std::string> domain_hints,
       std::vector<std::string> labels,
@@ -105,7 +105,7 @@ class CONTENT_EXPORT IdentityRequestAccount
   // This will be an empty image if fetching failed.
   gfx::Image decoded_picture;
 
-  std::vector<std::string> potentially_approved_origin_hashes;
+  std::vector<std::string> potentially_approved_site_hashes;
 
   std::vector<std::string> login_hints;
   std::vector<std::string> domain_hints;

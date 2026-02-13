@@ -148,8 +148,12 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
     AccountsResponse(AccountsResponse&&);
     AccountsResponse& operator=(const AccountsResponse&);
 
-    std::vector<IdentityRequestAccountPtr> PotentialAccountsForOrigin(
-        const url::Origin& origin) const;
+    // Returns potentially sign-in accounts on a given website based on the
+    // website's eTLD+1. e.g. for an origin https://login.website.example, we
+    // check if the user has any sign-in accounts from this IdP on the site
+    // "website.example".
+    std::vector<IdentityRequestAccountPtr> PotentialAccountsForSite(
+        const std::string& site) const;
 
     std::vector<IdentityRequestAccountPtr> accounts;
     std::string origin_salt;

@@ -114,7 +114,7 @@ base::TimeDelta GetRandomRejectionTime() {
 }
 
 std::string FormatOriginForDisplay(const url::Origin& origin) {
-  return FormatUrlForDisplay(origin.GetURL());
+  return FormatUrlToSite(origin.GetURL());
 }
 
 std::string GetTopFrameOriginForDisplay(const url::Origin& top_frame_origin) {

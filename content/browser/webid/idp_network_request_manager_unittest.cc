@@ -706,7 +706,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParsePhoneNumber) {
   EXPECT_EQ("111-111-1111", accounts.accounts[0]->display_name);
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ParseAccountPotentiallyApprovedOrigins) {
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountPotentiallyApprovedSites) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmEmbedderInitiatedLogin);
   // given_name and picture fields are optional
@@ -716,8 +716,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountPotentiallyApprovedOrigins) {
       "id": "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example",
-      "potentially_approved_origin_hashes": [
-        "622df46ad930842236c692ab72b62ae312b3b0164141f29b7bfdeb8e219b1043"
+      "potentially_approved_site_hashes": [
+        "870f48f3c28efb5dbf46d14881d802a4c34141a36ef9e66d28cec211b1969f7d"
       ]
     }
   ],
@@ -733,12 +733,12 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountPotentiallyApprovedOrigins) {
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
   EXPECT_EQ("fc432178f9155c4e24762de5b9505f2e", accounts.origin_salt);
   ASSERT_THAT(
-      accounts.accounts[0]->potentially_approved_origin_hashes,
+      accounts.accounts[0]->potentially_approved_site_hashes,
       ElementsAre(
-          "622df46ad930842236c692ab72b62ae312b3b0164141f29b7bfdeb8e219b1043"));
+          "870f48f3c28efb5dbf46d14881d802a4c34141a36ef9e66d28cec211b1969f7d"));
 
-  const auto& filtered_accounts = accounts.PotentialAccountsForOrigin(
-      url::Origin::Create(GURL("https://www.example.com/")));
+  const auto& filtered_accounts =
+      accounts.PotentialAccountsForSite("example.com");
   EXPECT_EQ(1ul, filtered_accounts.size());
 }
 
