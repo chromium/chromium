@@ -21827,30 +21827,6 @@
             ]
         }
     ],
-    "ReadAnythingReadAloudTsTextSegmentation": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReadAnythingReadAloudTSTextSegmentation"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "ReadAnythingReadAloudTSTextSegmentation"
-                    ]
-                }
-            ]
-        }
-    ],
     "RebindServiceBatchApi": [
         {
             "platforms": [
