@@ -8144,6 +8144,7 @@ test("unit_tests") {
       "//chrome/browser/auxiliary_search/proto",
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
       "//chrome/browser/content_settings:unit_tests",
+      "//chrome/browser/digital_credentials:unit_tests",
       "//chrome/browser/facilitated_payments:unit_tests",
       "//chrome/browser/facilitated_payments/ui/android:unit_tests",
       "//chrome/browser/flags:flags_android",

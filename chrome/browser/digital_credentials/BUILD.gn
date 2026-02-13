@@ -1,0 +1,14 @@
+import("//build/config/android/rules.gni")
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "digital_identity_provider_android_unittest.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//content/public/browser",
+    "//testing/gtest",
+    "//url",
+  ]
+}

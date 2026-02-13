@@ -38,6 +38,10 @@ class DigitalIdentityProviderAndroid : public content::DigitalIdentityProvider {
                  std::string result,
                  int32_t j_status_for_metrics);
 
+  static base::expected<base::Value, RequestStatusForMetrics> ParseResult(
+      std::string result,
+      int32_t j_status_for_metrics);
+
   bool IsLastCommittedOriginLowRisk(
       content::RenderFrameHost& render_frame_host) const override;
   DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
