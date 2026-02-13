@@ -202,13 +202,22 @@ public abstract class MultiInstanceManager {
     public abstract void maybeMergeTabs();
 
     /**
-     * Moves the specified tabs to the specified ChromeTabbedActivity instance. This accepts inputs
-     * to determine the position of the moved tabs in the destination window and an intent to create
-     * a new window.
+     * Moves the specified tabs to a new ChromeTabbedActivity instance.
      *
-     * @param destWindowId The id of the destination window. To move tabs to a new window, set this
-     *     to {@link INVALID_WINDOW_ID}.
-     * @param tabs The list of tabs that will be moved to the destination window.
+     * @param tabs The list of tabs to move.
+     * @param source The new window creation source used for metrics.
+     */
+    public void moveTabsToNewWindow(List<Tab> tabs, @NewWindowAppSource int source) {
+        // Not implemented
+    }
+
+    /**
+     * Moves the specified tabs to the specified ChromeTabbedActivity instance. This accepts inputs
+     * to determine the position of the moved tabs in the destination window. The operation will
+     * fail if the instance is not found.
+     *
+     * @param destWindowId The id of the destination window.
+     * @param tabs The list of tabs to move.
      * @param destTabIndex The tab index in the destination window where the tabs will be
      *     positioned. This will be ignored if {@code destGroupTabId} is set. To use the default tab
      *     index, set this to {@code TabList.INVALID_TAB_INDEX}.
@@ -217,15 +226,21 @@ public abstract class MultiInstanceManager {
      *     end of the destination tab group. A tab with this id must exist in the destination
      *     window, otherwise this operation will fail. If there is no tab group to move the
      *     specified tabs to, set this to {@code TabList.INVALID_TAB_INDEX}.
-     * @param source The new window creation source used for metrics. This is applicable only when
-     *     tabs are moved to a new window.
      */
-    public void moveTabsToWindow(
-            int destWindowId,
-            List<Tab> tabs,
-            int destTabIndex,
-            int destGroupTabId,
-            @NewWindowAppSource int source) {
+    public void moveTabsToWindowByIdChecked(
+            int destWindowId, List<Tab> tabs, int destTabIndex, int destGroupTabId) {
+        // Not implemented
+    }
+
+    /**
+     * Moves the specified tabs to a selected ChromeTabbedActivity instance. If there is only one
+     * window currently, tabs will be moved to a new window. Otherwise, the user will be presented
+     * with a UI to select a window to move the tabs to.
+     *
+     * @param tabs The list of tabs to move.
+     * @param source The new window creation source used for metrics.
+     */
+    public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         // Not implemented
     }
 
@@ -238,30 +253,6 @@ public abstract class MultiInstanceManager {
      */
     public void moveTabGroupToNewWindow(
             TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
-        // Not implemented
-    }
-
-    /**
-     * Move the specified tabs to the current instance of the ChromeTabbedActivity window.
-     *
-     * @param activity Activity of the Chrome Window in which the tab is to be moved.
-     * @param tabs The list of tabs that is to be moved to the current instance.
-     * @param atIndex Tab position index in the destination window instance.
-     */
-    public void moveTabsToWindow(@Nullable Activity activity, List<Tab> tabs, int atIndex) {
-        // Not implemented
-    }
-
-    /**
-     * Move the specified tabs to the specified instance of the ChromeTabbedActivity window.
-     *
-     * @param info {@link InstanceInfo} describing the destination window.
-     * @param tabs The list of tabs that is to be moved to the current instance.
-     * @param atIndex Tab position index in the destination window instance.
-     * @param source The new window creation source used for metrics.
-     */
-    public void moveTabsToWindow(
-            InstanceInfo info, List<Tab> tabs, int atIndex, @NewWindowAppSource int source) {
         // Not implemented
     }
 
@@ -290,17 +281,6 @@ public abstract class MultiInstanceManager {
             TabGroupMetadata tabGroupMetadata,
             int atIndex,
             @NewWindowAppSource int source) {
-        // Not implemented
-    }
-
-    /**
-     * If there's only one window currently, moves {@param tabs} to a new window. Otherwise, opens a
-     * dialog to select which window to move {@param tabs} to.
-     *
-     * @param tabs The list of tabs to move.
-     * @param source The new window creation source used for metrics.
-     */
-    public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         // Not implemented
     }
 

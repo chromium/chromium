@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
@@ -244,12 +243,8 @@ public class ToolbarTabControllerImplTest {
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
         inOrder.verify(mTab2).goBack();
         inOrder.verify(mMultiInstanceManager)
-                .moveTabsToWindow(
-                        /* destWindowId= */ MultiInstanceManager.INVALID_WINDOW_ID,
-                        Collections.singletonList(mTab2),
-                        /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
-                        NewWindowAppSource.KEYBOARD_SHORTCUT);
+                .moveTabsToNewWindow(
+                        Collections.singletonList(mTab2), NewWindowAppSource.KEYBOARD_SHORTCUT);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -308,12 +303,8 @@ public class ToolbarTabControllerImplTest {
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
         inOrder.verify(mTab2).goForward();
         inOrder.verify(mMultiInstanceManager)
-                .moveTabsToWindow(
-                        /* destWindowId= */ MultiInstanceManager.INVALID_WINDOW_ID,
-                        Collections.singletonList(mTab2),
-                        /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
-                        NewWindowAppSource.KEYBOARD_SHORTCUT);
+                .moveTabsToNewWindow(
+                        Collections.singletonList(mTab2), NewWindowAppSource.KEYBOARD_SHORTCUT);
         inOrder.verifyNoMoreInteractions();
     }
 

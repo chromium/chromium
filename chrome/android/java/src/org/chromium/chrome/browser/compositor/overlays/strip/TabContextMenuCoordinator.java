@@ -626,8 +626,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
         List<ListItem> result = new ArrayList<>();
 
-        // TODO(crbug.com/437327793): Stop filtering out Inactive windows if we can support moving a
-        // tab to a group in an Inactive window.
         Set<Integer> activeInstanceIds = new HashSet<>();
         List<InstanceInfo> activeInstances =
                 assumeNonNull(mMultiInstanceManager).getInstanceInfo(ACTIVE);
@@ -673,12 +671,11 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                     mTabGroupModelFilter,
                                     /* tabMovedCallback= */ null);
                         } else {
-                            mMultiInstanceManager.moveTabsToWindow(
+                            mMultiInstanceManager.moveTabsToWindowByIdChecked(
                                     windowId,
                                     tabs,
                                     /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                                    /* destGroupTabId= */ firstTabInGroupTabId,
-                                    NewWindowAppSource.MENU);
+                                    /* destGroupTabId= */ firstTabInGroupTabId);
                         }
                     };
             result.add(
@@ -770,13 +767,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (tabs.isEmpty()) return;
         ungroupTabs(tabs);
         recordMenuAction(R.id.move_to_new_window_sub_menu_id, tabs.size() > 1);
-        assumeNonNull(mMultiInstanceManager)
-                .moveTabsToWindow(
-                        /* destWindowId= */ MultiInstanceManager.INVALID_WINDOW_ID,
-                        tabs,
-                        /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
-                        NewWindowAppSource.MENU);
+        assumeNonNull(mMultiInstanceManager).moveTabsToNewWindow(tabs, NewWindowAppSource.MENU);
     }
 
     @Override
@@ -789,8 +780,11 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         ungroupTabs(tabs);
         recordMenuAction(R.id.move_to_other_window_sub_menu_id, tabs.size() > 1);
         assumeNonNull(mMultiInstanceManager)
-                .moveTabsToWindow(
-                        instanceInfo, tabs, TabList.INVALID_TAB_INDEX, NewWindowAppSource.MENU);
+                .moveTabsToWindowByIdChecked(
+                        instanceInfo.instanceId,
+                        tabs,
+                        /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
     }
 
     private List<ListItem> createReorderItems(AnchorInfo anchorInfo) {

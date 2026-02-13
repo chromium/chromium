@@ -240,40 +240,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     @Override
-    public void moveTabsToWindow(
-            int destWindowId,
-            List<Tab> tabs,
-            int destTabIndex,
-            int destGroupTabId,
-            @NewWindowAppSource int source) {
+    public void moveTabsToNewWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         if (tabs.isEmpty()) return;
-
-        // Move tabs to a new window if a valid |destWindowId| is not specified.
-        if (destWindowId == INVALID_WINDOW_ID) {
-            assert destTabIndex == TabList.INVALID_TAB_INDEX
-                            && destGroupTabId == TabList.INVALID_TAB_INDEX
-                    : "Unexpected destTabIndex and destGroupTabId detected with request to move"
-                            + " tabs to a new window.";
-            moveTabsToNewWindow(tabs, source);
-            return;
-        }
-
-        // If |destGroupTabId| is valid, move tabs to the tab group containing this tab in the
-        // destination window. Avoid creating a new window if the destination window is not found.
-        if (destGroupTabId != TabList.INVALID_TAB_INDEX) {
-            assert destTabIndex == TabList.INVALID_TAB_INDEX
-                    : "Unexpected destTabIndex detected with request to move tabs to a tab group in"
-                            + " the destination window.";
-            moveTabsToWindowAndMergeToDest(destWindowId, tabs, destGroupTabId);
-            return;
-        }
-
-        // Move tabs to the specified window. If a destination window for the specified
-        // |destWindowId| is not found, create a new window to move the tabs to.
-        moveTabsToWindow(destWindowId, tabs, destTabIndex, source);
-    }
-
-    private void moveTabsToNewWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         boolean openAdjacently = MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);
         if (isInstanceLimitReached()) {
             showInstanceCreationLimitMessage();
@@ -283,50 +251,48 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         }
     }
 
-    private void moveTabsToWindowAndMergeToDest(
-            int destWindowId, List<Tab> tabs, int destGroupTabId) {
-        Activity targetActivity = getActivityById(destWindowId);
-        if (BuildConfig.ENABLE_ASSERTS) {
+    @Override
+    public void moveTabsToWindowByIdChecked(
+            int destWindowId, List<Tab> tabs, int destTabIndex, int destGroupTabId) {
+        if (tabs.isEmpty()) return;
+        assert destTabIndex == TabList.INVALID_TAB_INDEX
+                        || destGroupTabId == TabList.INVALID_TAB_INDEX
+                : "Only one of destTabIndex or destGroupTabId should be specified.";
+        assert MultiInstancePersistentStore.hasInstance(destWindowId)
+                : "Invalid destination window id.";
+
+        // Validate tabs that are being moved to a tab group in the destination window.
+        if (BuildConfig.ENABLE_ASSERTS && destGroupTabId != TabList.INVALID_TAB_INDEX) {
             for (Tab tab : tabs) {
                 assert tab.getTabGroupId() == null : "Tab should not be part of a group.";
             }
         }
-        if (targetActivity != null) {
-            mTabReparentingDelegate.reparentTabsToExistingWindow(
-                    (ChromeTabbedActivity) targetActivity,
-                    tabs,
-                    /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                    destGroupTabId);
-        } else {
-            assert false : "Target activity is null";
-        }
-    }
 
-    private void moveTabsToWindow(
-            int destWindowId, List<Tab> tabs, int destTabIndex, @NewWindowAppSource int source) {
-        Activity targetActivity = getActivityById(destWindowId);
-        if (targetActivity != null) {
+        Activity destActivity = getActivityById(destWindowId);
+        // Reparent tabs to the activity associated with the specified instance if it is alive. If
+        // the instance does not have a live activity, restore it in a new activity to reparent the
+        // tabs into.
+        if (destActivity != null) {
             mTabReparentingDelegate.reparentTabsToExistingWindow(
-                    (ChromeTabbedActivity) targetActivity,
-                    tabs,
-                    destTabIndex,
-                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                    (ChromeTabbedActivity) destActivity, tabs, destTabIndex, destGroupTabId);
         } else {
-            TabModelSelector selector =
-                    TabWindowManagerSingleton.getInstance()
-                            .getTabModelSelectorById(getCurrentInstanceId());
             // If the source Chrome instance still has tabs (including incognito), allow
             // launching the new window adjacently. Otherwise, skip
             // FLAG_ACTIVITY_LAUNCH_ADJACENT to avoid a black screen caused by the source
             // window closing before the new one launches.
+            TabModelSelector selector =
+                    TabWindowManagerSingleton.getInstance()
+                            .getTabModelSelectorById(getCurrentInstanceId());
             boolean openAdjacently = assumeNonNull(selector).getTotalTabCount() > 1;
+            // TODO (crbug.com/483801863): Revisit NewWindowAppSource used here.
             mTabReparentingDelegate.reparentTabsToNewWindow(
-                    tabs, destWindowId, openAdjacently, source);
+                    tabs, destWindowId, openAdjacently, NewWindowAppSource.OTHER);
         }
     }
 
     @Override
     public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
+        if (tabs.isEmpty()) return;
         // Check the number of instances that the tab/s is able to move into.
         int instanceCount =
                 MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
@@ -354,7 +320,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
         showTargetSelectorDialog(
                 (instanceInfo) -> {
-                    moveTabsToWindow(instanceInfo, tabs, TabList.INVALID_TAB_INDEX, source);
+                    moveTabsToWindowByIdChecked(
+                            instanceInfo.instanceId,
+                            tabs,
+                            /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                            /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
                     // Close the source instance window, if needed.
                     closeChromeWindowIfEmpty(mInstanceId);
                 },
@@ -467,12 +437,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 },
                 instanceType,
                 R.string.menu_move_group_to_other_window);
-    }
-
-    @Override
-    public void moveTabsToWindow(
-            InstanceInfo info, List<Tab> tabs, int tabAtIndex, @NewWindowAppSource int source) {
-        moveTabsToWindow(info.instanceId, tabs, tabAtIndex, source);
     }
 
     @Override
@@ -1608,17 +1572,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         } else {
             mTabReparentingDelegate.reparentTabGroupToNewWindow(
                     tabGroupMetadata, INVALID_WINDOW_ID, openAdjacently, source);
-        }
-    }
-
-    @Override
-    public void moveTabsToWindow(@Nullable Activity activity, List<Tab> tabs, int atIndex) {
-        // Get the current instance and move tab there.
-        InstanceInfo info = getInstanceInfoFor(activity);
-        if (info != null) {
-            moveTabsToWindow(info, tabs, atIndex, NewWindowAppSource.OTHER);
-        } else {
-            Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
         }
     }
 

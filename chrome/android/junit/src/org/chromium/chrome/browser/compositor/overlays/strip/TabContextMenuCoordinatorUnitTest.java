@@ -1238,13 +1238,9 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 1, mView);
-        verify(mMultiInstanceManager, times(1))
-                .moveTabsToWindow(
-                        /* destWindowId= */ MultiInstanceManager.INVALID_WINDOW_ID,
-                        Collections.singletonList(mTabOutsideOfGroup),
-                        /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
-                        NewWindowAppSource.MENU);
+        verify(mMultiInstanceManager)
+                .moveTabsToNewWindow(
+                        Collections.singletonList(mTabOutsideOfGroup), NewWindowAppSource.MENU);
     }
 
     @Test
@@ -1269,12 +1265,12 @@ public class TabContextMenuCoordinatorUnitTest {
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToWindowRow(
                 modelList, 1, WINDOW_TITLE_2, mView);
 
-        verify(mMultiInstanceManager, times(1))
-                .moveTabsToWindow(
-                        INSTANCE_INFO_2,
+        verify(mMultiInstanceManager)
+                .moveTabsToWindowByIdChecked(
+                        INSTANCE_ID_2,
                         Collections.singletonList(mTabOutsideOfGroup),
-                        TabList.INVALID_TAB_INDEX,
-                        NewWindowAppSource.MENU);
+                        /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
     }
 
     @Test

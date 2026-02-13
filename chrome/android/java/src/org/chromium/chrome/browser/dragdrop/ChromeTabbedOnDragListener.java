@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -181,10 +182,11 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                         mWindowAndroid.getActivity().get(), draggedTabIncognito, mTabModelSelector);
 
         // Reparent the dragged tab to the destination window.
-        mMultiInstanceManager.moveTabsToWindow(
-                mWindowAndroid.getActivity().get(),
+        mMultiInstanceManager.moveTabsToWindowByIdChecked(
+                mMultiInstanceManager.getCurrentInstanceId(),
                 Collections.singletonList(draggedTab),
-                destIndex);
+                destIndex,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_CONTENT,
                 isInDesktopWindow,
@@ -223,8 +225,11 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                         mTabModelSelector);
 
         // Reparent the dragged tabs to the destination window.
-        mMultiInstanceManager.moveTabsToWindow(
-                mWindowAndroid.getActivity().get(), draggedTabs, destIndex);
+        mMultiInstanceManager.moveTabsToWindowByIdChecked(
+                mMultiInstanceManager.getCurrentInstanceId(),
+                draggedTabs,
+                destIndex,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_CONTENT,
                 isInDesktopWindow,

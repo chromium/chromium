@@ -348,7 +348,12 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         if (getModel(tab.isIncognito()).getTabById(tab.getId()) != tab) return;
 
         assert mMultiInstanceManager != null;
-        mMultiInstanceManager.moveTabsToWindow(activity, Collections.singletonList(tab), newIndex);
+        int destWindowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
+        mMultiInstanceManager.moveTabsToWindowByIdChecked(
+                destWindowId,
+                Collections.singletonList(tab),
+                newIndex,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
     }
 
     @Override

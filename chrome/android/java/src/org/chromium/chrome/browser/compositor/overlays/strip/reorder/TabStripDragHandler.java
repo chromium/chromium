@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -446,22 +447,27 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         recordTabRemovedFromGroupUserAction();
 
         // Move tab to another window.
+        int destWindowId = mMultiInstanceManager.getCurrentInstanceId();
         if (!tabDraggedBelongToCurrentModel) {
             // Reject cross-model drops if incognito is opened as a new window.
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) return false;
 
-            mMultiInstanceManager.moveTabsToWindow(
-                    getActivity(),
+            mMultiInstanceManager.moveTabsToWindowByIdChecked(
+                    destWindowId,
                     Collections.singletonList(tabBeingDragged),
-                    getTabModelSelector().getModel(tabBeingDragged.isIncognito()).getCount());
+                    getTabModelSelector().getModel(tabBeingDragged.isIncognito()).getCount(),
+                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
             showDroppedDifferentModelToast(getActivity());
         } else {
             // Reparent tab at drop index and merge to group on destination if needed.
             int tabIndex =
                     helper.getTabIndexForTabDrop(
                             dropEvent.getX() * mPxToDp, tabBeingDragged.getIsPinned());
-            mMultiInstanceManager.moveTabsToWindow(
-                    getActivity(), Collections.singletonList(tabBeingDragged), tabIndex);
+            mMultiInstanceManager.moveTabsToWindowByIdChecked(
+                    destWindowId,
+                    Collections.singletonList(tabBeingDragged),
+                    tabIndex,
+                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
             helper.maybeMergeToGroupOnDrop(
                     Collections.singletonList(tabBeingDragged.getId()),
                     tabIndex,
@@ -486,23 +492,29 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         boolean tabsDraggedBelongToCurrentModel =
                 doesBelongToCurrentModel(tabsBeingDragged.get(0).isIncognitoBranded());
         // Move tabs to another window.
+        int destWindowId = mMultiInstanceManager.getCurrentInstanceId();
         if (!tabsDraggedBelongToCurrentModel) {
             // Reject cross-model drops if incognito is opened as a new window.
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) return false;
 
-            mMultiInstanceManager.moveTabsToWindow(
-                    getActivity(),
+            mMultiInstanceManager.moveTabsToWindowByIdChecked(
+                    destWindowId,
                     tabsBeingDragged,
                     getTabModelSelector()
                             .getModel(tabsBeingDragged.get(0).isIncognito())
-                            .getCount());
+                            .getCount(),
+                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
             showDroppedDifferentModelToast(getActivity());
         } else {
             // Reparent tabs at drop index.
             int tabIndex =
                     helper.getTabIndexForTabDrop(
                             dropEvent.getX() * mPxToDp, isDraggingPinnedItem());
-            mMultiInstanceManager.moveTabsToWindow(getActivity(), tabsBeingDragged, tabIndex);
+            mMultiInstanceManager.moveTabsToWindowByIdChecked(
+                    destWindowId,
+                    tabsBeingDragged,
+                    tabIndex,
+                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
             List<Integer> tabsBeingDraggedIds = new ArrayList<>();
             for (Tab tab : tabsBeingDragged) {
                 tabsBeingDraggedIds.add(tab.getId());

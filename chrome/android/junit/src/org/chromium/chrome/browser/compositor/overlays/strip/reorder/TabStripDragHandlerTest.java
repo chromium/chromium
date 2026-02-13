@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -1241,8 +1242,8 @@ public class TabStripDragHandlerTest {
         // Stop reorder on drop and drag end.
         verify(mSourceStripLayoutHelper, times(2)).stopReorderMode(false);
         // Verify view not moved.
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabsToWindow(any(Activity.class), any(), anyInt());
+        verify(mSourceMultiInstanceManager, never())
+                .moveTabsToWindowByIdChecked(anyInt(), any(), anyInt(), anyInt());
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
         // Verify histograms.
@@ -1320,8 +1321,8 @@ public class TabStripDragHandlerTest {
         // Strip clears state for drop on drag exit.
         verify(mSourceStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
         // Verify view is not moved since drop is on source toolbar.
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabsToWindow(any(Activity.class), any(), anyInt());
+        verify(mSourceMultiInstanceManager, never())
+                .moveTabsToWindowByIdChecked(anyInt(), any(), anyInt(), anyInt());
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).stopReorderMode(false);
         // Verify destination strip not invoked.
@@ -1475,8 +1476,9 @@ public class TabStripDragHandlerTest {
                 .end(true);
 
         // Verify view moved to window.
-        verify(mDestMultiInstanceManager, times(1))
-                .moveTabsToWindow(any(Activity.class), eq(mTabsBeingDragged), eq(TAB_INDEX));
+        verify(mDestMultiInstanceManager)
+                .moveTabsToWindowByIdChecked(
+                        eq(ANOTHER_INSTANCE_ID), eq(mTabsBeingDragged), eq(TAB_INDEX), eq(-1));
         List<Integer> tabIds = new ArrayList<>();
         for (Tab tab : mTabsBeingDragged) {
             tabIds.add(tab.getId());
@@ -1561,8 +1563,9 @@ public class TabStripDragHandlerTest {
                 .verifyShadowVisibility(true)
                 .drop(mDestInstance)
                 .end(true);
-        verify(mDestMultiInstanceManager, times(1))
-                .moveTabsToWindow(any(Activity.class), eq(mTabsBeingDragged), eq(5));
+        verify(mDestMultiInstanceManager)
+                .moveTabsToWindowByIdChecked(
+                        eq(ANOTHER_INSTANCE_ID), eq(mTabsBeingDragged), eq(5), eq(-1));
 
         // Verify toast.
         verifyToast(
@@ -1696,8 +1699,8 @@ public class TabStripDragHandlerTest {
         verify(mDestStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
 
         // Verify not moved.
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabsToWindow(any(Activity.class), any(), anyInt());
+        verify(mSourceMultiInstanceManager, never())
+                .moveTabsToWindowByIdChecked(anyInt(), any(), anyInt(), anyInt());
 
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).stopReorderMode(false);
@@ -1784,8 +1787,8 @@ public class TabStripDragHandlerTest {
         verify(mSourceStripLayoutHelper, times(2)).stopReorderMode(false);
 
         // Verify not moved.
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabsToWindow(any(Activity.class), any(), anyInt());
+        verify(mSourceMultiInstanceManager, never())
+                .moveTabsToWindowByIdChecked(anyInt(), any(), anyInt(), anyInt());
 
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
@@ -1833,8 +1836,8 @@ public class TabStripDragHandlerTest {
             mSourceInstance.onDrag(mTabsToolbarView, event);
 
             // Verify - Move to new window not invoked.
-            verify(mDestMultiInstanceManager, times(0))
-                    .moveTabsToWindow(any(Activity.class), any(), anyInt());
+            verify(mDestMultiInstanceManager, never())
+                    .moveTabsToWindowByIdChecked(anyInt(), any(), anyInt(), anyInt());
         }
     }
 
@@ -2244,8 +2247,8 @@ public class TabStripDragHandlerTest {
                     .moveTabGroupToWindow(any(Activity.class), eq(mTabGroupMetadata), anyInt());
         } else {
             // Verify tab is not moved.
-            verify(mDestMultiInstanceManager, times(0))
-                    .moveTabsToWindow(any(Activity.class), any(), anyInt());
+            verify(mDestMultiInstanceManager, never())
+                    .moveTabsToWindowByIdChecked(anyInt(), any(), anyInt(), anyInt());
         }
     }
 
@@ -2256,8 +2259,8 @@ public class TabStripDragHandlerTest {
                     .moveTabGroupToWindow(any(Activity.class), eq(mTabGroupMetadata), eq(index));
         } else {
             // Verify tab is moved.
-            verify(mDestMultiInstanceManager, times(1))
-                    .moveTabsToWindow(any(Activity.class), any(), eq(index));
+            verify(mDestMultiInstanceManager)
+                    .moveTabsToWindowByIdChecked(eq(ANOTHER_INSTANCE_ID), any(), eq(index), eq(-1));
         }
     }
 

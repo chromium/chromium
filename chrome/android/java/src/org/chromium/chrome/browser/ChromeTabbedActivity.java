@@ -279,6 +279,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -2925,8 +2926,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
         boolean isTabInGroup = tab.getTabGroupId() != null;
 
-        mMultiInstanceManager.moveTabsToWindow(
-                this, Collections.singletonList(tab), /* atIndex= */ 0);
+        mMultiInstanceManager.moveTabsToWindowByIdChecked(
+                mWindowId,
+                Collections.singletonList(tab),
+                /* destTabIndex= */ 0,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
 
         if (isTabInGroup) RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, true);
@@ -2958,7 +2962,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             tabs.add(tab);
         }
 
-        mMultiInstanceManager.moveTabsToWindow(this, tabs, /* atIndex= */ 0);
+        mMultiInstanceManager.moveTabsToWindowByIdChecked(
+                mWindowId,
+                tabs,
+                /* destTabIndex= */ 0,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
 
         DragDropMetricUtils.recordDragDropType(
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
