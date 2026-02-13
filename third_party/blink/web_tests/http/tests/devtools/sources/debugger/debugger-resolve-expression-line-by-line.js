@@ -8,8 +8,8 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import * as SourceMapScopesModule from 'devtools/models/source_map_scopes/source_map_scopes.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Formatter from 'devtools/models/formatter/formatter.js';
+import * as StackTrace from 'devtools/models/stack_trace/stack_trace.js';
 
 (async function() {
   TestRunner.addResult(`Tests evaluation in webpack bundled scripts with 'line-by'line' source maps.\n`);
@@ -23,7 +23,7 @@ import * as Formatter from 'devtools/models/formatter/formatter.js';
 
   await TestRunner.addSnifferPromise(SourcesModule.CallStackSidebarPane.CallStackSidebarPane.prototype, 'updatedForTest');
   SourcesTestRunner.waitForScriptSource('resolve-expressions-webpack-authored.js', async (uiSourceCode) => {
-    const callFrame = UIModule.Context.Context.instance().flavor(SDK.DebuggerModel.CallFrame);
+    const callFrame = UIModule.Context.Context.instance().flavor(StackTrace.StackTrace.DebuggableFrameFlavor).sdkFrame;
     const mappings = await SourceMapScopesModule.NamesResolver.allVariablesInCallFrame(callFrame);
 
     // "this.#prop" maps to the whole assignment, but we should be able to handle that..

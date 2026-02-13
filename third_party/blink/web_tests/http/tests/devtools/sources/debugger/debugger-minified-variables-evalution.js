@@ -8,8 +8,8 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import * as SourceMapScopesModule from 'devtools/models/source_map_scopes/source_map_scopes.js';
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Formatter from 'devtools/models/formatter/formatter.js';
+import * as StackTrace from 'devtools/models/stack_trace/stack_trace.js';
 
 (async function() {
   TestRunner.addResult(`Tests evaluation in minified scripts.\n`);
@@ -39,7 +39,7 @@ import * as Formatter from 'devtools/models/formatter/formatter.js';
 
   function testWithExpression(expression) {
     return SourceMapScopesModule.NamesResolver
-      .allVariablesInCallFrame(UIModule.Context.Context.instance().flavor(SDK.DebuggerModel.CallFrame))
+      .allVariablesInCallFrame(UIModule.Context.Context.instance().flavor(StackTrace.StackTrace.DebuggableFrameFlavor).sdkFrame)
       .then(map => Formatter.FormatterWorkerPool.formatterWorkerPool().javaScriptSubstitute(expression, map))
       .then(SourcesTestRunner.evaluateOnCurrentCallFrame)
       .then(result => TestRunner.addResult(result.object.description));
