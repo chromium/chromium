@@ -122,7 +122,6 @@ bool ShaderTranslator::Init(GLenum shader_type,
 
   compile_options_ = driver_bug_workarounds;
   compile_options_.objectCode = true;
-  compile_options_.enforcePackingRestrictions = true;
   compile_options_.limitExpressionComplexity = true;
   compile_options_.limitCallStackDepth = true;
   compile_options_.clampIndirectArrayBounds = true;
@@ -130,7 +129,7 @@ bool ShaderTranslator::Init(GLenum shader_type,
   compile_options_.emulateGLBaseVertexBaseInstance = true;
 
   std::string compile_options_string =
-      "objectCode:variables:enforcePackingRestrictions:"
+      "objectCode:"
       "limitExpressionComplexity:limitCallStackDepth:clampIndirectArrayBounds:"
       "emulateGLDrawID:emulateGLBaseVertexBaseInstance";
 

@@ -376,7 +376,7 @@ crbug.com/401988385 [ chromeos angle-opengles mesa_ge_21.0 passthrough ] conform
 # edge of the 60s timeout.
 [ fuchsia web-engine-shell ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
 [ fuchsia web-engine-shell ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Slow ]
-[ fuchsia web-engine-shell ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Slow ]
+[ passthrough fuchsia web-engine-shell ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Slow ]
 # Comment below entry temporarily due to conflicts with crbug.com/443182226. Uncomment when crbug.com/443182226 is resolved
 # crbug.com/1490427 [ fuchsia web-engine-shell ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
@@ -419,6 +419,10 @@ crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
+
+# Validating uniform limits should be done at link time, not implemented on the validating command decoder. Remove once it's unshipped.
+crbug.com/angleproject/482223016 [ no-passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Skip ]
+crbug.com/angleproject/482223016 [ no-passthrough ] conformance/glsl/misc/shader-with-too-many-uniforms.html [ Skip ]
 
 
 ####################

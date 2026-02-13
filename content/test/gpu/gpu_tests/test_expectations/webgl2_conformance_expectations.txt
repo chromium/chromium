@@ -538,6 +538,10 @@ crbug.com/949249 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/ovr_
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
+# Validating uniform limits should be done at link time, not implemented on the validating command decoder. Remove once it's unshipped.
+crbug.com/angleproject/482223016 [ no-passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Skip ]
+crbug.com/angleproject/482223016 [ no-passthrough ] conformance/glsl/misc/shader-with-too-many-uniforms.html [ Skip ]
+
 # Persistent flaking on Windows and Mac/M1
 crbug.com/365680830 [ arch-x86_64 angle-d3d11 graphite-enabled win ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 crbug.com/365680830 [ mac arch-arm64 angle-metal ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
