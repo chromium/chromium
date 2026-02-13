@@ -4773,6 +4773,14 @@
       },
     },
     {
+      name: "SecurePaymentConfirmationCapabilities",
+      status: {
+        "Android": "test",
+        "Mac": "test",
+        "Win": "test",
+      },
+    },
+    {
       name: "SecurePaymentConfirmationDebug",
       base_feature: "none",
       public: true,
