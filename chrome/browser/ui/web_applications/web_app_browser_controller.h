@@ -122,6 +122,8 @@ class WebAppBrowserController : public AppBrowserController,
   bool HasPendingUpdateNotIgnoredByUser() const override;
   void CreateMetadataAndTriggerAppUpdateDialog(
       base::TimeTicks start_time) const override;
+  void CreateMetadataAndTriggerAppMigrationDialog(
+      base::TimeTicks start_time) const override;
 #if BUILDFLAG(IS_CHROMEOS)
   const ash::SystemWebAppDelegate* system_app() const override;
   bool ShouldShowCustomTabBar() const override;
@@ -177,7 +179,11 @@ class WebAppBrowserController : public AppBrowserController,
   void OnMetadataObtainedTriggerUpdateDialog(
       base::TimeTicks start_time,
       std::optional<WebAppIdentityUpdate> identity_update) const;
+  void OnMetadataObtainedTriggerMigrationDialog(
+      base::TimeTicks start_time,
+      std::optional<WebAppIdentityUpdate> identity_update) const;
   void OnUpdateDialogResult(WebAppIdentityUpdateResult result) const;
+  void OnMigrationDialogResult(WebAppIdentityUpdateResult result) const;
 
 #if BUILDFLAG(IS_CHROMEOS)
   void CheckDigitalAssetLinkRelationshipForAndroidApp(

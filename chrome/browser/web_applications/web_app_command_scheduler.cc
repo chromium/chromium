@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/app_migration_data_read_command.h"
 #include "chrome/browser/web_applications/commands/app_update_data_read_command.h"
 #include "chrome/browser/web_applications/commands/apply_manifest_migration_command.h"
 #include "chrome/browser/web_applications/commands/apply_pending_manifest_update_command.h"
@@ -857,6 +858,17 @@ void WebAppCommandScheduler::ReadAppUpdateDataFromDisk(
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<AppUpdateDataReadCommand>(app_id, std::move(callback)),
+      location);
+}
+
+void WebAppCommandScheduler::ReadAppMigrationDataFromDisk(
+    const webapps::AppId& old_app_id,
+    const webapps::AppId& new_app_id,
+    base::OnceCallback<void(std::optional<WebAppIdentityUpdate>)> callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<AppMigrationDataReadCommand>(old_app_id, new_app_id,
+                                                    std::move(callback)),
       location);
 }
 

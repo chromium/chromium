@@ -507,6 +507,9 @@ bool AppBrowserController::HasPendingMigration() const {
 void AppBrowserController::CreateMetadataAndTriggerAppUpdateDialog(
     base::TimeTicks start_time) const {}
 
+void AppBrowserController::CreateMetadataAndTriggerAppMigrationDialog(
+    base::TimeTicks start_time) const {}
+
 bool AppBrowserController::IsPreventCloseEnabled() const {
   auto* provider = WebAppProvider::GetForWebApps(browser()->profile());
   if (!provider) {

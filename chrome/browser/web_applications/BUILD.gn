@@ -14,6 +14,8 @@ assert(!is_android,
 source_set("web_applications") {
   sources = [
     "callback_utils.h",
+    "commands/app_migration_data_read_command.cc",
+    "commands/app_migration_data_read_command.h",
     "commands/app_update_data_read_command.cc",
     "commands/app_update_data_read_command.h",
     "commands/apply_manifest_migration_command.cc",

@@ -283,6 +283,11 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   virtual void CreateMetadataAndTriggerAppUpdateDialog(
       base::TimeTicks start_time) const;
 
+  // Constructs the metadata required for app migration and triggers the
+  // corresponding dialog.
+  virtual void CreateMetadataAndTriggerAppMigrationDialog(
+      base::TimeTicks start_time) const;
+
   // Returns whether prevent close is enabled.
   bool IsPreventCloseEnabled() const;
 

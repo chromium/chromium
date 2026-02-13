@@ -714,6 +714,15 @@ class WebAppCommandScheduler {
       base::OnceCallback<void(std::optional<WebAppIdentityUpdate>)> callback,
       const base::Location& location = FROM_HERE);
 
+  // Reads pending app migration information like icons to show on the dialog
+  // from disk, and uses that with web app metadata to construct a
+  // WebAppIdentityUpdate instance.
+  void ReadAppMigrationDataFromDisk(
+      const webapps::AppId& old_app_id,
+      const webapps::AppId& new_app_id,
+      base::OnceCallback<void(std::optional<WebAppIdentityUpdate>)> callback,
+      const base::Location& location = FROM_HERE);
+
   // Marks whether the pending update available for the app is ignored by the
   // user, and notifies changes to the WebAppRegistrar.
   void MarkAppPendingUpdateAsIgnored(
