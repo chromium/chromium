@@ -186,6 +186,18 @@ void ElasticOverscrollController::UpdateVelocity(
   float time_delta =
       (event_timestamp - entry.last_scroll_event_timestamp).InSecondsF();
   if (time_delta < kScrollVelocityZeroingTimeout && time_delta > 0) {
+    // On macOS, scroll events sent when transitioning between phases
+    // (e.g., normal -> momentum) can be sent in very quick succession with a
+    // scroll delta larger than what would be expected for the time delta
+    // between events. We ignore extremely small time deltas to avoid giving the
+    // scroll entry an incredibly high velocity. 1ms was chosen as an arbitrary
+    // value that is safely below the refresh rate of today's (2026) high-end
+    // displays.
+    constexpr float min_time_delta = 1.0f / 1000.0f;
+    if (time_delta < min_time_delta) {
+      return;
+    }
+
     entry.scroll_velocity =
         gfx::Vector2dF(adjusted_overscroll_delta.x() / time_delta,
                        adjusted_overscroll_delta.y() / time_delta);

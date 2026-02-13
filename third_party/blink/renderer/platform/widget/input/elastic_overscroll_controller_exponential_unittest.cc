@@ -41,6 +41,9 @@ enum InertialPhaseState {
 
 class MockScrollElasticityHelper : public cc::ScrollElasticityHelper {
  public:
+  static constexpr base::TimeDelta kDefaultTimeDelta =
+      base::Seconds(1.f / 60.f);
+
   MockScrollElasticityHelper() = default;
   ~MockScrollElasticityHelper() override = default;
 
@@ -146,8 +149,10 @@ class ElasticOverscrollControllerExponentialTest : public testing::Test {
       const Vector2dF& overscroll_delta = Vector2dF(),
       const cc::OverscrollBehavior& overscroll_behavior =
           cc::OverscrollBehavior(),
-      cc::ElementId element_id = cc::ElementId()) {
-    TickCurrentTime();
+      cc::ElementId element_id = cc::ElementId(),
+      base::TimeDelta timeDelta =
+          MockScrollElasticityHelper::kDefaultTimeDelta) {
+    TickCurrentTime(timeDelta);
     WebGestureEvent event(WebInputEvent::Type::kGestureScrollUpdate,
                           WebInputEvent::kNoModifiers, current_time_,
                           WebGestureDevice::kTouchpad);
@@ -174,8 +179,9 @@ class ElasticOverscrollControllerExponentialTest : public testing::Test {
                                              cc::InputHandlerScrollResult());
   }
 
-  const base::TimeTicks& TickCurrentTime() {
-    current_time_ += base::Seconds(1 / 60.f);
+  const base::TimeTicks& TickCurrentTime(
+      base::TimeDelta delta = MockScrollElasticityHelper::kDefaultTimeDelta) {
+    current_time_ += delta;
     return current_time_;
   }
   void TickCurrentTimeAndAnimate() {
@@ -208,7 +214,7 @@ TEST_F(ElasticOverscrollControllerExponentialTest, Axis) {
   EXPECT_EQ(0, helper_.request_begin_frame_count());
 
   // If we push more in the X direction than the Y direction, we should see a
-  // stretch  in the X direction. This decision should be based on the actual
+  // stretch in the X direction. This decision should be based on the actual
   // overscroll delta.
   helper_.SetScrollOffsetAndMaxScrollOffset(gfx::PointF(0, 10),
                                             gfx::PointF(10, 10));
@@ -357,6 +363,34 @@ TEST_F(ElasticOverscrollControllerExponentialTest, MomentumAnimate) {
   EXPECT_EQ(stretch_count, helper_.set_stretch_amount_count());
   EXPECT_EQ(begin_frame_count, helper_.request_begin_frame_count());
   EXPECT_EQ(1, helper_.animation_finished_count());
+}
+
+// Verify that a momentum scroll event that happens very quickly after a
+// non-momentum event doesn't cause a huge increase in velocity
+// (https://crbug.com/481401705)
+TEST_F(ElasticOverscrollControllerExponentialTest,
+       FastNonMomentumToMomentumUpdates) {
+  // A momentum event fired incredibly quickly after a nonmomentum event will
+  // have a smaller magnitude, but will be proportionally much larger than it
+  // should be when considering the time delta between events.
+  Vector2dF nonmomentum_delta(0, 15);
+  Vector2dF momentum_delta(0, 2);
+
+  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::PointF(0, 10),
+                                            gfx::PointF(0, 10));
+  SendGestureScrollBegin(NonMomentumPhase);
+  SendGestureScrollUpdate(NonMomentumPhase, nonmomentum_delta,
+                          nonmomentum_delta);
+  // Simulate a change from nonmomentum to momentum that occurs out-of-band from
+  // the screen refresh rate. The time delta being used was pulled from logs
+  // recording scroll events on a MacBook trackpad.
+  SendGestureScrollUpdate(MomentumPhase, momentum_delta, momentum_delta,
+                          cc::OverscrollBehavior(), cc::ElementId(),
+                          base::Seconds(0.000034));
+  TickCurrentTimeAndAnimate();
+
+  // Ensure we haven't stretched further than the original scroll delta.
+  EXPECT_LT(helper_.StretchAmount(cc::ElementId()).y(), nonmomentum_delta.y());
 }
 
 // Verify that a stretch opposing a scroll is correctly resolved.
