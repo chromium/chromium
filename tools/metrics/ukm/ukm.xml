@@ -3778,56 +3778,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Autofill2.SubmittedFormWithExperimentalFields">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-team@google.com</owner>
-  <summary>
-    Statistics on the number of non-empty experimental field-types in submitted
-    forms, recorded at form submission time.
-  </summary>
-  <metric name="FormSessionIdentifier">
-    <summary>
-      A random variable assigned to a specific instance of a HTML form in a
-      specific renderer. This should be globally unique and suitable for
-      counting distinct forms. Two different users would have different values.
-      A single user loading the same form in two different tabs would have two
-      different values. This is used to link the fields in this form in
-      Autofill2.FieldInfo.
-    </summary>
-  </metric>
-  <metric name="FormSignature">
-    <summary>
-      The signature of the form, which is a 10-bit hash of the form's domain,
-      name and all the supported form fields (including empty names).
-    </summary>
-  </metric>
-  <metric name="NumberOfNonEmptyExperimentalFields0">
-    <summary>
-      The total number of non-empty experimental fields in the form in group 0.
-    </summary>
-  </metric>
-  <metric name="NumberOfNonEmptyExperimentalFields1">
-    <summary>
-      The total number of non-empty experimental fields in the form in group 1.
-    </summary>
-  </metric>
-  <metric name="NumberOfNonEmptyExperimentalFields2">
-    <summary>
-      The total number of non-empty experimental fields in the form in group 2.
-    </summary>
-  </metric>
-  <metric name="NumberOfNonEmptyExperimentalFields3">
-    <summary>
-      The total number of non-empty experimental fields in the form in group 3.
-    </summary>
-  </metric>
-  <metric name="NumberOfNonEmptyExperimentalFields4">
-    <summary>
-      The total number of non-empty experimental fields in the form in group 4.
-    </summary>
-  </metric>
-</event>
-
 <event name="AutofillAi.FieldEvent">
   <owner>jihadghanna@google.com</owner>
   <owner>jkeitel@google.com</owner>

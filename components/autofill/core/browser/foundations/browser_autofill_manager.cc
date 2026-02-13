@@ -3445,16 +3445,6 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
         GetAcUnrecognizedBehavior(client()));
   }
 
-  if (base::FeatureList::IsEnabled(features::kAutofillUKMExperimentalFields) &&
-      !metrics_->form_submitted_timestamp.is_null() &&
-      ShouldUploadUkm(form_structure,
-                      /*require_classified_field=*/false)) {
-    client()
-        .GetFormInteractionsUkmLogger()
-        .LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
-            driver().GetPageUkmSourceId(), form_structure);
-  }
-
   for (const auto& autofill_field : form_structure) {
     // Clear log events.
     // Not conditioned on kAutofillLogUKMEventsWithSamplingOnSession because

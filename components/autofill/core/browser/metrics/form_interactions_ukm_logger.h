@@ -131,9 +131,6 @@ class FormInteractionsUkmLogger {
       FormEventSet form_events,
       base::TimeTicks initial_interaction_timestamp,
       base::TimeTicks form_submitted_timestamp);
-  void LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
-      ukm::SourceId ukm_source_id,
-      const FormStructure& form_structure);
   void LogFocusedComplexFormAtFormRemove(
       ukm::SourceId ukm_source_id,
       const FormStructure& form_structure,
