@@ -23,6 +23,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -308,5 +309,80 @@ public class SetupListManagerUnitTest {
         assertFalse(
                 "Completed Sign In should be pushed out",
                 rankedModules.contains(ModuleType.SIGN_IN_PROMO));
+    }
+
+    @Test
+    @SmallTest
+    public void testArm1_AddressBarFocus() {
+        // Arm 1: Address Bar Focus (Address Bar enabled, PW Management disabled)
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.ANDROID_SETUP_LIST)
+                .param(SetupListManager.ADDRESS_BAR_PLACEMENT_PARAM, true)
+                .param(SetupListManager.PW_MANAGEMENT_PARAM, false)
+                .apply();
+
+        // Mock eligible promos.
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mPasswordManagerHelperJni.hasChosenToSyncPasswords(any())).thenReturn(true);
+        when(mSearchEngineChoiceService.isDefaultBrowserPromoSuppressed()).thenReturn(false);
+
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
+        manager.maybePrimeCompletionStatus(mProfile);
+
+        List<Integer> rankedModules = manager.getRankedModuleTypes();
+        assertTrue(rankedModules.contains(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
+        assertFalse(rankedModules.contains(ModuleType.SAVE_PASSWORDS_PROMO));
+        assertFalse(rankedModules.contains(ModuleType.PASSWORD_CHECKUP_PROMO));
+    }
+
+    @Test
+    @SmallTest
+    public void testArm2_PasswordCheckupFocus() {
+        // Arm 2: PW Management Focus (Address Bar disabled, PW Management enabled)
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.ANDROID_SETUP_LIST)
+                .param(SetupListManager.ADDRESS_BAR_PLACEMENT_PARAM, false)
+                .param(SetupListManager.PW_MANAGEMENT_PARAM, true)
+                .apply();
+
+        // Mock eligible promos.
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mPasswordManagerHelperJni.hasChosenToSyncPasswords(any())).thenReturn(true);
+        when(mSearchEngineChoiceService.isDefaultBrowserPromoSuppressed()).thenReturn(false);
+
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
+        manager.maybePrimeCompletionStatus(mProfile);
+
+        List<Integer> rankedModules = manager.getRankedModuleTypes();
+        assertFalse(rankedModules.contains(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
+        assertTrue(rankedModules.contains(ModuleType.SAVE_PASSWORDS_PROMO));
+        assertTrue(rankedModules.contains(ModuleType.PASSWORD_CHECKUP_PROMO));
+    }
+
+    @Test
+    @SmallTest
+    public void testArm3_BothEnabled() {
+        // Arm 3: Both enabled
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.ANDROID_SETUP_LIST)
+                .param(SetupListManager.ADDRESS_BAR_PLACEMENT_PARAM, true)
+                .param(SetupListManager.PW_MANAGEMENT_PARAM, true)
+                .apply();
+
+        // Mock eligible promos.
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mPasswordManagerHelperJni.hasChosenToSyncPasswords(any())).thenReturn(true);
+        when(mSearchEngineChoiceService.isDefaultBrowserPromoSuppressed()).thenReturn(false);
+
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
+        manager.maybePrimeCompletionStatus(mProfile);
+
+        List<Integer> rankedModules = manager.getRankedModuleTypes();
+        assertTrue(rankedModules.contains(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
+        assertTrue(rankedModules.contains(ModuleType.SAVE_PASSWORDS_PROMO));
+        assertTrue(rankedModules.contains(ModuleType.PASSWORD_CHECKUP_PROMO));
     }
 }
