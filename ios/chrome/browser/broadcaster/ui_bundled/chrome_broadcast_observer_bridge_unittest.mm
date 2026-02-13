@@ -67,12 +67,16 @@ class ChromeBroadcastObserverBridgeTest : public PlatformTest {
   ChromeBroadcastObserverBridgeTest()
       : PlatformTest(),
         bridge_([[ChromeBroadcastOberverBridge alloc]
-            initWithObserver:&observer_]) {}
+            initWithObserver:&observer_]) {
+    scoped_feature_list_.InitAndDisableFeature(
+        web::features::kSmoothScrollingUseDelegate);
+  }
 
   const TestChromeBroadcastObserver& observer() { return observer_; }
   id<ChromeBroadcastObserver> bridge() { return bridge_; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestChromeBroadcastObserver observer_;
   __strong ChromeBroadcastOberverBridge* bridge_ = nil;
 };

@@ -25437,6 +25437,22 @@
             ]
         }
     ],
+    "SmoothScrollingUseDelegate": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FullscreenSmoothScrollingDefault",
+                        "kSmoothScrollingUseDelegate"
+                    ]
+                }
+            ]
+        }
+    ],
     "SnapshotInSwift": [
         {
             "platforms": [

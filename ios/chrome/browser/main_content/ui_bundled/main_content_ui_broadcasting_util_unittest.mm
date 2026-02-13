@@ -4,14 +4,25 @@
 
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui_broadcasting_util.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui.h"
 #import "ios/chrome/browser/main_content/ui_bundled/test/main_content_broadcast_test_util.h"
 #import "ios/chrome/browser/main_content/ui_bundled/test/test_main_content_ui_state.h"
+#import "ios/web/common/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-using MainContentUIBroadcastingUtilTest = PlatformTest;
+class MainContentUIBroadcastingUtilTest : public PlatformTest {
+ public:
+  MainContentUIBroadcastingUtilTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        web::features::kSmoothScrollingUseDelegate);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 // Test implementation of MainContentUI.
 @interface TestMainContentUI : NSObject <MainContentUI>
