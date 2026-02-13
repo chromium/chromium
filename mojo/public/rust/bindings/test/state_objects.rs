@@ -1,0 +1,75 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+//! This module defines several state objects corresponding to the definitions
+//! in `bindings_unittests.test-mojom`. They can be used conveniently in tests,
+//! and also serve as coverage for the syntax of the
+//! `add_mojom_state_object_impls` macro.
+
+chromium::import! {
+    "//mojo/public/rust/bindings";
+    "//mojo/public/rust/bindings:bindings_unittests_mojom_rust";
+}
+
+use bindings_unittests_mojom_rust::bindings_unittests as test_mojom;
+use test_mojom::{MathService, TwoInts};
+
+use bindings::register_mojom_state_object_impls;
+
+// Various implementers of the `MathService` interface
+
+// Wraps around if overflow would happen
+pub struct WrappingMathService {}
+
+impl MathService for WrappingMathService {
+    fn Add(&mut self, a: u32, b: u32, send_response: impl FnOnce(u32)) {
+        send_response(u32::wrapping_add(a, b))
+    }
+
+    fn AddTwoInts(&mut self, ns: TwoInts, send_response: impl FnOnce(u32)) {
+        // Too small to overflow!
+        send_response(u32::from(ns.a) + u32::from(ns.b))
+    }
+}
+
+register_mojom_state_object_impls!(impl MathService for WrappingMathService);
+
+// Uses saturating operations
+pub struct SaturatingMathService {}
+
+impl MathService for SaturatingMathService {
+    fn Add(&mut self, a: u32, b: u32, send_response: impl FnOnce(u32)) {
+        send_response(u32::saturating_add(a, b))
+    }
+
+    fn AddTwoInts(&mut self, ns: TwoInts, send_response: impl FnOnce(u32)) {
+        // Too small to overflow!
+        send_response(u32::from(ns.a) + u32::from(ns.b))
+    }
+}
+
+register_mojom_state_object_impls!(impl MathService for SaturatingMathService);
+
+// Calls a user-provided function with the result of each addition before
+// sending a response
+pub struct NotifyingMathService<F: FnMut(u32) + Send> {
+    pub f: F,
+}
+
+impl<F: FnMut(u32) + Send> MathService for NotifyingMathService<F> {
+    fn Add(&mut self, a: u32, b: u32, send_response: impl FnOnce(u32)) {
+        (self.f)(a + b);
+        send_response(a + b)
+    }
+
+    fn AddTwoInts(&mut self, ns: TwoInts, send_response: impl FnOnce(u32)) {
+        // Too small to overflow!
+        let ret = u32::from(ns.a) + u32::from(ns.b);
+        (self.f)(ret);
+        send_response(ret)
+    }
+}
+
+register_mojom_state_object_impls!(
+    impl<F> MathService for NotifyingMathService<F> where F: FnMut(u32) + Send);

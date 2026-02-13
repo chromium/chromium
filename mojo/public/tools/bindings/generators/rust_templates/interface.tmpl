@@ -32,7 +32,7 @@
 
 impl {{args_struct(method)}} {
   fn serialize_from_parts({{typed_fields(method.param_struct.fields)}}) -> bindings::message::MojomMessage {
-    let payload = mojom_parser::serialize(Self { {{field_names(method.param_struct.fields)}} } );
+    let payload = mojom_value_parser::serialize(Self { {{field_names(method.param_struct.fields)}} } );
     {%- if method.response_parameters %}
     let flags = bindings::message_header::MessageHeaderFlags::EXPECTS_RESPONSE;
     {%- else %}
@@ -51,7 +51,7 @@ impl {{args_struct(method)}} {
 
 impl {{response_struct(method)}} {
   fn serialize_from_parts({{typed_fields(method.response_param_struct.fields)}}) -> bindings::message::MojomMessage {
-    let payload = mojom_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} } );
+    let payload = mojom_value_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} } );
     let flags = bindings::message_header::MessageHeaderFlags::IS_RESPONSE;
     bindings::message::MojomMessage {
       header: bindings::message_header::MessageHeaderV3::new(
@@ -80,7 +80,10 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
 {%- endfor %}
 
   // Note to users: Do not override this function when implementing the trait
-  fn handle_incoming_message(&mut self, message: bindings::message::MojomMessage, send_response: fn(bindings::message::MojomMessage))
+  fn handle_incoming_message(
+      &mut self,
+      message: bindings::message::MojomMessage,
+      send_response: impl FnOnce(bindings::message::MojomMessage) + Send + 'static)
     where Self: Sized
   {
     let _ = send_response; // Mark as used in case no messages take a response
@@ -88,7 +91,7 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
       {%- for method in interface.methods %}
       {{method.ordinal}} => {
         let {{"_" if not method.parameters}}parsed: {{args_struct(method)}} =
-          mojom_parser::deserialize_exact(&message.payload)
+          mojom_value_parser::deserialize_exact(&message.payload)
           .expect("FOR_RELEASE: figure out what to do here");
         {%- if method.response_parameters %}
         let callback = move |{{typed_fields(method.response_param_struct.fields)}}| {
@@ -126,7 +129,7 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
       {%- for method in interface.methods if method.response_parameters %}
       ({{method.ordinal}}, {{callback_ty_name}}::{{method.name}}(callback)) => {
         let parsed: {{response_struct(method)}} =
-          mojom_parser::deserialize_exact(&message.payload)
+          mojom_value_parser::deserialize_exact(&message.payload)
           .expect("FOR_RELEASE: figure out what to do here");
         callback(
           {%- for field in method.response_param_struct.fields -%}
@@ -139,14 +142,17 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
     }
   }
 
-  fn handle_incoming_message(&mut self, _message: bindings::message::MojomMessage, _send_response: impl FnOnce(bindings::message::MojomMessage)) {
+  fn handle_incoming_message(
+      &mut self,
+      _message: bindings::message::MojomMessage,
+      _send_response: impl FnOnce(bindings::message::MojomMessage) + Send + 'static) {
     unimplemented!("Call the appropriate trait method directly on the Remote object instead")
   }
 }
 
 impl bindings::interface::DynMojomInterface for dyn {{interface.name}} {}
 
-impl {{interface.name}} for bindings::interface::remote::Remote<dyn {{interface.name}}> {
+impl {{interface.name}} for bindings::remote::Remote<dyn {{interface.name}}> {
   {%- for method in interface.methods %}
   fn {{method.name}}(&mut self{{", " if method.param_struct.fields}}
   {{- typed_fields(method.param_struct.fields)}}

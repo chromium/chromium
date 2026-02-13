@@ -209,6 +209,8 @@ impl MessagePipeWatcher {
 
     /// Send a message through the underlying pipe. This function just forwards
     /// MessageEndpoint::write from the underlying endpoint.
+    /// # Possible Error Codes:
+    /// - `FailedPrecondition`: If the other end of the message pipe is closed.
     pub fn send_message(&self, msg: RawMojoMessage) -> MojoResult<()> {
         self.shared_state.endpoint.write(msg)
     }

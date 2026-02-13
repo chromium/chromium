@@ -4,9 +4,6 @@
 
 //! TODO: Module docs (link to interface.rs?)
 
-// FOR_RELEASE: Remove this once the file is fully implemented
-#![allow(unused)]
-
 chromium::import! {
   "//mojo/public/rust/system";
   "//mojo/public/rust/sequences";
@@ -68,7 +65,6 @@ where
     T: DynMojomInterface + ?Sized,
 {
     endpoint_watcher: MessagePipeWatcher,
-    runner: SequencedTaskRunnerHandle,
     // Stores the callbacks to be invoked when we get a response, using the
     // request ID as a key. May be accessed out-of-sequence (when sending a
     // new message), so requires synchronization.
@@ -159,7 +155,7 @@ where
             Self::incoming_message_handler(raw_message, &pending_responses_clone)
         };
         let endpoint_watcher =
-            MessagePipeWatcher::new_with_runner(endpoint, runner.clone(), message_handler, None)
+            MessagePipeWatcher::new_with_runner(endpoint, runner, message_handler, None)
                 .expect("FOR_RELEASE: Figure out how to handle errors here");
         // FOR_RELEASE: We should clear out any existing messages in the endpoint
         // in case it's being re-used, so the new remote doesn't see responses to
@@ -167,7 +163,6 @@ where
 
         Self {
             pending_responses,
-            runner,
             endpoint_watcher,
             next_request_id: 1, // Reserve 0 in case it gets a special meaning later
             _phantom: PhantomData,
@@ -217,8 +212,10 @@ where
         self.next_request_id =
             if self.next_request_id == u64::MAX { 1 } else { self.next_request_id + 1 };
 
-        // FOR_RELEASE: This returns a MojoResult, figure out what to do with it
-        self.endpoint_watcher
+        // This can only fail if the other end is closed, in which case we've nothing to
+        // do here (we'll get a disconnection notification separately).
+        let _ = self
+            .endpoint_watcher
             .send_message(RawMojoMessage::new_with_bytes(&message.into_bytes()).unwrap());
     }
 
@@ -231,7 +228,8 @@ where
         let message: MojomMessage = match MojomMessage::from_raw(&raw_message) {
             Ok(msg) => msg,
             Err(err) => {
-                raw_message.report_bad_message(&err.to_string());
+                // The error here is a reminder to return immediately, which we do
+                let _ = raw_message.report_bad_message(&err.to_string());
                 return;
             }
         };
@@ -242,7 +240,8 @@ where
         let response_callback = match response_callback {
             Some(callback) => callback,
             None => {
-                raw_message.report_bad_message(&format!(
+                // The error here is a reminder to return immediately, which we do
+                let _ = raw_message.report_bad_message(&format!(
                     "Received message with unknown request_id {}",
                     message.header.request_id
                 ));

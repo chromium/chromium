@@ -40,7 +40,7 @@ use helper_functions_cxx::ffi as cxx_helpers;
 /// - The payload of the message is of the type indicated by the `name` field.
 /// - The flags are correct.
 /// - If this is a response, then the request_id matches the one in the request.
-#[derive(mojom_value_parser::MojomParse)]
+#[derive(mojom_value_parser::MojomParse, Debug)]
 pub struct MessageHeaderV3 {
     /// The ordinal of the mojom `interface` this message corresponds to. Used
     /// for sending multiple interfaces via the same pipe.
@@ -90,42 +90,42 @@ impl MessageHeaderV3 {
 
     /// Serialize the header as a mojom value, but replace the version number
     /// in the encoding with 3, because the serializer doesn't handle versioning
-    /// FOR_RELEASE: We can add another version that takes an output buffer if
-    /// we want to, instead of allocating here
     pub fn serialize_with_version(self) -> Vec<u8> {
         let mut serialized = mojom_value_parser::serialize(self);
-        Self::adjust_version_number(&mut serialized);
+        Self::set_version_number(&mut serialized, 3);
         return serialized;
     }
 
-    /// Deserialize the header from a mojom value, but replace the version
-    /// number in the encoding with 3, because the deserializer doesn't
-    /// handle versioning
+    /// Deserialize the header from a mojom value, but first replace the version
+    /// number in the encoding with 0, because the deserializer doesn't
+    /// handle versioning.
     ///
     /// This function must have mutable access to the buffer so it can
-    /// overwrite the version value before deserializing
+    /// overwrite the version value before deserializing.
     pub fn deserialize_with_version(
         data: &mut [u8],
     ) -> mojom_value_parser::ParsingResult<(&[u8], Self)> {
-        Self::adjust_version_number(data);
+        Self::set_version_number(data, 0);
         return mojom_value_parser::deserialize(data);
     }
 
-    /// Replace the version number of a serialized header with 3.
-    /// This is necessary because the serializer doesn't handle versioning yet,
-    /// so by default the encoded version numbers will be 0.
-    fn adjust_version_number(serialized: &mut [u8]) {
+    /// Replace the version number of a serialized header with `new_num`.
+    /// This is necessary after serializing because the serializer doesn't
+    /// currently handle versioning, so by default the encoded version numbers
+    /// will be 0, but on the wire they're expected to be 3.
+    // TODO(crbug.com/483986574): Handle versioning
+    fn set_version_number(serialized: &mut [u8], new_num: u8) {
         // The serialized value begins with 4 bytes containing the size, then
         // 4 bytes containing the version number. The version never goes above
         // 3, so it's sufficient to just replace byte number 5 (at index 4).
-        serialized[4] = 3;
+        serialized[4] = new_num;
     }
 }
 
 bitflags::bitflags! {
     /// Flags that can be set for a Mojom message.
     /// Only the first two flags are supported in Rust at the moment.
-    #[derive(Clone, Copy, Default)]
+    #[derive(Clone, Copy, Default, Debug)]
     #[repr(transparent)]
     pub struct MessageHeaderFlags: u32 {
         const EXPECTS_RESPONSE = 1 << 0;

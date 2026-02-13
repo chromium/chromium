@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This is a very simple mojom file meant for testing our rust mojom bindings.
+// It is not intended to be a thoughough test of mojom itself; it just exists
+// so that we have some messages we can send to test remotes/receivers with.
+
+module bindings_unittests.mojom;
+
+struct TwoInts {
+    uint8 a;
+    uint16 b;
+};
+
+interface MathService {
+    Add(uint32 a, uint32 b) => (uint32 ret);
+    // So many different sizes! I guess we don't have to worry about overflow.
+    AddTwoInts(TwoInts ns) => (uint32 ret);
+};

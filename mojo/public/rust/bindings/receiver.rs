@@ -4,9 +4,6 @@
 
 //! TODO: Module docs (link to interface.rs?)
 
-// FOR_RELEASE: Remove this once the file is fully implemented
-#![allow(unused)]
-
 chromium::import! {
   "//mojo/public/rust/system";
   "//mojo/public/rust/sequences";
@@ -48,7 +45,6 @@ use crate::message_pipe_watcher::{MessagePipeWatcher, ResponseSender};
 // searchability/consistency?)
 pub struct Receiver<StateTy: MojomInterface> {
     endpoint_watcher: MessagePipeWatcher,
-    runner: SequencedTaskRunnerHandle,
     // FOR_RELEASE: Replace these with their sequenced equivalents
     state: Arc<Mutex<StateTy>>,
 }
@@ -134,14 +130,13 @@ where
         let state_weak = Arc::downgrade(&state);
 
         let handler = move |raw_message, sender| {
-            Self::incoming_message_handler(raw_message, &state_weak, &sender)
+            Self::incoming_message_handler(raw_message, &state_weak, sender)
         };
 
-        let endpoint_watcher =
-            MessagePipeWatcher::new_with_runner(endpoint, runner.clone(), handler, None)
-                .expect("FOR_RELEASE: Figure out how to handle errors here");
+        let endpoint_watcher = MessagePipeWatcher::new_with_runner(endpoint, runner, handler, None)
+            .expect("FOR_RELEASE: Figure out how to handle errors here");
 
-        Self { endpoint_watcher, runner, state }
+        Self { endpoint_watcher, state }
     }
 
     // FOR_RELEASE: Provide a mutex-y function so the holder of this `Receiver` can
@@ -169,12 +164,13 @@ where
     fn incoming_message_handler(
         raw_message: RawMojoMessage,
         state_weak: &Weak<Mutex<StateTy>>,
-        sender: &ResponseSender,
+        sender: ResponseSender,
     ) {
         let message: MojomMessage = match MojomMessage::from_raw(&raw_message) {
             Ok(msg) => msg,
             Err(err) => {
-                raw_message.report_bad_message(&err.to_string());
+                // The error here is a reminder to return immediately, which we do
+                let _ = raw_message.report_bad_message(&err.to_string());
                 return;
             }
         };
@@ -201,7 +197,7 @@ where
             let request_id = message.header.request_id;
             state.lock().expect("Mutex should never be poisoned").handle_incoming_message(
                 message,
-                |mut response: MojomMessage| {
+                move |mut response: MojomMessage| {
                     response.header.request_id = request_id;
                     sender.try_send_response(
                         RawMojoMessage::new_with_bytes(&response.into_bytes()).unwrap(),

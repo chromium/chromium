@@ -36,14 +36,28 @@ pub fn deserialize_exact<T: MojomParse>(data_slice: &[u8]) -> ParsingResult<T> {
     Ok(parsed_value.try_into().unwrap())
 }
 
-/// Serialize a Rust struct into a Mojom message
+/// Serialize a Rust struct into a Mojom message.
+///
+/// Panics if called on a non-struct (structs are the only valid top-level
+/// type).
 /// FOR_RELEASE: See if we can take a reference instead (or maybe in addition)
 pub fn serialize<T: MojomParse>(value: T) -> Vec<u8> {
-    let data: Vec<u8> = vec![];
+    let mut data: Vec<u8> = vec![];
     let packed_format = T::wire_type();
-    // FOR_RELEASE: We haven't quite finished the deparser, but we'd call the
-    // equivalent to parse_message here.
-    let _: MojomValue = value.into();
-    let _ = packed_format;
+    let mojom_value: MojomValue = value.into();
+    // Make sure we actually got a struct, and unpack it.
+    let (field_values, packed_fields) = match (mojom_value, packed_format) {
+        (
+            MojomValue::Struct(_, field_values),
+            crate::MojomWireType::Pointer {
+                nested_data_type: crate::PackedStructuredType::Struct { packed_field_types, .. },
+                is_nullable: false,
+            },
+        ) => (field_values, packed_field_types),
+        _ => panic!("`serialize` can only be called on struct types"),
+    };
+    crate::deparse_values::deparse_struct(&mut data, &field_values, packed_fields)
+        // The Err return value is mostly useful for internal debugging
+        .expect("Deparsing should always succeed");
     data
 }
