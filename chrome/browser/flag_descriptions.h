@@ -3642,10 +3642,6 @@ inline constexpr char kProfileSignalsReportingEnabledName[] =
 inline constexpr char kProfileSignalsReportingEnabledDescription[] =
     "Enables the profile signals reporting flow for Chrome Enterprise.";
 
-inline constexpr char kProjectsPanelName[] = "Projects Panel";
-inline constexpr char kProjectsPanelDescription[] =
-    "Enables the Projects Panel.";
-
 inline constexpr char kProtectedAudiencesConsentedDebugTokenName[] =
     "Protected Audiences Consented Debug Token";
 inline constexpr char kProtectedAudiencesConsentedDebugTokenDescription[] =
