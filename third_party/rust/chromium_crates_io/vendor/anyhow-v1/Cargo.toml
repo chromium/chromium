@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
-rust-version = "1.39"
+edition = "2021"
+rust-version = "1.68"
 name = "anyhow"
-version = "1.0.100"
+version = "1.0.101"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 autolib = false

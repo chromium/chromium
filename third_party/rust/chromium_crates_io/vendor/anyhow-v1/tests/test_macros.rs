@@ -6,6 +6,7 @@
     clippy::match_single_binding,
     clippy::needless_pass_by_value,
     clippy::shadow_unrelated,
+    clippy::uninlined_format_args,
     clippy::wildcard_imports
 )]
 

@@ -1,4 +1,5 @@
 #![deny(improper_ctypes, improper_ctypes_definitions)]
+#![allow(clippy::uninlined_format_args)]
 
 use anyhow::anyhow;
 

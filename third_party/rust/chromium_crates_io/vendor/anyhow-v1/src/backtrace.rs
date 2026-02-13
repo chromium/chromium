@@ -233,7 +233,7 @@ mod capture {
                 true
             });
 
-            // If no frames came out assume that this is an unsupported platform
+            // If no frames came out, assume that this is an unsupported platform
             // since `backtrace` doesn't provide a way of learning this right
             // now, and this should be a good enough approximation.
             let inner = if frames.is_empty() {

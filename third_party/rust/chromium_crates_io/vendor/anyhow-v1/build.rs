@@ -1,3 +1,5 @@
+#![allow(clippy::uninlined_format_args)]
+
 use std::env;
 use std::ffi::OsString;
 use std::fs;
@@ -62,9 +64,8 @@ fn main() {
         }
     }
 
-    let rustc = match rustc_minor_version() {
-        Some(rustc) => rustc,
-        None => return,
+    let Some(rustc) = rustc_minor_version() else {
+        return;
     };
 
     if rustc >= 80 {
@@ -72,37 +73,11 @@ fn main() {
         println!("cargo:rustc-check-cfg=cfg(anyhow_nightly_testing)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_clippy_format_args)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_core_error)");
-        println!("cargo:rustc-check-cfg=cfg(anyhow_no_core_unwind_safe)");
-        println!("cargo:rustc-check-cfg=cfg(anyhow_no_fmt_arguments_as_str)");
-        println!("cargo:rustc-check-cfg=cfg(anyhow_no_ptr_addr_of)");
-        println!("cargo:rustc-check-cfg=cfg(anyhow_no_unsafe_op_in_unsafe_fn_lint)");
         println!("cargo:rustc-check-cfg=cfg(error_generic_member_access)");
         println!("cargo:rustc-check-cfg=cfg(std_backtrace)");
     }
 
-    if rustc < 51 {
-        // core::ptr::addr_of
-        // https://blog.rust-lang.org/2021/03/25/Rust-1.51.0.html#stabilized-apis
-        println!("cargo:rustc-cfg=anyhow_no_ptr_addr_of");
-    }
-
-    if rustc < 52 {
-        // core::fmt::Arguments::as_str
-        // https://blog.rust-lang.org/2021/05/06/Rust-1.52.0.html#stabilized-apis
-        println!("cargo:rustc-cfg=anyhow_no_fmt_arguments_as_str");
-
-        // #![deny(unsafe_op_in_unsafe_fn)]
-        // https://github.com/rust-lang/rust/issues/71668
-        println!("cargo:rustc-cfg=anyhow_no_unsafe_op_in_unsafe_fn_lint");
-    }
-
-    if rustc < 56 {
-        // core::panic::{UnwindSafe, RefUnwindSafe}
-        // https://blog.rust-lang.org/2021/10/21/Rust-1.56.0.html#stabilized-apis
-        println!("cargo:rustc-cfg=anyhow_no_core_unwind_safe");
-    }
-
-    if !error_generic_member_access && cfg!(feature = "std") && rustc >= 65 {
+    if !error_generic_member_access && cfg!(feature = "std") {
         // std::backtrace::Backtrace
         // https://blog.rust-lang.org/2022/11/03/Rust-1.65.0.html#stabilized-apis
         println!("cargo:rustc-cfg=std_backtrace");
