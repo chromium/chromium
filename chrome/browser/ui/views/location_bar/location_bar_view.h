@@ -288,6 +288,7 @@ class LocationBarView
   // LocationIconView::Delegate:
   const LocationBarModel* GetLocationBarModel() const override;
   bool IsEditingOrEmpty() const override;
+  void OnLocationIconGestureEvent(ui::GestureEvent* event) override;
   void OnLocationIconPressed(const ui::MouseEvent& event) override;
   void OnLocationIconDragged(const ui::MouseEvent& event) override;
   bool ShowPageInfoDialog() override;
@@ -481,6 +482,8 @@ class LocationBarView
   // if there is no valid active tab or the tab is in the process of being
   // destroyed.
   page_actions::PageActionController* GetPageActionController();
+
+  bool OpenContextMenu();
 
 #if BUILDFLAG(IS_MAC)
   // Called when app shims change.

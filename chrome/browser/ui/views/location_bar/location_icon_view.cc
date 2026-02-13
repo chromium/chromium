@@ -128,6 +128,11 @@ bool LocationIconView::IsBubbleShowing() const {
          PageInfoBubbleView::BUBBLE_NONE;
 }
 
+void LocationIconView::OnGestureEvent(ui::GestureEvent* event) {
+  delegate_->OnLocationIconGestureEvent(event);
+  IconLabelBubbleView::OnGestureEvent(event);
+}
+
 bool LocationIconView::OnMousePressed(const ui::MouseEvent& event) {
   delegate_->OnLocationIconPressed(event);
 
