@@ -4,6 +4,7 @@
 
 import {ContextualEntrypointAndCarouselElement} from 'chrome://new-tab-page/lazy_load.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -107,5 +108,60 @@ suite('NewTabPageContextualEntrypointAndCarouselTest', () => {
     element.$.fileUploadButton.click();
     const event = await openFileDialogPromise;
     assertFalse(event.detail.isImage);
+  });
+
+  test('Recent Tab chip respects allowed input types', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({
+      'composeboxShowContextMenu': true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    element = new ContextualEntrypointAndCarouselElement();
+    document.body.appendChild(element);
+    await microtasksFinished();
+
+    element.showModelPicker = true;
+    element.inputState = {
+      allowedModels: [],
+      allowedTools: [],
+      allowedInputTypes: [InputType.kBrowserTab],
+      activeModel: 0,
+      activeTool: 0,
+      disabledModels: [],
+      disabledTools: [],
+      disabledInputTypes: [],
+      toolConfigs: [],
+      modelConfigs: [],
+      toolsSectionConfig: null,
+      modelSectionConfig: null,
+      hintText: '',
+    };
+    element.tabSuggestions = [{
+      title: 'Tab 1',
+      url: { url: 'https://google.com' },
+      tabId: 1,
+      showInCurrentTabChip: true,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: BigInt(0)},
+    }];
+    element.showRecentTabChip = true;
+    await microtasksFinished();
+
+    // Assert (allowed).
+    const recentTabChip =
+        element.shadowRoot.querySelector('composebox-recent-tab-chip');
+    assertTrue(!!recentTabChip);
+
+    // Act (disallow).
+    element.inputState = {
+      ...element.inputState,
+      allowedInputTypes: [],  // No BrowserTab
+    };
+    await microtasksFinished();
+
+    // Assert (disallowed).
+    const recentTabChipHidden =
+        element.shadowRoot.querySelector('composebox-recent-tab-chip');
+    assertFalse(!!recentTabChipHidden);
   });
 });
