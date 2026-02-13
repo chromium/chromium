@@ -44,11 +44,13 @@ class HostStatusProvider {
     std::optional<multidevice::RemoteDeviceRef> host_device_;
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
     virtual void OnHostStatusChange(
         const HostStatusWithDevice& host_status_with_device) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   HostStatusProvider(const HostStatusProvider&) = delete;
@@ -69,7 +71,7 @@ class HostStatusProvider {
       const std::optional<multidevice::RemoteDeviceRef>& host_device);
 
  private:
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace multidevice_setup

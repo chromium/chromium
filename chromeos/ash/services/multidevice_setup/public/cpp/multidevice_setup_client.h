@@ -26,7 +26,7 @@ class MultiDeviceSetupClient {
       std::pair<mojom::HostStatus, std::optional<multidevice::RemoteDeviceRef>>;
   using FeatureStatesMap = base::flat_map<mojom::Feature, mojom::FeatureState>;
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called whenever the host status changes. If the host status is
     // HostStatus::kNoEligibleHosts or
@@ -40,7 +40,7 @@ class MultiDeviceSetupClient {
         const FeatureStatesMap& feature_states_map) {}
 
    protected:
-    virtual ~Observer() = default;
+    ~Observer() override = default;
   };
 
   using GetEligibleHostDevicesCallback =
@@ -91,7 +91,7 @@ class MultiDeviceSetupClient {
  private:
   friend class MultiDeviceSetupClientImplTest;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 std::string FeatureStatesMapToString(

@@ -25,10 +25,12 @@ namespace multidevice_setup {
 // ask it to enable its software features.
 class HostVerifier {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
     virtual void OnHostVerified() = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   HostVerifier(const HostVerifier&) = delete;
@@ -56,7 +58,7 @@ class HostVerifier {
   void NotifyHostVerified();
 
  private:
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace multidevice_setup

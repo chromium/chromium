@@ -19,10 +19,8 @@ namespace multidevice_setup {
 // what the server knows about.
 class HostBackendDelegate {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
-
     // Invoked when the host has changed. The new host can be retrieved via
     // GetMultiDeviceHostFromBackend().
     //
@@ -41,6 +39,9 @@ class HostBackendDelegate {
     // callback is also fired when a HasPendingHostRequest() changes from true
     // to false.
     virtual void OnPendingHostRequestChange() {}
+
+   protected:
+    ~Observer() override = default;
   };
 
   HostBackendDelegate(const HostBackendDelegate&) = delete;
@@ -92,7 +93,7 @@ class HostBackendDelegate {
   void NotifyPendingHostRequestChange();
 
  private:
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace multidevice_setup

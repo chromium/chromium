@@ -16,12 +16,12 @@ namespace multidevice_setup {
 // spamming the user with multiple notifications to set up MultiDevice features.
 class OobeCompletionTracker : public KeyedService {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnOobeCompleted() = 0;
 
    protected:
-    virtual ~Observer() = default;
+    ~Observer() override = default;
   };
 
   void AddObserver(Observer* observer);
@@ -37,7 +37,7 @@ class OobeCompletionTracker : public KeyedService {
   void MarkOobeShown();
 
  private:
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace multidevice_setup
