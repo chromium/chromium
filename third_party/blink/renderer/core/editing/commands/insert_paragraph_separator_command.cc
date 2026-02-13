@@ -278,8 +278,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
   Position canonical_pos =
       CreateVisiblePosition(insertion_position).DeepEquivalent();
   if (!start_block || !start_block->NonShadowBoundaryParentNode() ||
-      (RuntimeEnabledFeatures::InsertLineBreakIfPhrasingContentEnabled() &&
-       IsEditableRootPhrasingContent(insertion_position)) ||
+      IsEditableRootPhrasingContent(insertion_position) ||
       IsDisplayInlineType(list_child) || IsTableCell(start_block) ||
       IsA<HTMLFormElement>(*start_block) ||
       (RuntimeEnabledFeatures::FixLinebreakForPreTagEnabled() &&

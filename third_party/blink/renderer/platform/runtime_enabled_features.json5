@@ -3145,11 +3145,6 @@
       status: "stable",
     },
     {
-      // crbug.com/1420675
-      name: "InsertLineBreakIfPhrasingContent",
-      status: "stable",
-    },
-    {
       name: "InstalledApp",
       public: true,
       status: "stable",
