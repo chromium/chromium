@@ -17,17 +17,47 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if (defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)) || \
-    (defined(ARCH_CPU_ARM64) && BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS))
-#define UNWINDING_SUPPORTED 1
-#else
-#define UNWINDING_SUPPORTED 0
-#endif
-
 namespace {
 
 using ::testing::_;
 using ::testing::Return;
+
+#if (defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)) || \
+    (defined(ARCH_CPU_ARM64) && BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS))
+constexpr bool kUnwindingSupported = true;
+#else
+constexpr bool kUnwindingSupported = false;
+#endif
+
+#if defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+constexpr bool kPrerequisitesRelyOnDfm = true;
+#else
+constexpr bool kPrerequisitesRelyOnDfm = false;
+#endif
+
+#if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+constexpr bool kIsOfficialGoogleBuild = true;
+#else
+constexpr bool kIsOfficialGoogleBuild = false;
+#endif
+
+bool ExpectedAvailability(version_info::Channel channel,
+                          bool are_prerequisites_installed) {
+  if (!kUnwindingSupported) {
+    return false;
+  }
+  if (kIsOfficialGoogleBuild) {
+    if (channel != version_info::Channel::CANARY &&
+        channel != version_info::Channel::DEV &&
+        channel != version_info::Channel::BETA) {
+      return false;
+    }
+  }
+  if (kPrerequisitesRelyOnDfm) {
+    return are_prerequisites_installed;
+  }
+  return true;
+}
 
 // For `RequestUnwindPrerequisitesInstallation` and
 // `AreUnwindPrerequisitesAvailable`-related unit tests below.
@@ -42,45 +72,35 @@ class MockModuleUnwindPrerequisitesDelegate
 };
 
 TEST(UnwindPrerequisitesTest, RequestInstall) {
-  struct {
-    version_info::Channel channel;
-    bool enable_feature_install_android_unwind_dfm;
-    bool is_installation_expected;
-  } test_cases[] = {
-      {version_info::Channel::CANARY, false, false},
-      {version_info::Channel::DEV, false, false},
-      {version_info::Channel::BETA, false, false},
-      {version_info::Channel::STABLE, false, false},
-      {version_info::Channel::UNKNOWN, false, false},
-#if UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {version_info::Channel::CANARY, true, true},
-      {version_info::Channel::DEV, true, true},
-      {version_info::Channel::BETA, true, true},
-      {version_info::Channel::STABLE, true, true},
-      {version_info::Channel::UNKNOWN, true, true},
-#else
-      {version_info::Channel::CANARY, true, false},
-      {version_info::Channel::DEV, true, false},
-      {version_info::Channel::BETA, true, false},
-      {version_info::Channel::STABLE, true, false},
-      {version_info::Channel::UNKNOWN, true, false},
-#endif
-  };
+  for (auto channel :
+       {version_info::Channel::CANARY, version_info::Channel::DEV,
+        version_info::Channel::BETA, version_info::Channel::STABLE,
+        version_info::Channel::UNKNOWN}) {
+    for (bool enable_feature : {false, true}) {
+      for (bool are_available_initially : {false, true}) {
+        base::test::ScopedFeatureList feature_list;
+        if (enable_feature) {
+          feature_list.InitAndEnableFeature(kInstallAndroidUnwindDfm);
+        } else {
+          feature_list.InitAndDisableFeature(kInstallAndroidUnwindDfm);
+        }
 
-  for (const auto& test_case : test_cases) {
-    base::test::ScopedFeatureList feature_list;
-    if (test_case.enable_feature_install_android_unwind_dfm) {
-      feature_list.InitAndEnableFeature(kInstallAndroidUnwindDfm);
-    } else {
-      feature_list.InitAndDisableFeature(kInstallAndroidUnwindDfm);
+        MockModuleUnwindPrerequisitesDelegate mock_delegate;
+        EXPECT_CALL(mock_delegate, AreAvailable(channel))
+            .WillRepeatedly(Return(are_available_initially));
+
+        bool installation_expected = false;
+        if (!ExpectedAvailability(channel, are_available_initially)) {
+          installation_expected = kPrerequisitesRelyOnDfm &&
+                                  kIsOfficialGoogleBuild && enable_feature;
+        }
+
+        EXPECT_CALL(mock_delegate, RequestInstallation(_))
+            .Times(installation_expected ? 1 : 0);
+
+        RequestUnwindPrerequisitesInstallation(channel, &mock_delegate);
+      }
     }
-
-    MockModuleUnwindPrerequisitesDelegate mock_delegate;
-    EXPECT_CALL(mock_delegate, RequestInstallation(_))
-        .Times(test_case.is_installation_expected ? 1 : 0);
-
-    RequestUnwindPrerequisitesInstallation(test_case.channel, &mock_delegate);
   }
 }
 
@@ -96,55 +116,21 @@ TEST(UnwindPrerequisitesDeathTest, CannotRequestInstallOutsideBrowser) {
 }
 
 TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
-  MockModuleUnwindPrerequisitesDelegate true_mock_delegate;
-  EXPECT_CALL(true_mock_delegate, AreAvailable(_)).WillRepeatedly(Return(true));
+  for (auto channel :
+       {version_info::Channel::CANARY, version_info::Channel::DEV,
+        version_info::Channel::BETA, version_info::Channel::STABLE,
+        version_info::Channel::UNKNOWN}) {
+    for (bool are_available : {false, true}) {
+      MockModuleUnwindPrerequisitesDelegate mock_delegate;
+      EXPECT_CALL(mock_delegate, AreAvailable(channel))
+          .WillRepeatedly(Return(are_available));
 
-  MockModuleUnwindPrerequisitesDelegate false_mock_delegate;
-  EXPECT_CALL(false_mock_delegate, AreAvailable(_))
-      .WillRepeatedly(Return(false));
-
-  struct {
-    version_info::Channel channel;
-    raw_ptr<UnwindPrerequisitesDelegate> delegate;
-    bool are_unwind_prerequisites_expected;
-  } test_cases[] = {
-      // Android unwinders require the presence of the unwinder module.
-      {version_info::Channel::CANARY, &false_mock_delegate, false},
-      {version_info::Channel::DEV, &false_mock_delegate, false},
-      {version_info::Channel::BETA, &false_mock_delegate, false},
-      {version_info::Channel::STABLE, &false_mock_delegate, false},
-      {version_info::Channel::UNKNOWN, &false_mock_delegate, false},
-
-#if UNWINDING_SUPPORTED
-      {version_info::Channel::CANARY, &true_mock_delegate, true},
-      {version_info::Channel::DEV, &true_mock_delegate, true},
-      {version_info::Channel::BETA, &true_mock_delegate, true},
-#if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      // Since DFMs can be installed even if not requested by Chrome explicitly
-      // (for instance, in some app stores), for official builds, we
-      // only consider the unwinder module to be available for specific channels
-      // (which does not include `STABLE` and `UNKNOWN`).
-      {version_info::Channel::STABLE, &true_mock_delegate, false},
-      {version_info::Channel::UNKNOWN, &true_mock_delegate, false},
-#else  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {version_info::Channel::STABLE, &true_mock_delegate, true},
-      {version_info::Channel::UNKNOWN, &true_mock_delegate, true},
-#endif  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#else   // UNWINDING_SUPPORTED
-      // Unwinding on any other platforms is not currently supported for
-      // Android.
-      {version_info::Channel::CANARY, &true_mock_delegate, false},
-      {version_info::Channel::DEV, &true_mock_delegate, false},
-      {version_info::Channel::BETA, &true_mock_delegate, false},
-      {version_info::Channel::STABLE, &true_mock_delegate, false},
-      {version_info::Channel::UNKNOWN, &true_mock_delegate, false},
-#endif  // UNWINDING_SUPPORTED
-  };
-
-  for (const auto& test_case : test_cases) {
-    EXPECT_EQ(
-        AreUnwindPrerequisitesAvailable(test_case.channel, test_case.delegate),
-        test_case.are_unwind_prerequisites_expected);
+      bool expected = ExpectedAvailability(channel, are_available);
+      EXPECT_EQ(AreUnwindPrerequisitesAvailable(channel, &mock_delegate),
+                expected)
+          << "Failed for channel " << static_cast<int>(channel) << " and "
+          << (are_available ? "true" : "false") << " delegate";
+    }
   }
 }
 
