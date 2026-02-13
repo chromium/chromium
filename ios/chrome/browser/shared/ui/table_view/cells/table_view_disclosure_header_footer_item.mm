@@ -130,9 +130,7 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
                          constant:-HorizontalPadding()]
     ]];
 
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
+    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                        withAction:@selector(updateFontOnTraitChange)];
   }
   return self;

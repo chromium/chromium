@@ -177,9 +177,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // Set selection to the first one.
   [self selectFirstRow];
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                      withAction:@selector(updateHeightOnTraitChange)];
 }
 
