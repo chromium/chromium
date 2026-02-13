@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/legion_internals/legion_internals_page_handler.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -48,7 +49,8 @@ void LegionInternalsPageHandler::Connect(const std::string& url,
                                          ConnectCallback callback) {
   webui_client_ = legion::Client::Create(
       url, api_key, legion::kLegionProxyServerUrl.Get(), network_context_,
-      token_manager_, content::GetNetworkService());
+      token_manager_, content::GetNetworkService(),
+      std::make_unique<legion::LegionLogger>());
   scoped_logger_observations_.AddObservation(webui_client_->GetLogger());
   std::move(callback).Run();
 }

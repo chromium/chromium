@@ -52,18 +52,21 @@ class Client {
 
   static std::unique_ptr<Client> CreateWithApiKey(
       const GURL& url,
-      network::mojom::NetworkContext* network_context);
+      network::mojom::NetworkContext* network_context,
+      std::unique_ptr<LegionLogger> logger);
 
   static std::unique_ptr<Client> CreateWithToken(
       const GURL& url,
       network::mojom::NetworkContext* network_context,
-      phosphor::TokenManager* token_manager);
+      phosphor::TokenManager* token_manager,
+      std::unique_ptr<LegionLogger> logger);
 
   static std::unique_ptr<Client> CreateWithProxyAndToken(
       const GURL& url,
       const GURL& proxy_url,
       network::mojom::NetworkService* network_service,
-      phosphor::TokenManager* token_manager);
+      phosphor::TokenManager* token_manager,
+      std::unique_ptr<LegionLogger> logger);
 
   // Creates a client based on the provided configuration. This is a helper to
   // consolidate client creation logic.
@@ -77,7 +80,8 @@ class Client {
       const std::string& proxy_url_string,
       network::mojom::NetworkContext* network_context,
       phosphor::TokenManager* token_manager,
-      network::mojom::NetworkService* network_service);
+      network::mojom::NetworkService* network_service,
+      std::unique_ptr<LegionLogger> logger);
 
   virtual ~Client() = default;
 

@@ -26,7 +26,8 @@ class ConnectionFactory;
 // Client for starting the session and sending requests.
 class ClientImpl : public Client {
  public:
-  explicit ClientImpl(std::unique_ptr<ConnectionFactory> connection_factory);
+  ClientImpl(std::unique_ptr<ConnectionFactory> connection_factory,
+             std::unique_ptr<LegionLogger> logger);
   ~ClientImpl() override;
 
   ClientImpl(const ClientImpl&) = delete;
@@ -76,7 +77,7 @@ class ClientImpl : public Client {
 
   std::unique_ptr<ConnectionFactory> connection_factory_;
 
-  LegionLogger logger_;
+  std::unique_ptr<LegionLogger> logger_;
 
   base::WeakPtrFactory<ClientImpl> weak_factory_{this};
 };

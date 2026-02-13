@@ -23,6 +23,7 @@ if (!is_android) {
       "//components/keyed_service/core",
       "//components/legion",
       "//components/legion:proto",
+      "//components/legion/common",
       "//components/prefs",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",

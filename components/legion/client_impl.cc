@@ -74,8 +74,12 @@ void ReceivePaicMessage(
 
 }  // namespace
 
-ClientImpl::ClientImpl(std::unique_ptr<ConnectionFactory> connection_factory)
-    : connection_factory_(std::move(connection_factory)) {}
+ClientImpl::ClientImpl(std::unique_ptr<ConnectionFactory> connection_factory,
+                       std::unique_ptr<LegionLogger> logger)
+    : connection_factory_(std::move(connection_factory)),
+      logger_(std::move(logger)) {
+  CHECK(logger_);
+}
 
 ClientImpl::~ClientImpl() = default;
 
@@ -115,7 +119,7 @@ void ClientImpl::SendTextRequest(proto::FeatureName feature_name,
 }
 
 LegionLogger* ClientImpl::GetLogger() {
-  return &logger_;
+  return logger_.get();
 }
 
 void ClientImpl::SendGenerateContentRequest(
@@ -151,7 +155,7 @@ void ClientImpl::SendRequest(proto::FeatureName feature_name,
                              proto::LegionRequest legion_request,
                              OnRequestCompletedCallback callback,
                              const RequestOptions& options) {
-  logger_.LogInfo(FROM_HERE, "SendRequest started.");
+  logger_->LogInfo(FROM_HERE, "SendRequest started.");
 
   legion_request.set_feature_name(feature_name);
 
@@ -165,16 +169,17 @@ void ClientImpl::OnReponseReceived(
     OnRequestCompletedCallback cb,
     base::expected<proto::LegionResponse, ErrorCode> legion_response) {
   if (legion_response.has_value()) {
-    logger_.LogInfo(FROM_HERE, "Response received");
+    logger_->LogInfo(FROM_HERE, "Response received");
   } else {
-    logger_.LogError(FROM_HERE,
-                     "Error: " + base::ToString(legion_response.error()));
+    logger_->LogError(FROM_HERE,
+                      "Error: " + base::ToString(legion_response.error()));
   }
   std::move(cb).Run(legion_response);
 }
 
 void ClientImpl::OnConnectionDisconnected() {
-  logger_.LogInfo(FROM_HERE, "Connection disconnected. Destroying connection.");
+  logger_->LogInfo(FROM_HERE,
+                   "Connection disconnected. Destroying connection.");
   connection_.reset();
 }
 

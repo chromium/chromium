@@ -7,6 +7,7 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/legion/client.h"
+#include "components/legion/common/legion_logger.h"
 #include "components/legion/features.h"
 #include "components/legion/phosphor/blind_sign_auth_factory.h"
 #include "components/legion/phosphor/token_fetcher_impl.h"
@@ -42,6 +43,7 @@ PrivateAiService::PrivateAiService(
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto logger = std::make_unique<LegionLogger>();
   auto url_loader_factory = profile_->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
   auto bsa = bsa_factory_->CreateBlindSignAuth(url_loader_factory->Clone());
@@ -54,7 +56,7 @@ PrivateAiService::PrivateAiService(
   client_ = legion::Client::Create(
       kLegionUrl.Get(), kLegionApiKey.Get(), kLegionProxyServerUrl.Get(),
       profile_->GetDefaultStoragePartition()->GetNetworkContext(),
-      token_manager_.get(), content::GetNetworkService());
+      token_manager_.get(), content::GetNetworkService(), std::move(logger));
 }
 
 PrivateAiService::~PrivateAiService() {

@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/legion/common/legion_logger.h"
 #include "components/legion/connection.h"
 #include "components/legion/proto/legion.pb.h"
 #include "components/legion/testing/fake_connection.h"
@@ -73,7 +74,8 @@ class ClientImplTest : public ::testing::Test {
   ClientImplTest() {
     auto factory = std::make_unique<FakeConnectionFactory>();
     factory_ = factory.get();
-    client_ = std::make_unique<ClientImpl>(std::move(factory));
+    client_ = std::make_unique<ClientImpl>(std::move(factory),
+                                           std::make_unique<LegionLogger>());
   }
 
   ~ClientImplTest() override = default;

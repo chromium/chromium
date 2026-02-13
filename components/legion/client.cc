@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "components/legion/client_impl.h"
+#include "components/legion/common/legion_logger.h"
 #include "components/legion/connection_factory_impl.h"
 #include "components/legion/features.h"
 #include "components/legion/phosphor/token_manager.h"
@@ -23,21 +24,24 @@ namespace legion {
 // static
 std::unique_ptr<Client> Client::CreateWithApiKey(
     const GURL& url,
-    network::mojom::NetworkContext* network_context) {
+    network::mojom::NetworkContext* network_context,
+    std::unique_ptr<LegionLogger> logger) {
   CHECK(base::FeatureList::IsEnabled(kLegion));
 
   auto connection_factory_impl =
       std::make_unique<ApiKeyConnectionFactoryImpl>(url, network_context);
 
   // Raw `new` is used here because the constructor is private.
-  return base::WrapUnique(new ClientImpl(std::move(connection_factory_impl)));
+  return base::WrapUnique(
+      new ClientImpl(std::move(connection_factory_impl), std::move(logger)));
 }
 
 // static
 std::unique_ptr<Client> Client::CreateWithToken(
     const GURL& url,
     network::mojom::NetworkContext* network_context,
-    phosphor::TokenManager* token_manager) {
+    phosphor::TokenManager* token_manager,
+    std::unique_ptr<LegionLogger> logger) {
   CHECK(base::FeatureList::IsEnabled(kLegion));
   CHECK(network_context);
 
@@ -45,7 +49,8 @@ std::unique_ptr<Client> Client::CreateWithToken(
       url, network_context, token_manager);
 
   // Raw `new` is used here because the constructor is private.
-  return base::WrapUnique(new ClientImpl(std::move(connection_factory_impl)));
+  return base::WrapUnique(
+      new ClientImpl(std::move(connection_factory_impl), std::move(logger)));
 }
 
 // static
@@ -53,7 +58,8 @@ std::unique_ptr<Client> Client::CreateWithProxyAndToken(
     const GURL& url,
     const GURL& proxy_url,
     network::mojom::NetworkService* network_service,
-    phosphor::TokenManager* token_manager) {
+    phosphor::TokenManager* token_manager,
+    std::unique_ptr<LegionLogger> logger) {
   CHECK(base::FeatureList::IsEnabled(kLegion));
 
   auto connection_factory_impl =
@@ -61,7 +67,8 @@ std::unique_ptr<Client> Client::CreateWithProxyAndToken(
           url, proxy_url, network_service, token_manager);
 
   // Raw `new` is used here because the constructor is private.
-  return base::WrapUnique(new ClientImpl(std::move(connection_factory_impl)));
+  return base::WrapUnique(
+      new ClientImpl(std::move(connection_factory_impl), std::move(logger)));
 }
 
 // static
@@ -71,10 +78,11 @@ std::unique_ptr<Client> Client::Create(
     const std::string& proxy_url_string,
     network::mojom::NetworkContext* network_context,
     phosphor::TokenManager* token_manager,
-    network::mojom::NetworkService* network_service) {
+    network::mojom::NetworkService* network_service,
+    std::unique_ptr<LegionLogger> logger) {
   if (!api_key.empty()) {
     return Client::CreateWithApiKey(Client::FormatUrl(url, api_key),
-                                    network_context);
+                                    network_context, std::move(logger));
   }
 
   GURL formatted_url = Client::FormatUrl(url);
@@ -84,10 +92,12 @@ std::unique_ptr<Client> Client::Create(
       proxy_url = GURL(base::StrCat({"https://", proxy_url_string}));
     }
     return Client::CreateWithProxyAndToken(formatted_url, proxy_url,
-                                           network_service, token_manager);
+                                           network_service, token_manager,
+                                           std::move(logger));
   }
 
-  return Client::CreateWithToken(formatted_url, network_context, token_manager);
+  return Client::CreateWithToken(formatted_url, network_context, token_manager,
+                                 std::move(logger));
 }
 
 // static
