@@ -30,12 +30,16 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "chrome/common/chrome_features.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
@@ -2514,6 +2518,20 @@ void OmniboxEditModel::OnDefaultSearchExtensionDialogDone(
     // focus the web contents after the string classification.
     controller_->client()->FocusWebContents();
   }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopSEHijacking) &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kSearchEngineExplicitChoiceDialog)) {
+    HatsService* hats_service = HatsServiceFactory::GetForProfile(
+        static_cast<ChromeOmniboxClient*>(controller_->client())->profile(),
+        /*create_if_necessary=*/true);
+    if (hats_service) {
+      hats_service->LaunchDelayedSurvey(kHatsSurveyTriggerSEHijacking, 5000);
+    }
+  }
+#endif
 }
 
 void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
