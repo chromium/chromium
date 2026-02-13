@@ -512,7 +512,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // traversals. Also we rely on the consistency to avoid using fragments whose
   // |LayoutObject| were destroyed.
   void AssertFragmentTree(bool display_locked = false) const;
-#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   void AssertClearedPaintInvalidationFlags() const;
 
@@ -525,7 +524,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       layout_object->AssertClearedPaintInvalidationFlags();
     }
   }
-
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 #endif  // DCHECK_IS_ON()
 
   // LayoutObject tree manipulation

@@ -167,9 +167,9 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,
     }
 #endif
     Walk(*view, context, /* pre_paint_info */ nullptr);
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
     view->AssertSubtreeClearedPaintInvalidationFlags();
-#endif
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
   }
 
   // Ensure the cached previous layout block in CaretDisplayItemClient is
