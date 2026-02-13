@@ -17,36 +17,33 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
       <p class="description">$i18n{skillDescription}</p>
     </div>
     <div class="form-group">
-    <div id="nameLabel" class="cr-form-field-label" aria-hidden="true">$i18n{name}
+    <div id="nameWrapper">
+      <div id="nameLabel" class="cr-form-field-label" aria-hidden="true">$i18n{name}
+      </div>
+      ${this.isAutoGenerationLoading_ ? html`
+          <div id="nameLoaderContainer">
+            <cr-loading-gradient>
+              <svg width="100%" height="38">
+                <clipPath>
+                  <circle cx="20" cy="19" r="8"></circle>
+                  <rect x="40" y="13" width="100%" height="12" rx="4"></rect>
+                </clipPath>
+              </svg>
+            </cr-loading-gradient>
+          </div>
+        `
+        : html`
+        <cr-input class="stroked" id="nameText" type="text"
+            placeholder="$i18n{namePlaceholder}" .value="${this.skill_.name}"
+            @value-changed="${this.onNameChanged_}" aria-labelledby="nameLabel">
+          <input id="emojiTrigger" class="emoji-trigger" type="text"
+              .value="${this.skill_.icon}" @click="${this.onEmojiBtnClick_}"
+              @input="${this.onEmojiChanged_}" @keydown="${this.onEmojiKeyDown_}"
+              title="$i18n{chooseIcon}" aria-label="$i18n{chooseIcon}"
+              slot="inline-prefix">
+        </cr-input>
+        `}
     </div>
-    ${this.isAutoGenerationLoading_ ? html`
-        <div id="nameLoaderContainer">
-          <cr-loading-gradient>
-            <svg width="100%" height="38">
-              <clipPath>
-                <circle cx="20" cy="19" r="8"></circle>
-
-                <rect x="40" y="13" width="100%" height="12" rx="4"></rect>
-              </clipPath>
-            </svg>
-          </cr-loading-gradient>
-        </div>
-      `
-      : html`
-      <cr-input class="no-error stroked" id="nameText" type="text"
-          placeholder="$i18n{namePlaceholder}" .value="${this.skill_.name}"
-          @value-changed="${this.onNameChanged_}" aria-labelledby="nameLabel">
-        <input id="emojiTrigger" class="emoji-trigger"
-            type="text"
-            .value="${this.skill_.icon}"
-            @click="${this.onEmojiBtnClick_}"
-            @input="${this.onEmojiChanged_}"
-            @keydown="${this.onEmojiKeyDown_}"
-            title="$i18n{chooseIcon}"
-            aria-label="$i18n{chooseIcon}"
-            slot="inline-prefix">
-      </cr-input>
-      `}
     <div id="instructionsLabel" class="cr-form-field-label" aria-hidden="true">
       $i18n{instructions}
     </div>
@@ -54,23 +51,19 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
       <textarea id="instructionsText" aria-labelledby="instructionsLabel"
           maxlength="${MAX_PROMPT_CHAR_COUNT}"
           placeholder="$i18n{instructionsPlaceholder}"
-          .value="${this.skill_.prompt}"
-          @input="${this.onInstructionsInput_}">
+          .value="${this.skill_.prompt}" @input="${this.onInstructionsInput_}">
       </textarea>
       <div class="textarea-actions">
         <cr-icon-button id="iconUndo" title="$i18n{undo}"
-            aria-label="$i18n{undo}"
-            ?disabled="${!this.canUndoRefine_}"
+            aria-label="$i18n{undo}" ?disabled="${!this.canUndoRefine_}"
             @click="${this.onUndoClick_}">
         </cr-icon-button>
         <cr-icon-button id="iconRedo" title="$i18n{redo}"
-            aria-label="$i18n{redo}"
-            ?disabled="${!this.canRedoRefine_}"
+            aria-label="$i18n{redo}" ?disabled="${!this.canRedoRefine_}"
             @click="${this.onRedoClick_}">
         </cr-icon-button>
         <cr-icon-button id="iconRefine" title="$i18n{refine}"
-            aria-label="$i18n{refine}"
-            ?disabled="${this.isRefineDisabled_()}"
+            aria-label="$i18n{refine}" ?disabled="${this.isRefineDisabled_()}"
             @click="${this.onRefineClick_}">
         </cr-icon-button>
       </div>

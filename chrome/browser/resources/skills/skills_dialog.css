@@ -43,17 +43,22 @@ p.description {
   gap: 16px;
 }
 
+#nameWrapper {
+  transition: background-color 200ms ease-in-out;
+}
+
 cr-input {
   --cr-input-focus-outline-color: var(--cr-focus-outline-color);
   --cr-input-font-size: 12px;
   --cr-input-hover-background-color: var(--color-sys-surface-variant);
-  --cr-input-padding-bottom: 10px;
-  --cr-input-padding-end: 10px;
-  --cr-input-padding-start: 10px;
-  --cr-input-padding-top: 10px;
   --cr-input-placeholder-color: var(--color-sys-state-disabled);
   font-weight: 400;
   line-height: 18px;
+}
+
+cr-input:focus-within {
+  --cr-input-hover-background-color: var(--color-sys-surface);
+  --cr-input-background-color: var(--color-sys-surface);
 }
 
 .cr-form-field-label {
@@ -79,10 +84,9 @@ cr-input {
 #textareaWrapper:focus-within {
   border-color: var(--cr-focus-outline-color);
   box-shadow: 0 0 0 1px var(--cr-focus-outline-color);
-  background-color: var(--color-sys-surface-variant);
 }
 
-#textareaWrapper:hover {
+#textareaWrapper:hover:not(:focus-within) {
   background-color: var(--color-sys-surface-variant);
 }
 
@@ -111,6 +115,8 @@ textarea {
   background-color: transparent;
   padding: 10px 10px 0 10px;
   flex-grow: 1;
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }
 
 textarea::placeholder {
@@ -128,7 +134,9 @@ cr-icon-button {
   margin: 0;
   --cr-icon-button-fill-color: var(--color-sys-on-surface-subtle);
   --cr-icon-button-icon-size: 16px;
-  --cr-icon-button-size: 20px;
+  --cr-icon-button-size: 24px;
+  --cr-icon-button-hover-background-color:
+    var(--color-sys-state-hover-on-subtle);
 }
 
 #iconUndo {
