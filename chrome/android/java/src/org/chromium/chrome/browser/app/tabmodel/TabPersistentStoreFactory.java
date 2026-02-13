@@ -247,6 +247,7 @@ public class TabPersistentStoreFactory {
                 shadowTabPersistentStore,
                 selector.getModel(/* incognito= */ false),
                 regularShadowTabCreator,
+                migrationManager,
                 orchestratorTag);
         return shadowTabPersistentStore;
     }

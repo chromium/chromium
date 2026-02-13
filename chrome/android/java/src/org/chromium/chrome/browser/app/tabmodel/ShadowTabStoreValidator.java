@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateFrozenTabArguments;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
@@ -35,6 +36,7 @@ public class ShadowTabStoreValidator {
     private final TabPersistentStore mShadowStore;
     private final TabModel mTabModel;
     private final AccumulatingTabCreator mShadowTabCreator;
+    private final PersistentStoreMigrationManager mPersistentStoreMigrationManager;
     private final StoreMetricsObserver mAuthoritativeObserver;
     private final StoreMetricsObserver mShadowObserver;
     private final String mSuffix;
@@ -44,6 +46,8 @@ public class ShadowTabStoreValidator {
      * @param shadowStore The alternative store being compared against the authoritative one.
      * @param tabModel The {@link TabModel} associated with the authoritative store.
      * @param shadowTabCreator The {@link AccumulatingTabCreator} used by the shadow store.
+     * @param persistentStoreMigrationManager The {@link PersistentStoreMigrationManager} for
+     *     migration.
      * @param orchestratorTag The type of tab model orchestrator this validator is for.
      */
     public ShadowTabStoreValidator(
@@ -51,11 +55,13 @@ public class ShadowTabStoreValidator {
             TabPersistentStore shadowStore,
             TabModel tabModel,
             AccumulatingTabCreator shadowTabCreator,
+            PersistentStoreMigrationManager persistentStoreMigrationManager,
             String orchestratorTag) {
         mAuthoritativeStore = authoritativeStore;
         mShadowStore = shadowStore;
         mTabModel = tabModel;
         mShadowTabCreator = shadowTabCreator;
+        mPersistentStoreMigrationManager = persistentStoreMigrationManager;
         mSuffix = "." + orchestratorTag;
 
         mAuthoritativeObserver = new StoreMetricsObserver(this);
@@ -88,6 +94,8 @@ public class ShadowTabStoreValidator {
     }
 
     private void recordDiffMetrics() {
+        if (!mPersistentStoreMigrationManager.isShadowStoreCaughtUp()) return;
+
         int tabCountDelta =
                 mTabModel.getCount() - mShadowTabCreator.createFrozenTabArgumentsList.size();
         if (tabCountDelta > 0) {
