@@ -1172,10 +1172,6 @@ crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/baseline/grid-l
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/baseline/grid-lanes-grid-item-self-baseline-002b.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/fragmentation/* [ Failure Skip ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/subgrid/* [ Failure ]
-# Grid Lanes sizing test failures dependent on https://github.com/w3c/csswg-drafts/issues/12964
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/auto-repeat/row-auto-repeat-003.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/auto-repeat/row-auto-repeat-006.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/auto-repeat/intrinsic-auto-repeat/row-auto-repeat-auto-006.html [ Failure ]
 # Baseline failures when applied to intrinsic minimums
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/items/column-minimum-contribution-baseline-shim-vertical-lr.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/items/column-minimum-contribution-baseline-shim-vertical-rl.html [ Failure ]
