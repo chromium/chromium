@@ -160,7 +160,7 @@ extern NSString* const kSettingsDoneButtonId;
                                 delegate:
                                     (id<SettingsNavigationControllerDelegate>)
                                         delegate
-                                    UUID:(NSUUID*)UUID;
+                                    UUID:(NSUUID*)UUID API_AVAILABLE(ios(26.0));
 
 // Creates and displays a new UIViewController for user to report an issue.
 // `browser` is the browser where settings are being displayed and should not be

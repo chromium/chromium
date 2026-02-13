@@ -121,7 +121,8 @@
       _trustedVaultReauthenticationCoordinator;
 
   // The coordinator for the Credential Exchange feature handling the import.
-  CredentialImportCoordinator* _credentialImportCoordinator;
+  CredentialImportCoordinator* _credentialImportCoordinator
+      API_AVAILABLE(ios(26.0));
 
   // If needed, used for sign-in during the Credential Exchange import flow.
   SigninCoordinator* _signinCoordinator;
@@ -236,7 +237,9 @@
   self.addPasswordCoordinator.delegate = nil;
   self.addPasswordCoordinator = nil;
 
-  [self dismissCredentialImportCoordinator];
+  if (@available(iOS 26, *)) {
+    [self dismissCredentialImportCoordinator];
+  }
   [self dismissSigninCoordinator];
 
   [self.reauthCoordinator stop];
@@ -503,9 +506,11 @@
 
   [_visitsRecorder maybeRecordVisitMetric];
 
-  if (self.credentialImportUUID) {
-    [self startCredentialImport];
-    return;
+  if (@available(iOS 26, *)) {
+    if (self.credentialImportUUID) {
+      [self startCredentialImport];
+      return;
+    }
   }
 
   [self.mediator askFETToShowPasswordManagerWidgetPromo];
@@ -555,7 +560,7 @@
 #pragma mark - CredentialImportCoordinatorDelegate
 
 - (void)credentialImportCoordinatorDidFinish:
-    (CredentialImportCoordinator*)coordinator {
+    (CredentialImportCoordinator*)coordinator API_AVAILABLE(ios(26.0)) {
   CHECK_EQ(coordinator, _credentialImportCoordinator);
   [self dismissCredentialImportCoordinator];
   [self restartReauthCoordinator];
@@ -648,7 +653,7 @@
 
 // Starts the credential import. If the user is signed-in, then displays the
 // credential import sheet. Otherwise, display a sign-in sheet.
-- (void)startCredentialImport {
+- (void)startCredentialImport API_AVAILABLE(ios(26.0)) {
   CHECK(self.credentialImportUUID);
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(self.profile);
@@ -685,7 +690,8 @@
 // in, starts the credential import coordinator. Otherwise, just returns as the
 // import should not start.
 - (void)signinForImportFinishedWithCoordinator:(SigninCoordinator*)coordinator
-                                      identity:(id<SystemIdentity>)identity {
+                                      identity:(id<SystemIdentity>)identity
+    API_AVAILABLE(ios(26.0)) {
   CHECK_EQ(coordinator, _signinCoordinator);
   [self dismissSigninCoordinator];
   if (identity) {
@@ -694,7 +700,7 @@
 }
 
 // Starts the credential import coordinator.
-- (void)startCredentialImportCoordinator {
+- (void)startCredentialImportCoordinator API_AVAILABLE(ios(26.0)) {
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
   _credentialImportCoordinator = [[CredentialImportCoordinator alloc]
@@ -708,7 +714,7 @@
 }
 
 // Stops the credential import coordinator.
-- (void)dismissCredentialImportCoordinator {
+- (void)dismissCredentialImportCoordinator API_AVAILABLE(ios(26.0)) {
   [_credentialImportCoordinator stop];
   _credentialImportCoordinator.delegate = nil;
   _credentialImportCoordinator = nil;

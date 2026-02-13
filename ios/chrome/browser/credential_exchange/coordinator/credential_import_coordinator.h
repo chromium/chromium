@@ -11,6 +11,7 @@
 @protocol ReauthenticationProtocol;
 
 // Delegate for CredentialImportCoordinator.
+API_AVAILABLE(ios(26.0))
 @protocol CredentialImportCoordinatorDelegate
 
 // Called when the import coordinator should be stopped.
@@ -20,6 +21,7 @@
 @end
 
 // Coordinator for the credential exchange import flow.
+API_AVAILABLE(ios(26.0))
 @interface CredentialImportCoordinator : ChromeCoordinator
 
 // Delegate for this coordinator.

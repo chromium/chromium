@@ -14,6 +14,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -2099,9 +2100,13 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
         [weakSelf searchShareExtensionImageWithLens];
       };
     case CREDENTIAL_EXCHANGE_IMPORT:
-      return ^{
-        [weakSelf importCredentials];
-      };
+      if (@available(iOS 26, *)) {
+        return ^{
+          [weakSelf importCredentials];
+        };
+      } else {
+        NOTREACHED() << "Credential import is available on iOS 26+ only.";
+      }
     default:
       return nil;
   }
@@ -2312,7 +2317,7 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
   readingListBrowserAgent->BulkAddURLsToReadingListWithViewSnackbar(URLs);
 }
 
-- (void)importCredentials {
+- (void)importCredentials API_AVAILABLE(ios(26.0)) {
   id<SettingsCommands> settingsHandler = HandlerForProtocol(
       self.currentInterface.browser->GetCommandDispatcher(), SettingsCommands);
   [settingsHandler

@@ -47,7 +47,8 @@ class Browser;
 // import, needed to interact with the OS library to receive credential data.
 // If present, the credential import flow should be started after successful
 // local authentication. Will be set to nil after starting the import flow.
-@property(nonatomic, copy) NSUUID* credentialImportUUID;
+@property(nonatomic, copy) NSUUID* credentialImportUUID API_AVAILABLE(ios(26.0))
+    ;
 
 @end
 

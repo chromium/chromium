@@ -1061,7 +1061,8 @@ void OnListFamilyMembersResponse(
   }];
 }
 
-- (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID {
+- (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID
+    API_AVAILABLE(ios(26.0)) {
   if (!_settingsNavigationController) {
     _settingsNavigationController = [SettingsNavigationController
         credentialImportControllerForBrowser:_regularBrowser.get()

@@ -236,31 +236,27 @@
     case CredentialImportStage::kImporting:
       NOTREACHED() << "Primary action button should be disabled";
     case CredentialImportStage::kImported: {
-      if (@available(iOS 18.0, *)) {
-        // On successful import, display the credential provider prompt, if the
-        // AutoFill is not already enabled.
-        PasswordAutoFillStatusManager* sharedManager =
-            [PasswordAutoFillStatusManager sharedManager];
-        if (!sharedManager.ready || sharedManager.autoFillEnabled) {
-          [_delegate credentialImportCoordinatorDidFinish:self];
-          break;
-        }
-
-        // The completion handler of the OS library function might not run on
-        // the main thread, ensure that the UI dismissal does.
-        __weak __typeof(self) weakSelf = self;
-        auto callback = base::BindPostTask(
-            base::SequencedTaskRunner::GetCurrentDefault(),
-            base::BindOnce(^(BOOL appWasEnabledForAutoFill) {
-              [weakSelf
-                  handleTurnOnAutoFillPromptOutcome:appWasEnabledForAutoFill];
-            }));
-        [ASSettingsHelper
-            requestToTurnOnCredentialProviderExtensionWithCompletionHandler:
-                base::CallbackToBlock(std::move(callback))];
-      } else {
-        NOTREACHED() << "Credential import is only available on iOS 26+.";
+      // On successful import, display the credential provider prompt, if the
+      // AutoFill is not already enabled.
+      PasswordAutoFillStatusManager* sharedManager =
+          [PasswordAutoFillStatusManager sharedManager];
+      if (!sharedManager.ready || sharedManager.autoFillEnabled) {
+        [_delegate credentialImportCoordinatorDidFinish:self];
+        break;
       }
+
+      // The completion handler of the OS library function might not run on
+      // the main thread, ensure that the UI dismissal does.
+      __weak __typeof(self) weakSelf = self;
+      auto callback = base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(^(BOOL appWasEnabledForAutoFill) {
+            [weakSelf
+                handleTurnOnAutoFillPromptOutcome:appWasEnabledForAutoFill];
+          }));
+      [ASSettingsHelper
+          requestToTurnOnCredentialProviderExtensionWithCompletionHandler:
+              base::CallbackToBlock(std::move(callback))];
       break;
     }
   }
