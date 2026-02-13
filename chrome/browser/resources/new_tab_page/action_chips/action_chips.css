@@ -31,8 +31,7 @@
 }
 
 .action-chips-wrapper {
-  margin-bottom: 48px;
-  margin-top: 8px;
+  margin-bottom: 40px;
   max-width: calc(var(--ntp-chips-container-width) + 2px);
 }
 
