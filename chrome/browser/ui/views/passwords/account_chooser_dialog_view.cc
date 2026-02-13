@@ -63,6 +63,8 @@ AccountChooserDialogView::AccountChooserDialogView(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
           views::DialogContentType::kText, views::DialogContentType::kText);
   set_margins(gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0));
+  set_footnote_margins(ChromeLayoutProvider::Get()->GetInsetsMetric(
+      views::INSETS_DIALOG_FOOTNOTE));
 }
 
 AccountChooserDialogView::~AccountChooserDialogView() = default;

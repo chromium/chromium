@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -68,6 +69,21 @@ class PasswordBubbleBrowserTest
     } else if (StartsWith(name, "MoveToAccountStoreBubble",
                           base::CompareCase::SENSITIVE)) {
       SetupMovingPasswords();
+    } else if (StartsWith(name, "AccountChooser",
+                          base::CompareCase::SENSITIVE)) {
+      test_form()->url = GURL("https://example.com");
+      test_form()->display_name = u"test_user";
+      test_form()->username_value = u"test_user@gmail.com";
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>
+          local_credentials;
+      local_credentials.push_back(
+          std::make_unique<password_manager::PasswordForm>(*test_form()));
+
+      ChromePasswordManagerClient::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())
+          ->PromptUserToChooseCredentials(std::move(local_credentials),
+                                          url::Origin::Create(test_form()->url),
+                                          base::DoNothing());
     } else if (StartsWith(name, "SafeState", base::CompareCase::SENSITIVE)) {
       SetupSafeState();
     } else if (StartsWith(name, "MoreToFixState",
@@ -100,6 +116,10 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_AutoSignin) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_AccountChooser) {
   ShowAndVerifyUi();
 }
 
