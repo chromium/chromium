@@ -1,0 +1,252 @@
+diff --git a/third_party/libdmg-hfsplus/src/common/sizedbuf.c b/third_party/libdmg-hfsplus/src/common/sizedbuf.c
+index 6d6399cbbc17c..0fc3fff616853 100644
+--- a/third_party/libdmg-hfsplus/src/common/sizedbuf.c
++++ b/third_party/libdmg-hfsplus/src/common/sizedbuf.c
+@@ -1,6 +1,7 @@
+ #include "sizedbuf.h"
+ 
+ #include <stddef.h>
++#include <stdint.h>
+ #include <stdlib.h>
+ #include <string.h>
+ 
+@@ -19,7 +20,7 @@ SizedBuf* AllocBufCopy(const SizedBuf* buf) {
+     return AllocBufCopyBytes(buf->data, buf->len);
+ }
+ 
+-SizedBuf* AllocBufCopyBytes(const char* data, size_t len) {
++SizedBuf* AllocBufCopyBytes(const uint8_t* data, size_t len) {
+     ASSERT(data, "AllocBufCopyBytes can't copy out of NULL!");
+     SizedBuf* ret = malloc(sizeof(SizedBuf) + len);
+     ASSERT(ret, "AllocBufCopyBytes OOM");
+@@ -30,7 +31,22 @@ SizedBuf* AllocBufCopyBytes(const char* data, size_t len) {
+ 
+ SizedBuf* AllocBufCopyString(const char* str) {
+     ASSERT(str, "AllocBufCopyString can't copy out of NULL!");
+-    SizedBuf* ret = AllocBufCopyBytes(str, strlen(str) + 1);
++    SizedBuf* ret = AllocBufCopyBytes((const uint8_t*)str, strlen(str) + 1);
+     ret->len -= 1;
+     return ret;
+ }
++
++SizedBuf* ReallocBuf(SizedBuf* buf, size_t new_cap) {
++    if (!buf) {
++        SizedBuf* ret = ZAllocBuf(new_cap);
++        ret->len = 0;
++        return ret;
++    }
++    SizedBuf* ret = realloc(buf, sizeof(SizedBuf) + new_cap);
++    ASSERT(ret, "ReallocBuf failed");
++    ret->cap = new_cap;
++    if (ret->len > new_cap) {
++        ret->len = new_cap;
++    }
++    return ret;
++}
+diff --git a/third_party/libdmg-hfsplus/src/dmg/attribution.c b/third_party/libdmg-hfsplus/src/dmg/attribution.c
+index a6f5fac18ea79..a51884293deaa 100644
+--- a/third_party/libdmg-hfsplus/src/dmg/attribution.c
++++ b/third_party/libdmg-hfsplus/src/dmg/attribution.c
+@@ -1,4 +1,5 @@
+ #include <stddef.h>
++#include <stdint.h>
+ #include <string.h>
+ #include <zlib.h> // For crc32_combine.
+ #include "abstractfile.h"
+@@ -30,7 +31,7 @@ typedef struct AttributionPreservingSentinelData {
+ enum ShouldKeepRaw sentinelShouldKeepRaw(AbstractAttribution* attribution, const void* data, size_t len, const void* nextData, size_t nextLen) {
+   AttributionPreservingSentinelData* attributionData = (AttributionPreservingSentinelData*)attribution->data;
+   const SizedBuf* sentinelBuf = attributionData->sentinelBuf;
+-  if (NULL != memmem((const char*)data, len, sentinelBuf->data, sentinelBuf->len)) {
++  if (NULL != memmem((const uint8_t*)data, len, sentinelBuf->data, sentinelBuf->len)) {
+     return KeepCurrentRaw;
+   }
+ 
+@@ -39,7 +40,7 @@ enum ShouldKeepRaw sentinelShouldKeepRaw(AbstractAttribution* attribution, const
+     char* combinedData = malloc(len + nextLen);
+     memcpy(combinedData, data, len);
+     memcpy(combinedData + len, nextData, nextLen);
+-    if (NULL != memmem((const char*)combinedData, len + nextLen, sentinelBuf->data, sentinelBuf->len)) {
++    if (NULL != memmem((const uint8_t*)combinedData, len + nextLen, sentinelBuf->data, sentinelBuf->len)) {
+       return KeepCurrentAndNextRaw;
+     }
+   }
+@@ -197,7 +198,7 @@ uint32_t calculateMasterChecksum(ResourceKey* resources);
+ 
+ int updateAttribution(AbstractFile* abstractIn, AbstractFile* abstractOut, const char* anchor, const char* data, size_t dataLen) {
+   SizedBuf* sentinelBuf = AllocBufCopyString(anchor);
+-  SizedBuf* dataBuf = AllocBufCopyBytes(data, dataLen);
++  SizedBuf* dataBuf = AllocBufCopyBytes((const uint8_t*)data, dataLen);
+   int ret = updateAttributionFromBufs(abstractIn, abstractOut, sentinelBuf, dataBuf);
+   free(dataBuf);
+   free(sentinelBuf);
+diff --git a/third_party/libdmg-hfsplus/src/hfs/hfs.c b/third_party/libdmg-hfsplus/src/hfs/hfs.c
+index 680e7bb35910f..4da9fab6b3304 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/hfs.c
++++ b/third_party/libdmg-hfsplus/src/hfs/hfs.c
+@@ -11,6 +11,8 @@
+ #include "hfs/hfslib.h"
+ #include "hfs/hfsplus.h"
+ #include "abstractfile.h"
++#include "parse_data_param.h"
++#include "sizedbuf.h"
+ #include <inttypes.h>
+ 
+ char endianness;
+@@ -250,7 +252,7 @@ void cmd_getattr(Volume* volume, int argc, char *argv[]) {
+ 	free(record);
+ }
+ 
+-void cmd_setattr(Volume* volume, int argc, char *argv[]) {
++void cmd_setattr(Volume* volume, DataParamParserPtr data_param_parser, int argc, char *argv[]) {
+ 	HFSPlusCatalogRecord* record;
+ 
+ 	if (argc < 4) {
+@@ -271,23 +273,30 @@ void cmd_setattr(Volume* volume, int argc, char *argv[]) {
+ 		id = folderRecord -> folderID;
+ 	}
+ 
+-	// Note: this doesn't handle embedded nulls, string encodings, etc.
+-	size_t dataLen = strlen(argv[3]);
+-	if (dataLen == 0) {
+-		// Handle the empty string gracefully.
+-		dataLen = 1;
++	SizedBuf* value = data_param_parser(argv[3]);
++	// Write empty data as two zero-value bytes instead. This produces an
++	// empty string if string decoding is intended, then rounds up to an even
++	// record size.
++	if (value->len == 0) {
++		free(value);
++		value = ZAllocBuf(2);
+ 	}
+-	if ((dataLen & 0x1) == 0x1) {
++
++	if ((value->len & 0x1) == 0x1) {
+ 		// HFS record sizes must be even.  Pad the given data with one 0 to
+ 		// maintain this invariant.  Note that macOS `xattr` appears to do
+ 		// this silently.
+-		dataLen += 1;
++		ASSERT(value->cap >= value->len, "SizedBuf cap below len is bad news");
++		if (value->cap == value->len) {
++			// No space for the 0. Realloc.
++			value = ReallocBuf(value, value->len + 1);
++		}
++		// There is (now) definitely room to extend by one byte.
++		value->data[value->len] = 0;
++		value->len += 1;
+ 	}
+-	uint8_t* data = malloc(sizeof(uint8_t) * (dataLen));
+-	memset(data, 0, dataLen);
+-	memcpy(data, argv[3], strlen(argv[3]));
+ 
+-	ASSERT(setAttribute(volume, id, argv[2], data, dataLen), "setAttribute");
++	ASSERT(setAttribute(volume, id, argv[2], value->data, value->len), "setAttribute");
+ 
+ 	if (fileRecord != NULL) {
+ 		fileRecord -> flags |= kHFSHasAttributesMask;
+@@ -311,14 +320,22 @@ void TestByteOrder()
+ }
+ 
+ void usage(const char* name) {
+-	printf("usage: %s <image-file> <ls|cat|mv|mkdir|add|rm|chmod|extract|extractall|rmall|addall|attr|debug> <arguments>\n", name);
++	char dataFormats[256] = {0};
++	size_t needed = dataParamFormats(dataFormats, 256);
++	if (needed > 256) {
++		fprintf(stderr, "warning: data format list truncated, needed %zu bytes",
++			    needed);
++	}
++	printf("usage: %s <image-file> <ls|cat|mv|mkdir|add|rm|chmod|extract|extractall|rmall|addall|attr|setattr|debug> <arguments>\n", name);
+ 	printf("OPTIONS:\n");
+ 	printf("\t--symlinks, -s        <fail, traverse, clone_link>: how to handle symlinks\n");
+ 	printf("\t                      in the input directory in command `addall`\n");
+ 	printf("\t--special-modes, -m   <yes, no>: whether to chmod files in the volume\n");
+ 	printf("\t                      when they are recognized with a name or path\n");
+ 	printf("\t                      where OS setup or iPhone jailbreaking would\n");
+-	printf("\t                      require special permissions; specific to `addall`");
++	printf("\t                      require special permissions; specific to `addall`\n");
++	printf("\t--data-format, -d     `setattr` only: encoding format for xattr value\n");
++	printf("\t                       known formats: %s\n", dataFormats);
+ }
+ 
+ IncomingSymlinksPolicy must_parse_symlink_policy(const char* policy, const char* bin_name) {
+@@ -360,6 +377,7 @@ int main(int argc, char *argv[]) {
+ 	// Default values, may be overridden by flags
+ 	IncomingSymlinksPolicy symlink_policy = kIncomingSymlinksTraverse;
+ 	char assign_special_permissions = TRUE;
++	DataParamParserPtr data_param_parser = dataParamParserForFormat("literal");
+ 
+ 	TestByteOrder();
+ 
+@@ -367,7 +385,8 @@ int main(int argc, char *argv[]) {
+ 	const struct option longopts[] = {
+ 		{"symlinks", required_argument, NULL, 's'},
+ 		{"special-modes", required_argument, NULL, 'm'},
+-		{NULL, 0, NULL, 0},
++		{"data-format", required_argument, NULL, 'd'},
++		{NULL, 0, NULL, 0}
+ 	};
+ 	for(
+ 		int opt = getopt_long(argc, argv, optstring, longopts, NULL);
+@@ -381,6 +400,9 @@ int main(int argc, char *argv[]) {
+ 			case 'm':
+ 				assign_special_permissions = must_parse_bool(optarg, "special-modes", bin_name);
+ 				break;
++			case 'd':
++				data_param_parser = dataParamParserForFormat(optarg);
++				break;
+ 			default:
+ 				usage(bin_name);
+ 				exit(2);
+@@ -432,7 +454,7 @@ int main(int argc, char *argv[]) {
+ 		} else if (strcmp(argv[2], "getattr") == 0) {
+ 			cmd_getattr(volume, argc - 2, argv + 2);
+ 		} else if (strcmp(argv[2], "setattr") == 0) {
+-			cmd_setattr(volume, argc - 2, argv + 2);
++			cmd_setattr(volume, data_param_parser, argc - 2, argv + 2);
+ 		} else if (strcmp(argv[2], "debug") == 0) {
+ 			if (argc > 3 && strcmp(argv[3], "verbose") == 0) {
+ 				debugBTree(volume->catalogTree, TRUE);
+diff --git a/third_party/libdmg-hfsplus/src/includes/sizedbuf.h b/third_party/libdmg-hfsplus/src/includes/sizedbuf.h
+index 2d6a770d150f5..9d5817de2f7aa 100644
+--- a/third_party/libdmg-hfsplus/src/includes/sizedbuf.h
++++ b/third_party/libdmg-hfsplus/src/includes/sizedbuf.h
+@@ -2,6 +2,7 @@
+ #define _LIBDMG_HFSPLUS_SIZEDBUF_H
+ 
+ #include <stddef.h>
++#include <stdint.h>
+ 
+ // SizedBuf is an arbitrary-length buffer for arbitrary data. SizedBuf
+ // instances can be allocated with AllocBuf, ZAllocBuf, AllocCopyBuf, or
+@@ -14,7 +15,7 @@ typedef struct {
+   size_t cap;
+ 
+   // Arbitrary data storage; allocated length is `cap`.
+-  char data[];
++  uint8_t data[];
+ } SizedBuf;
+ 
+ #ifdef __cplusplus
+@@ -32,13 +33,21 @@ SizedBuf* AllocBufCopy(const SizedBuf* buf);
+ 
+ // AllocBufCopyBytes allocates a new SizedBuf with data copied from the provided
+ // byte buffer.
+-SizedBuf* AllocBufCopyBytes(const char* data, size_t len);
++SizedBuf* AllocBufCopyBytes(const uint8_t* data, size_t len);
+ 
+ // AllocBufCopyString allocates a new SizedBuf with data copied from the
+ // provided NUL-terminated C string. The `len` of the buffer excludes the
+ // NUL terminator, but the buffer's `cap` includes it.
+ SizedBuf* AllocBufCopyString(const char* str);
+ 
++// ReallocBuf uses realloc to resize buf such that is capacity is now `new_cap`.
++// If `new_cap` is shorter than `buf->len`, `buf->len` is shortened. If `buf`
++// is NULL, this calls `AllocBuf` instead.
++//
++// Do not use `buf` after realloc. The returned pointer may or may not refer
++// to the same memory location.
++SizedBuf* ReallocBuf(SizedBuf* buf, size_t new_cap);
++
+ #ifdef __cplusplus
+ }  // extern "C"
+ #endif

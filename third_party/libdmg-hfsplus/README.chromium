@@ -109,3 +109,8 @@ Local modifications:
       it (preserving `buildDmg`'s API). This converges on SizedBuf entry points
       already written for the prior `dmg attribute` patch.
     * Consequently, supports NUL bytes in the sentinel for `dmg build`.
+  * patches/2026-02-10-hfs-attribute-data-format.patch
+    * Adds `--data-format` flag to `hfsplus`, used in `hfs setattr`, to specify
+      a data param parser for the value to be written into the attribute.
+    * The extended attribute logic was already ready to handle NUL bytes.
+    * Fixes SizedBuf types and adds ReallocBuf.

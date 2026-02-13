@@ -11,6 +11,8 @@
 #include "hfs/hfslib.h"
 #include "hfs/hfsplus.h"
 #include "abstractfile.h"
+#include "parse_data_param.h"
+#include "sizedbuf.h"
 #include <inttypes.h>
 
 char endianness;
@@ -250,7 +252,7 @@ void cmd_getattr(Volume* volume, int argc, char *argv[]) {
 	free(record);
 }
 
-void cmd_setattr(Volume* volume, int argc, char *argv[]) {
+void cmd_setattr(Volume* volume, DataParamParserPtr data_param_parser, int argc, char *argv[]) {
 	HFSPlusCatalogRecord* record;
 
 	if (argc < 4) {
@@ -271,23 +273,30 @@ void cmd_setattr(Volume* volume, int argc, char *argv[]) {
 		id = folderRecord -> folderID;
 	}
 
-	// Note: this doesn't handle embedded nulls, string encodings, etc.
-	size_t dataLen = strlen(argv[3]);
-	if (dataLen == 0) {
-		// Handle the empty string gracefully.
-		dataLen = 1;
+	SizedBuf* value = data_param_parser(argv[3]);
+	// Write empty data as two zero-value bytes instead. This produces an
+	// empty string if string decoding is intended, then rounds up to an even
+	// record size.
+	if (value->len == 0) {
+		free(value);
+		value = ZAllocBuf(2);
 	}
-	if ((dataLen & 0x1) == 0x1) {
+
+	if ((value->len & 0x1) == 0x1) {
 		// HFS record sizes must be even.  Pad the given data with one 0 to
 		// maintain this invariant.  Note that macOS `xattr` appears to do
 		// this silently.
-		dataLen += 1;
+		ASSERT(value->cap >= value->len, "SizedBuf cap below len is bad news");
+		if (value->cap == value->len) {
+			// No space for the 0. Realloc.
+			value = ReallocBuf(value, value->len + 1);
+		}
+		// There is (now) definitely room to extend by one byte.
+		value->data[value->len] = 0;
+		value->len += 1;
 	}
-	uint8_t* data = malloc(sizeof(uint8_t) * (dataLen));
-	memset(data, 0, dataLen);
-	memcpy(data, argv[3], strlen(argv[3]));
 
-	ASSERT(setAttribute(volume, id, argv[2], data, dataLen), "setAttribute");
+	ASSERT(setAttribute(volume, id, argv[2], value->data, value->len), "setAttribute");
 
 	if (fileRecord != NULL) {
 		fileRecord -> flags |= kHFSHasAttributesMask;
@@ -311,14 +320,22 @@ void TestByteOrder()
 }
 
 void usage(const char* name) {
-	printf("usage: %s <image-file> <ls|cat|mv|mkdir|add|rm|chmod|extract|extractall|rmall|addall|attr|debug> <arguments>\n", name);
+	char dataFormats[256] = {0};
+	size_t needed = dataParamFormats(dataFormats, 256);
+	if (needed > 256) {
+		fprintf(stderr, "warning: data format list truncated, needed %zu bytes",
+			    needed);
+	}
+	printf("usage: %s <image-file> <ls|cat|mv|mkdir|add|rm|chmod|extract|extractall|rmall|addall|attr|setattr|debug> <arguments>\n", name);
 	printf("OPTIONS:\n");
 	printf("\t--symlinks, -s        <fail, traverse, clone_link>: how to handle symlinks\n");
 	printf("\t                      in the input directory in command `addall`\n");
 	printf("\t--special-modes, -m   <yes, no>: whether to chmod files in the volume\n");
 	printf("\t                      when they are recognized with a name or path\n");
 	printf("\t                      where OS setup or iPhone jailbreaking would\n");
-	printf("\t                      require special permissions; specific to `addall`");
+	printf("\t                      require special permissions; specific to `addall`\n");
+	printf("\t--data-format, -d     `setattr` only: encoding format for xattr value\n");
+	printf("\t                       known formats: %s\n", dataFormats);
 }
 
 IncomingSymlinksPolicy must_parse_symlink_policy(const char* policy, const char* bin_name) {
@@ -360,6 +377,7 @@ int main(int argc, char *argv[]) {
 	// Default values, may be overridden by flags
 	IncomingSymlinksPolicy symlink_policy = kIncomingSymlinksTraverse;
 	char assign_special_permissions = TRUE;
+	DataParamParserPtr data_param_parser = dataParamParserForFormat("literal");
 
 	TestByteOrder();
 
@@ -367,7 +385,8 @@ int main(int argc, char *argv[]) {
 	const struct option longopts[] = {
 		{"symlinks", required_argument, NULL, 's'},
 		{"special-modes", required_argument, NULL, 'm'},
-		{NULL, 0, NULL, 0},
+		{"data-format", required_argument, NULL, 'd'},
+		{NULL, 0, NULL, 0}
 	};
 	for(
 		int opt = getopt_long(argc, argv, optstring, longopts, NULL);
@@ -380,6 +399,9 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'm':
 				assign_special_permissions = must_parse_bool(optarg, "special-modes", bin_name);
+				break;
+			case 'd':
+				data_param_parser = dataParamParserForFormat(optarg);
 				break;
 			default:
 				usage(bin_name);
@@ -432,7 +454,7 @@ int main(int argc, char *argv[]) {
 		} else if (strcmp(argv[2], "getattr") == 0) {
 			cmd_getattr(volume, argc - 2, argv + 2);
 		} else if (strcmp(argv[2], "setattr") == 0) {
-			cmd_setattr(volume, argc - 2, argv + 2);
+			cmd_setattr(volume, data_param_parser, argc - 2, argv + 2);
 		} else if (strcmp(argv[2], "debug") == 0) {
 			if (argc > 3 && strcmp(argv[3], "verbose") == 0) {
 				debugBTree(volume->catalogTree, TRUE);
