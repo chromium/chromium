@@ -494,7 +494,7 @@ component("chrome_features") {
     "//extensions/buildflags",
     "//media:media_buildflags",
     "//net:buildflags",
-    "//printing/buildflags",
+    "//pdf:buildflags",
     "//rlz/buildflags",
   ]
 
