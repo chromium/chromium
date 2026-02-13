@@ -415,6 +415,11 @@ extern const char kIOSGeminiConsentGiven[];
 // Event fired when the user pins a site to the most visited tile.
 extern const char kIOSPinMVTSiteUsed[];
 
+// Event fired on each foreground transition where no scene has a startup
+// parameter. This includes switching between two windows in multi-window mode
+// when the user opens Chrome from the icon.
+extern const char kIOSChromeOpenedFromIcon[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.
