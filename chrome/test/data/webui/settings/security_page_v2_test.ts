@@ -5,13 +5,13 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrExpandButtonElement, SettingsSecureDnsV2Element, SettingsSecurityPageV2Element} from 'chrome://settings/lazy_load.js';
-import {HttpsFirstModeSetting, SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
+import {HttpsFirstModeSetting, JavascriptOptimizerSetting, SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import type {ControlledRadioButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, Router, routes, resetRouterForTesting, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
@@ -30,6 +30,7 @@ suite('Main', function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: true,
       enableBundledSecuritySettingsSecureDnsV2: false,
+      enableBlockV8OptimizerOnUnfamiliarSites: true,
     });
 
     settingsPrefs = document.createElement('settings-prefs');
@@ -54,7 +55,9 @@ suite('Main', function() {
         'generated.security_settings_bundle',
         SecuritySettingsBundleSetting.STANDARD);
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
-    return microtasksFinished();
+    page.setPrefValue(
+        'generated.javascript_optimizer', JavascriptOptimizerSetting.ALLOWED);
+    return flushTasks();
   }
 
   test('StandardBundleIsInitiallySelected', function() {
@@ -142,10 +145,7 @@ suite('Main', function() {
 
   test('StandardRadioButtonSelected', async function() {
     // Set initial page state.
-    page.setPrefValue(
-        'generated.security_settings_bundle',
-        SecuritySettingsBundleSetting.ENHANCED);
-    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    page.$.securitySettingsBundleEnhanced.click();
     await flushTasks();
 
     // Verify no User Action has been recorded yet.
@@ -244,10 +244,7 @@ suite('Main', function() {
   });
 
   test('ResetEnhancedBundleToDefaultsButtonVisibility', async function() {
-    page.setPrefValue(
-        'generated.security_settings_bundle',
-        SecuritySettingsBundleSetting.ENHANCED);
-    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    page.$.securitySettingsBundleEnhanced.click();
     await flushTasks();
     assertFalse(isChildVisible(page, '#resetEnhancedBundleToDefaultsButton'));
 
@@ -271,9 +268,9 @@ suite('Main', function() {
   });
 
   test('ResetEnhancedToDefaultsClick', async function() {
-    page.setPrefValue(
-        'generated.security_settings_bundle',
-        SecuritySettingsBundleSetting.ENHANCED);
+    page.$.securitySettingsBundleEnhanced.click();
+    await flushTasks();
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
     await flushTasks();
     assertTrue(!!page.$.resetEnhancedBundleToDefaultsButton);
     assertTrue(isVisible(page.$.resetEnhancedBundleToDefaultsButton));
@@ -480,6 +477,83 @@ suite('Main', function() {
     // Old Secure DNS row is hidden.
     assertFalse(isChildVisible(page, '#secureDnsRow'));
   });
+
+  test('JsGuardrailsAllowOnAllSites', async function() {
+    assertEquals(
+        SecuritySettingsBundleSetting.STANDARD,
+        page.prefs.generated.security_settings_bundle.value);
+
+    // Expand the row.
+    page.$.javascriptGuardrailsRow.$.expandButton.click();
+    await flushTasks();
+
+    const toggleButton =
+        page.$.javascriptGuardrailsRow.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>('#toggleButton');
+    assertTrue(!!toggleButton);
+
+    // Confirm that in the standard bundle the Javascript Guardrails is off.
+    assertFalse(toggleButton.checked);
+  });
+
+  test('JsGuardrailsBlockOnUnfamiliarSites', async function() {
+    // Expand the row.
+    page.$.javascriptGuardrailsRow.$.expandButton.click();
+    await flushTasks();
+
+    const toggleButton =
+        page.$.javascriptGuardrailsRow.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>('#toggleButton');
+    assertTrue(!!toggleButton);
+
+    // Click the toggle to turn on the JS optimizer setting.
+    toggleButton.click();
+    await flushTasks();
+
+    // Confirm that in the standard bundle the Javascript Guardrails is on
+    // and the block for unfamiliar sites radio button is checked.
+    assertTrue(toggleButton.checked);
+    assertTrue(page.$.blockForUnfamiliarSites.checked);
+  });
+
+  test('JsGuardrailsBlockOnAllSites', async function() {
+    // Expand the row.
+    page.$.javascriptGuardrailsRow.$.expandButton.click();
+    await flushTasks();
+
+    const blockForAllSitesButton = page.$.blockForAllSites;
+
+    // Click the block for all sites button.
+    blockForAllSitesButton.click()!;
+    await flushTasks();
+
+    const toggleButton =
+        page.$.javascriptGuardrailsRow.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>('#toggleButton');
+    assertTrue(!!toggleButton);
+
+    // Clicking a radio button while the toggle is off should turn it on.
+    assertTrue(toggleButton.checked);
+    assertFalse(page.$.blockForUnfamiliarSites.checked);
+    assertTrue(page.$.blockForAllSites.checked);
+  });
+
+  test(
+      'JsGuardrailsManageSiteExceptionsNavigatesToContentSettings',
+      async function() {
+        // Expand the row.
+        page.$.javascriptGuardrailsRow.$.expandButton.click();
+        await flushTasks();
+
+        // Click on manage site exceptions button.
+        const manageSiteExceptionsButton = page.$.manageSiteExceptionsButton;
+        manageSiteExceptionsButton.click()!;
+        await flushTasks();
+
+        assertEquals(
+            routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER,
+            Router.getInstance().getCurrentRoute());
+      });
 });
 
 suite('SecurityKeysSubpageDisabled', function() {

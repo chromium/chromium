@@ -12,6 +12,7 @@
 #include "components/content_settings/browser/ui/javascript_optimizer_setting.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace content_settings {
 
@@ -39,6 +40,12 @@ class GeneratedJavascriptOptimizerPref
 
   // Fired when preferences used to generate this preference are changed.
   void OnPreferencesChanged();
+
+  // Returns the default Javascript Optimizer setting for the passed-in
+  // security-bundle type.
+  static content_settings::JavascriptOptimizerSetting
+  GetDefaultJsOptimizerSetting(
+      safe_browsing::SecuritySettingsBundleSetting bundle_setting);
 
  private:
   // Profile this preference is generated for.

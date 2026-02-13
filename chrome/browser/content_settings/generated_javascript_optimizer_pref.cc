@@ -118,4 +118,16 @@ void GeneratedJavascriptOptimizerPref::OnPreferencesChanged() {
   NotifyObservers(kGeneratedJavascriptOptimizerPref);
 }
 
+content_settings::JavascriptOptimizerSetting
+GeneratedJavascriptOptimizerPref::GetDefaultJsOptimizerSetting(
+    safe_browsing::SecuritySettingsBundleSetting bundle_setting) {
+  switch (bundle_setting) {
+    case safe_browsing::SecuritySettingsBundleSetting::STANDARD:
+      return content_settings::JavascriptOptimizerSetting::kAllowed;
+    case safe_browsing::SecuritySettingsBundleSetting::ENHANCED:
+      return content_settings::JavascriptOptimizerSetting::
+          kBlockedForUnfamiliarSites;
+  }
+}
+
 }  // namespace content_settings

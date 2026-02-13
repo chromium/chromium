@@ -2017,8 +2017,11 @@
   <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_ENHANCED" desc="The state text denoting that a security feature is in the enhanced state.">
     Enhanced
   </message>
-  <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_ENHANCED_CUSTOM" desc="The state text denoting that a security feature is in the enhanced custom state. This text communitcates that the selected security setting is in its enhanced custom option.">
+  <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_ENHANCED_CUSTOM" desc="The state text denoting that a security feature is in the enhanced custom state. This text communicates that the selected security setting is in its enhanced custom state.">
     Enhanced: custom
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_ENHANCED_STRICT" desc="The state text denoting that a security feature is in the enhanced strict state. This text communicates that the selected security setting is in its enhanced strict state.">
+    Enhanced: strict
   </message>
   <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_STANDARD" desc="The state text denoting that a security feature is in the standard state.">
     Standard
@@ -2049,6 +2052,27 @@
   </message>
   <message name="IDS_SETTINGS_SECURITY_SECURE_DNS_CUSTOM" desc="Name of Secure DNS custom option">
     Use always with selected DNS over HTTPS provider
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_GUARDRAILS_TITLE" desc="Name of the JavaScript Guardrails security setting">
+    JavaScript Guardrails
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_GUARDRAILS_DESCRIPTION" desc="Description of the JavaScript Guardrails security setting">
+    Better protects you from attacks by turning off JavaScript optimization
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_GUARDRAILS_UNRECOGNIZED_SITES" desc="Name of JavaScript Guardrails unrecognized sites option.">
+    Unrecognized sites
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_GUARDRAILS_STRICT_FOR_ALL_SITES" desc="Name of JavaScript Guardrails strict for all sites option.">
+    Strict for all sites
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_GUARDRAILS_STRICT_FOR_ALL_SITES_DESCRIPTION" desc="Description of JavaScript Guardrails strict for all sites option.">
+    Custom enhanced protection turns off JavaScript optimization for all sites
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_GUARDRAILS_MANAGE_SITE_EXCEPTIONS" desc="Label of button that allows you to manage which sites JavaScript optimization can run on.">
+    Manage site exceptions
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_GUARDRAILS_MANAGE_SITE_EXCEPTIONS_DESCRIPTION" desc="Description of what the manage site exceptions button will direct you to.">
+    You can allowlist sites that you trust in content settings
   </message>
 
   <!-- Secure Connections -->

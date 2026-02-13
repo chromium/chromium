@@ -139,13 +139,13 @@
     padding-bottom: var(--cr-section-vertical-padding);
   }
 
-  #safeBrowsingRadioGroup {
+  .settings-radio-group-feature-row {
     align-items: flex-start;
     display: flex;
     justify-content: space-around;
   }
 
-  #safeBrowsingRadioGroup controlled-radio-button {
+  .settings-radio-group-feature-row controlled-radio-button {
     align-items: flex-start;
     display: flex;
     flex-direction: row;
@@ -153,11 +153,11 @@
     padding-inline: 20px;
   }
 
-  #safeBrowsingRadioGroup controlled-radio-button::part(disc) {
+  .settings-radio-group-feature-row controlled-radio-button::part(disc) {
     margin-top: 1px;
   }
 
-  #safeBrowsingRadioGroup controlled-radio-button::part(labelWrapper) {
+  .settings-radio-group-feature-row controlled-radio-button::part(labelWrapper) {
     align-items: flex-start;
     display: flex;
     flex-direction: column;
@@ -176,10 +176,23 @@
     padding-inline: 0 36px;
   }
 
-  #safeBrowsingRadioGroup .settings-radio-button-subtitle {
+  .settings-radio-button-subtitle {
     font-size: 90%;
-    font-weight: 400;
-    padding-block-end: 12px;
+    font-weight: 80;
+  }
+
+  .settings-radio-button-subtitle:not(:last-child) {
+    padding-bottom: var(--cr-section-vertical-padding);
+  }
+
+  #manageSiteExceptionsRow {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: var(--cr-section-vertical-padding);
+    padding-inline-end: 16px;
+    padding-inline-start: 20px;
+    padding-top: var(--cr-section-vertical-padding);
   }
 </style>
 <settings-subpage page-title="$i18n{securityPageTitle}"
@@ -269,6 +282,7 @@
         icon-visible="[[isSafeBrowsingWarningIconVisible_]]">
       <div slot="collapse">
         <settings-radio-group id="safeBrowsingRadioGroup"
+            class="settings-radio-group-feature-row"
             pref="{{prefs.generated.safe_browsing}}"
             selectable-elements="controlled-radio-button"
             on-change="onSafeBrowsingRadioChange_">
@@ -390,6 +404,49 @@
         on-radio-group-change="onSecureDnsRadioGroupChange_">
       </settings-secure-dns-v2>
     </template>
+    <security-page-feature-row id="javascriptGuardrailsRow"
+        pref="{{prefs.generated.javascript_optimizer}}"
+        name="[[javascriptOptimizerSettingEnum_.ALLOWED]]"
+        numeric-unchecked-values="[[javascriptGuardrailsOff_]]"
+        numeric-checked-value=
+            "[[javascriptOptimizerSettingEnum_.BLOCKED_FOR_UNFAMILIAR_SITES]]"
+        class="box" label="$i18n{securityJavascriptGuardrailsTitle}"
+        sub-label="$i18n{securityJavascriptGuardrailsDesc}"
+        state-text-map="[[javascriptGuardrailsStateTextMap_]]">
+      <div slot="collapse">
+        <settings-radio-group id="javascriptGuardrailsRadioGroup"
+            class="settings-radio-group-feature-row"
+            pref="{{prefs.generated.javascript_optimizer}}"
+            selectable-elements="controlled-radio-button">
+          <controlled-radio-button id="blockForUnfamiliarSites"
+              name=
+              "[[javascriptOptimizerSettingEnum_.BLOCKED_FOR_UNFAMILIAR_SITES]]"
+              pref="[[prefs.generated.javascript_optimizer]]"
+              label="$i18n{securityJavascriptGuardrailsUnrecognizedSites}">
+            <div class="settings-radio-button-subtitle">
+              $i18n{securityJavascriptGuardrailsUnrecognizedSitesDesc}
+            </div>
+          </controlled-radio-button>
+          <controlled-radio-button id="blockForAllSites"
+              name="[[javascriptOptimizerSettingEnum_.BLOCKED]]"
+              pref="[[prefs.generated.javascript_optimizer]]"
+              label="$i18n{securityJavascriptGuardrailsStrictForAllSites}">
+            <div class="settings-radio-button-subtitle">
+              $i18n{securityJavascriptGuardrailsStrictForAllSitesDesc}
+            </div>
+          </controlled-radio-button>
+        </settings-radio-group>
+        <div id="manageSiteExceptionsRow">
+          <div class="cr-secondary-text">
+            $i18n{securityJavascriptGuardrailsManageSiteExceptionsDesc}
+          </div>
+          <cr-button id="manageSiteExceptionsButton"
+              on-click="onManageSiteExceptionsClick_">
+            $i18n{securityJavascriptGuardrailsManageSiteExceptions}
+          </cr-button>
+        </div>
+      </div>
+    </security-page-feature-row>
   </settings-section>
   <settings-section page-title="$i18n{securityAccountAndNetworkSectionTitle}">
     <div id="httpsFirstModeSection">

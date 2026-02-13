@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/security_settings_provider.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
 #include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -32,6 +33,17 @@ void AddSecurityData(content::WebUIDataSource* html_source) {
   html_source->AddInteger("securityEnhancedBundleSafeBrowsingDefault",
                           static_cast<int>(GetDefaultSafeBrowsingState(
                               SecuritySettingsBundleSetting::ENHANCED)));
+
+  html_source->AddInteger(
+      "securityStandardBundleJavascriptGuardrailsDefault",
+      static_cast<int>(content_settings::GeneratedJavascriptOptimizerPref::
+                           GetDefaultJsOptimizerSetting(
+                               SecuritySettingsBundleSetting::STANDARD)));
+  html_source->AddInteger(
+      "securityEnhancedBundleJavascriptGuardrailsDefault",
+      static_cast<int>(content_settings::GeneratedJavascriptOptimizerPref::
+                           GetDefaultJsOptimizerSetting(
+                               SecuritySettingsBundleSetting::ENHANCED)));
 
   // TODO(http://crbug.com/458521865) Move remainder of
   // security-related-settings (not the strings) to this function.
