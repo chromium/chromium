@@ -15,8 +15,10 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -72,6 +74,18 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
   // Closing the bubble should reset the timestamp.
   tab_search_bubble_host()->CloseTabSearchBubble();
   EXPECT_FALSE(tab_search_bubble_host()->bubble_created_time_for_testing());
+  RunUntilBubbleWidgetDestroyed();
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
+                       TabSearchOpenedPrefUpdates) {
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  EXPECT_FALSE(prefs->GetBoolean(tab_search_prefs::kTabSearchOpened));
+
+  tab_search_bubble_host()->ShowTabSearchBubble();
+  EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchOpened));
+
+  tab_search_bubble_host()->CloseTabSearchBubble();
   RunUntilBubbleWidgetDestroyed();
 }
 

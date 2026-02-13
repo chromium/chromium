@@ -19,6 +19,8 @@ extern const char kTabSearchRecentlyClosedSectionExpanded[];
 
 extern const char kTabSearchTabIndex[];
 
+extern const char kTabSearchOpened[];
+
 extern const char kTabOrganizationFeature[];
 
 extern const char kTabOrganizationShowFRE[];

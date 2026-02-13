@@ -222,6 +222,8 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
             organization_feature));
   }
 
+  profile_->GetPrefs()->SetBoolean(tab_search_prefs::kTabSearchOpened, true);
+
   if (webui_bubble_manager_->GetBubbleWidget()) {
     return false;
   }

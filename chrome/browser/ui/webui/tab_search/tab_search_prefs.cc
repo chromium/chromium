@@ -21,6 +21,9 @@ const char kTabSearchRecentlyClosedSectionExpanded[] =
 // when shown.
 const char kTabSearchTabIndex[] = "tab_search.tab_index";
 
+// Boolean pref indicating whether the Tab Search bubble has been opened.
+const char kTabSearchOpened[] = "tab_search.opened";
+
 // Integer pref indicating which organization feature, if any, the Tab
 // Organization Selector should open to when shown.
 const char kTabOrganizationFeature[] = "tab_organization.feature";
@@ -41,6 +44,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       kTabSearchTabIndex,
       GetIntFromTabSearchSection(tab_search::mojom::TabSearchSection::kSearch));
+  registry->RegisterBooleanPref(kTabSearchOpened, false);
   registry->RegisterIntegerPref(
       kTabOrganizationFeature,
       GetIntFromTabOrganizationFeature(
