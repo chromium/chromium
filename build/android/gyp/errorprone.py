@@ -214,7 +214,6 @@ ERRORPRONE_WARNINGS_TO_ENABLE = [
     'UnnecessaryStaticImport',
     'UseBinds',
     'WildcardImport',
-    'NoStreams',
 ]
 
 

@@ -7,3 +7,20 @@ import("//build/config/android/rules.gni")
 java_prebuilt("error_prone_java") {
   jar_path = "cipd/error_prone_core.jar"
 }
+
+# We use //tools/android/errorprone_plugin when build_with_chromium.
+if (!build_with_chromium) {
+  java_binary("error_prone") {
+    # main_class and wrapper script are not actually used.
+    # This target is referenced directly from java_library_impl().
+    main_class = "<ignore>"
+    wrapper_script_name = "bin/helper/ignored_error_prone"
+
+    # GN adds nullaway.jar when nullaway is enabled, so add it as a
+    # build-time-only dep here.
+    input_jars_paths =
+        [ "//third_party/android_build_tools/nullaway/cipd/nullaway.jar" ]
+
+    deps = [ ":error_prone_java" ]
+  }
+}

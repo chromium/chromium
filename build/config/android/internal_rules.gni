@@ -3173,8 +3173,14 @@ if (enable_java_templates) {
       }
 
       if (invoker.enable_errorprone) {
-        # Our custom plugin pulls in the main errorprone dep transitively.
-        _errorprone_dep = "//tools/android/errorprone_plugin:errorprone_plugin"
+        if (build_with_chromium) {
+          # Pulls in the main errorprone dep transitively.
+          _errorprone_dep =
+              "//tools/android/errorprone_plugin:errorprone_plugin"
+        } else {
+          _errorprone_dep =
+              "//third_party/android_build_tools/error_prone:error_prone"
+        }
         deps += [ _errorprone_dep ]
         _dep_gen_dir = get_label_info(_errorprone_dep, "target_gen_dir")
         _dep_name = get_label_info(_errorprone_dep, "name")
@@ -3189,13 +3195,12 @@ if (enable_java_templates) {
         if (defined(invoker.min_sdk_version)) {
           args += [ "--xep-arg=-XepOpt:JdkObsolete:AndroidMinSdkVersion=${invoker.min_sdk_version}" ]
         }
-        inputs += [
-          _nullaway_jar,
-
+        inputs += [ _nullaway_jar ]
+        if (build_with_chromium) {
           # errorprone requires the plugin directory to detect src dir.
           # https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java;l=84;drc=dfd88085261b662a5c0a1abea1a3b120b08e8e48
-          "//tools/android/errorprone_plugin/OWNERS",
-        ]
+          inputs += [ "//tools/android/errorprone_plugin/OWNERS" ]
+        }
         if (defined(testonly) && testonly) {
           args += [ "--testonly" ]
         }
