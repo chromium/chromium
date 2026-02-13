@@ -34,6 +34,10 @@
 #include "ui/gfx/x/xlib_support.h"
 #endif
 
+#if BUILDFLAG(IS_POSIX)
+#include "base/files/file_descriptor_watcher_posix.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/functional/bind.h"
 #include "remoting/host/win/session_interaction_strategy.h"
@@ -84,6 +88,13 @@ int DesktopProcessMain() {
   scoped_refptr<AutoThreadTaskRunner> io_task_runner =
       AutoThread::CreateWithType("I/O thread", ui_task_runner,
                                  base::MessagePumpType::IO);
+
+#if BUILDFLAG(IS_POSIX)
+  // Allow the main thread (which is not an I/O thread) to use
+  // FileDescriptorWatcher. The constructor of FileDescriptorWatcher registers
+  // itself in a thread local storage.
+  base::FileDescriptorWatcher fd_watcher(io_task_runner->task_runner());
+#endif
 
   mojo::core::ScopedIPCSupport ipc_support(
       io_task_runner->task_runner(),
