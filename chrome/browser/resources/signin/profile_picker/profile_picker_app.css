@@ -77,6 +77,22 @@
   }
 }
 
+:host([app-mode_='regular-refreshed']) {
+  #banner-right,
+  #banner-left {
+    display: none;
+  }
+
+  background-image: url(profile_picker_light_background.svg);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+
+  @media (prefers-color-scheme: dark) {
+    background-image: url(profile_picker_dark_background.svg);
+  }
+}
+
+
 cr-view-manager {
   display: flex;
   font-size: 100%;

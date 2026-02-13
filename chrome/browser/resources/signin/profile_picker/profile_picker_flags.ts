@@ -29,3 +29,7 @@ export function isAskOnStartupAllowed(): boolean {
 export function isGlicVersion(): boolean {
   return loadTimeData.getBoolean('isGlicVersion');
 }
+
+export function isUseRefreshedUI(): boolean {
+  return loadTimeData.getBoolean('useRefreshedUI');
+}

@@ -15,6 +15,7 @@
 #include "base/thread_annotations.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -54,6 +55,7 @@ struct ProfilePickerTestParam {
   bool has_supervised_user = false;
   bool disallow_profile_creation = false;
   bool use_glic_version = false;
+  bool use_refreshed_ui = false;
   bool no_glic_eligible_profiles = false;
   bool is_enterprise_badging_enabled = false;
   bool is_profile_picker_first_run = true;
@@ -181,6 +183,14 @@ const ProfilePickerTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "SigninErrorCookiesNotAllowed",
                           .use_dark_theme = true},
      .signin_error_dialog_type = SigninUIError::Type::kSigninCookiesDisallowed},
+    /* Refreshed UI params (FirstRunDesktopRefresh) */
+    {.pixel_test_param = {.test_suffix = "RefreshedUI"},
+     .use_multiple_profiles = true,
+     .use_refreshed_ui = true},
+    {.pixel_test_param = {.test_suffix = "RefreshedUIDarkMode",
+                          .use_dark_theme = true},
+     .use_multiple_profiles = true,
+     .use_refreshed_ui = true},
 };
 
 enum class ProfileStatus {
@@ -292,6 +302,11 @@ class ProfilePickerUIPixelTest
     if (GetParam().open_all_profiles_experiment_enabled) {
       scoped_feature_list_.InitAndEnableFeature(
           switches::kOpenAllProfilesFromProfilePickerExperiment);
+    }
+
+    if (GetParam().use_refreshed_ui) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kFirstRunDesktopRefresh);
     }
   }
 

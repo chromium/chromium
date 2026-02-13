@@ -183,6 +183,10 @@ cr-checkbox {
     --profile-item-background: var(--google-grey-900);
   }
 
+  :host([is-refreshed-ui_]) {
+    --profile-item-background: var(--cr-fallback-color-surface5);
+  }
+
   .profile-item,
   #addProfile.profile-item {
     border-color: var(--google-grey-700);

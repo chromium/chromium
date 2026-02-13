@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -30,6 +31,7 @@ struct ProfileTypeChoiceTestParam {
   PixelTestParam pixel_test_param;
   bool decline_signin_cta_experiment_enabled = false;
   bool use_primary_and_tonal_buttons_for_promos = false;
+  bool use_refreshed_ui = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -45,6 +47,11 @@ const ProfileTypeChoiceTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"}},
     {.pixel_test_param = {.test_suffix = "RegularUsePrimaryAndTonalButtons"},
      .use_primary_and_tonal_buttons_for_promos = true},
+    {.pixel_test_param = {.test_suffix = "RegularRefreshedUI"},
+     .use_refreshed_ui = true},
+    {.pixel_test_param = {.test_suffix = "RegularRefreshedUIDarkMode",
+                          .use_dark_theme = true},
+     .use_refreshed_ui = true},
     {.pixel_test_param = {.test_suffix = "DarkRtlSmall",
                           .use_dark_theme = true,
                           .use_right_to_left_language = true,
@@ -75,7 +82,8 @@ class ProfileTypeChoiceUIPixelTest
         {{switches::kProfileCreationDeclineSigninCTAExperiment,
           GetParam().decline_signin_cta_experiment_enabled},
          {switches::kUsePrimaryAndTonalButtonsForPromos,
-          GetParam().use_primary_and_tonal_buttons_for_promos}});
+          GetParam().use_primary_and_tonal_buttons_for_promos},
+         {features::kFirstRunDesktopRefresh, GetParam().use_refreshed_ui}});
   }
 
   void ShowUi(const std::string& name) override {

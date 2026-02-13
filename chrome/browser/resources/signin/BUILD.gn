@@ -12,8 +12,11 @@ build_webui("build") {
   grd_prefix = "signin"
 
   static_files = [
-    # The shared images are used on the first run experience, sync confirmation
-    # and the profile picker.
+    "images/profile_picker_dark_background.svg",
+    "images/profile_picker_light_background.svg",
+
+    # The shared images are used on the first run experience, sync confirmation,
+    # DSE screen, history opt-in and the profile picker.
     "images/shared_dialog_illustration.svg",
     "images/shared_dialog_illustration_dark.svg",
     "images/shared_left_banner.svg",

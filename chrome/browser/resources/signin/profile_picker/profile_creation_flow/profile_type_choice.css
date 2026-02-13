@@ -22,6 +22,18 @@
   flex-direction: column;
 }
 
+:host([is-refreshed-ui_]) #actionContainer {
+  <if expr="is_win">
+  flex-direction: row;
+  </if>
+  <if expr="not is_win">
+  flex-direction: row-reverse;
+  </if>
+  justify-content: center;
+  gap: 8px;
+  padding-bottom: 24px;
+}
+
 #avatarContainer {
   bottom: calc(var(--avatar-size) / -2);
   height: calc(var(--avatar-size) + 4px);
@@ -71,6 +83,11 @@
   width: 100%;
 }
 
+:host([is-refreshed-ui_]) #infoContainer {
+  margin: 24px 0 0 0;
+  position: relative;
+}
+
 .info-box {
   align-items: center;
   border: 1px solid var(--google-grey-200);
@@ -82,6 +99,10 @@
   max-width: 780px;
   padding-block: 12px;
   padding-inline-end: 18px;
+}
+
+:host([is-refreshed-ui_]) .info-box {
+  border-radius: 24px;
 }
 
 .info-box > p {
@@ -114,8 +135,16 @@ cr-button {
   min-width: 210px;
 }
 
+:host([is-refreshed-ui_]) cr-button {
+  min-width: 110px;
+}
+
 #notNowButton {
   margin-top: 18px;
+}
+
+:host([is-refreshed-ui_]) #notNowButton {
+  margin-top: 0;
 }
 
 .title-container {
@@ -123,11 +152,19 @@ cr-button {
   text-align: center;
 }
 
+:host([is-refreshed-ui_]) .title-container {
+  margin-bottom: 24px;
+}
+
 .title {
   font-size: 2.25rem;
   font-weight: 500;
   line-height: 43px;
   margin-bottom: 16px;
+}
+
+:host([is-refreshed-ui_]) .title {
+  margin-bottom: 24px;
 }
 
 .subtitle {

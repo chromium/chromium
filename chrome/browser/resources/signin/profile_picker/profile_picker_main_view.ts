@@ -29,7 +29,7 @@ import {DragDropReorderTileListDelegate} from './drag_drop_reorder_tile_list_del
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
 import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
 import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
-import {isAskOnStartupAllowed, isGlicVersion, isProfileCreationAllowed} from './profile_picker_flags.js';
+import {isAskOnStartupAllowed, isGlicVersion, isProfileCreationAllowed, isUseRefreshedUI} from './profile_picker_flags.js';
 import {getCss} from './profile_picker_main_view.css.js';
 import {getHtml} from './profile_picker_main_view.html.js';
 import type {SigninErrorDialogElement} from './signin_error_dialog.js';
@@ -81,6 +81,8 @@ export class ProfilePickerMainViewElement extends
       isGlic_: {type: Boolean, reflect: true},
       // Exposed to CSS as 'is-open-all-profiles-button-experiment-enabled_'.
       isOpenAllProfilesButtonExperimentEnabled_: {type: Boolean, reflect: true},
+      // Exposed to CSS as 'is-refreshed-ui_'.
+      isRefreshedUI_: {type: Boolean, reflect: true},
     };
   }
 
@@ -112,6 +114,7 @@ export class ProfilePickerMainViewElement extends
       loadTimeData.getInteger('maxProfilesCountToShowOpenAllProfilesButton');
   protected accessor shouldShowOpenAllProfilesButton_: boolean = false;
 
+  protected accessor isRefreshedUI_: boolean = isUseRefreshedUI();
   private showProfilePickerToAllUsersExperiment_: boolean =
       loadTimeData.getBoolean('showProfilePickerToAllUsersExperiment');
   private isProfilePickerTextVariationsEnabled_: boolean =

@@ -22,7 +22,7 @@ import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js
 import {navigateTo, NavigationMixin, ProfileCreationSteps, Routes} from './navigation_mixin.js';
 import {getCss} from './profile_picker_app.css.js';
 import {getHtml} from './profile_picker_app.html.js';
-import {isForceSigninEnabled, isGlicVersion, isProfileCreationAllowed} from './profile_picker_flags.js';
+import {isForceSigninEnabled, isGlicVersion, isProfileCreationAllowed, isUseRefreshedUI} from './profile_picker_flags.js';
 
 export interface ProfilePickerAppElement {
   $: {
@@ -37,6 +37,7 @@ const ProfilePickerAppElementBase =
 // styling, where the string literals are used for attributes matching.
 enum AppMode {
   REGULAR = 'regular',
+  REGULAR_REFRESHED = 'regular-refreshed',
   NO_BANNER = 'no-banner',
   GLIC = 'glic',
 }
@@ -89,7 +90,7 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
   private currentRoute_: Routes|null = null;
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
-  protected accessor appMode_: AppMode = AppMode.REGULAR;
+  protected accessor appMode_: AppMode = this.computeRegularAppMode_();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -155,11 +156,16 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
     }
   }
 
+  private computeRegularAppMode_(): AppMode {
+    return isUseRefreshedUI() ? AppMode.REGULAR_REFRESHED : AppMode.REGULAR;
+  }
+
   private updateAppMode_(step: string) {
     if (this.currentRoute_ === Routes.MAIN ||
         (this.currentRoute_ === Routes.NEW_PROFILE &&
          step === ProfileCreationSteps.PROFILE_TYPE_CHOICE)) {
-      this.appMode_ = isGlicVersion() ? AppMode.GLIC : AppMode.REGULAR;
+      this.appMode_ =
+          isGlicVersion() ? AppMode.GLIC : this.computeRegularAppMode_();
     } else {
       assert(!isGlicVersion(), 'Only `Routes.MAIN` supports Glic version');
       this.appMode_ = AppMode.NO_BANNER;
