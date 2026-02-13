@@ -2250,6 +2250,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SimpleSkill& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::GeminiThreadSpecifics& proto) {
   VISIT(conversation_id);
   VISIT(title);
+  VISIT(last_turn_time_unix_epoch_millis);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AiThreadSpecifics& proto) {

@@ -401,12 +401,15 @@ TEST(ProtoValueConversionsTest, GeminiThreadSpecificsToValue) {
   sync_pb::GeminiThreadSpecifics gemini_specifics;
   gemini_specifics.set_conversation_id("my_id");
   gemini_specifics.set_title("my_title");
+  gemini_specifics.set_last_turn_time_unix_epoch_millis(1770989828);
 
   base::DictValue value =
       GeminiThreadSpecificsToValue(gemini_specifics).TakeDict();
   EXPECT_FALSE(value.empty());
   EXPECT_THAT(value.FindString("conversation_id"), Pointee(Eq("my_id")));
   EXPECT_THAT(value.FindString("title"), Pointee(Eq("my_title")));
+  EXPECT_THAT(value.FindString("last_turn_time_unix_epoch_millis"),
+              Pointee(Eq("1770989828")));
 }
 
 TEST(ProtoValueConversionsTest, ThemeSpecificsIosToValue) {

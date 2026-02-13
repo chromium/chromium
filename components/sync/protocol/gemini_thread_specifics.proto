@@ -20,4 +20,7 @@ message GeminiThreadSpecifics {
 
   // The title of the chat.
   optional string title = 2;
+
+  // Tracks the time the most recent turn in the thread was created.
+  optional int64 last_turn_time_unix_epoch_millis = 3;
 }
