@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/containers/linked_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
@@ -33,36 +34,45 @@ namespace net {
 //       through the following steps.
 //
 class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
+ private:
+  // Needs to be declared here for use in LockEndpoint.
+  struct LockInfo;
+
  public:
-  // Implement this interface to wait for an endpoint to be available.
-  class NET_EXPORT_PRIVATE Waiter : public base::LinkNode<Waiter> {
+  // Single-use class that is be used to wait until an endpoint is available
+  // without blocking, at which point it will obtain the lock to the endpoint
+  // and inform the caller. On destruction, EndpointLock will call
+  // UnlockEndpoint(), but only if it has both obtained a lock and that lock has
+  // not already been released. Only one EndpointLock object may have a lock for
+  // any endpoint at a time. It is safe to destroy an EndpointLock at any time,
+  // including before it has a lock.
+  class NET_EXPORT_PRIVATE EndpointLock final
+      : public base::LinkNode<EndpointLock> {
    public:
-    // If the node is in a list, removes it.
-    virtual ~Waiter();
+    EndpointLock(WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
+                 const IPEndPoint& endpoint);
 
-    virtual void GotEndpointLock() = 0;
-  };
+    EndpointLock(const EndpointLock&) = delete;
+    EndpointLock& operator=(const EndpointLock&) = delete;
 
-  // LockReleaser calls UnlockEndpoint() when it is destroyed, but only if it
-  // has not already been called. Only one LockReleaser object may exist for
-  // each endpoint at a time.
-  class NET_EXPORT_PRIVATE LockReleaser final {
-   public:
-    LockReleaser(WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
-                 IPEndPoint endpoint);
+    ~EndpointLock();
 
-    LockReleaser(const LockReleaser&) = delete;
-    LockReleaser& operator=(const LockReleaser&) = delete;
-
-    ~LockReleaser();
+    int LockEndpoint(base::OnceClosure lock_callback);
 
    private:
     friend class WebSocketEndpointLockManager;
 
-    // This is null if UnlockEndpoint() has been called before this object was
-    // destroyed.
+    void GotEndpointLock();
+
     raw_ptr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager_;
     const IPEndPoint endpoint_;
+
+    base::OnceClosure lock_callback_;
+    // The LockInfo when this class holds the lock. If non-null,
+    // `lock_info_->endpoint_lock` must be `this`.
+    //
+    // May only be modified SetLock() / ClearLock().
+    raw_ptr<LockInfo> lock_info_;
   };
 
   WebSocketEndpointLockManager();
@@ -73,14 +83,8 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
 
   ~WebSocketEndpointLockManager();
 
-  // Returns OK if lock was acquired immediately, ERR_IO_PENDING if not. If the
-  // lock was not acquired, then |waiter->GotEndpointLock()| will be called when
-  // it is. A Waiter automatically removes itself from the list of waiters when
-  // its destructor is called.
-  int LockEndpoint(const IPEndPoint& endpoint, Waiter* waiter);
-
   // Asynchronously releases the lock on |endpoint| after a delay. Does nothing
-  // if |endpoint| is not locked. If a LockReleaser object has been created for
+  // if |endpoint| is not locked. If an EndpointLock object has been created for
   // this endpoint, it will be unregistered.
   void UnlockEndpoint(const IPEndPoint& endpoint);
 
@@ -93,7 +97,7 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
 
  private:
   struct LockInfo {
-    typedef base::LinkedList<Waiter> WaiterQueue;
+    typedef base::LinkedList<EndpointLock> WaiterQueue;
 
     LockInfo();
     ~LockInfo();
@@ -110,9 +114,12 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
     // until this object is deleted.
     std::unique_ptr<WaiterQueue> queue;
 
-    // This pointer is non-NULL if a LockReleaser object has been constructed
-    // since the last call to UnlockEndpoint().
-    raw_ptr<LockReleaser> lock_releaser;
+    // This pointer is non-NULL if an EndpointLock object has been constructed
+    // since the last call to UnlockEndpoint().  If non-null,
+    // `endpoint_lock->lock_info_` must be `this`.
+    //
+    // May only be modified SetLock() / ClearLock().
+    raw_ptr<EndpointLock> endpoint_lock;
   };
 
   // SocketLockInfoMap requires std::map iterator semantics for LockInfoMap
@@ -120,10 +127,32 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
   // deleted).
   typedef std::map<IPEndPoint, LockInfo> LockInfoMap;
 
-  // Records the association of a LockReleaser with a particular endpoint.
-  void RegisterLockReleaser(LockReleaser* lock_releaser, IPEndPoint endpoint);
+  // Returns OK if lock was acquired immediately, ERR_IO_PENDING if not. If the
+  // lock was not acquired, then `endpoint_lock->GotEndpointLock()` will be
+  // called when it is. An EndpointLock automatically removes itself from the
+  // list of waiters when its destructor is called.
+  int LockEndpoint(const IPEndPoint& endpoint, EndpointLock* endpoint_lock);
+
+  // Asynchronously releases the lock represented by `lock_info` after a delay.
+  // If an EndpointLock object has been created for this endpoint, it will be
+  // unregistered.
+  //
+  // Separate function from UnlockEndpoint so ~EndpointLock() can unlock an
+  // endpoint without a search.
+  void UnlockEndpointInternal(const IPEndPoint& endpoint, LockInfo& lock_info);
+
+  // Records the association of an EndpointLock with a particular endpoint.
   void UnlockEndpointAfterDelay(const IPEndPoint& endpoint);
   void DelayedUnlockEndpoint(const IPEndPoint& endpoint);
+
+  // Set/Clear the pointers in `lock_info` and `endpoint_lock` to point at
+  // each other, when a lock is held/released. These are bookkeeping helper
+  // functions. Once SetLock() is called, ClearLock() must be called before
+  // SetLock() is called again on the same LockInfo. SetLock() take pointers
+  // rather than refs because SetLock() sets both objects to point at each
+  // other.
+  void SetLock(LockInfo* lock_info, EndpointLock* endpoint_lock);
+  void ClearLock(LockInfo& lock_info);
 
   // If an entry is present in the map for a particular endpoint, then that
   // endpoint is locked. If LockInfo.queue is non-empty, then one or more

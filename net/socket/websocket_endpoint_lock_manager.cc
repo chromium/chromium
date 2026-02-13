@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -24,25 +25,41 @@ const int kUnlockDelayInMs = 10;
 
 }  // namespace
 
-WebSocketEndpointLockManager::Waiter::~Waiter() {
+WebSocketEndpointLockManager::EndpointLock::EndpointLock(
+    WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
+    const IPEndPoint& endpoint)
+    : websocket_endpoint_lock_manager_(websocket_endpoint_lock_manager),
+      endpoint_(endpoint) {}
+
+WebSocketEndpointLockManager::EndpointLock::~EndpointLock() {
   if (next()) {
+    // If in queue, remove `this`.
     DCHECK(previous());
     RemoveFromList();
   }
-}
-
-WebSocketEndpointLockManager::LockReleaser::LockReleaser(
-    WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
-    IPEndPoint endpoint)
-    : websocket_endpoint_lock_manager_(websocket_endpoint_lock_manager),
-      endpoint_(endpoint) {
-  websocket_endpoint_lock_manager->RegisterLockReleaser(this, endpoint);
-}
-
-WebSocketEndpointLockManager::LockReleaser::~LockReleaser() {
-  if (websocket_endpoint_lock_manager_) {
-    websocket_endpoint_lock_manager_->UnlockEndpoint(endpoint_);
+  // Release lock if held.
+  if (lock_info_) {
+    websocket_endpoint_lock_manager_->UnlockEndpointInternal(endpoint_,
+                                                             *lock_info_);
   }
+}
+
+int WebSocketEndpointLockManager::EndpointLock::LockEndpoint(
+    base::OnceClosure lock_callback) {
+  DCHECK(!lock_callback_);
+  DCHECK(lock_callback);
+
+  int result = websocket_endpoint_lock_manager_->LockEndpoint(endpoint_, this);
+  if (result == ERR_IO_PENDING) {
+    lock_callback_ = std::move(lock_callback);
+  }
+  return result;
+}
+
+void WebSocketEndpointLockManager::EndpointLock::GotEndpointLock() {
+  DCHECK(lock_callback_);
+
+  std::move(lock_callback_).Run();
 }
 
 WebSocketEndpointLockManager::WebSocketEndpointLockManager()
@@ -52,32 +69,14 @@ WebSocketEndpointLockManager::~WebSocketEndpointLockManager() {
   DCHECK_EQ(lock_info_map_.size(), pending_unlock_count_);
 }
 
-int WebSocketEndpointLockManager::LockEndpoint(const IPEndPoint& endpoint,
-                                               Waiter* waiter) {
-  LockInfoMap::value_type insert_value(endpoint, LockInfo());
-  std::pair<LockInfoMap::iterator, bool> rv =
-      lock_info_map_.insert(insert_value);
-  LockInfo& lock_info_in_map = rv.first->second;
-  if (rv.second) {
-    DVLOG(3) << "Locking endpoint " << endpoint.ToString();
-    lock_info_in_map.queue = std::make_unique<LockInfo::WaiterQueue>();
-    return OK;
-  }
-  DVLOG(3) << "Waiting for endpoint " << endpoint.ToString();
-  lock_info_in_map.queue->Append(waiter);
-  return ERR_IO_PENDING;
-}
-
 void WebSocketEndpointLockManager::UnlockEndpoint(const IPEndPoint& endpoint) {
   auto lock_info_it = lock_info_map_.find(endpoint);
-  if (lock_info_it == lock_info_map_.end())
+  // Nothing to do if the lock is not held. This is not an error.
+  if (lock_info_it == lock_info_map_.end()) {
     return;
-  LockReleaser* lock_releaser = lock_info_it->second.lock_releaser;
-  if (lock_releaser) {
-    lock_info_it->second.lock_releaser = nullptr;
-    lock_releaser->websocket_endpoint_lock_manager_ = nullptr;
   }
-  UnlockEndpointAfterDelay(endpoint);
+
+  UnlockEndpointInternal(endpoint, lock_info_it->second);
 }
 
 bool WebSocketEndpointLockManager::IsEmpty() const {
@@ -91,26 +90,39 @@ base::TimeDelta WebSocketEndpointLockManager::SetUnlockDelayForTesting(
   return old_delay;
 }
 
-WebSocketEndpointLockManager::LockInfo::LockInfo() : lock_releaser(nullptr) {}
+WebSocketEndpointLockManager::LockInfo::LockInfo() = default;
 WebSocketEndpointLockManager::LockInfo::~LockInfo() {
-  DCHECK(!lock_releaser);
+  DCHECK(!endpoint_lock);
 }
 
 WebSocketEndpointLockManager::LockInfo::LockInfo(const LockInfo& rhs)
-    : lock_releaser(rhs.lock_releaser) {
+    : endpoint_lock(rhs.endpoint_lock) {
   DCHECK(!rhs.queue);
 }
 
-void WebSocketEndpointLockManager::RegisterLockReleaser(
-    LockReleaser* lock_releaser,
-    IPEndPoint endpoint) {
-  DCHECK(lock_releaser);
-  auto lock_info_it = lock_info_map_.find(endpoint);
-  CHECK(lock_info_it != lock_info_map_.end());
-  DCHECK(!lock_info_it->second.lock_releaser);
-  lock_info_it->second.lock_releaser = lock_releaser;
-  DVLOG(3) << "Registered (LockReleaser*)" << lock_releaser << " for "
-           << endpoint.ToString();
+int WebSocketEndpointLockManager::LockEndpoint(const IPEndPoint& endpoint,
+                                               EndpointLock* endpoint_lock) {
+  LockInfoMap::value_type insert_value(endpoint, LockInfo());
+  std::pair<LockInfoMap::iterator, bool> rv =
+      lock_info_map_.insert(insert_value);
+  LockInfo& lock_info_in_map = rv.first->second;
+  if (rv.second) {
+    DVLOG(3) << "Locking endpoint " << endpoint.ToString();
+    lock_info_in_map.queue = std::make_unique<LockInfo::WaiterQueue>();
+    // The endpoint is now locked by `endpoint_lock`.
+    SetLock(&lock_info_in_map, endpoint_lock);
+    return OK;
+  }
+  DVLOG(3) << "Waiting for endpoint " << endpoint.ToString();
+  lock_info_in_map.queue->Append(endpoint_lock);
+  return ERR_IO_PENDING;
+}
+
+void WebSocketEndpointLockManager::UnlockEndpointInternal(
+    const IPEndPoint& endpoint,
+    LockInfo& lock_info) {
+  ClearLock(lock_info);
+  UnlockEndpointAfterDelay(endpoint);
 }
 
 void WebSocketEndpointLockManager::UnlockEndpointAfterDelay(
@@ -132,7 +144,7 @@ void WebSocketEndpointLockManager::DelayedUnlockEndpoint(
   --pending_unlock_count_;
   if (lock_info_it == lock_info_map_.end())
     return;
-  DCHECK(!lock_info_it->second.lock_releaser);
+  DCHECK(!lock_info_it->second.endpoint_lock);
   LockInfo::WaiterQueue* queue = lock_info_it->second.queue.get();
   DCHECK(queue);
   if (queue->empty()) {
@@ -143,9 +155,28 @@ void WebSocketEndpointLockManager::DelayedUnlockEndpoint(
 
   DVLOG(3) << "Unlocking endpoint " << lock_info_it->first.ToString()
            << " and activating next waiter";
-  Waiter* next_job = queue->head()->value();
-  next_job->RemoveFromList();
-  next_job->GotEndpointLock();
+  EndpointLock* endpoint_lock = queue->head()->value();
+  // The endpoint is now locked by `endpoint_lock`.
+  SetLock(&lock_info_it->second, endpoint_lock);
+  endpoint_lock->RemoveFromList();
+  endpoint_lock->GotEndpointLock();
+}
+
+void WebSocketEndpointLockManager::SetLock(LockInfo* lock_info,
+                                           EndpointLock* endpoint_lock) {
+  DCHECK(endpoint_lock);
+  DCHECK(!lock_info->endpoint_lock);
+  DCHECK(!endpoint_lock->lock_info_);
+
+  lock_info->endpoint_lock = endpoint_lock;
+  endpoint_lock->lock_info_ = lock_info;
+}
+
+void WebSocketEndpointLockManager::ClearLock(LockInfo& lock_info) {
+  DCHECK(!lock_info.endpoint_lock ||
+         &lock_info == lock_info.endpoint_lock->lock_info_);
+  lock_info.endpoint_lock->lock_info_ = nullptr;
+  lock_info.endpoint_lock = nullptr;
 }
 
 }  // namespace net

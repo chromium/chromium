@@ -26,7 +26,7 @@ class StreamSocket;
 // TransportConnectJob, specifically either the IPv4 or IPv6 addresses. Each
 // address is tried in turn, and parent_job->OnSubJobComplete() is called when
 // the first address succeeds or the last address fails.
-class TransportConnectSubJob : public WebSocketEndpointLockManager::Waiter {
+class TransportConnectSubJob {
  public:
   using SubJobType = TransportConnectJob::SubJobType;
 
@@ -37,7 +37,7 @@ class TransportConnectSubJob : public WebSocketEndpointLockManager::Waiter {
   TransportConnectSubJob(const TransportConnectSubJob&) = delete;
   TransportConnectSubJob& operator=(const TransportConnectSubJob&) = delete;
 
-  ~TransportConnectSubJob() override;
+  ~TransportConnectSubJob();
 
   // Start connecting.
   int Start();
@@ -51,9 +51,6 @@ class TransportConnectSubJob : public WebSocketEndpointLockManager::Waiter {
   std::unique_ptr<StreamSocket> PassSocket() {
     return std::move(transport_socket_);
   }
-
-  // Implementation of WebSocketEndpointLockManager::EndpointWaiter.
-  void GotEndpointLock() override;
 
  private:
   enum State {
@@ -79,6 +76,10 @@ class TransportConnectSubJob : public WebSocketEndpointLockManager::Waiter {
 
   State next_state_ = STATE_NONE;
   const SubJobType type_;
+
+  // TODO(crbug.com/483395706): Move managing this into the socket class, and
+  // get rid of the unique_ptr.
+  std::unique_ptr<WebSocketEndpointLockManager::EndpointLock> endpoint_lock_;
 
   std::unique_ptr<StreamSocket> transport_socket_;
 };
