@@ -4446,6 +4446,19 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+const FeatureEntry::FeatureParam kProjectsPanelWithoutThreadsVariation[] = {
+    {"include_threads_in_projects_panel", "false"}};
+const FeatureEntry::FeatureParam kProjectsPanelWithThreadsVariation[] = {
+    {"include_threads_in_projects_panel", "true"}};
+
+const FeatureEntry::FeatureVariation kProjectsPanelVariations[] = {
+    {"without threads", kProjectsPanelWithoutThreadsVariation, nullptr},
+    {"with threads", kProjectsPanelWithThreadsVariation, nullptr}};
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+        // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kSeamlessSigninTwoButtonsContinue[] = {
     {"seamless-signin-promo-type", "twoButtons"},
@@ -12423,6 +12436,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProfileSignalsReportingEnabledDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          enterprise_signals::features::kProfileSignalsReportingEnabled)},
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"projects-panel", flag_descriptions::kProjectsPanelName,
+     flag_descriptions::kProjectsPanelDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(tabs::kProjectsPanel,
+                                    kProjectsPanelVariations,
+                                    "ProjectsPanel")},
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-keyboard-accessory-chip-width-adjustment",
