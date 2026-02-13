@@ -1072,6 +1072,10 @@ void ProcessManager::StopTrackingServiceWorkerRunningInstance(
 void ProcessManager::StopTrackingServiceWorkerRunningInstance(
     const ExtensionId& extension_id,
     int64_t worker_version_id) {
+  // NOTE: Multiple notifications can try to remove a worker when the worker
+  // stops (DidStopServiceWorkerContext(), ProcessManager::RenderProcessExit(),
+  // or extension uninstall/disable).
+
   // We need the specific version because an extension could be
   // re-activated before StopTrackingServiceWorkerRunningInstance() is called.
   // In that case we might try to stop tracking the new version instance of the
@@ -1080,23 +1084,11 @@ void ProcessManager::StopTrackingServiceWorkerRunningInstance(
       all_running_extension_workers_.GetAllForExtension(extension_id,
                                                         worker_version_id);
 
-  if (worker_ids_for_extension.empty()) {
-    // Multiple notifications can try to remove a worker when the worker
-    // stops (DidStopServiceWorkerContext(),
-    // ProcessManager::RenderProcessExit(), or extension uninstall/disable).
-    return;
-  }
-
   // TODO(crbug.com/40936639): After the fix releases there should only be one
-  // worker instance tracked for each extension at any time. If there is still
-  // more than one then do not delete it so we will count it and know about it.
-  // Confirm more thoroughly with DUMP_WILL_BE_CHECK() if metrics look
-  // promising.
-  if (worker_ids_for_extension.size() > 1u) {
-    return;
+  // worker instance tracked for each extension at any time.
+  for (const WorkerId& worker_id : worker_ids_for_extension) {
+    StopTrackingServiceWorkerRunningInstance(worker_id);
   }
-
-  StopTrackingServiceWorkerRunningInstance(worker_ids_for_extension[0]);
 }
 
 bool ProcessManager::HasServiceWorker(const WorkerId& worker_id) const {
