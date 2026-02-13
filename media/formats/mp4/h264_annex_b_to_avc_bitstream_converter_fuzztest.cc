@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "media/formats/mp4/h264_annex_b_to_avc_bitstream_converter.h"
 
 // Entry point for LibFuzzer.
@@ -24,7 +20,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     bool config_changed;
     media::H264AnnexBToAvcBitstreamConverter converter(
         add_parameter_sets_in_bitstream);
-    base::span<const uint8_t> input(data, data + size);
+    base::span<const uint8_t> input =
+        UNSAFE_TODO(base::span<const uint8_t>(data, data + size));
 
     auto status =
         converter.ConvertChunk(input, output, &config_changed, &size_out);

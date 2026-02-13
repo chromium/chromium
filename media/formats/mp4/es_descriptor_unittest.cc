@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/es_descriptor.h"
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -24,7 +20,7 @@ TEST(ESDescriptorTest, SingleByteLengthTest) {
                       0x00, 0x00, 0x05, 0x02, 0x12, 0x10, 0x06, 0x01, 0x02};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
 
   EXPECT_EQ(es_desc.object_type(), kForbidden);
   EXPECT_TRUE(es_desc.Parse(data));
@@ -41,7 +37,7 @@ TEST(ESDescriptorTest, NonAACTest) {
                       0x00, 0x00, 0x05, 0x02, 0x12, 0x10, 0x06, 0x01, 0x02};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
 
   EXPECT_TRUE(es_desc.Parse(data));
   EXPECT_NE(es_desc.object_type(), kISO_14496_3);
@@ -58,7 +54,7 @@ TEST(ESDescriptorTest, MultiByteLengthTest) {
                       0x02, 0x12, 0x10, 0x06, 0x01, 0x02};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
 
   EXPECT_TRUE(es_desc.Parse(data));
   EXPECT_EQ(es_desc.object_type(), kISO_14496_3);
@@ -75,7 +71,7 @@ TEST(ESDescriptorTest, FiveByteLengthTest) {
                       0x80, 0x02, 0x12, 0x10, 0x06, 0x01, 0x02};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
 
   EXPECT_TRUE(es_desc.Parse(data));
   EXPECT_EQ(es_desc.object_type(), kISO_14496_3);

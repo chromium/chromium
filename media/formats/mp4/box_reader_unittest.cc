@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/box_reader.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "media/base/mock_media_log.h"
@@ -94,7 +90,8 @@ class BoxReaderTest : public testing::Test {
 
  protected:
   std::vector<uint8_t> GetBuf() {
-    return std::vector<uint8_t>(kSkipBox, kSkipBox + sizeof(kSkipBox));
+    return std::vector<uint8_t>(kSkipBox,
+                                UNSAFE_TODO(kSkipBox + sizeof(kSkipBox)));
   }
 
   void TestTopLevelBox(base::span<const uint8_t> data, uint32_t fourCC) {

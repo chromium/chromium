@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "media/formats/mp4/aac.h"
 
 #include <stdint.h>
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "media/base/mock_media_log.h"
-#include "media/formats/mp4/aac.h"
 #include "media/formats/mpeg/adts_constants.h"
 #include "media/formats/mpeg/adts_stream_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -64,7 +61,7 @@ TEST_F(AACTest, BasicProfileTest) {
   uint8_t buffer[] = {0x12, 0x10};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
 
   EXPECT_TRUE(Parse(data));
   EXPECT_EQ(aac_.GetOutputSamplesPerSecond(false), 44100);
@@ -76,7 +73,7 @@ TEST_F(AACTest, ExtensionTest) {
   uint8_t buffer[] = {0x13, 0x08, 0x56, 0xe5, 0x9d, 0x48, 0x80};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
 
   EXPECT_TRUE(Parse(data));
   EXPECT_EQ(aac_.GetOutputSamplesPerSecond(false), 48000);
@@ -93,7 +90,7 @@ TEST_F(AACTest, ImplicitSBR_ChannelConfig0) {
   uint8_t buffer[] = {0x13, 0x08};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
 
   EXPECT_TRUE(Parse(data));
 
@@ -113,7 +110,7 @@ TEST_F(AACTest, ImplicitSBR_ChannelConfig1) {
   uint8_t buffer[] = {0x13, 0x10};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
 
   EXPECT_TRUE(Parse(data));
 
@@ -132,7 +129,7 @@ TEST_F(AACTest, SixChannelTest) {
   uint8_t buffer[] = {0x11, 0xb0};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
 
   EXPECT_TRUE(Parse(data));
   EXPECT_EQ(aac_.GetOutputSamplesPerSecond(false), 48000);
@@ -154,7 +151,7 @@ TEST_F(AACTest, IncorrectProfileTest) {
   uint8_t buffer[] = {0x0, 0x08};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
   EXPECT_MEDIA_LOG(UnsupportedAudioProfileLog("mp4a.40.0"));
   EXPECT_FALSE(Parse(data));
 
@@ -172,7 +169,7 @@ TEST_F(AACTest, IncorrectFrequencyTest) {
   uint8_t buffer[] = {0x0f, 0x88};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
   EXPECT_FALSE(Parse(data));
 
   data[0] = 0x0e;
@@ -184,7 +181,7 @@ TEST_F(AACTest, IncorrectChannelTest) {
   uint8_t buffer[] = {0x0e, 0x00};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
   EXPECT_FALSE(Parse(data));
 
   data[1] = 0x08;
@@ -196,7 +193,7 @@ TEST_F(AACTest, UnsupportedProfileTest) {
   uint8_t buffer[] = {0x3a, 0x08};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
   EXPECT_MEDIA_LOG(UnsupportedAudioProfileLog("mp4a.40.7"));
   EXPECT_FALSE(Parse(data));
 
@@ -210,7 +207,7 @@ TEST_F(AACTest, UnsupportedChannelLayoutTest) {
   uint8_t buffer[] = {0x12, 0x78};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
   EXPECT_MEDIA_LOG(UnsupportedChannelConfigLog("15"));
   EXPECT_FALSE(Parse(data));
 
@@ -223,7 +220,7 @@ TEST_F(AACTest, UnsupportedFrequencyIndexTest) {
   uint8_t buffer[] = {0x17, 0x10};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
   EXPECT_MEDIA_LOG(UnsupportedFrequencyIndexLog("e"));
   EXPECT_FALSE(Parse(data));
 
@@ -236,7 +233,7 @@ TEST_F(AACTest, UnsupportedExFrequencyIndexTest) {
   uint8_t buffer[] = {0x29, 0x17, 0x08, 0x0};
   std::vector<uint8_t> data;
 
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
   EXPECT_MEDIA_LOG(UnsupportedExtensionFrequencyIndexLog("e"));
   EXPECT_FALSE(Parse(data));
 
@@ -250,7 +247,7 @@ TEST_F(AACTest, XHE_AAC) {
                       0x85, 0xa0, 0x01, 0x13, 0x84, 0x00, 0x20, 0x00,
                       0x02, 0x50, 0x01, 0x19, 0x72, 0xc0, 0x00};
   std::vector<uint8_t> data;
-  data.assign(buffer, buffer + sizeof(buffer));
+  data.assign(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
 
   EXPECT_TRUE(Parse(data));
   EXPECT_EQ(aac_.GetOutputSamplesPerSecond(false), 48000);
@@ -270,7 +267,7 @@ TEST_F(AACTest, XHE_AAC) {
 TEST_F(AACTest, CreateAdtsFromEsds) {
   // Prime `aac_` with a codec description.
   uint8_t buffer[] = {0x12, 0x10};
-  std::vector<uint8_t> codec_desc(buffer, buffer + sizeof(buffer));
+  std::vector<uint8_t> codec_desc(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
   EXPECT_TRUE(Parse(codec_desc));
 
   uint8_t packet[] = {0x00, 0x01, 0x03, 0x04};
@@ -315,7 +312,7 @@ TEST_F(AACTest, FitsInAdts_ExplicitFrequencyReturnsFalse) {
   // Channel Configuration = 2 (Stereo) -> 4 bits: 0010
   // Combined: 00010111 10000000 00101011 00010001 00010000
   uint8_t buffer[] = {0x17, 0x80, 0x2b, 0x11, 0x10};
-  std::vector<uint8_t> data(buffer, buffer + sizeof(buffer));
+  std::vector<uint8_t> data(buffer, UNSAFE_TODO(buffer + sizeof(buffer)));
 
   EXPECT_TRUE(Parse(data));
   EXPECT_FALSE(aac_.fits_in_adts());
