@@ -7,10 +7,8 @@ package org.chromium.chrome.browser.permissions;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -19,8 +17,6 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +27,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
@@ -42,16 +37,13 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentSwitches;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -72,15 +64,9 @@ public class PermissionClapperQuietTest {
     @Rule public PermissionTestRule mPermissionRule = new PermissionTestRule();
 
     private static final String PAGE_URL = "/content/test/data/android/permission_navigation.html";
-    private static final String PREF_ENABLE_QUIET_NOTIFICATION_PERMISSION_UI =
-            "profile.content_settings.enable_quiet_permission_ui.notifications";
 
-    private static final int ACTION_GRANTED = 0;
-    private static final int ACTION_DENIED = 1;
-    private static final int ACTION_DISMISSED = 2;
-    private static final int ACTION_IGNORED = 3;
-
-    private HistogramWatcher expectActionTimes(int action, int times) {
+    private HistogramWatcher expectActionTimes(
+            @PermissionTestRule.PromptAction int action, int times) {
         return HistogramWatcher.newBuilder()
                 .expectIntRecordTimes(
                         "Permissions.Prompt.Notifications.LocationBarLeftClapperQuietIcon.Action",
@@ -93,7 +79,7 @@ public class PermissionClapperQuietTest {
                 .build();
     }
 
-    private HistogramWatcher expectAction(int action) {
+    private HistogramWatcher expectAction(@PermissionTestRule.PromptAction int action) {
         return expectActionTimes(action, 1);
     }
 
@@ -109,94 +95,22 @@ public class PermissionClapperQuietTest {
     @Before
     public void setUp() throws Exception {
         mPermissionRule.setUpActivity();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    WebsitePreferenceBridgeJni.get()
-                            .resetNotificationsSettingsForTest(
-                                    ProfileManager.getLastUsedRegularProfile());
-                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                            .setBoolean(PREF_ENABLE_QUIET_NOTIFICATION_PERMISSION_UI, true);
-                });
-    }
-
-    @After
-    public void tearDown() {
-        // Explicitly clear the permission setting and embargo for the test origin.
-        // resetNotificationsSettingsForTest only clears the settings map, not the auto-blocker.
-        // Calling setPermissionSettingForOrigin with DEFAULT triggers
-        // RemoveEmbargoAndResetCounts.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    String url = mPermissionRule.getURL(PAGE_URL);
-                    WebsitePreferenceBridgeJni.get()
-                            .setPermissionSettingForOrigin(
-                                    ProfileManager.getLastUsedRegularProfile(),
-                                    ContentSettingsType.NOTIFICATIONS,
-                                    url,
-                                    url,
-                                    ContentSetting.DEFAULT);
-                });
+        mPermissionRule.resetNotificationsSettingsForTest(/* enableQuietUi= */ true);
     }
 
     private void waitForQuietIcon() {
-        // We don't have a direct element to wait on for the Quiet Icon (it's a dynamically
-        // generated drawable on the standard location bar icon). Therefore, we verify the presence
-        // of the specific content description associated with the "blocked" (Quiet) state.
-        onViewWaiting(
-                withContentDescription(
-                        R.string
-                                .permissions_notification_not_allowed_confirmation_screenreader_announcement));
-    }
 
-    private void checkNoQuietIcon() {
-        // We check for the absence of the blocked content description.
-        String blockedDescription =
-                mPermissionRule
-                        .getActivity()
-                        .getString(
-                                R.string
-                                        .permissions_notification_not_allowed_confirmation_screenreader_announcement);
-        onView(withId(R.id.location_bar_status_icon))
-                .check(
-                        (view, noViewFoundException) -> {
-                            if (view == null) {
-                                throw new AssertionError("View is null");
-                            }
-                            if (view.getContentDescription() != null
-                                    && view.getContentDescription().equals(blockedDescription)) {
-                                throw new AssertionError("Quiet icon should not be visible");
-                            }
-                        });
-    }
-
-    private void waitForQuietIconGone() {
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        checkNoQuietIcon();
-                    } catch (AssertionError e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                });
+        mPermissionRule.waitForStatusIcon(PermissionTestRule.NOTIFICATIONS_NOT_ALLOWED_ID);
     }
 
     private void clickClapperQuietIcon() {
-        onView(withId(R.id.location_bar_status_icon)).perform(click());
+
+        mPermissionRule.openPageInfoFromStatusIcon();
     }
 
-    private void waitForPageInfoClose() {
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        onView(withId(R.id.page_info_url_wrapper)).check(doesNotExist());
-                    } catch (AssertionError e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                });
-    }
+    private void waitForQuietIconGone() {
 
-    private void waitForPageInfoOpen() {
-        onViewWaiting(withId(R.id.page_info_url_wrapper));
+        mPermissionRule.waitForStatusIconGone(PermissionTestRule.NOTIFICATIONS_NOT_ALLOWED_ID);
     }
 
     private void waitForSecurityIcon() {
@@ -207,7 +121,7 @@ public class PermissionClapperQuietTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     try {
-                        checkNoQuietIcon();
+                        waitForQuietIconGone();
                         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
                     } catch (AssertionError e) {
                         throw new CriteriaNotSatisfiedException(e);
@@ -242,44 +156,6 @@ public class PermissionClapperQuietTest {
     private void triggerQuietClapper() throws Exception {
         setupPageAndTriggerNotificationPermissionRequest(PAGE_URL);
         mPermissionRule.waitForOmniboxPermissionState(ContentSettingsType.NOTIFICATIONS);
-    }
-
-    private void checkNotificationPermission(@ContentSetting int expectedSetting) {
-        String url = mPermissionRule.getURL(PAGE_URL);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    @ContentSetting
-                    int currentSetting =
-                            WebsitePreferenceBridgeJni.get()
-                                    .getPermissionSettingForOrigin(
-                                            /* browserContextHandle= */ ProfileManager
-                                                    .getLastUsedRegularProfile(),
-                                            /* contentSettingsType= */ ContentSettingsType
-                                                    .NOTIFICATIONS,
-                                            /* origin= */ url,
-                                            /* embedder= */ url);
-                    Assert.assertEquals(expectedSetting, currentSetting);
-                });
-    }
-
-    private @ContentSetting int getNotificationPermission() {
-        String url = mPermissionRule.getURL(PAGE_URL);
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    return WebsitePreferenceBridgeJni.get()
-                            .getPermissionSettingForOrigin(
-                                    ProfileManager.getLastUsedRegularProfile(),
-                                    ContentSettingsType.NOTIFICATIONS,
-                                    url,
-                                    url);
-                });
-    }
-
-    private void pollPersistentPermissionSettings(@ContentSetting int setting) {
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    Criteria.checkThat(getNotificationPermission(), Matchers.is(setting));
-                });
     }
 
     private void triggerQuietIconTimeout() {
@@ -375,7 +251,8 @@ public class PermissionClapperQuietTest {
         // This verifies that the "Message" quiet UI was suppressed.
         mPermissionRule.waitForMessageShownState(false);
 
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
     }
 
     @Test
@@ -384,7 +261,7 @@ public class PermissionClapperQuietTest {
     @DisableFeatures({PermissionsAndroidFeatureList.PERMISSIONS_ANDROID_CLAPPER_QUIET})
     public void testStandardQuietUiShowsMessage() throws Exception {
 
-        setupPageAndTriggerNotificationPermissionRequest(PAGE_URL);
+        mPermissionRule.setupPageAndTriggerNotificationPermissionRequest(PAGE_URL);
 
         // With Clapper disabled, the standard Quiet UI (Message) should be shown.
         mPermissionRule.waitForMessageShownState(true);
@@ -394,7 +271,8 @@ public class PermissionClapperQuietTest {
     @MediumTest
     @Feature({"Permissions"})
     public void testQuietClapperIgnoreIcon() throws Exception {
-        HistogramWatcher histogramWatcher = expectActionTimes(ACTION_IGNORED, /* times= */ 2);
+        HistogramWatcher histogramWatcher =
+                expectActionTimes(PermissionTestRule.PromptAction.IGNORED, /* times= */ 2);
         CallbackHelper onDismissedCallback = setDismissedCallback();
 
         triggerQuietClapper();
@@ -402,7 +280,8 @@ public class PermissionClapperQuietTest {
         triggerQuietIconTimeout();
         onDismissedCallback.waitForCallback(0);
 
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
 
         triggerQuietClapper();
         waitForQuietIcon();
@@ -410,7 +289,8 @@ public class PermissionClapperQuietTest {
         onDismissedCallback.waitForCallback(0);
 
         // For quiet prompts, we block the page after 2 ignores.
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.BLOCK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.BLOCK, PAGE_URL);
         histogramWatcher.assertExpected();
     }
 
@@ -418,7 +298,7 @@ public class PermissionClapperQuietTest {
     @MediumTest
     @Feature({"Permissions"})
     public void testQuietClapperSubscribe() throws Exception {
-        HistogramWatcher histogramWatcher = expectAction(ACTION_GRANTED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.GRANTED);
         triggerQuietClapper();
         waitForQuietIcon();
 
@@ -428,39 +308,45 @@ public class PermissionClapperQuietTest {
         checkQuietIconTimerState(/* expectedIsRunning= */ false);
 
         // The settings should not have changed yet.
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
         // Wait for and click the "Subscribe" button.
-        onViewWaiting(withText(R.string.notifications_permission_subscribe)).perform(click());
+        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID))
+                .perform(click());
 
         // Verify permission is granted.
-        pollPersistentPermissionSettings(/* setting= */ ContentSetting.ALLOW);
+        mPermissionRule.waitForPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ALLOW, PAGE_URL);
 
         histogramWatcher.assertExpected();
 
         pressBack();
-        waitForPageInfoClose();
-        checkNoQuietIcon();
+        mPermissionRule.waitForPageInfoClose();
+        waitForQuietIconGone();
     }
 
     @Test
     @MediumTest
     @Feature({"Permissions"})
     public void testQuietClapperReset() throws Exception {
-        HistogramWatcher histogramWatcher = expectAction(ACTION_DISMISSED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.DISMISSED);
         triggerQuietClapper();
         waitForQuietIcon();
 
         clickClapperQuietIcon();
 
         // Wait for and click the "Reset permissions" button.
-        onViewWaiting(withText(R.string.page_info_permissions_reset)).perform(click());
+        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_BUTTON_TEXT_ID))
+                .perform(click());
 
         // Confirm the reset in the dialog.
-        onViewWaiting(withText("Reset")).perform(click());
+        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_DIALOG_BUTTON_TEXT))
+                .perform(click());
 
         // Because of the embargo logic for quiet permission prompts the permission gets blocked
         // after the first dismissal for this origin.
-        pollPersistentPermissionSettings(/* setting= */ ContentSetting.BLOCK);
+        mPermissionRule.waitForPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.BLOCK, PAGE_URL);
 
         histogramWatcher.assertExpected();
     }
@@ -469,19 +355,20 @@ public class PermissionClapperQuietTest {
     @MediumTest
     @Feature({"Permissions"})
     public void testQuietClapperDenyViaSystemBack() throws Exception {
-        HistogramWatcher histogramWatcher = expectAction(ACTION_DENIED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.DENIED);
         triggerQuietClapper();
         waitForQuietIcon();
 
         clickClapperQuietIcon();
-        waitForPageInfoOpen();
+        mPermissionRule.waitForPageInfoOpen();
 
         // Close Page Info via system Back press.
         pressBack();
-        waitForPageInfoClose();
+        mPermissionRule.waitForPageInfoClose();
         waitForQuietIconGone();
 
-        pollPersistentPermissionSettings(/* setting= */ ContentSetting.BLOCK);
+        mPermissionRule.waitForPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.BLOCK, PAGE_URL);
 
         histogramWatcher.assertExpected();
     }
@@ -490,31 +377,32 @@ public class PermissionClapperQuietTest {
     @MediumTest
     @Feature({"Permissions"})
     public void testQuietClapperDenyViaBackButton() throws Exception {
-        HistogramWatcher histogramWatcher = expectAction(ACTION_DENIED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.DENIED);
         triggerQuietClapper();
         waitForQuietIcon();
 
         clickClapperQuietIcon();
-        waitForPageInfoOpen();
+        mPermissionRule.waitForPageInfoOpen();
 
         // Dismiss Page Info via the subpage back button.
         // This should lead us to the "main" PageInfo component.
         onView(withId(R.id.subpage_back_button)).perform(click());
 
-        pollPersistentPermissionSettings(/* setting= */ ContentSetting.BLOCK);
+        mPermissionRule.waitForPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.BLOCK, PAGE_URL);
 
         histogramWatcher.assertExpected();
 
         // Close Page Info to ensure clean teardown.
         pressBack();
-        waitForPageInfoClose();
+        mPermissionRule.waitForPageInfoClose();
     }
 
     @Test
     @MediumTest
     @Feature({"Permissions"})
     public void testQuietClapperNavigation() throws Exception {
-        HistogramWatcher histogramWatcher = expectAction(ACTION_IGNORED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.IGNORED);
         triggerQuietClapper();
         waitForQuietIcon();
 
@@ -523,7 +411,8 @@ public class PermissionClapperQuietTest {
 
         waitForQuietIconGone();
         // Navigation acts as an ignore. For clapper quiet, 1 ignore does not block the origin.
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
 
         histogramWatcher.assertExpected();
     }
@@ -532,7 +421,7 @@ public class PermissionClapperQuietTest {
     @MediumTest
     @Feature({"Permissions"})
     public void testQuietClapperReload() throws Exception {
-        HistogramWatcher histogramWatcher = expectAction(ACTION_IGNORED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.IGNORED);
         triggerQuietClapper();
         waitForQuietIcon();
 
@@ -541,7 +430,8 @@ public class PermissionClapperQuietTest {
 
         waitForQuietIconGone();
         // Reload acts as an ignore. For clapper quiet, 1 ignore does not block the origin.
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
 
         histogramWatcher.assertExpected();
     }
@@ -577,7 +467,7 @@ public class PermissionClapperQuietTest {
         waitForQuietIcon();
         histogramWatcher.assertExpected();
 
-        histogramWatcher = expectAction(ACTION_IGNORED);
+        histogramWatcher = expectAction(PermissionTestRule.PromptAction.IGNORED);
         CallbackHelper onDismissedCallback = setDismissedCallback();
         triggerQuietIconTimeout();
         onDismissedCallback.waitForCallback(0);
@@ -607,7 +497,7 @@ public class PermissionClapperQuietTest {
         waitForQuietIcon();
         histogramWatcher.assertExpected();
 
-        histogramWatcher = expectAction(ACTION_IGNORED);
+        histogramWatcher = expectAction(PermissionTestRule.PromptAction.IGNORED);
         CallbackHelper onDismissedCallback = setDismissedCallback();
         triggerQuietIconTimeout();
         onDismissedCallback.waitForCallback(0);
@@ -627,13 +517,9 @@ public class PermissionClapperQuietTest {
 
         CallbackHelper onDismissedCallback = setDismissedCallback();
         // Force Loud UI by disabling the Quiet UI pref.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                            .setBoolean(PREF_ENABLE_QUIET_NOTIFICATION_PERMISSION_UI, false);
-                });
+        mPermissionRule.resetNotificationsSettingsForTest(/* enableQuietUi= */ false);
 
-        setupPageAndTriggerNotificationPermissionRequest(PAGE_URL);
+        mPermissionRule.setupPageAndTriggerNotificationPermissionRequest(PAGE_URL);
 
         // Verify Loud Prompt (Dialog) is shown.
         mPermissionRule.waitForDialogShownState(true);
@@ -642,7 +528,8 @@ public class PermissionClapperQuietTest {
         PermissionTestRule.replyToDialog(
                 PermissionTestRule.PromptDecision.DENY, mPermissionRule.getActivity());
 
-        pollPersistentPermissionSettings(/* setting= */ ContentSetting.BLOCK);
+        mPermissionRule.waitForPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.BLOCK, PAGE_URL);
 
         // Wait for the blocked icon (which gets reused by the quiet icon logic).
         waitForQuietIcon();
@@ -663,7 +550,7 @@ public class PermissionClapperQuietTest {
         // This test simulates "Interference" (user focusing the Omnibox) while the Quiet Icon is
         // shown. This action should reset the UI and implicitly Ignore the permission request.
         // We verify that the native-side request state is correctly updated to IGNORED.
-        HistogramWatcher histogramWatcher = expectAction(ACTION_IGNORED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.IGNORED);
 
         CallbackHelper onDismissedCallback = setDismissedCallback();
         triggerQuietClapper();
@@ -676,7 +563,8 @@ public class PermissionClapperQuietTest {
         onDismissedCallback.waitForCallback(0);
 
         histogramWatcher.assertExpected();
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
     }
 
     @Test
@@ -686,7 +574,7 @@ public class PermissionClapperQuietTest {
         // This test simulates a Cookie Controls icon event (e.g., highlighting) while the Quiet
         // Icon is shown. This high-priority icon update should preempt the quiet icon, causing it
         // to be removed and the request to be Ignored.
-        HistogramWatcher histogramWatcher = expectAction(ACTION_IGNORED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.IGNORED);
 
         triggerQuietClapper();
         waitForQuietIcon();
@@ -710,14 +598,15 @@ public class PermissionClapperQuietTest {
         waitForQuietIconGone();
 
         histogramWatcher.assertExpected();
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
     }
 
     @Test
     @MediumTest
     @Feature({"Permissions"})
     public void testQuietClapperTabDestroyed() throws Exception {
-        HistogramWatcher histogramWatcher = expectAction(ACTION_IGNORED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.IGNORED);
 
         ChromeTabUtils.fullyLoadUrlInNewTab(
                 InstrumentationRegistry.getInstrumentation(),
@@ -731,7 +620,7 @@ public class PermissionClapperQuietTest {
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), mPermissionRule.getActivity());
 
-        checkNoQuietIcon();
+        waitForQuietIconGone();
 
         histogramWatcher.assertExpected();
     }
@@ -742,7 +631,7 @@ public class PermissionClapperQuietTest {
     public void testQuietClapperPreemption() throws Exception {
         // Test that a high-priority request preempts the quiet UI and removes the icon.
         // We expect the quiet request to be ignored when preempted.
-        HistogramWatcher histogramWatcher = expectAction(ACTION_IGNORED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.IGNORED);
 
         triggerQuietClapper();
         waitForQuietIcon();
@@ -759,19 +648,20 @@ public class PermissionClapperQuietTest {
         waitForQuietIconGone();
 
         histogramWatcher.assertExpected();
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
     }
 
     @Test
     @MediumTest
     @Feature({"Permissions"})
     public void testQuietClapperPreemptionWhilePageInfoOpenSubscribe() throws Exception {
-        HistogramWatcher histogramWatcher = expectAction(ACTION_IGNORED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.IGNORED);
 
         triggerQuietClapper();
         waitForQuietIcon();
         clickClapperQuietIcon();
-        waitForPageInfoOpen();
+        mPermissionRule.waitForPageInfoOpen();
 
         // Trigger a high-priority permission request (Microphone) to preempt the quiet one.
         mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
@@ -780,33 +670,36 @@ public class PermissionClapperQuietTest {
         mPermissionRule.waitForDialogShownState(true);
 
         // Page Info should still be open. Attempt to Subscribe.
-        onViewWaiting(withText(R.string.notifications_permission_subscribe)).perform(click());
+        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID))
+                .perform(click());
 
         // Verify that the permission was NOT granted (because the request was preempted).
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
 
         // Verify no crash.
         histogramWatcher.assertExpected();
 
         // Cleanup
         pressBack();
-        waitForPageInfoClose();
+        mPermissionRule.waitForPageInfoClose();
         PermissionTestRule.replyToDialog(
                 PermissionTestRule.PromptDecision.DENY, mPermissionRule.getActivity());
 
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
     }
 
     @Test
     @MediumTest
     @Feature({"Permissions"})
     public void testQuietClapperPreemptionWhilePageInfoOpenReset() throws Exception {
-        HistogramWatcher histogramWatcher = expectAction(ACTION_IGNORED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.IGNORED);
 
         triggerQuietClapper();
         waitForQuietIcon();
         clickClapperQuietIcon();
-        waitForPageInfoOpen();
+        mPermissionRule.waitForPageInfoOpen();
 
         // Trigger preemption.
         mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
@@ -814,33 +707,37 @@ public class PermissionClapperQuietTest {
         mPermissionRule.waitForDialogShownState(true);
 
         // Attempt to Reset.
-        onViewWaiting(withText(R.string.page_info_permissions_reset)).perform(click());
-        onViewWaiting(withText("Reset")).perform(click());
+        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_BUTTON_TEXT_ID))
+                .perform(click());
+        onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_RESET_DIALOG_BUTTON_TEXT))
+                .perform(click());
 
         // Verify that the permission was NOT blocked (default for reset) or changed.
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
 
         histogramWatcher.assertExpected();
 
         // Cleanup
         pressBack();
-        waitForPageInfoClose();
+        mPermissionRule.waitForPageInfoClose();
         PermissionTestRule.replyToDialog(
                 PermissionTestRule.PromptDecision.DENY, mPermissionRule.getActivity());
 
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
     }
 
     @Test
     @MediumTest
     @Feature({"Permissions"})
     public void testQuietClapperPreemptionWhilePageInfoOpenDismiss() throws Exception {
-        HistogramWatcher histogramWatcher = expectAction(ACTION_IGNORED);
+        HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.IGNORED);
 
         triggerQuietClapper();
         waitForQuietIcon();
         clickClapperQuietIcon();
-        waitForPageInfoOpen();
+        mPermissionRule.waitForPageInfoOpen();
 
         // Trigger preemption.
         mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
@@ -849,7 +746,7 @@ public class PermissionClapperQuietTest {
 
         // Dismiss Page Info via system Back press.
         pressBack();
-        waitForPageInfoClose();
+        mPermissionRule.waitForPageInfoClose();
 
         histogramWatcher.assertExpected();
 
@@ -858,6 +755,7 @@ public class PermissionClapperQuietTest {
                 PermissionTestRule.PromptDecision.DENY, mPermissionRule.getActivity());
 
         // Verify permission state remains ASK.
-        checkNotificationPermission(/* expectedSetting= */ ContentSetting.ASK);
+        mPermissionRule.checkPermissionSettingForOrigin(
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
     }
 }

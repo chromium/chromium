@@ -134,6 +134,10 @@ class PermissionBlockedMessageDelegateAndroidTest
     TriggerDismiss(messages::DismissReason::PRIMARY_ACTION);
   }
 
+  void TriggerLoudSecondaryMenuItem(int command_id) {
+    controller_->HandleLoudUiSecondayMenuItemClicked(command_id);
+  }
+
   std::unique_ptr<MockDelegate> CreateDelegateWithPrompt(
       std::unique_ptr<MockPermissionPromptAndroid>& prompt_storage,
       const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
@@ -444,4 +448,75 @@ TEST_F(PermissionBlockedMessageDelegateAndroidTest,
   TriggerManageClick();
   TriggerDismiss(messages::DismissReason::SECONDARY_ACTION);
   TriggerDialogDismiss();
+}
+
+TEST_F(PermissionBlockedMessageDelegateAndroidTest, LoudUI_SecondaryMenu_Deny) {
+  base::HistogramTester histogram_tester;
+
+  auto request = std::make_unique<permissions::MockPermissionRequest>(
+      permissions::RequestType::kNotifications,
+      permissions::PermissionRequestGestureType::GESTURE);
+  std::vector<base::WeakPtr<permissions::PermissionRequest>> requests;
+  requests.push_back(request->GetWeakPtr());
+
+  std::unique_ptr<MockPermissionPromptAndroid> mock_prompt;
+  auto delegate = CreateDelegateWithPrompt(mock_prompt, requests);
+
+  EXPECT_CALL(*delegate, ShouldUseQuietUI)
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*delegate, GetContentSettingsType)
+      .WillRepeatedly(testing::Return(ContentSettingsType::NOTIFICATIONS));
+
+  // Expect Deny() to be called on menu "Don't Allow"
+  EXPECT_CALL(*delegate, Deny()).Times(1);
+
+  ExpectEnqueued();
+
+  ShowMessage(std::move(delegate));
+
+  // Trigger Menu "Don't Allow" (kDeny = 0)
+  TriggerLoudSecondaryMenuItem(0);
+
+  // Verify Histogram
+  histogram_tester.ExpectBucketCount("Permissions.ClapperLoud.MessageUI.Deny",
+                                     true, 1);
+}
+
+TEST_F(PermissionBlockedMessageDelegateAndroidTest,
+       LoudUI_SecondaryMenu_Manage) {
+  base::HistogramTester histogram_tester;
+
+  auto request = std::make_unique<permissions::MockPermissionRequest>(
+      permissions::RequestType::kNotifications,
+      permissions::PermissionRequestGestureType::GESTURE);
+  std::vector<base::WeakPtr<permissions::PermissionRequest>> requests;
+  requests.push_back(request->GetWeakPtr());
+
+  std::unique_ptr<MockPermissionPromptAndroid> mock_prompt;
+  auto delegate = CreateDelegateWithPrompt(mock_prompt, requests);
+
+  EXPECT_CALL(*delegate, ShouldUseQuietUI)
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*delegate, GetContentSettingsType)
+      .WillRepeatedly(testing::Return(ContentSettingsType::NOTIFICATIONS));
+
+  ExpectEnqueued();
+
+  ShowMessage(std::move(delegate));
+
+  // Expect message to be dismissed with SECONDARY_ACTION
+  EXPECT_CALL(message_dispatcher_bridge_, DismissMessage)
+      .WillOnce([](messages::MessageWrapper* message,
+                   messages::DismissReason dismiss_reason) {
+        EXPECT_EQ(messages::DismissReason::SECONDARY_ACTION, dismiss_reason);
+        message->HandleDismissCallback(base::android::AttachCurrentThread(),
+                                       static_cast<int>(dismiss_reason));
+      });
+
+  // Trigger Menu "Manage" (kManage = 1)
+  TriggerLoudSecondaryMenuItem(1);
+
+  // Verify Histogram
+  histogram_tester.ExpectBucketCount("Permissions.ClapperLoud.MessageUI.Manage",
+                                     true, 1);
 }
