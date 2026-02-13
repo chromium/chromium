@@ -30,6 +30,7 @@ class NearbyShareDetailedViewImplTest : public AshTestBase {
   void TearDown() override {
     detailed_view_.ClearAndDelete();
     widget_.reset();
+    test_delegate_ = nullptr;
     AshTestBase::TearDown();
   }
 
@@ -77,7 +78,7 @@ class NearbyShareDetailedViewImplTest : public AshTestBase {
     widget_->SetContentsView(detailed_view.release()->GetAsView());
   }
 
-  raw_ptr<TestNearbyShareDelegate, DanglingUntriaged> test_delegate_ = nullptr;
+  raw_ptr<TestNearbyShareDelegate> test_delegate_ = nullptr;
 
  private:
   raw_ptr<NearbyShareDetailedViewImpl> detailed_view_ = nullptr;
