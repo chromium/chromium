@@ -4359,6 +4359,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.ProxyChangeListener.RegistrationTime" units="microseconds"
+    expires_after="2026-08-05">
+  <owner>barkinunal@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Records the time taken to complete the registration of the
+    ProxyChangeListener on Android. This measures the duration from when
+    registration is initiated until it is complete. Note that there are two
+    binder calls involved, as there are two receivers being registered. The
+    metric covers the combined timing of these two calls. The combined timing
+    won't tell whether one was slow or both were slow, but they are likely
+    correlated. This metric is intended to help with judging priorities.
+
+    This metric is only recorded on Android, for which a high-resolution clock
+    is always available.
+  </summary>
+</histogram>
+
 <histogram name="Net.ProxyScriptFetcher.FirstByteDuration" units="ms"
     expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>
