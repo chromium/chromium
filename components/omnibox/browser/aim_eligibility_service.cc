@@ -217,6 +217,19 @@ void BuildFallbackConfig(const omnibox::AimEligibilityResponse& response,
                          omnibox::SearchboxConfig& fallback_config) {
   fallback_config.Clear();
   auto* rule_set = fallback_config.mutable_rule_set();
+  rule_set->set_max_total_inputs(10);
+
+  auto* lens_image_rule = rule_set->add_input_type_rules();
+  lens_image_rule->set_input_type(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  lens_image_rule->set_max_instance(10);
+
+  auto* lens_file_rule = rule_set->add_input_type_rules();
+  lens_file_rule->set_input_type(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  lens_file_rule->set_max_instance(10);
+
+  auto* browser_tab_rule = rule_set->add_input_type_rules();
+  browser_tab_rule->set_input_type(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  browser_tab_rule->set_max_instance(10);
 
   if (response.is_deep_search_eligible()) {
     rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
