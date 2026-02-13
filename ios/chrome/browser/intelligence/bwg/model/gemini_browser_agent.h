@@ -209,6 +209,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   CGFloat GetFloatyOffsetFromFullscreenController(
       FullscreenController* controller);
 
+  // Invokes the floaty.
+  void InvokeFloaty(GeminiConfiguration* config);
+
   // Forces the floaty to be shown if it is invoked. Can be used to set the
   // floaty opacity to 1.0 effectively re-showing the floaty. Useful to re-show
   // the floaty if a user is currently in fullscreen mode.

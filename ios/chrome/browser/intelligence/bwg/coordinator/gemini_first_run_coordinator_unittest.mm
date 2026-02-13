@@ -45,7 +45,6 @@ namespace {
 const CGFloat kPromoMaxImpressionCount = 3;
 
 const std::string kFirstProfileName = "FirstProfile";
-const std::string kSecondProfileName = "SecondProfile";
 
 std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
   return std::make_unique<
@@ -243,47 +242,4 @@ TEST_F(GeminiFirstRunCoordinatorTest, AIHubIPHNotTriggered) {
   [coordinator_ stop];
 
   EXPECT_OCMOCK_VERIFY(mock_help_command_handler_);
-}
-
-// Tests that the other Gemini floaty instances are dismissed before when
-// starting a new one.
-TEST_F(GeminiFirstRunCoordinatorTest, DismissOtherWindows) {
-  // Build second profile.
-  TestProfileIOS::Builder second_builder;
-  second_builder.SetName(kSecondProfileName);
-  ProfileIOS* second_profile =
-      profile_manager_.AddProfileWithBuilder(std::move(second_builder));
-  std::unique_ptr<TestBrowser> second_browser_ =
-      std::make_unique<TestBrowser>(second_profile);
-  BrowserListFactory::GetForProfile(second_profile)
-      ->AddBrowser(second_browser_.get());
-
-  id second_bwg_handler = OCMProtocolMock(@protocol(BWGCommands));
-  [second_browser_->GetCommandDispatcher()
-      startDispatchingToTarget:second_bwg_handler
-                   forProtocol:@protocol(BWGCommands)];
-
-  OCMExpect([second_bwg_handler
-      dismissGeminiFlowWithCompletion:[OCMArg checkWithBlock:^BOOL(
-                                                  ProceduralBlock block) {
-        if (block) {
-          block();
-        }
-        return YES;
-      }]]);
-
-  StartCoordinatorWithEntryPoint(gemini::EntryPoint::Promo);
-
-  // Emulate starting the floaty from the first window.
-  OCMStub([mock_bwg_command_handler_
-      dismissGeminiFlowWithCompletion:[OCMArg checkWithBlock:^(
-                                                  ProceduralBlock block) {
-        if (block) {
-          block();
-        }
-        return YES;
-      }]]);
-
-  EXPECT_OCMOCK_VERIFY(mock_bwg_command_handler_);
-  EXPECT_OCMOCK_VERIFY(second_bwg_handler);
 }

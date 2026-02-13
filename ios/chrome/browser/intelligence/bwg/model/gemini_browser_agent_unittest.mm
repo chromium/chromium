@@ -21,9 +21,12 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -32,6 +35,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
@@ -63,17 +67,18 @@ class GeminiBrowserAgentTest : public PlatformTest {
     profile_builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
-    profile_ = std::move(profile_builder).Build();
-    web::JavaScriptFeatureManager::FromBrowserState(profile_.get())
+    profile_ =
+        profile_manager_.AddProfileWithBuilder(std::move(profile_builder));
+    web::JavaScriptFeatureManager::FromBrowserState(profile_)
         ->ConfigureFeatures(
             {web::FindInPageJavaScriptFeature::GetInstance(),
              PageContextExtractorJavaScriptFeature::GetInstance()});
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_);
     GeminiBrowserAgent::CreateForBrowser(browser_.get());
     gemini_browser_agent_ = GeminiBrowserAgent::FromBrowser(browser_.get());
 
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForProfile(profile_.get());
+        OptimizationGuideServiceFactory::GetForProfile(profile_);
 
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
@@ -87,7 +92,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
     web_state_ = web_state.get();
-    web_state->SetBrowserState(profile_.get());
+    web_state->SetBrowserState(profile_);
     BwgTabHelper::CreateForWebState(web_state.get());
     WebViewProxyTabHelper::CreateForWebState(web_state.get());
     bwg_tab_helper_ = BwgTabHelper::FromWebState(web_state.get());
@@ -102,15 +107,14 @@ class GeminiBrowserAgentTest : public PlatformTest {
         ->SetDelegate(fake_snapshot_delegate_);
 
     favicon::WebFaviconDriver::CreateForWebState(
-        web_state.get(),
-        ios::FaviconServiceFactory::GetForProfile(
-            profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+        web_state.get(), ios::FaviconServiceFactory::GetForProfile(
+                             profile_, ServiceAccessType::IMPLICIT_ACCESS));
 
     auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto main_frame =
         web::FakeWebFrame::CreateMainWebFrame(GURL("https://example.com"));
     fake_main_frame_ = main_frame.get();
-    main_frame->set_browser_state(profile_.get());
+    main_frame->set_browser_state(profile_);
     web_frames_manager->AddWebFrame(std::move(main_frame));
     web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
                                    std::move(web_frames_manager));
@@ -121,7 +125,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
         std::make_unique<web::FakeWebFramesManager>();
     auto main_frame_page_content =
         web::FakeWebFrame::CreateMainWebFrame(GURL("https://example.com"));
-    main_frame_page_content->set_browser_state(profile_.get());
+    main_frame_page_content->set_browser_state(profile_);
     page_content_frames_manager->AddWebFrame(
         std::move(main_frame_page_content));
     web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
@@ -130,6 +134,20 @@ class GeminiBrowserAgentTest : public PlatformTest {
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate(true));
+  }
+
+  void TearDown() override {
+    fake_main_frame_ = nullptr;
+    web_state_ = nullptr;
+    profile_ = nullptr;
+    gemini_browser_agent_ = nullptr;
+    bwg_tab_helper_ = nullptr;
+    optimization_guide_service_ = nullptr;
+    mock_settings_handler_ = nullptr;
+    mock_bwg_handler_ = nullptr;
+    fake_snapshot_delegate_ = nullptr;
+    browser_.reset();
+    profile_manager_.PrepareForDestruction();
   }
 
   // Getter for `is_floaty_invoked_`.
@@ -164,8 +182,10 @@ class GeminiBrowserAgentTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestBrowser> browser_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_;
   raw_ptr<GeminiBrowserAgent> gemini_browser_agent_;
   raw_ptr<BwgTabHelper> bwg_tab_helper_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
@@ -284,14 +304,14 @@ TEST_F(GeminiBrowserAgentTest, TestActiveWebStateChanged) {
   // the feature flag enabled.
 
   std::unique_ptr<TestBrowser> scoped_browser =
-      std::make_unique<TestBrowser>(profile_.get());
+      std::make_unique<TestBrowser>(profile_);
   GeminiBrowserAgent::CreateForBrowser(scoped_browser.get());
   GeminiBrowserAgent* agent =
       GeminiBrowserAgent::FromBrowser(scoped_browser.get());
 
   std::unique_ptr<web::FakeWebState> web_state1 =
       std::make_unique<web::FakeWebState>();
-  web_state1->SetBrowserState(profile_.get());
+  web_state1->SetBrowserState(profile_);
   BwgTabHelper::CreateForWebState(web_state1.get());
   WebViewProxyTabHelper::CreateForWebState(web_state1.get());
   BwgTabHelper* helper1 = BwgTabHelper::FromWebState(web_state1.get());
@@ -305,7 +325,7 @@ TEST_F(GeminiBrowserAgentTest, TestActiveWebStateChanged) {
 
   std::unique_ptr<web::FakeWebState> web_state2 =
       std::make_unique<web::FakeWebState>();
-  web_state2->SetBrowserState(profile_.get());
+  web_state2->SetBrowserState(profile_);
   BwgTabHelper::CreateForWebState(web_state2.get());
   WebViewProxyTabHelper::CreateForWebState(web_state2.get());
   BwgTabHelper* helper2 = BwgTabHelper::FromWebState(web_state2.get());
@@ -538,4 +558,38 @@ TEST_F(GeminiBrowserAgentTest, TestDismissFloatyWhenFloatyIsShown) {
 TEST_F(GeminiBrowserAgentTest, TestCollapseFloatyIfInvoked) {
   SetIsFloatyInvoked(true);
   gemini_browser_agent_->CollapseFloatyIfInvoked();
+}
+
+// Tests that DismissGeminiFromOtherWindows dismisses Gemini in other browsers.
+TEST_F(GeminiBrowserAgentTest, TestDismissGeminiFromOtherWindows) {
+  TestProfileIOS::Builder second_profile_builder;
+  second_profile_builder.SetName("profile2");
+  TestProfileIOS* second_profile =
+      profile_manager_.AddProfileWithBuilder(std::move(second_profile_builder));
+
+  // Emulate opening a new window.
+  std::unique_ptr<TestBrowser> second_browser =
+      std::make_unique<TestBrowser>(second_profile);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(second_profile);
+  browser_list->AddBrowser(second_browser.get());
+
+  id mock_second_handler = OCMProtocolMock(@protocol(BWGCommands));
+  [second_browser->GetCommandDispatcher()
+      startDispatchingToTarget:mock_second_handler
+                   forProtocol:@protocol(BWGCommands)];
+
+  [[mock_second_handler expect]
+      dismissGeminiFlowWithCompletion:[OCMArg checkWithBlock:^BOOL(
+                                                  ProceduralBlock block) {
+        if (block) {
+          block();
+        }
+        return YES;
+      }]];
+
+  base::RunLoop run_loop;
+  gemini_browser_agent_->DismissGeminiFromOtherWindows(run_loop.QuitClosure());
+  run_loop.Run();
+  [mock_second_handler verify];
+  browser_list->RemoveBrowser(second_browser.get());
 }
