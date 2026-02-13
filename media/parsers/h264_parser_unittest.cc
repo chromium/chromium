@@ -433,42 +433,60 @@ TEST(H264ParserTest, RecursiveSEIParsing) {
   }
 }
 
-TEST(H264ParserTest, ParsePPS_SecondChromaQPIndexOffset_OutRange) {
-  // SPS: High Profile (100), Level 1.0 (10), seq_parameter_set_id = 0.
-  // This is required because second_chroma_qp_index_offset is only parsed
-  // for High profile or above.
-  constexpr auto kSPS = std::to_array<uint8_t>({
-      0x00, 0x00, 0x01, 0x67,  // Header
-      0x64, 0x00, 0x0A,        // Profile/Level
-      0xF3, 0xDC, 0x40         // Payload
-  });
-
-  // PPS: pic_parameter_set_id = 0, seq_parameter_set_id = 0.
-  // second_chroma_qp_index_offset = 13 (invalid, range is -12 to 12).
-  // Encoded as se(v) -> ue(25) -> 0000 11010.
-  constexpr auto kPPS = std::to_array<uint8_t>({
-      0x00, 0x00, 0x01, 0x68,  // Header
-      0xCE, 0x38, 0x03, 0x50   // Payload
-  });
-
+TEST(H264ParserTest, RangeChecks) {
   H264Parser parser;
   H264NALU nalu;
   int id;
 
-  // Parse SPS.
-  parser.SetStream(kSPS);
-  ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&nalu));
-  ASSERT_EQ(H264NALU::kSPS, nalu.nal_unit_type);
-  ASSERT_EQ(H264Parser::kOk, parser.ParseSPS(&id));
+  // PPS: pic_parameter_set_id = 0, seq_parameter_set_id = 0.
+  // second_chroma_qp_index_offset = 13 (invalid, range is -12 to 12).
+  // Encoded as se(v) -> ue(25) -> 0000 11010.
+  {
+    // SPS: High Profile (100), Level 1.0 (10), seq_parameter_set_id = 0.
+    // This is required because second_chroma_qp_index_offset is only parsed
+    // for High profile or above.
+    constexpr auto kSPS = std::to_array<uint8_t>({
+        0x00, 0x00, 0x01, 0x67,  // Header
+        0x64, 0x00, 0x0A,        // Profile/Level
+        0xF3, 0xDC, 0x40         // Payload
+    });
+    constexpr auto kPPS = std::to_array<uint8_t>({
+        0x00, 0x00, 0x01, 0x68,  // Header
+        0xCE, 0x38, 0x03, 0x50   // Payload
+    });
 
-  // Parse PPS.
-  parser.SetStream(kPPS);
-  ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&nalu));
-  ASSERT_EQ(H264NALU::kPPS, nalu.nal_unit_type);
+    // Parse SPS.
+    parser.SetStream(kSPS);
+    ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&nalu));
+    ASSERT_EQ(H264NALU::kSPS, nalu.nal_unit_type);
+    ASSERT_EQ(H264Parser::kOk, parser.ParseSPS(&id));
 
-  // This should fail because second_chroma_qp_index_offset is out of range.
-  // Before the fix, this would return kOk.
-  EXPECT_EQ(H264Parser::kInvalidStream, parser.ParsePPS(&id));
+    // Parse PPS.
+    parser.SetStream(kPPS);
+    ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&nalu));
+    ASSERT_EQ(H264NALU::kPPS, nalu.nal_unit_type);
+
+    // This should fail because second_chroma_qp_index_offset is out of range.
+    EXPECT_EQ(H264Parser::kInvalidStream, parser.ParsePPS(&id));
+  }
+
+  // SEI: Recovery Point, changing_slice_group_idc = 3 (invalid, range 0-2).
+  {
+    media::H264SEI sei;
+    constexpr auto kSEI = std::to_array<uint8_t>({
+        0x00, 0x00, 0x01, 0x06,  // Header
+        0x06,                    // Payload type 6 (Recovery Point)
+        0x01,                    // Payload size 1
+        0x98,                    // Payload: changing_slice_group_idc = 3
+        0x80                     // RBSP stop bit
+    });
+
+    parser.SetStream(kSEI);
+    ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&nalu));
+    ASSERT_EQ(H264NALU::kSEIMessage, nalu.nal_unit_type);
+
+    EXPECT_EQ(H264Parser::kInvalidStream, parser.ParseSEI(&sei));
+  }
 }
 
 }  // namespace media

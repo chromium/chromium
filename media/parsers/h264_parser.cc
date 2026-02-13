@@ -1078,6 +1078,7 @@ H264Parser::Result H264Parser::ParsePPS(int* pps_id) {
   std::unique_ptr<H264PPS> pps(new H264PPS());
 
   READ_UE_OR_RETURN(&pps->pic_parameter_set_id);
+  IN_RANGE_OR_RETURN(pps->pic_parameter_set_id, 0, 255);
   READ_UE_OR_RETURN(&pps->seq_parameter_set_id);
   TRUE_OR_RETURN(pps->seq_parameter_set_id < 32);
 
@@ -1403,8 +1404,10 @@ H264Parser::Result H264Parser::ParseSliceHeader(const H264NALU& nalu,
     }
   }
 
-  if (shdr->idr_pic_flag)
+  if (shdr->idr_pic_flag) {
     READ_UE_OR_RETURN(&shdr->idr_pic_id);
+    IN_RANGE_OR_RETURN(shdr->idr_pic_id, 0, 65535);
+  }
 
   size_t bits_left_at_pic_order_cnt_start = br_.NumBitsLeft();
   if (sps->pic_order_cnt_type == 0) {
@@ -1566,6 +1569,7 @@ H264Parser::Result H264Parser::ParseSEI(H264SEI* sei) {
             &recovery_point.broken_link_flag, &num_bits_remain);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
             2, &recovery_point.changing_slice_group_idc, &num_bits_remain);
+        IN_RANGE_OR_RETURN(recovery_point.changing_slice_group_idc, 0, 2);
         break;
       }
       case kSEIContentLightLevelInfo: {
