@@ -84,7 +84,10 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    apps_grid_view_ = nullptr;
+    scroll_view_ = nullptr;
     ShelfModel::Get()->SetShelfItemFactory(nullptr);
+    shelf_item_factory_.reset();
     AshTestBase::TearDown();
   }
 
@@ -167,8 +170,8 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
 
   // Cache some view pointers to make the tests more concise.
-  raw_ptr<ScrollableAppsGridView, DanglingUntriaged> apps_grid_view_ = nullptr;
-  raw_ptr<views::ScrollView, DanglingUntriaged> scroll_view_ = nullptr;
+  raw_ptr<ScrollableAppsGridView> apps_grid_view_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 };
 
 TEST_F(ScrollableAppsGridViewTest, ClickOnApp) {
