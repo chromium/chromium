@@ -175,103 +175,103 @@ std::vector<CreateRoutineArgumentsField> GetNonNullFields(
 
 }  // namespace
 
-bool ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum in,
+bool ConvertMojoRoutine(ash::cros_healthd::mojom::DiagnosticRoutineEnum in,
                         cx_diag::RoutineType* out) {
   DCHECK(out);
   switch (in) {
-    case crosapi::DiagnosticsRoutineEnum::kAcPower:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower:
       *out = cx_diag::RoutineType::kAcPower;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kBatteryCapacity:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity:
       *out = cx_diag::RoutineType::kBatteryCapacity;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kBatteryCharge:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge:
       *out = cx_diag::RoutineType::kBatteryCharge;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kBatteryDischarge:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge:
       *out = cx_diag::RoutineType::kBatteryDischarge;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kBatteryHealth:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth:
       *out = cx_diag::RoutineType::kBatteryHealth;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kCpuCache:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache:
       *out = cx_diag::RoutineType::kCpuCache;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kFloatingPointAccuracy:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
+        kFloatingPointAccuracy:
       *out = cx_diag::RoutineType::kCpuFloatingPointAccuracy;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kPrimeSearch:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch:
       *out = cx_diag::RoutineType::kCpuPrimeSearch;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kCpuStress:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress:
       *out = cx_diag::RoutineType::kCpuStress;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kDiskRead:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDiskRead:
       *out = cx_diag::RoutineType::kDiskRead;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kDnsResolution:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolution:
       *out = cx_diag::RoutineType::kDnsResolution;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kDnsResolverPresent:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolverPresent:
       *out = cx_diag::RoutineType::kDnsResolverPresent;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kLanConnectivity:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kLanConnectivity:
       *out = cx_diag::RoutineType::kLanConnectivity;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kMemory:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kMemory:
       *out = cx_diag::RoutineType::kMemory;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kSignalStrength:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSignalStrength:
       *out = cx_diag::RoutineType::kSignalStrength;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kGatewayCanBePinged:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kGatewayCanBePinged:
       *out = cx_diag::RoutineType::kGatewayCanBePinged;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kSmartctlCheck:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck:
       *out = cx_diag::RoutineType::kSmartctlCheck;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kSensitiveSensor:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSensitiveSensor:
       *out = cx_diag::RoutineType::kSensitiveSensor;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kNvmeSelfTest:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest:
       *out = cx_diag::RoutineType::kNvmeSelfTest;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kFingerprintAlive:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kFingerprintAlive:
       *out = cx_diag::RoutineType::kFingerprintAlive;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kSmartctlCheckWithPercentageUsed:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
+        kSmartctlCheckWithPercentageUsed:
       *out = cx_diag::RoutineType::kSmartctlCheckWithPercentageUsed;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kEmmcLifetime:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kEmmcLifetime:
       *out = cx_diag::RoutineType::kEmmcLifetime;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kBluetoothPower:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPower:
       *out = cx_diag::RoutineType::kBluetoothPower;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kUfsLifetime:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUfsLifetime:
       *out = cx_diag::RoutineType::kUfsLifetime;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kPowerButton:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPowerButton:
       *out = cx_diag::RoutineType::kPowerButton;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kAudioDriver:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAudioDriver:
       *out = cx_diag::RoutineType::kAudioDriver;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothDiscovery:
       *out = cx_diag::RoutineType::kBluetoothDiscovery;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kBluetoothScanning:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothScanning:
       *out = cx_diag::RoutineType::kBluetoothScanning;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kBluetoothPairing:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPairing:
       *out = cx_diag::RoutineType::kBluetoothPairing;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kFan:
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kFan:
       *out = cx_diag::RoutineType::kFan;
       return true;
-    // Below are deprecated routines.
-    case crosapi::DiagnosticsRoutineEnum::DEPRECATED_kNvmeWearLevel:
-    case crosapi::DiagnosticsRoutineEnum::kUnknown:
+    default:
       return false;
   }
   NOTREACHED();

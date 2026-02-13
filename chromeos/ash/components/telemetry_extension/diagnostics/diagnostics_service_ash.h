@@ -51,7 +51,6 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
  private:
   void OnDisconnect();
 
-  void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
   void GetRoutineUpdate(int32_t id,
                         crosapi::mojom::DiagnosticsRoutineCommandEnum command,
                         bool include_output,

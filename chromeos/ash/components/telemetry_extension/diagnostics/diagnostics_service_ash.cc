@@ -69,18 +69,6 @@ void DiagnosticsServiceAsh::OnDisconnect() {
   service_.reset();
 }
 
-void DiagnosticsServiceAsh::GetAvailableRoutines(
-    GetAvailableRoutinesCallback callback) {
-  GetService()->GetAvailableRoutines(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::GetAvailableRoutinesCallback
-             callback,
-         const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>&
-             routines) {
-        std::move(callback).Run(converters::diagnostics::Convert(routines));
-      },
-      std::move(callback)));
-}
-
 void DiagnosticsServiceAsh::GetRoutineUpdate(
     int32_t id,
     crosapi::mojom::DiagnosticsRoutineCommandEnum command,

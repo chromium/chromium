@@ -43,67 +43,6 @@ class DiagnosticsServiceAshTest : public testing::Test {
           remote_diagnostics_service_.BindNewPipeAndPassReceiver())};
 };
 
-TEST_F(DiagnosticsServiceAshTest, GetAvailableRoutinesSuccess) {
-  // Configure FakeCrosHealthd.
-  cros_healthd::FakeCrosHealthd::Get()->SetAvailableRoutinesForTesting({
-      cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kFloatingPointAccuracy,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kDiskRead,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolution,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolverPresent,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kLanConnectivity,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kMemory,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kSignalStrength,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kGatewayCanBePinged,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kSensitiveSensor,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kFingerprintAlive,
-      cros_healthd::mojom::DiagnosticRoutineEnum::
-          kSmartctlCheckWithPercentageUsed,
-  });
-
-  base::test::TestFuture<
-      const std::vector<crosapi::mojom::DiagnosticsRoutineEnum>&>
-      future;
-  diagnostics_service()->GetAvailableRoutines(future.GetCallback());
-
-  ASSERT_TRUE(future.Wait());
-
-  EXPECT_THAT(
-      future.Get(),
-      testing::ElementsAre(
-          crosapi::mojom::DiagnosticsRoutineEnum::kAcPower,
-          crosapi::mojom::DiagnosticsRoutineEnum::kBatteryCapacity,
-          crosapi::mojom::DiagnosticsRoutineEnum::kBatteryCharge,
-          crosapi::mojom::DiagnosticsRoutineEnum::kBatteryDischarge,
-          crosapi::mojom::DiagnosticsRoutineEnum::kBatteryHealth,
-          crosapi::mojom::DiagnosticsRoutineEnum::kCpuCache,
-          crosapi::mojom::DiagnosticsRoutineEnum::kFloatingPointAccuracy,
-          crosapi::mojom::DiagnosticsRoutineEnum::kPrimeSearch,
-          crosapi::mojom::DiagnosticsRoutineEnum::kCpuStress,
-          crosapi::mojom::DiagnosticsRoutineEnum::kDiskRead,
-          crosapi::mojom::DiagnosticsRoutineEnum::kDnsResolution,
-          crosapi::mojom::DiagnosticsRoutineEnum::kDnsResolverPresent,
-          crosapi::mojom::DiagnosticsRoutineEnum::kLanConnectivity,
-          crosapi::mojom::DiagnosticsRoutineEnum::kMemory,
-          crosapi::mojom::DiagnosticsRoutineEnum::kSignalStrength,
-          crosapi::mojom::DiagnosticsRoutineEnum::kGatewayCanBePinged,
-          crosapi::mojom::DiagnosticsRoutineEnum::kSmartctlCheck,
-          crosapi::mojom::DiagnosticsRoutineEnum::kSensitiveSensor,
-          crosapi::mojom::DiagnosticsRoutineEnum::kNvmeSelfTest,
-          crosapi::mojom::DiagnosticsRoutineEnum::kFingerprintAlive,
-          crosapi::mojom::DiagnosticsRoutineEnum::
-              kSmartctlCheckWithPercentageUsed));
-}
-
 TEST_F(DiagnosticsServiceAshTest, GetRoutineUpdateSuccess) {
   constexpr char kStatusMessage[] = "Routine ran by Google.";
   constexpr uint32_t kProgress = 87;

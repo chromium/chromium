@@ -68,8 +68,9 @@ class OsDiagnosticsGetAvailableRoutinesFunction
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult(
-      const std::vector<crosapi::mojom::DiagnosticsRoutineEnum>& routines);
+  void OnResponse(
+      const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
+          routines);
 };
 
 class OsDiagnosticsGetRoutineUpdateFunction

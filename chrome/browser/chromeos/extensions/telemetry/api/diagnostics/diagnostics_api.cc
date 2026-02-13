@@ -113,14 +113,13 @@ DiagnosticsApiFunctionBase::GetService() {
 // OsDiagnosticsGetAvailableRoutinesFunction -----------------------------------
 
 void OsDiagnosticsGetAvailableRoutinesFunction::RunIfAllowed() {
-  auto cb = base::BindOnce(&OsDiagnosticsGetAvailableRoutinesFunction::OnResult,
-                           this);
-
-  GetRemoteService()->GetAvailableRoutines(std::move(cb));
+  GetService()->GetAvailableRoutines(base::BindOnce(
+      &OsDiagnosticsGetAvailableRoutinesFunction::OnResponse, this));
 }
 
-void OsDiagnosticsGetAvailableRoutinesFunction::OnResult(
-    const std::vector<crosapi::mojom::DiagnosticsRoutineEnum>& routines) {
+void OsDiagnosticsGetAvailableRoutinesFunction::OnResponse(
+    const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
+        routines) {
   cx_diag::GetAvailableRoutinesResponse result;
   for (const auto in : routines) {
     cx_diag::RoutineType out;

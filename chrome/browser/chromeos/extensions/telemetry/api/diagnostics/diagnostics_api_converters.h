@@ -14,7 +14,7 @@
 
 namespace chromeos::converters::diagnostics {
 
-bool ConvertMojoRoutine(crosapi::mojom::DiagnosticsRoutineEnum in,
+bool ConvertMojoRoutine(ash::cros_healthd::mojom::DiagnosticRoutineEnum in,
                         chromeos::api::os_diagnostics::RoutineType* out);
 
 chromeos::api::os_diagnostics::RoutineStatus ConvertRoutineStatus(

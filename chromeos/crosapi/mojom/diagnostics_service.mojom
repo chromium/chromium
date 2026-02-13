@@ -23,9 +23,7 @@ import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 [Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
 interface DiagnosticsService {
-  // Returns an array of all diagnostic routines that the platform supports.
-  GetAvailableRoutines@0()
-      => (array<DiagnosticsRoutineEnum> available_routines);
+  // GetAvailableRoutines@0 was removed.
 
   // Sends commands to an existing routine. Also returns status information for
   // the routine.

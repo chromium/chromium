@@ -69,43 +69,40 @@ class TelemetryExtensionDiagnosticsApiBrowserTest
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetAvailableRoutinesSuccess) {
-  {
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    fake_service_impl->SetAvailableRoutines({
-        crosapi::DiagnosticsRoutineEnum::kAcPower,
-        crosapi::DiagnosticsRoutineEnum::kBatteryCapacity,
-        crosapi::DiagnosticsRoutineEnum::kBatteryCharge,
-        crosapi::DiagnosticsRoutineEnum::kBatteryDischarge,
-        crosapi::DiagnosticsRoutineEnum::kBatteryHealth,
-        crosapi::DiagnosticsRoutineEnum::kCpuCache,
-        crosapi::DiagnosticsRoutineEnum::kFloatingPointAccuracy,
-        crosapi::DiagnosticsRoutineEnum::kPrimeSearch,
-        crosapi::DiagnosticsRoutineEnum::kCpuStress,
-        crosapi::DiagnosticsRoutineEnum::kDiskRead,
-        crosapi::DiagnosticsRoutineEnum::kDnsResolution,
-        crosapi::DiagnosticsRoutineEnum::kDnsResolverPresent,
-        crosapi::DiagnosticsRoutineEnum::kLanConnectivity,
-        crosapi::DiagnosticsRoutineEnum::kMemory,
-        crosapi::DiagnosticsRoutineEnum::kSignalStrength,
-        crosapi::DiagnosticsRoutineEnum::kGatewayCanBePinged,
-        crosapi::DiagnosticsRoutineEnum::kSmartctlCheck,
-        crosapi::DiagnosticsRoutineEnum::kSensitiveSensor,
-        crosapi::DiagnosticsRoutineEnum::kNvmeSelfTest,
-        crosapi::DiagnosticsRoutineEnum::kFingerprintAlive,
-        crosapi::DiagnosticsRoutineEnum::kSmartctlCheckWithPercentageUsed,
-        crosapi::DiagnosticsRoutineEnum::kEmmcLifetime,
-        crosapi::DiagnosticsRoutineEnum::kBluetoothPower,
-        crosapi::DiagnosticsRoutineEnum::kUfsLifetime,
-        crosapi::DiagnosticsRoutineEnum::kPowerButton,
-        crosapi::DiagnosticsRoutineEnum::kAudioDriver,
-        crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery,
-        crosapi::DiagnosticsRoutineEnum::kBluetoothScanning,
-        crosapi::DiagnosticsRoutineEnum::kBluetoothPairing,
-        crosapi::DiagnosticsRoutineEnum::kFan,
-    });
-
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
+  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
+  ash::cros_healthd::FakeCrosHealthd::Get()->SetAvailableRoutinesForTesting({
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kFloatingPointAccuracy,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDiskRead,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolution,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolverPresent,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kLanConnectivity,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kMemory,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSignalStrength,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kGatewayCanBePinged,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSensitiveSensor,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kFingerprintAlive,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::
+          kSmartctlCheckWithPercentageUsed,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kEmmcLifetime,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPower,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUfsLifetime,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPowerButton,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAudioDriver,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothDiscovery,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothScanning,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPairing,
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kFan,
+  });
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([

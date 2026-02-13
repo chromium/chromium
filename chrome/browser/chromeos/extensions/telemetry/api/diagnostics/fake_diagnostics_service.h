@@ -32,7 +32,6 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
   BindNewPipeAndPassRemote();
 
   // crosapi::health::mojom::DiagnosticsService overrides.
-  void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
   void GetRoutineUpdate(int32_t id,
                         crosapi::mojom::DiagnosticsRoutineCommandEnum command,
                         bool include_output,
@@ -41,10 +40,6 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
   // Sets the return value for |Run*Routine|.
   void SetRunRoutineResponse(
       crosapi::mojom::DiagnosticsRunRoutineResponsePtr expected_response);
-
-  // Sets the return value for |GetAvailableRoutines|.
-  void SetAvailableRoutines(
-      std::vector<crosapi::mojom::DiagnosticsRoutineEnum> available_routines);
 
   // Sets the return value for |GetRoutineUpdate|.
   void SetRoutineUpdateResponse(
