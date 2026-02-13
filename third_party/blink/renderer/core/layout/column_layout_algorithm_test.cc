@@ -6683,17 +6683,21 @@ TEST_F(ColumnLayoutAlgorithmTest,
 
   ASSERT_TRUE(gap_geometry);
 
-  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(67)),
-                                             MainGap(LayoutUnit(137)),
-                                             MainGap(LayoutUnit(207))};
+  const Vector<MainGap> expected_row_gaps = {
+      MainGap(LayoutUnit(67)), MainGap(LayoutUnit(137)),
+      MainGap(LayoutUnit(142), SpannerMainGapType::kStart),
+      MainGap(LayoutUnit(143), SpannerMainGapType::kEnd),
+      MainGap(LayoutUnit(207))};
   const Vector<CrossGap> expected_column_gaps = {};
 
   const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
   const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
-  EXPECT_EQ(row_gaps.size(), 3);
+  EXPECT_EQ(row_gaps.size(), 5);
   EXPECT_EQ(column_gaps.size(), 0);
 
   EXPECT_FALSE(row_gaps[0].IsSpannerMainGap());
+  EXPECT_TRUE(row_gaps[2].IsStartSpannerMainGap());
+  EXPECT_TRUE(row_gaps[3].IsEndSpannerMainGap());
 
   EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
   EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));

@@ -416,8 +416,11 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
 
   container_builder_.HandleOofsAndSpecialDescendants();
 
+  // If we don't create any columns, then we don't bother dealing with gap
+  // decorations.
   if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-      Style().HasGapRule() && (!cross_gaps_.empty() || !main_gaps_.empty())) {
+      Style().HasGapRule() && (!cross_gaps_.empty() || !main_gaps_.empty()) &&
+      first_column_offset_.has_value()) {
     auto* gap_geometry =
         MakeGarbageCollected<GapGeometry>(GapGeometry::kMultiColumn);
 
@@ -1496,7 +1499,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
   margin_strut->Append(margins.block_end, /* is_quirky */ false);
 
   if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-      Style().HasGapRule() && !cross_gaps_.empty()) {
+      Style().HasGapRule()) {
     if (main_gaps_.empty() || !main_gaps_.back().IsStartSpannerMainGap()) {
       // This spanner is preceded by column content (because there are cross
       // gaps, and no preceding adjacent spanner). Insert a break for column
