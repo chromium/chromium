@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,6 +34,29 @@ class GlicActivePinnedFocusedTabManagerBrowserTest
         {features::kGlic, features::kGlicMultiInstance,
          mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
         {});
+  }
+
+ protected:
+  // Setup tabs for test and return handles. Uses current tab, but if count > 1
+  // then additional tabs will be created.
+  std::vector<tabs::TabInterface*> SetupTabs(int count) {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+    for (int i = 0; i < count - 1; ++i) {
+      EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+          browser(), GURL("about:blank"),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    }
+
+    std::vector<tabs::TabInterface*> tabs;
+    for (int i = 0; i < count; ++i) {
+      tabs::TabInterface* tab = GetTabListInterface()->GetTab(i);
+      EXPECT_TRUE(tab);
+      if (tab) {
+        tabs.push_back(tab);
+      }
+    }
+    return tabs;
   }
 
  private:
@@ -50,8 +74,9 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
   auto& manager = service->sharing_manager();
 
   // 2. Open a tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  std::vector<tabs::TabInterface*> tabs = SetupTabs(1);
+  ASSERT_FALSE(tabs.empty());
+  tabs::TabInterface* tab = tabs[0];
   ASSERT_TRUE(tab);
 
   // 3. Toggle Glic to ensure we are in a mode that uses
@@ -94,14 +119,11 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
   ASSERT_TRUE(service);
   auto& manager = service->sharing_manager();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
+  std::vector<tabs::TabInterface*> tabs = SetupTabs(2);
+  ASSERT_EQ(tabs.size(), 2u);
+  tabs::TabInterface* tab1 = tabs[0];
+  tabs::TabInterface* tab2 = tabs[1];
   ASSERT_TRUE(tab1);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  tabs::TabInterface* tab2 = browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab2);
   ASSERT_NE(tab1, tab2);
 
@@ -139,13 +161,10 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
   auto& manager = service->sharing_manager();
 
   // Open two tabs.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  tabs::TabInterface* tab2 = browser()->GetActiveTabInterface();
+  std::vector<tabs::TabInterface*> tabs = SetupTabs(2);
+  ASSERT_EQ(tabs.size(), 2u);
+  tabs::TabInterface* tab1 = tabs[0];
+  tabs::TabInterface* tab2 = tabs[1];
 
   service->ToggleUI(browser(), /*prevent_close=*/false,
                     mojom::InvocationSource::kTopChromeButton);
