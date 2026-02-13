@@ -67,7 +67,7 @@ CanvasNon2DSnapshotProviderBitmap::Create(
 
 CanvasNon2DSnapshotProviderBitmap::CanvasNon2DSnapshotProviderBitmap(
     const CanvasSnapshotProvider::Info& info)
-    : info_(info), snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {}
+    : info_(info) {}
 
 CanvasNon2DSnapshotProviderBitmap::~CanvasNon2DSnapshotProviderBitmap() =
     default;
@@ -110,7 +110,7 @@ CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
   if (sk_image) {
     paint_image =
         PaintImageBuilder::WithDefault()
-            .set_id(snapshot_paint_image_id_)
+            .set_id(cc::PaintImage::GetNextId())
             .set_image(std::move(sk_image), PaintImage::GetNextContentId())
             .TakePaintImage();
   }

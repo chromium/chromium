@@ -59,8 +59,6 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
   };
 
   const CanvasSnapshotProvider::Info info_;
-
-  const cc::PaintImage::Id snapshot_paint_image_id_;
 };
 
 }  // namespace blink
