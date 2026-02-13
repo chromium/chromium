@@ -241,7 +241,7 @@ def FindUpdateableCrates(args) -> List[str]:
     print("Checking which crates can be updated...")
     assert not IsGitDirty()  # No local changes expected here.
     old_crate_ids = crate_utils.GetCurrentCrateIds()
-    GnrtUpdate(args.remaining_args, check_stdout=False, check_exitcode=False)
+    GnrtUpdate(args.remaining_args, check_stdout=True, check_exitcode=True)
     new_crate_ids = crate_utils.GetCurrentCrateIds()
     Git("reset", "--hard")
     only_minor_updates = not DoArgsAskForBreakingChanges(args.remaining_args)
