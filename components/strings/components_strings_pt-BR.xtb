@@ -656,6 +656,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2071156619270205202">Esse não é um número de cartão virtual.</translation>
 <translation id="2071852865256799872">O navegador é gerenciado pela sua organização, e seu perfil é gerenciado por <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informações salvas apenas no dispositivo</translation>
 <translation id="2074733626795553847">Desbloquear <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Você visitou</translation>
 <translation id="2078956195623975415">Jogos de música e dança</translation>
@@ -4902,6 +4903,7 @@ Mais detalhes:
 <translation id="8858065207712248076">O Chrome recomenda redefinir sua senha de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se você a reutilizou em outros sites.</translation>
 <translation id="885906927438988819">Se o endereço estiver correto, <ph name="BEGIN_LINK" />tente executar o Diagnóstico de Rede do Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Artes digitais e fotográficas</translation>
+<translation id="8861482055962701239">Não foi possível salvar essas informações na sua Carteira do Google. Elas foram salvas no Chrome deste dispositivo. Quando você usar a Carteira de novo, o Chrome vai oferecer a opção de salvar essas informações nela.</translation>
 <translation id="8863218129525348270">Para agilizar o pagamento na próxima vez, salve o cartão no seu dispositivo</translation>
 <translation id="8864939224504814334">Ternos e roupas sociais</translation>
 <translation id="8866132857352163524">Trilhas sonoras</translation>

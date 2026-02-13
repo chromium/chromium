@@ -656,6 +656,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2071156619270205202">Txartela ez da egokia txartel birtualaren zenbaki bat izateko.</translation>
 <translation id="2071852865256799872">Zure erakundeak kudeatzen du arakatzailea, eta zure profila, aldiz, <ph name="PROFILE_DOMAIN" /> domeinuak</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Gailuan soilik gorde da informazioa</translation>
 <translation id="2074733626795553847">Desblokeatu <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Azken bisita:</translation>
 <translation id="2078956195623975415">Musika- eta dantza-jokoak</translation>
@@ -4895,6 +4896,7 @@ Xehetasun gehiago:
 <translation id="8858065207712248076"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> pasahitza beste webgune batzuetan ere erabili baduzu, hura berrezartzea gomendatzen du Chrome-k.</translation>
 <translation id="885906927438988819">Behar bezala idatzita badago, <ph name="BEGIN_LINK" />exekutatu Windows-en sare-diagnostikoak<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Argazkilaritza eta arte digitala</translation>
+<translation id="8861482055962701239">Informazioa ezin izan da Google Diru-zorroa zerbitzuan gorde. Horren ordez, gailu honetako Chrome-n gorde da. Hura erabiltzen duzun hurrengoan, Chrome-k Diru-zorroa zerbitzuan gorde nahi duzun galdetuko dizu.</translation>
 <translation id="8863218129525348270">Hurrengoan bizkorrago ordaintzeko, gorde txartela gailuan</translation>
 <translation id="8864939224504814334">Trajeak eta arropa formala</translation>
 <translation id="8866132857352163524">Soinu-bandak</translation>

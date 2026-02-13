@@ -261,6 +261,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome uni olib tashlashni tavsiya qiladi. <ph name="BEGIN_LINK" />Dastaklanadigan kengaytmalar haqida batafsil<ph name="END_LINK" />}other{Chrome ularni olib tashlashni tavsiya qiladi. <ph name="BEGIN_LINK" />Dastaklanadigan kengaytmalar haqida batafsil<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">“Varaq kiritish va hokazo” tugmasi yordamida bir nechta varaq, fayl va vositalar kiritish orqali qidiruvni chuqurlashtiring</translation>
 <translation id="3756724684201900923">Chrome oʻrnatish haqida batafsil</translation>
+<translation id="3772152698251011058">Bu sayt haqida Googlega xabar berish</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Hisobga kirishdagi xatolik sababli ChromeOS Flex maʼlumotlarni sinxronlay olmadi.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -412,6 +413,8 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tan
 Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> bilan ishlatiladigan Chrome profilini tanlang</translation>
 <translation id="5468572406162360320">Funksiyalarni yaxshilash maqsadida Chrome ulardan foydalanish axborotingizni Googlega yuboradi. Bu axborot xodimlar tomonidan oʻqilishi, qayta ishlanishi va izohlanishi mumkin.</translation>
+<translation id="547202872422499512">Endi Windows ishga tushirilganda Chrome ham ishga tushadi va darhol kezishni boshlash mumkin. Buni sozlamalarda faolsizlantirishingiz mumkin.</translation>
+<translation id="5486346529181556467">Siz zararli deb hisoblagan sayt haqida xabar berish orqali hamma uchun internet xavfszligini taʼminlang. <ph name="BEGIN_LINK" />Google xavfsiz boʻlmagan saytlar siyosati<ph name="END_LINK" /> haqida batafsil.</translation>
 <translation id="5524890928877629608">qidiruv hududining yuqori chap burchagi: chap <ph name="LEFT" />%, yuqori <ph name="TOP" />%</translation>
 <translation id="5550137307985173298">Chromega yangi qiyofa berish uchun yangi varaq sahifasidagi Chromeni moslash tugmasini bosing</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -571,6 +574,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Google Chrome Beta mDNS trafigiga ruxsat berishiga oid kiruvchi qoida.</translation>
 <translation id="6979589607440534284">Chrome ayrim fayllarni nega bloklashi haqida batafsil. Yangi varaqda ochiladi</translation>
+<translation id="6985817499499247940">Darhol kezishni boshlash uchun Chromeni avtomatik ishga tushiring.</translation>
 <translation id="6991926986715044139">Google Lens tezkor tugmasi doim chiqsin</translation>
 <translation id="6999131147875565462">Chrome tezroq ishlaydi va JavaScript ishlatadigan funksiyalar bexato ishlaydi</translation>
 <translation id="7011190694940573312">Operatsion tizim versiyasi mos emasligi sababli oʻrnatilmadi.</translation>
@@ -599,6 +603,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7288567540154601580">Varaqlar va kengaytmalar</translation>
 <translation id="7296210096911315575">Foydalanish va xavfsizlik</translation>
 <translation id="7302361266603927550">Ayrim Chrome maʼlumotlari Google hisobingizga hali saqlanmagan. Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi.</translation>
+<translation id="7306401458628386911">Darhol kezishni boshlang: Chrome endi Windows ishga tushirilganda ochiladi.</translation>
 <translation id="7308322188646931570">Yuklab olish uchun Chrome brauzerida omborga saqlash ruxsati bo‘lishi zarur</translation>
 <translation id="7339898014177206373">Yangi oyna</translation>
 <translation id="7352651011704765696">Xatolik yuz berdi.</translation>
@@ -662,6 +667,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7827099906024714326">Ayrim maʼlumotlar Google hisobingizda saqlanishi va barcha qurilmalarda ishlatilishidan avval Chrome shaxsingizni tasdiqlashi kerak. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi.</translation>
 <translation id="7832314606810669113">Barcha qurilmalarda bukmarklarni olish uchun Chrome hisobiga kiring. Hisobga kirilgandan keyin bu bukmark Google hisobida saqlanadi.</translation>
 <translation id="7845233973568007926">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin kompyuterni qayta ishga tushirishingiz lozim.</translation>
+<translation id="7847170235260850604">Windows ishga tushirilganda Chrome ishga tushadi</translation>
 <translation id="7849037457735762883">Ishni kelgan joyidan davom ettiring: Chrome har safar qayta ishga tushganda oxirgi varaqlarni tiklashi mumkin. Yoqish uchun bu yerga kiring:</translation>
 <translation id="7869620795354551924">Saqlangan parollardan foydalanish uchun QR kodni kiriting, iOS uchun Chrome ilovasini yuklab oling va Google hisobingizga kiring</translation>
 <translation id="7872446069773932638">Yuklab olinmoqda... <ph name="SECONDS" /> soniya qoldi.</translation>

@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">הכרטיס הזה לא עומד בדרישות לקבלת מספר כרטיס וירטואלי.</translation>
 <translation id="2071852865256799872">הדפדפן מנוהל על ידי הארגון שלך והפרופיל שלך מנוהל על ידי <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">המידע נשמר במכשיר בלבד</translation>
 <translation id="2074733626795553847">ביטול החסימה של <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">ביקרת כאן</translation>
 <translation id="2078956195623975415">משחקי מוזיקה וריקוד</translation>
@@ -4906,6 +4907,7 @@ Del</translation>
 <translation id="8858065207712248076">‏אם הזנת את הסיסמה של <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> באתרים אחרים, ההמלצה של Chrome היא לאפס אותה.</translation>
 <translation id="885906927438988819">‏אם האיות תקין, <ph name="BEGIN_LINK" />יש לנסות להפעיל את אבחון הרשת של Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">אומנות הצילום ואומנות דיגיטלית</translation>
+<translation id="8861482055962701239">‏המידע הזה לא נשמר ב-Google Wallet. במקום זאת, הוא נשמר ב-Chrome במכשיר הזה. בפעם הבאה שייעשה שימוש במידע, Chrome יציע לשמור אותו ב-Google Wallet.</translation>
 <translation id="8863218129525348270">רוצה לשלם מהר יותר בפעם הבאה? כדאי לשמור את פרטי הכרטיס במכשיר</translation>
 <translation id="8864939224504814334">חליפות ערב ולבוש עסקי</translation>
 <translation id="8866132857352163524">פסקולים</translation>

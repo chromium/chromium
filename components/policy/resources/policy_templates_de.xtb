@@ -1673,6 +1673,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, werden für verwaltete Geräte kei
 <translation id="2158741059065130266">Wenn die Richtlinie auf „True“ gesetzt ist, können Nutzer der <ph name="PRODUCT_OS_NAME" />-App „Dateien“ einen Papierkorb sehen und Dateien unter „Meine Dateien“ und „Downloads“ (einschließlich der vom Nutzer erstellten Nachfolgerelemente) beim Löschen dorthin verschieben.
 
       Wenn die Richtlinie auf „False“ gesetzt ist, sind die Dateien, die sich bereits im Papierkorb befanden, weiterhin verfügbar: Zuvor verborgene Dateien werden angezeigt und das Verzeichnis „Papierkorb“ ist unter „Meine Dateien“ oder „Downloads“ einsehbar.</translation>
+<translation id="215891883000260452">Erhebung von WebRTC-Diagnoseprotokollen für bestimmte Ursprünge aktivieren</translation>
 <translation id="2159092270572925582">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, durch die angegeben wird, welche Websites blockierbare (aktive) gemischte Inhalte (HTTP-Inhalte auf HTTPS-Websites) anzeigen dürfen und auf denen HTTPS-Upgrades für optional blockierbare gemischte Inhalte deaktiviert werden.
 
           Ist diese Richtlinie nicht konfiguriert, werden blockierbare gemischte Inhalte gesperrt und optional blockierbare gemischte Inhalte auf HTTPS umgestellt. Nutzer können Ausnahmen für bestimmte Websites festlegen.
@@ -2496,6 +2497,13 @@ Das System fragt AAAA-Einträge nur dann ab, wenn es für einen globalen IPv6-Ho
       Hinweis: Seit Version M114 dürfen bestimmte Kiosk-Apps das Verhalten dieser Richtlinie für bestimmte Anwendungsfälle überschreiben, z. B. für Schulprüfungen.</translation>
 <translation id="2667894101494585925">Abruf von Daten zur Optimierung aktivieren</translation>
 <translation id="2669157090883237118">Dadurch wird die empfohlene Konfiguration von <ph name="PRODUCT_OS_NAME" /> nicht geändert.</translation>
+<translation id="2669314653349044073">Mit dieser Richtlinie kannst du die Erhebung von WebRTC-Diagnoseprotokollen für bestimmte Ursprünge aktivieren.
+
+Ausführliche Informationen zu gültigen Eingabemustern findest du unter https://chromeenterprise.google/policies/url-patterns. Der Platzhalter „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie. Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert. Schema und Subdomains werden unterstützt.
+
+Wenn die Richtlinie konfiguriert ist, wird die Erhebung von Diagnoseprotokollen für die Ursprünge aktiviert, die mit den Mustern in der Liste übereinstimmen.
+
+Ist die Richtlinie nicht konfiguriert, ist die Erhebung von Diagnoseprotokollen standardmäßig deaktiviert.</translation>
 <translation id="2672012807430078509">Steuerung, durch die NTLM als Authentifizierungsprotokoll für SMB-Bereitstellungen aktiviert wird</translation>
 <translation id="2673363037046384711">Der Endnutzer kann den Modus für hohe Effizienz aktivieren oder deaktivieren.</translation>
 <translation id="2673968385134502798">Spiele</translation>

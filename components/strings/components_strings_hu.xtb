@@ -656,6 +656,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2071156619270205202">Ez a kártya nem használható virtuális kártyaszámmal.</translation>
 <translation id="2071852865256799872">Böngészőjét a szervezete, a profilját pedig a(z) <ph name="PROFILE_DOMAIN" /> kezeli</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Az információ csak az eszközre lett mentve</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> letiltásának feloldása</translation>
 <translation id="2074771604462073334">Ekkor járt itt:</translation>
 <translation id="2078956195623975415">Zenés és táncos játékok</translation>
@@ -704,6 +705,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2137891579555018930">Várakozás az engedélyre…</translation>
 <translation id="213826338245044447">Mobilos könyvjelzők</translation>
 <translation id="2141000681034340397">Bevitel szerkesztése</translation>
+<translation id="2141475438898772664">Fizetés 4 részletben vagy havonta</translation>
 <translation id="2144171668675205303">Nincsenek aktív témák.</translation>
 <translation id="2145193671493396738">Gazdasági hírek</translation>
 <translation id="214556005048008348">Fizetés visszavonása</translation>
@@ -2845,6 +2847,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5543564889050342791">Állatkertek, akváriumok és rezervátumok</translation>
 <translation id="5543722831081909240">180 fok</translation>
 <translation id="5544836308113951378">Hajóutak és hajóbérlés</translation>
+<translation id="5545314360139398232">A(z) <ph name="ISSUER_NAME" /> összekapcsolása későbbi fizetéshez</translation>
 <translation id="5547939254150808298">Nyomda és kiadás</translation>
 <translation id="554815783948612276">Fórum- és chatszolgáltatók</translation>
 <translation id="5548606607480005320">Biztonsági ellenőrzés</translation>
@@ -3692,6 +3695,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6926216138694948720">Testművészet</translation>
 <translation id="692638818576287323">Haszonjárművek</translation>
 <translation id="6927878187051807444">kamerafájlok és képernyőképek</translation>
+<translation id="6929949393612835405">Bezárás és visszatérés ide: „<ph name="OPENER_TITLE" />”</translation>
 <translation id="6930607614725241390">Keresés az oldalsó panelen</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Az alapértelmezett keresőmotor lehetővé teszi az internetes keresést, és biztosítja a Chrome-funkciókat<ph name="END_BOLD" />, például a címsávból és a weboldalakon található képek alapján történő keresést. Előfordulhat, hogy egy funkció nem áll rendelkezésre, ha a keresőmotor nem támogatja.</translation>
 <translation id="6934672428414710184">Ez a név a Google-fiókjából származik</translation>
@@ -4900,6 +4904,7 @@ További részletek:
 <translation id="8858065207712248076">A Chrome azt javasolja, hogy adjon meg új <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-jelszót a régi helyett, ha azt más webhelyeken is használta.</translation>
 <translation id="885906927438988819">Ha helyesen írta, <ph name="BEGIN_LINK" />próbálkozzon a Windows hálózati diagnosztikájának futtatásával<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fényképezés és digitális művészetek</translation>
+<translation id="8861482055962701239">Nem sikerült elmenteni ezt az információt a Google Walletbe. Csak az eszköz Chrome alkalmazásába mentette a rendszer. A következő használatakor a Chrome felkínálja a Walletbe való mentését.</translation>
 <translation id="8863218129525348270">A következő alkalommal gyorsabban fizethet, ha kártyáját az eszközre menti</translation>
 <translation id="8864939224504814334">Öltönyök és üzleti öltözék</translation>
 <translation id="8866132857352163524">Filmzenék</translation>

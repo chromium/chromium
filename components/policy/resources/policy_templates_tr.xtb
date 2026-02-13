@@ -1703,6 +1703,7 @@ Bu politika ayarlanmadan bırakılırsa, yönetilen cihazlar için DNS-over-HTTP
 <translation id="2158741059065130266">Politika, Doğru değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> Dosyalar uygulamasının kullanıcıları bir çöp kutusu görür ve Dosyalarım ve İndirilenler bölümlerindeki dosyalar (kullanıcıların oluşturduğu alt öğeler dahil) silindiğinde oraya gönderilir.
 
       Politika, Yanlış değerine ayarlanırsa daha önce çöp kutusunda bulunan dosyalar, gizli dosyalar gösterilerek ve Dosyalarım veya İndirilenler bölümünde .çöp kutusu dizini bulunarak kullanılabilir olmaya devam eder.</translation>
+<translation id="215891883000260452">Belirli kaynaklar için WebRTC teşhis günlüklerinin toplanmasını etkinleştir</translation>
 <translation id="2159092270572925582">Engellenebilir (ör. etkin) karma içeriği (ör. HTTPS sitelerindeki HTTP içeriği) görüntülemesine izin verilen sitelerin belirtildiği ve isteğe bağlı olarak engellenebilir karma içerik yükseltmelerinin devre dışı bırakılacağı bir URL kalıpları listesini ayarlamanıza olanak tanır.
 
           Bu politika ayarlanmadan bırakılırsa engellenebilir karma içerik engellenir ve isteğe bağlı olarak engellenebilir karma içerik yükseltilir, ayrıca kullanıcıların belirli sitelerde buna izin vermek üzere istisnalar ayarlamasına izin verilir.
@@ -2560,6 +2561,13 @@ Sistem, AAAA kayıtlarını yalnızca küresel bir IPv6 ana makinesinden cihaza 
       Not: M114 sürümünden itibaren belirli kiosk uygulamalarının, öğrenci değerlendirmeleri gibi özel kullanım alanlarında bu politikanın davranışını geçersiz kılmasına izin verilmektedir.</translation>
 <translation id="2667894101494585925">Optimizasyon Kılavuzunun Getirilmesini Etkinleştir</translation>
 <translation id="2669157090883237118">Önerilen <ph name="PRODUCT_OS_NAME" /> yapılandırmasını değiştirme.</translation>
+<translation id="2669314653349044073">Bu politika, belirli kaynaklar için WebRTC teşhis günlüklerinin toplanmasını etkinleştirmeye olanak tanır.
+
+Geçerli giriş kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir. Bu politika, yalnızca kaynağa göre eşleşir. Dolayısıyla, URL kalıbındaki yollar yok sayılır. Şema ve alt alan adları desteklenir.
+
+Politika ayarlanırsa listedeki kalıplarla eşleşen kaynaklar için teşhis günlüklerinin toplanması etkinleştirilir.
+
+Politika ayarlanmazsa teşhis günlüklerinin toplanması varsayılan olarak devre dışı bırakılır.</translation>
 <translation id="2672012807430078509">NTLM'nin SMB ekleme için kimlik doğrulama protokolü olarak etkinleştirilmesini kontrol eder</translation>
 <translation id="2673363037046384711">Son kullanıcı, Yüksek Verimlilik Modu'nu etkinleştirebilir veya devre dışı bırakabilir.</translation>
 <translation id="2673968385134502798">Oyunlar</translation>

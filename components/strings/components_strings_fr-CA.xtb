@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">Cette carte n'est pas compatible avec un numéro de carte virtuelle.</translation>
 <translation id="2071852865256799872">Votre navigateur est géré par votre organisation et votre profil est géré par <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informations enregistrées sur l'appareil uniquement</translation>
 <translation id="2074733626795553847">Débloquer <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Vous avez visité cette page</translation>
 <translation id="2078956195623975415">Jeux de musique et de danse</translation>
@@ -4900,6 +4901,7 @@ Détails supplémentaires :
 <translation id="8858065207712248076">Chrome recommande de réinitialiser votre mot de passe <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="885906927438988819">S'il n'y a pas d'erreur, <ph name="BEGIN_LINK" />essayez d'exécuter Diagnostics réseau de Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Photographie et arts numériques</translation>
+<translation id="8861482055962701239">Impossible d'enregistrer ces renseignements dans votre Google Portefeuille. Ils seront plutôt enregistrés dans Chrome sur cet appareil. Chrome vous proposera de les enregistrer dans Portefeuille la prochaine fois que vous l'utiliserez.</translation>
 <translation id="8863218129525348270">Pour payer plus rapidement la prochaine fois, enregistrez votre carte sur votre appareil</translation>
 <translation id="8864939224504814334">Complets et tenues professionnelles</translation>
 <translation id="8866132857352163524">Trames sonores</translation>

@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 ਮਿੰਟ ਪਹਿਲਾਂ}one{# ਮਿੰਟ ਪਹਿਲਾਂ}other{# ਮਿੰਟ ਪਹਿਲਾਂ}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ਨੂੰ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 ਮਹੀਨਾ ਪਹਿਲਾਂ}one{# ਮਹੀਨਾ ਪਹਿਲਾਂ}other{# ਮਹੀਨੇ ਪਹਿਲਾਂ}}</translation>
+<translation id="1591017414891297549">ਪੂਰਵ-ਝਲਕ</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 ਮਿੰਟ ਅਤੇ }one{# ਮਿੰਟ ਅਤੇ }other{# ਮਿੰਟ ਅਤੇ }}</translation>
 <translation id="1643823602425662293">ਸੂਚਨਾ</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> ਹੋਰ</translation>
 <translation id="8730621377337864115">ਹੋ ਗਿਆ</translation>
+<translation id="8741385002816058621">ਇਹ ਪੂਰਵ-ਝਲਕ ਵਿੱਚ ਇੱਕ ਵਿਸ਼ੇਸ਼ਤਾ ਹੈ</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 ਘੰਟਾ}one{# ਘੰਟਾ}other{# ਘੰਟੇ}}</translation>
 <translation id="8798099450830957504">ਪੂਰਵ-ਨਿਰਧਾਰਤ</translation>
 <translation id="8841375032071747811">'ਪਿੱਛੇ' ਬਟਨ</translation>

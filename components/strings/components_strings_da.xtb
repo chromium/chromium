@@ -656,6 +656,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2071156619270205202">Dette kort er ikke kvalificeret til et virtuelt kortnummer</translation>
 <translation id="2071852865256799872">Din browser administreres af din organisation, og din profil administreres af <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Oplysningerne er kun gemt på enheden</translation>
 <translation id="2074733626795553847">Fjern blokeringen af <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Du besøgte websitet</translation>
 <translation id="2078956195623975415">Musik- og dansespil</translation>
@@ -4902,6 +4903,7 @@ Yderligere oplysninger:
 <translation id="8858065207712248076">Chrome anbefaler, at du nulstiller din adgangskode til <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, hvis du har brugt den på andre websites.</translation>
 <translation id="885906927438988819">Hvis stavningen er korrekt, kan du <ph name="BEGIN_LINK" />prøve at køre Windows Netværksdiagnosticering<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Foto- og digitalkunst</translation>
+<translation id="8861482055962701239">Disse oplysninger kunne ikke gemmes i Google Wallet. De er gemt i Chrome på denne enhed i stedet. Chrome tilbyder at gemme oplysningerne i Wallet, næste gang du bruger den.</translation>
 <translation id="8863218129525348270">Gem dit kort på din enhed for at betale hurtigere næste gang</translation>
 <translation id="8864939224504814334">Jakkesæt og påklædning til forretningsfolk</translation>
 <translation id="8866132857352163524">Lydspor</translation>

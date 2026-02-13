@@ -656,6 +656,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2071156619270205202">Ova kartica ne ispunjava uslove za broj virtuelne kartice.</translation>
 <translation id="2071852865256799872">Vašim preglednikom upravlja vaša organizacija, a profilom <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informacije su sačuvane samo na uređaju</translation>
 <translation id="2074733626795553847">Deblokiranje teme <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Posjetili ste</translation>
 <translation id="2078956195623975415">Muzičke i plesne igre</translation>
@@ -4901,6 +4902,7 @@ Dodatni detalji:
 <translation id="8858065207712248076">Chrome preporučuje ponovno postavljanje lozinke za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ako sto je ponovo koristili na drugim web lokacijama.</translation>
 <translation id="885906927438988819">Ako nema greške u pravopisu, <ph name="BEGIN_LINK" />pokušajte pokrenuti Windows dijagnostiku mreže<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografska i digitalna umjetnost</translation>
+<translation id="8861482055962701239">Pohranjivanje ovih informacija u Google Novčaniku nije uspjelo. Umjesto toga su sačuvane u Chromeu na ovom uređaju. Chrome će vam ponuditi da ih sačuvate u Novčaniku sljedeći put kada ih upotrijebite.</translation>
 <translation id="8863218129525348270">Da sljedeći put brže platite, sačuvajte karticu na uređaj</translation>
 <translation id="8864939224504814334">Odijela i poslovna odjeća</translation>
 <translation id="8866132857352163524">Muzika iz filmova</translation>

@@ -705,6 +705,7 @@
 <translation id="2137891579555018930">Ожидание разрешения…</translation>
 <translation id="213826338245044447">Мобильные закладки</translation>
 <translation id="2141000681034340397">Изменить введенные данные</translation>
+<translation id="2141475438898772664">Оплата за 4 раза или помесячно</translation>
 <translation id="2144171668675205303">Нет активных тем</translation>
 <translation id="2145193671493396738">Экономические новости</translation>
 <translation id="214556005048008348">Отменить оплату</translation>
@@ -2848,6 +2849,7 @@
 <translation id="5543564889050342791">Зоопарки, аквариумы и заповедники</translation>
 <translation id="5543722831081909240">180 градусов</translation>
 <translation id="5544836308113951378">Круизы и чартерные рейсы</translation>
+<translation id="5545314360139398232">Использовать рассрочку, связав аккаунт с сервисом "<ph name="ISSUER_NAME" />"</translation>
 <translation id="5547939254150808298">Печать и издательское дело</translation>
 <translation id="554815783948612276">Поставщики форумов и чатов</translation>
 <translation id="5548606607480005320">Проверка безопасности</translation>
@@ -3695,6 +3697,7 @@
 <translation id="6926216138694948720">Боди-арт</translation>
 <translation id="692638818576287323">Коммерческий транспорт</translation>
 <translation id="6927878187051807444">файлов с камеры и скриншотов</translation>
+<translation id="6929949393612835405">Закрыть и вернуться к объекту "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Результаты поиска на боковой панели</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Поисковая система по умолчанию позволяет находить информацию в интернете и пользоваться различными функциями Chrome<ph name="END_BOLD" />, например совершать запросы из адресной строки или по изображению с веб-страницы. Некоторые функции могут быть недоступны, если их не поддерживает ваша поисковая система.</translation>
 <translation id="6934672428414710184">Это имя из вашего аккаунта Google</translation>

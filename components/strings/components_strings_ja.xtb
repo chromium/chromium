@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">このカードでは仮想カード番号はご利用いただけません</translation>
 <translation id="2071852865256799872">お使いのブラウザは組織によって、プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理されています</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">情報はデバイスのみに保存されます</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> のブロックを解除</translation>
 <translation id="2074771604462073334">過去にアクセス</translation>
 <translation id="2078956195623975415">音楽ゲーム、ダンスゲーム</translation>
@@ -4903,6 +4904,7 @@
 <translation id="8858065207712248076"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> パスワードを他のサイトで再使用した場合、Chrome ではパスワードの再設定を促すメッセージが表示されます。</translation>
 <translation id="885906927438988819">タイプミスでない場合は、<ph name="BEGIN_LINK" />Windows ネットワーク診断をお試しください<ph name="END_LINK" />。</translation>
 <translation id="8861126751581835107">芸術写真、デジタルアート</translation>
+<translation id="8861482055962701239">この情報を Google ウォレットに保存できませんでした。代わりにこのデバイスの Chrome に保存されました。次回この情報を使用するときに、ウォレットに保存するかどうかを確認するメッセージが表示されます。</translation>
 <translation id="8863218129525348270">カードをデバイスに保存すると、次回のお支払いが簡単になります</translation>
 <translation id="8864939224504814334">ビジネススーツ</translation>
 <translation id="8866132857352163524">サウンドトラック</translation>

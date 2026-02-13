@@ -656,6 +656,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2071156619270205202">Ova kartica ne ispunjava kriterije za broj virtualne kartice.</translation>
 <translation id="2071852865256799872">Preglednikom upravlja vaša organizacija, a profilom upravlja <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Podaci su spremljeni samo na uređaj</translation>
 <translation id="2074733626795553847">Deblokiraj temu <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Posjetili ste</translation>
 <translation id="2078956195623975415">Glazbene i plesne igre</translation>
@@ -4901,6 +4902,7 @@ Dodatne pojedinosti:
 <translation id="8858065207712248076">Chrome preporučuje poništavanje zaporke za organizaciju <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ako ste je upotrebljavali za druge web-lokacije.</translation>
 <translation id="885906927438988819">Ako nema pravopisnih pogrešaka, <ph name="BEGIN_LINK" />pokušajte pokrenuti Mrežnu dijagnostiku sustava Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografska i digitalna umjetnost</translation>
+<translation id="8861482055962701239">Spremanje podataka u Google Wallet nije uspjelo. Spremljeni su u Chrome na ovom uređaju. Chrome će vam ponuditi da ih spremite u Wallet prilikom sljedeće upotrebe.</translation>
 <translation id="8863218129525348270">Da biste sljedeći put platili brže, spremite karticu na uređaj</translation>
 <translation id="8864939224504814334">Odijela i poslovna odjeća</translation>
 <translation id="8866132857352163524">Filmska glazba</translation>

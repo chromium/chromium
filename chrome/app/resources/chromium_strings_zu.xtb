@@ -137,6 +137,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Idivayisi e-1 ye-HID ibifinyelelwa yisandiso se-Chromium esisodwa noma eziningi}=1{Idivayisi e-1 ye-HID ifinyelelwa yisandiso se-Chromium esisodwa noma eziningi}one{Amadivayisi angu-# e-HID abefinyelelwa yisandiso se-Chromium esisodwa noma eziningi}other{Amadivayisi angu-# e-HID abefinyelelwa yisandiso se-Chromium esisodwa noma eziningi}}</translation>
 <translation id="2401032172288869980">I-Chromium idinga izimvume zekhamera nemakrofoni kule sayithi</translation>
 <translation id="2403703063067034158">Iphutha lokuqala: esinye isenzakalo sokusetha siyaqalisa okwamanje, sicela uzame futhi ngokuhamba kwesikhathi.</translation>
+<translation id="2418322681019544463">Vula amalinki kuChromium kunoma iyiphi i-app futhi ugcine ibhrawuza ifinyeleleka ku-taskbar yakho</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Ngamathuluzi avela ku-Chromium<ph name="END_LINK" />, ungabhrawuza ngokuphepha bese uhlala ulawula</translation>
 <translation id="2451727308784734061">Sebenzisa isinqamuleli sakho ukuze ufike ngokushesha Kusiphathi Sephasiwedi. Ungahambisa isinqamuleli sakho esikrinini sasekhaya sekhompyutha yakho noma isiqalisi se-app.</translation>
 <translation id="2478295928299953161">I-Chromium izovala maduzane</translation>
@@ -613,6 +614,7 @@ I-Chromium ayikwazi ukubuyisela izilungiselelo zakho.</translation>
 <translation id="7745317241717453663">Lokhu kuzosusa idatha yakho yokuphequlula kusukela kule divayisi. Ukuze uthole idatha yakho emuva kwesikhathi, ngena ngemvume ku-Chromium njengo-<ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Isifaki asikwazanga ukudala umkhombandlela wesikhashana. Sicela uhlolele isikhala esikhululekile sediski nemvume ukuze ufake isofthiwe.</translation>
 <translation id="7750130090210923118">Setha Kabusha kuChromium Ezenzakalelayo</translation>
+<translation id="7781047659465034537">Setha iChromium njengokuzenzakalelayo bese uyiphina ku-taskbar</translation>
 <translation id="7786760609782648049">Yenza i-Chromium isheshe</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Kwenze kube nzima kubantu abanokufinyelela kuthrafikhi yakho ye-inthanethi ukuze babone ukuthi imaphi amasayithi owavakashelayo. I-Chromium isebenzisa ukuxhuma okuvikelekile ukuze ibheke ikheli lasesizindeni se-inthanethi lesayithi ku-DNS (Isistimu Yokwetha Isizinda).</translation>

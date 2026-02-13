@@ -660,6 +660,7 @@
 <translation id="2071156619270205202">Նշված համարը չի կարող օգտագործվել վիրտուալ քարտի համար։</translation>
 <translation id="2071852865256799872">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից, իսկ պրոֆիլը՝ <ph name="PROFILE_DOMAIN" /> տիրույթի կողմից</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Տվյալները պահվեցին միայն սարքում</translation>
 <translation id="2074733626795553847">Արգելաբացել «<ph name="TOPIC" />» թեման</translation>
 <translation id="2074771604462073334">Դուք այցելել եք</translation>
 <translation id="2078956195623975415">Երաժշտական և պարային խաղեր</translation>
@@ -4909,6 +4910,7 @@
 <translation id="8858065207712248076">Խորհուրդ ենք տալիս վերակայել <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ի ձեր գաղտնաբառը, եթե այն օգտագործել եք այլ կայքերում:</translation>
 <translation id="885906927438988819">Եթե տառասխալ չկա, <ph name="BEGIN_LINK" />գործարկեք Windows-ի ցանցի դիագնոստիկան<ph name="END_LINK" />։</translation>
 <translation id="8861126751581835107">Լուսանկարչական և թվային արվեստներ</translation>
+<translation id="8861482055962701239">Չհաջողվեց պահել այս տվյալները ձեր Google Wallet-ում։ Փոխարենը դրանք պահվեցին Chrome-ում՝ այս սարքում։ Հաջորդ անգամ, երբ օգտագործեք դրանք, Chrome-ը կառաջարկի պահել Wallet-ում։</translation>
 <translation id="8863218129525348270">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք քարտը ձեր սարքում</translation>
 <translation id="8864939224504814334">Կոստյումներ և բիզնես ոճի հագուստ</translation>
 <translation id="8866132857352163524">Սաունդթրեքներ</translation>

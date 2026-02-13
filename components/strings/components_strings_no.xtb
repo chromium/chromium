@@ -656,6 +656,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2071156619270205202">Dette kortet er ikke kvalifisert for virtuelt kortnummer.</translation>
 <translation id="2071852865256799872">Nettleseren din administreres av organisasjonen din, og profilen din administreres av <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informasjonen er bare lagret på enheten</translation>
 <translation id="2074733626795553847">Opphev blokkeringen av <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Du besøkte nettstedet</translation>
 <translation id="2078956195623975415">Musikk- og dansespill</translation>
@@ -4900,6 +4901,7 @@ Mer informasjon:
 <translation id="8858065207712248076">Chrome anbefaler at du tilbakestiller passordet ditt for <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> hvis du også har brukt det på andre nettsteder.</translation>
 <translation id="885906927438988819">Hvis stavemåten er korrekt, kan du <ph name="BEGIN_LINK" />prøve å kjøre Windows Nettverksdiagnose<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografi og digitalkunst</translation>
+<translation id="8861482055962701239">Kunne ikke lagre denne informasjonen i Google Wallet. Den ble lagret i Chrome på denne enheten i stedet. Chrome tilbyr å lagre den i Wallet neste gang du bruker det.</translation>
 <translation id="8863218129525348270">Lagre kortet på enheten din for å betale raskere neste gang</translation>
 <translation id="8864939224504814334">Dresser og forretningsantrekk</translation>
 <translation id="8866132857352163524">Lydspor</translation>

@@ -656,6 +656,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2071156619270205202">Cette carte n'est pas éligible pour le numéro de carte virtuelle.</translation>
 <translation id="2071852865256799872">Votre navigateur est géré par votre organisation et votre profil par <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informations enregistrées sur l'appareil uniquement</translation>
 <translation id="2074733626795553847">Débloquer <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Vous l'avez consulté</translation>
 <translation id="2078956195623975415">Jeux de musique et de danse</translation>
@@ -4902,6 +4903,7 @@ Informations supplémentaires :
 <translation id="8858065207712248076">L'équipe Chrome vous recommande de réinitialiser votre mot de passe <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="885906927438988819">S'il n'y a pas d'erreur, essayez de <ph name="BEGIN_LINK" />faire un diagnostic réseau Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Photographie et arts numériques</translation>
+<translation id="8861482055962701239">Impossible d'enregistrer ces informations dans Google Wallet. Elles ont été enregistrées dans Chrome sur cet appareil à la place. Chrome vous proposera de les enregistrer dans Wallet la prochaine fois que vous l'utiliserez.</translation>
 <translation id="8863218129525348270">Pour payer plus rapidement la prochaine fois, enregistrez votre carte sur votre appareil</translation>
 <translation id="8864939224504814334">Costumes et tenues de ville</translation>
 <translation id="8866132857352163524">Bandes-son</translation>

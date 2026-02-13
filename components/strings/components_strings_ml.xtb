@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">ഈ കാർഡ് വെർച്വൽ കാർഡ് നമ്പറിന് യോഗ്യമല്ല.</translation>
 <translation id="2071852865256799872">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ ഓർഗനൈസേഷനും നിങ്ങളുടെ പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് <ph name="PROFILE_DOMAIN" /> ഡൊമെയ്‌നുമാണ്</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">വിവരങ്ങൾ ഉപകരണത്തിൽ മാത്രം സംരക്ഷിച്ചു</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> അൺബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="2074771604462073334">നിങ്ങൾ സന്ദർശിച്ചത്</translation>
 <translation id="2078956195623975415">സംഗീത, നൃത്ത ഗെയിമുകൾ</translation>
@@ -4898,6 +4899,7 @@
 <translation id="8858065207712248076">മറ്റ് സൈറ്റുകളിൽ നിങ്ങൾ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് പുനഃസജ്ജീകരിക്കാൻ Chrome ശുപാർ‌ശ ചെയ്യുന്നു.</translation>
 <translation id="885906927438988819">അക്ഷരങ്ങൾ ശരിയാണെങ്കിൽ, <ph name="BEGIN_LINK" />Windows നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">ഫോട്ടോഗ്രാഫിക്, ഡിജിറ്റൽ ആർട്‌സ്</translation>
+<translation id="8861482055962701239">ഈ വിവരങ്ങൾ നിങ്ങളുടെ Google Wallet-ലേക്ക് സംരക്ഷിക്കാനായില്ല. പകരം, ഈ ഉപകരണത്തിലെ Chrome-ൽ സംരക്ഷിച്ചു. അടുത്ത തവണ നിങ്ങൾ ഇത് ഉപയോഗിക്കുമ്പോൾ Wallet-ലേക്ക് സംരക്ഷിക്കാൻ Chrome ഓഫർ ചെയ്യും.</translation>
 <translation id="8863218129525348270">അടുത്ത പ്രാവശ്യം വേഗത്തിൽ പണമടയ്ക്കാൻ, നിങ്ങളുടെ കാർഡ് ഉപകരണത്തിലേക്ക് സംരക്ഷിക്കുക</translation>
 <translation id="8864939224504814334">സ്യൂട്ടുകളും ബിസിനസ് വസ്‌ത്രവും</translation>
 <translation id="8866132857352163524">സൗണ്ട്ട്രാക്കുകൾ</translation>

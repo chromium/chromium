@@ -246,7 +246,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1382194467192730611">El dispositivo USB que permite tu administrador</translation>
 <translation id="1384725838384960382">Hoja de autenticación de credenciales de pago seguro</translation>
 <translation id="1386623374109090026">Anotaciones</translation>
-<translation id="138810468159004008">Permitir mientras visitas el sitio</translation>
+<translation id="138810468159004008">Permitir mientras visito el sitio</translation>
 <translation id="1391145880481608015">Más información sobre esta advertencia</translation>
 <translation id="139161720020179799">Gris oscuro 1</translation>
 <translation id="1391625539203220400">¿Quieres guardar el IBAN en este dispositivo?</translation>
@@ -656,6 +656,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2071156619270205202">Esta tarjeta no admite un número de tarjeta virtual.</translation>
 <translation id="2071852865256799872">Tu organización administra el navegador y <ph name="PROFILE_DOMAIN" /> administra tu perfil</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">La información solo se guardó en el dispositivo</translation>
 <translation id="2074733626795553847">Desbloquear <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Lo visitaste</translation>
 <translation id="2078956195623975415">Juegos de música y baile</translation>
@@ -4903,6 +4904,7 @@ Detalles adicionales:
 <translation id="8858065207712248076">Chrome te recomienda que restablezcas la contraseña de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si la volviste a usar en otros sitios.</translation>
 <translation id="885906927438988819">Si no hay errores, <ph name="BEGIN_LINK" />prueba ejecutar el diagnóstico de red de Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Arte fotográfico y digital</translation>
+<translation id="8861482055962701239">No se pudo guardar esta información en tu Billetera de Google. Se guardó en Chrome en este dispositivo. Chrome te ofrecerá guardarla en la Billetera la próxima vez que la uses.</translation>
 <translation id="8863218129525348270">Para realizar pagos de forma más rápida la próxima vez, guarda tu tarjeta en el dispositivo</translation>
 <translation id="8864939224504814334">Trajes y atuendos formales</translation>
 <translation id="8866132857352163524">Bandas sonoras</translation>

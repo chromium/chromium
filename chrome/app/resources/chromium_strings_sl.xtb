@@ -138,6 +138,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Najmanj ena razširitev za Chromium je dostopala do 1 naprave HID}=1{Najmanj ena razširitev za Chromium dostopa do 1 naprave HID}one{Najmanj ena razširitev za Chromium dostopa do # naprave HID}two{Najmanj ena razširitev za Chromium dostopa do # naprav HID}few{Najmanj ena razširitev za Chromium dostopa do # naprav HID}other{Najmanj ena razširitev za Chromium dostopa do # naprav HID}}</translation>
 <translation id="2401032172288869980">Chromium potrebuje dovoljenje za fotoaparat in mikrofon za to spletno mesto.</translation>
 <translation id="2403703063067034158">Napaka pri zagonu: Trenutno se izvaja še en primer nastavitve. Poskusite znova pozneje.</translation>
+<translation id="2418322681019544463">Povezave iz poljubne aplikacije odprite v Chromiumu in poskrbite, da bo brskalnik dostopen v opravilni vrstici</translation>
 <translation id="2440750600860946460">Z <ph name="BEGIN_LINK" />orodji iz Chromiuma<ph name="END_LINK" /> lahko varno brskate in imate nadzor</translation>
 <translation id="2451727308784734061">Z bližnjico lahko hitro odprete Upravitelja gesel. Bližnjico lahko premaknete na začetni zaslon računalnika ali v zaganjalnik aplikacij.</translation>
 <translation id="2478295928299953161">Chromium se bo kmalu zaprl</translation>
@@ -614,6 +615,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7745317241717453663">S tem bodo iz te naprave izbrisani podatki brskanja. Če želite pozneje prenesti podatke, se v Chromium prijavite kot <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Namestitvenemu programu ni uspelo ustvariti začasnega imenika. Preverite, ali je na disku dovolj prostora in ali imate dovoljenje za namestitev programske opreme.</translation>
 <translation id="7750130090210923118">Ponastavitev Chromiuma na privzete nastavitve</translation>
+<translation id="7781047659465034537">Nastavite Chromium kot privzeti brskalnik in ga pripnite v opravilno vrstico</translation>
 <translation id="7786760609782648049">Pospešite Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – delovna različica Chromiuma</translation>
 <translation id="7803986347287457849">Ljudem z dostopom do vašega internetnega prometa otežite ogled spletnih mest, ki jih obiskujete. Chromium uporablja varno povezavo za iskanje naslova IP spletnega mesta v DNS-ju (imenskem sistemu domen).</translation>

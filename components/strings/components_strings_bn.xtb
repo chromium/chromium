@@ -657,6 +657,7 @@
 <translation id="2071156619270205202">ভার্চুয়াল কার্ড নম্বরের জন্য এই কার্ডটি যোগ্য নয়।</translation>
 <translation id="2071852865256799872">আপনার প্রতিষ্ঠান আপনার ব্রাউজার ম্যানেজ করে এবং <ph name="PROFILE_DOMAIN" /> আপনার প্রোফাইল ম্যানেজ করে</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">তথ্য শুধুমাত্র ডিভাইসে সেভ করা হয়েছে</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> আনব্লক করুন</translation>
 <translation id="2074771604462073334">আপনি আগে দেখেছেন</translation>
 <translation id="2078956195623975415">মিউজিক ও ডান্সের গেম</translation>
@@ -4901,6 +4902,7 @@
 <translation id="8858065207712248076">Chrome-এর নীতি অনুযায়ী আপনার <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
 <translation id="885906927438988819">বানান সঠিক হলে, <ph name="BEGIN_LINK" />'Windows নেটওয়ার্ক ডায়াগনস্টিক' টুল চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="8861126751581835107">ফটোগ্রাফিক ও ডিজিটাল আর্ট</translation>
+<translation id="8861482055962701239">আপনার Google Wallet-এ এই তথ্য সেভ করা যায়নি। পরিবর্তে এই ডিভাইসের Chrome-এ সেটি সেভ করা হয়েছে। পরেরবার এটি ব্যবহার করার সময় Chrome, Wallet-এ এটি সেভ করার সুযোগ দেবে।</translation>
 <translation id="8863218129525348270">পরের বার আরও দ্রুত পেমেন্ট করতে, আপনার ডিভাইসে নিজের কার্ড সেভ করে রাখুন</translation>
 <translation id="8864939224504814334">স্যুট ও ব্যবসায়িক পোশাক</translation>
 <translation id="8866132857352163524">সাউন্ডট্র্যাক</translation>

@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ନମ୍ବର ପାଇଁ ଏହି କାର୍ଡଟି ଯୋଗ୍ୟ ନୁହେଁ।</translation>
 <translation id="2071852865256799872">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଆପଣଙ୍କର ବ୍ରାଉଜର ପରିଚାଳିତ ହୋଇଥାଏ ଏବଂ <ph name="PROFILE_DOMAIN" /> ଦ୍ୱାରା ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ ପରିଚାଳିତ ହୋଇଥାଏ</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">କେବଳ ଡିଭାଇସରେ ସୂଚନା ସେଭ କରାଯାଇଛି</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />କୁ ଅନବ୍ଲକ କରନ୍ତୁ</translation>
 <translation id="2074771604462073334">ଆପଣ ଭିଜିଟ କରିଛନ୍ତି</translation>
 <translation id="2078956195623975415">ମ୍ୟୁଜିକ ଏବଂ ଡ୍ୟାନ୍ସ ଗେମଗୁଡ଼ିକ</translation>
@@ -4896,6 +4897,7 @@
 <translation id="8858065207712248076">ଆପଣ ଯଦି ନିଜର <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ପାସ୍‌ୱର୍ଡକୁ ଅନ୍ୟ ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକରେ ପୁନଃ ବ୍ୟବହାର କରିଛନ୍ତି, ତେବେ Chrome ଆପଣଙ୍କୁ ଏହି ପାସ୍‌ୱର୍ଡକୁ ରିସେଟ୍ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
 <translation id="885906927438988819">ଯଦି ବନାନ ସଠିକ୍ ଅଛି, ତେବେ <ph name="BEGIN_LINK" />Windows ନେଟୱାର୍କ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଚଲାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="8861126751581835107">ଫଟୋଗ୍ରାଫିକ ଏବଂ ଡିଜିଟାଲ ଆର୍ଟ୍ସ</translation>
+<translation id="8861482055962701239">ଆପଣଙ୍କ Google Walletରେ ଏହି ସୂଚନାକୁ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଏହାକୁ ଏହି ଡିଭାଇସରେ Chromeରେ ସେଭ କରାଯାଇଛି। ଆପଣ ପରବର୍ତ୍ତୀ ଥର ଏହାକୁ ବ୍ୟବହାର କଲେ Chrome ଏହାକୁ Walletରେ ସେଭ କରିବାକୁ ଅଫର କରିବ।</translation>
 <translation id="8863218129525348270">ପରବର୍ତ୍ତୀ ସମୟରେ ଶୀଘ୍ର ପେମେଣ୍ଟ କରିବାକୁ, ଆପଣଙ୍କ ଡିଭାଇସରେ ଆପଣଙ୍କର କାର୍ଡ ସେଭ କରନ୍ତୁ</translation>
 <translation id="8864939224504814334">ସୁଟ ଏବଂ ବିଜିନେସ ପୋଷାକ</translation>
 <translation id="8866132857352163524">ସାଉଣ୍ଡଟ୍ରାକଗୁଡ଼ିକ</translation>

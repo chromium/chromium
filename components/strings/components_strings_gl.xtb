@@ -656,6 +656,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2071156619270205202">Esta tarxeta non é apta para asociarlle un número de tarxeta virtual.</translation>
 <translation id="2071852865256799872">O teu navegador está xestionado pola túa organización e o teu perfil está xestionado por <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">A información gardouse só no dispositivo</translation>
 <translation id="2074733626795553847">Desbloquear <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Acceso</translation>
 <translation id="2078956195623975415">Xogos de música e baile</translation>
@@ -4900,6 +4901,7 @@ Detalles adicionais:
 <translation id="8858065207712248076">Chrome recoméndache que restablezas o contrasinal de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se o reutilizaches noutros sitios.</translation>
 <translation id="885906927438988819">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar o diagnóstico de rede de Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografía e arte dixital</translation>
+<translation id="8861482055962701239">Non se puido gardar no teu Google Wallet. En lugar diso, gardouse en Chrome neste dispositivo. Chrome ofrecerache gardala en Wallet a próxima vez que uses o navegador.</translation>
 <translation id="8863218129525348270">Para pagar máis rápido a próxima vez, garda a tarxeta no teu dispositivo</translation>
 <translation id="8864939224504814334">Traxes e roupa formal</translation>
 <translation id="8866132857352163524">Bandas sonoras</translation>

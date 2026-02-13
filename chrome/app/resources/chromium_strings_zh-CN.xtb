@@ -134,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{一个或多个 Chromium 扩展程序访问过 1 部 HID 设备}=1{一个或多个 Chromium 扩展程序正在访问 1 部 HID 设备}other{一个或多个 Chromium 扩展程序正在访问 # 部 HID 设备}}</translation>
 <translation id="2401032172288869980">Chromium 需要为此网站授予摄像头权限和麦克风权限</translation>
 <translation id="2403703063067034158">启动错误：另一个设置实例目前正在运行，请稍后重试。</translation>
+<translation id="2418322681019544463">在任意应用内通过 Chromium 打开链接，并让浏览器始终显示在任务栏中</translation>
 <translation id="2440750600860946460">借助 <ph name="BEGIN_LINK" />Chromium 中的工具<ph name="END_LINK" />，您可以安全地浏览并掌控个人数据的安全</translation>
 <translation id="2451727308784734061">使用快捷方式可快速访问密码管理工具。您可将快捷方式移到电脑的主屏幕上或应用启动器中。</translation>
 <translation id="2478295928299953161">Chromium 即将关闭</translation>
@@ -605,6 +606,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7745317241717453663">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
 <translation id="7750130090210923118">重置为默认 Chromium</translation>
+<translation id="7781047659465034537">将 Chromium 设为默认浏览器并固定到任务栏</translation>
 <translation id="7786760609782648049">提高 Chromium 的运行速度</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">让对您的互联网流量有访问权限的用户更难看到您访问的网站。Chromium 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。</translation>

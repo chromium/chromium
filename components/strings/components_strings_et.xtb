@@ -656,6 +656,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2071156619270205202">Seda kaarti ei saa virtuaalkaardi numbrina kasutada.</translation>
 <translation id="2071852865256799872">Teie brauserit haldab teie organisatsioon ja teie profiili haldab <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Teave salvestati ainult seadmesse</translation>
 <translation id="2074733626795553847">Deblokeeri <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Külastasite</translation>
 <translation id="2078956195623975415">Muusika- ja tantsumängud</translation>
@@ -4901,6 +4902,7 @@ Lisateave:
 <translation id="8858065207712248076">Chromium soovitab teil organisatsiooni <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> parooli lähtestada, kui kasutasite seda ka muudel saitidel.</translation>
 <translation id="885906927438988819">Kui õigekirjavigu pole, <ph name="BEGIN_LINK" />käitage Windowsi võrgudiagnostika<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotograafia ja digikunst</translation>
+<translation id="8861482055962701239">Seda teavet ei saanud teie Google Walletisse salvestada. See salvestati selles seadmes hoopis Chrome'i. Chrome pakub järgmisel korral, kui seda kasutate, selle Walletisse salvestamist.</translation>
 <translation id="8863218129525348270">Järgmine kord kiiremini maksmiseks salvestage oma kaart seadmesse</translation>
 <translation id="8864939224504814334">Ülikonnad ja ametlik riietus</translation>
 <translation id="8866132857352163524">Filmimuusika</translation>

@@ -6406,6 +6406,13 @@ Opmerking: Dit beleid is niet van toepassing op HSTS-upgrades.</translation>
 <translation id="5303080953475303561">Met dit beleid stel je in hoe vaak het vergrendelscherm om het wachtwoord voor snel ontgrendelen vraagt. Elke keer dat het vergrendelscherm wordt getoond en de laatste wachtwoordinvoer plaatsvond vóór de periode die is gespecificeerd door de gekozen waarde, is snel ontgrendelen niet beschikbaar. Als gebruikers na deze periode op het vergrendelscherm blijven, worden ze de volgende keer dat ze een verkeerde code opgeven of het vergrendelscherm opnieuw openen (afhankelijk van wat als eerste gebeurt) om het wachtwoord gevraagd.
 
       Als je het beleid niet instelt, moeten gebruikers die snel ontgrendelen gebruiken hun wachtwoord dagelijks opgeven op het vergrendelscherm.</translation>
+<translation id="530488290401810961">Stel in hoe <ph name="PRODUCT_NAME" /> het basismodel voor generatieve AI downloadt en lokaal gebruikt voor inferentie.
+
+Als je het beleid toepast (0) of niet instelt, wordt het model automatisch gedownload en gebruikt voor inferentie.
+
+Als je het beleid niet toepast (1), wordt het model niet gedownload en wordt het bestaande model (als het al is gedownload) verwijderd.
+
+Op desktopplatforms kan het downloaden van modellen ook worden uitgezet door <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5306186200045823863">De verouderde PKI-infrastructuur van Symantec Corporation vertrouwen</translation>
 <translation id="5307432759655324440">Beschikbaarheid van incognitomodus</translation>
 <translation id="5308551343115571396">Nadat <ph name="LACROS_NAME" /> is uitgezet, proberen we zo veel mogelijk gebruikersgegevens te behouden en alle browsergegevens te verwijderen.</translation>

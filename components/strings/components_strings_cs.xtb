@@ -656,6 +656,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2071156619270205202">Tato karta není pro číslo virtuální karty vhodná.</translation>
 <translation id="2071852865256799872">Váš prohlížeč spravuje vaše organizace a váš profil spravuje doména <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informace jsou uloženy pouze v zařízení</translation>
 <translation id="2074733626795553847">Odblokovat téma <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Navštívili jste</translation>
 <translation id="2078956195623975415">Hudební a taneční hry</translation>
@@ -4896,6 +4897,7 @@ Další podrobnosti:
 <translation id="8858065207712248076">Pokud jste heslo organizace <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> použili na jiném webu, doporučujeme vám ho resetovat.</translation>
 <translation id="885906927438988819">Pokud je adresa zadána správně, <ph name="BEGIN_LINK" />zkuste spustit Diagnostiku sítě systému Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografie a digitální umění</translation>
+<translation id="8861482055962701239">Tyto informace se nepodařilo uložit do Peněženky Google. Jsou uložené v Chromu na tomto zařízení. Při příštím použití vám Chrome nabídne uložení do Peněženky.</translation>
 <translation id="8863218129525348270">Pokud příště chcete zaplatit rychleji, uložte si kartu do zařízení</translation>
 <translation id="8864939224504814334">Obleky a formální oděvy</translation>
 <translation id="8866132857352163524">Soundtracky</translation>

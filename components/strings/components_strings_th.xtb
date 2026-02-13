@@ -705,6 +705,7 @@
 <translation id="2137891579555018930">กำลังรอการอนุญาต...</translation>
 <translation id="213826338245044447">บุ๊กมาร์กบนมือถือ</translation>
 <translation id="2141000681034340397">แก้ไขอินพุต</translation>
+<translation id="2141475438898772664">ชำระเงินเป็น 4 งวดหรือรายเดือน</translation>
 <translation id="2144171668675205303">ไม่มีหัวข้อที่ใช้งานอยู่</translation>
 <translation id="2145193671493396738">ข่าวเศรษฐกิจ</translation>
 <translation id="214556005048008348">ยกเลิกการชำระเงิน</translation>
@@ -2848,6 +2849,7 @@
 <translation id="5543564889050342791">สวนสัตว์ พิพิธภัณฑ์สัตว์น้ำ และเขตอนุรักษ์</translation>
 <translation id="5543722831081909240">180 องศา</translation>
 <translation id="5544836308113951378">เรือสำราญและเรือเช่า</translation>
+<translation id="5545314360139398232">ลิงก์ <ph name="ISSUER_NAME" /> เพื่อแบ่งจ่าย</translation>
 <translation id="5547939254150808298">การพิมพ์และสิ่งพิมพ์</translation>
 <translation id="554815783948612276">ผู้ให้บริการฟอรัมและแชท</translation>
 <translation id="5548606607480005320">การตรวจสอบความปลอดภัย</translation>
@@ -3695,6 +3697,7 @@
 <translation id="6926216138694948720">รอยสัก</translation>
 <translation id="692638818576287323">ยานพาหนะเพื่อการพาณิชย์</translation>
 <translation id="6927878187051807444">ไฟล์กล้องและภาพหน้าจอ</translation>
+<translation id="6929949393612835405">ปิดและกลับไปที่ "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">ค้นหาในแผงด้านข้าง</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />เครื่องมือค้นหาเริ่มต้นจะให้คุณค้นหาเว็บและใช้งานฟีเจอร์ต่างๆ ของ Chrome<ph name="END_BOLD" /> เช่น การค้นหาจากแถบที่อยู่และภาพบนหน้าเว็บ ฟีเจอร์อาจไม่พร้อมใช้งาน หากเครื่องมือค้นหาของคุณไม่รองรับ</translation>
 <translation id="6934672428414710184">ชื่อนี้มาจากบัญชี Google ของคุณ</translation>

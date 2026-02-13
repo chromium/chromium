@@ -136,6 +136,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Chromium-erako luzapen bat edo gehiago giza interfazeko gailu bat erabiltzen ari ziren}=1{Chromium-erako luzapen bat edo gehiago giza interfazeko gailu bat erabiltzen ari dira}other{Chromium-erako luzapen bat edo gehiago giza interfazeko # gailu erabiltzen ari dira}}</translation>
 <translation id="2401032172288869980">Chromium-ek kamera eta mikrofonoa erabiltzeko baimenak behar ditu webgune honetan</translation>
 <translation id="2403703063067034158">Abiarazte-errorea: konfigurazioaren beste instantzia bat exekutatzen ari da. Saiatu berriro geroago.</translation>
+<translation id="2418322681019544463">Ireki edozein aplikaziotako estekak Chromium-en eta mantendu arakatzailea eskura zereginen barran</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium-en tresnekin<ph name="END_LINK" />, segurtasunez araka dezakezu, eta dena kontrolpean eduki</translation>
 <translation id="2451727308784734061">Erabili lasterbidea Pasahitz-kudeatzailea zerbitzura azkar joateko. Lasterbidea ordenagailuaren orri nagusira edo aplikazioak exekutatzeko tresnara eraman dezakezu.</translation>
 <translation id="2478295928299953161">Chromium itxi egingo da laster</translation>
@@ -607,6 +608,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7745317241717453663">Gailuko arakatze-datuak ezabatuko dira. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chromium-en <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="7747138024166251722">Instalatzaileak ezin izan du sortu behin behineko direktoriorik. Softwarea instalatzeko, egiaztatu diskoan duzun espazio librea eta baimena.</translation>
 <translation id="7750130090210923118">Berrezarri Chromium gai lehenetsira</translation>
+<translation id="7781047659465034537">Ezarri Chromium arakatzaile lehenetsi gisa eta aingura ezazu zereginen barran</translation>
 <translation id="7786760609782648049">Bizkortu Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Zaildu zure Interneteko trafikorako sarbidea duten pertsonei bisitatzen dituzun webguneak ikustea. Chromium-ek konexio seguru bat erabiltzen du DNSan (domeinu-izenen sistema) webgune baten IP helbidea bilatzean.</translation>

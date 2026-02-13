@@ -264,6 +264,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome raadt je aan deze extensie te verwijderen. <ph name="BEGIN_LINK" />Meer informatie over ondersteunde extensies<ph name="END_LINK" />}other{Chrome raadt je aan deze extensies te verwijderen. <ph name="BEGIN_LINK" />Meer informatie over ondersteunde extensies<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Verfijn je zoekopdracht door meerdere tabbladen, bestanden en tools toe te voegen met de knop Tabblad en meer toevoegen.</translation>
 <translation id="3756724684201900923">Meer informatie over hoe je Chrome installeert</translation>
+<translation id="3772152698251011058">Deze site melden bij Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex kan je gegevens niet synchroniseren door een fout tijdens het inloggen.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -413,6 +414,8 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5430073640787465221">Je bestand met voorkeuren is beschadigd of ongeldig. Google Chrome kan je instellingen niet herstellen.</translation>
 <translation id="5465210843490471889">Kies een Chrome-profiel om te gebruiken met <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Chrome stuurt je interacties met deze functies naar Google om de functies te verbeteren. Deze gegevens kunnen worden gelezen, verwerkt en geannoteerd door reviewers.</translation>
+<translation id="547202872422499512">Chrome wordt nu gestart als Windows wordt opgestart, zodat je meteen kunt browsen. Je kunt dit uitzetten via de instellingen.</translation>
+<translation id="5486346529181556467">Verbeter de online veiligheid voor iedereen door een site te melden die volgens jou schadelijk is. Meer informatie over het <ph name="BEGIN_LINK" />beleid van Google voor onveilige sites<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">linkerbovenhoek van zoekgebied: links <ph name="LEFT" />%, boven <ph name="TOP" />%</translation>
 <translation id="5550137307985173298">Klik op de knop Chrome aanpassen op de pagina Nieuw tabblad om Chrome een nieuwe look te geven</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -572,6 +575,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Inkomende regel zodat Google Chrome Bèta mDNS-verkeer toestaat.</translation>
 <translation id="6979589607440534284">Meer informatie over waarom Chrome bepaalde bestanden blokkeert, wordt geopend in een nieuw tabblad</translation>
+<translation id="6985817499499247940">Start Chrome automatisch om meteen te browsen.</translation>
 <translation id="6991926986715044139">Google Lens-snelkoppeling altijd tonen</translation>
 <translation id="6999131147875565462">Chrome werkt sneller en functies die JavaScript gebruiken, zouden naar behoren moeten werken</translation>
 <translation id="7011190694940573312">De installatie is mislukt omdat deze versie van het besturingssysteem niet wordt ondersteund.</translation>
@@ -600,6 +604,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="7288567540154601580">Tabbladen en extensies</translation>
 <translation id="7296210096911315575">Belangrijke informatie over gebruik en veiligheid</translation>
 <translation id="7302361266603927550">Sommige van je Chrome-gegevens zijn nog niet opgeslagen in je Google-account. Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegevens verwijderd.</translation>
+<translation id="7306401458628386911">Begin meteen met browsen: Chrome kan nu worden gestart als Windows wordt opgestart.</translation>
 <translation id="7308322188646931570">Chrome heeft toegang tot de opslag nodig om bestanden te kunnen downloaden</translation>
 <translation id="7339898014177206373">Nieuw venster</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
@@ -663,6 +668,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="7827099906024714326">Chrome moet verifiëren dat jij het bent voordat bepaalde gegevens kunnen worden opgeslagen in je Google-account en op al je apparaten kunnen worden gebruikt. Als je nu uitlogt, worden deze gegevens verwijderd.</translation>
 <translation id="7832314606810669113">Log in bij Chrome om onder andere je bookmarks op al je apparaten te gebruiken. Deze bookmark wordt opgeslagen in je Google-account nadat je bent ingelogd.</translation>
 <translation id="7845233973568007926">Bedankt voor het installeren. Je moet de computer opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>
+<translation id="7847170235260850604">Chrome starten als Windows wordt opgestart</translation>
 <translation id="7849037457735762883">Ga verder waar je gebleven was: Chrome kan je tabbladen herstellen elke keer dat je opnieuw opstart. Als je dit wilt aanzetten, ga je naar</translation>
 <translation id="7869620795354551924">Als je je opgeslagen wachtwoorden wilt gebruiken, volg je de QR-code, download je Chrome voor iOS en log je in op je Google-account</translation>
 <translation id="7872446069773932638">Downloaden... Nog <ph name="SECONDS" /> seconden</translation>

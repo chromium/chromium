@@ -656,6 +656,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2071156619270205202">Esta tarjeta no reúne los requisitos necesarios para un número de tarjeta virtual.</translation>
 <translation id="2071852865256799872">Tu organización gestiona tu navegador, y <ph name="PROFILE_DOMAIN" /> gestiona tu perfil</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Información guardada solo en el dispositivo</translation>
 <translation id="2074733626795553847">Desbloquear <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Lo has visitado</translation>
 <translation id="2078956195623975415">Juegos musicales y de baile</translation>
@@ -4901,6 +4902,7 @@ Más información:
 <translation id="8858065207712248076">Chrome te recomienda que cambies tu contraseña de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si la has vuelto a utilizar en otros sitios.</translation>
 <translation id="885906927438988819">Si está escrito correctamente, <ph name="BEGIN_LINK" />prueba a ejecutar el diagnóstico de red de Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Artes digitales y fotográficas</translation>
+<translation id="8861482055962701239">No se ha podido guardar esta información en tu Google Wallet, pero se ha guardado en Chrome en este dispositivo. Chrome te ofrecerá guardarla en Wallet la próxima vez que la uses.</translation>
 <translation id="8863218129525348270">Para pagar más rápido la próxima vez, guarda la tarjeta en tu dispositivo</translation>
 <translation id="8864939224504814334">Trajes y ropa formal</translation>
 <translation id="8866132857352163524">Bandas sonoras</translation>

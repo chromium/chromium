@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 Funud yn Ôl}zero{# Munud yn Ôl}two{# Funud yn Ôl}few{# Munud yn Ôl}many{# Munud yn Ôl}other{# Munud yn Ôl}}</translation>
 <translation id="1450753235335490080">Methu â rhannu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 Mis yn Ôl}zero{# Mis yn Ôl}two{# Fis yn Ôl}few{# Mis yn Ôl}many{# Mis yn Ôl}other{# Mis yn Ôl}}</translation>
+<translation id="1591017414891297549">RHAGOLWG</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 funud a }zero{# munud a }two{# funud a }few{# munud a }many{# munud a }other{# munud a }}</translation>
 <translation id="1643823602425662293">Hysbysiad</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/e</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> arall</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
+<translation id="8741385002816058621">Mae hon yn nodwedd mewn rhagolwg</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1a}zero{#a}two{#a}few{#a}many{#a}other{#a}}</translation>
 <translation id="8798099450830957504">Diofyn</translation>
 <translation id="8841375032071747811">Botwm mynd yn ôl</translation>

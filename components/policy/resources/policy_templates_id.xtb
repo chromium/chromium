@@ -6690,6 +6690,13 @@ Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
 <translation id="5303080953475303561">Menyetel kebijakan akan mengontrol frekuensi layar kunci meminta sandi untuk mode buka kunci cepat. Setiap kali layar kunci ditampilkan, jika entri sandi terakhir terjadi sebelum jangka waktu yang ditentukan oleh nilai yang dipilih, mode buka kunci cepat tidak akan tersedia. Jika pengguna tetap berada di layar kunci setelah jangka waktu ini, sandi akan diminta saat pengguna salah memasukkan kode lagi atau masuk kembali ke layar kunci, mana saja yang terjadi lebih dahulu.
 
       Jika kebijakan tidak disetel, pengguna yang menggunakan mode buka kunci cepat hanya perlu memasukkan sandi di layar kunci satu kali dalam sehari.</translation>
+<translation id="530488290401810961">Mengonfigurasi cara <ph name="PRODUCT_NAME" /> mendownload model AI Generatif dasar dan menggunakannya untuk inferensi secara lokal.
+
+Jika kebijakan ini disetel ke Aktif (0) atau tidak disetel, model akan otomatis didownload dan digunakan untuk inferensi.
+
+Jika kebijakan ini disetel ke Nonaktif (1), model tidak akan didownload, dan model yang ada (jika sudah didownload) akan dihapus.
+
+Di platform desktop, download model juga dapat dinonaktifkan oleh <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5306186200045823863">Mengaktifkan kepercayaan pada Infrastruktur IKP Lama milik Symantec Corporation</translation>
 <translation id="5307432759655324440">Ketersediaan mode samaran</translation>
 <translation id="5308551343115571396">Setelah <ph name="LACROS_NAME" /> dinonaktifkan, kami akan mencoba menyimpan data pengguna sebanyak mungkin, sekaligus menghapus semua data browser.</translation>

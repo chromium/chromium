@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">رقم هذه البطاقة غير مؤهَّل للاستخدام كرقم بطاقة افتراضية.</translation>
 <translation id="2071852865256799872">تتولّى مؤسستك إدارة متصفِّحك، كما أنّ ملفك الشخصي يخضع لإدارة <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">تم حفظ المعلومات على الجهاز فقط</translation>
 <translation id="2074733626795553847">إزالة حظر "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">زرت هذا الموقع الإلكتروني</translation>
 <translation id="2078956195623975415">ألعاب موسيقى ورقص</translation>
@@ -4904,6 +4905,7 @@
 <translation id="8858065207712248076">‏يُوصي Chrome بإعادة تحديد كلمة المرور <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> في حال إعادة استخدامها في مواقع إلكترونية أخرى.</translation>
 <translation id="885906927438988819">‏إذا تم التأكُد من عدم ورود أخطاء إملائية، يُرجى <ph name="BEGIN_LINK" />محاولة تشغيل بيانات التشخيص لشبكة Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">فنون رقمية وتصوير فوتوغرافي</translation>
+<translation id="8861482055962701239">‏تعذَّر حفظ هذه المعلومات في "محفظة Google". وبدلاً من ذلك، تم حفظها في Chrome على هذا الجهاز. وسيعرض Chrome خيار حفظها في "محفظة Google" عند استخدامها المرة القادمة.</translation>
 <translation id="8863218129525348270">للدفع بشكلٍ أسرع في المرة القادمة، احفظ تفاصيل بطاقتك في جهازك</translation>
 <translation id="8864939224504814334">بدلات وملابس للعمل</translation>
 <translation id="8866132857352163524">موسيقى تصويرية</translation>

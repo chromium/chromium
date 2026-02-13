@@ -137,6 +137,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Minst ett Chromium-tillägg har fått åtkomst till 1 styrdon}=1{Minst ett Chromium-tillägg har åtkomst till 1 styrdon}other{Minst ett Chromium-tillägg har åtkomst till # styrdon}}</translation>
 <translation id="2401032172288869980">Du behöver ge Chromium kamera- och mikrofonbehörighet för den här webbplatsen</translation>
 <translation id="2403703063067034158">Startfel: En annan instans av konfigurationen körs för närvarande. Försök igen senare.</translation>
+<translation id="2418322681019544463">Öppna länkar från appar i Chromium och ha webbläsaren tillgänglig i aktivitetsfältet</translation>
 <translation id="2440750600860946460">Med <ph name="BEGIN_LINK" />verktyg från Chromium<ph name="END_LINK" /> kan du surfa säkert och behålla kontrollen</translation>
 <translation id="2451727308784734061">Använd genvägen för att snabbt öppna Lösenordshantering. Du kan flytta genvägen till startskärmen eller startprogrammet för appar på datorn.</translation>
 <translation id="2478295928299953161">Chromium avslutas snart</translation>
@@ -608,6 +609,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7745317241717453663">Webbinformationen raderas från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="7747138024166251722">Det gick inte att skapa en tillfällig katalog för installationsfilen. Kontrollera diskutrymmet och att du har behörighet att installera program.</translation>
 <translation id="7750130090210923118">Återställ till standardversionen av Chromium</translation>
+<translation id="7781047659465034537">Ställ in Chromium som standard och fäst den på aktivitetsfältet</translation>
 <translation id="7786760609782648049">Gör Chromium snabbare</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Gör det svårare för personer som har åtkomst till din internettrafik att se vilka webbplatser du besöker. Chromium använder en säker anslutning för att söka efter en webbplats IP-adress i domännamnssystemet (DNS).</translation>

@@ -125,6 +125,7 @@
 <translation id="1436671784520050284">Continua amb la configuració</translation>
 <translation id="143681031165817424">L'adreça només s'ha desat en aquest dispositiu</translation>
 <translation id="1445276840641906250">Totes les pestanyes en un navegador</translation>
+<translation id="1447564161241938558">L'administrador ha desactivat la importació de contrasenyes i claus d'accés</translation>
 <translation id="1450170672351507823">La protecció estàndard està activada. Per augmentar la seguretat, utilitza la protecció millorada.</translation>
 <translation id="1455660774629812862">No amaguis</translation>
 <translation id="1456545332132818232">Ressenyes de productes a <ph name="PRODUCT_NAME" />, <ph name="STARS" /> de <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
@@ -2236,6 +2237,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="9055291197094969722">Crea grups de pestanyes per organitzar les pestanyes obertes i mantenir la productivitat</translation>
 <translation id="9055580485132823283">Estàs a punt de suprimir {password_count} contrasenyes, {passkey_count} claus d'accés i la llista de llocs web i aplicacions per als quals has triat que no es desi mai la informació d'inici de sessió. No se suprimiran els comptes que hagis creat per a llocs web i aplicacions.</translation>
 <translation id="9057030985451135243">Informació sobre els grups de pestanyes compartits</translation>
+<translation id="9064106978262828592">Hi ha hagut un problema en exportar les dades</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9066097352053395362">Amaga l'opció Adreça d'interès</translation>
 <translation id="9070824521421603770">Es tancaran les pestanyes i la teva sessió</translation>

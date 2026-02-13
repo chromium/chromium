@@ -656,6 +656,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2071156619270205202">Táto karta nespĺňa podmienky na pridelenie čísla virtuálnej karty.</translation>
 <translation id="2071852865256799872">Prehliadač je spravovaný vašou organizáciou a váš profil doménou <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informácie boli uložené len do zariadenia</translation>
 <translation id="2074733626795553847">Odblokovať <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Navštívili ste</translation>
 <translation id="2078956195623975415">Hudobné a tanečné hry</translation>
@@ -4897,6 +4898,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8858065207712248076">Ak ste heslo organizácie <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> použili aj na iných weboch, Chrome ho odporúča obnoviť.</translation>
 <translation id="885906927438988819">Ak je pravopis správny, <ph name="BEGIN_LINK" />skúste spustiť nástroj Windows Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografické a digitálne umenie</translation>
+<translation id="8861482055962701239">Tieto informácie sa nepodarilo uložiť do Peňaženky Google. Namiesto toho boli uložené do Chromu v tomto zariadení. Chrome vám pri ďalšom použití ponúkne uloženie do Peňaženky.</translation>
 <translation id="8863218129525348270">Ak chcete nabudúce platiť rýchlejšie, uložte si kartu do zariadenia</translation>
 <translation id="8864939224504814334">Obleky a oblečenie do práce</translation>
 <translation id="8866132857352163524">Filmová hudba</translation>

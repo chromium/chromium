@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">이 카드로는 가상 카드 번호를 사용할 수 없습니다.</translation>
 <translation id="2071852865256799872">조직에서 브라우저를 관리하고 <ph name="PROFILE_DOMAIN" />에서 프로필을 관리합니다</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">정보가 기기에만 저장됨</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> 차단 해제</translation>
 <translation id="2074771604462073334">최근 방문:</translation>
 <translation id="2078956195623975415">음악 및 댄스 게임</translation>
@@ -4900,6 +4901,7 @@
 <translation id="8858065207712248076">다른 사이트에서 비밀번호를 재사용했다면 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 비밀번호를 재설정하는 것이 좋습니다.</translation>
 <translation id="885906927438988819">철자가 올바르다면 <ph name="BEGIN_LINK" />Windows 네트워크 진단을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="8861126751581835107">사진 및 디지털 예술</translation>
+<translation id="8861482055962701239">이 정보를 Google 월렛에 저장할 수 없습니다. 대신 이 기기의 Chrome에 저장됩니다. 다음에 사용할 때 Chrome에서 월렛에 저장할지 묻습니다.</translation>
 <translation id="8863218129525348270">다음번에 더 빠르게 결제할 수 있도록 기기에 카드를 저장하세요</translation>
 <translation id="8864939224504814334">수트 및 비즈니스 정장</translation>
 <translation id="8866132857352163524">사운드트랙</translation>

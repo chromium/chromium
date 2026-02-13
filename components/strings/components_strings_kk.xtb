@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">Бұл нөмір виртуалдық карта нөмірі үшін жарамсыз.</translation>
 <translation id="2071852865256799872">Браузеріңізді ұйымыңыз басқарады және профиліңізді <ph name="PROFILE_DOMAIN" /> басқарады.</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Ақпарат тек құрылғыға сақталды</translation>
 <translation id="2074733626795553847">Блоктан шығару: <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Кірген уақытыңыз:</translation>
 <translation id="2078956195623975415">Музыка және би ойындары</translation>
@@ -4899,6 +4900,7 @@
 <translation id="8858065207712248076">Chrome басқа сайттарда пайдаланылған <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> құпия сөзін қайта орнатуды ұсынады.</translation>
 <translation id="885906927438988819">Дұрыс жазылған болса, <ph name="BEGIN_LINK" />Windows Network Diagnostics құралын іске қосып көріңіз<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Фотография және цифрлық өнер</translation>
+<translation id="8861482055962701239">Бұл ақпаратты Google Wallet-ке сақтау мүмкін болмады. Ол осы құрылғыдағы Chrome-ға сақталды. Келесі жолы пайдаланған кезде, Chrome оны Wallet-ке сақтауды ұсынады.</translation>
 <translation id="8863218129525348270">Келесіде жылдамырақ төлеу үшін картаңызды құрылғыңызға сақтаңыз.</translation>
 <translation id="8864939224504814334">Костюмдер және іскери киім</translation>
 <translation id="8866132857352163524">Саундтректер</translation>

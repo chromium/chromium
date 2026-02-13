@@ -137,6 +137,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Een of meer Chromium-uitbreidings het toegang tot 1 MKT-toestel gehad}=1{Een of meer Chromium-uitbreidings het tans toegang tot 1 MKT-toestel}other{Een of meer Chromium-uitbreidings het tans toegang tot # MKT-toestelle}}</translation>
 <translation id="2401032172288869980">Chromium het kamera- en mikrofoontoestemming vir hierdie werf nodig</translation>
 <translation id="2403703063067034158">Aanskakelingsfout: ’n ander geval of opstelling word tans gebruik; probeer weer later.</translation>
+<translation id="2418322681019544463">Maak skakels in Chromium vanaf enige app oop en hou die blaaier toeganklik op jou taakbalk</translation>
 <translation id="2440750600860946460">Met <ph name="BEGIN_LINK" />nutsgoed van Chromium<ph name="END_LINK" /> kan jy veilig blaai en in beheer bly</translation>
 <translation id="2451727308784734061">Gebruik jou kortpad om vinnig na Wagwoordbestuurder toe te gaan. Jy kan jou kortpad na jou rekenaar se tuisskerm of applanseerder toe skuif.</translation>
 <translation id="2478295928299953161">Chromium gaan binnekort toemaak</translation>
@@ -608,6 +609,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7745317241717453663">Dit sal jou blaaierdata op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chromium aan om jou data later op te haal.</translation>
 <translation id="7747138024166251722">Die installeerder kon nie 'n tydelike gids skep nie. Gaan asseblief na vir beskikbare skyfspasie en toestemming om sagteware te installeer.</translation>
 <translation id="7750130090210923118">Stel terug na verstek-Chromium</translation>
+<translation id="7781047659465034537">Stel Chromium as verstek en speld dit aan taakbalk vas</translation>
 <translation id="7786760609782648049">Maak Chromium vinniger</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Maak dit moeiliker vir mense met toegang tot jou internetverkeer om te sien watter werwe jy besoek. Chromium gebruik ’n veilige verbinding om ’n webwerf se IP-adres in die DNS (domeinnaamstelsel) op te soek.</translation>

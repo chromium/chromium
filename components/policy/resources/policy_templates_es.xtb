@@ -1676,6 +1676,7 @@ Si no se define esta política, no se enviarán las consultas de DNS-over-HTTPS 
 <translation id="2158741059065130266">Si se le asigna el valor True a esta política, los usuarios de la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /> verán una papelera, y los archivos que se encuentren en Mis archivos y en Descargas (incluidos sus descendientes creados por el usuario) se enviarán allí cuando se eliminen.
 
       Si se le asigna el valor False a esta política, los archivos que estuvieran previamente en la papelera seguirán disponibles y se podrán ver mostrando los archivos ocultos y buscando el directorio .Trash en Mis archivos o en Descargas.</translation>
+<translation id="215891883000260452">Habilitar la recogida de registros de diagnóstico de WebRTC en orígenes específicos</translation>
 <translation id="2159092270572925582">Permite crear una lista de patrones de URL donde se especifique qué sitios pueden mostrar contenido mixto (es decir, contenido HTTP en sitios HTTPS) bloqueable (es decir, activo), y para qué contenido mixto opcionalmente bloqueable se inhabilitarán las actualizaciones.
 
           Si no se establece esta política, el contenido mixto bloqueable se bloqueará y el contenido mixto opcionalmente bloqueable se actualizará, y los usuarios podrán establecer excepciones para permitir este contenido en sitios concretos.
@@ -2500,6 +2501,13 @@ El sistema solo consultará los registros AAAA cuando sea alcanzable para un hos
       Nota: A partir de la versión M114, algunas aplicaciones de kiosco específicas pueden anular el comportamiento de esta política en dichas aplicaciones en casos especiales, como evaluaciones de alumnos.</translation>
 <translation id="2667894101494585925">Habilitar la obtención de la guía de optimización</translation>
 <translation id="2669157090883237118">No cambiar la configuración recomendada de <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="2669314653349044073">Esta política permite habilitar la recogida de registros de diagnóstico de WebRTC para orígenes específicos.
+
+Para obtener información detallada sobre los patrones de entrada válidos, consulta https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política. Esta política solo detecta coincidencias basadas en el origen, así que se ignora cualquier ruta del patrón de URL. Se admiten esquemas y subdominios.
+
+Si se define esta política, se habilitará la recogida de registros de diagnóstico de los orígenes que coincidan con los patrones de la lista.
+
+Si no se define esta política, la recogida de registros de diagnóstico se inhabilitará de forma predeterminada.</translation>
 <translation id="2672012807430078509">Controla la habilitación de NTLM como protocolo de autenticación para activaciones SMB.</translation>
 <translation id="2673363037046384711">El usuario final puede habilitar o inhabilitar el modo Alta eficiencia.</translation>
 <translation id="2673968385134502798">Juegos</translation>

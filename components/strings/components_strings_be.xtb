@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">Гэтай картцы нельга прысвоіць нумар віртуальнай карткі.</translation>
 <translation id="2071852865256799872">Вашым браўзерам кіруе ваша арганізацыя, а профілем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Інфармацыя захоўваецца толькі на прыладзе</translation>
 <translation id="2074733626795553847">Разблакіраваць тэму "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">Наведана</translation>
 <translation id="2078956195623975415">Музычныя і танцавальныя гульні</translation>
@@ -704,6 +705,7 @@
 <translation id="2137891579555018930">Чакаем дазволу...</translation>
 <translation id="213826338245044447">Мабільныя закладкі</translation>
 <translation id="2141000681034340397">Змяніць уведзеныя даныя</translation>
+<translation id="2141475438898772664">Аплата ў чатыры этапы або штомесяц</translation>
 <translation id="2144171668675205303">Няма актыўных тэм</translation>
 <translation id="2145193671493396738">Навіны эканомікі</translation>
 <translation id="214556005048008348">Скасаваць плацеж</translation>
@@ -2847,6 +2849,7 @@
 <translation id="5543564889050342791">Заапаркі, акіянарыумы і запаведнікі</translation>
 <translation id="5543722831081909240">180 градусаў</translation>
 <translation id="5544836308113951378">Круізы і чартарныя рэйсы</translation>
+<translation id="5545314360139398232">Прывяжыце пастаўшчыка "<ph name="ISSUER_NAME" />", каб плаціць у растэрміноўку</translation>
 <translation id="5547939254150808298">Паліграфія і выдавецкая дзейнасць</translation>
 <translation id="554815783948612276">Пастаўшчыкі паслуг форумаў і чатаў</translation>
 <translation id="5548606607480005320">Праверка бяспекі</translation>
@@ -3694,6 +3697,7 @@
 <translation id="6926216138694948720">Бодзі-арт</translation>
 <translation id="692638818576287323">Камерцыйны транспарт</translation>
 <translation id="6927878187051807444">файлы з камеры і здымкі экрана</translation>
+<translation id="6929949393612835405">Закрыць і вярнуцца ў праграму "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Пошук на бакавой панэлі</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Стандартная пошукавая сістэма дае магчымасць шукаць інфармацыю ў інтэрнэце і карыстацца рознымі функцыямі Chrome<ph name="END_BOLD" /> (напрыклад, ажыццяўляць запыты з адраснага радка або з выкарыстаннем відарысаў на вэб-старонках). Пэўныя функцыі могуць быць недаступнымі, калі выбраная вамі пошукавая сістэма іх не падтрымлівае.</translation>
 <translation id="6934672428414710184">Гэта імя – з вашага Уліковага запісу Google</translation>
@@ -4900,6 +4904,7 @@
 <translation id="8858065207712248076">Chrome рэкамендуе скінуць ваш пароль <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, калі вы карысталіся ім на іншых сайтах.</translation>
 <translation id="885906927438988819">Калі напісанне правільнае, <ph name="BEGIN_LINK" />паспрабуйце запусціць дыягностыку сеткі Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Фатаграфічнае і лічбавае мастацтва</translation>
+<translation id="8861482055962701239">Не ўдалося захаваць гэту інфармацыю ў Google Кашальку. Яна захавана ў Chrome на гэтай прыладзе. Chrome прапануе захаваць яе ў Кашальку пры наступным выкарыстанні.</translation>
 <translation id="8863218129525348270">Каб наступны раз плаціць хутчэй, захавайце картку на сваёй прыладзе</translation>
 <translation id="8864939224504814334">Касцюмы і дзелавое адзенне</translation>
 <translation id="8866132857352163524">Саўндтрэкі</translation>

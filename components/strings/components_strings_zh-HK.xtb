@@ -656,7 +656,7 @@
 <translation id="2071156619270205202">此卡不能建立虛擬卡號。</translation>
 <translation id="2071852865256799872">你的瀏覽器由機構管理，個人檔案則由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
-<translation id="2073286362006276165">資訊只會儲存到裝置</translation>
+<translation id="2073286362006276165">資料只儲存至裝置</translation>
 <translation id="2074733626795553847">解除封鎖「<ph name="TOPIC" />」</translation>
 <translation id="2074771604462073334">上次瀏覽：</translation>
 <translation id="2078956195623975415">音樂和舞蹈遊戲</translation>
@@ -4901,7 +4901,7 @@
 <translation id="8858065207712248076">如果您已在其他網站上重用 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密碼，Chrome 建議您重設密碼。</translation>
 <translation id="885906927438988819">如果拼字正確，請<ph name="BEGIN_LINK" />嘗試執行 Windows 網絡診斷<ph name="END_LINK" />。</translation>
 <translation id="8861126751581835107">攝影和數碼藝術</translation>
-<translation id="8861482055962701239">這項資訊無法儲存到 Google 錢包，因此改存到這部裝置的 Chrome。下次使用時，Chrome 會詢問你是否要儲存至錢包。</translation>
+<translation id="8861482055962701239">資料無法儲存至「Google 錢包」，因此已改為儲存至此裝置上的 Chrome。Chrome 會在你下次使用時詢問是否要儲存至「錢包」。</translation>
 <translation id="8863218129525348270">將付款卡儲存在裝置上，下次就能更快完成付款程序</translation>
 <translation id="8864939224504814334">套裝和上班服裝</translation>
 <translation id="8866132857352163524">原聲帶</translation>

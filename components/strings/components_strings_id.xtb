@@ -657,6 +657,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2071156619270205202">Kartu ini tidak memenuhi syarat untuk nomor kartu virtual.</translation>
 <translation id="2071852865256799872">Browser dikelola oleh organisasi Anda dan profil Anda dikelola oleh <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Info hanya disimpan ke perangkat</translation>
 <translation id="2074733626795553847">Berhenti memblokir <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Anda Membukanya</translation>
 <translation id="2078956195623975415">Game Musik &amp; Tari</translation>
@@ -705,6 +706,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2137891579555018930">Menunggu izin ...</translation>
 <translation id="213826338245044447">Bookmark Seluler</translation>
 <translation id="2141000681034340397">Edit input Anda</translation>
+<translation id="2141475438898772664">Bayar dengan 4 cicilan atau bulanan</translation>
 <translation id="2144171668675205303">Tidak ada topik aktif</translation>
 <translation id="2145193671493396738">Berita Ekonomi</translation>
 <translation id="214556005048008348">Batalkan pembayaran</translation>
@@ -2848,6 +2850,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5543564889050342791">Kebun Binatang, Akuarium &amp; Cagar Alam</translation>
 <translation id="5543722831081909240">180 derajat</translation>
 <translation id="5544836308113951378">Pesiar &amp; Charter</translation>
+<translation id="5545314360139398232">Hubungkan <ph name="ISSUER_NAME" /> agar dapat membayar dengan cicilan</translation>
 <translation id="5547939254150808298">Percetakan &amp; Penerbitan</translation>
 <translation id="554815783948612276">Penyedia Forum &amp; Chat</translation>
 <translation id="5548606607480005320">Pemeriksaan keamanan</translation>
@@ -3695,6 +3698,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6926216138694948720">Seni Rajah dan Tindik</translation>
 <translation id="692638818576287323">Kendaraan Niaga</translation>
 <translation id="6927878187051807444">file kamera dan screenshot</translation>
+<translation id="6929949393612835405">Tutup dan kembali ke "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Telusuri di panel samping</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Mesin telusur default memungkinkan Anda menelusuri web dan mendukung fitur Chrome<ph name="END_BOLD" /> seperti menelusuri dari kolom URL dan dari gambar di halaman web. Fitur mungkin tidak tersedia jika mesin telusur tidak mendukungnya.</translation>
 <translation id="6934672428414710184">Nama ini dari Akun Google Anda</translation>
@@ -4897,6 +4901,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8858065207712248076">Chrome menyarankan untuk menyetel ulang sandi <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> jika Anda juga menggunakannya di situs lain.</translation>
 <translation id="885906927438988819">Jika ejaan sudah benar, <ph name="BEGIN_LINK" />coba jalankan Diagnostik Jaringan Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Seni Fotografi &amp; Digital</translation>
+<translation id="8861482055962701239">Tidak dapat menyimpan info ini ke Google Wallet Anda. Sebaliknya, info tersebut disimpan ke Chrome di perangkat ini. Chrome akan menawarkan untuk menyimpannya ke Wallet saat Anda menggunakannya lagi.</translation>
 <translation id="8863218129525348270">Agar selanjutnya dapat melakukan pembayaran lebih cepat, simpan kartu Anda ke perangkat</translation>
 <translation id="8864939224504814334">Setelan &amp; Pakaian Bisnis</translation>
 <translation id="8866132857352163524">Soundtrack</translation>

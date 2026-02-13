@@ -134,6 +134,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Auf 1 HID-Gerät wurde von mindestens einer Chromium-Erweiterung zugegriffen}=1{Auf 1 HID-Gerät wird von mindestens einer Chromium-Erweiterung zugegriffen}other{Auf # HID-Geräte wird von mindestens einer Chromium-Erweiterung zugegriffen}}</translation>
 <translation id="2401032172288869980">Chromium benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
 <translation id="2403703063067034158">Fehler beim Starten: Derzeit wird eine andere Einrichtung ausgeführt. Bitte versuche es später noch einmal.</translation>
+<translation id="2418322681019544463">So kannst du über jede App Links in Chromium öffnen und den Browser über die Taskleiste aufrufen</translation>
 <translation id="2440750600860946460">Die <ph name="BEGIN_LINK" />Tools von Chromium<ph name="END_LINK" /> helfen dir, sicher zu surfen und deine Daten zu schützen</translation>
 <translation id="2451727308784734061">Mit dieser Verknüpfung gelangst du schnell zum Passwortmanager. Du kannst sie auf den Startbildschirm oder in den App Launcher deines Computers verschieben.</translation>
 <translation id="2478295928299953161">Chromium wird bald geschlossen</translation>
@@ -605,6 +606,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7745317241717453663">Dadurch werden deine Browserdaten von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chromium an.</translation>
 <translation id="7747138024166251722">Das Installationsprogramm konnte kein temporäres Verzeichnis erstellen. Überprüfe, ob freier Speicherplatz und die Rechte zum Installieren von Software vorhanden sind.</translation>
 <translation id="7750130090210923118">Auf Chromium-Standard zurücksetzen</translation>
+<translation id="7781047659465034537">Chromium als Standardbrowser festlegen und an die Taskleiste anpinnen</translation>
 <translation id="7786760609782648049">Chromium noch schneller machen</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Du kannst es Personen mit Zugriff auf deinen Internetverkehr erschweren, zu sehen, welche Websites du besuchst. Chromium nutzt eine verschlüsselte Verbindung, um die IP-Adresse einer Website im DNS (Domain Name System) zu ermitteln.</translation>

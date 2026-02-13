@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">Cardul nu este eligibil pentru un număr de card virtual.</translation>
 <translation id="2071852865256799872">Browserul este gestionat de organizația ta, iar profilul este gestionat de <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informațiile au fost salvate numai pe dispozitiv</translation>
 <translation id="2074733626795553847">Deblochează <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Ai accesat</translation>
 <translation id="2078956195623975415">Jocuri cu muzică și dans</translation>
@@ -4902,6 +4903,7 @@ Detalii suplimentare:
 <translation id="8858065207712248076">Chrome îți recomandă să resetezi parola pentru <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> dacă ai folosit-o și pe alte site-uri.</translation>
 <translation id="885906927438988819">Dacă scrierea este corectă, <ph name="BEGIN_LINK" />încearcă să rulezi Diagnosticarea rețelei Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Artă fotografică și digitală</translation>
+<translation id="8861482055962701239">Informațiile nu au putut fi salvate în Portofelul Google. Au fost salvate în Chrome pe acest dispozitiv. Chrome îți va oferi opțiunea de a le salva în Portofel data viitoare când le folosești.</translation>
 <translation id="8863218129525348270">Pentru a plăti mai rapid data viitoare, salvează cardul pe dispozitiv</translation>
 <translation id="8864939224504814334">Costume și îmbrăcăminte elegantă</translation>
 <translation id="8866132857352163524">Coloane sonore</translation>

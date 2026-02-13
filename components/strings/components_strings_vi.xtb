@@ -656,6 +656,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2071156619270205202">Thẻ này không đáp ứng điều kiện để tạo số thẻ ảo.</translation>
 <translation id="2071852865256799872">Trình duyệt của bạn do tổ chức bạn quản lý, còn hồ sơ của bạn do <ph name="PROFILE_DOMAIN" /> quản lý</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Thông tin chỉ được lưu vào thiết bị</translation>
 <translation id="2074733626795553847">Bỏ chặn <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Bạn đã truy cập</translation>
 <translation id="2078956195623975415">Trò chơi âm nhạc và khiêu vũ</translation>
@@ -4902,6 +4903,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8858065207712248076">Chrome khuyên bạn nên đặt lại mật khẩu <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> của mình nếu đã sử dụng lại mật khẩu này trên các trang web khác.</translation>
 <translation id="885906927438988819">Nếu đúng chính tả, hãy <ph name="BEGIN_LINK" />thử chạy Chẩn đoán mạng của Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Nghệ thuật kỹ thuật số và nhiếp ảnh</translation>
+<translation id="8861482055962701239">Không thể lưu thông tin này vào Google Wallet. Thay vào đó, thông tin đã được lưu vào Chrome trên thiết bị này. Lần tới khi bạn dùng thông tin này, Chrome sẽ hỏi bạn có muốn lưu vào Wallet không.</translation>
 <translation id="8863218129525348270">Để thanh toán nhanh hơn vào lần tới, hãy lưu thông tin thẻ vào thiết bị của bạn</translation>
 <translation id="8864939224504814334">Com lê và trang phục công sở</translation>
 <translation id="8866132857352163524">Nhạc phim</translation>

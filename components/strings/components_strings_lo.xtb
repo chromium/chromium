@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">ບັດນີ້ບໍ່ມີສິດໃຊ້ໝາຍເລກບັດສະເໝືອນ.</translation>
 <translation id="2071852865256799872">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຖືກຈັດການໂດຍອົງການຂອງທ່ານ ແລະ ໂປຣໄຟລ໌ຂອງທ່ານຖືກຈັດການໂດຍ <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">ບັນທຶກຂໍ້ມູນໃສ່ໃນອຸປະກອນເທົ່ານັ້ນ</translation>
 <translation id="2074733626795553847">ຍົກເລີກການບລັອກ <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">ທ່ານເຂົ້າເບິ່ງ</translation>
 <translation id="2078956195623975415">ເກມເພງ ແລະ ເກມເຕັ້ນ</translation>
@@ -4900,6 +4901,7 @@
 <translation id="8858065207712248076">Chrome ແນະນຳໃຫ້ຣີເຊັດລະຫັດຜ່ານ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ຂອງທ່ານ ຖ້າທ່ານນຳມັນມາໃຊ້ໃໝ່ໃນເວັບໄຊອື່ນ.</translation>
 <translation id="885906927438988819">ຖ້າການສະກົດຄຳຖືກຕ້ອງ, <ph name="BEGIN_LINK" />ລອງເປີດໃຊ້ Windows Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">ຮູບຖ່າຍ ແລະ ສິນລະປະດິຈິຕອນ</translation>
+<translation id="8861482055962701239">ບໍ່ສາມາດບັນທຶກຂໍ້ມູນນີ້ໃສ່ໃນ Google Wallet ຂອງທ່ານໄດ້. ແຕ່ບັນທຶກໃສ່ໃນ Chrome ຢູ່ອຸປະກອນນີ້ແທນ. Chrome ຈະສະເໜີໃຫ້ບັນທຶກໃສ່ໃນ Wallet ເມື່ອທ່ານນຳໃຊ້ໃນເທື່ອຕໍ່ໄປ.</translation>
 <translation id="8863218129525348270">ຈ່າຍໄວຂຶ້ນໃນເທື່ອຕໍ່ໄປໂດຍການບັນທຶກບັດໄປໃສ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="8864939224504814334">ສູດ ແລະ ເຄື່ອງແຕ່ງກາຍທຸລະກິດ</translation>
 <translation id="8866132857352163524">ຊາວແທຣັກ</translation>

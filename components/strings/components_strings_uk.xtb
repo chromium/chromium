@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">Указаний номер не підходить для віртуальної картки.</translation>
 <translation id="2071852865256799872">Вашим веб-переглядачем керує організація, а профілем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Інформацію збережено лише на пристрої</translation>
 <translation id="2074733626795553847">Розблокувати тему "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">Ви відвідали цей сайт</translation>
 <translation id="2078956195623975415">Музичні й танцювальні ігри</translation>
@@ -4902,6 +4903,7 @@
 <translation id="8858065207712248076">Chrome радить скинути пароль <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, якщо ви застосовували його на інших сайтах.</translation>
 <translation id="885906927438988819">Якщо помилок немає, <ph name="BEGIN_LINK" />проведіть діагностику мережі Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Мистецтво фотографії і цифрове мистецтво</translation>
+<translation id="8861482055962701239">Не вдалося зберегти цю інформацію в Google Гаманці. Натомість її збережено в Chrome на цьому пристрої. Chrome запропонує зберегти цю інформацію в Гаманці наступного разу, коли ви скористаєтеся ним.</translation>
 <translation id="8863218129525348270">Щоб наступного разу платити швидше, збережіть цю картку на своєму пристрої</translation>
 <translation id="8864939224504814334">Костюми й діловий одяг</translation>
 <translation id="8866132857352163524">Звукові доріжки</translation>

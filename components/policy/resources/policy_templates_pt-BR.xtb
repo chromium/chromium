@@ -1735,6 +1735,7 @@ resolvedor associado ao resolvedor do sistema configurado pelo usuário.</transl
 <translation id="2158741059065130266">Se a política for definida como verdadeira, os usuários do app Arquivos do <ph name="PRODUCT_OS_NAME" /> vão poder ver uma lixeira, e os arquivos em "Meus arquivos" e "Downloads", incluindo os descendentes criados pelo usuário, vão ser enviados para lá após a exclusão.
 
       Se a política for definida como falsa, os arquivos que estavam na lixeira ainda vão estar disponíveis, mostrando os arquivos ocultos e encontrando o diretório .Trash em "Meus arquivos" ou "Downloads".</translation>
+<translation id="215891883000260452">Ativar a coleta de registros de diagnóstico do WebRTC para origens específicas</translation>
 <translation id="2159092270572925582">Permite a definição de uma lista de padrões de URL que especifica sites sem permissão para exibir conteúdo misto bloqueável (ativo), ou seja, conteúdo HTTP em sites HTTPS, e em que o conteúdo misto opcionalmente bloqueável (passivo) será desativado.
 
           Se esta política não for definida, o conteúdo misto bloqueável será bloqueado e o conteúdo misto opcionalmente bloqueável ganhará um upgrade. Além disso, o usuário poderá definir exceções para dar permissão a sites específicos.
@@ -2609,6 +2610,13 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
       Observação: desde a versão M114, aplicativos de quiosque específicos podem modificar o comportamento dessa política para casos de uso especiais, como avaliações de estudantes.</translation>
 <translation id="2667894101494585925">Ativar a busca do guia de otimização</translation>
 <translation id="2669157090883237118">Não mudar a configuração recomendada do <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="2669314653349044073">Esta política permite ativar a coleta de registros de diagnóstico do WebRTC para origens específicas.
+
+Para saber mais sobre padrões de entrada válidos, consulte https://chromeenterprise.google/policies/url-patterns. Não é possível usar <ph name="WILDCARD_VALUE" /> com esta política. Ela só considera as origens, por isso os caminhos no padrão do URL são ignorados. Esquemas e subdomínios podem ser usados.
+
+Aplicar esta política ativa a coleta dos registros de diagnóstico para origens correspondentes aos padrões na lista.
+
+Não aplicar esta política mantém a coleta dos registros de diagnóstico desativada por padrão.</translation>
 <translation id="2672012807430078509">Controles que ativam o NTLM como protocolo de autenticação para ativações de PMEs</translation>
 <translation id="2673363037046384711">O usuário final pode ativar ou desativar o modo de alta eficiência.</translation>
 <translation id="2673968385134502798">Jogos</translation>

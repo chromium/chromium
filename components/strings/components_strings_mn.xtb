@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">Энэ карт нь виртуал картын дугаарын эрхгүй байна.</translation>
 <translation id="2071852865256799872">Танай байгууллага таны хөтчийг удирддаг бөгөөд <ph name="PROFILE_DOMAIN" /> таны профайлыг удирддаг</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Мэдээллийг зөвхөн төхөөрөмжид хадгалсан</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />-г блокоос гаргах</translation>
 <translation id="2074771604462073334">Та зочилсон</translation>
 <translation id="2078956195623975415">Хөгжим, бүжгийн тоглоомууд</translation>
@@ -4900,6 +4901,7 @@
 <translation id="8858065207712248076">Хэрэв та <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-н нууц үгийг бусад сайтад дахин ашигласан бол Chrome-с үүнийг шинэчлэхийг зөвлөж байна.</translation>
 <translation id="885906927438988819">Хэрэв алдаагүй, зөв бичсэн бол <ph name="BEGIN_LINK" />Windows-н сүлжээний оношилгоог ажиллуулж үзнэ үү<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Гэрэл зураг, дижитал урлагууд</translation>
+<translation id="8861482055962701239">Энэ мэдээллийг таны Google Wallet-д хадгалж чадсангүй. Оронд нь энэ төхөөрөмж дээр Chrome-д хадгалсан. Таныг дараагийн удаа үүнийг ашиглахад Chrome Wallet-д хадгалахыг санал болгоно.</translation>
 <translation id="8863218129525348270">Дараагийн удаа төлбөрөө илүү хурдан төлөхийн тулд картаа төхөөрөмждөө хадгална уу</translation>
 <translation id="8864939224504814334">Хослол болон албан хэргийн хувцас</translation>
 <translation id="8866132857352163524">Киноны дуу</translation>

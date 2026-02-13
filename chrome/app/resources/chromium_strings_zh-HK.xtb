@@ -136,7 +136,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{當時至少有一個 Chromium 擴充程式正在存取 1 部 HID 裝置}=1{至少有一個 Chromium 擴充程式正在存取 1 部 HID 裝置}other{至少有一個 Chromium 擴充程式正在存取 # 部 HID 裝置}}</translation>
 <translation id="2401032172288869980">Chromium 需要相機權限和麥克風權限，才能執行此網站要求的功能</translation>
 <translation id="2403703063067034158">啟動錯誤：目前正在執行其他設定操作，請稍後再試。</translation>
-<translation id="2418322681019544463">使用 Chromium 開啟任何應用程式中的連結，並將瀏覽器固定在工作列，方便隨時使用</translation>
+<translation id="2418322681019544463">你可以用 Chromium 開啟任何應用程式的連結，並將瀏覽器釘選在工作列方便隨時取用</translation>
 <translation id="2440750600860946460">透過 <ph name="BEGIN_LINK" />Chromium 工具<ph name="END_LINK" />，你可安全瀏覽網絡，一切盡在掌握</translation>
 <translation id="2451727308784734061">透過捷徑快速開啟「密碼管理工具」。您可將捷徑移至電腦的主畫面或應用程式啟動器。</translation>
 <translation id="2478295928299953161">Chromium 即將關閉</translation>
@@ -606,7 +606,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7745317241717453663">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chromium。</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟件。</translation>
 <translation id="7750130090210923118">重設為預設的 Chromium</translation>
-<translation id="7781047659465034537">將 Chromium 設為預設瀏覽器，並釘選到工作列</translation>
+<translation id="7781047659465034537">將 Chromium 設定為預設瀏覽器，並釘選到工作列</translation>
 <translation id="7786760609782648049">加快 Chromium 的運作速度</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">讓可存取你互聯網流量的使用者難以查看你瀏覽的網站。Chromium 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>

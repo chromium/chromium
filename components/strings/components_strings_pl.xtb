@@ -656,6 +656,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2071156619270205202">Ta karta nie kwalifikuje się do nadania numeru karty wirtualnej.</translation>
 <translation id="2071852865256799872">Twoją przeglądarką zarządza Twoja organizacja, a Twoim profilem – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informacje zostały zapisane tylko na urządzeniu</translation>
 <translation id="2074733626795553847">Odblokuj: <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Odwiedzono</translation>
 <translation id="2078956195623975415">Gry muzyczne i taneczne</translation>
@@ -4904,6 +4905,7 @@ Dodatkowe informacje:
 <translation id="8858065207712248076">Chrome zaleca zresetowanie hasła, którego używasz w: <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, jeśli zostało użyte na innej stronie.</translation>
 <translation id="885906927438988819">Jeśli pisownia jest poprawna, <ph name="BEGIN_LINK" />uruchom Diagnostykę sieci systemu Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Sztuka fotograficzna i cyfrowa</translation>
+<translation id="8861482055962701239">Nie udało się zapisać tych informacji w Portfelu Google. Zamiast tego zapisano je w Chrome na tym urządzeniu. Chrome zaproponuje zapisanie ich w Portfelu przy następnym użyciu.</translation>
 <translation id="8863218129525348270">Aby następnym razem zapłacić szybciej, zapisz kartę na urządzeniu</translation>
 <translation id="8864939224504814334">Garnitury i stroje biznesowe</translation>
 <translation id="8866132857352163524">Ścieżki dźwiękowe</translation>

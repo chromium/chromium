@@ -136,6 +136,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{하나 이상의 Chromium 확장 프로그램에서 HID 기기 1대에 액세스함}=1{하나 이상의 Chromium 확장 프로그램에서 HID 기기 1대에 액세스 중}other{하나 이상의 Chromium 확장 프로그램에서 HID 기기 #대에 액세스 중}}</translation>
 <translation id="2401032172288869980">Chromium에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
 <translation id="2403703063067034158">시작 오류: 현재 다른 설정 인스턴스가 실행 중입니다. 나중에 다시 시도해 주세요.</translation>
+<translation id="2418322681019544463">모든 앱에서 Chromium으로 링크를 열고 작업 표시줄에서 브라우저에 계속 액세스할 수 있습니다</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium의 도구<ph name="END_LINK" />로 안전하게 탐색하고 관리할 수 있습니다.</translation>
 <translation id="2451727308784734061">바로가기를 사용하여 비밀번호 관리자로 빠르게 이동하세요. 바로가기는 컴퓨터의 홈 화면이나 앱 런처로 이동할 수 있습니다.</translation>
 <translation id="2478295928299953161">Chromium이 곧 종료됩니다</translation>
@@ -607,6 +608,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7745317241717453663">인터넷 사용 기록이 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chromium에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7750130090210923118">기본 Chromium으로 재설정</translation>
+<translation id="7781047659465034537">Chromium을 기본 브라우저로 설정하고 작업 표시줄에 고정하세요</translation>
 <translation id="7786760609782648049">Chromium의 속도를 높여보세요</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. Chromium은 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다.</translation>

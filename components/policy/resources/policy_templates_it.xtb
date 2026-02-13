@@ -1713,6 +1713,7 @@ Se questa policy non viene configurata, le query DNS over HTTPS non verranno inv
 <translation id="2158741059065130266">Se la policy viene impostata su True, gli utenti dell'app File di <ph name="PRODUCT_OS_NAME" /> possono vedere un Cestino e i file nelle cartelle I miei file e Download (inclusi i discendenti creati dall'utente) verranno inviati al Cestino quando verranno eliminati.
 
       Se la policy viene impostata su False, i file che si trovavano nel cestino continueranno a essere disponibili visualizzando i file nascosti e cercando la directory .Trash nella cartella I miei file o Download.</translation>
+<translation id="215891883000260452">Attiva la raccolta dei log di diagnostica per WebRTC per origini specifiche</translation>
 <translation id="2159092270572925582">Consente di impostare un elenco di pattern URL che specificano i siti autorizzati a visualizzare contenuti misti (ossia contenuti HTTP su siti HTTPS) bloccabili (ossia attivi) e per i quali gli aggiornamenti dei contenuti misti bloccabili facoltativi verranno disattivati.
 
           Se questa policy non viene impostata, i contenuti misti bloccabili verranno bloccati e quelli bloccabili facoltativi verranno aggiornati; inoltre, gli utenti potranno configurare eccezioni per consentire i contenuti misti per siti specifici.
@@ -2544,6 +2545,13 @@ Il sistema eseguirà una query sui record AAAA soltanto quando può essere conne
       Nota: dalla versione M114, determinate app kiosk possono sostituire il comportamento di questa policy per le proprie app per casi d'uso speciali, ad esempio le valutazioni degli studenti.</translation>
 <translation id="2667894101494585925">Attiva il recupero della guida all'ottimizzazione</translation>
 <translation id="2669157090883237118">Non modificare la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.</translation>
+<translation id="2669314653349044073">Questa policy consente di attivare la raccolta dei log di diagnostica per WebRTC per origini specifiche.
+
+Per informazioni dettagliate sui pattern di input validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy. Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato. Sono supportati lo schema e i sottodomini.
+
+Se la policy viene configurata, la raccolta dei log di diagnostica verrà attivata per le origini corrispondenti ai pattern nell'elenco.
+
+Se la policy non viene configurata, la raccolta dei log di diagnostica verrà disattivata per impostazione predefinita.</translation>
 <translation id="2672012807430078509">Controlla l'attivazione del protocollo di autenticazione NTLM per i montaggi SMB</translation>
 <translation id="2673363037046384711">L'utente finale può attivare o disattivare la modalità ad alta efficienza.</translation>
 <translation id="2673968385134502798">Giochi</translation>

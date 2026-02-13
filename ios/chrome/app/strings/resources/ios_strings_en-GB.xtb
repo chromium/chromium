@@ -125,6 +125,7 @@
 <translation id="1436671784520050284">Continue setup</translation>
 <translation id="143681031165817424">Address saved only on this device</translation>
 <translation id="1445276840641906250">All your tabs in one browser</translation>
+<translation id="1447564161241938558">Import passwords and passkeys is disabled by your administrator</translation>
 <translation id="1450170672351507823">Standard protection is on. For even more security, use enhanced protection.</translation>
 <translation id="1455660774629812862">Don't hide</translation>
 <translation id="1456545332132818232">Product reviews on <ph name="PRODUCT_NAME" />, <ph name="STARS" /> out of <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
@@ -2236,6 +2237,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="9055291197094969722">Create tab groups to organise your open tabs and stay productive</translation>
 <translation id="9055580485132823283">You are about to delete {password_count} passwords, {passkey_count} passkeys and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
 <translation id="9057030985451135243">Learn about shared tab groups</translation>
+<translation id="9064106978262828592">Trouble exporting your data</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9066097352053395362">Hide Edit bookmark</translation>
 <translation id="9070824521421603770">You'll be signed out and tabs will be closed</translation>

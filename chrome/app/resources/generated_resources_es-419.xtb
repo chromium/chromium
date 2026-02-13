@@ -687,6 +687,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1461041542809785877">Rendimiento</translation>
 <translation id="1461177659295855031">Mover a la carpeta Barra de favoritos</translation>
 <translation id="1461288887896722288">Acabas de acceder a una cuenta administrada. Si creas un nuevo perfil administrado, podrás acceder a algunos recursos vinculados a esa cuenta.</translation>
+<translation id="1461718860884899524">Denunciar un sitio &amp;no seguro…</translation>
 <translation id="146219525117638703">Estado de ONC</translation>
 <translation id="146220085323579959">Internet está desconectada. Verifica tu conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="1462480037563370607">Agregar sitios manualmente</translation>
@@ -908,6 +909,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1605744057217831567">Ver todos los datos y permisos de sitios</translation>
 <translation id="1606077700029460857">Cambiar la configuración del mouse</translation>
 <translation id="1606566847233779212">¿Quieres quitar los sitios específicos que agregaste?</translation>
+<translation id="160689647589417224">La aplicación está restringida en esta región.</translation>
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1607499585984539560">El usuario no está afiliado al dominio</translation>
 <translation id="1607540893439314147"><ph name="BEGIN_PARAGRAPH1" />Chatea con Gemini para comenzar a escribir, planificar, aprender y mucho más con la IA de Google.<ph name="END_PARAGRAPH1" />
@@ -2122,6 +2124,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2419706071571366386">Como medida de seguridad, sal de la cuenta cuando no estés usando la computadora.</translation>
 <translation id="2421705177906985956">No hay sitios para mostrar en este momento</translation>
 <translation id="2422125132043002186">Se canceló la restauración de Linux</translation>
+<translation id="2423506062824112361">No se pudo descargar el contenido debido a razones desconocidas.</translation>
 <translation id="2423578206845792524">Guar&amp;dar imagen como...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Invitado}other{Invitado (#)}}</translation>
 <translation id="2426805022920575512">Seleccionar otra cuenta</translation>
@@ -2295,6 +2298,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2524093372979370955">Esta acción inhabilitará las notificaciones de todos los periféricos USB nuevos en el sistema. ¿Confirmas que deseas continuar?</translation>
 <translation id="252418934079508528">Instalar <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Pregunta sobre esta pestaña</translation>
+<translation id="2525746158911982776">No se pudo realizar la actualización porque el sistema no tiene suficiente espacio de almacenamiento.</translation>
 <translation id="2526590354069164005">Escritorio</translation>
 <translation id="2526619973349913024">Verificar actualización</translation>
 <translation id="2527167509808613699">Cualquier tipo de conexión</translation>
@@ -4375,6 +4379,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3919798653937160644">Las páginas a las que accedas desde esta ventana no aparecerán en el historial del navegador ni dejarán rastros (por ejemplo, cookies) en la computadora después de cerrar todas las ventanas abiertas de la sesión de invitado. Los archivos descargados permanecerán intactos.</translation>
 <translation id="3920504717067627103">Directivas del certificado</translation>
 <translation id="3920909973552939961">No puede instalar controladores de pago</translation>
+<translation id="3920938867981797493">Políticas del actualizador</translation>
 <translation id="3922823422695198027">Se configuraron otras apps para abrir los mismos vínculos que <ph name="APP_NAME" />. Esta acción impedirá que <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> y <ph name="APP_NAME_4" /> abran los vínculos compatibles.</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
 <translation id="3923221004758245114">¿Quieres quitar <ph name="VM_NAME" /> de tu <ph name="DEVICE_TYPE" />? Esta acción borrará todas las apps y los datos de la máquina virtual.</translation>
@@ -4938,6 +4943,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4306489587293957491">Ingresar</translation>
 <translation id="4306810703452026910">Chrome dejará de marcar las notificaciones de este sitio como spam</translation>
 <translation id="4307992518367153382">Opciones básicas</translation>
+<translation id="4309035504231554969">No se pudo completar la instalación por motivos desconocidos.</translation>
 <translation id="4309165024397827958">Permite que los servicios y las apps para Android habilitadas usen la ubicación de este dispositivo. Es posible que Google recopile datos de ubicación anónimos periódicamente y los use para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
 <translation id="4309183709806093061">Compartir también el audio del sistema. Se silenciará este dispositivo para evitar acoples.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K en vivo)</translation>
@@ -5351,6 +5357,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4598556348158889687">Administración de almacenamiento</translation>
 <translation id="4598776695426288251">Wi-Fi disponible mediante varios dispositivos</translation>
 <translation id="4600071396330666617">Número de sugerencias</translation>
+<translation id="4600978165652322776">Se ha producido un error de red. Verifica tu conexión a Internet y la configuración de red.</translation>
 <translation id="4601095002996233687">Análisis detallados de descargas sospechosas.</translation>
 <translation id="4601426376352205922">Marcar como no leído</translation>
 <translation id="460190672235687855">Ver contraseñas</translation>
@@ -5629,6 +5636,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4795670271446126525">Olas rompientes</translation>
 <translation id="4797314204379834752">Usa los grupos de pestañas para organizar las tareas, hacer compras en línea y más</translation>
 <translation id="479863874072008121">Administrar dispositivos</translation>
+<translation id="4799574323027833817">No hay políticas vigentes.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4800709549856064659">Después del <ph name="START_DATE" /></translation>
 <translation id="4800839971935185386">Revisar la actualización de íconos y nombres</translation>
@@ -6741,6 +6749,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5562588178647493983">Si deseas obtener más información, comunícate con tu administrador</translation>
 <translation id="556321030400250233">archivo local o compartido</translation>
 <translation id="5563234215388768762">Busca en Google o escribe una URL</translation>
+<translation id="5563698194918415761">La política de red o un servidor proxy bloquearon la actualización.</translation>
 <translation id="5563824734298958390">¿Quieres salir del grupo de pestañas?</translation>
 <translation id="5565735124758917034">Activo</translation>
 <translation id="5568069709869097550">No puedo acceder</translation>
@@ -7967,6 +7976,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="642469772702851743">El propietario bloqueó este dispositivo (NS: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6425556984042222041">Velocidad para texto a voz</translation>
 <translation id="642729974267661262">No puede reproducir sonido</translation>
+<translation id="6427752304227226701">Denunciar un sitio &amp;no seguro…</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{No hay contraseñas guardadas.}=1{Revisando {COUNT} contraseña…}other{Revisando {COUNT} contraseñas…}}</translation>
 <translation id="6429384232893414837">Error en la actualización</translation>
 <translation id="6430814529589430811">Certificado único ASCII con codificación Base64</translation>
@@ -8638,6 +8648,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6883319974225028188">El sistema no pudo guardar la configuración del dispositivo.</translation>
 <translation id="6883606786470492001">Administra tus temas de anuncios y otros parámetros de configuración si quieres limitar la información que los sitios pueden obtener sobre ti para mostrarte anuncios personalizados</translation>
 <translation id="6884474387073389421">¿Confirmas que quieres borrar los datos de acceso seleccionados?</translation>
+<translation id="6885338910541974777">Falló el programa de instalación de la aplicación.</translation>
 <translation id="6885771755599377173">Vista previa de la información del sistema</translation>
 <translation id="6886871292305414135">Abrir vínculo en una pes&amp;taña nueva</translation>
 <translation id="6888831646723563669">Conéctate para disfrutar todas las funciones de tu nuevo dispositivo <ph name="DEVICE_TYPE" /></translation>
@@ -10504,6 +10515,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8147900440966275470">Se encontró <ph name="NUM" /> pestaña</translation>
 <translation id="814870937590541483">Más acciones para los archivos de Google Drive</translation>
 <translation id="8148760431881541277">Limitar el acceso</translation>
+<translation id="8149596686567059924">No se pudo descomprimir el paquete de actualización.</translation>
 <translation id="8149870652370242480">Para usar las contraseñas guardadas en tu teléfono, descarga Chrome para iOS y accede a tu Cuenta de Google.</translation>
 <translation id="8150396590017071059">Cambiar el PIN del Administrador de contraseñas</translation>
 <translation id="8151057139207656239">Se copiaron los detalles de la compilación</translation>
@@ -10641,6 +10653,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8243948765190375130">Es posible que se reduzca la calidad del contenido multimedia.</translation>
 <translation id="8244201515061746038">Botón para obtener más información sobre la autocorrección. Ve a la página de configuración de la autocorrección. Presiona Intro para activarla o Esc para descartarla.</translation>
 <translation id="8244514732452879619">Pronto se apagarán las luces</translation>
+<translation id="8244724656154470844">No se pudo verificar la actualización.</translation>
 <translation id="8246776524656196770">Protege tu llave de seguridad con un PIN (número de Identificación personal)</translation>
 <translation id="824713170151383793">Con Herramientas para desarrolladores</translation>
 <translation id="8247795734638043885">Descargar archivo no seguro</translation>
@@ -10747,6 +10760,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8312841338723044391">EN VIVO</translation>
 <translation id="8313308349366087671">Opciones de la aplicación</translation>
 <translation id="8313599942510782709">Tu tarea aún está en curso</translation>
+<translation id="8314219340741508325">La actualización descargada no incluye el contenido esperado.</translation>
 <translation id="8314381333424235892">Falta la extensión o no está instalada</translation>
 <translation id="831440797644402910">No se puede abrir esta carpeta</translation>
 <translation id="8314835274931377415">¿Deseas iniciar la configuración de Accesibilidad con interruptores?</translation>
@@ -11117,6 +11131,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8566916288687510520">Se recibió una contraseña nueva</translation>
 <translation id="8569673829373920831">Más información sobre <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">No se encontró ningún destino.</translation>
+<translation id="857026972772582291">Políticas de <ph name="APP_NAME" /></translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8571323456914890254">Abrir en vista dividida</translation>
 <translation id="8571687764447439720">Agregar un ticket de Kerberos</translation>
@@ -11631,6 +11646,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> hoy mismo.}other{<ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y regreses este dispositivo <ph name="DEVICE_TYPE" /> antes de la fecha límite.}}</translation>
 <translation id="8902667442496790482">Abrir configuración de Seleccionar para pronunciar</translation>
 <translation id="8903733144777177139">El acceso al micrófono está bloqueado</translation>
+<translation id="890518297681039136">No se realizó la operación por una razón desconocida.</translation>
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> creó una contraseña segura para este sitio web</translation>
 <translation id="890616557918890486">Cambiar la fuente</translation>
 <translation id="8907701755790961703">Selecciona un país.</translation>
@@ -12225,4 +12241,5 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="99731366405731005">Activa la <ph name="LINK1_BEGIN" />Sincronización de Chrome<ph name="LINK1_END" /> para usar la Sincronización Wi-Fi. <ph name="LINK2_BEGIN" />Más información<ph name="LINK2_END" /></translation>
 <translation id="998347228911661591">Sincroniza tus grupos de pestañas</translation>
 <translation id="998747458861718449">Inspeccionar</translation>
+<translation id="998852291477823323">Las políticas configuradas no permiten la acción.</translation>
 </translationbundle>

@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">ይህ ካርድ ለምናባዊ ካርድ ቁጥር ብቁ አይደለም።</translation>
 <translation id="2071852865256799872">የእርስዎ አሳሽ የሚተዳደረው በድርጅትዎ ነው እና የእርስዎ መገለጫ የሚተዳደረው በ<ph name="PROFILE_DOMAIN" /> ነው</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">መረጃ ወደ መሣሪያ ብቻ ተቀምጧል</translation>
 <translation id="2074733626795553847">የ<ph name="TOPIC" /> እገዳውን አንሳ</translation>
 <translation id="2074771604462073334">እርስዎ የጎበኙት</translation>
 <translation id="2078956195623975415">የሙዚቃ እና የዳንስ ጨዋታዎች</translation>
@@ -4904,6 +4905,7 @@
 <translation id="8858065207712248076">Chrome የእርስዎን የ<ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ይለፍ ቃል በሌሎች ጣቢያዎች ላይ ዳግም ከተጠቀሙበት እንደገና እንዲያዋቅሩት ይመክራል።</translation>
 <translation id="885906927438988819">የፊደል አጻጻፉ ትክክል ከሆነ <ph name="BEGIN_LINK" />የWindows አውታረ መረብ ምርመራን ለማስኬድ ይሞክሩ<ph name="END_LINK" />።</translation>
 <translation id="8861126751581835107">የፎቶግራፊ እና ዲጂታል ሥነ ጥበባት</translation>
+<translation id="8861482055962701239">ይህን መረጃ ወደ የእርስዎ Google Wallet ማስቀመጥ አልተቻለም። በምትኩ በዚህ መሣሪያ ላይ ወደ Chrome ተቀምጧል። በሚቀጥለው ጊዜ ሲጠቀሙት Chrome ወደ Wallet ለማስቀመጥ ይጠይቃል።</translation>
 <translation id="8863218129525348270">በሚቀጥለው ጊዜ በበለጠ ፍጥነት ለመክፈል፣ የእርስዎን ካርድ መሣሪያዎ ላይ ያስቀምጡ</translation>
 <translation id="8864939224504814334">ሱፎች እና የመስሪያ ቤት አለባበሶች</translation>
 <translation id="8866132857352163524">አጃቢ ሙዚቃ</translation>

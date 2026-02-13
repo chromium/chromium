@@ -656,6 +656,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2071156619270205202">Þetta kort er ekki gjaldgengt fyrir sýndarkortsnúmer.</translation>
 <translation id="2071852865256799872">Vafranum þínum er stjórnað af fyrirtækinu þínu og prófílnum þínum er stjórnað af <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Upplýsingar aðeins vistaðar í tæki</translation>
 <translation id="2074733626795553847">Taka <ph name="TOPIC" /> af bannlista</translation>
 <translation id="2074771604462073334">Þú heimsóttir</translation>
 <translation id="2078956195623975415">Tónlistar- og dansleikir</translation>
@@ -4900,6 +4901,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8858065207712248076">Chrome mælir með því að þú endurstillir aðgangsorðið fyrir <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ef þú notaðir það einnig á öðrum síðum.</translation>
 <translation id="885906927438988819">Ef stafsetningin er rétt skaltu <ph name="BEGIN_LINK" />prófa að keyra bilanaleit á netkerfi í Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Ljósmyndun og stafræn list</translation>
+<translation id="8861482055962701239">Ekki tókst að vista þessar upplýsingar í Google-veski. Í staðinn voru þær vistaðar í Chrome í þessu tæki. Chrome mun bjóðast til að vista þær í Veski næst þegar þú notar það.</translation>
 <translation id="8863218129525348270">Vistaðu kortið þitt í tækinu til að greiða hraðar næst</translation>
 <translation id="8864939224504814334">Jakkaföt og viðskiptaklæðnaður</translation>
 <translation id="8866132857352163524">Tónlist í kvikmyndum, þáttum og leikjum</translation>

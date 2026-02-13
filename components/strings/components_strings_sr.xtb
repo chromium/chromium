@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">Ова картица не испуњава услове за број виртуелне картице.</translation>
 <translation id="2071852865256799872">Прегледачем управља организација, а профилом управља <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Информације су сачуване само на уређају</translation>
 <translation id="2074733626795553847">Одблокирај тему <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Посетили сте</translation>
 <translation id="2078956195623975415">Музичке и плесне игре</translation>
@@ -4901,6 +4902,7 @@
 <translation id="8858065207712248076">Chrome вам препоручује да ресетујете лозинку за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако сте је користили на другим сајтовима.</translation>
 <translation id="885906927438988819">Ако нема грешака, <ph name="BEGIN_LINK" />покрените Windows дијагностику мреже<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Фотографска и дигитална уметност</translation>
+<translation id="8861482055962701239">Чување ових информација у Google новчанику није успело. Уместо тога, сачуване су у Chrome-у на овом уређају. Chrome ће вам понудити да их сачувате у Новчанику следећи пут кад их будете користили.</translation>
 <translation id="8863218129525348270">Да бисте следећи пут платили брже, сачувајте картицу на уређају</translation>
 <translation id="8864939224504814334">Одела и пословна одећа</translation>
 <translation id="8866132857352163524">Музика из филмова</translation>

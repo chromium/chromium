@@ -137,6 +137,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo de interface humana}=1{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo de interface humana}other{Unha ou varias extensións de Chromium estaban accedendo a # dispositivos de interface humana}}</translation>
 <translation id="2401032172288869980">Chromium necesita permiso de acceso á cámara e ao micrófono para este sitio</translation>
 <translation id="2403703063067034158">Produciuse un erro de inicio do sistema: Estase executando outra instancia de configuración. Téntao de novo máis tarde.</translation>
+<translation id="2418322681019544463">Abre ligazóns en Chromium desde calquera aplicación e accede facilmente ao navegador desde a barra de tarefas</translation>
 <translation id="2440750600860946460">Coas <ph name="BEGIN_LINK" />ferramentas de Chromium<ph name="END_LINK" />, podes navegar de maneira segura e manter o control</translation>
 <translation id="2451727308784734061">Usa o atallo para acceder rapidamente ao xestor de contrasinais. Podes mover o atallo ao Menú de aplicacións ou á pantalla de inicio do ordenador.</translation>
 <translation id="2478295928299953161">Chromium pecharase en breve</translation>
@@ -608,6 +609,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7745317241717453663">Esta acción eliminará os teus datos de navegación deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">O programa de instalación non puido crear un directorio temporal. Comproba se hai espazo libre no disco e se tes autorización para instalar o software.</translation>
 <translation id="7750130090210923118">Restablecer Chromium predeterminado</translation>
+<translation id="7781047659465034537">Define Chromium como o navegador predeterminado e fíxao na barra de tarefas</translation>
 <translation id="7786760609782648049">Fai que Chromium sexa máis rápido</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> (versión experimental de Chromium)</translation>
 <translation id="7803986347287457849">Fai que ás persoas que teñan acceso ao teu tráfico de Internet lles resulte máis difícil ver os sitios que visitas. Chromium usa unha conexión segura para buscar o enderezo IP dos sitios no DNS (Sistema de nomes de dominios).</translation>

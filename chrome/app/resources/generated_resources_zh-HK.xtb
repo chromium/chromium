@@ -688,7 +688,7 @@
 <translation id="1461041542809785877">效能</translation>
 <translation id="1461177659295855031">移至「書籤列」資料夾</translation>
 <translation id="1461288887896722288">您剛才已登入受管帳戶，建立新的受管個人檔案即可存取一些已連結至該帳戶的資源。</translation>
-<translation id="1461718860884899524">檢舉不安全的網站...</translation>
+<translation id="1461718860884899524">舉報不安全網站…</translation>
 <translation id="146219525117638703">ONC 狀態</translation>
 <translation id="146220085323579959">互聯網已中斷連線。請檢查互聯網連線，然後再試一次。</translation>
 <translation id="1462480037563370607">手動新增網站</translation>
@@ -913,7 +913,7 @@
 <translation id="1605744057217831567">查看所有網站資料和權限</translation>
 <translation id="1606077700029460857">變更滑鼠設定</translation>
 <translation id="1606566847233779212">要移除您新增的特定網站嗎？</translation>
-<translation id="160689647589417224">這個應用程式在此區域受到限制。</translation>
+<translation id="160689647589417224">應用程式在此地區受到限制。</translation>
 <translation id="1607139524282324606">清除項目</translation>
 <translation id="1607499585984539560">使用者並未與網域建立關聯</translation>
 <translation id="1607540893439314147"><ph name="BEGIN_PARAGRAPH1" />與 Gemini 對話，開始使用 Google AI 寫作、計劃、學習及執行其他工作。<ph name="END_PARAGRAPH1" />
@@ -2140,7 +2140,7 @@
 <translation id="2419706071571366386">為安全起見，當您未使用電腦時，請登出帳戶。</translation>
 <translation id="2421705177906985956">目前沒有可顯示的網站</translation>
 <translation id="2422125132043002186">已取消 Linux 還原</translation>
-<translation id="2423506062824112361">因不明原因無法下載內容。</translation>
+<translation id="2423506062824112361">因不明原因而無法下載內容。</translation>
 <translation id="2423578206845792524">另存圖片為(&amp;V)…</translation>
 <translation id="2424424966051154874">{0,plural, =1{訪客}other{訪客 (#)}}</translation>
 <translation id="2426805022920575512">選擇其他帳戶</translation>
@@ -2314,7 +2314,7 @@
 <translation id="2524093372979370955">系統會停用所有新 USB 周邊裝置的通知。確定要繼續嗎？</translation>
 <translation id="252418934079508528">安裝 <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">詢問有關此分頁的問題</translation>
-<translation id="2525746158911982776">因系統儲存空間不足無法更新。</translation>
+<translation id="2525746158911982776">系統儲存空間不足，因此無法更新。</translation>
 <translation id="2526590354069164005">桌面電腦</translation>
 <translation id="2526619973349913024">檢查更新</translation>
 <translation id="2527167509808613699">任何類型的連線</translation>
@@ -4953,7 +4953,7 @@
 <translation id="4306489587293957491">輸入</translation>
 <translation id="4306810703452026910">Chrome 不會再將來自此網站的通知標示為垃圾內容</translation>
 <translation id="4307992518367153382">基本</translation>
-<translation id="4309035504231554969">因不明原因安裝失敗。</translation>
+<translation id="4309035504231554969">因不明原因而無法安裝。</translation>
 <translation id="4309165024397827958">允許擁有位置存取權的 Android 應用程式和服務使用裝置的位置資訊。Google 可能會定期收集並以匿名方式使用位置資訊，以提升定位的精確度及改善適地性服務。</translation>
 <translation id="4309183709806093061">也分享系統音訊。此裝置將設定為靜音，以避免音訊反饋。</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K 使用中)</translation>
@@ -5367,7 +5367,7 @@
 <translation id="4598556348158889687">管理儲存空間</translation>
 <translation id="4598776695426288251">可透過多部裝置使用 Wi-Fi</translation>
 <translation id="4600071396330666617">建議數量</translation>
-<translation id="4600978165652322776">網路發生錯誤，請檢查網際網路連線和網路設定。</translation>
+<translation id="4600978165652322776">發生網絡錯誤。請檢查互聯網連線和網絡設定。</translation>
 <translation id="4601095002996233687">提供深入掃瞄功能，檢查是否有可疑的下載內容。</translation>
 <translation id="4601426376352205922">標示為未讀取</translation>
 <translation id="460190672235687855">查看密碼</translation>
@@ -6757,7 +6757,7 @@
 <translation id="5562588178647493983">請聯絡管理員查詢詳情</translation>
 <translation id="556321030400250233">本機或共用檔案</translation>
 <translation id="5563234215388768762">搜尋 Google 或輸入網址</translation>
-<translation id="5563698194918415761">更新遭到網路政策或 Proxy 伺服器封鎖。</translation>
+<translation id="5563698194918415761">更新被網絡政策或 Proxy 伺服器封鎖。</translation>
 <translation id="5563824734298958390">要離開分頁群組嗎？</translation>
 <translation id="5565735124758917034">啟用</translation>
 <translation id="5568069709869097550">無法登入</translation>
@@ -7981,7 +7981,7 @@
 <translation id="642469772702851743">這部裝置 (序號：<ph name="SERIAL_NUMBER" />) 已被其擁有者上鎖。</translation>
 <translation id="6425556984042222041">「文字轉語音」語速</translation>
 <translation id="642729974267661262">不允許播放音效</translation>
-<translation id="6427752304227226701">檢舉不安全的網站...</translation>
+<translation id="6427752304227226701">舉報不安全網站…</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{未儲存密碼。}=1{正在檢查 {COUNT} 個密碼…}other{正在檢查 {COUNT} 個密碼…}}</translation>
 <translation id="6429384232893414837">更新錯誤</translation>
 <translation id="6430814529589430811">Base64 編碼 ASCII，單一憑證</translation>
@@ -8653,7 +8653,7 @@
 <translation id="6883319974225028188">抱歉！系統無法儲存裝置設定。</translation>
 <translation id="6883606786470492001">管理廣告主題和其他設定，限制網站可根據你的哪些資料放送個人化廣告</translation>
 <translation id="6884474387073389421">確定要刪除已選取的登入資料嗎？</translation>
-<translation id="6885338910541974777">應用程式的安裝程式失敗。</translation>
+<translation id="6885338910541974777">應用程式的安裝程式無法執行。</translation>
 <translation id="6885771755599377173">預覽系統資訊</translation>
 <translation id="6886871292305414135">在新分頁中開啟連結(&amp;T)</translation>
 <translation id="6888831646723563669">連結後，你就可在新的 <ph name="DEVICE_TYPE" /> 上使用所有功能</translation>
@@ -10517,7 +10517,7 @@
 <translation id="8147900440966275470">找到 <ph name="NUM" /> 個分頁</translation>
 <translation id="814870937590541483">可以對「Google 雲端硬碟」檔案執行嘅其他操作</translation>
 <translation id="8148760431881541277">限制登入</translation>
-<translation id="8149596686567059924">更新套件無法解壓縮。</translation>
+<translation id="8149596686567059924">無法解壓縮更新套裝。</translation>
 <translation id="8149870652370242480">如要在手機上使用儲存的密碼，請下載 Chrome iOS 版，然後登入 Google 帳戶。</translation>
 <translation id="8150396590017071059">變更密碼管理工具 PIN</translation>
 <translation id="8151057139207656239">複製咗版本詳情</translation>
@@ -10762,7 +10762,7 @@
 <translation id="8312841338723044391">直播</translation>
 <translation id="8313308349366087671">應用程式選項</translation>
 <translation id="8313599942510782709">工作仍在處理中</translation>
-<translation id="8314219340741508325">下載的更新內容不含預期的內容。</translation>
+<translation id="8314219340741508325">下載的更新並未包含預期內容。</translation>
 <translation id="8314381333424235892">缺少或未安裝擴充程式</translation>
 <translation id="831440797644402910">無法開啟此資料夾</translation>
 <translation id="8314835274931377415">要開始設定按鈕控制功能嗎？</translation>
@@ -11644,7 +11644,7 @@
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您備份資料，並在今天內歸還此 <ph name="DEVICE_TYPE" />。}other{<ph name="MANAGER" /> 要求您備份資料，並在期限前歸還此 <ph name="DEVICE_TYPE" />。}}</translation>
 <translation id="8902667442496790482">開啟「揀選朗讀內容」設定</translation>
 <translation id="8903733144777177139">禁止存取麥克風</translation>
-<translation id="890518297681039136">因不明原因作業失敗。</translation>
+<translation id="890518297681039136">操作因不明原因而失敗。</translation>
 <translation id="8905253417215700291">「<ph name="GOOGLE_PASSWORD_MANAGER" />」已為此網站建立安全度高的密碼</translation>
 <translation id="890616557918890486">變更來源</translation>
 <translation id="8907701755790961703">請選取國家/地區</translation>
@@ -12239,5 +12239,5 @@
 <translation id="99731366405731005">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />以使用 Wi-Fi Sync。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
 <translation id="998347228911661591">同步分頁群組</translation>
 <translation id="998747458861718449">檢查(&amp;N)</translation>
-<translation id="998852291477823323">已設定的政策禁止執行這項動作。</translation>
+<translation id="998852291477823323">所設定的政策不允許此操作。</translation>
 </translationbundle>

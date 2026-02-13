@@ -135,6 +135,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Uma ou mais extensões do Chromium estavam a aceder a 1 dispositivo HID}=1{Uma ou mais extensões do Chromium estão a aceder a 1 dispositivo HID}other{Uma ou mais extensões do Chromium estão a aceder a # dispositivos HID}}</translation>
 <translation id="2401032172288869980">O Chromium necessita de autorizações da câmara e do microfone para este site</translation>
 <translation id="2403703063067034158">Erro de arranque: está a ser executada outra instância da configuração. Tente mais tarde.</translation>
+<translation id="2418322681019544463">Abra links no Chromium a partir de qualquer app e mantenha o navegador acessível na barra de tarefas</translation>
 <translation id="2440750600860946460">Com as <ph name="BEGIN_LINK" />ferramentas do Chromium<ph name="END_LINK" />, pode navegar em segurança e manter o controlo</translation>
 <translation id="2451727308784734061">Use o atalho para aceder rapidamente ao Gestor de Palavras-passe. Pode mover o atalho para o Launcher de apps ou o ecrã principal do computador.</translation>
 <translation id="2478295928299953161">O Chromium vai ser fechado em breve</translation>
@@ -606,6 +607,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7745317241717453663">Esta ação elimina os dados de navegação deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">O programa de instalação não conseguiu criar um directório temporário. Verifique se há espaço livre no disco e permissão para a instalação do software.</translation>
 <translation id="7750130090210923118">Repor Chromium predefinido</translation>
+<translation id="7781047659465034537">Defina o Chromium como navegador predefinido e afixe-o à barra de tarefas</translation>
 <translation id="7786760609782648049">Torne o Chromium mais rápido</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Torne mais difícil a visualização dos sites que visita por parte das pessoas com acesso ao seu tráfego da Internet. O Chromium usa uma ligação segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio).</translation>

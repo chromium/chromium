@@ -137,6 +137,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Jedan ili više dodataka za Chromium su pristupali 1 HID uređaju}=1{Jedan ili više dodataka za Chromium pristupaju 1 HID uređaju}one{Jedan ili više dodataka za Chromium pristupaju # HID uređaju}few{Jedan ili više dodataka za Chromium pristupaju HID uređajima (#)}other{Jedan ili više dodataka za Chromium pristupaju HID uređajima (#)}}</translation>
 <translation id="2401032172288869980">Chromium-u su potrebne dozvole za kameru i mikrofon za ovaj sajt</translation>
 <translation id="2403703063067034158">Greška pri pokretanju: Trenutno je pokrenuta druga instanca podešavanja. Probajte ponovo kasnije.</translation>
+<translation id="2418322681019544463">Otvarajte linkove u Chromium-u iz bilo koje aplikacije i omogućite pristup pregledaču na traci zadataka</translation>
 <translation id="2440750600860946460">Pomoću <ph name="BEGIN_LINK" />Chromium alatki<ph name="END_LINK" /> možete bezbedno da pregledate i zadržite kontrolu</translation>
 <translation id="2451727308784734061">Koristite prečicu da biste brzo pristupali Menadžeru lozinki. Prečicu možete da premestite na početni ekran računara ili u pokretač aplikacija.</translation>
 <translation id="2478295928299953161">Chromium će se uskoro zatvoriti</translation>
@@ -608,6 +609,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="7745317241717453663">Ovim ćete izbrisati podatke pregledanja sa ovog uređaja. Da biste kasnije vratili podatke, prijavite se u Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Program za instalaciju nije mogao da napravi privremeni direktorijum. Proverite da li imate slobodnog prostora na disku, kao i dozvolu da instalirate softver.</translation>
 <translation id="7750130090210923118">Resetuj na podrazumevani Chromium</translation>
+<translation id="7781047659465034537">Podesite Chromium kao podrazumevani pregledač i zakačite ga na traku zadataka</translation>
 <translation id="7786760609782648049">Ubrzajte Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Otežajte onima koji imaju pristup vašem internet saobraćaju da vide koje sajtove posećujete. Chromium koristi bezbednu vezu da bi tražio IP adresu sajta u DNS-u (sistemu imena domena).</translation>

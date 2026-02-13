@@ -135,6 +135,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Üks või mitu Chromiumi laiendust kasutasid juurdepääsu ühele HID-seadmele}=1{Üks või mitu Chromiumi laiendust pääsevad juurde ühele HID-seadmele}other{Üks või mitu Chromiumi laiendust pääsevad juurde # HID-seadmele}}</translation>
 <translation id="2401032172288869980">Chromium vajab selle saidi puhul kaamera ja mikrofoni kasutamise luba</translation>
 <translation id="2403703063067034158">Käivitamisviga: praegu käitatakse seadistuse teist eksemplari, proovige hiljem uuesti.</translation>
+<translation id="2418322681019544463">Avage mis tahes rakenduse lingid Chromiumis ja hoidke brauser tegumiribal käepärast.</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromiumi tööriistadega<ph name="END_LINK" /> saate ohutult sirvida ja kõik kontrolli all hoida</translation>
 <translation id="2451727308784734061">Kasutage oma otseteed, et kiiresti Paroolihalduri juurde pääseda. Saate teisaldada otsetee arvuti avakuvale või rakenduste käivitajale.</translation>
 <translation id="2478295928299953161">Chromium sulgub peagi</translation>
@@ -606,6 +607,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7745317241717453663">See kustutab sellest seadmest teie sirvimisandmed. Hiljem oma andmete toomiseks logige Chromiumi sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Installija ei suutnud luua ajutist kataloogi. Palun kontrollige vaba kettaruumi ja tarkvara installimise loa olemasolu.</translation>
 <translation id="7750130090210923118">Taasta Chromiumi vaiketeema</translation>
+<translation id="7781047659465034537">Määrake Chromium vaikebrauseriks ja kinnitage see tegumiribale</translation>
 <translation id="7786760609782648049">Muutke Chromium kiiremaks</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Muutke teie internetiliiklusele juurdepääsu omavate inimeste jaoks keerulisemaks vaadata, milliseid saite külastate. Chromium kasutab DNS-ist (domeeninimesüsteemist) saidi IP-aadressi otsimiseks turvalist ühendust.</translation>

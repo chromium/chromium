@@ -656,6 +656,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2071156619270205202">This card is not eligible for virtual card number.</translation>
 <translation id="2071852865256799872">Your browser is managed by your organisation and your profile is managed by <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Info saved to device only</translation>
 <translation id="2074733626795553847">Unblock <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">You visited</translation>
 <translation id="2078956195623975415">Music and dance games</translation>
@@ -704,6 +705,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2137891579555018930">Waiting for permission…</translation>
 <translation id="213826338245044447">Mobile Bookmarks</translation>
 <translation id="2141000681034340397">Edit your input</translation>
+<translation id="2141475438898772664">Pay in four or monthly</translation>
 <translation id="2144171668675205303">No active topics</translation>
 <translation id="2145193671493396738">Economy news</translation>
 <translation id="214556005048008348">Cancel payment</translation>
@@ -2848,6 +2850,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5543564889050342791">Zoos, aquariums and preserves</translation>
 <translation id="5543722831081909240">180 degrees</translation>
 <translation id="5544836308113951378">Cruises and charters</translation>
+<translation id="5545314360139398232">Link <ph name="ISSUER_NAME" /> to pay over time</translation>
 <translation id="5547939254150808298">Printing and publishing</translation>
 <translation id="554815783948612276">Forum and chat providers</translation>
 <translation id="5548606607480005320">Safety check</translation>
@@ -3695,6 +3698,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6926216138694948720">Body art</translation>
 <translation id="692638818576287323">Commercial Vehicles</translation>
 <translation id="6927878187051807444">camera files and screenshots</translation>
+<translation id="6929949393612835405">Close and return to '<ph name="OPENER_TITLE" />'</translation>
 <translation id="6930607614725241390">Search in side panel</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Your default search engine lets you search the web and powers Chrome features<ph name="END_BOLD" /> like searching from the address bar and from images on web pages. A feature might not be available if your search engine doesn’t support it.</translation>
 <translation id="6934672428414710184">This name is from your Google Account</translation>
@@ -4901,6 +4905,7 @@ Additional details:
 <translation id="8858065207712248076">Chrome recommends resetting your <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> password if you reused it on other sites.</translation>
 <translation id="885906927438988819">If spelling is correct, <ph name="BEGIN_LINK" />try running windows network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Photographic and digital arts</translation>
+<translation id="8861482055962701239">Couldn't save this info to your Google Wallet. It's been saved to Chrome on this device instead. Chrome will offer to save it to Wallet next time you use it.</translation>
 <translation id="8863218129525348270">To pay faster next time, save your card to your device</translation>
 <translation id="8864939224504814334">Suits and Business Attire</translation>
 <translation id="8866132857352163524">Soundtracks</translation>

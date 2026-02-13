@@ -101,6 +101,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2099452623287920103">Your passwords and other Chromium data that you saved in your Google Account will be removed from this device. To use them again in Chromium, sign back in.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Your organisation deletes browsing data automatically when Chromium isn't used for one minute. This could include history, autofill and downloads. Your tabs will stay open.}other{Your organisation deletes browsing data automatically when Chromium isn't used for # minutes. This could include history, autofill and downloads. Your tabs will stay open.}}</translation>
 <translation id="2126108037660393668">The downloaded file failed verification.</translation>
+<translation id="2135919691573380097">Report this site</translation>
 <translation id="2137162749895930932">Close translate screen</translation>
 <translation id="215352261310130060">Chromium blocked this download because the site isn't using a secure connection and the file may have been tampered with</translation>
 <translation id="2170098639895543546">Select anything on page</translation>
@@ -137,6 +138,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chromium extensions}=1{1 HID device is being accessed by one or more Chromium extensions}other{# HID devices are being accessed by one or more Chromium extensions}}</translation>
 <translation id="2401032172288869980">Chromium needs camera and microphone permissions for this site</translation>
 <translation id="2403703063067034158">Startup error: Another instance of setup is currently running, please try again later.</translation>
+<translation id="2418322681019544463">Open links in Chromium from any app and keep the browser accessible on your taskbar</translation>
 <translation id="2440750600860946460">With <ph name="BEGIN_LINK" />tools from Chromium<ph name="END_LINK" />, you can browse safely and stay in control</translation>
 <translation id="2451727308784734061">Use your shortcut to quickly get to the Password Manager. You can move your shortcut to your computer's home screen or app launcher.</translation>
 <translation id="2478295928299953161">Chromium will soon close</translation>
@@ -313,6 +315,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4334241893986177674">Search this screenshot</translation>
 <translation id="4334294535648607276">Download complete.</translation>
+<translation id="4384331407722351213">Launch Chromium when Windows starts</translation>
 <translation id="4384993550046411228">Get easy access to the features that you know, love and trust by setting Chromium as your default browser. Chromium will be pinned to your taskbar for quick access.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Chromium OS terms.</translation>
 <translation id="4407044323746248786">Exit Chromium anyway?</translation>
@@ -333,6 +336,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4531137820806573936">Chromium needs permission to map your surroundings and track your hands</translation>
 <translation id="4536805923587466102">You're already signed in as <ph name="USER_EMAIL_ADDRESS" /> in another Chromium profile</translation>
 <translation id="4548534452171747496">Chromium preloads pages which makes browsing and searching faster. <ph name="BEGIN_LINK" />Learn more about preload pages<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">Improve online safety for everyone when you report a site that you think is harmful.</translation>
 <translation id="4570813286784708942">Chromium blocked this download because you turned Safe Browsing off and the file can't be verified</translation>
 <translation id="4583692638088316420">Try Google Lens with Chromium on your phone</translation>
 <translation id="4594305310729380060">To Password Manager on this device</translation>
@@ -505,6 +509,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6598877126913850652">Go to Chromium notification settings</translation>
 <translation id="6600016381025017075">Search anything on this page</translation>
 <translation id="6613594504749178791">Your changes will take effect the next time you relaunch Chromium.</translation>
+<translation id="6637908313088374648">Chromium now launches when Windows starts so that you can begin browsing instantly. You can turn this off in settings.</translation>
 <translation id="6648212540664651655">Continue where you left off: Chromium restored your tabs from your last session. You can turn this off in</translation>
 <translation id="665732753414869868">Chromium needs camera permission to create a 3D map of your surroundings</translation>
 <translation id="6669284030132180248">If you also save your bookmarks in your Google Account, you can track product prices in Chromium and get notified when the price drops</translation>
@@ -563,6 +568,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="7213407614656404070">Use Chromium any time that you click links in messages, documents and other apps</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7246575524853130370">Your interests as estimated by Chromium</translation>
+<translation id="7252276985725323153">Begin browsing instantly: Chromium can now launch when Windows starts.</translation>
 <translation id="7274695763216404502">Pinned! Use image search again from the toolbar</translation>
 <translation id="7288567540154601580">Tabs and extensions</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium recommends that you remove it}other{Chromium recommends that you remove them}}</translation>
@@ -593,6 +599,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="751935028865900641">Sites will probably work as expected. You'll be signed out of most sites when you close all Chromium windows, except your Google Account if you're signed in to Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium will relaunch in 1 minute}other{Chromium will relaunch in # minutes}}</translation>
 <translation id="7565444033145385702">To protect your data, let Chromium remove permissions from sites that you haven't visited recently.</translation>
+<translation id="7583104404158659071">Launch Chromium automatically to begin browsing instantly.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> installer</translation>
 <translation id="761356813943268536">Chromium is using your camera and microphone.</translation>
 <translation id="7617377681829253106">Chromium just got better</translation>
@@ -608,6 +615,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7745317241717453663">This will delete your browsing data from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
 <translation id="7750130090210923118">Reset to default Chromium</translation>
+<translation id="7781047659465034537">Set Chromium as default and pin it to taskbar</translation>
 <translation id="7786760609782648049">Make Chromium faster</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Make it harder for people with access to your Internet traffic to see which sites you visit. Chromium uses a secure connection to look up a site's IP address in the DNS (Domain Name System).</translation>

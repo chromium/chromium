@@ -656,6 +656,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2071156619270205202">Ta kartica ni ustrezna za številko virtualne kartice.</translation>
 <translation id="2071852865256799872">Brskalnik upravlja vaša organizacija, vaš profil pa upravlja domena <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Podatki so shranjeni samo v napravi</translation>
 <translation id="2074733626795553847">Odblokiranje teme <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Obiskali ste</translation>
 <translation id="2078956195623975415">Glasbene in plesne igre</translation>
@@ -4904,6 +4905,7 @@ Dodatne podrobnosti:
 <translation id="8858065207712248076">Chrome priporoča, da ponastavite geslo za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, če ste ga uporabljali na drugih spletnih mestih.</translation>
 <translation id="885906927438988819">Če je črkovanje pravilno, <ph name="BEGIN_LINK" />poskušajte zagnati orodje za omrežno diagnostiko sistema Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografska in digitalna umetnost</translation>
+<translation id="8861482055962701239">Teh podatkov ni bilo mogoče shraniti v Google Denarnici. Namesto tega so se shranili v Chromu v tej napravi. Chrome bo ob naslednji uporabi ponudil, da jih shranite v Denarnici.</translation>
 <translation id="8863218129525348270">Če želite naslednjič hitreje plačati, shranite kartico v napravo</translation>
 <translation id="8864939224504814334">Kostimi in poslovna oblačila</translation>
 <translation id="8866132857352163524">Filmska glasba</translation>

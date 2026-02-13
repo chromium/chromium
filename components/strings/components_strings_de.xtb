@@ -656,6 +656,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2071156619270205202">Für diese Karte ist keine virtuelle Kartennummer verfügbar.</translation>
 <translation id="2071852865256799872">Dein Browser wird von deiner Organisation verwaltet, dein Profil von <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informationen nur auf Gerät gespeichert</translation>
 <translation id="2074733626795553847">Blockierung aufheben für <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Letzter Aufruf:</translation>
 <translation id="2078956195623975415">Musik- und Tanzspiele</translation>
@@ -4900,6 +4901,7 @@ Weitere Details:
 <translation id="8858065207712248076">Chrome empfiehlt, dein Passwort für <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> zurückzusetzen, wenn du es auf anderen Websites verwendet hast.</translation>
 <translation id="885906927438988819">Wenn die URL keinen Tippfehler enthält, <ph name="BEGIN_LINK" />kannst du die Windows-Netzwerkdiagnose durchführen<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografie und digitale Kunst</translation>
+<translation id="8861482055962701239">Diese Daten konnten nicht in Google Wallet gespeichert werden. Sie wurde stattdessen in Chrome auf diesem Gerät gespeichert. Wenn du das nächste Mal auf die Daten zugreifst, wirst du von Chrome gefragt, ob sie in Wallet gespeichert werden sollen.</translation>
 <translation id="8863218129525348270">Karte auf deinem Gerät speichern, um beim nächsten Mal schneller bezahlen zu können</translation>
 <translation id="8864939224504814334">Anzüge, Kostüme und Businessbekleidung</translation>
 <translation id="8866132857352163524">Soundtracks</translation>

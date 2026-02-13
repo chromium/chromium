@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 Menit Lalu}other{# Menit Lalu}}</translation>
 <translation id="1450753235335490080">Tidak dapat membagikan <ph name="CONTENT_TYPE" /></translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 Bulan Lalu}other{# Bulan Lalu}}</translation>
+<translation id="1591017414891297549">PRATINJAU</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 menit dan }other{# menit dan }}</translation>
 <translation id="1643823602425662293">Notifikasi</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/dtk</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>
+<translation id="8741385002816058621">Fitur ini masih berupa pratinjau</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1j}other{#j}}</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8841375032071747811">Tombol kembali</translation>

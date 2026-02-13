@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">Картичкава не е подобна за број на виртуелна картичка.</translation>
 <translation id="2071852865256799872">Со вашиот прелистувач управува вашата организација, а со вашиот профил управува <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Податоците се зачувани само на уредот</translation>
 <translation id="2074733626795553847">Одблокирање на <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Го отворивте ова</translation>
 <translation id="2078956195623975415">Музички и игри со танцување</translation>
@@ -4900,6 +4901,7 @@
 <translation id="8858065207712248076">Chrome препорачува ресетирање на лозинката за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако повторно сте ја употребиле на други сајтови.</translation>
 <translation id="885906927438988819">Ако правописот е точен, <ph name="BEGIN_LINK" />извршете дијагностика на мрежата на Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Фотографски и дигитални уметности</translation>
+<translation id="8861482055962701239">Не можеше да се зачуваат податоциве во вашата Google Wallet. Наместо тоа, се зачуваа во Chrome на уредов. Chrome ќе предложи да ги зачува во Wallet следниот пат кога ќе ја користите.</translation>
 <translation id="8863218129525348270">За да платите побрзо следниот пат, зачувајте ја картичката на вашиот уред</translation>
 <translation id="8864939224504814334">Костуми и бизнис облека</translation>
 <translation id="8866132857352163524">Филмска музика</translation>

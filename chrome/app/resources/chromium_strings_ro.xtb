@@ -135,6 +135,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Un dispozitiv HID a fost accesat de una sau mai multe extensii Chromium}=1{Un dispozitiv HID este accesat de una sau mai multe extensii Chromium}few{# dispozitive HID sunt accesate de una sau mai multe extensii Chromium}other{# de dispozitive HID sunt accesate de una sau mai multe extensii Chromium}}</translation>
 <translation id="2401032172288869980">Chromium are nevoie de acces la cameră și microfon pentru acest site</translation>
 <translation id="2403703063067034158">Eroare la pornire: se execută o altă instanță de configurare. Încearcă din nou mai târziu.</translation>
+<translation id="2418322681019544463">Deschide linkuri în Chromium din orice aplicație și menține browserul accesibil în bara de activități</translation>
 <translation id="2440750600860946460">Cu <ph name="BEGIN_LINK" />instrumentele din Chromium<ph name="END_LINK" />, navighezi în siguranță și deții controlul</translation>
 <translation id="2451727308784734061">Folosește comanda rapidă pentru a accesa rapid Managerul de parole. Poți muta comanda rapidă pe ecranul de pornire sau în lansatorul de aplicații al computerului.</translation>
 <translation id="2478295928299953161">Chromium se va închide în curând</translation>
@@ -606,6 +607,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7745317241717453663">Astfel, se vor șterge datele de navigare de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chromium ca <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Programul de instalare nu a putut crea un director temporar. Verifică dacă există suficient spațiu liber și dacă ai drepturile necesare pentru a instala software-ul.</translation>
 <translation id="7750130090210923118">Revino la tema Chromium prestabilită</translation>
+<translation id="7781047659465034537">Setează Chromium ca browser prestabilit și fixează-l în bara de activități</translation>
 <translation id="7786760609782648049">Crește eficiența în Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Împiedică persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. Chromium folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii).</translation>

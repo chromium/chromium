@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">यो कार्डलाई भर्चुअल कार्ड नम्बर प्रदान गर्न मिल्दैन।</translation>
 <translation id="2071852865256799872">तपाईंको सङ्गठनले तपाईंको ब्राउजर र <ph name="PROFILE_DOMAIN" /> ले तपाईंको प्रोफाइल व्यवस्थापन गर्छ</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">जानकारी डिभाइसमा मात्र सेभ गरिएको छ</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> अनब्लक गर्नुहोस्</translation>
 <translation id="2074771604462073334">तपाईंले ट्याब खोलेको समय:</translation>
 <translation id="2078956195623975415">सङ्गीत तथा नृत्यसम्बन्धी गेमहरू</translation>
@@ -4898,6 +4899,7 @@
 <translation id="8858065207712248076">तपाईंले आफ्नो <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> को पासवर्ड अन्य साइटहरूमा पुनः प्रयोग गर्नुभएका खण्डमा Chrome ले तपाईंलाई उक्त पासवर्ड रिसेट गर्न सिफारिस गर्दछ।</translation>
 <translation id="885906927438988819">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'Windows नेटवर्कका डाइगोनेस्टिक्स' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="8861126751581835107">फोटोग्राफी तथा डिजिटल कला</translation>
+<translation id="8861482055962701239">यो जानकारी तपाईंको Google Wallet मा सेभ गर्न सकिएन। यसलाई बरु यो डिभाइसको Chrome मा सेभ गरिएको छ। तपाईंले अर्को पटक यो कार्ड प्रयोग गर्दा Chrome ले यसलाई Wallet मा सेभ गर्ने विकल्प देखाउने छ।</translation>
 <translation id="8863218129525348270">अर्के पटक अझ छिटो भुक्तानी गर्न आफ्नो कार्ड डिभाइसमा सेभ गर्नुहोस्</translation>
 <translation id="8864939224504814334">अफिस जस्ता ठाउँहरूमा लगाइने सुट तथा पोशाक</translation>
 <translation id="8866132857352163524">साउन्ड ट्र्याकहरू</translation>

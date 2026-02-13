@@ -260,6 +260,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome merekomendasikan agar Anda menghapusnya. <ph name="BEGIN_LINK" />Pelajari lebih lanjut ekstensi yang didukung<ph name="END_LINK" />}other{Chrome merekomendasikan agar Anda menghapusnya. <ph name="BEGIN_LINK" />Pelajari lebih lanjut ekstensi yang didukung<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Perdalam penelusuran Anda dengan menambahkan beberapa tab, file, dan alat menggunakan tombol "Tambahkan tab dan lainnya".</translation>
 <translation id="3756724684201900923">Pelajari lebih lanjut cara menginstal Chrome</translation>
+<translation id="3772152698251011058">Laporkan situs ini kepada Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex tidak dapat menyinkronkan data Anda karena terjadi error saat login.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -408,6 +409,8 @@
 <translation id="5430073640787465221">File preferensi Anda rusak atau tidak valid. Google Chrome tidak dapat memulihkan setelan Anda.</translation>
 <translation id="5465210843490471889">Pilih profil Chrome yang akan digunakan dengan <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Untuk membantu meningkatkan fitur ini, Chrome mengirim interaksi Anda dengan fitur tersebut ke Google. Data ini dapat dibaca, diproses, dan dianotasi oleh petugas peninjau.</translation>
+<translation id="547202872422499512">Chrome kini diluncurkan saat Windows dimulai sehingga Anda dapat langsung menjelajahi internet. Anda dapat menonaktifkannya di setelan.</translation>
+<translation id="5486346529181556467">Tingkatkan keamanan online untuk semua orang saat Anda melaporkan situs yang menurut Anda berbahaya. Pelajari lebih lanjut <ph name="BEGIN_LINK" />kebijakan situs tidak aman Google<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">pojok kiri atas area penelusuran: kiri <ph name="LEFT" />%, atas <ph name="TOP" />%</translation>
 <translation id="5550137307985173298">Klik tombol Sesuaikan Chrome di Halaman Tab Baru untuk memberikan tampilan baru pada Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -440,6 +443,7 @@
 <translation id="5756509061973259733">Profil Chrome dengan akun ini sudah ada di perangkat ini</translation>
 <translation id="5759947850379142561">Pilih teks atau gambar untuk ditelusuri dengan Google Lens atau tekan escape untuk keluar dari Google Lens</translation>
 <translation id="5762867845020858790">Tambahkan profil Chrome baru untuk memisahkan bookmark, sandi, dan setelan.</translation>
+<translation id="5779427581965287859">Setel Chrome sebagai default dan sematkan ke taskbar</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Tidak dapat meluncurkan Chrome. Harap coba lagi.</translation>
 <translation id="5809516625706423866">Tidak dapat terhubung ke internet. HTTP 401 Tidak Sah. Periksa konfigurasi proxy Anda.</translation>
@@ -566,6 +570,7 @@
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6967962315388095737">Inbound rule untuk Google Chrome Beta guna mengizinkan traffic mDNS.</translation>
 <translation id="6979589607440534284">Pelajari alasan Chrome memblokir beberapa file, terbuka di tab baru</translation>
+<translation id="6985817499499247940">Otomatis luncurkan Chrome agar dapat langsung menjelajahi internet.</translation>
 <translation id="6991926986715044139">Selalu Tampilkan Pintasan Google Lens</translation>
 <translation id="6999131147875565462">Chrome berjalan lebih cepat dan fitur yang menggunakan JavaScript akan berfungsi sebagaimana mestinya</translation>
 <translation id="7011190694940573312">Penginstalan gagal karena versi sistem operasi ini tidak didukung.</translation>
@@ -594,6 +599,7 @@
 <translation id="7288567540154601580">Tab &amp; ekstensi</translation>
 <translation id="7296210096911315575">Penggunaan penting dan informasi keamanan</translation>
 <translation id="7302361266603927550">Beberapa data Chrome Anda belum disimpan di Akun Google Anda. Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini akan dihapus.</translation>
+<translation id="7306401458628386911">Langsung menjelajahi internet: Chrome kini dapat diluncurkan saat Windows dimulai.</translation>
 <translation id="7308322188646931570">Chrome memerlukan akses penyimpanan untuk mendownload file</translation>
 <translation id="7339898014177206373">Jendela baru</translation>
 <translation id="7352651011704765696">Terjadi error</translation>
@@ -657,6 +663,7 @@
 <translation id="7827099906024714326">Chrome perlu memverifikasi diri Anda sebelum beberapa data dapat disimpan di Akun Google Anda dan digunakan di semua perangkat Anda. Jika Anda logout sekarang, data ini akan dihapus.</translation>
 <translation id="7832314606810669113">Untuk mendapatkan bookmark dan info Anda yang lain di semua perangkat Anda, login ke Chrome. Bookmark ini akan disimpan di Akun Google Anda setelah Anda login.</translation>
 <translation id="7845233973568007926">Terima kasih telah menginstal. Anda harus memulai ulang komputer sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847170235260850604">Luncurkan Chrome saat Windows dimulai</translation>
 <translation id="7849037457735762883">Lanjutkan dari halaman terakhir yang dibuka: Chrome dapat memulihkan tab Anda setiap kali Anda memulai ulang. Untuk mengaktifkannya, buka</translation>
 <translation id="7869620795354551924">Untuk menggunakan sandi yang telah disimpan, ikuti kode QR, download Chrome untuk iOS, dan login ke Akun Google Anda</translation>
 <translation id="7872446069773932638">Mendownload ... <ph name="SECONDS" /> detik lagi</translation>
@@ -690,6 +697,7 @@
 <translation id="8162006532256575008">Gunakan Chrome Tanpa Akun</translation>
 <translation id="8177472873527554730">Tidak dapat menemukan konten di halaman</translation>
 <translation id="8221491193165283816">Anda biasanya memblokir notifikasi. Untuk mengizinkan situs ini memberi Anda notifikasi, klik di sini.</translation>
+<translation id="8253851811470049684">Buka link di Chrome dari aplikasi apa pun dan buat browser tetap dapat diakses di taskbar Anda</translation>
 <translation id="8255190535488645436">Google Chrome menggunakan kamera dan mikrofon Anda.</translation>
 <translation id="8267953129876836456">Chrome menemukan beberapa rekomendasi keamanan untuk Anda tinjau</translation>
 <translation id="8286862437124483331">Google Chrome mencoba menampilkan sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>

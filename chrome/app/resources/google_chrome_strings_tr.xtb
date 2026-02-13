@@ -441,6 +441,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5756509061973259733">Cihazda bu hesaba sahip bir Chrome profili zaten var</translation>
 <translation id="5759947850379142561">Google Lens ile aramak istediğiniz metni veya resmi seçin ya da Google Lens'ten çıkmak için Escape tuşuna basın</translation>
 <translation id="5762867845020858790">Yer işaretleri, şifreler ve ayarları ayrı tutmak için yeni bir Chrome profili ekleyin.</translation>
+<translation id="5779427581965287859">Chrome'u varsayılan olarak ayarlayın ve görev çubuğuna sabitleyin</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome başlatılamadı. Tekrar deneyin.</translation>
 <translation id="5809516625706423866">İnternet'e bağlanılamadı. HTTP 401 Yetkisiz. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
@@ -691,6 +692,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8162006532256575008">Chrome'u hesap olmadan kullan</translation>
 <translation id="8177472873527554730">Sayfada içerik bulunamadı</translation>
 <translation id="8221491193165283816">Genelde bildirimleri engelliyorsunuz. Bu sitenin size bildirim göndermesine izin vermek için burayı tıklayın.</translation>
+<translation id="8253851811470049684">Uygulamalardaki bağlantıları Chrome'da açın ve tarayıcıyı görev çubuğunuzda erişilebilir tutun</translation>
 <translation id="8255190535488645436">Google Chrome kameranızı ve mikrofonunuzu kullanıyor.</translation>
 <translation id="8267953129876836456">Chrome, incelemeniz gereken bazı güvenlik önerileri tespit etti</translation>
 <translation id="8286862437124483331">Google Chrome şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>

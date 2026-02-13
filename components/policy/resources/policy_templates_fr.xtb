@@ -1675,6 +1675,7 @@ Si cette règle n'est pas configurée, les requêtes DNS-over-HTTPS ne sont pas 
 <translation id="2158741059065130266">Si cette règle est définie sur "True", les utilisateurs de l'appli Fichiers de <ph name="PRODUCT_OS_NAME" /> voient une corbeille et les fichiers sous "Mes fichiers" et "Téléchargements" (y compris leurs descendants créés par l'utilisateur) y sont envoyés lors de la suppression.
 
       Si cette règle est définie sur "False", les fichiers qui se trouvaient dans la corbeille sont disponibles en affichant les fichiers masqués et en trouvant le répertoire ".Corbeille" sous "Mes fichiers" ou "Téléchargements".</translation>
+<translation id="215891883000260452">Activer la collecte des journaux de diagnostic WebRTC pour des origines spécifiques</translation>
 <translation id="2159092270572925582">Permet de lister les formats d'URL pour les sites autorisés à afficher du contenu mixte blocable (actif) (c'est-à-dire du contenu HTTP affiché sur des sites HTTPS) et pour lesquels la mise à niveau du contenu mixte blocable de manière facultative est désactivée.
 
           Si cette règle n'est pas configurée, le contenu mixte blocable est bloqué, et le contenu mixte blocable de manière facultative est mis à niveau. Les utilisateurs peuvent définir des exceptions autorisant l'affichage de ce contenu sur des sites spécifiques.
@@ -2498,6 +2499,13 @@ Le système n'interroge les enregistrements AAAA que si un hôte IPv6 global pe
       Remarque : Depuis M114, certaines applis kiosque sont autorisées à ignorer le comportement de cette règle pour leur appli dans des cas d'utilisation particuliers, tels que des évaluations scolaires.</translation>
 <translation id="2667894101494585925">Activer l'optimisation du guide d'extraction</translation>
 <translation id="2669157090883237118">Ne pas modifier la configuration <ph name="PRODUCT_OS_NAME" /> recommandée.</translation>
+<translation id="2669314653349044073">Cette règle permet d'activer la collecte des journaux de diagnostic pour WebRTC pour des origines spécifiques.
+
+Pour en savoir plus sur les formats d'entrée valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle. Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré. Scheme et les sous-domaines sont pris en charge.
+
+Si cette règle est configurée, la collecte des journaux de diagnostic sera activée pour les origines correspondant aux formats de la liste.
+
+Si cette règle n'est pas configurée, la collecte des journaux de diagnostic sera désactivée par défaut.</translation>
 <translation id="2672012807430078509">Contrôle l'activation du protocole d'authentification NTLM pour les installations SMB</translation>
 <translation id="2673363037046384711">L'utilisateur final peut activer ou désactiver le mode Haute efficacité.</translation>
 <translation id="2673968385134502798">Jeux</translation>
