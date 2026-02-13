@@ -150,6 +150,20 @@ source_set("glic") {
   }
 }
 
+if (is_android) {
+  android_library("public_java") {
+    sources = [
+      "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java",
+      "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceFactory.java",
+    ]
+    deps = [
+      "//chrome/browser/glic/android:jni_headers_java",
+      "//chrome/browser/profiles/android:java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+}
+
 source_set("enum") {
   sources = [ "glic_enums.h" ]
 }
@@ -396,6 +410,7 @@ source_set("impl") {
     deps += [
       ":actor_types_for_migration",
       "//chrome/browser/context_sharing/tab_bottom_sheet/android:jni_headers",
+      "//chrome/browser/glic/android",
     ]
   }
 

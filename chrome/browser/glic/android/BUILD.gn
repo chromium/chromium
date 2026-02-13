@@ -6,8 +6,10 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java" ]
+  sources = [
+    "//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
+  ]
 }
 
 android_resources("java_resources") {
@@ -17,7 +19,7 @@ android_resources("java_resources") {
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettings.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonController.java",
   ]
@@ -29,6 +31,7 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/glic:public_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/tab:java",
@@ -45,7 +48,11 @@ android_library("java") {
 }
 
 source_set("android") {
-  sources = [ "glic_keyed_service_android.cc" ]
+  sources = [
+    "glic_keyed_service_android.cc",
+    "glic_keyed_service_android.h",
+    "glic_keyed_service_factory_android.cc",
+  ]
   public_deps = [ ":jni_headers" ]
   deps = [
     ":jni_headers",

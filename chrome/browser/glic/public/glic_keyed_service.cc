@@ -85,6 +85,11 @@
 #include "chrome/browser/glic/media/glic_media_integration.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
+
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/android/glic_keyed_service_android.h"
 #endif
 
 namespace glic {

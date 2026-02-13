@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenBackPressHandler;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.host_zoom.HostZoomListenerFactory;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -1623,19 +1624,20 @@ public class RootUiCoordinator
                 }
             }
         } else if (id == R.id.glic_menu_id) {
+            Profile profile = mTabModelSelectorSupplier.get().getCurrentModel().getProfile();
+            assert profile != null;
+
+            GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
+            if (service == null) {
+                return false;
+            }
+
             var task = mChromeAndroidTaskSupplier.get();
             if (task == null) {
                 Log.w(TAG, "Failed to trigger GLIC: ChromeAndroidTask is null.");
                 return false;
             }
-            Profile profile = mTabModelSelectorSupplier.get().getCurrentModel().getProfile();
-            assert profile != null;
             long browserWindowPtr = task.getOrCreateNativeBrowserWindowPtr(profile);
-            GlicKeyedService service = new GlicKeyedService();
-            if (service == null) {
-                return false;
-            }
-
             // TODO(crbug.com/479863299): Create and pass in enum for invocationSource.
             service.toggleUI(
                     browserWindowPtr,
