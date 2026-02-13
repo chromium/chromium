@@ -59,39 +59,53 @@ export function getHtml(this: ContextualActionMenuElement) {
       <cr-icon icon="composebox:fileUpload"></cr-icon>
       ${this.getInputTypeLabel_(InputType.kLensFile)}
     </button>`: ''}
-    ${Array.from(this.supportedTools_.keys()).some(mode => this.isToolAllowed_(mode)) &&
+
+    <!-- Show a separator if there are tools AND (something above is visible) -->
+    ${(this.inputState?.allowedTools.length ?? 0) > 0 &&
         (this.imageUploadAllowed_ || this.fileUploadAllowed_) ?
         html`<hr/>` : ''}
-    ${Array.from(this.supportedTools_.keys()).some(mode => this.isToolAllowed_(mode)) ? html`
+
+    ${(this.inputState?.allowedTools.length ?? 0) > 0 ? html`
         ${this.showContextMenuHeaders_ && this.toolHeader_ ? html`
         <h4 id="toolHeader">${this.toolHeader_}</h4>` : ''}` : ''}
-    ${Array.from(this.supportedTools_.entries()).map(([mode, tool]) => this.isToolAllowed_(mode) ? html`
-      <button id="${tool.id}" class="dropdown-item" data-mode="${mode}"
+
+    ${this.inputState?.allowedTools.map(mode => {
+      const icon = this.supportedTools_.get(mode)?.icon;
+      return html`
+      <button class="dropdown-item" data-mode="${mode}"
           role="menuitem"
           @click="${this.onToolClick_}"
           ?disabled="${this.isToolDisabled_(mode)}">
-        <cr-icon icon="${tool.icon}"></cr-icon>
+        ${icon ? html`<cr-icon icon="${icon}"></cr-icon>` : ''}
         ${this.getToolLabel_(mode)}
-      </button>` : '')}
-    ${Array.from(this.supportedModels_.keys()).some(mode => this.isModelAllowed_(mode)) &&
-      (Array.from(this.supportedTools_.keys()).some(mode => this.isToolAllowed_(mode)) ||
+      </button>`;
+    })}
+
+    <!-- Show a separator if there are models AND (something above is visible) -->
+    ${(this.inputState?.allowedModels.length ?? 0) > 0 &&
+      ((this.inputState?.allowedTools.length ?? 0) > 0 ||
        this.imageUploadAllowed_ || this.fileUploadAllowed_) ? html`<hr/>` : ''}
-    ${Array.from(this.supportedModels_.keys()).some(mode => this.isModelAllowed_(mode)) ? html`
+
+    ${(this.inputState?.allowedModels.length ?? 0) > 0 ? html`
         ${this.showContextMenuHeaders_ && this.modelHeader_ ? html`
         <h4 id="modelHeader">${this.modelHeader_}</h4>` : ''}` : ''}
-    ${Array.from(this.supportedModels_.entries()).map(([mode, model]) => this.isModelAllowed_(mode) ? html`
-      <button id="${model.id}" class="dropdown-item"
+
+    ${this.inputState?.allowedModels.map(mode => {
+      const icon = this.supportedModels_.get(mode)?.icon;
+      return html`
+      <button class="dropdown-item"
           role="menuitemradio"
           aria-checked="${this.isModelActive_(mode)}"
           data-model="${mode}"
           @click="${this.onModelClick_}"
           ?disabled="${this.isModelDisabled_(mode)}">
-        <cr-icon icon="${model.icon}"></cr-icon>
+        ${icon ? html`<cr-icon icon="${icon}"></cr-icon>` : ''}
         <span>${this.getModelLabel_(mode)}</span>
         ${this.isModelActive_(mode) ? html`
           <cr-icon class="multi-tab-icon"
               icon="cr:check" id="model-check"></cr-icon>` : ''}
-      </button>` : '')}
+      </button>`;
+    })}
   </cr-action-menu>
 <!--_html_template_end_-->`;
 }
