@@ -23,6 +23,11 @@ class MockOneTimeTokenService : public OneTimeTokenService {
               Subscribe,
               (base::Time expiration, Callback callback),
               (override));
+  MOCK_METHOD(void,
+              RequestOneTimeToken,
+              (base::TimeDelta timeout,
+               base::OnceCallback<void(std::optional<OneTimeToken>)> callback),
+              (override));
 };
 
 }  // namespace one_time_tokens

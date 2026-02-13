@@ -489,8 +489,8 @@ void FindAndSetPossibleOtpFieldTypes(
   }
 
   for (auto [field, pt] : base::zip(fields, possible_types)) {
-    const std::string field_value_u8 =
-        base::UTF16ToUTF8(base::TrimWhitespace(field->value(), base::TRIM_ALL));
+    const std::string field_value_u8 = base::UTF16ToUTF8(
+        base::TrimWhitespace(field->value_for_import(), base::TRIM_ALL));
 
     // Check if the field value matches any of the recent OTPs.
     for (const OneTimeToken& otp : recent_otps) {

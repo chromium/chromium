@@ -4,7 +4,18 @@
 
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 
+#include <algorithm>
+
+#include "base/strings/string_util.h"
+
 namespace one_time_tokens {
+
+// static
+bool OneTimeToken::IsPotentialOtp(std::u16string_view value) {
+  return value.length() >= kMinOtpLength && value.length() <= kMaxOtpLength &&
+         std::ranges::all_of(value,
+                             [](char16_t c) { return base::IsAsciiDigit(c); });
+}
 
 OneTimeToken::OneTimeToken(OneTimeTokenType type,
                            const std::string& value,

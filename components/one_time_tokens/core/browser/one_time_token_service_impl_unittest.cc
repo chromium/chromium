@@ -6,9 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
@@ -22,12 +22,15 @@ namespace one_time_tokens {
 
 namespace {
 
-using base::test::RunOnceCallback;
-using testing::_;  // NOLINT
-using testing::ElementsAre;
-using testing::Mock;
-using testing::Pair;
-using testing::SaveArg;
+using ::base::test::RunOnceCallback;
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Mock;
+using ::testing::Optional;
+using ::testing::Pair;
+using ::testing::Property;
+using ::testing::SaveArg;
 
 MATCHER_P(OneTimeTokenValueEq, expected_token_value, "") {
   if (!arg.has_value()) {
@@ -756,6 +759,75 @@ TEST_F(OneTimeTokenServiceImplTest,
   EXPECT_THAT(observer_gmail.results(),
               ElementsAre(Pair(OneTimeTokenSource::kGmail,
                                OneTimeTokenValueEq("654321"))));
+}
+
+// Test that RequestOneTimeToken returns a token when the backend succeeds.
+TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Success) {
+  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
+  service.RequestOneTimeToken(base::Seconds(1), callback.Get());
+
+  EXPECT_TRUE(sms_otp_backend_.HasPendingRetrieveSmsOtpCallbacks());
+  EXPECT_CALL(callback,
+              Run(Optional(Property(&OneTimeToken::value, Eq("123456")))));
+  sms_otp_backend_.SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "123456", base::Time::Now()));
+}
+
+// Test that RequestOneTimeToken returns nullopt when the backend fails.
+TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Failure) {
+  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
+  service.RequestOneTimeToken(base::Seconds(1), callback.Get());
+
+  EXPECT_CALL(callback, Run(Eq(std::nullopt)));
+  sms_otp_backend_.SimulateOtpArrived(
+      base::unexpected(OneTimeTokenRetrievalError::kSmsOtpBackendError));
+}
+
+// Test that RequestOneTimeToken returns nullopt when there is no backend.
+TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_NoBackend) {
+  OneTimeTokenServiceImpl service(nullptr, nullptr);
+  base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
+
+  EXPECT_CALL(callback, Run(Eq(std::nullopt)));
+  service.RequestOneTimeToken(base::Seconds(1), callback.Get());
+}
+
+// Test that RequestOneTimeToken returns nullopt when the timeout is reached.
+TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_Timeout) {
+  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
+  service.RequestOneTimeToken(base::Milliseconds(100), callback.Get());
+
+  EXPECT_TRUE(sms_otp_backend_.HasPendingRetrieveSmsOtpCallbacks());
+  EXPECT_CALL(callback, Run(Eq(std::nullopt)));
+  task_environment_.FastForwardBy(base::Milliseconds(101));
+}
+
+// Test that if the backend responds after the timeout, it doesn't crash and the
+// second response is ignored.
+TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_LateResponse) {
+  OneTimeTokenServiceImpl service(&sms_otp_backend_, nullptr);
+  base::MockOnceCallback<void(std::optional<OneTimeToken>)> callback;
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
+  service.RequestOneTimeToken(base::Milliseconds(100), callback.Get());
+
+  // Fast forward past the timeout.
+  EXPECT_CALL(callback, Run(Eq(std::nullopt)));
+  task_environment_.FastForwardBy(base::Milliseconds(101));
+
+  // Now simulate a late response from the backend.
+  // This should not call the callback again and should not crash.
+  sms_otp_backend_.SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "123456", base::Time::Now()));
 }
 
 }  // namespace one_time_tokens

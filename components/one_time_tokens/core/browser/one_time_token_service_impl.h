@@ -47,6 +47,9 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService,
   [[nodiscard]] ExpiringSubscription Subscribe(base::Time expiration,
                                                Callback callback) override;
   std::vector<OneTimeToken> GetCachedOneTimeTokens() const override;
+  void RequestOneTimeToken(
+      base::TimeDelta timeout,
+      base::OnceCallback<void(std::optional<OneTimeToken>)> callback) override;
 
  private:
   // Retrieves SMS OTPs from `sms_.backend` if any subscriber is interested.

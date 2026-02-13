@@ -16,4 +16,18 @@ TEST(OneTimeToken, Constructor) {
   EXPECT_EQ(token.on_device_arrival_time(), now);
 }
 
+TEST(OneTimeToken, IsPotentialOtp) {
+  EXPECT_TRUE(OneTimeToken::IsPotentialOtp(u"1234"));
+  EXPECT_TRUE(OneTimeToken::IsPotentialOtp(u"12345"));
+  EXPECT_TRUE(OneTimeToken::IsPotentialOtp(u"123456"));
+
+  EXPECT_FALSE(OneTimeToken::IsPotentialOtp(u""));
+  EXPECT_FALSE(OneTimeToken::IsPotentialOtp(u"1"));
+  EXPECT_FALSE(OneTimeToken::IsPotentialOtp(u"12"));
+  EXPECT_FALSE(OneTimeToken::IsPotentialOtp(u"123"));
+  EXPECT_FALSE(OneTimeToken::IsPotentialOtp(u"1234567"));
+  EXPECT_FALSE(OneTimeToken::IsPotentialOtp(u"abcde"));
+  EXPECT_FALSE(OneTimeToken::IsPotentialOtp(u"1234a"));
+}
+
 }  // namespace one_time_tokens

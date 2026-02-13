@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
@@ -53,6 +54,15 @@ class OneTimeTokenService {
   // active. It's the responsibility of the caller to deduplicate those.
   [[nodiscard]] virtual ExpiringSubscription Subscribe(base::Time expiration,
                                                        Callback callback) = 0;
+
+  // Requests one time tokens from the underlying backend. `callback` is called
+  // exactly once when the request is complete, with the fetched token if
+  // successful. The `callback` is called with `std::nullopt` if no token could
+  // be fetched within the `timeout`, if the backend is not available or if
+  // there is a backend error.
+  virtual void RequestOneTimeToken(
+      base::TimeDelta timeout,
+      base::OnceCallback<void(std::optional<OneTimeToken>)> callback) = 0;
 };
 
 }  // namespace one_time_tokens

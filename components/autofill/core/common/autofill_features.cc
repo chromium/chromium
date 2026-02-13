@@ -902,6 +902,11 @@ BASE_FEATURE(kAutofillSkipPreFilledFields, base::FEATURE_ENABLED_BY_DEFAULT);
 // TODO(crbug.com/453999673): Clean up when launched.
 BASE_FEATURE(kAutofillSmsOtpCrowdsourcing, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, fetch sms otp from gmscore and upload votes for sms otp.
+// TODO(crbug.com/453999673): Clean up when launched.
+BASE_FEATURE(kAutofillSmsOtpCrowdsourcingFetchFromGmscore,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If this feature is enabled, the AddressFieldParser does NOT try to parse
 // address lines once it has found a street name and house number or other
 // combinations of fields that indicate that an address form uses structured

@@ -8,8 +8,10 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 
 namespace one_time_tokens {
@@ -57,6 +59,33 @@ std::vector<OneTimeToken> OneTimeTokenServiceImpl::GetCachedOneTimeTokens()
     const {
   return base::ToVector(cache_.GetCache(),
                         [](const OneTimeToken& token) { return token; });
+}
+
+void OneTimeTokenServiceImpl::RequestOneTimeToken(
+    base::TimeDelta timeout,
+    base::OnceCallback<void(std::optional<OneTimeToken>)> callback) {
+  auto on_request_finished = base::BindRepeating(
+      [](base::OnceCallback<void(std::optional<OneTimeToken>)>& callback,
+         std::optional<OneTimeToken> token) {
+        if (callback) {
+          std::move(callback).Run(std::move(token));
+        }
+      },
+      base::OwnedRef(std::move(callback)));
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(on_request_finished, std::nullopt), timeout);
+
+  if (sms_.backend) {
+    sms_.backend->RetrieveSmsOtp(base::BindOnce(
+        [](base::RepeatingCallback<void(std::optional<OneTimeToken>)> callback,
+           base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
+          callback.Run(base::OptionalFromExpected(std::move(result)));
+        },
+        on_request_finished));
+  } else {
+    on_request_finished.Run(std::nullopt);
+  }
 }
 
 void OneTimeTokenServiceImpl::RetrieveSmsOtpIfNeeded() {

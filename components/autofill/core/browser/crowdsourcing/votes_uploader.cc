@@ -5,10 +5,15 @@
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/timer.h"
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
@@ -18,7 +23,9 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_qualifiers.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -28,11 +35,22 @@
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 
 namespace autofill {
 
 using one_time_tokens::OneTimeToken;
+
+struct VotesUploader::VoteData {
+  bool empty() const;
+
+  std::vector<AutofillProfile> profiles;
+  std::vector<CreditCard> credit_cards;
+  std::vector<EntityInstance> entities;
+  std::vector<LoyaltyCard> loyalty_cards;
+  std::vector<OneTimeToken> otps;
+};
 
 namespace {
 
@@ -81,6 +99,11 @@ struct VotesUploader::PendingVote {
   FormSignature form_signature;
   base::OnceClosure upload_vote;
 };
+
+bool VotesUploader::VoteData::empty() const {
+  return profiles.empty() && credit_cards.empty() && entities.empty() &&
+         loyalty_cards.empty() && otps.empty();
+}
 
 VotesUploader::VotesUploader(AutofillClient* client) : client_(*client) {
   driver_observer_.Observe(&client_->GetAutofillDriverFactory());
@@ -201,23 +224,17 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
     base::TimeTicks initial_interaction_timestamp,
     const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id) {
-  // Only upload server statistics and UMA metrics if at least some local data
-  // is available to use as a baseline.
   std::vector<const AutofillProfile*> profiles =
       client_->GetPersonalDataManager().address_data_manager().GetProfiles();
-  if (observed_submission && IsAutofillable(*form)) {
-    AutofillMetrics::LogNumberOfProfilesAtAutofillableFormSubmission(
-        profiles.size());
-  }
+  std::vector<CreditCard> credit_cards =
+      base::ToVector(client_->GetPersonalDataManager()
+                         .payments_data_manager()
+                         .GetCreditCards(),
+                     [](const auto* ptr) { return *ptr; });
 
-  const std::vector<const CreditCard*>& credit_cards =
-      client_->GetPersonalDataManager()
-          .payments_data_manager()
-          .GetCreditCards();
-
-  base::span<const EntityInstance> entities;
+  std::vector<EntityInstance> entities;
   if (EntityDataManager* edm = client_->GetEntityDataManager()) {
-    entities = edm->GetEntityInstances();
+    entities = base::ToVector(edm->GetEntityInstances());
   }
 
   std::vector<LoyaltyCard> loyalty_cards;
@@ -226,19 +243,40 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
     loyalty_cards = valuables_data_manager->GetLoyaltyCards();
   }
 
-  std::vector<OneTimeToken> recent_otps;
-  if (one_time_tokens::OneTimeTokenService* token_service =
-          client_->GetOneTimeTokenService()) {
-    recent_otps = token_service->GetCachedOneTimeTokens();
+  if (observed_submission && IsAutofillable(*form)) {
+    AutofillMetrics::LogNumberOfProfilesAtAutofillableFormSubmission(
+        profiles.size());
   }
 
-  if (profiles.empty() && credit_cards.empty() && entities.empty() &&
-      loyalty_cards.empty() && recent_otps.empty()) {
+  std::vector<OneTimeToken> otps;
+  one_time_tokens::OneTimeTokenService* token_service =
+      client_->GetOneTimeTokenService();
+  if (token_service) {
+    otps = token_service->GetCachedOneTimeTokens();
+  }
+
+  VoteData vote_data = {
+      .profiles = base::ToVector(profiles, [](const auto* p) { return *p; }),
+      .credit_cards = std::move(credit_cards),
+      .entities = std::move(entities),
+      .loyalty_cards = std::move(loyalty_cards),
+      .otps = std::move(otps)};
+
+  bool has_potential_otp_field = std::ranges::any_of(
+      form->fields(), [](const std::unique_ptr<AutofillField>& field) {
+        return OneTimeToken::IsPotentialOtp(field->value());
+      });
+
+  if (vote_data.empty() &&
+      (!has_potential_otp_field ||
+       !base::FeatureList::IsEnabled(
+           features::kAutofillSmsOtpCrowdsourcingFetchFromGmscore))) {
     return false;
   }
 
-  if (form->field_count() * (profiles.size() + credit_cards.size() +
-                             entities.size() + loyalty_cards.size()) >=
+  if (form->field_count() *
+          (vote_data.profiles.size() + vote_data.credit_cards.size() +
+           vote_data.entities.size() + vote_data.loyalty_cards.size()) >=
       kMaxTypeMatchingCalls) {
     return false;
   }
@@ -255,15 +293,72 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   std::set<FieldGlobalId> fields_that_match_state =
       PreProcessStateMatchingTypes(profiles, *form, client_->GetAppLocale());
 
+  if (token_service && vote_data.otps.empty() && has_potential_otp_field &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillSmsOtpCrowdsourcingFetchFromGmscore)) {
+    // This is the 80 percentile latency of the otp success retrieval flow. The
+    // longer the timeout, the more risk we have of losing votes because the
+    // tab might be closed before we submit the votes.
+    constexpr base::TimeDelta kOtpSubscriptionTimeout = base::Milliseconds(600);
+    // The rest of the upload process is continued in `StartVoteUploadProcess`,
+    // which will be called after a timeout, or when RequestOneTimeToken
+    // returns.
+    token_service->RequestOneTimeToken(
+        kOtpSubscriptionTimeout,
+        base::BindOnce(
+            [](base::WeakPtr<VotesUploader> weak_ptr,
+               std::unique_ptr<FormStructure> form, bool observed_submission,
+               LanguageCode current_page_language,
+               base::TimeTicks initial_interaction_timestamp,
+               const std::u16string& last_unlocked_credit_card_cvc,
+               ukm::SourceId ukm_source_id,
+               FormStructure::FormAssociations form_associations,
+               std::set<FieldGlobalId> fields_that_match_state,
+               VoteData current_vote_data, std::optional<OneTimeToken> token) {
+              if (!weak_ptr) {
+                return;
+              }
+              if (token) {
+                current_vote_data.otps.push_back(std::move(*token));
+              }
+              weak_ptr->StartVoteUploadProcess(
+                  std::move(form), observed_submission, current_page_language,
+                  initial_interaction_timestamp, last_unlocked_credit_card_cvc,
+                  ukm_source_id, std::move(current_vote_data),
+                  std::move(form_associations),
+                  std::move(fields_that_match_state));
+            },
+            weak_ptr_factory_.GetWeakPtr(), std::move(form),
+            observed_submission, current_page_language,
+            initial_interaction_timestamp, last_unlocked_credit_card_cvc,
+            ukm_source_id, std::move(form_associations),
+            std::move(fields_that_match_state), std::move(vote_data)));
+    return true;
+  }
+
+  StartVoteUploadProcess(std::move(form), observed_submission,
+                         current_page_language, initial_interaction_timestamp,
+                         last_unlocked_credit_card_cvc, ukm_source_id,
+                         std::move(vote_data), std::move(form_associations),
+                         std::move(fields_that_match_state));
+  return true;
+}
+
+void VotesUploader::StartVoteUploadProcess(
+    std::unique_ptr<FormStructure> form,
+    bool observed_submission,
+    LanguageCode current_page_language,
+    base::TimeTicks initial_interaction_timestamp,
+    const std::u16string& last_unlocked_credit_card_cvc,
+    ukm::SourceId ukm_source_id,
+    VoteData vote_data,
+    FormStructure::FormAssociations form_associations,
+    std::set<FieldGlobalId> fields_that_match_state) {
   task_runner().PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          [](const std::vector<AutofillProfile>& profiles,
-             const std::vector<CreditCard>& credit_cards,
-             const std::vector<EntityInstance>& entities,
-             const std::vector<LoyaltyCard>& loyalty_cards,
+          [](VoteData vote_data,
              const std::u16string& last_unlocked_credit_card_cvc,
-             const std::vector<OneTimeToken>& recent_otps,
              const std::string& app_locale, bool observed_submission,
              std::unique_ptr<FormStructure> form,
              std::optional<RandomizedEncoder> randomized_encoder,
@@ -272,9 +367,10 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
              std::set<FieldGlobalId> fields_that_match_state) {
             std::vector<PossibleTypes> possible_types =
                 DeterminePossibleFieldTypesForUpload(
-                    profiles, credit_cards, entities, loyalty_cards,
+                    vote_data.profiles, vote_data.credit_cards,
+                    vote_data.entities, vote_data.loyalty_cards,
                     fields_that_match_state, last_unlocked_credit_card_cvc,
-                    recent_otps, app_locale, *form);
+                    vote_data.otps, app_locale, *form);
 
             for (auto [field, pt] : base::zip(form->fields(), possible_types)) {
               field->set_possible_types(pt.types);
@@ -286,8 +382,9 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
             options.form_associations = std::move(form_associations);
             options.observed_submission = observed_submission;
             options.available_field_types = DetermineAvailableFieldTypes(
-                profiles, credit_cards, entities, loyalty_cards,
-                last_unlocked_credit_card_cvc, recent_otps, app_locale);
+                vote_data.profiles, vote_data.credit_cards, vote_data.entities,
+                vote_data.loyalty_cards, last_unlocked_credit_card_cvc,
+                vote_data.otps, app_locale);
             for (auto [field, dates_and_formats] :
                  base::zip(form->fields(), possible_types)) {
               options.fields[field->global_id()].format_strings =
@@ -298,12 +395,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
                 EncodeUploadRequest(*form, options);
             return std::pair(std::move(form), std::move(upload_contents));
           },
-          // Beware not to bind std::vector<T*> or base::span<T> because this
-          // function is called asynchronously.
-          base::ToVector(profiles, [](const auto* ptr) { return *ptr; }),
-          base::ToVector(credit_cards, [](const auto* ptr) { return *ptr; }),
-          base::ToVector(entities), std::move(loyalty_cards),
-          last_unlocked_credit_card_cvc, std::move(recent_otps),
+          std::move(vote_data), last_unlocked_credit_card_cvc,
           client_->GetAppLocale(), observed_submission, std::move(form),
           RandomizedEncoder::Create(client_->GetPrefs()),
           std::move(current_page_language), std::move(form_associations),
@@ -312,7 +404,6 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
                      weak_ptr_factory_.GetWeakPtr(),
                      initial_interaction_timestamp, base::TimeTicks::Now(),
                      observed_submission, ukm_source_id));
-  return true;
 }
 
 void VotesUploader::OnFieldTypesDetermined(
