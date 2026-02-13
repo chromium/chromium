@@ -655,6 +655,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2071156619270205202">Ta kartica ni ustrezna za številko virtualne kartice.</translation>
 <translation id="2071852865256799872">Brskalnik upravlja vaša organizacija, vaš profil pa upravlja domena <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Podatki so shranjeni samo v napravi</translation>
 <translation id="2074733626795553847">Odblokiranje teme <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Obiskali ste</translation>
 <translation id="2078956195623975415">Glasbene in plesne igre</translation>
@@ -1117,6 +1118,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="277133753123645258">Način pošiljanja</translation>
 <translation id="277499241957683684">Manjka zapis o napravi</translation>
 <translation id="2775884851269838147">Prva stran za tiskanje</translation>
+<translation id="277828055419948999">Chromium lahko samodejno izpolni zahtevna polja, ki jih standardno samodejno izpolnjevanje morda ne zazna</translation>
 <translation id="2781185443919227679">Plaže in otoki</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Pripravljanje na zaključek nakupa</translation>
@@ -2473,6 +2475,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4950898438188848926">Gumb za preklop zavihkov, pritisnite Enter, če želite preklopiti na odprti zavihek, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Dejanja</translation>
 <translation id="4953689047182316270">Odzivanje na dogodke funkcij za ljudi s posebnimi potrebami</translation>
+<translation id="4954505713046251871">Zaradi zagotavljanja predlogov in izboljšanja te funkcije se URL in vsebina strani delita z Googlom</translation>
 <translation id="4954891067389874142">Plačujte hitreje, če je kartica shranjena. Podatki o kartici so šifrirani v Google Denarnici.</translation>
 <translation id="4957080528849277028">Gumb za ogled zgodovine uporabe Chroma, aktivirajte za ogled in upravljanje zgodovine brskanja v Chromovih nastavitvah</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{in še 1 spletnega mesta}one{in še # spletnega mesta}two{in še # spletnih mest}few{in še # spletnih mest}other{in še # spletnih mest}}</translation>
@@ -3978,6 +3981,7 @@ Dodatne podrobnosti:
 <translation id="7377314930809374926">Gostinstvo</translation>
 <translation id="7378594059915113390">Kontrolniki predstavnosti</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome lahko samodejno izpolni zahtevna polja, ki jih standardno samodejno izpolnjevanje morda ne zazna</translation>
 <translation id="7380398842872229465">10 x 15 palcev</translation>
 <translation id="7381551826960739226">Samodejno izpolnjevanje plačilnih sredstev je onemogočeno, ker ta obrazec ne uporablja varne povezave.</translation>
 <translation id="7388380253839603603">Cene pogonskih goriv in oskrba vozil z gorivom</translation>
@@ -4902,6 +4906,7 @@ Dodatne podrobnosti:
 <translation id="8858065207712248076">Chrome priporoča, da ponastavite geslo za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, če ste ga uporabljali na drugih spletnih mestih.</translation>
 <translation id="885906927438988819">Če je črkovanje pravilno, <ph name="BEGIN_LINK" />poskušajte zagnati orodje za omrežno diagnostiko sistema Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografska in digitalna umetnost</translation>
+<translation id="8861482055962701239">Teh podatkov ni bilo mogoče shraniti v Google Denarnici. Namesto tega so se shranili v Chromu v tej napravi. Chrome bo ob naslednji uporabi ponudil, da jih shranite v Denarnici.</translation>
 <translation id="8863218129525348270">Če želite naslednjič hitreje plačati, shranite kartico v napravo</translation>
 <translation id="8864939224504814334">Kostimi in poslovna oblačila</translation>
 <translation id="8866132857352163524">Filmska glasba</translation>

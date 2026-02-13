@@ -299,6 +299,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />개 탭 보기}other{<ph name="TABS_COUNT_MANY" />개 탭 보기}}</translation>
 <translation id="2297822946037605517">이 페이지 공유</translation>
 <translation id="230115972905494466">호환되는 기기 없음</translation>
+<translation id="2316129865977710310">아니요, 괜찮습니다.</translation>
 <translation id="2318045970523081853">탭하여 전화 걸기</translation>
 <translation id="2323763861024343754">사이트 저장공간</translation>
 <translation id="2328474416100889417">모든 사용자가 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, 모든 초대 링크가 사용 중지됩니다.</translation>
@@ -960,6 +961,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5075939510584558547">암호화 없이 저장</translation>
 <translation id="5078638979202084724">모든 탭 북마크</translation>
 <translation id="5085038751173179818">이 사이트 및 Chrome에 로그인하여 모든 기기에서 북마크 등을 사용하세요</translation>
+<translation id="5088347662971855383">Gemini 고정</translation>
 <translation id="5091199029769593641">곧 새 탭을 열 때 <ph name="SITE_NAME" /> 스토리가 표시됩니다. 내가 팔로우하는 사이트는 Google 계정에 저장되며 디스커버 설정에서 관리할 수 있습니다.</translation>
 <translation id="509429900233858213">오류가 발생했습니다.</translation>
 <translation id="5096775069898886423">보안 연결을 지원하지 않는 사이트의 경우, 사이트를 방문하기 전에 경고를 표시합니다.</translation>
@@ -1341,6 +1343,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}other{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}}</translation>
 <translation id="6649642165559792194">이미지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />에서 열기</translation>
+<translation id="6669390930482049506">알림 받기</translation>
 <translation id="6671495933530132209">이미지 복사</translation>
 <translation id="6672697278890207089">암호 입력</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> 추가</translation>

@@ -307,7 +307,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4205939740494406371">Chrome ne parvient pas à vérifier vos mots de passe. Réessayez dans 24 heures ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Annulation…</translation>
 <translation id="4224210481850767180">L'installation a été annulée.</translation>
-<translation id="4230631012078055975">Faites plus avec Chrome en vous connectant</translation>
 <translation id="4242034826641750751">Chrome a besoin de l'autorisation d'accéder au micro et à la caméra pour ce site</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome ?</translation>
 <translation id="4251615635259297716">Associer vos données Chrome à ce compte ?</translation>
@@ -605,7 +604,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7308322188646931570">Pour télécharger des fichiers, Chrome a besoin d'accéder à l'espace de stockage</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
-<translation id="7379321689415048316">Chrome peut compléter automatiquement les champs difficiles que la saisie automatique standard pourrait manquer</translation>
 <translation id="7386878009611068389">Pour te protéger en ligne avec les choix de ton parent, passe au profil Chrome sur lequel tu es déjà connecté en tant que <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Vous étiez connecté à Google Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
 <translation id="7412494426921990001">Cliquez sur le menu Chrome</translation>
@@ -707,7 +705,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8321888067342493336">Enregistrer en tant qu'image</translation>
 <translation id="8336463659890584292">Lorsqu'un site demande à précharger en mode privé des liens sur sa page, Chrome utilise les serveurs Google. Le site préchargé ignore votre identité, mais Google sait quels sites sont préchargés.</translation>
 <translation id="8342675569599923794">Chrome a bloqué ce fichier, car ce dernier est dangereux.</translation>
-<translation id="8349094670477064572">Vous enregistrerez et utiliserez des mots de passe et d'autres éléments de votre compte Google chaque fois que vous serez connecté à Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Demander à Google</translation>
 <translation id="8362914115861174987">Langue cible</translation>
 <translation id="8366770919198174997">Réduit les performances, mais rend Chrome plus résistant aux attaques</translation>

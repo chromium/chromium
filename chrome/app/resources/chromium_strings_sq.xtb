@@ -165,7 +165,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2738871930057338499">Lidhja me internetin nuk mund të kryhej. HTTP 403 (E ndaluar). Kontrollo konfigurimin e proxy-t.</translation>
 <translation id="2753623023919742414">Kliko për të kërkuar</translation>
 <translation id="2768103863314748511">Cakto Chromium si shikuesin e parazgjedhur të skedarëve PDF</translation>
-<translation id="277828055419948999">Chromium mund të plotësojë automatikisht fushat e vështira që mund të mos mbulohen nga plotësimi automatik standard</translation>
 <translation id="2785438272836277133">Kjo shtesë përmban softuerë keqdashës dhe nuk është e sigurt. Hiqe atë nga Chromium që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet e tua personale.</translation>
 <translation id="2799223571221894425">Nis sërish</translation>
 <translation id="2803971713792056305">Shfletuesi yt Chromium</translation>
@@ -594,7 +593,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7461356015007898716">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 7.</translation>
 <translation id="7467949745582939695">Të niset sërish Chromium?</translation>
 <translation id="7483335560992089831">Nuk mund të instalohet i njëjti version i Chromium që po ekzekutohet aktualisht. Mbylle Chromium dhe provo përsëri.</translation>
-<translation id="7517403744065880907">Do të ruash dhe përdorësh fjalëkalimet dhe më shumë në "Llogarinë tënde të Google" në çdo kohë që je i identifikuar në Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Sajtet ndoshta do të punojnë siç pritet. Do të dalësh nga shumica e sajteve kur të mbyllësh të gjitha dritaret e Chromium, përveçse nga "Llogaria jote e Google" nëse je identifikuar në Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium do të hapet përsëri për 1 minutë}other{Chromium do të hapet përsëri për # minuta}}</translation>
 <translation id="7565444033145385702">Për të mbrojtur të dhënat e tua, lejo që Chromium të heqë lejet nga sajtet që nuk i ke vizituar së fundi.</translation>
@@ -737,7 +735,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="9183331186620388872">Këshillë për Chromium: Kërko me "Lenten"</translation>
 <translation id="9185526690718004400">Nise përsëri për të përditësuar &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9206863043651638213">Merr më shumë kur je i identifikuar në Chromium</translation>
 <translation id="924957577793602335">Personalizoje Chromium</translation>
 <translation id="93478295209880648">Chromium mund të mos funksionojë si duhet sepse nuk mbështetet më në Windows XP ose Windows Vista</translation>
 <translation id="945522503751344254">Dërgo komente</translation>

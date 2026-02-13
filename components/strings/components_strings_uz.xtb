@@ -703,6 +703,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2137891579555018930">Ruxsat kutilmoqda...</translation>
 <translation id="213826338245044447">Mobil xatcho‘plar</translation>
 <translation id="2141000681034340397">Kiritilgan axborotni tahrirlash</translation>
+<translation id="2141475438898772664">4 qismga boʻlib yoki oylik toʻlash</translation>
 <translation id="2144171668675205303">Hech qaysi mavzu faol emas</translation>
 <translation id="2145193671493396738">Iqtisodiyot yangiliklari</translation>
 <translation id="214556005048008348">To‘lovni bekor qilish</translation>
@@ -1116,6 +1117,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="277133753123645258">Yetkazib berish usuli</translation>
 <translation id="277499241957683684">Qurilma ro‘yhatdan o‘tkazilmagan</translation>
 <translation id="2775884851269838147">Birinchi bosma sahifa</translation>
+<translation id="277828055419948999">Chromium standart avtomatik kiritish oʻtkazib yuborishi mumkin murakkab maydonlarni avtomatik kiritishi mumkin</translation>
 <translation id="2781185443919227679">Sohillar va orollar</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Toʻlovga tayyorlanmoqda</translation>
@@ -2468,6 +2470,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4950898438188848926">Varaqlar orasida almashish tugmasi, shu varaqqa almashish uchun Enter tugmasini bosing, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Harakatlar</translation>
 <translation id="4953689047182316270">Qulayliklar ishlatilishi</translation>
+<translation id="4954505713046251871">Tavsiyalar chiqarish va bu funksiyani yaxshilash maqsadida sahifaning URL manzili va kontenti Googlega yuboriladi</translation>
 <translation id="4954891067389874142">Saqlangan karta bilan xaridlarni tezroq amalga oshiring. Google Walletda karta tafsilotlari shifrlanadi.</translation>
 <translation id="4957080528849277028">Chrome tarixini koʻrish tugmasi, Chrome sozlamalari orqali brauzer tarixini koʻrish va boshqarish uchun faollashtiring</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 ta sayt}other{+ # ta sayt}}</translation>
@@ -2842,6 +2845,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5543564889050342791">Hayvonot bogʻlari, akvarium va qoʻriqxonalar</translation>
 <translation id="5543722831081909240">180 dajara</translation>
 <translation id="5544836308113951378">Kruizlar va charterlar</translation>
+<translation id="5545314360139398232">Toʻlovni davom ettirish uchun <ph name="ISSUER_NAME" /> hisobingizni ulang</translation>
 <translation id="5547939254150808298">Chop etish va nashriyot</translation>
 <translation id="554815783948612276">Forum va chat provayderlari</translation>
 <translation id="5548606607480005320">Xavfsizlik tekshiruvi</translation>
@@ -3688,6 +3692,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6926216138694948720">Bodi-art</translation>
 <translation id="692638818576287323">Tijoriy avtomobillar</translation>
 <translation id="6927878187051807444">kamera fayllari va skrinshotlar</translation>
+<translation id="6929949393612835405">Yopish va “<ph name="OPENER_TITLE" />”ga qaytish</translation>
 <translation id="6930607614725241390">Yon panelda qidirish</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Asosiy qidiruv vositangiz internetda qidirish imkonini beradi<ph name="END_BOLD" /> hamda manzil qatoridan va veb-sahifalardagi rasmlardan qidirish kabi Chrome funksiyalarini yoqadi. Qidiruv vositangiz dastaklamaydigan funksiyalar ishlamasligi mumkin.</translation>
 <translation id="6934672428414710184">Bu nom Google hisobingizga biriktirilgan</translation>
@@ -3969,6 +3974,7 @@ Batafsil axborot:
 <translation id="7377314930809374926">Turizm sohasi</translation>
 <translation id="7378594059915113390">Media boshqaruv elementlari</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome standart avtomatik kiritish oʻtkazib yuborishi mumkin murakkab maydonlarni avtomatik kiritishi mumkin</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="7381551826960739226">Bu shakl xavfsiz aloqa ishlatmasligi uchun toʻlov usullarini avtomatik kiritish faolsizlantirildi.</translation>
 <translation id="7388380253839603603">Yonilgʻi narxlari va avtomobillarga yonilgʻi quyish</translation>

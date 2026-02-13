@@ -355,6 +355,7 @@
 <translation id="1221825588892235038">কেৱল বাছনি কৰাবোৰ</translation>
 <translation id="1222835797152767346">ছাইন ইন কৰাটো সহজ কৰিবলৈ এটা পিন ছেট কৰক</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" />ৰ বাবে এখন অনুজ্ঞাপত্ৰৰ আৱশ্যক</translation>
+<translation id="1223498995510244364">সাৰাংশ তৈয়াৰ কৰক</translation>
 <translation id="1223853788495130632">আপোনাৰ প্ৰশাসকে এই ছেটিঙৰ বাবে এটা বিশেষ মানৰ চুপাৰিছ কৰিছে।</translation>
 <translation id="1225177025209879837">অনুৰোধৰ ওপৰত প্ৰক্ৰিয়া চলি আছে…</translation>
 <translation id="1227107020813934021">নথিৰ স্কেনাৰ বিচাৰক</translation>
@@ -1346,6 +1347,8 @@
 <translation id="1891362123137972260">ডিস্কৰ ঠাই একেবাৰে কমি গৈছে। অনুগ্ৰহ কৰি ডিস্কৰ ঠাই খালী কৰক।</translation>
 <translation id="189210018541388520">সম্পূৰ্ণ স্ক্রীণ হিচাপে খোলক</translation>
 <translation id="1892341345406963517">নমস্কাৰ <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">১) তলৰ <ph name="BUTTON_LABEL" />ত ক্লিক কৰক
+২) আপোনাৰ Windowsৰ ছেটিঙত <ph name="BUTTON_2" />ত ক্লিক কৰক</translation>
 <translation id="189358972401248634">অন্য ভাষা</translation>
 <translation id="1895658205118569222">শ্বাটডাউন</translation>
 <translation id="1896043844785689584">ফিংগাৰপ্ৰিণ্ট ছেট আপ কৰিবলৈ আপোনাৰ শিশুক কীব’ৰ্ডৰ একেবাৰে তলৰ সোঁফালৰ কোণত থকা ফিংগাৰপ্ৰিণ্ট ছেন্সৰটো স্পৰ্শ কৰিবলৈ দিয়ক। আপোনাৰ শিশুৰ ফিংগাৰপ্ৰিণ্টৰ ডেটা সুৰক্ষিতভাৱে ষ্ট’ৰ কৰা হয় আৰু সেইখিনি সদায় এই <ph name="DEVICE_TYPE" />ত থাকে।</translation>
@@ -3163,6 +3166,7 @@
 <translation id="3105820656234755131">পাছৱৰ্ডটো আপডে’ট কৰা হৈছে</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ব্লুটুথ)</translation>
 <translation id="310671807099593501">ছাইটটোৱে ব্লুটুথ ব্যৱহাৰ কৰি আছে</translation>
+<translation id="3108122610701115301">ডিফ’ল্ট ছেট কৰক</translation>
 <translation id="3108931485517391283">লাভ কৰিব নোৱাৰি</translation>
 <translation id="3108957152224931571">হাইলাইটৰ ৰং</translation>
 <translation id="3109206895301430738">ছেভ হৈ থকা টেবৰ গোট</translation>
@@ -5876,7 +5880,6 @@
 <translation id="495170559598752135">কাৰ্যসমূহ</translation>
 <translation id="4951966678293618079">এই ছাইটটোৰ বাবে কেতিয়াও পাছৱৰ্ড ছেভ নকৰিব</translation>
 <translation id="4953808748584563296">ডিফ’ল্ট কমলা অৱতাৰ</translation>
-<translation id="4954505713046251871">পৰামৰ্শ আগবঢ়োৱাৰ বাবে আৰু এই সুবিধাটো উন্নত কৰাৰ বাবে, পৃষ্ঠাখনৰ URL আৰু সমল Googleৰ সৈতে শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="4954652437333037880">ফাইল</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> দৃশ্যমানতা</translation>
 <translation id="4955710816792587366">আপোনাৰ পিন বাছনি কৰক</translation>
@@ -6358,6 +6361,7 @@
 <translation id="5288678174502918605">বন্ধ কৰা টেব পু&amp;নৰ খোলক</translation>
 <translation id="5290020561438336792">PC আৰু কাষ্ট কৰা ডিভাইচ দুয়োটা ভিন্ন ৱাই-ফাইল নেটৱৰ্কত (যেনে, ২.৪ গিগাহাৰ্টজ
     বনাম ৫ গিগাহাৰ্টজ) আছে</translation>
+<translation id="5290322819358431297">আপোনাৰ পাছৱৰ্ডসমূহ স্বয়ংক্রিয়ভাৱে পূৰ কৰক</translation>
 <translation id="52912272896845572">ব্যক্তিগত চাবিটো মান্য নহয়।</translation>
 <translation id="529175790091471945">এই ডিভাইচটো ফর্মেট কৰক</translation>
 <translation id="529296195492126134">ক্ষণস্থায়ী ব্যৱহাৰৰ ম’ড সমৰ্থিত নহয়। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক</translation>
@@ -6977,6 +6981,7 @@
 <translation id="5734697361979786483">ফাইল শ্বেয়াৰ কৰা সুবিধাটো যোগ কৰক</translation>
 <translation id="573520097779121706">কাৰ্ছৰডাল লৰচৰ কৰিবলৈ 7, 8, 9, u, o, j, k, l কীসমূহ ব্যৱহাৰ কৰক</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{এই ডেটা অথবা আপোনাৰ ডিভাইচে আপোনাৰ প্ৰতিষ্ঠানৰ কিছুমান সুৰক্ষা নীতি মানি চলা নাই। কি ঠিক কৰিব লাগে সেই বিষয়ে আপোনাৰ প্ৰশাসকৰ পৰা জানক।}=1{এই ফাইলটো অথবা আপোনাৰ ডিভাইচে আপোনাৰ প্ৰতিষ্ঠানৰ কিছুমান সুৰক্ষা নীতি মানি চলা নাই। কি ঠিক কৰিব লাগে সেই বিষয়ে আপোনাৰ প্ৰশাসকৰ পৰা জানক।}one{এই ফাইলসমূহে আপোনাৰ প্ৰতিষ্ঠানৰ কিছুমান সুৰক্ষা নীতি মানি চলা নাই। কি ঠিক কৰিব লাগে সেই বিষয়ে আপোনাৰ প্ৰশাসকৰ পৰা জানক।}other{এই ফাইলসমূহে আপোনাৰ প্ৰতিষ্ঠানৰ কিছুমান সুৰক্ষা নীতি মানি চলা নাই। কি ঠিক কৰিব লাগে সেই বিষয়ে আপোনাৰ প্ৰশাসকৰ পৰা জানক।}}</translation>
+<translation id="5736345781200955827">আপুনি যাতে Chrome ব্যৱহাৰ কৰি ছাইট আৰু এপ্‌সমূহত সহজতে ছাইন ইন কৰিব পাৰে, তাৰ বাবে আপোনাৰ পাছৱৰ্ড সৃষ্টি, ছেভ আৰু পৰিচালনা কৰক</translation>
 <translation id="5738093759615225354">আপোনাৰ কম্পিউটাৰত ছাইন ইন কৰিবলৈ আপোনাক এই পাছকীটোৰ আৱশ্যক</translation>
 <translation id="5738386565827477765">অডিঅ’ ডিভাইচ</translation>
 <translation id="5739017626473506901">বিদ্যালয়ৰ এটা একাউণ্ট যোগ দিয়াত <ph name="USER_NAME" />ক সহায় কৰিবলৈ ছাইন ইন কৰক</translation>
@@ -7229,6 +7234,7 @@
 <translation id="5901089233978050985">কেপচাৰ কৰি থকা টেবটোলৈ সলনি কৰক</translation>
 <translation id="5901494423252125310">প্ৰিণ্টাৰৰ দুৱাৰ খোল খাই আছে</translation>
 <translation id="5901630391730855834">হালধীয়া</translation>
+<translation id="5902400038326841449">Google Password Manager অফ কৰা হৈছে</translation>
 <translation id="5902892210366342391">ইনক’গনিট’ ম’ডত অসুৰক্ষিত ছাইটসমূহলৈ যোৱাৰ পূৰ্বে সকীয়নি চাওক</translation>
 <translation id="5904614460720589786">কনফিগাৰেশ্বন সম্পৰ্কীয় এটা সমস্যাৰ বাবে <ph name="APP_NAME" /> ছেট আপ কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="5906457147959147328">এই ছাইটটোক সুৰক্ষিত সমল প্লে’ কৰিবলৈ চিনাক্তকাৰী ব্যৱহাৰ কৰাৰ অনুমতি দিয়াটো অব্যাহত ৰাখক</translation>
@@ -8010,6 +8016,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> সম্পূৰ্ণ হৈছে</translation>
 <translation id="6452961788130242735">নেটৱর্ক সম্পর্কীয় সমস্যা বা ক্ষেত্ৰ বেয়া</translation>
 <translation id="6453191633103419909">টেব/স্ক্ৰীন প্ৰজেকশ্বনৰ গুণগত মান</translation>
+<translation id="6453306703004115497"><ph name="LANGUAGE" />লৈ অনুবাদ কৰা হৈছে</translation>
 <translation id="6453687572758515877">আটাইবোৰ টেব গোটবদ্ধ কৰক</translation>
 <translation id="6453921811609336127">পৰৱৰ্তী ইনপুটৰ পদ্ধতিটোলৈ সলনি কৰিবলৈ, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />কণ্ট্ৰ'ল<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />শ্বিফ্ট<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />স্পেচ<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> টিপক</translation>
 <translation id="6455264371803474013">বিশেষ ছাইটসমূহত</translation>
@@ -8168,6 +8175,7 @@
 <translation id="656293578423618167">ফাইল পাথ বা নামটো অতি দীঘল।  অনুগ্ৰহ কৰি এটা চুটি নামৰ সৈতে বা অন্য ঠাইত ছেভ কৰক।</translation>
 <translation id="6563002009564846727">Windowsৰ পৰা আমদানি কৰা প্ৰমাণপত্ৰসমূহ চাওক</translation>
 <translation id="6563055593659435495">আপোনাৰ ফ’নৰ সৈতে এটা সংযোগ ৰাখিব নোৱাৰি। আপোনাৰ ফ’নটো ওচৰত থকাটো, আনলক কৰি ৰখাটো আৰু ব্লুটুথ তথা ৱাই-ফাই অন হৈ থকাটো নিশ্চিত কৰক।</translation>
+<translation id="6564343790052433242"><ph name="APP_NAME" />ৰ বাবে পাছকী সৃষ্টি কৰিবলৈ, Google Password Manager অন থাকিবই লাগিব</translation>
 <translation id="6565144332292237355">আপোনাৰ স্থানীয় নেটৱৰ্কৰ যিকোনো ডিভাইচ বিচাৰিবলৈ আৰু ইয়াৰ সৈতে সংযোগ কৰিবলৈ ছাইটসমূহে এই সুবিধাটো ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="6568283005472142698">টেব সন্ধান</translation>
 <translation id="6569931898053264308">মধ্যমীয়া ৰাহি</translation>
@@ -11439,6 +11447,7 @@
 <translation id="8761945298804995673">এই ব্যৱহাৰকাৰীজন ইতিমধ্যে উপলব্ধ</translation>
 <translation id="8762886931014513155">আপোনাৰ <ph name="DEVICE_TYPE" />ক আপডে'ট কৰাৰ আৱশ্যক হৈছে।</translation>
 <translation id="8763927697961133303">ইউএছবি ডিভাইচ</translation>
+<translation id="8765940060470412555">ৰীডিং ম’ড আনপিন কৰক</translation>
 <translation id="8766156860774051068">আপুনি প্ৰস্তুত কৰা</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" />ৰ আটাইবোৰ সন্ধান দেখুৱাওক</translation>

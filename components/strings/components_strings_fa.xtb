@@ -1118,6 +1118,7 @@
 <translation id="277133753123645258">روش ارسال</translation>
 <translation id="277499241957683684">ثبت دستگاه موجود نیست</translation>
 <translation id="2775884851269838147">صفحه چاپ اول</translation>
+<translation id="277828055419948999">‏‫Chromium می‌تواند فیلدهای دشواری را که تکمیل خودکار استاندارد ممکن است ازدست بدهد تکمیل کند.</translation>
 <translation id="2781185443919227679">ساحل و جزیره</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">درحال آماده شدن برای تسویه‌حساب</translation>
@@ -2474,6 +2475,7 @@
 <translation id="4950898438188848926">‏دکمه جابه‌جایی برگه، برای جابه‌جایی به برگه باز، کلید Enter را فشار دهید، <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">کنش‌ها</translation>
 <translation id="4953689047182316270">پاسخ دادن به رویدادهای مربوط به دسترس‌پذیری</translation>
+<translation id="4954505713046251871">‏برای ارائه پیشنهادها و بهبود این ویژگی، نشانی وب و محتوای صفحه با Google هم‌رسانی می‌شود</translation>
 <translation id="4954891067389874142">‏وقتی کارتتان ذخیره شده باشد، می‌توانید سریع‌تر پرداخت کنید. جزئیات کارت در «کیف پول Google» رمزگذاری می‌شود.</translation>
 <translation id="4957080528849277028">‏دکمه «مشاهده سابقه Chrome»؛ برای مشاهده و مدیریت سابقه مرور در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{‫+ ۱ سایت}one{‫+ # سایت}other{‫+ # سایت}}</translation>
@@ -3977,6 +3979,7 @@
 <translation id="7377314930809374926">صنعت مهمان‌داری</translation>
 <translation id="7378594059915113390">کنترل‌های رسانه</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">‏‫Chrome می‌تواند فیلدهای دشواری را که تکمیل خودکار استاندارد ممکن است ازدست بدهد تکمیل کند</translation>
 <translation id="7380398842872229465">۱۵ × ۱۰ اینچ</translation>
 <translation id="7381551826960739226">تکمیل خودکار روش‌های پرداخت غیرفعال است زیرا این فرم از اتصال ایمن استفاده نمی‌کند.</translation>
 <translation id="7388380253839603603">قیمت بنزین و تأمین سوخت خودرو</translation>

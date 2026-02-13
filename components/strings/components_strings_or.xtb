@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ନମ୍ବର ପାଇଁ ଏହି କାର୍ଡଟି ଯୋଗ୍ୟ ନୁହେଁ।</translation>
 <translation id="2071852865256799872">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଆପଣଙ୍କର ବ୍ରାଉଜର ପରିଚାଳିତ ହୋଇଥାଏ ଏବଂ <ph name="PROFILE_DOMAIN" /> ଦ୍ୱାରା ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ ପରିଚାଳିତ ହୋଇଥାଏ</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">କେବଳ ଡିଭାଇସରେ ସୂଚନା ସେଭ କରାଯାଇଛି</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />କୁ ଅନବ୍ଲକ କରନ୍ତୁ</translation>
 <translation id="2074771604462073334">ଆପଣ ଭିଜିଟ କରିଛନ୍ତି</translation>
 <translation id="2078956195623975415">ମ୍ୟୁଜିକ ଏବଂ ଡ୍ୟାନ୍ସ ଗେମଗୁଡ଼ିକ</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">ସିପିଂ ପଦ୍ଧତି</translation>
 <translation id="277499241957683684">ଡିଭାଇସ୍‌ର ରେକର୍ଡ ନାହିଁ</translation>
 <translation id="2775884851269838147">ପ୍ରଥମରେ ପ୍ରିଣ୍ଟ ହୋଇଥିବା ପୃଷ୍ଠା</translation>
+<translation id="277828055419948999">ଷ୍ଟାଣ୍ଡାର୍ଡ ଅଟୋଫିଲ ମିସ କରୁଥିବା କଷ୍ଟକର ଫିଲ୍ଡଗୁଡ଼ିକୁ Chromium ଅଟୋଫିଲ କରିପାରିବ</translation>
 <translation id="2781185443919227679">ବେଳାଭୂମି ଏବଂ ଦ୍ୱୀପପୁଞ୍ଜ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">ଚେକଆଉଟ ପାଇଁ ପ୍ରସ୍ତୁତ ହେଉଛି</translation>
@@ -2469,6 +2471,7 @@
 <translation id="4950898438188848926">ଟାବ୍ ସ୍ୱିଚ୍ କରିବା ବଟନ୍, ଖୋଲାଥିବା ଟାବ୍‍କୁ ଯିବା ପାଇଁ Enter ଦବାନ୍ତୁ, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">କାର୍ଯ୍ୟ</translation>
 <translation id="4953689047182316270">ଆକ୍ସେସିବିଲିଟୀ ଇଭେଣ୍ଟକୁ ପ୍ରତିକ୍ରିୟା ଦିଏ</translation>
+<translation id="4954505713046251871">ପରାମର୍ଶ ଦେବା ଏବଂ ଏହି ଫିଚରକୁ ଉନ୍ନତ କରିବା ପାଇଁ, ପୃଷ୍ଠାର URL ଏବଂ ବିଷୟବସ୍ତୁକୁ Google ସହ ସେୟାର କରାଯାଇଛି</translation>
 <translation id="4954891067389874142">ଆପଣଙ୍କ କାର୍ଡକୁ ସେଭ କରାଗଲେ ଶୀଘ୍ର ପେମେଣ୍ଟ କରନ୍ତୁ। Google Walletରେ କାର୍ଡ ବିବରଣୀକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="4957080528849277028">'ଆପଣଙ୍କ Chrome ଇତିହାସ ଦେଖନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ଭ୍ୟୁ କରି ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 ସାଇଟ}other{+ # ସାଇଟ}}</translation>
@@ -3970,6 +3973,7 @@
 <translation id="7377314930809374926">ହସ୍ପିଟାଲିଟି ଇଣ୍ଡଷ୍ଟ୍ରି</translation>
 <translation id="7378594059915113390">ମିଡିଆକୁ ନିୟନ୍ତ୍ରଣ କରୁଛି</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">ଷ୍ଟାଣ୍ଡାର୍ଡ ଅଟୋଫିଲ ମିସ କରୁଥିବା କଷ୍ଟକର ଫିଲ୍ଡଗୁଡ଼ିକୁ Chrome ଅଟୋଫିଲ କରିପାରିବ</translation>
 <translation id="7380398842872229465">10 x 15 ଇଞ୍ଚ</translation>
 <translation id="7381551826960739226">ଏହି ଫର୍ମ ଏକ ସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରୁନଥିବା ଯୋଗୁଁ ସ୍ଵତଃ ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକର ପୂରଣକୁ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="7388380253839603603">ପେଟ୍ରୋଲ ମୂଲ୍ୟ ଏବଂ ଗାଡ଼ି ଫ୍ୟୁଏଲିଂ</translation>
@@ -4894,6 +4898,7 @@
 <translation id="8858065207712248076">ଆପଣ ଯଦି ନିଜର <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ପାସ୍‌ୱର୍ଡକୁ ଅନ୍ୟ ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକରେ ପୁନଃ ବ୍ୟବହାର କରିଛନ୍ତି, ତେବେ Chrome ଆପଣଙ୍କୁ ଏହି ପାସ୍‌ୱର୍ଡକୁ ରିସେଟ୍ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
 <translation id="885906927438988819">ଯଦି ବନାନ ସଠିକ୍ ଅଛି, ତେବେ <ph name="BEGIN_LINK" />Windows ନେଟୱାର୍କ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଚଲାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="8861126751581835107">ଫଟୋଗ୍ରାଫିକ ଏବଂ ଡିଜିଟାଲ ଆର୍ଟ୍ସ</translation>
+<translation id="8861482055962701239">ଆପଣଙ୍କ Google Walletରେ ଏହି ସୂଚନାକୁ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଏହାକୁ ଏହି ଡିଭାଇସରେ Chromeରେ ସେଭ କରାଯାଇଛି। ଆପଣ ପରବର୍ତ୍ତୀ ଥର ଏହାକୁ ବ୍ୟବହାର କଲେ Chrome ଏହାକୁ Walletରେ ସେଭ କରିବାକୁ ଅଫର କରିବ।</translation>
 <translation id="8863218129525348270">ପରବର୍ତ୍ତୀ ସମୟରେ ଶୀଘ୍ର ପେମେଣ୍ଟ କରିବାକୁ, ଆପଣଙ୍କ ଡିଭାଇସରେ ଆପଣଙ୍କର କାର୍ଡ ସେଭ କରନ୍ତୁ</translation>
 <translation id="8864939224504814334">ସୁଟ ଏବଂ ବିଜିନେସ ପୋଷାକ</translation>
 <translation id="8866132857352163524">ସାଉଣ୍ଡଟ୍ରାକଗୁଡ଼ିକ</translation>

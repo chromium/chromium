@@ -2029,6 +2029,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       Esta política anula las políticas <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />, y las preferencias del usuario.
 
       Esta política solo afecta el acceso a dispositivos USB a través de la API de WebUSB. Para otorgar el acceso a dispositivos USB a través de la API de Web Serial, consulta la política <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="2318353380372431186">Habilitar la instalación de IWA por parte del usuario</translation>
 <translation id="2318583605563438459">Permitir que los padres agreguen cuentas supervisadas</translation>
 <translation id="2326031114717677574">Es la tasa a la que se toman muestras de los datos del audio y se los recopila. El mínimo permitido es 1 minuto.
 
@@ -2724,6 +2725,7 @@ Si la inhabilitas o no la estableces, los usuarios podrán transferir archivos a
       Si inhabilitas la política, <ph name="PRODUCT_NAME" /> solo podrá usar estos hosts cuando estén instalados a nivel del sistema.</translation>
 <translation id="2753637905605932878">Restringir el intervalo de puertos UDP locales que usa WebRTC</translation>
 <translation id="2755847332939882873">Permite registrar el rendimiento de todo el sistema</translation>
+<translation id="2755963656455766808">Controlar la capacidad de un usuario para instalar manualmente apps web aisladas</translation>
 <translation id="2757054304033424106">Tipos de extensiones o aplicaciones que se pueden instalar</translation>
 <translation id="275769337615229465">La mayoría de los orígenes quedarán aislados de otros orígenes del mismo sitio.</translation>
 <translation id="2759224876420453487">Controlar el comportamiento del usuario en una sesión de varios perfiles</translation>
@@ -5881,6 +5883,12 @@ Esta política es temporal y se quitará en 2026.</translation>
        Puede habilitarse un nombre de host con una coincidencia de host completa o cualquier coincidencia de dominio. Por ejemplo, es posible que se eliminen las advertencias de una URL como https://foo.example.com/bar si esta lista incluye foo.example.com o example.com.</translation>
 <translation id="4852900976354340846">Configuración de Direct Sockets</translation>
 <translation id="485419696366295465">Controla las políticas relacionadas con el subsistema de <ph name="BOREALIS_NAME" />.</translation>
+<translation id="4854384393031206645">Controla la capacidad del usuario para instalar manualmente apps web aisladas (IWA).
+
+Si estableces esta política como falsa, se bloqueará la instalación de IWA por parte del usuario.
+
+Si estableces esta política como verdadera o no la estableces, se permitirán las instalaciones de IWA por usuario.
+</translation>
 <translation id="4855636880814771207">Si habilitas la política o no la estableces, los usuarios podrán activar y desactivar la conexión Bluetooth.
 
       Si la inhabilitas, el <ph name="PRODUCT_OS_NAME" /> desactivará la conexión Bluetooth, y los usuarios no podrán activarla.
@@ -6320,6 +6328,7 @@ Esta política es una prórroga temporal para permitir que el contenido web migr
       </translation>
 <translation id="5104606191349861549">Combinaciones de teclas (compatible a partir de la versión 129)</translation>
 <translation id="5105313908130842249">Demora de bloqueo de pantalla con batería</translation>
+<translation id="5105593357527099243">Inhabilitar la instalación de usuarios de IWA</translation>
 <translation id="510604120100968366">Habilita la función de sonido de batería baja.
 
           Esta función se encarga de reproducir el sonido de batería baja.
@@ -6696,7 +6705,6 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="530949964068726932">Ocultar las opciones de accesibilidad en el menú de la bandeja del sistema</translation>
 <translation id="5309944663104291505">No permitir que las apps web aisladas y las aplicaciones de kiosco instaladas de manera automática usen la API de Device Attributes</translation>
 <translation id="5311275381462687162">Configuración predeterminada del atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /> para el comportamiento de las cookies</translation>
-<translation id="5311430612584074035">Forzar la prioridad de primer plano para todas las pestañas del perfil</translation>
 <translation id="5312253627576569499">El porcentaje en que debe ajustarse la demora de atenuación de la pantalla cuando se observa actividad del usuario con la pantalla atenuada o poco después de que esta se haya apagado.</translation>
 <translation id="5316856058059940708">Inhabilitar el cursor grande</translation>
 <translation id="5318185076587284965">Habilitar el uso de servidores de retransmisión por parte del host de acceso remoto</translation>

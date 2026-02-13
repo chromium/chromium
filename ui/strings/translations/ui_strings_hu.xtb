@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 perce}other{# perce}}</translation>
 <translation id="1450753235335490080">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 hónapja}other{# hónapja}}</translation>
+<translation id="1591017414891297549">ELŐNÉZET</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 perc és }other{# perc és }}</translation>
 <translation id="1643823602425662293">Értesítés</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>
 <translation id="8725488761726303204">és <ph name="NUMBER" /> további</translation>
 <translation id="8730621377337864115">Kész</translation>
+<translation id="8741385002816058621">Ez egy előnézeti funkció</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 ó}other{# ó}}</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
 <translation id="8841375032071747811">Vissza gomb</translation>

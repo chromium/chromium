@@ -304,7 +304,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4205939740494406371">Chrome не може перевірити паролі. Повторіть спробу через 24 години або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Скасування…</translation>
 <translation id="4224210481850767180">Встановлення скасовано.</translation>
-<translation id="4230631012078055975">Увійдіть у Chrome, щоб отримати більше можливостей</translation>
 <translation id="4242034826641750751">Веб-переглядачу Chrome потрібен доступ до камери та мікрофона для цього сайту</translation>
 <translation id="424864128008805179">Вийти з Chrome?</translation>
 <translation id="4251615635259297716">Пов’язати ваші дані Chrome із цим обліковим записом?</translation>
@@ -598,7 +597,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7308322188646931570">Chrome потрібен доступ до пам’яті, щоб завантажувати файли</translation>
 <translation id="7339898014177206373">Нове вікно</translation>
 <translation id="7352651011704765696">Виникли проблеми</translation>
-<translation id="7379321689415048316">Chrome може автоматично заповнювати складні поля, які не заповнюються за допомогою стандартної функції</translation>
 <translation id="7386878009611068389">Щоб користуватися безпечнішими налаштуваннями, які вибрали твої батьки, перейди в профіль Chrome, у який уже виконано вхід за допомогою електронної адреси <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Ви ввійшли в Chrome як <ph name="USER_EMAIL_ADDRESS" />. Скористайтеся тим самим обліковим записом, щоб увійти знову.</translation>
 <translation id="7412494426921990001">Натисніть значок меню Chrome</translation>
@@ -700,7 +698,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8321888067342493336">Зберегти як зображення</translation>
 <translation id="8336463659890584292">Коли сайт надсилає запит на приватне попереднє завантаження посилань на його сторінці, Chrome використовує сервери Google. Завдяки цьому вашу особу не можна визначити через попередньо завантажений сайт. При цьому Google отримує інформацію про сайти, які попередньо завантажуються.</translation>
 <translation id="8342675569599923794">Цей файл небезпечний, тому Chrome заблокував його.</translation>
-<translation id="8349094670477064572">Увійшовши в Chrome, ви зможете зберігати й використовувати паролі та інші дані у своєму обліковому записі Google. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Запитання до Google</translation>
 <translation id="8362914115861174987">Перекласти такою мовою:</translation>
 <translation id="8366770919198174997">Знижує продуктивність, але робить вебпереглядач Chrome стійкішим до атак</translation>

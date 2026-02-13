@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">رقم هذه البطاقة غير مؤهَّل للاستخدام كرقم بطاقة افتراضية.</translation>
 <translation id="2071852865256799872">تتولّى مؤسستك إدارة متصفِّحك، كما أنّ ملفك الشخصي يخضع لإدارة <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">تم حفظ المعلومات على الجهاز فقط</translation>
 <translation id="2074733626795553847">إزالة حظر "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">زرت هذا الموقع الإلكتروني</translation>
 <translation id="2078956195623975415">ألعاب موسيقى ورقص</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">طريقة الشحن</translation>
 <translation id="277499241957683684">سجِلّ الجهاز مفقود</translation>
 <translation id="2775884851269838147">طباعة الصفحة الأولى</translation>
+<translation id="277828055419948999">‏يمكن لمتصفِّح Chromium ملء الحقول الصعبة التي قد لا ترصدها ميزة "الملء التلقائي" العادية</translation>
 <translation id="2781185443919227679">شواطئ وجزر</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">جارٍ الاستعداد للدفع</translation>
@@ -2472,6 +2474,7 @@
 <translation id="4950898438188848926">‏زر التبديل بين علامات التبويب، اضغط على Enter للتبديل إلى علامة التبويب المفتوحة هذه <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">إجراءات</translation>
 <translation id="4953689047182316270">الاستجابة لأحداث إمكانية الوصول</translation>
+<translation id="4954505713046251871">‏لتقديم اقتراحات وتحسين هذه الميزة، تتم مشاركة عنوان URL للصفحة ومحتواها مع Google</translation>
 <translation id="4954891067389874142">‏يمكنك الدفع بسرعة أكبر بعد حفظ بطاقتك. وللعلم، يتم تشفير تفاصيل البطاقة في "محفظة Google".</translation>
 <translation id="4957080528849277028">‏زر عرض سجلّ Chrome: انقر على هذا الزر لعرض سجلّ التصفّح وإدارته في إعدادات Chrome.</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{بالإضافة إلى موقع إلكتروني واحد}zero{بالإضافة إلى # موقع إلكتروني}two{بالإضافة إلى موقعَين إلكترونيَين}few{بالإضافة إلى # مواقع إلكترونية}many{بالإضافة إلى # موقعًا إلكترونيًا}other{بالإضافة إلى # موقع إلكتروني}}</translation>
@@ -3975,6 +3978,7 @@
 <translation id="7377314930809374926">مجال الاستضافة</translation>
 <translation id="7378594059915113390">عناصر التحكم في الوسائط</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">‏يمكن لمتصفّح Chrome ملء الحقول الصعبة التي قد لا ترصدها ميزة "الملء التلقائي" العادية</translation>
 <translation id="7380398842872229465">10 × 15 بوصة</translation>
 <translation id="7381551826960739226">تم إيقاف الملء التلقائي لطرق الدفع لأنّ هذا النموذج لا يستخدم اتصالاً آمنًا.</translation>
 <translation id="7388380253839603603">أسعار الوقود وخدمات تزويد السيارات بالوقود</translation>
@@ -4902,6 +4906,7 @@
 <translation id="8858065207712248076">‏يُوصي Chrome بإعادة تحديد كلمة المرور <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> في حال إعادة استخدامها في مواقع إلكترونية أخرى.</translation>
 <translation id="885906927438988819">‏إذا تم التأكُد من عدم ورود أخطاء إملائية، يُرجى <ph name="BEGIN_LINK" />محاولة تشغيل بيانات التشخيص لشبكة Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">فنون رقمية وتصوير فوتوغرافي</translation>
+<translation id="8861482055962701239">‏تعذَّر حفظ هذه المعلومات في "محفظة Google". وبدلاً من ذلك، تم حفظها في Chrome على هذا الجهاز. وسيعرض Chrome خيار حفظها في "محفظة Google" عند استخدامها المرة القادمة.</translation>
 <translation id="8863218129525348270">للدفع بشكلٍ أسرع في المرة القادمة، احفظ تفاصيل بطاقتك في جهازك</translation>
 <translation id="8864939224504814334">بدلات وملابس للعمل</translation>
 <translation id="8866132857352163524">موسيقى تصويرية</translation>

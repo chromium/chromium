@@ -166,7 +166,6 @@
 <translation id="2738871930057338499">ከበይነመረብ ጋር መገናኘት አልተቻለም። ኤችቲቲፒኤስ 403 ተከልክሏል። እባክዎ ተኪ ውቅረትዎን ይፈትሹ።</translation>
 <translation id="2753623023919742414">ለመፈለግ ጠቅ ያድርጉ</translation>
 <translation id="2768103863314748511">Chromiumን እንደ ነባሪ ፒዲኤፍ መመልከቻዎ ያቀናብሩ</translation>
-<translation id="277828055419948999">Chromium መደበኛ ራስ-ሙላ ሊያመልጡት የሚችሉትን አስቸጋሪ መስኮች በራስ-ሙላ መሙላት ይችላል</translation>
 <translation id="2785438272836277133">ይህ ቅጥያ ተንኮል አዘል ዌርን ይዟል እና ደህንነቱ የተጠበቀ አይደለም። የግል መረጃዎን ጨምሮ ከእንግዲህ እርስዎ በሚጎበኟቸው ጣቢያዎች ላይ ያለዎን ውሂብ ማየት እና መለወጥ እንዳይችል ከChromium ያስወግዱት።</translation>
 <translation id="2799223571221894425">ዳግም አስጀምር</translation>
 <translation id="2803971713792056305">የእርስዎ Chromium</translation>
@@ -595,7 +594,6 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="7461356015007898716">የወደፊት የChromium ዝማኔዎችን ለማግኘት Windows 10 ወይም ከዚያ በላይ ያስፈልግዎታል። ይህ ኮምፒውተር Windows 7ን እየተጠቀመ ነው።</translation>
 <translation id="7467949745582939695">Chromium ዳግም ይጀመር?</translation>
 <translation id="7483335560992089831">እየሄደ ያለውን ተመሳሳዩን የChromium ስሪት መጫን አይቻልም። እባክዎ Chromiumን ይዝጉና እንደገና ይሞክሩ።</translation>
-<translation id="7517403744065880907">ወደ Chromium በመለያ በሚገቡበት በማንኛውም ጊዜ በእርስዎ Google መለያ ውስጥ የይለፍ ቃላት እና ሌሎችንም እናስቀምጣለን እና እንጠቀማለን። <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">ጣቢያዎች እንደተጠበቀው መስራታቸው አይቀርም። ከGoogle መለያዎ በስተቀር በ Chromium ውስጥ ገብተው ከሆነ፣ ሁሉንም የChromium መስኮቶች ሲዘጉ ከአብዛኞቹ ጣቢያዎች ይወጣሉ።</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium በ1 ደቂቃ ውስጥ ዳግም ይጀመራል}one{Chromium በ# ደቂቃዎች ውስጥ ዳግም ይጀመራል}other{Chromium በ# ደቂቃዎች ውስጥ ዳግም ይጀመራል}}</translation>
 <translation id="7565444033145385702">ውሂብዎን ለመጠበቅ Chromium እርስዎ በቅርቡ ካልጎበኟቸው ጣቢያዎች ላይ ፈቃዶችን እንዲያስወግድ ይፍቀዱ።</translation>
@@ -738,7 +736,6 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="9183331186620388872">የChromium ጠቃሚ ምክር፦ በሌንስ ይፈልጉ</translation>
 <translation id="9185526690718004400">&amp;Chromiumን ለማዘመን ዳግም ያስነሱት</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9206863043651638213">Chromium ውስጥ በመለያ ሲገቡ ተጨማሪ ያግኙ</translation>
 <translation id="924957577793602335">Chromiumን የራስዎ ያድርጉት</translation>
 <translation id="93478295209880648">Chromium በWindows XP ወይም Windows Vista ላይ ከእንግዲህ ስለማይደገፍ በአግባቡ ላይሰራ ይችላል</translation>
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>

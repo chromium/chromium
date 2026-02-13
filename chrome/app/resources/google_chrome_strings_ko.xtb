@@ -307,7 +307,6 @@
 <translation id="4205939740494406371">Chrome에서 비밀번호를 확인할 수 없습니다. 24시간 후에 다시 시도해 보거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="4222932583846282852">취소 중...</translation>
 <translation id="4224210481850767180">설치가 취소되었습니다.</translation>
-<translation id="4230631012078055975">Chrome에 로그인하고 Chrome을 최대한 활용하세요</translation>
 <translation id="4242034826641750751">Chrome에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4251615635259297716">Chrome 데이터를 이 계정에 연결하시겠습니까?</translation>
@@ -447,6 +446,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5756509061973259733">이 계정을 사용하는 Chrome 프로필이 기기에 이미 존재합니다.</translation>
 <translation id="5759947850379142561">Google 렌즈로 검색할 텍스트 또는 이미지를 선택하거나 Esc 키를 눌러 Google 렌즈를 종료하세요</translation>
 <translation id="5762867845020858790">북마크, 비밀번호, 설정을 별도로 유지하려면 새 Chrome 프로필을 추가해 보세요</translation>
+<translation id="5779427581965287859">Chrome을 기본 브라우저로 설정하고 작업 표시줄에 고정하세요</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome을 실행할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="5809516625706423866">인터넷에 연결할 수 없습니다(HTTP 401 Unauthorized). 프록시 설정을 확인하시기 바랍니다.</translation>
@@ -604,7 +604,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7308322188646931570">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 있어야 합니다</translation>
 <translation id="7339898014177206373">새 창</translation>
 <translation id="7352651011704765696">문제가 발생했습니다</translation>
-<translation id="7379321689415048316">Chrome은 표준 자동 완성에서 누락될 수 있는 어려운 필드를 자동 완성할 수 있습니다.</translation>
 <translation id="7386878009611068389">부모님의 선택을 통해 온라인에서 더 안전하게 보호하려면 이미 <ph name="USER_EMAIL_ADDRESS" />님으로 로그인되어 있는 Chrome 프로필로 전환하세요.</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chrome에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>
 <translation id="7412494426921990001">Chrome 메뉴를 클릭합니다</translation>
@@ -697,6 +696,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8162006532256575008">계정 없이 Chrome 사용</translation>
 <translation id="8177472873527554730">페이지의 콘텐츠를 찾을 수 없음</translation>
 <translation id="8221491193165283816">기본적으로 알림을 차단하는 중입니다. 이 사이트의 알림을 허용하려면 여기를 클릭하세요.</translation>
+<translation id="8253851811470049684">모든 앱에서 Chrome으로 링크를 열고 작업 표시줄에서 브라우저에 액세스할 수 있도록 유지합니다</translation>
 <translation id="8255190535488645436">Chrome에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="8267953129876836456">Chrome에서 발견한 보안 권장사항을 검토해 주세요</translation>
 <translation id="8286862437124483331">Chrome에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
@@ -705,7 +705,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8321888067342493336">이미지로 저장</translation>
 <translation id="8336463659890584292">사이트에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chrome은 Google 서버를 사용합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있지만 Google은 어떤 사이트가 미리 로드되는지 학습합니다.</translation>
 <translation id="8342675569599923794">이 파일은 위험하므로 Chrome에서 차단했습니다.</translation>
-<translation id="8349094670477064572">Chrome에 로그인할 때마다 Google 계정에 비밀번호 등의 정보를 저장하고 사용할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Google에 물어보기</translation>
 <translation id="8362914115861174987">도착어</translation>
 <translation id="8366770919198174997">성능은 감소하지만 Chrome의 공격에 대한 저항력이 강화됨</translation>

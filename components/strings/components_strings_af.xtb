@@ -655,6 +655,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2071156619270205202">Hierdie kaart kwalifiseer nie vir virtuele kaartnommer nie.</translation>
 <translation id="2071852865256799872">Jou organisasie bestuur jou blaaier en <ph name="PROFILE_DOMAIN" /> bestuur jou profiel</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Inligting is net op toestel gestoor</translation>
 <translation id="2074733626795553847">Deblokkeer <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Jy het besoek op</translation>
 <translation id="2078956195623975415">Musiek- en dansspeletjies</translation>
@@ -1116,6 +1117,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="277133753123645258">Versendingmetode</translation>
 <translation id="277499241957683684">Toestelrekord ontbreek</translation>
 <translation id="2775884851269838147">Eerste drukbladsy</translation>
+<translation id="277828055419948999">Chromium kan moeilike velde outovul wat standaardoutovul dalk sal mis</translation>
 <translation id="2781185443919227679">Strande en eilande</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Maak gereed om te betaal</translation>
@@ -2472,6 +2474,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4950898438188848926">Oortjiewisselingknoppie, druk Enter om na die oop oortjie toe oor te skakel, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Handelinge</translation>
 <translation id="4953689047182316270">Reageer op toeganklikheidgebeurtenisse</translation>
+<translation id="4954505713046251871">Die bladsy se URL en inhoud word met Google gedeel om voorstelle te maak en hierdie kenmerk beter te maak</translation>
 <translation id="4954891067389874142">Betaal vinniger wanneer jou kaart gestoor is. Kaartbesonderhede is in Google Wallet geënkripteer.</translation>
 <translation id="4957080528849277028">Knoppie om jou Chrome-geskiedenis te bekyk; aktiveer om jou blaaigeskiedenis in Chrome-instellings te bekyk en te bestuur</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 werf}other{+ # werwe}}</translation>
@@ -3974,6 +3977,7 @@ Bykomende besonderhede:
 <translation id="7377314930809374926">Gasvryheidsbedryf</translation>
 <translation id="7378594059915113390">Media-kontroles</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome kan moeilike velde outovul wat standaardoutovul dalk sal mis</translation>
 <translation id="7380398842872229465">10x15 dm.</translation>
 <translation id="7381551826960739226">Outomatiese betaalmetode-invulling is gedeaktiveer omdat hierdie vorm nie ’n veilige verbinding gebruik nie.</translation>
 <translation id="7388380253839603603">Brandstofpryse en voertuigbrandstofinname</translation>
@@ -4898,6 +4902,7 @@ Bykomende besonderhede:
 <translation id="8858065207712248076">Chrome beveel aan dat jy jou <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-wagwoord terugstel as jy dit ook op ander werwe gebruik het.</translation>
 <translation id="885906927438988819">As die spelling korrek is, kan jy <ph name="BEGIN_LINK" />Windows Network Diagnostics probeer gebruik<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografiese en digitale kunste</translation>
+<translation id="8861482055962701239">Kon nie hierdie inligting in jou Google Wallet stoor nie. Dit word in plaas daarvan in Chrome op hierdie toestel gestoor. Chrome sal aanbied om dit in Wallet te stoor die volgende keer wat jy dit gebruik.</translation>
 <translation id="8863218129525348270">Stoor jou kaart op jou toestel om volgende keer vinniger te betaal</translation>
 <translation id="8864939224504814334">Pakke en besigheidsdrag</translation>
 <translation id="8866132857352163524">Klankbane</translation>

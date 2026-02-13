@@ -1118,6 +1118,7 @@
 <translation id="277133753123645258">ಶಿಪ್ಪಿಂಗ್ ವಿಧಾನ</translation>
 <translation id="277499241957683684">ಸಾಧನದ ರೆಕಾರ್ಡ್ ಕಾಣೆಯಾಗಿದೆ</translation>
 <translation id="2775884851269838147">ಮೊದಲ ಪ್ರಿಂಟ್ ಪುಟ</translation>
+<translation id="277828055419948999">ಪ್ರಮಾಣಿತ ಆಟೋಫಿಲ್ ಮಿಸ್ ಮಾಡಬಹುದಾದ ಕಷ್ಟಕರವಾದ ಫೀಲ್ಡ್‌ಗಳನ್ನು Chromium ಆಟೋಫಿಲ್ ಮಾಡಬಲ್ಲದು</translation>
 <translation id="2781185443919227679">ಕಡಲತೀರಗಳು ಮತ್ತು ದ್ವೀಪಗಳು</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">ಚೆಕ್ಔಟ್‌ಗೆ ಸಿದ್ಧವಾಗುತ್ತಿದೆ</translation>
@@ -2471,6 +2472,7 @@
 <translation id="4950898438188848926">ಟ್ಯಾಬ್ ಬದಲಿಸುವ ಬಟನ್, ತೆರೆದಿರುವ ಟ್ಯಾಬ್, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> ಗೆ ಬದಲಾಯಿಸಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
 <translation id="4953689047182316270">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಈವೆಂಟ್‌ಗಳಿಗೆ ಪ್ರತಿಕ್ರಿಯಿಸಿ</translation>
+<translation id="4954505713046251871">ಸಲಹೆಗಳನ್ನು ಒದಗಿಸಲು ಮತ್ತು ಈ ಫೀಚರ್ ಅನ್ನು ಸುಧಾರಿಸಲು, ಪುಟದ URL ಮತ್ತು ಕಂಟೆಂಟ್ ಅನ್ನು Google ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ</translation>
 <translation id="4954891067389874142">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಿದಾಗ ವೇಗವಾಗಿ ಪಾವತಿಸಿ. Google Wallet ನಲ್ಲಿ ಕಾರ್ಡ್ ವಿವರಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4957080528849277028">ನಿಮ್ಮ Chrome ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಿ ಬಟನ್, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ನಿರ್ವಹಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 ಸೈಟ್}one{+ # ಸೈಟ್‌ಗಳು}other{+ # ಸೈಟ್‌ಗಳು}}</translation>
@@ -3976,6 +3978,7 @@
 <translation id="7377314930809374926">ಹಾಸ್ಪಿಟಾಲಿಟಿ ಉದ್ಯಮ</translation>
 <translation id="7378594059915113390">ಮೀಡಿಯಾ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">ಪ್ರಮಾಣಿತ ಆಟೋಫಿಲ್ ಮಿಸ್ ಮಾಡಬಹುದಾದ ಕಷ್ಟಕರವಾದ ಫೀಲ್ಡ್‌ಗಳನ್ನು Chrome ಆಟೋಫಿಲ್ ಮಾಡಬಲ್ಲದು</translation>
 <translation id="7380398842872229465">10 x 15 ಇಂಚು</translation>
 <translation id="7381551826960739226">ಈ ಫಾರ್ಮ್ ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್‌ ಅನ್ನು ಬಳಸದ ಕಾರಣ ಸ್ವಯಂಚಾಲಿತ ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಭರ್ತಿ ಮಾಡುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="7388380253839603603">ಗ್ಯಾಸ್ ಬೆಲೆಗಳು ಮತ್ತು ವಾಹನಕ್ಕೆ ಇಂಧನ ಹಾಕುವುದು</translation>

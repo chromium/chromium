@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">Cardul nu este eligibil pentru un număr de card virtual.</translation>
 <translation id="2071852865256799872">Browserul este gestionat de organizația ta, iar profilul este gestionat de <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informațiile au fost salvate numai pe dispozitiv</translation>
 <translation id="2074733626795553847">Deblochează <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Ai accesat</translation>
 <translation id="2078956195623975415">Jocuri cu muzică și dans</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">Metodă de expediere</translation>
 <translation id="277499241957683684">Lipsește o înregistrare pentru gadget</translation>
 <translation id="2775884851269838147">Prima pagină printată</translation>
+<translation id="277828055419948999">Chromium poate să completeze automat câmpurile dificile pe care funcția standard de completare automată le poate omite</translation>
 <translation id="2781185443919227679">Plaje și insule</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Pregătim finalizarea achiziției</translation>
@@ -2472,6 +2474,7 @@
 <translation id="4950898438188848926">Butonul Comută între file, apasă pe Enter pentru a comuta la fila deschisă, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Acțiuni</translation>
 <translation id="4953689047182316270">să răspundă evenimentelor de accesibilitate</translation>
+<translation id="4954505713046251871">Pentru a oferi sugestii și a îmbunătăți această funcție, adresa URL și conținutul paginii sunt trimise la Google</translation>
 <translation id="4954891067389874142">Plătește mai rapid după salvarea cardului. Detaliile cardului sunt criptate în Portofelul Google.</translation>
 <translation id="4957080528849277028">Vezi butonul pentru istoricul Chrome, Enter pentru a vedea și a gestiona istoricul de navigare în setările Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 site}few{+ # site-uri}other{+ # de site-uri}}</translation>
@@ -3975,6 +3978,7 @@ Detalii suplimentare:
 <translation id="7377314930809374926">Industria ospitalității</translation>
 <translation id="7378594059915113390">Comenzi media</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome poate să completeze automat câmpurile dificile pe care funcția standard de completare automată le poate omite</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="7381551826960739226">Completarea automată a metodelor de plată este dezactivată, deoarece acest formular nu utilizează o conexiune securizată.</translation>
 <translation id="7388380253839603603">Prețuri la combustibil și combustibili pentru vehicule</translation>
@@ -4900,6 +4904,7 @@ Detalii suplimentare:
 <translation id="8858065207712248076">Chrome îți recomandă să resetezi parola pentru <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> dacă ai folosit-o și pe alte site-uri.</translation>
 <translation id="885906927438988819">Dacă scrierea este corectă, <ph name="BEGIN_LINK" />încearcă să rulezi Diagnosticarea rețelei Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Artă fotografică și digitală</translation>
+<translation id="8861482055962701239">Informațiile nu au putut fi salvate în Portofelul Google. Au fost salvate în Chrome pe acest dispozitiv. Chrome îți va oferi opțiunea de a le salva în Portofel data viitoare când le folosești.</translation>
 <translation id="8863218129525348270">Pentru a plăti mai rapid data viitoare, salvează cardul pe dispozitiv</translation>
 <translation id="8864939224504814334">Costume și îmbrăcăminte elegantă</translation>
 <translation id="8866132857352163524">Coloane sonore</translation>

@@ -355,6 +355,7 @@
 <translation id="1221825588892235038">فقط انتخاب</translation>
 <translation id="1222835797152767346">برای ورود راحت‌تر به سیستم، پین تنظیم کنید</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> به پروانه نیاز دارد</translation>
+<translation id="1223498995510244364">خلاصه کردن</translation>
 <translation id="1223853788495130632">سرپرست شما توصیه می‌کند که مقدار خاصی را برای این گزینه وارد کنید.</translation>
 <translation id="1225177025209879837">پردازش درخواست...</translation>
 <translation id="1227107020813934021">پیدا کردن اسکنرهای سند</translation>
@@ -1345,6 +1346,8 @@
 <translation id="1891362123137972260">فضای دیسک بسیار کم است. لطفاً فضای دیسک را آزاد کنید.</translation>
 <translation id="189210018541388520">باز کردن تمام صفحه</translation>
 <translation id="1892341345406963517">سلام <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">‏‫۱. روی <ph name="BUTTON_LABEL" /> در زیر کلیک کنید
+‫۲. روی <ph name="BUTTON_2" /> در تنظیمات Windows کلیک کنید</translation>
 <translation id="189358972401248634">زبان‌های دیگر</translation>
 <translation id="1895658205118569222">بسته شدن</translation>
 <translation id="1896043844785689584">برای تنظیم اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را در پایین گوشه سمت راست صفحه‌کلید لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
@@ -3162,6 +3165,7 @@
 <translation id="3105820656234755131">گذرواژه به‌روز شد</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
 <translation id="310671807099593501">سایت درحال استفاده از بلوتوث شما است</translation>
+<translation id="3108122610701115301">تنظیم پیش‌فرض</translation>
 <translation id="3108931485517391283">دریافت نمی‌شود</translation>
 <translation id="3108957152224931571">رنگ برجسته‌سازی</translation>
 <translation id="3109206895301430738">گروه‌های زبانه ذخیره‌شده</translation>
@@ -5876,7 +5880,6 @@
 <translation id="495170559598752135">کنش‌ها</translation>
 <translation id="4951966678293618079">هرگز گذرواژه‌ها برای این سایت ذخیره نشود</translation>
 <translation id="4953808748584563296">چهرک پیش‌فرض نارنجی</translation>
-<translation id="4954505713046251871">‏برای ارائه پیشنهادها و بهبود این ویژگی، نشانی وب و محتوای صفحه با Google هم‌رسانی می‌شود</translation>
 <translation id="4954652437333037880">فایل</translation>
 <translation id="4955707703665801001">رؤیت‌پذیری <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">پین خودتان را انتخاب کنید</translation>
@@ -6357,6 +6360,7 @@
 <translation id="5288678174502918605">با&amp;ز کردن مجدد برگه بسته</translation>
 <translation id="5290020561438336792">‏رایانه شخصی و دستگاه پخش در شبکه‌های مختلف Wi-Fi هستند (برای نمونه ۲٫۴ گیگاهرتز
     درمقابل ۵ گیگاهرتز)</translation>
+<translation id="5290322819358431297">تکمیل خودکار گذرواژه‌های شما</translation>
 <translation id="52912272896845572">فایل کلید خصوصی نامعتبر است.</translation>
 <translation id="529175790091471945">قالب‌بندی این دستگاه</translation>
 <translation id="529296195492126134">«حالت موقتی» پشتیبانی نمی‌شود. لطفاً با سرپرستتان تماس بگیرید</translation>
@@ -6976,6 +6980,7 @@
 <translation id="5734697361979786483">افزودن دستگاه ذخیره‌سازی متصل به شبکه</translation>
 <translation id="573520097779121706">‏از کلیدهای 7، 8، 9، u،‏ o،‏ j،‏ k،‏ l برای حرکت دادن مکان‌نما استفاده کنید</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{این داده یا دستگاه شما برخی‌از خط‌مشی‌های امنیتی سازمانتان را رعایت نمی‌کند. مواردی را که باید برطرف شود از سرپرست خود بپرسید.}=1{این فایل یا دستگاه شما برخی‌از خط‌مشی‌های امنیتی سازمانتان را رعایت نمی‌کند. مواردی را که باید برطرف شود از سرپرست خود بپرسید.}one{این فایل‌ها برخی‌از خط‌مشی‌های امنیتی سازمانتان را رعایت نمی‌کنند. مواردی را که باید برطرف شود از سرپرست خود بپرسید.}other{این فایل‌ها برخی‌از خط‌مشی‌های امنیتی سازمانتان را رعایت نمی‌کنند. مواردی را که باید برطرف شود از سرپرست خود بپرسید.}}</translation>
+<translation id="5736345781200955827">‏گذرواژه‌هایتان را ایجاد، ذخیره، و مدیریت کنید تا بتوانید به‌راحتی بااستفاده از Chrome به سیستم سایت‌ها و برنامه‌ها وارد شوید</translation>
 <translation id="5738093759615225354">برای ورود به سیستم رایانه‌تان به این گذرکلید نیاز دارید</translation>
 <translation id="5738386565827477765">دستگاه صوتی</translation>
 <translation id="5739017626473506901">به سیستم وارد شوید تا بتوانید به <ph name="USER_NAME" /> در افزودن حساب محل تحصیل کمک کنید</translation>
@@ -7228,6 +7233,7 @@
 <translation id="5901089233978050985">رفتن به زبانه درحال ضبط</translation>
 <translation id="5901494423252125310">در چاپگر باز است</translation>
 <translation id="5901630391730855834">زرد</translation>
+<translation id="5902400038326841449">‏«مدیر گذرواژه Google» خاموش است</translation>
 <translation id="5902892210366342391">نمایش هشدار قبل‌از رفتن به سایت‌های ناامن «درحالت ناشناس»</translation>
 <translation id="5904614460720589786">به‌دلیل مشکل پیکربندی، <ph name="APP_NAME" /> راه‌اندازی نشد. لطفاً با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">همچنان به این سایت اجازه داده شود از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کند</translation>
@@ -8009,6 +8015,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> تکمیل شد</translation>
 <translation id="6452961788130242735">مشکل شبکه یا حوزه نادرست</translation>
 <translation id="6453191633103419909">کیفیت پخش محتوای زبانه/ صفحه</translation>
+<translation id="6453306703004115497">ترجمه‌شده به <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">گروه‌بندی همه زبانه‌ها</translation>
 <translation id="6453921811609336127">برای رفتن به روش ورودی بعدی، کلیدهای <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />مهار<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />تبدیل<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />فاصله<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> را فشار دهید</translation>
 <translation id="6455264371803474013">در سایت‌هایی خاص</translation>
@@ -8167,6 +8174,7 @@
 <translation id="656293578423618167">مسیر یا نام فایل خیلی طولانی است. لطفاً با یک نام کوتاه‌تر یا در محل دیگری ذخیره کنید.</translation>
 <translation id="6563002009564846727">‏مشاهده گواهینامه‌های وارد شده از Windows</translation>
 <translation id="6563055593659435495">‏اتصال به تلفن قطع می‌شود. مطمئن شوید تلفنتان همین اطراف باشد و قفل آن باز و بلوتوث و Wi-Fi در آن روشن باشد.</translation>
+<translation id="6564343790052433242">‏برای ایجاد گذرکلید برای <ph name="APP_NAME" />، «مدیر گذرواژه Google» باید روشن باشد</translation>
 <translation id="6565144332292237355">سایت‌ها می‌توانند از این ویژگی برای جستجو کردن و وصل شدن به دستگاه‌های موجود در شبکه محلی شما استفاده کنند</translation>
 <translation id="6568283005472142698">جستجوی زبانه</translation>
 <translation id="6569931898053264308">صرفه‌جویی‌های متوسط</translation>
@@ -10912,7 +10920,7 @@
 <translation id="8413795581997394485">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودن آن‌ها مشخص شده است از شما محافظت می‌کند. هنگامی که از سایتی بازدید می‌کنید، Chrome بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حافظ حریم خصوصی که نشانی IP شما را پنهان کرده است به Google ارسال می‌کند. اگر سایتی کار مشکوکی انجام دهد، نشانی‌های وب کامل و بخش‌هایی از محتوای صفحه نیز ارسال می‌شود.</translation>
 <translation id="8413956290606243087">‏مایلید ChromeVox (صفحه‌خوان داخلی ChromeOS) را فعال کنید؟</translation>
 <translation id="8414396119627470038">ورود به سیستم <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="8415120635186642416">هر چیزی را پژوهش کنید</translation>
+<translation id="8415120635186642416">درباره هر چیزی پژوهش کنید</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />٪ (قاب)</translation>
 <translation id="8417065541337558100">پیش‌نمای دوربین</translation>
 <translation id="8417548266957501132">گذرواژه ولی</translation>
@@ -11440,6 +11448,7 @@
 <translation id="8761945298804995673">این کاربر از قبل وجود دارد</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> شما باید به‌روزرسانی شود</translation>
 <translation id="8763927697961133303">‏دستگاه USB</translation>
+<translation id="8765940060470412555">برداشتن سنجاق حالت خواندن</translation>
 <translation id="8766156860774051068">دست‌چین‌شده توسط شما</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">نمایش همه جستجوهای مربوط به <ph name="QUERY_CLUSTER_NAME" /></translation>

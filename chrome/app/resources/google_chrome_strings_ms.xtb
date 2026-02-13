@@ -251,6 +251,7 @@
 <translation id="3622716124581627104">Kenal pasti perkara atau tempat dan salin atau terjemahkan teks. Apabila anda menggunakan Google Lens, tangkapan skrin halaman dihantar kepada Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Kini lebih mudah menggunakan Chrome dengan Google Account anda dan pada komputer yang dikongsi.</translation>
 <translation id="3635073343384702370">Chrome boleh menyemak kata laluan anda apabila anda menyimpan kata laluan tersebut</translation>
+<translation id="3636970668267555808">Dapatkan akses mudah kepada ciri yang anda ketahui, sukai dan percayai dengan menetapkan Chrome sebagai penyemak imbas lalai anda.</translation>
 <translation id="3667616615096815454">Tidak dapat memasang, aplikasi tidak dikenali oleh pelayan.</translation>
 <translation id="3673813398384385993">Chrome mendapati bahawa "<ph name="EXTENSION_NAME" />" mengandungi perisian hasad</translation>
 <translation id="3697952514309507634">Profil Chrome lain</translation>
@@ -305,7 +306,6 @@
 <translation id="4205939740494406371">Chrome tidak dapat menyemak kata laluan anda. Cuba lagi selepas 24 jam atau <ph name="BEGIN_LINK" />semak kata laluan dalam Google Account anda<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Membatalkan…</translation>
 <translation id="4224210481850767180">Pemasangan telah dibatalkan.</translation>
-<translation id="4230631012078055975">Dapatkan lebih banyak manfaat apabila anda log masuk ke Chrome</translation>
 <translation id="4242034826641750751">Chrome memerlukan kebenaran kamera dan mikrofon untuk laman ini</translation>
 <translation id="424864128008805179">Log keluar daripada Chrome?</translation>
 <translation id="4251615635259297716">Paut data Chrome anda ke akaun ini?</translation>
@@ -603,7 +603,6 @@
 <translation id="7308322188646931570">Chrome memerlukan akses storan untuk memuat turun fail</translation>
 <translation id="7339898014177206373">Tetingkap baharu</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
-<translation id="7379321689415048316">Chrome boleh membuat autolengkap medan sukar yang mungkin terlepas daripada autolengkap standard</translation>
 <translation id="7386878009611068389">Untuk kekal lebih selamat dalam talian dengan pilihan ibu/bapa anda, beralih kepada profil Chrome anda yang sudah digunakan untuk log masuk sebagai <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Anda telah log masuk ke Chrome sebagai <ph name="USER_EMAIL_ADDRESS" />. Sila gunakan akaun yang sama untuk log masuk lagi.</translation>
 <translation id="7412494426921990001">Klik menu Chrome</translation>
@@ -706,7 +705,6 @@
 <translation id="8321888067342493336">Simpan sebagai imej</translation>
 <translation id="8336463659890584292">Apabila laman meminta prapemuatan pautan secara peribadi pada halaman mereka, Chrome menggunakan pelayan Google. Tindakan ini akan menyembunyikan identiti anda daripada laman yang dipramuat, tetapi Google mengetahui laman yang dipramuat.</translation>
 <translation id="8342675569599923794">Fail ini berbahaya, maka Chrome telah menyekatnya.</translation>
-<translation id="8349094670477064572">Anda akan menyimpan dan menggunakan kata laluan dan pelbagai lagi dalam Google Account anda apabila anda log masuk ke Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Tanya Google</translation>
 <translation id="8362914115861174987">Terjemahkan kepada</translation>
 <translation id="8366770919198174997">Mengurangkan prestasi tetapi menjadikan Chrome lebih tahan kepada serangan</translation>

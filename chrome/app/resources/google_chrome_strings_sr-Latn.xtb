@@ -308,7 +308,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4205939740494406371">Chrome ne može da vam proverava lozinke. Probajte ponovo posle 24 sata ili <ph name="BEGIN_LINK" />proverite lozinke na Google nalogu<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Otkazuje se...</translation>
 <translation id="4224210481850767180">Instalacija je otkazana.</translation>
-<translation id="4230631012078055975">Dobijte više kada ste prijavljeni u Chrome</translation>
 <translation id="4242034826641750751">Chrome-u su potrebne dozvole za kameru i mikrofon za ovaj sajt</translation>
 <translation id="424864128008805179">Želite li da se odjavite iz Chrome-a?</translation>
 <translation id="4251615635259297716">Želite li da povežete Chrome podatke sa ovim nalogom?</translation>
@@ -448,6 +447,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="5756509061973259733">Chrome profil sa ovim nalogom već postoji na ovom uređaju</translation>
 <translation id="5759947850379142561">Izaberite bilo koji tekst ili sliku za pretragu pomoću Google objektiva ili pritisnite Escape da biste izašli iz Google objektiva</translation>
 <translation id="5762867845020858790">Dodajte nov Chrome profil da biste razdvojili obeleživače, lozinke i podešavanja.</translation>
+<translation id="5779427581965287859">Podesite Chrome kao podrazumevani pregledač i zakačite ga na traku zadataka</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Nije moguće pokrenuti Chrome. Pokušajte ponovo.</translation>
 <translation id="5809516625706423866">Povezivanje sa internetom nije uspelo. Nije ovlašćen pristup (HTTP 401). Proverite konfiguraciju proksija.</translation>
@@ -605,7 +605,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7308322188646931570">Chrome traži pristup memorijskom prostoru da bi preuzimao datoteke</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7352651011704765696">Došlo je do greške</translation>
-<translation id="7379321689415048316">Chrome može automatski da popunjava teška polja koja standardno automatsko popunjavanje možda neće popuniti</translation>
 <translation id="7386878009611068389">Ako želiš veću bezbednost onlajn uz izbore roditelja, pređi na svoj Chrome profil na kom si već prijavljen/a kao <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Bili ste prijavljeni u Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Koristite isti nalog da biste se ponovo prijavili.</translation>
 <translation id="7412494426921990001">Kliknite na Chrome meni</translation>
@@ -698,6 +697,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8162006532256575008">Koristite Chrome bez naloga</translation>
 <translation id="8177472873527554730">Ne možemo da pronađemo sadržaj na stranici</translation>
 <translation id="8221491193165283816">Obično blokirate obaveštenja. Da biste dozvolili ovom sajtu da vas obaveštava, kliknite ovde.</translation>
+<translation id="8253851811470049684">Otvarajte linkove u Chrome-u iz bilo koje aplikacije i omogućite pristup pregledaču na traci zadataka</translation>
 <translation id="8255190535488645436">Google Chrome koristi kameru i mikrofon.</translation>
 <translation id="8267953129876836456">Chrome je pronašao bezbednosne preporuke koje možete da pregledate</translation>
 <translation id="8286862437124483331">Google Chrome pokušava da prikaže lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
@@ -706,7 +706,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8321888067342493336">Sačuvaj kao sliku</translation>
 <translation id="8336463659890584292">Kada sajt zatraži da privatno predučitava linkove na stranici, Chrome koristi Google servere. Na taj način se vaš identitet krije od predučitanog sajta, ali Google saznaje koji sajtovi su unapred učitani.</translation>
 <translation id="8342675569599923794">Ova datoteka je opasna, pa ju je Chrome blokirao.</translation>
-<translation id="8349094670477064572">Čuvaćete i koristićete lozinke i drugo na Google nalogu svaki put kada ste prijavljeni u Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Pitajte Google</translation>
 <translation id="8362914115861174987">Prevodi na jezik</translation>
 <translation id="8366770919198174997">Smanjuje performanse, ali čini Chrome otpornijim na napade</translation>

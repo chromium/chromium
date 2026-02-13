@@ -655,6 +655,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2071156619270205202">Tato karta není pro číslo virtuální karty vhodná.</translation>
 <translation id="2071852865256799872">Váš prohlížeč spravuje vaše organizace a váš profil spravuje doména <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informace jsou uloženy pouze v zařízení</translation>
 <translation id="2074733626795553847">Odblokovat téma <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Navštívili jste</translation>
 <translation id="2078956195623975415">Hudební a taneční hry</translation>
@@ -1116,6 +1117,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="277133753123645258">Způsob dopravy</translation>
 <translation id="277499241957683684">Chybějící záznam zařízení</translation>
 <translation id="2775884851269838147">První tisková stránka</translation>
+<translation id="277828055419948999">Chromium dokáže automaticky vyplnit i obtížná pole, se kterými si standardní automatické vyplňování nemusí poradit</translation>
 <translation id="2781185443919227679">Pláže a ostrovy</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Příprava na platbu</translation>
@@ -2468,6 +2470,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4950898438188848926">Tlačítko přepínání karet. Stisknutím klávesy Enter přejdete na otevřenou kartu (<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />)</translation>
 <translation id="495170559598752135">Akce</translation>
 <translation id="4953689047182316270">Reagovat na události přístupnosti</translation>
+<translation id="4954505713046251871">Za účelem nabízení návrhů a vylepšování této funkce se adresa URL a obsah stránky sdílí se společností Google</translation>
 <translation id="4954891067389874142">Když si kartu uložíte, budete moct platit rychleji. Údaje o kartě jsou v Peněžence Google zašifrovány.</translation>
 <translation id="4957080528849277028">Tlačítko zobrazení historie Chromu, aktivací můžete v nastavení Chromu zobrazit a spravovat historii prohlížení</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 web}few{+ # weby}many{+ # webu}other{+ # webů}}</translation>
@@ -3969,6 +3972,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7377314930809374926">Pohostinství</translation>
 <translation id="7378594059915113390">Ovládání médií</translation>
 <translation id="7378810950367401542"> / </translation>
+<translation id="7379321689415048316">Chrome dokáže automaticky vyplnit i obtížná pole, se kterými si standardní automatické vyplňování nemusí poradit</translation>
 <translation id="7380398842872229465">10 × 15″</translation>
 <translation id="7381551826960739226">Automatické vyplňování platebních metod je zakázáno, protože tento formulář nepoužívá zabezpečené připojení.</translation>
 <translation id="7388380253839603603">Ceny benzínu a tankování</translation>
@@ -4894,6 +4898,7 @@ Další podrobnosti:
 <translation id="8858065207712248076">Pokud jste heslo organizace <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> použili na jiném webu, doporučujeme vám ho resetovat.</translation>
 <translation id="885906927438988819">Pokud je adresa zadána správně, <ph name="BEGIN_LINK" />zkuste spustit Diagnostiku sítě systému Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografie a digitální umění</translation>
+<translation id="8861482055962701239">Tyto informace se nepodařilo uložit do Peněženky Google. Jsou uložené v Chromu na tomto zařízení. Při příštím použití vám Chrome nabídne uložení do Peněženky.</translation>
 <translation id="8863218129525348270">Pokud příště chcete zaplatit rychleji, uložte si kartu do zařízení</translation>
 <translation id="8864939224504814334">Obleky a formální oděvy</translation>
 <translation id="8866132857352163524">Soundtracky</translation>

@@ -655,6 +655,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2071156619270205202">Dette kortet er ikke kvalifisert for virtuelt kortnummer.</translation>
 <translation id="2071852865256799872">Nettleseren din administreres av organisasjonen din, og profilen din administreres av <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informasjonen er bare lagret på enheten</translation>
 <translation id="2074733626795553847">Opphev blokkeringen av <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Du besøkte nettstedet</translation>
 <translation id="2078956195623975415">Musikk- og dansespill</translation>
@@ -1116,6 +1117,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="277133753123645258">Leveringsmetode</translation>
 <translation id="277499241957683684">Manglende enhetsoppføring</translation>
 <translation id="2775884851269838147">Første utskriftsside</translation>
+<translation id="277828055419948999">Chromium kan autofylle vanskelige felter som standard autofyll kanskje ikke fyller ut</translation>
 <translation id="2781185443919227679">Strender og øyer</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Klargjør for betaling</translation>
@@ -2472,6 +2474,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4950898438188848926">Knappen for å bytte fane – trykk på Enter for å bytte til den åpne fanen, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4953689047182316270">Svar på tilgjengelighetshendelser</translation>
+<translation id="4954505713046251871">For å kunne gi deg forslag og forbedre denne funksjonen deler nettleseren sidens nettadresse og innhold med Google</translation>
 <translation id="4954891067389874142">Når kortet er lagret, kan du betale raskere. Kortdetaljene er kryptert i Google Wallet.</translation>
 <translation id="4957080528849277028">Knappen «Se Chrome-loggen din» – aktiver for å se og administrere nettleserloggen din i Chrome-innstillingene</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 nettsted}other{+ # nettsteder}}</translation>
@@ -3974,6 +3977,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7377314930809374926">Besøkstjenester</translation>
 <translation id="7378594059915113390">Mediekontroller</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome kan autofylle vanskelige felter som standard autofyll kanskje ikke fyller ut</translation>
 <translation id="7380398842872229465">10 x 15 tommer</translation>
 <translation id="7381551826960739226">Automatisk utfylling av betalingsmåter er deaktivert fordi dette skjemaet ikke bruker en sikker tilkobling.</translation>
 <translation id="7388380253839603603">Bensinpriser og drivstoffpåfylling</translation>
@@ -4898,6 +4902,7 @@ Mer informasjon:
 <translation id="8858065207712248076">Chrome anbefaler at du tilbakestiller passordet ditt for <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> hvis du også har brukt det på andre nettsteder.</translation>
 <translation id="885906927438988819">Hvis stavemåten er korrekt, kan du <ph name="BEGIN_LINK" />prøve å kjøre Windows Nettverksdiagnose<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografi og digitalkunst</translation>
+<translation id="8861482055962701239">Kunne ikke lagre denne informasjonen i Google Wallet. Den ble lagret i Chrome på denne enheten i stedet. Chrome tilbyr å lagre den i Wallet neste gang du bruker det.</translation>
 <translation id="8863218129525348270">Lagre kortet på enheten din for å betale raskere neste gang</translation>
 <translation id="8864939224504814334">Dresser og forretningsantrekk</translation>
 <translation id="8866132857352163524">Lydspor</translation>

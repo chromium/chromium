@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">Bu kart virtual kart nömrəsi üçün uyğun deyil.</translation>
 <translation id="2071852865256799872">Brauzeri təşkilat, profili isə <ph name="PROFILE_DOMAIN" /> idarə edir</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Məlumat yalnız cihazda yadda saxlanıldı</translation>
 <translation id="2074733626795553847">Blokdan çıxarın: <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Daxil olmusunuz</translation>
 <translation id="2078956195623975415">Musiqi və Rəqs oyunları</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">Göndərmə üsulu</translation>
 <translation id="277499241957683684">Çatmayan cihaz qeydi</translation>
 <translation id="2775884851269838147">İlk çap səhifəsi</translation>
+<translation id="277828055419948999">Chromium standart avtodoldurmanın ötürə biləcəyi çətin sahələri avtomatik doldura bilər</translation>
 <translation id="2781185443919227679">Çimərlik və Adalar</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Ödəməyə hazırlanır</translation>
@@ -2468,6 +2470,7 @@
 <translation id="4950898438188848926">Keçid düyməsinə klikləyin, açıq <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> tabına keçmək üçün "Daxil olun" düyməsinə basın</translation>
 <translation id="495170559598752135">Fəaliyyətlər</translation>
 <translation id="4953689047182316270">Əlçatımlılıq Tədbirlərinə cavab vermək</translation>
+<translation id="4954505713046251871">Təkliflər vermək və bu funksiyanı təkmilləşdirmək üçün səhifənin URL-i və kontenti Google ilə paylaşılır</translation>
 <translation id="4954891067389874142">Kartınızı yadda saxlayaraq daha sürətlə ödəyin. Kartın təfərrüatları Google Pulqabıda şifrələnir.</translation>
 <translation id="4957080528849277028">"Chrome tarixçəsinə baxın" düyməsi, aktivləşdirərək Chrome ayarlarında brauzer tarixçənizə baxıb, onu idarə edin</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 sayt}other{+ # sayt}}</translation>
@@ -3970,6 +3973,7 @@
 <translation id="7377314930809374926">Qonaqlama Sənayesi</translation>
 <translation id="7378594059915113390">Media Nəzarətləri</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome standart avtodoldurmanın ötürə biləcəyi çətin sahələri avtomatik doldura bilər</translation>
 <translation id="7380398842872229465">10 x 15 düym</translation>
 <translation id="7381551826960739226">Bu forma güvənli bağlantı istifadə etmədiyinə görə avtomatik ödəniş metodu doldurma deaktivdir.</translation>
 <translation id="7388380253839603603">Yanacaq Qiymətləri və Avtomobillərin Doldurulması</translation>
@@ -4894,6 +4898,7 @@
 <translation id="8858065207712248076">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chrome <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> parolunuzu sıfırlamağı tövsiyə edir.</translation>
 <translation id="885906927438988819">Yazılış doğrudursa, <ph name="BEGIN_LINK" />Windows Şəbəkə Diaqnostikasını icra edin<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotoqrafiya və Rəqəmsal İncəsənət</translation>
+<translation id="8861482055962701239">Məlumat Google Pulqabıda yadda saxlanılmadı. Bu cihazda Chrome-da yadda saxlanıldı. Növbəti dəfə istifadə etdiyiniz zaman Chrome onu Pulqabıda yadda saxlamağı təklif edəcək.</translation>
 <translation id="8863218129525348270">Gələn dəfə cəld ödəniş üçün kartı cihazda yadda saxlayın</translation>
 <translation id="8864939224504814334">Kostyum və biznes geyimləri</translation>
 <translation id="8866132857352163524">Saundtreklər</translation>

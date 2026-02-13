@@ -354,6 +354,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1221825588892235038">Alleen selectie</translation>
 <translation id="1222835797152767346">Stel een pincode in om makkelijker in te loggen</translation>
 <translation id="1223484782328004593">Je hebt een licentie nodig voor <ph name="APP_NAME" /></translation>
+<translation id="1223498995510244364">Samenvatten</translation>
 <translation id="1223853788495130632">Je beheerder raadt een specifieke waarde aan voor deze instelling.</translation>
 <translation id="1225177025209879837">Je verzoek wordt verwerkt...</translation>
 <translation id="1227107020813934021">Documentscanners zoeken</translation>
@@ -1338,6 +1339,8 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1891362123137972260">Er is zeer weinig schijfruimte beschikbaar. Maak ruimte vrij.</translation>
 <translation id="189210018541388520">Openen in volledig scherm</translation>
 <translation id="1892341345406963517">Hallo <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Klik op <ph name="BUTTON_LABEL" /> hieronder
+2. Klik op <ph name="BUTTON_2" /> in je Windows-instellingen</translation>
 <translation id="189358972401248634">Andere talen</translation>
 <translation id="1895658205118569222">Uitschakeling</translation>
 <translation id="1896043844785689584">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor rechtsonder op het toetsenbord aanraken. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op deze <ph name="DEVICE_TYPE" /> staan.</translation>
@@ -3152,6 +3155,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3105820656234755131">Wachtwoord geüpdatet</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Site gebruikt Bluetooth</translation>
+<translation id="3108122610701115301">Als standaard instellen</translation>
 <translation id="3108931485517391283">Kan niet ontvangen</translation>
 <translation id="3108957152224931571">Markeringskleur</translation>
 <translation id="3109206895301430738">Opgeslagen tabbladgroepen</translation>
@@ -5862,7 +5866,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="495170559598752135">Acties</translation>
 <translation id="4951966678293618079">Nooit wachtwoorden opslaan voor deze site</translation>
 <translation id="4953808748584563296">Standaard oranje avatar</translation>
-<translation id="4954505713046251871">De URL en content van de pagina worden gedeeld met Google om suggesties te bieden en deze functie te verbeteren</translation>
 <translation id="4954652437333037880">Archief</translation>
 <translation id="4955707703665801001">Zichtbaarheid voor <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Je pincode kiezen</translation>
@@ -6201,6 +6204,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5191251636205085390">Bekijk meer informatie over en beheer nieuwe technologieën die cookies van derden willen vervangen</translation>
 <translation id="519185197579575131">QT gebruiken</translation>
 <translation id="5192062846343383368">Open de Family Link-app om de instellingen voor toezicht te bekijken</translation>
+<translation id="5193602404493965468">*<ph name="FIELD_LIST" /> is vereist</translation>
 <translation id="5193978546360574373">Hiermee wordt de toegang tot Google Drive op deze Chromebook ingetrokken, waaronder toegang tot alle bestanden die offline beschikbaar zijn gemaakt</translation>
 <translation id="5193988420012215838">Naar klembord gekopieerd</translation>
 <translation id="5194256020863090856">Dit heeft alleen invloed op incognitovensters</translation>
@@ -6342,6 +6346,7 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5288106344236929384">Meer acties, toegangscodeopties voor <ph name="USERNAME" /> op <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Gesloten tabblad opni&amp;euw openen</translation>
 <translation id="5290020561438336792">Pc en cast-apparaat op verschillende wifi-netwerken (bijv. 2,4 GHz en 5 GHz)</translation>
+<translation id="5290322819358431297">Laat je wachtwoorden invullen</translation>
 <translation id="52912272896845572">Privésleutelbestand is ongeldig.</translation>
 <translation id="529175790091471945">Dit apparaat formatteren</translation>
 <translation id="529296195492126134">Kortstondige modus wordt niet ondersteund. Neem contact op met je beheerder.</translation>
@@ -6959,6 +6964,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5734697361979786483">Fileshare toevoegen</translation>
 <translation id="573520097779121706">Gebruik de toetsen 7, 8, 9, u, o, j, k, l om de cursor te verplaatsen</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Deze gegevens of je apparaat voldoen niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.}=1{Dit bestand of je apparaat voldoet niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.}other{Deze bestanden voldoen niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.}}</translation>
+<translation id="5736345781200955827">Maak, bewaar en beheer je wachtwoorden zodat je makkelijk kunt inloggen bij sites en apps met Chrome</translation>
 <translation id="5738093759615225354">Je hebt deze toegangscode nodig om in te loggen op je computer</translation>
 <translation id="5738386565827477765">Audioapparaat</translation>
 <translation id="5739017626473506901">Log in om <ph name="USER_NAME" /> te helpen een schoolaccount toe te voegen</translation>
@@ -7211,6 +7217,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5901089233978050985">Overschakelen naar tabblad vastleggen</translation>
 <translation id="5901494423252125310">Printerklep is open</translation>
 <translation id="5901630391730855834">Geel</translation>
+<translation id="5902400038326841449">Google Wachtwoordmanager staat uit</translation>
 <translation id="5902892210366342391">Waarschuwingen tonen voordat je in de incognitomodus naar niet-beveiligde sites gaat</translation>
 <translation id="5904614460720589786">Kan <ph name="APP_NAME" /> niet instellen vanwege een configuratieprobleem. Neem contact op met je beheerder. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Blijven toestaan dat deze site ID's gebruikt om beveiligde content af te spelen</translation>
@@ -7991,6 +7998,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> voltooid</translation>
 <translation id="6452961788130242735">Netwerkprobleem of onjuist domein</translation>
 <translation id="6453191633103419909">Weergavekwaliteit van tabblad/scherm</translation>
+<translation id="6453306703004115497">Vertaald naar het <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Alle tabbladen groeperen</translation>
 <translation id="6453921811609336127">Als je wilt overschakelen naar de volgende invoermethode, druk je op <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />spatiebalk<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Op specifieke sites</translation>
@@ -8149,6 +8157,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="656293578423618167">Het bestandspad of de bestandsnaam is te lang. Sla op met een kortere naam of op een andere locatie.</translation>
 <translation id="6563002009564846727">Geïmporteerde certificaten van Windows bekijken</translation>
 <translation id="6563055593659435495">Kan de verbinding met je telefoon niet in stand houden. Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
+<translation id="6564343790052433242">Google Wachtwoordmanager moet aanstaan om een toegangssleutel voor <ph name="APP_NAME" /> te maken</translation>
 <translation id="6565144332292237355">Sites kunnen deze functie gebruiken om apparaten in je lokale netwerk te zoeken en verbinding ermee te maken</translation>
 <translation id="6568283005472142698">Zoeken op tabbladen</translation>
 <translation id="6569931898053264308">Gemiddelde besparingen</translation>
@@ -11420,6 +11429,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="8761945298804995673">Deze gebruiker bestaat al</translation>
 <translation id="8762886931014513155">Je <ph name="DEVICE_TYPE" /> moet worden geüpdatet</translation>
 <translation id="8763927697961133303">USB-apparaat</translation>
+<translation id="8765940060470412555">Leesmodus losmaken</translation>
 <translation id="8766156860774051068">Beheerd door jou</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Alle zoekopdrachten voor <ph name="QUERY_CLUSTER_NAME" /> tonen</translation>

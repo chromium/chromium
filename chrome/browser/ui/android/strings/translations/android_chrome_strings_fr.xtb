@@ -299,6 +299,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Voir <ph name="TABS_COUNT_ONE" /> onglet}one{Voir <ph name="TABS_COUNT_MANY" /> onglet}other{Voir <ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="2297822946037605517">Partager cette page</translation>
 <translation id="230115972905494466">Aucun appareil compatible détecté</translation>
+<translation id="2316129865977710310">Non merci</translation>
 <translation id="2318045970523081853">Appuyer pour passer un appel</translation>
 <translation id="2323763861024343754">Données de site stockées</translation>
 <translation id="2328474416100889417">Tout le monde perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", et tous les liens d'invitation seront désactivés</translation>
@@ -960,6 +961,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5075939510584558547">Enregistrer sans chiffrement</translation>
 <translation id="5078638979202084724">Ajouter tous les onglets aux favoris</translation>
 <translation id="5085038751173179818">Connectez-vous à ce site et à Chrome pour accéder sur tous vos appareils à vos favoris et bien plus</translation>
+<translation id="5088347662971855383">Épingler Gemini</translation>
 <translation id="5091199029769593641">Vous verrez bientôt les stories de <ph name="SITE_NAME" /> quand vous ouvrirez un onglet. Les sites que vous suivez seront enregistrés dans votre compte Google. Vous pourrez les gérer dans les paramètres Discover.</translation>
 <translation id="509429900233858213">Une erreur s'est produite.</translation>
 <translation id="5096775069898886423">Recevoir un avertissement avant d'accéder aux sites qui ne prennent pas en charge les connexions sécurisées</translation>
@@ -1341,6 +1343,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}one{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}other{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}}</translation>
 <translation id="6649642165559792194">Prévisualiser l'image <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="666731172850799929">Ouvrir dans <ph name="APP_NAME" /></translation>
+<translation id="6669390930482049506">M'avertir</translation>
 <translation id="6671495933530132209">Copier l'image</translation>
 <translation id="6672697278890207089">Saisir votre phrase secrète</translation>
 <translation id="6672917148207387131">Ajouter <ph name="DOMAIN" /></translation>

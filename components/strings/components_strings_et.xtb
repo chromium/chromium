@@ -655,6 +655,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2071156619270205202">Seda kaarti ei saa virtuaalkaardi numbrina kasutada.</translation>
 <translation id="2071852865256799872">Teie brauserit haldab teie organisatsioon ja teie profiili haldab <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Teave salvestati ainult seadmesse</translation>
 <translation id="2074733626795553847">Deblokeeri <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Külastasite</translation>
 <translation id="2078956195623975415">Muusika- ja tantsumängud</translation>
@@ -1116,6 +1117,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="277133753123645258">Tarneviis</translation>
 <translation id="277499241957683684">Seadme kirje puudub</translation>
 <translation id="2775884851269838147">Esimesena prinditav leht</translation>
+<translation id="277828055419948999">Chromium saab automaatselt täita keerukaid välju, mida tavaline automaattäide ei pruugi tuvastada.</translation>
 <translation id="2781185443919227679">Rannad ja saared</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Maksmise ettevalmistamine</translation>
@@ -2472,6 +2474,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4950898438188848926">Vahelehe vahetamise nupp, vajutage sisestusklahvi avatud vahelehe aktiveerimiseks, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Toimingud</translation>
 <translation id="4953689047182316270">Juurdepääsetavuse sündmustele vastamine</translation>
+<translation id="4954505713046251871">Soovituste pakkumiseks ja selle funktsiooni täiustamiseks jagatakse lehe URL-i ja sisu Google'iga</translation>
 <translation id="4954891067389874142">Kui teie kaart on salvestatud, saate kiiremini maksta. Kaardi andmed on Google Walletis krüpteeritud.</translation>
 <translation id="4957080528849277028">Nupp Chrome'i ajaloo vaatamine, aktiveerige nupp, et Chrome'i seadetes oma sirvimisajalugu vaadata ja hallata</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{ja veel üks sait}other{ja veel # saiti}}</translation>
@@ -3975,6 +3978,7 @@ Lisateave:
 <translation id="7377314930809374926">Võõrustamistööstus</translation>
 <translation id="7378594059915113390">Meedia juhtnupud</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome saab automaatselt täita keerukaid välju, mida tavaline automaattäide ei pruugi tuvastada.</translation>
 <translation id="7380398842872229465">10 × 15 tolli</translation>
 <translation id="7381551826960739226">Automaatne makseviiside täitmine on keelatud, sest see vorm ei kasuta turvalist ühendust.</translation>
 <translation id="7388380253839603603">Kütusehinnad ja sõidukikütus</translation>
@@ -4899,6 +4903,7 @@ Lisateave:
 <translation id="8858065207712248076">Chromium soovitab teil organisatsiooni <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> parooli lähtestada, kui kasutasite seda ka muudel saitidel.</translation>
 <translation id="885906927438988819">Kui õigekirjavigu pole, <ph name="BEGIN_LINK" />käitage Windowsi võrgudiagnostika<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotograafia ja digikunst</translation>
+<translation id="8861482055962701239">Seda teavet ei saanud teie Google Walletisse salvestada. See salvestati selles seadmes hoopis Chrome'i. Chrome pakub järgmisel korral, kui seda kasutate, selle Walletisse salvestamist.</translation>
 <translation id="8863218129525348270">Järgmine kord kiiremini maksmiseks salvestage oma kaart seadmesse</translation>
 <translation id="8864939224504814334">Ülikonnad ja ametlik riietus</translation>
 <translation id="8866132857352163524">Filmimuusika</translation>

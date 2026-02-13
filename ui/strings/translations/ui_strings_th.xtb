@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
 <translation id="1450753235335490080">แชร์<ph name="CONTENT_TYPE" />ไม่สำเร็จ</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 เดือนที่ผ่านมา}other{# เดือนที่ผ่านมา}}</translation>
+<translation id="1591017414891297549">ตัวอย่าง</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 นาทีกับอีก }other{# นาทีกับอีก }}</translation>
 <translation id="1643823602425662293">การแจ้งเตือน</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/วินาที</translation>
 <translation id="8725488761726303204">และอีก <ph name="NUMBER" /> รายการ</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
+<translation id="8741385002816058621">ฟีเจอร์นี้เป็นเวอร์ชันตัวอย่าง</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 ชม.}other{# ชม.}}</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
 <translation id="8841375032071747811">ปุ่มกลับ</translation>

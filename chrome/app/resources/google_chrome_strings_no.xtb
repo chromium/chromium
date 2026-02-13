@@ -304,7 +304,6 @@
 <translation id="4205939740494406371">Chrome kan ikke sjekke passordene dine. Prøv på nytt om 24 timer, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Avbryter …</translation>
 <translation id="4224210481850767180">Installasjonen er avbrutt.</translation>
-<translation id="4230631012078055975">Få mer når du er logget på Chrome</translation>
 <translation id="4242034826641750751">Chrome trenger kamera- og mikrofontillatelse for dette nettstedet</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4251615635259297716">Vil du koble Chrome-dataene dine til denne kontoen?</translation>
@@ -598,7 +597,6 @@
 <translation id="7308322188646931570">Chrome må ha lagringstilgang for å laste ned filer</translation>
 <translation id="7339898014177206373">Nytt vindu</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
-<translation id="7379321689415048316">Chrome kan autofylle vanskelige felter som standard autofyll kanskje ikke fyller ut</translation>
 <translation id="7386878009611068389">For å holde deg tryggere på nettet med innstillingene som forelderen din har valgt, bytt til Chrome-profilen din der du allerede er logget på som <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Du ble logget på Chrome som <ph name="USER_EMAIL_ADDRESS" />. Du må logge deg på igjen med samme konto.</translation>
 <translation id="7412494426921990001">Klikk på Chrome-menyen</translation>
@@ -700,7 +698,6 @@
 <translation id="8321888067342493336">Lagre som bilde</translation>
 <translation id="8336463659890584292">Når nettsteder ber om privat forhåndslasting av linker på sidene sine, bruker Chrome tjenerne til Google. Dermed skjules identiteten din for det forhåndslastede nettstedet, men Google får vite hvilke nettsteder som blir forhåndslastet.</translation>
 <translation id="8342675569599923794">Denne filen er farlig, så Chrome har blokkert den.</translation>
-<translation id="8349094670477064572">Du lagrer og bruker passord med mer i Google-kontoen din når du er logget på Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Spør Google</translation>
 <translation id="8362914115861174987">Oversett til</translation>
 <translation id="8366770919198174997">Reduserer ytelsen, men gjør Chrome mer motstandsdyktig mot angrep</translation>

@@ -308,7 +308,6 @@
 <translation id="4205939740494406371">Chrome non puido comprobar os teus contrasinais. Téntao de novo dentro de 24 horas ou <ph name="BEGIN_LINK" />comproba os contrasinais na túa Conta de Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Cancelando…</translation>
 <translation id="4224210481850767180">Cancelouse a instalación.</translation>
-<translation id="4230631012078055975">Fai máis cousas cando teñas a sesión iniciada en Chrome</translation>
 <translation id="4242034826641750751">Chrome necesita permiso de acceso á cámara e ao micrófono para este sitio</translation>
 <translation id="424864128008805179">Queres pechar sesión en Chrome?</translation>
 <translation id="4251615635259297716">Queres ligar os teus datos de Chrome con esta conta?</translation>
@@ -448,6 +447,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5756509061973259733">Neste dispositivo xa existe un perfil de Chrome con esta conta</translation>
 <translation id="5759947850379142561">Selecciona calquera texto ou imaxe que queiras buscar con Google Lens ou preme Escape para saír da función</translation>
 <translation id="5762867845020858790">Engade un novo perfil de Chrome para manter separados os marcadores, os contrasinais e as opcións de configuración.</translation>
+<translation id="5779427581965287859">Define Chrome como o navegador predeterminado e fíxao na barra de tarefas</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> (versión experimental de Google Chrome)</translation>
 <translation id="5804318322022881572">Non se puido iniciar Chrome. Téntao de novo.</translation>
 <translation id="5809516625706423866">Non se puido establecer conexión con Internet. Erro: HTTP 401 (acceso non autorizado). Revisa a configuración do proxy.</translation>
@@ -605,7 +605,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7308322188646931570">Chrome necesita acceder ao almacenamento para descargar ficheiros</translation>
 <translation id="7339898014177206373">Nova ventá</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
-<translation id="7379321689415048316">Chrome pode encher automaticamente campos difíciles que a función de autocompletar estándar podería pasar por alto</translation>
 <translation id="7386878009611068389">Para protexerte en liña coas eleccións dos teus pais, cambia ao teu perfil de Chrome, onde xa tes a sesión iniciada como <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Iniciaches sesión en Chrome como <ph name="USER_EMAIL_ADDRESS" />. Utiliza a mesma conta para iniciar sesión de novo.</translation>
 <translation id="7412494426921990001">Fai clic no Menú de Chrome</translation>
@@ -698,6 +697,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8162006532256575008">Usar Chrome sen ningunha conta</translation>
 <translation id="8177472873527554730">Non se puido atopar contido na páxina</translation>
 <translation id="8221491193165283816">Adoitas bloquear as notificacións. Para permitir que este sitio che envíe notificacións, fai clic aquí.</translation>
+<translation id="8253851811470049684">Abre ligazóns en Chrome desde calquera aplicación e accede facilmente ao navegador desde a barra de tarefas</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando a túa cámara e micrófono.</translation>
 <translation id="8267953129876836456">Chrome atopou algunhas recomendacións de seguranza para que as revises</translation>
 <translation id="8286862437124483331">Google Chrome está tentando mostrar contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
@@ -706,7 +706,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8321888067342493336">Gardar como imaxe</translation>
 <translation id="8336463659890584292">Cando un sitio solicita precargar ligazóns da súa páxina de forma privada, Chrome usa os servidores de Google. Deste xeito, ocúltaselle a túa identidade ao sitio precargado, pero Google descobre os sitios que se precargan.</translation>
 <translation id="8342675569599923794">Este ficheiro é perigoso, así que Chrome bloqueouno.</translation>
-<translation id="8349094670477064572">Gardarás e usarás os contrasinais e outros datos na túa Conta de Google sempre que teñas a sesión iniciada en Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Preguntarlle a Google</translation>
 <translation id="8362914115861174987">Traducir ao</translation>
 <translation id="8366770919198174997">Reduce o rendemento, pero fai que Chrome sexa máis resistente aos ataques</translation>

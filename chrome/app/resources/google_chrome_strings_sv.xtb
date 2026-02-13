@@ -308,7 +308,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4205939740494406371">Chrome kan inte kontrollera dina lösenord. Försök igen om 24 timmar eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Avbryter …</translation>
 <translation id="4224210481850767180">Installationen har avbrutits.</translation>
-<translation id="4230631012078055975">Få mer när du är inloggad i Chrome</translation>
 <translation id="4242034826641750751">Du behöver ge Chrome kamera- och mikrofonbehörighet för den här webbplatsen</translation>
 <translation id="424864128008805179">Vill du logga ut från Chrome?</translation>
 <translation id="4251615635259297716">Koppla dina uppgifter i Chrome till det här kontot</translation>
@@ -448,6 +447,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5756509061973259733">Det finns redan en Chrome-profil med detta konto på enheten</translation>
 <translation id="5759947850379142561">Välj text eller bild att söka efter med Google Lens eller tryck på Escape för att avsluta Google Lens</translation>
 <translation id="5762867845020858790">Lägg till en ny Chrome-profil för att hålla isär bokmärken, lösenord och inställningar.</translation>
+<translation id="5779427581965287859">Ställ in Chrome som standard och fäst den på aktivitetsfältet</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Det gick inte att starta Chrome. Försök igen.</translation>
 <translation id="5809516625706423866">Det går inte att ansluta till internet. HTTP 401 Åtkomst nekad. Kontrollera proxykonfigurationen.</translation>
@@ -605,7 +605,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7308322188646931570">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
-<translation id="7379321689415048316">Chrome kan fylla i svåra fält som standardautofyll kanske missar</translation>
 <translation id="7386878009611068389">Du kan skydda dig online med dina föräldrars val genom att byta till din Chrome-profil där du redan är inloggad som <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Du var inloggad i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>
 <translation id="7412494426921990001">Klicka på Chrome-menyn</translation>
@@ -698,6 +697,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8162006532256575008">Använd Chrome utan konto</translation>
 <translation id="8177472873527554730">Det gick inte att hitta innehåll på sidan</translation>
 <translation id="8221491193165283816">Du blockerar aviseringar. Klicka här om du vill tillåta aviseringar från webbplatsen.</translation>
+<translation id="8253851811470049684">Öppna länkar från appar i Chrome och ha webbläsaren tillgänglig i aktivitetsfältet</translation>
 <translation id="8255190535488645436">Google Chrome använder din kamera och mikrofon.</translation>
 <translation id="8267953129876836456">Chrome har hittat några säkerhetsrekommendationer som du bör granska</translation>
 <translation id="8286862437124483331">Skriv ditt Windows-lösenord om du vill tillåta att lösenord visas i Google Chrome.</translation>
@@ -706,7 +706,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8321888067342493336">Spara som bild</translation>
 <translation id="8336463659890584292">När en webbplats frågar om dess länkar ska läsas in privat i förväg använder Chrome Googles servrar. Det innebär att din identitet döljs från den förinlästa webbplatsen, men Google får reda på vilka webbplatser som läses in i förväg.</translation>
 <translation id="8342675569599923794">Filen är farlig och har blockerats av Chrome.</translation>
-<translation id="8349094670477064572">Du sparar och använder lösenord med mera i Google-kontot när du är inloggad i Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Fråga Google</translation>
 <translation id="8362914115861174987">Översätt till</translation>
 <translation id="8366770919198174997">Minskar prestandan men gör Chrome mer motståndskraftig mot attacker</translation>

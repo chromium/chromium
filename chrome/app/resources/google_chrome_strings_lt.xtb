@@ -255,6 +255,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3622716124581627104">Nustatykite daiktus ar vietas ir kopijuokite arba verskite tekstą. Kai naudojate „Google Lens“, puslapio ekrano kopija siunčiama „Google“. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Dabar galite lengviau naudoti „Chrome“ naudodami „Google“ paskyrą ir bendrinamus kompiuterius.</translation>
 <translation id="3635073343384702370">„Chrome“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote</translation>
+<translation id="3636970668267555808">Lengvai pasiekite žinomas, mėgstamas ir patikimas funkcijas nustatę „Chrome“ kaip numatytąją naršyklę.</translation>
 <translation id="3667616615096815454">Nepavyko įdiegti, nes programa nežinoma serveriui.</translation>
 <translation id="3673813398384385993">„Chrome“ aptiko kenkėjišką programą plėtinyje „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="3697952514309507634">Kiti „Chrome“ profiliai</translation>
@@ -309,7 +310,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4205939740494406371">„Chrome“ negali patikrinti jūsų slaptažodžių. Bandykite dar kartą po 24 val. arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Atšaukiama...</translation>
 <translation id="4224210481850767180">Diegimas atšauktas.</translation>
-<translation id="4230631012078055975">Gaukite daugiau prisijungę prie „Chrome“</translation>
 <translation id="4242034826641750751">„Chrome“ reikalingi fotoaparato ir mikrofono leidimai šioje svetainėje</translation>
 <translation id="424864128008805179">Atsijungti nuo „Chrome“?</translation>
 <translation id="4251615635259297716">Susisieti „Chrome“ duomenis su šia paskyra?</translation>
@@ -611,7 +611,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7308322188646931570">„Chrome“ reikia prieigos prie saugyklos, kad būtų galima atsisiųsti failus</translation>
 <translation id="7339898014177206373">Naujas langas</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
-<translation id="7379321689415048316">„Chrome“ gali automatiškai užpildyti sudėtingus laukus, kurių standartinė automatinio pildymo funkcija gali nepastebėti</translation>
 <translation id="7386878009611068389">Jei norite būti saugesni internete naudodami vieno iš tėvų pasirinkimus, perjunkite į savo „Chrome“ profilį, kuriame jau esate prisijungę kaip <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Buvote prisijungę prie „Chrome“ kaip <ph name="USER_EMAIL_ADDRESS" />. Prisijungdami vėl naudokite tą pačią paskyrą.</translation>
 <translation id="7412494426921990001">Spustelėkite „Chrome“ meniu</translation>
@@ -714,7 +713,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8321888067342493336">Išsaugoti kaip vaizdą</translation>
 <translation id="8336463659890584292">Kai svetainė paprašo privačiai iš anksto įkelti nuorodas savo puslapyje, „Chrome“ naudoja „Google“ serverius. Taip slepiama jūsų tapatybė nuo iš anksto įkeltos svetainės, bet „Google“ sužino, kokios svetainės įkeliamos iš anksto.</translation>
 <translation id="8342675569599923794">Šis failas pavojingas, todėl „Chrome“ jį užblokavo.</translation>
-<translation id="8349094670477064572">Išsaugosite ir naudosite slaptažodžius bei kitus duomenis „Google“ paskyroje, kai būsite prisijungę prie „Chrome“. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Klausimai „Google“</translation>
 <translation id="8362914115861174987">Versti į</translation>
 <translation id="8366770919198174997">Sumažinamas našumas, bet „Chrome“ tampa atsparesnė atakoms</translation>

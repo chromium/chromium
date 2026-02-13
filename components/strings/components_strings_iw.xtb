@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">הכרטיס הזה לא עומד בדרישות לקבלת מספר כרטיס וירטואלי.</translation>
 <translation id="2071852865256799872">הדפדפן מנוהל על ידי הארגון שלך והפרופיל שלך מנוהל על ידי <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">המידע נשמר במכשיר בלבד</translation>
 <translation id="2074733626795553847">ביטול החסימה של <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">ביקרת כאן</translation>
 <translation id="2078956195623975415">משחקי מוזיקה וריקוד</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">שיטת משלוח</translation>
 <translation id="277499241957683684">חסרה רשומת מכשיר</translation>
 <translation id="2775884851269838147">דף מודפס ראשון</translation>
+<translation id="277828055419948999">‏‫Chromium יכול למלא אוטומטית שדות בעייתיים שהמילוי האוטומטי הרגיל עלול לפספס</translation>
 <translation id="2781185443919227679">חופים ואיים</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">מתכוננים לתשלום בקופה</translation>
@@ -2476,6 +2478,7 @@ Del</translation>
 <translation id="4950898438188848926">‏כפתור החלפת כרטיסיות, יש ללחוץ על Enter כדי לעבור לכרטיסייה הפתוחה, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">פעולות</translation>
 <translation id="4953689047182316270">להגיב לאירועי נגישות</translation>
+<translation id="4954505713046251871">‏כדי לקבל הצעות ולשפר את התכונה הזו, כתובת ה-URL ותוכן הדף יישלחו אל Google</translation>
 <translation id="4954891067389874142">‏אפשר לשלם מהר יותר עם כרטיס שנשמר. פרטי הכרטיס מוצפנים ב-Google Wallet.</translation>
 <translation id="4957080528849277028">‏הכפתור להצגת ההיסטוריה ב-Chrome, מפעילים אותו כדי להציג ולנהל את היסטוריית הגלישה בהגדרות Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{ועוד אתר אחד}one{ועוד # אתרים}two{ועוד # אתרים}other{ועוד # אתרים}}</translation>
@@ -3980,6 +3983,7 @@ Del</translation>
 <translation id="7377314930809374926">תעשיית המלונאות והאירוח</translation>
 <translation id="7378594059915113390">פקדי מדיה</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">‏‫Chrome יכול למלא אוטומטית שדות בעייתיים שהמילוי האוטומטי הרגיל עלול לפספס</translation>
 <translation id="7380398842872229465">‏10x15 אינץ'</translation>
 <translation id="7381551826960739226">המילוי האוטומטי של אמצעי התשלום מושבת כי הטופס הזה לא משתמש בחיבור מאובטח.</translation>
 <translation id="7388380253839603603">מחירי דלק ותדלוק</translation>
@@ -4904,6 +4908,7 @@ Del</translation>
 <translation id="8858065207712248076">‏אם הזנת את הסיסמה של <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> באתרים אחרים, ההמלצה של Chrome היא לאפס אותה.</translation>
 <translation id="885906927438988819">‏אם האיות תקין, <ph name="BEGIN_LINK" />יש לנסות להפעיל את אבחון הרשת של Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">אומנות הצילום ואומנות דיגיטלית</translation>
+<translation id="8861482055962701239">‏המידע הזה לא נשמר ב-Google Wallet. במקום זאת, הוא נשמר ב-Chrome במכשיר הזה. בפעם הבאה שייעשה שימוש במידע, Chrome יציע לשמור אותו ב-Google Wallet.</translation>
 <translation id="8863218129525348270">רוצה לשלם מהר יותר בפעם הבאה? כדאי לשמור את פרטי הכרטיס במכשיר</translation>
 <translation id="8864939224504814334">חליפות ערב ולבוש עסקי</translation>
 <translation id="8866132857352163524">פסקולים</translation>

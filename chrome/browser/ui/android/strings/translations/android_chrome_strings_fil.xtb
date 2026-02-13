@@ -299,6 +299,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Tingnan ang <ph name="TABS_COUNT_ONE" /> tab}one{Tingnan ang <ph name="TABS_COUNT_MANY" /> tab}other{Tingnan ang <ph name="TABS_COUNT_MANY" /> na tab}}</translation>
 <translation id="2297822946037605517">Ibahagi ang pahinang ito</translation>
 <translation id="230115972905494466">Walang nahanap na tugmang device</translation>
+<translation id="2316129865977710310">Hindi, salamat</translation>
 <translation id="2318045970523081853">I-tap para tumawag</translation>
 <translation id="2323763861024343754">Storage ng site</translation>
 <translation id="2328474416100889417">Mawawalan kaagad ng access ang lahat sa grupo ng tab na “<ph name="GROUP_NAME" />,” at mao-off ang lahat ng link ng imbitasyon</translation>
@@ -475,6 +476,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2992473221983447149">Mga paglalarawan ng larawan</translation>
 <translation id="2996291259634659425">Gumawa ng passphrase</translation>
 <translation id="2996809686854298943">Kinakailangan ang URL</translation>
+<translation id="3008916997590006706">I-tap ang I-save para madaling ma-access ang password na ito sa susunod na mag-sign in ka</translation>
 <translation id="3024215143424744261">Nakasara ang mga preference sa Reading mode</translation>
 <translation id="3026955690410463085">Kasama ang link</translation>
 <translation id="3027644380269727216">Batay sa iyong aktibidad sa isang site. Naka-on ang setting na ito.</translation>
@@ -960,6 +962,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5075939510584558547">I-save nang walang pag-encrypt</translation>
 <translation id="5078638979202084724">I-bookmark ang lahat ng mga tab</translation>
 <translation id="5085038751173179818">Mag-sign in sa site na ito at sa Chrome para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo</translation>
+<translation id="5088347662971855383">I-pin ang Gemini</translation>
 <translation id="5091199029769593641">Hindi magtatagal at makakakita ka ng mga kuwento mula sa <ph name="SITE_NAME" /> kapag nagbukas ka ng bagong tab. Mase-save sa iyong Google account ang mga site na sinusubaybayan mo. Puwede mong pamahalaan ang mga ito sa mga setting ng Discover.</translation>
 <translation id="509429900233858213">May naganap na error.</translation>
 <translation id="5096775069898886423">Para sa mga site na hindi sinusuportahan ang mga secure na koneksyon, mabigyan ng babala bago bisitahin ang site</translation>
@@ -1004,6 +1007,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5267572070504076962">I-on ang Ligtas na Pag-browse para magkaroon ng proteksyon laban sa mga mapanganib na site</translation>
 <translation id="5271967389191913893">Hindi mabuksan ng device ang content na ida-download.</translation>
 <translation id="5273031377282080577">Pinapamahalaan ng iyong administrator ang setting na ito.</translation>
+<translation id="5290322819358431297">I-autofill ang mga password mo</translation>
 <translation id="5292796745632149097">Ipadala kay</translation>
 <translation id="5301876394151419436">Naka-sign in ka bilang si <ph name="EMAIL" /> Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="5304593522240415983">Hindi maaaring maging blangko ang field na ito</translation>
@@ -1096,6 +1100,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="572328651809341494">Mga kamakailang tab</translation>
 <translation id="5728072125198221967">Mga naka-link na serbisyo ng Google</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, Naka-pin na Tab na Incognito na May Naririnig na Audio</translation>
+<translation id="5736345781200955827">Gawin, i-save, at pamahalaan ang iyong mga password para madali kang makapag-sign in sa mga site at app gamit ang Chrome</translation>
 <translation id="5744751019568455640">Narito ang mga boses na puwede mong piliin para sa pagbabasa ng iyong mga web page. Kung gusto mo ang boses na ito at gusto mong patuloy ko itong gamitin, i-tap lang ang pangalan ng boses.</translation>
 <translation id="574845902699630049">I-share bilang si <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Kailangan ng Chrome ng access sa storage para mag-download ng mga file.</translation>
@@ -1341,6 +1346,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> iba pa}one{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> iba pa}other{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> na iba pa}}</translation>
 <translation id="6649642165559792194">I-preview ang larawang <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="666731172850799929">Buksan sa <ph name="APP_NAME" /></translation>
+<translation id="6669390930482049506">Abisuhan ako</translation>
 <translation id="6671495933530132209">Kopyahin ang larawan</translation>
 <translation id="6672697278890207089">Ipasok ang iyong passphrase</translation>
 <translation id="6672917148207387131">Idagdag ang <ph name="DOMAIN" /></translation>

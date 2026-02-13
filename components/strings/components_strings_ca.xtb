@@ -655,6 +655,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2071156619270205202">Aquesta targeta no és apta per a un número de targeta virtual.</translation>
 <translation id="2071852865256799872">La teva organització gestiona el navegador i <ph name="PROFILE_DOMAIN" /> gestiona el perfil</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">La informació només es desa al dispositiu</translation>
 <translation id="2074733626795553847">Desbloqueja <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Hi has accedit</translation>
 <translation id="2078956195623975415">Jocs de música i dansa</translation>
@@ -703,6 +704,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2137891579555018930">S'està esperant el permís...</translation>
 <translation id="213826338245044447">Adreces d'interès per a mòbils</translation>
 <translation id="2141000681034340397">Edita l'entrada</translation>
+<translation id="2141475438898772664">Paga en 4 terminis o mensualment</translation>
 <translation id="2144171668675205303">Cap tema actiu</translation>
 <translation id="2145193671493396738">Notícies d'economia</translation>
 <translation id="214556005048008348">Cancel·la el pagament</translation>
@@ -1116,6 +1118,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="277133753123645258">Mètode d'enviament</translation>
 <translation id="277499241957683684">Falta el registre del dispositiu</translation>
 <translation id="2775884851269838147">Primera pàgina d'impressió</translation>
+<translation id="277828055419948999">Chromium pot emplenar automàticament els camps difícils que l'emplenament automàtic estàndard podria ometre</translation>
 <translation id="2781185443919227679">Platges i illes</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">S'està preparant la tramitació de compra</translation>
@@ -2472,6 +2475,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4950898438188848926">Botó per canviar de pestanya; prem Retorn per canviar a la pestanya oberta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Accions</translation>
 <translation id="4953689047182316270">Respondre als esdeveniments d'accessibilitat</translation>
+<translation id="4954505713046251871">Per oferir suggeriments i millorar aquesta funció, l'URL i el contingut de la pàgina es comparteixen amb Google</translation>
 <translation id="4954891067389874142">Pagaràs més ràpidament quan es desi la targeta. Les dades de la targeta s'encripten a Google Wallet.</translation>
 <translation id="4957080528849277028">Botó Mostra l'historial de Chrome: activa'l per veure i gestionar l'historial de navegació a la configuració de Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 lloc web}other{+ # llocs web}}</translation>
@@ -2846,6 +2850,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5543564889050342791">Zoològics, aquaris i reserves naturals</translation>
 <translation id="5543722831081909240">180 graus</translation>
 <translation id="5544836308113951378">Creuers i xàrters</translation>
+<translation id="5545314360139398232">Enllaça <ph name="ISSUER_NAME" /> per pagar al llarg del temps</translation>
 <translation id="5547939254150808298">Premsa i editorials</translation>
 <translation id="554815783948612276">Proveïdors de xats i fòrums</translation>
 <translation id="5548606607480005320">Comprovació de seguretat</translation>
@@ -3693,6 +3698,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6926216138694948720">Art corporal</translation>
 <translation id="692638818576287323">Vehicles comercials</translation>
 <translation id="6927878187051807444">fitxers de la càmera i captures de pantalla</translation>
+<translation id="6929949393612835405">Tanca i torna a "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Cerca al tauler lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />El motor de cerca predeterminat et permet fer cerques al web i proporciona les funcions de Chrome<ph name="END_BOLD" />, com ara la cerca des de la barra d'adreces i des d'imatges de pàgines web. Si el teu motor de cerca no admet una funció, és possible que no estigui disponible.</translation>
 <translation id="6934672428414710184">Aquest nom prové del teu Compte de Google</translation>
@@ -3975,6 +3981,7 @@ Detalls addicionals:
 <translation id="7377314930809374926">Sector de l'hostaleria</translation>
 <translation id="7378594059915113390">Controls multimèdia</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome pot emplenar automàticament els camps difícils que l'emplenament automàtic estàndard podria ometre</translation>
 <translation id="7380398842872229465">10 x 15 polzades</translation>
 <translation id="7381551826960739226">L'emplenament automàtic de formes de pagament està desactivat perquè aquest formulari no utilitza una connexió segura.</translation>
 <translation id="7388380253839603603">Preus de la gasolina i combustibles</translation>
@@ -4899,6 +4906,7 @@ Detalls addicionals:
 <translation id="8858065207712248076">Chrome et recomana que restableixis la contrasenya per a <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si l'has fet servir en altres llocs web.</translation>
 <translation id="885906927438988819">Si està ben escrit, <ph name="BEGIN_LINK" />prova d'executar el diagnòstic de xarxes de Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Arts digitals i fotogràfiques</translation>
+<translation id="8861482055962701239">No s'ha pogut desar aquesta informació a Google Wallet. S'ha desat a Chrome en aquest dispositiu. Chrome t'oferirà desar-la a Wallet la propera vegada que l'utilitzis.</translation>
 <translation id="8863218129525348270">Perquè la propera vegada puguis pagar més ràpidament, desa la targeta al dispositiu</translation>
 <translation id="8864939224504814334">Vestits i roba formal</translation>
 <translation id="8866132857352163524">Bandes sonores</translation>

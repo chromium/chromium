@@ -354,6 +354,7 @@
 <translation id="1221825588892235038">僅限選取的內容</translation>
 <translation id="1222835797152767346">設定 PIN 碼可簡化登入程序</translation>
 <translation id="1223484782328004593">「<ph name="APP_NAME" />」必須取得授權</translation>
+<translation id="1223498995510244364">摘要</translation>
 <translation id="1223853788495130632">管理員為這項設定推薦特定的值。</translation>
 <translation id="1225177025209879837">正在處理要求...</translation>
 <translation id="1227107020813934021">尋找文件掃描器</translation>
@@ -5858,7 +5859,6 @@
 <translation id="495170559598752135">動作</translation>
 <translation id="4951966678293618079">一律不儲存這個網站的密碼</translation>
 <translation id="4953808748584563296">預設的橘色顯示圖片</translation>
-<translation id="4954505713046251871">為提供建議及改善這項功能，系統會將網頁網址和內容提供給 Google</translation>
 <translation id="4954652437333037880">檔案</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />瀏覽權限</translation>
 <translation id="4955710816792587366">選擇 PIN 碼</translation>

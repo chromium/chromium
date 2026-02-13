@@ -304,7 +304,6 @@
 <translation id="4205939740494406371">Não foi possível verificar suas senhas. Tente novamente em 24 horas ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Cancelando…</translation>
 <translation id="4224210481850767180">A instalação foi cancelada.</translation>
-<translation id="4230631012078055975">Faça login no Chrome e aproveite mais recursos</translation>
 <translation id="4242034826641750751">O Chrome precisa da permissão de acesso ao microfone e à câmera para este site</translation>
 <translation id="424864128008805179">Sair do Google Chrome?</translation>
 <translation id="4251615635259297716">Vincular seus dados do Google Chrome a esta conta?</translation>
@@ -440,6 +439,7 @@
 <translation id="5756509061973259733">Este dispositivo já tem um perfil do Chrome com essa conta</translation>
 <translation id="5759947850379142561">Selecione qualquer texto ou imagem para pesquisar com o Google Lens ou pressione Esc para sair</translation>
 <translation id="5762867845020858790">Organize senhas, configurações e favoritos específicos em um perfil do Chrome.</translation>
+<translation id="5779427581965287859">Defina o Chrome como navegador padrão e fixe-o na barra de tarefas</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" />: Google Chrome Canary</translation>
 <translation id="5804318322022881572">Não foi possível iniciar o Chrome. Tente novamente.</translation>
 <translation id="5809516625706423866">Não foi possível conectar à Internet. HTTP 401 Não autorizado. Verifique sua configuração do proxy.</translation>
@@ -597,7 +597,6 @@
 <translation id="7308322188646931570">O Chrome precisa de acesso para fazer o download e armazenar arquivos</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7352651011704765696">Algo deu errado</translation>
-<translation id="7379321689415048316">O Chrome poderá preencher campos difíceis que o preenchimento automático padrão não conseguir completar</translation>
 <translation id="7386878009611068389">Para usar as configurações de segurança da família, mude para o perfil do Chrome em que você já fez login como <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Você estava conectado ao Google Chrome como <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para fazer login novamente.</translation>
 <translation id="7412494426921990001">Clique no menu do Google Chrome</translation>
@@ -690,6 +689,7 @@
 <translation id="8162006532256575008">Usar o Chrome sem uma conta</translation>
 <translation id="8177472873527554730">Não foi possível encontrar o conteúdo na página</translation>
 <translation id="8221491193165283816">Você geralmente bloqueia notificações. Para permitir que esse site envie notificações, clique aqui.</translation>
+<translation id="8253851811470049684">Clicar em links de qualquer app vai abri-los no Chrome, e você poderá acessar o navegador com mais rapidez na barra de tarefas.</translation>
 <translation id="8255190535488645436">O Google Chrome está usando sua câmera e seu microfone.</translation>
 <translation id="8267953129876836456">O Chrome encontrou algumas recomendações de segurança para sua avaliação</translation>
 <translation id="8286862437124483331">O Google Chrome está tentando mostrar senhas. Digite sua senha do Windows para permitir isso.</translation>
@@ -698,7 +698,6 @@
 <translation id="8321888067342493336">Salvar como imagem</translation>
 <translation id="8336463659890584292">Quando um site pede para pré-carregar links anonimamente, o Chrome usa os servidores do Google. Isso oculta sua identidade para o site, mas o Google aprende quais sites são pré-carregados.</translation>
 <translation id="8342675569599923794">Esse arquivo é perigoso, por isso ele foi bloqueado pelo Chrome.</translation>
-<translation id="8349094670477064572">Você vai salvar e usar senhas e outros dados na sua Conta do Google sempre que fizer login no Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Pergunte ao Google</translation>
 <translation id="8362914115861174987">Traduzir para </translation>
 <translation id="8366770919198174997">Reduz o desempenho, mas torna o Chrome mais resistente a ataques</translation>

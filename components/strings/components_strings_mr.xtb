@@ -1117,6 +1117,7 @@
 <translation id="277133753123645258">शिपिंग पद्धत</translation>
 <translation id="277499241957683684">डिव्हाइस रेकॉर्ड गहाळ</translation>
 <translation id="2775884851269838147">प्रिंट केलेले पहिले पेज</translation>
+<translation id="277828055419948999">Chromium साधारण ऑटोफिलमध्ये न भरली जाणारी अवघड फील्ड ऑटोफिल करू शकते</translation>
 <translation id="2781185443919227679">समुद्रकिनारे आणि बेटे</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">चेकआउट करण्यासाठी तयार होत आहे</translation>
@@ -2472,6 +2473,7 @@
 <translation id="4950898438188848926">टॅब स्विच बटण, उघड्या टॅबवर स्विच करण्यासाठी एंटर प्रेस करा, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">क्रिया</translation>
 <translation id="4953689047182316270">ॲक्सेसिबिलिटी कामक्रमांना प्रतिसाद द्या</translation>
+<translation id="4954505713046251871">सूचना देऊन या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी, पेजची URL आणि आशय या गोष्टी Google सोबत शेअर केल्या जातात</translation>
 <translation id="4954891067389874142">तुमचे कार्ड सेव्ह केलेले असताना, अधिक जलद पेमेंट करा. कार्डचे तपशील Google Wallet मध्ये एन्क्रिप्ट केलेले असतात.</translation>
 <translation id="4957080528849277028">तुमचा Chrome इतिहास पहा बटण, Chrome सेटिंग्जमध्ये तुमचा ब्राउझिंग इतिहास पाहण्यासाठी आणि व्यवस्थापित करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{आणखी १ साइट}other{आणखी # साइट}}</translation>
@@ -3976,6 +3978,7 @@
 <translation id="7377314930809374926">आदरातिथ्याशी संबंधित उद्योग</translation>
 <translation id="7378594059915113390">मीडिया नियंत्रणे</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome साधारण ऑटोफिलमध्ये न भरली जाणारी अवघड फील्ड ऑटोफिल करू शकते</translation>
 <translation id="7380398842872229465">१० x १५ इं</translation>
 <translation id="7381551826960739226">ऑटोमॅटिक पेमेंट पद्धती भरणे बंद केले गेले आहे, कारण हा फॉर्म सुरक्षित कनेक्शन वापरत नाही.</translation>
 <translation id="7388380253839603603">गॅसच्या किमती आणि वाहनांचे इंधन</translation>

@@ -304,7 +304,6 @@
 <translation id="4205939740494406371">Chrome kan ikke tjekke dine adgangskoder. Prøv igen efter 24 timer, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Annullerer…</translation>
 <translation id="4224210481850767180">Installationen er blevet annulleret.</translation>
-<translation id="4230631012078055975">Få flere muligheder, når du er logget ind i Chrome</translation>
 <translation id="4242034826641750751">Chrome skal have adgangstilladelse til kamera og mikrofon for at bruge dette website</translation>
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
 <translation id="4251615635259297716">Vil du linke dine Chrome-data til denne konto?</translation>
@@ -598,7 +597,6 @@
 <translation id="7308322188646931570">Chrome skal have lageradgang for at downloade filer</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
-<translation id="7379321689415048316">Chrome kan udfylde svære felter, som standardautofyld muligvis ikke kan</translation>
 <translation id="7386878009611068389">Hvis du vil være mere sikker online med dine forældres valg, skal du skifte til din Chrome-profil, hvor du allerede er logget ind som <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Du loggede ind i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
 <translation id="7412494426921990001">Klik på Chrome-menuen</translation>
@@ -700,7 +698,6 @@
 <translation id="8321888067342493336">Gem som billede</translation>
 <translation id="8336463659890584292">Når et website anmoder om at forudindlæse links privat på websitets side, anvender Chrome Googles servere. På denne måde skjules din identitet fra det forudindlæste website, men Google registrerer, hvilke websites der forudindlæses.</translation>
 <translation id="8342675569599923794">Denne fil er farlig, så Chrome har blokeret den.</translation>
-<translation id="8349094670477064572">Du kan gemme og bruge adgangskoder m.m. på din Google-konto, når du er logget ind i Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Spørg Google</translation>
 <translation id="8362914115861174987">Oversæt til</translation>
 <translation id="8366770919198174997">Reducerer ydeevnen, men gør Chrome mere modstandsdygtig over for angreb</translation>

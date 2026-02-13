@@ -255,6 +255,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3622716124581627104">Tukuyin ang mga bagay o lugar at kopyahin o isalin ang text. Kapag ginamit mo ang Google Lens, magpapadala ng screenshot ng page sa Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Ngayon, mas madali nang gamitin ang Chrome sa iyong Google Account at sa mga nakabahaging computer.</translation>
 <translation id="3635073343384702370">Masusuri ng Chrome ang iyong mga password kapag na-save mo ang mga ito</translation>
+<translation id="3636970668267555808">Magkaroon ng madaling access sa mga feature na alam, gusto, at pinagkakatiwalaan mo sa pamamagitan ng pagtatakda sa Chrome bilang default browser mo.</translation>
 <translation id="3667616615096815454">Hindi na-install, hindi kilala ng server ang application.</translation>
 <translation id="3673813398384385993">Napag-alaman ng Chrome na naglalaman ng malware ang "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3697952514309507634">Iba pang profile sa Chrome</translation>
@@ -309,7 +310,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4205939740494406371">Hindi masuri ng Chrome ang iyong mga password. Subukan ulit pagkalipas ng 24 na oras o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Kinakansela...</translation>
 <translation id="4224210481850767180">Nakansela ang pag-install.</translation>
-<translation id="4230631012078055975">Mas marami kang magagawa kapag naka-sign in ka sa Chrome</translation>
 <translation id="4242034826641750751">Kailangan ng Chrome ng pahintulot sa camera at mikropono para sa site na ito</translation>
 <translation id="424864128008805179">Mag-sign out sa Chrome?</translation>
 <translation id="4251615635259297716">I-link ang iyong data sa Chrome sa account na ito</translation>
@@ -611,7 +611,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7308322188646931570">Kailangan ng Chrome ng access sa storage para mag-download ng mga file</translation>
 <translation id="7339898014177206373">Bagong window</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
-<translation id="7379321689415048316">Mao-autofill ng Chrome ang mahihirap na field na posibleng mapalampas ng karaniwang autofill</translation>
 <translation id="7386878009611068389">Para manatiling mas ligtas online sa pamamagitan ng mga pinili ng iyong magulang, lumipat sa profile mo sa Chrome kung saan naka-sign in ka na bilang <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Naka-sign in ka sa Chrome bilang <ph name="USER_EMAIL_ADDRESS" />. Pakigamit ang parehong account upang mag-sign in muli.</translation>
 <translation id="7412494426921990001">I-click ang menu ng Chrome</translation>
@@ -714,7 +713,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8321888067342493336">I-save bilang larawan</translation>
 <translation id="8336463659890584292">Kapag humiling ang isang site na pribadong mag-preload ng mga link sa page nito, gumagamit ang Chrome ng mga server ng Google. Maitatago nito ang iyong pagkakakilanlan sa na-preload na site, pero malalaman ng Google kung anong mga site ang na-preload.</translation>
 <translation id="8342675569599923794">Mapanganib ang file na ito, kaya na-block ito ng Chrome.</translation>
-<translation id="8349094670477064572">Mase-save at magagamit mo ang mga password at iba pa sa iyong Google Account kapag naka-sign in ka sa Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Magtanong sa Google</translation>
 <translation id="8362914115861174987">Isalin sa</translation>
 <translation id="8366770919198174997">Pinapahina ang performance pero ginagawang mas matatag ang Chrome laban sa mga attack</translation>

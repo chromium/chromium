@@ -299,6 +299,7 @@
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Посмотреть <ph name="TABS_COUNT_ONE" /> вкладку}one{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладку}few{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладки}many{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладок}other{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2297822946037605517">Поделиться этой страницей</translation>
 <translation id="230115972905494466">Совместимые устройства не найдены.</translation>
+<translation id="2316129865977710310">Нет, спасибо</translation>
 <translation id="2318045970523081853">Нажмите, чтобы позвонить.</translation>
 <translation id="2323763861024343754">Данные сайтов</translation>
 <translation id="2328474416100889417">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям, а ссылки для приглашения больше не будут работать.</translation>
@@ -475,6 +476,7 @@
 <translation id="2992473221983447149">Описания изображений</translation>
 <translation id="2996291259634659425">Придумайте кодовую фразу</translation>
 <translation id="2996809686854298943">Необходимо указать URL</translation>
+<translation id="3008916997590006706">Нажмите "Сохранить", чтобы быстро получить доступ к этому паролю при следующем входе.</translation>
 <translation id="3024215143424744261">Настройки режима чтения закрыты</translation>
 <translation id="3026955690410463085">Добавить ссылку</translation>
 <translation id="3027644380269727216">Подбирается на основе ваших действий на сайте. Параметр включен.</translation>
@@ -960,6 +962,7 @@
 <translation id="5075939510584558547">Сохранение без шифрования</translation>
 <translation id="5078638979202084724">Добавить все вкладки в закладки</translation>
 <translation id="5085038751173179818">Войдите на этот сайт и в Chrome, чтобы синхронизировать закладки и другую информацию на своих устройствах.</translation>
+<translation id="5088347662971855383">Закрепить Gemini</translation>
 <translation id="5091199029769593641">Скоро, открывая новую вкладку, вы будете видеть статьи с сайта "<ph name="SITE_NAME" />". Сайты, на которые вы подписаны, сохранены в вашем аккаунте Google. Управлять ими можно в настройках рекомендаций.</translation>
 <translation id="509429900233858213">Произошла ошибка.</translation>
 <translation id="5096775069898886423">Если сайт не поддерживает защищенное подключение, предупреждать об этом ещё до перехода на него</translation>
@@ -1004,6 +1007,7 @@
 <translation id="5267572070504076962">Чтобы обеспечить защиту от опасных сайтов, включите Безопасный просмотр.</translation>
 <translation id="5271967389191913893">Не удается открыть скачанный контент.</translation>
 <translation id="5273031377282080577">Этим параметром управляет ваш администратор.</translation>
+<translation id="5290322819358431297">Автозаполнение паролей</translation>
 <translation id="5292796745632149097">Куда отправить</translation>
 <translation id="5301876394151419436">Вы вошли как <ph name="EMAIL" />. Синхронизацию можно в любой момент отключить в настройках. Google может использовать историю браузера для персонализации Поиска и других сервисов.</translation>
 <translation id="5304593522240415983">Это поле нужно заполнить</translation>
@@ -1096,6 +1100,7 @@
 <translation id="572328651809341494">Недавние вкладки</translation>
 <translation id="5728072125198221967">Связанные сервисы Google</translation>
 <translation id="5734658507307260911">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" с включенным звуком</translation>
+<translation id="5736345781200955827">Создавайте, сохраняйте и изменяйте пароли. Быстрый доступ к ним позволит вам легко входить в аккаунты на сайтах и в приложениях с помощью Chrome.</translation>
 <translation id="5744751019568455640">Здесь представлены голоса для озвучивания текста на веб-страницах. Нажмите на название понравившегося голоса, и я буду использовать именно его.</translation>
 <translation id="574845902699630049">Поделиться от имени пользователя <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Для скачивания файлов браузеру Chrome требуется доступ к хранилищу.</translation>
@@ -1341,6 +1346,7 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактное лицо}one{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактное лицо}few{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактных лица}many{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактных лиц}other{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактного лица}}</translation>
 <translation id="6649642165559792194">Просмотреть изображение <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="666731172850799929">Открыть в <ph name="APP_NAME" /></translation>
+<translation id="6669390930482049506">Включить</translation>
 <translation id="6671495933530132209">Скопировать изображение</translation>
 <translation id="6672697278890207089">Введите кодовую фразу</translation>
 <translation id="6672917148207387131">Добавить сайт <ph name="DOMAIN" /></translation>

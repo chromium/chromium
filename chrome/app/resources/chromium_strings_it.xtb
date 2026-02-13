@@ -134,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o più estensioni di Chromium stavano accedendo a 1 dispositivo HID}=1{Una o più estensioni di Chromium stanno accedendo a 1 dispositivo HID}other{Una o più estensioni di Chromium stanno accedendo a # dispositivi HID}}</translation>
 <translation id="2401032172288869980">Chromium deve avere le autorizzazioni di accesso al microfono e alla fotocamera per questo sito</translation>
 <translation id="2403703063067034158">Errore di avvio: è in esecuzione un'altra istanza di configurazione. Riprova più tardi.</translation>
+<translation id="2418322681019544463">Apri i link in Chromium da qualsiasi app e mantieni il browser accessibile sulla barra delle app</translation>
 <translation id="2440750600860946460">Con gli <ph name="BEGIN_LINK" />strumenti di Chromium<ph name="END_LINK" />, puoi navigare in sicurezza e mantenere il controllo</translation>
 <translation id="2451727308784734061">Usa la scorciatoia per accedere rapidamente a Gestore delle password. Puoi spostare la scorciatoia nella schermata Home del computer o in Avvio applicazioni.</translation>
 <translation id="2478295928299953161">Chromium verrà chiuso a breve</translation>
@@ -161,7 +162,6 @@
 <translation id="2738871930057338499">Impossibile connettersi a internet. HTTP 403 Accesso negato. Controlla la configurazione del proxy.</translation>
 <translation id="2753623023919742414">Fai clic per cercare</translation>
 <translation id="2768103863314748511">Imposta Chromium come visualizzatore PDF predefinito</translation>
-<translation id="277828055419948999">Chromium può compilare automaticamente i campi difficili che la compilazione automatica standard potrebbe non riuscire a compilare</translation>
 <translation id="2785438272836277133">Questa estensione contiene malware e non è sicura. Rimuovila da Chromium in modo che non possa più vedere e modificare i tuoi dati sui siti che visiti, incluse le tue informazioni personali.</translation>
 <translation id="2799223571221894425">Riavvia</translation>
 <translation id="2803971713792056305">Il tuo Chromium</translation>
@@ -586,7 +586,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7461356015007898716">Per ricevere gli aggiornamenti futuri di Chromium, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 7.</translation>
 <translation id="7467949745582939695">Vuoi riavviare Chromium?</translation>
 <translation id="7483335560992089831">Impossibile installare una versione di Chromium uguale a quella in esecuzione. Chiudi Chromium e riprova.</translation>
-<translation id="7517403744065880907">Potrai salvare e usare le password e altri dati nel tuo Account Google ogni volta che accedi a Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">È probabile che i siti funzionino come previsto. Quando chiudi tutte le finestre di Chromium, uscirai dalla maggior parte dei siti, ma se hai eseguito l'accesso a Chromium non uscirai dal tuo Account Google.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium verrà riavviato tra 1 minuto}other{Chromium verrà riavviato tra # minuti}}</translation>
 <translation id="7565444033145385702">Per proteggere i tuoi dati, consenti a Chromium di rimuovere le autorizzazioni dai siti che non hai visitato di recente.</translation>
@@ -605,6 +604,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7745317241717453663">Verranno eliminati i tuoi dati di navigazione da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Il programma di installazione non ha creato una directory temporanea. Verifica di disporre di spazio libero sul disco e dell'autorizzazione per l'installazione del software.</translation>
 <translation id="7750130090210923118">Ripristina Chromium predefinito</translation>
+<translation id="7781047659465034537">Imposta Chromium come browser predefinito e fissalo alla barra delle app</translation>
 <translation id="7786760609782648049">Rendi Chromium più veloce</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Rendi più difficile vedere quali siti visiti alle persone che hanno accesso al tuo traffico internet. Chromium utilizza una connessione sicura per cercare l'indirizzo IP di un sito nel DNS (Domain Name System).</translation>
@@ -727,7 +727,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="9183331186620388872">Suggerimento per Chromium: Cerca con Lens</translation>
 <translation id="9185526690718004400">Riavvia per aggiornare &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9206863043651638213">Ottieni di più quando accedi a Chromium</translation>
 <translation id="924957577793602335">Personalizza Chromium</translation>
 <translation id="93478295209880648">Chromium potrebbe non funzionare correttamente perché non è più supportato su Windows XP o Windows Vista</translation>
 <translation id="945522503751344254">Invia feedback</translation>

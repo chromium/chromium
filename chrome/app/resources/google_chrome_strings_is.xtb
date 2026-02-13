@@ -308,7 +308,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4205939740494406371">Chrome getur ekki athugað aðgangsorðin þín. Reyndu aftur eftir sólarhring eða <ph name="BEGIN_LINK" />athugaðu aðgangsorðin á Google reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Hættir við...</translation>
 <translation id="4224210481850767180">Hætt hefur verið við uppsetninguna.</translation>
-<translation id="4230631012078055975">Fáðu meira út úr Chrome með innskráningu</translation>
 <translation id="4242034826641750751">Chrome verður að fá leyfi fyrir myndavél og hljóðnema fyrir þetta vefsvæði</translation>
 <translation id="424864128008805179">Viltu skrá þig út úr Chrome?</translation>
 <translation id="4251615635259297716">Tengja Chrome gögnin þín við þennan reikning?</translation>
@@ -606,7 +605,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7308322188646931570">Chrome þarf aðgang að geymslu til að geta sótt skrár</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
-<translation id="7379321689415048316">Chrome getur fyllt út erfiða reiti sem stöðluð sjálfvirk útfylling gæti misst af</translation>
 <translation id="7386878009611068389">Til að vera öruggari á netinu með vali foreldra þinna skaltu skipta yfir í Chrome-prófílinn þinn þar sem þú ert þegar innskráð(ur) sem <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Þú varst skráð(ur) inn á Chrome sem <ph name="USER_EMAIL_ADDRESS" />. Notaðu sama reikning til að skrá þig inn aftur.</translation>
 <translation id="7412494426921990001">Smelltu á Chrome-valmyndina</translation>
@@ -708,7 +706,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8321888067342493336">Vista sem mynd</translation>
 <translation id="8336463659890584292">Þegar vefsvæði biður um að forhlaða tenglum á lokaðan hátt á síðunni sinni notar Chrome Google-þjóna. Þetta kemur í veg fyrir að forhlaðna vefsvæðið geti auðkennt þig en Google lærir að þekkja hvaða vefsvæðum er forhlaðið.</translation>
 <translation id="8342675569599923794">Þessi skrá er hættuleg og þess vegna útilokaði Chrome hana.</translation>
-<translation id="8349094670477064572">You’ll save and use passwords and more in your Google Account whenever you’re signed in to Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Spyrja Google</translation>
 <translation id="8362914115861174987">Þýða yfir á</translation>
 <translation id="8366770919198174997">Dregur úr afköstum en auðveldar Chrome að verjast árásum</translation>

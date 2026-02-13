@@ -1713,6 +1713,7 @@ Se questa policy non viene configurata, le query DNS over HTTPS non verranno inv
 <translation id="2158741059065130266">Se la policy viene impostata su True, gli utenti dell'app File di <ph name="PRODUCT_OS_NAME" /> possono vedere un Cestino e i file nelle cartelle I miei file e Download (inclusi i discendenti creati dall'utente) verranno inviati al Cestino quando verranno eliminati.
 
       Se la policy viene impostata su False, i file che si trovavano nel cestino continueranno a essere disponibili visualizzando i file nascosti e cercando la directory .Trash nella cartella I miei file o Download.</translation>
+<translation id="215891883000260452">Attiva la raccolta dei log di diagnostica per WebRTC per origini specifiche</translation>
 <translation id="2159092270572925582">Consente di impostare un elenco di pattern URL che specificano i siti autorizzati a visualizzare contenuti misti (ossia contenuti HTTP su siti HTTPS) bloccabili (ossia attivi) e per i quali gli aggiornamenti dei contenuti misti bloccabili facoltativi verranno disattivati.
 
           Se questa policy non viene impostata, i contenuti misti bloccabili verranno bloccati e quelli bloccabili facoltativi verranno aggiornati; inoltre, gli utenti potranno configurare eccezioni per consentire i contenuti misti per siti specifici.
@@ -2005,6 +2006,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
       Questa policy sostituisce le policy <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e le preferenze dell'utente.
 
       Questa policy viene applicata soltanto per l'accesso ai dispositivi USB tramite l'API WebUSB. Per concedere l'accesso ai dispositivi USB tramite l'API Web Serial, vedi la policy <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="2318353380372431186">Abilita l'installazione di IWA da parte dell'utente</translation>
 <translation id="2318583605563438459">Consenti ai genitori di aggiungere account supervisionati</translation>
 <translation id="2326031114717677574">La frequenza di campionamento e raccolta dei dati audio. Il valore minimo consentito è 1 minuto.
 
@@ -2544,6 +2546,13 @@ Il sistema eseguirà una query sui record AAAA soltanto quando può essere conne
       Nota: dalla versione M114, determinate app kiosk possono sostituire il comportamento di questa policy per le proprie app per casi d'uso speciali, ad esempio le valutazioni degli studenti.</translation>
 <translation id="2667894101494585925">Attiva il recupero della guida all'ottimizzazione</translation>
 <translation id="2669157090883237118">Non modificare la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.</translation>
+<translation id="2669314653349044073">Questa policy consente di attivare la raccolta dei log di diagnostica per WebRTC per origini specifiche.
+
+Per informazioni dettagliate sui pattern di input validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy. Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato. Sono supportati lo schema e i sottodomini.
+
+Se la policy viene configurata, la raccolta dei log di diagnostica verrà attivata per le origini corrispondenti ai pattern nell'elenco.
+
+Se la policy non viene configurata, la raccolta dei log di diagnostica verrà disattivata per impostazione predefinita.</translation>
 <translation id="2672012807430078509">Controlla l'attivazione del protocollo di autenticazione NTLM per i montaggi SMB</translation>
 <translation id="2673363037046384711">L'utente finale può attivare o disattivare la modalità ad alta efficienza.</translation>
 <translation id="2673968385134502798">Giochi</translation>
@@ -2651,6 +2660,7 @@ Se la policy viene disattivata o se non viene configurata, gli utenti possono tr
       Se viene impostata su Disattivata, <ph name="PRODUCT_NAME" /> può utilizzare questi host solo se sono installati a livello di sistema.</translation>
 <translation id="2753637905605932878">Limita l'intervallo di porte UDP locali utilizzato da WebRTC</translation>
 <translation id="2755847332939882873">Consenti la raccolta di dati di rilevamento del rendimento a livello di sistema</translation>
+<translation id="2755963656455766808">Controlla la possibilità per l'utente di installare manualmente app web isolate</translation>
 <translation id="2757054304033424106">Tipi di estensioni/app che possono essere installati</translation>
 <translation id="275769337615229465">La maggior parte delle origini verrà isolata dalle altre origini nello stesso sito.</translation>
 <translation id="2759224876420453487">Controlla il comportamento dell'utente in una sessione profilo multiplo</translation>
@@ -5759,6 +5769,12 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa nel 2026.<
        Un nome host può essere consentito nel caso di una completa corrispondenza del nome host o di una corrispondenza con un qualsiasi dominio. Ad esempio, gli avvisi per un URL come "https://foo.example.com/bar" potrebbero essere eliminati se l'elenco include "foo.example.com" o "example.com".</translation>
 <translation id="4852900976354340846">Impostazioni relative a Direct Sockets</translation>
 <translation id="485419696366295465">Consente di gestire le policy relative al sottosistema <ph name="BOREALIS_NAME" />.</translation>
+<translation id="4854384393031206645">Controlla la possibilità per l'utente di installare manualmente app web isolate (IWA).
+
+Se questa policy è impostata su false, l'installazione di IWA da parte dell'utente è bloccata.
+
+Se questa policy è impostata su true o se non viene configurata, le installazioni di IWA da parte dell'utente sono consentite.
+</translation>
 <translation id="4855636880814771207">Se la policy viene attivata o se non viene configurata, gli utenti possono attivare o disattivare il Bluetooth.
 
 Se la policy viene disattivata, <ph name="PRODUCT_OS_NAME" /> disattiva il Bluetooth e gli utenti non possono attivarlo.
@@ -6178,6 +6194,7 @@ Questa policy è una sospensione temporanea per consentire la migrazione dei con
       </translation>
 <translation id="5104606191349861549">Scorciatoie da tastiera (supportate dalla versione 129)</translation>
 <translation id="5105313908130842249">Ritardo blocco schermo in caso di utilizzo della batteria</translation>
+<translation id="5105593357527099243">Disabilita l'installazione di IWA da parte dell'utente</translation>
 <translation id="510604120100968366">Consente di attivare la funzionalità Suono batteria in esaurimento.
 
           Questa funzionalità consente di riprodurre il suono della batteria in esaurimento.
@@ -6540,7 +6557,6 @@ Nota: questa policy non viene applicata agli upgrade a HSTS.</translation>
 <translation id="530949964068726932">Nascondi opzioni di accessibilità nel menu della barra delle applicazioni</translation>
 <translation id="5309944663104291505">Non consentire alle app web isolate e alle applicazioni kiosk con installazione forzata di utilizzare l'API Device Attributes</translation>
 <translation id="5311275381462687162">Impostazione del comportamento precedente predefinito <ph name="ATTRIBUTE_SAMESITE_NAME" /> per i cookie</translation>
-<translation id="5311430612584074035">Forza la priorità in primo piano per tutte le schede nel profilo</translation>
 <translation id="5312253627576569499">La percentuale di regolazione del ritardo di oscuramento dello schermo quando viene osservata l'attività dell'utente mentre lo schermo è oscurato o subito dopo la disattivazione dello schermo.</translation>
 <translation id="5316856058059940708">Disabilita cursore grande</translation>
 <translation id="5318185076587284965">Attiva l'utilizzo dei server relay per l'host di accesso remoto</translation>

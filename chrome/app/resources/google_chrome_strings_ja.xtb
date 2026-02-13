@@ -303,7 +303,6 @@
 <translation id="4205939740494406371">Chrome でパスワードを確認できません。24 時間後にもう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウントでパスワードをご確認ください<ph name="END_LINK" />。</translation>
 <translation id="4222932583846282852">キャンセルしています...</translation>
 <translation id="4224210481850767180">インストールをキャンセルしました。</translation>
-<translation id="4230631012078055975">Chrome にログインしてさらに便利に</translation>
 <translation id="4242034826641750751">このサイトを利用するには、Chrome でカメラとマイクの使用を許可する必要があります</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
 <translation id="4251615635259297716">Chrome データをこのアカウントにリンクしますか？</translation>
@@ -597,7 +596,6 @@
 <translation id="7308322188646931570">ファイルをダウンロードするには、Chrome でストレージへのアクセスを許可する必要があります</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
-<translation id="7379321689415048316">標準の自動入力が難しい項目に自動入力できます</translation>
 <translation id="7386878009611068389">保護者の方が指定した設定でインターネットをより安全に利用するには、すでに <ph name="USER_EMAIL_ADDRESS" /> としてログインしている Chrome プロフィールに切り替えてください</translation>
 <translation id="7398801000654795464">Chrome に <ph name="USER_EMAIL_ADDRESS" /> としてログインしていました。再度ログインするには同じアカウントを使用してください。</translation>
 <translation id="7412494426921990001">Chrome メニューをクリックします</translation>
@@ -699,7 +697,6 @@
 <translation id="8321888067342493336">画像として保存</translation>
 <translation id="8336463659890584292">ページのリンクを非公開でプリロードするようサイトから求められた場合、Chrome は Google サーバーを使用します。これによりプリロードしたサイトにユーザーの情報が知られることはありませんが、Google はどのようなサイトがプリロードされたかを学習します。</translation>
 <translation id="8342675569599923794">このファイルは危険なファイルであるため、Chrome でブロックしました。</translation>
-<translation id="8349094670477064572">Chrome にログインしているときに、Google アカウントにパスワードなどを保存して使用できます。<ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Google で調べる</translation>
 <translation id="8362914115861174987">訳文の言語</translation>
 <translation id="8366770919198174997">パフォーマンスは低下しますが、攻撃に対する Chrome の耐性が強化されます</translation>

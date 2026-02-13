@@ -1675,6 +1675,7 @@ Si cette règle n'est pas configurée, les requêtes DNS-over-HTTPS ne sont pas 
 <translation id="2158741059065130266">Si cette règle est définie sur "True", les utilisateurs de l'appli Fichiers de <ph name="PRODUCT_OS_NAME" /> voient une corbeille et les fichiers sous "Mes fichiers" et "Téléchargements" (y compris leurs descendants créés par l'utilisateur) y sont envoyés lors de la suppression.
 
       Si cette règle est définie sur "False", les fichiers qui se trouvaient dans la corbeille sont disponibles en affichant les fichiers masqués et en trouvant le répertoire ".Corbeille" sous "Mes fichiers" ou "Téléchargements".</translation>
+<translation id="215891883000260452">Activer la collecte des journaux de diagnostic WebRTC pour des origines spécifiques</translation>
 <translation id="2159092270572925582">Permet de lister les formats d'URL pour les sites autorisés à afficher du contenu mixte blocable (actif) (c'est-à-dire du contenu HTTP affiché sur des sites HTTPS) et pour lesquels la mise à niveau du contenu mixte blocable de manière facultative est désactivée.
 
           Si cette règle n'est pas configurée, le contenu mixte blocable est bloqué, et le contenu mixte blocable de manière facultative est mis à niveau. Les utilisateurs peuvent définir des exceptions autorisant l'affichage de ce contenu sur des sites spécifiques.
@@ -1964,6 +1965,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
       Cette règle remplace <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> et les préférences de l'utilisateur.
 
       Cette règle ne concerne que l'accès aux appareils USB via l'API WebUSB. Pour autoriser l'accès aux appareils USB via l'API Web Serial, consultez la règle <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="2318353380372431186">Activer l'installation d'AWI par l'utilisateur</translation>
 <translation id="2318583605563438459">Autoriser les parents à ajouter des comptes supervisés</translation>
 <translation id="2326031114717677574">Fréquence d'échantillonnage et de collecte des données audio. La valeur minimale autorisée est de 1 minute.
 
@@ -2498,6 +2500,13 @@ Le système n'interroge les enregistrements AAAA que si un hôte IPv6 global pe
       Remarque : Depuis M114, certaines applis kiosque sont autorisées à ignorer le comportement de cette règle pour leur appli dans des cas d'utilisation particuliers, tels que des évaluations scolaires.</translation>
 <translation id="2667894101494585925">Activer l'optimisation du guide d'extraction</translation>
 <translation id="2669157090883237118">Ne pas modifier la configuration <ph name="PRODUCT_OS_NAME" /> recommandée.</translation>
+<translation id="2669314653349044073">Cette règle permet d'activer la collecte des journaux de diagnostic pour WebRTC pour des origines spécifiques.
+
+Pour en savoir plus sur les formats d'entrée valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle. Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré. Scheme et les sous-domaines sont pris en charge.
+
+Si cette règle est configurée, la collecte des journaux de diagnostic sera activée pour les origines correspondant aux formats de la liste.
+
+Si cette règle n'est pas configurée, la collecte des journaux de diagnostic sera désactivée par défaut.</translation>
 <translation id="2672012807430078509">Contrôle l'activation du protocole d'authentification NTLM pour les installations SMB</translation>
 <translation id="2673363037046384711">L'utilisateur final peut activer ou désactiver le mode Haute efficacité.</translation>
 <translation id="2673968385134502798">Jeux</translation>
@@ -2605,6 +2614,7 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
       Si elle est désactivée, <ph name="PRODUCT_NAME" /> ne peut utiliser ces hôtes que s'ils sont installés au niveau du système.</translation>
 <translation id="2753637905605932878">Restreindre la portée des ports UDP locaux utilisés par WebRTC</translation>
 <translation id="2755847332939882873">Autoriser la collecte d'une trace des performances au niveau du système</translation>
+<translation id="2755963656455766808">Détermine si un utilisateur peut installer manuellement des applications Web isolées</translation>
 <translation id="2757054304033424106">Types d'extensions ou d'applications autorisés à être installés</translation>
 <translation id="275769337615229465">La plupart des origines seront isolées des autres origines provenant du même site.</translation>
 <translation id="2759224876420453487">Contrôler le comportement de l'utilisateur lors d'une session à plusieurs profils</translation>
@@ -5662,6 +5672,12 @@ Cette règle est provisoire et sera supprimée en 2026.</translation>
        Un nom d'hôte peut être autorisé dans le cadre d'une correspondance d'hôte exacte ou de toute correspondance de domaine. Par exemple, les avertissements peuvent être supprimés pour l'URL "https://foo.example.com/bar" si la liste inclut "foo.example.com" ou "example.com".</translation>
 <translation id="4852900976354340846">Paramètres Direct Sockets</translation>
 <translation id="485419696366295465">Contrôle les règles liées au sous-système <ph name="BOREALIS_NAME" />.</translation>
+<translation id="4854384393031206645">Détermine si l'utilisateur peut installer manuellement des applications Web isolées (AWI).
+
+Si cette règle est définie sur "false", l'installation d'AWI par l'utilisateur est bloquée.
+
+Si elle est définie sur "true" ou si elle n'est pas configurée, l'utilisateur est autorisé à installer des AWI.
+</translation>
 <translation id="4855636880814771207">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent alors activer ou désactiver le Bluetooth.
 
       Si cette règle est désactivée, <ph name="PRODUCT_OS_NAME" /> désactive le Bluetooth, et les utilisateurs ne peuvent pas l'activer.
@@ -6085,6 +6101,7 @@ Cette règle est proposée pour une durée limitée afin de laisser le temps de 
       </translation>
 <translation id="5104606191349861549">Raccourcis clavier (compatibles depuis la version 129)</translation>
 <translation id="5105313908130842249">Délai de verrouillage de l'écran (batterie)</translation>
+<translation id="5105593357527099243">Désactiver l'installation d'AWI par l'utilisateur</translation>
 <translation id="510604120100968366">Active la fonctionnalité de son de batterie faible.
 
           Cette fonctionnalité permet d'émettre le son de batterie faible.
@@ -6447,7 +6464,6 @@ Remarque : Cette règle ne s'applique pas aux mises à niveau HSTS.</translatio
 <translation id="530949964068726932">Masquer les options d'accessibilité dans le menu de la barre d'état système</translation>
 <translation id="5309944663104291505">Ne pas autoriser les applis Web isolées installées d'office et les applis kiosque à utiliser l'API Device Attributes</translation>
 <translation id="5311275381462687162">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour tous les cookies</translation>
-<translation id="5311430612584074035">Forcer la priorité au premier plan pour tous les onglets du profil</translation>
 <translation id="5312253627576569499">Pourcentage d'adaptation du délai d'assombrissement de l'écran en cas d'activité de l'utilisateur lors de la réduction de la luminosité ou peu de temps après la désactivation de l'écran.</translation>
 <translation id="5316856058059940708">Désactiver le grand curseur</translation>
 <translation id="5318185076587284965">Autoriser l'hôte d'accès à distance à utiliser des serveurs de relais</translation>

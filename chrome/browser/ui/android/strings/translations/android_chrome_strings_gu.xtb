@@ -299,6 +299,7 @@
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ જુઓ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ જુઓ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ જુઓ}}</translation>
 <translation id="2297822946037605517">આ પેજ શેર કરો</translation>
 <translation id="230115972905494466">કોઈ સુસંગત ઉપકરણો મળ્યા નથી</translation>
+<translation id="2316129865977710310">ના, આભાર</translation>
 <translation id="2318045970523081853">કૉલ કરવા માટે ટૅપ કરો</translation>
 <translation id="2323763861024343754">સાઇટ સ્ટોરેજ</translation>
 <translation id="2328474416100889417">દરેક વ્યક્તિ તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને આમંત્રણની બધી લિંક બંધ થઈ જશે</translation>
@@ -475,6 +476,7 @@
 <translation id="2992473221983447149">છબીના વર્ણનો</translation>
 <translation id="2996291259634659425">પાસફ્રેઝ બનાવો</translation>
 <translation id="2996809686854298943">URL આવશ્યક છે</translation>
+<translation id="3008916997590006706">આગલી વખતે જ્યારે તમે સાઇન ઇન કરો, ત્યારે સરળતાથી આ પાસવર્ડ ઍક્સેસ કરવા માટે 'સાચવો' પર ટૅપ કરો</translation>
 <translation id="3024215143424744261">વાંચન મોડની પસંદગીઓ બંધ કરી</translation>
 <translation id="3026955690410463085">લિંકનો સમાવેશ કરો</translation>
 <translation id="3027644380269727216">કોઈ સાઇટ પરની તમારી પ્રવૃત્તિના આધારે. આ સેટિંગ ચાલુ છે.</translation>
@@ -960,6 +962,7 @@
 <translation id="5075939510584558547">એન્ક્રિપ્શન વિના સાચવો</translation>
 <translation id="5078638979202084724">બધા ટૅબ્સ બુકમાર્ક કરો</translation>
 <translation id="5085038751173179818">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક વગેરે મેળવવા માટે, આ સાઇટ અને Chromeમાં સાઇન ઇન કરો</translation>
+<translation id="5088347662971855383">Geminiને પિન કરો</translation>
 <translation id="5091199029769593641">ટૂંક સમયમાં, જ્યારે તમે નવી ટૅબ ખોલશો ત્યારે તમને <ph name="SITE_NAME" /> પરથી સ્ટોરી દેખાશે. તમે જે સાઇટ ફૉલો કરો છો તેને તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે. તમે તેમને Discoverના સેટિંગમાં મેનેજ કરી શકો છો.</translation>
 <translation id="509429900233858213">કોઈ ભૂલ આવી છે.</translation>
 <translation id="5096775069898886423">સુરક્ષિત કનેક્શનને સપોર્ટ કરતી ન હોય તેવી સાઇટ માટે, સાઇટની મુલાકાત લેતા પહેલાં ચેતવણી મેળવો</translation>
@@ -1004,6 +1007,7 @@
 <translation id="5267572070504076962">જોખમી સાઇટ સામે સંરક્ષણ મેળવવા માટે Safe Browsingની સુવિધા ચાલુ કરો</translation>
 <translation id="5271967389191913893">ડિવાઇસ, ડાઉનલોડ કરવાની કન્ટેન્ટ ખોલી શકતું નથી.</translation>
 <translation id="5273031377282080577">તમારા ઍડમિનિસ્ટ્રેટર આ સેટિંગ મેનેજ કરે છે.</translation>
+<translation id="5290322819358431297">તમારા પાસવર્ડ ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="5292796745632149097">આના પર મોકલો</translation>
 <translation id="5301876394151419436">તમે <ph name="EMAIL" /> તરીકે સાઇન ઇન કર્યું છે. તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="5304593522240415983">આ ફીલ્ડ ખાલી હોઈ શકતું નથી</translation>
@@ -1096,6 +1100,7 @@
 <translation id="572328651809341494">તાજેતરના ટેબ્સ</translation>
 <translation id="5728072125198221967">લિંક કરેલી Google સેવાઓ</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, પિન કરેલું સાંભળી શકાય તેવું છૂપું ટૅબ</translation>
+<translation id="5736345781200955827">તમારા પાસવર્ડ બનાવો, સાચવો અને મેનેજ કરો, જેથી તમે Chromeનો ઉપયોગ કરીને સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરી શકો</translation>
 <translation id="5744751019568455640">આ રહ્યાં એ બધા વૉઇસ, જેની પસંદગી તમે તમારા વેબપેજ પરના કન્ટેન્ટને વાંચવા માટે કરી શકો છો. જો તમને આ વૉઇસ ગમે અને તમે ઇચ્છતા હો કે હું તેનો ઉપયોગ કરવાનું ચાલુ રાખું, તો બસ એ વૉઇસના નામ પર ટૅપ કરો.</translation>
 <translation id="574845902699630049"><ph name="OWNER_FULL_NAME" /> તરીકે શેર કરો</translation>
 <translation id="5749068826913805084">ફાઇલો ડાઉનલોડ કરવા માટે Chromeને સ્ટોરેજ ઍક્સેસની જરૂર છે.</translation>
@@ -1341,6 +1346,7 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">છબીને પ્રીવ્યૂ કરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> માં ખોલો</translation>
+<translation id="6669390930482049506">મને સૂચિત કરો</translation>
 <translation id="6671495933530132209">છબી કૉપિ કરો</translation>
 <translation id="6672697278890207089">તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ઉમેરો</translation>

@@ -354,6 +354,7 @@
 <translation id="1221825588892235038">केवळ निवड</translation>
 <translation id="1222835797152767346">साइन इन करणे सोपे करण्यासाठी पिन सेट करा</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ला परवान्याची आवश्यकता आहे</translation>
+<translation id="1223498995510244364">सारांश द्या</translation>
 <translation id="1223853788495130632">या सेटिंगसाठी तुमचा ॲडमिनिस्ट्रेटर विशिष्‍ट मूल्याची शिफारस करतो.</translation>
 <translation id="1225177025209879837">विनंतीवर प्रक्रिया करत आहे...</translation>
 <translation id="1227107020813934021">डॉक्युमेंट स्कॅनर शोधा</translation>
@@ -1348,6 +1349,8 @@
 <translation id="1891362123137972260">डिस्कवरील जागा अतिशय कमी आहे. कृपया डिस्कवरील जागा मोकळी करा.</translation>
 <translation id="189210018541388520">फुल स्क्रीन उघडा</translation>
 <translation id="1892341345406963517">हाय <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">१. खाली <ph name="BUTTON_LABEL" /> वर क्लिक करा
+2. तुमच्या Windows सेटिंग्जमध्ये <ph name="BUTTON_2" /> वर क्लिक करा</translation>
 <translation id="189358972401248634">इतर भाषा</translation>
 <translation id="1895658205118569222">बंद करा</translation>
 <translation id="1896043844785689584">फिंगरप्रिंट सेट करण्यासाठी, तुमच्या लहान मुलाला कीबोर्डच्या तळाशी उजव्या कोपऱ्यातील फिंगरप्रिंट सेन्सरला स्पर्श करण्यास सांगा. तुमच्या लहान मुलाचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला जातो आणि तो या <ph name="DEVICE_TYPE" /> मध्येच राहतो.</translation>
@@ -3165,6 +3168,7 @@
 <translation id="3105820656234755131">पासवर्ड अपडेट केला</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लूटूथ)</translation>
 <translation id="310671807099593501">साइट ब्लूटूथ वापरत आहे</translation>
+<translation id="3108122610701115301">डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="3108931485517391283">मिळवू शकत नाही</translation>
 <translation id="3108957152224931571">हायलाइटचा रंग</translation>
 <translation id="3109206895301430738">सेव्ह केलेले टॅब गट</translation>
@@ -5877,7 +5881,6 @@
 <translation id="495170559598752135">क्रिया</translation>
 <translation id="4951966678293618079">या साइटसाठी पासवर्ड कधीही सेव्ह करू नका</translation>
 <translation id="4953808748584563296">डीफॉल्ट नारिंगी अवतार</translation>
-<translation id="4954505713046251871">सूचना देऊन या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी, पेजची URL आणि आशय या गोष्टी Google सोबत शेअर केल्या जातात</translation>
 <translation id="4954652437333037880">फाइल</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> ची दृश्यमानता</translation>
 <translation id="4955710816792587366">तुमचा पिन निवडा</translation>
@@ -6358,6 +6361,7 @@
 <translation id="5288678174502918605">बंद केलेले टॅब पु&amp;न्हा उघडा</translation>
 <translation id="5290020561438336792">PC आणि कास्टिंग डिव्‍हाइस वेगवेगळ्या वाय-फाय नेटवर्कशी कनेक्ट केले आहेत (उदा. २.४ GHz
     वि. ५ GHz)</translation>
+<translation id="5290322819358431297">तुमचे पासवर्ड ऑटोफिल करा</translation>
 <translation id="52912272896845572">प्रायव्हेट की फाइल चुकीची आहे.</translation>
 <translation id="529175790091471945">हे डिव्हाइस स्वरूपित करा</translation>
 <translation id="529296195492126134">क्षणिक मोडला सपोर्ट नाही. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा</translation>
@@ -6977,6 +6981,7 @@
 <translation id="5734697361979786483">फाइल शेअर जोडा</translation>
 <translation id="573520097779121706">कर्सर हलवण्यासाठी 7, 8, 9, u, o, j, k, l या की वापरा</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{हा डेटा किंवा तुमचे डिव्हाइस हे तुमच्या संस्थेच्या काही सुरक्षा धोरणांची पूर्तता करत नाहीत. कशाचे निराकरण करण्याची आवश्यकता आहे हे तपासण्यासाठी तुमच्या ॲडमिनशी संपर्क साधा.}=1{ही फाइल किंवा तुमचे डिव्हाइस हे तुमच्या संस्थेच्या काही सुरक्षा धोरणांची पूर्तता करत नाहीत. कशाचे निराकरण करण्याची आवश्यकता आहे हे तपासण्यासाठी तुमच्या ॲडमिनशी संपर्क साधा.}other{या फाइल तुमच्या संस्थेच्या काही सुरक्षा धोरणांची पूर्तता करत नाहीत. कशाचे निराकरण करण्याची आवश्यकता आहे हे तपासण्यासाठी तुमच्या ॲडमिनशी संपर्क साधा.}}</translation>
+<translation id="5736345781200955827">तुमचे पासवर्ड तयार करा, सेव्ह करा आणि व्यवस्थापित करा, जेणेकरून तुम्ही Chrome वापरून साइट आणि अ‍ॅप्समध्ये सहजपणे साइन इन करू शकाल</translation>
 <translation id="5738093759615225354">तुम्हाला तुमच्या कॉंप्युटरवर साइन इन करण्यासाठी ही पासकी आवश्यक आहे</translation>
 <translation id="5738386565827477765">ऑडिओ डिव्हाइस</translation>
 <translation id="5739017626473506901"><ph name="USER_NAME" /> यांना शाळेच्या खात्यामध्ये जोडण्यात मदत करण्यासाठी साइन इन करा</translation>
@@ -7229,6 +7234,7 @@
 <translation id="5901089233978050985">कॅप्चर करणाऱ्या टॅबवर स्विच करा</translation>
 <translation id="5901494423252125310">प्रिंटरचे दार उघडे आहे</translation>
 <translation id="5901630391730855834">पिवळा</translation>
+<translation id="5902400038326841449">Google Password Manager बंद केले आहे</translation>
 <translation id="5902892210366342391">गुप्त मोडमध्ये असुरक्षित साइटवर जाण्यापूर्वी चेतावण्या पहा</translation>
 <translation id="5904614460720589786">कॉन्फिगरेशनच्या समस्येमुळे <ph name="APP_NAME" /> सेट करता आले नाही. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">संरक्षित आशय प्ले करण्यासाठी या साइटला आयडेंटिफायर वापरण्याची अनुमती देणे पुढे सुरू ठेवा</translation>
@@ -8013,6 +8019,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> पूर्ण</translation>
 <translation id="6452961788130242735">नेटवर्क समस्या किंवा वाईट क्षेत्र</translation>
 <translation id="6453191633103419909">टॅब/स्क्रीनच्या प्रोजेक्शनची गुणवत्ता</translation>
+<translation id="6453306703004115497"><ph name="LANGUAGE" /> मध्ये भाषांतरित केले</translation>
 <translation id="6453687572758515877">सर्व टॅब गटबद्ध करा</translation>
 <translation id="6453921811609336127">पुढील इनपुट पद्धतीवर स्विच करण्यासाठी, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> प्रेस करा</translation>
 <translation id="6455264371803474013">विशिष्ट साइटवर</translation>
@@ -8171,6 +8178,7 @@ I feel - विटांची इमारत</translation>
 <translation id="656293578423618167">फाइल पथ किंवा नाव खूप मोठे आहे. कृपया एका छोट्या नावाने किंवा दुसर्‍या स्‍थानावर सेव्ह करा.</translation>
 <translation id="6563002009564846727">Windows मधून इंपोर्ट केलेली प्रमाणपत्रे पहा</translation>
 <translation id="6563055593659435495">तुमच्या फोनशी कनेक्शन सुरू ठेवू शकत नाही. तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
+<translation id="6564343790052433242"><ph name="APP_NAME" /> साठी पासकी तयार करण्याकरिता, Google Password Manager सुरू असणे आवश्यक आहे</translation>
 <translation id="6565144332292237355">तुमच्या स्थानिक नेटवर्कवरील कोणतेही डिव्हाइस शोधून त्याच्याशी कनेक्ट करण्यासाठी साइट हे वैशिष्ट्य वापरू शकते</translation>
 <translation id="6568283005472142698">टॅब शोध</translation>
 <translation id="6569931898053264308">मध्यम बचती</translation>
@@ -11442,6 +11450,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8761945298804995673">हा वापरकर्ता आधीपासून अस्तित्वात आहे</translation>
 <translation id="8762886931014513155">तुमच्या <ph name="DEVICE_TYPE" /> ला अपडेट करण्याची आवश्यकता आहे</translation>
 <translation id="8763927697961133303">USB डिव्हाइस</translation>
+<translation id="8765940060470412555">वाचन मोड अनपिन करा</translation>
 <translation id="8766156860774051068">तुम्ही निवडलेले</translation>
 <translation id="8766796754185931010">कोटोएरी</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> संबंधित सर्व शोध दाखवा</translation>

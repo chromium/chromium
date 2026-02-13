@@ -125,6 +125,7 @@
 <translation id="1436671784520050284">Lanjutkan penyiapan</translation>
 <translation id="143681031165817424">Alamat hanya disimpan di perangkat ini</translation>
 <translation id="1445276840641906250">Semua tab Anda dalam satu browser</translation>
+<translation id="1447564161241938558">Impor sandi dan kunci sandi dinonaktifkan oleh administrator Anda</translation>
 <translation id="1450170672351507823">Perlindungan standar aktif. Untuk keamanan yang lebih baik, gunakan Perlindungan yang ditingkatkan.</translation>
 <translation id="1455660774629812862">Jangan sembunyikan</translation>
 <translation id="1456545332132818232">Ulasan produk <ph name="PRODUCT_NAME" />, <ph name="STARS" /> dari <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
@@ -2236,6 +2237,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="9055291197094969722">Buat grup tab untuk mengatur tab yang terbuka dan tetap produktif</translation>
 <translation id="9055580485132823283">Anda akan menghapus {password_count} sandi, {passkey_count} kunci sandi, dan daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>
 <translation id="9057030985451135243">Pelajari grup tab bersama</translation>
+<translation id="9064106978262828592">Terjadi masalah saat mengekspor data Anda</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9066097352053395362">Sembunyikan Edit Bookmark</translation>
 <translation id="9070824521421603770">Anda akan logout dan tab akan ditutup</translation>

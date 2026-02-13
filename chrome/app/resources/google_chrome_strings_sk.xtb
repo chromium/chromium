@@ -305,7 +305,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4205939740494406371">Chrome nemôže skontrolovať heslá. Skúste to znova o 24 hodín alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Ruší sa...</translation>
 <translation id="4224210481850767180">Inštalácia bola zrušená.</translation>
-<translation id="4230631012078055975">Prihláste sa do Chromu a získajte ďalšie výhody</translation>
 <translation id="4242034826641750751">Chrome vyžaduje pre tento web povolený prístup ku kamere aj mikrofónu</translation>
 <translation id="424864128008805179">Odhlásiť sa z Chromu?</translation>
 <translation id="4251615635259297716">Chcete prepojiť údaje prehliadača Chrome s týmto účtom?</translation>
@@ -445,6 +444,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5756509061973259733">Profil Chromu s týmto účtom už v tomto zariadení existuje</translation>
 <translation id="5759947850379142561">Vyberte nejaký text alebo obrázok na vyhľadávanie pomocou funkcie Google Lens alebo stlačením klávesa Escape Google Lens zavrite</translation>
 <translation id="5762867845020858790">Pridajte nový profil Chromu, aby ste mali záložky, heslá a nastavenia oddelené.</translation>
+<translation id="5779427581965287859">Nastavte Chrome ako predvolený prehliadač a pripnite ho na panel aplikácií</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome sa nepodarilo spustiť. Skúste to znova.</translation>
 <translation id="5809516625706423866">Nepodarilo sa pripojiť k internetu. Chyba autorizácie HTTP 401. Skontrolujte konfiguráciu servera proxy.</translation>
@@ -602,7 +602,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7308322188646931570">Chrome potrebuje na sťahovanie súborov prístup k úložisku</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7352651011704765696">Niečo sa pokazilo</translation>
-<translation id="7379321689415048316">Chrome dokáže automaticky dopĺňať zložité polia, ktoré štandardné automatické dopĺňanie nemusí rozpoznať</translation>
 <translation id="7386878009611068389">Ak chceš zvýšiť svoju bezpečnosť na internete pomocou vybraných možností tvojho rodiča, prepni na profil Chrome, v ktorom máš už prihlásený účet <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Do prehliadača Chrome ste boli prihlásený/-á ako <ph name="USER_EMAIL_ADDRESS" />. Ak sa chcete prihlásiť znova, použite rovnaký účet.</translation>
 <translation id="7412494426921990001">Kliknite na Ponuku Chrome</translation>
@@ -695,6 +694,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8162006532256575008">Používať Chrome bez účtu</translation>
 <translation id="8177472873527554730">Obsah na stránke sa nepodarilo nájsť</translation>
 <translation id="8221491193165283816">Zvyčajne blokujete upozornenia. Ak chcete tomuto webu povoliť odosielanie upozornení, kliknite tu.</translation>
+<translation id="8253851811470049684">Otvárajte v Chrome odkazy z ľubovoľnej aplikácie a majte prehliadač k dispozícii na paneli aplikácií</translation>
 <translation id="8255190535488645436">Google Chrome používa vašu kameru a mikrofón.</translation>
 <translation id="8267953129876836456">Chrome našiel niekoľko bezpečnostných odporúčaní, ktoré by ste si mali pozrieť</translation>
 <translation id="8286862437124483331">Prehliadač Google Chrome sa pokúša zobraziť heslá. Ak to chcete povoliť, zadajte svoje heslo systému Windows.</translation>
@@ -703,7 +703,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8321888067342493336">Uložiť ako obrázok</translation>
 <translation id="8336463659890584292">Keď nejaký web požiada o súkromné prednačítanie odkazov na svojej stránke, Chrome použije servery Googlu. Týmto sa pred predinštalovaným webom skryje vaša identita, ale Google sa naučí, ktoré weby sa prednačítavajú.</translation>
 <translation id="8342675569599923794">Tento súbor je nebezpečný, a preto ho Chrome zablokoval.</translation>
-<translation id="8349094670477064572">Kedykoľvek sa prihlásite do Chromu, budete ukladať a používať heslá aj ďalší obsah vo svojom účte Google. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Otázky pre Google</translation>
 <translation id="8362914115861174987">Preklad do jazyka</translation>
 <translation id="8366770919198174997">Zníži výkonnosť, ale Chrome bude odolnejší voči útokom</translation>

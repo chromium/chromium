@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">මෙම කාඩ්පත අතථ්‍ය කාඩ්පත් අංකයකට සුදුසුකම් නොලබයි.</translation>
 <translation id="2071852865256799872">ඔබේ බ්‍රවුසර කළමනා කරනු ලබන්නේ ඔබේ සංවිධානය විසිනි, ඔබේ පැතිකඩ කළමනා කරනු ලබන්නේ <ph name="PROFILE_DOMAIN" /> විසිනි</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">තතු උපාංගයට පමණක් සුරකින ලදි</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> අවහිර නොකරන්න</translation>
 <translation id="2074771604462073334">ඔබ පැමිණ ඇත</translation>
 <translation id="2078956195623975415">සංගීත සහ නර්තන ක්‍රීඩා</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">නැව්ගත කිරීමේ ක්‍රමය</translation>
 <translation id="277499241957683684">අහිමි උපාංග වාර්ථාව</translation>
 <translation id="2775884851269838147">පළමු මුද්‍රණ පිටුව</translation>
+<translation id="277828055419948999">Chromium හට සම්මත ස්වයං පිරවීම මඟ හැරිය හැකි දුෂ්කර ක්ෂේත්‍ර ස්වයංව පිරවිය හැක</translation>
 <translation id="2781185443919227679">වෙරළ සහ දූපත්</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">ගෙවා පිටවීම සඳහා සූදානම් වෙමින්</translation>
@@ -2472,6 +2474,7 @@
 <translation id="4950898438188848926">පටිත්ත මාරු වීමේ බොත්තමෙන්, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> විවෘත පටිත්තට මාරු වීමට Enter ඔබන්න</translation>
 <translation id="495170559598752135">ක්‍රියාමාර්ග</translation>
 <translation id="4953689047182316270">ප්‍රවේශ්‍යතා සිදුවීම්වලට ප්‍රතිචාර දක්වන්න</translation>
+<translation id="4954505713046251871">යෝජනා ඉදිරිපත් කිරීමට සහ මෙම විශේෂාංගය වැඩි දියුණු කිරීමට, පිටුවේ URL සහ අන්තර්ගතය Google සමග බෙදා ගනු ලැබේ</translation>
 <translation id="4954891067389874142">ඔබේ කාඩ්පත සුරකින විට වේගයෙන් ගෙවන්න. කාඩ්පත් විස්තර Google Wallet හි සංකේතනය කර ඇත.</translation>
 <translation id="4957080528849277028">ඔබේ Chrome ඉතිහාසය බලන්න බොත්තම, Chrome සැකසීම් තුළ ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය බැලීමට සහ කළමනාකරණය කිරීමට සක්‍රිය කරන්න</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 අඩවියක්}one{අඩවි + #}other{අඩවි + #}}</translation>
@@ -3974,6 +3977,7 @@
 <translation id="7377314930809374926">ආගන්තුක සත්කාර කර්මාන්තය</translation>
 <translation id="7378594059915113390">මාධ්‍ය පාලක</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">සම්මත ස්වයං පිරවීම මඟ හැරිය හැකි දුෂ්කර ක්ෂේත්‍ර Chrome හට ස්වයං පිරවිය හැක</translation>
 <translation id="7380398842872229465">අඟ 10 x 15</translation>
 <translation id="7381551826960739226">මෙම පෝරමය ආරක්ෂිත සම්බන්ධතාවයක් භාවිතා නොකරන නිසා ස්වයංක්‍රීය ගෙවීම් ක්‍රම පිරවීම අබල කර ඇත.</translation>
 <translation id="7388380253839603603">ගෑස් මිල සහ වාහන ඉන්ධන</translation>
@@ -4898,6 +4902,7 @@
 <translation id="8858065207712248076">Chrome ඔබේ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> මුරපදය ඔබ වෙනත් අඩවිවල නැවත භාවිත කර තිබේ නම් යළි සැකසීමට නිර්දේශ කරයි.</translation>
 <translation id="885906927438988819">අක්ෂර වින්‍යාසය නිවැරදි නම්, <ph name="BEGIN_LINK" />Windows ජාල දෝෂ නිර්ණ ධාවනය කිරීම උත්සාහ කරන්න<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">ඡායාරූපකරණ සහ ඩිජිටල් කලා</translation>
+<translation id="8861482055962701239">මෙම තතු ඔබේ Google Wallet වෙත සුරැකීමට නොහැකි විය. එය වෙනුවට මෙම උපාංගයෙහි Chrome වෙත සුරැකී ඇත. ඔබ මීළඟ වතාවේ එය භාවිතා කරන විට එය Wallet වෙත සුරැකීමට Chrome ඉදිරිපත් කරයි.</translation>
 <translation id="8863218129525348270">මීළඟ වතාවේ වේගයෙන් ගෙවීමට, ඔබේ කාඩ්පත ඔබේ උපාංගයට සුරකින්න</translation>
 <translation id="8864939224504814334">ඇඳුම් සහ ව්‍යාපාරික ඇඟලුම්</translation>
 <translation id="8866132857352163524">හඬපටි</translation>

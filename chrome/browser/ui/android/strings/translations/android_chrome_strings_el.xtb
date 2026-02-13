@@ -299,6 +299,7 @@
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Εμφάνιση <ph name="TABS_COUNT_ONE" /> καρτέλας}other{Εμφάνιση <ph name="TABS_COUNT_MANY" /> καρτελών}}</translation>
 <translation id="2297822946037605517">Κοινή χρήση αυτής της σελίδας</translation>
 <translation id="230115972905494466">Δεν βρέθηκαν συμβατές συσκευές</translation>
+<translation id="2316129865977710310">Όχι, ευχαριστώ</translation>
 <translation id="2318045970523081853">Πατήστε για πραγματοποίηση κλήσης</translation>
 <translation id="2323763861024343754">Αποθηκ. χώρος ιστοσελίδας</translation>
 <translation id="2328474416100889417">Όλοι θα χάσουν αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /> και όλοι οι σύνδεσμοι πρόσκλησης θα απενεργοποιηθούν</translation>
@@ -960,6 +961,7 @@
 <translation id="5075939510584558547">Αποθήκευση χωρίς κρυπτογράφηση</translation>
 <translation id="5078638979202084724">Δημιουργία σελιδοδείκτη για όλες τις καρτέλες</translation>
 <translation id="5085038751173179818">Συνδεθείτε σε αυτόν τον ιστότοπο και στο Chrome για να μεταφέρετε τους σελιδοδείκτες σας και πολλά άλλα σε όλες τις συσκευές σας</translation>
+<translation id="5088347662971855383">Καρφίτσωμα Gemini</translation>
 <translation id="5091199029769593641">Σύντομα, θα βλέπετε ειδήσεις από τον ιστότοπο <ph name="SITE_NAME" /> όταν ανοίγετε μια νέα καρτέλα. Οι ιστότοποι που ακολουθείτε αποθηκεύονται στον Λογαριασμό σας Google. Μπορείτε να τους διαχειριστείτε στις ρυθμίσεις του Discover.</translation>
 <translation id="509429900233858213">Παρουσιάστηκε σφάλμα.</translation>
 <translation id="5096775069898886423">Λάβετε ειδοποιήσεις προτού επισκεφτείτε ιστοτόπους που δεν υποστηρίζουν ασφαλείς συνδέσεις</translation>
@@ -1341,6 +1343,7 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}other{<ph name="CONTACT_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}}</translation>
 <translation id="6649642165559792194">Προεπισκόπηση εικόνας <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="666731172850799929">Άνοιγμα σε <ph name="APP_NAME" /></translation>
+<translation id="6669390930482049506">Να λαμβάνω ειδοποιήσεις</translation>
 <translation id="6671495933530132209">Αντιγραφή εικόνας</translation>
 <translation id="6672697278890207089">Εισαγάγετε την φράση πρόσβασής σας</translation>
 <translation id="6672917148207387131">Προσθήκη <ph name="DOMAIN" /></translation>

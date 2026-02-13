@@ -299,6 +299,7 @@
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Праглядзець <ph name="TABS_COUNT_ONE" /> укладку}one{Праглядзець <ph name="TABS_COUNT_MANY" /> укладку}few{Праглядзець <ph name="TABS_COUNT_MANY" /> укладкі}many{Праглядзець <ph name="TABS_COUNT_MANY" /> укладак}other{Праглядзець <ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
 <translation id="2297822946037605517">Абагуліць гэту старонку</translation>
 <translation id="230115972905494466">Сумяшчальныя прылады не знойдзены</translation>
+<translation id="2316129865977710310">Не, дзякуй</translation>
 <translation id="2318045970523081853">Націсніце, каб зрабіць выклік</translation>
 <translation id="2323763861024343754">Сховішча сайта</translation>
 <translation id="2328474416100889417">Усе карыстальнікі адразу страцяць доступ да групы ўкладак "<ph name="GROUP_NAME" />", а ўсе спасылкі з запрашэннем будуць адключаны</translation>
@@ -960,6 +961,7 @@
 <translation id="5075939510584558547">Захоўванне без шыфравання</translation>
 <translation id="5078638979202084724">Дадаць у закладкі ўсе ўкладкі</translation>
 <translation id="5085038751173179818">Увайдзіце на сайт і ў Chrome, каб карыстацца ўкладкамі і іншым змесцівам на ўсіх сваіх прыладах</translation>
+<translation id="5088347662971855383">Замацаваць Gemini</translation>
 <translation id="5091199029769593641">Неўзабаве пры адкрыцці новай укладкі вы будзеце бачыць гісторыі з сайта <ph name="SITE_NAME" />. Сайты, на якія вы падпісаны, захоўваюцца ў вашым Уліковым запісе Google. Кіраваць імі можна ў наладах Рэкамендацый.</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
 <translation id="5096775069898886423">Атрымліваць папярэджанне, перш чым наведваць сайт, які не падтрымлівае бяспечнае падключэнне</translation>
@@ -1341,6 +1343,7 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Перадпрагляд відарыса <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="666731172850799929">Адкрыць у праграме <ph name="APP_NAME" /></translation>
+<translation id="6669390930482049506">Апавяшчаць мяне</translation>
 <translation id="6671495933530132209">Скапіраваць відарыс</translation>
 <translation id="6672697278890207089">Увядзіце фразу-пароль</translation>
 <translation id="6672917148207387131">Дадаць <ph name="DOMAIN" /></translation>

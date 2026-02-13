@@ -1118,6 +1118,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="277133753123645258">Pristatymo metodas</translation>
 <translation id="277499241957683684">Trūksta įrenginio įrašo</translation>
 <translation id="2775884851269838147">Pirmas spausdinamas lapas</translation>
+<translation id="277828055419948999">„Chromium“ gali automatiškai užpildyti sudėtingus laukus, kurių standartinė automatinio pildymo funkcija gali nepastebėti</translation>
 <translation id="2781185443919227679">Paplūdimiai ir salos</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Ruošiamasi atsiskaityti</translation>
@@ -2475,6 +2476,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4950898438188848926">Skirtuko perjungimo mygtukas. Paspauskite „Enter“, kad perjungtumėte į atidarytą skirtuką „<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />“</translation>
 <translation id="495170559598752135">Veiksmai</translation>
 <translation id="4953689047182316270">Reaguoti į pritaikymo neįgaliesiems įvykius</translation>
+<translation id="4954505713046251871">Kad būtų galima pateikti pasiūlymų ir patobulinti šią funkciją, puslapio URL ir turinys bendrinami su „Google“</translation>
 <translation id="4954891067389874142">Mokėkite greičiau išsaugoję kortelę. Išsami kortelės informacija užšifruojama „Google Wallet“.</translation>
 <translation id="4957080528849277028">Mygtukas „Peržiūrėti „Chrome“ istoriją“; suaktyvinkite, kad galėtumėte peržiūrėti ir tvarkyti naršymo istoriją „Chrome“ nustatymuose</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{ir dar 1 svetainės}one{ir dar # svetainės}few{ir dar # svetainių}many{ir dar # svetainės}other{ir dar # svetainių}}</translation>
@@ -3980,6 +3982,7 @@ Papildoma išsami informacija:
 <translation id="7377314930809374926">Svetingumo pramonė</translation>
 <translation id="7378594059915113390">Medijos valdikliai</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">„Chrome“ gali automatiškai užpildyti sudėtingus laukus, kurių standartinė automatinio pildymo funkcija gali nepastebėti</translation>
 <translation id="7380398842872229465">10 x 15 col.</translation>
 <translation id="7381551826960739226">Automatinis mokėjimo metodų pildymas neleidžiamas, nes šiai formai nenaudojamas saugus ryšys.</translation>
 <translation id="7388380253839603603">Degalų kainos ir transporto priemonių degalų sąnaudos</translation>

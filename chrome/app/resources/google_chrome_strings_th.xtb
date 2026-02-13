@@ -260,6 +260,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome ขอแนะนำให้คุณนำออก <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับส่วนขยายที่รองรับ<ph name="END_LINK" />}other{Chrome ขอแนะนําให้คุณนําออก <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับส่วนขยายที่รองรับ<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">เจาะลึกการค้นหาด้วยการเพิ่มแท็บ ไฟล์ และเครื่องมือหลายรายการโดยใช้ปุ่ม "เพิ่มแท็บและอื่นๆ"</translation>
 <translation id="3756724684201900923">ดูข้อมูลเพิ่มเติมเกี่ยวกับการติดตั้ง Chrome</translation>
+<translation id="3772152698251011058">รายงานเว็บไซต์นี้ไปยัง Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex ซิงค์ข้อมูลไม่ได้เนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -303,7 +304,6 @@
 <translation id="4205939740494406371">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดรอ 24 ชั่วโมงแล้วลองอีกครั้งหรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
 <translation id="4222932583846282852">กำลังยกเลิก...</translation>
 <translation id="4224210481850767180">ยกเลิกการติดตั้งแล้ว</translation>
-<translation id="4230631012078055975">รับประโยชน์มากขึ้นเมื่อลงชื่อเข้าใช้ Chrome</translation>
 <translation id="4242034826641750751">Chrome ต้องการสิทธิ์เข้าถึงกล้องและไมโครโฟนสำหรับเว็บไซต์นี้</translation>
 <translation id="424864128008805179">ต้องการออกจากระบบ Chrome ไหม</translation>
 <translation id="4251615635259297716">เชื่อมโยงข้อมูล Chrome กับบัญชีนี้ไหม</translation>
@@ -407,6 +407,8 @@
 <translation id="5430073640787465221">ไฟล์ค่ากำหนดของคุณขัดข้องหรือไม่ถูกต้อง Google Chrome ไม่สามารถกู้คืนการตั้งค่าของคุณได้</translation>
 <translation id="5465210843490471889">เลือกโปรไฟล์ Chrome ที่จะใช้กับ <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Chrome จะส่งข้อมูลการโต้ตอบของคุณให้กับ Google เพื่อช่วยปรับปรุงฟีเจอร์เหล่านี้ เจ้าหน้าที่ตรวจสอบอาจอ่าน ประมวลผล และใส่คำอธิบายประกอบข้อมูลดังกล่าว</translation>
+<translation id="547202872422499512">ตอนนี้ระบบจะเปิด Chrome เมื่อ Windows เริ่มทำงาน คุณจึงเริ่มท่องเว็บได้ทันที คุณปิดการดำเนินการนี้ได้ในการตั้งค่า</translation>
+<translation id="5486346529181556467">ช่วยให้ทุกคนบนโลกออนไลน์ปลอดภัยยิ่งขึ้นด้วยการรายงานเว็บไซต์ที่คิดว่าเป็นอันตราย ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />นโยบายของ Google เกี่ยวกับเว็บไซต์ที่ไม่ปลอดภัย<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">มุมซ้ายบนของพื้นที่การค้นหา: ซ้าย <ph name="LEFT" />% บน <ph name="TOP" />%</translation>
 <translation id="5550137307985173298">คลิกปุ่มปรับแต่ง Chrome ในหน้าแท็บใหม่เพื่อสร้างรูปลักษณ์ใหม่ๆ ให้ Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -566,6 +568,7 @@
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6967962315388095737">กฎขาเข้าสำหรับ Google Chrome เบต้าเพื่ออนุญาตการเข้าชมแบบ mDNS</translation>
 <translation id="6979589607440534284">ดูสาเหตุที่ Chrome บล็อกบางไฟล์ เปิดในแท็บใหม่</translation>
+<translation id="6985817499499247940">เปิด Chrome โดยอัตโนมัติเพื่อเริ่มท่องเว็บได้ทันที</translation>
 <translation id="6991926986715044139">แสดงทางลัด Google Lens เสมอ</translation>
 <translation id="6999131147875565462">Chrome ทำงานได้เร็วขึ้นและฟีเจอร์ที่ใช้ JavaScript ควรทำงานตามที่ออกแบบไว้</translation>
 <translation id="7011190694940573312">การติดตั้งไม่สำเร็จเนื่องจากระบบไม่รองรับระบบปฏิบัติการเวอร์ชันนี้</translation>
@@ -594,10 +597,10 @@
 <translation id="7288567540154601580">แท็บและส่วนขยาย</translation>
 <translation id="7296210096911315575">ข้อมูลสำคัญเกี่ยวกับการใช้งานและความปลอดภัย</translation>
 <translation id="7302361266603927550">ยังไม่ได้บันทึกข้อมูล Chrome บางอย่างของคุณลงในบัญชี Google โปรดรอสักครู่ก่อนออกจากระบบ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
+<translation id="7306401458628386911">เริ่มท่องเว็บได้ทันที: ตอนนี้ระบบสามารถเปิด Chrome เมื่อ Windows เริ่มทำงานได้แล้ว</translation>
 <translation id="7308322188646931570">Chrome ต้องการสิทธิ์เข้าถึงพื้นที่เก็บข้อมูลเพื่อดาวน์โหลดไฟล์</translation>
 <translation id="7339898014177206373">หน้าต่างใหม่</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
-<translation id="7379321689415048316">Chrome สามารถป้อนข้อมูลในช่องที่ป้อนยากซึ่งการป้อนข้อความอัตโนมัติมาตรฐานอาจพลาดไป</translation>
 <translation id="7386878009611068389">หากต้องการท่องโลกออนไลน์อย่างปลอดภัยยิ่งขึ้นด้วยตัวเลือกของผู้ปกครอง ให้เปลี่ยนไปใช้โปรไฟล์ Chrome ที่คุณลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL_ADDRESS" /> อยู่แล้ว</translation>
 <translation id="7398801000654795464">คุณเคยลงชื่อเข้าใช้ Chrome ในชื่อ <ph name="USER_EMAIL_ADDRESS" /> โปรดใช้บัญชีเดิมเพื่อลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="7412494426921990001">คลิกเมนู Chrome</translation>
@@ -657,6 +660,7 @@
 <translation id="7827099906024714326">Chrome จำเป็นต้องยืนยันว่าเป็นคุณก่อนจึงจะบันทึกข้อมูลบางอย่างในบัญชี Google และใช้ในอุปกรณ์ทุกเครื่องได้ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
 <translation id="7832314606810669113">ลงชื่อเข้าใช้ Chrome เพื่อเข้าถึงบุ๊กมาร์กและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง ระบบจะบันทึกบุ๊กมาร์กนี้ไว้ในบัญชี Google หลังจากที่คุณลงชื่อเข้าใช้</translation>
 <translation id="7845233973568007926">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทคอมพิวเตอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
+<translation id="7847170235260850604">เปิด Chrome เมื่อ Windows เริ่มทำงาน</translation>
 <translation id="7849037457735762883">ดำเนินการต่อจากที่ค้างไว้: Chrome สามารถคืนค่าแท็บทุกครั้งที่คุณรีสตาร์ท หากต้องการเปิดตัวเลือกนี้ ให้ไปที่</translation>
 <translation id="7869620795354551924">หากต้องการใช้รหัสผ่านที่บันทึกไว้ ให้สแกนคิวอาร์โค้ด, ดาวน์โหลด Chrome สำหรับ iOS และลงชื่อเข้าใช้บัญชี Google</translation>
 <translation id="7872446069773932638">กำลังดาวน์โหลด... เหลืออีก <ph name="SECONDS" /> วินาที</translation>
@@ -699,7 +703,6 @@
 <translation id="8321888067342493336">บันทึกเป็นรูปภาพ</translation>
 <translation id="8336463659890584292">เมื่อเว็บไซต์ขอโหลดลิงก์ในหน้าเว็บของตนล่วงหน้าแบบส่วนตัว Chrome จะใช้เซิร์ฟเวอร์ของ Google การดำเนินการนี้จะซ่อนตัวตนของคุณจากเว็บไซต์ที่โหลดล่วงหน้า แต่ Google จะทราบถึงเว็บไซต์ที่ได้รับการโหลดล่วงหน้า</translation>
 <translation id="8342675569599923794">ไฟล์นี้อันตราย Chrome จึงบล็อกไว้</translation>
-<translation id="8349094670477064572">คุณจะบันทึกและใช้รหัสผ่านรวมถึงข้อมูลอื่นๆ ในบัญชี Google ได้ทุกครั้งที่ลงชื่อเข้าใช้ Chrome <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">ถาม Google</translation>
 <translation id="8362914115861174987">แปลเป็นภาษา</translation>
 <translation id="8366770919198174997">ลดประสิทธิภาพแต่ทำให้ Chrome ต้านทานการโจมตีได้มากขึ้น</translation>

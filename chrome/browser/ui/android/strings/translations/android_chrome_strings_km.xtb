@@ -299,6 +299,7 @@
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{មើល <ph name="TABS_COUNT_ONE" /> ផ្ទាំង}other{មើល <ph name="TABS_COUNT_MANY" /> ផ្ទាំង}}</translation>
 <translation id="2297822946037605517">ចែករំលែកទំព័រនេះ</translation>
 <translation id="230115972905494466">រកមិន​ឃើញ​ឧបករណ៍​ដែល​ត្រូវគ្នាទេ</translation>
+<translation id="2316129865977710310">ទេ អរគុណ</translation>
 <translation id="2318045970523081853">ចុច​ដើម្បី​ហៅទូរសព្ទ</translation>
 <translation id="2323763861024343754">ទំហំផ្ទុកទិន្នន័យ</translation>
 <translation id="2328474416100889417">អ្នកគ្រប់គ្នា​នឹង​បាត់បង់​សិទ្ធិចូលប្រើ​ក្រុមផ្ទាំង “<ph name="GROUP_NAME" />” ភ្លាមៗ ហើយ​តំណអញ្ជើញ​ទាំងអស់​នឹងត្រូវបាន​បិទ</translation>
@@ -475,6 +476,7 @@
 <translation id="2992473221983447149">ការពណ៌នា​អំពីរូបភាព</translation>
 <translation id="2996291259634659425">បង្កើតឃ្លាសម្ងាត់</translation>
 <translation id="2996809686854298943">តម្រូវឲ្យមាន URL</translation>
+<translation id="3008916997590006706">ចុច "រក្សាទុក" ដើម្បីងាយស្រួលចូលប្រើពាក្យ​សម្ងាត់នេះនៅពេលអ្នកចូលគណនីលើកក្រោយ</translation>
 <translation id="3024215143424744261">បានបិទ​ចំណូលចិត្ត​មុខងារអាន</translation>
 <translation id="3026955690410463085">រួមបញ្ចូល​តំណ</translation>
 <translation id="3027644380269727216">ផ្អែក​លើ​សកម្មភាព​របស់​អ្នក​នៅលើ​គេហទំព័រ។ ការកំណត់​នេះ​ត្រូវ​បានបើក។</translation>
@@ -960,6 +962,7 @@
 <translation id="5075939510584558547">រក្សាទុក​ដោយមិន​អ៊ីនគ្រីប</translation>
 <translation id="5078638979202084724">ចំណាំផ្ទាំងទាំងអស់</translation>
 <translation id="5085038751173179818">ចូល​គណនីលើគេហទំព័រនេះ និង Chrome ដើម្បី​ទទួលបានចំណាំ​របស់អ្នក និង​អ្វីៗជាច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក</translation>
+<translation id="5088347662971855383">ខ្ទាស់ Gemini</translation>
 <translation id="5091199029769593641">ក្នុងពេលឆាប់ៗនេះ អ្នកនឹងមើលឃើញអត្ថបទពី <ph name="SITE_NAME" /> នៅពេលអ្នកបើកផ្ទាំងថ្មី។ គេហទំព័រដែលអ្នកតាមដានត្រូវបានរក្សាទុកនៅក្នុងគណនី Google របស់អ្នក។ អ្នកអាចគ្រប់គ្រងគេហទំព័រទាំងនេះនៅក្នុងការកំណត់ Discover។</translation>
 <translation id="509429900233858213">កំហុសឆ្គងបានកើតឡើង។</translation>
 <translation id="5096775069898886423">សម្រាប់​គេហទំព័រ​ដែល​មិនអាចធ្វើ​ការតភ្ជាប់​ដែលមាន​សុវត្ថិភាព អ្នកទទួលបាន​សារប្រុង​ប្រយ័ត្ន មុនពេល​ចូលមើល​គេហទំព័រនោះ</translation>
@@ -1004,6 +1007,7 @@
 <translation id="5267572070504076962">បើក​ការរុករក​ដោយសុវត្ថិភាព ដើម្បី​ទទួលបាន​ការការពារ​ប្រឆាំងនឹង​គេហទំព័រ​គ្រោះថ្នាក់</translation>
 <translation id="5271967389191913893">ឧបករណ៍មិនអាចបើកមាតិកានេះដើម្បីទាញយកបានទេ។</translation>
 <translation id="5273031377282080577">អ្នកគ្រប់គ្រងរបស់អ្នកគ្រប់គ្រងការ​កំណត់នេះ។</translation>
+<translation id="5290322819358431297">បំពេញពាក្យសម្ងាត់អ្នកដោយស្វ័យប្រវត្តិ</translation>
 <translation id="5292796745632149097">ផ្ញើ​ទៅ</translation>
 <translation id="5301876394151419436">អ្នក​បានចូល​គណនីជា <ph name="EMAIL" />។ អ្នកអាច​បញ្ឈប់​ការធ្វើ​សមកាលកម្ម​នៅពេលណាក៏បាន​នៅក្នុង​ការកំណត់។ Google អាច​កំណត់​ម៉ាស៊ីន​ស្វែងរក និង​សេវាកម្ម​ផ្សេង​ទៀតឱ្យមាន​លក្ខណៈ​ផ្ទាល់​ខ្លួន​ ផ្អែក​តាម​ប្រវត្តិ​របស់​អ្នក។</translation>
 <translation id="5304593522240415983">ប្រអប់នេះមិនអាចចន្លោះទេ</translation>
@@ -1096,6 +1100,7 @@
 <translation id="572328651809341494">ផ្ទាំងថ្មីៗ</translation>
 <translation id="5728072125198221967">សេវាកម្ម Google ដែលបានភ្ជាប់</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, ផ្ទាំងឯកជន​ដែលឮ​សំឡេង​ដែលបាន​ខ្ទាស់</translation>
+<translation id="5736345781200955827">បង្កើត រក្សាទុក និងគ្រប់គ្រងពាក្យសម្ងាត់របស់អ្នក ដើម្បីឱ្យអ្នកអាចចូលគណនីលើគេហទំព័រ និងកម្មវិធីបានយ៉ាងងាយស្រួលដោយប្រើ Chrome</translation>
 <translation id="5744751019568455640">ទាំងនេះគឺជាសំឡេងដែលអ្នកអាចជ្រើសរើសឱ្យអានទំព័រ​បណ្ដាញរបស់អ្នកឮៗ។ ប្រសិនបើ​អ្នកចូលចិត្តសំឡេងនេះ ហើយចង់ឱ្យខ្ញុំបន្ត​ប្រើសំឡេងនេះ គ្រាន់តែចុចឈ្មោះសំឡេងនេះជាការស្រេច។</translation>
 <translation id="574845902699630049">ចែករំលែក​ជា <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome ត្រូវការលទ្ធភាពចូលប្រើទំហំផ្ទុកដើម្បីដោនឡូតឯកសារ</translation>
@@ -1341,6 +1346,7 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ទៀត}other{<ph name="CONTACT_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ទៀត}}</translation>
 <translation id="6649642165559792194">មើល​រូបភាព​សាកល្បង <ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="666731172850799929">បើកក្នុង <ph name="APP_NAME" /></translation>
+<translation id="6669390930482049506">ជូនដំណឹង​ដល់ខ្ញុំ</translation>
 <translation id="6671495933530132209">ចម្លងរូបភាព</translation>
 <translation id="6672697278890207089">បញ្ចូលឃ្លា​សម្ងាត់របស់អ្នក</translation>
 <translation id="6672917148207387131">បញ្ចូល <ph name="DOMAIN" /></translation>

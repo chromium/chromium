@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">Тази карта не отговаря на условията за номер на виртуална карта.</translation>
 <translation id="2071852865256799872">Браузърът ви се управлява от организацията ви, а потребителският ви профил – от <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Информацията е запазена само на устройството</translation>
 <translation id="2074733626795553847">Отблокиране на <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Посетихте</translation>
 <translation id="2078956195623975415">Музикални и танцови игри</translation>
@@ -703,6 +704,7 @@
 <translation id="2137891579555018930">Чака се разрешение...</translation>
 <translation id="213826338245044447">Мобилни отметки</translation>
 <translation id="2141000681034340397">Редактиране на въведеното</translation>
+<translation id="2141475438898772664">Плащане на 4 вноски или месечно</translation>
 <translation id="2144171668675205303">Няма активни теми</translation>
 <translation id="2145193671493396738">Икономически новини</translation>
 <translation id="214556005048008348">Анулиране на плащането</translation>
@@ -1116,6 +1118,7 @@
 <translation id="277133753123645258">Начин на доставка</translation>
 <translation id="277499241957683684">Липсващ запис за устройството</translation>
 <translation id="2775884851269838147">Първа страница за отпечатване</translation>
+<translation id="277828055419948999">Chromium може да попълва автоматично трудни полета, които стандартната функция за автоматично попълване може да пропусне</translation>
 <translation id="2781185443919227679">Плажове и острови</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Подготовка за плащане</translation>
@@ -2472,6 +2475,7 @@
 <translation id="4950898438188848926">Бутон за превключване между раздели. Натиснете Enter, за да преминете към отворения раздел – <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4953689047182316270">Реагиране на събития за достъпност</translation>
+<translation id="4954505713046251871">За да ви показваме предложения и да подобрим тази функция, URL адресът и съдържанието на страницата се споделят с Google</translation>
 <translation id="4954891067389874142">Плащайте по-бързо, когато картата ви е запазена. Данните за картата се шифроват в Google Wallet.</translation>
 <translation id="4957080528849277028">Бутон „Преглед на историята ви в Chrome“. Активирайте, за да прегледате и управлявате историята си на сърфиране в настройките на Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайта}}</translation>
@@ -2846,6 +2850,7 @@
 <translation id="5543564889050342791">Зоопаркове, аквариуми и резервати</translation>
 <translation id="5543722831081909240">180 градуса</translation>
 <translation id="5544836308113951378">Круизи и чартъри</translation>
+<translation id="5545314360139398232">Свързване на <ph name="ISSUER_NAME" /> за плащане на вноски</translation>
 <translation id="5547939254150808298">Печатарска и издателска дейност</translation>
 <translation id="554815783948612276">Доставчици на форуми и чат услуги</translation>
 <translation id="5548606607480005320">Проверка на безопасността</translation>
@@ -3693,6 +3698,7 @@
 <translation id="6926216138694948720">Бодиарт</translation>
 <translation id="692638818576287323">Търговски превозни средства</translation>
 <translation id="6927878187051807444">файловете от камерата и екранните снимки</translation>
+<translation id="6929949393612835405">Затваряне и връщане към „<ph name="OPENER_TITLE" />“</translation>
 <translation id="6930607614725241390">Търсене в страничния панел</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Основната търсеща машина ви дава възможност да търсите в мрежата и да се възползвате от функции на Chrome<ph name="END_BOLD" />, като например търсене от адресната лента и от изображенията в уеб страниците. Някои функции може да не са налице, ако не се поддържат от търсещата ви машина.</translation>
 <translation id="6934672428414710184">Това име е от профила ви в Google</translation>
@@ -3975,6 +3981,7 @@
 <translation id="7377314930809374926">Туристически отрасъл</translation>
 <translation id="7378594059915113390">Контроли за мултимедия</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome може да попълва автоматично трудни полета, които стандартната функция за автоматично попълване може да пропусне</translation>
 <translation id="7380398842872229465">10 x 15 инча</translation>
 <translation id="7381551826960739226">Автоматичното попълване на начините на плащане е деактивирано, защото този формуляр не използва защитена връзка.</translation>
 <translation id="7388380253839603603">Цени на горива и зареждане с гориво на превозни средства</translation>
@@ -4899,6 +4906,7 @@
 <translation id="8858065207712248076">Chrome препоръчва да зададете повторно паролата си за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, ако сте я използвали и на други сайтове.</translation>
 <translation id="885906927438988819">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте мрежова диагностика в Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Фотографски и цифрови изкуства</translation>
+<translation id="8861482055962701239">Тази информация не бе запазена в профила ви в Google Wallet. Вместо това е запазена в Chrome на това устройство. Chrome ще предложи да я запази в Wallet следващия път, когато я използвате.</translation>
 <translation id="8863218129525348270">За да платите по-бързо следващия път, запазете картата на устройството си</translation>
 <translation id="8864939224504814334">Костюми и бизнес облекло</translation>
 <translation id="8866132857352163524">Саундтракове</translation>

@@ -354,6 +354,7 @@
 <translation id="1221825588892235038">เนื้อหาที่เลือกเท่านั้น</translation>
 <translation id="1222835797152767346">ตั้ง PIN เพื่อให้ลงชื่อเข้าใช้ได้ง่ายขึ้น</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ต้องมีใบอนุญาต</translation>
+<translation id="1223498995510244364">สรุป</translation>
 <translation id="1223853788495130632">ผู้ดูแลระบบของคุณแนะนำให้ใช้ค่าเฉพาะสำหรับการตั้งค่านี้</translation>
 <translation id="1225177025209879837">กำลังดำเนินการตามคำขอ...</translation>
 <translation id="1227107020813934021">ค้นหาเครื่องสแกนเอกสาร</translation>
@@ -5863,7 +5864,6 @@
 <translation id="495170559598752135">การทำงาน</translation>
 <translation id="4951966678293618079">ไม่บันทึกรหัสผ่านสำหรับเว็บไซต์นี้</translation>
 <translation id="4953808748584563296">รูปโปรไฟล์เริ่มต้นสีส้ม</translation>
-<translation id="4954505713046251871">ระบบจะแชร์ URL และเนื้อหาของหน้าเว็บกับ Google เพื่อแสดงคำแนะนำและปรับปรุงฟีเจอร์นี้</translation>
 <translation id="4954652437333037880">ไฟล์</translation>
 <translation id="4955707703665801001">ระดับการเข้าถึงของ<ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">เลือก PIN ของคุณ</translation>
@@ -6202,6 +6202,7 @@
 <translation id="5191251636205085390">ดูข้อมูลและควบคุมเทคโนโลยีใหม่ๆ ที่มีจุดประสงค์เพื่อมาแทนที่คุกกี้ของบุคคลที่สาม</translation>
 <translation id="519185197579575131">ใช้ QT</translation>
 <translation id="5192062846343383368">เปิดแอป Family Link เพื่อดูการตั้งค่าการควบคุมดูแล</translation>
+<translation id="5193602404493965468">* ต้องระบุ <ph name="FIELD_LIST" /></translation>
 <translation id="5193978546360574373">การดำเนินการนี้จะนำสิทธิ์เข้าถึง Google ไดรฟ์ใน Chromebook เครื่องนี้ออก รวมถึงสิทธิ์เข้าถึงไฟล์ที่กำหนดให้ใช้งานได้แบบออฟไลน์</translation>
 <translation id="5193988420012215838">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="5194256020863090856">การดำเนินการนี้จะมีผลกับหน้าต่างที่ไม่ระบุตัวตนเท่านั้น</translation>

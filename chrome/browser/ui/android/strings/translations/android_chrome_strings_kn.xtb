@@ -299,6 +299,7 @@
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ನೋಡಿ}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಿ}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಿ}}</translation>
 <translation id="2297822946037605517">ಈ ಪುಟವನ್ನು ಹಂಚಿ</translation>
 <translation id="230115972905494466">ಯಾವುದೇ ಹೊಂದಾಣಿಕೆಯಾಗುವ ಸಾಧನಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
+<translation id="2316129865977710310">ಬೇಡ, ಧನ್ಯವಾದಗಳು</translation>
 <translation id="2318045970523081853">ಕರೆ ಮಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2323763861024343754">ಸೈಟ್ ಸಂಗ್ರಹಣೆ</translation>
 <translation id="2328474416100889417">ಪ್ರತಿಯೊಬ್ಬರೂ ತಕ್ಷಣವೇ "<ph name="GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ ಮತ್ತು ಎಲ್ಲಾ ಆಹ್ವಾನ ಲಿಂಕ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
@@ -475,6 +476,7 @@
 <translation id="2992473221983447149">ಚಿತ್ರದ ವಿವರಣೆಗಳು</translation>
 <translation id="2996291259634659425">ಪಾಸ್‌ಫ್ರೇಸ್ ರಚಿಸಿ</translation>
 <translation id="2996809686854298943">URL ಅಗತ್ಯವಿದೆ</translation>
+<translation id="3008916997590006706">ಮುಂದಿನ ಬಾರಿ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸುಲಭವಾಗಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಸೇವ್ ಮಾಡಿ ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="3024215143424744261">ರೀಡಿಂಗ್ ಮೋಡ್ ಆದ್ಯತೆಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="3026955690410463085">ಲಿಂಕ್ ಸೇರಿಸಿ</translation>
 <translation id="3027644380269727216">ಸೈಟ್‌ ಒಂದರಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಆಧರಿಸಿ. ಈ ಸೆಟ್ಟಿಂಗ್ ಆನ್ ಆಗಿದೆ.</translation>
@@ -959,6 +961,7 @@
 <translation id="5075939510584558547">ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಇಲ್ಲದೆ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="5078638979202084724">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ</translation>
 <translation id="5085038751173179818">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು ಈ ಸೈಟ್ ಮತ್ತು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
+<translation id="5088347662971855383">Gemini ಅನ್ನು ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="5091199029769593641">ಶೀಘ್ರವೇ, ನೀವು ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತೆರೆದಾಗ, ನಿಮಗೆ <ph name="SITE_NAME" /> ನಲ್ಲಿ ಸ್ಟೋರಿಗಳನ್ನು ಕಾಣುತ್ತವೆ. ನೀವು ಅನುಸರಿಸುವ ಸೈಟ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ನೀವು ಅವುಗಳನ್ನು Discover ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="509429900233858213">ದೋಷವೊಂದು ಕಾಣಿಸಿಕೊಂಡಿದೆ.</translation>
 <translation id="5096775069898886423">ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್‌ಗಳನ್ನು ಬೆಂಬಲಿಸದ ಸೈಟ್‌ಗಳಿಗಾಗಿ, ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡುವ ಮೊದಲು ಎಚ್ಚರಿಕೆಯನ್ನು ಪಡೆಯಿರಿ</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5267572070504076962">ಅಪಾಯಕಾರಿ ಸೈಟ್‌ಗಳ ದಾಳಿಯಿಂದ ರಕ್ಷಣೆ ಪಡೆಯಲು ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="5271967389191913893">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಬೇಕಾದ ವಿಷಯವನ್ನು ಸಾಧನಕ್ಕೆ ತೆರೆಯಲಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="5273031377282080577">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
+<translation id="5290322819358431297">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="5292796745632149097">ಇಲ್ಲಿಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="5301876394151419436">ನೀವು <ph name="EMAIL" /> ಎಂಬುದಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿರುವಿರಿ ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು. Google, ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಆಧರಿಸಿ Search ಮತ್ತು ಇತರ ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಬಹುದು.</translation>
 <translation id="5304593522240415983">ಈ ಕ್ಷೇತ್ರವು ಖಾಲಿಯಾಗಿರುವಂತಿಲ್ಲ</translation>
@@ -1095,6 +1099,7 @@
 <translation id="572328651809341494">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="5728072125198221967">ಲಿಂಕ್ ಮಾಡಿರುವ Google ಸೇವೆಗಳು</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಲಾದ ಆಡಿಬಲ್ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
+<translation id="5736345781200955827">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ, ಸೇವ್ ಮಾಡಿ ಹಾಗೂ ನಿರ್ವಹಿಸಿ ಇದರಿಂದ ನೀವು Chrome ಅನ್ನು ಬಳಸಿಕೊಂಡು ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು</translation>
 <translation id="5744751019568455640">ನಿಮ್ಮ ವೆಬ್‌ಪುಟದಲ್ಲಿನ ವಿಷಯವನ್ನು ಓದಲು ನೀವು ಆಯ್ಕೆಮಾಡಬಹುದಾದ ಎಲ್ಲಾ ಧ್ವನಿಗಳು ಇಲ್ಲಿವೆ. ನೀವು ಈ ಧ್ವನಿಯನ್ನು ಇಷ್ಟಪಟ್ಟರೆ ಮತ್ತು ನಾನು ಅದನ್ನು ಬಳಸುವುದನ್ನು ಮುಂದುವರಿಸಲು ಬಯಸಿದರೆ, ಧ್ವನಿಯ ಹೆಸರನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="574845902699630049"><ph name="OWNER_FULL_NAME" /> ಹೆಸರಿನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="5749068826913805084">ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು Chrome ಗೆ ಸಂಗ್ರಹಣೆ ಆ್ಯಕ್ಸೆಸ್ ಅಗತ್ಯವಿದೆ.</translation>
@@ -1340,6 +1345,7 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">ಚಿತ್ರವನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸದು<ph name="END_NEW" /></translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> ರಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
+<translation id="6669390930482049506">ನನಗೆ ತಿಳಿಸಿ</translation>
 <translation id="6671495933530132209">ಚಿತ್ರವನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="6672697278890207089">ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ನಮೂದಿಸಿ</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ಅನ್ನು ಸೇರಿಸಿ</translation>

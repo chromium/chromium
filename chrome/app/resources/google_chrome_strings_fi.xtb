@@ -251,6 +251,7 @@
 <translation id="3622716124581627104">Tunnista asioita tai paikkoja ja kopioi tai käännä tekstiä. Kun käytät Google Lensia, sivusta lähetetään kuvakaappaus Googlelle. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nyt voit helpommin käyttää Chromea Google-tililläsi ja jaetuilla tietokoneilla.</translation>
 <translation id="3635073343384702370">Chrome voi tarkistaa salasanasi, kun tallennat niitä</translation>
+<translation id="3636970668267555808">Kun valitset Chromen oletusselaimeksi, saat helposti käyttöösi tutut, luotettavat ominaisuudet.</translation>
 <translation id="3667616615096815454">Asennus ei onnistu, palvelin ei tunnista sovellusta.</translation>
 <translation id="3673813398384385993">Chrome havaitsi, että "<ph name="EXTENSION_NAME" />" sisältää haittaohjelmia</translation>
 <translation id="3697952514309507634">Muut Chrome-profiilit</translation>
@@ -304,7 +305,6 @@
 <translation id="4205939740494406371">Chrome ei voi tarkistaa salasanojasi. Yritä uudelleen 24 tunnin kuluttua tai <ph name="BEGIN_LINK" />tarkista salasanat Google-tililtä<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Peruutetaan…</translation>
 <translation id="4224210481850767180">Asennus on peruutettu.</translation>
-<translation id="4230631012078055975">Enemmän ominaisuuksia, kun olet kirjautuneena Chromeen</translation>
 <translation id="4242034826641750751">Chrome tarvitsee kameran ja mikrofonin luvan tällä sivustolla</translation>
 <translation id="424864128008805179">Kirjaudutaanko ulos Chromesta?</translation>
 <translation id="4251615635259297716">Linkitetäänkö Chrome-tiedot tähän tiliin?</translation>
@@ -440,6 +440,7 @@
 <translation id="5756509061973259733">Tämän tilin Chrome-profiili on jo tällä laitteella</translation>
 <translation id="5759947850379142561">Valitse teksti tai kuva, jota haluat hakea Google Lensilla, tai poistu Google Lensista painamalla Escape</translation>
 <translation id="5762867845020858790">Lisää uusi Chrome-profiili, jotta kirjanmerkit, salasanat ja asetukset pysyvät erillään.</translation>
+<translation id="5779427581965287859">Valitse Chrome oletusselaimeksi ja kiinnitä se tehtäväpalkkiin</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chromen käynnistäminen epäonnistui. Yritä uudelleen.</translation>
 <translation id="5809516625706423866">Internetyhteyden muodostaminen ei onnistu. HTTP 401 (ei lupaa). Tarkista välityspalvelimen asetukset.</translation>
@@ -597,7 +598,6 @@
 <translation id="7308322188646931570">Chrome tarvitsee tallennustilan käyttöoikeuden tiedostojen lataamiseen.</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>
 <translation id="7352651011704765696">Tapahtui jokin virhe</translation>
-<translation id="7379321689415048316">Chrome voi täyttää automaattisesti vaikeita kenttiä, jotka tavallinen automaattinen täyttö ei välttämättä havaitse</translation>
 <translation id="7386878009611068389">Jos haluat käyttää vanhempasi valintoja verkossa, vaihda Chrome-profiiliin, jolla olet jo kirjautuneena tilillä <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Chromeen kirjautunut käyttäjä: <ph name="USER_EMAIL_ADDRESS" />. Kirjaudu uudelleen sisään samalla tilillä.</translation>
 <translation id="7412494426921990001">Valitse Chrome-valikko</translation>
@@ -690,6 +690,7 @@
 <translation id="8162006532256575008">Käytä Chromea ilman tiliä</translation>
 <translation id="8177472873527554730">Sisältöä ei löydy sivulta</translation>
 <translation id="8221491193165283816">Estät yleensä ilmoitukset. Voit antaa tälle sivustolle luvan lähettää ilmoituksia klikkaamalla tätä.</translation>
+<translation id="8253851811470049684">Avaa linkit Chromessa mistä tahansa sovelluksesta ja pidä selain käytettävissä tehtäväpalkissa</translation>
 <translation id="8255190535488645436">Google Chrome käyttää kameraasi ja mikrofoniasi.</translation>
 <translation id="8267953129876836456">Chrome on löytänyt turvallisuussuosituksia, jotka sinun täytyy tarkistaa</translation>
 <translation id="8286862437124483331">Google Chrome yrittää näyttää salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
@@ -698,7 +699,6 @@
 <translation id="8321888067342493336">Tallenna kuvana</translation>
 <translation id="8336463659890584292">Kun sivusto pyytää lupaa esiladata sen sivulla olevia linkkejä yksityisesti, Chrome käyttää Googlen palvelimia. Henkilöllisyytesi piilotetaan esiladatulta sivustolta, mutta Google oppii, mitä sivustoja esiladataan.</translation>
 <translation id="8342675569599923794">Tämä tiedosto on vaarallinen, joten Chrome on estänyt sen.</translation>
-<translation id="8349094670477064572">Voit tallentaa ja käyttää esimerkiksi Google-tilin salasanoja aina, kun olet kirjautuneena Chromeen. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Kysy Googlelta</translation>
 <translation id="8362914115861174987">Käännä kielelle</translation>
 <translation id="8366770919198174997">Rajoittaa suorituskykyä, mutta tekee Chromesta suojatumman hyökkäyksiä vastaan</translation>

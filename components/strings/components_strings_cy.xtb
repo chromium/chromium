@@ -704,6 +704,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2137891579555018930">Wrthi'n aros am ganiatâd…</translation>
 <translation id="213826338245044447">Nodau Tudalen Symudol</translation>
 <translation id="2141000681034340397">Golygu eich mewnbwn</translation>
+<translation id="2141475438898772664">Talu mewn 4 neu'n fisol</translation>
 <translation id="2144171668675205303">Dim pynciau gweithredol</translation>
 <translation id="2145193671493396738">Newyddion yr Economi</translation>
 <translation id="214556005048008348">Canslo taliad</translation>
@@ -1117,6 +1118,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="277133753123645258">Dull anfon</translation>
 <translation id="277499241957683684">Cofnod dyfais ar goll</translation>
 <translation id="2775884851269838147">Tudalen argraffu gyntaf</translation>
+<translation id="277828055419948999">Gall Chromium awtolenwi meysydd anodd y gallai awtolenwi safonol eu colli</translation>
 <translation id="2781185443919227679">Traethau ac Ynysoedd</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Wrthi'n paratoi am dalu</translation>
@@ -2473,6 +2475,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4950898438188848926">Botwm newid tab, pwyswch Enter i newid i'r tab sydd ar agor, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Gweithrediadau</translation>
 <translation id="4953689047182316270">Ymateb i Ddigwyddiadau Hygyrchedd</translation>
+<translation id="4954505713046251871">Er mwyn cynnig awgrymiadau a gwella'r nodwedd hon, mae URL a chynnwys y dudalen yn cael eu rhannu â Google</translation>
 <translation id="4954891067389874142">Talwch yn gyflymach pan fydd eich cerdyn wedi'i gadw. Mae manylion cerdyn wedi'u hamgryptio yn Google Wallet.</translation>
 <translation id="4957080528849277028">Botwm gweld eich hanes Chrome, gweithredwch i weld a rheoli eich hanes pori yn y gosodiadau Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 wefan}zero{+ # gwefannau}two{+ # wefan}few{+ # gwefan}many{+ # gwefan}other{+ # gwefan}}</translation>
@@ -2847,6 +2850,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5543564889050342791">Sŵau, Pysgotai a Gwarchodfeydd</translation>
 <translation id="5543722831081909240">180 gradd</translation>
 <translation id="5544836308113951378">Mordeithiau a Llongau Siarter</translation>
+<translation id="5545314360139398232">Cysylltwch <ph name="ISSUER_NAME" /> i dalu dros amser</translation>
 <translation id="5547939254150808298">Argraffu a Chyhoeddi</translation>
 <translation id="554815783948612276">Darparwyr Fforwm a Sgwrsio</translation>
 <translation id="5548606607480005320">Gwiriad diogelwch</translation>
@@ -3694,6 +3698,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6926216138694948720">Celf Corff</translation>
 <translation id="692638818576287323">Cerbydau Masnachol</translation>
 <translation id="6927878187051807444">ffeiliau camera a sgrinluniau</translation>
+<translation id="6929949393612835405">Cau a dychwelyd i "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Chwilio yn y panel ochr</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Mae eich peiriant chwilio diofyn yn gadael i chi chwilio'r we ac yn pweru nodweddion Chrome<ph name="END_BOLD" /> fel chwilio o'r bar cyfeiriad ac o ddelweddau ar dudalennau gwe. Mae'n bosib na fydd nodwedd ar gael os nad yw'ch peiriant chwilio yn ei chefnogi.</translation>
 <translation id="6934672428414710184">Mae'r enw hwn yn dod o'ch Cyfrif Google</translation>
@@ -3975,6 +3980,7 @@ Manylion ychwanegol:
 <translation id="7377314930809374926">Diwydiant Lletygarwch</translation>
 <translation id="7378594059915113390">Rheolaethau Cyfryngau</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Gall Chrome awtolenwi meysydd anodd y gallai awtolenwi safonol eu colli</translation>
 <translation id="7380398842872229465">10 x 15 modfedd</translation>
 <translation id="7381551826960739226">Mae llenwi dulliau talu awtomatig wedi'i analluogi oherwydd nid yw'r ffurflen hon yn defnyddio cysylltiad diogel.</translation>
 <translation id="7388380253839603603">Prisiau Tanwydd a Llenwi Cerbydau â Thanwydd</translation>

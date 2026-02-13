@@ -655,6 +655,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2071156619270205202">Huwezi kupata namba ya kadi pepe kwa kutumia kadi hii.</translation>
 <translation id="2071852865256799872">Kivinjari chako kinadhibitiwa na shirika lako na wasifu wako unadhibitiwa na <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Maelezo yamehifadhiwa kwenye kifaa pekee</translation>
 <translation id="2074733626795553847">Ruhusu <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Ulitembelea</translation>
 <translation id="2078956195623975415">Michezo ya Muziki na Dansi</translation>
@@ -1116,6 +1117,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="277133753123645258">Mbinu ya usafirishaji</translation>
 <translation id="277499241957683684">Rekodi ya kifaa inayokosekana</translation>
 <translation id="2775884851269838147">Kwanza chapisha ukurasa</translation>
+<translation id="277828055419948999">Chromium inaweza kujaza kiotomatiki sehemu ngumu ambazo kipengele cha kawaida cha kujaza kiotomatiki kinaweza kukosa</translation>
 <translation id="2781185443919227679">Fukwe na Visiwa</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Inajiandaa kulipa</translation>
@@ -2472,6 +2474,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4950898438188848926">Kitufe cha kubadilisha kichupo, bonyeza Enter ili uende kwenye kichupo cha kufungua, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Vitendo</translation>
 <translation id="4953689047182316270">Kushughulikia Matukio ya Zana za Walio na Matatizo ya Kuona au Kusikia</translation>
+<translation id="4954505713046251871">Ili kukupa mapendekezo na kuboresha kipengele hiki, maudhui na URL ya ukurasa hutumwa kwa Google</translation>
 <translation id="4954891067389874142">Lipa kwa haraka zaidi unapohifadhi maelezo ya kadi yako. Maelezo ya kadi yamesimbwa kwa njia fiche kwenye Pochi ya Google.</translation>
 <translation id="4957080528849277028">Kitufe cha 'Angalia historia yako kwenye Chrome', washa ili uangalie na udhibiti historia yako ya kuvinjari katika mipangilio ya Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{Na tovuti 1}other{Na tovuti #}}</translation>
@@ -3973,6 +3976,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7377314930809374926">Sekta ya Ukarimu</translation>
 <translation id="7378594059915113390">Vidhibiti vya Maudhui</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome inaweza kujaza kiotomatiki sehemu ngumu ambazo kipengele cha kawaida cha kujaza kiotomatiki kinaweza kukosa</translation>
 <translation id="7380398842872229465">Inchi 10 x 15</translation>
 <translation id="7381551826960739226">Kipengele cha kujaza mbinu za kulipa kiotomatiki kimezimwa kwa sababu fomu hii haitumii muunganisho salama.</translation>
 <translation id="7388380253839603603">Bei za Mafuta na Ujazaji Mafuta kwenye Magari</translation>
@@ -4896,6 +4900,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8858065207712248076">Chrome inapendekeza ubadilishe nenosiri lako la <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ikiwa ulilitumia tena kwenye tovuti zingine.</translation>
 <translation id="885906927438988819">Iwapo hakuna kosa la hijai, <ph name="BEGIN_LINK" />jaribu kutekeleza Uchunguzi wa Mtandao<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Sanaa Dijitali na ya Upigaji Picha</translation>
+<translation id="8861482055962701239">Imeshindwa kuhifadhi maelezo haya kwenye Pochi yako ya Google. Badala yake, imeyahifadhi kwenye Chrome katika kifaa hiki. Chrome itakuomba kuyahifadhi kwenye Pochi wakati mwingine utakapoyatumia.</translation>
 <translation id="8863218129525348270">Ili ulipe kwa haraka wakati ujao, hifadhi maelezo ya kadi yako kwenye kifaa chako</translation>
 <translation id="8864939224504814334">Suti na Mavazi Rasmi</translation>
 <translation id="8866132857352163524">Nyimbo</translation>

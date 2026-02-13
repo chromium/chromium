@@ -304,7 +304,6 @@
 <translation id="4205939740494406371">Chrome no puede revisar las contraseñas. Vuelve a intentarlo dentro de 24 horas o <ph name="BEGIN_LINK" />revisa las contraseñas en tu Cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Cancelando…</translation>
 <translation id="4224210481850767180">Se canceló la instalación.</translation>
-<translation id="4230631012078055975">Obtén más cuando accedas a Chrome</translation>
 <translation id="4242034826641750751">Chrome necesita permiso de acceso al micrófono y la cámara para este sitio.</translation>
 <translation id="424864128008805179">¿Quieres salir de Chrome?</translation>
 <translation id="4251615635259297716">¿Quieres vincular tus datos de Google Chrome con esta cuenta?</translation>
@@ -598,7 +597,6 @@
 <translation id="7308322188646931570">Chrome necesita acceder al almacenamiento para descargar archivos</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
-<translation id="7379321689415048316">Chrome puede autocompletar campos difíciles que la función de autocompletar estándar podría omitir</translation>
 <translation id="7386878009611068389">Para protegerte en línea con las elecciones de tu madre o padre, cambia a tu perfil de Chrome, en el que ya accediste como <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Accediste a Google Chrome con <ph name="USER_EMAIL_ADDRESS" />. Usa la misma cuenta para volver a acceder.</translation>
 <translation id="7412494426921990001">Haz clic en el menú de Chrome</translation>
@@ -700,7 +698,6 @@
 <translation id="8321888067342493336">Guardar como imagen</translation>
 <translation id="8336463659890584292">Cuando un sitio te pregunta si quieres precargar de forma privada los vínculos de su página, Chrome usa los servidores de Google. De esta manera, se oculta tu identidad del sitio precargado, pero Google aprende qué sitios se precargan.</translation>
 <translation id="8342675569599923794">Chrome bloqueó este archivo porque es peligroso.</translation>
-<translation id="8349094670477064572">Guardarás y usarás contraseñas y otros datos en tu Cuenta de Google cada vez que accedas a Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Pregúntale a Google</translation>
 <translation id="8362914115861174987">Traducir al</translation>
 <translation id="8366770919198174997">Reduce el rendimiento, pero hace que Chrome sea más resistente a los ataques</translation>

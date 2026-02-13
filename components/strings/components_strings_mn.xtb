@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">Энэ карт нь виртуал картын дугаарын эрхгүй байна.</translation>
 <translation id="2071852865256799872">Танай байгууллага таны хөтчийг удирддаг бөгөөд <ph name="PROFILE_DOMAIN" /> таны профайлыг удирддаг</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Мэдээллийг зөвхөн төхөөрөмжид хадгалсан</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />-г блокоос гаргах</translation>
 <translation id="2074771604462073334">Та зочилсон</translation>
 <translation id="2078956195623975415">Хөгжим, бүжгийн тоглоомууд</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">Хүргэлтийн арга</translation>
 <translation id="277499241957683684">Орхигдсон төхөөрөмж нь бичлэг</translation>
 <translation id="2775884851269838147">Эхний хуудсыг хэвлэх</translation>
+<translation id="277828055419948999">Chromium стандарт автоматаар бөглөх хэсгийн орхиж болзошгүй хүндрэлтэй талбаруудыг автоматаар бөглөх боломжтой</translation>
 <translation id="2781185443919227679">Далайн эрэг, арлууд</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Тооцоо хийхэд бэлдэж байна</translation>
@@ -2473,6 +2475,7 @@
 <translation id="4950898438188848926">Таб сэлгэх товчлуур, нээлттэй таб <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> руу сэлгэхийн тулд Enter дээр дарна уу</translation>
 <translation id="495170559598752135">Авах арга хэмжээ</translation>
 <translation id="4953689047182316270">Хүртээмжийн үйл ажиллагаанд хариу өгөх</translation>
+<translation id="4954505713046251871">Зөвлөмж санал болгож, энэ онцлогийг сайжруулахын тулд хуудасны URL, контентыг Google-тэй хуваалцдаг</translation>
 <translation id="4954891067389874142">Картаа хадгалсан үед илүү хурдан төлөөрэй. Картын дэлгэрэнгүй мэдээллийг Google Wallet-д шифрлэдэг.</translation>
 <translation id="4957080528849277028">Chrome-н түүхээ үзэх товчлуур, Chrome-н тохиргоонд хөтчийн түүхээ үзэх болон удирдахын тулд идэвхжүүлнэ үү</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайт}}</translation>
@@ -3974,6 +3977,7 @@
 <translation id="7377314930809374926">Зочлох үйлчилгээний салбар</translation>
 <translation id="7378594059915113390">Медиа хяналт</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome стандарт автоматаар бөглөх хэсгийн орхиж болзошгүй хүндрэлтэй талбаруудыг автоматаар бөглөх боломжтой</translation>
 <translation id="7380398842872229465">10 x 15 инч</translation>
 <translation id="7381551826960739226">Энэ маягт аюулгүй холболт ашигладаггүй тул төлбөрийн хэрэгслийг автоматаар бөглөхийг идэвхгүй болгосон.</translation>
 <translation id="7388380253839603603">Шатахууны үнэ, тээврийн хэрэгслийн түлш</translation>
@@ -4898,6 +4902,7 @@
 <translation id="8858065207712248076">Хэрэв та <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-н нууц үгийг бусад сайтад дахин ашигласан бол Chrome-с үүнийг шинэчлэхийг зөвлөж байна.</translation>
 <translation id="885906927438988819">Хэрэв алдаагүй, зөв бичсэн бол <ph name="BEGIN_LINK" />Windows-н сүлжээний оношилгоог ажиллуулж үзнэ үү<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Гэрэл зураг, дижитал урлагууд</translation>
+<translation id="8861482055962701239">Энэ мэдээллийг таны Google Wallet-д хадгалж чадсангүй. Оронд нь энэ төхөөрөмж дээр Chrome-д хадгалсан. Таныг дараагийн удаа үүнийг ашиглахад Chrome Wallet-д хадгалахыг санал болгоно.</translation>
 <translation id="8863218129525348270">Дараагийн удаа төлбөрөө илүү хурдан төлөхийн тулд картаа төхөөрөмждөө хадгална уу</translation>
 <translation id="8864939224504814334">Хослол болон албан хэргийн хувцас</translation>
 <translation id="8866132857352163524">Киноны дуу</translation>

@@ -655,7 +655,7 @@
 <translation id="2071156619270205202">此卡不能建立虛擬卡號。</translation>
 <translation id="2071852865256799872">你的瀏覽器由機構管理，個人檔案則由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
-<translation id="2073286362006276165">資訊只會儲存到裝置</translation>
+<translation id="2073286362006276165">資料只儲存至裝置</translation>
 <translation id="2074733626795553847">解除封鎖「<ph name="TOPIC" />」</translation>
 <translation id="2074771604462073334">上次瀏覽：</translation>
 <translation id="2078956195623975415">音樂和舞蹈遊戲</translation>
@@ -1117,6 +1117,7 @@
 <translation id="277133753123645258">運送方式</translation>
 <translation id="277499241957683684">沒有裝置記錄</translation>
 <translation id="2775884851269838147">第一列印頁</translation>
+<translation id="277828055419948999">Chromium 可自動填入標準自動填入功能可能遺漏的複雜欄位</translation>
 <translation id="2781185443919227679">海灘和島嶼</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">正在準備結帳</translation>
@@ -2472,6 +2473,7 @@
 <translation id="4950898438188848926">分頁切換按鈕，㩒一下 Enter 鍵就可以轉去開以下嘅分頁：<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4953689047182316270">回應無障礙功能事件</translation>
+<translation id="4954505713046251871">為提供建議及改善此功能，頁面網址和內容會與 Google 分享</translation>
 <translation id="4954891067389874142">儲存信用卡可加快付款速度。「Google 錢包」會加密信用卡詳情。</translation>
 <translation id="4957080528849277028">睇 Chrome 記錄按鈕，啟用之後就可以喺 Chrome 設定度睇同管理瀏覽記錄</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{和另外 1 個網站}other{和另外 # 個網站}}</translation>
@@ -3975,6 +3977,7 @@
 <translation id="7377314930809374926">服務性行業</translation>
 <translation id="7378594059915113390">媒體控制項</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome 可自動填入標準自動填入功能可能遺漏的複雜欄位</translation>
 <translation id="7380398842872229465">10 x 15 吋</translation>
 <translation id="7381551826960739226">此表格未使用安全連線，因此自動付款方式填入功能已停用。</translation>
 <translation id="7388380253839603603">氣油價格和汽車燃料</translation>
@@ -4899,7 +4902,7 @@
 <translation id="8858065207712248076">如果您已在其他網站上重用 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密碼，Chrome 建議您重設密碼。</translation>
 <translation id="885906927438988819">如果拼字正確，請<ph name="BEGIN_LINK" />嘗試執行 Windows 網絡診斷<ph name="END_LINK" />。</translation>
 <translation id="8861126751581835107">攝影和數碼藝術</translation>
-<translation id="8861482055962701239">這項資訊無法儲存到 Google 錢包，因此改存到這部裝置的 Chrome。下次使用時，Chrome 會詢問你是否要儲存至錢包。</translation>
+<translation id="8861482055962701239">資料無法儲存至「Google 錢包」，因此已改為儲存至此裝置上的 Chrome。Chrome 會在你下次使用時詢問是否要儲存至「錢包」。</translation>
 <translation id="8863218129525348270">將付款卡儲存在裝置上，下次就能更快完成付款程序</translation>
 <translation id="8864939224504814334">套裝和上班服裝</translation>
 <translation id="8866132857352163524">原聲帶</translation>

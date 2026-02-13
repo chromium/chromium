@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">ভার্চুয়াল কার্ড নম্বরের জন্য এই কার্ডটি যোগ্য নয়।</translation>
 <translation id="2071852865256799872">আপনার প্রতিষ্ঠান আপনার ব্রাউজার ম্যানেজ করে এবং <ph name="PROFILE_DOMAIN" /> আপনার প্রোফাইল ম্যানেজ করে</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">তথ্য শুধুমাত্র ডিভাইসে সেভ করা হয়েছে</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> আনব্লক করুন</translation>
 <translation id="2074771604462073334">আপনি আগে দেখেছেন</translation>
 <translation id="2078956195623975415">মিউজিক ও ডান্সের গেম</translation>
@@ -1117,6 +1118,7 @@
 <translation id="277133753123645258">শিপিংয়ের পদ্ধতি</translation>
 <translation id="277499241957683684">ডিভাইস রেকর্ড অনুপস্থিত</translation>
 <translation id="2775884851269838147">প্রথম প্রিন্ট করা পৃষ্ঠা</translation>
+<translation id="277828055419948999">Chromium কঠিন ফিল্ড অটোফিল করতে পারে যা সাধারণ অটোফিল মিস করতে পারে</translation>
 <translation id="2781185443919227679">সমুদ্রসৈকত ও দ্বীপপুঞ্জ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">চেক-আউটের জন্য প্রস্তুতি</translation>
@@ -2473,6 +2475,7 @@
 <translation id="4950898438188848926">একটি ট্যাব থেকে অন্য ট্যাবে যাওয়ার বোতাম, খোলা ট্যাবে যেতে এন্টার টিপুন, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">ক্রিয়াসমূহ</translation>
 <translation id="4953689047182316270">ব্যবহারযোগ্যতা সংক্রান্ত ইভেন্টে প্রতিবার্তা দিতে চায়</translation>
+<translation id="4954505713046251871">এই ফিচার উন্নত ও সাজেশন অফার করতে, পৃষ্ঠার কন্টেন্ট ও URL Google-এর সাথে শেয়ার করা হয়</translation>
 <translation id="4954891067389874142">কার্ড সেভ করে আরও দ্রুত পেমেন্ট করুন। Google Wallet-এ কার্ডের বিবরণ এনক্রিপ্ট করা থাকে।</translation>
 <translation id="4957080528849277028">'আপনার Chrome ইতিহাস দেখুন' বোতাম, Chrome সেটিংসে আপনার ব্রাউজিং ইতিহাস দেখতে ও ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{১টির বেশি সাইট}one{#টির বেশি সাইট}other{#টির বেশি সাইট}}</translation>
@@ -3975,6 +3978,7 @@
 <translation id="7377314930809374926">হসপিটালিটি শিল্প</translation>
 <translation id="7378594059915113390">মিডিয়ার নিয়ন্ত্রণ</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome কঠিন ফিল্ড অটোফিল করতে পারে যা স্ট্যান্ডার্ড অটোফিল মিস করতে পারে</translation>
 <translation id="7380398842872229465">১০ x ১৫ ইঞ্চি</translation>
 <translation id="7381551826960739226">অটোমেটিক পেমেন্ট পদ্ধতি পূরণ বন্ধ রয়েছে, কারণ এই ফর্ম নিরাপদ কানেকশন ব্যবহার করে না।</translation>
 <translation id="7388380253839603603">গ্যাসের দাম এবং গাড়ির জ্বালানি</translation>
@@ -4899,6 +4903,7 @@
 <translation id="8858065207712248076">Chrome-এর নীতি অনুযায়ী আপনার <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
 <translation id="885906927438988819">বানান সঠিক হলে, <ph name="BEGIN_LINK" />'Windows নেটওয়ার্ক ডায়াগনস্টিক' টুল চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="8861126751581835107">ফটোগ্রাফিক ও ডিজিটাল আর্ট</translation>
+<translation id="8861482055962701239">আপনার Google Wallet-এ এই তথ্য সেভ করা যায়নি। পরিবর্তে এই ডিভাইসের Chrome-এ সেটি সেভ করা হয়েছে। পরেরবার এটি ব্যবহার করার সময় Chrome, Wallet-এ এটি সেভ করার সুযোগ দেবে।</translation>
 <translation id="8863218129525348270">পরের বার আরও দ্রুত পেমেন্ট করতে, আপনার ডিভাইসে নিজের কার্ড সেভ করে রাখুন</translation>
 <translation id="8864939224504814334">স্যুট ও ব্যবসায়িক পোশাক</translation>
 <translation id="8866132857352163524">সাউন্ডট্র্যাক</translation>

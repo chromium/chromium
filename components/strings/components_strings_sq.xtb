@@ -655,6 +655,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2071156619270205202">Kjo kartë nuk është e përshtatshme për numrin e kartës virtuale.</translation>
 <translation id="2071852865256799872">Shfletuesi yt menaxhohet nga organizata jote dhe profili yt menaxhohet nga <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informacioni u ruajt vetëm në pajisje</translation>
 <translation id="2074733626795553847">Zhblloko "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">E ke vizituar</translation>
 <translation id="2078956195623975415">Lojëra me muzikë dhe kërcim</translation>
@@ -1117,6 +1118,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="277133753123645258">Mënyra e dërgimit</translation>
 <translation id="277499241957683684">Mungon një regjistrim i pajisjes</translation>
 <translation id="2775884851269838147">Faqja e parë e printimit</translation>
+<translation id="277828055419948999">Chromium mund të plotësojë automatikisht fushat e vështira që mund të mos mbulohen nga plotësimi automatik standard</translation>
 <translation id="2781185443919227679">Plazhe dhe ishuj</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Bëhu gati për përfundimin e blerjes</translation>
@@ -2473,6 +2475,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4950898438188848926">Butoni i ndërrimit të skedës. Shtyp "Enter" për të kaluar te skeda e hapur, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Veprimet</translation>
 <translation id="4953689047182316270">Reago ndaj ngjarjeve të qasshmërisë</translation>
+<translation id="4954505713046251871">Për të ofruar sugjerime dhe për të përmirësuar këtë veçori, URL-ja dhe përmbajtja e faqes ndahen me Google</translation>
 <translation id="4954891067389874142">Paguaj më shpejt me kartën tënde të ruajtur. Detajet e kartës janë të enkriptuara te "Portofoli i Google".</translation>
 <translation id="4957080528849277028">Butoni "Shiko historikun tënd të Chrome". Aktivizoje për të shikuar dhe menaxhuar historikun tënd të shfletimit te cilësimet e Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 sajt}other{+ # sajte}}</translation>
@@ -3976,6 +3979,7 @@ Detaje shtesë:
 <translation id="7377314930809374926">Industria e mikpritjes</translation>
 <translation id="7378594059915113390">Kontrollet e klipeve media</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome mund të plotësojë automatikisht fushat e vështira që mund të mos mbulohen nga plotësimi automatik standard</translation>
 <translation id="7380398842872229465">10 x 15 inç</translation>
 <translation id="7381551826960739226">Plotësimi automatik i mënyrave të pagesës është çaktivizuar sepse ky formular nuk përdor një lidhje të sigurt.</translation>
 <translation id="7388380253839603603">Çmimet e karburantit dhe furnizimi i automjeteve</translation>
@@ -4900,6 +4904,7 @@ Detaje shtesë:
 <translation id="8858065207712248076">Chrome rekomandon rivendosjen e fjalëkalimit tënd të <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> nëse e ke ripërdorur në sajte të tjera.</translation>
 <translation id="885906927438988819">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e rrjetit të Windows"<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Arte fotografike dhe dixhitale</translation>
+<translation id="8861482055962701239">Ky informacion nuk mund të ruhej te "Portofoli i Google". Në vend të tij, ai është ruajtur në Chrome në këtë pajisje. Chrome do të ofrojë që ta ruajë atë te "Portofoli" herën tjetër kur ta përdorësh.</translation>
 <translation id="8863218129525348270">Për të paguar më shpejt herën tjetër, ruaje kartën në pajisjen tënde</translation>
 <translation id="8864939224504814334">Kostume dhe veshje biznesi</translation>
 <translation id="8866132857352163524">Kolonat zanore</translation>

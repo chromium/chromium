@@ -135,6 +135,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Jedno ili više Chromiumovih proširenja pristupalo je jednom HID uređaju}=1{Jedno ili više Chromiumovih proširenja pristupa jednom HID uređaju}one{Jedno ili više Chromiumovih proširenja pristupa # HID uređaju}few{Jedno ili više Chromiumovih proširenja pristupa # HID uređaja}other{Jedno ili više Chromiumovih proširenja pristupa # HID uređaja}}</translation>
 <translation id="2401032172288869980">Chromium treba dopuštenje za fotoaparat i mikrofon za ovu web-lokaciju</translation>
 <translation id="2403703063067034158">Pogreška pokretanja: trenutačno je u tijeku drugi primjerak postavljanja. Pokušajte ponovno kasnije.</translation>
+<translation id="2418322681019544463">Otvorite veze u Chromiumu iz bilo koje aplikacije i zadržite pristup pregledniku na programskoj traci</translation>
 <translation id="2440750600860946460">Uz <ph name="BEGIN_LINK" />Chromiumove alate<ph name="END_LINK" /> možete sigurno pregledavati i zadržati kontrolu</translation>
 <translation id="2451727308784734061">Pomoću prečaca brzo pristupite Upravitelju zaporki. Prečac možete premjestiti na početni zaslon računala ili u pokretač aplikacija.</translation>
 <translation id="2478295928299953161">Chromium će se uskoro zatvoriti</translation>
@@ -162,7 +163,6 @@
 <translation id="2738871930057338499">Povezivanje s internetom nije moguće. HTTP 403 Zabranjeno je. Provjerite konfiguraciju proxyja.</translation>
 <translation id="2753623023919742414">Kliknite za pretraživanje</translation>
 <translation id="2768103863314748511">Postavite Chromium kao zadani preglednik za PDF</translation>
-<translation id="277828055419948999">Chromium može automatski popuniti složena polja koja standardno automatsko popunjavanje može propustiti</translation>
 <translation id="2785438272836277133">Ovo proširenje sadrži zlonamjerni softver i nije sigurno. Uklonite ga iz Chromiuma kako više ne bi moglo vidjeti i mijenjati vaše podatke na web-lokacijama koje posjećujete, uključujući vaše osobne podatke.</translation>
 <translation id="2799223571221894425">Pokreni ponovo</translation>
 <translation id="2803971713792056305">Vaš Chromium</translation>
@@ -587,7 +587,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7461356015007898716">Da biste primali buduća Chromiumova ažuriranja, trebat će vam Windows 10 ili novija verzija. Na ovom se računalu upotrebljava Windows 7.</translation>
 <translation id="7467949745582939695">Ponovo pokrenuti Chromium?</translation>
 <translation id="7483335560992089831">Ne možete instalirati istu verziju Chromiuma koja se trenutačno izvršava. Zatvorite Chromium i pokušajte ponovo.</translation>
-<translation id="7517403744065880907">Možete spremati i upotrebljavati zaporke i druge podatke na svojem Google računu kad ste prijavljeni u Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Web-lokacije će vjerojatno funkcionirati prema očekivanjima. Kad zatvorite sve prozore Chromiuma, odjavit ćete se s većine web-lokacija osim Google računa ako ste prijavljeni na Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium će se ponovo pokrenuti za jednu minutu}one{Chromium će se ponovo pokrenuti za # min}few{Chromium će se ponovo pokrenuti za # min}other{Chromium će se ponovo pokrenuti za # min}}</translation>
 <translation id="7565444033145385702">Da biste zaštitili svoje podatke, dopustite Chromiumu da ukloni dopuštenja s web-lokacija koje niste posjetili u posljednje vrijeme.</translation>
@@ -606,6 +605,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7745317241717453663">Time će se izbrisati podaci o pregledavanju s uređaja. Da biste kasnije dohvatili svoje podatke, prijavite se na Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Program za instalaciju nije izradio privremeni direktorij. Provjerite ima li slobodnog prostora na disku i postoji li dopuštenje za instalaciju softvera.</translation>
 <translation id="7750130090210923118">Vrati na zadanu temu Chromiuma</translation>
+<translation id="7781047659465034537">Postavite Chromium kao zadani preglednik i prikvačite ga na traku sa zadacima</translation>
 <translation id="7786760609782648049">Ubrzajte Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Otežajte korisnicima s pristupom vašem internetskom prometu da vide koje web-lokacije posjećujete. Chromium upotrebljava sigurnu vezu za traženje IP adrese web-lokacije u DNS-u (Domain Name System).</translation>
@@ -728,7 +728,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="9183331186620388872">Savjet za Chromium: pretražujte pomoću Objektiva</translation>
 <translation id="9185526690718004400">Ponovo pokrenite da biste ažurirali &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9206863043651638213">Iskoristite dodatne pogodnosti kad ste prijavljeni u Chromium</translation>
 <translation id="924957577793602335">Prilagodite Chromium sebi</translation>
 <translation id="93478295209880648">Chromium možda neće ispravno raditi jer više nije podržan na sustavima Windows XP i Windows Vista</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>

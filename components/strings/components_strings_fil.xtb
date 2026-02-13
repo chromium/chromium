@@ -1118,6 +1118,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="277133753123645258">Paraan ng pagpapadala</translation>
 <translation id="277499241957683684">Nawawalang tala ng device</translation>
 <translation id="2775884851269838147">Unang page ng pag-print</translation>
+<translation id="277828055419948999">Mao-autofill ng Chromium ang mahihirap na field na posibleng mapalampas ng karaniwang autofill</translation>
 <translation id="2781185443919227679">Mga Beach at Isla</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Inihahanda para sa pag-checkout</translation>
@@ -2474,6 +2475,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4950898438188848926">Button sa paglipat ng tab, pindutin ang Enter para lumipat sa nakabukas na tab, na <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Mga Pagkilos</translation>
 <translation id="4953689047182316270">Tumugon sa Mga Kaganapan ng Pagiging Accessible</translation>
+<translation id="4954505713046251871">Para makapag-alok ng mga suhestyon at mapahusay ang feature na ito, shine-share sa Google ang URL at content ng page</translation>
 <translation id="4954891067389874142">Mas mabilis na makakapagbayad kapag naka-save ang iyong card. Naka-encrypt sa Google Wallet ang mga detalye ng card.</translation>
 <translation id="4957080528849277028">Button na Tingnan ang iyong history sa Chrome, i-activate para matingnan at mapamahalaan ang history ng pag-browse mo sa mga setting ng Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 site}one{+ # site}other{+ # na site}}</translation>
@@ -3979,6 +3981,7 @@ Mga karagdagang detalye:
 <translation id="7377314930809374926">Industriya ng Hospitality</translation>
 <translation id="7378594059915113390">Mga Kontrol ng Media</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Mao-autofill ng Chrome ang mahihirap na field na posibleng mapalampas ng karaniwang autofill</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="7381551826960739226">Na-disable ang awtomatikong pagpunan ng mga paraan ng pagbabayad dahil hindi gumagamit ng secure na koneksyon ang form na ito.</translation>
 <translation id="7388380253839603603">Mga Presyo ng Gasolina at Fuel ng Sasakyan</translation>

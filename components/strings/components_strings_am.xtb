@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">ይህ ካርድ ለምናባዊ ካርድ ቁጥር ብቁ አይደለም።</translation>
 <translation id="2071852865256799872">የእርስዎ አሳሽ የሚተዳደረው በድርጅትዎ ነው እና የእርስዎ መገለጫ የሚተዳደረው በ<ph name="PROFILE_DOMAIN" /> ነው</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">መረጃ ወደ መሣሪያ ብቻ ተቀምጧል</translation>
 <translation id="2074733626795553847">የ<ph name="TOPIC" /> እገዳውን አንሳ</translation>
 <translation id="2074771604462073334">እርስዎ የጎበኙት</translation>
 <translation id="2078956195623975415">የሙዚቃ እና የዳንስ ጨዋታዎች</translation>
@@ -1117,6 +1118,7 @@
 <translation id="277133753123645258">የመላኪያ ዘዴ</translation>
 <translation id="277499241957683684">የሚጎድል የመሣሪያ መዝገብ</translation>
 <translation id="2775884851269838147">የመጀመሪያውን የታተመ ገፅ</translation>
+<translation id="277828055419948999">Chromium መደበኛ ራስ-ሙላ ሊያመልጡት የሚችሉትን አስቸጋሪ መስኮች በራስ-ሙላ መሙላት ይችላል</translation>
 <translation id="2781185443919227679">የባህር ዳርቻዎች እና ደሴቶች</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">ክፍያን ለማጠናቀቅ መዘጋጀት</translation>
@@ -2472,6 +2474,7 @@
 <translation id="4950898438188848926">የትር መቀየሪያ አዝራር፣ ወደ ክፍቱ ትር <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> ለመቀየር Enterን ይጫኑ</translation>
 <translation id="495170559598752135">እርምጃዎች</translation>
 <translation id="4953689047182316270">ለተደራሽነት ክስተቶች ምላሽ መስጠት</translation>
+<translation id="4954505713046251871">ጥቆማዎችን ለማቅረብ እና ይህን ባህሪ ለማሻሻል የገፁ ዩአርኤል እና ይዘት ከGoogle ጋር ይጋራሉ</translation>
 <translation id="4954891067389874142">ካርድዎ ሲቀመጥ በፍጥነት ይክፈሉ። የካርድ ዝርዝሮች Google Wallet ውስጥ የተመሠጠሩ ናቸው።</translation>
 <translation id="4957080528849277028">የእርስዎን የChrome ታሪክ አዝራር ይመልከቱ፣ በChrome ቅንብሮች ውስጥ የአሰሳ ታሪክዎን ለማየት እና ለማቀናበር ያግብሩ</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 ንጥል}one{+ # ንጥል}other{+ # ንጥሎች}}</translation>
@@ -3977,6 +3980,7 @@
 <translation id="7377314930809374926">የመስተንግዶ ኢንዱስትሪ</translation>
 <translation id="7378594059915113390">የሚዲያ መቆጣጠሪያዎች</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome መደበኛ ራስ-ሙላ ሊያመልጡት የሚችሉትን አስቸጋሪ መስኮች በራስ-ሙላ መሙላት ይችላል</translation>
 <translation id="7380398842872229465">10 x 15 ኢንች</translation>
 <translation id="7381551826960739226">ይህ ቅጽ የተመሰጠረ ግንኙነት ስለማይጠቀም ራስ-ሰር የመክፈያ ዘዴዎችን መሙላት ተሰናክሏል።</translation>
 <translation id="7388380253839603603">የነዳጅ ዋጋዎች እና የተሽከርካሪ ነዳጅ</translation>
@@ -4902,6 +4906,7 @@
 <translation id="8858065207712248076">Chrome የእርስዎን የ<ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ይለፍ ቃል በሌሎች ጣቢያዎች ላይ ዳግም ከተጠቀሙበት እንደገና እንዲያዋቅሩት ይመክራል።</translation>
 <translation id="885906927438988819">የፊደል አጻጻፉ ትክክል ከሆነ <ph name="BEGIN_LINK" />የWindows አውታረ መረብ ምርመራን ለማስኬድ ይሞክሩ<ph name="END_LINK" />።</translation>
 <translation id="8861126751581835107">የፎቶግራፊ እና ዲጂታል ሥነ ጥበባት</translation>
+<translation id="8861482055962701239">ይህን መረጃ ወደ የእርስዎ Google Wallet ማስቀመጥ አልተቻለም። በምትኩ በዚህ መሣሪያ ላይ ወደ Chrome ተቀምጧል። በሚቀጥለው ጊዜ ሲጠቀሙት Chrome ወደ Wallet ለማስቀመጥ ይጠይቃል።</translation>
 <translation id="8863218129525348270">በሚቀጥለው ጊዜ በበለጠ ፍጥነት ለመክፈል፣ የእርስዎን ካርድ መሣሪያዎ ላይ ያስቀምጡ</translation>
 <translation id="8864939224504814334">ሱፎች እና የመስሪያ ቤት አለባበሶች</translation>
 <translation id="8866132857352163524">አጃቢ ሙዚቃ</translation>

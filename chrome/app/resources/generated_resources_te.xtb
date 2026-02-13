@@ -354,6 +354,7 @@
 <translation id="1221825588892235038">ఎంపిక మాత్రమే</translation>
 <translation id="1222835797152767346">సైన్ ఇన్ చేయడాన్ని సులభతరం చేయడానికి పాస్‌వర్డ్‌ను సెట్ చేయండి</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" />కు లైసెన్స్ అవసరం</translation>
+<translation id="1223498995510244364">సారాంశం అందించండి</translation>
 <translation id="1223853788495130632">మీ నిర్వాహకుడు ఈ సెట్టింగ్‌కు ఒక ప్రత్యేక విలువను సిఫార్సు చేస్తున్నారు.</translation>
 <translation id="1225177025209879837">రిక్వెస్ట్‌ను ప్రాసెస్ చేస్తోంది...</translation>
 <translation id="1227107020813934021">డాక్యుమెంట్ స్కానర్‌లను కనుగొనడం</translation>
@@ -1345,6 +1346,8 @@
 <translation id="1891362123137972260">డిస్క్ స్పేస్ చాలా తక్కువగా ఉంది. దయచేసి డిస్క్ స్పేస్‌ను ఖాళీ చేయండి.</translation>
 <translation id="189210018541388520">ఫుల్-స్క్రీన్‌ను తెరువు</translation>
 <translation id="1892341345406963517">హాయ్ <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. దిగువ <ph name="BUTTON_LABEL" /> క్లిక్ చేయండి
+2. మీ Windows సెట్టింగ్‌లలో <ph name="BUTTON_2" />‌ను క్లిక్ చేయండి</translation>
 <translation id="189358972401248634">ఇతర భాషలు</translation>
 <translation id="1895658205118569222">షట్‌డౌన్</translation>
 <translation id="1896043844785689584">వేలిముద్రను సెటప్ చేయడానికి, కీబోర్డ్‌కు దిగువ కుడి మూలన ఉన్న వేలిముద్ర సెన్సార్‌ను మీ చిన్నారి వేలితో తాకించండి. మీ చిన్నారి వేలిముద్ర డేటా సురక్షితంగా స్టోర్ చేయబడుతుంది, ఎప్పటికీ ఈ <ph name="DEVICE_TYPE" />‌లోనే ఉంటుంది.</translation>
@@ -3162,6 +3165,7 @@
 <translation id="3105820656234755131">పాస్‌వర్డ్ అప్‌డేట్ అయింది</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (బ్లూటూత్)</translation>
 <translation id="310671807099593501">సైట్ బ్లూటూత్‌ను ఉపయోగిస్తోంది</translation>
+<translation id="3108122610701115301">ఆటోమేటిక్ సెట్టింగ్‌గా చేయండి</translation>
 <translation id="3108931485517391283">స్వీకరించడం సాధ్యం కాలేదు</translation>
 <translation id="3108957152224931571">హైలైట్ రంగు</translation>
 <translation id="3109206895301430738">సేవ్ చేయబడిన ట్యాబ్ గ్రూప్‌లు</translation>
@@ -4943,7 +4947,7 @@
 <translation id="4304713468139749426">పాస్‌వర్డ్ మేనేజర్</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" />కి కాపీ చేయి</translation>
 <translation id="4305817255990598646">స్విచ్</translation>
-<translation id="4306489587293957491">Enter</translation>
+<translation id="4306489587293957491">ఎంటర్ చేయండి</translation>
 <translation id="4306810703452026910">ఈ సైట్ నుండి వచ్చే నోటిఫికేషన్‌లను స్పామ్‌గా ఫ్లాగ్ చేయడాన్ని Chrome ఆపివేస్తుంది</translation>
 <translation id="4307992518367153382">ప్రాథమికాలు</translation>
 <translation id="4309035504231554969">తెలియని కారణం వల్ల ఇన్‌స్టాలేషన్ విఫలమైంది.</translation>
@@ -5876,7 +5880,6 @@
 <translation id="495170559598752135">చర్యలు</translation>
 <translation id="4951966678293618079">ఈ సైట్‌కు పాస్‌వర్డ్‌లను ఎన్నడూ సేవ్ చేయవద్దు</translation>
 <translation id="4953808748584563296">డిఫాల్ట్ నారింజ రంగు అవతార్</translation>
-<translation id="4954505713046251871">సూచనలను అందించడానికి, ఈ ఫీచర్‌ను మెరుగుపరచడానికి, పేజీ URL, ఇంకా కంటెంట్, Googleతో షేర్ చేయబడతాయి</translation>
 <translation id="4954652437333037880">ఫైల్</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> విజిబిలిటీ</translation>
 <translation id="4955710816792587366">మీ పిన్ ఎంచుకోండి</translation>
@@ -6357,6 +6360,7 @@
 <translation id="5288106344236929384">మరిన్ని చర్యలు, <ph name="DOMAIN" />‌లో <ph name="USERNAME" /> కోసం పాస్-కీ ఆప్షన్‌లు</translation>
 <translation id="5288678174502918605">మూసిన ట్యాబ్‌ను మళ్లీ &amp;తెరువు</translation>
 <translation id="5290020561438336792">PC, అలాగే ప్రసార పరికరం వేర్వేరు Wi-Fi నెట్‌వర్క్‌లలో (ఉదా. 2.4GHz వర్సెస్ 5GHz) ఉన్నాయి</translation>
+<translation id="5290322819358431297">మీ పాస్‌వర్డ్‌ల ఆటోఫిల్ చేయండి</translation>
 <translation id="52912272896845572">వ్యక్తిగతమైన కీ ఫైల్ చెల్లదు.</translation>
 <translation id="529175790091471945">ఈ పరికరాన్ని ఫార్మాట్ చేయి</translation>
 <translation id="529296195492126134">తాత్కాలిక మోడ్ సపోర్ట్ చేయదు. దయచేసి మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి</translation>
@@ -6976,6 +6980,7 @@
 <translation id="5734697361979786483">ఫైల్ షేర్‌ను జోడించండి</translation>
 <translation id="573520097779121706">కర్సర్‌ను మూవ్ చేయడానికి 7, 8, 9, u, o, j, k, l కీలను వినియోగించండి</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{ఈ డేటా లేదా మీ పరికరం మీ సంస్థకు సంబంధించిన కొన్ని సెక్యూరిటీ పాలసీలకు అనుగుణంగా లేదు. ఏమి పరిష్కరించాలి అనే దాని గురించి మీ అడ్మిన్‌ను సంప్రదించండి.}=1{ఈ ఫైల్ లేదా మీ పరికరం మీ సంస్థకు సంబంధించిన కొన్ని సెక్యూరిటీ పాలసీలకు అనుగుణంగా లేదు. ఏమి పరిష్కరించాలి అనే దాని గురించి మీ అడ్మిన్‌ను సంప్రదించండి.}other{ఈ ఫైల్స్ మీ సంస్థకు సంబంధించిన కొన్ని సెక్యూరిటీ పాలసీలకు అనుగుణంగా లేదు. ఏమి పరిష్కరించాలి అనే దాని గురించి మీ అడ్మిన్‌ను సంప్రదించండి.}}</translation>
+<translation id="5736345781200955827">మీ పాస్‌వర్డ్‌లను క్రియేట్ చేయండి, సేవ్ చేయండి, అలాగే మేనేజ్ చేయండి, తద్వారా మీరు Chromeను ఉపయోగించి సైట్‌లకు, యాప్‌లకు సులభంగా సైన్ ఇన్ చేయవచ్చు</translation>
 <translation id="5738093759615225354">మీ కంప్యూటర్‌లో సైన్ ఇన్ చేయడానికి మీకు ఈ పాస్-కీ అవసరం</translation>
 <translation id="5738386565827477765">ఆడియో డివైజ్</translation>
 <translation id="5739017626473506901"><ph name="USER_NAME" /> పాఠశాల ఖాతాను జోడించడంలో సహాయపడటానికి సైన్ ఇన్ చేయండి</translation>
@@ -7228,6 +7233,7 @@
 <translation id="5901089233978050985">క్యాప్చర్ చేస్తున్న ట్యాబ్‌కు మారండి</translation>
 <translation id="5901494423252125310">ప్రింటర్ తలుపు తెరుచుకుని ఉంది</translation>
 <translation id="5901630391730855834">పసుపు</translation>
+<translation id="5902400038326841449">Google Password Manager ఆఫ్ చేయబడింది</translation>
 <translation id="5902892210366342391">అజ్ఞాత మోడ్‌లో సురక్షితం కాని సైట్‌లకు వెళ్లే ముందు హెచ్చరికలను చూడండి</translation>
 <translation id="5904614460720589786">కాన్ఫిగరేషన్ సమస్య కారణంగా <ph name="APP_NAME" />ను సెటప్ చేయడం సాధ్యపడలేదు. దయచేసి మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">సురక్షితమైన కంటెంట్‌ను ప్లే చేయడానికి, ఐడెంటిఫయర్‌లను ఉపయోగించడానికి ఈ సైట్‌ను అనుమతించడం కొనసాగించండి</translation>
@@ -8009,6 +8015,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> పూర్తయింది</translation>
 <translation id="6452961788130242735">నెట్‌వర్క్ సమస్య ఉంది లేదా నెట్‌వర్క్ పరిధిలో లేదు</translation>
 <translation id="6453191633103419909">ట్యాబ్/స్క్రీన్ ప్రొజెక్షన్ క్వాలిటీ</translation>
+<translation id="6453306703004115497"><ph name="LANGUAGE" />లోకి అనువదించబడింది</translation>
 <translation id="6453687572758515877">ట్యాబ్‌లన్నింటినీ గ్రూప్ చేయండి</translation>
 <translation id="6453921811609336127">తర్వాతి ఇన్‌పుట్ విధానానికి స్విచ్ చేయడానికి, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> కీలను నొక్కండి</translation>
 <translation id="6455264371803474013">కొన్ని నిర్దిష్ట సైట్‌లలో మాత్రమే</translation>
@@ -8167,6 +8174,7 @@
 <translation id="656293578423618167">ఫైల్ పాత్ లేదా పేరు చాలా పొడవుగా ఉంది. దయచేసి చిన్న పేరుతో, లేదా మరొక స్థానానికి సేవ్ చేయండి.</translation>
 <translation id="6563002009564846727">Windows నుండి దిగుమతి చేసిన సర్టిఫికెట్‌లను చూడండి</translation>
 <translation id="6563055593659435495">మీ ఫోన్‌తో కనెక్ట్ అయ్యి ఉండటం సాధ్యం కాలేదు. మీ ఫోన్ సమీపంలోనే ఉందని, అన్‌లాక్ చేసి ఉందని, ఇంకా బ్లూటూత్, Wi-Fi ఆన్ చేసి ఉన్నాయని నిర్ధారించుకోండి.</translation>
+<translation id="6564343790052433242"><ph name="APP_NAME" /> కోసం పాస్-కీని క్రియేట్ చేయడానికి, Google Password Manager తప్పనిసరిగా ఆన్‌లో ఉండాలి</translation>
 <translation id="6565144332292237355">మీ లోకల్ నెట్‌వర్క్‌లో ఏదైనా పరికరం కోసం చూడటానికి లేదా కనెక్ట్ చేయడానికి సైట్‌లు ఈ ఫీచర్‌ను ఉపయోగించవచ్చు</translation>
 <translation id="6568283005472142698">ట్యాబ్ సెర్చ్</translation>
 <translation id="6569931898053264308">మధ్యస్థ మెమరీ సేవింగ్స్</translation>
@@ -11435,6 +11443,7 @@
 <translation id="8761945298804995673">ఈ వినియోగదారు ఇప్పటికే ఉన్నారు.</translation>
 <translation id="8762886931014513155">మీ <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయాలి</translation>
 <translation id="8763927697961133303">USB పరికరం</translation>
+<translation id="8765940060470412555">రీడింగ్ మోడ్‌ను అన్‌పిన్ చేయండి</translation>
 <translation id="8766156860774051068">మీరు సేకరించినవి</translation>
 <translation id="8766796754185931010">కోటోరి</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> కోసం చేసిన అన్ని సెర్చ్‌లను చూపండి</translation>

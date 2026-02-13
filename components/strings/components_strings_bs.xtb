@@ -655,6 +655,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2071156619270205202">Ova kartica ne ispunjava uslove za broj virtuelne kartice.</translation>
 <translation id="2071852865256799872">Vašim preglednikom upravlja vaša organizacija, a profilom <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informacije su sačuvane samo na uređaju</translation>
 <translation id="2074733626795553847">Deblokiranje teme <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Posjetili ste</translation>
 <translation id="2078956195623975415">Muzičke i plesne igre</translation>
@@ -1116,6 +1117,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="277133753123645258">Način isporuke</translation>
 <translation id="277499241957683684">Nedostaje evidencija uređaja</translation>
 <translation id="2775884851269838147">Prva stranica za štampanje</translation>
+<translation id="277828055419948999">Chromium može automatski popuniti složena polja koja standardno automatsko popunjavanje može propustiti</translation>
 <translation id="2781185443919227679">Plaže i ostrva</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Priprema za nastavak na plaćanje</translation>
@@ -2472,6 +2474,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4950898438188848926">Dugme za promjenu kartice; pritisnite Enter da se prebacite na otvorenu karticu, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4953689047182316270">Odgovori na događaje vezane za pristupačnost</translation>
+<translation id="4954505713046251871">Da vam nudimo prijedloge i poboljšamo ovu funkciju, URL i sadržaj stranice se dijele s Googleom</translation>
 <translation id="4954891067389874142">Brže plaćajte kada je kartica sačuvana. Podaci o kartici su šifrirani u Google Novčaniku.</translation>
 <translation id="4957080528849277028">Dugme Upravljaj historijom Chromea, aktivirajte da pregledate historiju pregledanja i upravljate njome u postavkama Chromea</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{i još 1 web lokacija}one{i još # web lokacija}few{i još # web lokacije}other{i još # web lokacija}}</translation>
@@ -3975,6 +3978,7 @@ Dodatni detalji:
 <translation id="7377314930809374926">Ugostiteljstvo</translation>
 <translation id="7378594059915113390">Kontrole medija</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome može automatski popuniti složena polja koja standardno automatsko popunjavanje može propustiti</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="7381551826960739226">Automatsko popunjavanje sredstava plaćanja je onemogućeno jer ovaj obrazac ne koristi sigurnu vezu.</translation>
 <translation id="7388380253839603603">Cijene plina i gorivo za vozila</translation>
@@ -4899,6 +4903,7 @@ Dodatni detalji:
 <translation id="8858065207712248076">Chrome preporučuje ponovno postavljanje lozinke za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ako sto je ponovo koristili na drugim web lokacijama.</translation>
 <translation id="885906927438988819">Ako nema greške u pravopisu, <ph name="BEGIN_LINK" />pokušajte pokrenuti Windows dijagnostiku mreže<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografska i digitalna umjetnost</translation>
+<translation id="8861482055962701239">Pohranjivanje ovih informacija u Google Novčaniku nije uspjelo. Umjesto toga su sačuvane u Chromeu na ovom uređaju. Chrome će vam ponuditi da ih sačuvate u Novčaniku sljedeći put kada ih upotrijebite.</translation>
 <translation id="8863218129525348270">Da sljedeći put brže platite, sačuvajte karticu na uređaj</translation>
 <translation id="8864939224504814334">Odijela i poslovna odjeća</translation>
 <translation id="8866132857352163524">Muzika iz filmova</translation>

@@ -299,6 +299,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктү көрүү}other{<ph name="TABS_COUNT_MANY" /> өтмөктү көрүү}}</translation>
 <translation id="2297822946037605517">Бул баракты бөлүшүү</translation>
 <translation id="230115972905494466">Шайкеш түзмөктөр табылган жок</translation>
+<translation id="2316129865977710310">Жок, рахмат</translation>
 <translation id="2318045970523081853">Чалуу үчүн басыңыз</translation>
 <translation id="2323763861024343754">Сайт дайындары</translation>
 <translation id="2328474416100889417">Ар бир адам дароо "<ph name="GROUP_NAME" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүн жоготот жана бардык чакыруу шилтемелери өчүрүлөт</translation>
@@ -960,6 +961,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5075939510584558547">Шифрлебей сактоо</translation>
 <translation id="5078638979202084724">Бардык өтмөктөрдү кыстарып коюу</translation>
 <translation id="5085038751173179818">Кыстармаларды жана башкаларды бардык түзмөктөрүңүздө колдонуу үчүн ушул сайтка жана Chrome'го кириңиз</translation>
+<translation id="5088347662971855383">Gemini'ды кадоо</translation>
 <translation id="5091199029769593641">Жакында жаңы өтмөктү ачкан сайын, <ph name="SITE_NAME" /> окуяларын көрүп турасыз. Сиз жазылган сайттар Google аккаунтуңузда сакталат. Аларды Сунуштардын параметрлеринен башкара аласыз.</translation>
 <translation id="509429900233858213">Ката кетти.</translation>
 <translation id="5096775069898886423">Коопсуз байланышты колдонбогон сайттарга өтүүдөн мурда эскертүү алыңыз</translation>
@@ -1341,6 +1343,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Сүрөттү алдын ала көрүү <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="666731172850799929">Төмөнкүдө ачуу <ph name="APP_NAME" /></translation>
+<translation id="6669390930482049506">Мага кабарлансын</translation>
 <translation id="6671495933530132209">Сүрөттү көчүрүү</translation>
 <translation id="6672697278890207089">Сыр сүйлөмүңүздү жазыңыз</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> кошуу</translation>

@@ -655,6 +655,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2071156619270205202">Ta karta nie kwalifikuje się do nadania numeru karty wirtualnej.</translation>
 <translation id="2071852865256799872">Twoją przeglądarką zarządza Twoja organizacja, a Twoim profilem – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informacje zostały zapisane tylko na urządzeniu</translation>
 <translation id="2074733626795553847">Odblokuj: <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Odwiedzono</translation>
 <translation id="2078956195623975415">Gry muzyczne i taneczne</translation>
@@ -1117,6 +1118,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="277133753123645258">Metoda wysyłki</translation>
 <translation id="277499241957683684">Brak rekordu urządzenia</translation>
 <translation id="2775884851269838147">Pierwsza strona wydruku</translation>
+<translation id="277828055419948999">Chromium może automatycznie uzupełniać trudne pola, które standardowe autouzupełnianie mogłoby pominąć</translation>
 <translation id="2781185443919227679">Plaże i wyspy</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Przygotowuję dane do płatności</translation>
@@ -2473,6 +2475,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4950898438188848926">Przycisk przełączania kart. Naciśnij Enter, by przełączyć się na otwartą kartę, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Czynności</translation>
 <translation id="4953689047182316270">Odpowiadanie na zdarzenia dotyczące ułatwień dostępu</translation>
+<translation id="4954505713046251871">Firmie Google udostępniane są adres URL i zawartość strony – pozwala to na wyświetlanie sugestii i ulepszanie tej funkcji.</translation>
 <translation id="4954891067389874142">Zapisz kartę, aby płacić szybciej. Dane karty są zaszyfrowane w Portfelu Google.</translation>
 <translation id="4957080528849277028">Przycisk Wyświetl historię Chrome; aktywuj, aby wyświetlić swoją historię przeglądania i zarządzać nią w ustawieniach Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{i 1 witryna}few{i # witryny}many{i # witryn}other{i # witryny}}</translation>
@@ -3978,6 +3981,7 @@ Dodatkowe informacje:
 <translation id="7377314930809374926">Branża turystyczna</translation>
 <translation id="7378594059915113390">Sterowanie multimediami</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome może automatycznie uzupełniać trudne pola, które standardowe autouzupełnianie mogłoby pominąć</translation>
 <translation id="7380398842872229465">10 x 15 cali</translation>
 <translation id="7381551826960739226">Automatyczne wypełnianie form płatności jest wyłączone, ponieważ ten formularz nie korzysta z bezpiecznego połączenia.</translation>
 <translation id="7388380253839603603">Ceny paliw i tankowanie pojazdów</translation>
@@ -4902,6 +4906,7 @@ Dodatkowe informacje:
 <translation id="8858065207712248076">Chrome zaleca zresetowanie hasła, którego używasz w: <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, jeśli zostało użyte na innej stronie.</translation>
 <translation id="885906927438988819">Jeśli pisownia jest poprawna, <ph name="BEGIN_LINK" />uruchom Diagnostykę sieci systemu Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Sztuka fotograficzna i cyfrowa</translation>
+<translation id="8861482055962701239">Nie udało się zapisać tych informacji w Portfelu Google. Zamiast tego zapisano je w Chrome na tym urządzeniu. Chrome zaproponuje zapisanie ich w Portfelu przy następnym użyciu.</translation>
 <translation id="8863218129525348270">Aby następnym razem zapłacić szybciej, zapisz kartę na urządzeniu</translation>
 <translation id="8864939224504814334">Garnitury i stroje biznesowe</translation>
 <translation id="8866132857352163524">Ścieżki dźwiękowe</translation>

@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">Бул карта виртуалдык картанын номери катары жарамдуу эмес.</translation>
 <translation id="2071852865256799872">Серепчиңиз уюмуңуз, ал эми профилиңиз <ph name="PROFILE_DOMAIN" /> тарабынан тескелет</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Маалымат түзмөккө гана сакталды</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> дегенди бөгөттөн чыгаруу</translation>
 <translation id="2074771604462073334">Бул жерде качан болгонсуз</translation>
 <translation id="2078956195623975415">Музыка жана бий оюндары</translation>
@@ -1117,6 +1118,7 @@
 <translation id="277133753123645258">Жөнөтүү ыкмасы</translation>
 <translation id="277499241957683684">Түзмөк жаздыруусу жок</translation>
 <translation id="2775884851269838147">Басылып чыга турган биринчи барак</translation>
+<translation id="277828055419948999">Chromium автотолтуруу функциясы өткөрүп жиберген татаал талааларды автотолтура алат</translation>
 <translation id="2781185443919227679">Жээктер жана аралдар</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Төлөм даярдалууда</translation>
@@ -2472,6 +2474,7 @@
 <translation id="4950898438188848926">Өтмөктү которуштуруу баскычы. Ачык өтмөккө өтүү үчүн "Enter" баскычын басыңыз, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Аракеттер</translation>
 <translation id="4953689047182316270">Атайын мүмкүнчүлүктөрдү иштетүү</translation>
+<translation id="4954505713046251871">Атайын сунуштарды сунуштоо жана бул функцияны жакшыртуу үчүн барактын URL дареги жана андагы материалдар Google менен бөлүшүлөт.</translation>
 <translation id="4954891067389874142">Картаңыз сакталганда тезирээк төлөңүз. Картанын чоо-жайы Google Капчыкта шифрленген.</translation>
 <translation id="4957080528849277028">"Chrome'до көрүлгөн вебсайттарды көрүү" баскычы. Chrome жөндөөлөрүндө көрүлгөн вебсайттарды көрүү жана башкаруу үчүн иштетиңиз</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{Дагы 1 сайт}other{Дагы # сайт}}</translation>
@@ -3976,6 +3979,7 @@
 <translation id="7377314930809374926">Мейманкана индустриясы</translation>
 <translation id="7378594059915113390">Медианы башкаруу элементтери</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome стандарттык автотолтуруу өткөрүп жиберген татаал талааларды толтура алат</translation>
 <translation id="7380398842872229465">10 x 15 дюйм</translation>
 <translation id="7381551826960739226">Бул форманын байланышы кооптуу болгондуктан, төлөм ыкмаларын автоматтык түрдө толтуруу мүмкүнчүлүгү өчүрүлдү.</translation>
 <translation id="7388380253839603603">Күйүүчү майдын баалары жана унаага май куюу</translation>
@@ -4900,6 +4904,7 @@
 <translation id="8858065207712248076"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> сырсөзүңүздү башка сайттарда колдонгон болсоңуз, Chrome аны өзгөртүүнү сунуштайт.</translation>
 <translation id="885906927438988819">Эгер туура жазылса, <ph name="BEGIN_LINK" />Windows тармагындагы мүчүлүштүктөрдү аныктоону<ph name="END_LINK" /> иштетип көрүңүз.</translation>
 <translation id="8861126751581835107">Фотография жана санариптик искусство</translation>
+<translation id="8861482055962701239">Бул маалымат Google Капчыкка сакталган жок. Анын ордуна ал ушул түзмөктөгү Chrome'до сакталды. Кийинки жолу колдонгонуңузда Chrome аны Капчыкка сактоону сунуштайт.</translation>
 <translation id="8863218129525348270">Кийинки жолу тезирээк төлөө үчүн картаңызды түзмөккө сактаңыз</translation>
 <translation id="8864939224504814334">Костюмдар жана бизнес кийимдер</translation>
 <translation id="8866132857352163524">Саундтректер</translation>

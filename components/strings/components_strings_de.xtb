@@ -655,6 +655,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2071156619270205202">Für diese Karte ist keine virtuelle Kartennummer verfügbar.</translation>
 <translation id="2071852865256799872">Dein Browser wird von deiner Organisation verwaltet, dein Profil von <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informationen nur auf Gerät gespeichert</translation>
 <translation id="2074733626795553847">Blockierung aufheben für <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Letzter Aufruf:</translation>
 <translation id="2078956195623975415">Musik- und Tanzspiele</translation>
@@ -1116,6 +1117,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="277133753123645258">Versandart</translation>
 <translation id="277499241957683684">Fehlender Gerätedatensatz</translation>
 <translation id="2775884851269838147">Erste Druckseite</translation>
+<translation id="277828055419948999">Chromium kann auch Felder automatisch ausfüllen, die von der Standard-Autofill-Funktion möglicherweise nicht erkannt werden</translation>
 <translation id="2781185443919227679">Strände und Inseln</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Bezahlvorgang wird vorbereitet</translation>
@@ -2470,6 +2472,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4950898438188848926">Schaltfläche zum Wechseln von Tabs, Eingabetaste drücken, um zum offenen Tab "<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />" zu wechseln</translation>
 <translation id="495170559598752135">Aktionen</translation>
 <translation id="4953689047182316270">Auf Bedienungshilfen reagieren</translation>
+<translation id="4954505713046251871">Damit du Vorschläge erhalten kannst und diese Funktion verbessert werden kann, werden die URL und die Inhalte der Seite an Google gesendet</translation>
 <translation id="4954891067389874142">Mit einer gespeicherten Karte kannst du schneller bezahlen. Die Kartendetails werden in Google Wallet verschlüsselt.</translation>
 <translation id="4957080528849277028">Button „Chrome-Verlauf ansehen“ – aktivieren, um in den Chrome-Einstellungen deinen Browserverlauf aufzurufen und zu verwalten</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{und 1 weiteren Website}other{und # weiteren Websites}}</translation>
@@ -3973,6 +3976,7 @@ Weitere Details:
 <translation id="7377314930809374926">Gastgewerbe</translation>
 <translation id="7378594059915113390">Mediensteuerelemente</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome kann auch Felder automatisch ausfüllen, die von der Standard-Autofill-Funktion möglicherweise nicht erkannt werden</translation>
 <translation id="7380398842872229465">10 × 15 Zoll</translation>
 <translation id="7381551826960739226">Die Funktion zum automatischen Ausfüllen der Zahlungsmethoden ist deaktiviert, da dieses Formular keine verschlüsselte Verbindung nutzt.</translation>
 <translation id="7388380253839603603">Treibstoffpreise und Kraftstoffe für Fahrzeuge</translation>
@@ -4898,6 +4902,7 @@ Weitere Details:
 <translation id="8858065207712248076">Chrome empfiehlt, dein Passwort für <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> zurückzusetzen, wenn du es auf anderen Websites verwendet hast.</translation>
 <translation id="885906927438988819">Wenn die URL keinen Tippfehler enthält, <ph name="BEGIN_LINK" />kannst du die Windows-Netzwerkdiagnose durchführen<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografie und digitale Kunst</translation>
+<translation id="8861482055962701239">Diese Daten konnten nicht in Google Wallet gespeichert werden. Sie wurde stattdessen in Chrome auf diesem Gerät gespeichert. Wenn du das nächste Mal auf die Daten zugreifst, wirst du von Chrome gefragt, ob sie in Wallet gespeichert werden sollen.</translation>
 <translation id="8863218129525348270">Karte auf deinem Gerät speichern, um beim nächsten Mal schneller bezahlen zu können</translation>
 <translation id="8864939224504814334">Anzüge, Kostüme und Businessbekleidung</translation>
 <translation id="8866132857352163524">Soundtracks</translation>

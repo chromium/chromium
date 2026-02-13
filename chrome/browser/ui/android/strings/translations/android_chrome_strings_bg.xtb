@@ -299,6 +299,7 @@
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Вижте <ph name="TABS_COUNT_ONE" /> раздел}other{Вижте <ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="2297822946037605517">Споделяне на тази страница</translation>
 <translation id="230115972905494466">Няма намерени съвместими устройства</translation>
+<translation id="2316129865977710310">Не, благодаря</translation>
 <translation id="2318045970523081853">Докоснете за извършване на обаждане</translation>
 <translation id="2323763861024343754">Данни от сайтове</translation>
 <translation id="2328474416100889417">Всички хора незабавно ще загубят достъп до групата раздели „<ph name="GROUP_NAME" />“ и всички връзки към поканата ще бъдат изключени</translation>
@@ -960,6 +961,7 @@
 <translation id="5075939510584558547">Запазване без шифроване</translation>
 <translation id="5078638979202084724">Запазване на отметки към всички раздели</translation>
 <translation id="5085038751173179818">Влезте в профила си в този сайт и в Chrome, за да получите отметките си и още много други неща на всичките си устройства</translation>
+<translation id="5088347662971855383">Фиксиране на Gemini</translation>
 <translation id="5091199029769593641">Скоро ще виждате материали от <ph name="SITE_NAME" />, когато отворите нов раздел. Сайтовете, които следвате, се запазват в профила ви в Google. Можете да ги управлявате от настройките за Discover.</translation>
 <translation id="509429900233858213">Възникна грешка.</translation>
 <translation id="5096775069898886423">Получавайте предупреждения за сайтове, които не поддържат защитени връзки, преди да ги посетите</translation>
@@ -1341,6 +1343,7 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="666731172850799929">Отваряне в <ph name="APP_NAME" /></translation>
+<translation id="6669390930482049506">Искам да получавам известия</translation>
 <translation id="6671495933530132209">Копиране на изображението</translation>
 <translation id="6672697278890207089">Въведете паролата си</translation>
 <translation id="6672917148207387131">Добавяне на <ph name="DOMAIN" /></translation>

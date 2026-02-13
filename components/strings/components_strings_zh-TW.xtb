@@ -1116,6 +1116,7 @@
 <translation id="277133753123645258">運送方式</translation>
 <translation id="277499241957683684">沒有裝置記錄</translation>
 <translation id="2775884851269838147">首刷頁面</translation>
+<translation id="277828055419948999">一般自動填入功能容易漏掉的難填欄位，Chromium 能自動填好</translation>
 <translation id="2781185443919227679">海灘與島嶼</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">正在準備結帳</translation>
@@ -2471,6 +2472,7 @@
 <translation id="4950898438188848926">分頁切換鈕，按下 Enter 鍵即可切換至開啟的分頁：<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4953689047182316270">回應無障礙活動</translation>
+<translation id="4954505713046251871">為提供建議及改善這項功能，系統會將網頁網址和內容提供給 Google</translation>
 <translation id="4954891067389874142">儲存卡片可加快付款速度。卡片資料會以加密方式存在 Google 錢包。</translation>
 <translation id="4957080528849277028">「查看 Chrome 歷史記錄」按鈕，啟動後即可在 Chrome 設定中查看及管理瀏覽記錄</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{和另外 1 個網站}other{和另外 # 個網站}}</translation>
@@ -3974,6 +3976,7 @@
 <translation id="7377314930809374926">餐旅業</translation>
 <translation id="7378594059915113390">媒體控制項</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">一般自動填入功能容易漏掉的難填欄位，Chrome 能自動填好</translation>
 <translation id="7380398842872229465">10 x 15 吋</translation>
 <translation id="7381551826960739226">這個表單未使用安全連線，因此付款方式自動填入功能已停用。</translation>
 <translation id="7388380253839603603">油價與交通工具燃油</translation>

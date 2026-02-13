@@ -655,6 +655,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2071156619270205202">Šī karte neatbilst virtuālās kartes numuram.</translation>
 <translation id="2071852865256799872">Pārlūku pārvalda jūsu organizācija, un jūsu profilu pārvalda <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informācija ir saglabāta tikai ierīcē</translation>
 <translation id="2074733626795553847">Atbloķēt <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Jūs apmeklējāt</translation>
 <translation id="2078956195623975415">Mūzikas un deju spēles</translation>
@@ -1116,6 +1117,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="277133753123645258">Nosūtīšanas veids</translation>
 <translation id="277499241957683684">Trūkst ierīces ieraksta.</translation>
 <translation id="2775884851269838147">Pirmā drukas lapa</translation>
+<translation id="277828055419948999">Chromium var automātiski aizpildīt sarežģītus laukus, kurus standarta automātiskās aizpildes funkcija var neatpazīt.</translation>
 <translation id="2781185443919227679">Pludmales un salas</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Notiek sagatavošana norēķiniem</translation>
@@ -2470,6 +2472,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4950898438188848926">Ciļņu pārslēgšanas poga. Nospiediet ievadīšanas taustiņu, lai pārslēgtos uz atvērto cilni, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="495170559598752135">Darbības</translation>
 <translation id="4953689047182316270">Atbildēt uz pieejamības notikumiem</translation>
+<translation id="4954505713046251871">Lai sniegtu ieteikumus un uzlabotu šo funkciju, ar uzņēmumu Google tiek kopīgots lapas URL un saturs.</translation>
 <translation id="4954891067389874142">Maksājiet ērtāk, izmantojot saglabāto karti. Kartes informācija lietotnē Google maks tiek šifrēta.</translation>
 <translation id="4957080528849277028">Poga “Skatīt Chrome vēsturi”. Aktivizējiet, lai Chrome iestatījumos skatītu un pārvaldītu pārlūkošanas vēsturi.</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{un vēl 1 vietne}zero{un vēl # vietnes}one{un vēl # vietne}other{un vēl # vietnes}}</translation>
@@ -3973,6 +3976,7 @@ Papildu informācija:
 <translation id="7377314930809374926">Viesmīlības nozare</translation>
 <translation id="7378594059915113390">Multivides vadīklas</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome var automātiski aizpildīt sarežģītus laukus, kurus standarta automātiskās aizpildes funkcija var neatpazīt.</translation>
 <translation id="7380398842872229465">10 x 15 collas</translation>
 <translation id="7381551826960739226">Automātiska maksājumu veidu ievadīšana ir atspējota, jo šai veidlapai netiek izmantots drošs savienojums.</translation>
 <translation id="7388380253839603603">Degvielas cenas un uzpilde</translation>
@@ -4898,6 +4902,7 @@ Papildu informācija:
 <translation id="8858065207712248076">Chrome iesaka atiestatīt jūsu <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> paroli, ja izmantojāt to citās vietnēs.</translation>
 <translation id="885906927438988819">Ja nav pareizrakstības kļūdu, <ph name="BEGIN_LINK" />mēģiniet palaist Windows tīkla diagnostiku<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotogrāfija un digitālā māksla</translation>
+<translation id="8861482055962701239">Šo informāciju nevarēja saglabāt lietotnē Google maks. Taču tā tika saglabāta pārlūkā Chrome šajā ierīcē. Pārlūkā Chrome tiks piedāvāts saglabāt šo informāciju lietotnē Maks, kad nākamreiz to izmantosiet.</translation>
 <translation id="8863218129525348270">Lai nākamreiz veiktu maksājumu ātrāk, ierīcē saglabājiet kartes datus.</translation>
 <translation id="8864939224504814334">Uzvalki un lietišķi apģērbi</translation>
 <translation id="8866132857352163524">Filmu mūzika</translation>

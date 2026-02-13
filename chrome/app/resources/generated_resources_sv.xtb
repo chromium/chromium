@@ -354,6 +354,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1221825588892235038">Endast markering</translation>
 <translation id="1222835797152767346">Ange en pinkod så att det blir enklare att logga in</translation>
 <translation id="1223484782328004593">Licens krävs för <ph name="APP_NAME" /></translation>
+<translation id="1223498995510244364">Sammanfatta</translation>
 <translation id="1223853788495130632">Administratören rekommenderar ett specifikt värde för den här inställningen.</translation>
 <translation id="1225177025209879837">Begäran bearbetas ...</translation>
 <translation id="1227107020813934021">Hitta dokumentskannrar</translation>
@@ -5879,7 +5880,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="495170559598752135">Åtgärder</translation>
 <translation id="4951966678293618079">Spara aldrig lösenord för den här webbplatsen</translation>
 <translation id="4953808748584563296">Orange standardavatar</translation>
-<translation id="4954505713046251871">För att kunna ge förslag och förbättra den här funktionen delas sidans webbadress och innehåll med Google</translation>
 <translation id="4954652437333037880">Arkiv</translation>
 <translation id="4955707703665801001">Synlighet för <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Välj en pinkod</translation>

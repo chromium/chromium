@@ -354,6 +354,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1221825588892235038">Pemilihan sahaja</translation>
 <translation id="1222835797152767346">Tetapkan PIN untuk memudahkan log masuk</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> memerlukan lesen</translation>
+<translation id="1223498995510244364">Ringkaskan</translation>
 <translation id="1223853788495130632">Pentadbir anda mencadangkan nilai khusus untuk tetapan ini.</translation>
 <translation id="1225177025209879837">Memproses permintaan...</translation>
 <translation id="1227107020813934021">Cari pengimbas dokumen</translation>
@@ -1348,6 +1349,8 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1891362123137972260">Ruang cakera terlalu sedikit. Sila kosongkan ruang cakera.</translation>
 <translation id="189210018541388520">Buka skrin penuh</translation>
 <translation id="1892341345406963517">Hai <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Klik <ph name="BUTTON_LABEL" /> di bawah
+2. Klik <ph name="BUTTON_2" /> dalam tetapan Windows anda</translation>
 <translation id="189358972401248634">Bahasa lain</translation>
 <translation id="1895658205118569222">Tutup</translation>
 <translation id="1896043844785689584">Untuk menyediakan cap jari, minta anak anda menyentuh penderia cap jari di penjuru kanan sebelah bawah papan kekunci. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
@@ -3165,6 +3168,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3105820656234755131">Kata Laluan Dikemaskinikan</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Tapak sedang menggunakan bluetooth</translation>
+<translation id="3108122610701115301">Tetapkan lalai</translation>
 <translation id="3108931485517391283">Tidak dapat menerima</translation>
 <translation id="3108957152224931571">Warna serlahan</translation>
 <translation id="3109206895301430738">Kumpulan Tab Disimpan</translation>
@@ -5879,7 +5883,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="495170559598752135">Tindakan</translation>
 <translation id="4951966678293618079">Jangan simpan kata laluan untuk laman ini</translation>
 <translation id="4953808748584563296">Avatar jingga lalai</translation>
-<translation id="4954505713046251871">Untuk menawarkan cadangan dan meningkatkan ciri ini, URL dan kandungan halaman dikongsi dengan Google</translation>
 <translation id="4954652437333037880">Fail</translation>
 <translation id="4955707703665801001">Keterlihatan <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Pilih PIN anda</translation>
@@ -6361,6 +6364,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5288678174502918605">B&amp;uka Semula Tab Yang Ditutup</translation>
 <translation id="5290020561438336792">PC dan peranti cast menggunakan rangkaian Wi-Fi yang berlainan (mis. 2.4GHz
     vs. 5GHz)</translation>
+<translation id="5290322819358431297">Autolengkap kata laluan anda</translation>
 <translation id="52912272896845572">Fail penting persendirian adalah tidak sah.</translation>
 <translation id="529175790091471945">Formatkan peranti ini</translation>
 <translation id="529296195492126134">Mod sementara tidak disokong. Sila hubungi pentadbir anda</translation>
@@ -6980,6 +6984,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5734697361979786483">Tambahkan perkongsian fail</translation>
 <translation id="573520097779121706">Gunakan kekunci 7, 8, 9, u, o, j, k, l untuk menggerakkan kursor</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Data ini atau peranti anda tidak memenuhi beberapa dasar keselamatan organisasi anda. Semak dengan pentadbir anda tentang perkara yang perlu dibetulkan.}=1{Fail ini atau peranti anda tidak memenuhi beberapa dasar keselamatan organisasi anda. Semak dengan pentadbir anda tentang perkara yang perlu dibetulkan.}other{Fail ini tidak memenuhi beberapa dasar keselamatan organisasi anda. Semak dengan pentadbir anda tentang perkara yang perlu dibetulkan.}}</translation>
+<translation id="5736345781200955827">Buat, simpan dan urus kata laluan anda supaya anda dapat log masuk ke laman dan apl dengan mudah menggunakan Chrome</translation>
 <translation id="5738093759615225354">Anda memerlukan kunci laluan ini untuk log masuk ke komputer anda</translation>
 <translation id="5738386565827477765">Peranti audio</translation>
 <translation id="5739017626473506901">Log masuk untuk membantu <ph name="USER_NAME" /> menambah akaun sekolah</translation>
@@ -7232,6 +7237,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5901089233978050985">Beralih kepada menangkap tab</translation>
 <translation id="5901494423252125310">Pintu pencetak terbuka</translation>
 <translation id="5901630391730855834">Kuning</translation>
+<translation id="5902400038326841449">Google Password Manager dimatikan</translation>
 <translation id="5902892210366342391">Berikan amaran sebelum mengakses laman yang tidak selamat dalam Mod Inkognito</translation>
 <translation id="5904614460720589786">Tidak dapat menyediakan <ph name="APP_NAME" /> kerana terdapat masalah konfigurasi. Sila hubungi pentadbir anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Teruskan membenarkan laman ini menggunakan pengecam untuk memainkan kandungan yang dilindungi</translation>
@@ -8013,6 +8019,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> selesai</translation>
 <translation id="6452961788130242735">Masalah rangkaian atau realma teruk</translation>
 <translation id="6453191633103419909">Kualiti Pemancaran Tab/Skrin</translation>
+<translation id="6453306703004115497">Diterjemahkan kepada <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Kumpulkan Semua Tab</translation>
 <translation id="6453921811609336127">Untuk bertukar kepada kaedah masukan yang seterusnya, tekan <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Ruang<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Di laman web tertentu</translation>
@@ -8171,6 +8178,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="656293578423618167">Laluan atau nama fail terlalu panjang. Sila simpan dengan nama yang lebih pendek atau ke lokasi lain.</translation>
 <translation id="6563002009564846727">Lihat sijil yang diimport daripada Windows</translation>
 <translation id="6563055593659435495">Tidak dapat mengekalkan sambungan dengan telefon anda. Pastikan telefon anda berada berdekatan, dibuka kunci dan Bluetooth serta Wi-Fi dihidupkan.</translation>
+<translation id="6564343790052433242">Untuk membuat kunci laluan untuk <ph name="APP_NAME" />, Google Password Manager perlu dihidupkan</translation>
 <translation id="6565144332292237355">Laman boleh menggunakan ciri ini untuk menemukan dan menyambung kepada mana-mana peranti pada rangkaian setempat anda</translation>
 <translation id="6568283005472142698">Carian Tab</translation>
 <translation id="6569931898053264308">Penjimatan Sederhana</translation>
@@ -11443,6 +11451,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8761945298804995673">Pengguna ini sudah wujud</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> anda memerlukan kemas kini</translation>
 <translation id="8763927697961133303">Peranti USB</translation>
+<translation id="8765940060470412555">Nyahsematkan mod membaca</translation>
 <translation id="8766156860774051068">Dipilih susun oleh anda</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Paparkan semua carian untuk <ph name="QUERY_CLUSTER_NAME" /></translation>

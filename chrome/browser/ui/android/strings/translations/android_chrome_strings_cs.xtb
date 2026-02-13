@@ -299,6 +299,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Zobrazit <ph name="TABS_COUNT_ONE" /> kartu}few{Zobrazit <ph name="TABS_COUNT_MANY" /> karty}many{Zobrazit <ph name="TABS_COUNT_MANY" /> karty}other{Zobrazit <ph name="TABS_COUNT_MANY" /> karet}}</translation>
 <translation id="2297822946037605517">Sdílet tuto stránku</translation>
 <translation id="230115972905494466">Nebyla nalezena žádná kompatibilní zařízení</translation>
+<translation id="2316129865977710310">Ne, děkuji</translation>
 <translation id="2318045970523081853">Klepnutím zahájíte hovor</translation>
 <translation id="2323763861024343754">Úložiště webů</translation>
 <translation id="2328474416100889417">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a všechny odkazy s pozvánkou se vypnou</translation>
@@ -960,6 +961,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5075939510584558547">Uložit bez šifrování</translation>
 <translation id="5078638979202084724">Přidat do záložek všechny karty</translation>
 <translation id="5085038751173179818">Když se na tento web a do Chromu přihlásíte, budete mít své záložky a další položky k dispozici na všech svých zařízeních</translation>
+<translation id="5088347662971855383">Připnout Gemini</translation>
 <translation id="5091199029769593641">Brzy se vám po otevření nové karty začnou zobrazovat články z webu <ph name="SITE_NAME" />. Weby, které sledujete, se ukládají do vašeho účtu Google. Můžete je spravovat v nastavení funkce Objevit.</translation>
 <translation id="509429900233858213">Došlo k chybě.</translation>
 <translation id="5096775069898886423">Před návštěvou webů, které nepodporují zabezpečená připojení, zobrazit upozornění</translation>
@@ -1341,6 +1343,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}few{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}many{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalšího}other{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalších}}</translation>
 <translation id="6649642165559792194">Zobrazit náhled obrázku <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="666731172850799929">Otevřít v aplikaci <ph name="APP_NAME" /></translation>
+<translation id="6669390930482049506">Chci dostávat oznámení</translation>
 <translation id="6671495933530132209">Zkopírovat obrázek</translation>
 <translation id="6672697278890207089">Zadejte přístupové heslo</translation>
 <translation id="6672917148207387131">Přidat doménu <ph name="DOMAIN" /></translation>

@@ -299,6 +299,7 @@
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను చూడండి}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లను చూడండి}}</translation>
 <translation id="2297822946037605517">ఈ పేజీని షేర్ చేయండి</translation>
 <translation id="230115972905494466">అనుకూల పరికరాలు ఏవీ కనుగొనబడలేదు</translation>
+<translation id="2316129865977710310">వద్దు, ధన్యవాదాలు</translation>
 <translation id="2318045970523081853">కాల్ చేయడానికి నొక్కండి</translation>
 <translation id="2323763861024343754">సైట్ స్టోరేజ్‌</translation>
 <translation id="2328474416100889417">అందరూ వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, అలాగే అన్ని ఆహ్వాన లింక్‌లు ఆఫ్ చేయబడతాయి</translation>
@@ -475,6 +476,7 @@
 <translation id="2992473221983447149">ఇమేజ్ వివరణలు</translation>
 <translation id="2996291259634659425">రహస్య పదబంధాన్ని క్రియేట్ చేయండి</translation>
 <translation id="2996809686854298943">URL అవసరం</translation>
+<translation id="3008916997590006706">మీరు తదుపరిసారి సైన్ ఇన్ చేసినప్పుడు ఈ పాస్‌వర్డ్‌ను సులభంగా యాక్సెస్ చేయడానికి సేవ్ చేయండి అనే ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="3024215143424744261">రీడింగ్ మోడ్ ప్రాధాన్యతలు మూసివేయబడ్డాయి</translation>
 <translation id="3026955690410463085">లింక్‌ను చేర్చండి</translation>
 <translation id="3027644380269727216">సైట్‌లోని మీ యాక్టివిటీ ఆధారంగా. ఈ సెట్టింగ్ ఆన్ చేయబడింది.</translation>
@@ -759,7 +761,7 @@
 <translation id="4300632303535881174">మునుపటి పేజీకి వెళ్లండి</translation>
 <translation id="4300949869324911380"><ph name="TAB_TITLE" />, మీడియాను రికార్డ్ చేసే మల్టీసెలెక్టెడ్ ట్యాబ్</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="4306489587293957491">Enter</translation>
+<translation id="4306489587293957491">ఎంటర్ చేయండి</translation>
 <translation id="4307992518367153382">ప్రాథమికాలు</translation>
 <translation id="4311652497846705514">PDFను తెరవాలా?</translation>
 <translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{స్పామ్ అయ్యే అవకాశం ఉంది}other{స్పామ్ అయ్యే అవకాశం ఉన్నవి (#)}}</translation>
@@ -960,6 +962,7 @@
 <translation id="5075939510584558547">ఎన్‌క్రిప్షన్ చేయకుండా సేవ్ చేయండి</translation>
 <translation id="5078638979202084724">అన్ని ట్యాబ్‌లను బుక్‌మార్క్ చేయండి</translation>
 <translation id="5085038751173179818">మీ పరికరాలన్నింటిలో మీ బుక్‌మార్క్‌లతో పాటు మరిన్నింటిని పొందడానికి ఈ సైట్‌కు, Chromeకు సైన్ ఇన్ చేయండి</translation>
+<translation id="5088347662971855383">Geminiని పిన్ చేయండి</translation>
 <translation id="5091199029769593641">త్వరలో, మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీరు <ph name="SITE_NAME" /> నుండి కథనాలను చూస్తారు. మీరు ఫాలో అయ్యే సైట్‌లు మీ Google ఖాతాలో సేవ్ చేయబడతాయి. మీరు వాటిని Discover సెట్టింగ్‌లలో మేనేజ్ చేయవచ్చు.</translation>
 <translation id="509429900233858213">ఒక ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="5096775069898886423">సురక్షితమైన కనెక్షన్‌లను సపోర్ట్ చేయని సైట్‌ల విషయంలో, సైట్‌ను సందర్శించే ముందే హెచ్చరికను పొందండి</translation>
@@ -1004,6 +1007,7 @@
 <translation id="5267572070504076962">హానికరమైన సైట్‌ల నుండి రక్షణ పొందడానికి సురక్షిత బ్రౌజింగ్‌ను ఆన్ చేయండి</translation>
 <translation id="5271967389191913893">పరికరం డౌన్‌లోడ్ చేయాల్సిన కంటెంట్‌ను తెరవలేదు.</translation>
 <translation id="5273031377282080577">మీ అడ్మినిస్ట్రేటర్ ఈ సెట్టింగ్‌ను మేనేజ్ చేస్తారు.</translation>
+<translation id="5290322819358431297">మీ పాస్‌వర్డ్‌ల ఆటోఫిల్ చేయండి</translation>
 <translation id="5292796745632149097">ఈ పరికరానికి పంపండి</translation>
 <translation id="5301876394151419436">మీరు <ph name="EMAIL" />‌గా సైన్ ఇన్ చేశారు. మీరు సింక్ అవ్వడాన్ని ఏ సమయంలోనైనా సెట్టింగ్‌లలో ఆపివేయవచ్చు. మీ హిస్టరీ ఆధారంగా Searchను, ఇతర సర్వీస్‌లను Google వ్యక్తిగతీకరించవచ్చు.</translation>
 <translation id="5304593522240415983">ఈ ఫీల్డ్ ఖాళీగా ఉండరాదు</translation>
@@ -1096,6 +1100,7 @@
 <translation id="572328651809341494">ఇటీవలి ట్యాబ్‌లు</translation>
 <translation id="5728072125198221967">లింక్ అయిన Google సర్వీస్‌లు</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, అజ్ఞాత మోడ్‌లో ఆడియోను ప్లే చేసే పిన్ చేసిన ట్యాబ్</translation>
+<translation id="5736345781200955827">మీ పాస్‌వర్డ్‌లను క్రియేట్ చేయండి, సేవ్ చేయండి, అలాగే మేనేజ్ చేయండి, తద్వారా మీరు Chromeను ఉపయోగించి సైట్‌లకు, యాప్‌లకు సులభంగా సైన్ ఇన్ చేయవచ్చు</translation>
 <translation id="5744751019568455640">మీ వెబ్ పేజీలోని కంటెంట్‌ను చదవడానికి మీరు ఎంచుకోగల వాయిస్‌లు ఇక్కడ ఉన్నాయి. మీకు వాయిస్ నచ్చితే, దాన్ని మీరు ఉపయోగించడం కొనసాగించాలనుకుంటే, వాయిస్ పేరుపై ట్యాప్ చేయండి.</translation>
 <translation id="574845902699630049"><ph name="OWNER_FULL_NAME" />గా షేర్ చేయండి</translation>
 <translation id="5749068826913805084">ఫైళ్లను డౌన్‌లోడ్ చేయడానికి Chromeకు స్టోరేజ్‌ యాక్సెస్ అవసరం.</translation>
@@ -1339,6 +1344,7 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />కొత్త<ph name="END_NEW" /> చిత్రం ప్రివ్యూ చేయండి</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />లో తెరువు</translation>
+<translation id="6669390930482049506">నాకు తెలియజేయి</translation>
 <translation id="6671495933530132209">ఇమేజ్‌ను కాపీ చేయండి</translation>
 <translation id="6672697278890207089">మీ పాస్‌ఫ్రేజ్‌ని ఎంటర్ చేయండి</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" />‌ను జోడించండి</translation>

@@ -2031,6 +2031,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
       Kebijakan ini menggantikan <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />, dan preferensi pengguna.
 
       Kebijakan ini hanya memengaruhi akses ke perangkat USB melalui WebUSB API. Untuk memberikan akses ke perangkat USB melalui Web Serial API, lihat kebijakan <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="2318353380372431186">Aktifkan penginstalan pengguna IWA</translation>
 <translation id="2318583605563438459">Izinkan orang tua menambahkan akun yang diawasi</translation>
 <translation id="2326031114717677574">Interval pada saat data audio diambil sampelnya dan dikumpulkan. Batas minimum yang diizinkan adalah 1 menit.
 
@@ -2730,6 +2731,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentr
       Menyetel kebijakan ke Nonaktif berarti <ph name="PRODUCT_NAME" /> hanya dapat menggunakan host ini jika diinstal di tingkat sistem.</translation>
 <translation id="2753637905605932878">Membatasi rentang port UDP lokal yang digunakan oleh WebRTC</translation>
 <translation id="2755847332939882873">Mengizinkan pengumpulan jejak performa di seluruh sistem</translation>
+<translation id="2755963656455766808">Mengontrol kemampuan pengguna untuk menginstal Aplikasi Web Terisolasi secara manual</translation>
 <translation id="2757054304033424106">Ketik ekstensi/aplikasi yang diizinkan untuk dipasang</translation>
 <translation id="275769337615229465">Sebagian besar origin akan diisolasi dari origin lain di situs yang sama.</translation>
 <translation id="2759224876420453487">Mengontrol perilaku pengguna pada sesi multiprofil</translation>
@@ -5891,6 +5893,12 @@ Kebijakan ini bersifat sementara dan akan dihapus pada tahun 2026.</translation>
        Nama host dapat diizinkan menggunakan pencocokan host lengkap, atau pencocokan domain apa pun. Misalnya, peringatan untuk URL seperti "https://foo.example.com/bar" dapat disembunyikan jika daftar ini menyertakan "foo.example.com" atau "example.com".</translation>
 <translation id="4852900976354340846">Setelan Direct Sockets</translation>
 <translation id="485419696366295465">Mengontrol kebijakan yang terkait dengan subsistem <ph name="BOREALIS_NAME" />.</translation>
+<translation id="4854384393031206645">Mengontrol kemampuan pengguna untuk menginstal Aplikasi Web Terisolasi (IWA) secara manual.
+
+Jika kebijakan ini disetel ke salah (false), penginstalan pengguna IWA akan diblokir.
+
+Jika kebijakan ini disetel ke benar (true), atau jika kebijakan ini tidak disetel, penginstalan pengguna IWA diizinkan.
+</translation>
 <translation id="4855636880814771207">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat mengaktifkan atau menonaktifkan Bluetooth.
 
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_OS_NAME" /> akan menonaktifkan Bluetooth, dan pengguna tidak dapat mengaktifkannya.
@@ -6333,6 +6341,7 @@ Kebijakan ini adalah penangguhan sementara agar pengguna memiliki waktu untuk me
       </translation>
 <translation id="5104606191349861549">Pintasan Keyboard (didukung sejak versi 129)</translation>
 <translation id="5105313908130842249">Penundaan penguncian layar saat menggunakan daya baterai</translation>
+<translation id="5105593357527099243">Nonaktifkan penginstalan pengguna IWA</translation>
 <translation id="510604120100968366">Mengaktifkan fitur suara baterai lemah.
 
           Fitur ini berfungsi untuk memutar suara baterai lemah.
@@ -6690,6 +6699,13 @@ Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
 <translation id="5303080953475303561">Menyetel kebijakan akan mengontrol frekuensi layar kunci meminta sandi untuk mode buka kunci cepat. Setiap kali layar kunci ditampilkan, jika entri sandi terakhir terjadi sebelum jangka waktu yang ditentukan oleh nilai yang dipilih, mode buka kunci cepat tidak akan tersedia. Jika pengguna tetap berada di layar kunci setelah jangka waktu ini, sandi akan diminta saat pengguna salah memasukkan kode lagi atau masuk kembali ke layar kunci, mana saja yang terjadi lebih dahulu.
 
       Jika kebijakan tidak disetel, pengguna yang menggunakan mode buka kunci cepat hanya perlu memasukkan sandi di layar kunci satu kali dalam sehari.</translation>
+<translation id="530488290401810961">Mengonfigurasi cara <ph name="PRODUCT_NAME" /> mendownload model AI Generatif dasar dan menggunakannya untuk inferensi secara lokal.
+
+Jika kebijakan ini disetel ke Aktif (0) atau tidak disetel, model akan otomatis didownload dan digunakan untuk inferensi.
+
+Jika kebijakan ini disetel ke Nonaktif (1), model tidak akan didownload, dan model yang ada (jika sudah didownload) akan dihapus.
+
+Di platform desktop, download model juga dapat dinonaktifkan oleh <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5306186200045823863">Mengaktifkan kepercayaan pada Infrastruktur IKP Lama milik Symantec Corporation</translation>
 <translation id="5307432759655324440">Ketersediaan mode samaran</translation>
 <translation id="5308551343115571396">Setelah <ph name="LACROS_NAME" /> dinonaktifkan, kami akan mencoba menyimpan data pengguna sebanyak mungkin, sekaligus menghapus semua data browser.</translation>
@@ -6709,7 +6725,6 @@ Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
 <translation id="530949964068726932">Sembunyikan opsi aksesibilitas di menu area notifikasi</translation>
 <translation id="5309944663104291505">Jangan izinkan Aplikasi Web Terisolasi (IWA) yang diinstal otomatis dan aplikasi kios menggunakan Device Attributes API</translation>
 <translation id="5311275381462687162">Setelan default perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
-<translation id="5311430612584074035">Terapkan prioritas latar depan untuk semua tab di profil</translation>
 <translation id="5312253627576569499">Persentase yang digunakan untuk menskalakan penundaan peredupan layar ketika terdapat aktivitas pengguna saat layar redup atau segera setelah layar dimatikan.</translation>
 <translation id="5316856058059940708">Nonaktifkan kursor besar</translation>
 <translation id="5318185076587284965">Aktifkan penggunaan server relay oleh hosting akses jarak jauh</translation>

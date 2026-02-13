@@ -1735,6 +1735,7 @@ resolvedor associado ao resolvedor do sistema configurado pelo usuário.</transl
 <translation id="2158741059065130266">Se a política for definida como verdadeira, os usuários do app Arquivos do <ph name="PRODUCT_OS_NAME" /> vão poder ver uma lixeira, e os arquivos em "Meus arquivos" e "Downloads", incluindo os descendentes criados pelo usuário, vão ser enviados para lá após a exclusão.
 
       Se a política for definida como falsa, os arquivos que estavam na lixeira ainda vão estar disponíveis, mostrando os arquivos ocultos e encontrando o diretório .Trash em "Meus arquivos" ou "Downloads".</translation>
+<translation id="215891883000260452">Ativar a coleta de registros de diagnóstico do WebRTC para origens específicas</translation>
 <translation id="2159092270572925582">Permite a definição de uma lista de padrões de URL que especifica sites sem permissão para exibir conteúdo misto bloqueável (ativo), ou seja, conteúdo HTTP em sites HTTPS, e em que o conteúdo misto opcionalmente bloqueável (passivo) será desativado.
 
           Se esta política não for definida, o conteúdo misto bloqueável será bloqueado e o conteúdo misto opcionalmente bloqueável ganhará um upgrade. Além disso, o usuário poderá definir exceções para dar permissão a sites específicos.
@@ -2026,6 +2027,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
       Esta política substitui <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e as preferências do usuário.
 
       Ela afeta apenas o acesso aos dispositivos USB pela API WebUSB. Para conceder acesso a dispositivos USB pela API Web Serial, consulte a política <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="2318353380372431186">Permite que usuários instalem AIWs</translation>
 <translation id="2318583605563438459">Permitir que os pais adicionem contas supervisionadas</translation>
 <translation id="2326031114717677574">Frequência de amostragem e coleta de dados de áudio. O mínimo permitido é de 1 minuto.
 
@@ -2609,6 +2611,13 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
       Observação: desde a versão M114, aplicativos de quiosque específicos podem modificar o comportamento dessa política para casos de uso especiais, como avaliações de estudantes.</translation>
 <translation id="2667894101494585925">Ativar a busca do guia de otimização</translation>
 <translation id="2669157090883237118">Não mudar a configuração recomendada do <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="2669314653349044073">Esta política permite ativar a coleta de registros de diagnóstico do WebRTC para origens específicas.
+
+Para saber mais sobre padrões de entrada válidos, consulte https://chromeenterprise.google/policies/url-patterns. Não é possível usar <ph name="WILDCARD_VALUE" /> com esta política. Ela só considera as origens, por isso os caminhos no padrão do URL são ignorados. Esquemas e subdomínios podem ser usados.
+
+Aplicar esta política ativa a coleta dos registros de diagnóstico para origens correspondentes aos padrões na lista.
+
+Não aplicar esta política mantém a coleta dos registros de diagnóstico desativada por padrão.</translation>
 <translation id="2672012807430078509">Controles que ativam o NTLM como protocolo de autenticação para ativações de PMEs</translation>
 <translation id="2673363037046384711">O usuário final pode ativar ou desativar o modo de alta eficiência.</translation>
 <translation id="2673968385134502798">Jogos</translation>
@@ -2716,6 +2725,7 @@ Se a política for definida como desativada ou não for definida, o usuário pod
       Se a política for definida como "Desativada", o <ph name="PRODUCT_NAME" /> só poderá usar esses hosts se eles estiverem instalados no nível do sistema.</translation>
 <translation id="2753637905605932878">Restringir o alcance das portas UDP locais usadas por WebRTC</translation>
 <translation id="2755847332939882873">Permite a coleta do rastreamento de desempenho do sistema</translation>
+<translation id="2755963656455766808">Controla se o usuário poderá instalar Apps Isolados da Web manualmente</translation>
 <translation id="2757054304033424106">Tipos de extensões/aplicativos que podem ser instalados</translation>
 <translation id="275769337615229465">A maioria das origens será isolada de outras no mesmo site.</translation>
 <translation id="2759224876420453487">Controla o comportamento do usuário em uma sessão de diversos perfis</translation>
@@ -5871,6 +5881,12 @@ Essa política é temporária e será removida em 2026.</translation>
        Um nome de host pode ser permitido com uma correspondência completa do host ou qualquer correspondência do domínio. Por exemplo, os alertas de um URL como "https://foo.example.com/bar" serão suprimidos se a lista incluir "foo.example.com" ou "example.com".</translation>
 <translation id="4852900976354340846">Configurações da API Direct Sockets</translation>
 <translation id="485419696366295465">Controla políticas relacionadas ao subsistema da <ph name="BOREALIS_NAME" />.</translation>
+<translation id="4854384393031206645">Controla se o usuário poderá instalar Apps Isolados da Web (AIWs) manualmente.
+
+Definir esta política como falsa impede que os usuários instalem AIWs.
+
+Definir a política como verdadeira, ou não defini-la, permite que os usuários instalem AIWs.
+</translation>
 <translation id="4855636880814771207">Se esta política for definida como ativada ou não for definida, o usuário poderá ativar ou desativar o Bluetooth.
 
       Se a política for definida como desativada, o <ph name="PRODUCT_OS_NAME" /> desativará o Bluetooth e o usuário não poderá ativá-lo.
@@ -6311,6 +6327,7 @@ Esta política é uma solução temporária para permitir que o conteúdo da Web
       </translation>
 <translation id="5104606191349861549">Atalhos do teclado (compatível desde a versão 129)</translation>
 <translation id="5105313908130842249">Intervalo de bloqueio da tela no funcionamento com energia da bateria</translation>
+<translation id="5105593357527099243">Impede que usuários instalem AIWs</translation>
 <translation id="510604120100968366">Ativar o recurso de som de bateria fraca.
 
           Esse recurso é responsável por reproduzir o som de bateria fraca.
@@ -6685,7 +6702,6 @@ Observação: esta política não se aplica a HSTS Upgrades.</translation>
 <translation id="530949964068726932">Ocultar opções de acessibilidade no menu da bandeja do sistema</translation>
 <translation id="5309944663104291505">Não permitir que aplicativos de quiosque e Apps Isolados da Web instalados à força usem a API Device Attributes</translation>
 <translation id="5311275381462687162">Configuração padrão do comportamento de cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado.</translation>
-<translation id="5311430612584074035">Forçar a prioridade de primeiro plano para todas as guias no perfil</translation>
 <translation id="5312253627576569499">Porcentagem de aumento do intervalo de escurecimento da tela quando a atividade do usuário é observada enquanto a tela está escurecida ou pouco depois de ela ter sido desligada.</translation>
 <translation id="5316856058059940708">Desativar o cursor grande</translation>
 <translation id="5318185076587284965">Ativar o uso de servidores relay pelo host de acesso remoto</translation>

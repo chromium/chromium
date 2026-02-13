@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">ບັດນີ້ບໍ່ມີສິດໃຊ້ໝາຍເລກບັດສະເໝືອນ.</translation>
 <translation id="2071852865256799872">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຖືກຈັດການໂດຍອົງການຂອງທ່ານ ແລະ ໂປຣໄຟລ໌ຂອງທ່ານຖືກຈັດການໂດຍ <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">ບັນທຶກຂໍ້ມູນໃສ່ໃນອຸປະກອນເທົ່ານັ້ນ</translation>
 <translation id="2074733626795553847">ຍົກເລີກການບລັອກ <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">ທ່ານເຂົ້າເບິ່ງ</translation>
 <translation id="2078956195623975415">ເກມເພງ ແລະ ເກມເຕັ້ນ</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">ວິທີການຈັດສົ່ງ</translation>
 <translation id="277499241957683684">ບັນທຶກອຸປະກອນຫາຍໄປ</translation>
 <translation id="2775884851269838147">ໜ້າທີ່ພິມທຳອິດ</translation>
+<translation id="277828055419948999">Chromium ສາມາດຕື່ມຂໍ້ມູນໃສ່ໃນຊ່ອງທີ່ຕື່ມຍາກໄດ້ໂດຍອັດຕະໂນມັດ ເຊິ່ງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດມາດຕະຖານອາດພາດໄປ</translation>
 <translation id="2781185443919227679">ຊາຍຫາດ ແລະ ໝູ່ເກາະ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">ກຳລັງກຽມພ້ອມສຳລັບການຈ່າຍເງິນ</translation>
@@ -2472,6 +2474,7 @@
 <translation id="4950898438188848926">ແຕະປຸ່ມສະຫຼັບ, ກົດ Enter ເພື່ອປ່ຽນເປັນແຖບທີ່ເປີດຢູ່, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">ການກະທໍາ</translation>
 <translation id="4953689047182316270">ຕອບສະໜອງຕໍ່ກັບເຫດການການຊ່ວຍເຂົ້າເຖິງ</translation>
+<translation id="4954505713046251871">ເພື່ອສະເໜີການແນະນຳ ແລະ ປັບປຸງຄຸນສົມບັດນີ້, URL ແລະ ເນື້ອຫາຂອງໜ້າຈະຖືກແບ່ງປັນໃຫ້ກັບ Google</translation>
 <translation id="4954891067389874142">ຈ່າຍເງິນໄດ້ໄວຂຶ້ນເມື່ອບັນທຶກບັດຂອງທ່ານໄວ້. ລະບົບຈະເຂົ້າລະຫັດລາຍລະອຽດບັດໃນ Google Wallet.</translation>
 <translation id="4957080528849277028">ປຸ່ມເບິ່ງປະຫວັດ Chrome ຂອງທ່ານ, ເປີດນຳໃຊ້ເພື່ອເບິ່ງ ແລະ ຈັດການປະຫວັດການທ່ອງເວັບຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{ອີກ 1 ເວັບໄຊ}other{ອີກ # ເວັບໄຊ}}</translation>
@@ -3974,6 +3977,7 @@
 <translation id="7377314930809374926">ອຸດສາຫະກໍາການບໍລິການ</translation>
 <translation id="7378594059915113390">ການຄວບຄຸມສື່</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome ສາມາດຕື່ມຂໍ້ມູນໃສ່ໃນຊ່ອງທີ່ຕື່ມຍາກໄດ້ໂດຍອັດຕະໂນມັດ ເຊິ່ງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດມາດຕະຖານອາດພາດໄປ</translation>
 <translation id="7380398842872229465">10 x 15 ນິ້ວ</translation>
 <translation id="7381551826960739226">ການຕື່ມຂໍ້ມູນວິທີການຈ່າຍເງິນອັດຕະໂນມັດຖືກປິດການນຳໃຊ້ເນື່ອງຈາກແບບຟອມນີ້ບໍ່ໄດ້ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພ.</translation>
 <translation id="7388380253839603603">ລາຄານ້ຳມັນ ແລະ ເຊື້ອໄຟຍານພາຫະນະ</translation>
@@ -4898,6 +4902,7 @@
 <translation id="8858065207712248076">Chrome ແນະນຳໃຫ້ຣີເຊັດລະຫັດຜ່ານ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ຂອງທ່ານ ຖ້າທ່ານນຳມັນມາໃຊ້ໃໝ່ໃນເວັບໄຊອື່ນ.</translation>
 <translation id="885906927438988819">ຖ້າການສະກົດຄຳຖືກຕ້ອງ, <ph name="BEGIN_LINK" />ລອງເປີດໃຊ້ Windows Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">ຮູບຖ່າຍ ແລະ ສິນລະປະດິຈິຕອນ</translation>
+<translation id="8861482055962701239">ບໍ່ສາມາດບັນທຶກຂໍ້ມູນນີ້ໃສ່ໃນ Google Wallet ຂອງທ່ານໄດ້. ແຕ່ບັນທຶກໃສ່ໃນ Chrome ຢູ່ອຸປະກອນນີ້ແທນ. Chrome ຈະສະເໜີໃຫ້ບັນທຶກໃສ່ໃນ Wallet ເມື່ອທ່ານນຳໃຊ້ໃນເທື່ອຕໍ່ໄປ.</translation>
 <translation id="8863218129525348270">ຈ່າຍໄວຂຶ້ນໃນເທື່ອຕໍ່ໄປໂດຍການບັນທຶກບັດໄປໃສ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="8864939224504814334">ສູດ ແລະ ເຄື່ອງແຕ່ງກາຍທຸລະກິດ</translation>
 <translation id="8866132857352163524">ຊາວແທຣັກ</translation>

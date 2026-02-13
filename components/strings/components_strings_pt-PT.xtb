@@ -1117,6 +1117,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="277133753123645258">Método de envio</translation>
 <translation id="277499241957683684">Registo do dispositivo em falta</translation>
 <translation id="2775884851269838147">Primeira página de impressão</translation>
+<translation id="277828055419948999">O Chromium pode preencher automaticamente campos difíceis que o preenchimento automático padrão pode não preencher</translation>
 <translation id="2781185443919227679">Praias e ilhas</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">A preparar o pagamento</translation>
@@ -2473,6 +2474,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4950898438188848926">Botão de mudança de separador: prima Enter para mudar para o separador aberto, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4953689047182316270">Responder a eventos de acessibilidade</translation>
+<translation id="4954505713046251871">Para oferecer sugestões e melhorar esta funcionalidade, o URL e o conteúdo da página são partilhados com a Google</translation>
 <translation id="4954891067389874142">Pague mais rapidamente quando o seu cartão for guardado. As informações do cartão são encriptadas na Carteira do Google.</translation>
 <translation id="4957080528849277028">Botão Ver o Histórico do Chrome; ative para ver e gerir o histórico de navegação nas definições do Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # sites}}</translation>
@@ -3976,6 +3978,7 @@ Detalhes adicionais:
 <translation id="7377314930809374926">Indústria hoteleira</translation>
 <translation id="7378594059915113390">Controlos de multimédia</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">O Chrome pode preencher automaticamente campos difíceis que o preenchimento automático padrão pode não preencher</translation>
 <translation id="7380398842872229465">10 x 15 pol.</translation>
 <translation id="7381551826960739226">O preenchimento automático de métodos de pagamento está desativado, porque este formulário não usa uma ligação segura.</translation>
 <translation id="7388380253839603603">Preços dos combustíveis e abastecimento de veículos</translation>

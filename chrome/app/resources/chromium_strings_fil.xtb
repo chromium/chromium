@@ -166,7 +166,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2738871930057338499">Hindi makakonekta sa Internet. HTTP 403 Forbidden. Tingnan ang configuration ng iyong proxy.</translation>
 <translation id="2753623023919742414">I-click para maghanap</translation>
 <translation id="2768103863314748511">Itakda ang Chromium bilang iyong default na viewer ng PDF</translation>
-<translation id="277828055419948999">Mao-autofill ng Chromium ang mahihirap na field na posibleng mapalampas ng karaniwang autofill</translation>
 <translation id="2785438272836277133">May malware ang extension na ito at hindi ito ligtas. Alisin ito sa Chromium para hindi na nito makita at mabago ang iyong data sa mga site na binibisita mo, kabilang ang iyong personal na impormasyon.</translation>
 <translation id="2799223571221894425">Ilunsad Muli</translation>
 <translation id="2803971713792056305">Iyong Chromium</translation>
@@ -376,6 +375,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5174969993834422967">Kadalasan mong bina-block ang mga notification. Para hayaan ang site na itong abisuhan ka, i-click ang icon ng notification sa kanang sulok ng iyong bar ng lokasyon.</translation>
 <translation id="5174983315706567306">Hindi sapat ang disk space.</translation>
 <translation id="5187123684706427865">Nagre-require ang Chromium account ng pag-authenticate ulit</translation>
+<translation id="5219681158518957165">Gamitin ang mga inirerekomendang setting ng browser</translation>
 <translation id="5224391634244552924">Walang naka-save na password. Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="5231355151045086930">Mag-sign out sa Chromium</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
@@ -479,6 +479,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6327105987658262776">Walang available na update.</translation>
 <translation id="6333502561965082103">May kasalukuyang isinasagawang isa pang pagpapatakbo sa Chromium. Pakisubukang muli sa ibang pagkakataon.</translation>
 <translation id="6334986366598267305">Ngayon, mas madali nang gamitin ang Chromium sa iyong Google Account at sa mga nakabahaging computer.</translation>
+<translation id="6347002662287820329">Magkaroon ng madaling access sa mga feature na alam, gusto, at pinagkakatiwalaan mo sa pamamagitan ng pagtatakda sa Chromium bilang default browser mo.</translation>
 <translation id="6347933965114150440">Shortcut ng Chromium</translation>
 <translation id="6366160072964553914">Na-block ng Chromium ang pag-download na ito dahil hindi karaniwang dina-download ang file at posibleng mapanganib ito</translation>
 <translation id="6373523479360886564">Sigurado ka bang nais mong i-uninstall ang Chromium?</translation>
@@ -595,7 +596,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7461356015007898716">Para makatanggap ng mga update sa Chromium sa hinaharap, mangangailangan ka ng Windows 10 o mas bago. Ang computer na ito ay gumagamit ng Windows 7.</translation>
 <translation id="7467949745582939695">Muling ilunsad ang Chromium?</translation>
 <translation id="7483335560992089831">Hindi ma-install ang parehong Bersyon ng Chromium na kasalukuyang tumatakbo. Pakisara ang Chromium at subukan ulit.</translation>
-<translation id="7517403744065880907">Mase-save at magagamit mo ang mga password at iba pa sa iyong Google Account kapag naka-sign in ka sa Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Malamang na gagana ang mga site na gaya ng inaasahan. Masa-sign out ka sa karamihan ng mga site kapag isinara mo ang lahat ng window ng Chromium, maliban sa iyong Google Account kung naka-sign in ka sa Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Muling ilulunsad ang Chromium sa loob ng 1 minuto}one{Muling ilulunsad ang Chromium sa loob ng # minuto}other{Muling ilulunsad ang Chromium sa loob ng # na minuto}}</translation>
 <translation id="7565444033145385702">Para protektahan ang iyong data, hayaan ang Chromium na mag-alis ng mga pahintulot sa mga site na hindi mo binisita kamakailan.</translation>
@@ -738,7 +738,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="9183331186620388872">Tip sa Chromium: Maghanap Gamit ang Lens</translation>
 <translation id="9185526690718004400">Ilunsad ulit para ma-update ang Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9206863043651638213">Mas marami kang magagawa kapag naka-sign in ka sa Chromium</translation>
 <translation id="924957577793602335">Gawing iyo ang Chromium</translation>
 <translation id="93478295209880648">Maaaring hindi gumana nang maayos ang Chromium dahil hindi na ito sinusuportahan sa Windows XP o Windows Vista</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>

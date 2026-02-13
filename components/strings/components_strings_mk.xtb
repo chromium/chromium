@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">Картичкава не е подобна за број на виртуелна картичка.</translation>
 <translation id="2071852865256799872">Со вашиот прелистувач управува вашата организација, а со вашиот профил управува <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Податоците се зачувани само на уредот</translation>
 <translation id="2074733626795553847">Одблокирање на <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Го отворивте ова</translation>
 <translation id="2078956195623975415">Музички и игри со танцување</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">Метод на испорака</translation>
 <translation id="277499241957683684">Недостасува снимка од уред</translation>
 <translation id="2775884851269838147">Прво испечати ја страницата</translation>
+<translation id="277828055419948999">Chromium може да ги пополнува автоматски проблематичните полиња што стандардната „Автоматско пополнување“ може да ги пропушти</translation>
 <translation id="2781185443919227679">Плажи и острови</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Се подготвува за плаќање</translation>
@@ -2472,6 +2474,7 @@
 <translation id="4950898438188848926">Копче за префрлање помеѓу картички, притиснете Enter за да се префрлите на отворената картичка, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Дејства</translation>
 <translation id="4953689047182316270">Одговори на настани за пристапност</translation>
+<translation id="4954505713046251871">За да се нудат предлози и да се подобрува функцијава, URL-адресата и содржините на страницата се споделуваат со Google</translation>
 <translation id="4954891067389874142">Плаќајте побрзо кога вашата картичка е зачувана. Податоците за картичката се шифрирани во Google Wallet.</translation>
 <translation id="4957080528849277028">Копче за прегледување на историјата на Chrome, активирајте го за да ја прегледувате и да управувате со историјата на прелистувањето во поставките за Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{и уште 1 сајт}one{и уште # сајт}other{и уште # сајта}}</translation>
@@ -3974,6 +3977,7 @@
 <translation id="7377314930809374926">Угостителска индустрија</translation>
 <translation id="7378594059915113390">Контроли за аудиовизуелни медиуми</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome може да ги пополнува автоматски проблематичните полиња што стандардната „Автоматско пополнување“ може да ги пропушти</translation>
 <translation id="7380398842872229465">10 x 15 инчи</translation>
 <translation id="7381551826960739226">Автоматското пополнување начини на плаќање е оневозможено бидејќи формуларов не користи безбедна врска.</translation>
 <translation id="7388380253839603603">Цени на гориво и полнење гориво во возила</translation>
@@ -4898,6 +4902,7 @@
 <translation id="8858065207712248076">Chrome препорачува ресетирање на лозинката за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако повторно сте ја употребиле на други сајтови.</translation>
 <translation id="885906927438988819">Ако правописот е точен, <ph name="BEGIN_LINK" />извршете дијагностика на мрежата на Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Фотографски и дигитални уметности</translation>
+<translation id="8861482055962701239">Не можеше да се зачуваат податоциве во вашата Google Wallet. Наместо тоа, се зачуваа во Chrome на уредов. Chrome ќе предложи да ги зачува во Wallet следниот пат кога ќе ја користите.</translation>
 <translation id="8863218129525348270">За да платите побрзо следниот пат, зачувајте ја картичката на вашиот уред</translation>
 <translation id="8864939224504814334">Костуми и бизнис облека</translation>
 <translation id="8866132857352163524">Филмска музика</translation>

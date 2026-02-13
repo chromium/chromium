@@ -1117,6 +1117,7 @@
 <translation id="277133753123645258">送货方式</translation>
 <translation id="277499241957683684">缺少设备记录</translation>
 <translation id="2775884851269838147">最先打印的页面</translation>
+<translation id="277828055419948999">Chromium 可自动填充标准自动填充功能可能会遗漏的复杂字段</translation>
 <translation id="2781185443919227679">海滩与岛屿</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">正在准备结账</translation>
@@ -2469,6 +2470,7 @@
 <translation id="4950898438188848926">标签页切换按钮，按 Enter 键可切换到打开的标签页，<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4953689047182316270">对无障碍事件做出响应</translation>
+<translation id="4954505713046251871">为了提供建议和改进此功能，系统会将网页的网址和内容分享给 Google</translation>
 <translation id="4954891067389874142">保存卡信息，付款更便捷。卡详细信息会在 Google 钱包中加密。</translation>
 <translation id="4957080528849277028">“查看您的 Chrome 历史记录”按钮，激活它即可在 Chrome 设置中查看和管理您的浏览记录</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{以及另外 1 个网站}other{以及另外 # 个网站}}</translation>
@@ -3971,6 +3973,7 @@
 <translation id="7377314930809374926">招待行业</translation>
 <translation id="7378594059915113390">媒体控件</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome 可自动填充标准自动填充功能可能会遗漏的复杂字段</translation>
 <translation id="7380398842872229465">10 x 15 英寸</translation>
 <translation id="7381551826960739226">由于该表单没有使用安全连接，因此自动填写支付方式的功能已停用。</translation>
 <translation id="7388380253839603603">油价与汽车燃料</translation>

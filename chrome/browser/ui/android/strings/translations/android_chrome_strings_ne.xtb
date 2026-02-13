@@ -299,6 +299,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब हेर्नुहोस्}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब हेर्नुहोस्}}</translation>
 <translation id="2297822946037605517">यो पेज सेयर गर्नुहोस्</translation>
 <translation id="230115972905494466">कुनै पनि मिल्दाजुल्दा यन्त्र भेटिएनन्</translation>
+<translation id="2316129865977710310">पर्दैन, धन्यवाद</translation>
 <translation id="2318045970523081853">कल गर्न ट्याप गर्नुहोस्</translation>
 <translation id="2323763861024343754">साइटको भण्डारण</translation>
 <translation id="2328474416100889417">सबै जना तत्कालै "<ph name="GROUP_NAME" />" ट्याब समूहको एक्सेस गुमाउने छन् र निम्तोका सबै लिंकहरू रद्द गरिने छन्</translation>
@@ -959,6 +960,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5075939510584558547">इन्क्रिप्ट नगरिकनै सेभ गर्नुहोस्</translation>
 <translation id="5078638979202084724">सबै ट्याबहरू पृष्ठमञ्जूषा गर्नुहोस्</translation>
 <translation id="5085038751173179818">आफ्ना सबै डिभाइसका बुकमार्कलगायतका कुराहरू प्राप्त गर्न यो साइट र Chrome मा साइन इन गर्नुहोस्</translation>
+<translation id="5088347662971855383">Gemini पिन गर्नुहोस्</translation>
 <translation id="5091199029769593641">चाँडै नै, तपाईंले नयाँ ट्याब खोल्दा <ph name="SITE_NAME" /> का लेखहरू देखाइने छन्। तपाईंले फलो गर्ने साइटहरू तपाईंको Google खातामा सेभ गरिन्छन्। तपाईं Discover सम्बन्धी सेटिङमा गई ती साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="509429900233858213">त्रुटि भयो।</translation>
 <translation id="5096775069898886423">सुरक्षित कनेक्सन प्रयोग गर्न नमिल्ने साइटका हकमा उक्त साइटमा जानुअघि नै चेतावनी प्राप्त गर्नुहोस्</translation>
@@ -1340,6 +1342,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}other{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> छविको पूर्वावलोकन गर्नुहोस्</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मा खोल्नुहोस्</translation>
+<translation id="6669390930482049506">मलाई नोटिफिकेसन पठाउनुहोस्</translation>
 <translation id="6671495933530132209">छविको कपी गर्नुहोस्</translation>
 <translation id="6672697278890207089">आफ्नो पासफ्रेज हाल्नुहोस्</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> हाल्नुहोस्</translation>

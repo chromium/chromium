@@ -134,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Bir veya daha fazla Chromium uzantısı, 1 insan arabirim cihazına erişiyordu}=1{Bir veya daha fazla Chromium uzantısı, 1 insan arabirim cihazına erişiyor}other{Bir veya daha fazla Chromium uzantısı, # insan arabirim cihazına erişiyor}}</translation>
 <translation id="2401032172288869980">Bu site için Chromium'un kamera ve mikrofon izinlerine ihtiyacı var</translation>
 <translation id="2403703063067034158">Başlatma hatası: Şu anda başka bir kurulum işlemi devam ediyor. Lütfen daha sonra tekrar deneyin.</translation>
+<translation id="2418322681019544463">Uygulamalardaki bağlantıları Chromium'da açın ve tarayıcıyı görev çubuğunuzda erişilebilir tutun</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium araçları<ph name="END_LINK" /> ile güvenli bir şekilde göz atabilir ve kontrolü elinizde tutabilirsiniz</translation>
 <translation id="2451727308784734061">Şifre Yöneticisi'ne hızlıca gitmek için kısayolunuzu kullanın. Kısayolunuzu bilgisayarınızın ana ekranına veya uygulama başlatıcıya taşıyabilirsiniz.</translation>
 <translation id="2478295928299953161">Chromium yakında kapanacak</translation>
@@ -161,7 +162,6 @@
 <translation id="2738871930057338499">İnternet'e bağlanılamadı. HTTP 403 Yasak. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
 <translation id="2753623023919742414">Aramak için tıklayın</translation>
 <translation id="2768103863314748511">Chromium'u varsayılan PDF görüntüleyiciniz olarak ayarlayın</translation>
-<translation id="277828055419948999">Chromium, standart otomatik doldurma özelliğinin atlayabileceği zor alanları otomatik olarak doldurabilir.</translation>
 <translation id="2785438272836277133">Bu uzantı kötü amaçlı yazılım içerdiği için güvenli değil. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chromium'dan kaldırın.</translation>
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2803971713792056305">Chromium'unuz</translation>
@@ -584,7 +584,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7461356015007898716">Gelecekteki Chromium güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 7 kullanıyor.</translation>
 <translation id="7467949745582939695">Chromium yeniden başlatılsın mı?</translation>
 <translation id="7483335560992089831">Şu anda çalışan aynı Chromium sürümünü yükleyemezsiniz. Lütfen Chromium'u kapatın ve yeniden deneyin.</translation>
-<translation id="7517403744065880907">Chromium'da oturum açtığınız her zaman şifreleri ve diğer öğeleri Google Hesabınıza kaydedip kullanabilirsiniz. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Siteler muhtemelen beklendiği gibi çalışır. Tüm Chromium pencerelerini kapattığınızda çoğu sitedeki oturumunuz kapatılır. Chromium'da oturum açtıysanız Google Hesabınız buna dahil değildir.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 1 dakika içinde yeniden başlatılacak}other{Chromium # dakika içinde yeniden başlatılacak}}</translation>
 <translation id="7565444033145385702">Verilerinizin korunması için Chromium'un, yakın zamanda ziyaret etmediğiniz sitelerin izinlerini kaldırmasına izin verin.</translation>
@@ -603,6 +602,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7745317241717453663">Bu işlem tarama verilerinizi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chromium'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="7747138024166251722">Yükleyici geçici bir dizin oluşturamadı. Lütfen, kullanılabilir disk alanını ve yazılım yükleme iznini kontrol edin.</translation>
 <translation id="7750130090210923118">Chromium Varsayılanına Sıfırla</translation>
+<translation id="7781047659465034537">Chromium'u varsayılan olarak ayarlayın ve görev çubuğuna sabitleyin</translation>
 <translation id="7786760609782648049">Chromium'u daha hızlı hale getirin</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">İnternet trafiğinize erişimi olan kişilerin, ziyaret ettiğiniz siteleri görmesini zorlaştırın. Chromium, DNS'de (Alan Adı Sistemi) bir sitenin IP adresini aramak için güvenli bağlantı kullanır.</translation>
@@ -725,7 +725,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="9183331186620388872">Chromium İpucu: Lens ile Arama Yapın</translation>
 <translation id="9185526690718004400">&amp;Chromium'u güncellemek için yeniden başlat</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9206863043651638213">Chromium'da oturum açarak daha fazla avantajdan yararlanın</translation>
 <translation id="924957577793602335">Chromium'u kendinize uyarlayın</translation>
 <translation id="93478295209880648">Chromium artık Windows XP veya Windows Vista üzerinde desteklenmediği için doğru şekilde çalışmayabilir</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>

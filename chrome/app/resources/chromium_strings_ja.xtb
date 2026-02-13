@@ -162,7 +162,6 @@
 <translation id="2738871930057338499">インターネットに接続できません。HTTP 403 アクセス不可エラーが発生しました。プロキシ設定をご確認ください。</translation>
 <translation id="2753623023919742414">クリックして検索</translation>
 <translation id="2768103863314748511">Chromium をデフォルトの PDF ビューアに設定する</translation>
-<translation id="277828055419948999">標準の自動入力が難しい項目に自動入力できます</translation>
 <translation id="2785438272836277133">この拡張機能にはマルウェアが含まれており、安全ではありません。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chromium からこの拡張機能を削除してください。</translation>
 <translation id="2799223571221894425">再起動</translation>
 <translation id="2803971713792056305">あなたの Chromium</translation>
@@ -581,7 +580,6 @@
 <translation id="7461356015007898716">今後、Chromium のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 7 が実行されています。</translation>
 <translation id="7467949745582939695">Chromium を再起動しますか？</translation>
 <translation id="7483335560992089831">実行中の Chromium と同じバージョンをインストールすることはできません。Chromium を閉じてからもう一度お試しください。</translation>
-<translation id="7517403744065880907">Chromium にログインしているときに、Google アカウントにパスワードなどを保存して使用できます。<ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">ほとんどの場合、サイトは適切に機能します。Chromium のウィンドウをすべて閉じると、ほとんどのサイトからログアウトします。ただし Chromium にログインしている場合、Google アカウントからはログアウトしません。</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium は 1 分後に再起動されます}other{Chromium は # 分後に再起動されます}}</translation>
 <translation id="7565444033145385702">データを保護するため、最近アクセスしていないサイトから権限を自動で削除します。</translation>
@@ -723,7 +721,6 @@
 <translation id="9183331186620388872">Chromium のヒント: レンズで検索</translation>
 <translation id="9185526690718004400">再起動して Chromium を更新(&amp;C)</translation>
 <translation id="9190841055450128916">Chromium（mDNS インバウンド）</translation>
-<translation id="9206863043651638213">Chromium にログインしてさらに便利に</translation>
 <translation id="924957577793602335">Chromium を独自にカスタマイズ</translation>
 <translation id="93478295209880648">Windows XP と Windows Vista はサポートされなくなったため、Chromium は正常に機能しない可能性があります</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>

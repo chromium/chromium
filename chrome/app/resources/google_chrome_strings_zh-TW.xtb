@@ -303,7 +303,6 @@
 <translation id="4205939740494406371">Chrome 無法檢查你的密碼，請於 24 小時後再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="4222932583846282852">取消中…</translation>
 <translation id="4224210481850767180">已取消安裝。</translation>
-<translation id="4230631012078055975">登入 Chrome 即可享有更多功能</translation>
 <translation id="4242034826641750751">Chrome 需要相機權限和麥克風權限，才能執行這個網站要求的功能</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4251615635259297716">要將你的 Chrome 資料連結至這個帳戶嗎？</translation>
@@ -599,7 +598,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7308322188646931570">Chrome 需要儲存空間存取權，才能下載檔案</translation>
 <translation id="7339898014177206373">開啟新視窗</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
-<translation id="7379321689415048316">一般自動填入功能容易漏掉的難填欄位，Chrome 能自動填好</translation>
 <translation id="7386878009611068389">為確保家長監護設定可以進一步守護你的上網安全，請切換至以 <ph name="USER_EMAIL_ADDRESS" /> 登入的 Chrome 設定檔</translation>
 <translation id="7398801000654795464">你使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chrome，請使用相同帳戶重新登入。</translation>
 <translation id="7412494426921990001">按一下 Chrome 選單</translation>
@@ -701,7 +699,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8321888067342493336">另存成圖片</translation>
 <translation id="8336463659890584292">當網站要求以私密方式預先載入網頁上的連結時，Chrome 會使用 Google 伺服器進行預先載入作業。這麼做可在預先載入網站中隱藏你的身分，但 Google 會知道這類網站預先載入的內容。</translation>
 <translation id="8342675569599923794">這個檔案並不安全，因此遭到 Chrome 封鎖。</translation>
-<translation id="8349094670477064572">只要登入 Chrome，就能將密碼和其他資訊儲存到 Google 帳戶，方便你隨時取用。<ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">向 Google 提問</translation>
 <translation id="8362914115861174987">譯文語言：</translation>
 <translation id="8366770919198174997">降低效能但提高 Chrome 防範攻擊的能力</translation>

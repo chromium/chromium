@@ -307,7 +307,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4205939740494406371">Chrome ne peut pas vérifier vos mots de passe. Réessayez après 24 heures ou <ph name="BEGIN_LINK" />effectuez une vérification des mots de passe dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Annulation en cours…</translation>
 <translation id="4224210481850767180">L'installation a été annulée.</translation>
-<translation id="4230631012078055975">Accédez à plus d'options lorsque vous êtes connecté à Chrome</translation>
 <translation id="4242034826641750751">Chrome requiert l'autorisation d'accéder au microphone et à l'appareil photo pour ce site</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome?</translation>
 <translation id="4251615635259297716">Associer vos données Chrome à ce compte?</translation>
@@ -446,6 +445,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="5756509061973259733">Il existe déjà un profil Chrome associé à ce compte sur cet appareil</translation>
 <translation id="5759947850379142561">Sélectionnez n'importe quel texte ou image à pour effectuer une recherche avec Lentille Google ou appuyez sur Échap pour quitter Lentille Google</translation>
 <translation id="5762867845020858790">Ajoutez un profil Chrome pour séparer les favoris, les mots de passe et les paramètres.</translation>
+<translation id="5779427581965287859">Définissez Chrome comme navigateur par défaut et épinglez-le à la barre des tâches</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Impossible de lancer Chrome. Réessayez.</translation>
 <translation id="5809516625706423866">Impossible de se connecter à Internet. HTTP 401 Unauthorized. Veuillez vérifier la configuration de votre mandataire.</translation>
@@ -603,7 +603,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="7308322188646931570">Chrome a besoin d'accéder au stockage pour télécharger des fichiers</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7352651011704765696">Une erreur s’est produite</translation>
-<translation id="7379321689415048316">Chrome peut remplir automatiquement les champs difficiles que la fonction de remplissage automatique standard pourrait manquer</translation>
 <translation id="7386878009611068389">Pour rester en sécurité en ligne avec les choix de tes parents, passe à ton profil Chrome où tu as utilisé l'adresse <ph name="USER_EMAIL_ADDRESS" /> pour te connecter</translation>
 <translation id="7398801000654795464">Vous étiez connecté à Google Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
 <translation id="7412494426921990001">Cliquez sur le menu Chrome.</translation>
@@ -696,6 +695,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="8162006532256575008">Utiliser Chrome sans compte</translation>
 <translation id="8177472873527554730">Impossible de trouver du contenu sur la page</translation>
 <translation id="8221491193165283816">Vous bloquez habituellement les notifications. Pour autoriser ce site à vous envoyer des notifications, cliquez ici.</translation>
+<translation id="8253851811470049684">Ouvrez des liens dans Chrome à partir de n'importe quelle appli et gardez le navigateur à portée de main dans votre barre des tâches</translation>
 <translation id="8255190535488645436">Google Chrome utilise votre caméra et votre microphone.</translation>
 <translation id="8267953129876836456">Chrome a trouvé des recommandations de sécurité que vous pouvez examiner</translation>
 <translation id="8286862437124483331">Google Chrome tente d'afficher les mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
@@ -704,7 +704,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="8321888067342493336">Enregistrer en tant qu'image</translation>
 <translation id="8336463659890584292">Lorsqu'un site demande de précharger des liens en privé sur sa page, Chrome utilise les serveurs de Google. Ceci permet de masquer votre identité au site préchargé et permet à Google de savoir quels sites sont préchargés.</translation>
 <translation id="8342675569599923794">Chrome a bloqué ce fichier, car il est dangereux.</translation>
-<translation id="8349094670477064572">Vous enregistrerez et utiliserez des mots de passe et plus encore dans votre compte Google chaque fois que vous serez connecté à Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Demander à Google</translation>
 <translation id="8362914115861174987">Langue cible</translation>
 <translation id="8366770919198174997">Réduit les performances, mais rend Chrome plus résistant aux attaques</translation>

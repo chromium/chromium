@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">이 카드로는 가상 카드 번호를 사용할 수 없습니다.</translation>
 <translation id="2071852865256799872">조직에서 브라우저를 관리하고 <ph name="PROFILE_DOMAIN" />에서 프로필을 관리합니다</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">정보가 기기에만 저장됨</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> 차단 해제</translation>
 <translation id="2074771604462073334">최근 방문:</translation>
 <translation id="2078956195623975415">음악 및 댄스 게임</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">배송 방법</translation>
 <translation id="277499241957683684">기기 기록 없음</translation>
 <translation id="2775884851269838147">첫 인쇄 페이지</translation>
+<translation id="277828055419948999">Chromium은 표준 자동 완성에서 누락될 수 있는 어려운 필드를 자동 완성할 수 있습니다.</translation>
 <translation id="2781185443919227679">해변 및 섬</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">결제 준비 중</translation>
@@ -2472,6 +2474,7 @@
 <translation id="4950898438188848926">탭 전환 버튼, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> 열린 탭으로 전환하려면 Enter를 누르세요</translation>
 <translation id="495170559598752135">작업</translation>
 <translation id="4953689047182316270">접근성 이벤트에 응답</translation>
+<translation id="4954505713046251871">추천을 제공하고 이 기능을 개선하기 위해 페이지의 URL 및 콘텐츠가 Google과 공유됩니다</translation>
 <translation id="4954891067389874142">카드를 저장하면 더 빠르게 결제할 수 있습니다. 카드 세부정보는 Google 월렛에 암호화되어 저장됩니다.</translation>
 <translation id="4957080528849277028">Chrome 방문 기록 보기 버튼, Chrome 설정에서 방문 기록을 보고 관리하려면 활성화하세요.</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{외 사이트 1개}other{외 사이트 #개}}</translation>
@@ -3975,6 +3978,7 @@
 <translation id="7377314930809374926">접객업</translation>
 <translation id="7378594059915113390">미디어 컨트롤</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome은 표준 자동 완성에서 누락될 수 있는 어려운 필드를 자동 완성할 수 있습니다.</translation>
 <translation id="7380398842872229465">10x15인치</translation>
 <translation id="7381551826960739226">양식에 보안 연결이 사용되지 않아 자동 결제 수단 채우기가 사용 중지되었습니다.</translation>
 <translation id="7388380253839603603">유가 및 차량용 연료</translation>
@@ -4898,6 +4902,7 @@
 <translation id="8858065207712248076">다른 사이트에서 비밀번호를 재사용했다면 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 비밀번호를 재설정하는 것이 좋습니다.</translation>
 <translation id="885906927438988819">철자가 올바르다면 <ph name="BEGIN_LINK" />Windows 네트워크 진단을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="8861126751581835107">사진 및 디지털 예술</translation>
+<translation id="8861482055962701239">이 정보를 Google 월렛에 저장할 수 없습니다. 대신 이 기기의 Chrome에 저장됩니다. 다음에 사용할 때 Chrome에서 월렛에 저장할지 묻습니다.</translation>
 <translation id="8863218129525348270">다음번에 더 빠르게 결제할 수 있도록 기기에 카드를 저장하세요</translation>
 <translation id="8864939224504814334">수트 및 비즈니스 정장</translation>
 <translation id="8866132857352163524">사운드트랙</translation>

@@ -163,7 +163,6 @@
 <translation id="2738871930057338499">Kan ikke koble til internett. HTTP 403 – forbudt. Kontroller proxy-tjenerkonfigurasjonen.</translation>
 <translation id="2753623023919742414">Klikk for å søke</translation>
 <translation id="2768103863314748511">Angi Chromium som standard PDF-leser</translation>
-<translation id="277828055419948999">Chromium kan autofylle vanskelige felter som standard autofyll kanskje ikke fyller ut</translation>
 <translation id="2785438272836277133">Denne utvidelsen inneholder skadelig programvare og er utrygg. Fjern den fra Chromium, slik at den ikke lenger kan se og endre dataene dine på nettsteder du besøker, inkludert personopplysningene dine.</translation>
 <translation id="2799223571221894425">Start på nytt</translation>
 <translation id="2803971713792056305">Din Chromium</translation>
@@ -588,7 +587,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7461356015007898716">For å få fremtidige Chromium-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 7.</translation>
 <translation id="7467949745582939695">Vil du starte Chromium på nytt?</translation>
 <translation id="7483335560992089831">Kan ikke installere den samme Chromium-versjonen som kjører. Lukk Chromium og prøv på nytt.</translation>
-<translation id="7517403744065880907">Du lagrer og bruker passord med mer i Google-kontoen din når du er logget på Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Nettsteder fungerer sannsynligvis som forventet. Du blir logget av de fleste nettsteder når du lukker alle Chromium-vinduer, unntatt Google-kontoen din hvis du er logget på Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium startes på nytt om 1 minutt}other{Chromium startes på nytt om # minutter}}</translation>
 <translation id="7565444033145385702">Du kan beskytte dataene dine ved å la Chromium fjerne tillatelser fra nettsteder du ikke har besøkt nylig.</translation>
@@ -730,7 +728,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="9183331186620388872">Chromium-tips: Søk med Lens</translation>
 <translation id="9185526690718004400">Start på nytt for å oppdatere &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-Inn)</translation>
-<translation id="9206863043651638213">Få mer når du er logget på Chromium</translation>
 <translation id="924957577793602335">Gi Chromium et personlig preg</translation>
 <translation id="93478295209880648">Chromium fungerer kanskje ikke riktig fordi den ikke lenger støttes på Windows XP eller Windows Vista</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>

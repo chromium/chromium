@@ -655,6 +655,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2071156619270205202">Questa carta non è idonea per un numero di carta virtuale.</translation>
 <translation id="2071852865256799872">Il tuo browser è gestito dalla tua organizzazione e il tuo profilo è gestito da <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informazioni salvate solo sul dispositivo</translation>
 <translation id="2074733626795553847">Sblocca <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Visitato</translation>
 <translation id="2078956195623975415">Giochi musicali e di danza</translation>
@@ -1116,6 +1117,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="277133753123645258">Metodo di spedizione</translation>
 <translation id="277499241957683684">Record del dispositivo mancante</translation>
 <translation id="2775884851269838147">Prima pagina di stampa</translation>
+<translation id="277828055419948999">Chromium può compilare automaticamente i campi difficili che la compilazione automatica standard potrebbe non riuscire a compilare</translation>
 <translation id="2781185443919227679">Spiagge e isole</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Preparazione del pagamento in corso…</translation>
@@ -2469,6 +2471,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4950898438188848926">Pulsante per cambiare scheda, premi INVIO per passare alla scheda aperta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Azioni</translation>
 <translation id="4953689047182316270">Rispondi agli eventi di accessibilità</translation>
+<translation id="4954505713046251871">Per poterti offrire suggerimenti e migliorare questa funzionalità, l'URL e i contenuti della pagina vengono condivisi con Google</translation>
 <translation id="4954891067389874142">Se salvi la carta paghi più velocemente. I dati della carta sono criptati in Google Wallet.</translation>
 <translation id="4957080528849277028">Pulsante Visualizza la tua cronologia di Chrome, attiva per visualizzare e gestire la tua cronologia di navigazione nelle impostazioni di Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 sito}other{+ # siti}}</translation>
@@ -3971,6 +3974,7 @@ Ulteriori dettagli:
 <translation id="7377314930809374926">Settore alberghiero</translation>
 <translation id="7378594059915113390">Controlli multimediali</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome può compilare automaticamente i campi difficili che la compilazione automatica standard potrebbe non riuscire a compilare</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="7381551826960739226">La compilazione automatica dei metodi di pagamento è disattivata perché questo modulo non utilizza una connessione sicura.</translation>
 <translation id="7388380253839603603">Prezzi del carburante e stazioni di servizio</translation>
@@ -4895,6 +4899,7 @@ Ulteriori dettagli:
 <translation id="8858065207712248076">Chrome ti consiglia di reimpostare la password di <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, se l'hai utilizzata su altri siti.</translation>
 <translation id="885906927438988819">Se l'ortografia è corretta, <ph name="BEGIN_LINK" />prova a eseguire lo strumento Diagnostica di rete Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografia e arti digitali</translation>
+<translation id="8861482055962701239">Non è stato possibile salvare queste informazioni in Google Wallet. Sono state invece salvate in Chrome su questo dispositivo. Chrome ti proporrà di salvarle in Wallet la prossima volta che le utilizzerai.</translation>
 <translation id="8863218129525348270">Per pagare più velocemente la prossima volta, salva la carta sul tuo dispositivo</translation>
 <translation id="8864939224504814334">Completi e abiti professionali</translation>
 <translation id="8866132857352163524">Colonne sonore</translation>

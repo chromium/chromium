@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">このカードでは仮想カード番号はご利用いただけません</translation>
 <translation id="2071852865256799872">お使いのブラウザは組織によって、プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理されています</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">情報はデバイスのみに保存されます</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> のブロックを解除</translation>
 <translation id="2074771604462073334">過去にアクセス</translation>
 <translation id="2078956195623975415">音楽ゲーム、ダンスゲーム</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">配送方法</translation>
 <translation id="277499241957683684">デバイス レコードがありません</translation>
 <translation id="2775884851269838147">最初の印刷ページ</translation>
+<translation id="277828055419948999">標準の自動入力が難しい項目に自動入力できます</translation>
 <translation id="2781185443919227679">ビーチ、島</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">購入手続きの準備を行っています</translation>
@@ -2472,6 +2474,7 @@
 <translation id="4950898438188848926">タブの切り替えボタンです。Enter キーを押すと開いているタブ「<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />」に切り替わります</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4953689047182316270">ユーザー補助機能のイベントへの応答</translation>
+<translation id="4954505713046251871">候補を表示して、この機能を改善するため、ページの URL とコンテンツを Google と共有します</translation>
 <translation id="4954891067389874142">カードを保存するとすばやくお支払いできます。カード情報は Google ウォレットで暗号化されます。</translation>
 <translation id="4957080528849277028">[Chrome 履歴を表示] ボタンです。実行すると、Chrome の設定で閲覧履歴を表示、管理できます</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{と 1 件のサイト}other{と # 件のサイト}}</translation>
@@ -3975,6 +3978,7 @@
 <translation id="7377314930809374926">サービス業</translation>
 <translation id="7378594059915113390">メディアの操作</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">標準の自動入力が難しい項目に自動入力できます</translation>
 <translation id="7380398842872229465">10x15 インチ</translation>
 <translation id="7381551826960739226">このフォームは安全な接続を使用していないため、お支払い方法の自動入力が無効になっています。</translation>
 <translation id="7388380253839603603">ガソリン料金、燃費</translation>
@@ -4901,6 +4905,7 @@
 <translation id="8858065207712248076"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> パスワードを他のサイトで再使用した場合、Chrome ではパスワードの再設定を促すメッセージが表示されます。</translation>
 <translation id="885906927438988819">タイプミスでない場合は、<ph name="BEGIN_LINK" />Windows ネットワーク診断をお試しください<ph name="END_LINK" />。</translation>
 <translation id="8861126751581835107">芸術写真、デジタルアート</translation>
+<translation id="8861482055962701239">この情報を Google ウォレットに保存できませんでした。代わりにこのデバイスの Chrome に保存されました。次回この情報を使用するときに、ウォレットに保存するかどうかを確認するメッセージが表示されます。</translation>
 <translation id="8863218129525348270">カードをデバイスに保存すると、次回のお支払いが簡単になります</translation>
 <translation id="8864939224504814334">ビジネススーツ</translation>
 <translation id="8866132857352163524">サウンドトラック</translation>

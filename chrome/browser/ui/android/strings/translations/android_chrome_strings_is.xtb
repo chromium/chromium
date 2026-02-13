@@ -299,6 +299,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Sjá <ph name="TABS_COUNT_ONE" /> flipa}one{sjá <ph name="TABS_COUNT_MANY" /> flipa}other{sjá <ph name="TABS_COUNT_MANY" /> flipa}}</translation>
 <translation id="2297822946037605517">Deila þessari síðu</translation>
 <translation id="230115972905494466">Engin samhæf tæki fundust</translation>
+<translation id="2316129865977710310">Nei, takk</translation>
 <translation id="2318045970523081853">Ýttu til að hringja</translation>
 <translation id="2323763861024343754">Geymsla vefsvæða</translation>
 <translation id="2328474416100889417">Allir notendur munu umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og slökkt verður á öllum boðstenglum</translation>
@@ -960,6 +961,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5075939510584558547">Vista án dulkóðunar</translation>
 <translation id="5078638979202084724">Bókamerkja alla flipa</translation>
 <translation id="5085038751173179818">Skráðu þig inn á þetta vefsvæði og Chrome til að fá bókamerkin þín og fleira í öll tækin þín</translation>
+<translation id="5088347662971855383">Festa Gemini</translation>
 <translation id="5091199029769593641">Fljótlega sérðu sögur frá <ph name="SITE_NAME" /> þegar þú opnar nýjan flipa. Vefsvæði sem þú fylgir eru vistuð á Google reikningnum þínum. Þú getur stjórnað þeim í stillingum Tillagna.</translation>
 <translation id="509429900233858213">Villa kom upp.</translation>
 <translation id="5096775069898886423">Fáðu viðvörun áður en þú opnar síðu sem styður ekki örugga tengingu</translation>
@@ -1341,6 +1343,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}one{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}other{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}}</translation>
 <translation id="6649642165559792194">Forskoða mynd <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="666731172850799929">Opna í <ph name="APP_NAME" /></translation>
+<translation id="6669390930482049506">Láta mig vita</translation>
 <translation id="6671495933530132209">Afrita mynd</translation>
 <translation id="6672697278890207089">Sláðu inn aðgangsorðið þitt</translation>
 <translation id="6672917148207387131">Bæta <ph name="DOMAIN" /> við</translation>

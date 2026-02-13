@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">Cette carte n'est pas compatible avec un numéro de carte virtuelle.</translation>
 <translation id="2071852865256799872">Votre navigateur est géré par votre organisation et votre profil est géré par <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informations enregistrées sur l'appareil uniquement</translation>
 <translation id="2074733626795553847">Débloquer <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Vous avez visité cette page</translation>
 <translation id="2078956195623975415">Jeux de musique et de danse</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">Mode de livraison</translation>
 <translation id="277499241957683684">Enregistrement d'appareil manquant.</translation>
 <translation id="2775884851269838147">Première page imprimée</translation>
+<translation id="277828055419948999">Chromium peut remplir automatiquement les champs difficiles que la fonction de remplissage automatique standard pourrait manquer</translation>
 <translation id="2781185443919227679">Plages et îles</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Préparation au paiement</translation>
@@ -2472,6 +2474,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4950898438188848926">Bouton de commutation d'onglet, appuyez sur Entrée pour basculer vers l'onglet ouvert, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4953689047182316270">Répondre aux événements d'accessibilité</translation>
+<translation id="4954505713046251871">Pour proposer des suggestions et améliorer cette fonctionnalité, l'URL et le contenu de la page sont partagés avec Google</translation>
 <translation id="4954891067389874142">Payez plus rapidement lorsque votre carte est enregistrée. Les détails de la carte sont chiffrés dans Google Portefeuille.</translation>
 <translation id="4957080528849277028">Bouton Afficher l'historique de Chrome, activez-le pour afficher et gérer votre historique de navigation dans les paramètres de Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 site}one{+ # site}other{+ # sites}}</translation>
@@ -3974,6 +3977,7 @@ Détails supplémentaires :
 <translation id="7377314930809374926">Industrie de l'accueil</translation>
 <translation id="7378594059915113390">Commandes multimédias</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome peut remplir automatiquement les champs difficiles que la fonction de remplissage automatique standard pourrait manquer</translation>
 <translation id="7380398842872229465">10 po x 15 po</translation>
 <translation id="7381551826960739226">Le remplissage automatique des modes de paiement est désactivé, car ce formulaire n'utilise pas de connexion sécurisée.</translation>
 <translation id="7388380253839603603">Prix de l'essence et ravitaillement de véhicules</translation>
@@ -4898,6 +4902,7 @@ Détails supplémentaires :
 <translation id="8858065207712248076">Chrome recommande de réinitialiser votre mot de passe <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="885906927438988819">S'il n'y a pas d'erreur, <ph name="BEGIN_LINK" />essayez d'exécuter Diagnostics réseau de Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Photographie et arts numériques</translation>
+<translation id="8861482055962701239">Impossible d'enregistrer ces renseignements dans votre Google Portefeuille. Ils seront plutôt enregistrés dans Chrome sur cet appareil. Chrome vous proposera de les enregistrer dans Portefeuille la prochaine fois que vous l'utiliserez.</translation>
 <translation id="8863218129525348270">Pour payer plus rapidement la prochaine fois, enregistrez votre carte sur votre appareil</translation>
 <translation id="8864939224504814334">Complets et tenues professionnelles</translation>
 <translation id="8866132857352163524">Trames sonores</translation>

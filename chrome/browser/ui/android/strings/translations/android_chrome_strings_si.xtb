@@ -299,6 +299,7 @@
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක් බලන්න}one{පටිති <ph name="TABS_COUNT_MANY" />ක් බලන්න}other{පටිති <ph name="TABS_COUNT_MANY" />ක් බලන්න}}</translation>
 <translation id="2297822946037605517">මෙම පිටුව බෙදා ගන්න</translation>
 <translation id="230115972905494466">ගැළපෙන උපාංග හමු නොවිණි</translation>
+<translation id="2316129865977710310">එපා, ස්තූතියි</translation>
 <translation id="2318045970523081853">ඇමතීමට තට්ටු කරන්න</translation>
 <translation id="2323763861024343754">අඩවි ආචයනය</translation>
 <translation id="2328474416100889417">සියලු දෙනාටම “<ph name="GROUP_NAME" />” පටිති සමූහය වෙත ප්‍රවේශය වහාම අහිමි වනු ඇති අතර, ආරාධනා සබැඳි සියල්ල ක්‍රියාවිරහිත වනු ඇත</translation>
@@ -759,7 +760,7 @@
 <translation id="4300632303535881174">පෙර පිටුවට යන්න</translation>
 <translation id="4300949869324911380"><ph name="TAB_TITLE" />, බහු-තේරූ පටිගත කිරීමේ පටිත්ත</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="4306489587293957491">Enter</translation>
+<translation id="4306489587293957491">ඇතුල් කරන්න</translation>
 <translation id="4307992518367153382">මූලික</translation>
 <translation id="4311652497846705514">PDF විවෘත කරන්න ද?</translation>
 <translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{අයාචිත වීමට හැක}one{අයාචිත වීමට හැක (#)}other{අයාචිත වීමට හැක (#)}}</translation>
@@ -960,6 +961,7 @@
 <translation id="5075939510584558547">කේතනයෙන් තොරව සුරකින්න</translation>
 <translation id="5078638979202084724">සියලු ටැබ පිටුසලකුණු කරන්න</translation>
 <translation id="5085038751173179818">ඔබේ සියලුම උපාංග මත ඔබේ පිටුසන් සහ තවත් ඒවා ලබා ගැනීමට මෙම අඩවියට සහ Chrome වෙත පුරන්න</translation>
+<translation id="5088347662971855383">Gemini අමුණන්න</translation>
 <translation id="5091199029769593641">ළඟදීම, ඔබ නව ටැබයක් විවෘත කරන විට <ph name="SITE_NAME" /> වෙතින් නව කතන්දර දකිනු ඇත. ඔබ අනුගමනය කරන අඩවි ඔබගේ Google ගිණුමේ සුරැකේ. ඔබට ඒවා Discover සැකසීම් තුළ කළමනාකරණය කළ හැකිය.</translation>
 <translation id="509429900233858213">දෝශයක් ඇතිවිය.</translation>
 <translation id="5096775069898886423">ආරක්ෂිත සම්බන්ධතාවලට සහය නොදක්වන වෙබ් අඩවි සඳහා, වෙබ් අඩවියට පිවිසීමට පෙර අනතුරු අඟවන්න</translation>
@@ -1341,6 +1343,7 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">රූපය පෙරදකින්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> තුළ විවෘත කරන්න</translation>
+<translation id="6669390930482049506">මට දන්වන්න</translation>
 <translation id="6671495933530132209">රූපය පිටපත් කරන්න</translation>
 <translation id="6672697278890207089">ඔබේ මුර-වැකිකඩ ඇතුළු කරන්න</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> එක් කරන්න</translation>

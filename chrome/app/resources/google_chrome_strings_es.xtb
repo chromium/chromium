@@ -308,7 +308,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4205939740494406371">Chrome no puede comprobar tus contraseñas. Vuelve a intentarlo en 24 horas o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Cancelando...</translation>
 <translation id="4224210481850767180">Se ha cancelado la instalación.</translation>
-<translation id="4230631012078055975">Inicia sesión para sacar más partido a Chrome</translation>
 <translation id="4242034826641750751">Chrome necesita los permisos del micrófono y de la cámara para este sitio</translation>
 <translation id="424864128008805179">¿Quieres cerrar sesión en Chrome?</translation>
 <translation id="4251615635259297716">¿Quieres vincular tus datos de Chrome a esta cuenta?</translation>
@@ -606,7 +605,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7308322188646931570">Chrome necesita acceso de almacenamiento para descargar archivos</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
-<translation id="7379321689415048316">Chrome puede autocompletar campos difíciles que la función Autocompletar estándar podría pasar por alto</translation>
 <translation id="7386878009611068389">Para tener más protección online con las opciones de tus padres, cambia a tu perfil de Chrome, donde ya has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Habías iniciado sesión en Chrome como <ph name="USER_EMAIL_ADDRESS" />. Utiliza la misma cuenta para volver a iniciar sesión.</translation>
 <translation id="7412494426921990001">Haz clic en el menú de Chrome</translation>
@@ -708,7 +706,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8321888067342493336">Guardar como imagen</translation>
 <translation id="8336463659890584292">Cuando un sitio te pregunta si quieres precargar de forma privada los enlaces de su página, Chrome usa los servidores de Google. De este modo, se oculta tu identidad en el sitio precargado, pero Google sabe qué sitios se han precargado.</translation>
 <translation id="8342675569599923794">Este archivo es peligroso, por lo que Chrome lo ha bloqueado.</translation>
-<translation id="8349094670477064572">Guardarás y usarás contraseñas y otros datos en tu cuenta de Google siempre que hayas iniciado sesión en Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Preguntar a Google</translation>
 <translation id="8362914115861174987">Traducir al</translation>
 <translation id="8366770919198174997">Reduce el rendimiento, pero hace que Chrome sea más resistente a los ataques</translation>

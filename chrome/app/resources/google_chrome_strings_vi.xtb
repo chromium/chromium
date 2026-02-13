@@ -306,7 +306,6 @@
 <translation id="4205939740494406371">Chrome không thể kiểm tra mật khẩu của bạn. Hãy thử lại sau 24 giờ hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Đang hủy...</translation>
 <translation id="4224210481850767180">Quá trình cài đặt đã bị huỷ.</translation>
-<translation id="4230631012078055975">Nhận được nhiều lợi ích hơn khi đăng nhập vào Chrome</translation>
 <translation id="4242034826641750751">Chrome cần có quyền truy cập máy ảnh và micrô đối với trang web này</translation>
 <translation id="424864128008805179">Đăng xuất khỏi Chrome?</translation>
 <translation id="4251615635259297716">Bạn muốn liên kết dữ liệu Chrome của bạn với tài khoản này?</translation>
@@ -602,7 +601,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7308322188646931570">Chrome cần quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
-<translation id="7379321689415048316">Chrome có thể tự động điền những trường khó mà tính năng tự động điền tiêu chuẩn có thể bỏ sót</translation>
 <translation id="7386878009611068389">Để giúp bạn an toàn hơn trên mạng với các lựa chọn của cha mẹ, hãy chuyển sang hồ sơ Chrome mà bạn đã đăng nhập bằng <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Bạn đã đăng nhập vào Chrome là <ph name="USER_EMAIL_ADDRESS" />. Vui lòng sử dụng cùng tài khoản để đăng nhập lại.</translation>
 <translation id="7412494426921990001">Nhấp vào Trình đơn Chrome</translation>
@@ -704,7 +702,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8321888067342493336">Lưu dưới dạng hình ảnh</translation>
 <translation id="8336463659890584292">Khi một trang web yêu cầu tải trước các đường liên kết trên trang ở chế độ riêng tư, Chrome sẽ sử dụng các máy chủ của Google. Điều này giúp ẩn danh tính của bạn khỏi trang web được tải trước, nhưng Google biết được trang web nào được tải trước.</translation>
 <translation id="8342675569599923794">Tệp này nguy hiểm, do đó Chrome đã chặn tệp.</translation>
-<translation id="8349094670477064572">Bạn sẽ lưu và sử dụng mật khẩu cùng nhiều nội dung khác trong Tài khoản Google mỗi khi đăng nhập vào Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="835927394551949760">Hỏi Google</translation>
 <translation id="8362914115861174987">Dịch sang</translation>
 <translation id="8366770919198174997">Làm giảm hiệu suất nhưng giúp Chrome tăng khả năng chống lại các cuộc tấn công</translation>

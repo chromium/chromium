@@ -299,6 +299,7 @@
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ് കാണുക}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ കാണുക}}</translation>
 <translation id="2297822946037605517">ഈ പേജ് പങ്കിടുക</translation>
 <translation id="230115972905494466">അനുയോജ്യമായ ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
+<translation id="2316129865977710310">വേണ്ട, നന്ദി</translation>
 <translation id="2318045970523081853">കോൾ ചെയ്യാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="2323763861024343754">സൈറ്റ് സ്‌റ്റോറേജ്</translation>
 <translation id="2328474416100889417">എല്ലാവർക്കും ഉടൻ തന്നെ “<ph name="GROUP_NAME" />” ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, എല്ലാ ക്ഷണ ലിങ്കുകളും ഓഫാക്കുകയും ചെയ്യും</translation>
@@ -960,6 +961,7 @@
 <translation id="5075939510584558547">എൻക്രിപ്ഷൻ ഇല്ലാതെ സംരക്ഷിക്കുക</translation>
 <translation id="5078638979202084724">എല്ലാ ടാബുകളും ബുക്ക്‌മാര്‍ക്ക് ചെയ്യുക</translation>
 <translation id="5085038751173179818">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകളും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നേടാൻ ഈ സൈറ്റിലേക്കും Chrome-ലേക്കും സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="5088347662971855383">Gemini പിൻ ചെയ്യുക</translation>
 <translation id="5091199029769593641">ഉടൻ, പുതിയൊരു ടാബ് തുറക്കുമ്പോൾ, നിങ്ങൾക്ക് <ph name="SITE_NAME" /> എന്നതിൽ നിന്നുള്ള സ്റ്റോറികൾ കാണാനാകും. നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുന്നു. Discover ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് അവ മാനേജ് ചെയ്യാനാകും.</translation>
 <translation id="509429900233858213">ഒരു പിശക് സംഭവിച്ചു.</translation>
 <translation id="5096775069898886423">സുരക്ഷിതമായ കണക്ഷനുകളെ പിന്തുണയ്‌ക്കാത്ത സൈറ്റുകൾക്ക്, ആ സൈറ്റ് സന്ദർശിക്കുന്നതിന് മുമ്പ് മുന്നറിയിപ്പ് നേടുക</translation>
@@ -1341,6 +1343,7 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="CONTACT_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />പുതിയ<ph name="END_NEW" /> ചിത്രം പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
+<translation id="6669390930482049506">എന്നെ അറിയിക്കുക</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
 <translation id="6672697278890207089">നിങ്ങളുടെ പാസ്ഫ്രെയ്സ് നല്‍കുക</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ചേർക്കുക</translation>

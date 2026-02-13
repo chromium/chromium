@@ -354,6 +354,7 @@
 <translation id="1221825588892235038">仅限选定内容</translation>
 <translation id="1222835797152767346">设置 PIN 码即可轻松登录</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> 必须获得许可</translation>
+<translation id="1223498995510244364">总结</translation>
 <translation id="1223853788495130632">您的管理员建议将此设置设为某个特定值。</translation>
 <translation id="1225177025209879837">正在处理请求…</translation>
 <translation id="1227107020813934021">查找文件扫描器</translation>
@@ -1122,7 +1123,7 @@
 <translation id="175081537116822146">需要登录并同步</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> 将能够修改“<ph name="FOLDERNAME" />”中的文件，除非您关闭此网站的所有标签页</translation>
 <translation id="1751335846119670066">帮我读</translation>
-<translation id="17513872634828108">目前打开的标签页</translation>
+<translation id="17513872634828108">打开的标签页</translation>
 <translation id="175196451752279553">重新打开关闭的标签页(&amp;E)</translation>
 <translation id="1753067873202720523">您的 Chromebook 在处于打开状态时可能无法充电。</translation>
 <translation id="1753557900380512635">室内</translation>
@@ -1331,6 +1332,8 @@
 <translation id="1891362123137972260">磁盘空间严重不足。请释放磁盘空间。</translation>
 <translation id="189210018541388520">以全屏模式打开</translation>
 <translation id="1892341345406963517"><ph name="PARENT_NAME" />，您好！</translation>
+<translation id="1892453608039100484">1. 点击下方的“<ph name="BUTTON_LABEL" />”
+2. 在 Windows 设置中点击“<ph name="BUTTON_2" />”</translation>
 <translation id="189358972401248634">其他语言</translation>
 <translation id="1895658205118569222">关机</translation>
 <translation id="1896043844785689584">若要设置指纹，请让您的孩子轻触键盘右下角的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
@@ -3144,6 +3147,7 @@
 <translation id="3105820656234755131">密码已更新</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（蓝牙）</translation>
 <translation id="310671807099593501">该网站正在使用蓝牙</translation>
+<translation id="3108122610701115301">设为默认</translation>
 <translation id="3108931485517391283">无法接收</translation>
 <translation id="3108957152224931571">突出显示颜色</translation>
 <translation id="3109206895301430738">已保存的标签页分组</translation>
@@ -5854,7 +5858,6 @@
 <translation id="495170559598752135">操作</translation>
 <translation id="4951966678293618079">一律不为此网站保存密码</translation>
 <translation id="4953808748584563296">默认的橙色头像</translation>
-<translation id="4954505713046251871">为了提供建议和改进此功能，系统会将网页的网址和内容分享给 Google</translation>
 <translation id="4954652437333037880">文件</translation>
 <translation id="4955707703665801001">“<ph name="FEATURE_NAME" />”功能的设备公开范围</translation>
 <translation id="4955710816792587366">选择 PIN 码</translation>
@@ -6334,6 +6337,7 @@
 <translation id="5288106344236929384">更多操作，<ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的通行密钥选项</translation>
 <translation id="5288678174502918605">重新打开关闭的标签页(&amp;E)</translation>
 <translation id="5290020561438336792">PC 和投放设备使用不同的 Wi-Fi 网络（例如分别为 2.4GHz 与 5GHz）</translation>
+<translation id="5290322819358431297">可自动填充密码</translation>
 <translation id="52912272896845572">私有密钥文件无效。</translation>
 <translation id="529175790091471945">将此设备格式化</translation>
 <translation id="529296195492126134">暂存模式不受支持。请与您的管理员联系</translation>
@@ -6951,6 +6955,7 @@
 <translation id="5734697361979786483">添加文件共享</translation>
 <translation id="573520097779121706">使用 7、8、9、u、o、j、k、l 键可移动光标</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{这些数据或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}=1{此文件或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}other{这些文件不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}}</translation>
+<translation id="5736345781200955827">您可创建、保存和管理您的密码，以便使用 Chrome 轻松登录网站和应用</translation>
 <translation id="5738093759615225354">您需要使用此通行密钥才能登录计算机</translation>
 <translation id="5738386565827477765">音频设备</translation>
 <translation id="5739017626473506901">请登录以帮助<ph name="USER_NAME" />添加学校账号</translation>
@@ -7203,6 +7208,7 @@
 <translation id="5901089233978050985">切换到执行录屏操作的标签页</translation>
 <translation id="5901494423252125310">打印机机盖未关</translation>
 <translation id="5901630391730855834">黄色</translation>
+<translation id="5902400038326841449">Google 密码管理工具已关闭</translation>
 <translation id="5902892210366342391">在您以无痕模式访问不安全的网站前发出警告</translation>
 <translation id="5904614460720589786">无法设置 <ph name="APP_NAME" />，因为出现了配置问题。请与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="5906457147959147328">继续允许此网站使用标识符播放受保护内容</translation>
@@ -7983,6 +7989,7 @@
 <translation id="6452251728599530347">已完成 <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">网络问题或领域有误</translation>
 <translation id="6453191633103419909">标签页/屏幕投影品质</translation>
+<translation id="6453306703004115497">翻译为<ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">将所有标签页归为一组</translation>
 <translation id="6453921811609336127">若要切换到下一种输入法，请按 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />空格键<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">在特定网站上</translation>
@@ -8141,6 +8148,7 @@
 <translation id="656293578423618167">该文件的路径或名称过长。请以较短的名称保存或保存到其他位置。</translation>
 <translation id="6563002009564846727">查看从 Windows 导入的证书</translation>
 <translation id="6563055593659435495">无法保持与手机的连接。请确保手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
+<translation id="6564343790052433242">若要为“<ph name="APP_NAME" />”创建通行密钥，必须开启 Google 密码管理工具</translation>
 <translation id="6565144332292237355">网站可以使用此功能查找并连接到本地网络上的任何设备</translation>
 <translation id="6568283005472142698">标签页搜索</translation>
 <translation id="6569931898053264308">节省适量内存</translation>
@@ -11412,6 +11420,7 @@
 <translation id="8761945298804995673">该用户已存在</translation>
 <translation id="8762886931014513155">您的 <ph name="DEVICE_TYPE" /> 需要更新</translation>
 <translation id="8763927697961133303">USB 设备</translation>
+<translation id="8765940060470412555">取消固定阅读模式</translation>
 <translation id="8766156860774051068">由您挑选</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">显示“<ph name="QUERY_CLUSTER_NAME" />”的所有搜索结果</translation>

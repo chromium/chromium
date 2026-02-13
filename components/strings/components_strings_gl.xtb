@@ -655,6 +655,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2071156619270205202">Esta tarxeta non é apta para asociarlle un número de tarxeta virtual.</translation>
 <translation id="2071852865256799872">O teu navegador está xestionado pola túa organización e o teu perfil está xestionado por <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">A información gardouse só no dispositivo</translation>
 <translation id="2074733626795553847">Desbloquear <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Acceso</translation>
 <translation id="2078956195623975415">Xogos de música e baile</translation>
@@ -1116,6 +1117,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="277133753123645258">Método de envío</translation>
 <translation id="277499241957683684">Non se atopa o rexistro do dispositivo</translation>
 <translation id="2775884851269838147">Primeira páxina de impresión</translation>
+<translation id="277828055419948999">Chromium pode encher automaticamente campos difíciles que a función de autocompletar estándar podería pasar por alto</translation>
 <translation id="2781185443919227679">Praias e illas</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Preparando todo para a tramitación da compra</translation>
@@ -2472,6 +2474,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4950898438188848926">Botón de cambio de pestana, preme Intro para cambiar á pestana aberta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Accións</translation>
 <translation id="4953689047182316270">Responder a eventos de accesibilidade</translation>
+<translation id="4954505713046251871">Para ofrecer suxestións e mellorar esta función, o URL e o contido da páxina compártense con Google</translation>
 <translation id="4954891067389874142">Garda a tarxeta para pagar máis rápido. Os seus detalles encríptanse en Google Wallet.</translation>
 <translation id="4957080528849277028">Botón para ver o historial de Chrome. Actívao para consultar e xestionar o historial de navegación na configuración de Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{e 1 sitio máis}other{e # sitios máis}}</translation>
@@ -3974,6 +3977,7 @@ Detalles adicionais:
 <translation id="7377314930809374926">Sector hostaleiro</translation>
 <translation id="7378594059915113390">Controis de contido multimedia</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome pode encher automaticamente campos difíciles que a función de autocompletar estándar podería pasar por alto</translation>
 <translation id="7380398842872229465">10 x 15 polgadas</translation>
 <translation id="7381551826960739226">A opción de autocompletado dos métodos de pago automático está desactivada porque este formulario non utiliza unha conexión segura.</translation>
 <translation id="7388380253839603603">Combustible para vehículos e prezos do combustible</translation>
@@ -4898,6 +4902,7 @@ Detalles adicionais:
 <translation id="8858065207712248076">Chrome recoméndache que restablezas o contrasinal de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se o reutilizaches noutros sitios.</translation>
 <translation id="885906927438988819">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar o diagnóstico de rede de Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografía e arte dixital</translation>
+<translation id="8861482055962701239">Non se puido gardar no teu Google Wallet. En lugar diso, gardouse en Chrome neste dispositivo. Chrome ofrecerache gardala en Wallet a próxima vez que uses o navegador.</translation>
 <translation id="8863218129525348270">Para pagar máis rápido a próxima vez, garda a tarxeta no teu dispositivo</translation>
 <translation id="8864939224504814334">Traxes e roupa formal</translation>
 <translation id="8866132857352163524">Bandas sonoras</translation>

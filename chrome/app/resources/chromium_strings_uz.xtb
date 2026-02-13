@@ -98,6 +98,7 @@
 <translation id="2099452623287920103">Parollar va boshqa Chromium maʼlumotlaringiz Google hisobiga saqlandi, ammo bu qurilmadan oʻchiriladi. Ularni Chromiumda yana ishlatish uchun hisobingizga kiring.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda brauzerning ishlashi haqida axborotni tozalaydi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin. Varaqlar ochiq qoladi.}other{Chromium # daqiqa ishlatilmasa, tashkilot avtomatik ravishda brauzerning ishlashi haqida axborotni tozalaydi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin. Varaqlar ochiq qoladi.}}</translation>
 <translation id="2126108037660393668">Yuklab olingan fayl tekshirilmadi.</translation>
+<translation id="2135919691573380097">Sayt ustidan shikoyat</translation>
 <translation id="2137162749895930932">Tarjima rejimini yopish</translation>
 <translation id="215352261310130060">Chromium bu yuklamani blokladi, chunki sayt xavfsiz ulanishdan foydalanmayapti va fayl oʻzgartirilgan boʻlishi mumkin.</translation>
 <translation id="2170098639895543546">Sahifadagi istalgan elementni tanlang</translation>
@@ -162,7 +163,6 @@
 <translation id="2738871930057338499">Internetga ulanmadi. HTTP 403, taqiqlangan. Proksi konfiguratsiyasini tekshiring.</translation>
 <translation id="2753623023919742414">Qidirish uchun bosing</translation>
 <translation id="2768103863314748511">Chromium birlamchi PDF fayllarni koʻrish vositasi etib tayinlansin</translation>
-<translation id="277828055419948999">Chromium standart avtomatik kiritish oʻtkazib yuborishi mumkin murakkab maydonlarni avtomatik kiritishi mumkin</translation>
 <translation id="2785438272836277133">Bu kengaytma tarkibida zararli kod bor va u xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromiumdan olib tashlang.</translation>
 <translation id="2799223571221894425">Qaytadan ishga tushirish</translation>
 <translation id="2803971713792056305">Sizning Chromium</translation>
@@ -309,6 +309,7 @@
 <translation id="4304713468139749426">Parollar menejeri</translation>
 <translation id="4334241893986177674">Bu skrinshotni qidirish</translation>
 <translation id="4334294535648607276">Yuklab olindi.</translation>
+<translation id="4384331407722351213">Windows ishga tushirilganda Chromiumni ishga tushirish</translation>
 <translation id="4384993550046411228">Chromiumni birlamchi brauzer etib belgilab, tanish, siz yoqtirgan va ishonchli funksiyalardan oson foydalaning. Tezkor kirish uchun Chromium vazifalar paneliga qadaladi.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini oʻqib, qabul qilishingizni talab qiladi. Bu shartlar Google ChromiumOS shartlarini kengaytirmaydi, oʻzgartirmaydi yoki cheklamaydi.</translation>
 <translation id="4407044323746248786">Chromium baribir yopilsinmi?</translation>
@@ -329,6 +330,7 @@
 <translation id="4531137820806573936">Chromium atrofingiz xaritasini yaratish va qoʻllaringiz holatini kuzatishga ruxsat olmoqchi</translation>
 <translation id="4536805923587466102">Siz allaqachon boshqa Chromium profilidan (<ph name="USER_EMAIL_ADDRESS" />) kirgansiz</translation>
 <translation id="4548534452171747496">Chromium kezish va qidiruvni tezlashtirish uchun sahifalarni oldindan yuklaydi. <ph name="BEGIN_LINK" />Sahifalarni oldindan yuklash haqida batafsil<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">Siz zararli deb hisoblagan sayt haqida xabar berish orqali hamma uchun internet xavfszligini taʼminlang.</translation>
 <translation id="4570813286784708942">Chromium bu yuklamani blokladi, chunki Saytlarni xavfsiz kezish funksiyasini faolsizlantirgansiz, shuning uchun bu fayl tekshirilmaydi</translation>
 <translation id="4583692638088316420">Telefonda Chromium orqali Google Lens sinang</translation>
 <translation id="4594305310729380060">Bu qurilmada Parollar menejeriga</translation>
@@ -501,6 +503,7 @@
 <translation id="6598877126913850652">Chromium bildirishnomalar sozlamalarini ochish</translation>
 <translation id="6600016381025017075">Sahifadagi elementlar qidiruvi</translation>
 <translation id="6613594504749178791">O‘zgartirishlar Chromium qaytadan ishga tushirilganda kuchga kiradi.</translation>
+<translation id="6637908313088374648">Endi Windows ishga tushirilganda Chromium ham ishga tushadi va darhol kezishni boshlash mumkin. Buni sozlamalarda faolsizlantirishingiz mumkin.</translation>
 <translation id="6648212540664651655">Ishni kelgan joyidan davom ettiring: Chromium oxirgi seansdagi varaqlarni tikladi. Faolsizlantirish uchun bu yerga kiring:</translation>
 <translation id="665732753414869868">Chromium atrofingiz 3D xxaritasini yaratishi uchun kameradan foydalanishiga ruxsat kerak</translation>
 <translation id="6669284030132180248">Bukmarklarni Google hisobingizda ham saqlasangiz, Chromiumʼda mahsulot narxlarini kuzatishingiz va narx tushganda xabar olasiz.</translation>
@@ -559,6 +562,7 @@ Ayrim bukmarklar hisobingizdan oʻchirilmaguncha yangilari saqlanmaydi. Hozir hi
 <translation id="7213407614656404070">Xabarlar, hujjatlar va boshqa ilovalardagi havolalarni har doim Chromium orqali ochish</translation>
 <translation id="7223968959479464213">Vazifalar menejeri – Chromium</translation>
 <translation id="7246575524853130370">Chromium taxmin qilgan qiziqishlaringiz</translation>
+<translation id="7252276985725323153">Darhol kezishni boshlang: Chromium endi Windows ishga tushirilganda ochiladi.</translation>
 <translation id="7274695763216404502">Mahkamlandi! Endi uni asboblar panelidan ochish mumkin</translation>
 <translation id="7288567540154601580">Varaqlar va kengaytmalar</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium uni olib tashlashni tavsiya qiladi}other{Chromium ularni olib tashlashni tavsiya qiladi}}</translation>
@@ -585,10 +589,10 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7461356015007898716">Chromium yangilanishlari Windows 10 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: Windows 7.</translation>
 <translation id="7467949745582939695">Chromium qayta ishga tushirilsinmi?</translation>
 <translation id="7483335560992089831">Tizimdagi joriy versiyadagi Chromium‘ni o‘rnatib bo‘lmaydi. Chromium‘ni yoping va qaytadan urinib ko‘ring.</translation>
-<translation id="7517403744065880907">Chromium hisobingizga kirganingizda parollar va boshqa maʼlumotlar Google hisobingizda saqlanadi va ishlatiladi. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Saytlar kutilganidek ishlashi mumkin. Barcha Chromium oynalari yopilganda aksariyat saytlardan chiqib ketasiz, ammo Chromium hisobingizga kirganingizda Google hisobingizdan chiqmaysiz.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 1 daqiqadan keyin qayta ishga tushadi}other{Chromium # daqiqadan keyin qayta ishga tushadi}}</translation>
 <translation id="7565444033145385702">Maʼlumotlaringizni himoyalash maqsadida Chromium brauzeriga uzoq vaqt kirmagan saytlardan ruxsatlarni olib tashlashi uchun ruxsat bering.</translation>
+<translation id="7583104404158659071">Darhol kezishni boshlash uchun Chromiumni avtomatik ishga tushiring.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> oʻrnatish vositasi</translation>
 <translation id="761356813943268536">Chromium kamera va mikrofoningizdan foydalanmoqda.</translation>
 <translation id="7617377681829253106">Chromium ancha yaxshilanmoqda</translation>
@@ -727,7 +731,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="9183331186620388872">Chromium maslahati: Lens bilan qidiring</translation>
 <translation id="9185526690718004400">&amp;Chromium brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9206863043651638213">Boshqa imtiyozlarni olish uchun Chromium hisobingizga kiring</translation>
 <translation id="924957577793602335">Chromium brauzerini oʻzingizga moslashtiring</translation>
 <translation id="93478295209880648">Chromium brauzeri Windows XP yoki Windows Vista tizimlarida ishlamay qolishi mumkin, chunki uning yangi versiyalarida bu tizimlar ta’minoti to‘xtatiladi</translation>
 <translation id="945522503751344254">Fikr-mulohaza</translation>

@@ -355,6 +355,7 @@
 <translation id="1221825588892235038">सिर्फ़ चुनें</translation>
 <translation id="1222835797152767346">साइन इन करने की प्रोसेस आसान बनाने के लिए, एक पिन सेट करें</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> को लाइसेंस की ज़रूरत है</translation>
+<translation id="1223498995510244364">खास जानकारी दें</translation>
 <translation id="1223853788495130632">आपका व्‍यवस्‍थापक इस सेटिंग के लिए किसी विशिष्ट मान की अनुशंसा करता है.</translation>
 <translation id="1225177025209879837">अनुरोध पूरा करने की प्रक्रिया जारी है...</translation>
 <translation id="1227107020813934021">दस्तावेज़ स्कैन करने वाले ऐप्लिकेशन ढूंढें</translation>
@@ -689,6 +690,7 @@
 <translation id="1461041542809785877">परफ़ॉर्मेंस</translation>
 <translation id="1461177659295855031">बुकमार्क बार वाले फ़ोल्डर में ले जाएं</translation>
 <translation id="1461288887896722288">आपने अभी-अभी मैनेज किए जा रहे खाते से साइन इन किया है. मैनेज की जा रही नई प्रोफ़ाइल बनाने पर, आपको उस खाते से जुड़े कुछ संसाधनों का ऐक्सेस मिल जाएगा.</translation>
+<translation id="1461718860884899524">किसी असुरक्षित साइट की शिकायत करें...</translation>
 <translation id="146219525117638703">ONC स्‍थिति</translation>
 <translation id="146220085323579959">इंटरनेट डिस्‍कनेक्‍ट हो गया है. कृपया अपना इंटरनेट कनेक्‍शन जाँचें और फिर से कोशिश करें.</translation>
 <translation id="1462480037563370607">मैन्युअल तरीके से साइटें जोड़ें</translation>
@@ -911,6 +913,7 @@
 <translation id="1605744057217831567">सभी साइटों के लिए डेटा और उन्हें दी गई अनुमतियां देखें</translation>
 <translation id="1606077700029460857">माउस की सेटिंग बदलें</translation>
 <translation id="1606566847233779212">क्या उन खास साइटों को हटाना है जिन्हें आपने जोड़ा था?</translation>
+<translation id="160689647589417224">यह ऐप्लिकेशन इस देश/इलाके में इस्तेमाल नहीं किया जा सकता.</translation>
 <translation id="1607139524282324606">प्रविष्टि हटाएं</translation>
 <translation id="1607499585984539560">उपयोगकर्ता, एंटरप्राइज़ डोमेन के साथ जुड़ा हुआ नहीं है</translation>
 <translation id="1607540893439314147"><ph name="BEGIN_PARAGRAPH1" />Google के एआई से कोई कॉन्टेंट लिखने, प्लान बनाने, कुछ सीखने वगैरह में मदद पाने के लिए, Gemini के साथ चैट करें.<ph name="END_PARAGRAPH1" />
@@ -2133,6 +2136,7 @@
 <translation id="2419706071571366386">सुरक्षा के लिए, आपका कंप्यूटर इस्तेमाल में नहीं होने पर साइन आउट कर दें.</translation>
 <translation id="2421705177906985956">इस समय दिखाने के लिए कोई साइट मौजूद नहीं है</translation>
 <translation id="2422125132043002186">Linux का डेटा बहाल करने की प्रक्रिया रद्द कर दी गई है</translation>
+<translation id="2423506062824112361">किसी अज्ञात वजह से कॉन्टेंट डाउनलोड नहीं किया जा सका.</translation>
 <translation id="2423578206845792524">इमेज को इस रूप में सेव करें...</translation>
 <translation id="2424424966051154874">{0,plural, =1{मेहमान}one{मेहमान (#)}other{मेहमान (#)}}</translation>
 <translation id="2426805022920575512">दूसरा खाता चुनें</translation>
@@ -2306,6 +2310,7 @@
 <translation id="2524093372979370955">इससे सिस्टम में, यूएसबी वाले सभी नए सहायक डिवाइसों के लिए, सूचनाएं पाने की सुविधा बंद हो जाएगी. क्या आपको वाकई इसे बंद करना है?</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> को इंस्टॉल करें</translation>
 <translation id="252513908494776481">इस टैब पर मौजूद कॉन्टेंट के बारे में सवाल पूछें</translation>
+<translation id="2525746158911982776">सिस्टम में स्टोरेज के लिए ज़रूरी जगह न होने की वजह से, अपडेट नहीं किया जा सका.</translation>
 <translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="2526619973349913024">देखें कि अपडेट उपलब्ध हैं या नहीं</translation>
 <translation id="2527167509808613699">किसी प्रकार का कनेक्शन</translation>
@@ -2569,6 +2574,7 @@
 <translation id="2714180132046334502">गहरा बैकग्राउंड</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">मॉडल</translation>
+<translation id="2715293433233060993">टैब को साइड में ले जाएं</translation>
 <translation id="2715751256863167692">यह अपग्रेड (बेहतर बनाना) आपका Chromebook रीसेट कर देता है और मौजूदा 'उपयोगकर्ता डेटा' हटा देता है.</translation>
 <translation id="2715934493766003251">फ़ाइल सिंक करने की सुविधा चालू रहने के दौरान, डिवाइस का स्टोरेज खाली नहीं किया जा सकता</translation>
 <translation id="2716986496990888774">अभिभावक इस सेटिंग को प्रबंधित करते हैं.</translation>
@@ -4383,6 +4389,7 @@
 <translation id="3919798653937160644">अपने कंप्यूटर पर सभी मेहमान विंडो बंद करने पर, इस विंडो में देखे गए पेजों की जानकारी आपके ब्राउज़र इतिहास में सेव नहीं होगी. साथ ही, इन पेजों से जुड़ा किसी भी तरह का डेटा मिट जाएगा, जैसे कि कुकी. हालांकि, आपकी डाउनलोड की गई सभी फ़ाइलें सेव रहेंगी.</translation>
 <translation id="3920504717067627103">प्रमाणपत्र नीतियां</translation>
 <translation id="3920909973552939961">पेमेंट हैंडलर इंस्टॉल करनी की अनुमति नहीं है</translation>
+<translation id="3920938867981797493">अपडेटर की नीतियां</translation>
 <translation id="3922823422695198027">अन्य ऐप्लिकेशन, <ph name="APP_NAME" /> की तरह उन लिंक को खोलने के लिए तैयार हैं. यह <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, और <ph name="APP_NAME_4" /> को सहायता लिंक खोलने से रोकता है.</translation>
 <translation id="3923184630988645767">डेटा खर्च</translation>
 <translation id="3923221004758245114">क्या आपको <ph name="DEVICE_TYPE" /> से <ph name="VM_NAME" /> को हटाना है? ऐसा करने से, वर्चुअल मशीन में मौजूद डेटा और सभी ऐप्लिकेशन मिट जाएंगे!</translation>
@@ -4943,6 +4950,7 @@
 <translation id="4306489587293957491">डालें</translation>
 <translation id="4306810703452026910">Chrome, इस साइट से मिलने वाली सूचनाओं को स्पैम के तौर पर मार्क करना बंद कर देगा</translation>
 <translation id="4307992518367153382">बुनियादी चीज़ें</translation>
+<translation id="4309035504231554969">किसी अज्ञात वजह से इंस्टॉल नहीं किया जा सका.</translation>
 <translation id="4309165024397827958">जिन Android ऐप्लिकेशन और सेवाओं को आपके डिवाइस की जगह की जानकारी की ज़रूरत होती है उन्हें इसके इस्तेमाल की अनुमति दें. Google, जगह की जानकारी को ज़्यादा सटीक बनाने और उससे जुड़ी सेवाओं को बेहतर बनाने के लिए, समय-समय पर जगह से जुड़ा डेटा इकट्ठा कर सकता है. साथ ही, वह आपकी पहचान ज़ाहिर किए बिना इस डेटा का इस्तेमाल कर सकता है.</translation>
 <translation id="4309183709806093061">सिस्टम का ऑडियो भी शेयर करें. ऑडियो फ़ीडबैक को रोकने के लिए, इस डिवाइस को म्यूट किया जाएगा.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K लाइव)</translation>
@@ -5356,6 +5364,7 @@
 <translation id="4598556348158889687">डिवाइस की मेमोरी का प्रबंधन</translation>
 <translation id="4598776695426288251">एक से ज़्यादा डिवाइस के ज़रिए वाई-फ़ाई उपलब्ध है</translation>
 <translation id="4600071396330666617">सुझावों की संख्या</translation>
+<translation id="4600978165652322776">नेटवर्क की कोई गड़बड़ी हुई. अपने इंटरनेट कनेक्शन और नेटवर्क सेटिंग की जांच करें.</translation>
 <translation id="4601095002996233687">संदिग्ध डाउनलोड की गहराई से जांच की जाती है.</translation>
 <translation id="4601426376352205922">'नहीं पढ़ा गया' का निशान लगाएं</translation>
 <translation id="460190672235687855">पासवर्ड देखें</translation>
@@ -5631,6 +5640,7 @@
 <translation id="479536056609751218">वेबपेज, केवल HTML</translation>
 <translation id="4795670271446126525">बड़ी-बड़ी लहरें</translation>
 <translation id="4797314204379834752">ऑनलाइन खरीदारी वगैरह के लिए, टास्क को व्यवस्थित करने के मकसद से टैब ग्रुप का इस्तेमाल करें</translation>
+<translation id="4799574323027833817">कोई नीति लागू नहीं है.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4800709549856064659"><ph name="START_DATE" /> के बाद</translation>
 <translation id="4800839971935185386">नाम और आइकॉन में हुए बदलाव देखें</translation>
@@ -5869,7 +5879,6 @@
 <translation id="495170559598752135">क्रियाएं</translation>
 <translation id="4951966678293618079">इस साइट के लिए कभी भी पासवर्ड सेव न करें</translation>
 <translation id="4953808748584563296">डिफ़ॉल्ट नारंगी अवतार</translation>
-<translation id="4954505713046251871">सुझाव देने और इस सुविधा को बेहतर बनाने के लिए, पेज का यूआरएल और कॉन्टेंट Google के साथ शेयर किया जाता है</translation>
 <translation id="4954652437333037880">फ़ाइल</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> के लिए, 'किसको दिखे' सेटिंग</translation>
 <translation id="4955710816792587366">अनलॉक करने के लिए अपना पिन चुनें</translation>
@@ -6739,6 +6748,7 @@
 <translation id="5562588178647493983">ज़्यादा जानकारी के लिए, अपने एडमिन से संपर्क करें</translation>
 <translation id="556321030400250233">स्थानीय या शेयर की गई फ़ाइल</translation>
 <translation id="5563234215388768762">Google पर खोजें या कोई यूआरएल टाइप करें</translation>
+<translation id="5563698194918415761">नेटवर्क की नीति या प्रॉक्सी सर्वर की वजह से, अपडेट को ब्लॉक कर दिया गया.</translation>
 <translation id="5563824734298958390">क्या आपको टैब ग्रुप से बाहर निकलना है?</translation>
 <translation id="5565735124758917034">सक्रिय</translation>
 <translation id="5568069709869097550">साइन इन नहीं किया जा सकता</translation>
@@ -7965,6 +7975,7 @@
 <translation id="642469772702851743">इस डिवाइस (क्रमांक: <ph name="SERIAL_NUMBER" />) को मालिक ने लॉक कर दिया था.</translation>
 <translation id="6425556984042222041">लिखाई को बोली में बदलने की दर</translation>
 <translation id="642729974267661262">आवाज़ चलाने की अनुमति नहीं है</translation>
+<translation id="6427752304227226701">किसी असुरक्षित साइट की शिकायत करें...</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{कोई भी पासवर्ड सेव नहीं किया गया है.}=1{{COUNT} पासवर्ड की जांच की जा रही है...}one{{COUNT} पासवर्ड की जांच की जा रही है…}other{{COUNT} पासवर्ड की जांच की जा रही है…}}</translation>
 <translation id="6429384232893414837">अपडेट में गड़बड़ी</translation>
 <translation id="6430814529589430811">Base64 में एन्कोड किया गया ASCII, सिर्फ़ एक प्रमाणपत्र</translation>
@@ -8638,6 +8649,7 @@
 <translation id="6883319974225028188">ओह!  यह सिस्टम, डिवाइस कॉन्फ़िगरेशन को सेव नहीं कर सका.</translation>
 <translation id="6883606786470492001">विज्ञापन के विषयों और अन्य सेटिंग को मैनेज करें, ताकि यह तय किया जा सके कि साइटें, आपकी दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए, आपके बारे में क्या जानकारी सेव कर सकती हैं</translation>
 <translation id="6884474387073389421">साइन इन करने के लिए जो डेटा डाला गया है, क्या वाकई उसे मिटाना है?</translation>
+<translation id="6885338910541974777">ऐप्लिकेशन का इंस्टॉलर प्रोग्राम काम नहीं कर सका.</translation>
 <translation id="6885771755599377173">सिस्टम जानकारी की झलक</translation>
 <translation id="6886871292305414135">लिंक को नए &amp;टैब में खोलें</translation>
 <translation id="6888831646723563669">अपने नए <ph name="DEVICE_TYPE" /> पर सभी सुविधाओं का लुत्फ़ उठाने के लिए कनेक्ट करें</translation>
@@ -10500,6 +10512,7 @@
 <translation id="8147900440966275470"><ph name="NUM" /> टैब मिला</translation>
 <translation id="814870937590541483">Google Drive में मौजूद फ़ाइलों के लिए ज़्यादा कार्रवाइयां</translation>
 <translation id="8148760431881541277">साइन-इन करने की सीमा तय करें</translation>
+<translation id="8149596686567059924">अपडेट पैकेज को अनपैक नहीं किया जा सका.</translation>
 <translation id="8149870652370242480">अपने फ़ोन पर सेव किए गए पासवर्ड का इस्तेमाल करने के लिए, iOS के लिए Chrome डाउनलोड करें और अपने Google खाते में साइन इन करें.</translation>
 <translation id="8150396590017071059">Password Manager का पिन बदलें</translation>
 <translation id="8151057139207656239">बिल्ड की जानकारी कॉपी की गई</translation>
@@ -10637,6 +10650,7 @@
 <translation id="8243948765190375130">मीडिया क्वालिटी कम हो सकती है</translation>
 <translation id="8244201515061746038">'ऑटो करेक्ट की सेटिंग के बारे में ज़्यादा जानें' बटन. ऑटो करेक्ट की सेटिंग वाले पेज पर जाएं. चालू करने के लिए Enter और खारिज करने के लिए Esc दबाएं.</translation>
 <translation id="8244514732452879619">लाइटें जल्दी ही बंद हो जाएंगी</translation>
+<translation id="8244724656154470844">अपडेट की जांच नहीं की जा सकी.</translation>
 <translation id="8246776524656196770">पिन (व्यक्तिगत पहचान संख्या) की मदद से अपनी सुरक्षा कुंजी की रक्षा करें</translation>
 <translation id="824713170151383793">DevTools की मदद से</translation>
 <translation id="8247795734638043885">असुरक्षित फ़ाइल डाउनलोड करें</translation>
@@ -10743,6 +10757,7 @@
 <translation id="8312841338723044391">लाइव</translation>
 <translation id="8313308349366087671">ऐप्लिकेशन के विकल्प</translation>
 <translation id="8313599942510782709">आपका टास्क अब भी जारी है</translation>
+<translation id="8314219340741508325">डाउनलोड किए गए अपडेट में, उम्मीद के मुताबिक कॉन्टेंट नहीं है.</translation>
 <translation id="8314381333424235892">एक्सटेंशन मौजूद नहीं है या अनइंस्टाॅल कर दिया गया है</translation>
 <translation id="831440797644402910">इस फ़ोल्डर को खोला नहीं जा सकता</translation>
 <translation id="8314835274931377415">क्या आप ऐक्सेस का तरीका बदलने वाले स्विच का सेट अप शुरू करना चाहते हैं?</translation>
@@ -11112,6 +11127,7 @@
 <translation id="8566916288687510520">नया पासवर्ड मिला</translation>
 <translation id="8569673829373920831"><ph name="APP_NAME" /> के बारे में ज़्यादा जानकारी</translation>
 <translation id="8569682776816196752">कोई गंतव्य नहीं मिला</translation>
+<translation id="857026972772582291"><ph name="APP_NAME" /> की नीतियां</translation>
 <translation id="8571213806525832805">पिछले चार हफ़्ते</translation>
 <translation id="8571323456914890254">स्प्लिट व्यू में खोलें</translation>
 <translation id="8571687764447439720">Kerberos टिकट जोड़ें</translation>
@@ -11288,6 +11304,7 @@
 <translation id="8685540043423825702">आपकी Chrome प्रोफ़ाइल</translation>
 <translation id="8685882652128627032">'साइट खोज जोड़ें' डायलॉग खोलने के लिए क्लिक करें</translation>
 <translation id="8686142379631285985">आपने <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> के तौर पर साइन इन किया है</translation>
+<translation id="8686578183956518912">टैब को सबसे ऊपर ले जाएं</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> रद्द करें</translation>
 <translation id="8687527282898211955">अपना पिन सेट अप करें</translation>
 <translation id="8687774873995698516"><ph name="HOST" /> को आइडेंटिफ़ायर इस्तेमाल करने की अनुमति कभी न दें, ताकि आपको सुरक्षित कॉन्टेंट दिखाया जा सके</translation>
@@ -11363,6 +11380,7 @@
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />ऑटोमैटिक भरने वाला मेटाडेटा<ph name="END_LINK1" /> भेजें
           <ph name="LINE_BREAK" />
           (आपका ऑटोमैटिक भरने वाला डेटा शेयर नहीं किया जाएगा)</translation>
+<translation id="8729012097107329437">इस साइट के लिए अनुमति दें</translation>
 <translation id="8729133765463465108">क्यूआर कोड स्कैन करने के लिए कैमरा इस्तेमाल करें</translation>
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8731029916209785242">अनुमतियां (<ph name="FORMATTED_ORIGIN" />)</translation>
@@ -11627,6 +11645,7 @@
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और यह <ph name="DEVICE_TYPE" /> आज ही लौटा दें.}one{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और यह <ph name="DEVICE_TYPE" /> तय समय से पहले लौटा दें.}other{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और यह <ph name="DEVICE_TYPE" /> तय समय से पहले लौटा दें.}}</translation>
 <translation id="8902667442496790482">चुनें और सुनें सेटिंग खोलें</translation>
 <translation id="8903733144777177139">माइक्रोफ़ोन का ऐक्सेस ब्लॉक किया गया है</translation>
+<translation id="890518297681039136">किसी अज्ञात गड़बड़ी की वजह से यह कार्रवाई नहीं की जा सकी.</translation>
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> ने इस वेबसाइट के लिए एक मज़बूत पासवर्ड बनाया है</translation>
 <translation id="890616557918890486">स्रोत बदलें</translation>
 <translation id="8907701755790961703">कृपया कोई देश चुनें</translation>
@@ -12221,4 +12240,5 @@
 <translation id="99731366405731005">'वाई-फ़ाई सिंक' इस्तेमाल करने के लिए, <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> चालू करें. <ph name="LINK2_BEGIN" />ज़्यादा जानें<ph name="LINK2_END" /></translation>
 <translation id="998347228911661591">अपने टैब ग्रुप सिंक करें</translation>
 <translation id="998747458861718449">नि&amp;रीक्षण करें</translation>
+<translation id="998852291477823323">कॉन्फ़िगर की गई नीतियों की वजह से यह कार्रवाई नहीं की जा सकी.</translation>
 </translationbundle>

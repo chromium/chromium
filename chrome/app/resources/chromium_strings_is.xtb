@@ -165,7 +165,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2738871930057338499">Ekki er hægt að tengjast internetinu. HTTP 403 bannað. Kannaðu uppsetningu staðgengilsþjóna.</translation>
 <translation id="2753623023919742414">Smelltu til að leita</translation>
 <translation id="2768103863314748511">Stilltu Chromium sem sjálfgefinn PDF-lesara</translation>
-<translation id="277828055419948999">Chromium getur fyllt út erfiða reiti sem stöðluð sjálfvirk útfylling gæti misst af</translation>
 <translation id="2785438272836277133">Þessi viðbót inniheldur spilliforrit og er ekki örugg. Fjarlægðu hana úr Chromium svo hún geti ekki lengur séð og breytt gögnum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingum þínum.</translation>
 <translation id="2799223571221894425">Endurræsa</translation>
 <translation id="2803971713792056305">Chromium-prófíllinn þinn</translation>
@@ -590,7 +589,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7461356015007898716">Til að fá frekari uppfærslur á Chromium þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 7.</translation>
 <translation id="7467949745582939695">Endurræsa Chromium?</translation>
 <translation id="7483335560992089831">Ekki er hægt að setja upp sömu útgáfu Chromium og er nú þegar í gangi. Lokaðu Chromium og reyndu aftur.</translation>
-<translation id="7517403744065880907">Þú vistar og notar aðgangsorðin þín og margt fleira á Google-reikningnum þegar þú ert með innskráningu í Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Vefsvæði munu líklega virka sem skyldi. Þú skráist út af flestum vefsvæðum þegar þú lokar öllum Chromium-gluggum en ekki út af Google-reikningnum þínum ef þú hefur skráð þig inn á Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium verður endurræst eftir 1 mínútu}one{Chromium verður endurræst eftir # mínútu}other{Chromium verður endurræst eftir # mínútur}}</translation>
 <translation id="7565444033145385702">Til að vernda gögnin þín skaltu leyfa Chromium að fjarlægja heimildir vefsvæða sem þú hefur ekki opnað nýlega.</translation>
@@ -732,7 +730,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="9183331186620388872">Ábending frá Chromium: Leitaðu með linsu</translation>
 <translation id="9185526690718004400">Endurræstu til að uppfæra &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-inn)</translation>
-<translation id="9206863043651638213">Fáðu meira út úr Chromium með innskráningu</translation>
 <translation id="924957577793602335">Lagaðu Chromium að þínum þörfum</translation>
 <translation id="93478295209880648">Vera kann að Chromium virki ekki sem skyldi vegna þess að vafrinn er ekki lengur studdur á Windows XP eða Windows Vista</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>

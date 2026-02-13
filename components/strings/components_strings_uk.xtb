@@ -655,6 +655,7 @@
 <translation id="2071156619270205202">Указаний номер не підходить для віртуальної картки.</translation>
 <translation id="2071852865256799872">Вашим веб-переглядачем керує організація, а профілем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Інформацію збережено лише на пристрої</translation>
 <translation id="2074733626795553847">Розблокувати тему "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">Ви відвідали цей сайт</translation>
 <translation id="2078956195623975415">Музичні й танцювальні ігри</translation>
@@ -1116,6 +1117,7 @@
 <translation id="277133753123645258">Спосіб відправлення</translation>
 <translation id="277499241957683684">Відсутній запис пристрою</translation>
 <translation id="2775884851269838147">Перша сторінка для друку</translation>
+<translation id="277828055419948999">Chromium може автоматично заповнювати складні поля, які не заповнюються за допомогою стандартної функції</translation>
 <translation id="2781185443919227679">Пляжі й острови</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Підготовка до оплати</translation>
@@ -2472,6 +2474,7 @@
 <translation id="4950898438188848926">Кнопка перемикання вкладки: натисніть Enter, щоб перейти на відкриту вкладку, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Дії</translation>
 <translation id="4953689047182316270">реагувати на події спеціальних можливостей</translation>
+<translation id="4954505713046251871">Щоб пропонувати рекомендації і покращувати цю функцію, ми надсилаємо в Google URL-адресу й контент сторінки</translation>
 <translation id="4954891067389874142">Збережіть картку, щоб платити швидше. Дані картки шифруються в Google Гаманці.</translation>
 <translation id="4957080528849277028">Кнопка "Переглянути історію Chrome"; активуйте, щоб переглянути історію веб-перегляду й керувати нею в налаштуваннях Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{і ще 1 сайту}one{і ще # сайту}few{і ще # сайтів}many{і ще # сайтів}other{і ще # сайту}}</translation>
@@ -3975,6 +3978,7 @@
 <translation id="7377314930809374926">Галузь обслуговування</translation>
 <translation id="7378594059915113390">Елементи керування медіа</translation>
 <translation id="7378810950367401542">/</translation>
+<translation id="7379321689415048316">Chrome може автоматично заповнювати складні поля, які не заповнюються за допомогою стандартної функції</translation>
 <translation id="7380398842872229465">10 x 15 дюйм.</translation>
 <translation id="7381551826960739226">Автоматичне заповнення способів оплати вимкнено, оскільки ця форма не використовує безпечне з’єднання.</translation>
 <translation id="7388380253839603603">Ціни на пальне й заправка автомобілів</translation>
@@ -4900,6 +4904,7 @@
 <translation id="8858065207712248076">Chrome радить скинути пароль <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, якщо ви застосовували його на інших сайтах.</translation>
 <translation id="885906927438988819">Якщо помилок немає, <ph name="BEGIN_LINK" />проведіть діагностику мережі Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Мистецтво фотографії і цифрове мистецтво</translation>
+<translation id="8861482055962701239">Не вдалося зберегти цю інформацію в Google Гаманці. Натомість її збережено в Chrome на цьому пристрої. Chrome запропонує зберегти цю інформацію в Гаманці наступного разу, коли ви скористаєтеся ним.</translation>
 <translation id="8863218129525348270">Щоб наступного разу платити швидше, збережіть цю картку на своєму пристрої</translation>
 <translation id="8864939224504814334">Костюми й діловий одяг</translation>
 <translation id="8866132857352163524">Звукові доріжки</translation>

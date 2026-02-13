@@ -136,6 +136,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{하나 이상의 Chromium 확장 프로그램에서 HID 기기 1대에 액세스함}=1{하나 이상의 Chromium 확장 프로그램에서 HID 기기 1대에 액세스 중}other{하나 이상의 Chromium 확장 프로그램에서 HID 기기 #대에 액세스 중}}</translation>
 <translation id="2401032172288869980">Chromium에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
 <translation id="2403703063067034158">시작 오류: 현재 다른 설정 인스턴스가 실행 중입니다. 나중에 다시 시도해 주세요.</translation>
+<translation id="2418322681019544463">모든 앱에서 Chromium으로 링크를 열고 작업 표시줄에서 브라우저에 계속 액세스할 수 있습니다</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium의 도구<ph name="END_LINK" />로 안전하게 탐색하고 관리할 수 있습니다.</translation>
 <translation id="2451727308784734061">바로가기를 사용하여 비밀번호 관리자로 빠르게 이동하세요. 바로가기는 컴퓨터의 홈 화면이나 앱 런처로 이동할 수 있습니다.</translation>
 <translation id="2478295928299953161">Chromium이 곧 종료됩니다</translation>
@@ -163,7 +164,6 @@
 <translation id="2738871930057338499">인터넷에 연결할 수 없습니다(HTTP 403 Forbidden). 프록시 설정을 확인하시기 바랍니다.</translation>
 <translation id="2753623023919742414">클릭하여 검색</translation>
 <translation id="2768103863314748511">Chromium을 기본 PDF 뷰어로 설정</translation>
-<translation id="277828055419948999">Chromium은 표준 자동 완성에서 누락될 수 있는 어려운 필드를 자동 완성할 수 있습니다.</translation>
 <translation id="2785438272836277133">이 확장 프로그램에는 멀웨어가 포함되어 있으며, 안전하지 않습니다. 더 이상 개인 정보를 비롯한 방문 사이트의 데이터를 확인하고 변경할 수 없도록 Chromium에서 이 확장 프로그램을 삭제하세요.</translation>
 <translation id="2799223571221894425">다시 시작</translation>
 <translation id="2803971713792056305">내 Chromium</translation>
@@ -588,7 +588,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7461356015007898716">향후 Chromium 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 7을 사용 중입니다.</translation>
 <translation id="7467949745582939695">Chromium을 다시 시작하시겠습니까?</translation>
 <translation id="7483335560992089831">이미 실행 중인 Chromium과 동일한 버전을 설치할 수 없습니다. Chromium을 종료한 뒤 다시 시도하세요.</translation>
-<translation id="7517403744065880907">Chromium에 로그인할 때마다 Google 계정에 비밀번호 등의 정보를 저장하고 사용할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">사이트가 정상적으로 작동할 것입니다. Chromium에 로그인한 경우 Google 계정을 제외한 모든 Chromium 창을 닫으면 대부분의 사이트에서 로그아웃됩니다.</translation>
 <translation id="753534427205733210">{0,plural, =1{1분 후 Chromium이 다시 시작됩니다}other{#분 후 Chromium이 다시 시작됩니다}}</translation>
 <translation id="7565444033145385702">데이터를 보호하려면 최근에 방문하지 않은 사이트의 권한을 Chromium에서 삭제하도록 허용하세요.</translation>
@@ -607,6 +606,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7745317241717453663">인터넷 사용 기록이 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chromium에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7750130090210923118">기본 Chromium으로 재설정</translation>
+<translation id="7781047659465034537">Chromium을 기본 브라우저로 설정하고 작업 표시줄에 고정하세요</translation>
 <translation id="7786760609782648049">Chromium의 속도를 높여보세요</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. Chromium은 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다.</translation>
@@ -729,7 +729,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9183331186620388872">Chromium 도움말: 렌즈로 검색</translation>
 <translation id="9185526690718004400">다시 실행하여 Chromium 업데이트</translation>
 <translation id="9190841055450128916">Chromium(mDNS-In)</translation>
-<translation id="9206863043651638213">Chromium에 로그인하고 Chromium을 최대한 활용하세요</translation>
 <translation id="924957577793602335">나만의 Chromium 만들기</translation>
 <translation id="93478295209880648">Windows XP 또는 Windows Vista에서 더 이상 Chromium을 지원하지 않으므로 Chromium이 올바르게 작동하지 않을 수 있습니다</translation>
 <translation id="945522503751344254">의견 보내기</translation>

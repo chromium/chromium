@@ -136,7 +136,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{當時至少有一個 Chromium 擴充程式正在存取 1 部 HID 裝置}=1{至少有一個 Chromium 擴充程式正在存取 1 部 HID 裝置}other{至少有一個 Chromium 擴充程式正在存取 # 部 HID 裝置}}</translation>
 <translation id="2401032172288869980">Chromium 需要相機權限和麥克風權限，才能執行此網站要求的功能</translation>
 <translation id="2403703063067034158">啟動錯誤：目前正在執行其他設定操作，請稍後再試。</translation>
-<translation id="2418322681019544463">使用 Chromium 開啟任何應用程式中的連結，並將瀏覽器固定在工作列，方便隨時使用</translation>
+<translation id="2418322681019544463">你可以用 Chromium 開啟任何應用程式的連結，並將瀏覽器釘選在工作列方便隨時取用</translation>
 <translation id="2440750600860946460">透過 <ph name="BEGIN_LINK" />Chromium 工具<ph name="END_LINK" />，你可安全瀏覽網絡，一切盡在掌握</translation>
 <translation id="2451727308784734061">透過捷徑快速開啟「密碼管理工具」。您可將捷徑移至電腦的主畫面或應用程式啟動器。</translation>
 <translation id="2478295928299953161">Chromium 即將關閉</translation>
@@ -164,7 +164,6 @@
 <translation id="2738871930057338499">無法連線至互聯網。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
 <translation id="2768103863314748511">將 Chromium 設定為預設 PDF 檢視器</translation>
-<translation id="277828055419948999">Chromium 可自動填入標準自動填入功能可能遺漏的複雜欄位</translation>
 <translation id="2785438272836277133">此擴充程式含有惡意軟件且不安全。請從 Chromium 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2803971713792056305">你的 Chromium</translation>
@@ -587,7 +586,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7461356015007898716">如要取得日後的 Chromium 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 7。</translation>
 <translation id="7467949745582939695">要重新啟動 Chromium 嗎？</translation>
 <translation id="7483335560992089831">無法安裝這個版本的 Chromium，因為目前正在執行相同版本。請關閉 Chromium，然後再試一次。</translation>
-<translation id="7517403744065880907">每當你登入 Chromium 後，就可以在 Google 帳戶中儲存及使用密碼和其他資料。<ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">網站可能會正常運作。關閉所有 Chromium 視窗後，系統會將你登出所有網站，但如果你已登入 Chromium，Google 帳戶就會維持登入狀態。</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 將於 1 分鐘後重新啟動}other{Chromium 將於 # 分鐘後重新啟動}}</translation>
 <translation id="7565444033145385702">為保護你的資料，請讓 Chromium 為你移除最近未瀏覽網站的權限。</translation>
@@ -606,7 +604,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7745317241717453663">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chromium。</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟件。</translation>
 <translation id="7750130090210923118">重設為預設的 Chromium</translation>
-<translation id="7781047659465034537">將 Chromium 設為預設瀏覽器，並釘選到工作列</translation>
+<translation id="7781047659465034537">將 Chromium 設定為預設瀏覽器，並釘選到工作列</translation>
 <translation id="7786760609782648049">加快 Chromium 的運作速度</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">讓可存取你互聯網流量的使用者難以查看你瀏覽的網站。Chromium 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
@@ -729,7 +727,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="9183331186620388872">Chromium 提示：使用「智能鏡頭」搜尋</translation>
 <translation id="9185526690718004400">重新啟動以更新 &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="9206863043651638213">登入 Chromium 後可享更多功能</translation>
 <translation id="924957577793602335">自訂屬於您的 Chromium</translation>
 <translation id="93478295209880648">由於 Chromium 將不再支援 Windows XP 或 Windows Vista，因此可能無法正常運作</translation>
 <translation id="945522503751344254">提供意見反映</translation>

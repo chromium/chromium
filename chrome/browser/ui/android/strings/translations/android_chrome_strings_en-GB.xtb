@@ -299,6 +299,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{See <ph name="TABS_COUNT_ONE" /> tab}other{See <ph name="TABS_COUNT_MANY" /> tabs}}</translation>
 <translation id="2297822946037605517">Share this page</translation>
 <translation id="230115972905494466">No compatible devices found</translation>
+<translation id="2316129865977710310">No, thanks</translation>
 <translation id="2318045970523081853">Tap to make call</translation>
 <translation id="2323763861024343754">Site storage</translation>
 <translation id="2328474416100889417">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and all invitation links will be turned off</translation>
@@ -960,6 +961,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5075939510584558547">Save without encryption</translation>
 <translation id="5078638979202084724">Bookmark all tabs</translation>
 <translation id="5085038751173179818">Sign in to this site and Chrome to get your bookmarks and more on all your devices</translation>
+<translation id="5088347662971855383">Pin Gemini</translation>
 <translation id="5091199029769593641">Soon, you’ll see stories from <ph name="SITE_NAME" /> when you open a new tab. The sites that you follow are saved in your Google Account. You can manage them in Discover settings.</translation>
 <translation id="509429900233858213">An error occurred.</translation>
 <translation id="5096775069898886423">For sites that don't support secure connections, get warned before visiting the site</translation>
@@ -1341,6 +1343,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}}</translation>
 <translation id="6649642165559792194">Preview image <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="666731172850799929">Open in <ph name="APP_NAME" /></translation>
+<translation id="6669390930482049506">Notify me</translation>
 <translation id="6671495933530132209">Copy image</translation>
 <translation id="6672697278890207089">Enter your passphrase</translation>
 <translation id="6672917148207387131">Add <ph name="DOMAIN" /></translation>
