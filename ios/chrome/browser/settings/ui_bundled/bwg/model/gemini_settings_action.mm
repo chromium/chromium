@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_action.h"
 
-#import "base/check.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_action_type.h"
 
 @implementation GeminiSettingsAction
@@ -16,10 +15,14 @@
   if (self) {
     switch (type) {
       case GeminiSettingsActionTypeViewController:
-        DCHECK(viewController && !URL);
+        if (!viewController || URL) {
+          return nil;
+        }
         break;
       case GeminiSettingsActionTypeURL:
-        DCHECK(URL && !viewController);
+        if (!URL || viewController) {
+          return nil;
+        }
         break;
       case GeminiSettingsActionTypeUnknown:
         break;

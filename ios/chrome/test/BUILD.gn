@@ -466,6 +466,8 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/settings/ui_bundled/autofill:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/autofill/cells:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/bandwidth:unit_tests",
+    "//ios/chrome/browser/settings/ui_bundled/bwg/model:unit_tests",
+    "//ios/chrome/browser/settings/ui_bundled/bwg/utils:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/cells:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/coordinator:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/content_settings:unit_tests",

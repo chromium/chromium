@@ -19,3 +19,12 @@ source_set("model") {
     "//ui/base",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "gemini_settings_action_unittest.mm" ]
+  deps = [
+    ":model",
+    "//testing/gtest",
+  ]
+}

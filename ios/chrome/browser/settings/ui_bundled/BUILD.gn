@@ -362,7 +362,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/policy/model:test_support",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/settings/ui_bundled:constants",
-    "//ios/chrome/browser/settings/ui_bundled/bwg/utils:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
