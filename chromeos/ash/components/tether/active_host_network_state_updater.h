@@ -26,7 +26,7 @@ class ActiveHostNetworkStateUpdater final : public ActiveHost::Observer {
   ActiveHostNetworkStateUpdater& operator=(
       const ActiveHostNetworkStateUpdater&) = delete;
 
-  ~ActiveHostNetworkStateUpdater();
+  ~ActiveHostNetworkStateUpdater() override;
 
   // ActiveHost::Observer:
   void OnActiveHostChanged(

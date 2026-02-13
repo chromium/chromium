@@ -73,10 +73,13 @@ class ActiveHost {
     std::string old_wifi_network_guid;
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnActiveHostChanged(
         const ActiveHostChangeInfo& active_host_change_info) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   ActiveHost(TetherHostFetcher* tether_host_fetcher, PrefService* pref_service);
@@ -153,7 +156,7 @@ class ActiveHost {
   raw_ptr<TetherHostFetcher> tether_host_fetcher_;
   raw_ptr<PrefService> pref_service_;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<ActiveHost> weak_ptr_factory_{this};
 };

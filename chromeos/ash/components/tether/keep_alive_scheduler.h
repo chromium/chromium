@@ -38,7 +38,7 @@ class KeepAliveScheduler : public ActiveHost::Observer,
   KeepAliveScheduler(const KeepAliveScheduler&) = delete;
   KeepAliveScheduler& operator=(const KeepAliveScheduler&) = delete;
 
-  virtual ~KeepAliveScheduler();
+  ~KeepAliveScheduler() override;
 
   // ActiveHost::Observer:
   void OnActiveHostChanged(

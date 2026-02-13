@@ -29,7 +29,7 @@ class HotspotUsageDurationTracker : public ActiveHost::Observer {
   HotspotUsageDurationTracker& operator=(const HotspotUsageDurationTracker&) =
       delete;
 
-  virtual ~HotspotUsageDurationTracker();
+  ~HotspotUsageDurationTracker() override;
 
  protected:
   // ActiveHost::Observer:

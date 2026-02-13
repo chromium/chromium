@@ -70,7 +70,7 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
   HostConnectionMetricsLogger& operator=(const HostConnectionMetricsLogger&) =
       delete;
 
-  virtual ~HostConnectionMetricsLogger();
+  ~HostConnectionMetricsLogger() override;
 
  protected:
   // ActiveHost::Observer:
