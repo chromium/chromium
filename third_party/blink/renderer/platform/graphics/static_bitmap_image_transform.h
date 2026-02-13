@@ -35,10 +35,10 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
     // reinterpret the image as being sRGB).
     bool reinterpret_as_srgb = false;
 
-    // If this is set to a non-nullptr value, then convert the source to this
-    // color space. It's not clear what it means to set `dest_color_space` and
-    // also `reinterpret_as_srgb`, so any call with both parameters will CHECK.
-    sk_sp<SkColorSpace> dest_color_space;
+    // If this is set, then convert the source to this color space. It's not
+    // clear what it means to set `dest_color_space` and also
+    // `reinterpret_as_srgb`, so any call with both parameters will CHECK.
+    std::optional<gfx::ColorSpace> dest_color_space;
 
     // If false, then strip the orientation from teh imgae (and therefore
     // reinterpret the image as having the origin be the top-left).
@@ -66,7 +66,7 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
   // Convert `image` to the specified color space.
   static scoped_refptr<StaticBitmapImage> ConvertToColorSpace(
       scoped_refptr<StaticBitmapImage> image,
-      sk_sp<SkColorSpace> color_space);
+      const gfx::ColorSpace& color_space);
 
  private:
   // Apply the specified transform by manipulating SkPixmaps in software. This

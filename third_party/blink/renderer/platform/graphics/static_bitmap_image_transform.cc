@@ -166,14 +166,13 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
         bm_alpha_type = kUnpremul_SkAlphaType;
       }
     }
-    const auto bm_color_space = options.dest_color_space
-                                    ? options.dest_color_space
-                                    : source->GetColorSpace().ToSkColorSpace();
+    const auto bm_color_space =
+        options.dest_color_space.value_or(source->GetColorSpace());
     const auto bm_info = SkImageInfo::Make(
         source_rect.size(),
         GetDestColorType(
             viz::ToClosestSkColorType(source->GetSharedImageFormat())),
-        bm_alpha_type, bm_color_space);
+        bm_alpha_type, bm_color_space.ToSkColorSpace());
     if (!bm.tryAllocPixels(bm_info)) {
       return nullptr;
     }
@@ -258,9 +257,8 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   // image before the copy from the source), regardless of whether the source is
   // premul or opaque.
   const SkAlphaType dest_alpha_type = kPremul_SkAlphaType;
-  const auto dest_color_space = options.dest_color_space
-                                    ? options.dest_color_space
-                                    : source_info.refColorSpace();
+  const auto dest_color_space = options.dest_color_space.value_or(
+      SkColorSpaceToGfxColorSpace(source_info.refColorSpace()));
   SkIRect source_rect;
   SkIRect source_rect_valid;
   SkISize dest_size;
@@ -274,7 +272,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
     auto resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
         gfx::Size(dest_size.width(), dest_size.height()),
         viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
-        dest_alpha_type, SkColorSpaceToGfxColorSpace(dest_color_space),
+        dest_alpha_type, dest_color_space,
         CanvasResourceProvider::ShouldInitialize::kNo,
         source->ContextProviderWrapper(), source->GetSharedImage()->usage());
 
@@ -293,7 +291,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   SkSurfaceProps surface_props;
   sk_sp<SkSurface> surface = SkSurfaces::Raster(
       SkImageInfo::Make(dest_size.width(), dest_size.height(), dest_color_type,
-                        dest_alpha_type, std::move(dest_color_space)),
+                        dest_alpha_type, dest_color_space.ToSkColorSpace()),
       &surface_props);
   if (!surface) {
     return nullptr;
@@ -335,8 +333,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
   const bool needs_strip_color_space = options.reinterpret_as_srgb;
   const bool needs_convert_color_space =
       options.dest_color_space &&
-      !SkColorSpace::Equals(options.dest_color_space.get(),
-                            source_color_space.ToSkColorSpace().get());
+      options.dest_color_space.value() != source_color_space;
   const bool needs_alpha_change =
       (source->GetAlphaType() == kUnpremul_SkAlphaType) !=
       (!options.premultiply_alpha);
@@ -376,7 +373,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
 scoped_refptr<StaticBitmapImage>
 StaticBitmapImageTransform::ConvertToColorSpace(
     scoped_refptr<StaticBitmapImage> source,
-    sk_sp<SkColorSpace> color_space) {
+    const gfx::ColorSpace& color_space) {
   StaticBitmapImageTransform::Params options;
   options.source_rect = gfx::Rect(GetSourceSize(source, options));
   options.dest_size = GetSourceSize(source, options);
