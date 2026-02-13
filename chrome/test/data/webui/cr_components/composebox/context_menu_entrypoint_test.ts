@@ -127,9 +127,9 @@ suite('ContextMenuEntrypoint', () => {
         assertEquals('Tab 1', items[0]!.getAttribute('title'));
         assertEquals('Tab 2', items[1]!.getAttribute('title'));
         assertEquals(
-            'Most recent tabs, Tab 1', items[0]!.getAttribute('aria-label'));
+            'Add recent tabs, Tab 1', items[0]!.getAttribute('aria-label'));
         assertEquals(
-            'Most recent tabs, Tab 2', items[1]!.getAttribute('aria-label'));
+            'Add recent tabs, Tab 2', items[1]!.getAttribute('aria-label'));
         assertEquals('imageUpload', items[2]!.id);
         assertEquals('fileUpload', items[3]!.id);
       });

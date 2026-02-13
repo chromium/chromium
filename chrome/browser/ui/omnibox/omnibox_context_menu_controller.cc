@@ -195,7 +195,7 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   }
 
   if (omnibox::kShowContextMenuHeaders.Get()) {
-    AddTitleWithStringId(IDS_NTP_COMPOSE_MOST_RECENT_TABS);
+    AddTitleWithStringId(IDS_NTP_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE);
   }
   std::vector<OmniboxContextMenuController::TabInfo> tabs = GetRecentTabs();
 
