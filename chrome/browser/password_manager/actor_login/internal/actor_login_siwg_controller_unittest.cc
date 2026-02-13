@@ -87,6 +87,14 @@ class MockChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
   MOCK_METHOD(void, LoadBlockedPlugins, (const std::string&), (override));
   MOCK_METHOD(void, SetShouldDeferMediaLoad, (bool), (override));
   MOCK_METHOD(void,
+              InitializeTool,
+              (actor::mojom::ToolInvocationPtr, InitializeToolCallback),
+              (override));
+  MOCK_METHOD(void,
+              ExecuteTool,
+              (const actor::TaskId&, ExecuteToolCallback),
+              (override));
+  MOCK_METHOD(void,
               InvokeTool,
               (actor::mojom::ToolInvocationPtr, InvokeToolCallback),
               (override));

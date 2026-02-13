@@ -96,6 +96,20 @@ interface ChromeRenderFrame {
   // background.
   SetShouldDeferMediaLoad(bool should_defer);
 
+  // Creates and validates the tool based on the request.
+  // Returns an `InitializeToolResult` which indicates one of three states:
+  //  - Success with coordinates
+  //  - Success without coordinates
+  //  - Failure with an ActionResult which contains the error code.
+  InitializeTool(actor.mojom.ToolInvocation request) =>
+      (actor.mojom.InitializeToolResult result);
+
+  // Requires InitializeTool to be called first.
+  // Performs a second validation check to ensure the tool's target is still
+  // valid, then executes the tool.
+  // Returns the ActionResult based on the execution.
+  ExecuteTool(actor.mojom.TaskId task_id) => (actor.mojom.ActionResult result);
+
   // Requests invoking of a tool from the actor automation framework. See
   // chrome/browser/actor
   //

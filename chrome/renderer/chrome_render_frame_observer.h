@@ -125,6 +125,11 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   void LoadBlockedPlugins(const std::string& identifier) override;
   void SetShouldDeferMediaLoad(bool should_defer) override;
 
+  // TODO(crbug.com/471252374): Move actor mojom methods to its own interface.
+  void InitializeTool(actor::mojom::ToolInvocationPtr request,
+                      InitializeToolCallback callback) override;
+  void ExecuteTool(const actor::TaskId& task_id,
+                   ExecuteToolCallback callback) override;
   void InvokeTool(actor::mojom::ToolInvocationPtr request,
                   InvokeToolCallback callback) override;
   void CancelTool(const actor::TaskId& task_id) override;

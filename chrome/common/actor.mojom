@@ -563,6 +563,24 @@ struct ScriptToolResponse {
   string? result;
 };
 
+// Represents the outcome of tool initialization.
+// This union covers three possible outcomes:
+// 1. Success with a target: `success_point` is set to a valid Point.
+// 2. Success without a target: `success_point` is explicitly set to null.
+// 3. Failure: `error_result` is populated.
+union InitializeToolResult {
+  // Populated when the tool is successfully initialized.
+  // Contains the resolved target point in Blink (physical) pixels relative
+  // to the widget's origin.
+  //
+  // NOTE: Not all tools provide a point. In those success cases, this
+  // field will be null.
+  gfx.mojom.Point? success_point;
+
+  // Populated when initialization fails.
+  ActionResult error_result;
+};
+
 struct ActionResult {
   // A code with the outcome of the tool invocation.
   ActionResultCode code;
