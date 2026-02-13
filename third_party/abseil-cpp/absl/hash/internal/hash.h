@@ -1060,10 +1060,46 @@ inline uint32_t Read1To3(const unsigned char* p, size_t len) {
   return mem0 | mem1;
 }
 
+#ifdef ABSL_HASH_INTERNAL_HAS_CRC32
+
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline uint64_t CombineRawImpl(uint64_t state,
+                                                            uint64_t value) {
+  // We use a union to access the high and low 32 bits of the state.
+  union {
+    uint64_t u64;
+    struct {
+#ifdef ABSL_IS_LITTLE_ENDIAN
+      uint32_t low, high;
+#else  // big endian
+      uint32_t high, low;
+#endif
+    } u32s;
+  } s;
+  s.u64 = state;
+  // The general idea here is to do two CRC32 operations in parallel using the
+  // low and high 32 bits of state as CRC states. Note that: (1) when absl::Hash
+  // is inlined into swisstable lookups, we know that the seed's high bits are
+  // zero so s.u32s.high is available immediately. (2) We chose to rotate value
+  // right by 45 for the low CRC because that minimizes the probe benchmark
+  // geomean across the 64 possible rotations. (3) The union makes it easy for
+  // the compiler to understand that the high and low CRC states are independent
+  // from each other so that when CombineRawImpl is repeated (e.g. for
+  // std::pair<size_t, size_t>), the CRC chains can run in parallel. We
+  // originally tried using bswaps rather than shifting by 32 bits (to get from
+  // high to low bits) because bswap is one byte smaller in code size, but the
+  // compiler couldn't understand that the CRC chains were independent.
+  s.u32s.high =
+      static_cast<uint32_t>(ABSL_HASH_INTERNAL_CRC32_U64(s.u32s.high, value));
+  s.u32s.low = static_cast<uint32_t>(
+      ABSL_HASH_INTERNAL_CRC32_U64(s.u32s.low, absl::rotr(value, 45)));
+  return s.u64;
+}
+#else   // ABSL_HASH_INTERNAL_HAS_CRC32
 ABSL_ATTRIBUTE_ALWAYS_INLINE inline uint64_t CombineRawImpl(uint64_t state,
                                                             uint64_t value) {
   return Mix(state ^ value, kMul);
 }
+#endif  // ABSL_HASH_INTERNAL_HAS_CRC32
 
 // Slow dispatch path for calls to CombineContiguousImpl with a size argument
 // larger than inlined size. Has the same effect as calling

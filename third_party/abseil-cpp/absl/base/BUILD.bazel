@@ -375,11 +375,9 @@ cc_test(
 cc_library(
     name = "throw_delegate",
     srcs = [
-        "internal/throw_delegate.cc",
         "throw_delegate.cc",
     ],
     hdrs = [
-        "internal/throw_delegate.h",
         "throw_delegate.h",
     ],
     copts = ABSL_DEFAULT_COPTS,

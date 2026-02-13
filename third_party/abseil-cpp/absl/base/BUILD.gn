@@ -215,20 +215,9 @@ if (absl_build_tests) {
   }
 }
 
-absl_source_set("internal_throw_delegate") {
-  sources = [ "internal/throw_delegate.cc" ]
-  public = [ "internal/throw_delegate.h" ]
-  deps = [
-    ":config",
-    ":raw_logging_internal",
-  ]
-  visibility = [ "//third_party/abseil-cpp/absl/*" ]
-}
-
 absl_source_set("throw_delegate") {
   sources = [ "throw_delegate.cc" ]
   public = [ "throw_delegate.h" ]
-  public_deps = [ ":internal_throw_delegate" ]
   deps = [
     ":config",
     ":raw_logging_internal",

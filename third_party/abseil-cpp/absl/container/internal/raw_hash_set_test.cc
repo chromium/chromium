@@ -4168,16 +4168,6 @@ TEST(Table, GrowExtremelyLargeTable) {
   EXPECT_EQ(t.capacity(), kTargetCapacity);
 }
 
-// Test that after calling generate_new_seed(), the high bits of the returned
-// seed are non-zero.
-TEST(PerTableSeed, HighBitsAreNonZero) {
-  HashtableSize hs(no_seed_empty_tag_t{});
-  for (int i = 0; i < 100; ++i) {
-    hs.generate_new_seed();
-    ASSERT_GT(hs.seed().seed() >> 16, 0);
-  }
-}
-
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END

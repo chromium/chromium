@@ -62,6 +62,7 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/base:no_destructor",
     "//third_party/abseil-cpp/absl/base:nullability",
     "//third_party/abseil-cpp/absl/base:prefetch",
+    "//third_party/abseil-cpp/absl/base:throw_delegate",
     "//third_party/abseil-cpp/absl/cleanup",
     "//third_party/abseil-cpp/absl/container:btree",
     "//third_party/abseil-cpp/absl/container:fixed_array",
@@ -138,9 +139,7 @@ group("absl_component_deps") {
 # Abseil testing utilities should only be included in test binaries.
 source_set("test_support") {
   testonly = true
-  public_deps = [
-    "//third_party/abseil-cpp/absl/hash:hash_testing",
-  ]
+  public_deps = [ "//third_party/abseil-cpp/absl/hash:hash_testing" ]
   deps = [ ":absl" ]
 }
 

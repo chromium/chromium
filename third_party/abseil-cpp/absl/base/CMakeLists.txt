@@ -292,10 +292,8 @@ absl_cc_library(
   NAME
     throw_delegate
   HDRS
-    "internal/throw_delegate.h"
     "throw_delegate.h"
   SRCS
-    "internal/throw_delegate.cc"
     "throw_delegate.cc"
   COPTS
     ${ABSL_DEFAULT_COPTS}

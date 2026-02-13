@@ -978,7 +978,7 @@ bool parse(const std::string& format, const std::string& input,
   while (std::isspace(*data)) ++data;
 
   // parse() must consume the entire input string.
-  if (*data != '\0') {
+  if (data != input.data() + input.size()) {
     if (err != nullptr) *err = "Illegal trailing data in input string";
     return false;
   }
