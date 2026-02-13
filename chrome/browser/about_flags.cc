@@ -12831,23 +12831,25 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(extensions_features::kSearchEngineUnconditionalDialog)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"persist-across-reboots-debug-logs",
-     flag_descriptions::kPersistAcrossRebootsDebugLogsName,
-     flag_descriptions::kPersistAcrossRebootsDebugLogsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kPersistAcrossRebootsDebugLogs)},
-#endif
-
     {"enable-webmcp-testing", flag_descriptions::kWebMCPTestingName,
      flag_descriptions::kWebMCPTestingDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kWebMCPTesting)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"persist-across-reboots-debug-logs",
+     flag_descriptions::kPersistAcrossRebootsDebugLogsName,
+     flag_descriptions::kPersistAcrossRebootsDebugLogsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kPersistAcrossRebootsDebugLogs)},
+
     {"browser-controls-scroll-snap-animation",
      flag_descriptions::kBrowserControlsScrollSnapAnimationDialogName,
      flag_descriptions::kBrowserControlsScrollSnapAnimationDialogDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(features::kBrowserControlsScrollSnapAnimation)},
+
+    {"edge-to-edge-extra-logs", flag_descriptions::kEdgeToEdgeExtraLogsName,
+     flag_descriptions::kEdgeToEdgeExtraLogsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeExtraLogs)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.

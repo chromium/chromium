@@ -406,6 +406,7 @@ public abstract class ChromeFeatureList {
     public static final String DRAW_CUTOUT_EDGE_TO_EDGE = "DrawCutoutEdgeToEdge";
     public static final String EDGE_TO_EDGE_BOTTOM_CHIN = "EdgeToEdgeBottomChin";
     public static final String EDGE_TO_EDGE_EVERYWHERE = "EdgeToEdgeEverywhere";
+    public static final String EDGE_TO_EDGE_EXTRA_LOGS = "EdgeToEdgeExtraLogs";
     public static final String EDGE_TO_EDGE_MONITOR_CONFIGURATIONS =
             "EdgeToEdgeMonitorConfigurations";
     public static final String EDGE_TO_EDGE_TABLET = "EdgeToEdgeTablet";
@@ -893,6 +894,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(EDGE_TO_EDGE_BOTTOM_CHIN, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeEverywhere =
             newCachedFlag(EDGE_TO_EDGE_EVERYWHERE, /* defaultValue= */ true);
+    public static final CachedFlag sEdgeToEdgeExtraLogs =
+            newCachedFlag(EDGE_TO_EDGE_EXTRA_LOGS, /* defaultValue= */ false);
     public static final CachedFlag sEdgeToEdgeMonitorConfigurations =
             newCachedFlag(EDGE_TO_EDGE_MONITOR_CONFIGURATIONS, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeTablet =
@@ -1193,6 +1196,7 @@ public abstract class ChromeFeatureList {
                     sDrawChromePagesEdgeToEdge,
                     sEdgeToEdgeBottomChin,
                     sEdgeToEdgeEverywhere,
+                    sEdgeToEdgeExtraLogs,
                     sEdgeToEdgeMonitorConfigurations,
                     sEdgeToEdgeTablet,
                     sEdgeToEdgeUseBackupNavbarInsets,

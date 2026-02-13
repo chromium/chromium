@@ -5281,6 +5281,11 @@ inline constexpr char kDrawChromePagesEdgeToEdgeName[] =
 inline constexpr char kDrawChromePagesEdgeToEdgeDescription[] =
     "Enables drawing more native pages and secondary activities edge-to-edge.";
 
+inline constexpr char kEdgeToEdgeExtraLogsName[] = "edge-to-edge-extra-logs";
+inline constexpr char kEdgeToEdgeExtraLogsDescription[] =
+    "When this is enabled, extra logs will be emitted for tracking "
+    "edge-to-edge state and inset updates.";
+
 inline constexpr char kEnableAccessibilityLabeledByName[] =
     "Enable Accessibility LabeledBy";
 inline constexpr char kEnableAccessibilityLabeledByDescription[] =

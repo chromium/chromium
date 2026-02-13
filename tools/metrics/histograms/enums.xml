@@ -11936,6 +11936,7 @@ from previous Chrome versions.
   <int value="-848691867" label="DesktopPWAWindowing:enabled"/>
   <int value="-847735582" label="NotificationsViaHelperApp:enabled"/>
   <int value="-847216521" label="ChromeDuplex:enabled"/>
+  <int value="-847111565" label="EdgeToEdgeExtraLogs:disabled"/>
   <int value="-846670837" label="QuickAppAccessTestUI:enabled"/>
   <int value="-846618756" label="AutofillEnableAmountExtraction:disabled"/>
   <int value="-846321831" label="OmniboxSiteSearch:enabled"/>
@@ -20181,6 +20182,7 @@ from previous Chrome versions.
   <int value="1963766060"
       label="AutofillEnableFixedPaymentsBubbleLogging:enabled"/>
   <int value="1964036852" label="AuxiliarySearchThirdParty:disabled"/>
+  <int value="1964172284" label="EdgeToEdgeExtraLogs:enabled"/>
   <int value="1964557360" label="ShimlessRMADynamicDeviceInfoInputs:disabled"/>
   <int value="1964778659" label="TailoredSecurityRetryForSyncUsers:disabled"/>
   <int value="1964816410" label="AndroidPayIntegrationV2:enabled"/>

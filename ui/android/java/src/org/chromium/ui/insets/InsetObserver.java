@@ -4,6 +4,16 @@
 
 package org.chromium.ui.insets;
 
+import static androidx.core.view.WindowInsetsCompat.Type.displayCutout;
+import static androidx.core.view.WindowInsetsCompat.Type.ime;
+import static androidx.core.view.WindowInsetsCompat.Type.mandatorySystemGestures;
+import static androidx.core.view.WindowInsetsCompat.Type.navigationBars;
+import static androidx.core.view.WindowInsetsCompat.Type.statusBars;
+import static androidx.core.view.WindowInsetsCompat.Type.systemBars;
+import static androidx.core.view.WindowInsetsCompat.Type.systemGestures;
+import static androidx.core.view.WindowInsetsCompat.Type.systemOverlays;
+import static androidx.core.view.WindowInsetsCompat.Type.tappableElement;
+
 import android.graphics.Rect;
 import android.view.View;
 
@@ -17,6 +27,7 @@ import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
@@ -39,6 +50,8 @@ import java.util.List;
  */
 @NullMarked
 public class InsetObserver implements OnApplyWindowInsetsListener {
+    private static final String TAG = "InsetObserver";
+
     private final Rect mWindowInsets;
     private final Rect mCurrentSafeArea;
     private int mKeyboardInset;
@@ -58,6 +71,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private final Rect mDisplayCutoutRect;
 
     private final boolean mEnableKeyboardOverlayMode;
+    private final boolean mEnableExtraEdgeToEdgeLogging;
     // This is currently only being used by the DeferredImeWindowInsetApplicationCallback. If this
     // is to be used by other callers, it should be changed to some token system to ensure that
     // different callers don't interfere with each other.
@@ -222,9 +236,12 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      *     mode, where its inset shouldn't affect the size of the viewport.
      */
     public InsetObserver(
-            ImmutableWeakReference<View> rootViewWeakRef, boolean enableKeyboardOverlayMode) {
+            ImmutableWeakReference<View> rootViewWeakRef,
+            boolean enableKeyboardOverlayMode,
+            boolean enableExtraEdgeToEdgeLogging) {
         mRootViewReference = rootViewWeakRef;
         mEnableKeyboardOverlayMode = enableKeyboardOverlayMode;
+        mEnableExtraEdgeToEdgeLogging = enableExtraEdgeToEdgeLogging;
         mWindowInsets = new Rect();
         mCurrentSafeArea = new Rect();
         mDisplayCutoutRect = new Rect();
@@ -495,9 +512,26 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         return mHasSeenNonZeroNavBar;
     }
 
+    private static void emitExtraEdgeToEdgeLogs(WindowInsetsCompat insets) {
+        Log.i(TAG, "Insets -----");
+        Log.i(TAG, "statusBars: " + insets.getInsets(statusBars()));
+        Log.i(TAG, "navigationBars: " + insets.getInsets(navigationBars()));
+        Log.i(TAG, "systemBars: " + insets.getInsets(systemBars()));
+        Log.i(TAG, "systemOverlays: " + insets.getInsets(systemOverlays()));
+        Log.i(TAG, "systemGestures: " + insets.getInsets(systemGestures()));
+        Log.i(TAG, "mandatorySystemGestures: " + insets.getInsets(mandatorySystemGestures()));
+        Log.i(TAG, "tappableElement: " + insets.getInsets(tappableElement()));
+        Log.i(TAG, "displayCutout: " + insets.getInsets(displayCutout()));
+        Log.i(TAG, "ime: " + insets.getInsets(ime()));
+        Log.i(TAG, "-----");
+    }
+
     @Override
     public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
         mLastSeenRawWindowInset = insets;
+
+        if (mEnableExtraEdgeToEdgeLogging) emitExtraEdgeToEdgeLogs(insets);
+
         verifyInsetsForEdgeToEdge(insets);
 
         updateDisplayCutoutRect(insets);

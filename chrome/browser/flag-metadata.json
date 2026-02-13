@@ -2512,6 +2512,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "edge-to-edge-extra-logs",
+    "owners": ["clhager@google.com", "twellington@chromium.org"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "elastic-overscroll",
     "owners": [ "arakeri@microsoft.com", "flackr@chromium.org" ],
     "expiry_milestone": 150
