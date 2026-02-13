@@ -8,6 +8,7 @@ import time
 import sys
 import os
 import re
+from dataclasses import dataclass
 from datetime import timedelta
 
 # Configuration
@@ -52,7 +53,7 @@ def get_issue_info():
         host = 'https://' + issue_url.split('//')[1].split('/')[0].strip()
         # Extract ID: 7514529
         issue_id = issue_url.rstrip('/').split('/')[-1].strip()
-    except:
+    except Exception:
         print(f"❌ Failed to parse host/ID from URL: {issue_url}")
         sys.exit(1)
 
@@ -65,6 +66,19 @@ def get_issue_info():
             break
 
     return issue_id, issue_url, patchset, host
+
+
+@dataclass
+class ParseResult:
+    """Holds the summarized state of the try job results."""
+    # Whether the monitoring should stop.
+    finished: bool
+    # A human-readable string summarizing the success/pending/failed counts.
+    stats: str
+    # Whether all monitored jobs succeeded.
+    success: bool
+    # List of builder names that failed.
+    failed_builders: list[str]
 
 
 class ReviewMonitor:
@@ -104,20 +118,36 @@ class ReviewMonitor:
         if code != 0: return None
         try:
             return json.loads(stdout)
-        except:
+        except Exception:
             return None
 
-    def parse_results(self, results):
+    def parse_results(self, results: list[dict]) -> ParseResult:
+        """Parses the raw JSON results from git cl try-results."""
         if not results:
-            return False, "Waiting for builds...", False, []
+            return ParseResult(finished=False,
+                               stats="Waiting for builds...",
+                               success=False,
+                               failed_builders=[])
 
-        total = len(results)
+        # Group by builder to handle retries: keep only the latest result for
+        # each
+        latest_jobs = {}
+        for job in results:
+            name = job.get('builder', {}).get('builder')
+            if not name:
+                raise ValueError(f"Job result missing builder name: {job}")
+
+            create_time = job.get('createTime', '')
+            if name not in latest_jobs or create_time > latest_jobs[name].get(
+                    'createTime', ''):
+                latest_jobs[name] = job
+
+        total = len(latest_jobs)
         success = []
         running = []
         failed = []
 
-        for job in results:
-            name = job.get('builder', {}).get('builder', 'unknown')
+        for name, job in latest_jobs.items():
             status = job.get('status')
             if status == 'SUCCESS':
                 success.append(name)
@@ -129,12 +159,22 @@ class ReviewMonitor:
         stats = (f"Success: {len(success)}/{total} | "
                  f"Pending: {len(running)} | Failed: {len(failed)}")
 
-        if len(failed) > 0:
-            return True, stats, False, failed
-        if len(running) == 0 and len(success) == total and total > 0:
-            return True, stats, True, []
+        if running:
+            return ParseResult(finished=False,
+                               stats=stats,
+                               success=False,
+                               failed_builders=failed)
 
-        return False, stats, False, running
+        if not failed and total > 0:
+            return ParseResult(finished=True,
+                               stats=stats,
+                               success=True,
+                               failed_builders=[])
+
+        return ParseResult(finished=True,
+                           stats=stats,
+                           success=False,
+                           failed_builders=failed)
 
     def _run_gerrit_command(self, cmd, ignorable_msgs=None):
         """Runs a gerrit_client command and handles success/failure."""
@@ -220,7 +260,7 @@ class ReviewMonitor:
             for approval in cq.get('all', []):
                 max_v = max(max_v, approval.get('value', 0))
             return max_v
-        except:
+        except Exception:
             return 0
         finally:
             if os.path.exists(temp_path):
@@ -270,23 +310,23 @@ class ReviewMonitor:
                     sys.exit(1)
 
                 results = self.get_try_results()
-                finished, stats, success, names = self.parse_results(results)
+                res = self.parse_results(results)
 
                 elapsed = str(timedelta(seconds=elapsed_total_seconds))
 
                 if not self.is_bg:
                     # Update the same line in terminal
                     sys.stdout.write(
-                        f"\r[{elapsed}] {stats} | "
+                        f"\r[{elapsed}] {res.stats} | "
                         f"{len(results) if results else 0} bots found...   ")
                     sys.stdout.flush()
                 else:
                     # Periodic log update
-                    print(f"[{elapsed}] {stats} | "
+                    print(f"[{elapsed}] {res.stats} | "
                           f"{len(results) if results else 0} bots found...")
 
-                if finished:
-                    if success:
+                if res.finished:
+                    if res.success:
                         msg = (f"CQ passed! Transitioning CL {self.issue_id} "
                                "to Ready for Review...")
                         print(f"\n\n✅ {msg}")
@@ -298,10 +338,29 @@ class ReviewMonitor:
                             message="CQ dry run passed! Sending for review "
                             "(automated via send_after_cq_dryrun.py).")
                     else:
-                        msg = (f"[CL {self.issue_id} PS {self.patchset}] "
-                               f"({self.issue_url}) "
-                               f"CQ failed on: {', '.join(names)}")
-                        print(f"\n\n🛑 {msg}")
+                        # If CQ failed, double check the label. If it's still
+                        # active, it means CQ is retrying.
+                        if self.get_cq_label() >= 1:
+                            res.finished = False
+                            if not self.is_bg:
+                                sys.stdout.write(
+                                    f"\r[{elapsed}] {res.stats} | "
+                                    "CQ still active, waiting for retries...   "
+                                )
+                                sys.stdout.flush()
+                            else:
+                                print(
+                                    f"[{elapsed}] {res.stats} | "
+                                    "CQ still active, waiting for retries...")
+                        else:
+                            msg = (
+                                f"[CL {self.issue_id} PS {self.patchset}] "
+                                f"({self.issue_url}) "
+                                f"CQ failed on: {', '.join(res.failed_builders)}"
+                            )
+                            print(f"\n\n🛑 {msg}")
+
+                if res.finished:
                     break
 
                 time.sleep(POLL_INTERVAL_SECONDS)
