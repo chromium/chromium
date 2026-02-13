@@ -49,19 +49,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OSCryptCacheEncryptionDelegate
   // net::CacheEncryptionDelegate implementation:
   void Init(base::OnceCallback<void(net::Error)> callback) override;
 
-  // Encrypts the given `plaintext` using OSCrypt. The resulting `ciphertext`
-  // contains all necessary information for decryption, including the
-  // initialization vector (IV), which is handled automatically by the
-  // underlying cryptographic library.
-  bool EncryptData(base::span<const uint8_t> plaintext,
-                   std::vector<uint8_t>* ciphertext) override;
-
-  // Decrypts the given `ciphertext` using OSCrypt. The implementation expects
-  // the `ciphertext` to contain the initialization vector (IV) and uses it to
-  // correctly decrypt the data.
-  bool DecryptData(base::span<const uint8_t> ciphertext,
-                   std::vector<uint8_t>* plaintext) override;
-
   // Returns a factory for creating encrypted backend file operations.
   // Returns nullptr on failure.
   disk_cache::BackendFileOperationsFactory* GetEncryptionFileOperationsFactory(

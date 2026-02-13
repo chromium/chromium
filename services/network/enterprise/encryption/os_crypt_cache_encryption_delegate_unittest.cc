@@ -6,8 +6,8 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/task_environment.h"
 #include "base/test/gtest_util.h"
+#include "base/test/task_environment.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -173,27 +173,8 @@ class OSCryptCacheEncryptionDelegateTest : public testing::Test {
 using OSCryptCacheEncryptionDelegateDeathTest =
     OSCryptCacheEncryptionDelegateTest;
 
-TEST_F(OSCryptCacheEncryptionDelegateTest, EncryptDecrypt) {
-  InitDelegate();
-  const std::vector<uint8_t> kPlaintext = {1, 2, 3, 4, 5};
-  std::vector<uint8_t> ciphertext;
-  ASSERT_TRUE(delegate_.EncryptData(kPlaintext, &ciphertext));
-  EXPECT_NE(kPlaintext, ciphertext);
-
-  std::vector<uint8_t> decrypted;
-  ASSERT_TRUE(delegate_.DecryptData(ciphertext, &decrypted));
-  EXPECT_EQ(kPlaintext, decrypted);
-}
-
 TEST_F(OSCryptCacheEncryptionDelegateDeathTest, NotInitialized) {
 #if defined(GTEST_HAS_DEATH_TEST)
-  const std::vector<uint8_t> kPlaintext = {1, 2, 3, 4, 5};
-  std::vector<uint8_t> ciphertext;
-  EXPECT_CHECK_DEATH(delegate_.EncryptData(kPlaintext, &ciphertext));
-
-  std::vector<uint8_t> plaintext2;
-  const std::vector<uint8_t> kCiphertext = {1, 2, 3, 4, 5, 6, 7};
-  EXPECT_CHECK_DEATH(delegate_.DecryptData(kCiphertext, &plaintext2));
   EXPECT_CHECK_DEATH(delegate_.GetEncryptionFileOperationsFactory(nullptr));
 #endif  // defined(GTEST_HAS_DEATH_TEST)
 }
@@ -236,33 +217,13 @@ TEST_F(OSCryptCacheEncryptionDelegateTest, InitWhileInitializing) {
   EXPECT_EQ(net::OK, result2);
 }
 
-TEST_F(OSCryptCacheEncryptionDelegateTest, DecryptFail) {
-  InitDelegate();
-  // Encrypt something to get a valid ciphertext structure.
-  const std::vector<uint8_t> kPlaintext = {1, 2, 3, 4, 5};
-  std::vector<uint8_t> ciphertext;
-  ASSERT_TRUE(delegate_.EncryptData(kPlaintext, &ciphertext));
-  ASSERT_FALSE(ciphertext.empty());
-
-  // Corrupt the ciphertext. This should cause decryption to fail.
-  ciphertext.back() ^= 1;
-
-  std::vector<uint8_t> plaintext;
-  EXPECT_FALSE(delegate_.DecryptData(ciphertext, &plaintext));
-}
-
 TEST_F(OSCryptCacheEncryptionDelegateDeathTest, Disconnect) {
   InitDelegate();
-  const std::vector<uint8_t> kPlaintext = {1, 2, 3, 4, 5};
-  std::vector<uint8_t> ciphertext;
-  ASSERT_TRUE(delegate_.EncryptData(kPlaintext, &ciphertext));
-
   provider_.reset();
   task_environment_.RunUntilIdle();
 
 #if defined(GTEST_HAS_DEATH_TEST)
-  std::vector<uint8_t> plaintext2;
-  EXPECT_CHECK_DEATH(delegate_.DecryptData(ciphertext, &plaintext2));
+  EXPECT_CHECK_DEATH(delegate_.GetEncryptionFileOperationsFactory(nullptr));
 #endif  // defined(GTEST_HAS_DEATH_TEST)
 }
 
@@ -285,9 +246,7 @@ TEST_F(OSCryptCacheEncryptionDelegateDeathTest, DisconnectDuringInit) {
 
   // The delegate should still be uninitialized.
 #if defined(GTEST_HAS_DEATH_TEST)
-  const std::vector<uint8_t> kPlaintext = {1, 2, 3, 4, 5};
-  std::vector<uint8_t> ciphertext;
-  EXPECT_CHECK_DEATH(delegate_.EncryptData(kPlaintext, &ciphertext));
+  EXPECT_CHECK_DEATH(delegate_.GetCacheEntryHasher());
 #endif  // defined(GTEST_HAS_DEATH_TEST)
 }
 
@@ -304,16 +263,14 @@ TEST_F(OSCryptCacheEncryptionDelegateDeathTest, InitEncryptorNotAvailable) {
   }));
   run_loop.Run();
 
-  const std::vector<uint8_t> kPlaintext = {1, 2, 3, 4, 5};
-  std::vector<uint8_t> ciphertext;
   if (result_out == net::OK) {
     // On platforms that do not support mocking OSCrypt as unavailable (e.g.
     // Windows), Init() will succeed via the fallback.
-    EXPECT_TRUE(delegate_.EncryptData(kPlaintext, &ciphertext));
+    EXPECT_FALSE(delegate_.GetEncryptionFileOperationsFactory(nullptr));
   } else {
     EXPECT_EQ(net::ERR_FAILED, result_out);
 #if defined(GTEST_HAS_DEATH_TEST)
-    EXPECT_CHECK_DEATH(delegate_.EncryptData(kPlaintext, &ciphertext));
+    EXPECT_CHECK_DEATH(delegate_.GetEncryptionFileOperationsFactory(nullptr));
 #endif  // defined(GTEST_HAS_DEATH_TEST)
   }
 }

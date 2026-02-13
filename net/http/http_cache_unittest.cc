@@ -15013,14 +15013,6 @@ class MockCacheEncryptionDelegate : public net::CacheEncryptionDelegate {
     std::move(callback).Run(init_result_);
   }
 
-  bool EncryptData(base::span<const uint8_t> plaintext,
-                   std::vector<uint8_t>* ciphertext) override {
-    return false;
-  }
-  bool DecryptData(base::span<const uint8_t> ciphertext,
-                   std::vector<uint8_t>* plaintext) override {
-    return false;
-  }
   disk_cache::BackendFileOperationsFactory* GetEncryptionFileOperationsFactory(
       scoped_refptr<disk_cache::BackendFileOperationsFactory>
           file_operations_factory) override {
