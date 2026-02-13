@@ -308,6 +308,7 @@ class PipelineImplTest : public ::testing::Test {
 
   void ExpectResume(const base::TimeDelta& seek_time) {
     ExpectRendererInitialization();
+    EXPECT_CALL(*demuxer_, IsSeekable()).WillOnce(Return(true));
     EXPECT_CALL(*demuxer_, OnSeek(seek_time, _))
         .WillOnce(RunOnceCallback<1>(PIPELINE_OK));
     EXPECT_CALL(*renderer_, SetPlaybackRate(_));
@@ -1151,6 +1152,7 @@ class PipelineTeardownTest : public PipelineImplTest {
     PipelineImplTest::DoSuspend();
 
     if (state == kResuming) {
+      EXPECT_CALL(*demuxer_, IsSeekable()).WillOnce(Return(true));
       PipelineImplTest::DoResume(base::TimeDelta());
       return;
     }

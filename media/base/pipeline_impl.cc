@@ -550,8 +550,14 @@ void PipelineImpl::RendererWrapper::Resume(
   // Queue the asynchronous actions required to start playback.
   SerialRunner::Queue fns;
 
-  fns.Push(base::BindOnce(&Demuxer::Seek, base::Unretained(demuxer_),
-                          start_timestamp));
+  // Non-seekable demuxers are responsible for resetting their own media times
+  // and issuing a seek directly. This is common for live content, where a
+  // resumption of playback after a delay may cause `start_timestamp` to be
+  // outside of a valid window where data is still available.
+  if (demuxer_->IsSeekable()) {
+    fns.Push(base::BindOnce(&Demuxer::Seek, base::Unretained(demuxer_),
+                            start_timestamp));
+  }
 
   fns.Push(base::BindOnce(&RendererWrapper::CreateRenderer,
                           weak_factory_.GetWeakPtr()));
