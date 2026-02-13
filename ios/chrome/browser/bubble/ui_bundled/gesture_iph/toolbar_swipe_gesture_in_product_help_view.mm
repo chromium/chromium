@@ -55,8 +55,7 @@ const int kBidirectionalAnimationRepeatCount = 4;
       _bidirectional = NO;
       _animationRepeatCount = [super animationRepeatCount];
     }
-    [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                      @[ UITraitVerticalSizeClass.class ])
+    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
                        withAction:@selector(updateUIOnTraitChange)];
   }
   return self;

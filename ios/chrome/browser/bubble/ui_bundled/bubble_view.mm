@@ -428,11 +428,11 @@ UIStackView* PageControl(BubblePageControlPage page) {
     self.isAccessibilityElement = YES;
 
     __weak __typeof(self) weakSelf = self;
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+    NSArray<UITrait>* traits = @[
       UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
       UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
       UITraitUserInterfaceLevel.class
-    ]);
+    ];
     UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                      UITraitCollection* previousCollection) {
       [weakSelf maybeChangeArrowColor:previousCollection];
