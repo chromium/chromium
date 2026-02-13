@@ -49,7 +49,6 @@ class VideoConferenceManagerAsh : public VideoConferenceManagerBase {
   void SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice device,
       bool enabled) override;
-  void StopAllScreenShare() override;
   void CreateBackgroundImage() override;
 
   // Registers an ash-browser client. Non-mojo clients need to manually call

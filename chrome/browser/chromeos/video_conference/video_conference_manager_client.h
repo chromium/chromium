@@ -72,7 +72,6 @@ class VideoConferenceManagerClientImpl
       crosapi::mojom::VideoConferenceMediaDevice device,
       bool disabled,
       SetSystemMediaDeviceStatusCallback callback) override;
-  void StopAllScreenShare() override;
 
  protected:
   // Sends VcManager the updated `VideoConferenceMediaUsageStatus`. Can be

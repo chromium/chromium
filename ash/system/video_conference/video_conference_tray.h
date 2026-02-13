@@ -127,7 +127,6 @@ class ASH_EXPORT VideoConferenceTray
 
   VideoConferenceTrayButton* audio_icon() { return audio_icon_; }
   VideoConferenceTrayButton* camera_icon() { return camera_icon_; }
-  VideoConferenceTrayButton* screen_share_icon() { return screen_share_icon_; }
   IconButton* toggle_bubble_button() { return toggle_bubble_button_; }
 
   // TrayBackgroundView:
@@ -151,7 +150,6 @@ class ASH_EXPORT VideoConferenceTray
   void OnMicrophonePermissionStateChange() override;
   void OnCameraCapturingStateChange(bool is_capturing) override;
   void OnMicrophoneCapturingStateChange(bool is_capturing) override;
-  void OnScreenSharingStateChange(bool is_capturing_screen) override;
   void OnDlcDownloadStateChanged(
       bool add_warning,
       const std::u16string& feature_tile_title) override;
@@ -192,7 +190,6 @@ class ASH_EXPORT VideoConferenceTray
   // Callback functions for the icons when being clicked.
   void OnCameraButtonClicked(const ui::Event& event);
   void OnAudioButtonClicked(const ui::Event& event);
-  void OnScreenShareButtonClicked(const ui::Event& event);
 
   // Creates the bubble with the correct views after retrieving the list of
   // `apps` from `VideoConferenceTrayController`.
@@ -201,7 +198,6 @@ class ASH_EXPORT VideoConferenceTray
   // Owned by the views hierarchy.
   raw_ptr<VideoConferenceTrayButton> audio_icon_ = nullptr;
   raw_ptr<VideoConferenceTrayButton> camera_icon_ = nullptr;
-  raw_ptr<VideoConferenceTrayButton> screen_share_icon_ = nullptr;
   raw_ptr<IconButton> toggle_bubble_button_ = nullptr;
 
   // The bubble that appears after clicking the tray button.

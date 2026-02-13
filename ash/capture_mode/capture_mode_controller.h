@@ -446,8 +446,6 @@ class ASH_EXPORT CaptureModeController
       crosapi::mojom::VideoConferenceMediaDevice device,
       bool enabled,
       SetSystemMediaDeviceStatusCallback callback) override;
-  void StopAllScreenShare() override;
-
   // ShellObserver:
   void OnPinnedStateChanged(aura::Window* pinned_window) override;
 

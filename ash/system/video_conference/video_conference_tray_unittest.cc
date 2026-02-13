@@ -47,8 +47,6 @@ constexpr char kCameraMuteHistogramName[] =
     "Ash.VideoConferenceTray.CameraMuteButton.Click";
 constexpr char kMicrophoneMuteHistogramName[] =
     "Ash.VideoConferenceTray.MicrophoneMuteButton.Click";
-constexpr char kStopScreenShareHistogramName[] =
-    "Ash.VideoConferenceTray.StopScreenShareButton.Click";
 constexpr char kTrayBackgroundViewHistogramName[] =
     "Ash.StatusArea.TrayBackgroundView.Pressed";
 
@@ -112,9 +110,7 @@ class VideoConferenceTrayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kVcStopAllScreenShare,
-         features::kFeatureManagementVideoConference},
-        {});
+        {features::kFeatureManagementVideoConference}, {});
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
@@ -192,10 +188,6 @@ class VideoConferenceTrayTest : public AshTestBase {
 
   VideoConferenceTrayButton* audio_icon() {
     return video_conference_tray()->audio_icon();
-  }
-
-  VideoConferenceTrayButton* screen_share_icon() {
-    return video_conference_tray()->screen_share_icon();
   }
 
   // Make the tray and buttons visible by setting `VideoConferenceMediaState`,
@@ -281,9 +273,6 @@ TEST_F(VideoConferenceTrayTest, TrayPressedMetrics) {
 
   LeftClickOn(audio_icon());
   histogram_tester.ExpectTotalCount(kTrayBackgroundViewHistogramName, 3);
-
-  LeftClickOn(screen_share_icon());
-  histogram_tester.ExpectTotalCount(kTrayBackgroundViewHistogramName, 4);
 }
 
 // Tests that tapping directly on the VideoConferenceTray (not the child toggle
@@ -449,21 +438,6 @@ TEST_F(VideoConferenceTrayTest, MicrophoneButtonVisibility) {
   EXPECT_FALSE(audio_icon()->GetVisible());
 }
 
-TEST_F(VideoConferenceTrayTest, ScreenshareButtonVisibility) {
-  auto* screen_share_icon = video_conference_tray()->screen_share_icon();
-
-  VideoConferenceMediaState state;
-  state.is_capturing_screen = true;
-  controller()->UpdateWithMediaState(state);
-  EXPECT_TRUE(screen_share_icon->GetVisible());
-  EXPECT_TRUE(screen_share_icon->show_privacy_indicator());
-
-  state.is_capturing_screen = false;
-  controller()->UpdateWithMediaState(state);
-  EXPECT_FALSE(screen_share_icon->GetVisible());
-  EXPECT_FALSE(screen_share_icon->show_privacy_indicator());
-}
-
 TEST_F(VideoConferenceTrayTest, ToggleCameraButton) {
   base::HistogramTester histogram_tester;
   SetTrayAndButtonsVisible();
@@ -500,19 +474,6 @@ TEST_F(VideoConferenceTrayTest, ToggleMicrophoneButton) {
   EXPECT_FALSE(controller()->GetMicrophoneMuted());
   EXPECT_FALSE(audio_icon()->toggled());
   histogram_tester.ExpectBucketCount(kMicrophoneMuteHistogramName, true, 1);
-}
-
-TEST_F(VideoConferenceTrayTest, ClickScreenshareButton) {
-  base::HistogramTester histogram_tester;
-  SetTrayAndButtonsVisible();
-
-  EXPECT_EQ(controller()->stop_all_screen_share_count(), 0);
-  // Click the screen share button should trigger the screen access stop
-  // callback.
-  LeftClickOn(screen_share_icon());
-  histogram_tester.ExpectBucketCount(kStopScreenShareHistogramName, true, 1);
-
-  EXPECT_EQ(controller()->stop_all_screen_share_count(), 1);
 }
 
 TEST_F(VideoConferenceTrayTest, PrivacyIndicator) {
@@ -836,12 +797,6 @@ TEST_F(VideoConferenceTrayTest, MultiDisplayVideoConferenceTrayVisibility) {
   EXPECT_TRUE(secondary_microphone_icon);
   EXPECT_TRUE(secondary_microphone_icon->is_capturing());
   EXPECT_FALSE(secondary_microphone_icon->toggled());
-
-  auto* secondary_screen_share_icon =
-      GetSecondaryVideoConferenceTray()->screen_share_icon();
-  EXPECT_TRUE(secondary_screen_share_icon);
-  EXPECT_TRUE(secondary_screen_share_icon->is_capturing());
-  EXPECT_FALSE(secondary_screen_share_icon->toggled());
 }
 
 // Tests that privacy indicators update on secondary displays when a capture

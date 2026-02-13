@@ -1991,9 +1991,6 @@ BASE_FEATURE(kVcPortraitRelight, base::FEATURE_ENABLED_BY_DEFAULT);
 // conferencing portrait relighing models.
 BASE_FEATURE(kVcRelightingInferenceBackend, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This is only used as a way to disable stopAllScreenShare.
-BASE_FEATURE(kVcStopAllScreenShare, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable or disable the fake effects for ChromeOS video conferencing controls
 // UI. Only meaningful in the emulator.
 BASE_FEATURE(kVcControlsUiFakeEffects, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3294,11 +3291,6 @@ bool IsVideoConferenceEnabled() {
 
 bool IsBirchVideoConferenceSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kBirchVideoConferenceSuggestions);
-}
-
-bool IsStopAllScreenShareEnabled() {
-  return base::FeatureList::IsEnabled(kVcStopAllScreenShare) &&
-         IsVideoConferenceEnabled();
 }
 
 bool IsVcBackgroundReplaceEnabled() {

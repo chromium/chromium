@@ -310,23 +310,6 @@ void VideoConferenceManagerClientImpl::SetSystemMediaDeviceStatus(
   std::move(callback).Run(true);
 }
 
-void VideoConferenceManagerClientImpl::StopAllScreenShare() {
-  for (const auto& pair : id_to_webcontents_) {
-    auto* web_app =
-        content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
-            pair.second);
-    DCHECK(web_app)
-        << "WebContents with no corresponding VideoConferenceWebApp.";
-    if (web_app->state().is_capturing_screen) {
-      MediaCaptureDevicesDispatcher::GetInstance()
-          ->GetMediaStreamCaptureIndicator()
-          ->StopMediaCapturing(
-              pair.second,
-              MediaStreamCaptureIndicator::MediaType::kDisplayMedia);
-    }
-  }
-}
-
 void VideoConferenceManagerClientImpl::NotifyManager(
     crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) {
   auto callback = base::BindOnce([](bool success) {

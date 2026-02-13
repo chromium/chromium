@@ -479,11 +479,6 @@ bool VideoConferenceTrayController::GetMicrophoneMuted() {
          !pref_service->GetBoolean(prefs::kUserMicrophoneAllowed);
 }
 
-void VideoConferenceTrayController::StopAllScreenShare() {
-  CHECK(video_conference_manager_);
-  video_conference_manager_->StopAllScreenShare();
-}
-
 void VideoConferenceTrayController::GetMediaApps(
     base::OnceCallback<void(MediaApps)> ui_callback) {
   CHECK(video_conference_manager_);
@@ -779,12 +774,6 @@ void VideoConferenceTrayController::UpdateWithMediaState(
   if (state_.is_capturing_microphone != old_state.is_capturing_microphone) {
     for (auto& observer : observer_list_) {
       observer.OnMicrophoneCapturingStateChange(state_.is_capturing_microphone);
-    }
-  }
-
-  if (state_.is_capturing_screen != old_state.is_capturing_screen) {
-    for (auto& observer : observer_list_) {
-      observer.OnScreenSharingStateChange(state_.is_capturing_screen);
     }
   }
 

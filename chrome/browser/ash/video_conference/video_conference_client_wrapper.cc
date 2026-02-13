@@ -41,10 +41,6 @@ void VideoConferenceClientWrapper::SetSystemMediaDeviceStatus(
   cpp_client_->SetSystemMediaDeviceStatus(device, enabled, std::move(callback));
 }
 
-void VideoConferenceClientWrapper::StopAllScreenShare() {
-  cpp_client_->StopAllScreenShare();
-}
-
 VideoConferenceMediaState& VideoConferenceClientWrapper::state() {
   return state_;
 }

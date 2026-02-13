@@ -1552,11 +1552,6 @@ void CaptureModeController::SetSystemMediaDeviceStatus(
   }
 }
 
-void CaptureModeController::StopAllScreenShare() {
-  // Our screen recordings are not considered screen shares, and we already have
-  // the stop recording button, so this does nothing.
-}
-
 void CaptureModeController::OnPinnedStateChanged(aura::Window* pinned_window) {
   if (!Shell::Get()->screen_pinning_controller()->IsPinned()) {
     return;

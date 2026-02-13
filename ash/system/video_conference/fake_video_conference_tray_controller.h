@@ -40,7 +40,6 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   void SetMicrophoneMuted(bool muted) override;
   bool GetCameraMuted() override;
   bool GetMicrophoneMuted() override;
-  void StopAllScreenShare() override;
   VideoConferenceTrayEffectsManager& GetEffectsManager() override;
 
   void SetEffectsManager(VideoConferenceTrayEffectsManager* effects_manager);
@@ -65,7 +64,6 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   const crosapi::mojom::VideoConferenceClientUpdatePtr& last_client_update() {
     return last_client_update_;
   }
-  int stop_all_screen_share_count() { return stop_all_screen_share_count_; }
 
   const MediaApps& media_apps() { return media_apps_; }
 
@@ -79,9 +77,6 @@ class ASH_EXPORT FakeVideoConferenceTrayController
 
   // Indicates whether microphone is muted.
   bool microphone_muted_ = false;
-
-  // Record number of times StopAllScreenShare is called.
-  int stop_all_screen_share_count_ = 0;
 
   // Records calls of the HandleDeviceUsedWhileDisabled for testing.
   std::vector<

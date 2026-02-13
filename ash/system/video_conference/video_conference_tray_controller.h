@@ -61,9 +61,6 @@ class ASH_EXPORT VideoConferenceTrayController
     // Called when the state of microphone capturing is changed.
     virtual void OnMicrophoneCapturingStateChange(bool is_capturing) = 0;
 
-    // Called when the state of screen sharing is changed.
-    virtual void OnScreenSharingStateChange(bool is_capturing_screen) = 0;
-
     // Called when the Dlc download state is changed for `feature_tile_title` if
     // any DLC was registered for that effect.
     virtual void OnDlcDownloadStateChanged(
@@ -156,9 +153,6 @@ class ASH_EXPORT VideoConferenceTrayController
 
   // Gets the state for microphone mute. Virtual for testing/mocking.
   virtual bool GetMicrophoneMuted();
-
-  // Stops all screen sharing. Virtual for testing/mocking.
-  virtual void StopAllScreenShare();
 
   // Returns asynchronously a vector of media apps that will be displayed in the
   // "Return to app" panel of the bubble. Virtual for testing/mocking.

@@ -97,8 +97,6 @@ void VideoConferenceClientBase::SetSystemMediaDeviceStatus(
   }
 }
 
-void VideoConferenceClientBase::StopAllScreenShare() {}
-
 void VideoConferenceClientBase::HandleMediaUsageUpdate() {
   crosapi::mojom::VideoConferenceMediaUsageStatusPtr new_status =
       crosapi::mojom::VideoConferenceMediaUsageStatus::New();

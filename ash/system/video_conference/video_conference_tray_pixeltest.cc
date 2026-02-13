@@ -38,8 +38,7 @@ class VideoConferenceTrayPixelTest
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kVcStopAllScreenShare,
-                              features::kFeatureManagementVideoConference},
+        /*enabled_features=*/{features::kFeatureManagementVideoConference},
         /*disabled_features=*/{features::kVcBackgroundReplace});
 
     // Instantiates a fake controller (the real one is created in
@@ -102,7 +101,7 @@ TEST_P(VideoConferenceTrayPixelTest, BasicPixelTest) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_no_focus_not_toggled"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 1,
       video_conference_tray()));
 
   Shell::Get()->focus_cycler()->FocusWidget(
@@ -116,14 +115,14 @@ TEST_P(VideoConferenceTrayPixelTest, BasicPixelTest) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_audio_focused_not_toggled"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 1,
       video_conference_tray()));
 
   PressAndReleaseKey(ui::VKEY_RETURN);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_audio_focused_and_toggled"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 1,
       video_conference_tray()));
 
   // Un-toggle the audio icon, then focus the video icon.
@@ -132,26 +131,19 @@ TEST_P(VideoConferenceTrayPixelTest, BasicPixelTest) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_video_focused_not_toggled"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 1,
       video_conference_tray()));
 
   PressAndReleaseKey(ui::VKEY_RETURN);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_video_focused_and_toggled"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 1,
       video_conference_tray()));
 
   // Un-toggle the video icon, then focus the screen capture icon.
   PressAndReleaseKey(ui::VKEY_RETURN);
   PressAndReleaseKey(ui::VKEY_TAB);
-
-  // For screen capture, the button cannot be toggled.
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(
-          "video_conference_tray_screen_capture_focused_not_toggled"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
-      video_conference_tray()));
 
   // Focus the toggle button icon.
   PressAndReleaseKey(ui::VKEY_TAB);
@@ -159,14 +151,14 @@ TEST_P(VideoConferenceTrayPixelTest, BasicPixelTest) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "video_conference_tray_toggle_bubble_focused_not_toggled"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 1,
       video_conference_tray()));
 
   PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "video_conference_tray_toggle_bubble_focused_and_toggled"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 1,
       video_conference_tray()));
 }
 
@@ -182,29 +174,21 @@ TEST_P(VideoConferenceTrayPixelTest, VideoConferenceTrayIconStates) {
 
   auto* camera_icon = video_conference_tray()->camera_icon();
   auto* audio_icon = video_conference_tray()->audio_icon();
-  auto* screen_share_icon = video_conference_tray()->screen_share_icon();
 
   ASSERT_TRUE(video_conference_tray()->GetVisible());
   ASSERT_TRUE(camera_icon);
   ASSERT_TRUE(audio_icon);
-  ASSERT_TRUE(screen_share_icon);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "video_conference_tray_camera_icon_with_indicator"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 1,
       camera_icon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_audio_icon_with_indicator"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 1,
       audio_icon));
-
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(
-          "video_conference_tray_screen_share_icon_with_indicator"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
-      screen_share_icon));
 
   // Toggle to mute the icons.
   LeftClickOn(camera_icon);
@@ -215,12 +199,12 @@ TEST_P(VideoConferenceTrayPixelTest, VideoConferenceTrayIconStates) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_camera_icon_muted"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 1,
       camera_icon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_audio_icon_muted"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 1,
       audio_icon));
 
   // Toggle again to unmute.
@@ -233,12 +217,12 @@ TEST_P(VideoConferenceTrayPixelTest, VideoConferenceTrayIconStates) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_camera_icon"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 1,
       camera_icon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_audio_icon"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 1,
       audio_icon));
 }
 

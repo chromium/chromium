@@ -60,9 +60,6 @@ class VideoConferenceManagerBase {
       crosapi::mojom::VideoConferenceMediaDevice device,
       bool disabled) = 0;
 
-  // Stops all screen sharing.
-  virtual void StopAllScreenShare() = 0;
-
   // Called when CreateBackgroundImage button is clicked on.
   virtual void CreateBackgroundImage() = 0;
 

@@ -46,8 +46,6 @@ class FakeVideoConferenceManagerClient
       bool disabled,
       SetSystemMediaDeviceStatusCallback callback) override {}
 
-  void StopAllScreenShare() override {}
-
   base::UnguessableToken id_{base::UnguessableToken::Create()};
 };
 

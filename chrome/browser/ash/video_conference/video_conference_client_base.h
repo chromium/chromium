@@ -46,7 +46,6 @@ class VideoConferenceClientBase
       crosapi::mojom::VideoConferenceMediaDevice device,
       bool enabled,
       SetSystemMediaDeviceStatusCallback callback) override;
-  void StopAllScreenShare() override;
 
   // Calculates a new `crosapi::mojom::VideoConferenceMediaUsageStatus` from all
   // current VC apps and notifies the manager if a field has changed.
