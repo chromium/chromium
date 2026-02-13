@@ -166,6 +166,13 @@ component("main_function_params") {
   configs += [ "//content:content_implementation" ]
 }
 
+source_set("memory_consumer_update") {
+  sources = [ "memory_consumer_update.h" ]
+  public_deps = [ "//base" ]
+  deps = [ "//content:export" ]
+  configs += [ "//content:content_implementation" ]
+}
+
 source_set("common_sources") {
   # External code should depend on via ":common" above.
   visibility = [ "//content/*" ]
@@ -252,6 +259,7 @@ source_set("common_sources") {
   public_deps = [
     ":interfaces",
     ":main_function_params",
+    ":memory_consumer_update",
     ":renderer_type",
     ":result_codes",
     ":switches",

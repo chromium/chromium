@@ -4,14 +4,19 @@
 
 module content.mojom;
 
+// Represents a memory update for a consumer.
+// TODO(pmonette): Hash the consumer ID to avoid serializing so many strings.
+struct MemoryConsumerUpdate {
+  string consumer_id;
+  int32? percentage;
+  bool release_memory;
+};
+
 // The interface for communicating with the MemoryCoordinator in a child
 // process.
 interface ChildMemoryCoordinator {
-  // Notifies the consumer with `consumer_id` to release memory.
-  NotifyReleaseMemory(string consumer_id);
-
-  // Notifies the consumer with `consumer_id` of a new memory limit.
-  NotifyUpdateMemoryLimit(string consumer_id, int32 percentage);
+  // Notifies of multiple changes at once.
+  UpdateConsumers(array<MemoryConsumerUpdate> updates);
 };
 
 // This struct directly corresponds to base::MemoryConsumerTraits, from which it

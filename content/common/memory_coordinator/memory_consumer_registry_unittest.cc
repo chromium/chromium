@@ -96,7 +96,8 @@ TEST_F(MemoryConsumerRegistryTest, AddRemoveConsumer) {
 
   // Release memory propagation
   EXPECT_CALL(consumer, OnReleaseMemory());
-  entries().front().host->ReleaseMemory("consumer");
+  entries().front().host->UpdateConsumers(
+      {{std::string("consumer"), std::nullopt, true}});
   Mock::VerifyAndClearExpectations(&consumer);
 
   registry().RemoveMemoryConsumer("consumer", &consumer);
@@ -112,7 +113,8 @@ TEST_F(MemoryConsumerRegistryTest, InheritMemoryLimit) {
 
   const int kNewLimit = 50;
   EXPECT_CALL(consumer1, OnUpdateMemoryLimit());
-  entries().front().host->UpdateMemoryLimit("consumer", kNewLimit);
+  entries().front().host->UpdateConsumers(
+      {{std::string("consumer"), kNewLimit, false}});
   EXPECT_EQ(consumer1.memory_limit(), kNewLimit);
 
   // New consumer should inherit limit

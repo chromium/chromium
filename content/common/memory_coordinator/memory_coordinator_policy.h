@@ -30,7 +30,7 @@ class MemoryCoordinatorPolicyManager;
 // - Register themselves with the MemoryCoordinatorPolicyManager.
 // - Implement OnConsumerGroupAdded/Removed to track the consumers they are
 //   interested in.
-// - Use manager().UpdateMemoryLimit() to request memory constraints on specific
+// - Use manager().UpdateConsumers() to request memory constraints on specific
 //   consumer groups.
 class CONTENT_EXPORT MemoryCoordinatorPolicy {
  public:

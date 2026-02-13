@@ -152,16 +152,9 @@ void ChildMemoryConsumerRegistryHost::RunDisconnectHandler() {
   std::move(disconnect_handler_).Run();
 }
 
-void ChildMemoryConsumerRegistryHost::UpdateMemoryLimit(
-    std::string_view consumer_id,
-    int percentage) {
-  coordinator_remote_->NotifyUpdateMemoryLimit(std::string(consumer_id),
-                                               percentage);
-}
-
-void ChildMemoryConsumerRegistryHost::ReleaseMemory(
-    std::string_view consumer_id) {
-  coordinator_remote_->NotifyReleaseMemory(std::string(consumer_id));
+void ChildMemoryConsumerRegistryHost::UpdateConsumers(
+    std::vector<MemoryConsumerUpdate> updates) {
+  coordinator_remote_->UpdateConsumers(std::move(updates));
 }
 
 }  // namespace content

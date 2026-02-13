@@ -27,6 +27,18 @@ mojom_component("mojom") {
       traits_headers = [ "memory_consumer_traits_mojom_traits.h" ]
       traits_public_deps = [ "//base" ]
     },
+    {
+      types = [
+        {
+          mojom = "content.mojom.MemoryConsumerUpdate"
+          cpp = "::content::MemoryConsumerUpdate"
+          move_only = true
+        },
+      ]
+
+      traits_headers = [ "memory_coordinator_mojom_traits.h" ]
+      traits_public_deps = [ "//content/public/common:memory_consumer_update" ]
+    },
   ]
 }
 

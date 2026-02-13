@@ -71,19 +71,18 @@ MemoryConsumerRegistry::~MemoryConsumerRegistry() {
   CHECK(consumer_groups_.empty());
 }
 
-void MemoryConsumerRegistry::UpdateMemoryLimit(std::string_view consumer_id,
-                                               int percentage) {
-  auto it = consumer_groups_.find(consumer_id);
-  CHECK(it != consumer_groups_.end());
-
-  it->second->UpdateMemoryLimit(percentage);
-}
-
-void MemoryConsumerRegistry::ReleaseMemory(std::string_view consumer_id) {
-  auto it = consumer_groups_.find(consumer_id);
-  CHECK(it != consumer_groups_.end());
-
-  it->second->ReleaseMemory();
+void MemoryConsumerRegistry::UpdateConsumers(
+    std::vector<MemoryConsumerUpdate> updates) {
+  for (const auto& update : updates) {
+    auto it = consumer_groups_.find(update.consumer_id);
+    CHECK(it != consumer_groups_.end());
+    if (update.percentage) {
+      it->second->UpdateMemoryLimit(*update.percentage);
+    }
+    if (update.release_memory) {
+      it->second->ReleaseMemory();
+    }
+  }
 }
 
 void MemoryConsumerRegistry::OnMemoryConsumerAdded(

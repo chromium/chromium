@@ -7,6 +7,7 @@
 
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/sequence_checker.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy.h"
@@ -35,9 +36,7 @@ class BrowserMemoryCoordinatorBridge : public MemoryCoordinatorPolicy,
                               ChildProcessId child_process_id) override;
 
   // mojom::ChildMemoryCoordinator:
-  void NotifyReleaseMemory(const std::string& consumer_id) override;
-  void NotifyUpdateMemoryLimit(const std::string& consumer_id,
-                               int percentage) override;
+  void UpdateConsumers(std::vector<MemoryConsumerUpdate> updates) override;
 
   // Binds this policy to the browser registry host.
   mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost>

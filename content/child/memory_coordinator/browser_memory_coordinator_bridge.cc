@@ -4,7 +4,8 @@
 
 #include "content/child/memory_coordinator/browser_memory_coordinator_bridge.h"
 
-#include "base/check.h"
+#include <utility>
+
 #include "base/check_op.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 
@@ -44,22 +45,15 @@ void BrowserMemoryCoordinatorBridge::OnConsumerGroupRemoved(
   }
 }
 
-void BrowserMemoryCoordinatorBridge::NotifyReleaseMemory(
-    const std::string& consumer_id) {
+void BrowserMemoryCoordinatorBridge::UpdateConsumers(
+    std::vector<MemoryConsumerUpdate> updates) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (groups_.contains(consumer_id)) {
-    manager().ReleaseMemory(consumer_id, ChildProcessId());
-  }
-}
-
-void BrowserMemoryCoordinatorBridge::NotifyUpdateMemoryLimit(
-    const std::string& consumer_id,
-    int percentage) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (groups_.contains(consumer_id)) {
-    manager().UpdateMemoryLimit(this, consumer_id, ChildProcessId(),
-                                percentage);
-  }
+  // Ignore updates for consumers whose unregistration is in flight to the
+  // browser.
+  std::erase_if(updates, [&](const auto& update) {
+    return !groups_.contains(update.consumer_id);
+  });
+  manager().UpdateConsumers(this, std::move(updates));
 }
 
 mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost>

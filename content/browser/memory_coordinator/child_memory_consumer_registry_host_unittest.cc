@@ -38,12 +38,8 @@ using ::testing::Test;
 class MockChildMemoryCoordinator : public mojom::ChildMemoryCoordinator {
  public:
   MOCK_METHOD(void,
-              NotifyReleaseMemory,
-              (const std::string& consumer_id),
-              (override));
-  MOCK_METHOD(void,
-              NotifyUpdateMemoryLimit,
-              (const std::string& consumer_id, int percentage),
+              UpdateConsumers,
+              (std::vector<MemoryConsumerUpdate> updates),
               (override));
 };
 
@@ -129,7 +125,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, RegisterAndUnregister) {
   hosts_.clear();
 }
 
-TEST_F(ChildMemoryConsumerRegistryHostTest, NotifyReleaseMemory) {
+TEST_F(ChildMemoryConsumerRegistryHostTest, UpdateConsumers) {
   const ChildProcessId kChildId(1);
 
   MemoryConsumerGroupHost* host = nullptr;
@@ -152,8 +148,10 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, NotifyReleaseMemory) {
 
   ASSERT_TRUE(host);
 
-  EXPECT_CALL(mock_coordinator, NotifyReleaseMemory("consumer"));
-  host->ReleaseMemory("consumer");
+  EXPECT_CALL(mock_coordinator,
+              UpdateConsumers(testing::ElementsAre(
+                  MemoryConsumerUpdate{"consumer", 50, true})));
+  host->UpdateConsumers({{std::string("consumer"), 50, true}});
   coordinator_receiver.FlushForTesting();
 
   EXPECT_CALL(controller_, OnConsumerGroupRemoved(_, _));

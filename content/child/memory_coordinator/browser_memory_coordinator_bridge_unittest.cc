@@ -154,7 +154,7 @@ TEST_F(BrowserMemoryCoordinatorBridgeTest, BrowserNotification) {
   EXPECT_CALL(consumer, OnReleaseMemory()).WillOnce([&]() {
     release_memory_future.SetValue();
   });
-  registry_host->coordinator()->NotifyReleaseMemory("consumer");
+  registry_host->coordinator()->UpdateConsumers({{"consumer", 100, true}});
 
   // Wait for the Mojo call to reach the child and trigger the consumer.
   EXPECT_TRUE(release_memory_future.Wait());

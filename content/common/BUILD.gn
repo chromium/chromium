@@ -198,6 +198,7 @@ source_set("common") {
     ":mojo_bindings",
     "//cc",
     "//cc/ipc",
+    "//content/public/common:memory_consumer_update",
     "//content/public/common:switches",
     "//gpu/command_buffer/common",
     "//ipc",

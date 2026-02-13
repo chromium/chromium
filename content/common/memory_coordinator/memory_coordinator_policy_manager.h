@@ -16,12 +16,21 @@
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_consumer_group_controller.h"
 #include "content/public/common/child_process_id.h"
+#include "content/public/common/memory_consumer_update.h"
 #include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace content {
 
 class MemoryCoordinatorPolicy;
+
+// Represents a memory consumer update for a specific child process.
+struct GlobalMemoryConsumerUpdate {
+  ChildProcessId child_process_id;
+  MemoryConsumerUpdate update;
+
+  bool operator==(const GlobalMemoryConsumerUpdate&) const = default;
+};
 
 // Manages memory coordinator policies and aggregates their memory limit
 // requests for consumer groups, ensuring the most restrictive (lowest) limit is
@@ -55,31 +64,54 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   void OnConsumerGroupRemoved(std::string_view consumer_id,
                               ChildProcessId child_process_id) override;
 
-  // Called by policies to request actions on a consumer group.
-  void UpdateMemoryLimit(MemoryCoordinatorPolicy* policy,
-                         std::string_view consumer_id,
-                         ChildProcessId child_process_id,
-                         int percentage);
-  void ReleaseMemory(std::string_view consumer_id,
-                     ChildProcessId child_process_id);
+  // Called by policies to request actions on multiple consumer groups across
+  // potentially different child processes.
+  void UpdateConsumers(MemoryCoordinatorPolicy* policy,
+                       std::vector<GlobalMemoryConsumerUpdate> updates);
+
+  // Called by policies to request actions on multiple consumer groups for the
+  // current process.
+  void UpdateConsumers(MemoryCoordinatorPolicy* policy,
+                       std::vector<MemoryConsumerUpdate> updates);
 
   // For testing only. Notifies all registered consumer groups.
   void NotifyReleaseMemoryForTesting();
   void NotifyUpdateMemoryLimitForTesting(int percentage);
 
  private:
-  struct GroupState {
+  class GroupState {
+   public:
     GroupState(base::MemoryConsumerTraits traits, ProcessType process_type);
     ~GroupState();
 
-    base::MemoryConsumerTraits traits;
-    ProcessType process_type;
+    // Updates the limit requested by `policy`. Returns the new aggregate limit
+    // if it changed, or std::nullopt otherwise.
+    std::optional<int> SetMemoryLimitForPolicy(MemoryCoordinatorPolicy* policy,
+                                               int percentage);
+
+    // Removes the limit requested by `policy`. Returns the new aggregate limit
+    // if it changed, or std::nullopt otherwise.
+    std::optional<int> ClearMemoryLimitForPolicy(
+        MemoryCoordinatorPolicy* policy);
+
+    base::MemoryConsumerTraits traits() const { return traits_; }
+    ProcessType process_type() const { return process_type_; }
+    int current_limit() const { return current_limit_; }
+
+    void SetCurrentLimitForTesting(int limit) { current_limit_ = limit; }
+
+   private:
+    // Computes the memory limit based on existing policies.
+    int RecomputeMemoryLimit() const;
+
+    const base::MemoryConsumerTraits traits_;
+    const ProcessType process_type_;
 
     // The limit requested by each policy.
-    base::flat_map<MemoryCoordinatorPolicy*, int> requested_limits;
+    base::flat_map<MemoryCoordinatorPolicy*, int> requested_limits_;
 
     // The last memory limit that was applied to this group.
-    int current_limit = base::MemoryConsumer::kDefaultMemoryLimit;
+    int current_limit_ = base::MemoryConsumer::kDefaultMemoryLimit;
   };
 
   struct HostState {
@@ -90,9 +122,13 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     absl::flat_hash_map<std::string, std::unique_ptr<GroupState>> groups;
   };
 
-  // Computes the memory limit based on existing policies.
-  int RecomputeMemoryLimit(
-      const base::flat_map<MemoryCoordinatorPolicy*, int>& requested_limits);
+  HostState& GetHostState(ChildProcessId child_process_id);
+  GroupState& GetGroupState(HostState& host_state,
+                            std::string_view consumer_id);
+
+  void UpdateConsumersForProcess(MemoryCoordinatorPolicy* policy,
+                                 ChildProcessId child_process_id,
+                                 std::vector<MemoryConsumerUpdate> updates);
 
   base::flat_set<MemoryCoordinatorPolicy*> policies_;
 
