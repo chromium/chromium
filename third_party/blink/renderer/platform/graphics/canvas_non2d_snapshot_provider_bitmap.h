@@ -54,8 +54,7 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
         const cc::DrawImage& draw_image) override;
 
    private:
-    std::unique_ptr<cc::PlaybackImageProvider> playback_image_provider_n32_;
-    std::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
+    const CanvasSnapshotProvider::Info info_;
   };
 
   const CanvasSnapshotProvider::Info info_;

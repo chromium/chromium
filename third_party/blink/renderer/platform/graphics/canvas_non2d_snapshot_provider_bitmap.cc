@@ -11,22 +11,8 @@
 namespace blink {
 
 CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::ImageProviderImpl(
-    CanvasSnapshotProvider::Info info) {
-  cc::TargetColorParams target_color_params;
-  target_color_params.color_space = info.color_space;
-
-  playback_image_provider_n32_ = std::make_unique<cc::PlaybackImageProvider>(
-      &Image::SharedCCDecodeCache(kN32_SkColorType), target_color_params,
-      cc::PlaybackImageProvider::Settings());
-
-  // If the image provider may require to decode to half float instead of
-  // uint8, create a f16 PlaybackImageProvider.
-  if (info.format == viz::SinglePlaneFormat::kRGBA_F16) {
-    playback_image_provider_f16_.emplace(
-        &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType), target_color_params,
-        cc::PlaybackImageProvider::Settings());
-  }
-}
+    CanvasSnapshotProvider::Info info)
+    : info_(info) {}
 
 cc::ImageProvider::ScopedResult
 CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::GetRasterContent(
@@ -47,13 +33,20 @@ CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::GetRasterContent(
   // image, we need to sniff the image bit depth here to avoid double
   // decoding.
   ImageProvider::ScopedResult scoped_decoded_image;
-  if (playback_image_provider_f16_ &&
+  cc::TargetColorParams target_color_params;
+  target_color_params.color_space = info_.color_space;
+
+  if (info_.format == viz::SinglePlaneFormat::kRGBA_F16 &&
       draw_image.paint_image().is_high_bit_depth()) {
-    scoped_decoded_image =
-        playback_image_provider_f16_->GetRasterContent(draw_image);
+    cc::PlaybackImageProvider image_provider(
+        &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType), target_color_params,
+        cc::PlaybackImageProvider::Settings());
+    scoped_decoded_image = image_provider.GetRasterContent(draw_image);
   } else {
-    scoped_decoded_image =
-        playback_image_provider_n32_->GetRasterContent(draw_image);
+    cc::PlaybackImageProvider image_provider(
+        &Image::SharedCCDecodeCache(kN32_SkColorType), target_color_params,
+        cc::PlaybackImageProvider::Settings());
+    scoped_decoded_image = image_provider.GetRasterContent(draw_image);
   }
   return scoped_decoded_image;
 }
