@@ -22,7 +22,7 @@ export function getHtml(this: ContextualTasksAppElement) {
     </div>
   `}
   <webview id="threadFrame" allowtransparency="on" partition="persist:contextual-tasks"
-      aria-hidden="${this.isZeroState_}"></webview>
+      aria-hidden="${this.isZeroState_ && !this.isShownInTab_}"></webview>
   <ghost-loader id="ghostLoader"></ghost-loader>
   ${this.isErrorDialogVisible_ ?
     html`<contextual-tasks-error-dialog></contextual-tasks-error-dialog>` : ''}
