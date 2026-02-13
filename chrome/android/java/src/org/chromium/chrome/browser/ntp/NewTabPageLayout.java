@@ -158,7 +158,7 @@ public class NewTabPageLayout extends LinearLayout
     private boolean mMvtContentFits;
     private float mTransitionEndOffset;
     private boolean mIsTablet;
-    private Supplier<Integer> mTabStripHeightSupplier;
+    private @Nullable Supplier<Integer> mTabStripHeightSupplier;
     // This variable is only valid when the NTP surface is in tablet mode.
     private boolean mIsInMultiWindowModeOnTablet;
     private Callback<Logo> mOnLogoAvailableCallback;
@@ -729,7 +729,7 @@ public class NewTabPageLayout extends LinearLayout
         final float transitionLength =
                 mCurrentNtpFakeSearchBoxTransitionStartOffset + mTransitionEndOffset;
         // Tab strip height is zero on phones, and may vary on tablets.
-        int tabStripHeight = mTabStripHeightSupplier.get();
+        int tabStripHeight = mTabStripHeightSupplier != null ? mTabStripHeightSupplier.get() : 0;
 
         // When scrollY equals searchBoxTop + tabStripHeight -transitionStartOffset, it marks the
         // start point of the transition. When scrollY equals searchBoxTop plus transitionEndOffset
