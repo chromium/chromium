@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import {BrowserProxy, PageCallbackRouter, PageHandlerRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {PageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -20,13 +23,17 @@ class TestAimBrowserProxy {
   }
 }
 
+const FAKE_TOKEN_STRING = '00000000000000001234567890ABCDEF';
+
 suite('AimAppTest', function() {
   let testProxy: TestAimBrowserProxy;
+  let metrics: MetricsTracker;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestAimBrowserProxy();
     BrowserProxy.setInstance(testProxy as unknown as BrowserProxy);
+    metrics = fakeMetricsPrivate();
   });
 
   // TODO(crbug.com/479888362): Disabled by gardener due to failure without
@@ -96,6 +103,13 @@ suite('AimAppTest', function() {
     testProxy.page.onPopupHidden();
     await microtasksFinished();
     assertTrue(!app.$.composebox.getInputText());
+
+    // There's no search context being added when setting the input, therefore,
+    // no context added histogram should get recorded.
+    assertEquals(
+        0,
+        metrics.count(
+            'ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox'));
   });
 
   test('PlaysGlowAnimationOnShowByDefault', async function() {
@@ -146,5 +160,39 @@ suite('AimAppTest', function() {
     });
     await microtasksFinished();
     assertTrue(glowAnimationPlayed);
+  });
+
+  test('LogsMetricOnAddSearchContextWithAttachments', function() {
+    const app = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+
+    assertEquals(
+        0,
+        metrics.count(
+            'ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox'));
+
+    // Set context with attachments.
+    app.$.composebox.addSearchContext({
+      input: 'test input',
+      attachments: [{
+        fileAttachment: {
+          uuid: FAKE_TOKEN_STRING,
+          name: 'test.pdf',
+          mimeType: 'application/pdf',
+          imageDataUrl: null,
+        },
+      }],
+      toolMode: 0,
+    });
+
+    assertEquals(
+        1,
+        metrics.count(
+            'ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox'));
+    assertEquals(
+        1,
+        metrics.count(
+            'ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox',
+            ComposeboxContextAddedMethod.CONTEXT_MENU));
   });
 });
