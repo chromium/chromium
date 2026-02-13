@@ -134,11 +134,11 @@ UIColor* SelectionCircleColor() {
     [self setClipsToBounds:YES];
     [self addSubview:_arrowView];
 
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+    NSArray<UITrait>* traits = @[
       UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
       UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
       UITraitUserInterfaceLevel.class
-    ]);
+    ];
     __weak __typeof(self) weakSelf = self;
     UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                      UITraitCollection* previousCollection) {
