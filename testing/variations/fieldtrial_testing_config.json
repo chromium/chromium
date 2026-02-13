@@ -27585,6 +27585,26 @@
             ]
         }
     ],
+    "V8BytecodeVerification": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8Flag_verify_bytecode_light"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8CodeFlushing": [
         {
             "platforms": [
