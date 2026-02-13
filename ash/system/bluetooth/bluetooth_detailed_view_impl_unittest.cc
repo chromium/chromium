@@ -83,6 +83,8 @@ class BluetoothDetailedViewImplTest : public AshTestBase,
   }
 
   void TearDown() override {
+    // Released before widget due to dependency
+    bluetooth_detailed_view_ = nullptr;
     widget_.reset();
 
     AshTestBase::TearDown();
@@ -111,8 +113,7 @@ class BluetoothDetailedViewImplTest : public AshTestBase,
   std::unique_ptr<views::Widget> widget_;
   FakeBluetoothDetailedViewDelegate bluetooth_detailed_view_delegate_;
   FakeDetailedViewDelegate detailed_view_delegate_;
-  raw_ptr<BluetoothDetailedViewImpl, DanglingUntriaged>
-      bluetooth_detailed_view_ = nullptr;
+  raw_ptr<BluetoothDetailedViewImpl> bluetooth_detailed_view_ = nullptr;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
