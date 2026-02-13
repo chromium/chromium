@@ -253,7 +253,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     if FLAGS.chromedriver is None:
       # chromedriver flag is not specified. Install the chocolatey package.
       self.InstallChocolateyPackage(instance_name, 'chromedriver',
-                                    '74.0.3729.60')
+                                    '145.0.7632.67')
       self.RunCommand(
           instance_name, "copy %s %s" %
           (r"C:\ProgramData\chocolatey\lib\chromedriver\tools\chromedriver.exe",
@@ -282,8 +282,6 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
 
     # run the test
     args = subprocess.list2cmdline(args or [])
-    self._pythonExecutablePath[instance_name] = (
-        r'C:\ProgramData\chocolatey\lib\python\tools\python.exe')
     cmd = r'%s -u %s %s' % (self._pythonExecutablePath[instance_name],
                             file_name, args)
     return self.RunCommand(instance_name, cmd).decode()
@@ -361,8 +359,6 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     # get any output from stdout because the output is buffered. When this
     # happens it makes debugging really hard.
     args = subprocess.list2cmdline(args or [])
-    self._pythonExecutablePath[instance_name] = (
-        r'C:\ProgramData\chocolatey\lib\python\tools\python.exe')
     ui_test_cmd = r'%s -u %s %s' % (self._pythonExecutablePath[instance_name],
                                     file_name, args)
     cmd = (r'%s c:\cel\supporting_files\run_ui_test.py --timeout %s -- %s') % (
@@ -389,8 +385,6 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
   def EnableUITest(self, instance_name):
     """Configures the instance so that UI tests can be run on it."""
     self.InstallWebDriver(instance_name)
-    self.InstallChocolateyPackage(instance_name, 'chocolatey_core_extension',
-                                  '1.3.3')
     self.InstallChocolateyPackageLatest(instance_name, 'sysinternals')
     self.InstallPipPackagesLatest(instance_name,
                                   ['pywinauto', 'pyperclip', 'requests'])
