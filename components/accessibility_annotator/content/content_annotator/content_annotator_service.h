@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_ANNOTATOR_SERVICE_H_
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_ANNOTATOR_SERVICE_H_
 
+#include <string>
+
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
@@ -14,6 +17,12 @@
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "url/gurl.h"
+
+namespace optimization_guide {
+class ModelQualityLogEntry;
+class RemoteModelExecutor;
+struct OptimizationGuideModelExecutionResult;
+}  // namespace optimization_guide
 
 namespace translate {
 struct LanguageDetectionDetails;
@@ -31,7 +40,10 @@ class ContentAnnotatorService
       page_content_annotations::PageContentAnnotationsService&
           page_content_annotations_service,
       page_content_annotations::PageContentExtractionService&
-          page_content_extraction_service);
+          page_content_extraction_service,
+      optimization_guide::RemoteModelExecutor&
+          optimization_guide_remote_model_executor);
+
   ~ContentAnnotatorService() override;
 
   ContentAnnotatorService(const ContentAnnotatorService&) = delete;
@@ -70,13 +82,24 @@ class ContentAnnotatorService
   // annotation eligibility.
   void MaybeAnnotate(CacheIterator it);
 
-  // `ContentAnnotatorServiceFactory` uses a `DependsOn()` to guarantee that the
-  // `raw_ref`s below outlive `ContentAnnotatorService`.
+  // Generates annotations based on the provided `prompt`.
+  void GenerateAnnotations(std::string prompt);
+
+  // Handles the result of the model execution from `GenerateAnnotations`.
+  void HandleModelExecutionResult(
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
+  // `ContentAnnotatorServiceFactory` uses a `DependsOn()` to guarantee that
+  // the `raw_ref`s below outlive `ContentAnnotatorService`.
   const raw_ref<page_content_annotations::PageContentAnnotationsService>
       page_content_annotations_service_;
 
   const raw_ref<page_content_annotations::PageContentExtractionService>
       page_content_extraction_service_;
+
+  const raw_ref<optimization_guide::RemoteModelExecutor>
+      optimization_guide_remote_model_executor_;
 
   base::ScopedObservation<
       page_content_annotations::PageContentExtractionService,
@@ -93,6 +116,8 @@ class ContentAnnotatorService
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<ContentAnnotatorService> weak_ptr_factory_{this};
 };
 
 }  // namespace accessibility_annotator

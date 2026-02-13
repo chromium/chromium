@@ -2,6 +2,7 @@ include_rules = [
   "+components/history/core/browser",
   "+components/keyed_service/core",
   "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
   "+components/page_content_annotations/content",
   "+components/page_content_annotations/core",
   "+components/translate/core",

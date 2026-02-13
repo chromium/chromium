@@ -12,6 +12,7 @@
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
@@ -44,7 +45,8 @@ class ContentAnnotatorServiceTest : public testing::Test {
                 &optimization_guide_model_provider_,
                 &history_service_)),
         service_(*page_content_annotations_service_,
-                 page_content_extraction_service_) {}
+                 page_content_extraction_service_,
+                 mock_remote_model_executor_) {}
   ~ContentAnnotatorServiceTest() override = default;
 
  protected:
@@ -57,6 +59,7 @@ class ContentAnnotatorServiceTest : public testing::Test {
       page_content_extraction_service_;
   std::unique_ptr<page_content_annotations::TestPageContentAnnotationsService>
       page_content_annotations_service_;
+  optimization_guide::MockRemoteModelExecutor mock_remote_model_executor_;
   ContentAnnotatorService service_;
 };
 

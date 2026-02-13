@@ -5,6 +5,8 @@
 #include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_service_factory.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -52,6 +54,13 @@ class ContentAnnotatorServiceFactoryTest : public testing::Test {
                   page_content_annotations::PageContentExtractionService>(
                   /*os_crypt_async=*/nullptr, context->GetPath(),
                   /*tracker=*/nullptr);
+            }));
+    OptimizationGuideKeyedServiceFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            browser_context,
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<MockOptimizationGuideKeyedService>();
             }));
   }
 

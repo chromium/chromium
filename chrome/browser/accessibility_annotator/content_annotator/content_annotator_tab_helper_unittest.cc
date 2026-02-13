@@ -12,6 +12,7 @@
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -27,9 +28,12 @@ class MockContentAnnotatorService : public ContentAnnotatorService {
       page_content_annotations::PageContentAnnotationsService&
           page_content_annotations_service,
       page_content_annotations::PageContentExtractionService&
-          page_content_extraction_service)
+          page_content_extraction_service,
+      optimization_guide::RemoteModelExecutor&
+          optimization_guide_remote_model_executor)
       : ContentAnnotatorService(page_content_annotations_service,
-                                page_content_extraction_service) {}
+                                page_content_extraction_service,
+                                optimization_guide_remote_model_executor) {}
   ~MockContentAnnotatorService() override = default;
 
   MOCK_METHOD(void,
@@ -55,7 +59,7 @@ class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
     mock_service_ =
         std::make_unique<testing::StrictMock<MockContentAnnotatorService>>(
             *page_content_annotations_service_,
-            *page_content_extraction_service);
+            *page_content_extraction_service, mock_remote_model_executor_);
 
     tab_interface_ = std::make_unique<tabs::MockTabInterface>();
     EXPECT_CALL(*tab_interface_, GetContents())
@@ -80,6 +84,7 @@ class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
   history::HistoryService history_service_;
   optimization_guide::TestOptimizationGuideModelProvider
       optimization_guide_model_provider_;
+  optimization_guide::MockRemoteModelExecutor mock_remote_model_executor_;
   std::unique_ptr<page_content_annotations::TestPageContentAnnotationsService>
       page_content_annotations_service_;
   std::unique_ptr<MockContentAnnotatorService> mock_service_;
