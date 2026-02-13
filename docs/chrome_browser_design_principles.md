@@ -139,7 +139,7 @@ integrates with `TabFeatures::GetUserDataFactory()`.
     `GetUserDataFactory().CreateInstance<...>()`.
     *   This automatically manages the lifetime of the object and allows it to
         be accessed via `TabInterface::GetUnownedUserDataHost()`.
-    *   The impl uses the unowned user data pattern to to expose the class
+    *   The impl uses the unowned user data pattern to expose the class
         instance via the static `CommerceUiTabHelper::From(TabInterface*)`.
 *   **Modular BUILD.gn:** It lives in its own directory
     `chrome/browser/ui/commerce/BUILD.gn`
@@ -217,7 +217,7 @@ strip.
     using `GetUserDataFactory().CreateInstance<...>()`.
     *   This automatically manages the lifetime of the object and allows it to
         be accessed via `BrowserWindowInterface::GetUnownedUserDataHost()`
-    *   The impl uses the unowned user data pattern to to expose the class
+    *   The impl uses the unowned user data pattern to expose the class
         instance via the static
         `VerticalTabStripStateController::From(BrowserWindowInterface*)`.
 *   **Modular BUILD.gn:** It has a modular build setup in
@@ -258,7 +258,7 @@ All features should be logically grouped in the directory structure with
 well-defined API surfaces. Dependencies should be injected during construction.
 
 Modularity has many positive externalities:
-* Smaller, co-located logical units reduces cognitive complexity in
+* Smaller, co-located logical units reduce cognitive complexity in
   understanding and modifying the code base.
 * Separation of interface from implementation prevents tight coupling between
   features. This in turn reduces spooky action at a distance, where seemingly
@@ -293,7 +293,7 @@ Requirements:
       is an example of a feature with logical circular dependencies.
         * The header files are moved into a "cookie_controls" target with no
           circular dependencies.
-        * The cc files are moved into a "impl" target, with circular
+        * The cc files are moved into an "impl" target, with circular
           dependencies allowed with `//chrome/browser:browser` and
           `//chrome/browser/ui:ui`. These circular dependencies will
           disappear when all sources are removed from `//chrome/browser:browser` and `//chrome/browser/ui:ui`.
@@ -308,7 +308,7 @@ Requirements:
     * [Lens
       overlay](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/lens/BUILD.gn;drc=8e2c1c747f15a93c55ab2f10ebc8b32801ba129e)
       is an example with *almost* no circular dependencies.
-        * It has a logical circular dependency on `//chrome/browser/browser/ui:ui`,
+        * It has a logical circular dependency on `//chrome/browser/ui:ui`,
           which will no longer be necessary once NTP is also modularized (crbug.com/382237520).
         * The BUILD.gn should use public/sources separation.
             * The main reason for this is to guard against future, unexpected usage
@@ -413,7 +413,7 @@ FooFeature::DoStuff() { DoStuffWith(prefs_); }
 ```cpp
 // Properly scoped state avoids categories of bugs and subtle issues. For
 // example: one common mistake is to store window-scoped state on a tab-scoped
-// object. This results in subtle bugs (or crashes) when tab is dragged into a
+// object. This results in subtle bugs (or crashes) when a tab is dragged into a
 // new window.
 
 // Do not do this:
@@ -647,7 +647,7 @@ control flows, which often leads to incorrect handling of one.
 Avoid the following:
 ```cpp
 if (result.cached) {
-  RunCallbackSync())
+  RunCallbackSync()
 } else {
   GetResultAndRunCallbackAsync()
 }
