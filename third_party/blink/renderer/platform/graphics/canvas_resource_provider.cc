@@ -726,15 +726,15 @@ bool CanvasNon2DResourceProviderSharedImage::OverwriteImage(
   }
 
   EndWriteAccess();
-  auto access = WillDrawInternal();
+  auto dst_access = WillDrawInternal();
 
   auto dst_client_si = resource()->GetClientSharedImage();
   if (!dst_client_si) {
-    resource()->EndAccess(std::move(access));
+    resource()->EndAccess(std::move(dst_access));
     return false;
   }
 
-  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+  std::unique_ptr<gpu::RasterScopedAccess> src_access =
       shared_image->BeginRasterAccess(raster, ready_sync_token,
                                       /*readonly=*/true);
   raster->CopySharedImage(shared_image->mailbox(), dst_client_si->mailbox(),
@@ -742,8 +742,8 @@ bool CanvasNon2DResourceProviderSharedImage::OverwriteImage(
                           /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
                           copy_rect.width(), copy_rect.height());
   completion_sync_token =
-      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
-  resource()->EndAccess(std::move(access));
+      gpu::RasterScopedAccess::EndAccess(std::move(src_access));
+  resource()->EndAccess(std::move(dst_access));
   return true;
 }
 
