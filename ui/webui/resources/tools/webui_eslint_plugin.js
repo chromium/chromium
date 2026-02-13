@@ -24,6 +24,42 @@ const POLYMER_IMPORT_REGEX = [
 const LIT_IMPORT_REGEX =
     ['resources', 'lit', 'v3_0', 'lit.rollup.js$'].join('\\u002F');
 
+const CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR =
+    'CallExpression[callee.name=/Mixin$/][arguments.0.name="CrLitElement"]';
+
+function isCrLitElementSubclass(node, programNode) {
+  assert.ok(node.type === 'ClassDeclaration');
+
+  if (!node.superClass) {
+    return false;
+  }
+
+  if (node.superClass.type === 'Identifier') {
+    if (node.superClass.name === 'CrLitElement') {
+      // Case1: 'MyElement extends CrLitElement {...}'
+      return true;
+    }
+
+    // Case2:
+    // const MyElementBase = SomeMixin(CrLitElement);
+    // MyElement extends MyElementBase {...}'
+    const baseClassSelector = esquery.parse(
+        `Program > VariableDeclaration > VariableDeclarator[id.name="${
+            node.superClass.name}"] ${CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR}`);
+    const matchingNodes = esquery.match(programNode, baseClassSelector);
+    return matchingNodes.length > 0;
+  }
+
+  if (node.superClass.type === 'CallExpression') {
+    // Case3: 'MyElement extends SomeMixin(SomeOtherMixin((CrLitElement)) {...}'
+    const selector = esquery.parse(CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR);
+    const matchingNodes = esquery.match(node.superClass, selector);
+    return matchingNodes.length > 0;
+  }
+
+  return false;
+}
+
 const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
   name: 'lit-element-structure',
   meta: {
@@ -34,6 +70,8 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
       recommended: 'error',
     },
     messages: {
+      incorrectClassName:
+          'CrLitElement subclass {{className}} should end with the \'Element\' suffix.',
       incorrectMethodDefinitionOrder:
           'Inconsistent method definition order in class {{className}}. Expected [{{expectedOrder}}], found [{{actualOrder}}].',
       missingSuperCalls:
@@ -109,17 +147,22 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
       }
 
       visitClassDeclaration(node) {
-        if (!node.id.name.includes('Element') || node.superClass === null) {
+        this.isLitElement =
+            isCrLitElementSubclass(node, context.sourceCode.ast);
+        if (!this.isLitElement) {
           return;
         }
 
-        if (node.superClass.type === 'Identifier' &&
-            (node.superClass.name.match(NATIVE_HTML_SUBCLASS_REGEX) ||
-             node.superClass.name === 'TestBrowserProxy')) {
-          return;
+        if (!node.id.name.endsWith('Element')) {
+          context.report({
+            node: node,
+            messageId: 'incorrectClassName',
+            data: {
+              className: node.id.name,
+            },
+          });
         }
 
-        this.isLitElement = true;
         this.node = node;
       }
 

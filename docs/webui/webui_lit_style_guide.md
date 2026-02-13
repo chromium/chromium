@@ -50,13 +50,16 @@ customElements.define(MyButtonElement.is, MyButtonElement);
 
 Specifically the following pieces are required:
 
- 1. `static get is() {...}` holds the DOM name of the custom element.
- 2. `interface HTMLElementTagNameMap {...}` informs the TypeScript compiler
+ 1. The class name should end with the `Element` suffix, which matches the
+    naming of native HTML elements (for example `HTMLButtonElement`), and
+    clearly conveys that a class is a UI component.
+ 2. `static get is() {...}` holds the DOM name of the custom element.
+ 3. `interface HTMLElementTagNameMap {...}` informs the TypeScript compiler
      about the association between the DOM name and the class name, allowing it
      to infer the type in `document.createElement` or `querySelector`,
      `querySelectorAll` calls. Must be placed after the class definition in the
      same file.
- 3. `customElements.define(...)` registers the custom element at runtime, so
+ 4. `customElements.define(...)` registers the custom element at runtime, so
      that the browser knows which class to instantiate when encountering the
      corresponding DOM name. Must be placed after the class definition in the
      same file.

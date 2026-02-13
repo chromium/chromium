@@ -241,6 +241,7 @@ class EslintTsTest(unittest.TestCase):
     self.assertTrue(_EXPECTED_STRING in str(context.exception))
 
     _EXPECTED_INCONSISTENT_METHOD_DEFINITION_ORDER_ERROR = "Inconsistent method definition order in class %(className)s. Expected %(expectedOrder)s, found %(actualOrder)s"
+    _EXPECTED_INCORRECT_CLASS_NAME_ERROR = 'CrLitElement subclass %(className)s should end with the \'Element\' suffix'
     _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR = "Missing customElements.define(%(className)s.is, %(className)s) call"
     _EXPECTED_MISSING_STATIC_GET_IS_ERROR = "Missing 'static get is() {...}' for web component class %(className)s"
     _EXPECTED_MISSING_SUPER_CALLS_ERROR = "Missing superclass calls for lifecycle method(s) %(lifecycleMethods)s in class %(className)s"
@@ -252,43 +253,55 @@ class EslintTsTest(unittest.TestCase):
 
     # The following strings *should* appear in the error output.
     errors = [
-        # Case1
+        # Case 1.1
         _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
-            'className': 'SomeElement1'
+            'className': 'TestError1Element',
         },
         _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
-            'className': 'SomeElement1'
+            'className': 'TestError1Element',
         },
-        # Case2
+        # Case 1.2
         _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR % {
-            'className': 'SomeElement2',
-            'domName': 'some-element2'
+            'className': 'TestError2Element',
+            'domName': 'test-error2'
         },
         _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
-            'className': 'SomeElement2'
+            'className': 'TestError2Element',
         },
-        # Case3
+        # Case 1.3
         _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
-            'className': 'SomeElement3'
+            'className': 'TestError3Element',
         },
-        # Case4
+        # Case 1.4
         _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR % {
-            'className': 'SomeElement4',
-            'domName': 'some-element4'
+            'className': 'TestError4Element',
+            'domName': 'test-error4',
         },
-        # Case5
+        # Case 1.5
         _EXPECTED_MISSING_SUPER_CALLS_ERROR % {
-            'className': 'SomeElement5',
-            'lifecycleMethods': ', '.join(super_call_required_methods)
+            'className': 'TestError5Element',
+            'lifecycleMethods': ', '.join(super_call_required_methods),
         },
-        # Case6
+        # Case 1.6
         _EXPECTED_INCONSISTENT_METHOD_DEFINITION_ORDER_ERROR % {
             'className':
-                'SomeElement6',
+                'TestError6Element',
             'expectedOrder':
                 '[is, styles, render, properties, constructor, connectedCallback, disconnectedCallback, willUpdate, firstUpdated, updated]',
             'actualOrder':
                 '[render, styles, is, properties, disconnectedCallback, connectedCallback, constructor, willUpdate, updated, firstUpdated]',
+        },
+        # Case 1.7
+        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+            'className': 'TestError7ElementFoo',
+        },
+        # Case 1.8
+        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+            'className': 'TestError8ElementFoo',
+        },
+        # Case 1.9
+        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+            'className': 'TestError9ElementFoo',
         },
     ]
     for e in errors:
@@ -297,58 +310,71 @@ class EslintTsTest(unittest.TestCase):
 
     # The following strings *should not* appear in the error output.
     non_errors = [
-        # Case7
+        # Case 2.1
         _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
-            'className': 'SomeElement7'
+            'className': 'TestNoError1Element'
         },
         _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR % {
-            'className': 'SomeElement7',
-            'domName': 'some-element7'
+            'className': 'TestNoError1Element',
+            'domName': 'test-no-error1',
         },
         _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
-            'className': 'SomeElement7'
+            'className': 'TestNoError1Element'
         },
         _EXPECTED_MISSING_SUPER_CALLS_ERROR % {
-            'className': 'SomeElement7',
+            'className': 'TestNoError1Element',
             'lifecycleMethods': ', '.join(super_call_required_methods)
         },
-        # Case8
+        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+            'className': 'TestNoError1Element',
+        },
+        # Case 2.2
         _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
-            'className': 'SomeElement8'
+            'className': 'TestNoError2Element'
         },
         _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR % {
-            'className': 'SomeElement8',
-            'domName': 'some-element8'
+            'className': 'TestNoError2Element',
+            'domName': 'test-no-error2',
         },
         _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
-            'className': 'SomeElement8'
+            'className': 'TestNoError2Element'
         },
         _EXPECTED_MISSING_SUPER_CALLS_ERROR % {
-            'className': 'SomeElement8',
-            'lifecycleMethods': ', '.join(super_call_required_methods)
+            'className': 'TestNoError2Element',
+            'lifecycleMethods': ', '.join(super_call_required_methods),
         },
-        # Case9
+        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+            'className': 'TestNoError2Element',
+        },
+        # Case 2.3
         _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
-            'className': 'SomeElement9'
+            'className': 'TestNoError3Element',
         },
         _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR % {
-            'className': 'SomeElement9',
-            'domName': 'some-element9'
+            'className': 'TestNoError3Element',
+            'domName': 'test-no-error3',
         },
         _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
-            'className': 'SomeElement9'
+            'className': 'TestNoError3Element',
         },
         _EXPECTED_MISSING_SUPER_CALLS_ERROR % {
-            'className': 'SomeElement9',
+            'className': 'TestNoError3Element',
             'lifecycleMethods': ', '.join(super_call_required_methods)
         },
         _EXPECTED_INCONSISTENT_METHOD_DEFINITION_ORDER_ERROR % {
             'className':
-                'SomeElement9',
+                'TestNoError3Element',
             'expectedOrder':
                 '[is, styles, render, properties, constructor, connectedCallback, disconnectedCallback, willUpdate, firstUpdated, updated]',
             'actualOrder':
                 '',
+        },
+        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+            'className': 'TestNoError3Element',
+        },
+        # Case 2.4
+        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+            'className': 'TestNoError4Element',
         },
     ]
     for e in non_errors:
