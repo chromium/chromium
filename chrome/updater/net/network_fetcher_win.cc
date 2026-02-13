@@ -71,7 +71,7 @@ std::optional<int> GetNetworkConnectivityCostHint() {
     VLOG(1) << "GetNetworkConnectivityHint failed with status " << status;
     return std::nullopt;
   }
-  return static_cast<int>(connectivity_hint.ConnectivityCost);
+  return std::to_underlying(connectivity_hint.ConnectivityCost);
 }
 
 // Factory method for the proxy configuration strategy.

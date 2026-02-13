@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -138,7 +139,7 @@ void RemoveAppIDsAndSendUninstallPings(
 
   for (const PingInfo& app_to_remove : app_ids_to_remove) {
     const std::string& app_id = app_to_remove.app_id_;
-    const int ping_reason = static_cast<int>(app_to_remove.ping_reason_);
+    const int ping_reason = std::to_underlying(app_to_remove.ping_reason_);
     if (remove_app.Run(app_to_remove)) {
       VLOG(1) << "Uninstall ping for app id: " << app_id
               << ". Ping reason: " << ping_reason;

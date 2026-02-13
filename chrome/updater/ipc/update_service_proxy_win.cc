@@ -764,7 +764,7 @@ class UpdateServiceProxyImplImpl
                                                           std::move(callback));
     if (interface2_) {
       HRESULT hr = interface2_->CheckForUpdate2(
-          app_id_w.c_str(), static_cast<int>(priority),
+          app_id_w.c_str(), std::to_underlying(priority),
           policy_same_version_update ==
               UpdateService::PolicySameVersionUpdate::kAllowed,
           language_w.c_str(), observer.Get());
@@ -776,7 +776,7 @@ class UpdateServiceProxyImplImpl
       }
     } else {
       HRESULT hr = get_interface()->CheckForUpdate(
-          app_id_w.c_str(), static_cast<int>(priority),
+          app_id_w.c_str(), std::to_underlying(priority),
           policy_same_version_update ==
               UpdateService::PolicySameVersionUpdate::kAllowed,
           observer.Get());
@@ -832,7 +832,7 @@ class UpdateServiceProxyImplImpl
     if (interface2_) {
       HRESULT hr = interface2_->Update2(
           app_id_w.c_str(), install_data_index_w.c_str(),
-          static_cast<int>(priority),
+          std::to_underlying(priority),
           policy_same_version_update ==
               UpdateService::PolicySameVersionUpdate::kAllowed,
           language_w.c_str(), observer.Get());
@@ -844,7 +844,7 @@ class UpdateServiceProxyImplImpl
     } else {
       HRESULT hr = get_interface()->Update(
           app_id_w.c_str(), install_data_index_w.c_str(),
-          static_cast<int>(priority),
+          std::to_underlying(priority),
           policy_same_version_update ==
               UpdateService::PolicySameVersionUpdate::kAllowed,
           observer.Get());
@@ -951,8 +951,8 @@ class UpdateServiceProxyImplImpl
           app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
           ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
           client_install_data_w.c_str(), install_data_index_w.c_str(),
-          install_id_w.c_str(), static_cast<int>(priority), language_w.c_str(),
-          observer.Get());
+          install_id_w.c_str(), std::to_underlying(priority),
+          language_w.c_str(), observer.Get());
       if (FAILED(hr)) {
         VLOG(2) << "Failed to call IUpdater2::Install2: " << std::hex << hr;
         observer->Disconnect().Run(base::unexpected(hr));
@@ -963,7 +963,7 @@ class UpdateServiceProxyImplImpl
           app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
           ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
           client_install_data_w.c_str(), install_data_index_w.c_str(),
-          static_cast<int>(priority), observer.Get());
+          std::to_underlying(priority), observer.Get());
       if (FAILED(hr)) {
         VLOG(2) << "Failed to call IUpdater::Install: " << std::hex << hr;
         observer->Disconnect().Run(base::unexpected(hr));

@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_CONSTANTS_H_
 
 #include <optional>
+#include <utility>
 
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -338,10 +339,10 @@ inline constexpr double kProbabilityOfIncreasedDelay = 0.1;
 // Windows.
 #if BUILDFLAG(IS_WIN)
 inline constexpr int kCustomInstallErrorBase =
-    static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE) + 74000;
+    std::to_underlying(update_client::InstallError::CUSTOM_ERROR_BASE) + 74000;
 #else
 inline constexpr int kCustomInstallErrorBase =
-    static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE);
+    std::to_underlying(update_client::InstallError::CUSTOM_ERROR_BASE);
 #endif
 
 // Running the application installer failed.

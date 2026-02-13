@@ -75,7 +75,7 @@ class AppInstallControllerImpl : public AppInstallController {
                              tag_args ? tag_args->language : "",
                              base::DoNothing(),
                              base::BindOnce([](UpdateService::Result result) {
-                               return static_cast<int>(result);
+                               return std::to_underlying(result);
                              }).Then(std::move(callback)));
   }
 

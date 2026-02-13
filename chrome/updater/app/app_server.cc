@@ -82,7 +82,7 @@ base::OnceClosure AppServer::ModeCheck() {
 
 #if BUILDFLAG(IS_WIN)
     return base::BindOnce(&AppServer::Shutdown, this,
-                          static_cast<int>(UpdateService::Result::kInactive));
+                          std::to_underlying(UpdateService::Result::kInactive));
 #else
     return base::BindOnce(&AppServer::ActiveDuty, this,
                           MakeInactiveUpdateService());
@@ -103,8 +103,9 @@ base::OnceClosure AppServer::ModeCheck() {
       }
 
 #if BUILDFLAG(IS_WIN)
-      return base::BindOnce(&AppServer::Shutdown, this,
-                            static_cast<int>(UpdateService::Result::kInactive));
+      return base::BindOnce(
+          &AppServer::Shutdown, this,
+          std::to_underlying(UpdateService::Result::kInactive));
 #else
       return base::BindOnce(&AppServer::ActiveDuty, this,
                             MakeInactiveUpdateService());

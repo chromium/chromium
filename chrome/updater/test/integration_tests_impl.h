@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -70,7 +71,7 @@ struct AppUpdateExpectation {
                        bool always_serve_crx = false,
                        const UpdateService::ErrorCategory error_category =
                            UpdateService::ErrorCategory::kService,
-                       const int error_code = static_cast<int>(
+                       const int error_code = std::to_underlying(
                            UpdateService::Result::kUpdateCanceled),
                        const int event_type = /*EVENT_UPDATE_COMPLETE=*/3,
                        const std::string& custom_app_response = {},

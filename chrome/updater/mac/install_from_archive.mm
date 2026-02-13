@@ -145,7 +145,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
                   const base::FilePath& unpacked_path) {
   if (!base::PathExists(unpacked_path)) {
     VLOG(1) << "File path (" << unpacked_path << ") does not exist.";
-    return static_cast<int>(InstallErrors::kMountedDmgPathDoesNotExist);
+    return std::to_underlying(InstallErrors::kMountedDmgPathDoesNotExist);
   }
   int run_executables = 0;
   for (const char* executable : {
@@ -164,7 +164,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
     if (!IsInstallScriptExecutable(executable_file_path)) {
       VLOG(1) << "Executable file path (" << executable_file_path
               << ") is not executable";
-      return static_cast<int>(InstallErrors::kExecutablePathNotExecutable);
+      return std::to_underlying(InstallErrors::kExecutablePathNotExecutable);
     }
 
     base::CommandLine command(executable_file_path);
@@ -189,7 +189,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
       int pipefds[2] = {};
       if (pipe(pipefds) != 0) {
         VPLOG(1) << "pipe";
-        return static_cast<int>(InstallErrors::kExecutablePipeFailed);
+        return std::to_underlying(InstallErrors::kExecutablePipeFailed);
       }
       read_fd.reset(pipefds[0]);
       write_fd.reset(pipefds[1]);
@@ -221,7 +221,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
     VLOG(1) << "Running " << command.GetCommandLineString();
     const base::Process proc = base::LaunchProcess(command, options);
     if (!proc.IsValid()) {
-      return static_cast<int>(InstallErrors::kExecutableWaitForExitFailed);
+      return std::to_underlying(InstallErrors::kExecutableWaitForExitFailed);
     }
 
     // Close write_fd to generate EOF in the read loop below.
@@ -265,7 +265,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
     if (!proc.WaitForExitWithTimeout(
             std::max(deadline - base::Time::Now(), base::TimeDelta()),
             &exit_code)) {
-      return static_cast<int>(InstallErrors::kExecutableWaitForExitFailed);
+      return std::to_underlying(InstallErrors::kExecutableWaitForExitFailed);
     }
     if (exit_code != 0) {
       return exit_code;
@@ -274,7 +274,8 @@ int RunExecutable(const base::FilePath& existence_checker_path,
   }
   return run_executables > 0
              ? 0
-             : static_cast<int>(InstallErrors::kExecutableFilePathDoesNotExist);
+             : std::to_underlying(
+                   InstallErrors::kExecutableFilePathDoesNotExist);
 }
 
 void CopyDMGContents(const base::FilePath& dmg_path,
@@ -318,12 +319,12 @@ int InstallFromDMG(const base::FilePath& dmg_file_path,
                    base::OnceCallback<int(const base::FilePath&)> install) {
   std::string mount_point;
   if (!MountDMG(dmg_file_path, &mount_point)) {
-    return static_cast<int>(InstallErrors::kFailMountDmg);
+    return std::to_underlying(InstallErrors::kFailMountDmg);
   }
 
   if (mount_point.empty()) {
     VLOG(1) << "No mount point.";
-    return static_cast<int>(InstallErrors::kNoMountPoint);
+    return std::to_underlying(InstallErrors::kNoMountPoint);
   }
   const base::FilePath mounted_dmg_path = base::FilePath(mount_point);
   const int result = std::move(install).Run(mounted_dmg_path);
@@ -349,7 +350,7 @@ int InstallFromDir(const base::FilePath& dir,
                    base::OnceCallback<int(const base::FilePath&)> install) {
   // Update permissions on files in the directory.
   if (!SetFilePermissionsRecursive(dir)) {
-    return static_cast<int>(InstallErrors::kCouldNotConfirmAppPermissions);
+    return std::to_underlying(InstallErrors::kCouldNotConfirmAppPermissions);
   }
 
   return std::move(install).Run(dir.BaseName().value() ==
@@ -367,13 +368,13 @@ int InstallFromApp(const base::FilePath& app_file_path,
   if (!base::PathExists(app_file_path) ||
       app_file_path.FinalExtension() != ".app") {
     VLOG(1) << "Path to the app does not exist!";
-    return static_cast<int>(InstallErrors::kNotSupportedInstallerType);
+    return std::to_underlying(InstallErrors::kNotSupportedInstallerType);
   }
 
   // Need to make sure that the app at the path being installed has the correect
   // permissions.
   if (!SetFilePermissionsRecursive(app_file_path)) {
-    return static_cast<int>(InstallErrors::kCouldNotConfirmAppPermissions);
+    return std::to_underlying(InstallErrors::kCouldNotConfirmAppPermissions);
   }
 
   return std::move(install).Run(app_file_path.DirName());
@@ -400,7 +401,7 @@ int InstallFromArchive(const base::FilePath& file_path,
   auto handler = handlers.find(file_path.Extension());
   if (handler == handlers.end()) {
     VLOG(0) << "Install failed: no handler for " << file_path.Extension();
-    return static_cast<int>(InstallErrors::kNotSupportedInstallerType);
+    return std::to_underlying(InstallErrors::kNotSupportedInstallerType);
   }
   return handler->second(
       file_path, base::BindOnce(&RunExecutable, existence_checker_path, ap,

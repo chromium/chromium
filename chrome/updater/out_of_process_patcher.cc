@@ -99,7 +99,7 @@ class PatchOperation : public base::RefCountedThreadSafe<PatchOperation> {
     patcher_->PatchFileZucchini(
         std::move(old), std::move(patch), std::move(out),
         base::BindOnce([](zucchini::status::Code status) {
-          return static_cast<int>(status);
+          return std::to_underlying(status);
         }).Then(base::BindOnce(&PatchOperation::Done, this)));
   }
 

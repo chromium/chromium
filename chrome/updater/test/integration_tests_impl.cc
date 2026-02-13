@@ -663,8 +663,8 @@ std::vector<base::FilePath> GetUpdaterLogFilesInTmp() {
 #if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(
       base::PathService::Get(IsSystemInstall(GetUpdaterScopeForTesting())
-                                 ? static_cast<int>(base::DIR_SYSTEM_TEMP)
-                                 : static_cast<int>(base::DIR_TEMP),
+                                 ? std::to_underlying(base::DIR_SYSTEM_TEMP)
+                                 : std::to_underlying(base::DIR_TEMP),
                              &temp_dir));
 #endif
   if (temp_dir.empty()) {
@@ -894,7 +894,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
                R"("eventresult":0,"eventtype":%d,("nextfp":.*,)?)"
                R"("nextversion":"%s","previousversion":"%s".*)"
                R"("version":"%s".*)",
-               app.app_id.c_str(), static_cast<int>(app.error_category),
+               app.app_id.c_str(), std::to_underlying(app.error_category),
                app.error_code, app.event_type,
                app.to_version.GetString().c_str(),
                app.from_version.GetString().c_str(),

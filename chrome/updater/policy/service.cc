@@ -215,7 +215,7 @@ void PolicyService::FetchPoliciesDone(
             << GetAllPoliciesAsString();
   } else {
     event.AddError(
-        {.category = static_cast<int>(update_client::ErrorCategory::kService),
+        {.category = std::to_underlying(update_client::ErrorCategory::kService),
          .code = result});
     VLOG(1) << "Failed to refresh policies: " << result;
   }

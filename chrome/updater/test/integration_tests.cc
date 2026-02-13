@@ -6073,7 +6073,7 @@ INSTANTIATE_TEST_SUITE_P(
                 true,
                 "INSTALLER_RESULT=0",
                 UpdateService::ErrorCategory::kInstall,
-                static_cast<int>(
+                std::to_underlying(
                     update_client::ProtocolError::UNKNOWN_APPLICATION),
                 "Kan nie installeer nie, die app is onbekend aan die bediener.",
                 {},
@@ -6089,7 +6089,7 @@ INSTANTIATE_TEST_SUITE_P(
                 true,
                 "INSTALLER_RESULT=0",
                 UpdateService::ErrorCategory::kInstall,
-                static_cast<int>(
+                std::to_underlying(
                     update_client::ProtocolError::OS_NOT_SUPPORTED),
                 base::WideToUTF8(GetLocalizedString(IDS_OS_NOT_SUPPORTED_BASE)),
                 {},
@@ -6103,7 +6103,7 @@ INSTANTIATE_TEST_SUITE_P(
                 true,
                 "INSTALLER_RESULT=0",
                 UpdateService::ErrorCategory::kInstall,
-                static_cast<int>(
+                std::to_underlying(
                     update_client::ProtocolError::HW_NOT_SUPPORTED),
                 base::WideToUTF8(GetLocalizedString(IDS_HW_NOT_SUPPORTED_BASE)),
                 {},
@@ -6117,7 +6117,7 @@ INSTANTIATE_TEST_SUITE_P(
                 true,
                 "INSTALLER_RESULT=0",
                 UpdateService::ErrorCategory::kInstall,
-                static_cast<int>(update_client::ProtocolError::NO_HASH),
+                std::to_underlying(update_client::ProtocolError::NO_HASH),
                 base::WideToUTF8(GetLocalizedString(IDS_NO_HASH_BASE)),
                 {},
                 base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
@@ -6130,7 +6130,7 @@ INSTANTIATE_TEST_SUITE_P(
                 true,
                 "INSTALLER_RESULT=0",
                 UpdateService::ErrorCategory::kInstall,
-                static_cast<int>(
+                std::to_underlying(
                     update_client::ProtocolError::UNSUPPORTED_PROTOCOL),
                 base::WideToUTF8(
                     GetLocalizedString(IDS_UNSUPPORTED_PROTOCOL_BASE)),
@@ -6145,7 +6145,7 @@ INSTANTIATE_TEST_SUITE_P(
                 true,
                 "INSTALLER_RESULT=0",
                 UpdateService::ErrorCategory::kInstall,
-                static_cast<int>(update_client::ProtocolError::INTERNAL),
+                std::to_underlying(update_client::ProtocolError::INTERNAL),
                 base::WideToUTF8(GetLocalizedString(IDS_INTERNAL_BASE)),
                 {},
                 base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
@@ -6215,7 +6215,7 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
                 base::DictValue()
                     .Set("app_id", kMsiAppId)
                     .Set("state",
-                         static_cast<int>(
+                         std::to_underlying(
                              should_install_successfully
                                  ? UpdateService::UpdateState::State::kUpdated
                                  : UpdateService::UpdateState::State::
@@ -6228,7 +6228,7 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
                     .Set("error_category",
                          should_install_successfully
                              ? 0
-                             : static_cast<int>(GetTestCase().error_category))
+                             : std::to_underlying(GetTestCase().error_category))
                     .Set("error_code", GetTestCase().error_code)
                     .Set("extra_code1", 0)
                     .Set("installer_text", GetTestCase().installer_text)
@@ -6395,7 +6395,7 @@ TEST_P(IntegrationInstallerResultsNewInstallsTest, OnDemandCancel) {
               /*target_version_prefix=*/{}, /*target_channel=*/{},
               crx_relative_path,
               /*always_serve_crx=*/true, UpdateService::ErrorCategory::kService,
-              static_cast<int>(update_client::ServiceError::CANCELLED),
+              std::to_underlying(update_client::ServiceError::CANCELLED),
               /*EVENT_INSTALL_COMPLETE=*/2, {}),
       },
       GetParam().version);
@@ -6403,7 +6403,7 @@ TEST_P(IntegrationInstallerResultsNewInstallsTest, OnDemandCancel) {
 
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
       kMsiAppId, AppBundleWebCreateMode::kCreateApp, STATE_ERROR,
-      static_cast<int>(update_client::ServiceError::CANCELLED),
+      std::to_underlying(update_client::ServiceError::CANCELLED),
       /*cancel_when_downloading=*/true));
 
   // Cleanup by overinstalling the current version and uninstalling.

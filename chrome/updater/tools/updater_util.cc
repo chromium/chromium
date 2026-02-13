@@ -706,9 +706,9 @@ void UpdaterUtilApp::UnpackCRX() {
                   LOG(INFO) << "Unpacked to " << result.unpack_path
                             << " with public key " << result.public_key;
                 } else {
-                  LOG(ERROR)
-                      << "Unpacking failed: " << static_cast<int>(result.error)
-                      << ": " << result.extended_error;
+                  LOG(ERROR) << "Unpacking failed: "
+                             << std::to_underlying(result.error) << ": "
+                             << result.extended_error;
                 }
               })
                   .Then(base::BindPostTaskToCurrentDefault(

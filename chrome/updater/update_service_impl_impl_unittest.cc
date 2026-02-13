@@ -123,30 +123,30 @@ INSTANTIATE_TEST_SUITE_P(
     UpdateServiceImplGetInstallerTextTest,
     ::testing::ValuesIn(std::vector<UpdateServiceImplGetInstallerTextTestCase>{
         {UpdateService::ErrorCategory::kDownload,
-         static_cast<int>(update_client::CrxDownloaderError::NO_URL),
+         std::to_underlying(update_client::CrxDownloaderError::NO_URL),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_DOWNLOAD_ERROR_BASE,
              L"update_client::CrxDownloaderError::NO_URL"))},
         {UpdateService::ErrorCategory::kDownload,
-         static_cast<int>(update_client::CrxDownloaderError::NO_HASH),
+         std::to_underlying(update_client::CrxDownloaderError::NO_HASH),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_DOWNLOAD_ERROR_BASE,
              L"update_client::CrxDownloaderError::NO_HASH"))},
         {UpdateService::ErrorCategory::kDownload,
-         static_cast<int>(update_client::CrxDownloaderError::BAD_HASH),
+         std::to_underlying(update_client::CrxDownloaderError::BAD_HASH),
          {},
          base::WideToUTF8(GetLocalizedString(IDS_DOWNLOAD_HASH_MISMATCH_BASE))},
         {UpdateService::ErrorCategory::kDownload,
-         static_cast<int>(
+         std::to_underlying(
              update_client::CrxDownloaderError::BITS_TOO_MANY_JOBS),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_DOWNLOAD_ERROR_BASE,
              L"update_client::CrxDownloaderError::BITS_TOO_MANY_JOBS"))},
         {UpdateService::ErrorCategory::kDownload,
-         static_cast<int>(update_client::CrxDownloaderError::GENERIC_ERROR),
+         std::to_underlying(update_client::CrxDownloaderError::GENERIC_ERROR),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_DOWNLOAD_ERROR_BASE,
@@ -157,109 +157,110 @@ INSTANTIATE_TEST_SUITE_P(
          base::WideToUTF8(GetLocalizedStringF(IDS_GENERIC_DOWNLOAD_ERROR_BASE,
                                               L"0xffff"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(update_client::UnpackerError::kInvalidParams),
+         std::to_underlying(update_client::UnpackerError::kInvalidParams),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kInvalidParams"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(update_client::UnpackerError::kInvalidFile),
+         std::to_underlying(update_client::UnpackerError::kInvalidFile),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kInvalidFile"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(update_client::UnpackerError::kUnzipPathError),
+         std::to_underlying(update_client::UnpackerError::kUnzipPathError),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kUnzipPathError"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(update_client::UnpackerError::kUnzipFailed),
+         std::to_underlying(update_client::UnpackerError::kUnzipFailed),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kUnzipFailed"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(update_client::UnpackerError::kBadManifest),
+         std::to_underlying(update_client::UnpackerError::kBadManifest),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kBadManifest"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(update_client::UnpackerError::kBadExtension),
+         std::to_underlying(update_client::UnpackerError::kBadExtension),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kBadExtension"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(update_client::UnpackerError::kIoError),
+         std::to_underlying(update_client::UnpackerError::kIoError),
          {},
          base::WideToUTF8(
              GetLocalizedStringF(IDS_GENERIC_UNPACK_ERROR_BASE,
                                  L"update_client::UnpackerError::kIoError"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(
+         std::to_underlying(
              update_client::UnpackerError::kDeltaVerificationFailure),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kDeltaVerificationFailure"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(update_client::UnpackerError::kDeltaBadCommands),
+         std::to_underlying(update_client::UnpackerError::kDeltaBadCommands),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kDeltaBadCommands"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(
+         std::to_underlying(
              update_client::UnpackerError::kDeltaUnsupportedCommand),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kDeltaUnsupportedCommand"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(update_client::UnpackerError::kDeltaOperationFailure),
+         std::to_underlying(
+             update_client::UnpackerError::kDeltaOperationFailure),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kDeltaOperationFailure"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(
+         std::to_underlying(
              update_client::UnpackerError::kDeltaPatchProcessFailure),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kDeltaPatchProcessFailure"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(
+         std::to_underlying(
              update_client::UnpackerError::kDeltaMissingExistingFile),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kDeltaMissingExistingFile"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(
+         std::to_underlying(
              update_client::UnpackerError::kPuffinMissingPreviousCrx),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
              L"update_client::UnpackerError::kPuffinMissingPreviousCrx"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(update_client::UnpackerError::kFailedToAddToCache),
+         std::to_underlying(update_client::UnpackerError::kFailedToAddToCache),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_UNPACK_CACHING_ERROR_BASE,
              L"update_client::UnpackerError::kFailedToAddToCache"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(
+         std::to_underlying(
              update_client::UnpackerError::kFailedToCreateCacheDir),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_UNPACK_CACHING_ERROR_BASE,
              L"update_client::UnpackerError::kFailedToCreateCacheDir"))},
         {UpdateService::ErrorCategory::kUnpack,
-         static_cast<int>(update_client::UnpackerError::kCrxCacheNotProvided),
+         std::to_underlying(update_client::UnpackerError::kCrxCacheNotProvided),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UNPACK_ERROR_BASE,
@@ -270,24 +271,24 @@ INSTANTIATE_TEST_SUITE_P(
          base::WideToUTF8(GetLocalizedStringF(IDS_GENERIC_UNPACK_ERROR_BASE,
                                               L"0xffff"))},
         {UpdateService::ErrorCategory::kService,
-         static_cast<int>(update_client::ServiceError::SERVICE_WAIT_FAILED),
+         std::to_underlying(update_client::ServiceError::SERVICE_WAIT_FAILED),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_SERVICE_ERROR_BASE,
              L"update_client::ServiceError::SERVICE_WAIT_FAILED"))},
         {UpdateService::ErrorCategory::kService,
-         static_cast<int>(update_client::ServiceError::UPDATE_DISABLED),
+         std::to_underlying(update_client::ServiceError::UPDATE_DISABLED),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_SERVICE_ERROR_BASE,
              L"update_client::ServiceError::UPDATE_DISABLED"))},
         {UpdateService::ErrorCategory::kService,
-         static_cast<int>(update_client::ServiceError::CANCELLED),
+         std::to_underlying(update_client::ServiceError::CANCELLED),
          {},
          base::WideToUTF8(
              GetLocalizedString(IDS_SERVICE_ERROR_CANCELLED_BASE))},
         {UpdateService::ErrorCategory::kService,
-         static_cast<int>(update_client::ServiceError::CHECK_FOR_UPDATE_ONLY),
+         std::to_underlying(update_client::ServiceError::CHECK_FOR_UPDATE_ONLY),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_SERVICE_ERROR_BASE,
@@ -298,47 +299,48 @@ INSTANTIATE_TEST_SUITE_P(
          base::WideToUTF8(GetLocalizedStringF(IDS_GENERIC_SERVICE_ERROR_BASE,
                                               L"0xffff"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
-         static_cast<int>(update_client::ProtocolError::RESPONSE_NOT_TRUSTED),
+         std::to_underlying(update_client::ProtocolError::RESPONSE_NOT_TRUSTED),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
              L"update_client::ProtocolError::RESPONSE_NOT_TRUSTED"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
-         static_cast<int>(update_client::ProtocolError::MISSING_URLS),
+         std::to_underlying(update_client::ProtocolError::MISSING_URLS),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
              L"update_client::ProtocolError::MISSING_URLS"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
-         static_cast<int>(update_client::ProtocolError::PARSE_FAILED),
+         std::to_underlying(update_client::ProtocolError::PARSE_FAILED),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
              L"update_client::ProtocolError::PARSE_FAILED"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
-         static_cast<int>(
+         std::to_underlying(
              update_client::ProtocolError::UPDATE_RESPONSE_NOT_FOUND),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
              L"update_client::ProtocolError::UPDATE_RESPONSE_NOT_FOUND"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
-         static_cast<int>(update_client::ProtocolError::URL_FETCHER_FAILED),
+         std::to_underlying(update_client::ProtocolError::URL_FETCHER_FAILED),
          {},
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
              L"update_client::ProtocolError::URL_FETCHER_FAILED"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
-         static_cast<int>(update_client::ProtocolError::UNKNOWN_APPLICATION),
+         std::to_underlying(update_client::ProtocolError::UNKNOWN_APPLICATION),
          "en",
          base::WideToUTF8(GetLocalizedString(IDS_UNKNOWN_APPLICATION_BASE))},
         {UpdateService::ErrorCategory::kUpdateCheck,
-         static_cast<int>(update_client::ProtocolError::RESTRICTED_APPLICATION),
+         std::to_underlying(
+             update_client::ProtocolError::RESTRICTED_APPLICATION),
          "en",
          base::WideToUTF8(
              GetLocalizedString(IDS_RESTRICTED_RESPONSE_FROM_SERVER_BASE))},
         {UpdateService::ErrorCategory::kUpdateCheck,
-         static_cast<int>(update_client::ProtocolError::INVALID_APPID), "en",
+         std::to_underlying(update_client::ProtocolError::INVALID_APPID), "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
              L"update_client::ProtocolError::INVALID_APPID"))},
@@ -369,78 +371,82 @@ INSTANTIATE_TEST_SUITE_P(
                                  L"0xffff",
                                  L"es"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(
+         std::to_underlying(
              update_client::InstallError::FINGERPRINT_WRITE_FAILED),
          "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::FINGERPRINT_WRITE_FAILED"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(update_client::InstallError::BAD_MANIFEST), "en",
+         std::to_underlying(update_client::InstallError::BAD_MANIFEST), "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::BAD_MANIFEST"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(update_client::InstallError::GENERIC_ERROR), "en",
+         std::to_underlying(update_client::InstallError::GENERIC_ERROR), "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::GENERIC_ERROR"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(update_client::InstallError::MOVE_FILES_ERROR), "en",
+         std::to_underlying(update_client::InstallError::MOVE_FILES_ERROR),
+         "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::MOVE_FILES_ERROR"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(update_client::InstallError::SET_PERMISSIONS_FAILED),
+         std::to_underlying(
+             update_client::InstallError::SET_PERMISSIONS_FAILED),
          "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::SET_PERMISSIONS_FAILED"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(update_client::InstallError::INVALID_VERSION), "en",
+         std::to_underlying(update_client::InstallError::INVALID_VERSION), "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::INVALID_VERSION"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(update_client::InstallError::VERSION_NOT_UPGRADED),
+         std::to_underlying(update_client::InstallError::VERSION_NOT_UPGRADED),
          "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::VERSION_NOT_UPGRADED"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(update_client::InstallError::NO_DIR_COMPONENT_USER),
+         std::to_underlying(update_client::InstallError::NO_DIR_COMPONENT_USER),
          "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::NO_DIR_COMPONENT_USER"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(
+         std::to_underlying(
              update_client::InstallError::CLEAN_INSTALL_DIR_FAILED),
          "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::CLEAN_INSTALL_DIR_FAILED"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(
+         std::to_underlying(
              update_client::InstallError::INSTALL_VERIFICATION_FAILED),
          "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::INSTALL_VERIFICATION_FAILED"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(update_client::InstallError::MISSING_INSTALL_PARAMS),
+         std::to_underlying(
+             update_client::InstallError::MISSING_INSTALL_PARAMS),
          "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::MISSING_INSTALL_PARAMS"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(update_client::InstallError::LAUNCH_PROCESS_FAILED),
+         std::to_underlying(update_client::InstallError::LAUNCH_PROCESS_FAILED),
          "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::LAUNCH_PROCESS_FAILED"))},
         {UpdateService::ErrorCategory::kInstall,
-         static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE), "en",
+         std::to_underlying(update_client::InstallError::CUSTOM_ERROR_BASE),
+         "en",
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"update_client::InstallError::CUSTOM_ERROR_BASE"))},
