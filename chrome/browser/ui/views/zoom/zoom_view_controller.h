@@ -33,15 +33,15 @@ class ZoomViewController {
 
   ~ZoomViewController();
 
-  // This is a wrapper that invokes `UpdatePageActionIcon` and
-  // `UpdateBubbleVisibility` in the correct order.
+  // This is a wrapper that invokes `UpdatePageActionIconProperties`,
+  // `UpdatePageActionIconVisibility` and `UpdateBubbleVisibility` in the
+  // correct order.
   void UpdatePageActionIconAndBubbleVisibility(bool prefer_to_show_bubble,
                                                bool from_user_gesture);
 
-  // Updates the page action icon, tooltip, and visibility based on
-  // the current zoom state (below/above default). Does NOT show/hide the
-  // bubble.
-  void UpdatePageActionIcon(bool is_bubble_visible);
+  // Updates the page action visibility based on the current zoom state
+  // (below/above default). Does NOT show/hide the bubble.
+  void UpdatePageActionIconVisibility(bool is_bubble_visible);
 
   // Shows or hides the bubble depending on whether `prefer_to_show_bubble` is
   // true and whether we are at default zoom, etc. When showing the bubble,
@@ -51,6 +51,11 @@ class ZoomViewController {
 
  private:
   bool IsBubbleVisible() const;
+
+  // Updates The zoom page actions's state (accessible name, tooltip, and icon)
+  // to reflect the current zoom percent and whether zoom is above or below the
+  // default.
+  void UpdatePageActionIconProperties();
 
   // Determines if the page action should be visible under the current zoom
   // conditions, factoring in whether the bubble is already visible or allowed.
