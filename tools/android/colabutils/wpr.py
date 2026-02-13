@@ -130,7 +130,7 @@ async def _server(action, archive_path):
             command_line.run("go",
                              "run",
                              "-C",
-                             "third_party/catapult/web_page_replay_go",
+                             "third_party/webpagereplay",
                              "src/wpr.go",
                              action,
                              "--https_cert_file",
