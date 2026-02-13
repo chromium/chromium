@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -54,6 +55,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
 #include "net/http/http_status_code.h"
@@ -1262,6 +1264,18 @@ void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
   if (!features::IsReadAnythingWithReadabilityEnabled() || is_pdf_) {
     return;
   }
+
+  // Don't attempt Readability distillation in automated tests. This is to prevent internal
+  // scripts from leaking.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableAutomation)) {
+    page_->OnReadabilityDistillationStateChanged(
+        read_anything::mojom::ReadAnythingDistillationState::
+            kDistillationEmpty);
+    page_->UpdateContent("", "");
+    return;
+  }
+
   const GURL& url = content->GetLastCommittedURL();
   RecordDistillationSchemeHistogram(url);
 
