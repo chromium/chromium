@@ -5,10 +5,14 @@
 #ifndef MEDIA_CAST_SENDER_VIDEO_BITRATE_SUGGESTER_H_
 #define MEDIA_CAST_SENDER_VIDEO_BITRATE_SUGGESTER_H_
 
+#include "base/functional/callback.h"
 #include "media/cast/cast_config.h"
 
 namespace media::cast {
 
+// This class is responsible for suggesting a video bitrate based on both the
+// current network conditions and the performance of the encoder (monitored
+// via frame drops).
 class VideoBitrateSuggester {
  public:
   using GetVideoNetworkBandwidthCB = base::RepeatingCallback<int()>;
@@ -39,6 +43,7 @@ class VideoBitrateSuggester {
   // The minimum and maximum bitrates set from the config.
   const int min_bitrate_ = 0;
   const int max_bitrate_ = 0;
+  const double max_frame_rate_ = 0;
 
   // The suggested bitrate, factoring in frame drops.
   int suggested_bitrate_ = 0;

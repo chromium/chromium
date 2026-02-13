@@ -1458,8 +1458,28 @@ BASE_FEATURE(kCastStreamingAv1, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the new exponential bitrate calculate logic is used, or
 // the legacy linear algorithm.
+// TODO(crbug.com/302584587): This is the V2 implementation of this experiment,
+// following the failure of the initial experiment.
 BASE_FEATURE(kCastStreamingExponentialVideoBitrateAlgorithm,
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int>
+    kCastStreamingExponentialVideoBitrateAlgorithmWindowSize{
+        &kCastStreamingExponentialVideoBitrateAlgorithm, "window_size", 30};
+const base::FeatureParam<int>
+    kCastStreamingExponentialVideoBitrateAlgorithmDropThreshold{
+        &kCastStreamingExponentialVideoBitrateAlgorithm, "drop_threshold", 1};
+const base::FeatureParam<double>
+    kCastStreamingExponentialVideoBitrateAlgorithmIncreaseFactor{
+        &kCastStreamingExponentialVideoBitrateAlgorithm, "increase_factor",
+        1.05};
+const base::FeatureParam<double>
+    kCastStreamingExponentialVideoBitrateAlgorithmDecreaseFactor{
+        &kCastStreamingExponentialVideoBitrateAlgorithm, "decrease_factor",
+        0.9};
+const base::FeatureParam<double>
+    kCastStreamingExponentialVideoBitrateAlgorithmDynamicWindowMultiplier{
+        &kCastStreamingExponentialVideoBitrateAlgorithm,
+        "dynamic_window_multiplier", 0.0};
 
 BASE_FEATURE(kCastStreamingHardwareHevc, base::FEATURE_DISABLED_BY_DEFAULT);
 

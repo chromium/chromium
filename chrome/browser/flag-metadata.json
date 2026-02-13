@@ -1396,24 +1396,30 @@
     "expiry_milestone": 151
   },
   {
+
+    "name": "cast-streaming-exponential-video-bitrate-algorithm",
+    "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "cast-streaming-hardware-h264",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 160
   },
   {
     "name": "cast-streaming-hardware-hevc",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 160
   },
   {
     "name": "cast-streaming-hardware-vp8",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 160
   },
   {
     "name": "cast-streaming-hardware-vp9",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 160
   },
   {
     "name": "cast-streaming-media-video-encoder",
@@ -1423,7 +1429,7 @@
   {
     "name": "cast-streaming-performance-overlay",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 160
   },
   {
     "name": "cct-adaptive-button",
@@ -2916,32 +2922,32 @@
   {
     "name": "enable-cast-streaming-av1",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 160
   },
   {
     "name": "enable-cast-streaming-mac-hardware-h264",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 160
   },
   {
     "name": "enable-cast-streaming-vp8",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 160
   },
   {
     "name": "enable-cast-streaming-vp9",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 160
   },
   {
     "name": "enable-cast-streaming-win-hardware-h264",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 160
   },
   {
     "name": "enable-cast-streaming-with-hidpi",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 160
   },
   {
     "name": "enable-chrome-refresh-token-binding",

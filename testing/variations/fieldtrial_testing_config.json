@@ -4942,6 +4942,31 @@
             ]
         }
     ],
+    "CastStreamingExponentialVideoBitrateAlgorithm": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "decrease_factor": "0.9",
+                        "drop_threshold": "1",
+                        "dynamic_window_multiplier": "0.0",
+                        "increase_factor": "1.05",
+                        "window_size": "30"
+                    },
+                    "enable_features": [
+                        "CastStreamingExponentialVideoBitrateAlgorithm"
+                    ]
+                }
+            ]
+        }
+    ],
     "CastStreamingHardwareHevc": [
         {
             "platforms": [
