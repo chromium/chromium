@@ -28,6 +28,10 @@
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/is_required.h"
 
+namespace sync_pb {
+class AutofillValuableSpecifics;
+}
+
 namespace autofill {
 
 // Entity and attribute types are blueprints for entity and attribute instances.
@@ -163,6 +167,8 @@ class AttributeInstance final {
    private:
     MarkAsMaskedPasskey() = default;
     friend class EntityTable;
+    friend std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
+        const sync_pb::AutofillValuableSpecifics&);
   };
   void mark_as_masked(MarkAsMaskedPasskey) { masked_ = true; }
 

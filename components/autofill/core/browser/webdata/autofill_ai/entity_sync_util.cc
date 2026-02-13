@@ -10,13 +10,16 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/autofill_ai_chrome_metadata.pb.h"
+#include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/sync/protocol/entity_data.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -43,6 +46,49 @@ using sync_pb::AutofillValuableSpecifics;
   } else {                                                                  \
     (specifics).clear_##proto_field_name();                                 \
   }
+
+// Sets a date field in a protocol buffer message based on a date attribute
+// from an EntityInstance by determining the microseconds since the unix epoch.
+template <typename Proto, typename Setter>
+void SetDateInSpecifics(const EntityInstance& entity,
+                        AttributeTypeName attribute_name,
+                        Proto& message,
+                        Setter setter) {
+  base::optional_ref<const AttributeInstance> attribute =
+      entity.attribute(AttributeType(attribute_name));
+  if (!attribute.has_value()) {
+    return;
+  }
+
+  auto get_component = [&](std::u16string_view fmt) -> std::optional<int> {
+    std::u16string val = attribute->GetInfo(
+        attribute->type().field_type(),
+        /*app_locale=*/"",
+        AutofillFormatString(std::u16string(fmt), FormatString_Type_DATE));
+
+    int component;
+    if (base::StringToInt(val, &component)) {
+      return component;
+    }
+    return std::nullopt;
+  };
+
+  std::optional<int> day = get_component(u"D");
+  std::optional<int> month = get_component(u"M");
+  std::optional<int> year = get_component(u"YYYY");
+
+  if (!day || !month || !year) {
+    return;
+  }
+
+  base::Time::Exploded exploded = {
+      .year = *year, .month = *month, .day_of_month = *day};
+  base::Time date;
+
+  if (base::Time::FromUTCExploded(exploded, &date)) {
+    (message.*setter)((date - base::Time::UnixEpoch()).InMicroseconds());
+  }
+}
 
 // Wraps a message `m` into an `Any`-typed message, essentially dropping the
 // actual type for serialization purposes.
@@ -132,10 +178,12 @@ void ReadChromeValuablesMetadata(
   }
 }
 
-// Adds a string-based attribute to the set.
+// Adds a string-based attribute to the set making it as masked if a passkey is
+// provided.
 void AddAttribute(
     AttributeTypeName type,
     const std::string& value,
+    std::optional<AttributeInstance::MarkAsMaskedPasskey> passkey,
     base::flat_set<AttributeInstance, AttributeInstance::CompareByType>&
         attributes) {
   AttributeInstance attribute{AttributeType(type)};
@@ -143,7 +191,35 @@ void AddAttribute(
   // string types or will be overwritten by metadata deserialization.
   attribute.SetRawInfo(attribute.type().field_type(), base::UTF8ToUTF16(value),
                        VerificationStatus::kNoStatus);
+  if (passkey) {
+    attribute.mark_as_masked(*passkey);
+  }
   attributes.insert(std::move(attribute));
+}
+
+// Adds a string-based attribute to the set.
+void AddAttribute(
+    AttributeTypeName type,
+    const std::string& value,
+    base::flat_set<AttributeInstance, AttributeInstance::CompareByType>&
+        attributes) {
+  AddAttribute(type, value, std::nullopt, attributes);
+}
+
+// Helper to add a date attribute from microseconds since the unix epoch.
+void AddDateAttribute(
+    AttributeTypeName type,
+    int64_t micros_since_epoch,
+    base::flat_set<AttributeInstance, AttributeInstance::CompareByType>&
+        attributes) {
+  // TODO(crbug.com/481650251): Verify with server-side that the timestamp is
+  // indeed UTC.
+  base::Time date =
+      base::Time::FromMillisecondsSinceUnixEpoch(micros_since_epoch / 1000);
+  AddAttribute(type,
+               base::UnlocalizedTimeFormatWithPattern(date, "yyyy-MM-dd",
+                                                      icu::TimeZone::getGMT()),
+               attributes);
 }
 
 // Finalizes the attribute set by reading metadata and calling FinalizeInfo.
@@ -306,6 +382,61 @@ sync_pb::AutofillValuableSpecifics GetVehicleInformationSpecifics(
   return specifics;
 }
 
+// Reads the passport specifics message and extracts attribute-information from
+// its fields. In particular, it also deserializes the metadata stored in the
+// sync message.
+base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+GetPassportAttributesFromSpecifics(
+    const sync_pb::AutofillValuableSpecifics& specifics,
+    AttributeInstance::MarkAsMaskedPasskey passkey) {
+  using enum AttributeTypeName;
+  CHECK_EQ(specifics.valuable_data_case(),
+           sync_pb::AutofillValuableSpecifics::kPassport);
+  const sync_pb::Passport& passport = specifics.passport();
+  base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+      attributes;
+
+  AddAttribute(kPassportName, passport.owner_name(), attributes);
+  AddAttribute(kPassportNumber, passport.masked_number(), passkey, attributes);
+  AddAttribute(kPassportCountry, passport.country_code(), attributes);
+  AddDateAttribute(kPassportIssueDate, passport.issue_date_unix_epoch_micros(),
+                   attributes);
+  AddDateAttribute(kPassportExpirationDate,
+                   passport.expiration_date_unix_epoch_micros(), attributes);
+
+  FinalizeEntityAttributes(EntityType(EntityTypeName::kPassport),
+                           specifics.serialized_chrome_valuables_metadata(),
+                           attributes);
+  return attributes;
+}
+
+// Takes an `entity` and returns a proto message with the information.
+// Note: Passports are read-only and not synced to the server. This
+// serialization is primarily for debugging (e.g., sync-internals).
+sync_pb::AutofillValuableSpecifics GetPassportSpecifics(
+    const EntityInstance& entity,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+  using enum AttributeTypeName;
+  CHECK_EQ(entity.type().name(), EntityTypeName::kPassport);
+
+  sync_pb::AutofillValuableSpecifics specifics = base_specifics;
+  specifics.set_id(*entity.guid());
+  specifics.set_is_editable(!entity.are_attributes_read_only());
+
+  sync_pb::Passport& passport = *specifics.mutable_passport();
+  SET_OR_CLEAR_STRING_FIELD(entity, kPassportNumber, masked_number, passport);
+  SET_OR_CLEAR_STRING_FIELD(entity, kPassportName, owner_name, passport);
+  SET_OR_CLEAR_STRING_FIELD(entity, kPassportCountry, country_code, passport);
+  SetDateInSpecifics(entity, kPassportIssueDate, passport,
+                     &sync_pb::Passport::set_issue_date_unix_epoch_micros);
+  SetDateInSpecifics(entity, kPassportExpirationDate, passport,
+                     &sync_pb::Passport::set_expiration_date_unix_epoch_micros);
+
+  *specifics.mutable_serialized_chrome_valuables_metadata() =
+      SerializeChromeValuablesMetadata(entity);
+  return specifics;
+}
+
 #undef SET_OR_CLEAR_STRING_FIELD
 
 }  // namespace
@@ -341,6 +472,7 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
     case EntityTypeName::kVehicle:
       return GetVehicleInformationSpecifics(entity, base_specifics);
     case EntityTypeName::kPassport:
+      return GetPassportSpecifics(entity, base_specifics);
     case EntityTypeName::kDriversLicense:
     case EntityTypeName::kNationalIdCard:
     case EntityTypeName::kKnownTravelerNumber:
@@ -381,7 +513,17 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           frecency_override);
     }
-    case sync_pb::AutofillValuableSpecifics::kPassport:
+    case sync_pb::AutofillValuableSpecifics::kPassport: {
+      return EntityInstance(
+          EntityType(EntityTypeName::kPassport),
+          GetPassportAttributesFromSpecifics(
+              specifics, AttributeInstance::MarkAsMaskedPasskey()),
+          guid,
+          /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
+          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
+          /*frecency_override=*/"");
+    }
     case sync_pb::AutofillValuableSpecifics::kDriverLicense:
     case sync_pb::AutofillValuableSpecifics::kNationalIdCard:
     case sync_pb::AutofillValuableSpecifics::kRedressNumber:

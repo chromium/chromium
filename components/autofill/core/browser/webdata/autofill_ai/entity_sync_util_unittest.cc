@@ -23,6 +23,15 @@ namespace {
 using syncer::test::AddUnknownFieldToProto;
 using syncer::test::HasUnknownField;
 
+struct TestPassportOptions {
+  std::string id = "passport-id";
+  std::string masked_number = "12345";
+  std::string owner_name = "Passport Owner";
+  std::string country_code = "FR";
+  std::string issue_date = "2023-01-02";
+  std::string expiry_date = "2033-03-04";
+};
+
 // Returns the string value of the attribute with the given type in `entity`.
 std::string GetStringValue(const EntityInstance& entity,
                            AttributeTypeName attribute_type_name) {
@@ -91,6 +100,38 @@ sync_pb::AutofillValuableSpecifics TestVehicleSpecifics() {
   specifics.mutable_vehicle_registration()->set_owner_name("Owner Name");
 
   return specifics;
+}
+
+// Returns a `sync_pb::AutofillValuableSpecifics` message with
+// the passport entity type.
+sync_pb::AutofillValuableSpecifics TestPassportSpecifics(
+    TestPassportOptions options = {}) {
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id(options.id);
+  sync_pb::Passport* passport = specifics.mutable_passport();
+  passport->set_masked_number(options.masked_number);
+  passport->set_owner_name(options.owner_name);
+  passport->set_country_code(options.country_code);
+
+  base::Time issue_date;
+  CHECK(base::Time::FromUTCString(options.issue_date.c_str(), &issue_date));
+  passport->set_issue_date_unix_epoch_micros(
+      issue_date.InMillisecondsSinceUnixEpoch() * 1000);
+
+  base::Time expiry_date;
+  CHECK(base::Time::FromUTCString(options.expiry_date.c_str(), &expiry_date));
+  passport->set_expiration_date_unix_epoch_micros(
+      expiry_date.InMillisecondsSinceUnixEpoch() * 1000);
+
+  return specifics;
+}
+
+void ExpectTimestampEquals(int64_t actual_micros,
+                           const std::string& expected_date_str) {
+  base::Time expected_date;
+  ASSERT_TRUE(
+      base::Time::FromUTCString(expected_date_str.c_str(), &expected_date));
+  EXPECT_EQ(actual_micros, expected_date.InMillisecondsSinceUnixEpoch() * 1000);
 }
 
 TEST(EntitySyncUtilTest, CreateEntityDataFromEntityInstance) {
@@ -644,6 +685,59 @@ TEST(EntitySyncUtilTest, EntityTypeToPassType) {
   EXPECT_EQ(EntityTypeToPassType(EntityType(kVehicle)),
             sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
   EXPECT_FALSE(EntityTypeToPassType(EntityType(kPassport)).has_value());
+}
+
+// Tests that `CreateEntityInstanceFromSpecifics` correctly deserializes
+// the passport entity from its proto representation.
+TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_Passport) {
+  TestPassportOptions options;
+  sync_pb::AutofillValuableSpecifics specifics = TestPassportSpecifics(options);
+  std::optional<EntityInstance> passport =
+      CreateEntityInstanceFromSpecifics(specifics);
+
+  ASSERT_TRUE(passport.has_value());
+  EXPECT_EQ(passport->guid().value(), specifics.id());
+  EXPECT_EQ(GetStringValue(*passport, AttributeTypeName::kPassportNumber),
+            specifics.passport().masked_number());
+  EXPECT_TRUE(
+      passport->attribute(AttributeType(AttributeTypeName::kPassportNumber))
+          ->masked());
+  EXPECT_EQ(GetStringValue(*passport, AttributeTypeName::kPassportName),
+            specifics.passport().owner_name());
+  EXPECT_EQ(GetStringValue(*passport, AttributeTypeName::kPassportCountry),
+            specifics.passport().country_code());
+  EXPECT_EQ(GetStringValue(*passport, AttributeTypeName::kPassportIssueDate),
+            options.issue_date);
+  EXPECT_EQ(
+      GetStringValue(*passport, AttributeTypeName::kPassportExpirationDate),
+      options.expiry_date);
+}
+
+// Tests that `CreateSpecificsFromEntityInstance` correctly serializes
+// fields.
+TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_Passport) {
+  TestPassportOptions options;
+  std::optional<EntityInstance> maybe_passport =
+      CreateEntityInstanceFromSpecifics(TestPassportSpecifics(options));
+  ASSERT_TRUE(maybe_passport.has_value());
+  EntityInstance passport = *maybe_passport;
+
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(passport, /*base_specifics=*/{});
+
+  EXPECT_EQ(passport.guid().value(), specifics.id());
+  EXPECT_EQ(GetStringValue(passport, AttributeTypeName::kPassportNumber),
+            specifics.passport().masked_number());
+  EXPECT_EQ(GetStringValue(passport, AttributeTypeName::kPassportName),
+            specifics.passport().owner_name());
+  EXPECT_EQ(GetStringValue(passport, AttributeTypeName::kPassportCountry),
+            specifics.passport().country_code());
+
+  ExpectTimestampEquals(specifics.passport().issue_date_unix_epoch_micros(),
+                        options.issue_date);
+  ExpectTimestampEquals(
+      specifics.passport().expiration_date_unix_epoch_micros(),
+      options.expiry_date);
 }
 
 }  // namespace
