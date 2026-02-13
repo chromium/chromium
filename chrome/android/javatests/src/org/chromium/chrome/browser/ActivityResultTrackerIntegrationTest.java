@@ -128,7 +128,7 @@ public class ActivityResultTrackerIntegrationTest {
     @After
     public void tearDown() {
         mInstrumentation.removeMonitor(mResultActivityMonitor);
-        ((ActivityResultTrackerImpl) mTracker).removeAll();
+        ((ActivityResultTrackerImpl) mTracker).onDestroy();
     }
 
     @Test
@@ -229,6 +229,101 @@ public class ActivityResultTrackerIntegrationTest {
         testerAfterRecreation2.assertCallbackCallCount(0);
         testerAfterRecreation1.waitForCallback();
         testerAfterRecreation1.assertReceivedResult(Activity.RESULT_OK);
+    }
+
+    @Test
+    @SmallTest
+    public void testStartActivity_registerAfterUnregister() throws TimeoutException {
+        ActivityResultTester tester = new ActivityResultTester(mTracker, KEY);
+        mTracker.unregister(tester);
+        ActivityResultTester newTester = new ActivityResultTester(mTracker, KEY);
+
+        tester.assertCallbackCallCount(0);
+        newTester.assertCallbackCallCount(0);
+
+        startResultActivity(newTester);
+        finishResultActivity(Activity.RESULT_OK);
+
+        tester.assertCallbackCallCount(0);
+        newTester.waitForCallback();
+        newTester.assertReceivedResult(Activity.RESULT_OK);
+    }
+
+    @Test
+    @SmallTest
+    public void testStartActivity_unregister() {
+        ActivityResultTester tester = new ActivityResultTester(mTracker, KEY);
+
+        startResultActivity(tester);
+        mTracker.unregister(tester);
+        finishResultActivity(Activity.RESULT_OK);
+
+        // After the activity is recreated, the old testers are unregistered.
+        // A new tester needs to be created to listen to the result.
+        ActivityResultTester testerAfterRecreation = new ActivityResultTester(mTracker, KEY);
+
+        // Verify that the result is not delivered to any trackers.
+        tester.assertCallbackCallCount(0);
+        testerAfterRecreation.assertCallbackCallCount(0);
+    }
+
+    @Test
+    @SmallTest
+    public void testStartActivity_unregister_activityKilled() {
+        ActivityResultTester tester = new ActivityResultTester(mTracker, KEY);
+
+        startResultActivity(tester);
+        mTracker.unregister(tester);
+        recreateBaseActivity();
+        finishResultActivity(Activity.RESULT_OK);
+
+        // After the activity is recreated, the old testers are unregistered.
+        // A new tester needs to be created to listen to the result.
+        ActivityResultTester testerAfterRecreation = new ActivityResultTester(mTracker, KEY);
+
+        // Verify that the result is not delivered to any trackers.
+        tester.assertCallbackCallCount(0);
+        testerAfterRecreation.assertCallbackCallCount(0);
+    }
+
+    @Test
+    @SmallTest
+    public void testStartActivity_registerAfterUnregister_activityKilled() throws TimeoutException {
+        ActivityResultTester tester = new ActivityResultTester(mTracker, KEY);
+        mTracker.unregister(tester);
+        ActivityResultTester newTester = new ActivityResultTester(mTracker, KEY);
+
+        tester.assertCallbackCallCount(0);
+        newTester.assertCallbackCallCount(0);
+
+        startResultActivity(newTester);
+        recreateBaseActivity();
+        finishResultActivity(Activity.RESULT_OK);
+
+        // After the activity is recreated, the old testers are unregistered.
+        // A new tester needs to be created to listen to the result.
+        ActivityResultTester testerAfterRecreation = new ActivityResultTester(mTracker, KEY);
+
+        // Verify that the result is delivered immediately only to the new registered tester.
+        tester.assertCallbackCallCount(0);
+        newTester.assertCallbackCallCount(0);
+        testerAfterRecreation.waitForCallback();
+        testerAfterRecreation.assertReceivedResult(Activity.RESULT_OK);
+    }
+
+    @Test
+    @SmallTest
+    public void testRegister_resultReceivedAfterUnregister() {
+        ActivityResultTester tester = new ActivityResultTester(mTracker, KEY);
+
+        startResultActivity(tester);
+        // Unregister intentionally before the base activity recreation to simulate
+        // the case where the base UI disappears before the activity result returns.
+        mTracker.unregister(tester);
+        finishResultActivity(Activity.RESULT_OK);
+
+        // Verify that the result is not delivered.
+        tester.assertCallbackCallCount(0);
     }
 
     @Test

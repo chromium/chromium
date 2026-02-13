@@ -313,6 +313,11 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             mHistorySyncCoordinator.destroy();
             mHistorySyncCoordinator = null;
         }
+
+        if (!mIsLegacyFlow) {
+            assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+            mActivityResultTracker.unregister(this);
+        }
     }
 
     /**
