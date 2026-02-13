@@ -9,11 +9,12 @@ import "url/mojom/url.mojom";
 
 // Bootstraps the PageHandler for communicating a SlimWebView to the browser.
 interface PageHandlerFactory {
-  // Creates a PageHandler and binds it to the given receiver.
-  CreatePageHandler(pending_receiver<PageHandler> handler);
+  // Creates a PageHandler and binds it to the given receiver and remote.
+  CreatePageHandler(pending_receiver<PageHandler> handler,
+                    pending_remote<Page> page);
 };
 
-// Interface that implements page-to-browser events for a SlimWebView.
+// Interface that implements page-to-browser messages for a SlimWebView.
 interface PageHandler {
   // Creates the GuestView from `create_params` and returns the created guest's
   // ID on success.
@@ -23,4 +24,11 @@ interface PageHandler {
   // Navigates the GuestView to the given URL. URL must be valid and either
   // https or about:blank.
   Navigate(int32 guest_instance_id, url.mojom.Url url);
+};
+
+// Interface that implements browser-to-page messages for a SlimWebView.
+interface Page {
+  // Dispatches an event to the SlimWebViewElement.
+  DispatchEvent(string event_name, mojo_base.mojom.DictionaryValue args,
+                int32 instance_id);
 };

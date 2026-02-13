@@ -10,10 +10,14 @@ assert(enable_guest_view)
 
 static_library("slim_web_view") {
   sources = [
+    "slim_web_view_constants.cc",
+    "slim_web_view_constants.h",
     "slim_web_view_guest.cc",
     "slim_web_view_guest.h",
     "slim_web_view_page_handler.cc",
     "slim_web_view_page_handler.h",
+    "slim_web_view_page_handler_factory.cc",
+    "slim_web_view_page_handler_factory.h",
   ]
 
   deps = [
@@ -22,6 +26,7 @@ static_library("slim_web_view") {
     "//base",
     "//components/guest_view/browser",
     "//content/public/browser",
+    "//net",
   ]
 }
 

@@ -10,6 +10,7 @@
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"
+#include "components/guest_view/browser/slim_web_view/slim_web_view_page_handler.h"
 #include "content/public/browser/web_contents.h"
 
 namespace android {
@@ -36,7 +37,16 @@ void ChromeGuestViewManagerDelegate::DispatchEvent(
     base::DictValue args,
     guest_view::GuestViewBase* guest,
     int instance_id) {
-  // TODO(crbug.com/460804848): Implement event dispatching.
+  // We only have one guest type for now.
+  CHECK(guest->GetViewType() == guest_view::SlimWebViewGuest::Type);
+  auto* rfh = guest->owner_rfh();
+  if (!rfh) {
+    return;
+  }
+  auto* handler =
+      guest_view::SlimWebViewPageHandler::GetForCurrentDocument(rfh);
+  CHECK(handler);
+  handler->DispatchEvent(event_name, std::move(args), instance_id);
 }
 
 bool ChromeGuestViewManagerDelegate::IsGuestAvailableToContext(

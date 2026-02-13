@@ -16,6 +16,12 @@ DOCUMENT_USER_DATA_KEY_IMPL(SlimWebViewPageHandler);
 
 SlimWebViewPageHandler::~SlimWebViewPageHandler() = default;
 
+void SlimWebViewPageHandler::DispatchEvent(const std::string& event_name,
+                                           base::DictValue args,
+                                           int instance_id) {
+  page_->DispatchEvent(event_name, std::move(args), instance_id);
+}
+
 void SlimWebViewPageHandler::CreateGuest(base::DictValue create_params,
                                          CreateGuestCallback callback) {
   auto* guest_view_manager = GetGuestViewManager();
@@ -52,9 +58,11 @@ void SlimWebViewPageHandler::Navigate(int32_t guest_instance_id,
 
 SlimWebViewPageHandler::SlimWebViewPageHandler(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<mojom::PageHandler> page_handler)
+    mojo::PendingReceiver<mojom::PageHandler> page_handler,
+    mojo::PendingRemote<mojom::Page> page)
     : content::DocumentUserData<SlimWebViewPageHandler>(render_frame_host),
-      receiver_(this, std::move(page_handler)) {}
+      receiver_(this, std::move(page_handler)),
+      page_(std::move(page)) {}
 
 GuestViewManager* SlimWebViewPageHandler::GetGuestViewManager() {
   auto* browser_context = render_frame_host().GetBrowserContext();

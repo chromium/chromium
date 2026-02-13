@@ -11,6 +11,27 @@ import {getCss} from './slim_web_view.css.js';
 import {getHtml} from './slim_web_view.html.js';
 import {BrowserProxyImpl} from './slim_web_view_browser_proxy.js';
 
+function dispatchEvent(
+    eventName: string, _args: DictionaryValue, instanceId: number) {
+  // TODO(crbug.com/460804848): Implement processing of events that aren't
+  // dispatched to views.
+  const view =
+      chrome.slimWebViewPrivate.getViewFromId(instanceId) as SlimWebViewElement;
+  if (!view) {
+    console.warn(
+        'Skipping event %s for instance id %d because it was not found.',
+        eventName, instanceId);
+    return;
+  }
+  // TODO(crbug.com/460804848): Implement passing of event fields.
+  view.dispatchEvent(new Event(eventName));
+}
+
+window.addEventListener('load', () => {
+  const proxy = BrowserProxyImpl.getInstance();
+  proxy.callbackRouter.dispatchEvent.addListener(dispatchEvent);
+});
+
 export interface SlimWebViewElement {
   $: {
     input: HTMLElement,

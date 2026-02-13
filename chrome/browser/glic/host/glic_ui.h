@@ -18,7 +18,7 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "components/guest_view/browser/slim_web_view/slim_web_view.mojom.h"  // nogncheck
+#include "components/guest_view/browser/slim_web_view/slim_web_view_page_handler_factory.h"  // nogncheck
 #endif
 
 namespace glic {
@@ -37,7 +37,7 @@ class GlicUIConfig : public content::DefaultWebUIConfig<GlicUI> {
 // The WebUI for chrome://glic
 class GlicUI : public ui::MojoWebUIController,
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-               public guest_view::mojom::PageHandlerFactory,
+               public guest_view::SlimWebViewPageHandlerFactory,
 #endif
                public glic::mojom::PageHandlerFactory,
                public glic::mojom::FrePageHandlerFactory,
@@ -51,8 +51,7 @@ class GlicUI : public ui::MojoWebUIController,
   static GlicUI* From(content::WebContents* web_contents);
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  void BindInterface(
-      mojo::PendingReceiver<guest_view::mojom::PageHandlerFactory> receiver);
+  using SlimWebViewPageHandlerFactory::BindInterface;
 #endif
 
   void BindInterface(
@@ -75,11 +74,11 @@ class GlicUI : public ui::MojoWebUIController,
 
  private:
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  void CreatePageHandler(
-      mojo::PendingReceiver<guest_view::mojom::PageHandler> receiver) override;
-  mojo::Receiver<guest_view::mojom::PageHandlerFactory>
-      slim_web_view_page_factory_receiver_{this};
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  using SlimWebViewPageHandlerFactory::CreatePageHandler;
+
+  // guest_view::SlimWebViewPageHandlerFactory implementation.
+  content::RenderFrameHost* GetWebUiRenderFrameHost() override;
+#endif
 
   void CreatePageHandler(
       mojo::PendingReceiver<glic::mojom::PageHandler> receiver,

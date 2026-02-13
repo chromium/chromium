@@ -9,6 +9,7 @@
 #include "components/guest_view/browser/slim_web_view/slim_web_view.mojom.h"
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace guest_view {
 
@@ -25,6 +26,10 @@ class SlimWebViewPageHandler
 
   ~SlimWebViewPageHandler() override;
 
+  void DispatchEvent(const std::string& event_name,
+                     base::DictValue args,
+                     int instance_id);
+
   // mojom::PageHandler implementation.
   void CreateGuest(base::DictValue create_params,
                    CreateGuestCallback callback) override;
@@ -32,13 +37,14 @@ class SlimWebViewPageHandler
 
  private:
   friend class content::DocumentUserData<SlimWebViewPageHandler>;
-  SlimWebViewPageHandler(
-      content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<mojom::PageHandler> page_handler);
+  SlimWebViewPageHandler(content::RenderFrameHost* render_frame_host,
+                         mojo::PendingReceiver<mojom::PageHandler> page_handler,
+                         mojo::PendingRemote<mojom::Page> page);
 
   GuestViewManager* GetGuestViewManager();
 
   mojo::Receiver<mojom::PageHandler> receiver_;
+  mojo::Remote<mojom::Page> page_;
 };
 
 }  // namespace guest_view

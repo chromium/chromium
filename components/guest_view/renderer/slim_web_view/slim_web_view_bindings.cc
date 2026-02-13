@@ -122,6 +122,15 @@ void RegisterView(v8::Isolate* isolate,
       ->ViewCreated(view_instance_id, kSlimWebViewType, std::move(receiver));
 }
 
+v8::Local<v8::Value> GetViewFromId(v8::Isolate* isolate, int view_instance_id) {
+  const ViewMap& view_map = GetViewMap();
+  const auto it = view_map.find(view_instance_id);
+  if (it == view_map.end()) {
+    return v8::Null(isolate);
+  }
+  return it->second.view.Get(isolate);
+}
+
 void AttachIframeGuest(v8::Isolate* isolate,
                        int element_instance_id,
                        int guest_instance_id,
@@ -190,6 +199,7 @@ void SlimWebViewBindings::MaybeInstall(content::RenderFrame& render_frame) {
 
   bind("getNextId", &GetNextId);
   bind("registerView", &RegisterView);
+  bind("getViewFromId", &GetViewFromId);
   bind("attachIframeGuest", &AttachIframeGuest);
 }
 

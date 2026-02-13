@@ -406,7 +406,6 @@ source_set("impl") {
       deps += [
         "//chrome/browser/resources/guest_view_shared:resources",
         "//components/guest_view/browser/slim_web_view",
-        "//components/guest_view/browser/slim_web_view:mojo_bindings",
       ]
     }
   }
