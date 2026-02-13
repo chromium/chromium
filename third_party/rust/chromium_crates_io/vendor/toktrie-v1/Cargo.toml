@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.87"
 name = "toktrie"
-version = "1.5.0"
+version = "1.5.1"
 build = false
 autolib = false
 autobins = false
