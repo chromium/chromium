@@ -982,35 +982,6 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
     return;
   }
 
-  // Append image description strings to the text.
-  auto* manager =
-      static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
-  if (manager->ShouldAllowImageDescriptions()) {
-    auto status = GetData().GetImageAnnotationStatus();
-    switch (status) {
-      case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
-      case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
-      case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
-      case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
-      case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
-        AppendTextToString(GetLocalizedStringForImageAnnotationStatus(status),
-                           &text);
-        break;
-
-      case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-        AppendTextToString(
-            GetString16Attribute(ax::mojom::StringAttribute::kImageAnnotation),
-            &text);
-        break;
-
-      case ax::mojom::ImageAnnotationStatus::kNone:
-      case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
-      case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
-      case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
-        break;
-    }
-  }
-
   // Compute whether this node's name attribute should override its text. This
   // is used in the below block to determine whether we should proceed with
   // surfacing text at all. Name overrides text when we've mapped name to
@@ -1180,10 +1151,18 @@ std::u16string BrowserAccessibilityAndroid::GetContainerTitle() const {
 }
 
 std::u16string BrowserAccessibilityAndroid::GetContentDescription() const {
-  if (ComputeAndroidNameTo() == AndroidNameTo::kContentDescription) {
-    return GetNameAsString16();
+  if (ComputeAndroidNameTo() != AndroidNameTo::kContentDescription) {
+    return u"";
   }
-  return u"";
+
+  std::u16string name = GetNameAsString16();
+
+  // If we have explicit alt text (author intent), return it.
+  if (!name.empty()) {
+    return name;
+  }
+
+  return GetImageAnnotationText();
 }
 
 std::u16string BrowserAccessibilityAndroid::GetSupplementalDescription() const {
@@ -1199,6 +1178,13 @@ std::u16string BrowserAccessibilityAndroid::GetSupplementalDescription() const {
       ShouldExposeValueAsName(GetValueForControl()) &&
       ComputeAndroidNameTo() == AndroidNameTo::kText) {
     return GetNameAsString16();
+  }
+
+  // We only return the annotation here if the node has a name.
+  // If GetNameAsString16() is empty, the annotation was already used
+  // as the name in GetContentDescription(), so we don't want it here as well.
+  if (!GetNameAsString16().empty()) {
+    return GetImageAnnotationText();
   }
 
   return u"";
@@ -2689,10 +2675,44 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
       // For example, relatedElement's name may not be appropriate for the text
       // property and needs to be fixed. For now, let them fall through the
       // default case and return to map to the text property.
-      name_to_cache_ = AndroidNameTo::kText;
+
+      // For images, the generated annotation should map to contentDescription.
+      if (ui::IsImage(GetRole()) && !GetImageAnnotationText().empty()) {
+        name_to_cache_ = AndroidNameTo::kContentDescription;
+      } else {
+        name_to_cache_ = AndroidNameTo::kText;
+      }
       break;
   }
   return name_to_cache_.value();
+}
+
+std::u16string BrowserAccessibilityAndroid::GetImageAnnotationText() const {
+  auto* manager =
+      static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
+
+  if (!manager->ShouldAllowImageDescriptions()) {
+    return std::u16string();
+  }
+
+  auto status = GetData().GetImageAnnotationStatus();
+  switch (status) {
+    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
+      return GetLocalizedStringForImageAnnotationStatus(status);
+
+    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
+      return GetString16Attribute(ax::mojom::StringAttribute::kImageAnnotation);
+
+    case ax::mojom::ImageAnnotationStatus::kNone:
+    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
+    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
+      return std::u16string();
+  }
 }
 
 std::u16string

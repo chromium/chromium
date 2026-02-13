@@ -352,6 +352,9 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // Computes the name-to-property mapping on Android.
   AndroidNameTo ComputeAndroidNameTo() const;
 
+  // Get image description string.
+  std::u16string GetImageAnnotationText() const;
+
   std::u16string old_value_;
   std::u16string new_value_;
 
