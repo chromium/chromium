@@ -330,6 +330,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSLensPromoDesktopFeature,
     &kIPHiOSEnhancedBrowsingDesktopFeature,
     &kIPHiOSTabGroupsDesktopFeature,
+    &kIPHiOSPriceTrackingDesktopFeature,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_IOS)

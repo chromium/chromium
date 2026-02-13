@@ -358,6 +358,8 @@ chromium-metrics-reviews@google.com.
                visited tiles on iOS"/>
   <variant name="IPH_iOSPostDefaultAbandonmentPromo"
       summary="showing the iOS post-default browser abandonment promo on iOS"/>
+  <variant name="IPH_iOSPriceTrackingDesktop"
+      summary="showing the price tracking desktop to mobile promo on desktop"/>
   <variant name="IPH_iOSPromoAllTabs"
       summary="showing All Tabs default browser promo"/>
   <variant name="IPH_iOSPromoAppStore"

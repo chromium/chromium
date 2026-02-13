@@ -561,6 +561,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSEnhancedBrowsingDesktopFeature,
                        "IPH_iOSEnhancedBrowsingDesktop");
 DEFINE_VARIATION_PARAM(kIPHiOSTabGroupsDesktopFeature,
                        "IPH_iOSTabGroupsDesktop");
+DEFINE_VARIATION_PARAM(kIPHiOSPriceTrackingDesktopFeature,
+                       "IPH_iOSPriceTrackingDesktop");
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_IOS)
@@ -855,6 +857,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSLensPromoDesktopFeature),
         VARIATION_ENTRY(kIPHiOSEnhancedBrowsingDesktopFeature),
         VARIATION_ENTRY(kIPHiOSTabGroupsDesktopFeature),
+        VARIATION_ENTRY(kIPHiOSPriceTrackingDesktopFeature),
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

@@ -85,7 +85,7 @@ bool IsAllowedCustomUiPromo(const base::Feature& promo_feature) {
       base::MakeFixedFlatSet<std::string_view>(
           {"IPH_ExtensionsZeroStatePromo", "IPH_iOSEnhancedBrowsingDesktop",
            "IPH_iOSLensPromoDesktop", "IPH_iOSPasswordPromoDesktop",
-           "IPH_iOSTabGroupsDesktop"});
+           "IPH_iOSTabGroupsDesktop", "IPH_iOSPriceTrackingDesktop"});
   return kAllowedPromoNames.contains(promo_feature.name);
 }
 

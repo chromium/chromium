@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -125,7 +126,7 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
     }
     case PromoType::kPriceTracking: {
       IOSPromoBubble::ShowPromoBubble(
-          {toolbar_button_provider->GetBubbleAnchor(kActionBookmarkThisTab)},
+          {toolbar_button_provider->GetAvatarToolbarButton()},
           /*highlighted_button=*/nullptr, profile, PromoType::kPriceTracking,
           bubble_type);
       break;

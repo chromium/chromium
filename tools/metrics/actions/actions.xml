@@ -485,6 +485,8 @@ should be able to be added at any place in this file.
       summary="For iOSPinMostVisitedSiteFeature feature"/>
   <variant name="_iOSPostDefaultAbandonmentPromo"
       summary="For iOSPostDefaultAbandonmentPromo feature"/>
+  <variant name="_iOSPriceTrackingDesktop"
+      summary="For iOSPriceTrackingDesktopFeature"/>
   <variant name="_iOSPromoAllTabs"
       summary="For All Tabs default browser promo."/>
   <variant name="_iOSPromoAppStore" summary="For iOSPromoAppStore feature"/>
