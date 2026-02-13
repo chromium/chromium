@@ -9,6 +9,7 @@
 #include <optional>
 #include <variant>
 
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 
@@ -116,16 +117,6 @@ class WebAppFilter {
  private:
   friend class WebAppRegistrar;
 
-  enum class SimpleCondition {
-    kIsDiy,
-    kWasInstalledByUser,
-    kInstalledByTrustedSource,
-    kIsolatedApp,
-    kIsolatedAppDevMode,
-    kIsolatedSubApp,
-    kOpensInDedicatedWindow
-  };
-
   using InstallStateSet = base::EnumSet<proto::InstallState,
                                         proto::InstallState_MIN,
                                         proto::InstallState_MAX>;
@@ -135,8 +126,10 @@ class WebAppFilter {
     WebAppManagementTypes sources;
   };
 
-  using Predicate =
-      std::variant<ManagementRequirement, InstallStateSet, SimpleCondition>;
+  struct IsolatedWebAppFilter {
+    bool must_be_in_dev_mode = false;
+    bool is_sub_app = false;
+  };
 
   struct LeafFilter {
     LeafFilter();
@@ -145,8 +138,16 @@ class WebAppFilter {
     LeafFilter(LeafFilter&&) noexcept;
     LeafFilter& operator=(LeafFilter&&) noexcept;
 
+    // TODO(crbug.com/463757344): Wrap this in an std::variant<>.
+    std::optional<ManagementRequirement> management_requirement;
+    std::optional<InstallStateSet> install_state_requirement;
+
+    bool opens_in_dedicated_window = false;
+    std::optional<IsolatedWebAppFilter> isolated_app_filter;
+    bool is_crafted_app = false;
+    bool launchable_from_install_api = false;
+    bool is_app_trusted = false;
     bool is_isolated_apps_including_uninstalling = false;
-    std::optional<Predicate> predicate;
   };
 
   static WebAppFilter HasSource(WebAppManagement::Type source);
@@ -157,8 +158,6 @@ class WebAppFilter {
   static WebAppFilter InstallStateIsAnyOf(InstallStateSet states);
 
   static WebAppFilter IsInRegistrar();
-
-  static WebAppFilter IsTrue(SimpleCondition condition);
 
   struct BinaryOp {
     enum class Op {
