@@ -909,16 +909,17 @@ wtf_size_t StringImpl::Find(const StringView& match_string,
     return blink::Find(Span16(), match_string[0], index);
   }
 
-  if (!match_length) [[unlikely]] {
-    return std::min(index, length());
-  }
-
   // Check index & matchLength are in range.
   if (index > length())
     return kNotFound;
   wtf_size_t search_length = length() - index;
   if (match_length > search_length) {
     return kNotFound;
+  }
+  // If the string to match is the empty string, return `index`. At this point
+  // we know it is <= `string.length()`.
+  if (!match_length) [[unlikely]] {
+    return index;
   }
 
   if (Is8Bit()) {

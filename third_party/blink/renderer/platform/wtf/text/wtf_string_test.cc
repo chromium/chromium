@@ -472,6 +472,74 @@ TEST(StringTest, StringPrinter) {
             ToStdStringThroughPrinter(String(base::span(kUnicodeSample))));
 }
 
+TEST(StringTest, FindSubstring) {
+  EXPECT_EQ(kNotFound, String().find(StringView()));
+  EXPECT_EQ(kNotFound, String("").find(StringView()));
+  EXPECT_EQ(kNotFound, String(u"").find(StringView()));
+  EXPECT_EQ(kNotFound, String().find("a"));
+  EXPECT_EQ(kNotFound, String("").find("a"));
+  EXPECT_EQ(kNotFound, String(u"").find("a"));
+
+  String view8("abcdeabcde");
+  ASSERT_TRUE(view8.Is8Bit());
+  EXPECT_EQ(0u, view8.find(""));
+  EXPECT_EQ(4u, view8.find("", 4));
+  EXPECT_EQ(view8.length(), view8.find("", view8.length()));
+  EXPECT_EQ(kNotFound, view8.find("", view8.length() + 1));
+
+  EXPECT_EQ(0u, view8.find("ab"));
+  EXPECT_EQ(5u, view8.find("ab", 1));
+  EXPECT_EQ(5u, view8.find("ab", 5));
+  EXPECT_EQ(kNotFound, view8.find("ab", 6));
+  EXPECT_EQ(kNotFound, view8.find("ab", view8.length() - 1));
+  EXPECT_EQ(kNotFound, view8.find("ab", view8.length()));
+  EXPECT_EQ(kNotFound, view8.find("ab", view8.length() + 1));
+  EXPECT_EQ(0u, view8.find(view8));
+  EXPECT_EQ(kNotFound, view8.find(view8, 1));
+  EXPECT_EQ(kNotFound, view8.find("abcdeabcdea"));
+
+  EXPECT_EQ(0u, view8.find(u"ab"));
+  EXPECT_EQ(5u, view8.find(u"ab", 1));
+  EXPECT_EQ(5u, view8.find(u"ab", 5));
+  EXPECT_EQ(kNotFound, view8.find(u"ab", 6));
+  EXPECT_EQ(kNotFound, view8.find(u"ab", view8.length() - 1));
+  EXPECT_EQ(kNotFound, view8.find(u"ab", view8.length()));
+  EXPECT_EQ(kNotFound, view8.find(u"ab", view8.length() + 1));
+  EXPECT_EQ(0u, view8.find(u"abcdeabcde"));
+  EXPECT_EQ(kNotFound, view8.find(u"abcdeabcde", 1));
+  EXPECT_EQ(kNotFound, view8.find(u"abcdeabcdea"));
+
+  String view8_with_null(base::byte_span_from_cstring("as\0cii"));
+  ASSERT_TRUE(view8_with_null.Is8Bit());
+  EXPECT_EQ(kNotFound, view8_with_null.find("ascii"));
+  const StringView kSNulC(base::byte_span_from_cstring("s\0c"));
+  EXPECT_EQ(1u, view8_with_null.find(kSNulC));
+  EXPECT_EQ(1u, view8_with_null.find(kSNulC, 1));
+  EXPECT_EQ(3u, view8_with_null.find("c"));
+  const StringView kNul(base::byte_span_from_cstring("\0"));
+  EXPECT_EQ(2u, view8_with_null.find(kNul));
+  EXPECT_EQ(kNotFound, view8_with_null.find(kNul, 3));
+
+  String view16(u"abcde\u1234abcde");
+  ASSERT_FALSE(view16.Is8Bit());
+  EXPECT_EQ(0u, view16.find("ab"));
+  EXPECT_EQ(2u, view16.find("cd"));
+  EXPECT_EQ(6u, view16.find("ab", 5));
+  EXPECT_EQ(kNotFound, view16.find("ab", 7));
+  EXPECT_EQ(5u, view16.find(u"\u1234a"));
+  EXPECT_EQ(kNotFound, view16.find("abd"));
+  EXPECT_EQ(kNotFound, view16.find(u"\u1234a", 6));
+
+  String view16_with_null(base::span_from_cstring(u"asci\0i"));
+  ASSERT_FALSE(view16_with_null.Is8Bit());
+  const StringView kNul16(base::span_from_cstring(u"\0"));
+  EXPECT_EQ(4u, view16_with_null.find(kNul));
+  EXPECT_EQ(4u, view16_with_null.find(kNul16));
+  EXPECT_EQ(4u, view16_with_null.find(kNul16, 4));
+  EXPECT_EQ(5u, view16_with_null.find("i", 4));
+  EXPECT_EQ(kNotFound, view16_with_null.find(kNul16, 5));
+}
+
 class TestMatcher {
  public:
   explicit TestMatcher(UChar target) : target_(target) {}
