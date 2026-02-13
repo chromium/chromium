@@ -114,7 +114,7 @@ void ReloadFromOmnibox() {
 - (void)
     FLAKY_testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    if (@available(iOS 19.0, *)) {
+    if (@available(iOS 26.0, *)) {
       // TODO(crbug.com/427699033): Re-enable test on iOS 26.
       // Test uses "split screen" (multiwindow) to force compact width.
       EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
@@ -287,7 +287,7 @@ void ReloadFromOmnibox() {
 // `kSwipedAsInstructedByGestureIPH` when the user pulls down on the IPH.
 - (void)DISABLED_testPullToRefreshPerformAction {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    if (@available(iOS 19.0, *)) {
+    if (@available(iOS 26.0, *)) {
       // TODO(crbug.com/427699033): Re-enable test on iOS 26.
       // Test uses "split screen" (multiwindow) to force compact width.
       EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");

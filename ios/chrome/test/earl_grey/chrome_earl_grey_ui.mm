@@ -87,7 +87,7 @@ id<GREYAction> PageSheetScrollDown() {
   }
 
   // And for iOS 26, the updated table view layout also makes this too big.
-  if (@available(iOS 19.0, *)) {
+  if (@available(iOS 26.0, *)) {
     menu_scroll_displacement = 250;
   }
   return grey_scrollInDirection(kGREYDirectionDown, menu_scroll_displacement);

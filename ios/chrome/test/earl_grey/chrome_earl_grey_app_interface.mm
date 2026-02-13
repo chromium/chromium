@@ -512,7 +512,7 @@ NSString* GetIdForWebState(web::WebState* web_state) {
       [[NSUserActivity alloc] initWithActivityType:@"EG2NewWindow"];
   UIWindowSceneActivationRequestOptions* options =
       [[UIWindowSceneActivationRequestOptions alloc] init];
-  if (@available(iOS 19.0, *)) {
+  if (@available(iOS 26.0, *)) {
     // For iOS26 windowing, ensure the new window doesn't fully overlap the
     // prior window.
     options.placement = [UIWindowSceneProminentPlacement prominentPlacement];

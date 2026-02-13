@@ -1085,7 +1085,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
-  if (@available(iOS 19.0, *)) {
+  if (@available(iOS 26.0, *)) {
     // TODO(crbug.com/427699033): Re-enable test on iOS 26.
     // Drag creates new window, but test fails to interact with it.
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
