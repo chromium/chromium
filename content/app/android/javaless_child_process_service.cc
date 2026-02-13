@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_listener_registry.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
@@ -162,6 +163,7 @@ void ChildProcessService::Run() {
   std::vector<std::string> command_line_copy = args->commandLine;
   base::android::CommandLineInit(command_line_copy);
   base::android::LibraryLoaded(process_type);
+  base::UmaHistogramBoolean("Android.ChildProcess.JavalessStarted", true);
 
   RegisterFileDescriptors(*args);
   StartContentMain(false);

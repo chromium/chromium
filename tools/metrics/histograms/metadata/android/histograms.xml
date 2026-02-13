@@ -1265,6 +1265,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ChildProcess.JavalessStarted" enum="Boolean"
+    expires_after="2026-08-12">
+  <owner>smaier@chromium.org</owner>
+  <summary>
+    Records when a child process (specifically a renderer) is started via the
+    javaless code path on Android.
+  </summary>
+</histogram>
+
 <histogram name="Android.ChildProcessBinding.BatchRequestDelay" units="ms"
     expires_after="2026-11-10">
   <owner>kawasin@google.com</owner>

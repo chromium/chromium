@@ -332,6 +332,7 @@ public class ChildProcessService {
                 mLibraryInitialized = true;
                 mLibraryInitializedLock.notifyAll();
             }
+            RecordHistogram.recordBooleanHistogram("Android.ChildProcess.JavalessStarted", false);
             sendBuildInfoToNative();
             SparseArray<String> idsToKeys = mDelegate.getFileDescriptorsIdsToKeys();
 
