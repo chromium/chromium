@@ -66,6 +66,40 @@ void AuditsIssue::ReportQuirksModeIssue(ExecutionContext* execution_context,
   execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 
+std::unique_ptr<protocol::Audits::SourceCodeLocation> CreateProtocolLocation(
+    const SourceLocation& location) {
+  auto protocol_location = protocol::Audits::SourceCodeLocation::create()
+                               .setUrl(location.Url())
+                               .setLineNumber(location.LineNumber() - 1)
+                               .setColumnNumber(location.ColumnNumber())
+                               .build();
+  if (location.ScriptId()) {
+    protocol_location->setScriptId(String::Number(location.ScriptId()));
+  }
+  return protocol_location;
+}
+
+void AuditsIssue::ReportDocumentCookiePerformanceIssue(
+    ExecutionContext* execution_context) {
+  auto* source_location = CaptureSourceLocation(execution_context);
+  auto performance_issue_details =
+      protocol::Audits::PerformanceIssueDetails::create()
+          .setSourceCodeLocation(CreateProtocolLocation(*source_location))
+          .setPerformanceIssueType(
+              protocol::Audits::PerformanceIssueTypeEnum::DocumentCookie)
+          .build();
+  auto issue_details =
+      protocol::Audits::InspectorIssueDetails::create()
+          .setPerformanceIssueDetails(std::move(performance_issue_details))
+          .build();
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(protocol::Audits::InspectorIssueCodeEnum::PerformanceIssue)
+          .setDetails(std::move(issue_details))
+          .build();
+  execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
 namespace {
 
 protocol::Network::CorsError RendererCorsIssueCodeToProtocol(
@@ -80,19 +114,6 @@ protocol::Network::CorsError RendererCorsIssueCodeToProtocol(
   }
 }
 }  // namespace
-
-std::unique_ptr<protocol::Audits::SourceCodeLocation> CreateProtocolLocation(
-    const SourceLocation& location) {
-  auto protocol_location = protocol::Audits::SourceCodeLocation::create()
-                               .setUrl(location.Url())
-                               .setLineNumber(location.LineNumber() - 1)
-                               .setColumnNumber(location.ColumnNumber())
-                               .build();
-  if (location.ScriptId()) {
-    protocol_location->setScriptId(String::Number(location.ScriptId()));
-  }
-  return protocol_location;
-}
 
 protocol::Audits::GenericIssueErrorType
 AuditsIssue::GenericIssueErrorTypeToProtocol(

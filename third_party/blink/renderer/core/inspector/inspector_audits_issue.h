@@ -106,6 +106,9 @@ class CORE_EXPORT AuditsIssue {
                                     String frame_id,
                                     String loader_id);
 
+  static void ReportDocumentCookiePerformanceIssue(
+      ExecutionContext* execution_context);
+
   static void ReportCorsIssue(ExecutionContext* execution_context,
                               RendererCorsIssueCode code,
                               String url,
@@ -223,7 +226,6 @@ class CORE_EXPORT AuditsIssue {
       const String& disableReason = String());
 
  private:
-
   std::unique_ptr<protocol::Audits::InspectorIssue> issue_;
 };
 

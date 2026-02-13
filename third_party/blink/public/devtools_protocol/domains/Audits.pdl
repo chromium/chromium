@@ -105,6 +105,16 @@ experimental domain Audits
       # The recommended solution to the issue.
       optional CookieIssueInsight insight
 
+  type PerformanceIssueType extends string
+    enum
+      DocumentCookie
+
+  # Details for a performance issue.
+  type PerformanceIssueDetails extends object
+    properties
+      PerformanceIssueType performanceIssueType
+      optional SourceCodeLocation sourceCodeLocation
+
   type MixedContentResolutionStatus extends string
     enum
       MixedContentBlocked
@@ -720,6 +730,7 @@ experimental domain Audits
       ConnectionAllowlistIssue
       UserReidentificationIssue
       PermissionElementIssue
+      PerformanceIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -754,6 +765,7 @@ experimental domain Audits
       optional ConnectionAllowlistIssueDetails connectionAllowlistIssueDetails
       optional UserReidentificationIssueDetails userReidentificationIssueDetails
       optional PermissionElementIssueDetails permissionElementIssueDetails
+      optional PerformanceIssueDetails performanceIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.

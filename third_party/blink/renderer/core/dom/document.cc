@@ -67,6 +67,7 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink-forward.h"
@@ -79,6 +80,7 @@
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/web/web_link_preview_triggerer.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -277,6 +279,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/touch_list.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
@@ -6766,6 +6769,11 @@ String Document::cookie(ExceptionState& exception_state) const {
     return String();
 
   CountUse(WebFeature::kCookieGet);
+
+  // Report PerformanceIssue for DevTools
+  if (auto* execution_context = GetExecutionContext()) {
+    AuditsIssue::ReportDocumentCookiePerformanceIssue(execution_context);
+  }
 
   if (!dom_window_->GetSecurityOrigin()->CanAccessCookies()) {
     if (dom_window_->IsSandboxed(

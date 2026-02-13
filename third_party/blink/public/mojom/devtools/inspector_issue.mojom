@@ -29,6 +29,7 @@ enum InspectorIssueCode {
   kFederatedAuthUserInfoRequestIssue,
   kPartitioningBlobURLIssue,
   kUserReidentificationIssue,
+  kPerformanceIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -187,6 +188,15 @@ struct CookieIssueDetails {
   url.mojom.Url? site_for_cookies;
   url.mojom.Url? cookie_url;
   AffectedRequest? request;
+};
+
+enum PerformanceIssueType {
+  kDocumentCookie,
+};
+
+struct PerformanceIssueDetails {
+  PerformanceIssueType performance_issue_type;
+  AffectedLocation? affected_location;
 };
 
 enum SharedArrayBufferIssueType {
@@ -381,6 +391,7 @@ struct InspectorIssueDetails {
   FederatedAuthUserInfoRequestIssueDetails?
       federated_auth_user_info_request_details;
   UserReidentificationIssueDetails? user_reidentification_issue_details;
+  PerformanceIssueDetails? performance_issue_details;
   mojo_base.mojom.UnguessableToken? issue_id;
 };
 

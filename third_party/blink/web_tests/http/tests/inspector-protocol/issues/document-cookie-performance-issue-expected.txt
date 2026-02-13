@@ -1,0 +1,18 @@
+Tests that performance issues are reported for document.cookie access
+Inspector issue: {
+    issue : {
+        code : PerformanceIssue
+        details : {
+            performanceIssueDetails : {
+                performanceIssueType : DocumentCookie
+                sourceCodeLocation : {
+                    columnNumber : 10
+                    lineNumber : 0
+                    scriptId : <string>
+                    url :
+                }
+            }
+        }
+    }
+}
+
