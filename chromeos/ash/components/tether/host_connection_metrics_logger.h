@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/tether/active_host.h"
 
@@ -258,6 +259,9 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
 
   base::Time connect_to_host_start_time_;
   std::string active_host_device_id_;
+
+  base::ScopedObservation<ActiveHost, ActiveHost::Observer>
+      active_host_observer_{this};
 };
 
 }  // namespace tether

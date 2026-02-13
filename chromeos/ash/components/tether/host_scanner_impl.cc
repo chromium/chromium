@@ -44,12 +44,10 @@ HostScannerImpl::HostScannerImpl(
       clock_(clock),
       tether_availability_operation_orchestrator_factory_(
           std::move(tether_availability_operation_orchestrator_factory)) {
-  session_manager_->AddObserver(this);
+  session_manager_observer_.Observe(session_manager_);
 }
 
-HostScannerImpl::~HostScannerImpl() {
-  session_manager_->RemoveObserver(this);
-}
+HostScannerImpl::~HostScannerImpl() = default;
 
 bool HostScannerImpl::IsScanActive() {
   return tether_availability_operation_orchestrator_ != nullptr;

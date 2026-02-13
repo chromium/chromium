@@ -107,11 +107,7 @@ TetherConnectorImpl::TetherConnectorImpl(
       disconnect_tethering_request_sender_(disconnect_tethering_request_sender),
       wifi_hotspot_disconnector_(wifi_hotspot_disconnector) {}
 
-TetherConnectorImpl::~TetherConnectorImpl() {
-  if (connect_tethering_operation_) {
-    connect_tethering_operation_->RemoveObserver(this);
-  }
-}
+TetherConnectorImpl::~TetherConnectorImpl() = default;
 
 void TetherConnectorImpl::ConnectToNetwork(
     const std::string& tether_network_guid,
@@ -169,7 +165,8 @@ void TetherConnectorImpl::ConnectToNetwork(
   connect_tethering_operation_ = ConnectTetheringOperation::Factory::Create(
       TetherHost(*tether_host_to_connect), host_connection_factory_,
       host_scan_cache_->DoesHostRequireSetup(tether_network_guid));
-  connect_tethering_operation_->AddObserver(this);
+  connect_tethering_operation_observer_.Observe(
+      connect_tethering_operation_.get());
   connect_tethering_operation_->Initialize();
 }
 
@@ -191,8 +188,7 @@ bool TetherConnectorImpl::CancelConnectionAttempt(
 
   if (connect_tethering_operation_) {
     // If a ConnectTetheringOperation is in progress, stop it.
-    connect_tethering_operation_->RemoveObserver(this);
-    connect_tethering_operation_.reset();
+    ResetConnectTetheringOperation();
   }
 
   // Send a DisconnectTetheringRequest so that it can turn off its Wi-Fi
@@ -247,8 +243,7 @@ void TetherConnectorImpl::OnSuccessfulConnectTetheringResponse(
   std::string ssid_copy = ssid;
   std::string password_copy = password;
 
-  connect_tethering_operation_->RemoveObserver(this);
-  connect_tethering_operation_.reset();
+  ResetConnectTetheringOperation();
 
   wifi_hotspot_connector_->ConnectToWifiHotspot(
       ssid_copy, password_copy, active_host_->GetTetherNetworkGuid(),
@@ -264,8 +259,7 @@ void TetherConnectorImpl::OnConnectTetheringFailure(
                          device_id_pending_connection_)
                   << " could not complete. Error code: " << error_code;
 
-  connect_tethering_operation_->RemoveObserver(this);
-  connect_tethering_operation_.reset();
+  ResetConnectTetheringOperation();
   RecordConnectTetheringOperationResult(device_id_pending_connection_,
                                         error_code);
   SetConnectionFailed(NetworkConnectionHandler::kErrorConnectFailed);
@@ -453,6 +447,11 @@ void TetherConnectorImpl::RecordConnectTetheringOperationResult(
     host_connection_metrics_logger_->RecordConnectionToHostResult(
         result.value(), device_id, internal_error);
   }
+}
+
+void TetherConnectorImpl::ResetConnectTetheringOperation() {
+  connect_tethering_operation_observer_.Reset();
+  connect_tethering_operation_.reset();
 }
 
 }  // namespace ash::tether

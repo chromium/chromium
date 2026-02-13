@@ -15,12 +15,10 @@ namespace tether {
 HostConnectionMetricsLogger::HostConnectionMetricsLogger(
     ActiveHost* active_host)
     : active_host_(active_host), clock_(base::DefaultClock::GetInstance()) {
-  active_host_->AddObserver(this);
+  active_host_observer_.Observe(active_host_);
 }
 
-HostConnectionMetricsLogger::~HostConnectionMetricsLogger() {
-  active_host_->RemoveObserver(this);
-}
+HostConnectionMetricsLogger::~HostConnectionMetricsLogger() = default;
 
 void HostConnectionMetricsLogger::RecordConnectionToHostResult(
     ConnectionToHostResult result,

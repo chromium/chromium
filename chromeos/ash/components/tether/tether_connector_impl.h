@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
@@ -91,6 +92,8 @@ class TetherConnectorImpl : public TetherConnector,
       const std::string& device_id,
       ConnectTetheringOperation::HostResponseErrorCode error_code);
 
+  void ResetConnectTetheringOperation();
+
   raw_ptr<HostConnection::Factory> host_connection_factory_;
   raw_ptr<NetworkConnectionHandler> network_connection_handler_;
   raw_ptr<NetworkStateHandler> network_state_handler_;
@@ -111,6 +114,9 @@ class TetherConnectorImpl : public TetherConnector,
   base::OnceClosure success_callback_;
   StringErrorCallback error_callback_;
   std::unique_ptr<ConnectTetheringOperation> connect_tethering_operation_;
+  base::ScopedObservation<ConnectTetheringOperation,
+                          ConnectTetheringOperation::Observer>
+      connect_tethering_operation_observer_{this};
   base::Time connect_to_host_start_time_;
   base::WeakPtrFactory<TetherConnectorImpl> weak_ptr_factory_{this};
 };

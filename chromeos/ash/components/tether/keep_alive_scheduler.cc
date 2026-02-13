@@ -37,12 +37,10 @@ KeepAliveScheduler::KeepAliveScheduler(
       host_scan_cache_(host_scan_cache),
       device_id_tether_network_guid_map_(device_id_tether_network_guid_map),
       timer_(std::move(timer)) {
-  active_host_->AddObserver(this);
+  active_host_observer_.Observe(active_host_);
 }
 
-KeepAliveScheduler::~KeepAliveScheduler() {
-  active_host_->RemoveObserver(this);
-}
+KeepAliveScheduler::~KeepAliveScheduler() = default;
 
 void KeepAliveScheduler::OnActiveHostChanged(
     const ActiveHost::ActiveHostChangeInfo& change_info) {

@@ -24,12 +24,11 @@ NetworkHostScanCache::NetworkHostScanCache(
     : network_state_handler_(network_state_handler),
       tether_host_response_recorder_(tether_host_response_recorder),
       device_id_tether_network_guid_map_(device_id_tether_network_guid_map) {
-  tether_host_response_recorder_->AddObserver(this);
+  tether_host_response_recorder_observer_.Observe(
+      tether_host_response_recorder_);
 }
 
-NetworkHostScanCache::~NetworkHostScanCache() {
-  tether_host_response_recorder_->RemoveObserver(this);
-}
+NetworkHostScanCache::~NetworkHostScanCache() = default;
 
 void NetworkHostScanCache::SetHostScanResult(const HostScanCacheEntry& entry) {
   if (!ExistsInCache(entry.tether_network_guid)) {
