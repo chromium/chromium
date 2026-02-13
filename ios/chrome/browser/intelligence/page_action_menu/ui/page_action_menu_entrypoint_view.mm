@@ -200,9 +200,24 @@ NSTimeInterval kAnimationDuration = 0.3;
           forState:UIControlStateNormal];
 #endif
   } else {
-    [self setImage:CustomSymbolWithPointSize(kTextSparkSymbol,
-                                             kIconPointSize * scale)
-          forState:UIControlStateNormal];
+    PageActionMenuIconVariations pageActionMenuIcon = GetPageActionMenuIcon();
+    switch (pageActionMenuIcon) {
+      case PageActionMenuIconVariations::kDefault:
+        [self setImage:CustomSymbolWithPointSize(kTextSparkSymbol,
+                                                 kIconPointSize * scale)
+              forState:UIControlStateNormal];
+        break;
+      case PageActionMenuIconVariations::kSparkles1:
+        [self setImage:DefaultSymbolWithPointSize(kSparklesSymbol,
+                                                  kIconPointSize * scale)
+              forState:UIControlStateNormal];
+        break;
+      case PageActionMenuIconVariations::kSparkles2:
+        [self setImage:DefaultSymbolWithPointSize(kSparkles2Symbol,
+                                                  kIconPointSize * scale)
+              forState:UIControlStateNormal];
+        break;
+    }
   }
 }
 
