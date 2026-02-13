@@ -657,8 +657,7 @@ UIButton* GetButtonForAction(AlertAction* action) {
   };
   [self registerForTraitChanges:traits withHandler:handler];
 
-  traits = TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(selectImageForCurrentStyle)];
 }
 
