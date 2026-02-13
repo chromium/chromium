@@ -32,6 +32,8 @@ enum TabResumptionItemType {
 // Item used to display the tab resumption tile.
 @interface TabResumptionItem : MagicStackModule
 
+// The updates to properties must be reflected in the copy method.
+// LINT.IfChange(Copy)
 // The type of the tab.
 @property(nonatomic, readonly) TabResumptionItemType itemType;
 
@@ -72,6 +74,7 @@ enum TabResumptionItemType {
 // ShopCard related information to render the ShopCard variants of
 // tab-resumption.
 @property(nonatomic, strong) ShopCardData* shopCardData;
+// LINT.ThenChange(tab_resumption_item.mm:Copy)
 
 // The Item's designated initializer.
 - (instancetype)initWithItemType:(TabResumptionItemType)itemType

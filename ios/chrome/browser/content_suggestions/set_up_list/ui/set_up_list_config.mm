@@ -23,10 +23,13 @@
 
 - (id)copyWithZone:(NSZone*)zone {
   SetUpListConfig* copy = [[super copyWithZone:zone] init];
+  // The updates to properties must be reflected in the copy method.
+  // LINT.IfChange(Copy)
   copy.setUpListItems = self.setUpListItems;
   copy.shouldShowCompactModule = self.shouldShowCompactModule;
   copy.setUpListConsumerSource = self.setUpListConsumerSource;
   copy.commandHandler = self.commandHandler;
+  // LINT.ThenChange(set_up_list_config.h:Copy)
   return copy;
 }
 

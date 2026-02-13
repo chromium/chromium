@@ -34,9 +34,12 @@
 
 - (id)copyWithZone:(NSZone*)zone {
   MagicStackModule* copy = [[[self class] allocWithZone:zone] init];
+  // The updates to properties must be reflected in the copy method.
+  // LINT.IfChange(Copy)
   copy.shouldShowSeeMore = self.shouldShowSeeMore;
   copy.showNotificationsOptIn = self.showNotificationsOptIn;
   copy.delegate = self.delegate;
+  // LINT.ThenChange(magic_stack_module.h:Copy)
   return copy;
 }
 

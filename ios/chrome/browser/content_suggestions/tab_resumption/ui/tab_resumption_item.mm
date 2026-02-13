@@ -76,6 +76,8 @@
 - (instancetype)copyWithZone:(NSZone*)zone {
   TabResumptionItem* item =
       [[super copyWithZone:zone] initWithItemType:self.itemType];
+  // The updates to properties must be reflected in the copy method.
+  // LINT.IfChange(Copy)
   item.commandHandler = self.commandHandler;
   item.sessionName = [self.sessionName copy];
   item.localWebState = self.localWebState;
@@ -88,6 +90,7 @@
   item.URLKey = self.URLKey;
   item.requestID = self.requestID;
   item.shopCardData = self.shopCardData;
+  // LINT.ThenChange(tab_resumption_item.h:Copy)
   return item;
 }
 

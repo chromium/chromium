@@ -11,6 +11,8 @@
 // view.
 @interface StandaloneModuleViewConfiguration : MagicStackModule
 
+// The updates to properties must be reflected in the copy method.
+// LINT.IfChange(Copy)
 // Product image for the module
 @property(nonatomic, strong) UIImage* productImage;
 
@@ -33,6 +35,7 @@
 
 // Accessibility identifier for the module.
 @property(nonatomic, copy) NSString* accessibilityIdentifier;
+// LINT.ThenChange(standalone_module_view_configuration.mm:Copy)
 
 @end
 

@@ -15,11 +15,14 @@
 // Config object for the Shortcuts module.
 @interface ShortcutsConfig : MagicStackModule
 
+// The updates to properties must be reflected in the copy method.
+// LINT.IfChange(Copy)
 // List of Shortcuts to show in module.
 @property(nonatomic, copy) NSArray<ShortcutsActionItem*>* shortcutItems;
 
 // Command handler for user actions.
 @property(nonatomic, weak) id<ShortcutsCommands> commandHandler;
+// LINT.ThenChange(shortcuts_config.mm:Copy)
 
 @end
 

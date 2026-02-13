@@ -13,11 +13,14 @@
 // Item containing the configurations for the Shopcard view.
 @interface ShopCardItem : MagicStackModule
 
+// The updates to properties must be reflected in the copy method.
+// LINT.IfChange(Copy)
 // Shopping data including the card type, and card-specific data.
 @property(nonatomic, strong) ShopCardData* shopCardData;
 
 // Command handler for user actions.
 @property(nonatomic, weak) id<ShopCardCommands> shopCardHandler;
+// LINT.ThenChange(shop_card_item.mm:Copy)
 
 @end
 

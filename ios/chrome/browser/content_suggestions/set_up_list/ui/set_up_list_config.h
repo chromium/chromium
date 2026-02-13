@@ -14,6 +14,8 @@
 // Config object for a Set Up List module.
 @interface SetUpListConfig : MagicStackModule
 
+// The updates to properties must be reflected in the copy method.
+// LINT.IfChange(Copy)
 // List of Set Up List items to show in the module.
 @property(nonatomic, strong) NSArray<SetUpListItemViewData*>* setUpListItems;
 
@@ -27,6 +29,7 @@
 // Command handler for Set Up List events.
 @property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
     commandHandler;
+// LINT.ThenChange(set_up_list_config.mm:Copy)
 
 @end
 

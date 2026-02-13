@@ -31,6 +31,8 @@
 
 - (instancetype)copyWithZone:(NSZone*)zone {
   IconDetailViewConfiguration* viewConfig = [[super copyWithZone:zone] init];
+  // The updates to properties must be reflected in the copy method.
+  // LINT.IfChange(Copy)
   viewConfig.titleText = [self.titleText copy];
   viewConfig.descriptionText = [self.descriptionText copy];
   viewConfig.layoutType = self.layoutType;
@@ -49,6 +51,7 @@
   viewConfig.badgeBackgroundColor = self.badgeBackgroundColor;
   viewConfig.badgeUsesDefaultSymbol = self.badgeUsesDefaultSymbol;
   viewConfig.accessibilityIdentifier = [self.accessibilityIdentifier copy];
+  // LINT.ThenChange(icon_detail_view_configuration.h:Copy)
   return viewConfig;
 }
 

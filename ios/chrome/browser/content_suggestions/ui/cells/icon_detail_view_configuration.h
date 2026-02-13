@@ -51,6 +51,8 @@ enum class IconViewSourceType;
 // Configuration for the `IconDetailView`.
 @interface IconDetailViewConfiguration : MagicStackModule
 
+// The updates to properties must be reflected in the copy method.
+// LINT.IfChange(Copy)
 // Content properties.
 // The title to be displayed in the view.
 @property(nonatomic, copy) NSString* titleText;
@@ -99,6 +101,7 @@ enum class IconViewSourceType;
 @property(nonatomic, assign) BOOL badgeUsesDefaultSymbol;
 
 @property(nonatomic, strong) NewTabPageColorPalette* ntpBackgroundColorPalette;
+// LINT.ThenChange(icon_detail_view_configuration.mm:Copy)
 
 // Returns the configuration for an `IconView` associated with this
 // `IconDetailView`.

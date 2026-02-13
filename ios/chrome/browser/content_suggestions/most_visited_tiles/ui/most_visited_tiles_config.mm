@@ -30,9 +30,12 @@
 - (id)copyWithZone:(NSZone*)zone {
   MostVisitedTilesConfig* copy =
       [[super copyWithZone:zone] initWithLayoutGuideCenter:_layoutGuideCenter];
+  // The updates to properties must be reflected in the copy method.
+  // LINT.IfChange(Copy)
   copy.mostVisitedItems = self.mostVisitedItems;
   copy.imageDataSource = self.imageDataSource;
   copy.commandHandler = self.commandHandler;
+  // LINT.ThenChange(most_visited_tiles_config.h:Copy)
   return copy;
 }
 

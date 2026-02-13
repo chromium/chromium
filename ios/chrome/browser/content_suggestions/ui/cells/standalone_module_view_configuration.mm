@@ -11,6 +11,8 @@
 - (instancetype)copyWithZone:(NSZone*)zone {
   StandaloneModuleViewConfiguration* viewConfig =
       [[super copyWithZone:zone] init];
+  // The updates to properties must be reflected in the copy method.
+  // LINT.IfChange(Copy)
   viewConfig.productImage = self.productImage;
   viewConfig.faviconImage = self.faviconImage;
   viewConfig.fallbackSymbolImage = self.fallbackSymbolImage;
@@ -18,6 +20,7 @@
   viewConfig.bodyText = [self.bodyText copy];
   viewConfig.buttonText = [self.buttonText copy];
   viewConfig.accessibilityIdentifier = [self.accessibilityIdentifier copy];
+  // LINT.ThenChange(standalone_module_view_configuration.h:Copy)
   return viewConfig;
 }
 

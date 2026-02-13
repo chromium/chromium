@@ -17,6 +17,8 @@
 // Config object for the Most Visited Tiles module.
 @interface MostVisitedTilesConfig : MagicStackModule
 
+// The updates to properties must be reflected in the copy method.
+// LINT.IfChange(Copy)
 // List of Most Visited Tiles to show in module.
 @property(nonatomic, strong) NSArray<MostVisitedItem*>* mostVisitedItems;
 
@@ -30,6 +32,7 @@
 
 // Command handler for user actions.
 @property(nonatomic, weak) id<MostVisitedTilesCommands> commandHandler;
+// LINT.ThenChange(most_visited_tiles_config.mm:Copy)
 
 // Initializes the config object for most visited tiles.
 - (instancetype)initWithLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
