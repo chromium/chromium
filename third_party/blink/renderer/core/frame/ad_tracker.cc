@@ -113,6 +113,32 @@ ApiFunctionInfo GetApiFunctionInfo(v8::Isolate* isolate,
   return {handle_scope.Escape(api_function), is_monkey_patched};
 }
 
+// Checks if the function executed in `frame` matches the provided
+// `api_function`.
+bool MatchesApiFunction(v8::Isolate* isolate,
+                        v8::Local<v8::Function> api_function,
+                        v8::Local<v8::StackFrame> frame) {
+  // Verify the function in the frame matches the API by script ID.
+  if (frame->GetScriptId() != api_function->ScriptId()) {
+    return false;
+  }
+
+  v8::Local<v8::String> frame_func_name = frame->GetFunctionName();
+  v8::Local<v8::Value> api_func_name_value = api_function->GetDebugName();
+
+  if (!frame_func_name.IsEmpty() && !frame_func_name->IsUndefined() &&
+      api_func_name_value->IsString()) {
+    v8::Local<v8::String> api_func_name = api_func_name_value.As<v8::String>();
+
+    if (ToCoreString(isolate, frame_func_name) ==
+        ToCoreString(isolate, api_func_name)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool IsKnownAdExecutionContext(ExecutionContext* execution_context) {
   // TODO(jkarlin): Do the same check for worker contexts.
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
@@ -451,7 +477,10 @@ bool AdTracker::IsAdScriptInStackHelper(
     return false;
   }
 
-  std::array<v8::StackTrace::ScriptIdAndContext, 1> stack_buffer;
+  // We inspect the top two stack frames. It allows us to capture publisher
+  // monkey patch scenarios (i.e., a publisher monkey patch that passively
+  // invokes an ad's intent.
+  std::array<v8::StackTrace::ScriptIdAndContext, 2> stack_buffer;
   auto stack =
       v8::StackTrace::CurrentScriptIdsAndContexts(isolate, stack_buffer);
 
@@ -469,16 +498,51 @@ bool AdTracker::IsAdScriptInStackHelper(
     return false;
   }
 
-  int top_script_id = stack[0].id;
+  auto ad_script_it = ad_script_data_.end();
+  int ad_script_index = -1;
 
-  auto script_it = ad_script_data_.find(top_script_id);
-  if (script_it == ad_script_data_.end()) {
-    // The top of the stack is not registered ad script. Is it from an ad frame?
+  for (size_t i = 0; i < stack.size(); ++i) {
+    int script_id = stack[i].id;
+    if (script_id <= 0) {
+      return false;
+    }
 
-    // If the top of the stack is non-ad, then we consider the stack to be
-    // non-ad related, as publisher script may be running an event callback.
-    // TODO(jkarlin): Address publisher monkeypatch methods that are merely
-    // passively invoking the ad's intent.
+    auto it = ad_script_data_.find(script_id);
+    if (it != ad_script_data_.end()) {
+      ad_script_index = i;
+      ad_script_it = it;
+      break;
+    }
+  }
+
+  if (ad_script_it == ad_script_data_.end()) {
+    // The top scripts on the stack are not registered ad script. Are they
+    // from ad frames?
+
+    // If the top scripts on the stack are non-ad, then we consider the stack
+    // to be non-ad related, as publisher script may be running an event
+    // callback.
+    return false;
+  }
+
+  if (ad_script_index > 0) {
+    // The top script on the stack is non-ad, but a script further down (at
+    // `ad_script_index`) is an ad.
+    //
+    // Handle the scenario where an ad script calls a non-ad monkey patch (e.g.,
+    // a publisher monkey patch that passively invokes an ad's intent). If the
+    // called function matches the specific API being tracked, we classify the
+    // stack as ad-related.
+    if (ignore_monkey_patch != MonkeyPatchableApi::kNone &&
+        WasApiCalledByAdScript(isolate, ignore_monkey_patch, ad_script_index)) {
+      if (out_ad_script) {
+        *out_ad_script = ad_script_it->value.id;
+      }
+      return true;
+    }
+
+    // Otherwise, consider the stack non-ad-related. This prevents false
+    // positives where publisher script may be running an event callback.
     return false;
   }
 
@@ -492,7 +556,7 @@ bool AdTracker::IsAdScriptInStackHelper(
   }
 
   if (out_ad_script) {
-    *out_ad_script = script_it->value.id;
+    *out_ad_script = ad_script_it->value.id;
   }
 
   return true;
@@ -563,35 +627,60 @@ bool AdTracker::WasApiCalledByNonAdScript(v8::Isolate* isolate,
       return false;
     }
 
-    // Verify the function at the boundary is the patched API by checking its
-    // script ID and name.
-    if (ad_barrier_frame->GetScriptId() != api_function->ScriptId()) {
-      return false;
-    }
-
-    v8::Local<v8::String> barrier_func_name =
-        ad_barrier_frame->GetFunctionName();
-    v8::Local<v8::Value> api_func_name_value = api_function->GetDebugName();
-
-    if (!barrier_func_name.IsEmpty() && !barrier_func_name->IsUndefined() &&
-        api_func_name_value->IsString()) {
-      v8::Local<v8::String> api_func_name =
-          api_func_name_value.As<v8::String>();
-
-      if (ToCoreString(isolate, barrier_func_name) ==
-          ToCoreString(isolate, api_func_name)) {
-        return true;
-      }
-    }
-
-    // If the function names don't match, it doesn't fit the expected pattern
-    // (e.g., a "just-in-time" patch).
-    return false;
+    // Verify that the ad function at the boundary is indeed the API we are
+    // tracking. This prevents misidentifying unrelated calls (e.g., a non-ad
+    // script calling a random helper function inside an ad) as a monkey patch.
+    // If the boundary function doesn't match the API, it's not the pattern we
+    // are looking for.
+    return MatchesApiFunction(isolate, api_function, ad_barrier_frame);
   }
 
   // If the loop completes, the entire stack trace is from ad scripts, so the
   // call did not originate from a non-ad script.
   return false;
+}
+
+bool AdTracker::WasApiCalledByAdScript(v8::Isolate* isolate,
+                                       MonkeyPatchableApi api,
+                                       int ad_script_index) const {
+  // `ad_script_index` is the index of the ad script (the caller).
+  // We need to check the frame immediately above it (the callee), which must
+  // be the monkey patched API.
+  DCHECK_GT(ad_script_index, 0);
+  int monkey_patch_frame_index = ad_script_index - 1;
+
+  ApiFunctionInfo api_info = GetApiFunctionInfo(isolate, api);
+  if (!api_info.is_monkey_patched) {
+    return false;
+  }
+
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Function> api_function;
+  if (!api_info.function.ToLocal(&api_function)) {
+    return false;
+  }
+
+  // We only need the stack up to the ad script.
+  v8::Local<v8::StackTrace> stack_trace = v8::StackTrace::CurrentStackTrace(
+      isolate, /*frame_limit=*/ad_script_index);
+
+  if (stack_trace.IsEmpty() ||
+      stack_trace->GetFrameCount() <= monkey_patch_frame_index) {
+    return false;
+  }
+
+  v8::Local<v8::StackFrame> monkey_patch_frame =
+      stack_trace->GetFrame(isolate, monkey_patch_frame_index);
+
+  if (monkey_patch_frame.IsEmpty()) {
+    return false;
+  }
+
+  // Verify that the non-ad function being called is the API wrapper we are
+  // interested in. This ensures we only flag the specific scenario where the
+  // ad is trying to use the API, rather than general event handlers or
+  // callbacks invoked by the ad.
+  return MatchesApiFunction(isolate, api_function, monkey_patch_frame);
 }
 
 bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,

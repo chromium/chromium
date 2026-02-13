@@ -136,12 +136,17 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // generally best as it catches more ads but you may want to call
   // `kBottomOnly` if you truly only care about that frame.
   //
-  // When `ignore_monkey_patch` is specified, a heuristic is enabled to prevent
-  // false positives from monkey patching. If the script at the top of the stack
-  // is an ad script and the API was invoked by non-ad script, this check will
-  // be ignored for the first call to the specified API within the current
-  // synchronous task. This is because the ad script is likely just a proxy for
-  // the real, non-ad caller.
+  // When `ignore_monkey_patch` is specified, a heuristic is enabled to mitigate
+  // inaccurate stack tagging caused by API monkey patching (i.e., the immediate
+  // caller is a proxy for the real caller). This handles two distinct
+  // scenarios:
+  // 1. Ad Monkey Patch (Mitigating False Positives):
+  //    If the script at the top of the stack is an ad script and the API was
+  //    invoked by a non-ad script, this check will be ignored for the first
+  //    call to the specified API within the current synchronous task.
+  // 2. Non-Ad Monkey Patch (Mitigating False Negatives):
+  //    If the script at the top of the stack is a non-ad script and the API was
+  //    invoked by an ad script, the stack is classified as ad-related.
   //
   // Note: This function is not idempotent when `ignore_monkey_patch` is used,
   // as it tracks the first call to an API within a synchronous task.
@@ -199,6 +204,13 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // called the monkey patched `api`.
   bool WasApiCalledByNonAdScript(v8::Isolate* isolate,
                                  MonkeyPatchableApi api) const;
+
+  // Helper for `IsAdScriptInStack` that checks if a non-ad script at the top
+  // of the stack is a monkey patch called by an ad script.
+  // `ad_script_index` is the index of the ad script in the stack.
+  bool WasApiCalledByAdScript(v8::Isolate* isolate,
+                              MonkeyPatchableApi api,
+                              int ad_script_index) const;
 
   bool IsKnownAdScript(ExecutionContext*, const String& url);
 
