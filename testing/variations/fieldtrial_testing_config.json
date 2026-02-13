@@ -21089,28 +21089,6 @@
             ]
         }
     ],
-    "PrivacySandboxSentimentSurvey": [
-        {
-            "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "probability": "1.0",
-                        "sentiment-survey-trigger-id": "EHJUDsZQd0ugnJ3q1cK0Ru5GreU3"
-                    },
-                    "enable_features": [
-                        "PrivacySandboxSentimentSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivateAggregationApiErrorReporting": [
         {
             "platforms": [

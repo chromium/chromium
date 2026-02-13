@@ -441,15 +441,6 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kHasPreFirstTab"/>
 </enum>
 
-<!-- LINT.IfChange(PrivacySandboxSurveyTypesEnums) -->
-
-<enum name="PrivacySandboxSurveyTypes">
-  <int value="0" label="Unknown Survey"/>
-  <int value="1" label="Sentiment Survey"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyController.java:PrivacySandboxSurveyTypes) -->
-
 <enum name="QuickDeleteAction">
   <int value="0" label="Entry from menu item clicked"/>
   <int value="1" label="Delete button on dialog clicked"/>

@@ -481,7 +481,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kPrivacySandboxActivityTypeStorage,
     &privacy_sandbox::kPrivacySandboxAdTopicsContentParity,
     &privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements,
-    &privacy_sandbox::kPrivacySandboxSentimentSurvey,
     &privacy_sandbox::kPrivacySandboxSettings4,
     &privacy_sandbox::kRelatedWebsiteSetsUi,
     &safe_browsing::kAutoRevokeSuspiciousNotification,

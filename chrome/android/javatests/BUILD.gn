@@ -1600,7 +1600,6 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/policy/PolicyAuditorBridgeTest.java",
     "src/org/chromium/chrome/browser/previewtab/PreviewTabTest.java",
     "src/org/chromium/chrome/browser/printing/PrintingControllerTest.java",
-    "src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyControllerIntegrationTest.java",
     "src/org/chromium/chrome/browser/push_messaging/PushMessagingTest.java",
     "src/org/chromium/chrome/browser/read_later/ReadLaterContextMenuTest.java",
     "src/org/chromium/chrome/browser/reengagement/ReengagementNotificationControllerIntegrationTest.java",

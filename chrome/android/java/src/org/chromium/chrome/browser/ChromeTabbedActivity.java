@@ -213,7 +213,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_change.PriceChangeModuleBuilder;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSurveyController;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -3701,14 +3700,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         ChromeSurveyController.initialize(
                 mTabModelSelector, getLifecycleDispatcher(), activity, messageDispatcher, profile);
-
-        PrivacySandboxSurveyController.initialize(
-                mTabModelSelector,
-                getLifecycleDispatcher(),
-                activity,
-                messageDispatcher,
-                getActivityTabProvider(),
-                profile);
 
         SigninSurveyController.initialize(
                 profile, mTabModelSelector, getLifecycleDispatcher(), activity, messageDispatcher);
