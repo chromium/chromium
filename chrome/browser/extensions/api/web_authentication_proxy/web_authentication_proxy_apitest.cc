@@ -684,6 +684,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, SplitIncognitoOnly) {
   EXPECT_FALSE(ProxyIsActiveForContext(profile()));
   EXPECT_FALSE(ProxyIsActiveForContext(incognito_context));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // A split mode extension should reattach after the incognito window is
 // destroyed and recreated.
@@ -731,6 +732,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, SplitModeDestruction) {
   EXPECT_EQ(ProxyForContext(incognito_context), extension);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // The webAuthenticationproxy API does not consider user host permissions.
 IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, UserHostPermissions) {
   SetJsTestName("policyBlockedHosts");
