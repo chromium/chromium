@@ -52,7 +52,6 @@ FUZZERS_WITH_CORPORA = [
     'code_cache_host_mojolpm_fuzzer',
     'color_analysis_fuzzer',
     'color_parser_fuzzer',
-    'color_transform_fuzzer',
     'comfort_noise_decoder_fuzzer',
     'command_line_fuzzer',
     'compact_enc_det_fuzzer',

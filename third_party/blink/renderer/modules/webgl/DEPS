@@ -19,7 +19,6 @@ include_rules = [
     "+partition_alloc/partition_alloc_constants.h",
     "+skia/ext",
     "+third_party/blink/renderer/modules/webcodecs",
-    "+ui/gfx/color_transform.h",
     "+ui/gfx/extension_set.h",
     "+ui/gl/angle_platform_impl.h",
     "+ui/gl/egl_util.h",
