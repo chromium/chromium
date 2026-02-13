@@ -1620,13 +1620,6 @@ inline constexpr char kSubAppsDescription[] =
     "Enable IWAs to install sub apps that have their own manifest and can "
     "integrate with the OS, in many ways as if it were a separate app.";
 
-inline constexpr char kDevToolsIndividualRequestThrottlingName[] =
-    "Enable individual request throttling in DevTools";
-inline constexpr char kDevToolsIndividualRequestThrottlingDescription[] =
-    "Enables a new feature in DevTools' network panel to apply network "
-    "conditions to individual requests, extending the per-request blocking "
-    "behavior.";
-
 inline constexpr char kDevToolsLiveEditName[] =
     "Enable JavaScript live editing in DevTools";
 inline constexpr char kDevToolsLiveEditDescription[] =

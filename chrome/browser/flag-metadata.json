@@ -2207,11 +2207,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "devtools-individual-request-throttling",
-    "owners": [ "pfaffe@chromium.org" ],
-    "expiry_milestone": 147
-  },
-  {
     "name": "devtools-live-edit",
     "owners": [ "bmeurer@chromium.org", "szuend@chromium.org" ],
     "expiry_milestone": 150

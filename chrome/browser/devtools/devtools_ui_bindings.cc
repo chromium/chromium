@@ -2102,12 +2102,6 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
       base::DictValue().Set("enabled", base::FeatureList::IsEnabled(
                                            ::features::kDevToolsLiveEdit)));
 
-  response_dict.Set(
-      "devToolsIndividualRequestThrottling",
-      base::DictValue().Set(
-          "enabled", base::FeatureList::IsEnabled(
-                         ::features::kDevToolsIndividualRequestThrottling)));
-
   base::DictValue device_bound_sessions_debugging;
   device_bound_sessions_debugging.Set(
       "enabled",
