@@ -8,7 +8,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -184,10 +183,6 @@ class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
   policy::FakeBrowserDMTokenStorage browser_dm_token_storage_;
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
- private:
-  base::test::ScopedFeatureList scoped_features_{
-      extensions_features::kApiProxyOverrideRulesPrivate};
 };
 
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateApiTest, ProxyOverrideRules) {
