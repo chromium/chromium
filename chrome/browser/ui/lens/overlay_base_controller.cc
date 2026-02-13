@@ -73,6 +73,13 @@ OverlayBaseController::OverlayBaseController(tabs::TabInterface* tab,
 
 OverlayBaseController::~OverlayBaseController() {
   state_ = State::kOff;
+  if (overlay_web_view_) {
+    // Remove render frame observer.
+    overlay_web_view_->GetWebContents()
+        ->GetPrimaryMainFrame()
+        ->GetProcess()
+        ->RemoveObserver(this);
+  }
 }
 
 bool OverlayBaseController::IsOverlayShowing() const {
