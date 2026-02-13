@@ -16,8 +16,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/multipart_uploader.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -72,7 +72,8 @@ FakeUploader::FakeUploader(
                              false,
                              histogram_suffix,
                              traffic_annotation,
-                             base::DoNothing()),
+                             base::DoNothing(),
+                             content::GetUIThreadTaskRunner({})),
       base_url_(base_url),
       metadata_(metadata),
       file_path_(file_path),

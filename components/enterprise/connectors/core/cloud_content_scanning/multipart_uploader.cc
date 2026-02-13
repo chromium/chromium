@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/multipart_uploader.h"
 
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/multipart_uploader_base.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace safe_browsing {
 
@@ -26,7 +24,8 @@ MultipartUploadRequest::MultipartUploadRequest(
     const std::string& data,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    Callback callback)
+    Callback callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : MultipartUploadRequestBase(std::move(url_loader_factory),
                                  base_url,
                                  metadata,
@@ -34,7 +33,7 @@ MultipartUploadRequest::MultipartUploadRequest(
                                  histogram_suffix,
                                  traffic_annotation,
                                  std::move(callback),
-                                 content::GetUIThreadTaskRunner({})) {}
+                                 std::move(ui_task_runner)) {}
 
 MultipartUploadRequest::MultipartUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -45,7 +44,8 @@ MultipartUploadRequest::MultipartUploadRequest(
     bool is_obfuscated,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    Callback callback)
+    Callback callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : MultipartUploadRequestBase(std::move(url_loader_factory),
                                  base_url,
                                  metadata,
@@ -55,7 +55,7 @@ MultipartUploadRequest::MultipartUploadRequest(
                                  histogram_suffix,
                                  traffic_annotation,
                                  std::move(callback),
-                                 content::GetUIThreadTaskRunner({})) {}
+                                 std::move(ui_task_runner)) {}
 
 MultipartUploadRequest::MultipartUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -64,7 +64,8 @@ MultipartUploadRequest::MultipartUploadRequest(
     base::ReadOnlySharedMemoryRegion page_region,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    Callback callback)
+    Callback callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : MultipartUploadRequestBase(std::move(url_loader_factory),
                                  base_url,
                                  metadata,
@@ -72,7 +73,7 @@ MultipartUploadRequest::MultipartUploadRequest(
                                  histogram_suffix,
                                  traffic_annotation,
                                  std::move(callback),
-                                 content::GetUIThreadTaskRunner({})) {}
+                                 std::move(ui_task_runner)) {}
 
 MultipartUploadRequest::~MultipartUploadRequest() = default;
 
@@ -85,11 +86,12 @@ MultipartUploadRequest::CreateStringRequest(
     const std::string& data,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    MultipartUploadRequest::Callback callback) {
+    MultipartUploadRequest::Callback callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
   if (!factory_) {
     return std::make_unique<MultipartUploadRequest>(
         url_loader_factory, base_url, metadata, data, histogram_suffix,
-        traffic_annotation, std::move(callback));
+        traffic_annotation, std::move(callback), std::move(ui_task_runner));
   }
 
   return factory_->CreateStringRequest(
@@ -108,11 +110,13 @@ MultipartUploadRequest::CreateFileRequest(
     bool is_obfuscated,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    MultipartUploadRequest::Callback callback) {
+    MultipartUploadRequest::Callback callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
   if (!factory_) {
     return std::make_unique<MultipartUploadRequest>(
         url_loader_factory, base_url, metadata, path, file_size, is_obfuscated,
-        histogram_suffix, traffic_annotation, std::move(callback));
+        histogram_suffix, traffic_annotation, std::move(callback),
+        std::move(ui_task_runner));
   }
 
   // Note that multipart uploads only handle data that is less than
@@ -133,11 +137,13 @@ MultipartUploadRequest::CreatePageRequest(
     base::ReadOnlySharedMemoryRegion page_region,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    MultipartUploadRequest::Callback callback) {
+    MultipartUploadRequest::Callback callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
   if (!factory_) {
     return std::make_unique<MultipartUploadRequest>(
         url_loader_factory, base_url, metadata, std::move(page_region),
-        histogram_suffix, traffic_annotation, std::move(callback));
+        histogram_suffix, traffic_annotation, std::move(callback),
+        std::move(ui_task_runner));
   }
 
   return factory_->CreatePageRequest(

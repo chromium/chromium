@@ -10183,7 +10183,6 @@ test("unit_tests") {
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_utils_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/file_analysis_request_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/file_opening_job_unittest.cc",
-      "../browser/safe_browsing/cloud_content_scanning/multipart_uploader_unittest.cc",
       "../browser/safe_browsing/download_protection/download_feedback_service_unittest.cc",
       "../browser/safe_browsing/download_protection/download_feedback_unittest.cc",
       "../browser/safe_browsing/download_protection/path_sanitizer_unittest.cc",

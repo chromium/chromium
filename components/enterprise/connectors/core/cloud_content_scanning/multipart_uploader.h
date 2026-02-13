@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_MULTIPART_UPLOADER_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_MULTIPART_UPLOADER_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_MULTIPART_UPLOADER_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_MULTIPART_UPLOADER_H_
 
 #include <memory>
 #include <string>
@@ -24,6 +24,9 @@ namespace safe_browsing {
 
 // This class encapsulates the upload of a file with metadata using the
 // multipart protocol. This class is neither movable nor copyable.
+//
+// TODO(crbug.com/481674868): Combine multipart uploader base class and the
+// corresponding unit tests with this.
 class MultipartUploadRequest
     : public enterprise_connectors::MultipartUploadRequestBase {
  public:
@@ -36,7 +39,8 @@ class MultipartUploadRequest
       const std::string& data,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      Callback callback);
+      Callback callback,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   // Creates a MultipartUploadRequest, which will upload the file corresponding
   // to `path` to the given `base_url` with `metadata` attached.
@@ -49,7 +53,8 @@ class MultipartUploadRequest
       bool is_obfuscated,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      Callback callback);
+      Callback callback,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   // Creates a MultipartUploadRequest, which will upload the page in
   // `page_region` to the given `base_url` with `metadata` attached.
@@ -60,7 +65,8 @@ class MultipartUploadRequest
       base::ReadOnlySharedMemoryRegion page_region,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      Callback callback);
+      Callback callback,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   MultipartUploadRequest(const MultipartUploadRequest&) = delete;
   MultipartUploadRequest& operator=(const MultipartUploadRequest&) = delete;
@@ -77,7 +83,8 @@ class MultipartUploadRequest
       const std::string& data,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      MultipartUploadRequest::Callback callback);
+      MultipartUploadRequest::Callback callback,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   static std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
   CreateFileRequest(
@@ -89,7 +96,8 @@ class MultipartUploadRequest
       bool is_obfuscated,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      MultipartUploadRequest::Callback callback);
+      MultipartUploadRequest::Callback callback,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   static std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
   CreatePageRequest(
@@ -99,9 +107,10 @@ class MultipartUploadRequest
       base::ReadOnlySharedMemoryRegion page_region,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      MultipartUploadRequest::Callback callback);
+      MultipartUploadRequest::Callback callback,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 };
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_MULTIPART_UPLOADER_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_MULTIPART_UPLOADER_H_

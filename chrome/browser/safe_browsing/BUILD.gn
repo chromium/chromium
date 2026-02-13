@@ -334,8 +334,6 @@ static_library("safe_browsing") {
         "cloud_content_scanning/cloud_binary_upload_service_factory.h",
         "cloud_content_scanning/deep_scanning_utils.cc",
         "cloud_content_scanning/deep_scanning_utils.h",
-        "cloud_content_scanning/multipart_uploader.cc",
-        "cloud_content_scanning/multipart_uploader.h",
         "download_protection/deep_scanning_request.cc",
         "download_protection/deep_scanning_request.h",
         "download_protection/download_feedback.cc",

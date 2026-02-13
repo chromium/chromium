@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/multipart_uploader.h"
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "content/public/test/browser_task_environment.h"
+#include "base/test/task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -37,7 +37,7 @@ class MultipartUploadRequestTest : public testing::Test {
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_{
+  base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
@@ -46,13 +46,15 @@ class MultipartUploadRequestTest : public testing::Test {
 class MockMultipartUploadRequest : public MultipartUploadRequest {
  public:
   MockMultipartUploadRequest()
-      : MultipartUploadRequest(nullptr,
-                               GURL(),
-                               "",
-                               "",
-                               "",
-                               TRAFFIC_ANNOTATION_FOR_TESTS,
-                               base::DoNothing()) {}
+      : MultipartUploadRequest(
+            nullptr,
+            GURL(),
+            "",
+            "",
+            "",
+            TRAFFIC_ANNOTATION_FOR_TESTS,
+            base::DoNothing(),
+            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   MOCK_METHOD0(SendRequest, void());
 };
@@ -75,7 +77,8 @@ TEST_F(MultipartUploadRequestTest, StringRequest_Failure) {
 
   auto connector_request = MultipartUploadRequest::CreateStringRequest(
       test_shared_loader_factory_, dummy_upload_url, "metadata", "data",
-      "DummySuffix", TRAFFIC_ANNOTATION_FOR_TESTS, std::move(callback));
+      "DummySuffix", TRAFFIC_ANNOTATION_FOR_TESTS, std::move(callback),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   auto* request = static_cast<MultipartUploadRequest*>(connector_request.get());
 
   request->Start();
@@ -105,7 +108,8 @@ TEST_F(MultipartUploadRequestTest, StringRequest_Success) {
 
   auto connector_request = MultipartUploadRequest::CreateStringRequest(
       test_shared_loader_factory_, dummy_upload_url, "metadata", "data",
-      "DummySuffix", TRAFFIC_ANNOTATION_FOR_TESTS, std::move(callback));
+      "DummySuffix", TRAFFIC_ANNOTATION_FOR_TESTS, std::move(callback),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   auto* request = static_cast<MultipartUploadRequest*>(connector_request.get());
 
   request->Start();
