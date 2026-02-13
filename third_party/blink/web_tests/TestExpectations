@@ -1228,7 +1228,6 @@ crbug.com/591099 fast/writing-mode/auto-sizing-orthogonal-flows.html [ Failure ]
 crbug.com/982194 [ Win10.20h2 ] fast/writing-mode/border-image-vertical-lr.html [ Failure Pass ]
 crbug.com/591099 fast/writing-mode/percentage-height-orthogonal-writing-modes.html [ Failure ]
 crbug.com/835484 paint/invalidation/outline/inline-focus.html [ Failure ]
-crbug.com/591099 paint/invalidation/scroll/fixed-under-composited-fixed-scrolled.html [ Failure ]
 
 # CSS Text failures
 crbug.com/429178779 external/wpt/css/css-text/text-autospace/text-autospace-ideogram-alpha-001.html [ Failure ]

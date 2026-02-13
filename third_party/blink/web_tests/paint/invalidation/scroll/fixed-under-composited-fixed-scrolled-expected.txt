@@ -1,18 +1,7 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 2016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -20,12 +9,16 @@
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='fixed-container'",
-      "position": [0, 400],
       "bounds": [785, 600],
       "contentsOpaque": true,
       "backfaceVisibility": "hidden",
-      "backgroundColor": "#008000",
-      "transform": 1
+      "backgroundColor": "#008000"
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -36,8 +29,7 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -400, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }
