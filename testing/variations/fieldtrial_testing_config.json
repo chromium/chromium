@@ -3329,6 +3329,48 @@
             ]
         }
     ],
+    "AutofillTrackSelectFieldEdits": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillTrackSelectFieldEdits"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillUKMExperimentalFields": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "autofill_experimental_regex_bucket1": "test1"
+                    },
+                    "enable_features": [
+                        "AutofillUKMExperimentalFields"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillUnmaskCardRequestTimeout": [
         {
             "platforms": [

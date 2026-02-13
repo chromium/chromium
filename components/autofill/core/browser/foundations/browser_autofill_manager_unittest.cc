@@ -2289,6 +2289,60 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
+// Tests that when `features::kAutofillTrackSelectFieldEdits` is enabled,
+// changing the selection of a <select> control is correctly recorded as a
+// user modification in the UKM metrics.
+TEST_F(BrowserAutofillManagerTest, OnSelectControlSelectionChanged) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillTrackSelectFieldEdits);
+
+  FormData form = CreateTestAddressFormData();
+  // Setup so the form is cached.
+  FormsSeen({form});
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+  autofill_manager().OnSelectControlSelectionChanged(
+      form, form.fields()[0].global_id());
+
+  FormSubmitted(form);
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
+
+  auto entries = GetUkmEvents(*autofill_client().GetUkmRecorder(),
+                              UkmAutofillKeyMetricsType::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_THAT(
+      entries[0],
+      Contains(autofill_metrics::UkmMetricNameAndValue(
+          UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 1)));
+}
+
+// Tests that when `features::kAutofillTrackSelectFieldEdits` is disabled,
+// changing the selection of a <select> control is ignored and NOT recorded
+// as a user modification in the UKM metrics.
+TEST_F(BrowserAutofillManagerTest, OnSelectControlSelectionChangedDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillTrackSelectFieldEdits);
+
+  FormData form = CreateTestAddressFormData();
+  // Setup so the form is cached.
+  FormsSeen({form});
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+  autofill_manager().OnSelectControlSelectionChanged(
+      form, form.fields()[0].global_id());
+
+  FormSubmitted(form);
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
+
+  auto entries = GetUkmEvents(*autofill_client().GetUkmRecorder(),
+                              UkmAutofillKeyMetricsType::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_THAT(
+      entries[0],
+      Contains(autofill_metrics::UkmMetricNameAndValue(
+          UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0)));
+}
+
 TEST_F(BrowserAutofillManagerTest, TestParseFormUntilInteractionMetric) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
