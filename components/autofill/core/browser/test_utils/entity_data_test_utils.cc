@@ -137,6 +137,12 @@ EntityInstance GetKnownTravelerNumberInstance(
     KnownTravelerNumberOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;
+  if (options.name) {
+    attributes.emplace_back(AttributeType(kKnownTravelerNumberName));
+    attributes.back().SetInfo(
+        NAME_FULL, options.name, std::string(options.app_locale),
+        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
+  }
   if (options.number) {
     attributes.emplace_back(AttributeType(kKnownTravelerNumberNumber));
     attributes.back().SetInfo(
@@ -157,6 +163,12 @@ EntityInstance GetKnownTravelerNumberInstance(
 EntityInstance GetRedressNumberEntityInstance(RedressNumberOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;
+  if (options.name) {
+    attributes.emplace_back(AttributeType(kRedressNumberName));
+    attributes.back().SetInfo(
+        NAME_FULL, options.name, std::string(options.app_locale),
+        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
+  }
   if (options.number) {
     attributes.emplace_back(AttributeType(kRedressNumberNumber));
     attributes.back().SetInfo(
@@ -224,6 +236,12 @@ EntityInstance GetVehicleEntityInstanceWithRandomGuid(VehicleOptions options) {
 EntityInstance GetNationalIdCardEntityInstance(NationalIdCardOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;
+  if (options.name) {
+    attributes.emplace_back(AttributeType(kNationalIdCardName));
+    attributes.back().SetInfo(
+        NAME_FULL, options.name, std::string(options.app_locale),
+        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
+  }
   if (options.number) {
     attributes.emplace_back(AttributeType(kNationalIdCardNumber));
     attributes.back().SetInfo(NATIONAL_ID_CARD_NUMBER, options.number,
@@ -240,17 +258,19 @@ EntityInstance GetNationalIdCardEntityInstance(NationalIdCardOptions options) {
   }
   if (options.issue_date) {
     attributes.emplace_back(AttributeType(kNationalIdCardIssueDate));
-    attributes.back().SetInfo(NATIONAL_ID_CARD_ISSUE_DATE, options.issue_date,
-                              std::string(options.app_locale),
-                              /*format_string=*/std::nullopt,
-                              VerificationStatus::kNoStatus);
+    attributes.back().SetInfo(
+        NATIONAL_ID_CARD_ISSUE_DATE, options.issue_date,
+        std::string(options.app_locale),
+        AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
+        VerificationStatus::kNoStatus);
   }
   if (options.expiry_date) {
     attributes.emplace_back(AttributeType(kNationalIdCardExpirationDate));
     attributes.back().SetInfo(
         NATIONAL_ID_CARD_EXPIRATION_DATE, options.expiry_date,
         std::string(options.app_locale),
-        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
+        AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
+        VerificationStatus::kNoStatus);
   }
   return GetEntityInstance(std::move(attributes), ToEntityOptions(options));
 }

@@ -23,14 +23,17 @@ using ::testing::ElementsAre;
 
 TEST(EntityAttributeUpdateDetailsTest, AttributeUnchanged) {
   EntityInstance new_number = test::GetKnownTravelerNumberInstance(
-      {.number = u"1234", .expiration_date = u"2030-01-01"});
+      {.name = u"Name", .number = u"1234", .expiration_date = u"2030-01-01"});
   EntityInstance old_number = test::GetKnownTravelerNumberInstance(
-      {.number = u"1234", .expiration_date = u"2030-01-01"});
+      {.name = u"Name", .number = u"1234", .expiration_date = u"2030-01-01"});
 
   ASSERT_THAT(
       EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
           new_number, old_number, "en-US"),
       ElementsAre(
+          EntityAttributeUpdateDetails(
+              u"Name", u"Name", std::nullopt,
+              EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
           EntityAttributeUpdateDetails(
               u"Number", u"1234", std::nullopt,
               EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
@@ -44,9 +47,9 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeUpdated) {
   features.InitAndDisableFeature(features::kAutofillAiNewUpdatePrompt);
 
   EntityInstance new_ktn = test::GetKnownTravelerNumberInstance(
-      {.number = u"1234", .expiration_date = u"2030-01-01"});
+      {.name = u"Name", .number = u"1234", .expiration_date = u"2030-01-01"});
   EntityInstance old_ktn = test::GetKnownTravelerNumberInstance(
-      {.number = u"1234", .expiration_date = u"2025-01-01"});
+      {.name = u"Name", .number = u"1234", .expiration_date = u"2025-01-01"});
 
   ASSERT_THAT(
       EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
@@ -55,6 +58,9 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeUpdated) {
           EntityAttributeUpdateDetails(
               u"Expiration date", u"Jan 1, 2030", u"Jan 1, 2025",
               EntityAttributeUpdateType::kNewEntityAttributeUpdated),
+          EntityAttributeUpdateDetails(
+              u"Name", u"Name", std::nullopt,
+              EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
           EntityAttributeUpdateDetails(
               u"Number", u"1234", std::nullopt,
               EntityAttributeUpdateType::kNewEntityAttributeUnchanged)));
@@ -65,14 +71,17 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeUpdated) {
 TEST(EntityAttributeUpdateDetailsTest, AttributeUpdatedRevampedUI) {
   base::test::ScopedFeatureList features{features::kAutofillAiNewUpdatePrompt};
   EntityInstance new_ktn = test::GetKnownTravelerNumberInstance(
-      {.number = u"1234", .expiration_date = u"2030-01-01"});
+      {.name = u"Name", .number = u"1234", .expiration_date = u"2030-01-01"});
   EntityInstance old_ktn = test::GetKnownTravelerNumberInstance(
-      {.number = u"1234", .expiration_date = u"2025-01-01"});
+      {.name = u"Name", .number = u"1234", .expiration_date = u"2025-01-01"});
 
   ASSERT_THAT(
       EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
           new_ktn, old_ktn, "en-US"),
       ElementsAre(EntityAttributeUpdateDetails(
+                      u"Name", u"Name", std::nullopt,
+                      EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
+                  EntityAttributeUpdateDetails(
                       u"Number", u"1234", std::nullopt,
                       EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
                   EntityAttributeUpdateDetails(
@@ -82,33 +91,42 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeUpdatedRevampedUI) {
 
 TEST(EntityAttributeUpdateDetailsTest, AttributeAdded) {
   EntityInstance new_number = test::GetKnownTravelerNumberInstance(
-      {.number = u"4321", .expiration_date = u"2030-01-01"});
+      {.name = u"Name", .number = u"4321", .expiration_date = u"2030-01-01"});
   EntityInstance old_number = test::GetKnownTravelerNumberInstance(
-      {.number = u"1234", .expiration_date = nullptr});
+      {.name = u"Name", .number = u"1234", .expiration_date = nullptr});
 
   ASSERT_THAT(
       EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
           new_number, old_number, "en-US"),
-      ElementsAre(EntityAttributeUpdateDetails(
-                      u"Number", u"4321", u"1234",
-                      EntityAttributeUpdateType::kNewEntityAttributeUpdated),
-                  EntityAttributeUpdateDetails(
-                      u"Expiration date", u"Jan 1, 2030", std::nullopt,
-                      EntityAttributeUpdateType::kNewEntityAttributeAdded)));
+      ElementsAre(
+          EntityAttributeUpdateDetails(
+              u"Number", u"4321", u"1234",
+              EntityAttributeUpdateType::kNewEntityAttributeUpdated),
+          EntityAttributeUpdateDetails(
+              u"Expiration date", u"Jan 1, 2030", std::nullopt,
+              EntityAttributeUpdateType::kNewEntityAttributeAdded),
+          EntityAttributeUpdateDetails(
+              u"Name", u"Name", std::nullopt,
+              EntityAttributeUpdateType::kNewEntityAttributeUnchanged)));
 }
 
 TEST(EntityAttributeUpdateDetailsTest, AttributeRemoved) {
   EntityInstance new_number = test::GetKnownTravelerNumberInstance(
-      {.number = u"4321", .expiration_date = nullptr});
+      {.name = u"Name", .number = u"4321", .expiration_date = nullptr});
   EntityInstance old_number = test::GetKnownTravelerNumberInstance(
-      {.number = u"1234", .expiration_date = u"2030-01-01"});
+      {.name = u"Name", .number = u"1234", .expiration_date = u"2030-01-01"});
 
   // Only the attributes in the new entity are taken into account.
-  ASSERT_THAT(EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
-                  new_number, old_number, "en-US"),
-              ElementsAre(EntityAttributeUpdateDetails(
-                  u"Number", u"4321", u"1234",
-                  EntityAttributeUpdateType::kNewEntityAttributeUpdated)));
+  ASSERT_THAT(
+      EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
+          new_number, old_number, "en-US"),
+      ElementsAre(
+          EntityAttributeUpdateDetails(
+              u"Number", u"4321", u"1234",
+              EntityAttributeUpdateType::kNewEntityAttributeUpdated),
+          EntityAttributeUpdateDetails(
+              u"Name", u"Name", std::nullopt,
+              EntityAttributeUpdateType::kNewEntityAttributeUnchanged)));
 }
 
 }  // namespace
