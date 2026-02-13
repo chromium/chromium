@@ -40,6 +40,7 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    network_list_wifi_header_view_ = nullptr;
     widget_.reset();
 
     AshTestBase::TearDown();
@@ -70,8 +71,7 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
-  raw_ptr<NetworkListWifiHeaderView, DanglingUntriaged>
-      network_list_wifi_header_view_;
+  raw_ptr<NetworkListWifiHeaderView> network_list_wifi_header_view_;
 };
 
 TEST_F(NetworkListWifiHeaderViewTest, SetToggleStateUpdatesTooltips) {
