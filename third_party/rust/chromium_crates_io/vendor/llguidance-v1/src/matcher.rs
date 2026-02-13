@@ -211,4 +211,10 @@ impl Matcher {
             MatcherState::Error(e) => Err(anyhow!("{}", e)),
         }
     }
+
+    pub fn invalidate_bias_cache(&mut self) {
+        if let MatcherState::Normal(inner) = &mut self.0 {
+            inner.parser.invalidate_bias_cache();
+        }
+    }
 }

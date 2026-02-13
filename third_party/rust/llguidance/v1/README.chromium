@@ -1,7 +1,7 @@
 Name: llguidance
 URL: https://crates.io/crates/llguidance
-Version: 1.5.0
-Revision: b635bdf47a1bfc4f47127d55f8f2636811fba945
+Version: 1.5.1
+Revision: 532f907ad493e39a0e5f07e3628fb8f5ac964ea5
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: MIT
 License File: //third_party/rust/chromium_crates_io/vendor/llguidance-v1/LICENSE

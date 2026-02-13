@@ -8,7 +8,41 @@ use llguidance::{
     Matcher, ParserFactory,
 };
 
+const DEFAULT_VOCAB_SIZE: usize = 32_768;
+
 const BLOG_SCHEMA_JSON: &str = include_str!("../../sample_parser/data/blog.schema.json");
+
+// Lazy lexeme grammars for benchmarking (Issue #275)
+const LAZY_DOTSTAR_GRAMMAR: &str = r#"
+start[lazy]: /.*/ "END"
+"#;
+
+const LAZY_CHARCLASS_GRAMMAR: &str = r#"
+start[lazy]: /[a-zA-Z0-9 ]*/ "END"
+"#;
+
+// Greedy equivalent for comparison
+const GREEDY_CHARCLASS_GRAMMAR: &str = r#"
+start: /[a-zA-Z0-9 ]*/ "END"
+"#;
+
+// Complex lazy lexeme patterns
+const LAZY_SEQUENTIAL_GRAMMAR: &str = r#"
+start: a b c
+a[lazy]: /.*/ "A"
+b[lazy]: /.*/ "B"
+c[lazy]: /.*/ "C"
+"#;
+
+const LAZY_ALTERNATING_GRAMMAR: &str = r#"
+start: (lazy | text)+
+lazy[lazy]: /[^E]*/ "END"
+text: /[^x]+/
+"#;
+
+const LAZY_MULTI_TERMINATOR_GRAMMAR: &str = r#"
+start[lazy]: /.*/ ("END1" | "END2" | "END3")
+"#;
 
 // Different prefixes representing various parser states
 const PREFIX_START: &[u8] = b""; // Start of JSON
@@ -60,10 +94,10 @@ fn blog_grammar() -> TopLevelGrammar {
     TopLevelGrammar::from_json_schema(schema)
 }
 
-fn matcher_at_prefix(tok_env: &TokEnv, prefix: &[u8]) -> Matcher {
+fn create_matcher(tok_env: &TokEnv, grammar: TopLevelGrammar, prefix: &[u8]) -> Matcher {
     let mut factory = ParserFactory::new_simple(tok_env).unwrap();
     factory.quiet();
-    let mut matcher = Matcher::new(factory.create_parser(blog_grammar()));
+    let mut matcher = Matcher::new(factory.create_parser(grammar));
 
     for &byte in prefix {
         let mask = matcher.compute_mask().unwrap();
@@ -86,8 +120,11 @@ fn bench_compute_mask(c: &mut Criterion) {
             &vocab_size,
             |b, &size| {
                 let tok_env = synthetic_tok_env(size);
-                let mut matcher = matcher_at_prefix(&tok_env, PREFIX_IN_STRING);
-                b.iter(|| black_box(matcher.compute_mask().unwrap()))
+                let mut matcher = create_matcher(&tok_env, blog_grammar(), PREFIX_IN_STRING);
+                b.iter(|| {
+                    matcher.invalidate_bias_cache();
+                    black_box(matcher.compute_mask().unwrap())
+                })
             },
         );
     }
@@ -98,7 +135,7 @@ fn bench_compute_mask(c: &mut Criterion) {
 /// This reveals if certain grammar states are slower than others.
 fn bench_compute_mask_positions(c: &mut Criterion) {
     let mut group = c.benchmark_group("compute_mask_positions");
-    let vocab_size = 32_768usize;
+    let vocab_size = DEFAULT_VOCAB_SIZE;
 
     let positions = [
         ("start", PREFIX_START),
@@ -112,8 +149,11 @@ fn bench_compute_mask_positions(c: &mut Criterion) {
     for (name, prefix) in positions {
         group.bench_with_input(BenchmarkId::from_parameter(name), &prefix, |b, &prefix| {
             let tok_env = synthetic_tok_env(vocab_size);
-            let mut matcher = matcher_at_prefix(&tok_env, prefix);
-            b.iter(|| black_box(matcher.compute_mask().unwrap()))
+            let mut matcher = create_matcher(&tok_env, blog_grammar(), prefix);
+            b.iter(|| {
+                matcher.invalidate_bias_cache();
+                black_box(matcher.compute_mask().unwrap())
+            })
         });
     }
     group.finish();
@@ -136,7 +176,7 @@ fn bench_token_generation(c: &mut Criterion) {
                 let tok_env = synthetic_tok_env(size);
 
                 b.iter_batched(
-                    || matcher_at_prefix(&tok_env, PREFIX_IN_STRING),
+                    || create_matcher(&tok_env, blog_grammar(), PREFIX_IN_STRING),
                     |mut m| {
                         for _ in 0..num_tokens {
                             let mask = m.compute_mask().unwrap();
@@ -182,6 +222,115 @@ fn bench_first_mask(c: &mut Criterion) {
     group.finish();
 }
 
+fn run_matcher_on_input(m: &mut Matcher, input: &[u8]) {
+    for &byte in input {
+        let mask = m.compute_mask().unwrap();
+        if !mask.is_allowed(byte as TokenId) {
+            break;
+        }
+        m.consume_token(byte as TokenId).unwrap();
+    }
+}
+
+/// Benchmark lazy lexeme performance (Issue #275).
+/// Compares lazy vs greedy patterns with permissive regexes like [...]* and .*
+fn bench_lazy_lexeme(c: &mut Criterion) {
+    use criterion::BatchSize;
+
+    let mut group = c.benchmark_group("lazy_lexeme");
+    let vocab_size = DEFAULT_VOCAB_SIZE;
+
+    // 50 'x' characters as input
+    const INPUT: &[u8] = b"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
+    let grammars = [
+        ("lazy_dotstar", LAZY_DOTSTAR_GRAMMAR),
+        ("lazy_charclass", LAZY_CHARCLASS_GRAMMAR),
+        ("greedy_charclass", GREEDY_CHARCLASS_GRAMMAR),
+    ];
+
+    group.throughput(Throughput::Elements(INPUT.len() as u64));
+
+    let tok_env = synthetic_tok_env(vocab_size);
+    for (name, grammar) in grammars {
+        group.bench_with_input(
+            BenchmarkId::from_parameter(name),
+            &grammar,
+            |b, &grammar| {
+                b.iter_batched(
+                    || {
+                        create_matcher(
+                            &tok_env,
+                            TopLevelGrammar::from_lark(grammar.to_string()),
+                            b"",
+                        )
+                    },
+                    |mut m| {
+                        run_matcher_on_input(&mut m, INPUT);
+                        black_box(m)
+                    },
+                    BatchSize::SmallInput,
+                )
+            },
+        );
+    }
+    group.finish();
+}
+
+/// Benchmark complex lazy lexeme patterns: sequential, alternating, multi-terminator
+fn bench_lazy_lexeme_complex(c: &mut Criterion) {
+    use criterion::BatchSize;
+
+    let mut group = c.benchmark_group("lazy_lexeme_complex");
+    let vocab_size = DEFAULT_VOCAB_SIZE;
+
+    // Each test case: (name, grammar, input_bytes)
+    let test_cases: [(&str, &str, &[u8]); 4] = [
+        // Long content in single lazy lexeme - primary use case
+        (
+            "long_content",
+            LAZY_DOTSTAR_GRAMMAR,
+            b"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxEND",
+        ),
+        // Sequential lazy lexemes
+        ("sequential", LAZY_SEQUENTIAL_GRAMMAR, b"xxxAyyyBzzzC"),
+        // Alternating lazy/text
+        (
+            "alternating",
+            LAZY_ALTERNATING_GRAMMAR,
+            b"xxxENDaaaxxxENDbbb",
+        ),
+        // Multiple possible terminators
+        (
+            "multi_terminator",
+            LAZY_MULTI_TERMINATOR_GRAMMAR,
+            b"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxEND2",
+        ),
+    ];
+
+    let tok_env = synthetic_tok_env(vocab_size);
+    for (name, grammar, input) in test_cases {
+        group.throughput(Throughput::Elements(input.len() as u64));
+        group.bench_with_input(BenchmarkId::from_parameter(name), &input, |b, &input| {
+            b.iter_batched(
+                || {
+                    create_matcher(
+                        &tok_env,
+                        TopLevelGrammar::from_lark(grammar.to_string()),
+                        b"",
+                    )
+                },
+                |mut m| {
+                    run_matcher_on_input(&mut m, input);
+                    black_box(m)
+                },
+                BatchSize::SmallInput,
+            )
+        });
+    }
+    group.finish();
+}
+
 criterion_group! {
     name = benches;
     config = Criterion::default()
@@ -189,6 +338,6 @@ criterion_group! {
         .warm_up_time(std::time::Duration::from_secs(2))
         .measurement_time(std::time::Duration::from_secs(5))
         .noise_threshold(0.05);
-    targets = bench_compute_mask, bench_compute_mask_positions, bench_token_generation, bench_first_mask
+    targets = bench_compute_mask, bench_compute_mask_positions, bench_token_generation, bench_first_mask, bench_lazy_lexeme, bench_lazy_lexeme_complex
 }
 criterion_main!(benches);

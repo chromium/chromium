@@ -951,4 +951,8 @@ impl TokenParser {
 
         Ok(())
     }
+
+    pub fn invalidate_bias_cache(&mut self) {
+        self.parser.invalidate_bias_cache();
+    }
 }
