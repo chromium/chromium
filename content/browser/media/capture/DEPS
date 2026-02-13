@@ -2,6 +2,7 @@ include_rules = [
   "+components/remote_cocoa/browser",
   "+components/viz/common",
   "+third_party/libyuv",  # For scaling in desktop_capture_device.cc.
+  "+skia/ext", # For SkPixmap-based YUV and color space conversion
 ]
 
 specific_include_rules = {

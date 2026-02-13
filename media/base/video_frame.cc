@@ -1358,6 +1358,7 @@ SkYUVAInfo VideoFrame::GetVisibleSkYUVAInfo() const {
 
 std::vector<SkPixmap> VideoFrame::GetVisiblePlanesSkPixmaps() const {
   const auto yuva_info = GetVisibleSkYUVAInfo();
+  const auto color_space = ColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
   std::array<SkISize, kMaxPlanes> plane_dimensions = {
       SkISize::Make(visible_rect_.width(), visible_rect_.height()),
   };
@@ -1377,8 +1378,8 @@ std::vector<SkPixmap> VideoFrame::GetVisiblePlanesSkPixmaps() const {
     const auto alpha_type = SkColorTypeIsAlwaysOpaque(color_type)
                                 ? kOpaque_SkAlphaType
                                 : kUnpremul_SkAlphaType;
-    const SkImageInfo plane_info =
-        SkImageInfo::Make(plane_dimensions[p], color_type, alpha_type);
+    const SkImageInfo plane_info = SkImageInfo::Make(
+        plane_dimensions[p], color_type, alpha_type, color_space);
     planes[p] = SkPixmap(plane_info, visible_data(p), stride(p));
   }
   return planes;

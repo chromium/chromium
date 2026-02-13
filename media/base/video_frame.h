@@ -617,7 +617,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   SkYUVAInfo GetVisibleSkYUVAInfo() const;
 
   // Return SkPixmaps that reference the visible data for this. On failure,
-  // the result will be empty.
+  // the result will be empty. The SkColorSpace for all SkPixmaps will be
+  // set to ColorSpace().GetAsFullRangeRGB().ToSkColorSpace().
   std::vector<SkPixmap> GetVisiblePlanesSkPixmaps() const;
 
   // Returns the `acquire_sync_token_`
