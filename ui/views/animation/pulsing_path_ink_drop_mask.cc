@@ -8,6 +8,7 @@
 
 #include "base/i18n/rtl.h"
 #include "ui/compositor/paint_recorder.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/view_class_properties.h"
 
@@ -77,19 +78,25 @@ void PulsingPathInkDropMask::OnPaintLayer(const ui::PaintContext& context) {
     }
     bounds.Inset(gfx::InsetsF(insets));
   }
-
-  const float current_inset =
+  const float current_throb_value =
       throb_animation_.CurrentValueBetween(0.0f, throb_inset_);
-  bounds.Inset(gfx::InsetsF(current_inset));
+  const float outset =
+      current_throb_value *
+      std::max(0.0f, std::min({initial_rect_.fLeft - bounds.x(),
+                               initial_rect_.fTop - bounds.y(),
+                               bounds.right() - initial_rect_.fRight,
+                               bounds.bottom() - initial_rect_.fBottom}));
 
-  // Transform the highlight path to the target region.
-  //
-  // Note: this is not the correct calculation if the original inkdrop isn't
-  // centered in the target space. However, it should work for the vast majority
-  // of cases, and is no worse than what PulsingInkDropMask does.
+  SkRect target_rect = initial_rect_.makeOutset(outset, outset);
+  if (outset == 0) {
+    // If no outset, the target must already be the size of its bounds, thus
+    // requiring the throb to switch directions.
+    target_rect =
+        target_rect.makeInset(current_throb_value, current_throb_value);
+  }
+
   SkPath path = path_.makeTransform(
-      SkMatrix::MakeRectToRect(initial_rect_, gfx::RectFToSkRect(bounds),
-                               SkMatrix::ScaleToFit::kCenter_ScaleToFit));
+      SkMatrix::Rect2Rect(initial_rect_, target_rect).value());
   recorder.canvas()->DrawPath(path, flags);
 }
 
