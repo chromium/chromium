@@ -323,7 +323,10 @@ void CSSPropertyValueSet::FinalizeGarbageCollectedObject() {
 bool MutableCSSPropertyValueSet::RemoveShorthandProperty(
     CSSPropertyID property_id) {
   if (property_id == CSSPropertyID::kAll) {
-    return RemovePropertiesAffectedByAll();
+    RemovePropertiesAffectedByAll();
+
+    int all_index = FindPropertyIndex(property_id);
+    return RemovePropertyAtIndex(all_index, /*return_text*/ nullptr);
   }
   StylePropertyShorthand shorthand = shorthandForProperty(property_id);
   if (!shorthand.length()) {
