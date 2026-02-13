@@ -108,11 +108,16 @@ class FeaturePromoController {
   virtual void MaybeShowPromo(FeaturePromoParams params,
                               UserEducationContextPtr context) = 0;
 
-  // Tries to start the promo at a time when the Feature Engagement backend may
-  // not yet be initialized. Once it is initialized (which could be
+  // Tries to start the promo at startup, when the Feature Engagement backend
+  // may not yet be initialized. Once it is initialized (which could be
   // immediately), attempts to show the promo and calls
   // `params.show_promo_result_callback` with the result. If EndPromo() is
   // called before the promo is shown, the promo is canceled immediately.
+  //
+  // USAGE NOTE: Startup promos may only be queued once per profile each
+  // (though queuing them in a browser that does not support user education
+  // doesn't count). Attempting to requeue the same promo at any time will
+  // result in an "already queued" failure.
   //
   // A promo may be queued and then not show due to its Feature Engagement
   // conditions not being satisfied. For example, if multiple promos with a

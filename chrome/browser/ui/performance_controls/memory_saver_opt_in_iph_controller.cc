@@ -48,7 +48,6 @@ void MemorySaverOptInIPHController::MaybeTriggerPromo() {
       !manager->IsMemorySaverModeActive() &&
       base::SysInfo::AmountOfTotalPhysicalMemory() <= kMemoryCap16GB) {
     BrowserUserEducationInterface::From(browser_window_interface_)
-        ->MaybeShowStartupFeaturePromo(
-            feature_engagement::kIPHMemorySaverModeFeature);
+        ->MaybeShowFeaturePromo(feature_engagement::kIPHMemorySaverModeFeature);
   }
 }

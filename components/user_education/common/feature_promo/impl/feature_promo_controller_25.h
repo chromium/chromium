@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_FEATURE_PROMO_CONTROLLER_25_H_
 
 #include <memory>
+#include <set>
 
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
@@ -124,6 +125,7 @@ class FeaturePromoController25 : public FeaturePromoControllerCommon {
   bool update_pending_ = false;
   std::unique_ptr<PrivateData> private_;
   base::RepeatingTimer poller_;
+  std::set<raw_ref<const base::Feature>> attempted_startup_promos_;
   const std::string demo_feature_name_;
   const raw_ref<ProductMessagingController> product_messaging_controller_;
   base::WeakPtrFactory<FeaturePromoController25> weak_ptr_factory_{this};

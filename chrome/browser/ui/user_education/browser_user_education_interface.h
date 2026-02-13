@@ -114,6 +114,13 @@ class BrowserUserEducationInterface {
   // was actually shown. Since `show_promo_result_callback` could be called any
   // time, make sure that you will not experience any race conditions or UAFs if
   // the calling object goes out of scope.
+  //
+  // IMPORTANT USAGE NOTE: Once a promo has been successfully queued in an
+  // eligible browser using this method, subsequent attempts to show the same
+  // promo using this method will fail *even if the initial attempt failed for
+  // some other reason*. You can therefore safely call this method at browser
+  // window creation, as subsequent browser windows in the same profile won't be
+  // able to re-show the promo.
   virtual void MaybeShowStartupFeaturePromo(
       user_education::FeaturePromoParams params) = 0;
 

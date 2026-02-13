@@ -205,6 +205,15 @@ FeaturePromoResult FeaturePromoController25::CanShowPromo(
 void FeaturePromoController25::MaybeShowStartupPromo(
     FeaturePromoParams params,
     UserEducationContextPtr context) {
+  // Don't repeatedly attempt to show startup promos. Once one has been queued,
+  // subsequent attempts will fail.
+  if (attempted_startup_promos_.contains(params.feature)) {
+    PostShowPromoResult(*params.feature,
+                        std::move(params.show_promo_result_callback),
+                        FeaturePromoResult::kAlreadyQueued);
+    return;
+  }
+  attempted_startup_promos_.emplace(params.feature);
   MaybeShowPromo(std::move(params), std::move(context));
 }
 

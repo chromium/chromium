@@ -114,8 +114,7 @@ void BatterySaverButton::OnClicked() {
 void BatterySaverButton::MaybeShowFeaturePromo() {
   pending_promo_ = false;
   BrowserUserEducationInterface::From(browser_view_->browser())
-      ->MaybeShowStartupFeaturePromo(
-          feature_engagement::kIPHBatterySaverModeFeature);
+      ->MaybeShowFeaturePromo(feature_engagement::kIPHBatterySaverModeFeature);
 }
 
 void BatterySaverButton::CloseFeaturePromo(bool engaged) {

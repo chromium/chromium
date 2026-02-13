@@ -19,6 +19,16 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/user_education_storage_service.h"
 
+namespace {
+
+void PostShowPromoFailure(user_education::FeaturePromoParams params,
+                          user_education::FeaturePromoResult::Failure failure) {
+  user_education::FeaturePromoController::PostShowPromoResult(
+      *params.feature, std::move(params.show_promo_result_callback), failure);
+}
+
+}  // namespace
+
 BrowserUserEducationInterfaceImpl::BrowserUserEducationInterfaceImpl(
     BrowserWindowInterface* browser)
     : BrowserUserEducationInterface(browser), profile_(browser->GetProfile()) {}
@@ -60,8 +70,7 @@ void BrowserUserEducationInterfaceImpl::CompleteInitialization() {
       << "Should not have a controller but no service.";
 
   for (auto& params : queued_params_) {
-    controller->MaybeShowStartupPromo(std::move(params),
-                                      user_education_context_);
+    MaybeShowStartupFeaturePromoImpl(std::move(params));
   }
   queued_params_.clear();
 }
@@ -153,9 +162,8 @@ void BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(
     }
     LOG(ERROR) << "Attempting to show IPH " << params.feature->name
                << state_desc << "; IPH will not be shown.";
-    user_education::FeaturePromoController::PostShowPromoResult(
-        *params.feature, std::move(params.show_promo_result_callback),
-        user_education::FeaturePromoResult::kError);
+    PostShowPromoFailure(std::move(params),
+                         user_education::FeaturePromoResult::kError);
     return;
   }
 
@@ -164,9 +172,8 @@ void BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(
     return;
   }
 
-  user_education::FeaturePromoController::PostShowPromoResult(
-      *params.feature, std::move(params.show_promo_result_callback),
-      user_education::FeaturePromoResult::kBlockedByContext);
+  PostShowPromoFailure(std::move(params),
+                       user_education::FeaturePromoResult::kBlockedByContext);
 }
 
 void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromo(
@@ -180,21 +187,12 @@ void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromo(
   if (state_ == State::kTornDown) {
     LOG(ERROR) << "Attempting to show IPH " << params.feature->name
                << " after browser shutdown; IPH will not be shown.";
-    user_education::FeaturePromoController::PostShowPromoResult(
-        *params.feature, std::move(params.show_promo_result_callback),
-        user_education::FeaturePromoResult::kError);
+    PostShowPromoFailure(std::move(params),
+                         user_education::FeaturePromoResult::kError);
     return;
   }
 
-  if (auto* const controller = GetFeaturePromoController()) {
-    controller->MaybeShowStartupPromo(std::move(params),
-                                      user_education_context_);
-    return;
-  }
-
-  user_education::FeaturePromoController::PostShowPromoResult(
-      *params.feature, std::move(params.show_promo_result_callback),
-      user_education::FeaturePromoResult::kBlockedByContext);
+  MaybeShowStartupFeaturePromoImpl(std::move(params));
 }
 
 bool BrowserUserEducationInterfaceImpl::AbortFeaturePromo(
@@ -263,8 +261,7 @@ void BrowserUserEducationInterfaceImpl::NotifyNewBadgeFeatureUsed(
 void BrowserUserEducationInterfaceImpl::ClearQueuedPromos(
     user_education::FeaturePromoResult::Failure failure) {
   for (auto& params : queued_params_) {
-    user_education::FeaturePromoController::PostShowPromoResult(
-        *params.feature, std::move(params.show_promo_result_callback), failure);
+    PostShowPromoFailure(std::move(params), failure);
   }
   queued_params_.clear();
 }
@@ -272,4 +269,16 @@ void BrowserUserEducationInterfaceImpl::ClearQueuedPromos(
 const user_education::UserEducationContextPtr&
 BrowserUserEducationInterfaceImpl::GetUserEducationContextImpl() const {
   return user_education_context_;
+}
+
+void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromoImpl(
+    user_education::FeaturePromoParams params) {
+  if (auto* const controller = GetFeaturePromoController()) {
+    controller->MaybeShowStartupPromo(std::move(params),
+                                      user_education_context_);
+    return;
+  }
+
+  PostShowPromoFailure(std::move(params),
+                       user_education::FeaturePromoResult::kBlockedByContext);
 }
