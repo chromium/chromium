@@ -4,13 +4,24 @@
 
 import("//build/rust/rust_static_library.gni")
 
+rust_static_library("other_lib") {
+  crate_root = "other.rs"
+  sources = [ crate_root ]
+  testonly = true
+  cpp_api_from_rust = {
+    target_name = "other_lib_bindings"
+  }
+}
+
 rust_static_library("rust_lib") {
   crate_root = "lib.rs"
   sources = [ crate_root ]
   testonly = true
   cpp_api_from_rust = {
     target_name = "rust_lib_bindings"
+    deps = [ ":other_lib_bindings" ]
   }
+  deps = [ ":other_lib" ]
 }
 
 source_set("test_cpp_api_from_rust") {

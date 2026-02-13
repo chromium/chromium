@@ -612,6 +612,8 @@ template("rust_target") {
                                  _SECONDARY_RUST_COMPILER_ATTR_NAMES)
           rust_target = ":${_main_target_name}"
           rustc_env_and_flags = _rustc_env_and_flags
+          original_attributes = _cpp_api_from_rust_attributes
+          crate_name = _crate_name
         }
       }
     }

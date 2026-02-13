@@ -122,6 +122,54 @@ $ cat out/rel/gen/build/rust/tests/test_cpp_api_from_rust/rust_lib.h | head -3
 // Features: <none>
 ```
 
+### Specifying binding dependencies
+
+If public APIs of a crate depend on types from another crate, then the
+dependency on the other crate needs to be explicitly specified in `BUILD.gn`.
+For example:
+
+```rust
+// build/rust/tests/test_cpp_api_from_rust/lib.rs:
+
+chromium::import! {
+    "//build/rust/tests/test_cpp_api_from_rust:internal_helper";
+    "//build/rust/tests/test_cpp_api_from_rust:other_lib";
+}
+
+pub fn create_multiplier(x: i32) -> other_lib::Multiplier {
+    internal_helper::do_something();
+
+    other_lib::Multiplier::new(x)
+}
+```
+
+```gn
+# build/rust/tests/test_cpp_api_from_rust/BUILD.gn
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("rust_lib") {
+  crate_root = "lib.rs"
+  sources = [ crate_root ]
+  deps = [
+    ":other_lib",
+    ":internal_helper",
+  ]
+
+  cpp_api_from_rust = {
+    target_name = "rust_lib_bindings"
+    deps = [ "//some/other/lib:other_lib_bindings" ]
+  }
+}
+```
+
+Note how `other_lib_bindings` are listed in `deps` of `cpp_api_from_rust` above.
+Note that types from `internal_helper` are _not_ used in public APIs of
+`rust_lib` and therefore it is _not_ listed in `deps` attribute of
+`cpp_api_from_rust`.
+
+TODO: `gnrt_config.toml` equivalent for `//third_party/rust` libraries.
+
 ## Troubleshooting
 
 ### APIs missing from the generated bindings
@@ -146,4 +194,4 @@ $ cat out/rel/gen/build/rust/tests/test_cpp_api_from_rust/rust_lib.h
 ...
 ```
 
-Then: TODO: Support for transitive deps is not implemented yet.
+Then you want to read the "Specifying binding dependencies" section above.
