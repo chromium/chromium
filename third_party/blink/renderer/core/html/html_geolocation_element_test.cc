@@ -100,8 +100,6 @@ TEST_F(HTMLGeolocationElementTestBase, GetTypeAttribute) {
   auto* geolocation_element =
       MakeGarbageCollected<HTMLGeolocationElement>(GetDocument());
   EXPECT_EQ(AtomicString("geolocation"), geolocation_element->GetType());
-  geolocation_element->setType(AtomicString("camera"));
-  EXPECT_EQ(AtomicString("geolocation"), geolocation_element->GetType());
 }
 
 class HTMLGeolocationElementTest : public HTMLGeolocationElementTestBase {

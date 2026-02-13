@@ -7,7 +7,7 @@
 
 #include "third_party/blink/public/mojom/web_install/web_install.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/html/html_permission_element.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_base.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
@@ -25,7 +25,7 @@ class String;
 //   provided.
 // By default the element renders as an Install button, but may also show as
 // a Launch button.
-class CORE_EXPORT HTMLInstallElement : public HTMLPermissionElement {
+class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -41,7 +41,7 @@ class CORE_EXPORT HTMLInstallElement : public HTMLPermissionElement {
   // HTMLElement:
   bool IsURLAttribute(const Attribute&) const override;
 
-  // HTMLPermissionElement:
+  // HTMLCapabilityElementBase:
   void UpdateAppearance() override;
   void UpdateIcon(mojom::blink::PermissionName permission_name) override;
   mojom::blink::EmbeddedPermissionRequestDescriptorPtr

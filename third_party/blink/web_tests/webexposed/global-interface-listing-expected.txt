@@ -4624,13 +4624,23 @@ interface HTMLInputElement : HTMLElement
     setter valueAsNumber
     setter webkitdirectory
     setter width
-interface HTMLInstallElement : HTMLPermissionElement
+interface HTMLInstallElement : HTMLElement
     attribute @@toStringTag
+    getter initialPermissionStatus
     getter installURL
+    getter invalidReason
+    getter isValid
     getter manifestId
+    getter onpromptaction
+    getter onpromptdismiss
+    getter onvalidationstatuschange
+    getter permissionStatus
     method constructor
     setter installURL
     setter manifestId
+    setter onpromptaction
+    setter onpromptdismiss
+    setter onvalidationstatuschange
 interface HTMLLIElement : HTMLElement
     attribute @@toStringTag
     getter type
@@ -4994,22 +5004,6 @@ interface HTMLParamElement : HTMLElement
     setter type
     setter value
     setter valueType
-interface HTMLPermissionElement : HTMLElement
-    static method isTypeSupported
-    attribute @@toStringTag
-    getter initialPermissionStatus
-    getter invalidReason
-    getter isValid
-    getter onpromptaction
-    getter onpromptdismiss
-    getter onvalidationstatuschange
-    getter permissionStatus
-    getter type
-    method constructor
-    setter onpromptaction
-    setter onpromptdismiss
-    setter onvalidationstatuschange
-    setter type
 interface HTMLPictureElement : HTMLElement
     attribute @@toStringTag
     method constructor
@@ -5383,6 +5377,7 @@ interface HTMLUnknownElement : HTMLElement
     attribute @@toStringTag
     method constructor
 interface HTMLUserMediaElement : HTMLElement
+    static method isTypeSupported
     attribute @@toStringTag
     getter initialPermissionStatus
     getter invalidReason

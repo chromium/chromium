@@ -71,14 +71,15 @@ class CORE_EXPORT CachedPermissionStatus final
   }
 
  private:
-  friend class HTMLPermissionElement;
+  friend class HTMLCapabilityElementBase;
   friend class DocumentLoader;
   friend class CachedPermissionStatusTest;
 
   FRIEND_TEST_ALL_PREFIXES(CachedPermissionStatusTest, RegisterClient);
   FRIEND_TEST_ALL_PREFIXES(CachedPermissionStatusTest,
                            UnregisterClientRemoveObserver);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementTest, SetTypeAfterInsertedInto);
+  FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseTest,
+                           SetTypeAfterInsertedInto);
 
   // Allow this object to keep track of the Client instances corresponding to
   // it.

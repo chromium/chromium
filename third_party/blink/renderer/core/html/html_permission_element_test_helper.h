@@ -19,7 +19,7 @@ class RunLoop;
 
 namespace blink {
 
-class HTMLPermissionElement;
+class HTMLCapabilityElementBase;
 
 using mojom::blink::PermissionDescriptor;
 using mojom::blink::PermissionDescriptorPtr;
@@ -113,7 +113,7 @@ class PermissionElementTestPermissionService : public PermissionService {
   std::unique_ptr<base::RunLoop> client_disconnect_run_loop_;
 };
 
-void WaitForPermissionElementRegistration(HTMLPermissionElement*);
+void WaitForPermissionElementRegistration(HTMLCapabilityElementBase*);
 
 }  // namespace blink
 

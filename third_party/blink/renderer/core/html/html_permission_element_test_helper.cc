@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/html/html_permission_element.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_base.h"
 
 namespace blink {
 
@@ -174,7 +174,7 @@ void PermissionElementTestPermissionService::
   should_defer_registered_callback_ = should_defer;
 }
 
-void WaitForPermissionElementRegistration(HTMLPermissionElement* el) {
+void WaitForPermissionElementRegistration(HTMLCapabilityElementBase* el) {
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return el->is_registered_in_browser_process_for_testing(); }));
 }

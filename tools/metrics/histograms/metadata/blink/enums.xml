@@ -8295,7 +8295,7 @@ Called by update_use_counter_css.py.-->
   <int value="5" label="Invalid display property"/>
 </enum>
 
-<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_permission_element.h:InvalidStyleReason) -->
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_capability_element_base.h:InvalidStyleReason) -->
 
 <!-- LINT.IfChange(PermissionElementUserInteractionDeniedReason) -->
 
@@ -8315,7 +8315,7 @@ Called by update_use_counter_css.py.-->
   <int value="10" label="Web app installation data error"/>
 </enum>
 
-<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_permission_element.h:UserInteractionDeniedReason) -->
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_capability_element_base.h:UserInteractionDeniedReason) -->
 
 <enum name="RaceTaskPriority">
   <int value="0" label="LowerPriority"/>

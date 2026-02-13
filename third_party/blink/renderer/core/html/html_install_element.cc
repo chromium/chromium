@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/html/html_permission_element.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_base.h"
 #include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -24,11 +24,14 @@
 namespace blink {
 
 HTMLInstallElement::HTMLInstallElement(Document& document)
-    : HTMLPermissionElement(document, html_names::kInstallTag),
+    : HTMLCapabilityElementBase(document, html_names::kInstallTag),
       service_(document.GetExecutionContext()) {
   CHECK(RuntimeEnabledFeatures::InstallElementEnabled(
       document.GetExecutionContext()));
-  setType(AtomicString("install"));
+  type_ = AtomicString("install");
+  auto descriptor = mojom::blink::PermissionDescriptor::New();
+  descriptor->name = mojom::blink::PermissionName::WEB_APP_INSTALLATION;
+  permission_descriptors_.push_back(std::move(descriptor));
   UseCounter::CountWebDXFeature(document, WebDXFeature::kDRAFT_InstallElement);
 }
 
@@ -42,7 +45,7 @@ const String& HTMLInstallElement::ManifestId() const {
 
 void HTMLInstallElement::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
-  HTMLPermissionElement::Trace(visitor);
+  HTMLCapabilityElementBase::Trace(visitor);
 }
 
 void HTMLInstallElement::UpdateAppearance() {
@@ -135,13 +138,13 @@ bool HTMLInstallElement::IsURLAttribute(const Attribute& attr) const {
 
 void HTMLInstallElement::DefaultEventHandler(Event& event) {
   // We'll handle activation here, and punt everything else through
-  // `HTMLPermissionElement`.
+  // `HTMLCapabilityElementBase`.
   if (event.type() == event_type_names::kDOMActivate) {
     HandleActivation(event, blink::BindOnce(&HTMLInstallElement::OnActivated,
                                             WrapWeakPersistent(this)));
     return;
   }
-  HTMLPermissionElement::DefaultEventHandler(event);
+  HTMLCapabilityElementBase::DefaultEventHandler(event);
 }
 
 HeapMojoRemote<mojom::blink::WebInstallService>&

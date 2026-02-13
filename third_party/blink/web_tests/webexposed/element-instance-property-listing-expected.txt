@@ -862,7 +862,6 @@ html element install
     property onpromptdismiss
     property onvalidationstatuschange
     property permissionStatus
-    property type
 html element kbd
 html element label
     property control
@@ -1014,15 +1013,6 @@ html element param
     property type
     property value
     property valueType
-html element permission
-    property initialPermissionStatus
-    property invalidReason
-    property isValid
-    property onpromptaction
-    property onpromptdismiss
-    property onvalidationstatuschange
-    property permissionStatus
-    property type
 html element picture
 html element plaintext
 html element pre

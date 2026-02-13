@@ -2521,7 +2521,7 @@
       "external/wpt/html/semantics/permission-element"
     ],
     "args": [
-      "--enable-blink-features=PermissionElement"
+      "--enable-blink-features=UserMediaElement"
     ],
     "owners": [
       "permissions-core@google.com"
@@ -2535,7 +2535,7 @@
     ],
     "bases": [],
     "args": [
-      "--disable-blink-features=PermissionElement,GeolocationElement,InstallElement"
+      "--disable-blink-features=UserMediaElement,GeolocationElement,InstallElement"
     ],
     "owners": [
       "permissions-core@google.com"

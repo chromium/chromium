@@ -20,7 +20,7 @@
       </if>
       <include name="IDR_UASTYLE_SCROLL_BUTTON_CSS" file="../renderer/core/css/scroll_button.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_SCROLL_MARKER_CSS" file="../renderer/core/css/scroll_marker.css" type="BINDATA" compress="brotli"/>
-      <include name="IDR_UASTYLE_PERMISSION_ELEMENT_CSS" file="../renderer/core/html/resources/permission.css" flattenhtml="true" type="BINDATA" compress="brotli"/>
+      <include name="IDR_UASTYLE_CAPABILITY_ELEMENT_CSS" file="../renderer/core/html/resources/capability_element.css" flattenhtml="true" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_THEME_INPUT_MULTIPLE_FIELDS_CSS" file="../renderer/core/html/resources/input_multiple_fields.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_THEME_FORCED_COLORS_CSS" file="../renderer/core/html/resources/forced_colors.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_SVG_CSS" file="../renderer/core/css/svg.css" type="BINDATA" compress="brotli"/>

@@ -7,6 +7,8 @@
 interface HTMLUserMediaElement : HTMLElement {
   [HTMLConstructor] constructor();
   [CEReactions, Reflect] attribute DOMString type;
+
+  static boolean isTypeSupported(DOMString type);
 };
 
 HTMLUserMediaElement includes InPagePermissionMixin;

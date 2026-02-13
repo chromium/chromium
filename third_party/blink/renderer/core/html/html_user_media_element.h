@@ -6,22 +6,25 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_USER_MEDIA_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/html/html_permission_element.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_base.h"
 
 namespace blink {
 
-class CORE_EXPORT HTMLUserMediaElement : public HTMLPermissionElement {
+class CORE_EXPORT HTMLUserMediaElement : public HTMLCapabilityElementBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static bool isTypeSupported(const AtomicString& type);
+
   explicit HTMLUserMediaElement(Document& document);
 
   // HTML Element
   bool IsHTMLUserMediaElement() const final { return true; }
 
- protected:
+  void AttributeChanged(const AttributeModificationParams& params) override;
+
   Vector<mojom::blink::PermissionDescriptorPtr> ParseType(
-      const AtomicString& type) override;
+      const AtomicString& type);
 };
 
 // The custom type casting is required for the UserMediaElement OT because the

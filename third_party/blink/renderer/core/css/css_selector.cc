@@ -795,8 +795,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   }
 
   if (match->type == CSSSelector::kPseudoPermissionGranted &&
-      !RuntimeEnabledFeatures::PermissionElementEnabled(
-          document ? document->GetExecutionContext() : nullptr) &&
       !RuntimeEnabledFeatures::GeolocationElementEnabled(
           document ? document->GetExecutionContext() : nullptr) &&
       !RuntimeEnabledFeatures::UserMediaElementEnabled(

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_base.h"
 #include "third_party/blink/renderer/core/html/html_geolocation_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -359,9 +360,11 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     changed_default_style = true;
   }
 
-  if (!permission_element_style_sheet_ && IsA<HTMLPermissionElement>(element)) {
-    CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
-              element.GetExecutionContext()) ||
+  if (!permission_element_style_sheet_ &&
+      IsA<HTMLCapabilityElementBase>(element)) {
+    CHECK((RuntimeEnabledFeatures::PermissionElementEnabled(
+               element.GetExecutionContext()) &&
+           IsA<HTMLPermissionElement>(element)) ||
           (RuntimeEnabledFeatures::UserMediaElementEnabled(
                element.GetExecutionContext()) &&
            IsA<HTMLUserMediaElement>(element)) ||
@@ -372,7 +375,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
                element.GetExecutionContext()) &&
            IsA<HTMLInstallElement>(element)));
     permission_element_style_sheet_ = ParseUASheet(
-        UncompressResourceAsASCIIString(IDR_UASTYLE_PERMISSION_ELEMENT_CSS));
+        UncompressResourceAsASCIIString(IDR_UASTYLE_CAPABILITY_ELEMENT_CSS));
     AddRulesToDefaultStyleSheets(permission_element_style_sheet_,
                                  NamespaceType::kHTML);
     changed_default_style = true;

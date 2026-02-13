@@ -770,9 +770,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->visited_link_salt = visited_link_salt_;
   params->content_settings = content_settings_->Clone();
 
-  if (RuntimeEnabledFeatures::PermissionElementEnabled(
-          frame_->DomWindow()->GetExecutionContext()) ||
-      RuntimeEnabledFeatures::GeolocationElementEnabled(
+  if (RuntimeEnabledFeatures::GeolocationElementEnabled(
           frame_->DomWindow()->GetExecutionContext()) ||
       RuntimeEnabledFeatures::UserMediaElementEnabled(
           frame_->DomWindow()->GetExecutionContext()) ||
@@ -2722,9 +2720,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   }
 
   if (initial_permission_statuses_ &&
-      (RuntimeEnabledFeatures::PermissionElementEnabled(
-           frame_->DomWindow()->GetExecutionContext()) ||
-       RuntimeEnabledFeatures::GeolocationElementEnabled(
+      (RuntimeEnabledFeatures::GeolocationElementEnabled(
            frame_->DomWindow()->GetExecutionContext()) ||
        RuntimeEnabledFeatures::UserMediaElementEnabled(
            frame_->DomWindow()->GetExecutionContext()) ||
