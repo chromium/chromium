@@ -712,9 +712,9 @@ base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
 
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
 void GlicKeyedService::CaptureRegion(
-    content::WebContents* web_contents,
+    tabs::TabInterface* tab,
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
-  region_capture_controller_->CaptureRegion(web_contents, std::move(observer));
+  region_capture_controller_->CaptureRegion(tab, std::move(observer));
 }
 #endif
 

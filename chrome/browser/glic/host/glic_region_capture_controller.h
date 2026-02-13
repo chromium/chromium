@@ -7,11 +7,14 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
@@ -31,7 +34,7 @@ class GlicRegionCaptureController {
   ~GlicRegionCaptureController();
 
   void CaptureRegion(
-      content::WebContents* web_contents,
+      tabs::TabInterface* tab,
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
   void CancelCaptureRegion();
   bool IsCaptureRegionInProgressForTesting() const;
@@ -47,14 +50,17 @@ class GlicRegionCaptureController {
  private:
   void ResetMembers();
   void OnCaptureRegionObserverDisconnected();
+  void HandleDiscardContents(tabs::TabInterface* tab,
+                             content::WebContents* old_contents,
+                             content::WebContents* new_contents);
 
   base::RepeatingClosure on_capture_region_for_testing_ = base::DoNothing();
-
-  base::WeakPtr<content::WebContents> web_contents_;
 
   std::unique_ptr<lens::LensRegionSearchController>
       lens_region_search_controller_;
   mojo::Remote<mojom::CaptureRegionObserver> capture_region_observer_;
+  base::CallbackListSubscription content_discarded_subscription_;
+  tabs::TabHandle tab_handle_;
 
   base::WeakPtrFactory<GlicRegionCaptureController> weak_factory_{this};
 };

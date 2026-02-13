@@ -293,7 +293,7 @@ class GlicKeyedService : public KeyedService,
 
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
   void CaptureRegion(
-      content::WebContents* web_contents,
+      tabs::TabInterface* tab,
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
 #endif
 
