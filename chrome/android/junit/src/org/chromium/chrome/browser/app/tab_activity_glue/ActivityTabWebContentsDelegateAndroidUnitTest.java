@@ -33,16 +33,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroidUnitTest.ShadowWebContentsDarkModeController;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,9 +65,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-/** Unit test for {@link ActivityTabWebContentsDelegateAndroid}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowWebContentsDarkModeController.class})
 @EnableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 @DisableFeatures({
     ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE,
@@ -78,16 +73,8 @@ import java.util.function.Supplier;
     ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API
 })
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
-    @Implements(WebContentsDarkModeController.class)
-    static class ShadowWebContentsDarkModeController {
-        static boolean sGlobalSettingsEnabled;
-        static GURL sBlockedUrl;
-
-        @Implementation
-        public static boolean isEnabledForUrl(BrowserContextHandle browserContextHandle, GURL url) {
-            return sGlobalSettingsEnabled && !url.equals(sBlockedUrl);
-        }
-    }
+    private boolean mGlobalSettingsEnabled;
+    private @Nullable GURL mBlockedUrl;
 
     static class TestActivityTabWebContentsDelegateAndroid
             extends ActivityTabWebContentsDelegateAndroid {
@@ -178,6 +165,14 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
     @Before
     public void setup() {
+        WebContentsDarkModeController.setInstanceForTesting(
+                new WebContentsDarkModeController.Impl() {
+                    @Override
+                    public boolean isEnabledForUrl(
+                            BrowserContextHandle browserContextHandle, GURL url) {
+                        return mGlobalSettingsEnabled && !url.equals(mBlockedUrl);
+                    }
+                });
         mTabWebContentsDelegateAndroid =
                 new TestActivityTabWebContentsDelegateAndroid(
                         mTab, mActivity, mTabCreatorManager, mTabGroupModelFilter);
@@ -201,7 +196,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
     @After
     public void tearDown() {
-        ShadowWebContentsDarkModeController.sBlockedUrl = null;
+        mBlockedUrl = null;
     }
 
     @Test
@@ -246,22 +241,22 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Test
     public void testForceDarkWebContent_DarkTheme_GlobalSettingDisabled() {
         ColorUtils.setInNightModeForTesting(true);
-        ShadowWebContentsDarkModeController.sGlobalSettingsEnabled = false;
+        mGlobalSettingsEnabled = false;
         assertForceDarkEnabledForWebContents(false);
     }
 
     @Test
     public void testForceDarkWebContent_DarkTheme_GlobalSettingEnabled() {
         ColorUtils.setInNightModeForTesting(true);
-        ShadowWebContentsDarkModeController.sGlobalSettingsEnabled = true;
+        mGlobalSettingsEnabled = true;
         assertForceDarkEnabledForWebContents(true);
     }
 
     @Test
     public void testForceDarkWebContent_DarkTheme_DisabledForUrl() {
         ColorUtils.setInNightModeForTesting(true);
-        ShadowWebContentsDarkModeController.sGlobalSettingsEnabled = true;
-        ShadowWebContentsDarkModeController.sBlockedUrl = mUrl1;
+        mGlobalSettingsEnabled = true;
+        mBlockedUrl = mUrl1;
         assertForceDarkEnabledForWebContents(false);
 
         doReturn(mUrl2).when(mWebContents).getVisibleUrl();

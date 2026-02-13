@@ -10,6 +10,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -20,6 +21,7 @@ public class FirstRunUtils {
     private static final int DEFAULT_SKIP_TOS_EXIT_DELAY_MS = 1000;
 
     private static boolean sDisableDelayOnExitFreForTest;
+    private static @Nullable Boolean sCctTosDialogEnabledForTesting;
 
     /**
      * Synchronizes first run native and Java preferences. Must be called after native
@@ -63,14 +65,22 @@ public class FirstRunUtils {
      * @return Whether the ToS should be shown during the first-run for CCTs/PWAs.
      */
     public static boolean isCctTosDialogEnabled() {
+        if (sCctTosDialogEnabledForTesting != null) {
+            return sCctTosDialogEnabledForTesting;
+        }
         return FirstRunUtilsJni.get().getCctTosDialogEnabled();
+    }
+
+    public static void setCctTosDialogEnabledForTesting(boolean isEnabled) {
+        sCctTosDialogEnabledForTesting = isEnabled;
+        ResettersForTesting.register(() -> sCctTosDialogEnabledForTesting = null);
     }
 
     /**
      * The the number of ms delay before exiting FRE with policy. By default the delay would be
      * {@link #DEFAULT_SKIP_TOS_EXIT_DELAY_MS}, but we will get the recommended timeout from the
-     * AccessibilityState, which calculates a time based on currently running accessibility
-     * services and OS-level system settings.
+     * AccessibilityState, which calculates a time based on currently running accessibility services
+     * and OS-level system settings.
      *
      * @return The number of ms delay before exiting FRE with policy.
      */

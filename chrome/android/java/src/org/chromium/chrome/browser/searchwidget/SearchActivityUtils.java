@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
@@ -32,6 +33,14 @@ import org.chromium.url.GURL;
 @NullMarked
 public class SearchActivityUtils {
     private static final String TAG = "SAUtils";
+
+    /** Delegate for {@link #resolveOmniboxRequestForResult(Activity, OmniboxLoadUrlParams)}. */
+    public interface TestDelegate {
+        void resolveOmniboxRequestForResult(
+                Activity activity, @Nullable OmniboxLoadUrlParams params);
+    }
+
+    private static @Nullable TestDelegate sDelegate;
 
     /**
      * Retrieve the intent origin.
@@ -137,12 +146,21 @@ public class SearchActivityUtils {
      */
     /* package */ static void resolveOmniboxRequestForResult(
             Activity activity, @Nullable OmniboxLoadUrlParams params) {
+        if (sDelegate != null) {
+            sDelegate.resolveOmniboxRequestForResult(activity, params);
+            return;
+        }
         var intent = createLoadUrlIntent(activity.getCallingActivity(), params);
         if (intent != null) {
             activity.setResult(Activity.RESULT_OK, intent);
         } else {
             activity.setResult(Activity.RESULT_CANCELED);
         }
+    }
+
+    public static void setDelegateForTesting(TestDelegate delegate) {
+        sDelegate = delegate;
+        ResettersForTesting.register(() -> sDelegate = null);
     }
 
     /**

@@ -22,8 +22,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -45,9 +43,7 @@ import org.chromium.components.policy.PolicyService;
  * {@link PolicyLoadListenerUnitTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {SkipTosDialogPolicyListenerUnitTest.ShadowFirstRunUtils.class})
+@Config(manifest = Config.NONE)
 // TODO(crbug.com/40182398): Rewrite using paused loop. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
 public class SkipTosDialogPolicyListenerUnitTest {
@@ -55,16 +51,6 @@ public class SkipTosDialogPolicyListenerUnitTest {
             "histogramRecorded.OnIsDeviceOwnedDetected";
     private static final String HIST_POLICY_LOAD_LISTENER_AVAILABLE =
             "histogramRecorded.OnPolicyLoadListenerAvailable";
-
-    @Implements(FirstRunUtils.class)
-    static class ShadowFirstRunUtils {
-        static boolean sIsCctTosDialogEnabled;
-
-        @Implementation
-        public static boolean isCctTosDialogEnabled() {
-            return sIsCctTosDialogEnabled;
-        }
-    }
 
     static class TestHistNameProvider implements SkipTosDialogPolicyListener.HistogramNameProvider {
         String mHistogramForEnterpriseInfo;
@@ -108,7 +94,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
                 .onAvailable(any());
 
         // Set ToS to enabled by default.
-        ShadowFirstRunUtils.sIsCctTosDialogEnabled = true;
+        FirstRunUtils.setCctTosDialogEnabledForTesting(true);
 
         buildNewSkipTosDialogPolicyListener();
 
@@ -133,7 +119,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
 
     @Test
     public void testPolicyLoadedWithNoEffect() {
-        ShadowFirstRunUtils.sIsCctTosDialogEnabled = true;
+        FirstRunUtils.setCctTosDialogEnabledForTesting(true);
         mPolicyLoadListenerCallback.onResult(true);
         assertTosDialogEnabled();
         assertHistogramsRecorded(false, true);
@@ -167,7 +153,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
         assertPolicyCheckNotComplete();
         assertHistogramsRecorded(true, false);
 
-        ShadowFirstRunUtils.sIsCctTosDialogEnabled = false;
+        FirstRunUtils.setCctTosDialogEnabledForTesting(false);
         mPolicyLoadListenerCallback.onResult(true);
         assertTosDialogSkipped();
         assertHistogramsRecorded(true, true);
@@ -175,7 +161,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
 
     @Test
     public void testPolicySetToSkipWithDeviceNotOwned() {
-        ShadowFirstRunUtils.sIsCctTosDialogEnabled = false;
+        FirstRunUtils.setCctTosDialogEnabledForTesting(false);
         mPolicyLoadListenerCallback.onResult(true);
         assertPolicyCheckNotComplete();
         assertHistogramsRecorded(false, true);
@@ -187,7 +173,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
 
     @Test
     public void testPolicySetToSkipWithDeviceOwned() {
-        ShadowFirstRunUtils.sIsCctTosDialogEnabled = false;
+        FirstRunUtils.setCctTosDialogEnabledForTesting(false);
         mPolicyLoadListenerCallback.onResult(true);
         assertPolicyCheckNotComplete();
         assertHistogramsRecorded(false, true);
@@ -225,7 +211,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
         assertPolicyCheckNotComplete();
         assertHistogramsRecorded(false, false);
 
-        ShadowFirstRunUtils.sIsCctTosDialogEnabled = false;
+        FirstRunUtils.setCctTosDialogEnabledForTesting(false);
         mPolicyLoadListenerCallback.onResult(true);
         // Signals should be ignore since #destroy happened.
         assertPolicyCheckNotComplete();
@@ -265,7 +251,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
     @Test
     public void testBuildListenerAfterPolicyLoadedAsNeeded_TosSkipped() {
         setupMockPolicyLoadListenerInitialized(true);
-        ShadowFirstRunUtils.sIsCctTosDialogEnabled = false;
+        FirstRunUtils.setCctTosDialogEnabledForTesting(false);
 
         buildNewSkipTosDialogPolicyListener();
         assertPolicyCheckNotComplete();
@@ -302,7 +288,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
         assertPolicyCheckNotComplete();
         assertHistogramsRecorded(true, false);
 
-        ShadowFirstRunUtils.sIsCctTosDialogEnabled = false;
+        FirstRunUtils.setCctTosDialogEnabledForTesting(false);
         mPolicyLoadListenerCallback.onResult(true);
         assertTosDialogSkipped();
         assertHistogramsRecorded(true, true);

@@ -16,34 +16,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.night_mode.AutoDarkFeedbackSourceUnitTest.ShadowWebContentsDarkModeController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
 /** Unit test for {@link AutoDarkFeedbackSource}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = ShadowWebContentsDarkModeController.class)
 @EnableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 public class AutoDarkFeedbackSourceUnitTest {
-    @Implements(WebContentsDarkModeController.class)
-    static class ShadowWebContentsDarkModeController {
-        static boolean sEnabledState;
-
-        @Implementation
-        public static boolean getEnabledState(
-                BrowserContextHandle browserContextHandle, Context context, GURL url) {
-            return sEnabledState;
-        }
-    }
+    private boolean mEnabledState;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -52,12 +38,20 @@ public class AutoDarkFeedbackSourceUnitTest {
 
     @Before
     public void setup() {
-        ShadowWebContentsDarkModeController.sEnabledState = false;
+        WebContentsDarkModeController.setInstanceForTesting(
+                new WebContentsDarkModeController.Impl() {
+                    @Override
+                    public boolean getEnabledState(
+                            BrowserContextHandle browserContextHandle, Context context, GURL url) {
+                        return mEnabledState;
+                    }
+                });
+        mEnabledState = false;
     }
 
     @After
     public void tearDown() {
-        ShadowWebContentsDarkModeController.sEnabledState = false;
+        mEnabledState = false;
     }
 
     @Test
@@ -69,19 +63,19 @@ public class AutoDarkFeedbackSourceUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
     public void testDisabled_FeatureNotEnabled() {
-        ShadowWebContentsDarkModeController.sEnabledState = true;
+        mEnabledState = true;
         doTestFeedbackSource(AutoDarkFeedbackSource.DISABLED_VALUE);
     }
 
     @Test
     public void testAutoDarkEnabledState_Enabled() {
-        ShadowWebContentsDarkModeController.sEnabledState = true;
+        mEnabledState = true;
         doTestFeedbackSource(AutoDarkFeedbackSource.ENABLED_VALUE);
     }
 
     @Test
     public void testAutoDarkEnabledState_DisabledGlobalSettings() {
-        ShadowWebContentsDarkModeController.sEnabledState = false;
+        mEnabledState = false;
         doTestFeedbackSource(AutoDarkFeedbackSource.DISABLED_VALUE);
     }
 

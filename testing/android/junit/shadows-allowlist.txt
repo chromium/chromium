@@ -10,14 +10,10 @@
 +org.chromium.base.task.AsyncTask
 +org.chromium.base.task.PostTask
 +org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate$ClipDataItemBuilder
-+org.chromium.chrome.browser.firstrun.FirstRunUtils
-+org.chromium.chrome.browser.init.ChromeBrowserInitializer
 +org.chromium.chrome.browser.multiwindow.MultiInstanceManagerApi31
-+org.chromium.chrome.browser.night_mode.WebContentsDarkModeController
 +org.chromium.chrome.browser.profiles.Profile
 +org.chromium.chrome.browser.profiles.ProfileManager
 +org.chromium.chrome.browser.profiles.ProfileManagerUtils
-+org.chromium.chrome.browser.searchwidget.SearchActivityUtils
 +org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator
 +org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator
 +org.chromium.chrome.browser.share.ShareHelper$ChooserActionHelper

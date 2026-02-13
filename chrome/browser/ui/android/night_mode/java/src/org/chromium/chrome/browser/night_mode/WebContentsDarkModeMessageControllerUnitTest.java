@@ -28,8 +28,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
@@ -39,7 +37,6 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController.AutoDarkClickableSpan;
-import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageControllerUnitTest.ShadowWebContentsDarkModeController;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -67,8 +64,10 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowAppCompatResources.class, ShadowWebContentsDarkModeController.class})
+        shadows = {ShadowAppCompatResources.class})
 public class WebContentsDarkModeMessageControllerUnitTest {
+    private boolean mIsFeatureEnabled;
+
     private static final String USER_ED_FEATURE =
             FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE;
     private static final String USER_ED_OPT_IN_FEATURE =
@@ -136,23 +135,6 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         }
     }
 
-    @Implements(WebContentsDarkModeController.class)
-    static class ShadowWebContentsDarkModeController {
-        static boolean sIsFeatureEnabled;
-
-        @Implementation
-        public static void setGlobalUserSettings(
-                BrowserContextHandle browserContextHandle, boolean enabled) {
-            sIsFeatureEnabled = enabled;
-        }
-
-        @Implementation
-        public static boolean isFeatureEnabled(
-                Context context, BrowserContextHandle browserContextHandle) {
-            return sIsFeatureEnabled;
-        }
-    }
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Activity mMockActivity;
     @Mock Profile mMockProfile;
@@ -168,6 +150,21 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
     @Before
     public void setup() {
+        WebContentsDarkModeController.setInstanceForTesting(
+                new WebContentsDarkModeController.Impl() {
+                    @Override
+                    public boolean isFeatureEnabled(
+                            Context context, BrowserContextHandle browserContextHandle) {
+                        return mIsFeatureEnabled;
+                    }
+
+                    @Override
+                    public void setGlobalUserSettings(
+                            BrowserContextHandle browserContextHandle, boolean enabled) {
+                        mIsFeatureEnabled = enabled;
+                    }
+                });
+
         when(mMockActivity.getResources()).thenReturn(mMockResources);
         when(mMockResources.getString(anyInt())).thenReturn(TEST_LINK_STRING);
         when(mMockResources.getString(eq(R.string.auto_dark_message_title)))
@@ -185,11 +182,11 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         SettingsNavigationFactory.setInstanceForTesting(mMockSettingsNavigation);
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mMockFeedbackLauncher);
         TrackerFactory.setTrackerForTests(mMockTracker);
-        ShadowWebContentsDarkModeController.sIsFeatureEnabled = true;
+        mIsFeatureEnabled = true;
     }
 
     private void setOptOut(boolean optOut) {
-        ShadowWebContentsDarkModeController.sIsFeatureEnabled = optOut;
+        mIsFeatureEnabled = optOut;
         if (!optOut) {
             FeatureOverrides.overrideParam(
                     ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING,
@@ -250,7 +247,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         if (clicked) mMessageDispatcher.clickButton();
         Assert.assertEquals(
                 "Feature should be enabled if we click the opt-in action.",
-                ShadowWebContentsDarkModeController.sIsFeatureEnabled,
+                mIsFeatureEnabled,
                 clicked);
         verify(mMockWebContents, times(clicked ? 1 : 0)).notifyRendererPreferenceUpdate();
 
@@ -277,7 +274,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Set setting and feature engagement state.
         setOptOut(optOut);
-        ShadowWebContentsDarkModeController.sIsFeatureEnabled = enabled;
+        mIsFeatureEnabled = enabled;
         String enabledFeature = optOut ? USER_ED_FEATURE : USER_ED_OPT_IN_FEATURE;
         when(mMockTracker.shouldTriggerHelpUi(eq(enabledFeature))).thenReturn(shouldTrigger);
 

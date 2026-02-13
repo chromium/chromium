@@ -26,7 +26,6 @@ import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -103,7 +102,6 @@ import java.util.Set;
 @Config(
         manifest = Config.NONE,
         shadows = {
-            SearchActivityUnitTest.ShadowSearchActivityUtils.class,
             SearchActivityUnitTest.ShadowTabBuilder.class,
         })
 @EnableFeatures({
@@ -121,23 +119,6 @@ public class SearchActivityUnitTest {
     private static final String HISTOGRAM_SUFFIX_LAUNCHER = ".Launcher";
     private static final String HISTOGRAM_SUFFIX_HUB = ".Hub";
 
-    // SearchActivityUtils call intercepting mock.
-    private interface TestSearchActivityUtils {
-        void resolveOmniboxRequestForResult(Activity activity, OmniboxLoadUrlParams params);
-    }
-
-    // Shadow forwarding static calls to TestSearchActivityUtils.
-    @Implements(SearchActivityUtils.class)
-    public static class ShadowSearchActivityUtils {
-        static TestSearchActivityUtils sMockUtils;
-
-        @Implementation
-        public static void resolveOmniboxRequestForResult(
-                Activity activity, OmniboxLoadUrlParams params) {
-            sMockUtils.resolveOmniboxRequestForResult(activity, params);
-        }
-    }
-
     @Implements(TabBuilder.class)
     public static class ShadowTabBuilder {
         static Tab sMockTab;
@@ -149,7 +130,7 @@ public class SearchActivityUnitTest {
     }
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock TestSearchActivityUtils mUtils;
+    private @Mock SearchActivityUtils.TestDelegate mUtils;
     private @Mock TemplateUrlService mTemplateUrlSvc;
     private @Mock Profile mProfile;
     private @Mock TemplateUrlServiceFactoryJni mTemplateUrlFactoryJni;
@@ -210,7 +191,7 @@ public class SearchActivityUnitTest {
                 .thenReturn(mStatusCoordinator);
         lenient().when(mLocationBarCoordinator.getUrlBarCoordinator()).thenReturn(mUrlCoordinator);
 
-        ShadowSearchActivityUtils.sMockUtils = mUtils;
+        SearchActivityUtils.setDelegateForTesting(mUtils);
         WebContentsFactory.setWebContentsForTesting(mWebContents);
         ShadowTabBuilder.sMockTab = mTab;
         RevenueStats.setCustomTabSearchClientHookForTesting(mSetCustomTabSearchClient);
