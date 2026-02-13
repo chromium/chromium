@@ -6270,7 +6270,9 @@ crbug.com/456517732 http/tests/devtools/console/console-format-es6-2.js [ Failur
 crbug.com/456517732 http/tests/devtools/console/console-format-es6.js [ Failure Pass ]
 crbug.com/456517732 http/tests/devtools/console/console-log-short-hand-method.js [ Failure Pass ]
 crbug.com/456517732 http/tests/devtools/sources/debugger-async/async-callstack-in-console.js [ Failure Pass ]
-
+crbug.com/456517732 http/tests/devtools/console/console-bad-stacktrace.js [ Failure Pass ]
+crbug.com/456517732 http/tests/devtools/console/console-uncaught-promise-in-worker.js [ Failure Pass ]
+crbug.com/456517732 http/tests/devtools/console/console-worker-nested-imports-syntax-error.js [ Failure Pass ]
 
 # Sheriff 2021-06-03
 crbug.com/1185121 fast/scroll-snap/animate-fling-to-snap-points-1.html [ Failure Pass ]
