@@ -41,6 +41,13 @@ export interface TabUpload {
 
 export type ContextualUpload = TabUpload|FileUpload;
 
+export enum GlifAnimationState {
+  INELIGIBLE = 'ineligible',
+  SPINNER_ONLY = 'spinner-only',
+  STARTED = 'started',
+  FINISHED = 'finished',
+}
+
 export function recordEnumerationValue(
     metricName: string, value: number, enumSize: number) {
   // In rare cases chrome.metricsPrivate is not available.

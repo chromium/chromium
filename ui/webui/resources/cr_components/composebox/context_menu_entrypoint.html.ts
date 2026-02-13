@@ -4,7 +4,8 @@
 
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {type ContextMenuEntrypointElement, GlifAnimationState} from './context_menu_entrypoint.js';
+import {GlifAnimationState} from './common.js';
+import type {ContextMenuEntrypointElement} from './context_menu_entrypoint.js';
 
 export function getHtml(this: ContextMenuEntrypointElement) {
   // clang-format off

@@ -18,8 +18,7 @@ import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbo
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {recordBoolean} from './common.js';
-import {GlifAnimationState} from './context_menu_entrypoint.js';
+import {GlifAnimationState, recordBoolean} from './common.js';
 import type {ContextualActionMenuElement} from './contextual_action_menu.js';
 import {getCss} from './contextual_entrypoint_button.css.js';
 import {getHtml} from './contextual_entrypoint_button.html.js';
