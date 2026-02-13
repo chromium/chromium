@@ -358,6 +358,7 @@ public class SelectableTabListEditorTest {
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @Feature("DesktopWindow")
     @SmallTest
+    @DisabledTest(message = "crbug.com/484108560")
     public void testMarginWithAppHeaders() {
         // Height to apply as top margin.
         int appHeaderHeight =
