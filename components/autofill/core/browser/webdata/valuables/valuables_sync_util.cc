@@ -118,6 +118,7 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
       trimmed_specifics.mutable_vehicle_registration()
           ->clear_license_plate_country();
       trimmed_specifics.mutable_vehicle_registration()->clear_owner_name();
+      trimmed_specifics.mutable_vehicle_registration()->clear_issuer_name();
       if (trimmed_specifics.mutable_vehicle_registration()->ByteSizeLong() ==
           0) {
         trimmed_specifics.clear_vehicle_registration();

@@ -2093,6 +2093,7 @@ VISIT_PROTO_FIELDS(const sync_pb::VehicleRegistration& proto) {
   VISIT(license_plate_region);
   VISIT(license_plate_country);
   VISIT(owner_name);
+  VISIT(issuer_name);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::FlightReservation& proto) {

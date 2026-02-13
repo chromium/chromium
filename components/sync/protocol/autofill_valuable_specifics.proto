@@ -70,6 +70,10 @@ message VehicleRegistration {
   // The owner of the vehicle as it appears on their vehicle registration
   // documents.
   optional string owner_name = 8;
+
+  // The name of the issuer of the vehicle registration, e.g. "DMV".
+  // Note that this field is currently not used in Chrome.
+  optional string issuer_name = 9;
 }
 
 // Represents a flight reservation from Google Wallet.
