@@ -22,8 +22,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -39,7 +37,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
-import org.chromium.chrome.browser.settings.SettingsActivityUnitTest.ShadowProfileManagerUtils;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
@@ -55,15 +52,8 @@ import java.io.File;
 import java.io.IOException;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 30, shadows = ShadowProfileManagerUtils.class)
+@Config(sdk = 30)
 public class MultiColumnSettingsTest {
-
-    /** Shadow class to bypass the real call to ProfileManagerUtils. */
-    @Implements(ProfileManagerUtils.class)
-    public static class ShadowProfileManagerUtils {
-        @Implementation
-        protected static void flushPersistentDataForAllProfiles() {}
-    }
 
     private ActivityScenario<SettingsActivity> mActivityScenario;
     private SettingsActivity mSettingsActivity;
@@ -88,6 +78,7 @@ public class MultiColumnSettingsTest {
 
     @Before
     public void setup() {
+        ProfileManagerUtils.setFlushPersistentDataCallbackForTesting(() -> {});
         ChromeBrowserInitializer.setForTesting(mInitializer);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 

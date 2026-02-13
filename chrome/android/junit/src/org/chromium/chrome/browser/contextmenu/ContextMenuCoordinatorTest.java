@@ -56,7 +56,6 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.Visibility;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.TestActivity;
@@ -125,17 +124,6 @@ public class ContextMenuCoordinatorTest {
         }
     }
 
-    /** Helper shadow to set the results for {@link Profile#fromWebContents}. */
-    @Implements(Profile.class)
-    public static class ShadowProfile {
-        static Profile sProfileFromWebContents;
-
-        @Implementation
-        public static Profile fromWebContents(WebContents webContents) {
-            return sProfileFromWebContents;
-        }
-    }
-
     /** Helper class to access the protected constructor of ViewAndroidDelegate. */
     public static class TestViewAndroidDelegate extends ViewAndroidDelegate {
         public TestViewAndroidDelegate(ViewGroup containerView) {
@@ -162,7 +150,7 @@ public class ContextMenuCoordinatorTest {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
         mCoordinator =
                 new ContextMenuCoordinator(mActivity, TOP_CONTENT_OFFSET_PX, mNativeDelegate);
-        ShadowProfile.sProfileFromWebContents = mProfile;
+        Profile.setProfileFromWebContentsForTesting(mProfile);
         ContextMenuHeaderCoordinator.setDisableForTesting(true);
     }
 
@@ -196,7 +184,7 @@ public class ContextMenuCoordinatorTest {
 
     @Test
     @Config(
-            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
+            shadows = {ShadowContextMenuDialog.class},
             qualifiers = "mdpi")
     public void testDismissDialogCalledOnVisibilityChanged_Hidden() {
         final int triggeringTouchXDp = 100;
@@ -215,7 +203,7 @@ public class ContextMenuCoordinatorTest {
 
     @Test
     @Config(
-            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
+            shadows = {ShadowContextMenuDialog.class},
             qualifiers = "mdpi")
     public void testDismissDialogCalledOnVisibilityChanged_Visible() {
         final int triggeringTouchXDp = 100;
@@ -280,7 +268,7 @@ public class ContextMenuCoordinatorTest {
     @DisabledTest(message = "crbug.com/1444964")
     @DisableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
     @Config(
-            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
+            shadows = {ShadowContextMenuDialog.class},
             qualifiers = "mdpi")
     public void testDisplayMenu() {
         final int triggeringTouchXDp = 100;
@@ -313,7 +301,7 @@ public class ContextMenuCoordinatorTest {
     @DisabledTest(message = "crbug.com/1444964")
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     @Config(
-            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
+            shadows = {ShadowContextMenuDialog.class},
             qualifiers = "mdpi")
     @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testDisplayMenu_DragEnabled() {
@@ -366,7 +354,7 @@ public class ContextMenuCoordinatorTest {
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     @Config(
             sdk = 29,
-            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
+            shadows = {ShadowContextMenuDialog.class},
             qualifiers = "mdpi")
     @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testFocusAfterSubmenuNavigation() {

@@ -32,8 +32,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
@@ -48,7 +46,6 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
-import org.chromium.chrome.browser.settings.SettingsActivityUnitTest.ShadowProfileManagerUtils;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
 import org.chromium.ui.display.DisplayUtil;
@@ -57,17 +54,9 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link SettingsActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = ShadowProfileManagerUtils.class)
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 @EnableFeatures({ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES})
 public class SettingsActivityUnitTest {
-    /** Shadow class to bypass the real call to ProfileManagerUtils. */
-    @Implements(ProfileManagerUtils.class)
-    public static class ShadowProfileManagerUtils {
-        @Implementation
-        protected static void flushPersistentDataForAllProfiles() {}
-    }
-
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private ActivityScenario<SettingsActivity> mActivityScenario;
@@ -78,6 +67,7 @@ public class SettingsActivityUnitTest {
 
     @Before
     public void setup() {
+        ProfileManagerUtils.setFlushPersistentDataCallbackForTesting(() -> {});
         ChromeBrowserInitializer.setForTesting(mInitializer);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
     }

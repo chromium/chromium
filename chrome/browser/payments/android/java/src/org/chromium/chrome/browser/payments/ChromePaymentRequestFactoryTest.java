@@ -19,7 +19,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.chrome.browser.payments.test_support.ShadowProfile;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.payments.InvalidPaymentRequest;
 import org.chromium.components.payments.PaymentFeatureList;
@@ -33,9 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** A test for ChromePaymentRequestFactory. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowProfile.class})
+@Config(manifest = Config.NONE)
 public class ChromePaymentRequestFactoryTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -51,7 +48,7 @@ public class ChromePaymentRequestFactoryTest {
         WebContentsStatics.setWebContentsForTesting(mWebContents);
 
         Mockito.doReturn(true).when(mProfile).isOffTheRecord();
-        ShadowProfile.setProfile(mProfile);
+        Profile.setProfileFromWebContentsForTesting(mProfile);
 
         setPaymentPermissionsPolicy(true);
     }

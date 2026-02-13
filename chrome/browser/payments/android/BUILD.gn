@@ -33,7 +33,6 @@ robolectric_library("junit_test_support") {
   sources = [
     "java/src/org/chromium/chrome/browser/payments/test_support/MockPaymentUiServiceBuilder.java",
     "java/src/org/chromium/chrome/browser/payments/test_support/PaymentRequestParamsBuilder.java",
-    "java/src/org/chromium/chrome/browser/payments/test_support/ShadowProfile.java",
   ]
 }
 
