@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,31 +20,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for the {@link TabViewManager} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {TabViewManagerUnitTest.TabBrowserControlsOffsetHelperShadow.class})
 public class TabViewManagerUnitTest {
-    /** A shadow implementation of {@link TabBrowserControlsOffsetHelper}. */
-    @Implements(TabBrowserControlsOffsetHelper.class)
-    public static class TabBrowserControlsOffsetHelperShadow {
-        @Implementation
-        public static TabBrowserControlsOffsetHelper get(Tab tab) {
-            TabBrowserControlsOffsetHelper mockTabBrowserControlsOffsetHelper =
-                    mock(TabBrowserControlsOffsetHelper.class);
-            when(mockTabBrowserControlsOffsetHelper.contentOffset()).thenReturn(0);
-            when(mockTabBrowserControlsOffsetHelper.bottomControlsOffset()).thenReturn(0);
-            return mockTabBrowserControlsOffsetHelper;
-        }
-    }
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabImpl mTab;
+    @Mock private TabBrowserControlsOffsetHelper mTabBrowserControlsOffsetHelper;
     @Mock private TabViewProvider mTabViewProvider0;
     @Mock private TabViewProvider mTabViewProvider1;
     @Mock private TabViewProvider mTabViewProvider2;
@@ -60,6 +43,10 @@ public class TabViewManagerUnitTest {
 
     @Before
     public void setUp() {
+        TabBrowserControlsOffsetHelper.setInstanceForTesting(mTabBrowserControlsOffsetHelper);
+        when(mTabBrowserControlsOffsetHelper.contentOffset()).thenReturn(0);
+        when(mTabBrowserControlsOffsetHelper.bottomControlsOffset()).thenReturn(0);
+
         mTabViewManager = new TabViewManagerImpl(mTab);
         when(mTabViewProvider0.getTabViewProviderType())
                 .thenReturn(TabViewManagerImpl.PRIORITIZED_TAB_VIEW_PROVIDER_TYPES[0]);

@@ -30,7 +30,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.Lifecycle.State;
@@ -206,7 +205,6 @@ public class AndroidShareSheetControllerUnitTest {
     @After
     public void tearDown() {
         ShadowLinkToTextCoordinator.setForceToFail(null);
-        ShadowQrCodeDialog.sLastUrl = null;
         mWindow.destroy();
     }
 
@@ -645,8 +643,9 @@ public class AndroidShareSheetControllerUnitTest {
     @Test
     @Config(
             sdk = 34,
-            shadows = {ShadowChooserActionHelper.class, ShadowQrCodeDialog.class})
+            shadows = {ShadowChooserActionHelper.class})
     public void shareQrCodeForImage() throws CanceledException {
+        QrCodeDialog.setInstanceForTesting(Mockito.mock(QrCodeDialog.class));
         Uri testImageUri = Uri.parse("content://test.image.uri");
         ShareParams params =
                 new ShareParams.Builder(mWindow, "", "")
@@ -674,7 +673,7 @@ public class AndroidShareSheetControllerUnitTest {
         Assert.assertEquals(
                 "Image source URL should be used for QR Code.",
                 JUnitTestGURLs.GOOGLE_URL_DOGS.getSpec(),
-                ShadowQrCodeDialog.sLastUrl);
+                QrCodeDialog.getLastUrlForTesting());
     }
 
     @Test
@@ -921,17 +920,6 @@ public class AndroidShareSheetControllerUnitTest {
         @Implementation
         protected String getTitle() {
             return "Include link: <link>";
-        }
-    }
-
-    @Implements(QrCodeDialog.class)
-    static class ShadowQrCodeDialog {
-        static @Nullable String sLastUrl;
-
-        @Implementation
-        protected static QrCodeDialog newInstance(String url, WindowAndroid windowAndroid) {
-            sLastUrl = url;
-            return Mockito.mock(QrCodeDialog.class);
         }
     }
 

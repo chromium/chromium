@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -20,6 +21,8 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
     @VisibleForTesting
     public static final Class<TabBrowserControlsOffsetHelper> USER_DATA_KEY =
             TabBrowserControlsOffsetHelper.class;
+
+    private static @Nullable TabBrowserControlsOffsetHelper sInstanceForTesting;
 
     private final TabImpl mTab;
 
@@ -39,12 +42,18 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
      * @return The offset helper for a given tab.
      */
     public static TabBrowserControlsOffsetHelper get(Tab tab) {
+        if (sInstanceForTesting != null) return sInstanceForTesting;
         TabBrowserControlsOffsetHelper helper = tab.getUserDataHost().getUserData(USER_DATA_KEY);
         if (helper == null) {
             helper = new TabBrowserControlsOffsetHelper(tab);
             tab.getUserDataHost().setUserData(USER_DATA_KEY, helper);
         }
         return helper;
+    }
+
+    public static void setInstanceForTesting(TabBrowserControlsOffsetHelper instance) {
+        sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     private TabBrowserControlsOffsetHelper(Tab tab) {

@@ -17,14 +17,11 @@
 +org.chromium.chrome.browser.profiles.Profile
 +org.chromium.chrome.browser.profiles.ProfileManager
 +org.chromium.chrome.browser.profiles.ProfileManagerUtils
-+org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory
 +org.chromium.chrome.browser.searchwidget.SearchActivityUtils
 +org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator
 +org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator
-+org.chromium.chrome.browser.share.qrcode.QrCodeDialog
 +org.chromium.chrome.browser.share.ShareHelper$ChooserActionHelper
 +org.chromium.chrome.browser.tab.SadTab
-+org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper
 +org.chromium.chrome.browser.tab.TabBuilder
 +org.chromium.chrome.browser.tab.TabUtils
 +org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController$Delegate

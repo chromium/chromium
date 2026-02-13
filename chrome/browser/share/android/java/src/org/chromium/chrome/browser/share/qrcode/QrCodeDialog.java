@@ -19,6 +19,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
@@ -35,14 +36,16 @@ import java.util.ArrayList;
 @NullMarked
 public class QrCodeDialog extends DialogFragment {
     // Used to pass the URL in the bundle.
-    public static String URL_KEY = "url_key";
+    public static final String URL_KEY = "url_key";
+
+    private static @Nullable QrCodeDialog sInstanceForTesting;
+    private static @Nullable String sLastUrlForTesting;
 
     private @Nullable WindowAndroid mWindowAndroid;
     // TODO(crbug.com/40280300): Remove list of Tabs.
     protected ArrayList<QrCodeDialogTab> mTabs = new ArrayList<>();
 
-    @SuppressWarnings("NullAway.Init")
-    private TabLayoutPageListener mTabLayoutPageListener;
+    private @Nullable TabLayoutPageListener mTabLayoutPageListener;
 
     /**
      * Create a new instance of {@link QrCodeDialog} and set the URL.
@@ -50,6 +53,10 @@ public class QrCodeDialog extends DialogFragment {
      * @param windowAndroid The AndroidPermissionDelegate to be query for download permissions.
      */
     static QrCodeDialog newInstance(String url, WindowAndroid windowAndroid) {
+        if (sInstanceForTesting != null) {
+            sLastUrlForTesting = url;
+            return sInstanceForTesting;
+        }
         assert windowAndroid != null;
         QrCodeDialog qrCodeDialog = new QrCodeDialog();
         Bundle args = new Bundle();
@@ -57,6 +64,19 @@ public class QrCodeDialog extends DialogFragment {
         qrCodeDialog.setArguments(args);
         qrCodeDialog.setWindowAndroid(windowAndroid);
         return qrCodeDialog;
+    }
+
+    public static void setInstanceForTesting(@Nullable QrCodeDialog instance) {
+        sInstanceForTesting = instance;
+        ResettersForTesting.register(
+                () -> {
+                    sInstanceForTesting = null;
+                    sLastUrlForTesting = null;
+                });
+    }
+
+    public static @Nullable String getLastUrlForTesting() {
+        return sLastUrlForTesting;
     }
 
     @Override
@@ -71,12 +91,14 @@ public class QrCodeDialog extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
+        assumeNonNull(mTabLayoutPageListener);
         mTabLayoutPageListener.resumeSelectedTab();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        assumeNonNull(mTabLayoutPageListener);
         mTabLayoutPageListener.pauseAllTabs();
     }
 
