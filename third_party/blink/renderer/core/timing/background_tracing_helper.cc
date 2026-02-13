@@ -55,11 +55,6 @@ std::optional<uint32_t> ConvertToHashInteger(std::string_view chars) {
 
 static constexpr char kTriggerPrefix[] = "trigger:";
 
-bool MarkNameIsTrigger(StringView mark_name) {
-  return StringView(mark_name, 0, std::size(kTriggerPrefix) - 1) ==
-         kTriggerPrefix;
-}
-
 std::string GenerateFullTrigger(std::string_view site,
                                 std::string_view mark_name) {
   return base::StrCat({site, "-", mark_name});
@@ -209,6 +204,14 @@ size_t BackgroundTracingHelper::GetIdSuffixPos(StringView string) {
 
   // Return the location of the underscore.
   return cursor - 1;
+}
+
+bool BackgroundTracingHelper::MarkNameIsTrigger(StringView mark_name) {
+  if (mark_name.length() < std::size(kTriggerPrefix)) {
+    return false;
+  }
+  return StringView(mark_name, 0, std::size(kTriggerPrefix) - 1) ==
+         kTriggerPrefix;
 }
 
 std::pair<StringView, std::optional<uint32_t>>
