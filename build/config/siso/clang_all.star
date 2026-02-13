@@ -12,6 +12,7 @@ load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
 load("./mac_sdk.star", "mac_sdk")
 load("./win_sdk.star", "win_sdk")
+load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 
 def __clang_plugin_configs(ctx):
     configs = [
@@ -24,6 +25,29 @@ def __clang_plugin_configs(ctx):
     if "args.gn" in ctx.metadata and gn.args(ctx).get("sanitizer_coverage_skip_stdlib_and_absl"):
         configs += ["build/config/sanitizers/ignorelist_stdlib_and_absl.txt"]
     return configs
+
+def __check_crash_diagnostics(ctx, args):
+    # If multiple -fcrash-diagnostics-dir flags are provided, clang uses the last one.
+    crash_dir = None
+    skip = False
+    for i, arg in enumerate(args):
+        if skip:
+            skip = False
+            continue
+        if arg.startswith("-fcrash-diagnostics-dir="):
+            crash_dir = arg.removeprefix("-fcrash-diagnostics-dir=")
+        elif arg == "-fcrash-diagnostics-dir" and i + 1 < len(args):
+            crash_dir = args[i + 1]
+            skip = True
+
+    if crash_dir:
+        if path.isabs(crash_dir):
+            # RBE requires relative paths for output directories.
+            # If the crash dir is absolute (e.g. /tmp/...), we can't capture it easily.
+            # For now, just skip it to avoid build failures.
+            return
+        crash_dir = ctx.fs.canonpath(crash_dir)
+        ctx.actions.fix(auxiliary_log_output_dirs = [crash_dir])
 
 def __filegroups(ctx):
     gn_logs_data = gn_logs.read(ctx)
@@ -211,7 +235,17 @@ def __thin_archive(ctx, cmd):
     ctx.actions.write(cmd.outputs[0], data)
     ctx.actions.exit(exit_status = 0)
 
+def __compile(ctx, cmd):
+    __check_crash_diagnostics(ctx, cmd.args)
+
+def __compile_coverage(ctx, cmd):
+    clang_command = clang_code_coverage_wrapper.run(ctx, list(cmd.args))
+    __check_crash_diagnostics(ctx, clang_command)
+    ctx.actions.fix(args = clang_command)
+
 __handlers = {
+    "clang_compile": __compile,
+    "clang_compile_coverage": __compile_coverage,
     "lld_link": __lld_link,
     "lld_thin_archive": __thin_archive,
 }

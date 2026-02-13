@@ -7,14 +7,10 @@
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./android.star", "android")
-load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
+load("./clang_all.star", "clang_all")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
 load("./win_sdk.star", "win_sdk")
-
-def __clang_compile_coverage(ctx, cmd):
-    clang_command = clang_code_coverage_wrapper.run(ctx, list(cmd.args))
-    ctx.actions.fix(args = clang_command)
 
 def __clang_link(ctx, cmd):
     if not config.get(ctx, "remote-link"):
@@ -73,10 +69,9 @@ def __clang_link(ctx, cmd):
 
     ctx.actions.fix(inputs = cmd.inputs + inputs)
 
-__handlers = {
-    "clang_compile_coverage": __clang_compile_coverage,
-    "clang_link": __clang_link,
-}
+__handlers = {}
+__handlers.update(clang_all.handlers)
+__handlers["clang_link"] = __clang_link
 
 def __rules(ctx):
     gn_logs_data = gn_logs.read(ctx)
@@ -94,6 +89,7 @@ def __rules(ctx):
         rules.extend([
             {
                 "name": "clang-cl/cxx",
+                "handler": "clang_compile",
                 "action": "(.*_)?cxx",
                 "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang-cl ",
                 "inputs": [
@@ -106,6 +102,7 @@ def __rules(ctx):
             },
             {
                 "name": "clang-cl/cc",
+                "handler": "clang_compile",
                 "action": "(.*_)?cc",
                 "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang-cl ",
                 "inputs": [
@@ -192,6 +189,7 @@ def __rules(ctx):
     rules.extend([
         {
             "name": "clang/cxx",
+            "handler": "clang_compile",
             "action": "(.*_)?cxx",
             "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang++ ",
             "inputs": [
@@ -204,6 +202,7 @@ def __rules(ctx):
         },
         {
             "name": "clang/cxx_module",
+            "handler": "clang_compile",
             "action": "(.*_)?cxx_module",
             "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang++ ",
             "inputs": [
@@ -216,6 +215,7 @@ def __rules(ctx):
         },
         {
             "name": "clang/cc",
+            "handler": "clang_compile",
             "action": "(.*_)?cc",
             "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang ",
             "inputs": [
@@ -228,6 +228,7 @@ def __rules(ctx):
         },
         {
             "name": "clang/objcxx",
+            "handler": "clang_compile",
             "action": "(.*_)?objcxx",
             "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang++",
             "inputs": [
@@ -240,6 +241,7 @@ def __rules(ctx):
         },
         {
             "name": "clang/objc",
+            "handler": "clang_compile",
             "action": "(.*_)?objc",
             "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang",
             "inputs": [
@@ -252,6 +254,7 @@ def __rules(ctx):
         },
         {
             "name": "clang/asm",
+            "handler": "clang_compile",
             "action": "(.*_)?asm",
             "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang",
             "inputs": [
