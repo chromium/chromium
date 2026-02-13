@@ -53,6 +53,7 @@
 /.gemini/*
 !/.gemini/commands/
 !/.gemini/OWNERS
+!/.gemini/.style.mdformat
 .landmines
 .metadata
 .project

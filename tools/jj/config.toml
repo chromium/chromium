@@ -86,6 +86,13 @@ patterns = [
 command = ["tools/jj/formatters/python.py", "$path"]
 patterns = ["glob:'**/*.py'"]
 
+[fix.tools.md-format]
+command = ["third_party/depot_tools/markdown_format.py", "--from-stdin", "--assume-filename=$path"]
+patterns = [
+    "glob:'agents/**/*.md'",
+    "glob:'.gemini/**/*.md'",
+]
+
 [fix.tools.mojom-format]
 command = ["vpython3", "mojo/public/tools/mojom/mojom_format.py"]
 patterns = [
