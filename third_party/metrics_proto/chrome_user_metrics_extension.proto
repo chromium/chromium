@@ -5,7 +5,7 @@
 // This file was exported from google3, do not edit manually.
 // See README.chromium for details.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -34,6 +34,8 @@ import "user_demographics.proto";
 message ChromeUserMetricsExtension {
   // The product (i.e. end user application) for a given UMA log.
   enum Product {
+    option features.enum_type = CLOSED;
+
     // Google Chrome product family.
     CHROME = 0;
 
@@ -56,7 +58,7 @@ message ChromeUserMetricsExtension {
   // (though they still need to add the new product to the server-side enum).
   // Note: The default value is Chrome, so Chrome products will not transmit
   // this field.
-  optional int32 product = 10 [default = 0];
+  int32 product = 10 [default = 0];
 
   // The id of the client install that generated these events.
   //
@@ -71,7 +73,7 @@ message ChromeUserMetricsExtension {
   // [1]
   // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/user_data_dir.md
   // For non-Chrome Android clients, this is the install id unique to the app.
-  optional fixed64 client_id = 1;
+  fixed64 client_id = 1;
 
   // The session id for this user.
   // Values such as tab ids are only meaningful within a particular session.
@@ -83,7 +85,7 @@ message ChromeUserMetricsExtension {
   // previous session). Prefer to use system_profile.session_hash, which is
   // populated correctly in all cases. (The only setting in which session_id
   // is acceptable is for analyzing user actions.)
-  optional int32 session_id = 2;
+  int32 session_id = 2;
 
   // The id associated with a user entity that generated these events. These
   // user IDs are only associated with users on device. Their generation is not
@@ -95,7 +97,7 @@ message ChromeUserMetricsExtension {
   // captured when a log is first opened. If there is no user logged in at the
   // time the log is opened, then this field will be unset. All ephemeral (i.e.
   // guest, kiosk) users will have this field unset.
-  optional fixed64 user_id = 24;
+  fixed64 user_id = 24;
 
   // A client-managed id that functions as a sequence number for the log record.
   // Clients are expected to maintain a counter, incrementing it (by 1) for each
@@ -104,7 +106,7 @@ message ChromeUserMetricsExtension {
   // record_id values associated to a given client_id form an uninterrupted
   // numeric sequence (i.e. k, k+1, k+2, k+3, ...), allowing for the detection
   // of dropped, or otherwise lost, records.
-  optional int64 record_id = 28;
+  int64 record_id = 28;
 
   // A client-managed id that functions as a sequence number for the log record.
   // Clients are expected to maintain a counter, incrementing it (by 1) for each
@@ -113,21 +115,25 @@ message ChromeUserMetricsExtension {
   // the record_id values associated to a given client_id form an uninterrupted
   // numeric sequence (i.e. k, k+1, k+2, k+3, ...), allowing for the detection
   // of dropped, or otherwise lost, finalized records.
-  optional int64 finalized_record_id = 29;
+  int64 finalized_record_id = 29;
 
   // Represents the type of log.
   enum LogType {
+    option features.enum_type = CLOSED;
+
     UNKNOWN = 0;
     // The log was uploaded from an out-of-band (manual) trigger.
     OUT_OF_BAND = 1;
   }
 
-  optional LogType log_type = 30;
+  LogType log_type = 30;
 
   // Next tag: 4
   message RealLocalTime {
     // The source of the timestamp.
     enum TimeSource {
+      option features.enum_type = CLOSED;
+
       UNSPECIFIED = 0;
 
       // The time on the local machine.
@@ -139,15 +145,15 @@ message ChromeUserMetricsExtension {
       NETWORK_TIME_CLOCK = 2;
     }
 
-    optional TimeSource time_source = 1;
+    TimeSource time_source = 1;
 
     // |time_sec| is in seconds since epoch.
-    optional int64 time_sec = 2;
+    int64 time_sec = 2;
 
     // |time_zone_offset_from_gmt_sec| is in seconds.
     // Only logged in |time_log_closed| entries, not |time_log_created| entries.
     // (Populating this field when creating a log slows down startup too much.)
-    optional int32 time_zone_offset_from_gmt_sec = 3;
+    int32 time_zone_offset_from_gmt_sec = 3;
   }
 
   // These times are set for "ongoing" UMA logs.  For two other types
@@ -169,16 +175,16 @@ message ChromeUserMetricsExtension {
   // means histograms that are stored in a record could have been emitted up to
   // 30 seconds before the log was created. This logic may change in the
   // future; see http://crbug.com/1171830
-  optional RealLocalTime time_log_created = 25;
-  optional RealLocalTime time_log_closed = 26;
+  RealLocalTime time_log_created = 25;
+  RealLocalTime time_log_closed = 26;
 
   // Information about the user's browser and system configuration.
-  optional SystemProfileProto system_profile = 3;
+  SystemProfileProto system_profile = 3;
 
   // The user's demographic information. This data is made available to Chrome
   // via syncable priority pref, so is only available if the user is signed-in
   // and syncing.
-  optional UserDemographicsProto user_demographics = 21;
+  UserDemographicsProto user_demographics = 21;
 
   // This message will log one or more of the following event types:
   repeated UserActionEventProto user_action_event = 4;
@@ -190,17 +196,17 @@ message ChromeUserMetricsExtension {
 
   repeated ChromeOSAppListLaunchEventProto chrome_os_app_list_launch_event = 20;
 
-  optional StructuredDataProto structured_data = 23;
+  StructuredDataProto structured_data = 23;
 
   // A list of all collected sample-based profiles since the last UMA upload.
   repeated SampledProfile sampled_profile = 11;
 
   // Additional data related with Cast-enabled devices.
-  optional CastLogsProto cast_logs = 12;
+  CastLogsProto cast_logs = 12;
 
   // The ReportingInfo message sent in the X-Chrome-UMA-ReportingInfo header.
   // Copied in by the receiving server.
-  optional ReportingInfo reporting_info = 17;
+  ReportingInfo reporting_info = 17;
 
   // The Chrome traces obtained during the current session. The start time,
   // duration and details depend on the experiment triggers in the current
@@ -213,5 +219,5 @@ message ChromeUserMetricsExtension {
   // within the same log session, only the last one will be recorded. This is
   // used to identify applications that use Custom Tabs in an abusive way. This
   // is specific to Android.
-  optional CustomTabSessionProto custom_tab_session = 27;
+  CustomTabSessionProto custom_tab_session = 27;
 }

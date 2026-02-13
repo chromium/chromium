@@ -5,7 +5,7 @@
 // This file was exported from google3, do not edit manually.
 // See README.chromium for details.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -16,6 +16,8 @@ package metrics;
 
 import "extension_install.proto";
 
+option features.utf8_validation = NONE;
+
 // Stores information about the user's brower and system configuration.
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
@@ -23,7 +25,7 @@ import "extension_install.proto";
 // Next tag: 51
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
-  optional int64 build_timestamp = 1;
+  int64 build_timestamp = 1;
 
   // A version number string for the application. For Chrome, this is the
   // browser version number, typically a 4-tuple of numbers separated by periods
@@ -40,20 +42,22 @@ message SystemProfileProto {
   //
   // This value is more trustworthy than the UA string associated with the
   // request as it is not user-modifiable.
-  optional string app_version = 2;
+  string app_version = 2;
 
   // The application can create logs about previous versions. In particular the
   // initial stability log refers to the previous run, which can be an older
   // version. This field is set by the client when the log being written has an
   // app_version that's different than the version of the app writing the log.
   // Note that the version uploading the log may also be different.
-  optional string log_written_by_app_version = 40;
+  string log_written_by_app_version = 40;
 
   // The brand code or distribution tag assigned to a partner, if available.
   // Windows, Mac, iOS, and CrOS clients may have a brand code.
-  optional string brand_code = 12;
+  string brand_code = 12;
 
   enum Channel {
+    option features.enum_type = CLOSED;
+
     CHANNEL_UNKNOWN = 0;  // Unknown channel -- perhaps an unofficial build?
     CHANNEL_CANARY = 1;
     CHANNEL_DEV = 2;
@@ -61,16 +65,16 @@ message SystemProfileProto {
     CHANNEL_STABLE = 4;
   }
 
-  optional Channel channel = 10;
+  Channel channel = 10;
 
   // True for a client following updates on the extended stable channel;
   // see go/chrome-extended-dd.
-  optional bool is_extended_stable_channel = 36 [default = false];
+  bool is_extended_stable_channel = 36 [default = false];
 
   // True if Chrome build is instrumented (e.g. built with ASAN instrumentation
   // or with DCHECKs enabled).
   // This field was renamed from |is_asan_build| to reflect its actual meaning.
-  optional bool is_instrumented_build = 20 [default = false];
+  bool is_instrumented_build = 20 [default = false];
 
   // For Chrome, the date the user enabled UMA, in seconds since the epoch.
   // If the user has toggled the UMA enabled state multiple times, this will
@@ -80,11 +84,11 @@ message SystemProfileProto {
   // if the user opted into metrics collection before WebView started tracking
   // this information. Otherwise, the field value should correctly reflect the
   // first startup for this app after the user opted into metrics collection.
-  optional int64 uma_enabled_date = 3;
+  int64 uma_enabled_date = 3;
 
   // The time when the client was installed, in seconds since the epoch.
   // For privacy, this is rounded to the nearest hour.
-  optional int64 install_date = 16;
+  int64 install_date = 16;
 
   // A message about the cloned install detection that helps improve data
   // quality by identifying potential VMs and bots. This message will be
@@ -96,24 +100,24 @@ message SystemProfileProto {
   message ClonedInstallInfo {
     // The latest timestamp we reset a cloned client’s client id, in seconds
     // since the epoch. For privacy, this is rounded to the nearest hour.
-    optional int64 last_timestamp = 1;
+    int64 last_timestamp = 1;
 
     // The client_id that this client is cloned from. This field is tied to the
     // cloned install detector only; any other way of resetting client_id
     // doesn't touch this field. This field is only reported in the
     // resetting session.
-    optional fixed64 cloned_from_client_id = 2;
+    fixed64 cloned_from_client_id = 2;
 
     // The first timestamp when we reset a cloned client’s client id, in seconds
     // since the epoch. For privacy, this is rounded to the nearest hour.
-    optional int64 first_timestamp = 3;
+    int64 first_timestamp = 3;
 
     // The number of times this client has been reset due to cloned install.
     // Increment by one per reset happens.
-    optional int32 count = 4;
+    int32 count = 4;
   }
 
-  optional ClonedInstallInfo cloned_install_info = 39;
+  ClonedInstallInfo cloned_install_info = 39;
 
   // The non-identifying low entropy source value. This value seeds the
   // pseudorandom generator which picks experimental groups. Clients only report
@@ -121,14 +125,14 @@ message SystemProfileProto {
   // means this value won't be changed within the session even even if the low
   // entropy source is reset (e.g. via the UMA checkbox) because group
   // assignments won't be changed until restart.
-  optional int32 low_entropy_source = 31;
+  int32 low_entropy_source = 31;
 
   // The old low entropy value. This value is thought to be biased in the wild,
   // and is no longer used for experiments requiring low entropy. Clients which
   // already have an "old" value continue incorporating it into the high entropy
   // source, to avoid changing those group assignments. New clients only have
   // the new source.
-  optional int32 old_low_entropy_source = 32;
+  int32 old_low_entropy_source = 32;
 
   // A pseudo low entropy value. The actual low_entropy_source value is used for
   // assignment to experiment arms, and this use may cause drift over time (for
@@ -138,19 +142,19 @@ message SystemProfileProto {
   // experiment randomization. Consequently, it can be used in statistical
   // validation to answer the question of how our data would be distributed if
   // we didn't have to worry about low entropy source drift.
-  optional int32 pseudo_low_entropy_source = 37;
+  int32 pseudo_low_entropy_source = 37;
 
   // The user's selected application locale, i.e. the user interface language.
   // The locale includes a language code and, possibly, also a country code,
   // e.g. "en-US".
-  optional string application_locale = 4;
+  string application_locale = 4;
 
   // Hashes of command line keys used in the browser session when the MetricsLog
   // is created. This takes into account the command line switches that were
   // used when launching the session, as well as any modifications made to them,
   // for example via CommandLine::AppendSwitch and CommandLine::RemoveSwitch.
   // Values are the lower 32-bit of SHA1 hash in little-endian.
-  repeated fixed32 command_line_key_hash = 38 [packed = true];
+  repeated fixed32 command_line_key_hash = 38;
 
   // Information on the user's operating system.
   // Next tag: 11
@@ -167,22 +171,22 @@ message SystemProfileProto {
     // - 'iPhone OS' (iOS versions <= 8)
     // - 'iPadOS'
     // - 'Mac OS X'
-    optional string name = 1;
+    string name = 1;
 
     // The version of the OS.  The meaning of this field is OS-dependent.
-    optional string version = 2;
+    string version = 2;
 
     // The fingerprint of the build.  Only used on Android and WebView.
-    optional string build_fingerprint = 3;
+    string build_fingerprint = 3;
 
     // The build number for the OS version. The same OS version may have a
     // different build number. The meaning of this field is OS-dependent.
-    optional string build_number = 5;
+    string build_number = 5;
 
     // The version of the kernel. Linux based operating systems, such as
     // ChromeOS and Android, have a kernel version that the OS release version
     // was built with that differs from the version field above.
-    optional string kernel_version = 6;
+    string kernel_version = 6;
 
     // Information on ChromeOS ARC runtime. This is collected to ease analysis
     // on ARC-specific metrics, since this info varies by different boards /
@@ -191,19 +195,21 @@ message SystemProfileProto {
     message Arc {
       // Android release number from build.prop "ro.build.version.release", e.g.
       // "7.1.1" for N and "9" for P.
-      optional string release = 1;
+      string release = 1;
     }
 
     // Available since M76. This field is reported if current build supports
     // ARC, regardless of whether ARC is enabled or not. Check "Arc.State"
     // histogram to determine if ARC is enabled for current report.
     // Logged on ChromeOS only.
-    optional Arc arc = 7;
+    Arc arc = 7;
 
     // Data related to system-level dark mode configuration. This is currently
     // only uploaded on Android. "*_APP" variants are included to reflect when
     // the user overrides the system configuration within the browser
     enum DarkModeState {
+      option features.enum_type = CLOSED;
+
       UNKNOWN = 0;
 
       // Both the system and the browser are in dark mode.
@@ -221,12 +227,14 @@ message SystemProfileProto {
       LIGHT_MODE_APP = 4;
     }
 
-    optional DarkModeState dark_mode_state = 8 [default = UNKNOWN];
+    DarkModeState dark_mode_state = 8 [default = UNKNOWN];
 
     // The value returned by the "XDG_SESSION_TYPE" environment variable, as
     // translated to a base::nix::SessionType, this field is only set on Linux.
     // Some features are enabled/disabled depending on this value.
     enum XdgSessionType {
+      option features.enum_type = CLOSED;
+
       UNSET = 0;
       OTHER_SESSION_TYPE = 1;
       UNSPECIFIED = 2;
@@ -236,13 +244,15 @@ message SystemProfileProto {
       MIR = 6;
     }
 
-    optional XdgSessionType xdg_session_type = 9;
+    XdgSessionType xdg_session_type = 9;
 
     // The value returned by the "XDG_CURRENT_DESKTOP" environment variable, as
     // translated to a base::nix::DesktopEnvironment. Note that all KDE values
     // from that enum are bucketed together. This field is only set on Linux.
     // Some bugs reproduce only in particular desktop environments.
     enum XdgCurrentDesktop {
+      option features.enum_type = CLOSED;
+
       OTHER = 0;
       CINNAMON = 1;
       DEEPIN = 2;
@@ -256,10 +266,10 @@ message SystemProfileProto {
       COSMIC = 10;
     }
 
-    optional XdgCurrentDesktop xdg_current_desktop = 10;
+    XdgCurrentDesktop xdg_current_desktop = 10;
   }
 
-  optional OS os = 5;
+  OS os = 5;
 
   // Information on the user's hardware.
   // Next tag: 29
@@ -270,20 +280,20 @@ message SystemProfileProto {
     // of running under emulation (e.g. on Windows on ARM, which would report
     // either x86 or x86_64, depending on the bitness of the exe being run).
     // Started being correctly recorded on iOS in M90: crrev/c/2723012.
-    optional string cpu_architecture = 1;
+    string cpu_architecture = 1;
 
     // Browser process CPU architecture. Will be different from
     // `cpu_architecture` in the case where Chromium runs non-natively (e.g.
     // macOS Rosetta or Arm Windows). One of four values: x86, x86_64, ARM,
     // ARM_64. Added in M90.
-    optional string app_cpu_architecture = 21;
+    string app_cpu_architecture = 21;
 
     // The amount of RAM present on the system, in megabytes.
-    optional int64 system_ram_mb = 2;
+    int64 system_ram_mb = 2;
 
     // The base memory address that chrome.dll was loaded at.
     // (Logged only on Windows.)
-    optional int64 dll_base = 3;
+    int64 dll_base = 3;
 
     // The hardware_class describes the current machine model, e.g. "MacPro1,1"
     // on Mac, "iPhone9,3" on iOS or "Nexus 5" on Android. Implemented on OS X,
@@ -297,7 +307,7 @@ message SystemProfileProto {
     // currently in |full_hardware_class| field. In M69+, this contains the
     // board name only. E.G. "CELES", "VEYRON_MINNIE".
 
-    optional string hardware_class = 4;
+    string hardware_class = 4;
 
     // This field is only sent on Chrome OS. The full hardware class is a unique
     // string associated with each Chrome OS device product revision generally
@@ -309,7 +319,7 @@ message SystemProfileProto {
     // internal database associates this hardware class with the qualified
     // device specifications including OEM information, schematics, hardware
     // qualification reports, test device tags, etc.
-    optional string full_hardware_class = 18;
+    string full_hardware_class = 18;
 
     // This field is only sent on ChromeOS. The updated hardware class is
     // similar to the full hardware class, but it is updated over the lifecycle
@@ -317,31 +327,33 @@ message SystemProfileProto {
     // manufacturing time. The updated hardware class can reflect the device's
     // current hardware components, which can change due to repairs or component
     // replacements.
-    optional string updated_hardware_class = 28;
+    string updated_hardware_class = 28;
 
     // This field is only sent on Chrome OS devices with cellular support.
     // This represents the variant of cellular modem present on the device.
-    optional string cellular_device_variant = 24;
+    string cellular_device_variant = 24;
 
     // The number of physical screens.
-    optional int32 screen_count = 5;
+    int32 screen_count = 5;
 
     // The screen dimensions of the primary screen, in pixels.
-    optional int32 primary_screen_width = 6;
-    optional int32 primary_screen_height = 7;
+    int32 primary_screen_width = 6;
+    int32 primary_screen_height = 7;
 
     // The device scale factor of the primary screen.
-    optional float primary_screen_scale_factor = 12;
+    float primary_screen_scale_factor = 12;
 
     // Max DPI for any attached screen. (Windows only)
-    optional float max_dpi_x = 9;
-    optional float max_dpi_y = 10;
+    float max_dpi_x = 9;
+    float max_dpi_y = 10;
 
     // The form factor of the device. Added in M101, foldable added in M120.
     // Android devices can be phone, tablet, TV, automotive or foldable. iOS
     // devices can be phone or tablet. For Windows, Mac, ChromeOS, Lacros, and
     // Linux, the desktop form factor is always used.
     enum FormFactor {
+      option features.enum_type = CLOSED;
+
       FORM_FACTOR_UNKNOWN = 0;
       FORM_FACTOR_DESKTOP = 1;
       FORM_FACTOR_PHONE = 2;
@@ -352,33 +364,35 @@ message SystemProfileProto {
       FORM_FACTOR_FOLDABLE = 7;
     }
 
-    optional FormFactor form_factor = 22;
+    FormFactor form_factor = 22;
 
     // Information on the CPU obtained by CPUID.
     message CPU {
       // A 12 character string naming the vendor, e.g. "GenuineIntel".
-      optional string vendor_name = 1;
+      string vendor_name = 1;
 
       // The signature reported by CPUID (from EAX).
-      optional uint32 signature = 2;
+      uint32 signature = 2;
 
       // Number of logical processors/cores on the current machine, which
       // includes hyperthreaded cores.
-      optional uint32 num_cores = 3;
+      uint32 num_cores = 3;
 
       // Number of efficient logical processors/cores on the current machine,
       // which includes hyperthreaded cores. All cores below highest power
       // efficiency level are considered efficient.
-      optional uint32 num_efficient_cores = 5;
+      uint32 num_efficient_cores = 5;
 
       // Whether the CPU is running in a hypervisor.
-      optional bool is_hypervisor = 4;
+      bool is_hypervisor = 4;
     }
 
-    optional CPU cpu = 13;
+    CPU cpu = 13;
 
     // Type of BIOS (can change at each boot).
     enum BiosType {
+      option features.enum_type = CLOSED;
+
       BIOS_TYPE_UNKNOWN = 0;
 
       // Legacy BIOS or UEFI with CSM mode.
@@ -391,48 +405,48 @@ message SystemProfileProto {
     // Motherboard information.
     message Motherboard {
       // Manufacturer for the motherboard.
-      optional string manufacturer = 1;
+      string manufacturer = 1;
 
       // Model for the motherboard.
-      optional string model = 2;
+      string model = 2;
 
       // Manufacturer for the BIOS.
-      optional string bios_manufacturer = 3;
+      string bios_manufacturer = 3;
 
       // Version of the BIOS currently installed.
-      optional string bios_version = 4;
+      string bios_version = 4;
 
       // What mode of BIOS is booted.
-      optional BiosType bios_type = 5;
+      BiosType bios_type = 5;
     }
 
-    optional Motherboard motherboard = 25;
+    Motherboard motherboard = 25;
 
     // Information on the GPU
     message Graphics {
       // The GPU manufacturer's vendor id.
-      optional uint32 vendor_id = 1;
+      uint32 vendor_id = 1;
 
       // The GPU manufacturer's device id for the chip set.
-      optional uint32 device_id = 2;
+      uint32 device_id = 2;
 
       // The driver version on the GPU.
-      optional string driver_version = 3;
+      string driver_version = 3;
 
       // The GL_VENDOR string. An example of a gl_vendor string is
       // "Imagination Technologies". "" if we are not using OpenGL.
-      optional string gl_vendor = 6;
+      string gl_vendor = 6;
 
       // The GL_RENDERER string. An example of a gl_renderer string is
       // "PowerVR SGX 540". "" if we are not using OpenGL.
-      optional string gl_renderer = 7;
+      string gl_renderer = 7;
     }
 
-    optional Graphics gpu = 8;
+    Graphics gpu = 8;
 
     // Whether the internal display produces touch events. Omitted if unknown.
     // Logged on ChromeOS only.
-    optional bool internal_display_supports_touch = 14;
+    bool internal_display_supports_touch = 14;
 
     // Internal storage device information on ChromeOS. Added in M94.
     // Next tag: 9
@@ -441,31 +455,33 @@ message SystemProfileProto {
       // Can be vendor_id (for NVMe, 32bit), manfid (for eMMC, 16bit, since
       // M113), oemid (for eMMC, 16bit, before M113), JEDEC manfid (for UFS,
       // 16bit) etc. depending on the device type.
-      optional uint32 vendor_id = 1;
+      uint32 vendor_id = 1;
 
       // Id of the storage device product.
       // Can be product_id (for NVMe, 32bit), PNM (for eMMC, 48bit), hashed
       // model name (for UFS, 32bit) etc. depending on the device type.
-      optional uint64 product_id = 2;
+      uint64 product_id = 2;
 
       // Revision of the storage device product.
       // Can be PCIe rev (for NVMe, 8bit), PRV(for eMMC, 8bit) etc. depending on
       // the device type.
-      optional uint32 revision = 3;
+      uint32 revision = 3;
 
       // Storage Device model. Comes from /sys/block/<device>/device/model.
-      optional string model = 4;
+      string model = 4;
 
       // Storage Device capacity in MB.
-      optional uint32 size_mb = 5;
+      uint32 size_mb = 5;
 
       // 8 byte FW revision of a storage device. Usually a string, but may
       // contain non-printable characters.
-      optional uint64 firmware_version = 6;
+      uint64 firmware_version = 6;
 
       // Type of the storage device interface.
       // TYPE_UNKNOWN signifies an error on population side.
       enum Type {
+        option features.enum_type = CLOSED;
+
         TYPE_UNKNOWN = 0;
         TYPE_EMMC = 1;
         TYPE_NVME = 2;
@@ -473,18 +489,20 @@ message SystemProfileProto {
         TYPE_SD_EXPRESS_INTERNAL = 4;
       }
 
-      optional Type type = 7;
+      Type type = 7;
 
       // Purpose defines how the OS uses the device.
       // PURPOSE_UNKNOWN signifies an error on population side.
       enum Purpose {
+        option features.enum_type = CLOSED;
+
         PURPOSE_UNKNOWN = 0;
         PURPOSE_BOOT = 1;
         PURPOSE_SWAP = 2;
         PURPOSE_BOOT_SWAP = 3;
       }
 
-      optional Purpose purpose = 8;
+      Purpose purpose = 8;
     }
 
     // List of internal storage devices on a Chrome OS device.
@@ -495,14 +513,14 @@ message SystemProfileProto {
       // Whether this drive incurs a time penalty when randomly accessed. This
       // should be true for spinning disks but false for SSDs or other
       // flash-based drives.
-      optional bool has_seek_penalty = 1;
+      bool has_seek_penalty = 1;
     }
 
     // The drive that the application executable was loaded from.
-    optional Drive app_drive = 16;
+    Drive app_drive = 16;
 
     // The drive that the current user data directory was loaded from.
-    optional Drive user_data_drive = 17;
+    Drive user_data_drive = 17;
 
     // Type of TPM on the device. This field is only filled in on ChromeOS
     // devices (both CrOS and LaCrOS platforms). This includes Chromebooks with
@@ -511,6 +529,8 @@ message SystemProfileProto {
     // generic TPM2 devices that use TPM2 chips that aren't manufactured by
     // Google.
     enum TpmType {
+      option features.enum_type = CLOSED;
+
       TPM_TYPE_UNKNOWN = 0;
       TPM_TYPE_1 = 1;
       TPM_TYPE_CR50 = 2;
@@ -519,28 +539,30 @@ message SystemProfileProto {
       TPM_TYPE_GENERIC_2 = 5;
     }
 
-    optional TpmType tpm_type = 23;
+    TpmType tpm_type = 23;
 
     // Firmware version of the TPM on the device. This field is only filled in
     // on ChromeOS devices (both CrOS and LaCrOS platforms).
-    optional uint64 tpm_firmware_version = 26;
+    uint64 tpm_firmware_version = 26;
 
     // RW Firmware version of the TPM on the device. This field is only filled
     // in on ChromeOS devices.
-    optional string tpm_rw_firmware_version = 27;
+    string tpm_rw_firmware_version = 27;
   }
 
-  optional Hardware hardware = 6;
+  Hardware hardware = 6;
 
   // Information about the network connection.
   // Next tag: 9
   message Network {
     // Set to true if connection_type changed during the lifetime of the log.
-    optional bool connection_type_is_ambiguous = 1;
+    bool connection_type_is_ambiguous = 1;
 
     // Derived from net::NetworkChangeNotifier::ConnectionType translated
     // through NetworkMetricsProvider::GetConnectionType.
     enum ConnectionType {
+      option features.enum_type = CLOSED;
+
       CONNECTION_UNKNOWN = 0;
       CONNECTION_ETHERNET = 1;
       CONNECTION_WIFI = 2;
@@ -559,11 +581,13 @@ message SystemProfileProto {
     }
 
     // The connection type according to NetworkChangeNotifier.
-    optional ConnectionType connection_type = 2;
+    ConnectionType connection_type = 2;
 
     // Derived from net::NetworkQualityEstimator::EffectiveConnectionType
     // translated through NetworkMetricsProvider::GetConnectionType.
     enum EffectiveConnectionType {
+      option features.enum_type = CLOSED;
+
       EFFECTIVE_CONNECTION_TYPE_UNKNOWN = 0;
 
       // Deprecated: Specifies that the connection_type changed during the
@@ -584,40 +608,42 @@ message SystemProfileProto {
     // many cases, the "effective" connection type and the actual type of
     // connection in use are the same, but often a network connection performs
     // significantly differently, usually worse, from its expected capabilities.
-    optional EffectiveConnectionType min_effective_connection_type = 7;
-    optional EffectiveConnectionType max_effective_connection_type = 8;
+    EffectiveConnectionType min_effective_connection_type = 7;
+    EffectiveConnectionType max_effective_connection_type = 8;
   }
 
-  optional Network network = 13;
+  Network network = 13;
 
   // Information on the Google Update install that is managing this client.
   message GoogleUpdate {
     // Whether the Google Update install is system-level or user-level.
-    optional bool is_system_install = 1;
+    bool is_system_install = 1;
 
     // The date at which Google Update last started performing an automatic
     // update check, in seconds since the Unix epoch.
-    optional int64 last_automatic_start_timestamp = 2;
+    int64 last_automatic_start_timestamp = 2;
 
     // The date at which Google Update last successfully sent an update check
     // and received an intact response from the server, in seconds since the
     // Unix epoch. (The updates don't need to be successfully installed.)
-    optional int64 last_update_check_timestamp = 3;
+    int64 last_update_check_timestamp = 3;
 
     // Describes a product being managed by Google Update. (This can also
     // describe Google Update itself.)
     message ProductInfo {
       // The current version of the product that is installed.
-      optional string version = 1;
+      string version = 1;
 
       // The date at which Google Update successfully updated this product,
       // stored in seconds since the Unix epoch.  This is updated when an update
       // is successfully applied, or if the server reports that no update
       // is available.
-      optional int64 last_update_success_timestamp = 2;
+      int64 last_update_success_timestamp = 2;
 
       // The result reported by the product updater on its last run.
       enum InstallResult {
+        option features.enum_type = CLOSED;
+
         INSTALL_RESULT_SUCCESS = 0;
         INSTALL_RESULT_FAILED_CUSTOM_ERROR = 1;
         INSTALL_RESULT_FAILED_MSI_ERROR = 2;
@@ -625,22 +651,22 @@ message SystemProfileProto {
         INSTALL_RESULT_EXIT_CODE = 4;
       }
 
-      optional InstallResult last_result = 3;
+      InstallResult last_result = 3;
 
       // The error code reported by the product updater on its last run.  This
       // will typically be a error code specific to the product installer.
-      optional int32 last_error = 4;
+      int32 last_error = 4;
 
       // The extra error code reported by the product updater on its last run.
       // This will typically be a Win32 error code.
-      optional int32 last_extra_error = 5;
+      int32 last_extra_error = 5;
     }
 
-    optional ProductInfo google_update_status = 4;
-    optional ProductInfo client_status = 5;
+    ProductInfo google_update_status = 4;
+    ProductInfo client_status = 5;
   }
 
-  optional GoogleUpdate google_update = 11;
+  GoogleUpdate google_update = 11;
 
   // Figures that can be used to generate application stability metrics.
   // All values are counts of events since the last time that these
@@ -649,28 +675,28 @@ message SystemProfileProto {
   message Stability {
     // Deprecated Jan 2025.
     reserved 23;
-    reserved "uptime_sec";
+    reserved uptime_sec;
 
     // Logged on Android only as of late Q2 2022. Used by only Android WebView.
     // Other platforms should use Stability.Counts2.
-    optional int32 page_load_count = 2;
+    int32 page_load_count = 2;
 
     // Logged on Android only as of Q2 2022. Used by only Android WebView. Other
     // platforms should use Stability.Counts2.
-    optional int32 renderer_launch_count = 26;
+    int32 renderer_launch_count = 26;
 
     // Number of times the browser has crashed while logged in as the "other
     // user" (guest) account.
     // Logged on ChromeOS only.
-    optional int32 other_user_crash_count = 7;
+    int32 other_user_crash_count = 7;
 
     // Number of times the kernel has crashed.
     // Logged on ChromeOS only.
-    optional int32 kernel_crash_count = 8;
+    int32 kernel_crash_count = 8;
 
     // Number of times the system has shut down uncleanly.
     // Logged on ChromeOS only.
-    optional int32 unclean_system_shutdown_count = 9;
+    int32 unclean_system_shutdown_count = 9;
 
     // All the remaining fields in the Stability are recorded at most once per
     // client session.
@@ -684,20 +710,20 @@ message SystemProfileProto {
     //
     // Logged on Android only as of Q1 2022. Used by only Android WebView. Other
     // platforms should use Stability.Counts2.
-    optional int32 launch_count = 15;
+    int32 launch_count = 15;
 
     // Android only. The number of times Chrome didn't exit cleanly and the GMS
     // Core version has changed from the last session. This is in addition to
     // |crash_count| in which we exclude unclean exits that are likely caused by
     // GMS Core updates.
-    optional int32 crash_count_due_to_gms_core_update = 30;
+    int32 crash_count_due_to_gms_core_update = 30;
 
     // Whether the metrics being reported are from a previous run picked up via
     // the left-over memory mapped files.
-    optional bool from_previous_run = 29;
+    bool from_previous_run = 29;
   }
 
-  optional Stability stability = 8;
+  Stability stability = 8;
 
   // Description of a field trial or experiment that the user is currently
   // enrolled in.
@@ -706,36 +732,36 @@ message SystemProfileProto {
   message FieldTrial {
     // The name of the field trial, as a 32-bit identifier.
     // Currently, the identifier is a hash of the field trial's name.
-    optional fixed32 name_id = 1;
+    fixed32 name_id = 1;
 
     // The user's group within the field trial, as a 32-bit identifier.
     // Currently, the identifier is a hash of the group's name.
-    optional fixed32 group_id = 2;
+    fixed32 group_id = 2;
   }
 
   repeated FieldTrial field_trial = 9;
 
   // Seed version from variations_seed.proto used to instantiate FieldTrials
   // for this session.
-  optional string variations_seed_version = 28;
+  string variations_seed_version = 28;
 
   // Denotes whether the variations seed applied by the client had any studies
   // that (A) applied to the client's platform, channel, form factor, and
   // version and (B) were constrained to a limited-entropy-mode layer.
   //
   // Unset when a seed is not applied.
-  optional bool seed_has_active_limited_layer = 50;
+  bool seed_has_active_limited_layer = 50;
 
   // Whether the client_id in the log matches the client_id we used to assign
   // field trials.
-  optional bool client_id_was_used_for_trial_assignment = 33;
+  bool client_id_was_used_for_trial_assignment = 33;
 
   // The unhashed client_id for this report. This is a uuid in its canonical
   // textual representation in the form 8-4-4-4-12 for a total of 36 characters.
   // Used to simulate field trial assignments for the client.
   // This field is set when MetricsService::CreateLog is called, and the value
   // is normally equal to the MetricsStateManager's initial_client_id_.
-  optional string client_uuid = 34;
+  string client_uuid = 34;
 
   // The session's hash. At the beginning of a session (i.e. process startup), a
   // random number will be generated, and all logs from that session (i.e.
@@ -748,7 +774,7 @@ message SystemProfileProto {
   // same `session_id` but are actually different sessions.
   // Note: Added in M125. Clients before will not set this field, and trying to
   // read it will return the default value of 0.
-  optional fixed64 session_hash = 46;
+  fixed64 session_hash = 46;
 
   // An ID/counter that is incremented every time the app is foregrounded or
   // backgrounded. Note that this value is process-bound and resets each time
@@ -785,7 +811,7 @@ message SystemProfileProto {
   //
   // TODO: crbug.com/383881315 - Clarify some common questions/situations once
   // the implementation is complete. See comments in cl/705639538 for examples.
-  optional int32 fg_bg_id = 48;
+  int32 fg_bg_id = 48;
 
   // Information about the A/V output device(s) (typically just a TV).
   // However, a configuration may have one or more intermediate A/V devices
@@ -794,19 +820,21 @@ message SystemProfileProto {
   message ExternalAudioVideoDevice {
     // The manufacturer name (possibly encoded as a 3-letter code, e.g. "YMH"
     // for Yamaha).
-    optional string manufacturer_name = 1;
+    string manufacturer_name = 1;
 
     // The model name (e.g. "RX-V1900"). Some devices may report generic names
     // like "receiver" or use the full manufacturer name (e.g "PHILIPS").
-    optional string model_name = 2;
+    string model_name = 2;
 
     // The product code (e.g. "0218").
-    optional string product_code = 3;
+    string product_code = 3;
 
     // The device types. A single device can have multiple types (e.g. a set-top
     // box could be both a tuner and a player).  The same type may even be
     // repeated (e.g a device that reports two tuners).
     enum AVDeviceType {
+      option features.enum_type = CLOSED;
+
       AV_DEVICE_TYPE_UNKNOWN = 0;
       AV_DEVICE_TYPE_TV = 1;
       AV_DEVICE_TYPE_RECORDER = 2;
@@ -818,18 +846,18 @@ message SystemProfileProto {
     repeated AVDeviceType av_device_type = 4;
 
     // The year of manufacture.
-    optional int32 manufacture_year = 5;
+    int32 manufacture_year = 5;
 
     // The week of manufacture.
     // Note: per the Wikipedia EDID article, numbering for this field may not
     // be consistent between manufacturers.
-    optional int32 manufacture_week = 6;
+    int32 manufacture_week = 6;
 
     // Selected horizontal resolution in pixels.
-    optional int32 horizontal_resolution = 7;
+    int32 horizontal_resolution = 7;
 
     // Selected vertical resolution in pixels.
-    optional int32 vertical_resolution = 8;
+    int32 vertical_resolution = 8;
 
     // Audio capabilities of the device.
     // Ref: http://en.wikipedia.org/wiki/Extended_display_identification_data
@@ -837,6 +865,8 @@ message SystemProfileProto {
     message AudioDescription {
       // Audio format
       enum AudioFormat {
+        option features.enum_type = CLOSED;
+
         AUDIO_FORMAT_UNKNOWN = 0;
         AUDIO_FORMAT_LPCM = 1;
         AUDIO_FORMAT_AC_3 = 2;
@@ -854,28 +884,30 @@ message SystemProfileProto {
         AUDIO_FORMAT_MICROSOFT_WMA_PRO = 14;
       }
 
-      optional AudioFormat audio_format = 1;
+      AudioFormat audio_format = 1;
 
       // Number of channels (e.g. 1, 2, 8, etc.).
-      optional int32 num_channels = 2;
+      int32 num_channels = 2;
 
       // Supported sample frequencies in Hz (e.g. 32000, 44100, etc.).
       // Multiple frequencies may be specified.
       repeated int32 sample_frequency_hz = 3;
 
       // Maximum bit rate in bits/s.
-      optional int32 max_bit_rate_per_second = 4;
+      int32 max_bit_rate_per_second = 4;
 
       // Bit depth (e.g. 16, 20, 24, etc.).
-      optional int32 bit_depth = 5;
+      int32 bit_depth = 5;
 
       // Output mode: analog vs digital.
       enum OutputMode {
+        option features.enum_type = CLOSED;
+
         ANALOG = 0;
         DIGITAL = 1;
       }
 
-      optional OutputMode output_mode = 6;
+      OutputMode output_mode = 6;
     }
 
     repeated AudioDescription audio_description = 9;
@@ -886,16 +918,16 @@ message SystemProfileProto {
     // the TV's inputs.
     // Values > 1 indicate there are 1 or more devices between this device
     // and the TV.
-    optional int32 position_in_setup = 10;
+    int32 position_in_setup = 10;
 
     // Whether this device is in the path to the TV.
-    optional bool is_in_path_to_tv = 11;
+    bool is_in_path_to_tv = 11;
 
     // The CEC version the device supports.
     // CEC stands for Consumer Electronics Control, a part of the HDMI
     // specification.  Not all HDMI devices support CEC.
     // Only devices that support CEC will report a value here.
-    optional int32 cec_version = 12;
+    int32 cec_version = 12;
 
     // This message reports CEC commands seen by a device.
     // After each log is sent, this information is cleared and gathered again.
@@ -906,36 +938,38 @@ message SystemProfileProto {
       // We add only one CECCommand message per unique opcode.  Only opcodes
       // seen by the device will be reported. The remainder of the message
       // accumulates status for this opcode (and device).
-      optional int32 opcode = 1;
+      int32 opcode = 1;
 
       // The total number of commands received from the external device.
-      optional int32 num_received_direct = 2;
+      int32 num_received_direct = 2;
 
       // The number of commands received from the external device as part of a
       // broadcast message.
-      optional int32 num_received_broadcast = 3;
+      int32 num_received_broadcast = 3;
 
       // The total number of commands sent to the external device.
-      optional int32 num_sent_direct = 4;
+      int32 num_sent_direct = 4;
 
       // The number of commands sent to the external device as part of a
       // broadcast message.
-      optional int32 num_sent_broadcast = 5;
+      int32 num_sent_broadcast = 5;
 
       // The number of aborted commands for unknown reasons.
-      optional int32 num_aborted_unknown_reason = 6;
+      int32 num_aborted_unknown_reason = 6;
 
       // The number of aborted commands because of an unrecognized opcode.
-      optional int32 num_aborted_unrecognized = 7;
+      int32 num_aborted_unrecognized = 7;
     }
 
     repeated CECCommand cec_command = 13;
 
     // Selected Frame rate
-    optional int32 frame_rate = 14;
+    int32 frame_rate = 14;
 
     // Selected color encoding.
     enum ColorEncoding {
+      option features.enum_type = CLOSED;
+
       COLOR_ENCODING_UNKNOWN = 0;
       COLOR_ENCODING_RGB = 1;
       COLOR_ENCODING_YUV444 = 2;
@@ -943,38 +977,38 @@ message SystemProfileProto {
       COLOR_ENCODING_YUV420 = 4;
     }
 
-    optional ColorEncoding color_encoding = 15;
+    ColorEncoding color_encoding = 15;
 
     // Selected bit-depth.
-    optional int32 bit_depth = 16;
+    int32 bit_depth = 16;
 
     // Devices's max TMDS char rate.
-    optional int32 tmds = 17;
+    int32 tmds = 17;
 
     // HDR10 support.
-    optional bool hdr10_support = 18;
+    bool hdr10_support = 18;
 
     // Dolby vision support.
-    optional bool dolby_vision_support = 19;
+    bool dolby_vision_support = 19;
 
     // Supported EOTF's.
     // EOTF support according to the spec:
     //   eotf_support & 0x1 -> SDR supported
     //   (eotf_support > 1) & 0x1 -> traditional HDR supported
     //   (eotf_support > 2) & 0x1 -> ST2084 supported
-    optional int32 eotf_support = 20;
+    int32 eotf_support = 20;
 
     // Supports YUV.
-    optional bool yuv_support = 21;
+    bool yuv_support = 21;
 
     // Supports YUV_420.
-    optional bool yuv_420_support = 22;
+    bool yuv_420_support = 22;
 
     // The maximum HDCP version supported by the sink.
-    optional int32 maximum_supported_hdcp_version = 23;
+    int32 maximum_supported_hdcp_version = 23;
 
     // The current HDCP version negotiated with the sink.
-    optional int32 current_hdcp_version = 24;
+    int32 current_hdcp_version = 24;
   }
 
   repeated ExternalAudioVideoDevice external_audio_video_device = 14;
@@ -986,16 +1020,16 @@ message SystemProfileProto {
   // Not logged by Chrome browser platforms.
   message ExternalAccessPoint {
     // The manufacturer name, for example "ASUSTeK Computer Inc.".
-    optional string manufacturer = 1;
+    string manufacturer = 1;
 
     // The model name, for example "Wi-Fi Protected Setup Router".
-    optional string model_name = 2;
+    string model_name = 2;
 
     // The model number, for example "RT-N16".
-    optional string model_number = 3;
+    string model_number = 3;
 
     // The device name (sometime same as model_number), for example "RT-N16".
-    optional string device_name = 4;
+    string device_name = 4;
 
     // The organizationally unique identifier, for example "08:9E:08".
     // OUI is the highest three bytes of MAC address
@@ -1005,12 +1039,12 @@ message SystemProfileProto {
     reserved 5;
   }
 
-  optional ExternalAccessPoint external_access_point = 15;
+  ExternalAccessPoint external_access_point = 15;
 
   // Number of users currently signed into a multiprofile session.
   // A zero value indicates that the user count changed while the log is open.
   // Logged only on ChromeOS.
-  optional uint32 multi_profile_user_count = 17;
+  uint32 multi_profile_user_count = 17;
 
   // Information about extensions that are installed, masked to provide better
   // privacy.  Only extensions from a single profile are reported; this will
@@ -1036,19 +1070,23 @@ message SystemProfileProto {
   // then HAS_OFFSTORE is reported. This should be kept in sync with the
   // corresponding enum in chrome/browser/metrics/extensions_metrics_provider.cc
   enum ExtensionsState {
+    option features.enum_type = CLOSED;
+
     NO_EXTENSIONS = 0;
     NO_OFFSTORE_VERIFIED = 1;
     NO_OFFSTORE_UNVERIFIED = 2;
     HAS_OFFSTORE = 3;
   }
 
-  optional ExtensionsState offstore_extensions_state = 19;
+  ExtensionsState offstore_extensions_state = 19;
 
   // The nature of the choice the user was given concerning metrics recording.
   // Specifically, whether the enable metrics/crash reporting checkbox that was
   // shown on first run was checked or unchecked by default.
   // This state is recorded on first run, and uploaded in every UMA log.
   enum UmaDefaultState {
+    option features.enum_type = CLOSED;
+
     // The enable checkbox was unchecked by default.
     OPT_IN = 0;
 
@@ -1062,9 +1100,11 @@ message SystemProfileProto {
     OPT_UNKNOWN = 3;
   }
 
-  optional UmaDefaultState uma_default_state = 22;
+  UmaDefaultState uma_default_state = 22;
 
   enum AntiVirusState {
+    option features.enum_type = CLOSED;
+
     // The security product software is turned on and protecting the user.
     STATE_ON = 0;
 
@@ -1088,27 +1128,29 @@ message SystemProfileProto {
     // The product name e.g. "System Center Endpoint Protection". This might not
     // be recorded, see ShouldReportFullNames() in
     // chrome/browser/metrics/antivirus_metrics_provider_win.cc.
-    optional string product_name = 1;
+    string product_name = 1;
 
     // The hash of the product name.
-    optional fixed32 product_name_hash = 2;
+    fixed32 product_name_hash = 2;
 
     // The version of the product, as read from the file information. This might
     // not be recorded, see ShouldReportFullNames() in
     // chrome/browser/metrics/antivirus_metrics_provider_win.cc.
-    optional string product_version = 3;
+    string product_version = 3;
 
     // The hash of the product version. Might not be set if the product version
     // could not be obtained from the disk.
-    optional fixed32 product_version_hash = 4;
+    fixed32 product_version_hash = 4;
 
     // The current state of the product.
-    optional AntiVirusState product_state = 5;
+    AntiVirusState product_state = 5;
   }
 
   repeated AntiVirusProduct antivirus_product = 23;
 
   enum ComponentId {
+    option features.enum_type = CLOSED;
+
     // The client transmitted a component ID the server does not recognize.
     UNKNOWN = 1;
 
@@ -1146,7 +1188,7 @@ message SystemProfileProto {
     // Removed in cl/643485319:
     reserved 29;
 
-    reserved "WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST";
+    reserved WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST;
 
     // Hardware Decryption CDM only for Chrome on Windows.
     MEDIA_FOUNDATION_WIDEVINE_CDM = 30;
@@ -1195,23 +1237,23 @@ message SystemProfileProto {
   // Next Tag: 5
   message ChromeComponent {
     // Which component this information is for.
-    optional ComponentId component_id = 1 [default = UNKNOWN];
+    ComponentId component_id = 1 [default = UNKNOWN];
 
     // Human-readable dotted-quad representation of the currently-installed
     // version of the component, e.g. "1.2.3.4".
-    optional string version = 2;
+    string version = 2;
 
     // The first 32 bits of the Omaha-style fingerprint of the installed
     // component, discarding any bits that describe the fingerprint format. In
     // practice this is the first 32 bits of the SHA256 hash of the package that
     // was installed as the component. It is a stronger version number that can
     // vary across platform, architecture, or branches of an A/B component test.
-    optional fixed32 omaha_fingerprint = 3;
+    fixed32 omaha_fingerprint = 3;
 
     // A hash of the cohort identifier of this component, excluding
     // non-assignment information. The hash function is Chromium's
     // PersistentHash.
-    optional fixed32 cohort_hash = 4;
+    fixed32 cohort_hash = 4;
   }
 
   repeated ChromeComponent chrome_component = 24;
@@ -1229,7 +1271,7 @@ message SystemProfileProto {
   // For WebView UMA records, under some conditions this field contains the
   // package name of the currently-running app.  See http://shortn/_5HRGU153JL
   // for details.
-  optional string app_package_name = 26;
+  string app_package_name = 26;
 
   // Indicates if the `app_package_name` should be filtered out on the
   // server-side. The client will use this to signal no further filtering is
@@ -1238,6 +1280,8 @@ message SystemProfileProto {
   // this to indicate no filtering is required since system apps are not subject
   // to filtering. Only recorded on the Android WebView platform.
   enum AppPackageNameAllowlistFilter {
+    option features.enum_type = CLOSED;
+
     // Indicates the package name filtering was not set.
     // This will be the case with data coming from old WebView versions.
     SERVER_SIDE_FILTER_UNSPECIFIED = 0;
@@ -1252,12 +1296,14 @@ message SystemProfileProto {
     // Removed in cl/567086405:
     reserved 2;
 
-    reserved "NO_SERVER_SIDE_FILTER_REQUIRED_DUE_TO_CLIENT_FILTERING";
+    reserved NO_SERVER_SIDE_FILTER_REQUIRED_DUE_TO_CLIENT_FILTERING;
   }
 
-  optional AppPackageNameAllowlistFilter app_package_name_allowlist_filter = 42;
+  AppPackageNameAllowlistFilter app_package_name_allowlist_filter = 42;
 
   enum ClientSideSamplingStatus {
+    option features.enum_type = CLOSED;
+
     // Default value, no conclusion can be drawn.
     SAMPLING_UNKNOWN = 0;
 
@@ -1270,9 +1316,11 @@ message SystemProfileProto {
 
   // Specifies whether sampling was applied on the client. Older clients will
   // not set this field, which will result in the default value of UNKNOWN.
-  optional ClientSideSamplingStatus client_side_sampling_status = 43;
+  ClientSideSamplingStatus client_side_sampling_status = 43;
 
   enum MetricsFilteringStatus {
+    option features.enum_type = CLOSED;
+
     // Not expected to be reported explicitly, used when the field was not set.
     METRICS_UNKNOWN = 0;
 
@@ -1289,11 +1337,13 @@ message SystemProfileProto {
   // filtering applies to both histograms and user actions. The chosen metrics
   // to filter may vary by platform and evolve over time. Older clients will not
   // set this field, which will result in the default value of METRICS_UNKNOWN.
-  optional MetricsFilteringStatus metrics_filtering_status = 44;
+  MetricsFilteringStatus metrics_filtering_status = 44;
 
   // The package which installed Chrome, as reported by
   // PackageManager.getInstallerPackageName().
   enum InstallerPackage {
+    option features.enum_type = CLOSED;
+
     // This field was not set.
     INSTALLER_PACKAGE_UNKNOWN = 0;
 
@@ -1308,7 +1358,7 @@ message SystemProfileProto {
   }
 
   // The package which installed Chrome, as reported by Android.
-  optional InstallerPackage installer_package = 35;
+  InstallerPackage installer_package = 35;
 
   // Data related to the "Better Together" multi-device features. This is only
   // uploaded on Chrome OS.
@@ -1317,60 +1367,64 @@ message SystemProfileProto {
     // The pii-free model name of the phone used for Better Together with this
     // device. Will not be set if Better Together is not set up. Hashed using
     // variations::HashName() to produce a 32-bit SHA1 hash.
-    optional fixed32 phone_model_name_hash = 1;
+    fixed32 phone_model_name_hash = 1;
 
     // True if SmartLock is enabled on this Chromebook.
-    optional bool is_smartlock_enabled = 2;
+    bool is_smartlock_enabled = 2;
 
     // True if Instant Tethering is enabled on this Chromebook.
-    optional bool is_instant_tethering_enabled = 3;
+    bool is_instant_tethering_enabled = 3;
 
     // True if Messages integration is enabled on this Chromebook.
     // Deprecated 10/23.
-    optional bool is_messages_enabled = 4 [deprecated = true];
+    bool is_messages_enabled = 4 [deprecated = true];
   }
 
-  optional LinkedAndroidPhoneData linked_android_phone_data = 29;
+  LinkedAndroidPhoneData linked_android_phone_data = 29;
 
   // Demo mode related dimension information.
   // Next Tag: 6
   message DemoModeDimensions {
-    optional string country = 1;
+    string country = 1;
 
     // Demo devices retailer id and store id, value is set during demo setup.
     // Next Tag: 3
     message Retailer {
-      optional string retailer_id = 1;
+      string retailer_id = 1;
 
-      optional string store_id = 2;
+      string store_id = 2;
     }
 
-    optional Retailer retailer = 2;
+    Retailer retailer = 2;
 
     enum CustomizationFacet {
+      option features.enum_type = CLOSED;
+
       UNDEFINED = 0;
       CLOUD_GAMING_DEVICE = 1;
       FEATURE_AWARE_DEVICE = 2;
     }
 
-    repeated CustomizationFacet customization_facet = 3 [packed = true];
+    repeated CustomizationFacet customization_facet = 3;
 
     // The Demo Mode highlights app version. The version number is used to
     // identify the Omaha Chrome Component - Demo Mode App package that was
     // downloaded onto the device.
-    optional string app_version = 4;
+    string app_version = 4;
 
     // The Demo Mode resources version. The version number is used to identify
     // the Omaha Chrome Component - Demo Mode Resources bundle that was
     // downloaded onto the device.
-    optional string resources_version = 5;
+    string resources_version = 5;
   }
 
-  optional DemoModeDimensions demo_mode_dimensions = 41;
+  DemoModeDimensions demo_mode_dimensions = 41;
 
   // LTSChannel indicates whether ChromeOS is running an lts channel.
   // https://chromium.googlesource.com/chromiumos/docs/+/HEAD/releases.md#channels
   enum LTSChannel {
+    option features.enum_type = CLOSED;
+
     // This field was not set.
     LTS_CHANNEL_UNKNOWN = 0;
 
@@ -1389,7 +1443,7 @@ message SystemProfileProto {
   // this separate field to filter out for ltc or lts. Most UMA users are not
   // aware of the existence of lts and we would lose monitoring for many Chrome
   // features.
-  optional LTSChannel lts_channel = 45;
+  LTSChannel lts_channel = 45;
 
   // Metrics for Windows device's Trusted Platform Module (TPM).
   // This field is only filled in on Windows devices. The string values are
@@ -1399,44 +1453,46 @@ message SystemProfileProto {
     // The ID used to identify the manufacturer of the TPM. It is matched
     // against the list of trusted manufacturers reported by the Trusted
     // Computing Group.
-    optional fixed32 manufacturer_id = 1;
+    fixed32 manufacturer_id = 1;
 
     // The hardware version is used to identify the physical TPM chip provided
     // by the manufacturer. The meaning of the value that appears in this field
     // depends on the manufacturer.  This might not be recorded, see
     // ShouldReportFullNames() in
     // chrome/browser/metrics/tpm_metrics_provider_win.cc.
-    optional string manufacturer_version = 2;
+    string manufacturer_version = 2;
 
     // Hash value of the manufacturer_version value.
-    optional fixed32 manufacturer_version_hash = 3;
+    fixed32 manufacturer_version_hash = 3;
 
     // Information regarding the type of TPM on the machine, such as if the
     // chip is a virtual TPM or a physical one. This information is provided by
     // the Windows Operating System, not the manufacturer and can be used
     // independently. This might not be recorded, see ShouldReportFullNames() in
     // chrome/browser/metrics/tpm_metrics_provider_win.cc.
-    optional string manufacturer_version_info = 4;
+    string manufacturer_version_info = 4;
 
     // Hash value of the manufacturer_version_info value.
-    optional fixed32 manufacturer_version_info_hash = 5;
+    fixed32 manufacturer_version_info_hash = 5;
 
     // The TPM software specification version (2.0 or 1.2) and sub version. The
     // meaning of the value that appears in this field is dependent on the
     // manufacturer. This might not be recorded, see ShouldReportFullNames() in
     // chrome/browser/metrics/tpm_metrics_provider_win.cc.
-    optional string tpm_specific_version = 6;
+    string tpm_specific_version = 6;
 
     // Hash value of the tpm_specific_version_hash value.
-    optional fixed32 tpm_specific_version_hash = 7;
+    fixed32 tpm_specific_version_hash = 7;
   }
 
   // Identifying information of Trusted Platform Module on the device. This
   // field is only filled in on Windows devices.
-  optional TpmIdentifier tpm_identifier = 47;
+  TpmIdentifier tpm_identifier = 47;
 
   message AccessibilityState {
     enum AXMode {
+      option features.enum_type = CLOSED;
+
       // Native accessibility APIs, specific to each platform, are enabled.
       // When this mode is set that indicates the presence of a third-party
       // client accessing Chrome via accessibility APIs. However, unless one
@@ -1513,8 +1569,8 @@ message SystemProfileProto {
     }
 
     // Indicates which accessibility mode flags are set.
-    repeated AXMode enabled_modes = 1 [packed = true];
+    repeated AXMode enabled_modes = 1;
   }
   // The current state of accessibility features on the client.
-  optional AccessibilityState accessibility_state = 49;
+  AccessibilityState accessibility_state = 49;
 }

@@ -5,12 +5,14 @@
 // This file was exported from google3, do not edit manually.
 // See README.chromium for details.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
 
 package metrics;
+
+option features.utf8_validation = NONE;
 
 // One structured metrics event, containing several hashed and unhashed metrics
 // related to a single event type. Structured metrics have hashing keys based on
@@ -30,7 +32,7 @@ message StructuredEventProto {
   // days.
   //
   // For events of type SEQUENCE, the ID will be rotated every 120 days.
-  optional fixed64 profile_event_id = 1;
+  fixed64 profile_event_id = 1;
 
   // A per-profile, per-project ID used only for events of type SEQUENCE. A
   // device may have multiple profiles and multiple projects (ie cros-events).
@@ -45,7 +47,7 @@ message StructuredEventProto {
   // Since the per-profile, per-project keys are rotated every 120 days, this
   // means that the |user_project_id| will also change every N days. For more
   // details on how keys are rotated, refer to go/structured-metrics.
-  optional fixed64 user_project_id = 7;
+  fixed64 user_project_id = 7;
 
   // A device-wide, per-project ID used only for events of type SEQUENCE. This
   // ID is rotated every 120 days.
@@ -61,12 +63,12 @@ message StructuredEventProto {
   //
   // Note that an event may have both a |device_project_id| and
   // |user_project_id|.
-  optional fixed64 device_project_id = 8;
+  fixed64 device_project_id = 8;
 
   // The first 8 bytes of the MD5 hash of the event's name as a string. Each
   // name is defined in src/tools/metrics/structured/structured.xml, and this
   // will be the hash of one of those.
-  optional fixed64 event_name_hash = 2;
+  fixed64 event_name_hash = 2;
 
   // All metric values for this event. Each metric has two properties defined in
   // structured.xml that determine what is recorded.
@@ -99,11 +101,11 @@ message StructuredEventProto {
   //    - int64 array: This client supplies an array of int64 values for the
   //      metric. Each metric will have an max defined by the metric definition.
   message Metric {
-    optional fixed64 name_hash = 1;
+    fixed64 name_hash = 1;
 
     // Wrapper of repeated integer fields.
     message RepeatedInt64 {
-      repeated int64 values = 1 [packed = true];
+      repeated int64 values = 1;
     }
 
     oneof value {
@@ -124,21 +126,25 @@ message StructuredEventProto {
   //
   // An event should be marked as a SEQUENCE if it contains temporal data.
   enum EventType {
+    option features.enum_type = CLOSED;
+
     UNKNOWN = 0;
     REGULAR = 1;
     RAW_STRING = 2;
     SEQUENCE = 3;
   }
 
-  optional EventType event_type = 4;
+  EventType event_type = 4;
 
   // The project name hash is the first 8 bytes of the MD5 hash of the project
   // name that is defined in src/tools/metrics/structured/structured.xml.
-  optional fixed64 project_name_hash = 5;
+  fixed64 project_name_hash = 5;
 
   // These enum values represent the type of user segment for the primary
   // user.
   enum PrimaryUserSegment {
+    option features.enum_type = CLOSED;
+
     UNKNOWN_PRIMARY_USER_TYPE = 0;
 
     // Primary profile is for an unmanaged user.
@@ -174,27 +180,27 @@ message StructuredEventProto {
   message EventSequenceMetadata {
     // GUIDs generated on the client to uniquely identify an event. These event
     // IDs will be used to establish relationships between events on the client.
-    optional fixed64 event_unique_id = 1;
+    fixed64 event_unique_id = 1;
 
     // Time elapsed since boot time. Note that system uptime includes duration a
     // device has spent asleep. System uptime resets when a machine reboots.
     // Granularity is in milliseconds.
-    optional int64 system_uptime = 2;
+    int64 system_uptime = 2;
 
     // Monotonically increasing number incremented every time a system reset is
     // detected. This value will be reset to 0 in the event of a powerwash.
-    optional int64 reset_counter = 3;
+    int64 reset_counter = 3;
 
     // The number of weeks since the client id rotated.
-    optional uint32 client_id_rotation_weeks = 4;
+    uint32 client_id_rotation_weeks = 4;
 
     // The segment policy of the user.
-    optional PrimaryUserSegment primary_user_segment = 5;
+    PrimaryUserSegment primary_user_segment = 5;
   }
 
   // Metadata associated with event type SEQUENCE. This field will be stripped
   // if the event is not of type SEQUENCE.
-  optional EventSequenceMetadata event_sequence_metadata = 6;
+  EventSequenceMetadata event_sequence_metadata = 6;
 }
 
 // The top-level proto for structured metrics. One StructuredDataProto is
@@ -208,10 +214,12 @@ message StructuredDataProto {
   // Whether the device is enrolled and may be controlled by a policy.
   // Deprecated as of Chrome M119, use |device_segment| to determine if the
   // device is enrolled.
-  optional bool is_device_enrolled = 2 [deprecated = true];
+  bool is_device_enrolled = 2 [deprecated = true];
 
   // The broader market segment the device is used.
   enum DeviceSegment {
+    option features.enum_type = CLOSED;
+
     UNKNOWN = 0;
     CONSUMER = 1;
     EDUCATION = 2;
@@ -219,5 +227,5 @@ message StructuredDataProto {
   }
 
   // The segment policy of the device.
-  optional DeviceSegment device_segment = 3;
+  DeviceSegment device_segment = 3;
 }

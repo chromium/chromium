@@ -5,7 +5,7 @@
 // This file was exported from google3, do not edit manually.
 // See README.chromium for details.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -13,6 +13,8 @@ option java_package = "org.chromium.components.metrics";
 option java_outer_classname = "TranslateEventProtos";
 
 package metrics;
+
+option features.utf8_validation = NONE;
 
 // Stores information about a single interaction between a user and
 // the Translate UI. Contains features used by Translate Ranker for
@@ -25,34 +27,34 @@ message TranslateEventProto {
   // https://cs.chromium.org/chromium/src/components/translate/core/browser/translate_language_list.cc
   // for a list of supported languages.
   // Source language of the translation.
-  optional string source_language = 1;
+  string source_language = 1;
 
   // Target language of the translation.
-  optional string target_language = 2;
+  string target_language = 2;
 
   // The country where the user is. 2-letter country code. This corresponds to
   // the stored permanent country in VariationsService.
-  optional string country = 14;
+  string country = 14;
 
   // The following counts are extracted from TranslatePrefs.
   // The number of times the user accepted a translation for the
   // source language.
-  optional int32 accept_count = 3;
+  int32 accept_count = 3;
 
   // The number of times the user declined a translation for the
   // source language.
-  optional int32 decline_count = 4;
+  int32 decline_count = 4;
 
   // The number of times the user ignored a translation for the source
   // language.
-  optional int32 ignore_count = 5;
+  int32 ignore_count = 5;
 
   // Language list from the language settings. These are languages the user
   // explicitly set in the language settings.
   repeated string language_list = 6;
 
   // The version of the translate ranker model.
-  optional uint32 ranker_version = 7;
+  uint32 ranker_version = 7;
 
   // Timestamp of when the Ranker was queried, in seconds.
   // This value comes from Chromium's TimeTicks::Now(), which is an abstract
@@ -61,20 +63,24 @@ message TranslateEventProto {
   // These numbers are only comparable within a session.  To sequence events
   // across sessions, order by the |session_id| from the
   // ChromeUserMetricsExtension message.
-  optional int64 ranker_request_timestamp_sec = 8;
+  int64 ranker_request_timestamp_sec = 8;
 
   // The decision of translate ranker whether we should show the UI or not.
   enum RankerResponse {
+    option features.enum_type = CLOSED;
+
     SHOW = 0;
     DONT_SHOW = 1;
     NOT_QUERIED = 2;
   }
 
-  optional RankerResponse ranker_response = 9 [default = NOT_QUERIED];
+  RankerResponse ranker_response = 9 [default = NOT_QUERIED];
 
   // The action performed by the user in the translate UI.
   // Next tag: 28
   enum EventType {
+    option features.enum_type = CLOSED;
+
     // The feedback event does not correspond to any of the enumerated
     // cases.
     UNKNOWN = 0;
@@ -178,7 +184,7 @@ message TranslateEventProto {
   }
 
   // Event received from translate UI.
-  optional EventType event_type = 10;
+  EventType event_type = 10;
 
   // Decisions that have been overridden by translate ranker (e.g.
   // LANGUAGE_DISABLED_BY_AUTO_BLACKLIST).
@@ -191,13 +197,13 @@ message TranslateEventProto {
   // These numbers are only comparable within a session.  To sequence events
   // across sessions, order by the |session_id| from the
   // ChromeUserMetricsExtension message.
-  optional int64 event_timestamp_sec = 11;
+  int64 event_timestamp_sec = 11;
 
   // Modified source language, if the user changed it. If changed more than
   // once, we only keep the last one.
-  optional string modified_source_language = 12;
+  string modified_source_language = 12;
 
   // Modified target language, if the user changed it. If changed more than
   // once, we only keep the last one.
-  optional string modified_target_language = 13;
+  string modified_target_language = 13;
 }

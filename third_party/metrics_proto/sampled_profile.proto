@@ -5,7 +5,7 @@
 // This file was exported from google3, do not edit manually.
 // See README.chromium for details.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -21,6 +21,8 @@ import "perf_data.proto";
 import "perf_stat.proto";
 import "system_profile.proto";
 
+option features.utf8_validation = NONE;
+
 // Protocol buffer for collected sample-based profiling data.
 // Contains the parameters and data from a single profile collection event.
 
@@ -28,6 +30,8 @@ import "system_profile.proto";
 message SampledProfile {
   // Indicates the event that triggered this collection.
   enum TriggerEvent {
+    option features.enum_type = CLOSED;
+
     UNKNOWN_TRIGGER_EVENT = 0;
 
     // The profile was triggered by periodic sampling.  Periodically sampled
@@ -58,13 +62,13 @@ message SampledProfile {
     PERIODIC_HEAP_COLLECTION = 7;
   }
 
-  optional TriggerEvent trigger_event = 1;
+  TriggerEvent trigger_event = 1;
 
   // The process in which the profile was collected.
-  optional Process process = 11;
+  Process process = 11;
 
   // The thread in which the profile was collected.
-  optional Thread thread = 12;
+  Thread thread = 12;
 
   // Map of Chrome PIDs running on the system when the profile was collected.
   // Each Chrome PID is mapped to its process type.
@@ -78,7 +82,7 @@ message SampledProfile {
 
   // A list of pids that belong to Lacros binaries, which are a subset of the
   // keys of the process_types above.
-  repeated uint32 lacros_pids = 18 [packed = true];
+  repeated uint32 lacros_pids = 18;
 
   // The version string of the Lacros Chrome browser running on a CrOS machine.
   // It a 4-tuple of numbers separated by dots.
@@ -86,10 +90,10 @@ message SampledProfile {
   // include any additional suffixes such as development build or bitness.
   // This, and lacros_channel are only populated when lacros binaries are
   // found in the running processes, i.e. when lacros_pids is not empty.
-  optional string lacros_version = 19;
+  string lacros_version = 19;
 
   // The channel of the Lacros Chrome browser running on a CrOS machine.
-  optional SystemProfileProto.Channel lacros_channel = 20;
+  SystemProfileProto.Channel lacros_channel = 20;
 
   // Map of Chrome TIDs running on the system when the profile was collected.
   // Each Chrome TID is mapped to its thread type.
@@ -99,35 +103,35 @@ message SampledProfile {
   // rather than wall time.
 
   // Time after system boot when the collection took place, in milliseconds.
-  optional int64 ms_after_boot = 2;
+  int64 ms_after_boot = 2;
 
   // Time after last login when the collection took place, in milliseconds.
-  optional int64 ms_after_login = 3;
+  int64 ms_after_login = 3;
 
   // The duration for which the machine was suspended prior to collecting the
   // sampled profile. Only set when |trigger_event| is RESUME_FROM_SUSPEND.
-  optional int64 suspend_duration_ms = 5;
+  int64 suspend_duration_ms = 5;
 
   // Number of milliseconds after a resume that profile was collected. Only set
   // when |trigger_event| is RESUME_FROM_SUSPEND.
-  optional int64 ms_after_resume = 6;
+  int64 ms_after_resume = 6;
 
   // Number of tabs restored during a session restore. Only set when
   // |trigger_event| is RESTORE_SESSION.
-  optional int32 num_tabs_restored = 7;
+  int32 num_tabs_restored = 7;
 
   // Number of milliseconds after a session restore that a profile was
   // collected. Only set when |trigger_event| is RESTORE_SESSION.
-  optional int64 ms_after_restore = 8;
+  int64 ms_after_restore = 8;
 
   // Sampled profile data collected from Linux perf tool.
-  optional PerfDataProto perf_data = 4;
+  PerfDataProto perf_data = 4;
 
   // Sampled profile data collected by periodic sampling of call stacks.
-  optional CallStackProfile call_stack_profile = 9;
+  CallStackProfile call_stack_profile = 9;
 
   // Perf counter data collected using "perf stat".
-  optional PerfStatProto perf_stat = 10;
+  PerfStatProto perf_stat = 10;
 
   // The maximum frequency in MHz reported for each logical CPU on the device.
   // This is a repeated field, where entry 0 corresponds to core 0, entry 1 to
@@ -140,17 +144,17 @@ message SampledProfile {
   // of the system.
   // The percent of the time that runnable processes are delayed because the CPU
   // is unavailable, accumulated over 10 seconds.
-  optional float psi_cpu_last_10s_pct = 16;
+  float psi_cpu_last_10s_pct = 16;
 
   // The percent of the time that runnable processes are delayed because the CPU
   // is unavailable, accumulated over 60 seconds.
-  optional float psi_cpu_last_60s_pct = 17;
+  float psi_cpu_last_60s_pct = 17;
 
   // The device thermal state when the profile was collected.
-  optional ThermalState thermal_state = 21;
+  ThermalState thermal_state = 21;
 
   // The operating system's advertised speed limit for CPUs in percent. Values
   // below 100 indicate that the system is impairing processing power due to
   // thermal management.
-  optional int32 cpu_speed_limit_percent = 22;
+  int32 cpu_speed_limit_percent = 22;
 }

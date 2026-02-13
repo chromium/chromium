@@ -5,7 +5,7 @@
 // This file was exported from google3, do not edit manually.
 // See README.chromium for details.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -14,34 +14,38 @@ option java_outer_classname = "PrinterEventProtos";
 
 package metrics;
 
+option features.utf8_validation = NONE;
+
 // Stores information about a printer that a user is setting up/has attempted to
 // set up.
 // Next tag: 21
 message PrinterEventProto {
   // The detected printer manufacuter name.
-  optional string usb_printer_manufacturer = 1;
+  string usb_printer_manufacturer = 1;
 
   // The detected printer model name.
-  optional string usb_printer_model = 2;
+  string usb_printer_model = 2;
 
   // The usb vendor id of the printer.
-  optional int32 usb_vendor_id = 3;
+  int32 usb_vendor_id = 3;
 
   // The usb model id of the printer.
-  optional int32 usb_model_id = 4;
+  int32 usb_model_id = 4;
 
   // The value reported as a printer's printer-make-and-model attribute.
-  optional string ipp_make_and_model = 5;
+  string ipp_make_and_model = 5;
 
   // A true value means that the user provided their own PPD.
-  optional bool user_ppd = 6;
+  bool user_ppd = 6;
 
   // The identifier for PPDs from our serving system.
-  optional string ppd_identifier = 7;
+  string ppd_identifier = 7;
 
   // The action for which the printer was logged.
   // Next tag: 5
   enum EventType {
+    option features.enum_type = CLOSED;
+
     UNKNOWN = 0;
 
     // Specified printer successfully installed using the detected
@@ -62,17 +66,17 @@ message PrinterEventProto {
   }
 
   // The event for which this was recorded.
-  optional EventType event_type = 8;
+  EventType event_type = 8;
 
   // List of document formats the printer supports. MIME-types.
   repeated string document_format_supported = 9;
 
   // The printer's document-format-preferred attribute. MIME-type.
-  optional string document_format_preferred = 10;
+  string document_format_preferred = 10;
 
   // Document format used when the user does not supply a document-format
   // attribute. MIME-type.
-  optional string document_format_default = 11;
+  string document_format_default = 11;
 
   // Supported printing modes for URF printing.
   repeated string urf_supported = 12;
@@ -82,6 +86,8 @@ message PrinterEventProto {
   // for details.
   // Next tag: 20
   enum PdfVersion {
+    option features.enum_type = CLOSED;
+
     PDF_VERSION_UNKNOWN = 0;
     ADOBE_1_3 = 1;
     ADOBE_1_4 = 2;
@@ -112,6 +118,8 @@ message PrinterEventProto {
   // for details.
   // Next tag: 29
   enum IppFeature {
+    option features.enum_type = CLOSED;
+
     IPP_FEATURE_UNKNOWN = 0;
     ADF = 1;
     FILM_READER = 2;
@@ -147,20 +155,20 @@ message PrinterEventProto {
   repeated IppFeature ipp_features_supported = 14;
 
   // Mopria certification level of the printer.
-  optional string mopria_certified = 15;
+  string mopria_certified = 15;
 
   // Categories of printing supported by the printer.
   repeated string printer_kind = 16;
 
   // Whether or not the printer supports roll sizes.
-  optional bool roll_sizes_available = 17;
+  bool roll_sizes_available = 17;
 
   // The name of the PPD file that was used to set up the printer.
-  optional string ppd_file_name = 18;
+  string ppd_file_name = 18;
 
   // All of the CUPS filters used by the printer.
   repeated string cups_filters = 19;
 
   // IEEE 1284 Device ID string.
-  optional string device_id = 20;
+  string device_id = 20;
 }

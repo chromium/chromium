@@ -5,7 +5,7 @@
 // This file was exported from google3, do not edit manually.
 // See README.chromium for details.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -26,37 +26,36 @@ message OmniboxEventProto {
   // These numbers are only comparable within a session.  To sequence events
   // across sessions, order by the |session_id| from the
   // ChromeUserMetricsExtension message.
-  optional int64 time_sec = 1;
+  int64 time_sec = 1;
 
   // The id of the originating tab for this omnibox interaction.
   // This is the current tab *unless* the user opened the target in a new tab.
   // In those cases, this is unset.  Tab ids are unique for a given session_id
   // (in the containing protocol buffer ChromeUserMetricsExtensionProto).
-  optional int32 tab_id = 2;
+  int32 tab_id = 2;
 
   // The number of characters the user had typed before autocompleting.
-  optional int32 typed_length = 3;
+  int32 typed_length = 3;
 
   // Whether the user deleted text immediately before selecting an omnibox
   // suggestion.  This is usually the result of pressing backspace or delete.
-  optional bool just_deleted_text = 11;
+  bool just_deleted_text = 11;
 
   // The number of terms that the user typed in the omnibox.
-  optional int32 num_typed_terms = 4;
+  int32 num_typed_terms = 4;
 
   // The index of the item that the user selected in the omnibox popup list.
   // This corresponds the index of the |suggestion| below.
-  optional int32 selected_index = 5;
+  int32 selected_index = 5;
 
   // Whether the user selected the option to switch tabs (or ignored it
   // and navigated). If true, one or more |Suggestions| will have
   // |has_tab_match| set as well, which must include the |selected_index|.
-  optional bool selected_tab_match = 17;
+  bool selected_tab_match = 17;
 
   // DEPRECATED. Whether or not the top match was hidden in the omnibox
   // suggestions dropdown.
-  optional bool DEPRECATED_is_top_result_hidden_in_dropdown = 14
-      [deprecated = true];
+  bool DEPRECATED_is_top_result_hidden_in_dropdown = 14 [deprecated = true];
 
   // Whether the omnibox popup is open.  It can be closed if, for instance,
   // the user clicks in the omnibox and hits return to reload the same page.
@@ -65,11 +64,11 @@ message OmniboxEventProto {
   // paste-and-search/paste-and-go actions ignore the current content of the
   // omnibox dropdown (if it is open) when they happen, we pretend the
   // dropdown is closed when logging these.
-  optional bool is_popup_open = 15;
+  bool is_popup_open = 15;
 
   // True if this is a paste-and-search or paste-and-go action.  (The codebase
   // refers to both these types as paste-and-go.)
-  optional bool is_paste_and_go = 16;
+  bool is_paste_and_go = 16;
 
   // The length of the inline autocomplete text in the omnibox.
   // The sum |typed_length| + |completed_length| gives the full length of the
@@ -78,14 +77,14 @@ message OmniboxEventProto {
   // match and omitted otherwise.  The first suggestion is always allowed to
   // be the default match.  (This is an enforced constraint.)  Hence, if
   // |selected_index| == 0, then this field will always be set.
-  optional int32 completed_length = 6;
+  int32 completed_length = 6;
 
   // The amount of time, in milliseconds, since the user first began modifying
   // the text in the omnibox.  If at some point after modifying the text, the
   // user reverts the modifications (thus seeing the current web page's URL
   // again), then writes in the omnibox again, this elapsed time should start
   // from the time of the second series of modification.
-  optional int64 typing_duration_ms = 7;
+  int64 typing_duration_ms = 7;
 
   // The amount of time, in milliseconds, since the last time the default
   // (inline) match changed.  This may be longer than the time since the
@@ -94,11 +93,13 @@ message OmniboxEventProto {
   // because the default match might have come from an asynchronous
   // provider.  Regardless, it should always be less than or equal to
   // the field |typing_duration_ms|.
-  optional int64 duration_since_last_default_match_update_ms = 13;
+  int64 duration_since_last_default_match_update_ms = 13;
 
   // The type of page the user was on when they used the omnibox. Or the type of
   // page for which suggestions were prefetched from the server.
   enum PageClassification {
+    option features.enum_type = CLOSED;
+
     // An invalid URL; shouldn't happen.
     INVALID_SPEC = 0;
 
@@ -253,9 +254,11 @@ message OmniboxEventProto {
     // are displayed in the chrome://omnibox debug UI.
   }
 
-  optional PageClassification current_page_classification = 10;
+  PageClassification current_page_classification = 10;
 
   enum ModeType {
+    option features.enum_type = CLOSED;
+
     // Unknown type (should not be reported).
     UNKNOWN_MODE = 0;
 
@@ -266,11 +269,13 @@ message OmniboxEventProto {
     IMAGE_MODE = 2;
   }
 
-  optional ModeType mode_type = 18;
-  optional OmniboxInputType input_type = 8;
+  ModeType mode_type = 18;
+  OmniboxInputType input_type = 8;
 
   // An enum used in multiple places below.
   enum ProviderType {
+    option features.enum_type = CLOSED;
+
     UNKNOWN_PROVIDER = 0;  // Unknown provider (should not reach here)
     HISTORY_URL = 1;       // URLs in history, or user-typed URLs
     HISTORY_CONTENTS = 2;  // Matches for page contents of pages in history
@@ -375,13 +380,15 @@ message OmniboxEventProto {
   // Next tag: 11
   message Suggestion {
     // Where does this result come from?
-    optional ProviderType provider = 1;
+    ProviderType provider = 1;
 
     // What kind of result this is.
     // This corresponds to the AutocompleteMatch::Type enumeration in
     // components/omnibox/autocomplete_match.h
     // (except for Android GSA result types).
     enum ResultType {
+      option features.enum_type = CLOSED;
+
       UNKNOWN_RESULT_TYPE = 0;    // Unknown type (should not reach here)
       URL_WHAT_YOU_TYPED = 1;     // The input as a URL
       HISTORY_URL = 2;            // A past page whose URL contains the input
@@ -473,33 +480,33 @@ message OmniboxEventProto {
       TAB_GROUP = 41;                   // Tab group suggestion result.
     }
 
-    optional ResultType result_type = 2;
+    ResultType result_type = 2;
 
     // The relevance score for this suggestion.
-    optional int32 relevance = 3;
+    int32 relevance = 3;
 
     // How many times this result was typed in / selected from the omnibox
     // in this profile.
     // Only set for some providers and result_types.  At the time of
     // writing this comment, it is only set for HistoryURL and
     // HistoryQuickProvider matches.
-    optional int32 typed_count = 5;
+    int32 typed_count = 5;
 
     // Whether this item is starred (bookmarked) in this profile.
-    optional bool is_starred = 4 [deprecated = true];
+    bool is_starred = 4 [deprecated = true];
 
     // Whether this item is disabled in the UI (not clickable).
-    optional bool is_disabled = 6;
+    bool is_disabled = 6;
 
     // Used to identify the specific source / type for suggestions by the
     // suggest server. The meaning of individual values is determined by the
     // provider of each suggestion type and is different for every suggestion
     // type. See enum ResultType above for more details.
-    optional int32 result_subtype_identifier = 7;
+    int32 result_subtype_identifier = 7;
 
     // Whether the suggestion presented in the match, regardless of type,
     // matched an open tab.
-    optional bool has_tab_match = 8;
+    bool has_tab_match = 8;
 
     // Whether this suggestion came associated with a keyword.  Does not include
     // suggestions that came from the default search engine unless the search
@@ -511,7 +518,7 @@ message OmniboxEventProto {
     // engine, the input "bing testing" will often show a suggestion to "Search
     // Bing for testing" in the dropdown.  This suggestion will be marked as
     // |is_keyword_suggestion|.
-    optional bool is_keyword_suggestion = 9;
+    bool is_keyword_suggestion = 9;
 
     // Signals for machine learning scoring (logged by client code).
     // See details: http://shortn/_B21YgmkLs9.
@@ -524,46 +531,46 @@ message OmniboxEventProto {
       // profile. Only include typed visits from the last 90 days. Discounted by
       // a time-decaying factor with a 30-day half-life based on the last visit
       // timestamp.
-      optional int32 typed_count = 1;
+      int32 typed_count = 1;
 
       // Number of times the URL was visited in general for this profile on this
       // device. Note that this will soon be across syncing devices with the
       // rollout of full history sync in 2023. Only include visits from the last
       // 90 days. Discounted by a time-decaying factor with a 30-day half-life
       // based on the last visit timestamp.
-      optional int32 visit_count = 2;
+      int32 visit_count = 2;
 
       // Elapsed time since last visit for this profile on this device. Uses the
       // local client-side timestamps. Can be unreliable as local times can
       // change in between different runs of Chrome.
-      optional int64 elapsed_time_last_visit_secs = 3;
+      int64 elapsed_time_last_visit_secs = 3;
 
       // Number of times the suggestion was visited with the current input or
       // prefix of it for this profile on this device.
       // Discounted by a time-decaying factor with a 1-week half-life based on
       // the last visit timestamp.
-      optional int32 shortcut_visit_count = 4;
+      int32 shortcut_visit_count = 4;
 
       // Length of the shortest shortcut text.
       // Useful in comparison with |typed_length|.
-      optional int32 shortest_shortcut_len = 5;
+      int32 shortest_shortcut_len = 5;
 
       // Elapsed time since last shortcut visit for this profile on this device.
       // Uses the local client-side timestamps. Can be unreliable as local times
       // can change in between different runs of Chrome.
-      optional int64 elapsed_time_last_shortcut_visit_sec = 6;
+      int64 elapsed_time_last_shortcut_visit_sec = 6;
 
       // URL points to the root page of a website, i.e., no query, path words,
       // or references after "/".
-      optional bool is_host_only = 7;
+      bool is_host_only = 7;
 
       // Number of bookmarks for this profile with this URL.
-      optional int32 num_bookmarks_of_url = 8;
+      int32 num_bookmarks_of_url = 8;
 
       // Position of the first matched bookmark title term.
       // E.g. 4 for input 'x' and title "0123x56".
       // Not set when there is no match in the bookmark title.
-      optional int32 first_bookmark_title_match_position = 9;
+      int32 first_bookmark_title_match_position = 9;
 
       // Total length of matched strings in the bookmark title. Can be larger
       // than the input text length. The input text is split by whitespaces, and
@@ -571,74 +578,74 @@ message OmniboxEventProto {
       // lengths are summed. Similarly for other text matching signals below.
       // E.g. 9 for input "[abc] ijk [xyz]" and title "[abc] def [xyz] - [xyz]".
       // Set to 0 when there is no match in the title.
-      optional int32 total_bookmark_title_match_length = 10;
+      int32 total_bookmark_title_match_length = 10;
 
       // Number of input terms matched by bookmark title. Take the maximum when
       // there are multiple matching bookmarks of this URL.
       // E.g., 1 for input "[a] b" and bookmark title "[a] book title".
       // Not set when the user does not have this URL bookmarked.
-      optional int32 num_input_terms_matched_by_bookmark_title = 11;
+      int32 num_input_terms_matched_by_bookmark_title = 11;
 
       // Position of the first matched URL substring.
       // URL scheme or TLD matches are excluded, though those characters are
       // counted when assessing match position. E.g., 11 for 't' in
       // "https://hos[t].com" Not set when there is no URL match.
-      optional int32 first_url_match_position = 12;
+      int32 first_url_match_position = 12;
 
       // Total length of the matched URL strings. Can be longer than the input
       // string. E.g., Given input "ab abc" and url "abc.com/ab", total is 7 (4
       // for "ab" in "[ab]c.com/[ab]" and 3 for "abc" in
       // "[abc].com"). Set to 0 when there is no URL string match.
-      optional int32 total_url_match_length = 13;
+      int32 total_url_match_length = 13;
 
       // One word matches host at a word boundary. E.g., true for input "[h] a"
       // and "[h].com", Set to false when there are matches in the host but none
       // at word boundaries. E.g., false for input "a" and "h[a].com". Not set
       // when there is no host match.
-      optional bool host_match_at_word_boundary = 14;
+      bool host_match_at_word_boundary = 14;
 
       // Total length of the matched host substrings.
       // Can be larger than the input text.
       // E.g., 3 for input "h a" and "[h]ost[aa].com".
       // Set to 0 when there is no host match.
-      optional int32 total_host_match_length = 15;
+      int32 total_host_match_length = 15;
 
       // Total length of the matched substrings in the path at word boundaries.
       // Can be larger than the input text. E.g. 3 for 'p' in
       // 'a.com/[p]ath_[p]ath/[p]ath'. Set to 0 when there are no such matches.
-      optional int32 total_path_match_length = 16;
+      int32 total_path_match_length = 16;
 
       // Total length of the matched substrings in the query_or_ref at word
       // boundaries. Can be larger than the input text.
       // E.g., 3 for input '[qu] [a]' and 'a.com/a?[qu]ery_[a]'.
       // Set to 0 when there are no such matches.
-      optional int32 total_query_or_ref_match_length = 17;
+      int32 total_query_or_ref_match_length = 17;
 
       // Total length of the matched substrings in the page title at word
       // boundaries. Can be larger than the input text.
       // E.g., 2 for input "[a] [t] x" and page title "[a]bc [t]itle".
       // Set to 0 when there is no title match.
-      optional int32 total_title_match_length = 18;
+      int32 total_title_match_length = 18;
 
       // Has matches that are not in schemes (e.g., "https") or "www".
-      optional bool has_non_scheme_www_match = 19;
+      bool has_non_scheme_www_match = 19;
 
       // Number of input terms matched by title.
       // E.g., 1 for input "[a] b" and title "[a] title [a]".
       // Useful in comparison with |num_typed_terms|.
-      optional int32 num_input_terms_matched_by_title = 20;
+      int32 num_input_terms_matched_by_title = 20;
 
       // Number of input terms matched by url.
       // Useful in comparison with |num_typed_terms|.
       // E.g., 1 for input "[a] b" and url "[a].com".
-      optional int32 num_input_terms_matched_by_url = 21;
+      int32 num_input_terms_matched_by_url = 21;
 
       // Length of url. E.g., 22 for "https://www.host.com/p".
-      optional int32 length_of_url = 22;
+      int32 length_of_url = 22;
 
       // Site engagement score for the site the URL is on. See
       // https://www.chromium.org/developers/design-documents/site-engagement/
-      optional float site_engagement = 23;
+      float site_engagement = 23;
 
       // True if url can be default match.
       // Currently, this requires single-term input, and match needs to begin
@@ -646,7 +653,7 @@ message OmniboxEventProto {
       // input 'w', true for "https://www.[w]sj.com" or "[w]ww.a.com", false for
       // "host[w].com". ref:
       // https://source.chromium.org/chromium/chromium/src/+/main:components/omnibox/browser/scored_history_match.cc;l=187?q=inline%20autocomplete
-      optional bool allowed_to_be_default_match = 24;
+      bool allowed_to_be_default_match = 24;
 
       // Server-generated relevance score provided by the remote Suggest service
       // for this suggestion.
@@ -660,13 +667,13 @@ message OmniboxEventProto {
       //               `false` OR non-Search suggestion (obtained from any
       //               source)
       //   - Unset:    Otherwise (due to unexpected client-side behavior)
-      optional int32 search_suggest_relevance = 25;
+      int32 search_suggest_relevance = 25;
 
       // Moved to OmniboxScoringSignals proto in cl/651828883:
-      optional bool is_search_suggest_entity = 26 [deprecated = true];
+      bool is_search_suggest_entity = 26 [deprecated = true];
 
       // Moved to OmniboxScoringSignals proto in cl/651828883:
-      optional bool is_verbatim = 27 [deprecated = true];
+      bool is_verbatim = 27 [deprecated = true];
       // Whether the host part of the `destination_url` associated with this
       // suggestion matches the host part of the URL for the page the user is
       // currently on.
@@ -678,10 +685,10 @@ message OmniboxEventProto {
       //            OR `destination_url` does not have the same host as the
       //            current page.
       //   - Unset: Otherwise (due to unexpected client-side behavior).
-      optional bool destination_host_match_for_current_page = 35;
+      bool destination_host_match_for_current_page = 35;
     }
 
-    optional ScoringSignals scoring_signals = 10;
+    ScoringSignals scoring_signals = 10;
   }
 
   repeated Suggestion suggestion = 9;
@@ -691,12 +698,12 @@ message OmniboxEventProto {
   // Next tag: 6
   message ProviderInfo {
     // Which provider generated this ProviderInfo entry.
-    optional ProviderType provider = 1;
+    ProviderType provider = 1;
 
     // The provider's done() value, i.e., whether it's completed processing
     // the query.  Providers which don't do any asynchronous processing
     // will always be done.
-    optional bool provider_done = 2;
+    bool provider_done = 2;
 
     // The set of field trials that have triggered in the most recent query,
     // possibly affecting the shown suggestions.  Each element is a hash
@@ -722,7 +729,7 @@ message OmniboxEventProto {
     // suggestions during this omnibox session.
     // Note that each provider may define a session differently for its
     // purposes.
-    optional int32 times_returned_results_in_session = 5;
+    int32 times_returned_results_in_session = 5;
   }
 
   // A list of diagnostic information about each provider.  Providers
@@ -730,11 +737,13 @@ message OmniboxEventProto {
   repeated ProviderInfo provider_info = 12;
 
   // Whether the Omnibox was in keyword mode, however it was entered.
-  optional bool in_keyword_mode = 19;
+  bool in_keyword_mode = 19;
 
   // The type of keyword used in keyword mode. The field storing this enum is
   // not present if not in keyword mode.
   enum KeywordType {
+    option features.enum_type = CLOSED;
+
     KEYWORD_TYPE_UNSPECIFIED = 0;
     STARTER_PACK = 1;  // Starter pack keyword.
     PREPOPULATED = 2;  // Prepopulated keyword.
@@ -769,11 +778,13 @@ message OmniboxEventProto {
     NON_FEATURED_OVERRIDABLE_SITE_SEARCH_SET_BY_POLICY = 13;
   }
 
-  optional KeywordType keyword_type = 28;
+  KeywordType keyword_type = 28;
 
   // How the Omnibox got into keyword mode. Not present if not in keyword
   // mode.
   enum KeywordModeEntryMethod {
+    option features.enum_type = CLOSED;
+
     INVALID = 0;
     TAB = 1;                // Select a suggestion that provides a keyword hint
                             // and press Tab.
@@ -792,13 +803,15 @@ message OmniboxEventProto {
                             // from the omnibox toolbelt.
   }
 
-  optional KeywordModeEntryMethod keyword_mode_entry_method = 20;
+  KeywordModeEntryMethod keyword_mode_entry_method = 20;
 
   // Whether the omnibox input is a search query that is started
   // by clicking on a image tile.
-  optional bool is_query_started_from_tile = 21;
+  bool is_query_started_from_tile = 21;
 
   enum Feature {
+    option features.enum_type = CLOSED;
+
     RICH_AUTOCOMPLETION = 0;
 
     SHORT_BOOKMARK_SUGGESTIONS_BY_TOTAL_INPUT_LENGTH = 2;
@@ -850,24 +863,26 @@ message OmniboxEventProto {
   message ProfileData {
     // Total number of bookmarks in the profile this omnibox interaction took
     // place in.
-    optional int32 total_num_bookmarks = 1;
+    int32 total_num_bookmarks = 1;
 
     // Total number of URLs stored in the history database in the profile this
     // omnibox interaction took place in.
-    optional int32 total_num_history_urls = 2;
+    int32 total_num_history_urls = 2;
 
     // Is signed into the browser. Set to false for Guest and Incognito
     // profiles. Not set when signed-in status is unknown.
-    optional bool is_signed_into_browser = 3;
+    bool is_signed_into_browser = 3;
 
     // Is sync-enabled.
-    optional bool is_sync_enabled = 4;
+    bool is_sync_enabled = 4;
   }
 
-  optional ProfileData profile_data = 23;
+  ProfileData profile_data = 23;
 
   // The position of the omnibox.
   enum OmniboxPosition {
+    option features.enum_type = CLOSED;
+
     // Unknown position (should not be reported).
     UNKNOWN_POSITION = 0;
 
@@ -881,5 +896,5 @@ message OmniboxEventProto {
   // The position of the steady state (unfocused) omnibox.  Logged on iOS only;
   // will be set on iOS with the BottomOmniboxSteadyStateIOS experiment.
   // TODO(christianxu): Update this on experiment cleanup.
-  optional OmniboxPosition steady_state_omnibox_position = 27;
+  OmniboxPosition steady_state_omnibox_position = 27;
 }
