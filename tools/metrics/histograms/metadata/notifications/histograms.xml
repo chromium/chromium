@@ -105,19 +105,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.Build" enum="BooleanSuccess"
-    expires_after="2024-01-14">
+    expires_after="2027-02-13">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
     Records whether we could successfully build a notification using Android's
     Notification Builder. If unsuccessful, we will silently drop the
     notification display request.
+
+    This histogram was previously unused from 2024-01-14 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Notifications.Android.CachedChannelsStatusOnFirstGetRuleIterator"
-    enum="BooleanInitialized" expires_after="2024-12-31">
+    enum="BooleanInitialized" expires_after="2027-02-13">
   <owner>qinmin@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -125,6 +128,9 @@ chromium-metrics-reviews@google.com.
     channel content settings, whether cached channels are initialized. This is
     only recorded on non-incognito profile and is only recorded once per browser
     session.
+
+    This histogram was previously unused from 2024-12-31 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
@@ -140,25 +146,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.IntentProcessedInParallel"
-    units="intents" expires_after="2025-04-13">
+    units="intents" expires_after="2027-02-13">
   <owner>peter@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
   <summary>
     Records the number of notification that are processed in parallel. A sample
     is recorded when a new intent is received by TrampolineActivity and
     forwarded to Chrome. Measured on Android.
+
+    This histogram was previously unused from 2025-04-13 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Notifications.Android.IntentStartToFinishDuration.{NativeInitialized}"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2027-02-13">
   <owner>peter@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
   <summary>
     Records how long it takes from receiving a notification in the
     TrampolineActivity to finish processing the notification. A sample is
     recorded when a qualified notification is processed. Measured on Android.
+
+    This histogram was previously unused from 2025-04-13 to 2026-02-13, so data
+    might be missing.
   </summary>
   <token key="NativeInitialized">
     <variant name="NativeInitialized"
@@ -181,13 +193,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobIsAlreadyPending{IntentAction}"
-    enum="Boolean" expires_after="2025-06-22">
+    enum="Boolean" expires_after="2027-02-13">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
     Recorded before a call to JobScheduler.schedule() in response to a
     notification intent, and indicates whether there was a job already pending
     with the same ID.
+
+    This histogram was previously unused from 2025-06-22 to 2026-02-13, so data
+    might be missing.
   </summary>
   <token key="IntentAction">
     <variant name="" summary="Counts intents with every action."/>
@@ -215,13 +230,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobPendingReason{IntentAction}"
-    enum="NotificationPendingJobReason" expires_after="2025-04-13">
+    enum="NotificationPendingJobReason" expires_after="2027-02-13">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
     After a call to JobScheduler.schedule() to handle a notification click,
     records whether the job ends up pending, and if so, the reason why. Recorded
     only in Android U and later.
+
+    This histogram was previously unused from 2025-04-13 to 2026-02-13, so data
+    might be missing.
   </summary>
   <token key="IntentAction">
     <variant name="" summary="Counts intents with every action."/>
@@ -231,12 +249,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobScheduleResult{IntentAction}"
-    enum="BooleanSuccess" expires_after="2025-04-13">
+    enum="BooleanSuccess" expires_after="2027-02-13">
   <owner>peter@chromium.org</owner>
-  <owner>engey@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
   <summary>
     Records wheher JobScheduler.schedule() succeeds when it is called to
     schedule a job with the JobScheduler to handle a notification click.
+
+    This histogram was previously unused from 2025-04-13 to 2026-02-13, so data
+    might be missing.
   </summary>
   <token key="IntentAction">
     <variant name="" summary="Counts intents with every action."/>
@@ -262,13 +283,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobStartDelay{IntentAction}" units="ms"
-    expires_after="2025-06-22">
+    expires_after="2027-02-13">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
     Records the delay between scheduling a job with the JobScheduler (with a
     desired latency of 0ms, in response to a notification click) and receiving
     the onStartJob callback. Only measured on Android N and above.
+
+    This histogram was previously unused from 2025-06-22 to 2026-02-13, so data
+    might be missing.
   </summary>
   <token key="IntentAction">
     <variant name="" summary="Counts intents with every action."/>
@@ -289,13 +313,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.SitesChannel" enum="BooleanUsage"
-    expires_after="2025-01-26">
+    expires_after="2027-02-13">
   <owner>peter@chromium.org</owner>
   <summary>
     Recorded when the Sites channel (which we hope to deprecate) is used as a
     fallback, when a site-specific notification channel is expected to exist but
     does not. Note, we only log when the sites channel is *used*, not when it is
     not used.
+
+    This histogram was previously unused from 2025-01-26 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
@@ -311,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.ClosedCount"
-    units="notifications" expires_after="2023-11-12">
+    units="notifications" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -323,11 +350,14 @@ chromium-metrics-reviews@google.com.
     system profiles are being used. We expect that the number of &quot;0&quot;
     samples is likely an overestimate because of this. This issue is tracked in
     crbug.com/1385455.
+
+    This histogram was previously unused from 2023-11-12 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.MutedCount"
-    units="notifications" expires_after="2023-09-10">
+    units="notifications" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -344,11 +374,14 @@ chromium-metrics-reviews@google.com.
     system profiles are being used. We expect that the number of &quot;0&quot;
     samples is likely an overestimate because of this. This issue is tracked in
     crbug.com/1385455.
+
+    This histogram was previously unused from 2023-09-10 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.ReplacedCount"
-    units="notifications" expires_after="2023-09-10">
+    units="notifications" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -360,11 +393,14 @@ chromium-metrics-reviews@google.com.
     system profiles are being used. We expect that the number of &quot;0&quot;
     samples is likely an overestimate because of this. This issue is tracked in
     crbug.com/1385455.
+
+    This histogram was previously unused from 2023-09-10 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.RevealDuration" units="ms"
-    expires_after="2023-07-09">
+    expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -379,11 +415,14 @@ chromium-metrics-reviews@google.com.
     system profiles are being used. We expect that the number of &quot;0&quot;
     samples is likely an overestimate because of this. This issue is tracked in
     crbug.com/1385455.
+
+    This histogram was previously unused from 2023-07-09 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.SessionDuration"
-    units="ms" expires_after="2023-11-12">
+    units="ms" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -398,11 +437,14 @@ chromium-metrics-reviews@google.com.
     system profiles are being used. We expect that the number of &quot;0&quot;
     samples is likely an overestimate because of this. This issue is tracked in
     crbug.com/1385455.
+
+    This histogram was previously unused from 2023-11-12 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.SnoozedCount"
-    units="notifications" expires_after="2023-07-09">
+    units="notifications" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -419,6 +461,9 @@ chromium-metrics-reviews@google.com.
     system profiles are being used. We expect that the number of &quot;0&quot;
     samples is likely an overestimate because of this. This issue is tracked in
     crbug.com/1385455.
+
+    This histogram was previously unused from 2023-07-09 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
@@ -483,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Database.DeleteBeforeWriteResult"
-    enum="NotificationDatabaseStatus" expires_after="2024-01-07">
+    enum="NotificationDatabaseStatus" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -493,11 +538,14 @@ chromium-metrics-reviews@google.com.
 
     This metric was expired between May 2022 and July 2023 and may be missing
     data.
+
+    This histogram was previously unused from 2024-01-07 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Database.DeleteResult"
-    enum="NotificationDatabaseStatus" expires_after="2024-01-07">
+    enum="NotificationDatabaseStatus" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -506,11 +554,14 @@ chromium-metrics-reviews@google.com.
 
     This metric was expired between May 2022 and July 2023 and may be missing
     data.
+
+    This histogram was previously unused from 2024-01-07 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Database.DestroyResult"
-    enum="NotificationDatabaseStatus" expires_after="2024-01-07">
+    enum="NotificationDatabaseStatus" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -519,11 +570,14 @@ chromium-metrics-reviews@google.com.
 
     This metric was expired between May 2022 and July 2023 and may be missing
     data.
+
+    This histogram was previously unused from 2024-01-07 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Database.ExpiredNotificationCount"
-    units="notifications" expires_after="2023-10-22">
+    units="notifications" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -531,21 +585,27 @@ chromium-metrics-reviews@google.com.
     and therefore got removed and closed on the system. Logged once at startup
     and every time we synchronize notifications after that (e.g. to schedule the
     next notification trigger event).
+
+    This histogram was previously unused from 2023-10-22 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Database.OldestNotificationTimeInMinutes"
-    units="minutes" expires_after="2022-04-17">
+    units="minutes" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Records the age of the oldest notification for an origin. Logged after
     handling a push event for that origin.
+
+    This histogram was previously unused from 2022-04-17 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Database.OpenAfterCorruptionResult"
-    enum="NotificationDatabaseStatus" expires_after="2024-01-07">
+    enum="NotificationDatabaseStatus" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -554,6 +614,9 @@ chromium-metrics-reviews@google.com.
 
     This metric was expired between May 2022 and July 2023 and may be missing
     data.
+
+    This histogram was previously unused from 2024-01-07 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
@@ -573,7 +636,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Database.ReadForServiceWorkerResult"
-    enum="NotificationDatabaseStatus" expires_after="2024-01-07">
+    enum="NotificationDatabaseStatus" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -582,16 +645,22 @@ chromium-metrics-reviews@google.com.
 
     This metric was expired between May 2022 and July 2023 and may be missing
     data.
+
+    This histogram was previously unused from 2024-01-07 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Database.ReadResult"
-    enum="NotificationDatabaseStatus" expires_after="2023-06-18">
+    enum="NotificationDatabaseStatus" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Records the result status codes of reading data of a single notification
     from the Web Notification database.
+
+    This histogram was previously unused from 2023-06-18 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
@@ -620,12 +689,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Database.WriteResult"
-    enum="NotificationDatabaseStatus" expires_after="2023-04-16">
+    enum="NotificationDatabaseStatus" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Records the result status codes of writing data for a notification to the
     Web Notification database.
+
+    This histogram was previously unused from 2023-04-16 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
@@ -659,7 +731,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.LoadProfileResult" enum="BooleanSuccess"
-    expires_after="2022-04-17">
+    expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -667,6 +739,9 @@ chromium-metrics-reviews@google.com.
     event. Logged on each notification action (click, close, settings, disable)
     on platforms that use system notifications (not on Chrome OS or when we're
     using Chrome's notifications).
+
+    This histogram was previously unused from 2022-04-17 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
@@ -695,7 +770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.macOS.ServiceProcessKilled" units="ms"
-    expires_after="2024-08-07">
+    expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -704,11 +779,14 @@ chromium-metrics-reviews@google.com.
 
     This histogram was expired between 2022-08-07 and 2023-09-06. Data might be
     missing or incomplete for this period.
+
+    This histogram was previously unused from 2024-08-07 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.macOS.ServiceProcessRuntime" units="ms"
-    expires_after="2024-08-14">
+    expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -718,6 +796,9 @@ chromium-metrics-reviews@google.com.
 
     This histogram was expired between 2022-08-14 and 2023-09-06. Data might be
     missing or incomplete for this period.
+
+    This histogram was previously unused from 2024-08-14 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
@@ -734,13 +815,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.NotificationHelper.ComServerModuleStatus"
-    enum="NotificationHelperComServerModuleStatus" expires_after="2025-01-05">
+    enum="NotificationHelperComServerModuleStatus" expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The execute status of a ComServerModule class instance. Logged whenever a
     notification_helper process is launched by Windows. Note: Not logged after
     M87 until end of August 2022.
+
+    This histogram was previously unused from 2025-01-05 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
@@ -761,7 +845,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Notifications.NotificationHelper.NotificationActivatorSecondaryStatus"
     enum="NotificationHelperNotificationActivatorSecondaryStatus"
-    expires_after="2024-09-01">
+    expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -769,11 +853,14 @@ chromium-metrics-reviews@google.com.
     whenever a notification_helper process is launched by Windows. Note: Not
     logged after M85 until end of August 2022, and also not at the beginning of
     Sept 2023.
+
+    This histogram was previously unused from 2024-09-01 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.NotificationHelper.ServerRuntime" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -784,27 +871,36 @@ chromium-metrics-reviews@google.com.
     finishing the API calls, Windows signals this process to exit. Note: Not
     logged after M87 until end of August 2022, and also not at the beginning of
     Sept 2023.
+
+    This histogram was previously unused from 2024-09-01 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.NotifierType" enum="NotifierType"
-    expires_after="2024-01-14">
+    expires_after="2027-02-13">
   <owner>tbarzic@chromium.org</owner>
   <owner>tengs@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
     The number of times a notification was added for the various types of
     sources.
+
+    This histogram was previously unused from 2024-01-14 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Permissions.RevokeDeleteCount" units="units"
-    expires_after="2022-08-28">
+    expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The number of notifications that got deleted from the NotificationDatabase
     after the notification permissions got revoked.
+
+    This histogram was previously unused from 2022-08-28 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
@@ -899,31 +995,40 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PersistentWebNotificationClickResult"
-    enum="PlatformNotificationStatus" expires_after="2023-04-23">
+    enum="PlatformNotificationStatus" expires_after="2027-02-13">
   <owner>peter@chromium.org</owner>
   <owner>deepak.m1@samsung.com</owner>
   <summary>
     Recorded delivery status for persistent notification clicks to a Service
     Worker when handling a click on a persistent WebNotification has finished.
+
+    This histogram was previously unused from 2023-04-23 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.PersistentWebNotificationCloseResult"
-    enum="PlatformNotificationStatus" expires_after="2022-09-11">
+    enum="PlatformNotificationStatus" expires_after="2027-02-13">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
     Records delivery status for persistent notification close events sent to a
     Service Worker when the event has been handled.
+
+    This histogram was previously unused from 2022-09-11 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Scheduler.BackgroundTask.NotificationShown"
-    units="notifications" expires_after="2023-06-04">
+    units="notifications" expires_after="2027-02-13">
   <owner>shaktisahu@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records the number of notifications shown in each background task run.
+
+    This histogram was previously unused from 2023-06-04 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
@@ -1071,7 +1176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.CloseStatus"
-    enum="WindowsNotificationCloseStatus" expires_after="2025-03-09">
+    enum="WindowsNotificationCloseStatus" expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1079,11 +1184,14 @@ chromium-metrics-reviews@google.com.
     only). Logged whenever a notification is closed. Note: Not logged after M98
     until end of August 2022, and also not at the beginning of Sept 2023 and
     Sept 2024.
+
+    This histogram was previously unused from 2025-03-09 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.CreateToastManagerErrorCode"
-    enum="Hresult" expires_after="2025-03-09">
+    enum="Hresult" expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1092,21 +1200,27 @@ chromium-metrics-reviews@google.com.
     histogram Notifications.Windows.DisplayStatus reported
     CREATE_TOAST_NOTIFIER_WITH_ID_FAILED. Note: Not logged after M89 until end
     of August 2022, and also not at the beginning of Sept 2023 and Sept 2024.
+
+    This histogram was previously unused from 2025-03-09 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.DisplayFailure" enum="Hresult"
-    expires_after="2025-05-11">
+    expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The HRESULT returned by the Windows Action Center, when showing a
     notification fails. Note: Not logged at the beginning of Sept 2023
+
+    This histogram was previously unused from 2025-05-11 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.DisplayStatus"
-    enum="WindowsNotificationDisplayStatus" expires_after="2025-03-09">
+    enum="WindowsNotificationDisplayStatus" expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1116,12 +1230,15 @@ chromium-metrics-reviews@google.com.
     see Notification.Windows histograms CreateToastManagerErrorCode and
     ShowFailedErrorCode (respectively). Note: Not logged between January 2022
     until end of August 2022.
+
+    This histogram was previously unused from 2025-03-09 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.GetDisplayedLaunchIdStatus"
     enum="WindowsNotificationGetDisplayedLaunchIdStatus"
-    expires_after="2025-05-11">
+    expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1129,11 +1246,14 @@ chromium-metrics-reviews@google.com.
     in NotificationPlatformBridgeWin (Windows only). Logged whenever a request
     to retrieve all displayed notifications comes in. Note: Not logged after M98
     until end of August 2022, and also not at the beginning of Sept 2023.
+
+    This histogram was previously unused from 2025-05-11 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.GetDisplayedStatus"
-    enum="WindowsNotificationGetDisplayedStatus" expires_after="2025-01-05">
+    enum="WindowsNotificationGetDisplayedStatus" expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1141,12 +1261,15 @@ chromium-metrics-reviews@google.com.
     (Windows only). Logged whenever a request to retrieve all displayed
     notifications comes in. Note: Not logged after M98 until end of August 2022,
     and also not at the beginning of Sept 2023.
+
+    This histogram was previously unused from 2025-01-05 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.GetNotificationLaunchIdStatus"
     enum="WindowsNotificationGetNotificationLaunchIdStatus"
-    expires_after="2024-09-01">
+    expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1155,11 +1278,14 @@ chromium-metrics-reviews@google.com.
     decode the GetNotificationLaunchId comes in. Note: Not logged between
     January 2022 until end of August 2022, and also not at the beginning of Sept
     2023.
+
+    This histogram was previously unused from 2024-09-01 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.GetSettingPolicy"
-    enum="WindowsNotificationGetSettingPolicy" expires_after="2024-09-01">
+    enum="WindowsNotificationGetSettingPolicy" expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1167,44 +1293,56 @@ chromium-metrics-reviews@google.com.
     (Windows only). Logged whenever a request to show a notification comes in.
     Note: Not logged after M98 until end of August 2022, and not at the
     beginning of Sept 2023.
+
+    This histogram was previously unused from 2024-09-01 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.GetSettingPolicyStartup"
-    enum="WindowsNotificationGetSettingPolicy" expires_after="2024-09-01">
+    enum="WindowsNotificationGetSettingPolicy" expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The policy value provided by get_Setting in NotificationPlatformBridgeWin
     (Windows only). Logged only once at startup on a task runner. Note: Not
     logged at the beginning of Sept 2023.
+
+    This histogram was previously unused from 2024-09-01 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.GetSettingStatus"
-    enum="WindowsNotificationGetSettingStatus" expires_after="2025-01-05">
+    enum="WindowsNotificationGetSettingStatus" expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The return value of get_Setting calls in NotificationPlatformBridgeWin
     (Windows only). Logged whenever a request to show a notification comes in.
     Note: Not logged at the beginning of Sept 2023
+
+    This histogram was previously unused from 2025-01-05 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.GetSettingStatusStartup"
-    enum="WindowsNotificationGetSettingStatus" expires_after="2024-09-01">
+    enum="WindowsNotificationGetSettingStatus" expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The return value of get_Setting calls in NotificationPlatformBridgeWin
     (Windows only). Logged only once at startup on a task runner. Note: Not
     logged at the beginning of Sept 2023.
+
+    This histogram was previously unused from 2024-09-01 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.HandleEventStatus"
-    enum="WindowsNotificationHandleEventStatus" expires_after="2025-01-05">
+    enum="WindowsNotificationHandleEventStatus" expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1212,11 +1350,14 @@ chromium-metrics-reviews@google.com.
     only). Logged whenever a notification event is being handled. Note: Not
     logged between January 2022 and end of August 2022, and not at the beginning
     of Sept 2023.
+
+    This histogram was previously unused from 2025-01-05 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.HistoryStatus"
-    enum="WindowsNotificationHistoryStatus" expires_after="2024-09-01">
+    enum="WindowsNotificationHistoryStatus" expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1224,11 +1365,14 @@ chromium-metrics-reviews@google.com.
     only). Logged whenever history is requested for notifications. Note: Not
     logged after M98 until end of August 2022, and also not at the beginning of
     Sept 2023.
+
+    This histogram was previously unused from 2024-09-01 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.LaunchIdDecodeStatus"
-    enum="WindowsNotificationLaunchIdDecodeStatus" expires_after="2024-09-01">
+    enum="WindowsNotificationLaunchIdDecodeStatus" expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1236,34 +1380,43 @@ chromium-metrics-reviews@google.com.
     only). Logged whenever a notification event is being handled. Note: Not
     logged after M87 until end of August 2022, and also not at the beginning of
     Sept 2023.
+
+    This histogram was previously unused from 2024-09-01 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.OnFailedStatus"
-    enum="WindowsNotificationOnFailedStatus" expires_after="2025-01-05">
+    enum="WindowsNotificationOnFailedStatus" expires_after="2027-02-13">
   <owner>chengx@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of OnFailed requests in NotificationPlatformBridgeWin (Windows
     only). Logged whenever a failed event is handled. Note: Not logged after M98
     until end of August 2022, and also not at the beginning of Sept 2023.
+
+    This histogram was previously unused from 2025-01-05 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.SetReadyCallbackStatus2"
     enum="WindowsNotificationSetReadyCallbackStatus2"
-    expires_after="2024-09-01">
+    expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of SetReadyCallback requests in NotificationPlatformBridgeWin
     (Windows only). Logged once at startup. Note: Not logged after M98 until end
     of August 2022, and also not at the beginning of Sept 2023.
+
+    This histogram was previously unused from 2024-09-01 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.ShowFailedErrorCode" enum="Hresult"
-    expires_after="2025-01-05">
+    expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1272,18 +1425,24 @@ chromium-metrics-reviews@google.com.
     histogram Notifications.Windows.DisplayStatus reported SHOWING_TOAST_FAILED.
     Note: Not logged after M98 until end of August 2022, and not at the
     beginning of Sept 2023.
+
+    This histogram was previously unused from 2025-01-05 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.StartMenuShortcutStatus"
     enum="WindowsNotificationStartMenuShortcutStatus"
-    expires_after="2024-09-01">
+    expires_after="2027-02-13">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Used to indicate the status of start menu shortcut (Windows only). Logged
     whenever a notification display attempt is made. Note: Not logged after M98
     until end of August 2022, and also not at the beginning of Sept 2023.
+
+    This histogram was previously unused from 2024-09-01 to 2026-02-13, so data
+    might be missing.
   </summary>
 </histogram>
 
