@@ -4,11 +4,14 @@
 
 #include "content/common/shared_file_util.h"
 
+#include <string_view>
+
 #include "base/file_descriptor_store.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/global_descriptors.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "content/public/common/content_switches.h"
@@ -62,26 +65,25 @@ void SharedFileSwitchValueBuilder::AddEntry(const std::string& key_str,
   if (!switch_value_.empty()) {
     switch_value_ += ",";
   }
-  switch_value_ += key_str;
-  switch_value_ += ":";
-  switch_value_ += base::NumberToString(key_id);
+
+  base::StrAppend(&switch_value_, {key_str, ":", base::NumberToString(key_id)});
 }
 
 std::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
     const std::string& value) {
   std::map<int, std::string> values;
-  std::vector<std::string> string_pairs = base::SplitString(
+  std::vector<std::string_view> string_pairs = base::SplitStringPiece(
       value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const auto& pair : string_pairs) {
-    size_t colon_position = pair.find(":");
+  for (std::string_view pair : string_pairs) {
+    size_t colon_position = pair.find(':');
     if (colon_position == std::string::npos || colon_position == 0 ||
         colon_position == pair.size() - 1) {
       DLOG(ERROR) << "Found invalid entry parsing shared file string value:"
                   << pair;
       return std::nullopt;
     }
-    std::string key = pair.substr(0, colon_position);
-    std::string number_string =
+    std::string_view key = pair.substr(0, colon_position);
+    std::string_view number_string =
         pair.substr(colon_position + 1, std::string::npos);
     int key_int;
     if (!base::StringToInt(number_string, &key_int)) {
@@ -90,7 +92,7 @@ std::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
       return std::nullopt;
     }
 
-    values[key_int] = key;
+    values[key_int] = std::string(key);
   }
   return std::make_optional(std::move(values));
 }
