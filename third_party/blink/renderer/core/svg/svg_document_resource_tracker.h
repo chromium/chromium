@@ -56,6 +56,8 @@ class CORE_EXPORT SVGDocumentResourceTracker final
 
   void WillBeDestroyed();
 
+  void Dispose();
+
   void Trace(Visitor*) const;
 
   void AddResource(SVGDocumentResource* resource);

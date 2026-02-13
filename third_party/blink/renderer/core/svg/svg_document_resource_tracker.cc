@@ -75,18 +75,20 @@ void SVGDocumentResourceTracker::Put(const CacheKey& key,
 }
 
 void SVGDocumentResourceTracker::WillBeDestroyed() {
-  if (RuntimeEnabledFeatures::
+  if (!RuntimeEnabledFeatures::
           SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
-    for (const auto& resource : tracked_resources_) {
-      resource->GetContent()->Dispose();
-    }
-    MemoryCache::Get()->EvictResourcesForCacheIdentifier(cache_identifier_);
-    tracked_resources_.clear();
-  } else {
     for (SVGResourceDocumentContent* content : entries_.Values()) {
       content->Dispose();
     }
   }
+}
+
+void SVGDocumentResourceTracker::Dispose() {
+  for (const auto& resource : tracked_resources_) {
+    resource->GetContent()->Dispose();
+  }
+  MemoryCache::Get()->EvictResourcesForCacheIdentifier(cache_identifier_);
+  tracked_resources_.clear();
 }
 
 void SVGDocumentResourceTracker::DisposeUnobserved() {

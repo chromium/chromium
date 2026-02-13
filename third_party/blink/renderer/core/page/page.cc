@@ -93,6 +93,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
 #include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_scheduler_registry.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -540,11 +541,18 @@ SpatialNavigationController& Page::GetSpatialNavigationController() {
 
 SVGDocumentResourceTracker& Page::GetSVGDocumentResourceTracker() {
   if (!svg_document_resource_tracker_) {
-    svg_document_resource_tracker_ =
-        MakeGarbageCollected<SVGDocumentResourceTracker>(
-            GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner(),
-            SVGDocumentResourceTracker::MakeCacheIdentifier(
-                String(BrowsingContextGroupToken().ToString())));
+    if (RuntimeEnabledFeatures::
+            SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
+      svg_document_resource_tracker_ =
+          SVGResourceSchedulerRegistry::GetTracker(GetAgentGroupScheduler());
+
+    } else {
+      svg_document_resource_tracker_ =
+          MakeGarbageCollected<SVGDocumentResourceTracker>(
+              GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner(),
+              SVGDocumentResourceTracker::MakeCacheIdentifier(
+                  String(BrowsingContextGroupToken().ToString())));
+    }
   }
   return *svg_document_resource_tracker_;
 }

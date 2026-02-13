@@ -5279,7 +5279,7 @@
     },
     {
       name: "SvgPartitionSVGDocumentResourcesInMemoryCache",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SvgScriptElementAsyncAttribute",
