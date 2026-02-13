@@ -2,6 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("web_ui") {
+  sources = [
+    "chrome_ios_safe_browsing_local_state_delegate.h",
+    "chrome_ios_safe_browsing_local_state_delegate.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/safe_browsing/core/browser/web_ui:local_state_delegate",
+    "//ios/chrome/browser/shared/model/application_context",
+  ]
+}
+
 source_set("features") {
   sources = [
     "features.h",

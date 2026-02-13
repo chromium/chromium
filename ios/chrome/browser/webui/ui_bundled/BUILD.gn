@@ -146,6 +146,7 @@ source_set("webui_internal") {
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
     "//components/resources",
+    "//components/safe_browsing/ios/browser/web_ui",
     "//components/signin/public/identity_manager",
     "//components/sync/invalidations",
     "//components/version_info:channel",
