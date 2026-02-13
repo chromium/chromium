@@ -61,6 +61,10 @@ class JsCommunication
   class JsObjectInfo;
   struct JavaScriptExecutable;
 
+  static void RunScriptsInternal(
+      base::WeakPtr<JsCommunication> js_communication,
+      mojom::DocumentInjectionTime injection_time);
+
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::JsCommunication> pending_receiver);
 
@@ -80,6 +84,7 @@ class JsCommunication
   mojo::AssociatedRemote<mojom::JsObjectsClient> client_remote_;
 
   base::WeakPtrFactory<JsCommunication> weak_ptr_factory_for_bindings_{this};
+  base::WeakPtrFactory<JsCommunication> weak_ptr_factory_{this};
 };
 
 }  // namespace js_injection

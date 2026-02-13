@@ -210,21 +210,37 @@ void JsCommunication::OnDestruct() {
 }
 
 void JsCommunication::RunScripts(mojom::DocumentInjectionTime injection_time) {
-  url::Origin frame_origin =
-      url::Origin(render_frame()->GetWebFrame()->GetSecurityOrigin());
-  for (const auto& script : scripts_) {
+  RunScriptsInternal(weak_ptr_factory_.GetWeakPtr(), injection_time);
+  // Careful `this` may be destroyed.
+}
+
+// static
+void JsCommunication::RunScriptsInternal(
+    base::WeakPtr<JsCommunication> js_communication,
+    mojom::DocumentInjectionTime injection_time) {
+  CHECK(js_communication);
+  url::Origin frame_origin = url::Origin(
+      js_communication->render_frame()->GetWebFrame()->GetSecurityOrigin());
+  for (const auto& script : js_communication->scripts_) {
     if (!script->origin_matcher.Matches(frame_origin)) {
       continue;
     }
     if (script->injection_time == injection_time) {
       if (script->js_world == content::ISOLATED_WORLD_ID_GLOBAL) {
-        render_frame()->GetWebFrame()->ExecuteScript(
+        js_communication->render_frame()->GetWebFrame()->ExecuteScript(
             blink::WebScriptSource(script->script));
       } else {
-        render_frame()->GetWebFrame()->ExecuteScriptInIsolatedWorld(
-            script->js_world, blink::WebScriptSource(script->script),
-            blink::BackForwardCacheAware::kAllow);
+        js_communication->render_frame()
+            ->GetWebFrame()
+            ->ExecuteScriptInIsolatedWorld(
+                script->js_world, blink::WebScriptSource(script->script),
+                blink::BackForwardCacheAware::kAllow);
       }
+    }
+    // Careful, executing a script may cause JsCommunication object to be
+    // destroyed.
+    if (!js_communication) {
+      return;
     }
   }
 }
