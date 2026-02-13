@@ -8,8 +8,7 @@
 #include <memory>
 
 #include "base/memory/singleton.h"
-
-class DefaultBrowserSurfaceManager;
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
 
 // DefaultBrowserPromptManager is a Global singleton class that is responsible
 // for owning and displaying prompts that nudge user to set Chrome as their

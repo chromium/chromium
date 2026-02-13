@@ -138,7 +138,6 @@ void CompareHttpProgIdWithDefaultState(DefaultBrowserState default_state,
 
 DefaultBrowserManager::ShellDelegate::~ShellDelegate() = default;
 
-
 DEFINE_USER_DATA(DefaultBrowserManager);
 
 DefaultBrowserManager::DefaultBrowserManager(

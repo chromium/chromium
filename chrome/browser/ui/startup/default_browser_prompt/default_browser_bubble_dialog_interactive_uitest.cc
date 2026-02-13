@@ -95,6 +95,8 @@ class DefaultBrowserDialogManagerInteractiveTest
         /*can_pin_to_taskbar=*/false);
   }
 
+  void CloseDialogs() { manager_->CloseAll(); }
+
   void TearDownOnMainThread() override {
     manager_.reset();
     InteractiveBrowserTest::TearDownOnMainThread();
@@ -121,12 +123,13 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
       VerifyHistogram("DefaultBrowser.BubbleDialog.ShellIntegration.Shown", 1,
                       1),
       PressButton(default_browser::kBubbleDialogSetLaterButtonId),
-      WaitForHide(default_browser::kBubbleDialogSetLaterButtonId),
       VerifyHistogram(
           "DefaultBrowser.BubbleDialog.ShellIntegration.Interaction",
           std::to_underlying(
               default_browser::DefaultBrowserInteractionType::kDismissed),
-          1));
+          1),
+      Do([this]() { CloseDialogs(); }),
+      WaitForHide(default_browser::kBubbleDialogId));
 }
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
@@ -137,10 +140,11 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
       VerifyHistogram("DefaultBrowser.BubbleDialog.ShellIntegration.Shown", 1,
                       1),
       PressButton(default_browser::kBubbleDialogOpenSettingsButtonId),
-      WaitForHide(default_browser::kBubbleDialogOpenSettingsButtonId),
       VerifyHistogram(
           "DefaultBrowser.BubbleDialog.ShellIntegration.Interaction",
           std::to_underlying(
               default_browser::DefaultBrowserInteractionType::kAccepted),
-          1));
+          1),
+      Do([this]() { CloseDialogs(); }),
+      WaitForHide(default_browser::kBubbleDialogId));
 }

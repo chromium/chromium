@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_bubble_dialog.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -103,13 +104,17 @@ void DefaultBrowserBubbleDialogManager::OnAccept() {
   }
   default_browser_controller_->OnAccepted(
       base::DoNothingWithBoundArgs(std::move(default_browser_controller_)));
-  CloseAll();
+
+  DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
+      DefaultBrowserPromptManager::CloseReason::kAccept);
 }
 
 void DefaultBrowserBubbleDialogManager::OnDismiss() {
   default_browser_controller_->OnDismissed();
   default_browser_controller_.reset();
-  CloseAll();
+
+  DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
+      DefaultBrowserPromptManager::CloseReason::kDismiss);
 }
 
 void DefaultBrowserBubbleDialogManager::CloseAll() {

@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "build/buildflag.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
+#include "chrome/browser/default_browser/default_browser_features.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 

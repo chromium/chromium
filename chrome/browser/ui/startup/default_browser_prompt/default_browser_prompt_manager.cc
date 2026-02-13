@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_bubble_dialog_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -26,6 +27,9 @@
 #endif
 
 namespace {
+
+using default_browser::DefaultBrowserManager;
+using default_browser::DefaultBrowserPromptSurface;
 
 bool ShouldShowPrompts() {
   PrefService* local_state = g_browser_process->local_state();
@@ -71,9 +75,7 @@ DefaultBrowserPromptManager* DefaultBrowserPromptManager::GetInstance() {
   return base::Singleton<DefaultBrowserPromptManager>::get();
 }
 
-DefaultBrowserPromptManager::DefaultBrowserPromptManager()
-    : prompt_surface_manager_(
-          std::make_unique<DefaultBrowserInfoBarManager>()) {}
+DefaultBrowserPromptManager::DefaultBrowserPromptManager() = default;
 
 DefaultBrowserPromptManager::~DefaultBrowserPromptManager() = default;
 
@@ -114,6 +116,21 @@ void DefaultBrowserPromptManager::OnCanPinToTaskbarResult(
 }
 
 void DefaultBrowserPromptManager::ShowPrompts(bool can_pin_to_taskbar) {
+  DefaultBrowserPromptSurface prompt_surface =
+      default_browser::GetDefaultBrowserPromptSurface();
+
+  switch (prompt_surface) {
+    case DefaultBrowserPromptSurface::kInfobar:
+      prompt_surface_manager_ =
+          std::make_unique<DefaultBrowserInfoBarManager>();
+      break;
+    case DefaultBrowserPromptSurface::kBubbleDialog:
+      prompt_surface_manager_ =
+          std::make_unique<DefaultBrowserBubbleDialogManager>();
+      break;
+  }
+  CHECK(prompt_surface_manager_);
+
   prompt_surface_manager_->Show(
       default_browser::DefaultBrowserManager::CreateControllerFor(
           prompt_surface_manager_->GetEntrypointType()),
@@ -121,8 +138,10 @@ void DefaultBrowserPromptManager::ShowPrompts(bool can_pin_to_taskbar) {
 }
 
 void DefaultBrowserPromptManager::CloseAllPrompts(CloseReason close_reason) {
-  prompt_surface_manager_->CloseAll();
-
+  if (prompt_surface_manager_) {
+    prompt_surface_manager_->CloseAll();
+    prompt_surface_manager_.reset();
+  }
   if (close_reason == CloseReason::kAccept) {
     SetAppMenuItemVisibility(false);
   }
