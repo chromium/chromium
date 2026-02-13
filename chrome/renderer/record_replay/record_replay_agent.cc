@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_dom_event.h"
@@ -58,8 +59,13 @@ RecordReplayAgent::RecordReplayAgent(
 
 RecordReplayAgent::~RecordReplayAgent() = default;
 
+// Destroys itself asynchronously because OnDestruct() can be triggered
+// synchronously by JavaScript, and that JavaScript might be triggered
+// synchronously by `this`.
 void RecordReplayAgent::OnDestruct() {
-  delete this;
+  receiver_.reset();
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
 }
 
 blink::WebDocument RecordReplayAgent::GetDocument() {
