@@ -613,6 +613,10 @@ config("compiler") {
       ]
     }
 
+    # TODO(crbug.com/484082200): Re-enable once the test failures this causes
+    # have been solved.
+    cflags += [ "-fno-lifetime-dse" ]
+
     # TODO(hans): Remove this once Clang generates better optimized debug info
     # by default. https://crbug.com/765793
     cflags += [
