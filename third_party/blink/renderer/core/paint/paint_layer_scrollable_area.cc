@@ -238,8 +238,6 @@ void PaintLayerScrollableArea::DisposeImpl() {
 
   ClearScrollableArea();
 
-  RunScrollCompleteCallbacks(ScrollableArea::ScrollCompletionMode::kFinished);
-
   layer_ = nullptr;
 }
 

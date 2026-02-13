@@ -159,11 +159,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   static mojom::blink::ScrollBehavior V8EnumToScrollBehavior(
       V8ScrollBehavior::Enum);
 
-  // Register a callback that will be invoked when the next scroll completes -
-  // this includes the scroll animation time.
-  void RegisterScrollCompleteCallback(ScrollCallback callback);
-  void RunScrollCompleteCallbacks(ScrollCompletionMode);
-
   void MouseEnteredScrollbar(Scrollbar&);
   void MouseExitedScrollbar(Scrollbar&);
   void MouseCapturedScrollbar();
@@ -706,7 +701,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   bool ProgrammaticScrollHelper(const ScrollOffset&,
                                 mojom::blink::ScrollBehavior,
                                 gfx::Vector2d animation_adjustment,
-                                ScrollCallback on_finish,
                                 cc::ScrollSourceType);
   void UserScrollHelper(const ScrollOffset&,
                         mojom::blink::ScrollBehavior,
@@ -789,8 +783,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       fade_overlay_scrollbars_timer_;
 
   Member<TextOverflowPostLayoutSnapshot> text_overflow_snapshot_;
-
-  Vector<ScrollCallback> pending_scroll_complete_callbacks_;
 
   ScrollOffset pending_scroll_anchor_adjustment_;
 
