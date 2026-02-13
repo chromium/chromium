@@ -9647,3 +9647,7 @@ crbug.com/482121289 [ Win ] external/wpt/geolocation/enabled-by-permission-polic
 
 # Temporary entry while fixing semantics
 crbug.com/483413086 external/wpt/html/browsers/the-window-object/named-access-on-the-window-object/window-named-properties.html [ Failure Pass ]
+
+# Gardener 2026-02-13
+crbug.com/483892110 [ Mac12 ] external/wpt/shadow-dom/focus-navigation#delegatesFocus-highlight-sibling.html [ Timeout Pass ]
+crbug.com/483962364 [ Mac12 ] external/wpt/shadow-dom/focus-navigation#focus-navigation-slot-fallback.html [ Timeout Pass ]
