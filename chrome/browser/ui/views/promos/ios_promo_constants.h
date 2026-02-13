@@ -28,6 +28,14 @@ inline constexpr char kIOSPromoLensBubbleQRCodeURL[] =
 inline constexpr char kIOSPromoESBBubbleQRCodeURL[] =
     "https://www.google.com/chrome/go-mobile/"
     "?ios-campaign=desktop-chr-esb-1&android-campaign=desktop-chr-esb-1";
+inline constexpr char kIOSPromoTabGroupsQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-tab-groups-1&android-campaign=desktop-chr-tab-"
+    "groups-1";
+inline constexpr char kIOSPromoPriceTrackingQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-price-track-1&android-campaign=desktop-chr-"
+    "price-track-1";
 
 // Size of the image view (QR code or otherwise) in the promos.
 inline constexpr int kImageSize = 80;

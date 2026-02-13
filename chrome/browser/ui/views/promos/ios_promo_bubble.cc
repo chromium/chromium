@@ -251,8 +251,9 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpTabGroupsBubble(
           IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_BUBBLE_DESCRIPTION_QR;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
-      // TODO (crbug.com/479229912): Add the Tab Groups QR code image once the
-      // URL is provided.
+      config.promo_image =
+          CreateQrCodeImage(IOSPromoConstants::kIOSPromoTabGroupsQRCodeURL);
+      config.qr_code_url = IOSPromoConstants::kIOSPromoTabGroupsQRCodeURL;
       break;
     case BubbleType::kReminder:
       config.promo_title_id =
@@ -290,8 +291,9 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpPriceTrackingBubble(
           IDS_IOS_DESKTOP_PRICE_TRACKING_DESCRIPTION_QR;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
-      // TODO (crbug.com/479229912): Add the Price Tracking QR code image once
-      // the URL is provided.
+      config.promo_image =
+          CreateQrCodeImage(IOSPromoConstants::kIOSPromoPriceTrackingQRCodeURL);
+      config.qr_code_url = IOSPromoConstants::kIOSPromoPriceTrackingQRCodeURL;
       break;
     case BubbleType::kReminder:
       config.promo_title_id =
