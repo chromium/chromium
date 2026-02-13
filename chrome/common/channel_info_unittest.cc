@@ -115,20 +115,15 @@ TEST_P(ChannelInfoTest, IsExtendedStableChannel) {
   EXPECT_EQ(IsExtendedStableChannel(), GetParam().is_extended_stable);
 }
 
-#if BUILDFLAG(IS_WIN)
-#elif BUILDFLAG(IS_MAC)
-
+#if BUILDFLAG(IS_MAC)
 TEST_P(ChannelInfoTest, GetChannelByName) {
   EXPECT_EQ(GetChannelByName(GetParam().channel_name_with_es),
             GetParam().channel);
 }
-
 #elif BUILDFLAG(IS_POSIX)
-
 TEST_P(ChannelInfoTest, GetChannelSuffixForDataDir) {
   EXPECT_EQ(GetChannelSuffixForDataDir(), GetParam().posix_data_dir_suffix);
 }
-
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
