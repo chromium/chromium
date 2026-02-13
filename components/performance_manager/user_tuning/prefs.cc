@@ -38,6 +38,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kPerformanceInterventionNotificationLastShown,
                              base::Time());
   registry->RegisterListPref(kPerformanceInterventionNotificationAcceptHistory);
+  registry->RegisterBooleanPref(kForceForegroundPriorityForAllTabs, false);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -47,7 +48,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kTabDiscardingExceptionsWithTime,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterListPref(kManagedTabDiscardingExceptions);
-  registry->RegisterBooleanPref(kForceForegroundPriorityForAllTabs, false);
 }
 
 MemorySaverModeState GetCurrentMemorySaverModeState(PrefService* pref_service) {

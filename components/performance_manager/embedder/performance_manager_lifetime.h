@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/prefs/pref_service.h"
 
 namespace performance_manager {
 
@@ -22,7 +23,9 @@ using GraphCreatedCallback = base::OnceCallback<void(Graph*)>;
 // and PerformanceManagerRegistry.
 class PerformanceManagerLifetime {
  public:
-  PerformanceManagerLifetime(const GraphFeatures&, GraphCreatedCallback);
+  PerformanceManagerLifetime(const GraphFeatures&,
+                             GraphCreatedCallback,
+                             PrefService* pref_service = nullptr);
   ~PerformanceManagerLifetime();
 
   // Allows specifying an additional callback that will be invoked in tests.

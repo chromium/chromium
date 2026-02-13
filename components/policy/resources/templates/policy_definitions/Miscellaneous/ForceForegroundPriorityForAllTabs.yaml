@@ -1,4 +1,4 @@
-caption: Force foreground priority for all tabs in the profile
+caption: Force foreground priority for all tabs
 desc: |-
   This policy controls whether background web content is forced to run at
   foreground priority.
@@ -24,8 +24,8 @@ supported_on:
 - chrome.*:146-
 - chrome_os:146-
 features:
-  dynamic_refresh: true
-  per_profile: true
+  dynamic_refresh: false
+  per_profile: false
 type: main
 schema:
   type: boolean
