@@ -250,8 +250,10 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config.event_configs.insert(EventConfig(
         feature_engagement::events::kChromeOpened, Comparator(ANY, 0), 7, 365));
 
-    // TODO(crbug.com/479220063): create a new kChromeOpenedFromIcon event and
-    // use it to check if no app icon launches in last 7 days.
+    // L7 app icon launches.
+    config.event_configs.insert(
+        EventConfig(feature_engagement::events::kIOSChromeOpenedFromIcon,
+                    Comparator(ANY, 0), 7, 365));
 
     return config;
   } else if (kIPHiOSPostDefaultAbandonmentPromoFeature.name == feature->name) {
