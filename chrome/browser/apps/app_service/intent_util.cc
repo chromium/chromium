@@ -109,15 +109,17 @@ const std::string URLPatternToFileSystemPattern(const URLPattern& pattern,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-constexpr char kIntentExtraText[] = "S.android.intent.extra.TEXT";
-constexpr char kIntentExtraSubject[] = "S.android.intent.extra.SUBJECT";
-constexpr char kIntentExtraStartType[] = "S.org.chromium.arc.start_type";
-constexpr char kIntentActionPrefix[] = "android.intent.action";
-constexpr char kType[] = "type";
+constexpr std::string_view kIntentExtraText = "S.android.intent.extra.TEXT";
+constexpr std::string_view kIntentExtraSubject =
+    "S.android.intent.extra.SUBJECT";
+constexpr std::string_view kIntentExtraStartType =
+    "S.org.chromium.arc.start_type";
+constexpr std::string_view kIntentActionPrefix = "android.intent.action";
+constexpr std::string_view kType = "type";
 
-constexpr int kIntentPrefixLength = 2;
+constexpr size_t kIntentPrefixLength = 2;
 
-const char* ConvertAppServiceToArcIntentAction(const std::string& action) {
+std::string_view ConvertAppServiceToArcIntentAction(std::string_view action) {
   if (action == kIntentActionMain) {
     return arc::kIntentActionMain;
   } else if (action == kIntentActionView) {
@@ -126,9 +128,8 @@ const char* ConvertAppServiceToArcIntentAction(const std::string& action) {
     return arc::kIntentActionSend;
   } else if (action == kIntentActionSendMultiple) {
     return arc::kIntentActionSendMultiple;
-  } else if (action.compare(0, strlen(kIntentActionPrefix),
-                            kIntentActionPrefix) == 0) {
-    return action.c_str();
+  } else if (action.starts_with(kIntentActionPrefix)) {
+    return action;
   } else {
     return arc::kIntentActionView;
   }
@@ -476,21 +477,19 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
   auto extras = base::flat_map<std::string, std::string>();
   if (intent->share_text.has_value()) {
     // Slice off the "S." prefix for the key.
-    extras.insert(
-        std::make_pair(UNSAFE_TODO(kIntentExtraText + kIntentPrefixLength),
-                       intent->share_text.value()));
+    extras.insert({std::string(kIntentExtraText.substr(kIntentPrefixLength)),
+                   intent->share_text.value()});
   }
   if (intent->share_title.has_value()) {
     // Slice off the "S." prefix for the key.
-    extras.insert(
-        std::make_pair(UNSAFE_TODO(kIntentExtraSubject + kIntentPrefixLength),
-                       intent->share_title.value()));
+    extras.insert({std::string(kIntentExtraSubject.substr(kIntentPrefixLength)),
+                   intent->share_title.value()});
   }
   if (intent->start_type.has_value()) {
     // Slice off the "S." prefix for the key.
     extras.insert(
-        std::make_pair(UNSAFE_TODO(kIntentExtraStartType + kIntentPrefixLength),
-                       intent->start_type.value()));
+        {std::string(kIntentExtraStartType.substr(kIntentPrefixLength)),
+         intent->start_type.value()});
   }
   if (!intent->extras.empty()) {
     extras.insert(intent->extras.begin(), intent->extras.end());
@@ -507,7 +506,8 @@ arc::mojom::IntentInfoPtr ConvertAppServiceToArcIntent(
   }
 
   arc_intent = arc::mojom::IntentInfo::New();
-  arc_intent->action = ConvertAppServiceToArcIntentAction(intent->action);
+  arc_intent->action =
+      std::string(ConvertAppServiceToArcIntentAction(intent->action));
   if (intent->url.has_value()) {
     arc_intent->data = intent->url->spec();
   }
@@ -556,13 +556,13 @@ std::string CreateLaunchIntent(const std::string& package_name,
   std::string ret = base::StringPrintf("%s;", arc::kIntentPrefix);
 
   // Convert action.
-  std::string action = ConvertAppServiceToArcIntentAction(intent->action);
+  auto action = std::string(ConvertAppServiceToArcIntentAction(intent->action));
   ret += base::StringPrintf("%s=%s;", arc::kAction,
                             ConvertAppServiceToArcIntentAction(intent->action));
 
   // Convert categories.
   for (const auto& category : intent->categories) {
-    ret += base::StringPrintf("%s=%s;", arc::kCategory, category.c_str());
+    ret += base::StringPrintf("%s=%s;", arc::kCategory, category);
   }
 
   // Set launch flags.
@@ -574,39 +574,37 @@ std::string CreateLaunchIntent(const std::string& package_name,
   // Convert activity_name.
   if (intent->activity_name.has_value()) {
     // Remove the |package_name| prefix, if activity starts with it.
-    const std::string& activity = intent->activity_name.value();
-    const char* activity_compact_name =
-        activity.find(package_name.c_str()) == 0
-            ? UNSAFE_TODO(activity.c_str() + package_name.length())
-            : activity.c_str();
-    ret += base::StringPrintf("%s=%s/%s;", arc::kComponent,
-                              package_name.c_str(), activity_compact_name);
+    std::string_view activity_compact_name = intent->activity_name.value();
+    if (activity_compact_name.starts_with(package_name)) {
+      activity_compact_name.remove_prefix(package_name.length());
+    }
+    ret += base::StringPrintf("%s=%s/%s;", arc::kComponent, package_name,
+                              activity_compact_name);
   } else {
-    ret += base::StringPrintf("%s=%s/;", arc::kComponent, package_name.c_str());
+    ret += base::StringPrintf("%s=%s/;", arc::kComponent, package_name);
   }
 
   if (intent->mime_type.has_value()) {
-    ret +=
-        base::StringPrintf("%s=%s;", kType, intent->mime_type.value().c_str());
+    ret += base::StringPrintf("%s=%s;", kType, intent->mime_type.value());
   }
 
   if (intent->share_text.has_value()) {
     ret += base::StringPrintf("%s=%s;", kIntentExtraText,
-                              intent->share_text.value().c_str());
+                              intent->share_text.value());
   }
 
   if (intent->share_title.has_value()) {
     ret += base::StringPrintf("%s=%s;", kIntentExtraSubject,
-                              intent->share_title.value().c_str());
+                              intent->share_title.value());
   }
 
   if (intent->start_type.has_value()) {
     ret += base::StringPrintf("%s=%s;", kIntentExtraStartType,
-                              intent->start_type.value().c_str());
+                              intent->start_type.value());
   }
 
   for (auto it : intent->extras) {
-    ret += base::StringPrintf("%s=%s;", it.first.c_str(), it.second.c_str());
+    ret += base::StringPrintf("%s=%s;", it.first, it.second);
   }
 
   ret += arc::kEndSuffix;
@@ -659,8 +657,8 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
         break;
       case apps::ConditionType::kAction:
         for (auto& condition_value : condition->condition_values) {
-          actions.push_back(
-              ConvertAppServiceToArcIntentAction(condition_value->value));
+          actions.push_back(std::string(
+              ConvertAppServiceToArcIntentAction(condition_value->value)));
         }
         break;
       case apps::ConditionType::kMimeType:
