@@ -328,7 +328,11 @@ class CORE_EXPORT HTMLSelectElement final
   // This should only be called when UsesMenuList() returns true.
   void SetIsAppearanceBasePickerForDisplayNone(bool);
 
+  void SelectedContentElementInsertedLegacy(
+      HTMLSelectedContentElement* selectedcontent);
   void SelectedContentElementInserted(
+      HTMLSelectedContentElement* selectedcontent);
+  void UpdateDescendantSelectedcontentsForInsertion(
       HTMLSelectedContentElement* selectedcontent);
   void SelectedContentElementRemoved(
       HTMLSelectedContentElement* selectedcontent);

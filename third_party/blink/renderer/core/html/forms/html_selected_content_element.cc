@@ -14,6 +14,8 @@ HTMLSelectedContentElement::HTMLSelectedContentElement(Document& document)
 
 void HTMLSelectedContentElement::CloneContentsFromOptionElement(
     const HTMLOptionElement* option) {
+  // TODO(crbug.com/458113204): This disabled check does not exist in the spec.
+  // It should be added to the spec or removed.
   if (disabled_) {
     return;
   }
@@ -42,39 +44,100 @@ void HTMLSelectedContentElement::DidNotifySubtreeInsertionsToDocument() {
   // just got inserted into a <select> and there are no other <select>s in
   // between.
   // TODO(crbug.com/40236878): Use a flat tree traversal here.
-  disabled_ = false;
-  HTMLSelectElement* first_ancestor_select = nullptr;
-  for (auto* ancestor = parentNode(); ancestor;
-       ancestor = ancestor->parentNode()) {
-    if (IsA<HTMLOptionElement>(ancestor) ||
-        IsA<HTMLSelectedContentElement>(ancestor)) {
-      // Putting a <selectedcontent> inside an <option> or another
-      // <seletedoption> can lead to infinite loops.
-      disabled_ = true;
-    }
-    if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
-      if (first_ancestor_select) {
-        // If there are multiple ancestor selects, then cloning can lead to
-        // infinite loops, so disable this element.
+  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
+    disabled_ = false;
+    nearest_ancestor_select_ = nullptr;
+    for (auto* ancestor = parentNode(); ancestor;
+         ancestor = ancestor->parentNode()) {
+      if (IsA<HTMLOptionElement>(ancestor) ||
+          IsA<HTMLSelectedContentElement>(ancestor)) {
+        // Putting a <selectedcontent> inside an <option> or another
+        // <selectedcontent> can lead to infinite loops.
         disabled_ = true;
-        break;
+        // The HTML spec has a "break" here, but we continue instead because we
+        // need to call select->SelectedContentElementInserted to keep track of
+        // all descendant selectedcontent elements for each select, which the
+        // spec also doesn't do. This is not web observable because we account
+        // for it by gating later code in this method on disabled_.
       }
-      first_ancestor_select = select;
-      select->SelectedContentElementInserted(this);
+      if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
+        if (nearest_ancestor_select_) {
+          // If there are multiple ancestor selects, then cloning can lead to
+          // infinite loops, so disable this element.
+          disabled_ = true;
+          break;
+        }
+        nearest_ancestor_select_ = select;
+        // TODO(crbug.com/458113204): This method may be called multiple times
+        // for the same select element, and we shouldn't call
+        // SelectedContentElementInserted on the same select multiple times.
+        // This should be moved to InsertedInto.
+        select->SelectedContentElementInserted(this);
+      }
+    }
+
+    if (!disabled_ && nearest_ancestor_select_ &&
+        !nearest_ancestor_select_->IsMultiple()) {
+      nearest_ancestor_select_->UpdateDescendantSelectedcontentsForInsertion(
+          this);
+    }
+  } else {
+    disabled_ = false;
+    HTMLSelectElement* first_ancestor_select = nullptr;
+    for (auto* ancestor = parentNode(); ancestor;
+         ancestor = ancestor->parentNode()) {
+      if (IsA<HTMLOptionElement>(ancestor) ||
+          IsA<HTMLSelectedContentElement>(ancestor)) {
+        // Putting a <selectedcontent> inside an <option> or another
+        // <seletedoption> can lead to infinite loops.
+        disabled_ = true;
+      } else if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
+        if (first_ancestor_select) {
+          // If there are multiple ancestor selects, then cloning can lead to
+          // infinite loops, so disable this element.
+          disabled_ = true;
+          break;
+        }
+        first_ancestor_select = select;
+        select->SelectedContentElementInsertedLegacy(this);
+      }
     }
   }
 }
 
-void HTMLSelectedContentElement::RemovedFrom(ContainerNode& container) {
-  HTMLElement::RemovedFrom(container);
-  // Call SelectedContentElementRemoved on the first ancestor <select> if we
-  // just got detached from it.
-  if (!Traversal<HTMLSelectElement>::FirstAncestor(*this)) {
-    if (auto* select = Traversal<HTMLSelectElement>::FirstAncestor(container)) {
-      select->SelectedContentElementRemoved(this);
+void HTMLSelectedContentElement::RemovedFrom(ContainerNode& removed_from) {
+  HTMLElement::RemovedFrom(removed_from);
+  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
+    // TODO(crbug.com/458113204): Remove this disabled_ check after removing the
+    // code to trigger cloning during removal in order to make sure that
+    // nearest_ancestor_select_ stays up to date.
+    if (disabled_) {
+      return;
     }
+    if (auto* new_nearest_ancestor_select =
+            Traversal<HTMLSelectElement>::FirstAncestor(*this)) {
+      nearest_ancestor_select_ = new_nearest_ancestor_select;
+      return;
+    }
+    if (auto* previous_ancestor_select =
+            Traversal<HTMLSelectElement>::FirstAncestorOrSelf(removed_from)) {
+      nearest_ancestor_select_ = nullptr;
+      previous_ancestor_select->SelectedContentElementRemoved(this);
+    }
+  } else {
+    if (!Traversal<HTMLSelectElement>::FirstAncestor(*this)) {
+      if (auto* select =
+              Traversal<HTMLSelectElement>::FirstAncestor(removed_from)) {
+        select->SelectedContentElementRemoved(this);
+      }
+    }
+    disabled_ = false;
   }
-  disabled_ = false;
+}
+
+void HTMLSelectedContentElement::Trace(Visitor* visitor) const {
+  HTMLElement::Trace(visitor);
+  visitor->Trace(nearest_ancestor_select_);
 }
 
 }  // namespace blink

@@ -1844,7 +1844,32 @@ void HTMLSelectElement::SetIsAppearanceBasePickerForDisplayNone(bool value) {
 }
 
 void HTMLSelectElement::SelectedContentElementInserted(
+    HTMLSelectedContentElement* inserted_selectedcontent) {
+  CHECK(RuntimeEnabledFeatures::SelectedcontentSpecEnabled());
+  descendant_selectedcontents_.Add(inserted_selectedcontent);
+}
+
+void HTMLSelectElement::UpdateDescendantSelectedcontentsForInsertion(
+    HTMLSelectedContentElement* inserted_selectedcontent) {
+  CHECK(RuntimeEnabledFeatures::SelectedcontentSpecEnabled());
+  DCHECK(descendant_selectedcontents_.Contains(inserted_selectedcontent));
+
+  bool first = true;
+  for (HTMLSelectedContentElement* descendant_selectedcontent :
+       descendant_selectedcontents_) {
+    if (first) {
+      first = false;
+      descendant_selectedcontent->CloneContentsFromOptionElement(
+          SelectedOption());
+    } else {
+      descendant_selectedcontent->CloneContentsFromOptionElement(nullptr);
+    }
+  }
+}
+
+void HTMLSelectElement::SelectedContentElementInsertedLegacy(
     HTMLSelectedContentElement* selectedcontent) {
+  CHECK(!RuntimeEnabledFeatures::SelectedcontentSpecEnabled());
   descendant_selectedcontents_.Add(selectedcontent);
   auto iter = descendant_selectedcontents_.begin();
   if (*iter == selectedcontent) {
@@ -1856,12 +1881,23 @@ void HTMLSelectElement::SelectedContentElementInserted(
 }
 
 void HTMLSelectElement::SelectedContentElementRemoved(
-    HTMLSelectedContentElement* selectedcontent) {
-  bool was_first = *descendant_selectedcontents_.begin() == selectedcontent;
-  descendant_selectedcontents_.Remove(selectedcontent);
-  if (was_first && !descendant_selectedcontents_.IsEmpty()) {
-    (*descendant_selectedcontents_.begin())
-        ->CloneContentsFromOptionElement(SelectedOption());
+    HTMLSelectedContentElement* removed_selectedcontent) {
+  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
+    descendant_selectedcontents_.Remove(removed_selectedcontent);
+    // Always update the first selectedcontent element if present.
+    if (descendant_selectedcontents_.begin() !=
+        descendant_selectedcontents_.end()) {
+      (*descendant_selectedcontents_.begin())
+          ->CloneContentsFromOptionElement(SelectedOption());
+    }
+  } else {
+    bool was_first =
+        *descendant_selectedcontents_.begin() == removed_selectedcontent;
+    descendant_selectedcontents_.Remove(removed_selectedcontent);
+    if (was_first && !descendant_selectedcontents_.IsEmpty()) {
+      (*descendant_selectedcontents_.begin())
+          ->CloneContentsFromOptionElement(SelectedOption());
+    }
   }
 }
 

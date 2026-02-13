@@ -4834,6 +4834,12 @@
       status: "test",
     },
     {
+      // Aligns the implementation of the <selectedcontent> element with the
+      // HTML spec. https://issues.chromium.org/issues/458113204
+      name: "SelectedcontentSpec",
+      status: "experimental",
+    },
+    {
       // See https://crbug.com/40664519
       // Disabled due to UI freeze issues, see https://crbug.com/448833953.
       name: "SelectionAndFocusedVisiblePositionMatch",

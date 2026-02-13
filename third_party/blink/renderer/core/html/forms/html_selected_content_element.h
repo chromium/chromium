@@ -25,9 +25,13 @@ class HTMLSelectedContentElement : public HTMLElement {
   void DidNotifySubtreeInsertionsToDocument() override;
   void RemovedFrom(ContainerNode&) override;
 
+  void Trace(Visitor*) const override;
+
  private:
   // When this is true, cloning is disabled.
   bool disabled_ = false;
+
+  Member<HTMLSelectElement> nearest_ancestor_select_;
 };
 
 }  // namespace blink
