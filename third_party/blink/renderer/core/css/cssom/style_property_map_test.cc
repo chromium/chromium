@@ -158,6 +158,7 @@ TEST_F(StylePropertyMapTest, CSSKeywordValuesTest) {
           // scrollbar-gutter:both-edges DCHECK fails for other reasons. Needs
           // investigation.
         case CSSPropertyID::kTextDecorationLine:
+        case CSSPropertyID::kTextTransform:
         case CSSPropertyID::kTimelineTriggerSource:
         case CSSPropertyID::kTouchAction:
         case CSSPropertyID::kTransitionBehavior:

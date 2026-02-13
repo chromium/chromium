@@ -132,7 +132,7 @@ struct SameSizeAsComputedStyleBase
 
  private:
   Member<void*> pointers[10];
-  unsigned bitfields[5];
+  unsigned bitfields[6];
 };
 
 struct SameSizeAsComputedStyle : public SameSizeAsComputedStyleBase {
@@ -2037,37 +2037,62 @@ String ApplyMathAutoTransform(const String& text, TextOffsetMap* offset_map) {
 String ComputedStyle::ApplyTextTransform(const String& text,
                                          UChar previous_character,
                                          TextOffsetMap* offset_map) const {
-  switch (TextTransform()) {
-    case ETextTransform::kNone:
-      return text;
-    case ETextTransform::kCapitalize: {
-      if (RuntimeEnabledFeatures::ICUCapitalizationEnabled()) {
-        const LayoutLocale* locale = GetFontDescription().Locale();
-        CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
-        return case_map.ToTitle(text, offset_map, previous_character);
-      }
-      return Capitalize(text, previous_character);
-    }
-    case ETextTransform::kUppercase: {
-      const LayoutLocale* locale = GetFontDescription().Locale();
-      CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
-      return DisableNewGeorgianCapitalLetters(
-          case_map.ToUpper(text, offset_map));
-    }
-    case ETextTransform::kLowercase: {
-      const LayoutLocale* locale = GetFontDescription().Locale();
-      CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
-      return case_map.ToLower(text, offset_map);
-    }
-    case ETextTransform::kFullWidth:
-      return ApplyFullwidthTransform(text, offset_map,
-                                     ShouldPreserveWhiteSpaces());
-    case ETextTransform::kFullSizeKana:
-      return ApplyFullSizeKanaTransform(text, offset_map);
-    case ETextTransform::kMathAuto:
-      return ApplyMathAutoTransform(text, offset_map);
+  ETextTransform transform = TextTransform();
+
+  if (transform == ETextTransform::kNone) {
+    return text;
   }
-  NOTREACHED();
+  if (transform == ETextTransform::kMathAuto) {
+    return ApplyMathAutoTransform(text, offset_map);
+  }
+
+  String result = text;
+
+  // Apply transforms in spec order: case, then full-width, then full-size-kana.
+  if (EnumHasFlags(transform, ETextTransform::kCapitalize)) {
+    if (RuntimeEnabledFeatures::ICUCapitalizationEnabled()) {
+      const LayoutLocale* locale = GetFontDescription().Locale();
+      CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
+      result = case_map.ToTitle(result, offset_map, previous_character);
+    } else {
+      result = Capitalize(result, previous_character);
+    }
+  } else if (EnumHasFlags(transform, ETextTransform::kUppercase)) {
+    const LayoutLocale* locale = GetFontDescription().Locale();
+    CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
+    result =
+        DisableNewGeorgianCapitalLetters(case_map.ToUpper(result, offset_map));
+  } else if (EnumHasFlags(transform, ETextTransform::kLowercase)) {
+    const LayoutLocale* locale = GetFontDescription().Locale();
+    CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
+    result = case_map.ToLower(result, offset_map);
+  }
+
+  if (EnumHasFlags(transform, ETextTransform::kFullWidth)) {
+    result = ApplyFullwidthTransform(result, offset_map,
+                                     ShouldPreserveWhiteSpaces());
+  }
+
+  if (EnumHasFlags(transform, ETextTransform::kFullSizeKana)) {
+    // full-size-kana can change the UTF-16 length of the text.
+    // If a prior step already modified offset_map, we need to record the kana
+    // offsets separately because ApplyFullSizeKanaTransform will record offsets
+    // relative to its input (the intermediate string) and not the original.
+    if (offset_map && !offset_map->IsEmpty()) {
+      wtf_size_t intermediate_length = result.length();
+      TextOffsetMap kana_map;
+      result = ApplyFullSizeKanaTransform(result, &kana_map);
+      if (!kana_map.IsEmpty()) {
+        TextOffsetMap composed(text.length(), *offset_map, intermediate_length,
+                               kana_map, result.length());
+        *offset_map = std::move(composed);
+      }
+    } else {
+      result = ApplyFullSizeKanaTransform(result, offset_map);
+    }
+  }
+
+  return result;
 }
 
 const AtomicString& ComputedStyle::TextEmphasisMarkString() const {

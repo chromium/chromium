@@ -10627,12 +10627,49 @@ const CSSValue* TextSpacingTrim::CSSValueFromComputedStyleInternal(
       style.GetFontDescription().GetTextSpacingTrim());
 }
 
+const CSSValue* TextTransform::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext&,
+    CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ConsumeTextTransform(stream);
+}
+
+// https://www.w3.org/TR/css-text-4/#text-transform-property
+// none | [capitalize | uppercase | lowercase] || full-width || full-size-kana
+//   | math-auto
 const CSSValue* TextTransform::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.TextTransform());
+  ETextTransform transform = style.TextTransform();
+
+  if (transform == ETextTransform::kNone) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  if (transform == ETextTransform::kMathAuto) {
+    return CSSIdentifierValue::Create(CSSValueID::kMathAuto);
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+
+  if (EnumHasFlags(transform, ETextTransform::kCapitalize)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kCapitalize));
+  } else if (EnumHasFlags(transform, ETextTransform::kUppercase)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kUppercase));
+  } else if (EnumHasFlags(transform, ETextTransform::kLowercase)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kLowercase));
+  }
+
+  if (EnumHasFlags(transform, ETextTransform::kFullWidth)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kFullWidth));
+  }
+  if (EnumHasFlags(transform, ETextTransform::kFullSizeKana)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kFullSizeKana));
+  }
+
+  DCHECK_GE(list->length(), 1u);
+  return list;
 }
 
 // https://drafts.csswg.org/css-text-decor-4/#text-underline-position-property

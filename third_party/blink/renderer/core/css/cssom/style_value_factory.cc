@@ -205,7 +205,8 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       }
       return CreateStyleValue(value);
     }
-    case CSSPropertyID::kTextDecorationLine: {
+    case CSSPropertyID::kTextDecorationLine:
+    case CSSPropertyID::kTextTransform: {
       if (value.IsIdentifierValue()) {
         return CreateStyleValue(value);
       }

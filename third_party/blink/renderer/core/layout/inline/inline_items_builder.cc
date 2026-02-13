@@ -230,7 +230,8 @@ inline bool IsNonOrc16BitCharacter(UChar ch) {
 
 // text-transform: full-width collapses spaces into ideographic space (U+3000).
 inline UChar GetCollapsedSpaceChar(const ComputedStyle* style) {
-  return style && style->TextTransform() == ETextTransform::kFullWidth
+  return style && EnumHasFlags(style->TextTransform(),
+                               ETextTransform::kFullWidth)
              ? uchar::kIdeographicSpace
              : uchar::kSpace;
 }

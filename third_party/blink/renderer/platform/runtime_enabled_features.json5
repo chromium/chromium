@@ -1793,6 +1793,12 @@
       status: "experimental",
     },
     {
+      // crbug.com/41297237: Support multi-keyword values in CSS `text-transform`.
+      name: "CSSTextTransformMultiKeyword",
+      depends_on: ["CSSTextTransformFullWidth", "CSSTextTransformFullSizeKana"],
+      status: "experimental",
+    },
+    {
       // Support for the 'all' keyword of the 'timeline-scope' property.
       //
       // https://drafts.csswg.org/scroll-animations-1/#timeline-scope

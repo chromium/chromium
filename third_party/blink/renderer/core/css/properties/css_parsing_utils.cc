@@ -8791,6 +8791,69 @@ CSSValue* ConsumeTextDecorationLine(CSSParserTokenStream& stream) {
   return list;
 }
 
+// https://www.w3.org/TR/css-text-4/#text-transform-property
+// none | [capitalize | uppercase | lowercase] || full-width || full-size-kana
+//   | math-auto
+CSSValue* ConsumeTextTransform(CSSParserTokenStream& stream) {
+  CSSValueID id = stream.Peek().Id();
+
+  // 'none' is standalone. ConvertFlags does not require kNone to be in a list.
+  if (id == CSSValueID::kNone) {
+    return ConsumeIdent(stream);
+  }
+
+  // 'math-auto' is standalone.
+  if (id == CSSValueID::kMathAuto) {
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*ConsumeIdent(stream));
+    return list;
+  }
+
+  CSSIdentifierValue* case_keyword = nullptr;
+  CSSIdentifierValue* full_width = nullptr;
+  CSSIdentifierValue* full_size_kana = nullptr;
+
+  bool multi_keyword =
+      RuntimeEnabledFeatures::CSSTextTransformMultiKeywordEnabled();
+
+  while (true) {
+    id = stream.Peek().Id();
+    if ((id == CSSValueID::kCapitalize || id == CSSValueID::kUppercase ||
+         id == CSSValueID::kLowercase) &&
+        !case_keyword) {
+      case_keyword = ConsumeIdent(stream);
+    } else if (id == CSSValueID::kFullWidth && !full_width &&
+               RuntimeEnabledFeatures::CSSTextTransformFullWidthEnabled()) {
+      full_width = ConsumeIdent(stream);
+    } else if (id == CSSValueID::kFullSizeKana && !full_size_kana &&
+               RuntimeEnabledFeatures::CSSTextTransformFullSizeKanaEnabled()) {
+      full_size_kana = ConsumeIdent(stream);
+    } else {
+      break;
+    }
+    if (!multi_keyword) {
+      break;
+    }
+  }
+
+  // Use canonical order: [case-keyword] full-width full-size-kana
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (case_keyword) {
+    list->Append(*case_keyword);
+  }
+  if (full_width) {
+    list->Append(*full_width);
+  }
+  if (full_size_kana) {
+    list->Append(*full_size_kana);
+  }
+
+  if (!list->length()) {
+    return nullptr;
+  }
+  return list;
+}
+
 // Consume the `text-box-edge` production.
 CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream& stream) {
   if (CSSIdentifierValue* auto_value =

@@ -62,8 +62,37 @@ const char* FontStyleToString(FontSelectionValue slope) {
   return "normal";
 }
 
-StringView TextTransformToString(ETextTransform transform) {
-  return GetCSSValueNameAs<StringView>(PlatformEnumToCSSValueID(transform));
+String TextTransformToString(ETextTransform transform) {
+  if (transform == ETextTransform::kNone) {
+    return "none";
+  }
+  if (transform == ETextTransform::kMathAuto) {
+    return "math-auto";
+  }
+
+  StringBuilder result;
+  if (EnumHasFlags(transform, ETextTransform::kCapitalize)) {
+    result.Append("capitalize");
+  } else if (EnumHasFlags(transform, ETextTransform::kUppercase)) {
+    result.Append("uppercase");
+  } else if (EnumHasFlags(transform, ETextTransform::kLowercase)) {
+    result.Append("lowercase");
+  }
+
+  if (EnumHasFlags(transform, ETextTransform::kFullWidth)) {
+    if (!result.empty()) {
+      result.Append(' ');
+    }
+    result.Append("full-width");
+  }
+  if (EnumHasFlags(transform, ETextTransform::kFullSizeKana)) {
+    if (!result.empty()) {
+      result.Append(' ');
+    }
+    result.Append("full-size-kana");
+  }
+
+  return result.ReleaseString();
 }
 
 StringView TextAlignToString(ETextAlign align) {

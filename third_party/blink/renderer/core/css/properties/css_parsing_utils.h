@@ -773,6 +773,7 @@ bool ConsumeRadii(std::array<CSSValue*, 4>& horizontal_radii,
                   CSSParserLocalContext& local_context);
 
 CSSValue* ConsumeTextDecorationLine(CSSParserTokenStream&);
+CSSValue* ConsumeTextTransform(CSSParserTokenStream&);
 CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream&);
 CSSValue* ConsumeTextBoxTrim(CSSParserTokenStream&);
 

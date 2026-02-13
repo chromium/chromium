@@ -1429,16 +1429,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kOptimizespeed ||
              value_id == CSSValueID::kOptimizelegibility ||
              value_id == CSSValueID::kGeometricprecision;
-    case CSSPropertyID::kTextTransform:
-      return value_id == CSSValueID::kCapitalize ||
-             value_id == CSSValueID::kUppercase ||
-             value_id == CSSValueID::kLowercase ||
-             value_id == CSSValueID::kMathAuto ||
-             value_id == CSSValueID::kNone ||
-             (RuntimeEnabledFeatures::CSSTextTransformFullWidthEnabled() &&
-              value_id == CSSValueID::kFullWidth) ||
-             (RuntimeEnabledFeatures::CSSTextTransformFullSizeKanaEnabled() &&
-              value_id == CSSValueID::kFullSizeKana);
     case CSSPropertyID::kUnicodeBidi:
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kEmbed ||
@@ -1826,7 +1816,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kWebkitTextOrientation,
     CSSPropertyID::kTextRendering,
     CSSPropertyID::kTextSpacingTrim,
-    CSSPropertyID::kTextTransform,
     CSSPropertyID::kUnicodeBidi,
     CSSPropertyID::kVectorEffect,
     CSSPropertyID::kViewTransitionScope,
