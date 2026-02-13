@@ -25,7 +25,7 @@ vars = {
   'abseil_revision': 'c54e50d9f14471146af9f1f357b3c525c2ff5bb7',
   'build_revision': '3c58005adf6e658f44946971a544d62815373e00',
   'buildtools_revision': '5df641722f2e50623646d702e0046fb68c0f5ce1',
-  'catapult_revision': '6fd8bbe723677254ff1130a1a416988b8b3e285e',
+  'catapult_revision': '8ce759d4b71fd2dac753a603ca50d7d98067a585',
   'chromium_googletest_revision': '91e8a4cf5607164178e0455bbea40845c9b0d93c',
   'chromium_re2_revision': '581c1f779dffb7d5ffd4296b79736c9ce961caae',
   'chromium_testing_revision': '6bf7e8e674b4552e12d140378e4394e7970e3fbc',
