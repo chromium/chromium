@@ -37,15 +37,14 @@ found in the LICENSE file.
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.Headline2Thick.Secondary"
             app:leading="@dimen/headline2_size_leading"/>
-        <org.chromium.ui.widget.TextViewWithLeading
+        <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/empty_state_text_description"
+            style="@style/TextButton"
             android:maxWidth="@dimen/empty_state_text_width"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:paddingTop="@dimen/empty_state_subheading_padding_top"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-            app:leading="@dimen/text_size_medium_leading"/>
+            android:textAlignment="center"/>
     </LinearLayout>
 </ScrollView>
