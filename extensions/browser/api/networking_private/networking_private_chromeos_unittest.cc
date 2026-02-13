@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -980,7 +981,7 @@ TEST_F(NetworkingPrivateApiTest,
 TEST_F(NetworkingPrivateApiTest,
        CreateAlreadyConfiguredUserPrivateNetwork_ByHexSsid) {
   std::string hex_ssid =
-      base::HexEncode(kManagedUserWifiSsid, sizeof(kManagedUserWifiSsid) - 1);
+      base::HexEncode(base::byte_span_from_cstring(kManagedUserWifiSsid));
   const char kNetworkConfig[] =
       R"({
            "Priority": 1,
@@ -1002,7 +1003,7 @@ TEST_F(NetworkingPrivateApiTest,
 TEST_F(NetworkingPrivateApiTest,
        CreateAlreadyConfiguredUserPrivateNetwork_NonMatchingSsids) {
   std::string hex_ssid =
-      base::HexEncode(kManagedUserWifiSsid, sizeof(kManagedUserWifiSsid) - 1);
+      base::HexEncode(base::byte_span_from_cstring(kManagedUserWifiSsid));
   const char kNetworkConfig[] =
       R"({
            "Priority": 1,
@@ -1026,7 +1027,7 @@ TEST_F(NetworkingPrivateApiTest,
 TEST_F(NetworkingPrivateApiTest,
        CreateAlreadyConfiguredUserPrivateNetwork_ByHexSSID) {
   std::string hex_ssid =
-      base::HexEncode(kManagedUserWifiSsid, sizeof(kManagedUserWifiSsid) - 1);
+      base::HexEncode(base::byte_span_from_cstring(kManagedUserWifiSsid));
   const char kNetworkConfig[] =
       R"({
            "Priority": 1,
@@ -1064,8 +1065,8 @@ TEST_F(NetworkingPrivateApiTest, CreateAlreadyConfiguredDeviceNetwork) {
 
 TEST_F(NetworkingPrivateApiTest,
        CreateAlreadyConfiguredDeviceNetwork_ByHexSSID) {
-  std::string hex_ssid = base::HexEncode(kManagedDeviceWifiSsid,
-                                         sizeof(kManagedDeviceWifiSsid) - 1);
+  std::string hex_ssid =
+      base::HexEncode(base::byte_span_from_cstring(kManagedDeviceWifiSsid));
   const char kNetworkConfig[] =
       R"({
            "Type": "WiFi",

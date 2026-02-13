@@ -701,7 +701,7 @@ std::string NetworkCertLoader::GetPkcs11IdAndSlotForCert(CERTCertificate* cert,
   SECItem* sec_item = PK11_GetLowLevelKeyIDForPrivateKey(priv_key);
   std::string pkcs11_id;
   if (sec_item) {
-    pkcs11_id = base::HexEncode(sec_item->data, sec_item->len);
+    pkcs11_id = base::HexEncode(net::x509_util::SECItemAsSpan(*sec_item));
     SECITEM_FreeItem(sec_item, PR_TRUE);
   }
   SECKEY_DestroyPrivateKey(priv_key);

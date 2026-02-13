@@ -13,6 +13,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/strings/string_number_conversions.h"
@@ -1259,8 +1260,8 @@ class TopRowLayoutCustomTest
     custom_scan_codes.reserve(top_row_action_keys_.size());
     for (const auto& action_key : top_row_action_keys_) {
       const uint32_t scan_code = ConvertTopRowActionKeyToScanCode(action_key);
-      custom_scan_codes.push_back(
-          base::ToLowerASCII(base::HexEncode(&scan_code, 1)));
+      custom_scan_codes.push_back(base::ToLowerASCII(
+          base::HexEncode(base::byte_span_from_ref(scan_code).first<1>())));
     }
 
     custom_layout_string_ = base::JoinString(custom_scan_codes, " ");

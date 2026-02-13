@@ -106,7 +106,7 @@ std::string CertManagerImpl::ImportPrivateKey(const std::string& key_pem,
     NET_LOG(ERROR) << "Failed to get private key ID";
     return std::string();
   }
-  return base::HexEncode(sec_item->data, sec_item->len);
+  return base::HexEncode(net::x509_util::SECItemAsSpan(*sec_item));
 }
 
 std::string CertManagerImpl::ImportUserCert(const std::string& cert_pem,
@@ -136,7 +136,7 @@ std::string CertManagerImpl::ImportUserCert(const std::string& cert_pem,
     return std::string();
   }
 
-  return base::HexEncode(sec_item->data, sec_item->len);
+  return base::HexEncode(net::x509_util::SECItemAsSpan(*sec_item));
 }
 
 void CertManagerImpl::DeleteCertAndKeyAsync(const std::string& cert_pem,

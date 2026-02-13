@@ -187,7 +187,7 @@ TEST_F(CertManagerImplTest, ImportKeyAndCertTest) {
       PK11_GetLowLevelKeyIDForCert(nullptr, cert.get(), nullptr));
   EXPECT_TRUE(cert_sec_item);
   std::string cert_id =
-      base::HexEncode(cert_sec_item->data, cert_sec_item->len);
+      base::HexEncode(net::x509_util::SECItemAsSpan(*cert_sec_item));
 
   // Get the key ID.
   crypto::ScopedPK11Slot private_slot = cert_db()->GetPrivateSlot();
@@ -198,7 +198,8 @@ TEST_F(CertManagerImplTest, ImportKeyAndCertTest) {
   crypto::ScopedSECItem key_sec_item(
       PK11_GetLowLevelKeyIDForPrivateKey(key.get()));
   EXPECT_TRUE(key_sec_item);
-  std::string key_id = base::HexEncode(key_sec_item->data, key_sec_item->len);
+  std::string key_id =
+      base::HexEncode(net::x509_util::SECItemAsSpan(*key_sec_item));
 
   EXPECT_EQ(key_id, cert_id);
   EXPECT_EQ(import_future.imported_cert_id().value(), cert_id);

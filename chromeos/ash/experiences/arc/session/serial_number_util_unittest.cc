@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/experiences/arc/session/serial_number_util.h"
 
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -183,8 +184,8 @@ TEST_F(SerialNumberUtilTest, GetOrCreateSerialNumber_InvalidLocalState) {
 
   // Do the same with a too short hex salt.
   const std::string buf(kSaltLen + 1, 'x');
-  const std::string invalid_hex_salt_2 =
-      base::HexEncode(buf.data(), kSaltLen - 1);  // too short
+  const std::string invalid_hex_salt_2 = base::HexEncode(
+      base::as_byte_span(buf).first(kSaltLen - 1));  // too short
   test_local_state()->SetString(prefs::kArcSerialNumberSalt,
                                 invalid_hex_salt_2);
   EXPECT_FALSE(
@@ -196,7 +197,7 @@ TEST_F(SerialNumberUtilTest, GetOrCreateSerialNumber_InvalidLocalState) {
 
   // Do the same with a too long one.
   const std::string invalid_hex_salt_3 =
-      base::HexEncode(buf.data(), kSaltLen + 1);  // too long
+      base::HexEncode(base::as_byte_span(buf).first(kSaltLen + 1));  // too long
   test_local_state()->SetString(prefs::kArcSerialNumberSalt,
                                 invalid_hex_salt_3);
   EXPECT_FALSE(
@@ -207,7 +208,8 @@ TEST_F(SerialNumberUtilTest, GetOrCreateSerialNumber_InvalidLocalState) {
   EXPECT_NE(invalid_hex_salt_3, salt);
 
   // Test the valid case too.
-  const std::string valid_hex_salt = base::HexEncode(buf.data(), kSaltLen);
+  const std::string valid_hex_salt =
+      base::HexEncode(base::as_byte_span(buf).first(kSaltLen));
   test_local_state()->SetString(prefs::kArcSerialNumberSalt, valid_hex_salt);
   EXPECT_FALSE(
       GetOrCreateSerialNumber(test_local_state(), chromeos_user, std::string())
