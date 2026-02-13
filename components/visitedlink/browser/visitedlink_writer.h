@@ -196,9 +196,8 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // thread.
   struct LoadFromFileResult;
 
-  using TableLoadCompleteCallback = base::OnceCallback<void(
-      bool success,
-      scoped_refptr<LoadFromFileResult> load_from_file_result)>;
+  using TableLoadCompleteCallback =
+      base::OnceCallback<void(std::unique_ptr<LoadFromFileResult>)>;
 
   // Object to rebuild the table on the history thread (see the .cc file).
   class TableBuilder;
@@ -257,18 +256,14 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   static void LoadFromFile(const base::FilePath& filename,
                            TableLoadCompleteCallback callback);
 
-  // Load the table from the database file. Returns true on success.
-  // Fills parameter |load_from_file_result| on success. It is called from
-  // the background thread.
-  static bool LoadApartFromFile(
-      const base::FilePath& filename,
-      scoped_refptr<LoadFromFileResult>* load_from_file_result);
+  // Load the table from the database file. Returns the result on success,
+  // nullptr otherwise. It is called from the background thread.
+  static std::unique_ptr<LoadFromFileResult> LoadApartFromFile(
+      const base::FilePath& filename);
 
   // It is called from the background thread and executed on the UI
   // thread.
-  void OnTableLoadComplete(
-      bool success,
-      scoped_refptr<LoadFromFileResult> load_from_file_result);
+  void OnTableLoadComplete(std::unique_ptr<LoadFromFileResult>);
 
   // Reads the header of the link coloring database from disk. Assumes the
   // file pointer is at the beginning of the file and that it is the first

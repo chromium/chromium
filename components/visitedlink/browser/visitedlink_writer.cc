@@ -140,8 +140,7 @@ enum class AddFingerprint {
 
 }  // namespace
 
-struct VisitedLinkWriter::LoadFromFileResult
-    : public base::RefCountedThreadSafe<LoadFromFileResult> {
+struct VisitedLinkWriter::LoadFromFileResult {
   LoadFromFileResult(base::ScopedFILE file,
                      base::MappedReadOnlyRegion hash_table_memory,
                      int32_t num_entries,
@@ -156,10 +155,6 @@ struct VisitedLinkWriter::LoadFromFileResult
   int32_t num_entries;
   int32_t used_count;
   LinkSalt salt;
-
- private:
-  friend class base::RefCountedThreadSafe<LoadFromFileResult>;
-  virtual ~LoadFromFileResult();
 };
 
 VisitedLinkWriter::LoadFromFileResult::LoadFromFileResult(
@@ -173,8 +168,6 @@ VisitedLinkWriter::LoadFromFileResult::LoadFromFileResult(
       num_entries(num_entries),
       used_count(used_count),
       salt(salt) {}
-
-VisitedLinkWriter::LoadFromFileResult::~LoadFromFileResult() = default;
 
 // TableBuilder ---------------------------------------------------------------
 
@@ -667,49 +660,41 @@ bool VisitedLinkWriter::InitFromFile() {
 // static
 void VisitedLinkWriter::LoadFromFile(const base::FilePath& filename,
                                      TableLoadCompleteCallback callback) {
-  scoped_refptr<LoadFromFileResult> load_from_file_result;
-  bool success = LoadApartFromFile(filename, &load_from_file_result);
-
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), success,
-                                std::move(load_from_file_result)));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), LoadApartFromFile(filename)));
 }
 
 // static
-bool VisitedLinkWriter::LoadApartFromFile(
-    const base::FilePath& filename,
-    scoped_refptr<LoadFromFileResult>* load_from_file_result) {
-  DCHECK(load_from_file_result);
-
+std::unique_ptr<VisitedLinkWriter::LoadFromFileResult>
+VisitedLinkWriter::LoadApartFromFile(const base::FilePath& filename) {
   base::ScopedFILE file_closer(base::OpenFile(filename, "rb+"));
   if (!file_closer.get())
-    return false;
+    return nullptr;
 
   int32_t num_entries, used_count;
   LinkSalt salt;
   if (!ReadFileHeader(file_closer.get(), &num_entries, &used_count, salt))
-    return false;  // Header isn't valid.
+    return nullptr;  // Header isn't valid.
 
   // Allocate and read the table.
   base::MappedReadOnlyRegion hash_table_memory;
   if (!CreateApartURLTable(num_entries, salt, &hash_table_memory))
-    return false;
+    return nullptr;
 
   if (!ReadFromFile(file_closer.get(), kFileHeaderSize,
                     GetHashTableFromMapping(hash_table_memory.mapping),
                     num_entries * sizeof(Fingerprint))) {
-    return false;
+    return nullptr;
   }
 
-  *load_from_file_result = new LoadFromFileResult(
-      std::move(file_closer), std::move(hash_table_memory), num_entries,
-      used_count, salt);
-  return true;
+  return std::make_unique<LoadFromFileResult>(std::move(file_closer),
+                                              std::move(hash_table_memory),
+                                              num_entries, used_count, salt);
 }
 
 void VisitedLinkWriter::OnTableLoadComplete(
-    bool success,
-    scoped_refptr<LoadFromFileResult> load_from_file_result) {
+    std::unique_ptr<LoadFromFileResult> load_from_file_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(persist_to_disk_);
   DCHECK(!table_builder_);
@@ -721,7 +706,7 @@ void VisitedLinkWriter::OnTableLoadComplete(
 
   table_is_loading_from_file_ = false;
 
-  if (!success) {
+  if (!load_from_file_result) {
     // This temporary sets are used only when table was loaded.
     added_since_load_.clear();
     deleted_since_load_.clear();
@@ -741,8 +726,6 @@ void VisitedLinkWriter::OnTableLoadComplete(
   added_since_rebuild_.clear();
   deleted_since_rebuild_.clear();
 
-  DCHECK(load_from_file_result);
-
   // Delete the previous table.
   DCHECK(mapped_table_memory_.region.IsValid());
   mapped_table_memory_ = base::MappedReadOnlyRegion();
@@ -750,8 +733,8 @@ void VisitedLinkWriter::OnTableLoadComplete(
   // Assign the open file.
   DCHECK(!scoped_file_holder_);
   DCHECK(load_from_file_result->file.get());
-  scoped_file_holder_ = std::make_unique<base::ScopedFILE>();
-  *scoped_file_holder_ = std::move(load_from_file_result->file);
+  scoped_file_holder_ = std::make_unique<base::ScopedFILE>(
+      std::move(load_from_file_result->file));
 
   // Assign the loaded table.
   DCHECK(load_from_file_result->hash_table_memory.region.IsValid() &&
