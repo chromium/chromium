@@ -825,6 +825,56 @@ TEST_F(IdentityDialogControllerTest, OnFlowCompletedNoActorLoginRequest) {
   controller->OnFlowCompleted(content::webid::FederatedLoginResult::kSuccess);
 }
 
+TEST_F(IdentityDialogControllerTest, OnConnectionStatusHeaderReceived) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+
+  GURL idp_url("https://idp.example");
+  url::Origin idp_origin = url::Origin::Create(idp_url);
+  std::string account_id = "account_id123";
+
+  // Success case: account_id matches.
+  {
+    base::MockCallback<OnFederatedResultReceivedCallback> result_callback;
+    EXPECT_CALL(result_callback,
+                Run(content::webid::FederatedLoginResult::kSuccess))
+        .Times(1);
+
+    FederatedActorLoginRequest::Set(web_contents(), idp_origin, account_id,
+                                    result_callback.Get());
+
+    controller->OnConnectionStatusHeaderReceived(account_id);
+  }
+
+  // Failure case: account_id does not match.
+  {
+    base::MockCallback<OnFederatedResultReceivedCallback> result_callback;
+    EXPECT_CALL(
+        result_callback,
+        Run(content::webid::FederatedLoginResult::kExpectedAccountNotPresent))
+        .Times(1);
+
+    FederatedActorLoginRequest::Set(web_contents(), idp_origin, account_id,
+                                    result_callback.Get());
+
+    controller->OnConnectionStatusHeaderReceived("wrong_account");
+  }
+
+  // Failure case: account_id is missing.
+  {
+    base::MockCallback<OnFederatedResultReceivedCallback> result_callback;
+    EXPECT_CALL(
+        result_callback,
+        Run(content::webid::FederatedLoginResult::kExpectedAccountNotPresent))
+        .Times(1);
+
+    FederatedActorLoginRequest::Set(web_contents(), idp_origin, account_id,
+                                    result_callback.Get());
+
+    controller->OnConnectionStatusHeaderReceived(std::nullopt);
+  }
+}
+
 TEST_F(IdentityDialogControllerTest, ActorLoginContinuationAndSuccess) {
   std::unique_ptr<IdentityDialogController> controller =
       std::make_unique<IdentityDialogController>(web_contents());

@@ -304,6 +304,10 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Closes the modal dialog.
   virtual void CloseModalDialog();
 
+  // Handles the "Federation-RP-Connection-Status" header.
+  virtual void OnConnectionStatusHeaderReceived(
+      const std::optional<std::string>& account_id);
+
   // Informs the controller that the flow has completed.
   virtual void OnFlowCompleted(webid::FederatedLoginResult result);
 

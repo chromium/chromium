@@ -135,6 +135,8 @@ class IdentityDialogController
       blink::mojom::RpMode rp_mode,
       DismissCallback dismiss_callback) override;
   void CloseModalDialog() override;
+  void OnConnectionStatusHeaderReceived(
+      const std::optional<std::string>& account_id) override;
   void OnFlowCompleted(content::webid::FederatedLoginResult result) override;
   content::WebContents* GetRpWebContents() override;
   void RequestIdPRegistrationPermision(

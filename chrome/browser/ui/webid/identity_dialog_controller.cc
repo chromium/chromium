@@ -337,6 +337,22 @@ void IdentityDialogController::OnAccountsDisplayed() {
   std::move(on_accounts_displayed_).Run();
 }
 
+void IdentityDialogController::OnConnectionStatusHeaderReceived(
+    const std::optional<std::string>& account_id) {
+  FederatedActorLoginRequest* actor_login_request =
+      FederatedActorLoginRequest::Get(rp_web_contents_);
+  if (!actor_login_request) {
+    return;
+  }
+
+  if (account_id && *account_id == actor_login_request->account_id()) {
+    OnFlowCompleted(content::webid::FederatedLoginResult::kSuccess);
+  } else {
+    OnFlowCompleted(
+        content::webid::FederatedLoginResult::kExpectedAccountNotPresent);
+  }
+}
+
 void IdentityDialogController::OnFlowCompleted(
     content::webid::FederatedLoginResult result) {
   // OnFlowCompleted() may be invoked while the WebContents is being destroyed,

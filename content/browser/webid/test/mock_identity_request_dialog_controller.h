@@ -84,6 +84,10 @@ class MockIdentityRequestDialogController
               (override));
   MOCK_METHOD(void, CloseModalDialog, (), (override));
   MOCK_METHOD(void,
+              OnConnectionStatusHeaderReceived,
+              (const std::optional<std::string>&),
+              (override));
+  MOCK_METHOD(void,
               OnFlowCompleted,
               (content::webid::FederatedLoginResult),
               (override));

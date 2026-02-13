@@ -13,9 +13,13 @@
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/webid_utils.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/webid/identity_request_dialog_controller.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -45,13 +49,22 @@ NavigationInterceptor::NavigationInterceptor(
               [](content::RenderFrameHost* rfh) -> RequestService* {
                 return webid::RequestService::GetOrCreateForCurrentDocument(
                     rfh);
+              }),
+          base::BindRepeating(
+              [](content::WebContents* web_contents)
+                  -> std::unique_ptr<IdentityRequestDialogController> {
+                return GetContentClient()
+                    ->browser()
+                    ->CreateIdentityRequestDialogController(web_contents);
               })) {}
 
 NavigationInterceptor::NavigationInterceptor(
     NavigationThrottleRegistry& registry,
-    RequestServiceBuilder service_builder)
+    RequestServiceBuilder service_builder,
+    ControllerBuilder controller_builder)
     : content::NavigationThrottle(registry),
-      service_builder_(std::move(service_builder)) {}
+      service_builder_(std::move(service_builder)),
+      controller_builder_(std::move(controller_builder)) {}
 
 NavigationInterceptor::~NavigationInterceptor() = default;
 
@@ -102,10 +115,13 @@ NavigationInterceptor::ProcessRequest() {
     return PROCEED;
   }
 
-  std::optional<std::string> header =
+  std::optional<std::string> intercept_header =
       headers->GetNormalizedHeader("FedCM-Intercept-Navigation");
 
-  if (!header) {
+  std::optional<std::string> connection_status_header =
+      headers->GetNormalizedHeader("Federation-RP-Connection-Status");
+
+  if (!intercept_header && !connection_status_header) {
     return PROCEED;
   }
 
@@ -125,9 +141,19 @@ NavigationInterceptor::ProcessRequest() {
     return PROCEED;
   }
 
-  data_decoder::DataDecoder::ParseStructuredHeaderDictionaryIsolated(
-      *header, base::BindOnce(&NavigationInterceptor::OnHeaderParsed,
-                              weak_ptr_factory_.GetWeakPtr()));
+  if (connection_status_header) {
+    data_decoder::DataDecoder::ParseStructuredHeaderDictionaryIsolated(
+        *connection_status_header,
+        base::BindOnce(&NavigationInterceptor::OnConnectionStatusHeaderParsed,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else if (intercept_header) {
+    data_decoder::DataDecoder::ParseStructuredHeaderDictionaryIsolated(
+        *intercept_header,
+        base::BindOnce(&NavigationInterceptor::OnHeaderParsed,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    return PROCEED;
+  }
 
   // TODO(http://crbug.com/455614294): Ideally, we'd like to cancel the
   // navigation early on so that the spinner stops. However, we need to
@@ -135,6 +161,47 @@ NavigationInterceptor::ProcessRequest() {
   // async header parsing and token request complete.
 
   return DEFER;
+}
+
+void NavigationInterceptor::OnConnectionStatusHeaderParsed(
+    base::expected<net::structured_headers::Dictionary, std::string> result) {
+  content::RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
+  if (!rfh) {
+    // The document is no longer valid, likely because the target frame has
+    // navigated in the meantime.
+    // Resume the deferred navigation without cancelling.
+    Resume();
+    return;
+  }
+
+  if (!result.has_value()) {
+    // The header was available, but malformed.
+    // Cancel the navigation because it is a developer error.
+    CancelDeferredNavigation(CANCEL);
+    return;
+  }
+
+  auto it = result->find("status");
+  if (it != result->end() && it->second.member.size() == 1 &&
+      it->second.member[0].item.is_string() &&
+      it->second.member[0].item.GetString() == "connected") {
+    std::optional<std::string> account_id;
+    auto account_id_it = result->find("account_id");
+    if (account_id_it != result->end() &&
+        account_id_it->second.member.size() == 1 &&
+        account_id_it->second.member[0].item.is_string()) {
+      account_id = account_id_it->second.member[0].item.GetString();
+    }
+
+    std::unique_ptr<IdentityRequestDialogController> controller =
+        controller_builder_.Run(WebContents::FromRenderFrameHost(rfh));
+    if (controller) {
+      controller->OnConnectionStatusHeaderReceived(account_id);
+    }
+  }
+
+  // Resume the deferred navigation without cancelling.
+  Resume();
 }
 
 void NavigationInterceptor::OnHeaderParsed(
