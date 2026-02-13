@@ -10,9 +10,11 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -155,6 +157,49 @@ TEST_F(CredentialManagerDialogControllerTest, AccountChooserClosed) {
 
   EXPECT_CALL(ui_controller_mock(), OnDialogHidden());
   controller().OnCloseDialog();
+}
+
+TEST_F(CredentialManagerDialogControllerTest, SortsCredentials) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kCredentialManagementUnifiedUi};
+
+  auto prompt = std::make_unique<StrictMock<MockPasswordPrompt>>();
+  auto* prompt_ptr = prompt.get();
+
+  password_manager::PasswordForm form_a = GetLocalForm();
+  form_a.username_value = u"one_day_ago";
+  form_a.date_last_used = base::Time::Now() - base::Days(1);
+
+  password_manager::PasswordForm form_b = GetLocalForm();
+  form_b.username_value = u"one_hour_ago";
+  form_b.date_last_used = base::Time::Now() - base::Hours(1);
+
+  base::Time one_week_ago = base::Time::Now() - base::Days(7);
+  password_manager::PasswordForm form_c = GetLocalForm();
+  form_c.username_value = u"one_week_ago_alphabetically_last";
+  form_c.date_last_used = one_week_ago;
+
+  password_manager::PasswordForm form_d = GetLocalForm();
+  form_d.username_value = u"one_week_ago_alphabetically_first";
+  form_d.date_last_used = one_week_ago;
+
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> locals;
+  locals.push_back(std::make_unique<password_manager::PasswordForm>(form_a));
+  locals.push_back(std::make_unique<password_manager::PasswordForm>(form_b));
+  locals.push_back(std::make_unique<password_manager::PasswordForm>(form_c));
+  locals.push_back(std::make_unique<password_manager::PasswordForm>(form_d));
+
+  EXPECT_CALL(*prompt_ptr, ShowAccountChooser());
+  controller().ShowAccountChooser(std::move(prompt), std::move(locals));
+
+  const auto& forms = controller().GetLocalForms();
+  ASSERT_EQ(4u, forms.size());
+  EXPECT_EQ(u"one_hour_ago", forms[0]->username_value);
+  EXPECT_EQ(u"one_day_ago", forms[1]->username_value);
+  EXPECT_EQ(u"one_week_ago_alphabetically_first", forms[2]->username_value);
+  EXPECT_EQ(u"one_week_ago_alphabetically_last", forms[3]->username_value);
+
+  EXPECT_CALL(*prompt_ptr, ControllerGone());
 }
 
 TEST_F(CredentialManagerDialogControllerTest, AutoSigninPromo) {

@@ -11,8 +11,10 @@
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/webauthn/credential_sorter.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -46,6 +48,24 @@ std::u16string GetAuthenticationMessage(PasswordsModelDelegate* delegate) {
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
+struct PasswordFormTraits {
+  static std::u16string GetAccountName(
+      const std::unique_ptr<password_manager::PasswordForm>& form) {
+    return form->username_value;
+  }
+
+  static webauthn::sorting::SortableCredentialType GetSortableCredentialType(
+      const std::unique_ptr<password_manager::PasswordForm>& form) {
+    // For sorting purposes, consider federated credentials as passwords too.
+    return webauthn::sorting::SortableCredentialType::kPassword;
+  }
+
+  static base::Time GetLastUsedTime(
+      const std::unique_ptr<password_manager::PasswordForm>& form) {
+    return form->date_last_used;
+  }
+};
+
 }  // namespace
 
 CredentialManagerDialogControllerImpl::CredentialManagerDialogControllerImpl(
@@ -67,7 +87,13 @@ void CredentialManagerDialogControllerImpl::ShowAccountChooser(
   DCHECK(!account_chooser_dialog_);
   DCHECK(!autosignin_dialog_);
   DCHECK(dialog);
-  local_credentials_.swap(locals);
+  local_credentials_ = std::move(locals);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kCredentialManagementUnifiedUi)) {
+    local_credentials_ = webauthn::sorting::SortCredentials<
+        std::unique_ptr<password_manager::PasswordForm>, PasswordFormTraits>(
+        std::move(local_credentials_));
+  }
   account_chooser_dialog_ = std::move(dialog);
   account_chooser_dialog_->ShowAccountChooser();
 }
