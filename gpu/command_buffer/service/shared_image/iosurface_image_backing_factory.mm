@@ -53,8 +53,6 @@ bool IsFormatSupported(viz::SharedImageFormat format,
       format == viz::SinglePlaneFormat::kRGBA_4444 ||
       format == viz::SinglePlaneFormat::kBGR_565 ||
       format == viz::SinglePlaneFormat::kRGBA_F16 ||
-      // BGRA_1010102 is always supported on Apple but RGBA_1010102 is not.
-      format == viz::SinglePlaneFormat::kBGRA_1010102 ||
       // Support R_F16 for SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR.
       format == viz::SinglePlaneFormat::kR_F16 ||
       format == viz::MultiPlaneFormat::kNV12 ||
@@ -77,6 +75,15 @@ bool IsFormatSupported(viz::SharedImageFormat format,
 
   if (format == viz::SinglePlaneFormat::kBGRX_8888) {
     return flags.ext_texture_format_bgra8888 && !flags.disable_mac_swangle_rgbx;
+  }
+
+  // BGRA_1010102 is always supported on Apple but RGBA_1010102 is not.
+  if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+    return flags.chromium_image_ar30;
+  }
+
+  if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
+    return flags.chromium_image_ab30;
   }
 
   if (format == viz::SinglePlaneFormat::kR_8 ||
@@ -328,6 +335,15 @@ bool IOSurfaceImageBackingFactory::IsSupported(
     return false;
   }
 
+  if (!IsFormatSupported(format, feature_info_->feature_flags())) {
+    return false;
+  }
+
+  // Creation from pixel data is not supported for multiplanar formats.
+  if (format.is_multi_plane() && !pixel_data.empty()) {
+    return false;
+  }
+
   // On macOS, there is no separate interop factory. Any GpuMemoryBuffer-backed
   // image can be used with both OpenGL and Metal
 
@@ -363,19 +379,6 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
-  if (!IsFormatSupported(format, feature_info_->feature_flags())) {
-    LOG(ERROR) << "CreateSharedImage: Unable to create SharedImage with format "
-               << format.ToString();
-    return nullptr;
-  }
-
-  if (format.is_multi_plane() && !pixel_data.empty()) {
-    LOG(ERROR) << "CreateSharedImage: Creation from pixel data is not "
-                  "supported for multiplanar format "
-               << format.ToString();
-    return nullptr;
-  }
-
   if (!IsValidSize(size, max_texture_size_) ||
       !IsPixelDataValid(format, size, pixel_data)) {
     return nullptr;
@@ -441,12 +444,6 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     std::optional<gfx::BufferUsage> buffer_usage) {
   if (handle.type != gfx::IO_SURFACE_BUFFER || !handle.io_surface()) {
     LOG(ERROR) << "Invalid IOSurface GpuMemoryBufferHandle.";
-    return nullptr;
-  }
-
-  if (!IsFormatSupported(format, feature_info_->feature_flags())) {
-    LOG(ERROR) << "CreateSharedImage: Unable to create SharedImage with format "
-               << format.ToString();
     return nullptr;
   }
 
