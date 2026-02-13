@@ -72,7 +72,7 @@ void PopupTracker::WebContentsDestroyed() {
       visibility_tracker_.GetForegroundDuration();
   if (opener_source_id_ != ukm::kInvalidSourceId) {
     const int kMaxInteractions = 100;
-    const int kMaxSubcatagoryInteractions = 50;
+    const int kMaxSubcategoryInteractions = 50;
     ukm::builders::Popup_Closed(opener_source_id_)
         .SetEngagementTime(ukm::GetExponentialBucketMinForUserTiming(
             total_foreground_duration.InMilliseconds()))
@@ -83,9 +83,9 @@ void PopupTracker::WebContentsDestroyed() {
         .SetNumInteractions(
             CappedUserInteractions(num_interactions_, kMaxInteractions))
         .SetNumActivationInteractions(CappedUserInteractions(
-            num_activation_events_, kMaxSubcatagoryInteractions))
+            num_activation_events_, kMaxSubcategoryInteractions))
         .SetNumGestureScrollBeginInteractions(CappedUserInteractions(
-            num_gesture_scroll_begin_events_, kMaxSubcatagoryInteractions))
+            num_gesture_scroll_begin_events_, kMaxSubcategoryInteractions))
         .SetRedirectCount(num_redirects_)
         .Record(ukm::UkmRecorder::Get());
   }
