@@ -99,7 +99,8 @@ public class EdgeToEdgeLayoutViewTest {
                                     null,
                                     /* useBackupNavbarInsetsEnabled= */ true,
                                     /* useBackupNavbarInsetsFieldTrial= */ mUseBackupNavbarInsetsFieldTrial,
-                                    /* canUseMandatoryGesturesInsets= */ true);
+                                    /* canUseMandatoryGesturesInsets= */ true,
+                                    /* enableExtraEdgeToEdgeLogging= */ false);
 
                     mContentView = new FrameLayout(sActivity, null);
                     sActivity.setContentView(

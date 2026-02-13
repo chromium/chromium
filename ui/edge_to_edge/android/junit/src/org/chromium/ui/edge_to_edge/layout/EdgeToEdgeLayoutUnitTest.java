@@ -1118,7 +1118,8 @@ public class EdgeToEdgeLayoutUnitTest {
                         insetObserver,
                         /* useBackupNavbarInsetsEnabled= */ useBackupNavbarInsets,
                         /* useBackupNavbarInsetsFieldTrial= */ mUseBackupNavbarFieldTrial,
-                        /* canUseMandatoryGesturesInsets= */ true);
+                        /* canUseMandatoryGesturesInsets= */ true,
+                        /* enableExtraEdgeToEdgeLogging= */ false);
         mEdgeToEdgeLayout =
                 (EdgeToEdgeBaseLayout)
                         mEdgeToEdgeLayoutCoordinator.wrapContentView(mOriginalContentView);

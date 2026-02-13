@@ -464,7 +464,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                             EdgeToEdgeUtils.isUseBackupNavbarInsetsEnabled(),
                             EdgeToEdgeFieldTrialImpl.getBackupNavbarInsetsOverrides(),
                             ChromeFeatureList.sEdgeToEdgeUseBackupNavbarInsetsUseGestures
-                                    .getValue());
+                                    .getValue(),
+                            ChromeFeatureList.sEdgeToEdgeExtraLogs.isEnabled());
         }
         return mEdgeToEdgeLayoutCoordinator;
     }

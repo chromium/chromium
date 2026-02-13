@@ -52,6 +52,7 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     private final boolean mUseBackupNavbarInsetsEnabled;
     private final @Nullable EdgeToEdgeFieldTrial mUseBackupNavbarInsetsFieldTrial;
     private final boolean mCanUseMandatoryGesturesInsets;
+    private final boolean mEnableExtraEdgeToEdgeLogging;
 
     /**
      * Construct the coordinator used to handle padding and color for the Edge to edge layout. If an
@@ -72,12 +73,14 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
             @Nullable InsetObserver insetObserver,
             boolean useBackupNavbarInsetsEnabled,
             @Nullable EdgeToEdgeFieldTrial useBackupNavbarInsetsFieldTrial,
-            boolean canUseMandatoryGesturesInsets) {
+            boolean canUseMandatoryGesturesInsets,
+            boolean enableExtraEdgeToEdgeLogging) {
         mContext = context;
         mInsetObserver = insetObserver;
         mUseBackupNavbarInsetsEnabled = useBackupNavbarInsetsEnabled;
         mUseBackupNavbarInsetsFieldTrial = useBackupNavbarInsetsFieldTrial;
         mCanUseMandatoryGesturesInsets = canUseMandatoryGesturesInsets;
+        mEnableExtraEdgeToEdgeLogging = enableExtraEdgeToEdgeLogging;
     }
 
     /**
@@ -96,7 +99,8 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
                 insetObserver,
                 /* useBackupNavbarInsetsEnabled= */ false,
                 /* useBackupNavbarInsetsFieldTrial= */ null,
-                /* canUseMandatoryGesturesInsets= */ false);
+                /* canUseMandatoryGesturesInsets= */ false,
+                /* enableExtraEdgeToEdgeLogging= */ false);
     }
 
     /**
@@ -251,6 +255,7 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
                 (EdgeToEdgeBaseLayout)
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.edge_to_edge_base_layout, null, false);
+        mView.setEnableExtraEdgeToEdgeLogging(mEnableExtraEdgeToEdgeLogging);
         if (mInsetObserver != null) {
             mInsetObserver.addInsetsConsumer(
                     this, InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR);

@@ -18,6 +18,7 @@ import androidx.annotation.ColorInt;
 import androidx.core.graphics.Insets;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.UiSwitches;
@@ -35,6 +36,7 @@ import org.chromium.ui.insets.WindowInsetsUtils;
  */
 @NullMarked
 public class EdgeToEdgeBaseLayout extends FrameLayout {
+    private static final String TAG = "EdgeToEdgeBaseLayout";
     private static final int DEFAULT_NAV_BAR_DIVIDER_SIZE = 1;
     private static final int DISPLAY_CUTOUT_PAINT_COLOR = Color.BLACK;
     private static final int DEBUG_PAINT_COLOR = Color.argb(100, 200, 0, 200);
@@ -56,6 +58,8 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
     private final Paint mNavBarPaint = new Paint();
     private final Paint mNavBarDividerPaint = new Paint();
     private final Paint mDisplayCutoutPaint = new Paint();
+
+    private boolean mEnableExtraEdgeToEdgeLogging;
 
     private Insets mStatusBarInsets = Insets.NONE;
     private Insets mNavigationBarInsets = Insets.NONE;
@@ -97,7 +101,20 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
             colorRectOnDraw(canvas, mNavBarRectDebug, mDebugPaint);
         }
 
+        if (mEnableExtraEdgeToEdgeLogging) emitExtraEdgeToEdgeLogs();
+
         super.onDraw(canvas);
+    }
+
+    private void emitExtraEdgeToEdgeLogs() {
+        Log.i(TAG, "Layout Rects -----");
+        Log.i(TAG, "statusBar: " + mStatusBarRect);
+        Log.i(TAG, "captionBar: " + mCaptionBarRect);
+        Log.i(TAG, "navigationBar: " + mNavBarRect);
+        Log.i(TAG, "cutoutRectTop: " + mCutoutRectTop);
+        Log.i(TAG, "cutoutRectLeft: " + mCutoutRectLeft);
+        Log.i(TAG, "cutoutRectRight: " + mCutoutRectRight);
+        Log.i(TAG, "-----");
     }
 
     @Override
@@ -159,6 +176,10 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
             mNavBarRectDebug.set(mNavBarRect);
             mNavBarRectDebug.inset(mNavBarRect.width() / 4, 0);
         }
+    }
+
+    void setEnableExtraEdgeToEdgeLogging(boolean enableExtraEdgeToEdgeLogging) {
+        mEnableExtraEdgeToEdgeLogging = enableExtraEdgeToEdgeLogging;
     }
 
     void setStatusBarInsets(Insets insets) {
