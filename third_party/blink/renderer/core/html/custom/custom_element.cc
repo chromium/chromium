@@ -325,10 +325,15 @@ void CustomElement::TryToUpgrade(Element& element) {
   if (CustomElementDefinition* definition =
           registry->DefinitionFor(CustomElementDescriptor(
               is_value.IsNull() ? element.localName() : is_value,
-              element.localName())))
+              element.localName()))) {
     definition->EnqueueUpgradeReaction(element);
-  else
+  } else {
+    // Ensure the element's document is in the registry's associated document
+    // set so that CollectCandidates can find these candidates later when a
+    // definition is registered.
+    registry->AssociatedWith(element.GetDocument());
     registry->AddCandidate(element);
+  }
 }
 
 }  // namespace blink

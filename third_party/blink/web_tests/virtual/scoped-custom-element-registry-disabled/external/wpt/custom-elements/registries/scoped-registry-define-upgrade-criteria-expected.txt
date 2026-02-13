@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] Adding definition to scoped registry should upgrade nodes associated with the registry.
+  Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] Adding definition to global registry should not affect shadow roots using scoped registry
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] Adding definition to scoped registry should affect all associated shadow roots
