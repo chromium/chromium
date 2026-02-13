@@ -29,7 +29,7 @@ class ClientChannel {
     virtual ~Observer();
     virtual void OnDisconnected() = 0;
     virtual void OnMessageReceived(const std::string& payload) = 0;
-    virtual void OnNearbyConnectionStateChagned(
+    virtual void OnNearbyConnectionStateChanged(
         mojom::NearbyConnectionStep step,
         mojom::NearbyConnectionStepResult result) {}
   };

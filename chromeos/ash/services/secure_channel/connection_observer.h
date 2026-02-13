@@ -41,7 +41,7 @@ class NearbyConnectionObserver {
  public:
   virtual ~NearbyConnectionObserver() {}
 
-  virtual void OnNearbyConnectionStateChagned(
+  virtual void OnNearbyConnectionStateChanged(
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result) {}
 };

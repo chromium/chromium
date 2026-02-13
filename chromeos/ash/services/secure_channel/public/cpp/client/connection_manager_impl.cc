@@ -206,7 +206,7 @@ void ConnectionManagerImpl::OnMessageReceived(const std::string& payload) {
   NotifyMessageReceived(payload);
 }
 
-void ConnectionManagerImpl::OnNearbyConnectionStateChagned(
+void ConnectionManagerImpl::OnNearbyConnectionStateChanged(
     mojom::NearbyConnectionStep step,
     mojom::NearbyConnectionStepResult result) {
   if (secure_channel_structured_metrics_logger_) {

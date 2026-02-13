@@ -146,7 +146,7 @@ class SecureChannel : public ConnectionObserver,
                        bool success) override;
 
   // NearbyConnectionObserver:
-  void OnNearbyConnectionStateChagned(
+  void OnNearbyConnectionStateChanged(
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result) override;
 

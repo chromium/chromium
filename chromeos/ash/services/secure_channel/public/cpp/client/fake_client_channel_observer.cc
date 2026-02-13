@@ -18,7 +18,7 @@ void FakeClientChannelObserver::OnMessageReceived(const std::string& payload) {
   received_messages_.push_back(payload);
 }
 
-void FakeClientChannelObserver::OnNearbyConnectionStateChagned(
+void FakeClientChannelObserver::OnNearbyConnectionStateChanged(
     mojom::NearbyConnectionStep step,
     mojom::NearbyConnectionStepResult result) {
   nearby_connection_step_ = step;

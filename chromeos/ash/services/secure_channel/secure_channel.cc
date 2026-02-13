@@ -238,7 +238,7 @@ void SecureChannel::OnSendCompleted(const Connection& connection,
   Disconnect();
 }
 
-void SecureChannel::OnNearbyConnectionStateChagned(
+void SecureChannel::OnNearbyConnectionStateChanged(
     mojom::NearbyConnectionStep step,
     mojom::NearbyConnectionStepResult result) {
   for (auto& observer : observer_list_) {

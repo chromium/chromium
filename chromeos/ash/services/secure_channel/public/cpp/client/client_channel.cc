@@ -78,7 +78,7 @@ void ClientChannel::NotifyNearbyConnectionStateChanged(
     mojom::NearbyConnectionStep step,
     mojom::NearbyConnectionStepResult result) {
   for (auto& observer : observer_list_) {
-    observer.OnNearbyConnectionStateChagned(step, result);
+    observer.OnNearbyConnectionStateChanged(step, result);
   }
 }
 

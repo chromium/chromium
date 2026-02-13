@@ -103,7 +103,7 @@ void Connection::SetNearbyConnectionSubStatus(
     mojom::NearbyConnectionStep step,
     mojom::NearbyConnectionStepResult result) {
   for (auto& observer : nearby_connection_state_observers_) {
-    observer.OnNearbyConnectionStateChagned(step, result);
+    observer.OnNearbyConnectionStateChanged(step, result);
   }
 }
 

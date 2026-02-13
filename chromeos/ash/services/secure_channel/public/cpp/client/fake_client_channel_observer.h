@@ -23,7 +23,7 @@ class FakeClientChannelObserver : public ClientChannel::Observer {
 
   // ClientChannel::Observer:
   void OnDisconnected() override;
-  void OnNearbyConnectionStateChagned(
+  void OnNearbyConnectionStateChanged(
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result) override;
 
