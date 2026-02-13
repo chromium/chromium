@@ -39,6 +39,12 @@ namespace content {
 // This is enforced at several points in the navigation flow.
 BASE_FEATURE(kCheckDocumentSequenceNumber, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, we reset the browsing instance swap result on same-document
+// navigations. This prevents stale "no swap" reasons from persisting and
+// causing inconsistencies on future BFCache restores.
+BASE_FEATURE(kResetBrowsingInstanceSwapResultOnSameDocument,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 // Overridden time for unit tests. Should be accessed only from the main thread.
@@ -141,8 +147,22 @@ void BackForwardCacheMetrics::DidCommitNavigation(
     bool back_forward_cache_allowed) {
   // Back-forward cache in enabled only for primary frame trees, so we need to
   // record metrics only for primary main frame navigations.
-  if (!navigation->IsInPrimaryMainFrame() || navigation->IsSameDocument())
+  if (!navigation->IsInPrimaryMainFrame()) {
     return;
+  }
+
+  // Same-document navigations usually return early to skip metric recording,
+  // but this bypasses the state cleanup at the end of the function, allowing
+  // stale state (e.g., from session restores) to persist.
+  //
+  // To ensure that the metrics object is in a clean state for the next time
+  // the page is navigated away from, we proceed to the cleanup logic below
+  // when the feature is enabled.
+  if (navigation->IsSameDocument() &&
+      !base::FeatureList::IsEnabled(
+          kResetBrowsingInstanceSwapResultOnSameDocument)) {
+    return;
+  }
 
   // Record metrics for history navigation, if applicable.
   if (IsCrossDocumentMainFrameHistoryNavigation(navigation)) {

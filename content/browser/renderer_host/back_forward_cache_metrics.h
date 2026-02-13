@@ -33,6 +33,9 @@ namespace content {
 // TODO(https://crbug.com/40229455): Remove this once established to be safe.
 BASE_DECLARE_FEATURE(kCheckDocumentSequenceNumber);
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kResetBrowsingInstanceSwapResultOnSameDocument);
+
 class BackForwardCacheCanStoreDocumentResult;
 class BackForwardCacheCanStoreTreeResult;
 class NavigationEntryImpl;

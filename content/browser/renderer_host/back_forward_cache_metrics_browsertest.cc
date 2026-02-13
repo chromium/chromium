@@ -636,6 +636,98 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id4));
 }
 
+class BackForwardCacheMetricsSameDocumentBrowserTest
+    : public BackForwardCacheMetricsBrowserTest {
+ public:
+  BackForwardCacheMetricsSameDocumentBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kResetBrowsingInstanceSwapResultOnSameDocument);
+  }
+
+  class BackForwardCacheWebContentsDelegate : public WebContentsDelegate {
+   public:
+    bool IsBackForwardCacheSupported(WebContents& web_contents) override {
+      return true;
+    }
+  };
+
+  BackForwardCacheWebContentsDelegate web_contents_delegate_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackForwardCacheMetricsSameDocumentBrowserTest,
+                         testing::ValuesIn({BackForwardCacheStatus::kDisabled,
+                                            BackForwardCacheStatus::kEnabled}),
+                         BackForwardCacheMetricsBrowserTest::DescribeParams);
+
+// Verifies that stale "no swap" reasons (e.g., from session restore) are
+// cleared during same-document navigations. This prevents a crash (DCHECK
+// failure) when the page is subsequently restored from BFCache. This test would
+// cause a crash at the last navigation if the feature is disabled.
+IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsSameDocumentBrowserTest,
+                       SessionRestoreAndSameDocumentNavigation) {
+  if (!IsBackForwardCacheEnabled()) {
+    return;
+  }
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_a_foo(embedded_test_server()->GetURL("a.com", "/title1.html#foo"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // Setup history: A -> A#foo -> B
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a_foo));
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  std::unique_ptr<WebContents> new_tab = shell()->web_contents()->Clone();
+  WebContentsImpl* new_tab_impl = static_cast<WebContentsImpl*>(new_tab.get());
+  WebContentsObserver::Observe(new_tab.get());
+  NavigationControllerImpl& new_controller = new_tab_impl->GetController();
+
+  new_tab->SetDelegate(&web_contents_delegate_);
+
+  // Load the duplicated tab (B is displayed)
+  {
+    TestNavigationObserver clone_observer(new_tab.get());
+    new_controller.LoadIfNecessary();
+    clone_observer.Wait();
+  }
+  // Go back to A#foo
+  {
+    TestNavigationObserver observer(new_tab.get());
+    new_controller.GoBack();
+    observer.Wait();
+  }
+  // Go back to A, which does not regard as a same-document navigation, and
+  // records the not-restored reason.
+  {
+    TestNavigationObserver observer(new_tab.get());
+    new_controller.GoBack();
+    observer.Wait();
+  }
+  // Go forward to A#foo, which is a same-document navigation, will clear the
+  // not-restored reason.
+  {
+    TestNavigationObserver observer(new_tab.get());
+    new_controller.GoForward();
+    observer.Wait();
+  }
+  // Go forward to B, which is restored from BFCache.
+  {
+    TestNavigationObserver observer(new_tab.get());
+    new_controller.GoForward();
+    observer.Wait();
+  }
+  // Go back to A#foo, which is restored from BFCache.
+  {
+    TestNavigationObserver observer(new_tab.get());
+    new_controller.GoBack();
+    observer.Wait();
+  }
+}
+
 class RecordBackForwardCacheMetricsWithoutEnabling
     : public BackForwardCacheMetricsBrowserTestBase {
  public:
