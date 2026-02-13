@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutIFrame IFRAME id='iframe' class='composited'",
+      "name": "LayoutIFrame (relayout-boundary) IFRAME id='iframe' class='composited'",
       "position": [-30, -30],
       "bounds": [390, 240],
       "transform": 1
@@ -20,7 +20,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
+      "name": "LayoutBlockFlow (relayout-boundary) DIV id='iframe-content' class='box'",
       "bounds": [210, 210],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",

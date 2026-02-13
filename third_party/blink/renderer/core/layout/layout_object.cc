@@ -2182,6 +2182,9 @@ String LayoutObject::DecoratedName() const {
   if (IsMulticolContainer()) {
     attributes.push_back("multicol");
   }
+  if (IsRelayoutBoundary()) {
+    attributes.push_back("relayout-boundary");
+  }
   if (!attributes.empty()) {
     name.Append(" (");
     name.Append(attributes[0]);

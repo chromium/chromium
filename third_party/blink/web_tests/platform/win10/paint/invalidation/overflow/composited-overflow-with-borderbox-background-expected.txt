@@ -10,7 +10,7 @@
       ]
     },
     {
-      "name": "LayoutBlockFlow DIV id='scroller'",
+      "name": "LayoutBlockFlow (relayout-boundary) DIV id='scroller'",
       "position": [10, 10],
       "bounds": [185, 185],
       "drawsContent": false,
@@ -30,7 +30,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV id='scroller'",
+      "name": "LayoutBlockFlow (relayout-boundary) DIV id='scroller'",
       "position": [10, 10],
       "bounds": [185, 300],
       "contentsOpaque": true,

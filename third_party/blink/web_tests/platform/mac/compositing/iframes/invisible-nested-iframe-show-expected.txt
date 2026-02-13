@@ -13,7 +13,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
+      "name": "LayoutBlockFlow (relayout-boundary) DIV id='iframe-content' class='box'",
       "bounds": [210, 210],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
@@ -27,7 +27,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV class='box'",
+      "name": "LayoutBlockFlow (relayout-boundary) DIV class='box'",
       "bounds": [210, 210],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",

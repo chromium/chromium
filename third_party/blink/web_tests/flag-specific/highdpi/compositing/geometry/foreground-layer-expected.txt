@@ -29,7 +29,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
+      "name": "LayoutBlockFlow (relative positioned, inline, children-inline, relayout-boundary) DIV class='main box'",
       "position": [-45, -45],
       "bounds": [510, 510],
       "backgroundColor": "#FF0000",
@@ -42,7 +42,7 @@
       "transform": 6
     },
     {
-      "name": "LayoutBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
+      "name": "LayoutBlockFlow (relative positioned, inline, children-inline, relayout-boundary) DIV class='main box'",
       "position": [60, 60],
       "bounds": [300, 300],
       "contentsOpaque": true,

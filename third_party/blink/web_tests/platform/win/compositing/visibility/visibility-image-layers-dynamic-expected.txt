@@ -14,7 +14,7 @@ Initial
       "transform": 1
     },
     {
-      "name": "LayoutImage IMG class='visible composited box'",
+      "name": "LayoutImage (relayout-boundary) IMG class='visible composited box'",
       "bounds": [100, 100],
       "transform": 3
     },
@@ -73,12 +73,12 @@ After step 1
       "transform": 1
     },
     {
-      "name": "LayoutImage IMG class='hidden composited box'",
+      "name": "LayoutImage (relayout-boundary) IMG class='hidden composited box'",
       "bounds": [100, 100],
       "transform": 2
     },
     {
-      "name": "LayoutImage IMG class='visible composited box'",
+      "name": "LayoutImage (relayout-boundary) IMG class='visible composited box'",
       "bounds": [100, 100],
       "transform": 4
     },
@@ -147,7 +147,7 @@ After step 2
       "transform": 1
     },
     {
-      "name": "LayoutImage IMG class='hidden composited box'",
+      "name": "LayoutImage (relayout-boundary) IMG class='hidden composited box'",
       "bounds": [100, 100],
       "transform": 2
     },
@@ -158,12 +158,12 @@ After step 2
       "transform": 3
     },
     {
-      "name": "LayoutImage IMG class='composited box'",
+      "name": "LayoutImage (relayout-boundary) IMG class='composited box'",
       "bounds": [100, 100],
       "transform": 4
     },
     {
-      "name": "LayoutImage IMG class='visible composited box'",
+      "name": "LayoutImage (relayout-boundary) IMG class='visible composited box'",
       "bounds": [100, 100],
       "transform": 6
     },

@@ -7,21 +7,21 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutImage (positioned, block) IMG",
+      "name": "LayoutImage (positioned, block, relayout-boundary) IMG",
       "position": [10, 10],
       "bounds": [50, 50],
       "contentsOpaque": true,
       "backgroundColor": "#000000"
     },
     {
-      "name": "LayoutImage (positioned, block) IMG class='to-visible'",
+      "name": "LayoutImage (positioned, block, relayout-boundary) IMG class='to-visible'",
       "position": [500, 200],
       "bounds": [50, 50],
       "contentsOpaque": true,
       "backgroundColor": "#000000"
     },
     {
-      "name": "LayoutImage (positioned, block) IMG",
+      "name": "LayoutImage (positioned, block, relayout-boundary) IMG",
       "position": [10, 10],
       "bounds": [50, 50],
       "contentsOpaque": true,
