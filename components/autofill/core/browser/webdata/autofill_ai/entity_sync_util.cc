@@ -73,10 +73,6 @@ sync_pb::Any SerializeChromeValuablesMetadata(const EntityInstance& entity) {
       }
       case AttributeType::DataType::kCountry:
       case AttributeType::DataType::kDate:
-        // TODO(crbug.com/436174974): Implement serialization of those
-        // DataType's.
-        NOTIMPLEMENTED();
-        break;
       case AttributeType::DataType::kState:
       case AttributeType::DataType::kString:
         // Nothing to serialize here as the structure is trivial.
