@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_stack_view.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_item.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
-#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_view.h"
 #import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_item.h"
@@ -193,7 +192,6 @@
   SafetyCheckView* safetyCheckView =
       [[SafetyCheckView alloc] initWithState:state
                          contentViewDelegate:contentViewDelegate];
-  [state.safetyCheckConsumerSource addConsumer:safetyCheckView];
   return safetyCheckView;
 }
 

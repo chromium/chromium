@@ -105,7 +105,6 @@ using l10n_util::GetNSStringF;
   state.reusedPasswordsCount = self.reusedPasswordsCount;
   state.compromisedPasswordsCount = self.compromisedPasswordsCount;
   state.lastRunTime = self.lastRunTime;
-  state.safetyCheckConsumerSource = self.safetyCheckConsumerSource;
   state.audience = self.audience;
   state.itemType = self.itemType;
   return state;

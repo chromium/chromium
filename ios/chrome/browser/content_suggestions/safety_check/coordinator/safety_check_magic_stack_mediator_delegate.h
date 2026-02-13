@@ -8,6 +8,10 @@
 // Handles Safety Check Module events.
 @protocol SafetyCheckMagicStackMediatorDelegate
 
+// Signals that the SafetyCheckMagicStackMediator did reconfigure the existing
+// item.
+- (void)safetyCheckMagicStackMediatorDidReconfigureItem;
+
 // Indicates to receiver that the Safety Check module should be removed.
 - (void)removeSafetyCheckModule;
 

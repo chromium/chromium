@@ -21,9 +21,7 @@
 #import "ios/chrome/browser/content_suggestions/safety_check/model/safety_check_utils.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/public/safety_check_constants.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_audience.h"
-#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_item_type.h"
-#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_magic_stack_consumer.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
@@ -39,7 +37,6 @@
     ProfileStateObserver,
     PrefObserverDelegate,
     SafetyCheckAudience,
-    SafetyCheckConsumerSource,
     SafetyCheckManagerObserver>
 @end
 
@@ -61,8 +58,6 @@
   // Used by the Safety Check (Magic Stack) module for the current Safety Check
   // state.
   SafetyCheckState* _safetyCheckState;
-  // The Safety Check (Magic Stack) consumer.
-  id<SafetyCheckMagicStackConsumer> _safetyCheckConsumer;
 }
 
 - (instancetype)initWithSafetyCheckManager:
@@ -70,8 +65,7 @@
                                 localState:(PrefService*)localState
                                  userState:(PrefService*)userState
                               profileState:(ProfileState*)profileState {
-  self = [super init];
-  if (self) {
+  if ((self = [super init])) {
     _safetyCheckManager = safetyCheckManager;
     _localState = localState;
     _userState = userState;
@@ -129,10 +123,7 @@
 }
 
 - (void)disconnect {
-  _safetyCheckConsumer = nil;
-
   _safetyCheckState.audience = nil;
-  _safetyCheckState.safetyCheckConsumerSource = nil;
 
   _safetyCheckManagerObserver.reset();
 
@@ -161,13 +152,6 @@
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
   _safetyCheckState.audience = self;
-  _safetyCheckState.safetyCheckConsumerSource = self;
-}
-
-#pragma mark - SafetyCheckConsumerSource
-
-- (void)addConsumer:(id<SafetyCheckMagicStackConsumer>)consumer {
-  _safetyCheckConsumer = consumer;
 }
 
 #pragma mark - SafetyCheckAudience
@@ -212,11 +196,11 @@
     return;
   }
 
-  // Ensures the consumer gets the latest Safety Check state only when the
-  // running state changes; this avoids calling the consumer every time an
+  // Ensures the delegate gets the latest Safety Check state only when the
+  // running state changes; this avoids calling the delegate every time an
   // individual check state changes.
   _safetyCheckState.audience = self;
-  [_safetyCheckConsumer safetyCheckStateDidChange:_safetyCheckState];
+  [self safetyCheckStateDidChange:_safetyCheckState];
 }
 
 - (void)safetyCheckManagerWillShutdown {
@@ -345,7 +329,6 @@
                            ? RunningSafetyCheckState::kRunning
                            : RunningSafetyCheckState::kDefault;
   state.audience = self;
-  state.safetyCheckConsumerSource = self;
   state.itemType = [state isRunning] ? SafetyCheckItemType::kRunning
                                      : SafetyCheckItemType::kDefault;
 
@@ -385,6 +368,12 @@
 
   _userState->SetInteger(
       prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, issuesCount);
+}
+
+// Informs this mediator's delegate that the Safety Check state did change.
+- (void)safetyCheckStateDidChange:(SafetyCheckState*)state {
+  (void)state;
+  [self.delegate safetyCheckMagicStackMediatorDidReconfigureItem];
 }
 
 @end

@@ -15,7 +15,6 @@ enum class PasswordSafetyCheckState;
 enum class RunningSafetyCheckState;
 enum class SafeBrowsingSafetyCheckState;
 @protocol SafetyCheckAudience;
-@protocol SafetyCheckConsumerSource;
 enum class SafetyCheckItemType;
 enum class UpdateChromeSafetyCheckState;
 
@@ -46,10 +45,6 @@ enum class UpdateChromeSafetyCheckState;
 
 // The last run time of the Safety Check.
 @property(nonatomic, assign) std::optional<base::Time> lastRunTime;
-
-// Safety Check model.
-@property(nonatomic, strong) id<SafetyCheckConsumerSource>
-    safetyCheckConsumerSource;
 
 // The object that should handle user events.
 @property(nonatomic, weak) id<SafetyCheckAudience> audience;

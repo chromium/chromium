@@ -48,23 +48,12 @@
   [self createSubviews];
 }
 
-#pragma mark - SafetyCheckMagicStackConsumer
-
-- (void)safetyCheckStateDidChange:(SafetyCheckState*)state {
-  _state = state;
-  if (_contentView) {
-    [_contentView removeFromSuperview];
-  }
-  [self createSubviews];
-}
-
 #pragma mark - Private
 
 // Creates all views for the Safety Check (Magic Stack) module.
 - (void)createSubviews {
-  // Return if the subviews have already been created and added.
-  if (!(self.subviews.count == 0)) {
-    return;
+  if (_contentView) {
+    [_contentView removeFromSuperview];
   }
 
   self.translatesAutoresizingMaskIntoConstraints = NO;

@@ -9,8 +9,8 @@
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "ios/chrome/browser/content_suggestions/safety_check/coordinator/safety_check_magic_stack_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/model/safety_check_prefs.h"
-#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_magic_stack_consumer.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
@@ -31,7 +31,7 @@
 
 @interface SafetyCheckMagicStackMediator (Testing)
 
-- (void)addConsumer:(id<SafetyCheckMagicStackConsumer>)consumer;
+- (void)safetyCheckStateDidChange:(SafetyCheckState*)state;
 
 @end
 
@@ -57,18 +57,19 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
     safety_check_manager_ =
         IOSChromeSafetyCheckManagerFactory::GetForProfile(profile);
 
-    mediator_ = [[SafetyCheckMagicStackMediator alloc]
+    mediator_ = OCMPartialMock([[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:safety_check_manager_.get()
                         localState:local_pref_service_.get()
                          userState:pref_service_.get()
-                      profileState:nil];
+                      profileState:nil]);
 
-    safety_check_magic_stack_consumer_ =
-        OCMProtocolMock(@protocol(SafetyCheckMagicStackConsumer));
-    [mediator_ addConsumer:safety_check_magic_stack_consumer_];
+    safety_check_magic_stack_mediator_delegate_ =
+        OCMProtocolMock(@protocol(SafetyCheckMagicStackMediatorDelegate));
+    mediator_.delegate = safety_check_magic_stack_mediator_delegate_;
   }
 
   void TearDown() override {
+    safety_check_magic_stack_mediator_delegate_ = nil;
     [mediator_ disconnect];
     mediator_ = nil;
     safety_check_manager_->StopSafetyCheck();
@@ -82,13 +83,13 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
   raw_ptr<PrefService> pref_service_;
   raw_ptr<PrefService> local_pref_service_;
   SafetyCheckMagicStackMediator* mediator_;
-  id safety_check_magic_stack_consumer_;
+  id safety_check_magic_stack_mediator_delegate_;
   raw_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
 };
 
-// Tests the mediator's consumer is called with the correct Safety Check state
+// Tests the mediator's delegate is called with the correct Safety Check state
 // when the Safety Check is run.
-TEST_F(SafetyCheckMagicStackMediatorTest, CallsConsumerWithRunningState) {
+TEST_F(SafetyCheckMagicStackMediatorTest, CallsDelegateWithRunningState) {
   safety_check_manager_->StopSafetyCheck();
 
   SafetyCheckState* expected = [[SafetyCheckState alloc]
@@ -97,7 +98,7 @@ TEST_F(SafetyCheckMagicStackMediatorTest, CallsConsumerWithRunningState) {
               safeBrowsingState:SafeBrowsingSafetyCheckState::kSafe
                    runningState:RunningSafetyCheckState::kRunning];
 
-  OCMExpect([safety_check_magic_stack_consumer_
+  OCMExpect([mediator_
       safetyCheckStateDidChange:[OCMArg checkWithBlock:^BOOL(
                                             SafetyCheckState* state) {
         return state.updateChromeState == expected.updateChromeState &&
@@ -105,33 +106,36 @@ TEST_F(SafetyCheckMagicStackMediatorTest, CallsConsumerWithRunningState) {
                state.safeBrowsingState == expected.safeBrowsingState &&
                state.runningState == expected.runningState;
       }]]);
+  OCMExpect([safety_check_magic_stack_mediator_delegate_
+      safetyCheckMagicStackMediatorDidReconfigureItem]);
 
   safety_check_manager_->StartSafetyCheck();
 
-  EXPECT_OCMOCK_VERIFY(safety_check_magic_stack_consumer_);
+  EXPECT_OCMOCK_VERIFY((id)mediator_);
+  EXPECT_OCMOCK_VERIFY(safety_check_magic_stack_mediator_delegate_);
 }
 
-// Tests the mediator's consumer is not called when the password state changes,
-// i.e. consumer is called only when the running state changes.
+// Tests the mediator's delegate is not called when the password state changes,
+// i.e. delegate is informed only when the running state changes.
 TEST_F(SafetyCheckMagicStackMediatorTest,
-       DoesNotCallConsumerWithPasswordStateChange) {
-  OCMReject([safety_check_magic_stack_consumer_
-      safetyCheckStateDidChange:[OCMArg any]]);
+       DoesNotCallDelegateWithPasswordStateChange) {
+  OCMReject([safety_check_magic_stack_mediator_delegate_
+      safetyCheckMagicStackMediatorDidReconfigureItem]);
 
   safety_check_manager_->PasswordCheckStatusChanged(
       PasswordCheckState::kQuotaLimit);
 
-  EXPECT_OCMOCK_VERIFY(safety_check_magic_stack_consumer_);
+  EXPECT_OCMOCK_VERIFY(safety_check_magic_stack_mediator_delegate_);
 }
 
-// Tests the mediator's consumer is not called when the Insecure Credentials
-// list changes, i.e. consumer is called only when the running state changes.
+// Tests the mediator's delegate is not called when the Insecure Credentials
+// list changes, i.e. delegate is informed only when the running state changes.
 TEST_F(SafetyCheckMagicStackMediatorTest,
-       DoesNotCallConsumerWithInsecureCredentialsChange) {
-  OCMReject([safety_check_magic_stack_consumer_
-      safetyCheckStateDidChange:[OCMArg any]]);
+       DoesNotCallDelegateWithInsecureCredentialsChange) {
+  OCMReject([safety_check_magic_stack_mediator_delegate_
+      safetyCheckMagicStackMediatorDidReconfigureItem]);
 
   safety_check_manager_->InsecureCredentialsChanged();
 
-  EXPECT_OCMOCK_VERIFY(safety_check_magic_stack_consumer_);
+  EXPECT_OCMOCK_VERIFY(safety_check_magic_stack_mediator_delegate_);
 }

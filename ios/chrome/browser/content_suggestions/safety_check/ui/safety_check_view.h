@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_magic_stack_consumer.h"
-
 @class SafetyCheckState;
 @protocol MagicStackModuleContentViewDelegate;
 
@@ -16,7 +14,7 @@
 //
 // This view shows users the current state of the Update Chrome, Password, and
 // Safe Browsing check.
-@interface SafetyCheckView : UIView <SafetyCheckMagicStackConsumer>
+@interface SafetyCheckView : UIView
 
 // Initializes the SafetyCheckView with `state` and `contentViewDelegate`.
 // TODO(crbug.com/391617946): Refactor content view delegate and methods that

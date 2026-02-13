@@ -334,6 +334,14 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
 #pragma mark - SafetyCheckMagicStackMediatorDelegate
 
+- (void)safetyCheckMagicStackMediatorDidReconfigureItem {
+  if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_prefService)) {
+    return;
+  }
+  SafetyCheckState* state = _safetyCheckMediator.safetyCheckState;
+  [self.delegate magicStackRankingModel:self didReconfigureItem:state];
+}
+
 - (void)removeSafetyCheckModule {
   if (![self isMagicStackOrderReady]) {
     return;
