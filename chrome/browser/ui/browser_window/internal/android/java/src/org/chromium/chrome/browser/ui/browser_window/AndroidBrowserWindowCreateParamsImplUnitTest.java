@@ -45,7 +45,7 @@ public class AndroidBrowserWindowCreateParamsImplUnitTest {
         assertEquals(
                 "Initial bounds should match.",
                 new Rect(leftBound, topBound, width, height),
-                params.getInitialBounds());
+                params.getInitialBoundsInDp());
         assertEquals(
                 "Initial show state should match.", initialShowState, params.getInitialShowState());
     }

@@ -50,7 +50,7 @@ final class AndroidBrowserWindowCreateParamsImpl implements AndroidBrowserWindow
     }
 
     @Override
-    public Rect getInitialBounds() {
+    public Rect getInitialBoundsInDp() {
         return mInitialBounds;
     }
 

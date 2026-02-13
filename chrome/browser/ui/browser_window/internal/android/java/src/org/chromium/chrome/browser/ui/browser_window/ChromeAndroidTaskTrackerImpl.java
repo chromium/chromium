@@ -25,6 +25,8 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.PendingTaskInfo;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -134,7 +136,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
         // Launch the required Activity based on |createParams|.
         if (!sPausePendingTaskActivityCreationForTesting) {
-            launchNewWindowIntent(newWindowIntent, createParams.getInitialBounds());
+            launchNewWindowIntent(newWindowIntent, createParams.getInitialBoundsInDp());
         } else {
             sPendingTasksAwaitingActivityCreationForTesting.put(pendingId, pendingTaskInfo);
         }
@@ -287,7 +289,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                 : "Unable to resume Activity creation for pending task with ID: " + pendingTaskId;
 
         launchNewWindowIntent(
-                pendingTaskInfo.mIntent, pendingTaskInfo.mCreateParams.getInitialBounds());
+                pendingTaskInfo.mIntent, pendingTaskInfo.mCreateParams.getInitialBoundsInDp());
     }
 
     private void removeInternal(int taskId) {
@@ -341,7 +343,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                 return null;
             case BrowserWindowType.POPUP:
                 var popupIntentCreator = assertNonNull(PopupIntentCreatorProvider.getInstance());
-                Rect bounds = createParams.getInitialBounds();
+                Rect bounds = createParams.getInitialBoundsInDp();
                 WindowFeatures features =
                         new WindowFeatures(
                                 bounds.left, bounds.top, bounds.width(), bounds.height());
@@ -356,15 +358,22 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         }
     }
 
-    private static void launchNewWindowIntent(Intent intent, Rect initialBounds) {
+    private static void launchNewWindowIntent(Intent intent, Rect initialBoundsInDp) {
         var context = ContextUtils.getApplicationContext();
-        if (initialBounds.isEmpty()) {
+        if (initialBoundsInDp.isEmpty()) {
             context.startActivity(intent);
             return;
         }
 
         ActivityOptions options = ActivityOptions.makeBasic();
-        options.setLaunchBounds(initialBounds);
+        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
+        options.setLaunchDisplayId(display.getDisplayId());
+        options.setLaunchBounds(
+                new Rect(
+                        DisplayUtil.dpToPx(display, initialBoundsInDp.left),
+                        DisplayUtil.dpToPx(display, initialBoundsInDp.top),
+                        DisplayUtil.dpToPx(display, initialBoundsInDp.right),
+                        DisplayUtil.dpToPx(display, initialBoundsInDp.bottom)));
         context.startActivity(intent, options.toBundle());
     }
 }
