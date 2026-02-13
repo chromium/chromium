@@ -545,6 +545,23 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       ServiceWorkerContext::ResultCallback result_callback,
       blink::ServiceWorkerStatusCode service_worker_status);
 
+  void ScheduleStartWorkerCallback(int64_t version_id,
+                                   int process_id,
+                                   int thread_id,
+                                   StartWorkerCallback callback);
+
+  void DidFindRegistrationForStartWorker(
+      ServiceWorkerContext::StartWorkerCallback info_callback,
+      ServiceWorkerContext::StatusCodeResponseCallback failure_callback,
+      blink::ServiceWorkerStatusCode service_worker_status,
+      scoped_refptr<ServiceWorkerRegistration> registration);
+
+  void DidStartWorker(
+      scoped_refptr<ServiceWorkerVersion> version,
+      ServiceWorkerContext::StartWorkerCallback info_callback,
+      ServiceWorkerContext::StatusCodeResponseCallback failure_callback,
+      blink::ServiceWorkerStatusCode start_worker_status);
+
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
   CreateNonNetworkPendingURLLoaderFactoryBundleForUpdateCheck(
       BrowserContext* browser_context);
@@ -601,6 +618,11 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // to dispatch OnVersionStartedRunning()/OnVersionStoppedRunning() events.
   base::flat_map<int64_t /* version_id */, ServiceWorkerRunningInfo>
       running_service_workers_;
+
+  // Map that contains all callbacks that are waiting for the service worker to
+  // start running.
+  base::flat_map<int64_t /* version_id */, std::vector<base::OnceClosure>>
+      waiting_start_callbacks_;
 
   // These fields are used to (re)create `storage_control_`.
   base::FilePath user_data_directory_;
