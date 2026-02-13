@@ -379,8 +379,16 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
   EXPECT_EQ("redDiv", EvalJs(shell(), "domTarget"));
 }
 
+// TODO(484071054): This seems to be extremely flaky on fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_WheelEventFrameRetargetOnPreventDefault \
+  DISABLED_WheelEventFrameRetargetOnPreventDefault
+#else
+#define MAYBE_WheelEventFrameRetargetOnPreventDefault \
+  WheelEventFrameRetargetOnPreventDefault
+#endif
 IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
-                       WheelEventFrameRetargetOnPreventDefault) {
+                       MAYBE_WheelEventFrameRetargetOnPreventDefault) {
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       [](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
