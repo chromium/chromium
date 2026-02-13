@@ -1,6 +1,6 @@
 // cargo run --example upstream_benchmark --release
 
-use rand::{Rng, SeedableRng};
+use rand::{RngExt as _, SeedableRng as _};
 
 const SAMPLES: usize = 10000;
 const ITERATIONS: usize = 1000;

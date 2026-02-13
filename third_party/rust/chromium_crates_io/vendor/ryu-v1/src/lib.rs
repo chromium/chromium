@@ -89,7 +89,7 @@
 //! notation.
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/ryu/1.0.22")]
+#![doc(html_root_url = "https://docs.rs/ryu/1.0.23")]
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,

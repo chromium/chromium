@@ -11,15 +11,14 @@
 
 [package]
 edition = "2021"
-rust-version = "1.68"
+rust-version = "1.71"
 name = "ryu"
-version = "1.0.22"
+version = "1.0.23"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = [
     "build.rs",
     "*.png",
-    "chart/**",
 ]
 autolib = false
 autobins = false
@@ -104,10 +103,13 @@ optional = true
 version = "1.8"
 
 [dev-dependencies.rand]
-version = "0.9"
+version = "0.10"
+
+[dev-dependencies.rand_core]
+version = "0.10"
 
 [dev-dependencies.rand_xorshift]
-version = "0.4"
+version = "0.5"
 
 [target."cfg(not(miri))".dev-dependencies.criterion]
 version = "0.8"

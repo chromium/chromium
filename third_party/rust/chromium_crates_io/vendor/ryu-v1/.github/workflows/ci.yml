@@ -48,14 +48,14 @@ jobs:
         continue-on-error: true
 
   msrv:
-    name: Rust 1.68.0
+    name: Rust 1.71.0
     needs: pre_ci
     if: needs.pre_ci.outputs.continue
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
-      - uses: dtolnay/rust-toolchain@1.68.0
+      - uses: dtolnay/rust-toolchain@1.71.0
       - run: cargo build
       - run: cargo build --features small
 
@@ -118,7 +118,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
       - uses: dtolnay/install@cargo-outdated
-      - run: cargo outdated --workspace --exit-code 1
+      - run: cargo outdated --workspace --ignore rand,rand_core,rand_xorshift --exit-code 1
       - run: cargo outdated --manifest-path fuzz/Cargo.toml --exit-code 1
 
   fuzz:
