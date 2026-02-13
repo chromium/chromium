@@ -646,10 +646,6 @@ bool AddressDataManager::IsAutofillSyncToggleAvailable() const {
     return false;
   }
 
-  if (!pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin)) {
-    return false;
-  }
-
   if (!sync_service_) {
     return false;
   }

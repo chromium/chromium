@@ -1276,22 +1276,6 @@ TEST_F(AddressDataManagerTest,
   EXPECT_FALSE(address_data_manager().IsEligibleForAddressAccountStorage());
 }
 
-TEST_F(AddressDataManagerTest, AutofillSyncToggleAvailableInTransportMode) {
-  identity_test_env_.ClearPrimaryAccount();
-  MakePrimaryAccountAvailable(/*use_sync_transport_mode=*/true,
-                              identity_test_env_, sync_service_);
-  RecreateAddressDataManager();
-  const CoreAccountInfo& account = sync_service_.GetAccountInfo();
-  identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account.account_id, account.email, account.gaia,
-      /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
-      /*picture_url=*/"");
-
-
-  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, false);
-  EXPECT_FALSE(address_data_manager().IsAutofillSyncToggleAvailable());
-}
-
 TEST_F(AddressDataManagerTest, AutofillSyncToggleNotAvailableWithSigninPromos) {
   base::test::ScopedFeatureList feature_list{
       syncer::kReplaceSyncPromosWithSignInPromos};
