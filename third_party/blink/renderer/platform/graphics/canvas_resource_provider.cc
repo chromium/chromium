@@ -727,7 +727,6 @@ bool CanvasNon2DResourceProviderSharedImage::OverwriteImage(
 
   EndWriteAccess();
   auto access = WillDrawInternal();
-  EndWriteAccess();
 
   auto dst_client_si = resource()->GetClientSharedImage();
   if (!dst_client_si) {
