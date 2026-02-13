@@ -601,9 +601,6 @@
 
 // Glic button context menu and tabstrip context menu
 #define IDC_GLIC_TOGGLE_PIN 53320
-#define IDC_TAB_SEARCH_TOGGLE_PIN 53321
-#define IDC_PROJECTS_PANEL_TOGGLE_PIN 53322
-#define IDC_EVERYTHING_MENU_TOGGLE_PIN 53323
 
 // Show contextual tasks side panel.
 #define IDC_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL                  54000

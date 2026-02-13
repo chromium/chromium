@@ -6,7 +6,6 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -165,14 +163,6 @@ class TabSearchToolbarButtonComboEnabledTest
   }
   ~TabSearchToolbarButtonComboEnabledTest() override = default;
 
-  auto EnsureTabSearchVisible() {
-    return Steps(Do([this]() {
-                   browser()->profile()->GetPrefs()->SetBoolean(
-                       prefs::kTabSearchPinnedToTabstrip, true);
-                 }),
-                 WaitForShow(kTabSearchButtonElementId));
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -181,7 +171,7 @@ class TabSearchToolbarButtonComboEnabledTest
 // the horizontal tab strip combo button is enabled.
 IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonComboEnabledTest,
                        ButtonNotInToolbar) {
-  RunTestSequence(EnsureTabSearchVisible(),
+  RunTestSequence(WaitForShow(kTabSearchButtonElementId),
                   CheckElementCount(kTabSearchButtonElementId, 1),
                   CheckView(kTabSearchButtonElementId, [](views::View* view) {
                     // When combo button is enabled, the TabSearch button should
@@ -200,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonComboEnabledTest,
   PinnedToolbarActionsModel::Get(browser()->profile())
       ->UpdatePinnedState(kActionTabSearch, true);
 
-  RunTestSequence(EnsureTabSearchVisible(),
+  RunTestSequence(WaitForShow(kTabSearchButtonElementId),
                   CheckElementCount(kTabSearchButtonElementId, 1),
                   CheckView(kTabSearchButtonElementId, [](views::View* view) {
                     // When combo button is enabled, the TabSearch button should
