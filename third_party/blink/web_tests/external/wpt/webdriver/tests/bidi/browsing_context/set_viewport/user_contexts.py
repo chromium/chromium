@@ -2,7 +2,7 @@ import pytest
 from webdriver.bidi.modules.script import ContextTarget
 from webdriver.bidi.undefined import UNDEFINED
 
-from ... import get_device_pixel_ratio, get_viewport_dimensions
+from ... import get_device_pixel_ratio, get_viewport_dimensions, remote_mapping_to_dict
 
 pytestmark = pytest.mark.asyncio
 
@@ -59,7 +59,6 @@ async def test_set_to_user_context(bidi_session, new_tab, create_user_context):
 
 async def test_set_to_user_context_window_open(
     bidi_session,
-    new_tab,
     create_user_context,
     inline,
     subscribe_events,
@@ -85,11 +84,17 @@ async def test_set_to_user_context_window_open(
     # Assert that tabs opened via window.open in the same user context
     # successfully load and have the right viewport set.
     on_load = wait_for_event(CONTEXT_LOAD_EVENT)
-    result = await bidi_session.script.evaluate(
+    result = await bidi_session.script.call_function(
         await_promise=False,
-        expression=f"""window.open('{inline("popup")}')""",
+        function_declaration=f"""() => {{
+            const win = window.open('{inline("popup")}');
+            return {{ width: win.innerWidth, height: win.innerHeight }};
+        }}""",
         target=ContextTarget(context_in_user_context_1["context"]),
     )
+
+    assert remote_mapping_to_dict(result["value"]) == test_viewport
+
     event = await wait_for_future_safe(on_load)
 
     contexts = await bidi_session.browsing_context.get_tree(root=event["context"])

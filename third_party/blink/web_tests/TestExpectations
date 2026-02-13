@@ -2868,6 +2868,18 @@ crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 crbug.com/475042067 external/wpt/webrtc-encoded-transform/idlharness.https.window.html?include=(SFrameDecrypterStream|SFrameEncrypterStream|SFrameSenderTransform|SFrameReceiverTransform|SFrameTransform.\*) [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win ] external/wpt/html/semantics/embedded-content/the-audio-element/audio-loading-attr-default.tentative.html [ Pass Timeout ]
+external/wpt/mediacapture-fromelement/capture-audio-unaffected-volume.html [ Timeout ]
+external/wpt/mediacapture-fromelement/restart-after-ended.html [ Timeout ]
+external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/user_contexts.py [ Failure ]
+external/wpt/webdriver/tests/bidi/external/user_agent_client_hints/set_client_hints_override/client_hints.py [ Failure ]
+external/wpt/webdriver/tests/bidi/external/user_agent_client_hints/set_client_hints_override/contexts.py [ Failure ]
+external/wpt/webdriver/tests/bidi/external/user_agent_client_hints/set_client_hints_override/global.py [ Failure ]
+external/wpt/webdriver/tests/bidi/external/user_agent_client_hints/set_client_hints_override/invalid.py [ Failure ]
+external/wpt/webdriver/tests/bidi/external/user_agent_client_hints/set_client_hints_override/user_contexts.py [ Failure ]
+[ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/wheel.py [ Failure ]
+[ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/wheel_events.py [ Timeout ]
+[ Android ] external/wpt/webdriver/tests/classic/perform_actions/wheel_events.py [ Timeout ]
 crbug.com/483370598 external/wpt/css/css-anchor-position/position-area-overflow-icb-004.html [ Failure ]
 crbug.com/483107905 external/wpt/css/css-inline/baseline-shift/baseline-shift-bottom-svg.html [ Failure ]
 crbug.com/483107905 external/wpt/css/css-inline/baseline-shift/baseline-shift-bottom.html [ Failure ]
@@ -9646,7 +9658,7 @@ crbug.com/478186112 [ Linux ] external/wpt/pointerevents/pointerevent_attributes
 crbug.com/478186112 [ Win10.20h2 ] external/wpt/pointerevents/pointerevent_attributes.html?touch [ Pass Timeout ]
 crbug.com/478186112 [ Linux ] external/wpt/pointerevents/pointerevent_attributes.html?touch [ Pass Timeout ]
 crbug.com/483104784 [ Win11 ] virtual/lna-webrtc/fast/peerconnection/RTCPeerConnection-iframe-gc.html [ Failure Pass ]
-crbug.com/482121289 [ Linux ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Pass Timeout Crash ]
+crbug.com/482121289 [ Linux ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Crash Pass Timeout ]
 crbug.com/482121289 [ Win ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Pass Timeout ]
 
 # Temporary entry while fixing semantics

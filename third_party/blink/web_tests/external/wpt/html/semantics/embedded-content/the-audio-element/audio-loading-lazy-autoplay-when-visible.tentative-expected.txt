@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_true: Audio should fire play event after scrolling into view expected true got false
+[FAIL] Audio with loading=lazy and autoplay does not play while not visible, then plays once scrolled into view
+  assert_true: Audio should be paused when not visible in viewport expected true got false
+Harness: the test ran to completion.
+

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] createMediaElementSource() output reflects HTMLMediaElement effective volume changes (volume/muted)(src-stream)
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'createMediaElementSource' on 'AudioContext': HTMLMediaElement already connected previously to a different MediaElementSourceNode."
+Harness: the test ran to completion.
+

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] ViewTransition interface: attribute types
-  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
-Harness: the test ran to completion.
-

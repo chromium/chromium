@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] Audio loading attribute default value is 'eager'
+  assert_equals: Default value should be 'eager' expected (string) "eager" but got (undefined) undefined
+[FAIL] Audio loading attribute reflects 'lazy'
+  assert_equals: loading='lazy' should reflect as 'lazy' expected (string) "lazy" but got (undefined) undefined
+[FAIL] Audio loading attribute reflects 'eager'
+  assert_equals: loading='eager' should reflect as 'eager' expected (string) "eager" but got (undefined) undefined
+[FAIL] Audio loading attribute with invalid value reflects as 'eager'
+  assert_equals: Invalid value should reflect as 'eager' expected (string) "eager" but got (undefined) undefined
+[FAIL] Audio loading attribute with empty string reflects as 'eager'
+  assert_equals: Empty string should reflect as 'eager' expected (string) "eager" but got (undefined) undefined
+[FAIL] Audio loading attribute is case-insensitive for 'lazy'
+  assert_equals: Uppercase 'LAZY' should reflect as 'lazy' expected (string) "lazy" but got (undefined) undefined
+[FAIL] Audio loading attribute is case-insensitive for 'eager'
+  assert_equals: Uppercase 'EAGER' should reflect as 'eager' expected (string) "eager" but got (undefined) undefined
+[FAIL] Setting audio.loading IDL attribute to 'lazy'
+  assert_equals: Setting IDL to 'lazy' should set content attribute expected "lazy" but got "EAGER"
+[FAIL] Setting audio.loading IDL attribute to 'eager'
+  assert_equals: Setting IDL to 'eager' should set content attribute expected "eager" but got "EAGER"
+[FAIL] Setting audio.loading IDL attribute to invalid value
+  assert_equals: Setting IDL to 'invalid' should set content attribute expected "invalid" but got "EAGER"
+Harness: the test ran to completion.
+

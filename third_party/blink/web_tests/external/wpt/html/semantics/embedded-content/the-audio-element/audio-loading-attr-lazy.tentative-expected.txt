@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Audio loading attribute should reflect the loading content attribute
+  assert_equals: Audio loading attribute should be 'lazy' when set to 'lazy' expected (string) "lazy" but got (undefined) undefined
+Harness: the test ran to completion.
+
