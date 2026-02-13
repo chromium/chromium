@@ -45,14 +45,30 @@ SkillsDialogView::SkillsDialogView(Profile* profile) {
   web_view_->GetWebContents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   web_view_->LoadInitialURL(GURL(std::string(chrome::kChromeUISkillsURL) +
                                  chrome::kChromeUISkillsDialogPath));
+  web_view_->GetWebContents()->SetDelegate(this);
   AddChildView(std::move(web_view));
 }
 
-SkillsDialogView::~SkillsDialogView() = default;
+SkillsDialogView::~SkillsDialogView() {
+  if (web_view_ && web_view_->GetWebContents()) {
+    web_view_->GetWebContents()->SetDelegate(nullptr);
+  }
+}
 
 gfx::Size SkillsDialogView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return GetLayoutManager()->GetPreferredSize(this, available_size);
+}
+
+bool SkillsDialogView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (!web_view_) {
+    return false;
+  }
+
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, web_view_->GetFocusManager());
 }
 
 BEGIN_METADATA(SkillsDialogView)

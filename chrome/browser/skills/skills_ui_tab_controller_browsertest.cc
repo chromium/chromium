@@ -360,4 +360,78 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
 #endif
 }
 
+IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
+                       KeyboardShortcutsAreRouted) {
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+  skills::Skill test_skill("id", "name", "icon", "prompt");
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
+
+  content::WebContents* dialog_contents = GetDialogWebContents();
+  ASSERT_TRUE(dialog_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(dialog_contents));
+
+  // Focus the WebView to ensure it's ready for input.
+  views::Widget* widget = GetDialogWidget();
+  widget->GetFocusManager()->SetFocusedView(
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+          SkillsDialogView::kSkillsDialogElementId, GetBrowserContext()));
+
+  static constexpr char kSetupScript[] = R"(
+    (async function() {
+      await customElements.whenDefined('skills-dialog-app');
+      for (let i = 0; i < 40; i++) {
+        const app = document.querySelector('skills-dialog-app');
+        if (app && app.shadowRoot) {
+            const crInput = app.shadowRoot.getElementById('nameText');
+            if (crInput && crInput.shadowRoot) {
+              const nativeInput = crInput.shadowRoot.querySelector('input');
+              if (nativeInput) {
+                // Use cr-input's API to set the value safely
+                crInput.value = 'Hello World';
+                nativeInput.focus();
+                // Force an input event so the Undo stack registers it
+                nativeInput.dispatchEvent(
+                  new Event('input', { bubbles: true }));
+                return true;
+              }
+            }
+          }
+        await new Promise(r => setTimeout(r, 100));
+      }
+      return false;
+    })();
+  )";
+  EXPECT_EQ(true, content::EvalJs(dialog_contents, kSetupScript));
+
+  // Simulate the Accelerator (Ctrl+A / Cmd+A).
+  ui::KeyboardCode key = ui::VKEY_A;
+  bool control = false;
+  bool command = false;
+#if BUILDFLAG(IS_MAC)
+  command = true;
+#else
+  control = true;
+#endif
+
+  content::SimulateKeyPress(dialog_contents, ui::DomKey::FromCharacter('a'),
+                            ui::DomCode::US_A, key, control, /*shift=*/false,
+                            /*alt=*/false, command);
+
+  auto selection_check = content::EvalJs(dialog_contents, R"(
+    (function() {
+      const app = document.querySelector('skills-dialog-app');
+      const crInput = app && app.shadowRoot ?
+                      app.shadowRoot.getElementById('nameText') : null;
+      const nativeInput = crInput && crInput.shadowRoot ?
+                          crInput.shadowRoot.querySelector('input') : null;
+      return nativeInput ?
+        (nativeInput.selectionEnd - nativeInput.selectionStart) : 0;
+    })()
+  )");
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+#endif
+}
+
 }  // namespace skills
