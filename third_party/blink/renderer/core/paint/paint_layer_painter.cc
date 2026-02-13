@@ -269,6 +269,10 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       [[unlikely]] {
     // Skip if we need layout. This should never happen. See crbug.com/1423308
     // and crbug.com/330051489.
+
+    // TODO(crbug.com/478682594): Remove when done investigating.
+    object.DumpForBug478682594();
+
     return kFullyPainted;
   }
 
