@@ -188,7 +188,8 @@ IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
   EXPECT_TRUE(icon_view->GetVisible());
 
   // Focus in the location bar should hide the icon.
-  location_bar_view()->FocusLocation(false);
+  location_bar_view()->FocusLocation(/*is_user_initiated=*/false,
+                                     /*clear_focus_if_failed=*/false);
   ViewVisibilityWaiter(icon_view, false).Wait();
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
@@ -210,7 +211,8 @@ IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
   EXPECT_FALSE(icon_view->GetVisible());
 
   // Focus in the location bar should not show the icon.
-  location_bar_view()->FocusLocation(false);
+  location_bar_view()->FocusLocation(/*is_user_initiated=*/false,
+                                     /*clear_focus_if_failed=*/false);
   ViewVisibilityWaiter(icon_view, false).Wait();
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
@@ -232,7 +234,8 @@ IN_PROC_BROWSER_TEST_P(LensOverlayHomeworkPageActionIconViewTest,
   EXPECT_FALSE(icon_view->GetVisible());
 
   // Focus in the location bar should not show the icon.
-  location_bar_view()->FocusLocation(false);
+  location_bar_view()->FocusLocation(/*is_user_initiated=*/false,
+                                     /*clear_focus_if_failed=*/false);
   ViewVisibilityWaiter(icon_view, false).Wait();
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
@@ -340,7 +343,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(icon_view->GetVisible());
 
   // Focus in the location bar should hide the icon.
-  location_bar_view()->FocusLocation(false);
+  location_bar_view()->FocusLocation(/*is_user_initiated=*/false,
+                                     /*clear_focus_if_failed=*/false);
   ViewVisibilityWaiter(icon_view, false).Wait();
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
@@ -364,7 +368,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(icon_view->GetVisible());
 
   // Focus in the location bar should not show the icon.
-  location_bar_view()->FocusLocation(false);
+  location_bar_view()->FocusLocation(/*is_user_initiated=*/false,
+                                     /*clear_focus_if_failed=*/false);
   ViewVisibilityWaiter(icon_view, false).Wait();
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
@@ -388,7 +393,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(icon_view->GetVisible());
 
   // Focus in the location bar should not show the icon.
-  location_bar_view()->FocusLocation(false);
+  location_bar_view()->FocusLocation(/*is_user_initiated=*/false,
+                                     /*clear_focus_if_failed=*/false);
   ViewVisibilityWaiter(icon_view, false).Wait();
 
   EXPECT_TRUE(focus_manager->GetFocusedView());

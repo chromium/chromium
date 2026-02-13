@@ -277,13 +277,15 @@ class TestLocationBar : public LocationBar {
   void set_omnibox_view(OmniboxViewViews* view) { omnibox_view_ = view; }
 
   // LocationBar:
-  void FocusLocation(bool select_all) override {}
+  void FocusLocation(bool select_all, bool clear_focus_if_failed) override {}
   void FocusSearch() override {}
+  void UpdateFocusBehavior(bool toolbar_visible) override {}
   void UpdateContentSettingsIcons() override {}
   void SaveStateToContents(content::WebContents* contents) override {}
   void Revert() override {}
   OmniboxView* GetOmniboxView() override { return nullptr; }
   OmniboxController* GetOmniboxController() override { return nullptr; }
+  bool ShouldCloseOmniboxPopup(ui::MouseEvent* event) override { return false; }
   ChipController* GetChipController() override { return nullptr; }
   LocationBarTesting* GetLocationBarForTesting() override { return nullptr; }
   LocationBarModel* GetLocationBarModel() override {

@@ -899,7 +899,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SaveAfterFocusTabSwitchTest) {
                  WindowOpenDisposition::NEW_FOREGROUND_TAB, true);
 
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  location_bar->FocusLocation(true);
+  location_bar->FocusLocation(/*is_user_initiated=*/true,
+                              /*clear_focus_if_failed=*/false);
 
   NavigateHelper(first_url, browser(), WindowOpenDisposition::SWITCH_TO_TAB,
                  false);

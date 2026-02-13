@@ -211,7 +211,8 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
       false);
 
   if (focus_omnibox) {
-    browser()->window()->GetLocationBar()->FocusLocation(false);
+    browser()->window()->GetLocationBar()->FocusLocation(
+        /*is_user_initiated=*/false, /*clear_focus_if_failed=*/false);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -384,7 +385,8 @@ void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
   SendKeysMenuListener menu_listener(
       browser_view->toolbar_button_provider()->GetAppMenuButton(), browser(),
       true);
-  browser()->window()->GetLocationBar()->FocusLocation(false);
+  browser()->window()->GetLocationBar()->FocusLocation(
+      /*is_user_initiated=*/false, /*clear_focus_if_failed=*/false);
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_F10, false,
                                               false, false, false));

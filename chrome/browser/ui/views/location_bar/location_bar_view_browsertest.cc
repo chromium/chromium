@@ -503,7 +503,8 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionsMigrationTest,
   views::FocusManager* const focus_manager =
       GetLocationBarView()->GetFocusManager();
 
-  GetLocationBarView()->FocusLocation(true);
+  GetLocationBarView()->FocusLocation(/*is_user_initiated=*/true,
+                                      /*clear_focus_if_failed=*/false);
   OmniboxViewViews* const omnibox = GetLocationBarView()->omnibox_view();
   ASSERT_EQ(focus_manager->GetFocusedView(), omnibox);
 
@@ -654,7 +655,8 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
       location_icon_view->GetImageModel(views::Button::STATE_NORMAL);
 
   // The "Add Context" button does show up when the Omnibox popup is open.
-  location_bar_view->FocusLocation(true);
+  location_bar_view->FocusLocation(/*is_user_initiated=*/true,
+                                   /*clear_focus_if_failed=*/false);
   omnibox_view->SetUserText(u"test");
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return location_bar_view->GetOmniboxController()->IsPopupOpen();
@@ -702,7 +704,8 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
   prefs->SetBoolean(omnibox::kShowAiModeOmniboxButton, true);
 
   // Force "Add content" button to show by focusing and typing.
-  location_bar_view->FocusLocation(true);
+  location_bar_view->FocusLocation(/*is_user_initiated=*/true,
+                                   /*clear_focus_if_failed=*/false);
   omnibox_view->SetUserText(u"test");
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return location_bar_view->GetOmniboxController()->IsPopupOpen();

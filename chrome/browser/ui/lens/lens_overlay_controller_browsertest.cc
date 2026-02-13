@@ -8465,7 +8465,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   ASSERT_TRUE(preselection_widget->IsVisible());
 
   // Focus the location bar.
-  browser()->window()->GetLocationBar()->FocusLocation(false);
+  browser()->window()->GetLocationBar()->FocusLocation(
+      /*is_user_initiated=*/false, /*clear_focus_if_failed=*/false);
 
   // Must explicitly get preselection bubble from controller. Widget should be
   // hidden when omnibox has focus.

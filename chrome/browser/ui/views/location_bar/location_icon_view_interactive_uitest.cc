@@ -66,7 +66,8 @@ class LocationIconViewTest : public InProcessBrowserTest {
     LocationBarView* location_bar = GetLocationBarView();
     ASSERT_TRUE(location_bar) << "Failed to get LocationBarView";
 
-    location_bar->FocusLocation(/*is_user_initiated=*/true);
+    location_bar->FocusLocation(/*is_user_initiated=*/true,
+                                /*clear_focus_if_failed=*/false);
 
     // Wait for focus to be set.
     ASSERT_TRUE(base::test::RunUntil([&]() -> bool {

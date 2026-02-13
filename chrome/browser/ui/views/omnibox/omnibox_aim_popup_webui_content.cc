@@ -72,7 +72,8 @@ void OmniboxAimPopupWebUIContent::UpdateLocationBarFocusForScreenReader() {
             ->GetAccessibilityMode()
             .has_mode(ui::AXMode::kScreenReader);
     if (is_screen_reader_enabled) {
-      location_bar_view()->FocusLocation(true);
+      location_bar_view()->FocusLocation(/*is_user_initiated=*/true,
+                                         /*clear_focus_if_failed=*/false);
     }
   }
 }

@@ -276,13 +276,15 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
     ~TestLocationBar() override = default;
 
     // LocationBar:
-    void FocusLocation(bool select_all) override {}
+    void FocusLocation(bool select_all, bool clear_focus_if_failed) override {}
     void FocusSearch() override {}
+    void UpdateFocusBehavior(bool toolbar_visible) override {}
     void UpdateContentSettingsIcons() override {}
     void SaveStateToContents(content::WebContents* contents) override {}
     void Revert() override {}
     OmniboxView* GetOmniboxView() override;
     OmniboxController* GetOmniboxController() override;
+    bool ShouldCloseOmniboxPopup(ui::MouseEvent* event) override;
     ChipController* GetChipController() override;
     LocationBarTesting* GetLocationBarForTesting() override;
     LocationBarModel* GetLocationBarModel() override;

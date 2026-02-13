@@ -22,11 +22,16 @@ WebUIStubLocationBar::WebUIStubLocationBar(WebUIBrowserWindow* window)
 
 WebUIStubLocationBar::~WebUIStubLocationBar() = default;
 
-void WebUIStubLocationBar::FocusLocation(bool is_user_initiated) {
+void WebUIStubLocationBar::FocusLocation(bool is_user_initiated,
+                                         bool clear_focus_if_failed) {
   NOTIMPLEMENTED();
 }
 
 void WebUIStubLocationBar::FocusSearch() {
+  NOTIMPLEMENTED();
+}
+
+void WebUIStubLocationBar::UpdateFocusBehavior(bool toolbar_visible) {
   NOTIMPLEMENTED();
 }
 
@@ -50,6 +55,11 @@ OmniboxView* WebUIStubLocationBar::GetOmniboxView() {
 OmniboxController* WebUIStubLocationBar::GetOmniboxController() {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+bool WebUIStubLocationBar::ShouldCloseOmniboxPopup(ui::MouseEvent* event) {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 ChipController* WebUIStubLocationBar::GetChipController() {

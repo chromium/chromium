@@ -52,6 +52,11 @@ OmniboxController* TestBrowserWindow::TestLocationBar::GetOmniboxController() {
   return nullptr;
 }
 
+bool TestBrowserWindow::TestLocationBar::ShouldCloseOmniboxPopup(
+    ui::MouseEvent* event) {
+  return false;
+}
+
 ChipController* TestBrowserWindow::TestLocationBar::GetChipController() {
   return nullptr;
 }

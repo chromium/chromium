@@ -335,8 +335,8 @@ void ToolbarView::Init() {
 
   if (display_mode_ != DisplayMode::kNormal) {
     location_bar_view_ = AddChildView(std::move(location_bar));
-    location_bar_view_->Init();
     location_bar_ = location_bar_view_;
+    location_bar_view_->Init();
   }
 
   if (display_mode_ == DisplayMode::kNormal) {

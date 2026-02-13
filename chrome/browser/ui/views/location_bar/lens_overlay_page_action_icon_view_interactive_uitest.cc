@@ -144,7 +144,8 @@ class LensOverlayPageActionIconViewTest
       lens_overlay_icon_view()->set_update_callback_for_testing(
           run_loop.QuitClosure());
     }
-    location_bar()->FocusLocation(false);
+    location_bar()->FocusLocation(/*is_user_initiated=*/false,
+                                  /*clear_focus_if_failed=*/false);
     EXPECT_TRUE(PageActionView()->GetFocusManager()->GetFocusedView());
     if (!IsMigrationEnabled()) {
       run_loop.Run();
@@ -296,7 +297,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  location_bar()->FocusLocation(false);
+  location_bar()->FocusLocation(/*is_user_initiated=*/false,
+                                /*clear_focus_if_failed=*/false);
   if (IsMigrationEnabled()) {
     views::View* page_action_view = PageActionView();
     ASSERT_NE(nullptr, page_action_view);
