@@ -21,12 +21,12 @@ cargo_crate("lib") {
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2018"
+  edition = "2021"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "unicode-ident"
   cargo_pkg_description = "Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31"
   cargo_pkg_repository = "https://github.com/dtolnay/unicode-ident"
-  cargo_pkg_version = "1.0.22"
+  cargo_pkg_version = "1.0.23"
 
   allow_unsafe = true
 
