@@ -1211,9 +1211,6 @@ ios_builder(
         ],
     ),
     cpu = cpu.ARM64,
-    # TODO(crbug.com/484073405): Re-enable once certs are rotated and builder
-    # is back to green.
-    tree_closing = False,
     console_view_entry = [
         consoles.console_view_entry(
             category = "ios|default",
