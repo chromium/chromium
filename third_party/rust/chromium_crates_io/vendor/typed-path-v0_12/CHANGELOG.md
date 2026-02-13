@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.3] - 2026-02-10
+
+*  Remove AsRef<Path<T>> for Cow<[u8]> and AsRef<Utf8Path<T>> for Cow<str> as they conflict with other libraries (by Its-Just-Nans)
+
 ## [0.12.2] - 2026-01-27
 
 * Add missing LICENSE-APACHE and LICENSE-MIT files (#58)
@@ -188,7 +192,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release of the library!
 
-[Unreleased]: https://github.com/chipsenkbeil/typed-path/compare/v0.12.1...HEAD
+[Unreleased]: https://github.com/chipsenkbeil/typed-path/compare/v0.12.3...HEAD
+[0.12.3]: https://github.com/chipsenkbeil/typed-path/compare/v0.12.2...v0.12.3
+[0.12.2]: https://github.com/chipsenkbeil/typed-path/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/chipsenkbeil/typed-path/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/chipsenkbeil/typed-path/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/chipsenkbeil/typed-path/compare/v0.10.0...v0.11.0

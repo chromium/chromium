@@ -78,7 +78,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "Provides typed variants of Path and PathBuf for Unix and Windows"
   cargo_pkg_repository = "https://github.com/chipsenkbeil/typed-path"
-  cargo_pkg_version = "0.12.2"
+  cargo_pkg_version = "0.12.3"
 
   allow_unsafe = true
 

@@ -4,4 +4,4 @@ version = 3
 
 [[package]]
 name = "typed-path"
-version = "0.12.2"
+version = "0.12.3"

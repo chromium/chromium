@@ -1,7 +1,7 @@
 Name: typed-path
 URL: https://crates.io/crates/typed-path
-Version: 0.12.2
-Revision: 6b1bcfd71c096277caa95bc9f817aeb476b44ec2
+Version: 0.12.3
+Revision: ec65f79eb1f61b0e11e70859b041a0a304c3a9ff
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/typed-path-v0_12/LICENSE-APACHE

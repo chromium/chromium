@@ -1067,16 +1067,6 @@ where
     }
 }
 
-impl<T> AsRef<Utf8Path<T>> for Cow<'_, str>
-where
-    T: Utf8Encoding,
-{
-    #[inline]
-    fn as_ref(&self) -> &Utf8Path<T> {
-        Utf8Path::new(self)
-    }
-}
-
 impl<T> AsRef<Utf8Path<T>> for String
 where
     T: Utf8Encoding,
@@ -1419,14 +1409,11 @@ macro_rules! impl_cmp_bytes {
 
 impl_cmp_bytes!(; Utf8PathBuf<T>, str);
 impl_cmp_bytes!('a; Utf8PathBuf<T>, &'a str);
-impl_cmp_bytes!('a; Utf8PathBuf<T>, Cow<'a, str>);
 impl_cmp_bytes!(; Utf8PathBuf<T>, String);
 impl_cmp_bytes!(; Utf8Path<T>, str);
 impl_cmp_bytes!('a; Utf8Path<T>, &'a str);
-impl_cmp_bytes!('a; Utf8Path<T>, Cow<'a, str>);
 impl_cmp_bytes!(; Utf8Path<T>, String);
 impl_cmp_bytes!('a; &'a Utf8Path<T>, str);
-impl_cmp_bytes!('a, 'b; &'a Utf8Path<T>, Cow<'b, str>);
 impl_cmp_bytes!('a; &'a Utf8Path<T>, String);
 
 mod helpers {

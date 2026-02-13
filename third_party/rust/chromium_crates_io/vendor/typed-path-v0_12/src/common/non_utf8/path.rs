@@ -1055,16 +1055,6 @@ where
     }
 }
 
-impl<T> AsRef<Path<T>> for Cow<'_, [u8]>
-where
-    T: Encoding,
-{
-    #[inline]
-    fn as_ref(&self) -> &Path<T> {
-        Path::new(self)
-    }
-}
-
 impl<T> AsRef<Path<T>> for Vec<u8>
 where
     T: Encoding,
@@ -1433,14 +1423,11 @@ macro_rules! impl_cmp_bytes {
 
 impl_cmp_bytes!(; PathBuf<T>, [u8]);
 impl_cmp_bytes!('a; PathBuf<T>, &'a [u8]);
-impl_cmp_bytes!('a; PathBuf<T>, Cow<'a, [u8]>);
 impl_cmp_bytes!(; PathBuf<T>, Vec<u8>);
 impl_cmp_bytes!(; Path<T>, [u8]);
 impl_cmp_bytes!('a; Path<T>, &'a [u8]);
-impl_cmp_bytes!('a; Path<T>, Cow<'a, [u8]>);
 impl_cmp_bytes!(; Path<T>, Vec<u8>);
 impl_cmp_bytes!('a; &'a Path<T>, [u8]);
-impl_cmp_bytes!('a, 'b; &'a Path<T>, Cow<'b, [u8]>);
 impl_cmp_bytes!('a; &'a Path<T>, Vec<u8>);
 
 mod helpers {
