@@ -295,6 +295,7 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   // Must be declared before anything that may make use of the
@@ -580,6 +581,137 @@ TEST_F(ChromeTailoredSecurityServiceTest,
 
   EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
             safe_browsing::TailoredSecurityRetryState::NO_RETRY_NEEDED);
+}
+
+// TODO(crbug.com/483770964): Create a parameterized test suite that runs with
+// kBundledSecuritySettings enabled and disabled.
+TEST_F(ChromeTailoredSecurityServiceTest, EnableEnhancedBundlePref) {
+  // Set initial state.
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kBundledSecuritySettings);
+
+  // Verify initial preference state.
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::STANDARD);
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+
+  // Enable ESB through account integration.
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  // Verify current preference state.
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::ENHANCED);
+  EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest, DisableEnhancedBundlePref) {
+  // Set initial state.
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kBundledSecuritySettings);
+
+  // Verify initial preference state.
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::STANDARD);
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+
+  // Enable ESB through account integration.
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  // Verify current preference state.
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::ENHANCED);
+  EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+
+  // Disable ESB through account integration.
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
+                                                   base::Time::Now());
+
+  // Verify current preference state.
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::STANDARD);
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       EsbAlreadyEnabledBundlePrefNotChanged) {
+  // Set initial state.
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kBundledSecuritySettings);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSecurityBundleSetting(*prefs(), SecuritySettingsBundleSetting::ENHANCED);
+
+  // Verify initial preference state.
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::ENHANCED);
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+
+  // Attempt to enable ESB through account integration.
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  // Verify that the current preference state has not changed.
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::ENHANCED);
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
+            safe_browsing::TailoredSecurityRetryState::NO_RETRY_NEEDED);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       EsbAlreadyDisabledBundlePrefNotChanged) {
+  // Set initial state.
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kBundledSecuritySettings);
+
+  // Verify initial preference state.
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::STANDARD);
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+
+  // Attempt to disable ESB through account integration.
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
+                                                   base::Time::Now());
+
+  // Verify that the current preference state has not changed.
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::STANDARD);
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       EnhancedBundleEnabledManuallyAttemptToDisable) {
+  // Set initial state.
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kBundledSecuritySettings);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSecurityBundleSetting(*prefs(), SecuritySettingsBundleSetting::ENHANCED);
+
+  // Verify initial preference state.
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::ENHANCED);
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+
+  // Attempt to disable ESB through account integration.
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
+                                                   base::Time::Now());
+
+  // Verify that the current preference state has not changed.
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::ENHANCED);
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
 }
 
 }  // namespace safe_browsing
