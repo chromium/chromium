@@ -1,0 +1,13 @@
+edition = "2023";
+
+package lens;
+
+import "added_inputs.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message ModalityChipProps {
+  AddedInput added_input = 10;
+
+  string id = 11;
+}

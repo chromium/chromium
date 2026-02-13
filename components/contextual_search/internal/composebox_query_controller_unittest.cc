@@ -50,6 +50,7 @@
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
+#include "third_party/lens_server_proto/modality_chip_props.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
@@ -257,6 +258,17 @@ class ComposeboxQueryControllerTest
 
     controller().StartFileUploadFlow(file_token, std::move(input_data),
                                      image_options);
+  }
+
+  void StartModalityChipUploadFlow(
+      const base::UnguessableToken& file_token,
+      const lens::ModalityChipProps& modality_chip_props) {
+    std::unique_ptr<lens::ContextualInputData> input_data =
+        std::make_unique<lens::ContextualInputData>();
+    input_data->modality_chip_props = modality_chip_props;
+
+    controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                     /*image_options=*/std::nullopt);
   }
 
   void WaitForFileUpload(
@@ -4052,6 +4064,112 @@ TEST_F(ComposeboxQueryControllerTest,
   const auto& payload = client_to_aim_message.submit_query().payload();
   // TODO(crbug.com/483174088): Add support for non-Lens inputs.
   EXPECT_FALSE(payload.has_added_inputs());
+}
+
+TEST_F(ComposeboxQueryControllerTest, UploadModalityChipSuccess) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the modality chip upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  lens::ModalityChipProps modality_chip_props;
+  modality_chip_props.set_id("test_chip_id");
+  modality_chip_props.mutable_added_input()->mutable_lens_file()->set_vsrid(
+      "test_vsrid");
+
+  StartModalityChipUploadFlow(file_token, modality_chip_props);
+
+  // Assert: Validate file upload status changes.
+  // Modality chips don't have kProcessing or kUploadStarted states because
+  // they are considered already uploaded from the server.
+  FileUploadStatusTuple final_file_upload_status =
+      file_upload_status_future_.Take();
+  EXPECT_EQ(file_token, std::get<0>(final_file_upload_status));
+  EXPECT_EQ(lens::MimeType::kUnknown, std::get<1>(final_file_upload_status));
+  EXPECT_EQ(FileUploadStatus::kUploadSuccessful,
+            std::get<2>(final_file_upload_status));
+
+  // Assert: Check that the modality chip props are correctly set in the file
+  // info.
+  auto* file_info = controller().GetFileInfoForTesting(file_token);
+  ASSERT_TRUE(file_info);
+  ASSERT_TRUE(file_info->input_data);
+  ASSERT_TRUE(file_info->input_data->modality_chip_props.has_value());
+  EXPECT_EQ(file_info->input_data->modality_chip_props->id(), "test_chip_id");
+
+  // Verify that no network requests were sent for the chip upload.
+  EXPECT_EQ(controller().num_file_upload_requests_sent(), 0);
+}
+
+TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_IncludesModalityChip) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the modality chip upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  lens::ModalityChipProps modality_chip_props;
+  modality_chip_props.mutable_added_input()->mutable_lens_file()->set_vsrid(
+      "test_vsrid");
+  StartModalityChipUploadFlow(file_token, modality_chip_props);
+  file_upload_status_future_.Take();
+
+  // Act: Create search URL.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kAim;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Verify AddedInputs param.
+  std::optional<lens::AddedInputs> added_inputs =
+      GetAddedInputsFromUrl(search_url);
+  ASSERT_TRUE(added_inputs.has_value());
+  EXPECT_EQ(added_inputs->added_inputs_size(), 1);
+  EXPECT_TRUE(added_inputs->added_inputs(0).has_lens_file());
+  EXPECT_EQ(added_inputs->added_inputs(0).lens_file().vsrid(), "test_vsrid");
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateClientToAimRequest_IncludesModalityChip) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the modality chip upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  lens::ModalityChipProps modality_chip_props;
+  modality_chip_props.mutable_added_input()->mutable_lens_file()->set_vsrid(
+      "test_vsrid");
+  StartModalityChipUploadFlow(file_token, modality_chip_props);
+  file_upload_status_future_.Take();
+
+  // Create ClientToAimRequest.
+  auto create_client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  create_client_to_aim_request_info->query_text = "test query";
+  create_client_to_aim_request_info->file_tokens = {file_token};
+
+  auto client_to_aim_message = controller().CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info));
+
+  // Verify AddedInputs field.
+  const auto& payload = client_to_aim_message.submit_query().payload();
+  EXPECT_TRUE(payload.has_added_inputs());
+  EXPECT_EQ(payload.added_inputs().added_inputs_size(), 1);
+  EXPECT_TRUE(payload.added_inputs().added_inputs(0).has_lens_file());
+  EXPECT_EQ(payload.added_inputs().added_inputs(0).lens_file().vsrid(),
+            "test_vsrid");
 }
 
 TEST_F(ComposeboxQueryControllerTest, MimeTypeToString) {

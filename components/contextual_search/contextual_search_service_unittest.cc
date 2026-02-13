@@ -18,6 +18,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/modality_chip_props.pb.h"
 
 namespace contextual_search {
 
@@ -362,6 +363,39 @@ TEST_F(ContextualSearchServiceTest, FileInfoTest) {
   uploaded_infos = session_handle->GetUploadedContextFileInfos();
   ASSERT_EQ(uploaded_infos.size(), 1u);
   EXPECT_EQ(uploaded_infos[0].file_token, token3);
+}
+
+TEST_F(ContextualSearchServiceTest, StartModalityChipUploadFlow) {
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  auto metrics_recorder = std::make_unique<ContextualSearchMetricsRecorder>(
+      ContextualSearchSource::kUnknown);
+
+  MockContextualSearchContextController* mock_controller_ptr =
+      mock_controller.get();
+
+  auto session_handle = service_->CreateSessionForTesting(
+      std::move(mock_controller), std::move(metrics_recorder));
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
+
+  base::UnguessableToken file_token = session_handle->CreateContextToken();
+
+  auto modality_chip_props = std::make_unique<lens::ModalityChipProps>();
+  modality_chip_props->set_id("test_chip_id");
+
+  // Expect StartFileUploadFlow to be called with the modality chip props.
+  EXPECT_CALL(*mock_controller_ptr,
+              StartFileUploadFlow(file_token, testing::NotNull(), _))
+      .WillOnce(
+          testing::WithArgs<1>([&](std::unique_ptr<lens::ContextualInputData>
+                                       contextual_input_data) {
+            EXPECT_TRUE(contextual_input_data->modality_chip_props.has_value());
+            EXPECT_EQ(contextual_input_data->modality_chip_props->id(),
+                      "test_chip_id");
+          }));
+
+  session_handle->StartModalityChipUploadFlow(file_token,
+                                              std::move(modality_chip_props));
 }
 
 TEST_F(ContextualSearchServiceTest, NullController) {
