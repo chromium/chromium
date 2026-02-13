@@ -10,6 +10,7 @@ import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -286,7 +287,7 @@ public class SearchActivityTest {
         locationBar.beginQuery(IntentOrigin.SEARCH_WIDGET, SearchType.VOICE, null);
         verify(mHandler, times(0))
                 .startVoiceRecognition(
-                        VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);
+                        eq(VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET), any());
 
         mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
         Assert.assertEquals(0, mTestDelegate.showSearchEngineDialogIfNeededCallback.getCallCount());
@@ -303,7 +304,7 @@ public class SearchActivityTest {
 
         verify(mHandler)
                 .startVoiceRecognition(
-                        VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);
+                        eq(VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET), any());
     }
 
     @Test

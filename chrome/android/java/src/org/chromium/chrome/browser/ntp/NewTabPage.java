@@ -32,6 +32,7 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TimeUtils;
@@ -419,7 +420,8 @@ public class NewTabPage
                     feedReliabilityLogger.onVoiceSearch();
                 }
                 mVoiceRecognitionHandler.startVoiceRecognition(
-                        VoiceRecognitionHandler.VoiceInteractionSource.NTP);
+                        VoiceRecognitionHandler.VoiceInteractionSource.NTP,
+                        CallbackUtils.emptyRunnable());
                 mTracker.notifyEvent(EventConstants.NTP_VOICE_SEARCH_BUTTON_CLICKED);
             } else if (mOmniboxStub != null) {
                 if (feedReliabilityLogger != null) {
@@ -435,7 +437,7 @@ public class NewTabPage
                     focusReason = OmniboxFocusReason.NTP_AI_MODE;
                 }
 
-                mOmniboxStub.setUrlBarFocus(
+                mOmniboxStub.beginInput(
                         new AutocompleteInput()
                                 .setUserText(pastedText)
                                 .setFocusReason(focusReason)

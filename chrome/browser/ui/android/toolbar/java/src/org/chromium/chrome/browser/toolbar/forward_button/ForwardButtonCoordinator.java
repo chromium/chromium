@@ -196,7 +196,7 @@ public class ForwardButtonCoordinator extends ToolbarChildButton {
     private void maybeUnfocusUrlBar() {
         LocationBar locationBar = mLocationBarSupplier.get();
         if (locationBar != null && locationBar.getOmniboxStub() != null) {
-            locationBar.getOmniboxStub().setUrlBarFocus(null);
+            locationBar.getOmniboxStub().endInput();
         }
     }
 

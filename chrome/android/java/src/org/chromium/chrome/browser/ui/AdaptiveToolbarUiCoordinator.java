@@ -11,6 +11,7 @@ import android.content.Context;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.Initializer;
@@ -288,7 +289,9 @@ public class AdaptiveToolbarUiCoordinator {
                         if (voiceRecognitionHandler.get() == null) return;
                         voiceRecognitionHandler
                                 .get()
-                                .startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+                                .startVoiceRecognition(
+                                        VoiceInteractionSource.TOOLBAR,
+                                        CallbackUtils.emptyRunnable());
                     }
                 };
         mVoiceToolbarButtonController =
