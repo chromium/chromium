@@ -835,7 +835,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   if (IsChromeNextIaEnabled()) {
     [self.view addSubview:bottomToolbar];
-    // TODO(crbug.com/472279443): Make sure the bottom toolbar is taking into
+    // TODO(crbug.com/483992386): Make sure the bottom toolbar is taking into
     // account the AppBar.
 
     [NSLayoutConstraint activateConstraints:@[

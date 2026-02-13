@@ -146,7 +146,7 @@
   [_tabGridViewController addChildViewController:_browserLayoutViewController];
   if (IsChromeNextIaEnabled()) {
     CGRect frame = _tabGridViewController.view.bounds;
-    // TODO(crbug.com/472279443): Use autolayout instead of fixed margins.
+    // TODO(crbug.com/483998779): Use autolayout instead of fixed margins.
     frame.size.height -= 50;
     _browserLayoutViewController.view.frame = frame;
   } else {

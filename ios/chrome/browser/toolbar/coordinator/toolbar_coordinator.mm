@@ -624,7 +624,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)updateUIForOverflowMenuIPHDisplayed {
   if (IsChromeNextIaEnabled()) {
-    // TODO(crbug.com/472279443): implement this.
+    // TODO(crbug.com/483995532): implement this.
   }
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
     [coordinator.popupMenuUIUpdater updateUIForOverflowMenuIPHDisplayed];
@@ -633,7 +633,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)updateUIForIPHDismissed {
   if (IsChromeNextIaEnabled()) {
-    // TODO(crbug.com/472279443): implement this.
+    // TODO(crbug.com/483995532): implement this.
   }
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
     [coordinator.popupMenuUIUpdater updateUIForIPHDismissed];
@@ -642,7 +642,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot {
   if (IsChromeNextIaEnabled()) {
-    // TODO(crbug.com/472279443): implement this.
+    // TODO(crbug.com/483995532): implement this.
   }
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
     [coordinator.popupMenuUIUpdater setOverflowMenuBlueDot:hasBlueDot];
@@ -805,7 +805,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)highlightViewInStep:(GuidedTourStep)step {
   if (IsChromeNextIaEnabled()) {
-    // TODO(crbug.com/472279443): implement this.
+    // TODO(crbug.com/483995303): implement this.
     NOTREACHED() << "Not implemented yet";
   }
   for (id<GuidedTourCommands> coordinator in self.coordinators) {
@@ -815,7 +815,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)stepCompleted:(GuidedTourStep)step {
   if (IsChromeNextIaEnabled()) {
-    // TODO(crbug.com/472279443): implement this.
+    // TODO(crbug.com/483995303): implement this.
     NOTREACHED() << "Not implemented yet";
   }
   for (id<GuidedTourCommands> coordinator in self.coordinators) {
@@ -967,7 +967,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)toggleEntryPointHighlight:(BOOL)highlight {
   CHECK(IsChromeNextIaEnabled());
-  // TODO(crbug.com/472279443): implement this.
+  // TODO(crbug.com/483994483): implement this.
   NOTREACHED();
 }
 
@@ -975,7 +975,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
   if (IsChromeNextIaEnabled()) {
-    // TODO(crbug.com/472279443): Implement this.
+    // TODO(crbug.com/483994559): Implement this.
     NOTREACHED();
   }
 

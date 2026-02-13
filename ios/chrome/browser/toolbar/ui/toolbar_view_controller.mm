@@ -27,7 +27,7 @@
 
 namespace {
 
-// TODO(crbug.com/472279443): Use real design.
+// TODO(crbug.com/483997234): Use real design.
 constexpr CGFloat kLocationBarHeight = 40;
 
 constexpr CGFloat kStackViewSpacing = 9;
