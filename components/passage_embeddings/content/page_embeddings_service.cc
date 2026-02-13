@@ -236,7 +236,10 @@ std::vector<PassageEmbedding> PageEmbeddingsService::GetEmbeddings(
 
 void PageEmbeddingsService::OnPageContentExtracted(
     content::Page& page,
-    const optimization_guide::proto::AnnotatedPageContent& page_content) {
+    scoped_refptr<
+        const page_content_annotations::RefCountedAnnotatedPageContent>
+        page_content) {
+  CHECK(page_content);
   auto* const web_contents =
       content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
 
@@ -247,7 +250,7 @@ void PageEmbeddingsService::OnPageContentExtracted(
   }
 
   web_contents_state_[web_contents].pending_passages =
-      candidates_generator_.Run(page_content, kMaxPassagesPerPage.Get());
+      candidates_generator_.Run(page_content->data, kMaxPassagesPerPage.Get());
 
   if (current_usage_mode_ == kContinuous ||
       web_contents_state_[web_contents].observer->IsWebContentsHidden()) {

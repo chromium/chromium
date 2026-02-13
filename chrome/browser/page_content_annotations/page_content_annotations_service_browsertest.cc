@@ -1692,9 +1692,10 @@ class FakeExtractionServiceObserver
  public:
   void OnPageContentExtracted(
       content::Page& page,
-      const optimization_guide::proto::AnnotatedPageContent& page_content)
-      override {
-    page_content_future_.SetValue(page_content);
+      scoped_refptr<
+          const page_content_annotations::RefCountedAnnotatedPageContent>
+          page_content) override {
+    page_content_future_.SetValue(page_content->data);
   }
   void Wait() { EXPECT_TRUE(page_content_future_.Wait()); }
   base::test::TestFuture<optimization_guide::proto::AnnotatedPageContent>

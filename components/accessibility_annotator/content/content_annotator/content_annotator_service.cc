@@ -65,7 +65,9 @@ void ContentAnnotatorService::OnLanguageDetermined(
 
 void ContentAnnotatorService::OnPageContentExtracted(
     content::Page& page,
-    const optimization_guide::proto::AnnotatedPageContent& page_content) {
+    scoped_refptr<
+        const page_content_annotations::RefCountedAnnotatedPageContent>
+        page_content) {
   // TODO(crbug.com/463735432): Implement logic to locally
   // store page title and transformed APC.
 }

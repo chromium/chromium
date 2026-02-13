@@ -10,10 +10,13 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -33,15 +36,14 @@ namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
 
-namespace optimization_guide::proto {
-class AnnotatedPageContent;
-}  // namespace optimization_guide::proto
-
 namespace os_crypt_async {
 class OSCryptAsync;
 }  // namespace os_crypt_async
 
 namespace page_content_annotations {
+
+using RefCountedAnnotatedPageContent =
+    base::RefCountedData<optimization_guide::proto::AnnotatedPageContent>;
 
 class AnnotatedPageContentRequest;
 struct ExtractedPageContentResult;
@@ -57,7 +59,7 @@ class PageContentExtractionService : public KeyedService,
     // triggered for every page once the page has sufficiently loaded.
     virtual void OnPageContentExtracted(
         content::Page& page,
-        const optimization_guide::proto::AnnotatedPageContent& page_content) {}
+        scoped_refptr<const RefCountedAnnotatedPageContent> page_content) {}
   };
 
 #if BUILDFLAG(IS_ANDROID)

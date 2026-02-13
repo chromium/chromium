@@ -508,14 +508,17 @@ void ContextualCueingService::OnPinnedTabsSuggestionsReceived(
 
 void ContextualCueingService::OnPageContentExtracted(
     content::Page& page,
-    const optimization_guide::proto::AnnotatedPageContent& page_content) {
+    scoped_refptr<
+        const page_content_annotations::RefCountedAnnotatedPageContent>
+        page_content) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(page_content);
 
   auto* cueing_page_data = ContextualCueingPageData::GetForPage(page);
   if (!cueing_page_data) {
     return;
   }
-  cueing_page_data->OnPageContentExtracted(page_content);
+  cueing_page_data->OnPageContentExtracted(page_content->data);
 }
 
 }  // namespace contextual_cueing

@@ -67,8 +67,9 @@ class ContentAnnotatorService
   //     Observer:
   void OnPageContentExtracted(
       content::Page& page,
-      const optimization_guide::proto::AnnotatedPageContent& page_content)
-      override;
+      scoped_refptr<
+          const page_content_annotations::RefCountedAnnotatedPageContent>
+          page_content) override;
 
  private:
   using CacheIterator =

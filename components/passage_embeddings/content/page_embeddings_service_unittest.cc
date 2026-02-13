@@ -124,8 +124,10 @@ class PageEmbeddingsServiceTest : public content::RenderViewHostTestHarness {
 TEST_F(PageEmbeddingsServiceTest, GeneratesCandidatePassages) {
   std::unique_ptr<content::WebContents> web_contents =
       CreateTestWebContentsWithVisibility(content::Visibility::HIDDEN);
-  optimization_guide::proto::AnnotatedPageContent page_content;
-  page_content.mutable_main_frame_data()->set_title("passage text");
+  scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent>
+      page_content = base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>();
+  page_content->data.mutable_main_frame_data()->set_title("passage text");
 
   ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
       .WillByDefault([](PassagePriority priority,
@@ -170,7 +172,8 @@ TEST_F(PageEmbeddingsServiceTest, NotifiesObserver) {
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   std::move(compute_passages_embeddings_callback)
       .Run({""}, {Embedding({1.0f})}, 1, ComputeEmbeddingsStatus::kSuccess);
@@ -207,7 +210,8 @@ TEST_F(PageEmbeddingsServiceTest,
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   web_contents.reset();
 
@@ -240,7 +244,8 @@ TEST_F(PageEmbeddingsServiceTest, GetEmbeddings) {
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   std::move(compute_passages_embeddings_callback)
       .Run({"passage text"}, {Embedding({1.0f})}, 1,
@@ -277,7 +282,8 @@ TEST_F(PageEmbeddingsServiceTest, EmbeddingsNotPresentOnError) {
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   std::move(compute_passages_embeddings_callback)
       .Run({"passage text"}, {Embedding({1.0f})}, 1,
@@ -304,14 +310,16 @@ TEST_F(PageEmbeddingsServiceTest, NewPageContentCancelsExistingEmbeddingTask) {
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   ON_CALL(embedder_mock(), ComputePassagesEmbeddings).WillByDefault(Return(2));
   EXPECT_CALL(embedder_mock(), TryCancel(1));
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 }
 
 // Validates that the embeddings are no longer available after destroying the
@@ -338,7 +346,8 @@ TEST_F(PageEmbeddingsServiceTest, EmbeddingsRemovedOnWebContentsDestruction) {
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   web_contents.reset();
 
@@ -377,7 +386,8 @@ TEST_F(PageEmbeddingsServiceTest, CancelledEmbeddingsAreIgnored) {
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
       .WillByDefault([&](PassagePriority priority,
@@ -391,7 +401,8 @@ TEST_F(PageEmbeddingsServiceTest, CancelledEmbeddingsAreIgnored) {
   // embedding computation.
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   std::move(compute_passages_embeddings_callback1)
       .Run({"passage text 1"}, {Embedding({1.0f})}, 1,
@@ -438,7 +449,8 @@ TEST_F(PageEmbeddingsServiceTest, DoesNotCrashOnCancel) {
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
       .WillByDefault([&](PassagePriority priority,
@@ -452,7 +464,8 @@ TEST_F(PageEmbeddingsServiceTest, DoesNotCrashOnCancel) {
   // embedding computation.
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   // Mimic real cancelling.
   std::move(compute_passages_embeddings_callback1)
@@ -511,7 +524,8 @@ TEST_F(PageEmbeddingsServiceTest, PrioritySetBasedOnHighestPriorityObserver) {
   set_priority_expectation(kPassive);
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   // Adding an urgent observer should raise the priority.
   page_embeddings_service().AddObserver(&observer_urgent);
@@ -519,7 +533,8 @@ TEST_F(PageEmbeddingsServiceTest, PrioritySetBasedOnHighestPriorityObserver) {
   set_priority_expectation(kUrgent);
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   // Adding a user blocking observer should raise the priority again.
   page_embeddings_service().AddObserver(&observer_user_blocking);
@@ -527,7 +542,8 @@ TEST_F(PageEmbeddingsServiceTest, PrioritySetBasedOnHighestPriorityObserver) {
   set_priority_expectation(kUserInitiated);
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   // Removing the urgent observer should not affect the priority since a higher
   // priority observer is present.
@@ -536,7 +552,8 @@ TEST_F(PageEmbeddingsServiceTest, PrioritySetBasedOnHighestPriorityObserver) {
   set_priority_expectation(kUserInitiated);
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   // Removing the last observer should restore the priority to the default.
   page_embeddings_service().RemoveObserver(&observer_user_blocking);
@@ -544,7 +561,8 @@ TEST_F(PageEmbeddingsServiceTest, PrioritySetBasedOnHighestPriorityObserver) {
   set_priority_expectation(kPassive);
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 }
 
 // Validates that the embedder's tasks are reprioritized as expected.
@@ -577,12 +595,14 @@ TEST_F(PageEmbeddingsServiceTest, TasksReprioritized) {
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents1->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   ON_CALL(embedder_mock(), ComputePassagesEmbeddings).WillByDefault(Return(2));
   page_embeddings_service().OnPageContentExtracted(
       web_contents2->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   ObserverMock observer_user_blocking;
   EXPECT_CALL(observer_user_blocking, GetDefaultPriority)
@@ -646,14 +666,16 @@ TEST_F(PageEmbeddingsServiceTest, ScopedPriority) {
   set_priority_expectation(kUserInitiated);
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   // Destroying the ScopedPriority should revert to the lower priority.
   scoped_priority.reset();
   set_priority_expectation(kUrgent);
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   page_embeddings_service().RemoveObserver(&observer);
 }
@@ -703,14 +725,16 @@ TEST_F(PageEmbeddingsServiceTest, ScopedPriorityWithHigherPriorityObserver) {
   set_priority_expectation(kUserInitiated);
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   // Destroying the ScopedPriority should not affect the priority.
   scoped_priority.reset();
   set_priority_expectation(kUserInitiated);
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   page_embeddings_service().RemoveObserver(&observer_user_blocking);
   page_embeddings_service().RemoveObserver(&observer_default);
@@ -736,7 +760,8 @@ TEST_F(PageEmbeddingsServiceTest,
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   page_embeddings_service().RemoveObserver(&observer);
 }
@@ -771,7 +796,8 @@ TEST_F(PageEmbeddingsServiceTest,
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   ASSERT_FALSE(compute_passages_embeddings_callback.is_null());
   std::move(compute_passages_embeddings_callback)
@@ -823,7 +849,8 @@ TEST_F(PageEmbeddingsServiceTest,
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   ASSERT_FALSE(compute_passages_embeddings_callback.is_null());
   std::move(compute_passages_embeddings_callback)
@@ -862,7 +889,8 @@ TEST_F(PageEmbeddingsServiceTest,
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   page_embeddings_service().AddObserver(&observer);
 
@@ -904,7 +932,8 @@ TEST_F(PageEmbeddingsServiceTest,
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
-      optimization_guide::proto::AnnotatedPageContent());
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>());
 
   page_embeddings_service().AddObserver(&observer);
 

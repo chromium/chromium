@@ -124,8 +124,13 @@ void PageContentExtractionService::OnPageContentExtracted(
         annotated_page_content,
     const std::vector<uint8_t>& screenshot_data,
     std::optional<int> tab_id) {
+  // TODO(crrev.com/c/484331007): std::move() APC into the ref counted object.
+  auto ref_counted_content =
+      base::MakeRefCounted<RefCountedAnnotatedPageContent>(
+          annotated_page_content);
+
   for (auto& observer : observers_) {
-    observer.OnPageContentExtracted(page, annotated_page_content);
+    observer.OnPageContentExtracted(page, ref_counted_content);
   }
 
   if (!is_page_content_cache_enabled_) {

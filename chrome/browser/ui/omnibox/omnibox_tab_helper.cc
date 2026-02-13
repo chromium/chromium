@@ -143,16 +143,20 @@ std::optional<bool> OmniboxTabHelper::IsPagePaywalled() {
 
 void OmniboxTabHelper::OnPageContentExtracted(
     content::Page& page,
-    const optimization_guide::proto::AnnotatedPageContent& page_content) {
+    scoped_refptr<
+        const page_content_annotations::RefCountedAnnotatedPageContent>
+        page_content) {
+  CHECK(page_content);
+
   // Ignore if the APC does not belong to the primary page of this tabs web
   // contents.
   if (&page != &(GetWebContents().GetPrimaryPage())) {
     return;
   }
   page_has_apc_paywall_signal_ =
-      page_content.has_main_frame_data() &&
-      page_content.main_frame_data().has_paid_content_metadata() &&
-      page_content.main_frame_data()
+      page_content->data.has_main_frame_data() &&
+      page_content->data.main_frame_data().has_paid_content_metadata() &&
+      page_content->data.main_frame_data()
           .paid_content_metadata()
           .contains_paid_content();
 }
