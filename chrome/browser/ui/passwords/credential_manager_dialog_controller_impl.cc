@@ -54,12 +54,6 @@ struct PasswordFormTraits {
     return form->username_value;
   }
 
-  static webauthn::sorting::SortableCredentialType GetSortableCredentialType(
-      const std::unique_ptr<password_manager::PasswordForm>& form) {
-    // For sorting purposes, consider federated credentials as passwords too.
-    return webauthn::sorting::SortableCredentialType::kPassword;
-  }
-
   static base::Time GetLastUsedTime(
       const std::unique_ptr<password_manager::PasswordForm>& form) {
     return form->date_last_used;
