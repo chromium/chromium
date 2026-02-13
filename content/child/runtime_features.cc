@@ -638,17 +638,6 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableFledge(false);
   }
 
-  // PermissionElement cannot be enabled without the support of the
-  // browser process.
-  if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
-    LOG_IF(WARNING,
-           WebRuntimeFeatures::IsPermissionElementEnabledByRuntimeFlag())
-        << "PermissionElement cannot be enabled in this configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << blink::features::kPermissionElement.name << " instead.";
-    WebRuntimeFeatures::EnablePermissionElement(false);
-  }
-
   // UserMediaElement cannot be enabled without the support of the
   // browser process.
   if (!base::FeatureList::IsEnabled(blink::features::kUserMediaElement)) {

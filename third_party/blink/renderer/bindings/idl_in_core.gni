@@ -475,7 +475,6 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/html/html_or_foreign_element.idl",
   "//third_party/blink/renderer/core/html/html_paragraph_element.idl",
   "//third_party/blink/renderer/core/html/html_param_element.idl",
-  "//third_party/blink/renderer/core/html/html_permission_element.idl",
   "//third_party/blink/renderer/core/html/html_picture_element.idl",
   "//third_party/blink/renderer/core/html/html_pre_element.idl",
   "//third_party/blink/renderer/core/html/html_progress_element.idl",
