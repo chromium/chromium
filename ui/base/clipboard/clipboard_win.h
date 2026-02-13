@@ -120,14 +120,22 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
   void WriteUploadCloudClipboard();
   void WriteConfidentialDataForPassword();
 
-  // Dispatches to |worker_task_runner_| when kNonBlockingOsClipboardReads is
-  // enabled; otherwise runs on the caller thread. |read_tuple_func| takes an
-  // HWND followed by |args| and returns a tuple; |callback| receives the tuple
-  // elements.
-  template <typename ReadTupleFunc, typename Callback, typename... Args>
-  void ReadAsync(ReadTupleFunc read_tuple_func,
-                 Callback callback,
-                 Args&&... args) const;
+  // If kNonBlockingOsClipboardReads is enabled, runs `read_func` on
+  // `worker_task_runner_` (passing owner_window = nullptr) and runs
+  // `reply_func` on the caller sequence with the result. Otherwise runs both
+  // callbacks synchronously on the caller thread, and `read_func` is passed
+  // owner_window = GetClipboardWindow().
+  template <typename Result>
+  void ReadAsync(base::OnceCallback<Result(HWND)> read_func,
+                 base::OnceCallback<void(Result)> reply_func) const;
+  struct ReadHTMLResult {
+    std::u16string markup;
+    std::string src_url;
+    uint32_t fragment_start = 0;
+    uint32_t fragment_end = 0;
+  };
+  // TODO(crbug.com/458194647): Return ReadHTMLResult instead of using
+  // out-params.
   static void ReadHTMLInternal(HWND owner_window,
                                ClipboardBuffer buffer,
                                std::u16string* markup,

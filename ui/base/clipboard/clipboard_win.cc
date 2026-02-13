@@ -251,15 +251,6 @@ HANDLE GetClipboardDataWithLimit(UINT format) {
   return data;
 }
 
-template <typename Callback, typename Tuple>
-void RunCallbackWithTuple(Callback callback, Tuple result) {
-  std::apply(
-      [callback = std::move(callback)](auto&&... args) mutable {
-        std::move(callback).Run(std::forward<decltype(args)>(args)...);
-      },
-      std::move(result));
-}
-
 }  // namespace
 
 // Clipboard factory method.
@@ -413,18 +404,22 @@ std::vector<std::u16string> ClipboardWin::GetStandardFormats(
 void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
                             const std::optional<DataTransferEndpoint>& data_dst,
                             ReadHtmlCallback callback) const {
-  ReadAsync(
-      [](HWND owner_window, ClipboardBuffer buffer) {
-        std::u16string markup;
-        std::string src_url;
-        uint32_t fragment_start = 0;
-        uint32_t fragment_end = 0;
-        ReadHTMLInternal(owner_window, buffer, &markup, &src_url,
-                         &fragment_start, &fragment_end);
-        return std::make_tuple(std::move(markup), GURL(src_url), fragment_start,
-                               fragment_end);
-      },
-      std::move(callback), buffer);
+  ReadAsync(base::BindOnce(
+                [](ClipboardBuffer buffer, HWND owner_window) {
+                  ReadHTMLResult result;
+                  ReadHTMLInternal(owner_window, buffer, &result.markup,
+                                   &result.src_url, &result.fragment_start,
+                                   &result.fragment_end);
+                  return result;
+                },
+                buffer),
+            base::BindOnce(
+                [](ReadHtmlCallback callback, ReadHTMLResult result) {
+                  std::move(callback).Run(
+                      std::move(result.markup), GURL(result.src_url),
+                      result.fragment_start, result.fragment_end);
+                },
+                std::move(callback)));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -956,28 +951,20 @@ void ClipboardWin::WriteConfidentialDataForPassword() {
       base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
 }
 
-template <typename ReadTupleFunc, typename Callback, typename... Args>
-void ClipboardWin::ReadAsync(ReadTupleFunc read_tuple_func,
-                             Callback callback,
-                             Args&&... args) const {
-  using TupleReplyType = std::invoke_result_t<ReadTupleFunc, HWND, Args...>;
+template <typename Result>
+void ClipboardWin::ReadAsync(
+    base::OnceCallback<Result(HWND)> read_func,
+    base::OnceCallback<void(Result)> reply_func) const {
   if (!base::FeatureList::IsEnabled(features::kNonBlockingOsClipboardReads)) {
-    TupleReplyType result = std::move(read_tuple_func)(
-        /*owner_window=*/GetClipboardWindow(), std::forward<Args>(args)...);
-    RunCallbackWithTuple(std::move(callback), std::move(result));
+    Result result =
+        std::move(read_func).Run(/*owner_window=*/GetClipboardWindow());
+    std::move(reply_func).Run(std::move(result));
     return;
   }
+  CHECK(worker_task_runner_);
   worker_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](ReadTupleFunc read_tuple_func, auto&&... bound_args) {
-            return std::move(read_tuple_func)(
-                /*owner_window=*/nullptr,
-                std::forward<decltype(bound_args)>(bound_args)...);
-          },
-          std::move(read_tuple_func), std::forward<Args>(args)...),
-      base::BindOnce(&RunCallbackWithTuple<Callback, TupleReplyType>,
-                     std::move(callback)));
+      FROM_HERE, base::BindOnce(std::move(read_func), /*owner_window=*/nullptr),
+      std::move(reply_func));
 }
 
 std::vector<uint8_t> ClipboardWin::ReadPngInternal(
