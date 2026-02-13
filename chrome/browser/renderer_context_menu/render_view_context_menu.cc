@@ -371,9 +371,6 @@ using extensions::MenuManager;
 
 namespace {
 
-constexpr char kOpenLinkAsProfileHistogram[] =
-    "RenderViewContextMenu.OpenLinkAsProfile";
-
 constexpr int kTabMenuIconSize = 16;
 
 base::OnceCallback<void(RenderViewContextMenu*)>* GetMenuShownCallback() {
@@ -385,18 +382,6 @@ base::OnceCallback<void(RenderViewContextMenu*)>* GetMenuShownCallback() {
 enum class UmaEnumIdLookupType {
   GeneralEnumId,
   ContextSpecificEnumId,
-};
-
-// Count when Open Link as Profile or Incognito Window menu item is displayed or
-// clicked. Metric: "RenderViewContextMenu.OpenLinkAsProfile".
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OpenLinkAs {
-  kOpenLinkAsProfileDisplayed = 0,
-  kOpenLinkAsProfileClicked = 1,
-  kOpenLinkAsIncognitoDisplayed = 2,
-  kOpenLinkAsIncognitoClicked = 3,
-  kMaxValue = kOpenLinkAsIncognitoClicked,
 };
 
 const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
@@ -1528,24 +1513,6 @@ void RenderViewContextMenu::RecordShownItem(int id, bool is_submenu) {
       // visible items than executable items.
       DLOG(ERROR) << "Update GetIdcToUmaMap. Unhandled IDC: " << id;
     }
-  }
-
-  // The "Open Link as Profile" item can either be shown directly in the main
-  // menu as an item or as a sub-menu. The metric needs to track the
-  // impressions in the main menu, which are
-  // IDC_CONTENT_CONTEXT_OPENLINKINPROFILE when there is a sub-menu, and
-  // IDC_OPEN_LINK_IN_PROFILE_FIRST when there is not.
-  // IDC_OPEN_LINK_IN_PROFILE_FIRST is also emitted when the sub-menu is
-  // opened, so it is not taken into account when the sub-menu exists.
-  if (id == IDC_CONTENT_CONTEXT_OPENLINKINPROFILE ||
-      (id == IDC_OPEN_LINK_IN_PROFILE_FIRST &&
-       profile_link_submenu_model_.GetItemCount() == 0)) {
-    base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
-                                  OpenLinkAs::kOpenLinkAsProfileDisplayed);
-  } else if (id == IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD &&
-             IsOpenLinkOTREnabled(GetProfile(), params_.link_url)) {
-    base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
-                                  OpenLinkAs::kOpenLinkAsIncognitoDisplayed);
   }
 }
 
@@ -3278,8 +3245,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
   if (id >= IDC_OPEN_LINK_IN_PROFILE_FIRST &&
       id <= IDC_OPEN_LINK_IN_PROFILE_LAST) {
     ExecOpenLinkInProfile(id - IDC_OPEN_LINK_IN_PROFILE_FIRST);
-    base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
-                                  OpenLinkAs::kOpenLinkAsProfileClicked);
     return;
   }
 
@@ -3328,8 +3293,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
           WindowOpenDisposition::OFF_THE_RECORD, ui::PAGE_TRANSITION_LINK,
           /*extra_headers=*/std::string(),
           /*started_from_context_menu=*/true);
-      base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
-                                    OpenLinkAs::kOpenLinkAsIncognitoClicked);
       break;
 
     case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:

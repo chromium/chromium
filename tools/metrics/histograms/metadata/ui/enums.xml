@@ -150,13 +150,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/waap/waap_ui_metrics_service.cc:InitialWebUIView) -->
 
-<enum name="OpenLinkAs">
-  <int value="0" label="Open Link as Profile displayed."/>
-  <int value="1" label="Open Link as Profile clicked."/>
-  <int value="2" label="Open Link in Incognito Window displayed."/>
-  <int value="3" label="Open Link in Incognito Window clicked."/>
-</enum>
-
 <!-- LINT.IfChange(PinInfoBarUserInteraction) -->
 
 <enum name="PinInfoBarUserInteraction">
