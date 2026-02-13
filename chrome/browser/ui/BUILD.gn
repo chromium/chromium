@@ -5726,6 +5726,7 @@ if (!is_android) {
     deps = [
       "//base",
       "//chrome/browser",
+      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",

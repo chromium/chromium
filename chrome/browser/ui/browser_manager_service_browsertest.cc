@@ -12,6 +12,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -126,7 +128,10 @@ IN_PROC_BROWSER_TEST_F(BrowserManagerServiceTest,
   testing::Mock::VerifyAndClearExpectations(&primary_observer);
   testing::Mock::VerifyAndClearExpectations(&secondary_observer);
 
-  // Close secondary browser and expect events.
+  // Close secondary browser and expect events. Ensure the secondary profile is
+  // not destroyed before the end of the test to prevent UAF crashes.
+  ScopedProfileKeepAlive profile_keep_alive(
+      secondary_browser->GetProfile(), ProfileKeepAliveOrigin::kBrowserWindow);
   EXPECT_CALL(secondary_observer, OnBrowserClosed(secondary_browser)).Times(1);
   CloseBrowserSynchronously(secondary_browser);
 }
