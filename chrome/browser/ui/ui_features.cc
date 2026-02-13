@@ -255,9 +255,6 @@ BASE_FEATURE(kThreeButtonPasswordSaveDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarHeightSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSidePanelContentAnimationLayerFeatures,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables enterprise profile badging for managed profiles on the toolbar avatar
 // and in the profile menu. On managed profiles, a building icon will be used as
 // a badge in the profile menu.

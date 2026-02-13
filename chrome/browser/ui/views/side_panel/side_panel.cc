@@ -480,10 +480,6 @@ SidePanel::SidePanel(BrowserView* browser_view,
   animation_coordinator_->AddObserver(kSidePanelContentLeftBoundAnimation,
                                       this);
 
-  animation_coordinator_->AddObserver(kSidePanelContentOpacityAnimation, this);
-  animation_coordinator_->AddObserver(kSidePanelContentCornerRadiusAnimation,
-                                      this);
-
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -508,10 +504,7 @@ SidePanel::~SidePanel() {
       this);
 
   animation_coordinator_->RemoveObserver(kSidePanelBoundsAnimation, this);
-
-  animation_coordinator_->RemoveObserver(kSidePanelContentOpacityAnimation,
-                                         this);
-  animation_coordinator_->RemoveObserver(kSidePanelContentCornerRadiusAnimation,
+  animation_coordinator_->RemoveObserver(kSidePanelContentLeftBoundAnimation,
                                          this);
 }
 
@@ -689,26 +682,7 @@ double SidePanel::GetAnimationValue() const {
 void SidePanel::OnAnimationSequenceProgressed(
     const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
     double animation_value) {
-  static bool layer_features_enabled = base::FeatureList::IsEnabled(
-      features::kSidePanelContentAnimationLayerFeatures);
-  if (animation_id == kSidePanelContentCornerRadiusAnimation) {
-    if (layer_features_enabled) {
-      CHECK(browser_view_->GetSidePanelAnimationContent());
-      CHECK(browser_view_->GetSidePanelAnimationContent()->layer());
-      const gfx::RoundedCornersF kRoundedCorners{
-          gfx::Tween::FloatValueBetween(animation_value, 0, 16)};
-      browser_view_->GetSidePanelAnimationContent()
-          ->layer()
-          ->SetRoundedCornerRadius(kRoundedCorners);
-    }
-  } else if (animation_id == kSidePanelContentOpacityAnimation) {
-    if (layer_features_enabled) {
-      CHECK(browser_view_->GetSidePanelAnimationContent());
-      CHECK(browser_view_->GetSidePanelAnimationContent()->layer());
-      browser_view_->GetSidePanelAnimationContent()->layer()->SetOpacity(
-          gfx::Tween::DoubleValueBetween(animation_value, 0.5, 1));
-    }
-  } else if (animation_id == kSidePanelBoundsAnimation) {
+  if (animation_id == kSidePanelBoundsAnimation) {
     if (last_animation_values_[animation_id] != animation_value) {
       last_animation_values_[animation_id] = animation_value;
       InvalidateLayout();
@@ -726,17 +700,6 @@ void SidePanel::OnAnimationSequenceProgressed(
 void SidePanel::OnAnimationTypeStarted(
     SidePanelAnimationCoordinator::AnimationType type) {
   last_animation_values_.clear();
-  if (type == SidePanelAnimationCoordinator::AnimationType::
-                  kOpenWithContentTransition) {
-    if (base::FeatureList::IsEnabled(
-            features::kSidePanelContentAnimationLayerFeatures)) {
-      views::View* animation_content =
-          browser_view_->GetSidePanelAnimationContent();
-      CHECK(animation_content);
-      CHECK(animation_content->layer());
-      animation_content->layer()->SetOpacity(0.5);
-    }
-  }
 }
 
 void SidePanel::OnAnimationTypeEnded(
