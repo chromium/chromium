@@ -22,10 +22,12 @@ namespace ash::secure_channel {
 // to the associated communication channel.
 class ClientConnectionParameters {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
     virtual void OnConnectionRequestCanceled() = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   explicit ClientConnectionParameters(const std::string& feature);
@@ -100,7 +102,7 @@ class ClientConnectionParameters {
   std::string feature_;
   base::UnguessableToken id_;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   bool has_invoked_delegate_function_ = false;
 };

@@ -24,14 +24,16 @@ namespace ash::secure_channel {
 // object.
 class ClientChannel {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer();
     virtual void OnDisconnected() = 0;
     virtual void OnMessageReceived(const std::string& payload) = 0;
     virtual void OnNearbyConnectionStateChanged(
         mojom::NearbyConnectionStep step,
         mojom::NearbyConnectionStepResult result) {}
+
+   protected:
+    ~Observer() override = default;
   };
 
   ClientChannel(const ClientChannel&) = delete;
@@ -96,7 +98,7 @@ class ClientChannel {
       mojom::NearbyConnectionStepResult result);
 
  private:
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
   bool is_disconnected_ = false;
 };
 

@@ -9,8 +9,6 @@
 
 namespace ash::secure_channel {
 
-ClientChannel::Observer::~Observer() = default;
-
 ClientChannel::ClientChannel() = default;
 
 ClientChannel::~ClientChannel() = default;

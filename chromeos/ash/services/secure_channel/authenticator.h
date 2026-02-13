@@ -15,12 +15,13 @@ namespace ash::secure_channel {
 
 class SecureContext;
 
-class AuthenticatorObserver {
+class AuthenticatorObserver : public base::CheckedObserver {
  public:
-  virtual ~AuthenticatorObserver() {}
-
   virtual void OnAuthenticationStateChanged(
       mojom::SecureChannelState secure_channel_state) = 0;
+
+ protected:
+  ~AuthenticatorObserver() override = default;
 };
 
 // Interface for authenticating the remote connection. The two devices
@@ -61,8 +62,7 @@ class Authenticator {
       mojom::SecureChannelState secure_channel_state);
 
  private:
-  base::ObserverList<AuthenticatorObserver>::Unchecked
-      authentication_state_observers_;
+  base::ObserverList<AuthenticatorObserver> authentication_state_observers_;
 };
 
 }  // namespace ash::secure_channel

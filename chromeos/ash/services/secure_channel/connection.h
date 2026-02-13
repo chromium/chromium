@@ -145,9 +145,9 @@ class Connection {
   Status status_;
 
   // The registered observers of the connection.
-  base::ObserverList<ConnectionObserver>::Unchecked observers_;
+  base::ObserverList<ConnectionObserver> observers_;
 
-  base::ObserverList<NearbyConnectionObserver>::Unchecked
+  base::ObserverList<NearbyConnectionObserver>
       nearby_connection_state_observers_;
 
   // A temporary buffer storing bytes received before a received message can be

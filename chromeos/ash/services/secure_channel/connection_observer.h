@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/observer_list_types.h"
 #include "chromeos/ash/services/secure_channel/connection.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 
@@ -15,10 +16,8 @@ namespace ash::secure_channel {
 class WireMessage;
 
 // An interface for observing events that happen on a Connection.
-class ConnectionObserver {
+class ConnectionObserver : public base::CheckedObserver {
  public:
-  virtual ~ConnectionObserver() {}
-
   // Called when the |connection|'s status changes from |old_status| to
   // |new_status|. The |connectoin| is guaranteed to be non-null.
   virtual void OnConnectionStatusChanged(Connection* connection,
@@ -35,15 +34,19 @@ class ConnectionObserver {
   virtual void OnSendCompleted(const Connection& connection,
                                const WireMessage& message,
                                bool success) {}
+
+ protected:
+  ~ConnectionObserver() override = default;
 };
 
-class NearbyConnectionObserver {
+class NearbyConnectionObserver : public base::CheckedObserver {
  public:
-  virtual ~NearbyConnectionObserver() {}
-
   virtual void OnNearbyConnectionStateChanged(
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result) {}
+
+ protected:
+  ~NearbyConnectionObserver() override = default;
 };
 
 }  // namespace ash::secure_channel

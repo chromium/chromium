@@ -10,8 +10,6 @@
 
 namespace ash::secure_channel {
 
-AuthenticatedChannel::Observer::~Observer() = default;
-
 AuthenticatedChannel::AuthenticatedChannel() = default;
 
 AuthenticatedChannel::~AuthenticatedChannel() = default;

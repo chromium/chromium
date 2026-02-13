@@ -22,15 +22,17 @@ namespace ash::secure_channel {
 // All messages sent and received over the channel are encrypted.
 class AuthenticatedChannel {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer();
     virtual void OnDisconnected() = 0;
     virtual void OnMessageReceived(const std::string& feature,
                                    const std::string& payload) = 0;
     virtual void OnNearbyConnectionStateChanged(
         mojom::NearbyConnectionStep step,
         mojom::NearbyConnectionStepResult result) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   AuthenticatedChannel(const AuthenticatedChannel&) = delete;
@@ -103,7 +105,7 @@ class AuthenticatedChannel {
       mojom::NearbyConnectionStepResult result);
 
  private:
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
   bool is_disconnected_ = false;
 };
 

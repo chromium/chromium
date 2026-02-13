@@ -54,7 +54,7 @@ class SecureChannel : public ConnectionObserver,
 
   static std::string StatusToString(const Status& status);
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnSecureChannelStatusChanged(SecureChannel* secure_channel,
                                               const Status& old_status,
@@ -77,6 +77,9 @@ class SecureChannel : public ConnectionObserver,
     virtual void OnSecureChannelAuthenticationStateChanged(
         SecureChannel* secure_channel,
         mojom::SecureChannelState secure_channel_state) {}
+
+   protected:
+    ~Observer() override = default;
   };
 
   class Factory {
@@ -193,7 +196,7 @@ class SecureChannel : public ConnectionObserver,
   base::queue<std::unique_ptr<PendingMessage>> queued_messages_;
   std::unique_ptr<PendingMessage> pending_message_;
   int next_sequence_number_ = 0;
-  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observer_list_;
+  base::ObserverList<Observer> observer_list_;
   base::ScopedObservation<Connection, ConnectionObserver>
       connection_observation_{this};
   base::WeakPtrFactory<SecureChannel> weak_ptr_factory_{this};
