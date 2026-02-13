@@ -85,9 +85,9 @@ public class ViewFinder {
     public static <ViewT extends View> ViewPresence<ViewT> waitForView(
             Class<ViewT> viewClass, Matcher<View> matcher, ViewElement.Options options) {
         RootSpec rootSpec = options.mRootSpec;
-        // If not specified, default to anyRoot().
+        // If not specified, default to focusedRoot().
         if (rootSpec == null) {
-            rootSpec = RootSpec.anyRoot();
+            rootSpec = RootSpec.focusedRoot();
         }
 
         return noopTo().enterState(

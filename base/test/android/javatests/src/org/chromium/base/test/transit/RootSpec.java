@@ -52,7 +52,7 @@ public abstract class RootSpec {
     }
 
     /**
-     * Restrict search to:
+     * Restrict search to any root:
      *
      * <pre>
      * 1. An Activity's subwindows.
@@ -65,7 +65,20 @@ public abstract class RootSpec {
     }
 
     /**
-     * Restrict search to:
+     * Restrict search to any focused root:
+     *
+     * <pre>
+     * 1. An Activity's subwindows.
+     * 2. Dialogs.
+     * 3. Other Roots.
+     * </pre>
+     */
+    public static RootSpec focusedRoot() {
+        return new FocusedRootSpec();
+    }
+
+    /**
+     * Restrict search to any focused root:
      *
      * <pre>
      * 2. Dialogs.
@@ -240,6 +253,13 @@ public abstract class RootSpec {
             IBinder activityToken = activity.getWindow().getDecorView().getWindowToken();
 
             return applicationWindowToken == activityToken;
+        }
+    }
+
+    private static class FocusedRootSpec extends RootSpec {
+        @Override
+        public boolean matches(Root root) {
+            return root.getDecorView().hasWindowFocus();
         }
     }
 }

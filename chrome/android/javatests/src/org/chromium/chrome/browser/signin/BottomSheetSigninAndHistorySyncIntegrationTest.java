@@ -32,6 +32,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.base.test.util.ApplicationTestUtils.waitForActivityWithClass;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -59,6 +60,8 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.transit.RootSpec;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -238,8 +241,10 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 HistorySyncConfig.OptInMode.REQUIRED,
                 TestAccounts.AADC_ADULT_ACCOUNT.getId());
 
-        ViewUtils.waitForVisibleView(
-                withText(R.string.signin_account_picker_bottom_sheet_error_title));
+        // This is a Toast, so need to use RootSpec.anyRoot().
+        waitForView(
+                withText(R.string.signin_account_picker_bottom_sheet_error_title),
+                ViewElement.rootSpecOption(RootSpec.anyRoot()));
         verify(mDelegate, never()).onFlowComplete(any());
         assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
