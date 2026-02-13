@@ -20,6 +20,10 @@ class TestPasswordAutofillAgent;
 class PasswordGenerationAgent;
 }  // namespace autofill
 
+namespace record_replay {
+class RecordReplayAgent;
+}
+
 // This test fixture emulates a single RenderView within the main test process.
 // Since it does everything in a single process, tests based on this fixture do
 // not cover code related to Chrome's multiprocess architecture, such as
@@ -49,6 +53,7 @@ class ChromeRenderViewTest : public content::RenderViewTest {
       nullptr;
   raw_ptr<autofill::PasswordGenerationAgent> password_generation_ = nullptr;
   raw_ptr<autofill::AutofillAgent> autofill_agent_ = nullptr;
+  raw_ptr<record_replay::RecordReplayAgent> record_replay_agent_ = nullptr;
 
   std::unique_ptr<service_manager::BinderRegistry> registry_;
   blink::AssociatedInterfaceRegistry associated_interfaces_;

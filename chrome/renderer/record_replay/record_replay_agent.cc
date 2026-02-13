@@ -195,10 +195,6 @@ void RecordReplayAgent::SelectControlSelectionChanged(
   if (!record_) {
     return;
   }
-
-  if (!driver_) {
-    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(&driver_);
-  }
   GetDriver()->OnSelectChanged(element.GetDomNodeId(),
                                BuildElementSelector(element),
                                element.Value().Utf8());
@@ -208,10 +204,6 @@ void RecordReplayAgent::TextFieldDidEndEditing(
     const blink::WebInputElement& element) {
   if (!record_) {
     return;
-  }
-
-  if (!driver_) {
-    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(&driver_);
   }
   GetDriver()->OnTextChange(element.GetDomNodeId(),
                             BuildElementSelector(element),

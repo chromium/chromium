@@ -283,7 +283,11 @@ static_library("test_support") {
   }
   if (!is_android) {
     public_deps += [ "//chrome/renderer:process_state" ]
-    deps += [ "//chrome/browser/apps/app_service/publishers" ]
+    deps += [
+      "//chrome/browser/apps/app_service/publishers",
+      "//chrome/common/record_replay",
+      "//chrome/renderer/record_replay",
+    ]
   }
 
   if (enable_dice_support) {
@@ -2766,7 +2770,11 @@ if (!is_android) {
       "//chrome/browser/webid",
       "//chrome/browser/webid:browser_tests",
       "//chrome/common:version_header",
+      "//chrome/common/record_replay",
+      "//chrome/common/record_replay:mojom",
       "//chrome/renderer",
+      "//chrome/renderer/record_replay",
+      "//chrome/renderer/record_replay:test_support",
       "//chrome/services/removable_storage_writer:lib",
       "//chrome/test/data/webui:resources",
       "//chrome/test/data/webui/mojo:mojo_bindings",
@@ -4094,10 +4102,7 @@ if (!is_android) {
         "//chrome/browser/ui/omnibox",
         "//chrome/browser/ui/views/glic",
         "//chrome/browser/ui/views/tabs/glic",
-        "//chrome/common/record_replay:mojom",
         "//chrome/renderer/actor:browser_tests",
-        "//chrome/renderer/record_replay",
-        "//chrome/renderer/record_replay:test_support",
         "//chrome/renderer/webui_browser:browser_tests",
         "//components/legion",
         "//components/legion:testing",

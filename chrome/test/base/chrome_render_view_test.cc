@@ -43,7 +43,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/record_replay/record_replay_features.h"
 #include "chrome/renderer/process_state.h"  // nogncheck
+#include "chrome/renderer/record_replay/record_replay_agent.h"
 #endif
 
 using autofill::AutofillAgent;
@@ -101,9 +103,17 @@ void ChromeRenderViewTest::SetUp() {
   autofill_agent_ = new AutofillAgent(
       GetMainRenderFrame(), std::move(unique_password_autofill_agent),
       std::move(unique_password_generation), &associated_interfaces_);
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          record_replay::features::kRecordReplayBase)) {
+    record_replay_agent_ = new record_replay::RecordReplayAgent(
+        GetMainRenderFrame(), &associated_interfaces_);
+  }
+#endif
 }
 
 void ChromeRenderViewTest::TearDown() {
+  record_replay_agent_ = nullptr;
   autofill_agent_ = nullptr;
   password_generation_ = nullptr;
   password_autofill_agent_ = nullptr;

@@ -10,7 +10,9 @@
 
 #include "base/functional/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/common/record_replay/record_replay.mojom.h"
+#include "chrome/common/record_replay/record_replay_features.h"
 #include "chrome/renderer/record_replay/record_replay_agent_test_api.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
@@ -60,8 +62,6 @@ class MockRecordReplayDriver : public mojom::RecordReplayDriver {
 
 class RecordReplayAgentTest : public ChromeRenderViewTest {
  public:
-  RecordReplayAgentTest() = default;
-
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
     GetMainRenderFrame()
@@ -70,16 +70,13 @@ class RecordReplayAgentTest : public ChromeRenderViewTest {
             mojom::RecordReplayDriver::Name_,
             base::BindRepeating(&MockRecordReplayDriver::BindPendingReceiver,
                                 base::Unretained(&mock_driver_)));
-    agent_ = std::make_unique<RecordReplayAgent>(GetMainRenderFrame(),
-                                                 &associated_interfaces_);
   }
 
   void TearDown() override {
-    agent_.reset();
     ChromeRenderViewTest::TearDown();
   }
 
-  RecordReplayAgent& agent() { return *agent_; }
+  RecordReplayAgent& agent() { return *record_replay_agent_; }
   MockRecordReplayDriver& mock_driver() { return mock_driver_; }
 
   blink::WebDocument GetDocument() { return GetMainFrame()->GetDocument(); }
@@ -93,8 +90,9 @@ class RecordReplayAgentTest : public ChromeRenderViewTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kRecordReplayBase};
   MockRecordReplayDriver mock_driver_;
-  std::unique_ptr<RecordReplayAgent> agent_ = nullptr;
 };
 
 // Tests the selector generation through GetElementSelector().
@@ -215,12 +213,11 @@ TEST_F(RecordReplayAgentTest, RecordingSelect) {
   )");
   agent().StartRecording();
 
+  EXPECT_CALL(mock_driver(),
+              OnSelectChanged(GetDomNodeId("select"), "#select", "value2"));
   blink::WebFormControlElement select =
       GetWebElementById("select").DynamicTo<blink::WebFormControlElement>();
   select.SetValue("value2");
-
-  EXPECT_CALL(mock_driver(),
-              OnSelectChanged(GetDomNodeId("select"), "#select", "value2"));
   test_api(agent()).SelectControlSelectionChanged(select);
 }
 
@@ -229,12 +226,11 @@ TEST_F(RecordReplayAgentTest, RecordingTextChange) {
   LoadHTML(R"(<input id="input">)");
   agent().StartRecording();
 
+  EXPECT_CALL(mock_driver(),
+              OnTextChange(GetDomNodeId("input"), "#input", "new text"));
   blink::WebInputElement input =
       GetWebElementById("input").DynamicTo<blink::WebInputElement>();
   input.SetValue("new text");
-
-  EXPECT_CALL(mock_driver(),
-              OnTextChange(GetDomNodeId("input"), "#input", "new text"));
   test_api(agent()).TextFieldDidEndEditing(input);
 }
 

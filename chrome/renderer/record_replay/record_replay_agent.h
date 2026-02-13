@@ -69,8 +69,9 @@ class RecordReplayAgent : public content::RenderFrameObserver,
 
   // TODO(b/476101114): Wire up to blink::WebRecordReplayClient:
   void DidReceiveLeftMouseDownOrGestureTapInNode(const blink::WebNode& node);
-  void SelectControlSelectionChanged(const blink::WebFormControlElement&);
-  void TextFieldDidEndEditing(const blink::WebInputElement&);
+  void SelectControlSelectionChanged(
+      const blink::WebFormControlElement& element);
+  void TextFieldDidEndEditing(const blink::WebInputElement& element);
 
   mojo::AssociatedReceiver<mojom::RecordReplayAgent> receiver_{this};
   mojo::AssociatedRemote<mojom::RecordReplayDriver> driver_;
