@@ -284,6 +284,9 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
 
   ++num_tabs_closed_;
 
+  Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
+      tab_search_prefs::kTabSearchUsed, true);
+
   // CloseTab() can target the WebContents hosting Tab Search if the Tab Search
   // WebUI is open in a chrome browser tab rather than its bubble. In this case
   // CloseWebContentsAt() closes the WebContents hosting this
@@ -310,6 +313,8 @@ void TabSearchPageHandler::CloseWebUiTab() {
   // CloseWebContentsAt(). See (https://crbug.com/1175507).
   TabStripModel* const tab_strip_model = browser_->tab_strip_model();
   CHECK(tab_strip_model);
+  Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
+      tab_search_prefs::kTabSearchUsed, true);
   const int index =
       tab_strip_model->GetIndexOfWebContents(web_ui_->GetWebContents());
   tab_strip_model->CloseWebContentsAt(
@@ -785,6 +790,9 @@ void TabSearchPageHandler::SwitchToTab(
 
   called_switch_to_tab_ = true;
 
+  Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
+      tab_search_prefs::kTabSearchUsed, true);
+
   details->tab->GetBrowserWindowInterface()->GetTabStripModel()->ActivateTabAt(
       details->GetIndex());
   // Tab search shows tabs from other windows in the profile. So if a user
@@ -808,6 +816,10 @@ void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
   if (!tab_restore_service) {
     return;
   }
+
+  Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
+      tab_search_prefs::kTabSearchUsed, true);
+
   tab_restore_service->RestoreEntryById(
       BrowserLiveTabContext::FindContextForWebContents(
           browser_->tab_strip_model()->GetActiveWebContents()),
