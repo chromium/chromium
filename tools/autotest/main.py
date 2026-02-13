@@ -32,78 +32,20 @@ autotest.py -C out/foo StringUtilTest.IsStringUTF8 SpanTest.AsStringView
 
 import argparse
 import os
-import re
 import sys
 import shutil
 
-import test_executor
+import filters
 import finders.file_finder as file_finder
 import finders.target_finder as target_finder
+import test_executor
 import utils.command_util as command
 import utils.constants as const
 import utils.telemetry as telemetry
 from utils.command_error import AutotestError, CommandError
 
-from pathlib import Path
-
 sys.path.append(str(const.SRC_DIR / 'build' / 'android'))
 from pylib import constants
-
-
-def BuildCppTestFilter(filenames: list[str], line: int | None) -> str:
-  make_filter_command: list[str | Path] = [
-      sys.executable, const.SRC_DIR / 'tools' / 'make_gtest_filter.py'
-  ]
-  if line:
-    make_filter_command += ['--line', str(line)]
-  else:
-    make_filter_command += ['--class-only']
-  make_filter_command += filenames
-  return command.RunCommand(make_filter_command).strip()
-
-
-def BuildJavaTestFilter(filenames: list[str]) -> str:
-  return ':'.join('*.{}*'.format(os.path.splitext(os.path.basename(f))[0])
-                  for f in filenames)
-
-
-_PREF_MAPPING_GTEST_FILTER: str = '*PolicyPrefsTest.PolicyToPrefsMapping*'
-
-_PREF_MAPPING_FILE_REGEX: re.Pattern[str] = re.compile(
-    const.PREF_MAPPING_FILE_PATTERN)
-
-SPECIAL_TEST_FILTERS: list[tuple[re.Pattern[str], str]] = [
-    (_PREF_MAPPING_FILE_REGEX, _PREF_MAPPING_GTEST_FILTER)
-]
-
-
-def BuildTestFilter(filenames: list[str], line: int | None) -> str:
-  java_files: list[str] = [f for f in filenames if f.endswith('.java')]
-  # TODO(crbug.com/434009870): Support EarlGrey tests, which don't use
-  # Googletest's macros or pascal case naming convention.
-  cc_files: list[str] = [
-      f for f in filenames if f.endswith('.cc') or f.endswith('_unittest.mm')
-  ]
-  filters: list[str] = []
-  if java_files:
-    filters.append(BuildJavaTestFilter(java_files))
-  if cc_files:
-    filters.append(BuildCppTestFilter(cc_files, line))
-  for regex, gtest_filter in SPECIAL_TEST_FILTERS:
-    if any(True for f in filenames if regex.match(f)):
-      filters.append(gtest_filter)
-      break
-  return ':'.join(filters)
-
-
-def BuildPrefMappingTestFilter(filenames: list[str]) -> str | None:
-  mapping_files: list[str] = [
-      f for f in filenames if _PREF_MAPPING_FILE_REGEX.match(f)
-  ]
-  if not mapping_files:
-    return None
-  names_without_extension: list[str] = [Path(f).stem for f in mapping_files]
-  return ':'.join(names_without_extension)
 
 
 @telemetry.tracer.start_as_current_span('chromium.tools.autotest.main')
@@ -255,14 +197,14 @@ def main() -> int:
                                                       filenames, args)
 
   if not gtest_filter:
-    gtest_filter = BuildTestFilter(filenames, args.line)
+    gtest_filter = filters.BuildTestFilter(filenames, args.line)
 
   if not gtest_filter:
     command.ExitWithMessage('Failed to derive a gtest filter')
 
   pref_mapping_filter: str | None = args.test_policy_to_pref_mappings_filter
   if not pref_mapping_filter:
-    pref_mapping_filter = BuildPrefMappingTestFilter(filenames)
+    pref_mapping_filter = filters.BuildPrefMappingTestFilter(filenames)
 
   assert targets
 

@@ -137,6 +137,14 @@ TEST_FILE_NAME_REGEX: re.Pattern[str] = re.compile(
     r'|(.*_[a-z]*test(?:_win|_mac|_linux|_chromeos|_android)?\.(cc|mm))' +
     r'|(' + PREF_MAPPING_FILE_PATTERN + r')')
 
+_PREF_MAPPING_GTEST_FILTER: str = '*PolicyPrefsTest.PolicyToPrefsMapping*'
+
+PREF_MAPPING_FILE_REGEX: re.Pattern[str] = re.compile(PREF_MAPPING_FILE_PATTERN)
+
+SPECIAL_TEST_FILTERS: list[tuple[re.Pattern[str], str]] = [
+    (PREF_MAPPING_FILE_REGEX, _PREF_MAPPING_GTEST_FILTER)
+]
+
 # Some tests don't directly include gtest.h and instead include it via gmock.h
 # or a test_utils.h file, so make sure these cases are captured. Also include
 # files that use <...> for #includes instead of quotes.
