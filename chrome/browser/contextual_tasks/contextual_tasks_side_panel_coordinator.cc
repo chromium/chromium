@@ -1032,6 +1032,10 @@ ContextualTasksSidePanelCoordinator::GetSessionHandleForActiveTabOrSidePanel() {
         browser_window_->GetActiveTabInterface();
     if (active_tab_interface) {
       web_contents = active_tab_interface->GetContents();
+      if (web_contents &&
+          !ui_service_->IsContextualTasksUrl(web_contents->GetURL())) {
+        web_contents = nullptr;
+      }
     }
   }
 
