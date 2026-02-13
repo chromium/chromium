@@ -350,13 +350,28 @@ public class CompositorView extends FrameLayout
     }
 
     /**
+     * Updates the InputTransferHandler of the current mSurfaceId with the current state of mIsInXr.
+     */
+    @SuppressWarnings("NewApi")
+    private void updateXrStateForCurrentSurfaceInputTransferHandler() {
+        if (InputUtils.isTransferInputToVizSupported() && mSurfaceId != null) {
+            InputTransferHandler handler = SurfaceInputTransferHandlerMap.getMap().get(mSurfaceId);
+            assert handler != null;
+            handler.setIsInXr(mIsInXr);
+        }
+    }
+
+    /**
      * Enables/disables immersive AR overlay mode, a variant of overlay video mode.
+     *
      * @param enabled Whether to enter or leave overlay immersive ar mode.
      */
     public void setOverlayImmersiveArMode(boolean enabled, boolean domSurfaceNeedsConfiguring) {
         // Disable SurfaceControl for the duration of the session. This works around a black
         // screen after activating the screen keyboard (IME), see https://crbug.com/1166248.
         mIsInXr = enabled;
+
+        updateXrStateForCurrentSurfaceInputTransferHandler();
 
         if (domSurfaceNeedsConfiguring) {
             setOverlayVideoMode(enabled);
@@ -377,6 +392,8 @@ public class CompositorView extends FrameLayout
      */
     public void setOverlayVrMode(boolean enabled) {
         mIsInXr = enabled;
+
+        updateXrStateForCurrentSurfaceInputTransferHandler();
 
         // We're essentially entering OverlayVideo mode because we're going to be rendering to an
         // overlay, but we don't actually need a new composite or to adjust the alpha blend.
@@ -498,6 +515,9 @@ public class CompositorView extends FrameLayout
             assert mSurfaceId == null;
             mSurfaceId = surfaceId;
             SurfaceInputTransferHandlerMap.getMap().put(mSurfaceId, handler);
+            // WebXR can trigger a re-creation of the surface, in that case, we need to ensure that
+            // the InputTransferHandler is aware that we are in Xr.
+            handler.setIsInXr(mIsInXr);
         }
     }
 

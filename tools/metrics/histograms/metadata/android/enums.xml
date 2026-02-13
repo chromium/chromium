@@ -1968,6 +1968,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="RIRDelegateConnectionNotSetup"/>
   <int value="15" label="SharedMemoryUnavailable"/>
   <int value="16" label="PositiveEventAndDownTimeDelta"/>
+  <int value="17" label="XrIsActive"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/android/transfer_input_to_viz_result.h:TransferInputToVizResult)-->
