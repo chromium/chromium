@@ -7905,6 +7905,7 @@ test("unit_tests") {
       "//chrome/services/mac_notifications/public/mojom",
       "//chrome/utility/safe_browsing",
       "//chrome/utility/safe_browsing/mac:dmg_common",
+      "//components/enterprise/platform_auth:enterprise_platform_auth",
       "//components/power_metrics",
       "//media/capture:test_support",
       "//ui/events/devices:test_support",

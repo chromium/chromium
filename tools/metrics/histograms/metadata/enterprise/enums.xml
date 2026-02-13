@@ -2700,6 +2700,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="URLSession has failed with an OS error."/>
   <int value="2" label="URLSession request has timed out."/>
   <int value="3" label="URLSession response body size over the limit."/>
+  <int value="4"
+      label="URLSession request has violated CORS restrictions of the
+             URLSessionURLLoader"/>
 </enum>
 
 <enum name="OsSuite">

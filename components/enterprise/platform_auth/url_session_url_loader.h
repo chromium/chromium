@@ -62,6 +62,29 @@ class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) URLSessionURLLoader
   static constexpr char kTestServerResponseBody[] =
       "This is a test response body";
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(SSORequestFailReason)
+  enum class SSORequestFailReason {
+    kOther = 0,
+    kOsError = 1,
+    kTimeout = 2,
+    kResponseTooBig = 3,
+    kCorsViolation = 4,
+    kMaxValue = kCorsViolation,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:OktaSSOFailureReason)
+
+  static constexpr std::string_view kOktaResultHistogram =
+      "Enterprise.ExtensibleEnterpriseSSO.Okta.Result";
+  static constexpr std::string_view kOktaSuccessDurationHistogram =
+      "Enterprise.ExtensibleEnterpriseSSO.Okta.Success.Duration";
+  static constexpr std::string_view kOktaFailureDurationHistogram =
+      "Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Duration";
+  static constexpr std::string_view kOktaFailureReasonHistogram =
+      "Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Reason";
+
  private:
   URLSessionURLLoader();
   ~URLSessionURLLoader() override;
@@ -73,19 +96,6 @@ class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) URLSessionURLLoader
       base::TimeDelta timeout = kTimeout);
 
   void OnRequestComplete(NSURLResponse* response, NSData* data);
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(SSORequestFailReason)
-  enum class SSORequestFailReason {
-    kOther = 0,
-    kOsError = 1,
-    kTimeout = 2,
-    kResponseTooBig = 3,
-    kMaxValue = kResponseTooBig,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:OktaSSOFailureReason)
 
   void OnRequestFailed(SSORequestFailReason reason);
 

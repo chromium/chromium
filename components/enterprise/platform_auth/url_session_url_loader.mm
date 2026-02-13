@@ -218,6 +218,7 @@ void URLSessionURLLoader::OnRequestFailed(SSORequestFailReason reason) {
       break;
     case SSORequestFailReason::kOsError:
     case SSORequestFailReason::kOther:
+    case SSORequestFailReason::kCorsViolation:
       error_code = net::ERR_FAILED;
       break;
   }
