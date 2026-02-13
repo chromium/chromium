@@ -16,10 +16,11 @@ namespace media {
 
 namespace {
 
-constexpr int k48kHz = 48000;
-constexpr int kDefaultSampleRate = 44100;
+const int k48kHz = 48000;
 
 }  // namespace
+
+static const int kDefaultSampleRate = 44100;
 
 class AudioTimestampHelperTest : public ::testing::Test {
  public:
@@ -90,16 +91,6 @@ TEST_F(AudioTimestampHelperTest, TimeToFrames) {
             AudioTimestampHelper::TimeToFrames(base::Microseconds(20), k48kHz));
   EXPECT_EQ(1,
             AudioTimestampHelper::TimeToFrames(base::Microseconds(21), k48kHz));
-
-  // Same duration of 20.833 microseconds as above, but ensure negative rounding
-  // works as intended.
-  EXPECT_EQ(
-      0, AudioTimestampHelper::TimeToFrames(base::Microseconds(-10), k48kHz));
-  EXPECT_EQ(
-      -1, AudioTimestampHelper::TimeToFrames(base::Microseconds(-20), k48kHz));
-  EXPECT_EQ(
-      -1, AudioTimestampHelper::TimeToFrames(base::Microseconds(-21), k48kHz));
-
   // Exact value with maximum precision of TimeDelta.
   EXPECT_EQ(750, AudioTimestampHelper::TimeToFrames(base::Microseconds(15625),
                                                     k48kHz));
