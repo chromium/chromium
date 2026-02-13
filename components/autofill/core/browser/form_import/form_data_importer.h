@@ -86,10 +86,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   // Tries to initiate the saving of `extracted_iban` if applicable.
   bool ProcessIbanImportCandidate(Iban& extracted_iban);
 
-  // Cache the last four of the fetched virtual card so we don't offer saving
-  // them.
-  void CacheFetchedVirtualCard(const std::u16string& last_four);
-
   CreditCardSaveManager* GetCreditCardSaveManager() {
     return credit_card_save_manager_.get();
   }
@@ -269,9 +265,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   // Will be passed to `credit_card_save_manager_` for metrics. If no credit
   // card was found in the form, the type will be `kNoCard`.
   CreditCardImportType credit_card_import_type_ = CreditCardImportType::kNoCard;
-
-  // Used to store the last four digits of the fetched virtual cards.
-  base::flat_set<std::u16string> fetched_virtual_cards_;
 
   // Enables importing from multi-step import flows.
   MultiStepImportMerger multistep_importer_;

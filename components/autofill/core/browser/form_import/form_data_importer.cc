@@ -220,11 +220,6 @@ void FormDataImporter::ImportAndProcessFormData(
       ukm_source_id);
 }
 
-void FormDataImporter::CacheFetchedVirtualCard(
-    const std::u16string& last_four) {
-  fetched_virtual_cards_.insert(last_four);
-}
-
 FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
     const FormStructure& submitted_form,
     bool profile_autofill_enabled,
@@ -627,7 +622,8 @@ std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
   }
 
   // If the extracted card is a known virtual card, return the extracted card.
-  if (fetched_virtual_cards_.contains(candidate.LastFourDigits())) {
+  if (GetPaymentsFormDataImporter().fetched_virtual_cards_.contains(
+          candidate.LastFourDigits())) {
     credit_card_import_type_ = CreditCardImportType::kVirtualCard;
     return candidate;
   }

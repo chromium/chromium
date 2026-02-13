@@ -5,8 +5,10 @@
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 
 #include <optional>
+#include <string>
 
 #include "base/check_deref.h"
+#include "base/containers/flat_set.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
@@ -36,6 +38,11 @@ std::optional<Iban> PaymentsFormDataImporter::ExtractIban(
   payments_data_manager().SetAutofillHasSeenIban();
 
   return candidate_iban;
+}
+
+void PaymentsFormDataImporter::CacheFetchedVirtualCard(
+    const std::u16string& last_four) {
+  fetched_virtual_cards_.insert(last_four);
 }
 
 Iban PaymentsFormDataImporter::ExtractIbanFromForm(const FormStructure& form) {

@@ -6,7 +6,9 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_PAYMENTS_PAYMENTS_FORM_DATA_IMPORTER_H_
 
 #include <optional>
+#include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 
@@ -63,12 +65,16 @@ class PaymentsFormDataImporter {
   PaymentsFormDataImporter& operator=(const PaymentsFormDataImporter&) = delete;
   virtual ~PaymentsFormDataImporter();
 
+  // Returns the extracted IBAN from the `form` if it is a new IBAN.
+  std::optional<Iban> ExtractIban(const FormStructure& form);
+
+  // Cache the last four of the fetched virtual card so we don't offer saving
+  // them.
+  void CacheFetchedVirtualCard(const std::u16string& last_four);
+
   FetchedPaymentsDataContext& fetched_payments_data_context() {
     return fetched_payments_data_context_;
   }
-
-  // Returns the extracted IBAN from the `form` if it is a new IBAN.
-  std::optional<Iban> ExtractIban(const FormStructure& form);
 
  private:
   friend class PaymentsFormDataImporterTestApi;
@@ -86,6 +92,9 @@ class PaymentsFormDataImporter {
   PaymentsDataManager& payments_data_manager();
 
   const raw_ref<AutofillClient> client_;
+
+  // Used to store the last four digits of the fetched virtual cards.
+  base::flat_set<std::u16string> fetched_virtual_cards_;
 
   // Struct to record contexts for the last payments data fetch. Should be reset
   // when a new fetch starts.

@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/addresses/address_form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -2719,7 +2720,8 @@ TEST_F(FormDataImporterTest,
                                            "4111 1111 1111 1111", "01", "2999");
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
-  form_data_importer().CacheFetchedVirtualCard(u"1111");
+  form_data_importer().GetPaymentsFormDataImporter().CacheFetchedVirtualCard(
+      u"1111");
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
       *form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
