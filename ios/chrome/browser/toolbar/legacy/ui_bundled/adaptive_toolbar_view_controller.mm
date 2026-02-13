@@ -204,10 +204,10 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
   [self updateUIOnTraitChange:nil];
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+  NSArray<UITrait>* traits = @[
     UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
     UITraitPreferredContentSizeCategory.class
-  ]);
+  ];
   __weak __typeof(self) weakSelf = self;
   UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                    UITraitCollection* previousCollection) {
