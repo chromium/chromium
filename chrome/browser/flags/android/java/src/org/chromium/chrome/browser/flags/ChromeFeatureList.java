@@ -1688,6 +1688,12 @@ public abstract class ChromeFeatureList {
             newIntCachedFeatureParam(
                     READALOUD, "read_aloud_readability_delay_ms_after_page_load", 500);
 
+    public static final StringCachedFeatureParam sReadAloudAudioOverviewsSupportedLanguages =
+            newStringCachedFeatureParam(
+                    READALOUD_AUDIO_OVERVIEWS,
+                    "read_aloud_audio_overviews_supported_languages",
+                    "en");
+
     public static final BooleanCachedFeatureParam sShouldConsiderLanguageInOverviewReadability =
             newBooleanCachedFeatureParam(
                     READALOUD_AUDIO_OVERVIEWS,
@@ -1817,6 +1823,7 @@ public abstract class ChromeFeatureList {
                     sPCctMinimumHeightRatio,
                     sPriceChangeModuleSkipShoppingPersistedTabDataDelayedInit,
                     sReadAloudAudioOverviewsSpeedAdditionPercentage,
+                    sReadAloudAudioOverviewsSupportedLanguages,
                     sReadAloudReadabilityDelayMsAfterPageLoad,
                     sSearchinCctApplyReferrerId,
                     sShouldConsiderLanguageInOverviewReadability,

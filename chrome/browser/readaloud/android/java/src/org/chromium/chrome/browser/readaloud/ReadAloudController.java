@@ -1451,7 +1451,7 @@ public class ReadAloudController
     }
 
     private static boolean isLanguageSupportedForOverview(String language) {
-        return language.equals("en");
+        return ReadAloudFeatures.getSupportedLanguagesForOverview().contains(language);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

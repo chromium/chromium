@@ -7,6 +7,8 @@
 
 #include <jni.h>
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -363,6 +365,12 @@ inline constexpr base::FeatureParam<int>
         &kReadAloud,
         "read_aloud_readability_delay_ms_after_page_load",
         /* default_value=*/500);
+
+inline constexpr base::FeatureParam<std::string>
+    kReadAloudAudioOverviewsSupportedLanguages(
+        &kReadAloudAudioOverviews,
+        "read_aloud_audio_overviews_supported_languages",
+        /* default_value=*/"en");
 
 inline constexpr base::FeatureParam<bool> kTouchToSearchCalloutIph(
     &kTouchToSearchCallout,
