@@ -649,14 +649,18 @@ chromium-metrics-reviews@google.com.
   <int value="50" label="Actor task icon, attached, audio mode."/>
   <int value="51" label="Actor task icon, detached, text mode."/>
   <int value="52" label="Actor task icon, detached, audio mode."/>
-  <int value="53" label="Handoff button, attached, text mode."/>
-  <int value="54" label="Handoff button, attached, audio mode."/>
-  <int value="55" label="Handoff button, detached, text mode."/>
-  <int value="56" label="Handoff button, detached, audio mode."/>
-  <int value="57" label="skills, attached, text mode."/>
-  <int value="58" label="skills, attached, audio mode."/>
-  <int value="59" label="skills, detached, text mode."/>
-  <int value="60" label="skills, detached, audio mode."/>
+  <int value="53" label="User shared an image, attached, text mode."/>
+  <int value="54" label="User shared an image, attached, audio mode."/>
+  <int value="55" label="User shared an image, detached, text mode."/>
+  <int value="56" label="User shared an image, detached, audio mode."/>
+  <int value="57" label="Handoff button, attached, text mode."/>
+  <int value="58" label="Handoff button, attached, audio mode."/>
+  <int value="59" label="Handoff button, detached, text mode."/>
+  <int value="60" label="Handoff button, detached, audio mode."/>
+  <int value="61" label="skills, attached, text mode."/>
+  <int value="62" label="skills, attached, audio mode."/>
+  <int value="63" label="skills, detached, text mode."/>
+  <int value="64" label="skills, detached, audio mode."/>
   <int value="65" label="Auto-opened by contextual cue, attached, text mode."/>
   <int value="66" label="Auto-opened by contextual cue, attached, audio mode."/>
   <int value="67" label="Auto-opened by contextual cue, detached, text mode."/>
