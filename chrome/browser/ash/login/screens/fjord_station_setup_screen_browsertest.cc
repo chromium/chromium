@@ -93,9 +93,10 @@ IN_PROC_BROWSER_TEST_F(FjordStationSetupScreenTest,
 
   // Verify after clicking Next the button text and webview frame URL are
   // updated.
-  EXPECT_EQ(
-      test::OobeJS().GetAttributeString(kSrcAttribute, kStationSetupFramePath),
-      kExpectedFinishSetupUrl);
+  std::string finish_setup_url_attribute =
+      test::GetOobeElementPath(kStationSetupFramePath) + ".src === '" +
+      kExpectedFinishSetupUrl + "'";
+  test::OobeJS().CreateWaiter(finish_setup_url_attribute)->Wait();
   EXPECT_EQ(
       test::OobeJS().GetAttributeString(kTextKeyAttribute, kActionButtonPath),
       kExpectedDoneButtonTextKey);
