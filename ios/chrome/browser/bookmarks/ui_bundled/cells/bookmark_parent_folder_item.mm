@@ -123,9 +123,7 @@
                                   kBookmarkCellHorizontalAccessoryViewSpacing));
   [self applyContentSizeCategoryStyles];
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                      withAction:@selector(applyContentSizeCategoryStyles)];
 
   return self;
