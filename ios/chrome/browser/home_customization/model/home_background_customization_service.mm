@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import <set>
+#import <string_view>
 
 #import "base/base64.h"
 #import "base/containers/adapters.h"
@@ -62,6 +63,85 @@ bool operator==(const sync_pb::ThemeSpecificsIos& lhs,
 }
 }  // namespace sync_pb
 
+namespace {
+
+// Checks if the legacy theme pref has been migrated. If not, copies the legacy
+// value to the new pref and marks migration as complete. Returns the encoded
+// migrated theme if migration occurred, or `std::nullopt` otherwise.
+std::optional<std::string> MigrateLegacyThemeIfNeeded(
+    PrefService* profile_pref_service) {
+  CHECK(base::FeatureList::IsEnabled(syncer::kSyncThemesIos));
+
+  if (profile_pref_service->GetBoolean(prefs::kIosNtpThemeMigrationComplete)) {
+    return std::nullopt;
+  }
+
+  // Mark migration as complete immediately so it's not tried again.
+  profile_pref_service->SetBoolean(prefs::kIosNtpThemeMigrationComplete, true);
+
+  const std::string legacy_theme =
+      profile_pref_service->GetString(prefs::kIosSavedThemeSpecificsIos);
+
+  // Only migrate if legacy data exists.
+  if (!legacy_theme.empty()) {
+    profile_pref_service->SetString(prefs::kIosNtpThemeSpecifics, legacy_theme);
+    return legacy_theme;
+  }
+
+  return std::nullopt;
+}
+
+// Retrieves the active `ThemeSpecificsIos`.
+std::string GetThemeSpecifics(PrefService* profile_pref_service) {
+  if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
+    return profile_pref_service->GetString(prefs::kIosNtpThemeSpecifics);
+  }
+
+  // When `syncer::kSyncThemesIos` is disabled use the legacy theme pref.
+  return profile_pref_service->GetString(prefs::kIosSavedThemeSpecificsIos);
+}
+
+// Sets the string value for `pref_name` to `value` in `pref_service`. If
+// `value` is empty, the pref is cleared instead.
+void SetOrClearStringPref(PrefService* pref_service,
+                          std::string_view pref_name,
+                          const std::string& value) {
+  if (value.empty()) {
+    pref_service->ClearPref(pref_name);
+  } else {
+    pref_service->SetString(pref_name, value);
+  }
+}
+
+// Saves the encoded theme to the appropriate pref based on
+// `syncer::kSyncThemesIos`.
+void SaveThemeSpecifics(PrefService* profile_pref_service,
+                        const std::string& encoded_theme) {
+  // Always update the legacy pref, which ensures that if
+  // `syncer::kSyncThemesIos` is turned off, the user's most recent theme is
+  // still preserved in the legacy pref.
+  SetOrClearStringPref(profile_pref_service, prefs::kIosSavedThemeSpecificsIos,
+                       encoded_theme);
+
+  if (!base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
+    return;
+  }
+
+  SetOrClearStringPref(profile_pref_service, prefs::kIosNtpThemeSpecifics,
+                       encoded_theme);
+
+  // If writing a new value, ensure migration is marked complete. This prevents
+  // any potential weird edge case where a user saves a theme somehow before
+  // migration logic ever ran.
+  if (!encoded_theme.empty() &&
+      !profile_pref_service->GetBoolean(prefs::kIosNtpThemeMigrationComplete)) {
+    profile_pref_service->SetBoolean(prefs::kIosNtpThemeMigrationComplete,
+                                     true);
+  }
+}
+
+}  // namespace
+
 HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
     PrefService* pref_service,
     UserUploadedImageManager* user_image_manager,
@@ -74,6 +154,9 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
   if (!IsNTPBackgroundCustomizationEnabled()) {
     return;
   }
+
+  CHECK(pref_service_);
+
   pref_change_registrar_.Init(pref_service_);
   PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(
       &HomeBackgroundCustomizationService::OnPolicyPrefsChanged,
@@ -154,6 +237,8 @@ void HomeBackgroundCustomizationService::RegisterProfilePrefs(
   // Use a simple list as a sentinel value to indicate "new user".
   registry->RegisterListPref(prefs::kIosRecentlyUsedBackgrounds,
                              base::ListValue().Append(true));
+  registry->RegisterStringPref(prefs::kIosNtpThemeSpecifics, std::string());
+  registry->RegisterBooleanPref(prefs::kIosNtpThemeMigrationComplete, false);
 }
 
 std::optional<HomeCustomBackground>
@@ -333,8 +418,8 @@ void HomeBackgroundCustomizationService::StoreCurrentTheme() {
     new_recent_background = current_theme_;
   }
 
-  pref_service_->SetString(prefs::kIosSavedThemeSpecificsIos,
-                           EncodeThemeSpecificsIos(current_theme_));
+  std::string encoded_theme = EncodeThemeSpecificsIos(current_theme_);
+  SaveThemeSpecifics(pref_service_, encoded_theme);
 
   if (current_user_uploaded_background_) {
     pref_service_->SetDict(prefs::kIosUserUploadedBackground,
@@ -386,8 +471,21 @@ void HomeBackgroundCustomizationService::LoadCurrentTheme() {
   if (!IsNTPBackgroundCustomizationEnabled()) {
     return;
   }
-  current_theme_ = DecodeThemeSpecificsIos(
-      pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos));
+
+  std::string saved_encoded_theme = GetThemeSpecifics(pref_service_);
+
+  // If theme sync is enabled, check if a migration from legacy theme storage is
+  // needed.
+  if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
+    std::optional<std::string> migrated_theme =
+        MigrateLegacyThemeIfNeeded(pref_service_);
+
+    // Use the migrated theme if present, otherwise keep the existing
+    // `saved_encoded_theme`.
+    saved_encoded_theme = migrated_theme.value_or(saved_encoded_theme);
+  }
+
+  current_theme_ = DecodeThemeSpecificsIos(saved_encoded_theme);
 
   const base::DictValue& background_data =
       pref_service_->GetDict(prefs::kIosUserUploadedBackground);

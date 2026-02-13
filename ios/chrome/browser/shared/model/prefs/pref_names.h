@@ -442,6 +442,16 @@ inline constexpr char kIosNtpFeedTopPromoAlreadySeen[] =
 inline constexpr char kIosNtpFeedTopSigninPromoDisplayedCount[] =
     "ios.ntp_feed_top.signin_promo_displayed_count";
 
+// Boolean preference indicating if the legacy theme data has been migrated
+// to `kIosNtpThemeSpecifics`.
+inline constexpr char kIosNtpThemeMigrationComplete[] =
+    "ios.ntp.theme_migration_complete";
+
+// String preference to store the active `ThemeSpecificsIos` for the user's
+// background choices. This is the "live" source of truth for the current NTP
+// background, updated by both local changes and remote sync updates.
+inline constexpr char kIosNtpThemeSpecifics[] = "ios.ntp.theme_specifics";
+
 // Preference that hold a boolean indicating if the user has already dismissed
 // the sign-in promo in the reading list.
 inline constexpr char kIosReadingListPromoAlreadySeen[] =
