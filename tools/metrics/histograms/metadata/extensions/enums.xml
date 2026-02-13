@@ -3265,6 +3265,7 @@ Called by update_extension_permission.py.-->
   <int value="261" label="kOmniboxDirectInput"/>
   <int value="262" label="kExperimentalActor"/>
   <int value="263" label="kEnterpriseLogin"/>
+  <int value="264" label="kProxyOverrideRulesPrivate"/>
 </enum>
 
 <enum name="ExtensionPolicyReinstallReason">

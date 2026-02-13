@@ -98,6 +98,9 @@ const PrefMappingEntry kMappings[] = {
     {"relatedWebsiteSetsEnabled",
      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, APIPermissionID::kPrivacy,
      APIPermissionID::kPrivacy},
+    {"proxyOverrideRulesPrivate", proxy_config::prefs::kProxyOverrideRules,
+     APIPermissionID::kProxyOverrideRulesPrivate,
+     APIPermissionID::kProxyOverrideRulesPrivate},
     // accessibilityFeatures.animationPolicy is available for
     // all platforms but the others from accessibilityFeatures
     // is only available for OS_CHROMEOS.

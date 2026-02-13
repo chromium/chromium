@@ -1,0 +1,74 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+  {
+    "namespace": "proxyOverrideRulesPrivate",
+    "description": "API for managing proxy override rules.",
+    "types": [
+      {
+        "id": "DnsProbeResult",
+        "type": "string",
+        "enum": ["resolved", "not_found"]
+      },
+      {
+        "id": "DnsProbe",
+        "type": "object",
+        "properties": {
+          "Host": {"type": "string"},
+          "Result": {"$ref": "DnsProbeResult"}
+        }
+      },
+      {
+        "id": "ProxyOverrideRuleCondition",
+        "type": "object",
+        "properties": {
+          "DnsProbe": {
+            "$ref": "DnsProbe",
+            "optional": true
+          }
+        }
+      },
+      {
+        "id": "ProxyOverrideRule",
+        "type": "object",
+        "properties": {
+          "DestinationMatchers": {
+            "type": "array",
+            "items": {"type": "string"},
+            "optional": true,
+            "description": "URL patterns of the destinations for which this rule should apply."
+          },
+          "ExcludeDestinationMatchers": {
+            "type": "array",
+            "items": {"type": "string"},
+            "optional": true,
+            "description": "URL patterns of the destinations for which this rule should not apply."
+          },
+          "ProxyList": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "List of proxies to use for the destinations matching this rule."
+          },
+          "Conditions": {
+            "type": "array",
+            "items": {"$ref": "ProxyOverrideRuleCondition"},
+            "optional": true,
+            "description": "List of conditions that must be met for this rule to apply."
+          }
+        }
+      }
+    ],
+    "properties": {
+      "rules": {
+        "$ref": "types.ChromeSetting",
+        "description": "Configures the proxy override rules. The value of this setting is a list of ProxyOverrideRule objects.",
+        "value": [
+          "proxyOverrideRulesPrivate",
+          {"type": "array", "items": {"$ref": "ProxyOverrideRule"}}
+        ]
+      }
+    }
+  }
+]

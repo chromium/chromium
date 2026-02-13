@@ -84,6 +84,7 @@ if (enable_extensions) {
     "content_settings.json",
     "crash_report_private.idl",
     "enterprise_reporting_private.idl",
+    "proxy_override_rules_private.json",
     "image_writer_private.idl",
     "language_settings_private.idl",
     "passwords_private.idl",

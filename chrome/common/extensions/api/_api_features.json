@@ -456,6 +456,11 @@
   "enterprise.reportingPrivate.onDataMaskingRulesTriggered": {
     "feature_flag": "ApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered"
   },
+  "proxyOverrideRulesPrivate": {
+    "dependencies": ["permission:proxyOverrideRulesPrivate"],
+    "contexts": ["privileged_extension"],
+    "feature_flag": "ApiProxyOverrideRulesPrivate"
+  },
   "experimental.devtools.audits": {
     "nocompile": true,
     "dependencies": ["permission:experimental", "manifest:devtools_page"],
