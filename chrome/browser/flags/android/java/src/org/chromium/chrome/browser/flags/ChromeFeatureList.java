@@ -156,6 +156,7 @@ public abstract class ChromeFeatureList {
     // Feature names.
     // LINT.IfChange(FeaturesExposedToJava)
     // keep-sorted start group_prefixes=["public static final String"]
+
     public static final String ABORT_NAVIGATIONS_FROM_TAB_CLOSURES =
             "AbortNavigationsFromTabClosures";
     public static final String ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS =
@@ -498,8 +499,6 @@ public abstract class ChromeFeatureList {
     public static final String NEW_TAB_PAGE_CUSTOMIZATION_TOOLBAR_BUTTON =
             "NewTabPageCustomizationToolbarButton";
     public static final String NEW_TAB_PAGE_CUSTOMIZATION_V2 = "NewTabPageCustomizationV2";
-    public static final String NOTIFICATION_PERMISSION_BOTTOM_SHEET =
-            "NotificationPermissionBottomSheet";
     public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
     public static final String NOTIFICATION_TRAMPOLINE = "NotificationTrampoline";
     public static final String NOTIFICATION_TRAMPOLINE_NO_NEW_TASK =

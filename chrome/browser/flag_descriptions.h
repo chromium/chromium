@@ -5448,13 +5448,6 @@ inline constexpr char kNotificationPermissionRationaleDescription[] =
     "Configure the dialog shown before requesting notification permission. "
     "Only works with builds targeting Android T.";
 
-inline constexpr char kNotificationPermissionRationaleBottomSheetName[] =
-    "Notification Permission Rationale Bottom Sheet UI";
-inline constexpr char kNotificationPermissionRationaleBottomSheetDescription[] =
-    "Enable the alternative bottom sheet UI for the notification permission "
-    "flow. "
-    "Only works with builds targeting Android T+.";
-
 inline constexpr char kOfflineAutoFetchName[] = "Offline Auto Fetch";
 inline constexpr char kOfflineAutoFetchDescription[] =
     "Enables auto fetch of content when Chrome is online";

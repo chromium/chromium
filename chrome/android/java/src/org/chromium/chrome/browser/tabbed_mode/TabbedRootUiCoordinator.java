@@ -126,7 +126,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.RationaleDelegate;
-import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleBottomSheet;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleDialogController;
 import org.chromium.chrome.browser.notifications.tips.TipsOptInCoordinator;
 import org.chromium.chrome.browser.notifications.tips.TipsUtils;
@@ -1881,18 +1880,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         }
 
-        final Supplier<RationaleDelegate> rationaleUIDelegateSupplier;
-        if (NotificationPermissionController.shouldUseBottomSheetRationaleUi()) {
-            rationaleUIDelegateSupplier =
-                    () ->
-                            new NotificationPermissionRationaleBottomSheet(
-                                    mActivity, getBottomSheetController());
-        } else {
-            rationaleUIDelegateSupplier =
-                    () ->
-                            new NotificationPermissionRationaleDialogController(
-                                    mActivity, mModalDialogManagerSupplier.get());
-        }
+        final Supplier<RationaleDelegate> rationaleUIDelegateSupplier =
+                () ->
+                        new NotificationPermissionRationaleDialogController(
+                                mActivity, mModalDialogManagerSupplier.get());
         mNotificationPermissionController =
                 new NotificationPermissionController(mWindowAndroid, rationaleUIDelegateSupplier);
         NotificationPermissionController.attach(mWindowAndroid, mNotificationPermissionController);

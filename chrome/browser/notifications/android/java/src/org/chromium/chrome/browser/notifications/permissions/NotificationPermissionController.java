@@ -58,15 +58,6 @@ public class NotificationPermissionController {
     public static final String FIELD_TRIAL_PERMISSION_REQUEST_MAX_COUNT =
             "permission_request_max_count";
 
-    /**
-     * Returns whether the bottom sheet rationale UI should be used.
-     *
-     * @return true if the bottom sheet UI should be used, false if the dialog UI should be used.
-     */
-    public static boolean shouldUseBottomSheetRationaleUi() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.NOTIFICATION_PERMISSION_BOTTOM_SHEET);
-    }
-
     /** Refers to what type of permission UI should be shown. */
     @IntDef({
         PermissionRequestMode.DO_NOT_REQUEST,

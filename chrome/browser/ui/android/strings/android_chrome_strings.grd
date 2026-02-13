@@ -6539,15 +6539,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_NOTIFICATION_PERMISSION_RATIONALE_REJECT_BUTTON_TEXT" desc="The text of the negative button on the notification permission prompt dialog">
         No thanks
       </message>
-      <message name="IDS_NOTIFICATION_PERMISSION_RATIONALE_CONTENT_DESCRIPTION" desc="The content description for the notification permission rationale bottom sheet. Read as accessibility string when tapping on the bottom sheet.">
-        Notification permission flow
-      </message>
-      <message name="IDS_NOTIFICATION_PERMISSION_RATIONALE_OPENED_FULL" desc="The accessibility string read when the notification permission rationale bottom sheet is fully opened.">
-        Notification permission flow opened at full height
-      </message>
-      <message name="IDS_NOTIFICATION_PERMISSION_RATIONALE_CLOSED_DESCRIPTION" desc="The accessibility string read when the notification permission rationale bottom sheet is closed.">
-        Notification permission flow closed
-      </message>
 
       <!-- Notification Trampoline Toast Messages-->
       <message name="IDS_NOTIFICATION_TRAMPOLINE_TOAST_MESSAGE" desc="A short message that was shown when a notification is clicked while Chrome is in background waiting to be launched.">
