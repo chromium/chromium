@@ -2164,6 +2164,8 @@ bool Flex::ParseShorthand(bool important,
         }
 
         if (!flex_basis) {
+          local_context.SetUnresolvedProperty(
+              CSSPropertyName(CSSPropertyID::kFlexBasis));
           flex_basis = css_parsing_utils::ConsumeLengthOrPercent(
               stream, context, local_context,
               CSSPrimitiveValue::ValueRange::kNonNegative);
@@ -2755,8 +2757,11 @@ bool Gap::ParseShorthand(bool important,
                          CSSParserLocalContext& local_context,
                          HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kGap).length(), 2u);
+  local_context.SetUnresolvedProperty(CSSPropertyName(CSSPropertyID::kRowGap));
   CSSValue* row_gap =
       css_parsing_utils::ConsumeGapLength(stream, context, local_context);
+  local_context.SetUnresolvedProperty(
+      CSSPropertyName(CSSPropertyID::kColumnGap));
   CSSValue* column_gap =
       css_parsing_utils::ConsumeGapLength(stream, context, local_context);
   if (!row_gap) {

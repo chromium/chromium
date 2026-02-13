@@ -65,6 +65,8 @@ namespace {{namespace}} {
   (property.is_visited_highlight_colors and 'kVisitedHighlightColors' or ''),
   (property.valid_for_highlight and 'kValidForHighlight' or ''),
   (property.logical_property_group and 'kInLogicalPropertyGroup' or ''),
+  (property.percentages_depend_on_used_value and 'kPercentagesDependOnUsedValue' or ''),
+  (property.percentages_depend_on_used_value == False and 'kPercentagesDoNotDependOnUsedValue' or ''),
 ] | reject('==', '') | join(' | ') %}
 {% set ctor_args = (not is_alias and [property_id, flags, separator] or []) %}
 // {{property.name}}

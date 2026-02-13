@@ -517,6 +517,9 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     return nullptr;
   }
 
+  CSSParserLocalContext::FunctionLocalContext function_context(function_id,
+                                                               local_context);
+
   if (function_id == CSSValueID::kColor) {
     context.Count(WebFeature::kCSSColorFunction);
   }

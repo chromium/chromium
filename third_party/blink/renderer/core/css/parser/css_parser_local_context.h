@@ -8,6 +8,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -99,6 +101,10 @@ class CORE_EXPORT CSSParserLocalContext {
     return context;
   }
 
+  void SetUnresolvedProperty(CSSPropertyName property_name) {
+    unresolved_property_name_ = property_name;
+  }
+
   void IncrementRandomValueCount() { ++random_value_count_; }
 
   bool UseAliasParsing() const {
@@ -117,37 +123,57 @@ class CORE_EXPORT CSSParserLocalContext {
     return unresolved_property_name_;
   }
 
-  const AtomicString PropertyNameAndRandomCount() const {
-    StringBuilder str;
-    if (unresolved_property_name_.has_value() &&
-        unresolved_property_name_->Id() != CSSPropertyID::kInvalid) {
-      // Use string of form "PROPERTY {property_name} {property_value_index}"
-      // as name, this is later used for caching random values [0]. The prefix
-      // "PROPERTY" is needed since we need to make distinguish between custom
-      // property name and random value identifier, i.e. <dashed-ident> value in
-      // <random-value-sharing> [1]
-      // [0] https://drafts.csswg.org/css-values-5/#random-caching-key
-      // [1] https://drafts.csswg.org/css-values-5/#typedef-random-value-sharing
-      str.Append("PROPERTY ");
-      CSSPropertyName resolved_property_name =
-          unresolved_property_name_->IsCustomProperty()
-              ? *unresolved_property_name_
-              : CSSPropertyName(
-                    ResolveCSSPropertyID(unresolved_property_name_->Id()));
-      str.Append(resolved_property_name.ToAtomicString());
-      str.Append(" ");
-      str.AppendNumber(random_value_count_);
-    }
-    return str.ToAtomicString();
-  }
+  const AtomicString PropertyNameAndRandomCount() const;
 
   wtf_size_t RandomValueCount() const { return random_value_count_; }
 
+  // We currently use this class to get the context for resolving percentages.
+  // for instance `30%` in `color-mix(red 30%, white)` and in `translate(30%)`
+  // means different things, while in `color-mix()` it shows the progress, in
+  // `translate` percentages should be resolved against the reference box
+  // dimensions. This is currently used for `random()` function.
+  class FunctionLocalContext {
+    STACK_ALLOCATED();
+
+   public:
+    FunctionLocalContext(CSSValueID function_id,
+                         CSSParserLocalContext& local_context)
+        : local_context_(local_context) {
+      local_context_.functions_stack_.push_back(function_id);
+    }
+    ~FunctionLocalContext() {
+      DCHECK(!local_context_.functions_stack_.empty());
+      local_context_.functions_stack_.pop_back();
+    }
+
+   private:
+    CSSParserLocalContext& local_context_;
+  };
+
+  // Checks whether percentages for the current property context depend on
+  // used value and cannot be resolved before layout. We use this function to
+  // determine if percentages in `random()` functions should be simplified
+  // computed value time or should take the form of `random(fixed ...)`.
+  bool PercentagesDependOnUsedValue() const;
+
+  // All CSS properties that accept percentages should have
+  // `percentages_depend_on_used_value` flag set in css_properties.json5. As
+  // well as all CSS functions, like color-mix(), transform(), etc. that have
+  // percentages in their syntax should define function local context, see
+  // `CSSParserLocalContext::FunctionLocalContext` above.
+#if DCHECK_IS_ON()
+  void CheckPercentagesFlagSetOnProperty() const;
+#endif
+
  private:
+  bool InFunctionContext() const { return !functions_stack_.empty(); }
+
   CSSParserLocalContext() = default;
 
   CSSPropertyID current_shorthand_ = CSSPropertyID::kInvalid;
   std::optional<CSSPropertyName> unresolved_property_name_;
+  HeapVector<CSSValueID> functions_stack_;
+
   wtf_size_t random_value_count_ = 0;
 };
 

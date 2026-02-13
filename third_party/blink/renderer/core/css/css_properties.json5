@@ -876,6 +876,20 @@
       default: false,
       valid_type: "bool",
     },
+
+    // - percentages_depend_on_used_value
+    //
+    // Whether or not percentages for the given property depend on used value
+    // and can or cannot be resolved before layout time.
+    //
+    // Should only be set on properties which accept percentage values. Setting
+    // this flag to true will disallow simplifying calc expressions with
+    // percentages which resolve differently for positive and negative
+    // reference values, i.e. min()/max()/clamp()/random(), at computed value
+    // time.
+    percentages_depend_on_used_value: {
+      valid_type: "bool",
+    },
   },
 
   // Members in the data objects should appear in the same order as in the
@@ -1454,6 +1468,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       stored_on_extra_field: ["font"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "font-size-adjust",
@@ -1499,6 +1514,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       stored_on_extra_field: ["font"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "font-style",
@@ -1934,6 +1950,7 @@
       // stored on ComputedStyle; see CSSToLengthConversionData::ZoomedComputedPixels.
       supports_incremental_style: false,
       valid_for_permission_element: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "accent-color",
@@ -2214,6 +2231,7 @@
       supports_incremental_style: true,
       valid_for_page_context: true,
       stored_on_extra_field: ["Background"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "background-position-y",
@@ -2231,6 +2249,7 @@
       supports_incremental_style: true,
       valid_for_page_context: true,
       stored_on_extra_field: ["Background"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "background-repeat",
@@ -2264,6 +2283,7 @@
       supports_incremental_style: true,
       valid_for_page_context: true,
       stored_on_extra_field: ["Background"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "baseline-shift",
@@ -2277,6 +2297,7 @@
       keywords: ["baseline", "sub", "super"],
       typedom_types: ["Keyword", "Percentage", "Length"],
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "baseline-source",
@@ -2335,6 +2356,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["border-radius", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "border-bottom-right-radius",
@@ -2357,6 +2379,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["border-radius", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "border-bottom-style",
@@ -2461,6 +2484,7 @@
       // Overlaps with -webkit-border-image.
       overlapping: true,
       stored_on_extra_field: ["border-image"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "border-image-source",
@@ -2491,6 +2515,7 @@
       // Overlaps with -webkit-border-image.
       overlapping: true,
       stored_on_extra_field: ["border-image"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "border-left-color",
@@ -2687,6 +2712,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["border-radius", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "border-top-right-radius",
@@ -2709,6 +2735,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       invalidate: ["border-radius", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "border-top-style",
@@ -2797,6 +2824,7 @@
       valid_for_permission_element: true,
       invalidate: ["inset", "out-of-flow", "scroll-anchor"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "box-decoration-break",
@@ -3302,6 +3330,7 @@
       converter: "ConvertLength",
       supports_incremental_style: true,
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "cy",
@@ -3314,6 +3343,7 @@
       converter: "ConvertLength",
       supports_incremental_style: true,
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "d",
@@ -3457,6 +3487,7 @@
       keywords: ["auto", "fit-content", "min-content", "max-content", "content"],
       valid_for_permission_element: true,
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "flex-direction",
@@ -3570,6 +3601,7 @@
       keywords: ["normal", "infinite"],
       invalidate: ["layout", "paint"],
       runtime_flag: "CSSGridLanesLayout",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "frame-sizing",
@@ -3595,6 +3627,7 @@
       typedom_types: ["Keyword", "Length", "Percentage", "Flex"],
       separator: " ",
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "grid-auto-flow",
@@ -3623,6 +3656,7 @@
       typedom_types: ["Keyword", "Length", "Percentage", "Flex"],
       separator: " ",
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "grid-column-end",
@@ -3734,6 +3768,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "grid-template-rows",
@@ -3752,6 +3787,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "height",
@@ -3776,6 +3812,7 @@
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "hyphenate-limit-chars",
@@ -4004,6 +4041,7 @@
       valid_for_permission_element: true,
       invalidate: ["inset", "out-of-flow", "scroll-anchor"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "letter-spacing",
@@ -4026,6 +4064,7 @@
       affected_by_zoom: true,
       // The field isn't actually used; this is currently stored in FontDescription.
       stored_on_extra_field: ["font"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "lighting-color",
@@ -4069,6 +4108,7 @@
       // The font and line height are necessary to correctly resolve font relative
       // units.
       highlight_style_comes_from_originating_element: true,
+      percentages_depend_on_used_value: false,
     },
     {
       name: "list-style-image",
@@ -4140,6 +4180,7 @@
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "height",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "margin-left",
@@ -4165,6 +4206,7 @@
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "width",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "margin-right",
@@ -4190,6 +4232,7 @@
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "width",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "margin-top",
@@ -4214,6 +4257,7 @@
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "height",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "margin-trim",
@@ -4329,6 +4373,7 @@
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "max-width",
@@ -4352,6 +4397,7 @@
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "min-height",
@@ -4374,6 +4420,7 @@
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "min-width",
@@ -4396,6 +4443,7 @@
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "mix-blend-mode",
@@ -4437,6 +4485,7 @@
       converter: "ConvertPosition",
       typedom_types: ["Keyword", "Position"],
       invalidate: ["paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "object-view-box",
@@ -4477,6 +4526,7 @@
       converter: "ConvertLength",
       typedom_types: ["Length", "Percentage"],
       invalidate: ["transform-data", "transform-other"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "offset-path",
@@ -4538,6 +4588,7 @@
       supports_incremental_style: true,
       accepts_numeric_literal: true,
       invalidate: ["opacity"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "order",
@@ -4838,6 +4889,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       invalidate: ["layout", "paint", "scroll-anchor"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "padding-left",
@@ -4859,6 +4911,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       invalidate: ["layout", "paint", "scroll-anchor"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "padding-right",
@@ -4880,6 +4933,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       invalidate: ["layout", "paint", "scroll-anchor"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "padding-top",
@@ -4901,6 +4955,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       invalidate: ["layout", "paint", "scroll-anchor"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "page",
@@ -5171,6 +5226,7 @@
       valid_for_permission_element: true,
       invalidate: ["inset", "out-of-flow", "scroll-anchor"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "r",
@@ -5183,6 +5239,7 @@
       converter: "ConvertLength",
       supports_incremental_style: true,
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "rx",
@@ -5196,6 +5253,7 @@
       converter: "ConvertLengthOrAuto",
       supports_incremental_style: true,
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "ry",
@@ -5209,6 +5267,7 @@
       converter: "ConvertLengthOrAuto",
       supports_incremental_style: true,
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "scroll-target-group",
@@ -5420,6 +5479,7 @@
         resolver: "block-end",
       },
       valid_for_permission_element: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "scroll-padding-block-start",
@@ -5434,6 +5494,7 @@
         resolver: "block-start",
       },
       valid_for_permission_element: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "scroll-padding-bottom",
@@ -5450,6 +5511,7 @@
       },
       computable: false,
       valid_for_permission_element: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "scroll-padding-inline-end",
@@ -5464,6 +5526,7 @@
         resolver: "inline-end",
       },
       valid_for_permission_element: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "scroll-padding-inline-start",
@@ -5478,6 +5541,7 @@
         resolver: "inline-start",
       },
       valid_for_permission_element: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "scroll-padding-left",
@@ -5494,6 +5558,7 @@
       },
       computable: false,
       valid_for_permission_element: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "scroll-padding-right",
@@ -5510,6 +5575,7 @@
       },
       computable: false,
       valid_for_permission_element: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "scroll-padding-top",
@@ -5526,6 +5592,7 @@
       },
       computable: false,
       valid_for_permission_element: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "scroll-snap-align",
@@ -5609,6 +5676,7 @@
       keywords: ["none"],
       typedom_types: ["Length", "Percentage"],
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "shape-outside",
@@ -5729,6 +5797,7 @@
       typedom_types: ["Keyword"],
       invalidate: ["paint", "stroke", "border-shape"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "stroke-dashoffset",
@@ -5744,6 +5813,7 @@
       typedom_types: ["Length", "Percentage"],
       invalidate: ["paint"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "stroke-linecap",
@@ -5816,6 +5886,7 @@
       valid_for_permission_icon: true,
       invalidate: ["layout", "paint", "border-shape"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "table-layout",
@@ -6031,6 +6102,7 @@
       computable: false,
       valid_for_page_context: true,
       invalidate: ["text-decoration"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "text-indent",
@@ -6045,6 +6117,7 @@
       valid_for_page_context: true,
       invalidate: ["layout", "paint"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "text-justify",
@@ -6123,6 +6196,7 @@
       // path does not do.
       supports_incremental_style: false,
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "text-spacing",
@@ -6181,6 +6255,7 @@
       valid_for_page_context: true,
       invalidate: ["text-decoration"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: false,
     },
     {
       name: "text-underline-position",
@@ -6233,6 +6308,7 @@
       valid_for_permission_element: true,
       invalidate: ["inset", "out-of-flow", "scroll-anchor"],
       affected_by_zoom: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "overlay",
@@ -6328,6 +6404,7 @@
       converter: "ConvertTranslate",
       supports_incremental_style: true,
       invalidate: ["has-transform", "transform-data", "transform-other"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "rotate",
@@ -6358,6 +6435,7 @@
       converter: "ConvertScale",
       supports_incremental_style: true,
       invalidate: ["has-transform", "transform-data", "transform-other"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "unicode-bidi",
@@ -6398,6 +6476,7 @@
       valid_for_page_context: true,
       valid_for_permission_element: true,
       stored_on_extra_field: ["VerticalAlign", "VerticalAlignLength"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "view-timeline-axis",
@@ -6510,6 +6589,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "y",
@@ -6523,6 +6603,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "appearance",
@@ -6705,6 +6786,7 @@
       keywords: ["normal"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "row-gap",
@@ -6719,6 +6801,7 @@
       keywords: ["normal"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       invalidate: ["layout", "paint"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "rule-overlap",
@@ -6770,6 +6853,7 @@
       converter: "ConvertLength",
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "row-rule-edge-inset-end",
@@ -6783,6 +6867,7 @@
       converter: "ConvertLength",
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "column-rule-edge-inset-start",
@@ -6796,6 +6881,7 @@
       converter: "ConvertLength",
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "row-rule-edge-inset-start",
@@ -6809,6 +6895,7 @@
       converter: "ConvertLength",
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "column-rule-interior-inset-end",
@@ -6822,6 +6909,7 @@
       converter: "ConvertLength",
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "row-rule-interior-inset-end",
@@ -6835,6 +6923,7 @@
       converter: "ConvertLength",
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "column-rule-interior-inset-start",
@@ -6848,6 +6937,7 @@
       converter: "ConvertLength",
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "row-rule-interior-inset-start",
@@ -6861,6 +6951,7 @@
       converter: "ConvertLength",
       invalidate: ["paint"],
       runtime_flag: "CSSGapDecoration",
+      percentages_depend_on_used_value: true,
     },
     {
       name: "column-rule-color",
@@ -7672,6 +7763,7 @@
       valid_for_permission_icon: true,
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "will-change",
@@ -7717,6 +7809,7 @@
       affected_by_zoom: true,
       // The field isn't actually used; this is currently stored in FontDescription.
       stored_on_extra_field: ["font"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "z-index",
@@ -7751,6 +7844,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "block-size",
@@ -7765,6 +7859,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "min-inline-size",
@@ -7776,6 +7871,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_position_try: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "min-block-size",
@@ -7788,6 +7884,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "max-inline-size",
@@ -7801,6 +7898,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "max-block-size",
@@ -7814,6 +7912,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "margin-inline-start",
@@ -7829,6 +7928,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "margin-inline-end",
@@ -7845,6 +7945,7 @@
       valid_for_permission_element: true,
       valid_for_permission_icon: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "margin-block-start",
@@ -7860,6 +7961,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "margin-block-end",
@@ -7875,6 +7977,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "padding-inline-start",
@@ -7886,6 +7989,7 @@
       },
       typedom_types: ["Length", "Percentage"],
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "padding-inline-end",
@@ -7897,6 +8001,7 @@
       },
       typedom_types: ["Length", "Percentage"],
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "padding-block-start",
@@ -7908,6 +8013,7 @@
       },
       typedom_types: ["Length", "Percentage"],
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "padding-block-end",
@@ -7919,6 +8025,7 @@
       },
       typedom_types: ["Length", "Percentage"],
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "border-inline-start-width",
@@ -8059,6 +8166,7 @@
       valid_for_position_try: true,
       layout_dependent: true,
       valid_for_permission_element: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "inset-inline-end",
@@ -8071,6 +8179,7 @@
       valid_for_position_try: true,
       layout_dependent: true,
       valid_for_permission_element: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "inset-block-start",
@@ -8083,6 +8192,7 @@
       valid_for_position_try: true,
       layout_dependent: true,
       valid_for_permission_element: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "inset-block-end",
@@ -8096,6 +8206,7 @@
       layout_dependent: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "border-start-start-radius",
@@ -8108,6 +8219,7 @@
       valid_for_first_letter: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "border-start-end-radius",
@@ -8120,6 +8232,7 @@
       valid_for_first_letter: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "border-end-start-radius",
@@ -8132,6 +8245,7 @@
       valid_for_first_letter: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "border-end-end-radius",
@@ -8144,6 +8258,7 @@
       valid_for_first_letter: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      percentages_depend_on_used_value: true,
     },
 
     {

@@ -1182,9 +1182,15 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
       const CSSMathExpressionNode* max,
       const CSSMathExpressionNode* step);
 
+  // Currently the computed value for calc() expressions with category
+  // `kCalcPercent`, i.e. calc() with only percentages: random(10%, 30%)
+  // would be simplified to X%. This is not correct, if percentages depend on a
+  // used value. To control that use `percentages_depend_on_used_value`
+  // parameter.
   static CSSMathExpressionRandomFunction* Create(
       const RandomValueSharing* random_value_sharing,
-      HeapVector<Member<const CSSMathExpressionNode>>&& nodes);
+      HeapVector<Member<const CSSMathExpressionNode>>&& nodes,
+      bool percentages_depend_on_used_value);
 
   CSSMathExpressionNode* Copy() const override;
   bool IsRandomFunction() const final { return true; }

@@ -1,8 +1,6 @@
 This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Property font-palette value 'palette-mix(in lch, --blue random(90%, 10%), --yellow 10%)'
-  assert_true: 'palette-mix(in lch, --blue random(90%, 10%), --yellow 10%)' is a supported value for font-palette. expected true got false
-[FAIL] Shared by property 'font-palette' with values 'palette-mix(in lch, --blue random(10%, 90%, 10%), --yellow)', 'palette-mix(in lch, --blue random(element-shared, 10%, 90%, 10%), --yellow)'
-  assert_false: palette-mix(in lch, --blue random(10%, 90%, 10%), --yellow) values on different elements should not be equal expected false got true
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property border-image-slice value 'random(10%, 30%)'
+  assert_true: 'random(10%, 30%)' is a supported value for border-image-slice. expected true got false
 Harness: the test ran to completion.
 

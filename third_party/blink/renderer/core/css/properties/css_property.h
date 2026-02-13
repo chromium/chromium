@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -123,6 +124,13 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   virtual bool IsLayoutDependent(const ComputedStyle* style,
                                  LayoutObject* layout_object) const {
     return false;
+  }
+
+  bool PercentagesDependOnUsedValue() const {
+    return flags_ & kPercentagesDependOnUsedValue;
+  }
+  bool PercentagesDoNotDependOnUsedValue() const {
+    return flags_ & kPercentagesDoNotDependOnUsedValue;
   }
 
   virtual const CSSValue* CSSValueFromComputedStyleInternal(
@@ -279,6 +287,12 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kValidForVisited = 1ull << 36,
     // See valid_for_permission_icon in css_properties.json5
     kValidForPermissionIcon = 1ull << 37,
+    // When percentages_depend_on_used_value is explicitly set to true.
+    // See percentages_depend_on_used_value in css_properties.json5
+    kPercentagesDependOnUsedValue = 1ull << 38,
+    // When percentages_depend_on_used_value is explicitly set to false.
+    // See percentages_depend_on_used_value in css_properties.json5
+    kPercentagesDoNotDependOnUsedValue = 1ull << 39,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

@@ -4712,8 +4712,9 @@ class CSSMathExpressionNodeParser {
         local_context_.IncrementRandomValueCount();
         const auto& random_value_sharing =
             std::get<const RandomValueSharing*>(non_expr_argument);
-        return CSSMathExpressionRandomFunction::Create(random_value_sharing,
-                                                       std::move(nodes));
+        return CSSMathExpressionRandomFunction::Create(
+            random_value_sharing, std::move(nodes),
+            local_context_.PercentagesDependOnUsedValue());
       }
       // TODO(crbug.com/1284199): Support other math functions.
       default:
@@ -5274,9 +5275,11 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
       CSSMathExpressionOperation::Operands operands;
       for (wtf_size_t i = 1; i < children.size(); ++i) {
         operands.push_back(Create(*children[i]));
+        DCHECK_NE(operands.back()->Category(), kCalcLengthFunction);
       }
-      return CSSMathExpressionRandomFunction::Create(random_value_sharing,
-                                                     std::move(operands));
+      // We shouldn't have unresolvable percentages by this point.
+      return CSSMathExpressionRandomFunction::Create(
+          random_value_sharing, std::move(operands), false);
     }
   }
 }
@@ -5529,17 +5532,10 @@ CSSMathExpressionRandomFunction::CSSMathExpressionRandomFunction(
 
 CSSMathExpressionRandomFunction* CSSMathExpressionRandomFunction::Create(
     const RandomValueSharing* random_value_sharing,
-    HeapVector<Member<const CSSMathExpressionNode>>&& nodes) {
+    HeapVector<Member<const CSSMathExpressionNode>>&& nodes,
+    bool percentages_depend_on_used_value) {
   CalculationResultCategory category = DetermineComparisonCategory(nodes);
-  // Currently the computed value for calc() expressions with category
-  // `kCalcPercent`, i.e. calc() with only percentages: min(10%, 30%)
-  // would be simplified to 10%. This is not correct, since percentages
-  // here can represent negative values. Same issue will happen with
-  // random() if `min`, `max` (and optionally `step`) parameters have only
-  // percentages values. To avoid that we will use `category
-  // `kCalcLengthPercent` for these expressions for now.
-  // TODO(crbug.com/463635948): Remove the following if check.
-  if (category == kCalcPercent) {
+  if (category == kCalcPercent && percentages_depend_on_used_value) {
     category = kCalcLengthFunction;
   }
   if (category == CalculationResultCategory::kCalcOther) {

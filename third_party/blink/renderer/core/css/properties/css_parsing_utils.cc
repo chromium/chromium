@@ -252,6 +252,8 @@ CSSValue* ConsumeLinear(CSSParserTokenStream& stream,
 
   // https://w3c.github.io/csswg-drafts/css-easing/#linear-easing-function-parsing
   DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kLinear);
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kLinear, local_context);
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
@@ -801,6 +803,9 @@ CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenStream& stream,
     return nullptr;
   }
 
+  CSSParserLocalContext::FunctionLocalContext function_context(filter_type,
+                                                               local_context);
+
   CSSFunctionValue* filter_value;
   CSSValue* parsed_value = nullptr;
   bool no_arguments = false;
@@ -1327,6 +1332,9 @@ CSSPrimitiveValue* ConsumePercent(CSSParserTokenStream& stream,
                                   const CSSParserContext& context,
                                   CSSParserLocalContext& local_context,
                                   CSSPrimitiveValue::ValueRange value_range) {
+#if DCHECK_IS_ON()
+  local_context.CheckPercentagesFlagSetOnProperty();
+#endif
   const CSSParserToken token = stream.Peek();
   if (token.GetType() == kPercentageToken) {
     if (value_range == CSSPrimitiveValue::ValueRange::kNonNegative &&
@@ -2007,6 +2015,8 @@ CSSValue* ConsumeColorMixFunction(
   DCHECK(stream.Peek().FunctionId() == CSSValueID::kColorMix);
   context.Count(WebFeature::kCSSColorMixFunction);
 
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kColorMix, local_context);
   cssvalue::CSSColorMixValue* result;
   std::optional<ColorInterpolationSpace>
       consume_color_interpolation_space_result{};
@@ -2791,6 +2801,12 @@ static bool ConsumeGradientColorStops(CSSParserTokenStream& stream,
                                       CSSParserLocalContext& local_context,
                                       cssvalue::CSSGradientValue* gradient,
                                       PositionFunctor consume_position_func) {
+  // Technically, color stops are not functions, but we guard them under a
+  // separate `FunctionLocalContext` since percentages in gradient color stops
+  // do not depend on used value, but percentages inside some gradient
+  // functions, like conic-gradient() or radial-gradient(), do.
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kColorStop, local_context);
   bool supports_color_hints =
       gradient->GradientType() == cssvalue::kCSSLinearGradient ||
       gradient->GradientType() == cssvalue::kCSSRadialGradient ||
@@ -2900,6 +2916,9 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenStream& stream,
   //  <color-stop-list>
   // )
   // ref: https://www.w3.org/TR/css-images-4/#radial-gradients
+
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kRadialGradient, local_context);
 
   const CSSIdentifierValue* shape = nullptr;
   const CSSIdentifierValue* size_keyword = nullptr;
@@ -3106,6 +3125,9 @@ static CSSValue* ConsumeConicGradient(CSSParserTokenStream& stream,
   //   <color-interpolation-method> ]? , <angular-color-stop-list>
   // )
   // ref: https://www.w3.org/TR/css-images-4/#conic-gradients
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kConicGradient, local_context);
+
   auto consume_color_interpolation_space_result =
       ConsumeColorInterpolationSpace(stream);
   if (!consume_color_interpolation_space_result) {
@@ -3262,6 +3284,8 @@ static CSSValue* ConsumeDeprecatedWebkitCrossFade(
 static CSSValue* ConsumeCrossFade(CSSParserTokenStream& stream,
                                   const CSSParserContext& context,
                                   CSSParserLocalContext& local_context) {
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kCrossFade, local_context);
   // Parse an arbitrary comma-separated image|color values,
   // where each image may have a percentage before or after it.
   HeapVector<std::pair<Member<CSSValue>, Member<CSSPrimitiveValue>>>
@@ -3903,8 +3927,9 @@ bool ConsumeShorthandVia2Longhands(
   const StylePropertyShorthand::Properties& longhands = shorthand.properties();
   DCHECK_EQ(longhands.size(), 2u);
 
-  auto local_context = CSSParserLocalContext(CSSPropertyName(shorthand.id()))
-                           .WithCurrentShorthand(shorthand.id());
+  auto local_context =
+      CSSParserLocalContext(CSSPropertyName(longhands[0]->PropertyID()))
+          .WithCurrentShorthand(shorthand.id());
 
   const CSSValue* start =
       ParseLonghand(longhands[0]->PropertyID(), context, local_context, stream);
@@ -3913,6 +3938,8 @@ bool ConsumeShorthandVia2Longhands(
     return false;
   }
 
+  local_context.SetUnresolvedProperty(
+      CSSPropertyName(longhands[1]->PropertyID()));
   const CSSValue* end =
       ParseLonghand(longhands[1]->PropertyID(), context, local_context, stream);
 
@@ -3940,8 +3967,9 @@ bool ConsumeShorthandVia4Longhands(
   const StylePropertyShorthand::Properties& longhands = shorthand.properties();
   DCHECK_EQ(longhands.size(), 4u);
 
-  auto local_context = CSSParserLocalContext(CSSPropertyName(shorthand.id()))
-                           .WithCurrentShorthand(shorthand.id());
+  auto local_context =
+      CSSParserLocalContext(CSSPropertyName(longhands[0]->PropertyID()))
+          .WithCurrentShorthand(shorthand.id());
 
   const CSSValue* top =
       ParseLonghand(longhands[0]->PropertyID(), context, local_context, stream);
@@ -3950,15 +3978,21 @@ bool ConsumeShorthandVia4Longhands(
     return false;
   }
 
+  local_context.SetUnresolvedProperty(
+      CSSPropertyName(longhands[1]->PropertyID()));
   const CSSValue* right =
       ParseLonghand(longhands[1]->PropertyID(), context, local_context, stream);
 
   const CSSValue* bottom = nullptr;
   const CSSValue* left = nullptr;
   if (right) {
+    local_context.SetUnresolvedProperty(
+        CSSPropertyName(longhands[2]->PropertyID()));
     bottom = ParseLonghand(longhands[2]->PropertyID(), context, local_context,
                            stream);
     if (bottom) {
+      local_context.SetUnresolvedProperty(
+          CSSPropertyName(longhands[3]->PropertyID()));
       left = ParseLonghand(longhands[3]->PropertyID(), context, local_context,
                            stream);
     }
@@ -4008,6 +4042,9 @@ bool ConsumeShorthandGreedilyViaLonghands(
       if (longhands[i]) {
         continue;
       }
+
+      local_context.SetUnresolvedProperty(
+          CSSPropertyName(shorthand_properties[i]->PropertyID()));
       longhands[i] = ParseLonghand(shorthand_properties[i]->PropertyID(),
                                    context, local_context, stream);
 
@@ -5496,6 +5533,9 @@ cssvalue::CSSRepeatValue* ConsumeGapDecorationRepeatFunction(
 
   stream.ConsumeWhitespace();
 
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kRepeat, local_context);
+
   CSSPrimitiveValue* repetition_value = nullptr;
 
   if (IdentMatches<CSSValueID::kAuto>(stream.Peek().Id())) {
@@ -5866,6 +5906,9 @@ CSSValue* ConsumePaletteMixFunction(CSSParserTokenStream& stream,
   if (stream.Peek().FunctionId() != CSSValueID::kPaletteMix) {
     return nullptr;
   }
+
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kPaletteMix, local_context);
 
   std::optional<ColorInterpolationSpace>
       consume_color_interpolation_space_result{};
@@ -6699,6 +6742,8 @@ bool ConsumeGridTrackRepeatFunction(
   DCHECK_EQ(stream.Peek().GetType(), kFunctionToken);
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kRepeat, local_context);
 
   // <name-repeat> syntax for subgrids only supports `auto-fill`.
   if (is_subgrid_track_list &&
@@ -7186,11 +7231,15 @@ bool ConsumeGridTemplateShorthand(bool important,
     CSSParserSavePoint savepoint(stream);
     template_rows = ConsumeIdent<CSSValueID::kNone>(stream);
     if (!template_rows) {
+      local_context.SetUnresolvedProperty(
+          CSSPropertyName(CSSPropertyID::kGridTemplateRows));
       template_rows =
           ConsumeGridTemplatesRowsOrColumns(stream, context, local_context);
     }
 
     if (template_rows && ConsumeSlashIncludingWhitespace(stream)) {
+      local_context.SetUnresolvedProperty(
+          CSSPropertyName(CSSPropertyID::kGridTemplateColumns));
       template_columns =
           ConsumeGridTemplatesRowsOrColumns(stream, context, local_context);
       if (template_columns) {
@@ -8700,6 +8749,8 @@ CSSValue* ConsumeBasicShape(CSSParserTokenStream& stream,
     return nullptr;
   }
   CSSValueID id = stream.Peek().FunctionId();
+  CSSParserLocalContext::FunctionLocalContext function_context(id,
+                                                               local_context);
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
@@ -8936,6 +8987,8 @@ CSSValue* ConsumeTransformValue(CSSParserTokenStream& stream,
       return nullptr;
     }
     transform_value = MakeGarbageCollected<CSSFunctionValue>(function_id);
+    CSSParserLocalContext::FunctionLocalContext function_context(function_id,
+                                                                 local_context);
     CSSValue* parsed_value = nullptr;
     switch (function_id) {
       case CSSValueID::kRotate:
