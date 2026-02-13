@@ -335,12 +335,10 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDetaching) {
 
   // The tab drag and drop operation will result in creation and destruction of
   // a new browser as the tab is dragged between existing browser windows.
-  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer;
   event_generator.PressLeftButton();
   TabRemoveObserver observer(browser(), &event_generator);
   event_generator.MoveMouseTo(end_point);
-  browser_created_observer.Wait();
   browser_destroyed_observer.Wait();
 
   // Verify that dragging a tab between `window1` and `window2` results in
