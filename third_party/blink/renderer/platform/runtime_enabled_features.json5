@@ -3411,6 +3411,7 @@
     {
       name: "MachineLearningNeuralNetwork",
       origin_trial_feature_name: "WebMachineLearningNeuralNetwork",
+      origin_trial_os: ["win", "mac", "linux", "chromeos"],
       // Enabled by webnn::mojom::features::kWebMachineLearningNeuralNetwork.
       base_feature: "none",
     },

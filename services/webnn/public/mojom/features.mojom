@@ -8,7 +8,10 @@ module webnn.mojom.features;
 // https://github.com/webmachinelearning/webnn/blob/main/explainer.md
 feature kWebMachineLearningNeuralNetwork {
   const string name = "WebMachineLearningNeuralNetwork";
+  [EnableIf=is_win|is_mac|is_linux|is_chromeos]
   const bool default_state = true;
+  [EnableIfNot=is_win|is_mac|is_linux|is_chromeos]
+  const bool default_state = false;
 };
 
 // Enables experimental Web Machine Learning Neural Network API features.
