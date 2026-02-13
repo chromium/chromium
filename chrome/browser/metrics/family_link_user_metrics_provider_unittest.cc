@@ -515,7 +515,7 @@ class FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest
  protected:
   virtual void SetUpFeatureList() {
     scoped_feature_list_.InitAndEnableFeature(
-        kSupervisedUserUseEmitDeviceLogRecordSeparately);
+        kSupervisedUserEmitLogRecordSeparately);
   }
 
   void SetUp() override {
@@ -576,7 +576,7 @@ class
  protected:
   void SetUpFeatureList() override {
     scoped_feature_list_.InitAndDisableFeature(
-        kSupervisedUserUseEmitDeviceLogRecordSeparately);
+        kSupervisedUserEmitLogRecordSeparately);
   }
 
   void CreateProfiles(std::size_t count) {

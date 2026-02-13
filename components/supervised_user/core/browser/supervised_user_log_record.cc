@@ -45,8 +45,7 @@ std::optional<SupervisedUserLogRecord::Segment> GetSupervisionStatus(
     signin::IdentityManager* identity_manager,
     const PrefService& pref_service,
     const DeviceParentalControls& device_parental_controls) {
-  if (!base::FeatureList::IsEnabled(
-          kSupervisedUserUseEmitDeviceLogRecordSeparately) &&
+  if (!base::FeatureList::IsEnabled(kSupervisedUserEmitLogRecordSeparately) &&
       !IsSubjectToParentalControls(pref_service) &&
       device_parental_controls.IsEnabled()) {
     // This type of supervision is signin-status independent (but only available
@@ -303,8 +302,7 @@ bool SupervisedUserLogRecord::EmitHistograms(
     const DeviceParentalControls& device_parental_controls) {
   bool did_emit_histogram = false;
 
-  if (base::FeatureList::IsEnabled(
-          kSupervisedUserUseEmitDeviceLogRecordSeparately) &&
+  if (base::FeatureList::IsEnabled(kSupervisedUserEmitLogRecordSeparately) &&
       device_parental_controls.IsEnabled()) {
     base::UmaHistogramEnumeration(
         kFamilyLinkUserLogSegmentHistogramName,

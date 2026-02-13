@@ -907,6 +907,9 @@ extern const char kStrokesAPIEnabledDescription[];
 extern const char kSupervisedUserBlockInterstitialV3Name[];
 extern const char kSupervisedUserBlockInterstitialV3Description[];
 
+extern const char kSupervisedUserEmitLogRecordSeparatelyName[];
+extern const char kSupervisedUserEmitLogRecordSeparatelyDescription[];
+
 extern const char
     kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefsName[];
 extern const char

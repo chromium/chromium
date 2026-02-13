@@ -1115,8 +1115,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "SupervisedUserEmitLogRecordSeparately",
                         "SupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs",
-                        "SupervisedUserUseEmitDeviceLogRecordSeparately",
                         "SupervisedUserUseUrlFilteringService"
                     ]
                 }
