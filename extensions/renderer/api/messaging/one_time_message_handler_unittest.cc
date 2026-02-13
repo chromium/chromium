@@ -29,7 +29,11 @@
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
+#include "gin/arguments.h"
+#include "gin/converter.h"
 #include "gin/data_object_builder.h"
+#include "gin/function_template.h"
+#include "gin/public/context_holder.h"
 
 namespace extensions {
 
@@ -1013,5 +1017,98 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 INSTANTIATE_TEST_SUITE_P(All,
                          OneTimeMessageHandlerGarbageCollectionTestWithPromises,
                          testing::Values(true));
+
+// Verifies that destroying the OneTimeMessageHandler during a reply callback
+// doesn't cause a crash.
+// Partial regression test for https://crbug.com/480978108.
+//
+// Note: This test simulates the destruction of the OneTimeMessageHandler during
+// the reply callback since unfortunately there doesn't seem to be a way to
+// feasibly reproduce the destruction at the exact right time in an automated
+// test. In production, this can happen if a one time message reply callback
+// triggers a nested message loop (debugger halts reply callback, etc.) and then
+// the worker thread processes a task to destroy the worker (and thus the
+// `OneTimeMessageHandler`). This could happen due to idle timeout, extension
+// reload, etc. While this test artificially destroys the handler, it exercises
+// the same safety check that prevents a crash when we try to close the message
+// port (in `OneTimeMessageHandler::DeliverReplyToOpener`) during this brief
+// post-worker-destruction window
+TEST_F(OneTimeMessageHandlerTest, ReplyCallbackDestroysOneTimeMessageHandler) {
+  const PortId port_id(script_context()->context_id(), 0, true,
+                       mojom::SerializationFormat::kJson);
+  Message message("\"Hello\"", mojom::SerializationFormat::kJson, false);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  std::unique_ptr<OneTimeMessageHandler> handler =
+      std::make_unique<OneTimeMessageHandler>(bindings_system());
+
+  // Bind a function that destroys the handler.
+  auto destroy_handler = [](std::unique_ptr<OneTimeMessageHandler>* handler_ptr,
+                            gin::Arguments* arguments) {
+    handler_ptr->reset();
+  };
+
+  v8::Local<v8::FunctionTemplate> func_tmpl = gin::CreateFunctionTemplate(
+      isolate(),
+      base::BindRepeating(destroy_handler, base::Unretained(&handler)));
+
+  v8::Local<v8::Function> func =
+      func_tmpl->GetFunction(context).ToLocalChecked();
+  func->SetName(gin::StringToSymbol(isolate(), "destroyHandler"));
+
+  context->Global()
+      ->Set(context, gin::StringToSymbol(isolate(), "destroyHandler"), func)
+      .Check();
+
+  constexpr char kScript[] = "(function(reply) { destroyHandler(); })";
+  v8::Local<v8::Function> callback = FunctionFromString(context, kScript);
+
+  MessageTarget target(MessageTarget::ForExtension(extension()->id()));
+  MockMessagePortHost mock_message_port_host;
+  EXPECT_CALL(*ipc_message_sender(),
+              SendOpenMessageChannel(script_context(), port_id, target,
+                                     mojom::ChannelType::kSendMessage,
+                                     messaging_util::kSendMessageChannel,
+                                     testing::_, testing::_))
+      .WillOnce([&mock_message_port_host](
+                    ScriptContext* script_context, const PortId& port_id,
+                    const MessageTarget& target,
+                    mojom::ChannelType channel_type,
+                    const std::string& channel_name,
+                    mojo::PendingAssociatedRemote<mojom::MessagePort> port,
+                    mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
+                        port_host) {
+        port.EnableUnassociatedUsage();
+        port_host.EnableUnassociatedUsage();
+        mock_message_port_host.BindReceiver(std::move(port_host));
+      });
+  EXPECT_CALL(mock_message_port_host,
+              PostMessage(testing::Property(&Message::data, message.data())));
+
+  mojo::PendingAssociatedRemote<mojom::MessagePort> message_port;
+  mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
+      message_port_host_receiver;
+  messaging_service()->BindPortForTesting(
+      script_context(), port_id, message_port, message_port_host_receiver);
+
+  handler->SendMessage(script_context(), port_id, target,
+                       mojom::ChannelType::kSendMessage, std::move(message),
+                       binding::AsyncResponseType::kCallback, callback,
+                       &mock_message_port_host, std::move(message_port),
+                       std::move(message_port_host_receiver));
+
+  ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
+  ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
+
+  Message reply("\"Hi\"", mojom::SerializationFormat::kJson, false);
+
+  // DeliverMessage will trigger the crash if the fix is not present.
+  // Note: handler might be destroyed during this call, so use a raw pointer
+  // to invoke it (which simulates 'this').
+  OneTimeMessageHandler* handler_raw = handler.get();
+  handler_raw->DeliverMessage(script_context(), std::move(reply), port_id);
+}
 
 }  // namespace extensions
