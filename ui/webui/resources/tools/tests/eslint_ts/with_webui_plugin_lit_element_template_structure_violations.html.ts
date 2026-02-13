@@ -27,15 +27,19 @@ function computeProgress(this: MyDummyElement) {
   return Math.round(this.loadProgress * 100);
 }
 
+// Local variable violation, outside of getHtml()
+const INPUT_MAX_LENGTH = 100;
+
 export function getHtml(this: MyDummyElement) {
   // If statement violation
   if (this.data === null) {
     return nothing;
   }
 
+  // Local variable violation
+  const messagesToRender = [];
   // For loop violation, indicating overly complex logic. Belongs in class
   // definition file, or in a map() statement.
-  const messagesToRender = [];
   for (const log of this.data.log) {
     messagesToRender.push(log.dateString + ': ' + log.message);
   }
@@ -45,15 +49,26 @@ export function getHtml(this: MyDummyElement) {
     return html`<div id="spinner" class="spinner"></div>`;
   }
 
+  // Local variable violations.
   // clang-format off
+  const input = html`
+      <cr-input maxlength="${INPUT_MAX_LENGTH}" @input="${this.onInput_}">
+      </cr-input>`;
+
+  let titleClass = 'title';
+  if (this.fancyTitle) {
+    titleClass = 'fancy-title';
+  }
+
   return html`
-<div class="title">Dummy Title</div>
+<div class="${titleClass}">Dummy Title</div>
 ${this.loading ? html`
   <div>Percent Complete: ${computeProgress.bind(this)()}</div>
   ${getSpinnerDiv()}
 ` : html`
   ${messagesToRender.map(message => html`<div>${message}</div>`)}
   ${getButtonHtml.bind(this)('Reload', !this.enableReload)}
+  ${input}
 `}
 `;
   // clang-format on

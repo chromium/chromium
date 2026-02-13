@@ -8,6 +8,7 @@ import type {SearchboxElement} from './searchbox.js';
 
 export function getHtml(this: SearchboxElement) {
   // clang-format off
+  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
   const dropdown = html`
     <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
         class="${!this.ntpRealboxNextEnabled ? 'dropdownContainer' : nothing}"
@@ -26,6 +27,7 @@ export function getHtml(this: SearchboxElement) {
         ?show-thumbnail="${this.showThumbnail}">
     </cr-searchbox-dropdown>`;
 
+  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
   const contextualEntrypoint = html`
     <contextual-entrypoint-and-carousel id="context"
         part="contextual-entrypoint-and-carousel"

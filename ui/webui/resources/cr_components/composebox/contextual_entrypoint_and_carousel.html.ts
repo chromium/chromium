@@ -10,6 +10,7 @@ import {ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js'
 import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
 
 export function getHtml(this: ContextualEntrypointAndCarouselElement) {
+  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
   const getActiveToolChip = () => {
     switch (this.activeTool_) {
       case ComposeboxToolMode.kDeepSearch:
@@ -53,6 +54,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
     }
   };
 
+  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
   const toolChips = html`
         ${
       this.shouldShowRecentTabChip_ ? html`
@@ -72,6 +74,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       ${getActiveToolChip()}
   `;
 
+  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
   const voiceSearchButton = html`
           <cr-icon-button id="voiceSearchButton" class="voice-icon"
               part="voice-icon" iron-icon="cr:mic"
@@ -80,6 +83,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
           </cr-icon-button>
         `;
 
+  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
   const contextMenu = html`
       <div class="context-menu-container" part="context-menu-and-tools"
           @mousedown="${this.preventFocus_}"

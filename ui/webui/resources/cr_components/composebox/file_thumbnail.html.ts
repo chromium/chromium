@@ -8,6 +8,7 @@ import type {ComposeboxFileThumbnailElement} from './file_thumbnail.js';
 
 export function getHtml(this: ComposeboxFileThumbnailElement) {
   // clang-format off
+  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
   const spinner = html`
       <svg role="image" class="spinner" viewBox="0 0 100 100">
         <circle class="spinner-circle" cx="50" cy="50" r="40" />

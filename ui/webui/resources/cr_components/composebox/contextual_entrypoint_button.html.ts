@@ -9,6 +9,7 @@ import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_bu
 
 export function getHtml(this: ContextualEntrypointButtonElement) {
   // clang-format off
+  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
   const entrypointButton = html`
     ${this.showContextMenuDescription ? html`
     <cr-button id="entrypoint"

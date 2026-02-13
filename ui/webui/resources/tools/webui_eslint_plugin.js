@@ -946,8 +946,6 @@ const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs({
           messageId: 'ifStatementFound',
         });
       },
-      // TODO (crbug.com/481519338): Enable these parts of the check.
-      /*
       ['VariableDeclaration'](node) {
         if (!hasLitImport) {
           return;
@@ -963,7 +961,6 @@ const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs({
           });
         }
       },
-      */
     };
   },
 });

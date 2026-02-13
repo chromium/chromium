@@ -440,6 +440,14 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
       composed: true,
     }));
   }
+
+  protected getIconForToolMode_(mode: ToolMode): string|undefined {
+    return this.supportedTools_.get(mode)?.icon;
+  }
+
+  protected getIconForModelMode_(mode: ModelMode): string|undefined {
+    return this.supportedModels_.get(mode)?.icon;
+  }
 }
 
 declare global {

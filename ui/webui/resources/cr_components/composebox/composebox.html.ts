@@ -9,6 +9,7 @@ import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ComposeboxElement} from './composebox.js';
 
 export function getHtml(this: ComposeboxElement) {
+  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
   const submitContainer = html`
     <div id="submitContainer" class="icon-fade" part="submit"
         slot="${this.searchboxNextEnabled ? 'submit-button' : nothing}"

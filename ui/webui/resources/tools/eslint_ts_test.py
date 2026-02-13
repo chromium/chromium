@@ -370,6 +370,8 @@ class EslintTsTest(unittest.TestCase):
 
     _FUNCTION_DEFINITION_ERROR = "Extra function definition '%(functionName)s' found in the HTML template file. Complex logic should be delegated to the class definition file. Standalone/separate chunks of templates may need a dedicated custom element"
 
+    _VARIABLE_DECLARATION_ERROR = "Local (const/let) variable '%(variableName)s' found in the HTML template file. Logic should be delegated to the class definition file"
+
     # The following strings *should* appear in the error output.
     errors = [
         _FOR_STATEMENT_ERROR,
@@ -382,6 +384,18 @@ class EslintTsTest(unittest.TestCase):
         },
         _FUNCTION_DEFINITION_ERROR % {
             'functionName': 'getSpinnerDiv'
+        },
+        _VARIABLE_DECLARATION_ERROR % {
+            'variableName': 'INPUT_MAX_LENGTH'
+        },
+        _VARIABLE_DECLARATION_ERROR % {
+            'variableName': 'input'
+        },
+        _VARIABLE_DECLARATION_ERROR % {
+            'variableName': 'titleClass'
+        },
+        _VARIABLE_DECLARATION_ERROR % {
+            'variableName': 'messagesToRender'
         },
     ]
     for e in errors:
