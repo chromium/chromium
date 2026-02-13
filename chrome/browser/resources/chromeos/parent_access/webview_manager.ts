@@ -35,8 +35,8 @@ export class WebviewManager {
   /**
    * Configures the webview to use the specified token to authenticate the user.
    * Sets the token as part of the Auhtorization: Bearer HTTP header.
-   * @param {string} accessToken the access token
-   * @param {!function(string):boolean} shouldSendTokenToUrlFn function that
+   * @param accessToken the access token
+   * @param shouldSendTokenToUrlFn function that
    *     returns true if the access token should be sent to the specified host.
    */
   setAccessToken(
@@ -66,7 +66,7 @@ export class WebviewManager {
   /**
    * Configures the webview to permit navigation only to URLs allowed
    * by the specified function.
-   * @param {!function(string):boolean} allowedRequestFn function that returns
+   * @param allowedRequestFn function that returns
    *     true if the request to the specified URL is allowed.
    */
   setAllowRequestFn(allowedRequestFn: AllowedRequestFunction) {

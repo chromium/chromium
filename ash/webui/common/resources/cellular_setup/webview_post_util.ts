@@ -30,45 +30,43 @@ type CommitEvent = chrome.webviewTag.LoadCommitEvent;
  *        <code>name1=value1&name2=value2&name3</code>
  *    Note that for <code>name3</code>, the value will be set to
  *    <code>true</code>.
- * @const {string}
  */
-const WEBVIEW_REDIRECT_SCRIPT = '(function(form, paymentUrl, postData) {' +
-    'function addInputElement(form, name, value) {' +
-    '  var input = document.createElement(\'input\');' +
-    '  input.type = \'hidden\';' +
-    '  input.name = name;' +
-    '  input.value = value;' +
-    '  form.appendChild(input);' +
-    '}' +
-    'function initFormFromPostData(form, postData) {' +
-    '  if (!postData) return;' +
-    '  var pairs = postData.split(\'&\');' +
-    '  pairs.forEach(pairStr => {' +
-    '    var pair = pairStr.split(\'=\');' +
-    '    if (pair.length === 2)' +
-    '      addInputElement(form, pair[0], pair[1]);' +
-    '    else if (pair.length === 1)' +
-    '      addInputElement(form, pair[0], true);' +
-    '  });' +
-    '}' +
-    'form.action = unescape(paymentUrl);' +
-    'form.method = \'POST\';' +
-    'initFormFromPostData(form, unescape(postData));' +
-    'form.submit();' +
-    '})';
+const WEBVIEW_REDIRECT_SCRIPT: string = `(function(form, paymentUrl, postData) {
+    function addInputElement(form, name, value) {
+      var input = document.createElement(\'input\');
+      input.type = \'hidden\';
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    }
+    function initFormFromPostData(form, postData) {
+      if (!postData) return;
+      var pairs = postData.split(\'&\');
+      pairs.forEach(pairStr => {
+        var pair = pairStr.split(\'=\');
+        if (pair.length === 2)
+          addInputElement(form, pair[0], pair[1]);
+        else if (pair.length === 1)
+          addInputElement(form, pair[0], true);
+      });
+    }
+    form.action = unescape(paymentUrl);
+    form.method = \'POST\';
+    initFormFromPostData(form, unescape(postData));
+    form.submit();
+    })`;
 
 /**
- * @const {string} The ID used for the form element in the initial webiew
- *     HTML.
+ * The ID used for the form element in the initial webiew HTML.
  */
-const WEBVIEW_REDIRECT_FORM_ID = 'redirectForm';
+const WEBVIEW_REDIRECT_FORM_ID: string = 'redirectForm';
 
 /**
- * @const {string} The initial webview HTML - this will be loaded into the
+ * The initial webview HTML - this will be loaded into the
  *     webview using data URL before executing
  *     <code>WEBVIEW_REDIRECT_SCRIPT</code>.
  */
-const WEBVIEW_REDIRECT_HTML = '<html><body>' +
+const WEBVIEW_REDIRECT_HTML: string = '<html><body>' +
     '<form id="' + WEBVIEW_REDIRECT_FORM_ID + '"></form>' +
     '</body></html>';
 
