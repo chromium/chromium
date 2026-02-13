@@ -67,6 +67,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "AutofillAiWalletErrorMessage";
     case ToastId::kRecordReplay:
       return "RecordReplay";
+    case ToastId::kAutoSignIn:
+      return "AutoSignIn";
   }
 
   NOTREACHED();

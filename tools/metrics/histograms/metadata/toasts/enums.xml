@@ -80,6 +80,7 @@ chromium-metrics-reviews@google.com.
       label="Showed Autofill AI Wallet error message (fetch, update or
              migrate failed)"/>
   <int value="29" label="Showed Record / Replay progress"/>
+  <int value="30" label="Auto Sign-in Toast"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

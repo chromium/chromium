@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller_impl.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller_impl.h"
+#include "chrome/browser/ui/passwords/manage_passwords_auto_signin_toast_delegate.h"
 #include "chrome/browser/ui/passwords/manage_passwords_icon_view.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
@@ -366,8 +367,27 @@ void ManagePasswordsUIController::OnAutoSignin(
   DCHECK(!local_forms.empty());
   DestroyPopups();
   passwords_data_.OnAutoSignin(std::move(local_forms), origin);
-  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kCredentialManagementUnifiedUi)) {
+    ShowAutoSignInToast();
+    bubble_status_ = BubbleStatus::NOT_SHOWN;
+  } else {
+    bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  }
   UpdateBubbleAndIconVisibility();
+}
+
+void ManagePasswordsUIController::ShowAutoSignInToast() {
+  const password_manager::PasswordForm& form = GetPendingPassword();
+  if (form.username_value.empty()) {
+    return;
+  }
+  if (!auto_signin_toast_delegate_) {
+    auto_signin_toast_delegate_ =
+        std::make_unique<ManagePasswordsAutoSigninToastDelegate>(
+            web_contents());
+  }
+  auto_signin_toast_delegate_->OnAutoSignInToast(form.username_value);
 }
 
 void ManagePasswordsUIController::OnPromptEnableAutoSignin() {

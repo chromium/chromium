@@ -16398,6 +16398,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TITLE_MD" desc="The title of the auto-signin toast in Material Design mode.">
         Signing in as
       </message>
+      <message name="IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TOAST_BODY" desc="The body of the auto-signin toast showing the username being signed in.">
+        Signed in as <ph name="USERNAME">$1<ex>user@example.com</ex></ph>
+      </message>
       <message name="IDS_AUTO_SIGNIN_FIRST_RUN_TITLE_MANY_DEVICES" desc="The title of the dialog during the autosign-in first run experience for the Chrome syncing users.">
         Sign in easily across devices
       </message>

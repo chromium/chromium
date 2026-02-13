@@ -9,9 +9,13 @@
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
@@ -52,8 +56,8 @@ class PasswordBubbleBrowserTest
       ExecuteManagePasswordsCommand();
     } else if (StartsWith(name, "AutoSignin", base::CompareCase::SENSITIVE)) {
       test_form()->url = GURL("https://example.com");
-      test_form()->display_name = u"Peter";
-      test_form()->username_value = u"pet12@gmail.com";
+      test_form()->display_name = u"test_user";
+      test_form()->username_value = u"test_user@gmail.com";
       std::vector<std::unique_ptr<password_manager::PasswordForm>>
           local_credentials;
       local_credentials.push_back(
@@ -159,3 +163,38 @@ INSTANTIATE_TEST_SUITE_P(
     ThreeButtonPasswordBubbleBrowserTest,
     testing::Combine(testing::Values(SyncConfiguration::kNotSyncing),
                      testing::Bool()));
+
+class PasswordAutoSignInToastTest : public base::test::WithFeatureOverride,
+                                    public ManagePasswordsTest {
+ public:
+  PasswordAutoSignInToastTest()
+      : base::test::WithFeatureOverride(
+            password_manager::features::kCredentialManagementUnifiedUi) {}
+
+  ToastController* GetToastController() {
+    return browser()->browser_window_features()->toast_controller();
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PasswordAutoSignInToastTest, Shows) {
+  test_form()->url = GURL("https://example.com");
+  test_form()->display_name = u"test_user";
+  test_form()->username_value = u"test_user@gmail.com";
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      local_credentials;
+  local_credentials.push_back(
+      std::make_unique<password_manager::PasswordForm>(*test_form()));
+
+  SetupAutoSignin(std::move(local_credentials));
+
+  if (IsParamFeatureEnabled()) {
+    // Verify toast is showing.
+    EXPECT_TRUE(GetToastController()->IsShowingToast());
+    EXPECT_EQ(GetToastController()->GetCurrentToastId(), ToastId::kAutoSignIn);
+  } else {
+    // Verify bubble is showing.
+    EXPECT_TRUE(PasswordBubbleViewBase::manage_password_bubble());
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordAutoSignInToastTest);

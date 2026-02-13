@@ -19,6 +19,7 @@ source_set("passwords") {
     "//services/network/public/mojom",
     "//ui/gfx",
   ]
+  deps = [ "//chrome/browser/ui:browser_navigator_params_headers" ]
 
   if (!is_android) {
     sources += [
@@ -26,6 +27,7 @@ source_set("passwords") {
       "credential_leak_dialog_controller_impl.h",
       "credential_manager_dialog_controller.h",
       "credential_manager_dialog_controller_impl.h",
+      "manage_passwords_auto_signin_toast_delegate.h",
       "manage_passwords_icon_view.h",
       "manage_passwords_ui_controller.h",
       "password_base_dialog_controller.h",
@@ -48,6 +50,7 @@ source_set("passwords") {
       "//ui/views",
       "//url",
     ]
+    deps += [ "//chrome/browser/ui/toasts/api:toasts" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
@@ -57,8 +60,6 @@ source_set("passwords") {
       "password_cross_domain_confirmation_popup_view.h",
     ]
   }
-
-  deps = [ "//chrome/browser/ui:browser_navigator_params_headers" ]
 }
 
 source_set("impl") {
@@ -113,6 +114,7 @@ source_set("impl") {
     sources += [
       "credential_leak_dialog_controller_impl.cc",
       "credential_manager_dialog_controller_impl.cc",
+      "manage_passwords_auto_signin_toast_delegate.cc",
       "manage_passwords_ui_controller.cc",
       "password_change_ui_controller.cc",
       "password_generation_popup_controller_impl.cc",
@@ -142,6 +144,8 @@ source_set("impl") {
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/promos:service",
       "//chrome/browser/ui/promos:utils",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/web_applications",
       "//components/browsing_data/content",
@@ -256,6 +260,7 @@ source_set("unit_tests") {
     sources += [
       "credential_leak_dialog_controller_impl_unittest.cc",
       "credential_manager_dialog_controller_impl_unittest.cc",
+      "manage_passwords_auto_signin_toast_delegate_unittest.cc",
       "manage_passwords_ui_controller_unittest.cc",
       "password_cross_domain_confirmation_popup_controller_impl_unittest.cc",
       "password_generation_popup_controller_impl_unittest.cc",
@@ -272,6 +277,8 @@ source_set("unit_tests") {
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/test:test_support",
       "//components/affiliations/core/browser:test_support",
       "//components/autofill/content/browser",
@@ -287,6 +294,7 @@ source_set("unit_tests") {
       "//components/password_manager/core/common:features",
       "//components/prefs",
       "//components/signin/public/identity_manager",
+      "//components/tabs:test_support",
       "//components/ukm:test_support",
       "//components/variations:test_support",
       "//content/public/browser",

@@ -59,6 +59,7 @@ class CredentialLeakDialogController;
 class CredentialManagerDialogController;
 class PasswordBaseDialogController;
 class ManagePasswordsPageActionController;
+class ManagePasswordsAutoSigninToastDelegate;
 
 // Per-tab class to control the Omnibox password icon and bubble.
 class ManagePasswordsUIController
@@ -245,6 +246,8 @@ class ManagePasswordsUIController
   void ShowChangePasswordBubble(const std::u16string& username,
                                 const std::u16string& new_password);
 
+  void ShowAutoSignInToast();
+
  protected:
   explicit ManagePasswordsUIController(content::WebContents* web_contents);
 
@@ -389,6 +392,9 @@ class ManagePasswordsUIController
 
   // Timeout in seconds for the manual fallback for saving.
   static int save_fallback_timeout_in_seconds_;
+
+  std::unique_ptr<ManagePasswordsAutoSigninToastDelegate>
+      auto_signin_toast_delegate_;
 
   // The wrapper around current state and data.
   ManagePasswordsState passwords_data_;

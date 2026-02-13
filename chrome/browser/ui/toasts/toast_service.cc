@@ -353,6 +353,13 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kRecordReplay, ToastSpecification::Builder(kInfoIcon).Build());
 
+  toast_registry_->RegisterToast(
+      ToastId::kAutoSignIn,
+      ToastSpecification::Builder(vector_icons::kPasswordManagerIcon,
+                                  IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TOAST_BODY)
+          .AddMenu()
+          .Build());
+
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWalletPrivatePasses)) {
     toast_registry_->RegisterToast(
