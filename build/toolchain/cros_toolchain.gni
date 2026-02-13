@@ -22,13 +22,9 @@
 # auron_paine CrOS device with the system root cached in /g/.cros_cache,
 # the following GN arguments must be provided to configure
 # cross-compilation with RBE acceleration. (NB: additional variables
-# will be necessary to successfully compile a working CrOS Chrome. See
-# the definition of GYP_DEFINES inside a sysroot shell.)
+# will be necessary to successfully compile a working CrOS Chrome.)
 #
 # target_sysroot= /g/.cros_cache/chrome-sdk/tarballs/auron_paine+7644.0.0+sysroot_chromeos-base_chromeos-chrome.tar.xz"
-# cros_target_cc = "x86_64-cros-linux-gnu-gcc -B/g/.cros_cache/chrome-sdk/tarballs/auron_paine+7657.0.0+target_toolchain/usr/x86_64-pc-linux-gnu/x86_64-cros-linux-gnu/binutils-bin/2.25.51-gold"
-# cros_target_cxx = "x86_64-cros-linux-gnu-g++ -B/g/.cros_cache/chrome-sdk/tarballs/auron_paine+7657.0.0+target_toolchain/usr/x86_64-pc-linux-gnu/x86_64-cros-linux-gnu/binutils-bin/2.25.51-gold"
-# cros_target_ar = "x86_64-cros-linux-gnu-gcc-ar"
 # target_cpu = "x64"
 
 import("//build/config/clang/clang.gni")
@@ -53,28 +49,4 @@ declare_args() {
   cros_v8_snapshot_extra_cxxflags = ""
   cros_v8_snapshot_extra_ldflags = ""
   cros_v8_snapshot_sysroot = ""
-
-  # The following are ignored and should no longer be set.
-  cros_target_ar = "${clang_base_path}/bin/llvm-ar"
-  cros_target_cc = "${clang_base_path}/bin/clang"
-  cros_target_cxx = "${clang_base_path}/bin/clang++"
-  cros_target_nm = ""
-  cros_target_readelf = ""
-  cros_host_ar = "${clang_base_path}/bin/llvm-ar"
-  cros_host_cc = "${clang_base_path}/bin/clang"
-  cros_host_cxx = "${clang_base_path}/bin/clang++"
-  cros_host_nm = ""
-  cros_host_readelf = ""
-  cros_v8_snapshot_ar = "${clang_base_path}/bin/llvm-ar"
-  cros_v8_snapshot_cc = "${clang_base_path}/bin/clang"
-  cros_v8_snapshot_cxx = "${clang_base_path}/bin/clang++"
-  cros_v8_snapshot_nm = ""
-  cros_v8_snapshot_readelf = ""
-}
-
-declare_args() {
-  # The following are ignored and should no longer be set.
-  cros_target_ld = cros_target_cxx
-  cros_host_ld = cros_host_cxx
-  cros_v8_snapshot_ld = cros_v8_snapshot_cxx
 }
