@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_URL_LOADER_FACTORY_UTILS_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "content/common/content_export.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -26,9 +27,9 @@ class PrefetchRequest;
 // https://docs.google.com/document/d/12cjL04kEjtLs5hSthgg8o_UK-LeS_RcF992Z2vCp7Vk/edit?usp=sharing
 // for illustration of the current/possibly planned status of how
 // `URLLoaderFactory` is created around prefetching.
-scoped_refptr<network::SharedURLLoaderFactory> CreatePrefetchURLLoaderFactory(
-    network::mojom::NetworkContext* network_context,
-    const PrefetchRequest& prefetch_request);
+CONTENT_EXPORT scoped_refptr<network::SharedURLLoaderFactory>
+CreatePrefetchURLLoaderFactory(network::mojom::NetworkContext* network_context,
+                               const PrefetchRequest& prefetch_request);
 
 }  // namespace content
 

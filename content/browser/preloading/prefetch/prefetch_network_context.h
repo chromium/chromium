@@ -22,10 +22,8 @@ class PrefetchRequest;
 class CONTENT_EXPORT PrefetchNetworkContext {
  public:
   // Creates the `URLLoaderFactory` inside ctor.
-  // If `use_isolated_network_context` is true, a valid
-  // `isolated_network_context` should be passed.
+  // A valid `isolated_network_context` should be passed.
   PrefetchNetworkContext(
-      bool use_isolated_network_context,
       mojo::Remote<network::mojom::NetworkContext> isolated_network_context,
       const PrefetchRequest& prefetch_request);
   ~PrefetchNetworkContext();
@@ -45,10 +43,6 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   void CloseIdleConnections();
 
  private:
-  // Whether an isolated network context or the default network context should
-  // be used.
-  const bool use_isolated_network_context_;
-
   // The network context and URL loader factory to use when making prefetches.
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

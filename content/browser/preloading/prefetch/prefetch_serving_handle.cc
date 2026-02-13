@@ -135,14 +135,6 @@ PrefetchServingHandle::redirect_chain() const {
       base::PassKey<PrefetchServingHandle>());
 }
 
-PrefetchNetworkContext* PrefetchServingHandle::GetCurrentNetworkContextToServe()
-    const {
-  const PrefetchSingleRedirectHop& this_prefetch =
-      GetCurrentSingleRedirectHopToServe();
-  return GetPrefetchContainer()->GetNetworkContext(
-      this_prefetch.is_isolated_network_context_required_);
-}
-
 bool PrefetchServingHandle::HaveDefaultContextCookiesChanged() const {
   const PrefetchSingleRedirectHop& this_prefetch =
       GetCurrentSingleRedirectHopToServe();
@@ -228,14 +220,19 @@ void PrefetchServingHandle::CopyIsolatedCookies() {
 
   OnIsolatedCookieCopyStart();
 
-  if (!GetCurrentNetworkContextToServe()) {
+  PrefetchNetworkContext* isolated_network_context =
+      prefetch_container_->GetIsolatedNetworkContext();
+
+  if (!isolated_network_context) {
     CHECK_IS_TEST();
-    // Not set in unit tests.
+    // Not set in unit tests. In non-test cases, `isolated_network_context` is
+    // always non-null because the isolated network context should have been
+    // created at the time of prefetch.
     return;
   }
 
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
-  GetCurrentNetworkContextToServe()->GetCookieManager()->GetCookieList(
+  isolated_network_context->GetCookieManager()->GetCookieList(
       GetCurrentURLToServe(), options,
       net::CookiePartitionKeyCollection::Todo(),
       BindOnceForRvalueMemberMethod<const net::CookieAccessResultList&,

@@ -1691,30 +1691,28 @@ PrefetchService::GetURLLoaderFactoryForCurrentPrefetch(
     return base::WrapRefCounted(g_url_loader_factory_for_testing);
   }
 
-  const bool is_isolated_network_context_required =
-      prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch();
+  if (!prefetch_container
+           .IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
+    return prefetch_container
+        .GetOrCreateDefaultNetworkContextURLLoaderFactory();
+  }
 
   if (PrefetchNetworkContext* network_context =
-          prefetch_container.GetNetworkContext(
-              is_isolated_network_context_required)) {
+          prefetch_container.GetIsolatedNetworkContext()) {
     return network_context->GetURLLoaderFactory();
   }
 
-  mojo::Remote<network::mojom::NetworkContext> isolated_network_context;
-  if (is_isolated_network_context_required) {
-    const bool is_proxy_required_when_cross_origin =
-        prefetch_container.request()
-            .prefetch_type()
-            .IsProxyRequiredWhenCrossOrigin() &&
-        !prefetch_container.request()
-             .prefetch_type()
-             .IsProxyBypassedForTesting();  // IN-TEST
-    isolated_network_context =
-        CreateIsolatedNetworkContext(is_proxy_required_when_cross_origin);
-  }
+  const bool is_proxy_required_when_cross_origin =
+      prefetch_container.request()
+          .prefetch_type()
+          .IsProxyRequiredWhenCrossOrigin() &&
+      !prefetch_container.request()
+           .prefetch_type()
+           .IsProxyBypassedForTesting();  // IN-TEST
+
   return prefetch_container
-      .CreateNetworkContext(is_isolated_network_context_required,
-                            std::move(isolated_network_context))
+      .CreateIsolatedNetworkContext(
+          CreateIsolatedNetworkContext(is_proxy_required_when_cross_origin))
       ->GetURLLoaderFactory();
 }
 

@@ -17,7 +17,6 @@ class GURL;
 namespace content {
 
 class PrefetchContainer;
-class PrefetchNetworkContext;
 class PrefetchResponseReader;
 class PrefetchSingleRedirectHop;
 class ServiceWorkerClient;
@@ -76,8 +75,6 @@ class CONTENT_EXPORT PrefetchServingHandle final {
 
   // Whether or not an isolated network context is required to serve.
   bool IsIsolatedNetworkContextRequiredToServe() const;
-
-  PrefetchNetworkContext* GetCurrentNetworkContextToServe() const;
 
   bool HaveDefaultContextCookiesChanged() const;
 
