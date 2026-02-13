@@ -620,7 +620,7 @@ impl<'a> ParseBuffer<'a> {
     /// ```
     pub fn peek2<T: Peek>(&self, token: T) -> bool {
         fn peek2(buffer: &ParseBuffer, peek: fn(Cursor) -> bool) -> bool {
-            buffer.cursor().skip().map_or(false, peek)
+            buffer.cursor().skip().is_some_and(peek)
         }
 
         let _ = token;
@@ -634,7 +634,7 @@ impl<'a> ParseBuffer<'a> {
                 .cursor()
                 .skip()
                 .and_then(Cursor::skip)
-                .map_or(false, peek)
+                .is_some_and(peek)
         }
 
         let _ = token;

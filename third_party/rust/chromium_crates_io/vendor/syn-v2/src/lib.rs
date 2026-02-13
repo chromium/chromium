@@ -249,7 +249,7 @@
 //!   dynamic library libproc_macro from rustc toolchain.
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/syn/2.0.114")]
+#![doc(html_root_url = "https://docs.rs/syn/2.0.115")]
 #![cfg_attr(docsrs, feature(doc_cfg), doc(auto_cfg = false))]
 #![deny(unsafe_op_in_unsafe_fn)]
 #![allow(non_camel_case_types)]
