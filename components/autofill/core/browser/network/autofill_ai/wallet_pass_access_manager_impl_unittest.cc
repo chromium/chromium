@@ -10,10 +10,12 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -28,14 +30,17 @@ namespace autofill {
 
 namespace {
 
+using ::base::test::EqualsProto;
 using ::base::test::RunOnceCallback;
+using ::base::test::RunOnceCallbackRepeatedly;
 using ::testing::_;
 using GetUnmaskedPassCallback =
     ::wallet::WalletHttpClient::GetUnmaskedPassCallback;
 using ::wallet::PrivatePass;
 using WalletRequestError = ::wallet::WalletHttpClient::WalletRequestError;
 
-constexpr std::string_view kUnmaskedValue = "unmasked";
+constexpr std::string_view kMaskedValue = "5678";
+constexpr std::string_view kUnmaskedValue = "12345678";
 
 class MockWalletHttpClient : public wallet::WalletHttpClient {
  public:
@@ -70,6 +75,48 @@ EntityInstance GetServerEntityInstance(EntityTypeName entity_type) {
     case EntityTypeName::kRedressNumber:
       return test::GetRedressNumberEntityInstance(
           {.record_type = EntityInstance::RecordType::kServerWallet});
+    default:
+      NOTREACHED();
+  }
+}
+
+PrivatePass CreatePassWithNumber(EntityTypeName pass_type,
+                                 std::string_view number) {
+  PrivatePass pass;
+  switch (pass_type) {
+    case EntityTypeName::kPassport:
+      pass.mutable_passport()->set_passport_number(number);
+      break;
+    case EntityTypeName::kDriversLicense:
+      pass.mutable_driver_license()->set_driver_license_number(number);
+      break;
+    case EntityTypeName::kNationalIdCard:
+      pass.mutable_id_card()->set_id_number(number);
+      break;
+    case EntityTypeName::kKnownTravelerNumber:
+      pass.mutable_known_traveler_number()->set_known_traveler_number(number);
+      break;
+    case EntityTypeName::kRedressNumber:
+      pass.mutable_redress_number()->set_redress_number(number);
+      break;
+    default:
+      NOTREACHED();
+  }
+  return pass;
+}
+
+AttributeType GetPassNumberAttribute(EntityTypeName entity_type) {
+  switch (entity_type) {
+    case EntityTypeName::kPassport:
+      return AttributeType(AttributeTypeName::kPassportNumber);
+    case EntityTypeName::kDriversLicense:
+      return AttributeType(AttributeTypeName::kDriversLicenseNumber);
+    case EntityTypeName::kNationalIdCard:
+      return AttributeType(AttributeTypeName::kNationalIdCardNumber);
+    case EntityTypeName::kKnownTravelerNumber:
+      return AttributeType(AttributeTypeName::kKnownTravelerNumberNumber);
+    case EntityTypeName::kRedressNumber:
+      return AttributeType(AttributeTypeName::kRedressNumberNumber);
     default:
       NOTREACHED();
   }
@@ -115,36 +162,7 @@ TEST_P(WalletPassAccessManagerImplTest, GetUnmaskedWalletEntityInstance) {
   data_manager().AddOrUpdateEntityInstance(masked_entity);
   webdata_helper().WaitUntilIdle();
 
-  PrivatePass unmasked_pass;
-  AttributeTypeName expected_unmasked_type;
-  switch (GetParam()) {
-    case EntityTypeName::kPassport:
-      *unmasked_pass.mutable_passport()->mutable_passport_number() =
-          kUnmaskedValue;
-      expected_unmasked_type = AttributeTypeName::kPassportNumber;
-      break;
-    case EntityTypeName::kDriversLicense:
-      *unmasked_pass.mutable_driver_license()->mutable_driver_license_number() =
-          kUnmaskedValue;
-      expected_unmasked_type = AttributeTypeName::kDriversLicenseNumber;
-      break;
-    case EntityTypeName::kNationalIdCard:
-      *unmasked_pass.mutable_id_card()->mutable_id_number() = kUnmaskedValue;
-      expected_unmasked_type = AttributeTypeName::kNationalIdCardNumber;
-      break;
-    case EntityTypeName::kKnownTravelerNumber:
-      *unmasked_pass.mutable_known_traveler_number()
-           ->mutable_known_traveler_number() = kUnmaskedValue;
-      expected_unmasked_type = AttributeTypeName::kKnownTravelerNumberNumber;
-      break;
-    case EntityTypeName::kRedressNumber:
-      *unmasked_pass.mutable_redress_number()->mutable_redress_number() =
-          kUnmaskedValue;
-      expected_unmasked_type = AttributeTypeName::kRedressNumberNumber;
-      break;
-    default:
-      NOTREACHED();
-  }
+  PrivatePass unmasked_pass = CreatePassWithNumber(GetParam(), kUnmaskedValue);
   EXPECT_CALL(mock_http_client(),
               GetUnmaskedPass(masked_entity.guid().value(), _))
       .WillOnce(RunOnceCallback<1>(std::move(unmasked_pass)));
@@ -153,7 +171,7 @@ TEST_P(WalletPassAccessManagerImplTest, GetUnmaskedWalletEntityInstance) {
                                                    unmask_result.GetCallback());
 
   AttributeInstance expected_unmasked_attribute(
-      (AttributeType(expected_unmasked_type)));
+      GetPassNumberAttribute(GetParam()));
   expected_unmasked_attribute.SetRawInfo(
       expected_unmasked_attribute.type().field_type(),
       base::UTF8ToUTF16(kUnmaskedValue), VerificationStatus::kNoStatus);
@@ -191,10 +209,28 @@ TEST_P(WalletPassAccessManagerImplTest,
   EXPECT_FALSE(unmask_result.Get().has_value());
 }
 
+// Tests that unmasking fails when Wallet returns a malformed response without a
+// pass number.
+TEST_P(WalletPassAccessManagerImplTest,
+       GetUnmaskedWalletEntityInstance_MalformedResponseNoNumber) {
+  EntityInstance masked_entity =
+      test::MaskEntityInstance(GetServerEntityInstance(GetParam()));
+  data_manager().AddOrUpdateEntityInstance(masked_entity);
+  webdata_helper().WaitUntilIdle();
+
+  EXPECT_CALL(mock_http_client(),
+              GetUnmaskedPass(masked_entity.guid().value(), _))
+      .WillOnce(RunOnceCallback<1>(PrivatePass()));
+  base::test::TestFuture<std::optional<EntityInstance>> unmask_result;
+  access_manager().GetUnmaskedWalletEntityInstance(masked_entity.guid(),
+                                                   unmask_result.GetCallback());
+  EXPECT_FALSE(unmask_result.Get().has_value());
+}
+
 // Tests that unmasking fails when Wallet returns a malformed response with a
 // different pass number than the entity that was requested.
 TEST_P(WalletPassAccessManagerImplTest,
-       GetUnmaskedWalletEntityInstance_MalformedResponse) {
+       GetUnmaskedWalletEntityInstance_MalformedResponseDifferentNumber) {
   EntityInstance masked_entity =
       test::MaskEntityInstance(GetServerEntityInstance(GetParam()));
   data_manager().AddOrUpdateEntityInstance(masked_entity);
@@ -203,10 +239,9 @@ TEST_P(WalletPassAccessManagerImplTest,
   PrivatePass malformed_pass;
   // Return a response for a different entity type.
   if (masked_entity.type().name() == EntityTypeName::kPassport) {
-    *malformed_pass.mutable_id_card()->mutable_id_number() = kUnmaskedValue;
+    malformed_pass.mutable_id_card()->set_id_number(kUnmaskedValue);
   } else {
-    *malformed_pass.mutable_passport()->mutable_passport_number() =
-        kUnmaskedValue;
+    malformed_pass.mutable_passport()->set_passport_number(kUnmaskedValue);
   }
   EXPECT_CALL(mock_http_client(),
               GetUnmaskedPass(masked_entity.guid().value(), _))
@@ -215,6 +250,132 @@ TEST_P(WalletPassAccessManagerImplTest,
   access_manager().GetUnmaskedWalletEntityInstance(masked_entity.guid(),
                                                    unmask_result.GetCallback());
   EXPECT_FALSE(unmask_result.Get().has_value());
+}
+
+// Tests that when saving a new pass:
+// - No ID is provided to the Upsert call.
+// - A masked pass with the server-provided ID is returned to the caller.
+TEST_P(WalletPassAccessManagerImplTest, SaveWalletEntityInstance) {
+  EntityInstance unmasked_entity = GetServerEntityInstance(GetParam());
+
+  // Expect that no ID is provided to the upsert call.
+  PrivatePass expected_upsert_pass;
+  ASSERT_FALSE(expected_upsert_pass.has_pass_id());
+
+  PrivatePass masked_pass = CreatePassWithNumber(GetParam(), kMaskedValue);
+  masked_pass.set_pass_id("updated-id");
+  EXPECT_CALL(mock_http_client(),
+              UpsertPrivatePass(EqualsProto(expected_upsert_pass), _))
+      .WillOnce(RunOnceCallback<1>(std::move(masked_pass)));
+  base::test::TestFuture<std::optional<EntityInstance>> save_result;
+  access_manager().SaveWalletEntityInstance(unmasked_entity,
+                                            save_result.GetCallback());
+
+  AttributeInstance expected_masked_attribute(
+      GetPassNumberAttribute(GetParam()));
+  expected_masked_attribute.SetRawInfo(
+      expected_masked_attribute.type().field_type(),
+      base::UTF8ToUTF16(kMaskedValue), VerificationStatus::kNoStatus);
+  test_api(expected_masked_attribute).mark_as_masked();
+  EXPECT_EQ(save_result.Get(),
+            unmasked_entity
+                .CopyWithNewEntityId(EntityInstance::EntityId("updated-id"))
+                .CopyWithUpdatedAttribute(expected_masked_attribute));
+}
+
+// Tests that when updating an existing pass:
+// - The pass ID is provided to the Upsert call.
+// - A masked pass with the server-provided ID is returned to the caller.
+TEST_P(WalletPassAccessManagerImplTest, UpdateWalletEntityInstance) {
+  EntityInstance unmasked_entity = GetServerEntityInstance(GetParam());
+
+  PrivatePass expected_upsert_pass;
+  expected_upsert_pass.set_pass_id(unmasked_entity.guid().value());
+
+  PrivatePass masked_pass = CreatePassWithNumber(GetParam(), kMaskedValue);
+  masked_pass.set_pass_id("updated-id");
+  EXPECT_CALL(mock_http_client(),
+              UpsertPrivatePass(EqualsProto(expected_upsert_pass), _))
+      .WillOnce(RunOnceCallback<1>(std::move(masked_pass)));
+  base::test::TestFuture<std::optional<EntityInstance>> update_result;
+  access_manager().UpdateWalletEntityInstance(unmasked_entity,
+                                              update_result.GetCallback());
+
+  AttributeInstance expected_masked_attribute(
+      GetPassNumberAttribute(GetParam()));
+  expected_masked_attribute.SetRawInfo(
+      expected_masked_attribute.type().field_type(),
+      base::UTF8ToUTF16(kMaskedValue), VerificationStatus::kNoStatus);
+  test_api(expected_masked_attribute).mark_as_masked();
+  EXPECT_EQ(update_result.Get(),
+            unmasked_entity
+                .CopyWithNewEntityId(EntityInstance::EntityId("updated-id"))
+                .CopyWithUpdatedAttribute(expected_masked_attribute));
+}
+
+// Tests that saving and updating fails when Wallet returns an error upserting.
+TEST_P(WalletPassAccessManagerImplTest,
+       UpsertWalletEntityInstance_ErrorResponse) {
+  EntityInstance unmasked_entity = GetServerEntityInstance(GetParam());
+  EXPECT_CALL(mock_http_client(), UpsertPrivatePass)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(
+          base::unexpected(WalletRequestError::kGenericError)));
+
+  base::test::TestFuture<std::optional<EntityInstance>> save_result;
+  access_manager().SaveWalletEntityInstance(unmasked_entity,
+                                            save_result.GetCallback());
+  EXPECT_FALSE(save_result.Get().has_value());
+
+  base::test::TestFuture<std::optional<EntityInstance>> update_result;
+  access_manager().UpdateWalletEntityInstance(unmasked_entity,
+                                              update_result.GetCallback());
+  EXPECT_FALSE(update_result.Get().has_value());
+}
+
+// Tests that saving and updating fails when Wallet returns a malformed response
+// without a pass number.
+TEST_P(WalletPassAccessManagerImplTest,
+       UpsertWalletEntityInstance_MalformedResponseNoNumber) {
+  EntityInstance unmasked_entity = GetServerEntityInstance(GetParam());
+  EXPECT_CALL(mock_http_client(), UpsertPrivatePass)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(PrivatePass()));
+
+  base::test::TestFuture<std::optional<EntityInstance>> save_result;
+  access_manager().SaveWalletEntityInstance(unmasked_entity,
+                                            save_result.GetCallback());
+  EXPECT_FALSE(save_result.Get().has_value());
+
+  base::test::TestFuture<std::optional<EntityInstance>> update_result;
+  access_manager().UpdateWalletEntityInstance(unmasked_entity,
+                                              update_result.GetCallback());
+  EXPECT_FALSE(update_result.Get().has_value());
+}
+
+// Tests that saving and updating fails when Wallet returns a malformed response
+// with a different pass number than the entity that was upserted.
+TEST_P(WalletPassAccessManagerImplTest,
+       UpsertWalletEntityInstance_MalformedResponseDifferentNumber) {
+  EntityInstance unmasked_entity = GetServerEntityInstance(GetParam());
+
+  PrivatePass malformed_pass;
+  // Return a response for a different entity type.
+  if (unmasked_entity.type().name() == EntityTypeName::kPassport) {
+    malformed_pass.mutable_id_card()->set_id_number(kMaskedValue);
+  } else {
+    malformed_pass.mutable_passport()->set_passport_number(kMaskedValue);
+  }
+  EXPECT_CALL(mock_http_client(), UpsertPrivatePass)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(malformed_pass));
+
+  base::test::TestFuture<std::optional<EntityInstance>> save_result;
+  access_manager().SaveWalletEntityInstance(unmasked_entity,
+                                            save_result.GetCallback());
+  EXPECT_FALSE(save_result.Get().has_value());
+
+  base::test::TestFuture<std::optional<EntityInstance>> update_result;
+  access_manager().UpdateWalletEntityInstance(unmasked_entity,
+                                              update_result.GetCallback());
+  EXPECT_FALSE(update_result.Get().has_value());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

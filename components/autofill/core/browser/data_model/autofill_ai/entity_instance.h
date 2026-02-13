@@ -49,6 +49,7 @@ struct AutofillFormatString;
 class EntityInstance;
 class EntityInstanceTestApi;
 class EntityTable;
+class WalletPassAccessManagerImpl;
 
 // An attribute instance is a typed string value with additional metadata.
 // It is associated with an EntityInstance. Attributes are used in order to fill
@@ -167,6 +168,7 @@ class AttributeInstance final {
    private:
     MarkAsMaskedPasskey() = default;
     friend class EntityTable;
+    friend class WalletPassAccessManagerImpl;
     friend std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
         const sync_pb::AutofillValuableSpecifics&);
   };
@@ -419,6 +421,9 @@ class EntityInstance final {
   // That is, `this` is an `EntityInstance` returned unmasked from a Wallet
   // server; it is strictly transient and must never be persisted to disk.
   bool IsUnmaskedServerEntity() const;
+
+  // Returns a copy of `this` with a new `id`.
+  EntityInstance CopyWithNewEntityId(EntityId id) const;
 
   // Returns a copy of `this` with the given `record_type`.
   EntityInstance CopyWithNewRecordType(RecordType record_type) const;

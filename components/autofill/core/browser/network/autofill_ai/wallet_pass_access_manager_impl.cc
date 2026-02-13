@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +31,13 @@ namespace {
 
 using ::wallet::PrivatePass;
 using WalletRequestError = ::wallet::WalletHttpClient::WalletRequestError;
+
+PrivatePass EntityInstanceToPrivatePass(const EntityInstance& entity) {
+  PrivatePass pass;
+  pass.set_pass_id(entity.guid().value());
+  // TODO(crbug.com/478783796): Convert `entity.attributes()`.
+  return pass;
+}
 
 // Attempts to extract the pass number from the `response` and constructs an
 // `AttributeInstance` of the corresponding `AttributeType`.
@@ -71,6 +79,12 @@ std::optional<AttributeInstance> PassNumberFromResponse(
   return std::nullopt;
 }
 
+bool AttributeCorrespondsToEntity(const AttributeInstance& attribute,
+                                  const EntityInstance& entity) {
+  return attribute.type().entity_type() == entity.type() &&
+         entity.attribute(attribute.type()).has_value();
+}
+
 }  // namespace
 
 WalletPassAccessManagerImpl::WalletPassAccessManagerImpl(
@@ -84,13 +98,28 @@ WalletPassAccessManagerImpl::~WalletPassAccessManagerImpl() = default;
 void WalletPassAccessManagerImpl::SaveWalletEntityInstance(
     const EntityInstance& entity,
     UpsertEntityInstanceCallback callback) {
-  NOTIMPLEMENTED();
+  PrivatePass pass = EntityInstanceToPrivatePass(entity);
+  // To indicate saving of a new entity, the pass ID in the request is kept
+  // empty. The server-side will choose an identifier and return it through the
+  // Upsert response, which `UpsertPrivatePass()` uses to set the result's ID.
+  pass.clear_pass_id();
+  http_client_->UpsertPrivatePass(
+      std::move(pass), GetUpsertResponseToMaskedEntityCallback(entity).Then(
+                           std::move(callback)));
 }
 
 void WalletPassAccessManagerImpl::UpdateWalletEntityInstance(
     const EntityInstance& entity,
     UpsertEntityInstanceCallback callback) {
-  NOTIMPLEMENTED();
+  PrivatePass pass = EntityInstanceToPrivatePass(entity);
+  // To indicate updating of an existing entity, the request has a pass ID set.
+  // The Upsert response and thus the entity returned through the `callback`
+  // might still contain a different ID, meaning that deduplication happened on
+  // the server-side.
+  CHECK(pass.has_pass_id());
+  http_client_->UpsertPrivatePass(
+      std::move(pass), GetUpsertResponseToMaskedEntityCallback(entity).Then(
+                           std::move(callback)));
 }
 
 void WalletPassAccessManagerImpl::GetUnmaskedWalletEntityInstance(
@@ -115,12 +144,9 @@ void WalletPassAccessManagerImpl::GetUnmaskedWalletEntityInstance(
             }
             std::optional<AttributeInstance> unmasked_pass_number =
                 PassNumberFromResponse(response.value());
-            // Make sure the response type corresponds to the entity.
             if (!unmasked_pass_number.has_value() ||
-                unmasked_pass_number->type().entity_type() !=
-                    masked_entity.type() ||
-                !masked_entity.attribute(unmasked_pass_number->type())
-                     .has_value()) {
+                !AttributeCorrespondsToEntity(*unmasked_pass_number,
+                                              masked_entity)) {
               return std::nullopt;
             }
             CHECK(!unmasked_pass_number->masked());
@@ -132,6 +158,37 @@ void WalletPassAccessManagerImpl::GetUnmaskedWalletEntityInstance(
           },
           *masked_entity)
           .Then(std::move(callback)));
+}
+
+base::OnceCallback<std::optional<EntityInstance>(
+    const base::expected<PrivatePass, WalletRequestError>&)>
+WalletPassAccessManagerImpl::GetUpsertResponseToMaskedEntityCallback(
+    const EntityInstance& unmasked_entity) const {
+  CHECK(unmasked_entity.IsUnmaskedServerEntity());
+  return base::BindOnce(
+      [](EntityInstance unmasked_entity,
+         const base::expected<PrivatePass, WalletRequestError>& response)
+          -> std::optional<EntityInstance> {
+        if (!response.has_value()) {
+          return std::nullopt;
+        }
+        std::optional<AttributeInstance> masked_pass_number =
+            PassNumberFromResponse(response.value());
+        if (!masked_pass_number.has_value() ||
+            !AttributeCorrespondsToEntity(*masked_pass_number,
+                                          unmasked_entity)) {
+          return std::nullopt;
+        }
+        masked_pass_number->mark_as_masked({});
+        EntityInstance masked_entity =
+            unmasked_entity
+                .CopyWithNewEntityId(
+                    EntityInstance::EntityId(response->pass_id()))
+                .CopyWithUpdatedAttribute(std::move(*masked_pass_number));
+        CHECK(masked_entity.IsMaskedServerEntity());
+        return masked_entity;
+      },
+      unmasked_entity);
 }
 
 }  // namespace autofill
