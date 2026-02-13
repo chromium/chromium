@@ -52,8 +52,6 @@ class PixelTest : public testing::Test {
     kSkiaVulkan,
     // SkiaRenderer with the Skia Graphite on Dawn will be used.
     kSkiaGraphiteDawn,
-    // SkiaRenderer with the Skia Graphite on Metal will be used.
-    kSkiaGraphiteMetal,
   };
 
   explicit PixelTest(GraphicsBackend backend = kDefault);
@@ -133,8 +131,7 @@ class PixelTest : public testing::Test {
   void TearDown() override;
 
   bool use_skia_graphite() const {
-    return graphics_backend_ == GraphicsBackend::kSkiaGraphiteDawn ||
-           graphics_backend_ == GraphicsBackend::kSkiaGraphiteMetal;
+    return graphics_backend_ == GraphicsBackend::kSkiaGraphiteDawn;
   }
 
  private:

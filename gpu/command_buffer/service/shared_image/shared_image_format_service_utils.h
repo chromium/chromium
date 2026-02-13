@@ -227,14 +227,6 @@ GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
     bool support_multiplanar_copy);
 #endif
 
-#if BUILDFLAG(SKIA_USE_METAL)
-GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphiteMetalTextureInfo(
-    viz::SharedImageFormat format,
-    int plane_index = 0,
-    bool is_yuv_plane = false,
-    bool mipmapped = false);
-#endif
-
 GPU_GLES2_EXPORT
 skgpu::graphite::TextureInfo FallbackGraphiteBackendTextureInfo(
     const skgpu::graphite::TextureInfo& texture_info);

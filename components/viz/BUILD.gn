@@ -6,7 +6,7 @@ import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
 import("//testing/test.gni")
 
-if (is_ios && (skia_use_dawn || skia_use_metal)) {
+if (is_ios && skia_use_dawn) {
   bundle_data("unit_tests_filter_bundle_data") {
     testonly = true
     sources = [ "//testing/buildbot/filters/ios.viz_unittests.filter" ]

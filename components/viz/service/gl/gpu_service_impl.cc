@@ -111,10 +111,6 @@
 #include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #endif
 
-#if BUILDFLAG(SKIA_USE_METAL)
-#include "gpu/command_buffer/service/metal_context_provider.h"
-#endif
-
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 #include "base/test/clang_profiling.h"
 #endif
@@ -233,8 +229,8 @@ GpuServiceImpl::GpuServiceImpl(
       std::make_unique<gpu::webgpu::DawnCachingInterfaceFactory>();
 #endif
 
-  if (gpu_preferences_.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
+  if (gpu_preferences_.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
     dawn_context_provider_ = std::move(init_params.dawn_context_provider);
 
     if (dawn_context_provider_) {
@@ -261,16 +257,8 @@ GpuServiceImpl::GpuServiceImpl(
             std::move(dawn_caching_interface));
       }
     }
-#endif  // BUILDFLAG(SKIA_USE_DAWN)
-  } else if (gpu_preferences_.gr_context_type ==
-             gpu::GrContextType::kGraphiteMetal) {
-#if BUILDFLAG(SKIA_USE_METAL)
-    metal_context_provider_ = MetalContextProvider::Create();
-    if (!metal_context_provider_) {
-      DLOG(ERROR) << "Failed to create Metal context provider for Graphite.";
-    }
-#endif  // BUILDFLAG(SKIA_USE_METAL)
   }
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
@@ -482,9 +470,9 @@ void GpuServiceImpl::InitializeWithHostInternal(
       gpu_preferences_, this, watchdog_thread_.get(), main_runner_, io_runner_,
       scheduler_, sync_point_manager, shared_image_manager, gpu_feature_info_,
       &use_shader_cache_shm_count_->data, std::move(default_offscreen_surface),
-      vulkan_context_provider(), metal_context_provider(),
-      dawn_context_provider(), dawn_caching_interface_factory(),
-      gr_context_options_provider_, &persistent_caches_);
+      vulkan_context_provider(), dawn_context_provider(),
+      dawn_caching_interface_factory(), gr_context_options_provider_,
+      &persistent_caches_);
 
   media_gpu_channel_manager_ = std::make_unique<media::MediaGpuChannelManager>(
       gpu_channel_manager_.get());

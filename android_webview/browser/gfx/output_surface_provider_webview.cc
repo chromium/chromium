@@ -216,8 +216,8 @@ void OutputSurfaceProviderWebView::InitializeContext() {
       /*use_virtualized_gl_contexts=*/false,
       base::BindOnce(&OnContextLost, std::move(expect_context_loss_ptr)),
       GpuServiceWebView::GetInstance()->gpu_preferences().gr_context_type,
-      vulkan_context_provider_, /*metal_context_provider=*/nullptr,
-      /*dawn_context_provider=*/nullptr, /*peak_memory_monitor=*/nullptr,
+      vulkan_context_provider_, /*dawn_context_provider=*/nullptr,
+      /*peak_memory_monitor=*/nullptr,
       /*direct_rendering_display_compositor_enabled=*/false,
       /*created_on_compositor_gpu_thread=*/false,
       aw_gr_context_options_provider_.get());

@@ -52,7 +52,6 @@ GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendDawnMetal[];
 GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendDawnOpenGLES[];
 GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendDawnSwiftshader[];
 GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendDawnVulkan[];
-GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendMetal[];
 GPU_CONFIG_EXPORT extern const char kDisableSkiaGraphite[];
 GPU_CONFIG_EXPORT extern const char kEnableSkiaGraphite[];
 GPU_CONFIG_EXPORT extern const char kDisableSkiaGraphitePrecompilation[];

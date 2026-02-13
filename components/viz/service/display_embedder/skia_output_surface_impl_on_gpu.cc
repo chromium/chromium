@@ -1938,10 +1938,6 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
     if (!InitializeForDawn()) {
       return false;
     }
-  } else if (context_state_->IsGraphiteMetal()) {
-    if (!InitializeForMetal()) {
-      return false;
-    }
   } else {
     if (!InitializeForGL()) {
       return false;
@@ -2218,35 +2214,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 #else   // BUILDFLAG(SKIA_USE_DAWN)
   NOTREACHED();
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
-}
-
-bool SkiaOutputSurfaceImplOnGpu::InitializeForMetal() {
-#if !BUILDFLAG(IS_APPLE)
-  NOTREACHED();
-#else
-  if (dependency_->IsOffscreen()) {
-    output_device_ = std::make_unique<SkiaOutputDeviceOffscreen>(
-        context_state_, gfx::SurfaceOrigin::kTopLeft,
-        renderer_settings_.requires_alpha_channel,
-        shared_gpu_deps_->memory_tracker(),
-        GetDidSwapBuffersCompleteCallback());
-  } else {
-    scoped_refptr<gl::Presenter> presenter = dependency_->CreatePresenter();
-    presenter_ = presenter.get();
-    CHECK(presenter_);
-
-#if BUILDFLAG(IS_MAC)
-    presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
-#endif  // BUILDFLAG(IS_MAC)
-    output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
-        std::make_unique<OutputPresenterGL>(std::move(presenter), dependency_),
-        dependency_, shared_image_representation_factory_.get(),
-        shared_gpu_deps_->memory_tracker(), GetDidSwapBuffersCompleteCallback(),
-        GetReleaseOverlaysCallback());
-  }
-
-  return true;
-#endif  // !BUILDFLAG(IS_APPLE)
 }
 
 bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_framebuffer) {

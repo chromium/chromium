@@ -205,8 +205,7 @@ TEST_F(SkiaOutputSurfaceImplTest, MAYBE_EndPaintReleaseFence) {
   // Skip test for Skia Graphite
   gpu::GrContextType gr_context_type =
       GetGpuService()->gpu_preferences().gr_context_type;
-  if (gr_context_type == gpu::GrContextType::kGraphiteDawn ||
-      gr_context_type == gpu::GrContextType::kGraphiteMetal) {
+  if (gr_context_type == gpu::GrContextType::kGraphiteDawn) {
     GTEST_SKIP();
   }
   OutputSurface::ReshapeParams reshape_params;

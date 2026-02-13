@@ -33,8 +33,6 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::GrContextType,
         return gpu::mojom::GrContextType::kVulkan;
       case gpu::GrContextType::kGraphiteDawn:
         return gpu::mojom::GrContextType::kGraphiteDawn;
-      case gpu::GrContextType::kGraphiteMetal:
-        return gpu::mojom::GrContextType::kGraphiteMetal;
     }
     NOTREACHED();
   }
@@ -52,9 +50,6 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::GrContextType,
         return true;
       case gpu::mojom::GrContextType::kGraphiteDawn:
         *out = gpu::GrContextType::kGraphiteDawn;
-        return true;
-      case gpu::mojom::GrContextType::kGraphiteMetal:
-        *out = gpu::GrContextType::kGraphiteMetal;
         return true;
     }
     return false;

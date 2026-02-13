@@ -253,9 +253,6 @@ std::vector<RasterTestConfig> const kTestCases = {
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_SKIA_GRAPHITE_TESTS)
     {viz::RendererType::kSkiaGraphiteDawn, TestRasterType::kGpu},
-#if BUILDFLAG(IS_IOS)
-    {viz::RendererType::kSkiaGraphiteMetal, TestRasterType::kGpu},
-#endif  // BUILDFLAG(IS_IOS)
 #endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE_TESTS)
 };
 

@@ -38,10 +38,6 @@
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif
 
-#if BUILDFLAG(SKIA_USE_METAL)
-#include "gpu/command_buffer/service/metal_context_provider.h"
-#endif
-
 // From ANGLE's EGL/eglext_angle.h. This should be included instead of being
 // redefined here.
 #ifndef EGL_ANGLE_device_metal
@@ -79,12 +75,6 @@ id<MTLDevice> GetMTLDevice(scoped_refptr<SharedContextState> context_state) {
     CHECK(context_state->dawn_context_provider());
     return dawn::native::metal::GetMTLDevice(
         context_state->dawn_context_provider()->GetDevice().Get());
-  }
-#endif
-#if BUILDFLAG(SKIA_USE_METAL)
-  if (context_state->IsGraphiteMetal()) {
-    CHECK(context_state->metal_context_provider());
-    return context_state->metal_context_provider()->GetMTLDevice();
   }
 #endif
   if (context_state->GrContextIsGL()) {

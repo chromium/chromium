@@ -65,7 +65,6 @@ enum class GrContextType : uint32_t {
   kGL,      // Ganesh
   kVulkan,  // Ganesh
   kGraphiteDawn,
-  kGraphiteMetal,
 };
 
 GPU_CONFIG_EXPORT std::string GrContextTypeToString(GrContextType type);
@@ -73,6 +72,7 @@ GPU_CONFIG_EXPORT std::string GrContextTypeToString(GrContextType type);
 // Used to represent the Skia backend that the GPU process has initialized.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SkiaBackendType)
 enum class SkiaBackendType {
   kUnknown = 0,
   kNone = 1,
@@ -82,11 +82,13 @@ enum class SkiaBackendType {
   kGraphiteDawnMetal = 5,
   kGraphiteDawnD3D11 = 6,
   kGraphiteDawnD3D12 = 7,
-  kGraphiteMetal = 8,
+  // This can be commented out (not reassigned) once kMaxValue moves past it.
+  kDeprecatedGraphiteMetal = 8,
   // It's not clear what granularity of kGraphiteDawnGL* backend dawn will
   // provided yet so those values are to be added later.
-  kMaxValue = kGraphiteMetal
+  kMaxValue = kDeprecatedGraphiteMetal
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:SkiaBackendType)
 
 GPU_CONFIG_EXPORT std::string SkiaBackendTypeToString(SkiaBackendType type);
 

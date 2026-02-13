@@ -28,7 +28,6 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
-#include "gpu/command_buffer/service/metal_context_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/copy_image_plane.h"
 #include "gpu/command_buffer/service/shared_image/dawn_fallback_image_representation.h"
@@ -136,67 +135,6 @@ wgpu::Texture CreateWGPUTexture(wgpu::SharedTextureMemory shared_texture_memory,
 
   return shared_texture_memory.CreateTexture(&texture_descriptor);
 }
-
-#if BUILDFLAG(SKIA_USE_METAL)
-
-base::apple::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
-    id<MTLDevice> mtl_device,
-    IOSurfaceRef io_surface,
-    const gfx::Size& size,
-    viz::SharedImageFormat format,
-    int plane_index) {
-  TRACE_EVENT0("gpu", "IOSurfaceImageBackingFactory::CreateMetalTexture");
-  base::apple::scoped_nsprotocol<id<MTLTexture>> mtl_texture;
-  MTLPixelFormat mtl_pixel_format =
-      static_cast<MTLPixelFormat>(ToMTLPixelFormat(format, plane_index));
-  if (mtl_pixel_format == MTLPixelFormatInvalid) {
-    return mtl_texture;
-  }
-
-  base::apple::scoped_nsobject<MTLTextureDescriptor> mtl_tex_desc(
-      [[MTLTextureDescriptor alloc] init]);
-  [mtl_tex_desc.get() setTextureType:MTLTextureType2D];
-  [mtl_tex_desc.get()
-      setUsage:MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget];
-  [mtl_tex_desc.get() setPixelFormat:mtl_pixel_format];
-  [mtl_tex_desc.get() setWidth:size.width()];
-  [mtl_tex_desc.get() setHeight:size.height()];
-  [mtl_tex_desc.get() setDepth:1];
-  [mtl_tex_desc.get() setMipmapLevelCount:1];
-  [mtl_tex_desc.get() setArrayLength:1];
-  [mtl_tex_desc.get() setSampleCount:1];
-  // TODO(crbug.com/40622826): For zero-copy resources that are populated
-  // on the CPU (e.g, video frames), it may be that MTLStorageModeManaged will
-  // be more appropriate.
-#if BUILDFLAG(IS_IOS)
-  // On iOS we are using IOSurfaces which must use MTLStorageModeShared.
-  [mtl_tex_desc.get() setStorageMode:MTLStorageModeShared];
-#else
-  [mtl_tex_desc.get() setStorageMode:MTLStorageModeManaged];
-#endif
-  mtl_texture.reset([mtl_device newTextureWithDescriptor:mtl_tex_desc.get()
-                                               iosurface:io_surface
-                                                   plane:plane_index]);
-  DCHECK(mtl_texture);
-  return mtl_texture;
-}
-
-std::vector<scoped_refptr<GraphiteTextureHolder>> CreateGraphiteMetalTextures(
-    std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures,
-    const viz::SharedImageFormat format,
-    const gfx::Size& size) {
-  int num_planes = format.NumberOfPlanes();
-  std::vector<scoped_refptr<GraphiteTextureHolder>> graphite_textures;
-  graphite_textures.reserve(num_planes);
-  for (int plane = 0; plane < num_planes; plane++) {
-    SkISize sk_size = gfx::SizeToSkISize(format.GetPlaneSize(plane, size));
-    graphite_textures.emplace_back(base::MakeRefCounted<GraphiteTextureHolder>(
-        skgpu::graphite::BackendTextures::MakeMetal(
-            sk_size, mtl_textures[plane].get())));
-  }
-  return graphite_textures;
-}
-#endif
 
 id<MTLDevice> QueryMetalDeviceFromANGLE(EGLDisplay display) {
   id<MTLDevice> metal_device = nil;
@@ -697,125 +635,6 @@ void IOSurfaceImageBacking::SkiaGaneshRepresentation::CheckContext() {
     DCHECK(gl::GLContext::GetCurrent() == context_);
 #endif
 }
-
-#if BUILDFLAG(SKIA_USE_METAL)
-///////////////////////////////////////////////////////////////////////////////
-// SkiaGraphiteMetalRepresentation
-
-class IOSurfaceImageBacking::SkiaGraphiteMetalRepresentation final
-    : public SkiaGraphiteImageRepresentation {
- public:
-  // Graphite does not keep track of the MetalTexture like Ganesh, so the
-  // representation/backing needs to keep the Metal texture alive.
-  SkiaGraphiteMetalRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      skgpu::graphite::Recorder* recorder,
-      std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures)
-      : SkiaGraphiteImageRepresentation(manager, backing, tracker),
-        recorder_(recorder),
-        mtl_textures_(std::move(mtl_textures)) {
-    CHECK_EQ(mtl_textures_.size(), NumPlanesExpected());
-  }
-
-  ~SkiaGraphiteMetalRepresentation() override {
-    if (!write_surfaces_.empty()) {
-      DLOG(ERROR) << "SkiaImageRepresentation was destroyed while still "
-                  << "open for write access.";
-    }
-  }
-
- private:
-  // SkiaGraphiteImageRepresentation:
-  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
-      const SkSurfaceProps& surface_props,
-      const gfx::Rect& update_rect) override;
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess() override;
-  void EndWriteAccess() override;
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override;
-  void EndReadAccess() override;
-
-  IOSurfaceImageBacking* backing_impl() const {
-    return static_cast<IOSurfaceImageBacking*>(backing());
-  }
-
-  const raw_ptr<skgpu::graphite::Recorder> recorder_;
-  std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures_;
-  std::vector<sk_sp<SkSurface>> write_surfaces_;
-};
-
-std::vector<sk_sp<SkSurface>>
-IOSurfaceImageBacking::SkiaGraphiteMetalRepresentation::BeginWriteAccess(
-    const SkSurfaceProps& surface_props,
-    const gfx::Rect& update_rect) {
-  AutoLock auto_lock(backing_impl());
-
-  if (!write_surfaces_.empty()) {
-    // Write access is already in progress.
-    return {};
-  }
-
-  if (!backing_impl()->BeginAccess(/*readonly=*/false)) {
-    return {};
-  }
-
-  int num_planes = format().NumberOfPlanes();
-  write_surfaces_.reserve(num_planes);
-  for (int plane = 0; plane < num_planes; plane++) {
-    SkColorType sk_color_type = viz::ToClosestSkColorType(format(), plane);
-    // Gray is not a renderable single channel format, but alpha is.
-    if (sk_color_type == kGray_8_SkColorType) {
-      sk_color_type = kAlpha_8_SkColorType;
-    }
-    SkISize sk_size = gfx::SizeToSkISize(format().GetPlaneSize(plane, size()));
-
-    auto backend_texture = skgpu::graphite::BackendTextures::MakeMetal(
-        sk_size, mtl_textures_[plane].get());
-    auto surface = SkSurfaces::WrapBackendTexture(
-        recorder_, backend_texture, sk_color_type,
-        backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
-        &surface_props);
-    write_surfaces_.emplace_back(std::move(surface));
-  }
-  return write_surfaces_;
-}
-
-std::vector<scoped_refptr<GraphiteTextureHolder>>
-IOSurfaceImageBacking::SkiaGraphiteMetalRepresentation::BeginWriteAccess() {
-  AutoLock auto_lock(backing_impl());
-
-  if (!backing_impl()->BeginAccess(/*readonly=*/false)) {
-    return {};
-  }
-  return CreateGraphiteMetalTextures(mtl_textures_, format(), size());
-}
-
-void IOSurfaceImageBacking::SkiaGraphiteMetalRepresentation::EndWriteAccess() {
-  AutoLock auto_lock(backing_impl());
-#if DCHECK_IS_ON()
-  for (auto& surface : write_surfaces_) {
-    DCHECK(surface->unique());
-  }
-#endif
-  write_surfaces_.clear();
-  backing_impl()->EndAccess(/*readonly=*/false);
-}
-
-std::vector<scoped_refptr<GraphiteTextureHolder>>
-IOSurfaceImageBacking::SkiaGraphiteMetalRepresentation::BeginReadAccess() {
-  AutoLock auto_lock(backing_impl());
-  if (!backing_impl()->BeginAccess(/*readonly=*/true)) {
-    return {};
-  }
-  return CreateGraphiteMetalTextures(mtl_textures_, format(), size());
-}
-
-void IOSurfaceImageBacking::SkiaGraphiteMetalRepresentation::EndReadAccess() {
-  AutoLock auto_lock(backing_impl());
-  backing_impl()->EndAccess(/*readonly=*/true);
-}
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // OverlayRepresentation
@@ -1726,37 +1545,9 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
     return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
         std::move(dawn_representation), context_state,
         context_state->gpu_main_graphite_recorder(), manager, this, tracker);
-#else
-    NOTREACHED();
-#endif
-  } else {
-    CHECK(context_state->IsGraphiteMetal());
-#if BUILDFLAG(SKIA_USE_METAL)
-    std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures;
-    mtl_textures.reserve(format().NumberOfPlanes());
-
-    for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
-      auto plane_size = format().GetPlaneSize(plane, size());
-      base::apple::scoped_nsprotocol<id<MTLTexture>> mtl_texture =
-          CreateMetalTexture(
-              context_state->metal_context_provider()->GetMTLDevice(),
-              io_surface_.get(), plane_size, format(), plane);
-      if (!mtl_texture) {
-        LOG(ERROR) << "Failed to create MTLTexture from IOSurface";
-        return nullptr;
-      }
-      mtl_textures.push_back(std::move(mtl_texture));
-    }
-
-    // Use GPU main recorder since this should only be called for
-    // fulfilling Graphite promise images on GPU main thread.
-    return std::make_unique<SkiaGraphiteMetalRepresentation>(
-        manager, this, tracker, context_state->gpu_main_graphite_recorder(),
-        std::move(mtl_textures));
-#else
-    NOTREACHED();
 #endif
   }
+  NOTREACHED();
 }
 
 void IOSurfaceImageBacking::SetPurgeable(bool purgeable) {

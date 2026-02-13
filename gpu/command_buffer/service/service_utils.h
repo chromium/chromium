@@ -36,9 +36,8 @@ ParseGpuPreferences(const base::CommandLine* command_line);
 // Determine which Skia GrContext backend will be used for GPU compositing and
 // rasterization (if enabled) by checking the feature flags for Vulkan and/or
 // Graphite. If they are not enabled, default to GL.
-// If Graphite is enabled, the backend is Dawn by default or cn be specified
-// using the --skia-graphite-backend flag. On iOS, the backend is Metal by
-// default if skia_use_metal is set to true via gn args.
+// If Graphite is enabled, its Dawn backend can be selected by using the
+// --skia-graphite-backend flag.
 GPU_GLES2_EXPORT GrContextType
 ParseGrContextType(const base::CommandLine* command_line);
 

@@ -176,7 +176,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   class DawnRepresentation;
   class SkiaGraphiteDawnMetalRepresentation;
   class SkiaGaneshRepresentation;
-  class SkiaGraphiteMetalRepresentation;
   class OverlayRepresentation;
 
   class DawnBufferCopyRepresentation final : public DawnBufferRepresentation {

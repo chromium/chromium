@@ -82,8 +82,6 @@ class LayerTreeTest : public testing::Test, public TestHooks {
         return "Skia Vulkan";
       case viz::RendererType::kSkiaGraphiteDawn:
         return "Skia Graphite Dawn";
-      case viz::RendererType::kSkiaGraphiteMetal:
-        return "Skia Graphite Metal";
       case viz::RendererType::kSoftware:
         return "Software";
     }
@@ -230,8 +228,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     return renderer_type_ == viz::RendererType::kSkiaVk;
   }
   bool use_skia_graphite() const {
-    return renderer_type_ == viz::RendererType::kSkiaGraphiteDawn ||
-           renderer_type_ == viz::RendererType::kSkiaGraphiteMetal;
+    return renderer_type_ == viz::RendererType::kSkiaGraphiteDawn;
   }
 
   const viz::RendererType renderer_type_;

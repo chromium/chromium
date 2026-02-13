@@ -765,12 +765,6 @@ LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     init_vulkan = true;
 #endif
-  } else if (renderer_type_ == viz::RendererType::kSkiaGraphiteMetal) {
-    enabled_features.push_back(features::kSkiaGraphite);
-    // Force the use of Graphite even if disallowed for other reasons.
-    command_line->AppendSwitch(::switches::kEnableSkiaGraphite);
-    command_line->AppendSwitchASCII(::switches::kSkiaGraphiteBackend,
-                                    ::switches::kSkiaGraphiteBackendMetal);
   } else {
     disabled_features.push_back(features::kVulkan);
     disabled_features.push_back(features::kSkiaGraphite);

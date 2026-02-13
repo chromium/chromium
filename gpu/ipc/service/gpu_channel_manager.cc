@@ -336,7 +336,6 @@ GpuChannelManager::GpuChannelManager(
     GpuProcessShmCount* use_shader_cache_shm_count,
     scoped_refptr<gl::GLSurface> default_offscreen_surface,
     viz::VulkanContextProvider* vulkan_context_provider,
-    viz::MetalContextProvider* metal_context_provider,
     DawnContextProvider* dawn_context_provider,
     webgpu::DawnCachingInterfaceFactory* dawn_caching_interface_factory,
     const SharedContextState::GrContextOptionsProvider*
@@ -363,7 +362,6 @@ GpuChannelManager::GpuChannelManager(
           this),
       dawn_caching_interface_factory_(dawn_caching_interface_factory),
       vulkan_context_provider_(vulkan_context_provider),
-      metal_context_provider_(metal_context_provider),
       dawn_context_provider_(dawn_context_provider),
       use_persistent_cache_for_ganesh_(
           base::FeatureList::IsEnabled(features::kGpuPersistentCache)),
@@ -951,8 +949,7 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
       base::BindOnce(&GpuChannelManager::OnContextLost, base::Unretained(this),
                      context_lost_count_ + 1),
       gpu_preferences_.gr_context_type, vulkan_context_provider_,
-      metal_context_provider_, dawn_context_provider_, peak_memory_monitor_,
-      /*direct_rendering_display_compositor_enabled=*/
+      dawn_context_provider_, peak_memory_monitor_,
       features::IsDrDcEnabled(gpu_feature_info_),
       /*created_on_compositor_gpu_thread=*/false, gr_context_options_provider_);
 

@@ -1467,6 +1467,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="37" label="Other"/>
 </enum>
 
+<!-- LINT.IfChange(SkiaBackendType) -->
+
 <enum name="SkiaBackendType">
   <summary>
     What Skia backend is being used for GPU acceleration in Chrome.
@@ -1479,8 +1481,10 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="GraphiteDawnMetal"/>
   <int value="6" label="GraphiteDawnD3D11"/>
   <int value="7" label="GraphiteDawnD3D12"/>
-  <int value="8" label="GraphiteMetal"/>
+  <int value="8" label="GraphiteMetal (Deprecated)"/>
 </enum>
+
+<!-- LINT.ThenChange(//gpu/config/gpu_preferences.h:SkiaBackendType) -->
 
 <enum name="SkiaPipelineCreationRace">
   <int value="0" label="Normal compilation won a race with Normal compilation"/>

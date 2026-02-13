@@ -20,8 +20,6 @@ const char* RendererTypeTestSuffix(RendererType type) {
       return "SkiaVulkan";
     case RendererType::kSkiaGraphiteDawn:
       return "SkiaGraphiteDawn";
-    case RendererType::kSkiaGraphiteMetal:
-      return "SkiaGraphiteMetal";
     case RendererType::kSoftware:
       return "Software";
   }
@@ -40,9 +38,6 @@ std::vector<RendererType> GetRendererTypes(bool include_software) {
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_SKIA_GRAPHITE_TESTS)
   types.push_back(RendererType::kSkiaGraphiteDawn);
-#if BUILDFLAG(IS_IOS)
-  types.push_back(RendererType::kSkiaGraphiteMetal);
-#endif  // BUILDFLAG(IS_IOS)
 #endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE_TESTS)
   return types;
 }

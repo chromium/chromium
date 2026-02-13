@@ -71,10 +71,6 @@
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #endif
 
-#if BUILDFLAG(SKIA_USE_METAL)
-#include "gpu/command_buffer/service/metal_context_provider.h"
-#endif
-
 #if BUILDFLAG(SKIA_USE_DAWN)
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif
@@ -263,7 +259,6 @@ SharedContextState::SharedContextState(
     ContextLostCallback context_lost_callback,
     GrContextType gr_context_type,
     viz::VulkanContextProvider* vulkan_context_provider,
-    viz::MetalContextProvider* metal_context_provider,
     DawnContextProvider* dawn_context_provider,
     scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
     bool direct_rendering_display_compositor_enabled,
@@ -288,7 +283,6 @@ SharedContextState::SharedContextState(
           GpuPeakMemoryAllocationSource::SKIA)),
       memory_type_tracker_(memory_tracker_.get()),
       vk_context_provider_(vulkan_context_provider),
-      metal_context_provider_(metal_context_provider),
       dawn_context_provider_(dawn_context_provider),
       gr_context_options_provider_(gr_context_options_provider),
       created_on_compositor_gpu_thread_(created_on_compositor_gpu_thread),
@@ -384,11 +378,6 @@ gpu::GraphiteSharedContext* SharedContextState::graphite_shared_context()
     return dawn_context_provider_->GetGraphiteSharedContext();
   }
 #endif
-#if BUILDFLAG(SKIA_USE_METAL)
-  if (metal_context_provider_) {
-    return metal_context_provider_->GetGraphiteSharedContext();
-  }
-#endif
   return nullptr;
 }
 
@@ -402,11 +391,6 @@ bool SharedContextState::IsUsingGL() const {
 bool SharedContextState::IsGraphiteDawn() const {
   return gr_context_type() == GrContextType::kGraphiteDawn &&
          dawn_context_provider();
-}
-
-bool SharedContextState::IsGraphiteMetal() const {
-  return gr_context_type() == GrContextType::kGraphiteMetal &&
-         metal_context_provider();
 }
 
 bool SharedContextState::IsGraphiteDawnMetal() const {
@@ -469,8 +453,7 @@ bool SharedContextState::InitializeSkia(
     return true;
   }
 
-  if (gr_context_type_ == GrContextType::kGraphiteDawn ||
-      gr_context_type_ == GrContextType::kGraphiteMetal) {
+  if (gr_context_type_ == GrContextType::kGraphiteDawn) {
     return InitializeGraphite(gpu_preferences, workarounds,
                               use_shader_cache_shm_count);
   }
@@ -603,37 +586,25 @@ bool SharedContextState::InitializeGraphite(
       GetDefaultGraphiteContextOptions(workarounds);
 
   gpu::GraphiteSharedContext* graphite_shared_context = nullptr;
-  if (gr_context_type_ == GrContextType::kGraphiteDawn) {
+
 #if BUILDFLAG(SKIA_USE_DAWN)
-    CHECK(dawn_context_provider_);
-    if (dawn_context_provider_->InitializeGraphiteContext(
-            context_options, use_shader_cache_shm_count)) {
-      graphite_shared_context =
-          dawn_context_provider_->GetGraphiteSharedContext();
-    } else {
-      // There is currently no way for the GPU process to gracefully handle
-      // failure to initialize Dawn, leaving the user in an unknown state if we
-      // allow GPU process initialization to continue. Intentionally crash the
-      // GPU process in this case to trigger browser-side fallback logic (either
-      // to software or to Ganesh depending on the platform).
-      // TODO(crbug.com/325000752): Handle this case within the GPU process.
-      NOTREACHED();
-    }
-#endif
+  CHECK_EQ(gr_context_type_, GrContextType::kGraphiteDawn);
+  CHECK(dawn_context_provider_);
+  if (dawn_context_provider_->InitializeGraphiteContext(
+          context_options, use_shader_cache_shm_count)) {
+    graphite_shared_context =
+        dawn_context_provider_->GetGraphiteSharedContext();
   } else {
-    CHECK_EQ(gr_context_type_, GrContextType::kGraphiteMetal);
-#if BUILDFLAG(SKIA_USE_METAL)
-    if (metal_context_provider_ &&
-        metal_context_provider_->InitializeGraphiteContext(
-            context_options, use_shader_cache_shm_count)) {
-      graphite_shared_context =
-          metal_context_provider_->GetGraphiteSharedContext();
-    } else {
-      DLOG(ERROR) << "Failed to create Graphite Context for Metal";
-      return false;
-    }
-#endif
+    // There is currently no way for the GPU process to gracefully handle
+    // failure to initialize Dawn, leaving the user in an unknown state if we
+    // allow GPU process initialization to continue. Intentionally crash the
+    // GPU process in this case to trigger browser-side fallback logic (either
+    // to software or to Ganesh depending on the platform).
+    // TODO(crbug.com/325000752): Handle this case within the GPU process.
+    NOTREACHED();
   }
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
+
   if (!graphite_shared_context) {
     LOG(ERROR) << "Skia Graphite disabled: Graphite Context creation failed.";
     return false;
@@ -1419,11 +1390,6 @@ int32_t SharedContextState::GetMaxTextureSize() {
       max_texture_size = limits.maxTextureDimension2D;
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
-#if BUILDFLAG(SKIA_USE_METAL)
-    if (metal_context_provider()) {
-      max_texture_size = metal_context_provider()->GetMaxTextureSize();
-    }
-#endif  // BUILDFLAG(SKIA_USE_METAL)
   }
   DCHECK_GT(max_texture_size, 0);
   max_texture_size_ = max_texture_size;

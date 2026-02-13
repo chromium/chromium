@@ -40,10 +40,6 @@
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif
 
-#if BUILDFLAG(SKIA_USE_METAL)
-#include "gpu/command_buffer/service/metal_context_provider.h"
-#endif
-
 #if BUILDFLAG(SKIA_USE_DAWN) || BUILDFLAG(USE_DAWN)
 #include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
 #include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
@@ -175,13 +171,6 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
 #else
     FAIL() << "Graphite-Dawn not available";
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
-  } else if (context_type == GrContextType::kGraphiteMetal) {
-#if BUILDFLAG(SKIA_USE_METAL)
-    metal_context_provider_ = viz::MetalContextProvider::Create();
-    ASSERT_TRUE(metal_context_provider_);
-#else
-    FAIL() << "Graphite-Metal not available";
-#endif  // BUILDFLAG(SKIA_USE_METAL)
   } else if (context_type == GrContextType::kVulkan) {
 #if BUILDFLAG(ENABLE_VULKAN)
     vulkan_implementation_ = gpu::CreateVulkanImplementation();
@@ -217,10 +206,10 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 #if BUILDFLAG(SKIA_USE_DAWN)
           ,
-      /*metal_context_provider=*/nullptr, dawn_context_provider_.get()
-#elif BUILDFLAG(SKIA_USE_METAL)
+      dawn_context_provider_.get()
+#else
       ,
-      metal_context_provider_.get()
+      /*dawn_context_provider=*/nullptr
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
   );
 

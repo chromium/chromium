@@ -85,13 +85,6 @@ PixelTest::PixelTest(GraphicsBackend backend)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     init_vulkan = true;
 #endif
-  } else if (backend == kSkiaGraphiteMetal) {
-    scoped_feature_list_.InitAndEnableFeature(features::kSkiaGraphite);
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    // Force the use of Graphite even if disallowed for other reasons.
-    command_line->AppendSwitch(::switches::kEnableSkiaGraphite);
-    command_line->AppendSwitchASCII(::switches::kSkiaGraphiteBackend,
-                                    ::switches::kSkiaGraphiteBackendMetal);
   } else {
     // Ensure that we don't accidentally have vulkan or graphite enabled.
     scoped_feature_list_.InitWithFeatures(

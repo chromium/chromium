@@ -30,7 +30,6 @@ buildflag_header("buildflags") {
   flags = [
     "SKIA_SUPPORT_SKOTTIE=$skia_support_skottie",
     "SKIA_USE_DAWN=$skia_use_dawn",
-    "SKIA_USE_METAL=$skia_use_metal",
   ]
 }
 
@@ -151,9 +150,6 @@ config("skia_config") {
     if (skia_use_dawn) {
       defines += [ "SK_DAWN" ]
       configs += [ "//third_party/dawn/include/dawn:public" ]
-    }
-    if (skia_use_metal) {
-      defines += [ "SK_METAL" ]
     }
   }
   if (current_cpu == "loong64") {
@@ -570,12 +566,10 @@ component("skia") {
     }
 
     public_deps += [ ":skia_graphite_public" ]
-    deps += [ ":skia_graphite_private" ]
-
-    if (skia_use_metal) {
-      deps += [ ":skia_ganesh_metal" ]
-    }
-    deps += [ "//gpu/config:workaround_list" ]
+    deps += [
+      ":skia_graphite_private",
+      "//gpu/config:workaround_list",
+    ]
   }
 
   if (skia_support_pdf) {
@@ -1020,10 +1014,6 @@ if (skia_support_gpu) {
         "//third_party/dawn/src/dawn:proc",
       ]
     }
-    if (skia_use_metal) {
-      public += skia_graphite_mtl_public
-      frameworks = [ "Metal.framework" ]
-    }
     deps = [ "//gpu/config:workaround_list" ]
   }
 
@@ -1035,33 +1025,11 @@ if (skia_support_gpu) {
     if (skia_use_dawn) {
       sources += skia_graphite_dawn_sources
     }
-    if (skia_use_metal) {
-      sources += skia_shared_mtl_sources
-      sources += skia_graphite_mtl_sources
-    }
     deps = [ "//gpu/config:workaround_list" ]
     if (skia_use_dawn) {
       deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
     }
     visibility = [ ":skia" ]
-  }
-
-  if (skia_use_metal) {
-    # Split out Ganesh Metal sources, because they require ARC.
-    skia_source_set("skia_ganesh_metal") {
-      sources = skia_gpu_metal_public
-      sources += skia_gpu_metal_private
-      cflags_objcc = [
-        "-Wno-unguarded-availability",
-        "-fobjc-arc",
-      ]
-      deps = [ "//gpu/config:workaround_list" ]
-      if (skia_use_dawn) {
-        # Needed due to include chain containing webgpu_cpp.h via GrDawnTypes.h.
-        public_deps = [ "//third_party/dawn/include/dawn:cpp_headers" ]
-      }
-      visibility = [ ":skia" ]
-    }
   }
 }
 

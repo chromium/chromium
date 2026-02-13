@@ -208,14 +208,11 @@ std::unique_ptr<SkiaImageRepresentation> SharedImageBacking::ProduceSkia(
     case gpu::GrContextType::kGL:
     case gpu::GrContextType::kVulkan:
       return ProduceSkiaGanesh(manager, tracker, context_state);
-    case gpu::GrContextType::kGraphiteMetal:
     case gpu::GrContextType::kGraphiteDawn:
       return ProduceSkiaGraphite(manager, tracker, context_state);
       // NOTE: Do not add a default case to force any new types to be
       // handled here on addition.
   }
-
-  NOTREACHED();
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>

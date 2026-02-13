@@ -1045,9 +1045,6 @@ TEST_F(GpuRasterPixelTest, DrawHdrImageWithMetadata) {
   // Allow large quantization error on Android.
   // TODO(crbug.com/40238547): Ensure higher precision for HDR images.
   constexpr float kEpsilon = 1 / 16.f;
-#elif BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL)
-  // TODO(crbug.com/40280014): Allow larger errors on iOS as well.
-  constexpr float kEpsilon = 1 / 12.f;
 #else
   constexpr float kEpsilon = 1 / 32.f;
 #endif

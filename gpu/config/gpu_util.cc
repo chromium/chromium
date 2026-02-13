@@ -297,11 +297,6 @@ GpuFeatureStatus GetSkiaGraphiteFeatureStatus(
     return kGpuFeatureStatusEnabled;
   }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
-#if BUILDFLAG(SKIA_USE_METAL)
-  if (gpu_preferences.gr_context_type == GrContextType::kGraphiteMetal) {
-    return kGpuFeatureStatusEnabled;
-  }
-#endif  // BUILDFLAG(SKIA_USE_METAL)
   return kGpuFeatureStatusDisabled;
 }
 

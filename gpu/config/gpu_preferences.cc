@@ -69,8 +69,6 @@ std::string GrContextTypeToString(GrContextType type) {
       return "GaneshVulkan";
     case GrContextType::kGraphiteDawn:
       return "GraphiteDawn";
-    case GrContextType::kGraphiteMetal:
-      return "GraphiteMetal";
   }
   NOTREACHED() << "GrContextType=" << static_cast<int>(type);
 }
@@ -93,8 +91,8 @@ std::string SkiaBackendTypeToString(SkiaBackendType type) {
       return "GraphiteDawnD3D11";
     case SkiaBackendType::kGraphiteDawnD3D12:
       return "GraphiteDawnD3D12";
-    case SkiaBackendType::kGraphiteMetal:
-      return "GraphiteMetal";
+    case SkiaBackendType::kDeprecatedGraphiteMetal:
+      return "DeprecatedGraphiteMetal";
   }
   NOTREACHED() << "SkiaBackendType=" << static_cast<int>(type);
 }

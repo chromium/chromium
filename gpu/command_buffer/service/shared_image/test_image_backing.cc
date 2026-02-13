@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
@@ -15,6 +16,10 @@
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 #include "third_party/skia/include/gpu/ganesh/mock/GrMockTypes.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#endif
 
 namespace gpu {
 namespace {
@@ -137,37 +142,6 @@ class TestDawnImageRepresentation : public DawnImageRepresentation {
   }
 
   void EndAccess() override {}
-};
-
-class TestMetalSkiaGraphiteImageRepresentation
-    : public SkiaGraphiteImageRepresentation {
- public:
-  TestMetalSkiaGraphiteImageRepresentation(SharedImageManager* manager,
-                                           SharedImageBacking* backing,
-                                           MemoryTypeTracker* tracker)
-      : SkiaGraphiteImageRepresentation(manager, backing, tracker) {}
-
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override {
-    return {};
-  }
-  void EndReadAccess() override {}
-
-  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
-      const SkSurfaceProps& surface_props,
-      const gfx::Rect& update_rect) override {
-    std::vector<sk_sp<SkSurface>> surfaces;
-    for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
-      auto plane_size = format().GetPlaneSize(plane, size());
-      surfaces.push_back(
-          SkSurfaces::Null(plane_size.width(), plane_size.height()));
-    }
-    return surfaces;
-  }
-  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess()
-      override {
-    return {};
-  }
-  void EndWriteAccess() override {}
 };
 
 }  // namespace
@@ -389,12 +363,18 @@ TestImageBacking::ProduceSkiaGraphite(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-#if BUILDFLAG(SKIA_USE_METAL)
-  return std::make_unique<TestMetalSkiaGraphiteImageRepresentation>(
-      manager, this, tracker);
-#else
+#if BUILDFLAG(SKIA_USE_DAWN)
+  if (context_state->IsGraphiteDawn()) {
+    return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
+        ProduceDawn(manager, tracker,
+                    context_state->dawn_context_provider()->GetDevice(),
+                    context_state->dawn_context_provider()->backend_type(),
+                    /*view_formats=*/{}, context_state),
+        context_state, context_state->gpu_main_graphite_recorder(), manager,
+        this, tracker);
+  }
+#endif
   return nullptr;
-#endif  // BUILDFLAG(SKIA_USE_METAL)
 }
 
 std::unique_ptr<OverlayImageRepresentation> TestImageBacking::ProduceOverlay(

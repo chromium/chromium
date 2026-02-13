@@ -325,7 +325,6 @@ class SkiaOutputSurfaceImplOnGpu
   bool InitializeForGL();
   bool InitializeForVulkan();
   bool InitializeForDawn();
-  bool InitializeForMetal();
 
   // Provided as a callback to |device_|.
   void DidSwapBuffersCompleteInternal(gpu::SwapBuffersCompleteParams params,

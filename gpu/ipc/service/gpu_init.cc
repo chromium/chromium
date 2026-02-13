@@ -520,8 +520,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   const bool need_fallback_from_graphite = [this]() {
     // If graphite is requested, check ANGLE implementation.
-    if (gpu_preferences_.gr_context_type != GrContextType::kGraphiteDawn &&
-        gpu_preferences_.gr_context_type != GrContextType::kGraphiteMetal) {
+    if (gpu_preferences_.gr_context_type != GrContextType::kGraphiteDawn) {
       return false;
     }
 
@@ -1263,10 +1262,6 @@ void GpuInit::SetSkiaBackendType() {
       break;
     case gpu::GrContextType::kVulkan:
       skia_backend_type = SkiaBackendType::kGaneshVulkan;
-      break;
-    case gpu::GrContextType::kGraphiteMetal:
-      // Graphite/Metal isn't expected to be used outside tests.
-      skia_backend_type = SkiaBackendType::kUnknown;
       break;
     case gpu::GrContextType::kGraphiteDawn: {
 #if BUILDFLAG(SKIA_USE_DAWN)

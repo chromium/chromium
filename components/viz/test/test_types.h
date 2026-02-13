@@ -14,7 +14,6 @@ enum class RendererType {
   kSkiaGL,
   kSkiaVk,
   kSkiaGraphiteDawn,
-  kSkiaGraphiteMetal,
   kSoftware,
 };
 

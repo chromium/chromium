@@ -1194,11 +1194,6 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
               wgpu::FeatureName::Unorm16TextureFormats);
     }
 #endif
-#if BUILDFLAG(SKIA_USE_METAL)
-    if (shared_context_state_->IsGraphiteMetal()) {
-      caps.texture_norm16 = true;
-    }
-#endif
   } else {
     caps.texture_norm16 = feature_info()->feature_flags().ext_texture_norm16;
     caps.texture_half_float_linear =

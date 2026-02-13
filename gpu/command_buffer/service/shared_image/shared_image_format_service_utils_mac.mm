@@ -12,11 +12,6 @@
 #include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format.h"
 
-#if BUILDFLAG(SKIA_USE_METAL)
-#include "third_party/skia/include/gpu/graphite/mtl/MtlGraphiteTypes.h"
-#include "third_party/skia/include/gpu/graphite/mtl/MtlGraphiteTypesUtils.h"
-#endif
-
 namespace gpu {
 
 uint32_t SharedImageFormatToIOSurfacePixelFormat(viz::SharedImageFormat format,
@@ -125,34 +120,5 @@ unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
   }
   return static_cast<unsigned int>(mtl_pixel_format);
 }
-
-#if BUILDFLAG(SKIA_USE_METAL)
-skgpu::graphite::TextureInfo GraphiteMetalTextureInfo(
-    viz::SharedImageFormat format,
-    int plane_index,
-    bool is_yuv_plane,
-    bool mipmapped) {
-  MTLPixelFormat mtl_pixel_format =
-      static_cast<MTLPixelFormat>(ToMTLPixelFormat(format, plane_index));
-  CHECK_NE(mtl_pixel_format, MTLPixelFormatInvalid);
-  // Must match CreateMetalTexture in iosurface_image_backing.mm.
-  // TODO(sunnyps): Move constants to a common utility header.
-  skgpu::graphite::MtlTextureInfo mtl_texture_info;
-  mtl_texture_info.fSampleCount = skgpu::graphite::SampleCount::k1;
-  mtl_texture_info.fFormat = mtl_pixel_format;
-  mtl_texture_info.fUsage = MTLTextureUsageShaderRead;
-  if (format.is_single_plane() && !is_yuv_plane) {
-    mtl_texture_info.fUsage |= MTLTextureUsageRenderTarget;
-  }
-#if BUILDFLAG(IS_IOS)
-  mtl_texture_info.fStorageMode = MTLStorageModeShared;
-#else
-  mtl_texture_info.fStorageMode = MTLStorageModeManaged;
-#endif
-  mtl_texture_info.fMipmapped =
-      mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
-  return skgpu::graphite::TextureInfos::MakeMetal(mtl_texture_info);
-}
-#endif
 
 }  // namespace gpu

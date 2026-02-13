@@ -308,11 +308,6 @@ GrContextType ParseGrContextType(const base::CommandLine* command_line) {
       return GrContextType::kGraphiteDawn;
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
-#if BUILDFLAG(SKIA_USE_METAL)
-    if (value == switches::kSkiaGraphiteBackendMetal) {
-      return GrContextType::kGraphiteMetal;
-    }
-#endif  // BUILDFLAG(SKIA_USE_METAL)
     LOG(ERROR) << "Skia Graphite backend = \"" << value
                << "\" not found - falling back to Ganesh!";
   }

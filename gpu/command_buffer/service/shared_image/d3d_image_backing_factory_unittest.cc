@@ -179,7 +179,8 @@ class D3DImageBackingFactoryTest
     context_state_ = base::MakeRefCounted<SharedContextState>(
         std::move(share_group), surface_, context_,
         /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
-        gr_context_type, nullptr, nullptr, dawn_context_provider_.get());
+        gr_context_type, /*vulkan_context_provider=*/nullptr,
+        dawn_context_provider_.get());
     context_state_->InitializeSkia(GpuPreferences(), workarounds);
     auto feature_info =
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
