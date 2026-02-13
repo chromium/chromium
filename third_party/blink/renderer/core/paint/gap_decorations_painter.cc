@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_intersection.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
@@ -59,7 +60,7 @@ bool ShouldMoveIntersectionStartForward(
     const RuleBreak rule_break,
     const RuleVisibilityItems rule_visibility,
     const GapGeometry& gap_geometry,
-    const Vector<LayoutUnit>& intersections) {
+    const Vector<GapIntersection>& intersections) {
   if (rule_break == RuleBreak::kNone) {
     return false;
   }
@@ -88,7 +89,7 @@ bool ShouldMoveIntersectionEndForward(
     const RuleBreak rule_break,
     const RuleVisibilityItems rule_visibility,
     const GapGeometry& gap_geometry,
-    const Vector<LayoutUnit>& intersections) {
+    const Vector<GapIntersection>& intersections) {
   if (!IsRuleSegmentVisible(track_direction, gap_index, end_index,
                             rule_visibility, gap_geometry)) {
     return false;
@@ -166,7 +167,7 @@ void AdjustIntersectionIndexPair(GridTrackSizingDirection track_direction,
                                  RuleBreak rule_break,
                                  RuleVisibilityItems rule_visibility,
                                  const GapGeometry& gap_geometry,
-                                 const Vector<LayoutUnit>& intersections) {
+                                 const Vector<GapIntersection>& intersections) {
   const wtf_size_t last_intersection_index = intersection_count - 1;
 
   CHECK_LE(start, last_intersection_index);
@@ -258,7 +259,7 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
     const LayoutUnit center =
         gap_geometry.GetGapCenterOffset(track_direction, gap_index);
 
-    const Vector<LayoutUnit> intersections =
+    const Vector<GapIntersection> intersections =
         gap_geometry.GenerateIntersectionListForGap(track_direction, gap_index);
 
     const wtf_size_t last_intersection_index = intersections.size() - 1;
@@ -324,9 +325,9 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
 
       // Compute the secondary axis values using the intersection offsets.
       const LayoutUnit secondary_start =
-          intersections[start] + decoration_start_offset;
-      const LayoutUnit secondary_size =
-          intersections[end] - secondary_start - decoration_end_offset;
+          intersections[start].GetOffset() + decoration_start_offset;
+      const LayoutUnit secondary_size = intersections[end].GetOffset() -
+                                        secondary_start - decoration_end_offset;
 
       // Columns paint a vertical strip at the center of the gap while rows
       // paint horizontal strip at the center of the gap

@@ -154,6 +154,7 @@ blink_core_sources_layout = [
   "gap/cross_gap.h",
   "gap/gap_geometry.cc",
   "gap/gap_geometry.h",
+  "gap/gap_intersection.h",
   "gap/gap_utils.cc",
   "gap/gap_utils.h",
   "gap/main_gap.cc",
