@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
@@ -112,10 +114,10 @@ void ShowSettings(Browser* browser) {
 
 BrowserNavigatorTest::BrowserNavigatorTest() {
   scoped_feature_list_.InitWithFeatures(
-      {
-          features::kFileSystemAccessPersistentPermissions,
-      },
-      {});
+      /*enabled_features*/ {features::kFileSystemAccessPersistentPermissions,
+                            omnibox::kWebUIOmniboxPopup,
+                            omnibox::internal::kWebUIOmniboxAimPopup},
+      /*disabled_features*/ {});
 }
 
 void BrowserNavigatorTest::SetUpOnMainThread() {
@@ -292,13 +294,13 @@ Browser* BrowserNavigatorTest::NavigateHelper(const GURL& url,
     EXPECT_FALSE(expected_contents);
     expected_contents = browser->tab_strip_model()->GetActiveWebContents();
   }
-  std::optional<content::CreateAndLoadWebContentsObserver> new_tab_observer;
+  std::optional<ui_test_utils::AllBrowserTabAddedWaiter> new_tab_observer;
   std::optional<content::LoadStopObserver> load_stop_observer;
   if (wait_for_navigation) {
     if (expected_contents) {
       load_stop_observer.emplace(expected_contents);
     } else {
-      new_tab_observer.emplace();
+      new_tab_observer.emplace(1);
     }
   }
 

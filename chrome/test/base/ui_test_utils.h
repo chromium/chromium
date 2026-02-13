@@ -554,16 +554,23 @@ class TabAddedWaiter : public TabStripModelObserver {
       nullptr;
 };
 
-// Similar to TabAddedWaiter, but will observe tabs added to all Browser
-// objects, and can return the last tab that was added.
+// Similar to `TabAddedWaiter`, but will observe tabs added to all Browser
+// objects, and can return the 1st tab that was added. Will optionally verify
+// the expected number of tabs were added.
 class AllBrowserTabAddedWaiter : public TabStripModelObserver,
                                  public BrowserCollectionObserver {
  public:
-  AllBrowserTabAddedWaiter();
+  // A null `expected_count` means the test expects at least 1 tab to be added.
+  // A non-null value means the test expects exactly that many tabs to be added.
+  explicit AllBrowserTabAddedWaiter(
+      std::optional<size_t> expected_count = std::nullopt);
   AllBrowserTabAddedWaiter(const AllBrowserTabAddedWaiter&) = delete;
   AllBrowserTabAddedWaiter& operator=(const AllBrowserTabAddedWaiter&) = delete;
   ~AllBrowserTabAddedWaiter() override;
 
+  // If `expected_count_` is provided, waits for that many tabs to be added.
+  // Otherwise, waits for at least 1 tab to be added. Returns the `WebContents`
+  // of the 1st tab added.
   content::WebContents* Wait();
 
   // TabStripModelObserver:
@@ -577,10 +584,9 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
 
  private:
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-
-  // The last tab that was added.
-  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
-      nullptr;
+  std::optional<size_t> expected_count_;
+  std::vector<raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>>
+      web_contents_;
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
 };
