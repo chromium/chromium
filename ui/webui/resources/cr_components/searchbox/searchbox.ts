@@ -510,6 +510,9 @@ export class SearchboxElement extends SearchboxElementBase implements
         this.callbackRouter_.onTabStripChanged.addListener(
             this.refreshTabSuggestions_.bind(this));
     this.inputState_ = (await this.pageHandler_.getInputState()).state;
+    if (this.inputState_) {
+      this.inputState_.activeModel = ModelMode.kUnspecified;
+    }
 
     if (this.cyclingPlaceholders) {
       const {config} = await this.pageHandler_.getPlaceholderConfig();
@@ -1268,7 +1271,8 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected openComposebox_(
       uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
-      model: ModelMode = ModelMode.kUnspecified) {
+      model: ModelMode = this.inputState_?.allowedModels[0] ||
+          ModelMode.kUnspecified) {
     if (this.ntpRealboxNextEnabled) {
       this.$.context.closeMenu();
     }
