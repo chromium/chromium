@@ -195,6 +195,10 @@ void UrlLoadingBrowserAgent::LoadURLForQuery(NSString* query) {
   }
 }
 
+void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
+  LoadUrlInTab(params, browser_->GetWebStateList()->GetActiveWebState());
+}
+
 void UrlLoadingBrowserAgent::Dispatch(const UrlLoadParams& params) {
   // Then dispatch.
   switch (params.disposition) {
@@ -214,26 +218,36 @@ void UrlLoadingBrowserAgent::Dispatch(const UrlLoadParams& params) {
   }
 }
 
-void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
+void UrlLoadingBrowserAgent::LoadUrlInTab(const UrlLoadParams& params,
+                                          web::WebState* target_web_state) {
+  CHECK(!target_web_state || target_web_state->IsRealized());
+  if (target_web_state) {
+    CHECK_NE(browser_->GetWebStateList()->GetIndexOfWebState(target_web_state),
+             WebStateList::kInvalidIndex);
+  }
+  bool is_current_web_state =
+      target_web_state == browser_->GetWebStateList()->GetActiveWebState();
+  base::WeakPtr<web::WebState> web_state =
+      target_web_state ? target_web_state->GetWeakPtr() : nullptr;
+
   web::NavigationManager::WebLoadParams web_params = params.web_params;
 
   ProfileIOS* profile = browser_->GetProfile();
 
-  notifier_->TabWillLoadUrl(web_params.url, web_params.transition_type);
-
-  WebStateList* web_state_list = browser_->GetWebStateList();
-  web::WebState* current_web_state = web_state_list->GetActiveWebState();
+  notifier_->TabWillLoadUrl(web_params.url, web_params.transition_type,
+                            web_state);
 
   // NOTE: This check for the Crash Host URL is here to avoid the URL from
   // ending up in the history causing the app to crash at every subsequent
   // restart.
   if (web_params.url.GetHost() == kChromeUIBrowserCrashHost) {
     CrashReporterURLObserver::GetSharedInstance()->RecordURL(
-        web_params.url, current_web_state, /*pending=*/true);
+        web_params.url, target_web_state, /*pending=*/true);
     InduceBrowserCrash(web_params.url);
     // Under a debugger, the app can continue working even after the CHECK.
     // Adding a return avoids adding the crash url to history.
-    notifier_->TabFailedToLoadUrl(web_params.url, web_params.transition_type);
+    notifier_->TabFailedToLoadUrl(web_params.url, web_params.transition_type,
+                                  web_state);
     return;
   }
 
@@ -244,14 +258,15 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
   // load a disallowed URL, instead create a new tab not in the incognito state.
   // Also if there's no current web state, that means there is no current tab
   // to open in, so this also redirects to a new tab.
-  if (!current_web_state ||
+  if (!target_web_state ||
       (profile->IsOffTheRecord() && !IsURLAllowedInIncognito(web_params.url))) {
     if (prerender_browser_agent) {
       prerender_browser_agent->CancelPrerender();
     }
-    notifier_->TabFailedToLoadUrl(web_params.url, web_params.transition_type);
+    notifier_->TabFailedToLoadUrl(web_params.url, web_params.transition_type,
+                                  web_state);
 
-    if (!current_web_state) {
+    if (!target_web_state) {
       UrlLoadParams fixed_params = params;
       fixed_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
       fixed_params.in_incognito = profile->IsOffTheRecord();
@@ -265,13 +280,18 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
     return;
   }
 
-  // Ask the prerender service to load this URL if it can, and return if it does
-  // so.
-  if (prerender_browser_agent &&
-      prerender_browser_agent->ValidatePrerender(web_params.url,
-                                                 web_params.transition_type)) {
-    notifier_->TabDidPrerenderUrl(web_params.url, web_params.transition_type);
-    return;
+  // ValidatePrerender assumes that the URL is being loaded in the current tab.
+  // We currently don't support pre-rendering for background tabs.
+  if (is_current_web_state) {
+    // Ask the prerender service to load this URL if it can, and return if it
+    // does so.
+    if (prerender_browser_agent &&
+        prerender_browser_agent->ValidatePrerender(
+            web_params.url, web_params.transition_type)) {
+      notifier_->TabDidPrerenderUrl(web_params.url, web_params.transition_type,
+                                    web_state);
+      return;
+    }
   }
 
   const bool typed_or_generated_transition =
@@ -280,7 +300,11 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
       PageTransitionCoreTypeIs(web_params.transition_type,
                                ui::PAGE_TRANSITION_GENERATED);
   if (typed_or_generated_transition) {
-    LoadTimingTabHelper::FromWebState(current_web_state)->DidInitiatePageLoad();
+    // Only record load timing if the tab is in the foreground.
+    if (is_current_web_state) {
+      LoadTimingTabHelper::FromWebState(target_web_state)
+          ->DidInitiatePageLoad();
+    }
   }
 
   // If this is a reload initiated from the omnibox.
@@ -288,15 +312,17 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
   // the same as the old url, the transition type is ui::PAGE_TRANSITION_RELOAD.
   if (PageTransitionCoreTypeIs(web_params.transition_type,
                                ui::PAGE_TRANSITION_RELOAD)) {
-    current_web_state->GetNavigationManager()->Reload(
+    target_web_state->GetNavigationManager()->Reload(
         web::ReloadType::NORMAL, true /* check_for_repost */);
-    notifier_->TabDidReloadUrl(web_params.url, web_params.transition_type);
+    notifier_->TabDidReloadUrl(web_params.url, web_params.transition_type,
+                               web_state);
     return;
   }
 
-  current_web_state->GetNavigationManager()->LoadURLWithParams(web_params);
+  target_web_state->GetNavigationManager()->LoadURLWithParams(web_params);
 
-  notifier_->TabDidLoadUrl(web_params.url, web_params.transition_type);
+  notifier_->TabDidLoadUrl(web_params.url, web_params.transition_type,
+                           web_state);
 }
 
 void UrlLoadingBrowserAgent::SwitchToTab(const UrlLoadParams& params) {

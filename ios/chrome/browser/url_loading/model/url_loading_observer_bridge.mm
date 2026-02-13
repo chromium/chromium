@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/url_loading/model/url_loading_observer_bridge.h"
 
+#import "ios/web/public/web_state.h"
+
 UrlLoadingObserverBridge::UrlLoadingObserverBridge(
     id<URLLoadingObserving> owner)
     : owner_(owner) {}
@@ -16,43 +18,61 @@ UrlLoadingObserverBridge::~UrlLoadingObserverBridge() {
 
 void UrlLoadingObserverBridge::TabWillLoadUrl(
     const GURL& url,
-    ui::PageTransition transition_type) {
-  if ([owner_ respondsToSelector:@selector(tabWillLoadURL:transitionType:)]) {
-    [owner_ tabWillLoadURL:url transitionType:transition_type];
+    ui::PageTransition transition_type,
+    base::WeakPtr<web::WebState> web_state) {
+  if ([owner_ respondsToSelector:@selector(tabWillLoadURL:
+                                           transitionType:webState:)]) {
+    [owner_ tabWillLoadURL:url
+            transitionType:transition_type
+                  webState:web_state];
   }
 }
 
 void UrlLoadingObserverBridge::TabFailedToLoadUrl(
     const GURL& url,
-    ui::PageTransition transition_type) {
+    ui::PageTransition transition_type,
+    base::WeakPtr<web::WebState> web_state) {
   if ([owner_ respondsToSelector:@selector(tabFailedToLoadURL:
-                                               transitionType:)]) {
-    [owner_ tabFailedToLoadURL:url transitionType:transition_type];
+                                               transitionType:webState:)]) {
+    [owner_ tabFailedToLoadURL:url
+                transitionType:transition_type
+                      webState:web_state];
   }
 }
 
 void UrlLoadingObserverBridge::TabDidPrerenderUrl(
     const GURL& url,
-    ui::PageTransition transition_type) {
+    ui::PageTransition transition_type,
+    base::WeakPtr<web::WebState> web_state) {
   if ([owner_ respondsToSelector:@selector(tabDidPrerenderURL:
-                                               transitionType:)]) {
-    [owner_ tabDidPrerenderURL:url transitionType:transition_type];
+                                               transitionType:webState:)]) {
+    [owner_ tabDidPrerenderURL:url
+                transitionType:transition_type
+                      webState:web_state];
   }
 }
 
 void UrlLoadingObserverBridge::TabDidReloadUrl(
     const GURL& url,
-    ui::PageTransition transition_type) {
-  if ([owner_ respondsToSelector:@selector(tabDidReloadURL:transitionType:)]) {
-    [owner_ tabDidReloadURL:url transitionType:transition_type];
+    ui::PageTransition transition_type,
+    base::WeakPtr<web::WebState> web_state) {
+  if ([owner_ respondsToSelector:@selector(tabDidReloadURL:
+                                            transitionType:webState:)]) {
+    [owner_ tabDidReloadURL:url
+             transitionType:transition_type
+                   webState:web_state];
   }
 }
 
 void UrlLoadingObserverBridge::TabDidLoadUrl(
     const GURL& url,
-    ui::PageTransition transition_type) {
-  if ([owner_ respondsToSelector:@selector(tabDidLoadURL:transitionType:)]) {
-    [owner_ tabDidLoadURL:url transitionType:transition_type];
+    ui::PageTransition transition_type,
+    base::WeakPtr<web::WebState> web_state) {
+  if ([owner_ respondsToSelector:@selector(tabDidLoadURL:
+                                          transitionType:webState:)]) {
+    [owner_ tabDidLoadURL:url
+           transitionType:transition_type
+                 webState:web_state];
   }
 }
 

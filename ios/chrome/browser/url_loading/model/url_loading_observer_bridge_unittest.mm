@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_observer_bridge.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/rand_util.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -12,6 +13,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer_bridge.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -65,55 +67,66 @@ class UrlLoadingObserverBridgeTest : public PlatformTest {
 // Tests `TabWillLoadUrl` forwarding.
 TEST_F(UrlLoadingObserverBridgeTest, TabWillLoadUrl) {
   const GURL url(kTestUrl);
-  OCMExpect([observer()
-      tabWillLoadURL:url
-      transitionType:ui::PageTransition::PAGE_TRANSITION_TYPED]);
+  auto web_state = std::make_unique<web::FakeWebState>();
+  OCMExpect([observer() tabWillLoadURL:url
+                        transitionType:ui::PageTransition::PAGE_TRANSITION_TYPED
+                              webState:web_state->GetWeakPtr()]);
   url_loading_notifier()->TabWillLoadUrl(
-      url, ui::PageTransition::PAGE_TRANSITION_TYPED);
+      url, ui::PageTransition::PAGE_TRANSITION_TYPED, web_state->GetWeakPtr());
   EXPECT_OCMOCK_VERIFY(observer());
 }
 
 // Tests `TabFailedToLoadUrl` forwarding.
 TEST_F(UrlLoadingObserverBridgeTest, TabFailedToLoadUrl) {
   const GURL url(kTestUrl);
+  auto web_state = std::make_unique<web::FakeWebState>();
   OCMExpect([observer()
       tabFailedToLoadURL:url
-          transitionType:ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK]);
+          transitionType:ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK
+                webState:web_state->GetWeakPtr()]);
   url_loading_notifier()->TabFailedToLoadUrl(
-      url, ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK);
+      url, ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK,
+      web_state->GetWeakPtr());
   EXPECT_OCMOCK_VERIFY(observer());
 }
 
 // Tests `TabDidPrerenderUrl` forwarding.
 TEST_F(UrlLoadingObserverBridgeTest, TabDidPrerenderUrl) {
   const GURL url(kTestUrl);
+  auto web_state = std::make_unique<web::FakeWebState>();
   OCMExpect([observer()
       tabDidPrerenderURL:url
-          transitionType:ui::PageTransition::PAGE_TRANSITION_FIRST]);
+          transitionType:ui::PageTransition::PAGE_TRANSITION_FIRST
+                webState:web_state->GetWeakPtr()]);
   url_loading_notifier()->TabDidPrerenderUrl(
-      url, ui::PageTransition::PAGE_TRANSITION_FIRST);
+      url, ui::PageTransition::PAGE_TRANSITION_FIRST, web_state->GetWeakPtr());
   EXPECT_OCMOCK_VERIFY(observer());
 }
 
 // Tests `TabDidReloadUrl` forwarding.
 TEST_F(UrlLoadingObserverBridgeTest, TabDidReloadUrl) {
   const GURL url(kTestUrl);
+  auto web_state = std::make_unique<web::FakeWebState>();
   OCMExpect([observer()
       tabDidReloadURL:url
-       transitionType:ui::PageTransition::PAGE_TRANSITION_RELOAD]);
+       transitionType:ui::PageTransition::PAGE_TRANSITION_RELOAD
+             webState:web_state->GetWeakPtr()]);
   url_loading_notifier()->TabDidReloadUrl(
-      url, ui::PageTransition::PAGE_TRANSITION_RELOAD);
+      url, ui::PageTransition::PAGE_TRANSITION_RELOAD, web_state->GetWeakPtr());
   EXPECT_OCMOCK_VERIFY(observer());
 }
 
 // Tests `TabDidLoadUrl` forwarding.
 TEST_F(UrlLoadingObserverBridgeTest, TabDidLoadUrl) {
   const GURL url(kTestUrl);
+  auto web_state = std::make_unique<web::FakeWebState>();
   OCMExpect([observer()
        tabDidLoadURL:url
-      transitionType:ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT]);
+      transitionType:ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT
+            webState:web_state->GetWeakPtr()]);
   url_loading_notifier()->TabDidLoadUrl(
-      url, ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT);
+      url, ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT,
+      web_state->GetWeakPtr());
   EXPECT_OCMOCK_VERIFY(observer());
 }
 

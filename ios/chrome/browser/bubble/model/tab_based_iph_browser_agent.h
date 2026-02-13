@@ -7,6 +7,7 @@
 
 #import "base/callback_list.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/bookmarks/browser/base_bookmark_model_observer.h"
 #import "components/reading_list/core/reading_list_model_observer.h"
@@ -34,6 +35,10 @@ enum class BrowserViewVisibilityState;
 class ReadingListModel;
 class UrlLoadingNotifierBrowserAgent;
 class WebStateList;
+
+namespace web {
+class WebState;
+}  // namespace web
 
 namespace feature_engagement {
 class Tracker;
@@ -89,7 +94,8 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
 
   // UrlLoadingObserver
   void TabDidLoadUrl(const GURL& url,
-                     ui::PageTransition transition_type) override;
+                     ui::PageTransition transition_type,
+                     base::WeakPtr<web::WebState> web_state) override;
 
   // WebStateObserver
   void DidStartNavigation(web::WebState* web_state,

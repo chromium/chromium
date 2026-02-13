@@ -217,6 +217,45 @@ TEST_F(URLLoadingBrowserAgentTest, TestOpenInCurrentTab) {
   EXPECT_EQ(0, scene_loader_->load_new_tab_call_count_);
 }
 
+// Tests opening a url in a specific tab.
+TEST_F(URLLoadingBrowserAgentTest, TestLoadUrlInTab) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  ASSERT_EQ(0, web_state_list->count());
+  // Create two tabs and activate the second one.
+  std::unique_ptr<web::FakeWebState> web_state = CreateFakeWebState();
+  std::unique_ptr<web::FakeWebState> web_state_2 = CreateFakeWebState();
+  web::WebState* web_state_ptr = web_state.get();
+  web::WebState* web_state_ptr_2 = web_state_2.get();
+  web_state->SetCurrentURL(GURL("http://test.example/1"));
+  web_state_2->SetCurrentURL(GURL("http://test.example/2"));
+  web_state_list->InsertWebState(std::move(web_state));
+  web_state_list->InsertWebState(std::move(web_state_2));
+  web_state_list->ActivateWebStateAt(1);
+
+  GURL url3("http://test.example/3");
+  // Use `InCurrentTab` despite the tab being in the background,
+  // since we're navigating within a tab that's already open.
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(url3);
+  loader_->LoadUrlInTab(params, web_state_ptr);
+
+  // Verify that the background tab navigated to the new URL.
+  web::FakeNavigationManager* navigation_manager =
+      static_cast<web::FakeNavigationManager*>(
+          web_state_ptr->GetNavigationManager());
+  EXPECT_TRUE(navigation_manager->LoadURLWithParamsWasCalled());
+  const std::optional<web::NavigationManager::WebLoadParams>& last_params =
+      navigation_manager->GetLastLoadURLWithParams();
+  ASSERT_TRUE(last_params.has_value());
+  EXPECT_EQ(url3, last_params->url);
+
+  // Verify that the second tab is still active and didn't navigate.
+  EXPECT_EQ(web_state_ptr_2, web_state_list->GetActiveWebState());
+  web::FakeNavigationManager* navigation_manager_2 =
+      static_cast<web::FakeNavigationManager*>(
+          web_state_ptr_2->GetNavigationManager());
+  EXPECT_FALSE(navigation_manager_2->LoadURLWithParamsWasCalled());
+}
+
 // Tests opening a url in a new tab.
 TEST_F(URLLoadingBrowserAgentTest, TestOpenInNewTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();

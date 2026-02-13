@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actuation/model/tools/navigate_tool.h"
 
+#import "base/memory/weak_ptr.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -29,7 +30,8 @@ namespace {
 class TestUrlLoadingObserver : public UrlLoadingObserver {
  public:
   void TabWillLoadUrl(const GURL& url,
-                      ui::PageTransition transition_type) override {
+                      ui::PageTransition transition_type,
+                      base::WeakPtr<web::WebState> web_state) override {
     last_url_ = url;
   }
   GURL last_url_;

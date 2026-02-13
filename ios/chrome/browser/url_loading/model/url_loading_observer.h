@@ -5,9 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_URL_LOADING_MODEL_URL_LOADING_OBSERVER_H_
 #define IOS_CHROME_BROWSER_URL_LOADING_MODEL_URL_LOADING_OBSERVER_H_
 
+#import "base/memory/weak_ptr.h"
 #import "base/observer_list_types.h"
 #import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
+
+namespace web {
+class WebState;
+}  // namespace web
 
 // Observer used to update listeners of change of state in url loading.
 class UrlLoadingObserver : public base::CheckedObserver {
@@ -17,29 +22,34 @@ class UrlLoadingObserver : public base::CheckedObserver {
 
   ~UrlLoadingObserver() override;
 
-  // The loader will load `URL` in the current tab. Next state will be
+  // The loader will load `URL` in the given tab. Next state will be
   // one of: tabFailedToLoadURL, tabDidPrerenderURL,
   // tabDidReloadURL or tabDidLoadURL.
   virtual void TabWillLoadUrl(const GURL& url,
-                              ui::PageTransition transition_type) {}
+                              ui::PageTransition transition_type,
+                              base::WeakPtr<web::WebState> web_state) {}
 
-  // The loader didn't succeed loading the requested `URL`. Reason
-  // can, for example be an incognito mismatch or an induced crash.
-  // It is possible that the url was loaded, but in another tab.
+  // The loader didn't succeed loading the requested `URL` in the given tab.
+  // Reason can, for example, be an incognito mismatch or an induced crash. It
+  // is possible that the url was loaded, but in another tab.
   virtual void TabFailedToLoadUrl(const GURL& url,
-                                  ui::PageTransition transition_type) {}
+                                  ui::PageTransition transition_type,
+                                  base::WeakPtr<web::WebState> web_state) {}
 
-  // The loader replaced the load with a prerendering.
+  // The loader replaced the load with a prerendering in the given tab.
   virtual void TabDidPrerenderUrl(const GURL& url,
-                                  ui::PageTransition transition_type) {}
+                                  ui::PageTransition transition_type,
+                                  base::WeakPtr<web::WebState> web_state) {}
 
-  // The loader reloaded the `URL` in the current tab.
+  // The loader reloaded the `URL` in the given tab.
   virtual void TabDidReloadUrl(const GURL& url,
-                               ui::PageTransition transition_type) {}
+                               ui::PageTransition transition_type,
+                               base::WeakPtr<web::WebState> web_state) {}
 
-  // The loader initiated the `url` loading successfully.
+  // The loader initiated the `url` loading successfully in the given tab.
   virtual void TabDidLoadUrl(const GURL& url,
-                             ui::PageTransition transition_type) {}
+                             ui::PageTransition transition_type,
+                             base::WeakPtr<web::WebState> web_state) {}
 
   // The loader will load `URL` in a new tab. Next state will be:
   // newTabDidLoadURL.

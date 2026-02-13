@@ -303,13 +303,12 @@
 }
 
 - (void)tabWillLoadURL:(const GURL&)URL
-        transitionType:(ui::PageTransition)transitionType {
+        transitionType:(ui::PageTransition)transitionType
+              webState:(base::WeakPtr<web::WebState>)webState {
   [self.consumer dismissBookmarkModalController];
 
-  web::WebState* currentWebState = _webStateList->GetActiveWebState();
-  if (currentWebState &&
-      (transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)) {
-    new_tab_page_uma::RecordActionFromOmnibox(_incognito, currentWebState, URL,
+  if (webState && (transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)) {
+    new_tab_page_uma::RecordActionFromOmnibox(_incognito, webState.get(), URL,
                                               transitionType);
   }
 }

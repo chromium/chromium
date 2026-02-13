@@ -189,11 +189,11 @@ void TabBasedIPHBrowserAgent::ReadingListDidAddEntry(
 
 void TabBasedIPHBrowserAgent::TabDidLoadUrl(
     const GURL& url,
-    ui::PageTransition transition_type) {
+    ui::PageTransition transition_type,
+    base::WeakPtr<web::WebState> web_state) {
   ResetFeatureStatesAndRemoveIPHViews();
-  web::WebState* current_web_state = web_state_list_->GetActiveWebState();
-  if (current_web_state) {
-    GURL visible = current_web_state->GetLastCommittedURL();
+  if (web_state) {
+    GURL visible = web_state->GetLastCommittedURL();
     if (url == visible &&
         transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR &&
         url != kChromeUINewTabURL) {
