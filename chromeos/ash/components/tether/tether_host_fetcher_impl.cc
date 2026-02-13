@@ -38,16 +38,13 @@ TetherHostFetcherImpl::TetherHostFetcherImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
     : device_sync_client_(device_sync_client),
       multidevice_setup_client_(multidevice_setup_client) {
-  device_sync_client_->AddObserver(this);
-  multidevice_setup_client_->AddObserver(this);
+  device_sync_client_observation_.Observe(device_sync_client);
+  multidevice_setup_client_observation_.Observe(multidevice_setup_client);
 
   CacheCurrentTetherHost();
 }
 
-TetherHostFetcherImpl::~TetherHostFetcherImpl() {
-  device_sync_client_->RemoveObserver(this);
-  multidevice_setup_client_->RemoveObserver(this);
-}
+TetherHostFetcherImpl::~TetherHostFetcherImpl() = default;
 
 void TetherHostFetcherImpl::OnNewDevicesSynced() {
   CacheCurrentTetherHost();

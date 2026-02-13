@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/tether/tether_host_fetcher.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
@@ -75,6 +76,13 @@ class TetherHostFetcherImpl
 
   raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
   raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
+
+  base::ScopedObservation<device_sync::DeviceSyncClient,
+                          device_sync::DeviceSyncClient::Observer>
+      device_sync_client_observation_{this};
+  base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
+                          multidevice_setup::MultiDeviceSetupClient::Observer>
+      multidevice_setup_client_observation_{this};
 
   base::WeakPtrFactory<TetherHostFetcherImpl> weak_ptr_factory_{this};
 };

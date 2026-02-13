@@ -18,12 +18,10 @@ ActiveHostNetworkStateUpdater::ActiveHostNetworkStateUpdater(
     ActiveHost* active_host,
     NetworkStateHandler* network_state_handler)
     : active_host_(active_host), network_state_handler_(network_state_handler) {
-  active_host_->AddObserver(this);
+  active_host_observation_.Observe(active_host);
 }
 
-ActiveHostNetworkStateUpdater::~ActiveHostNetworkStateUpdater() {
-  active_host_->RemoveObserver(this);
-}
+ActiveHostNetworkStateUpdater::~ActiveHostNetworkStateUpdater() = default;
 
 void ActiveHostNetworkStateUpdater::OnActiveHostChanged(
     const ActiveHost::ActiveHostChangeInfo& change_info) {

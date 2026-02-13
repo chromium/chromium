@@ -29,12 +29,10 @@ HotspotUsageDurationTracker::HotspotUsageDurationTracker(
     ActiveHost* active_host,
     base::Clock* clock)
     : active_host_(active_host), clock_(clock) {
-  active_host_->AddObserver(this);
+  active_host_observation_.Observe(active_host);
 }
 
-HotspotUsageDurationTracker::~HotspotUsageDurationTracker() {
-  active_host_->RemoveObserver(this);
-}
+HotspotUsageDurationTracker::~HotspotUsageDurationTracker() = default;
 
 void HotspotUsageDurationTracker::OnActiveHostChanged(
     const ActiveHost::ActiveHostChangeInfo& change_info) {

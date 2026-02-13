@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_SECURE_CHANNEL_HOST_CONNECTION_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_SECURE_CHANNEL_HOST_CONNECTION_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/uuid.h"
 #include "chromeos/ash/components/tether/host_connection.h"
 #include "chromeos/ash/components/tether/tether_host_fetcher.h"
@@ -116,6 +119,10 @@ class SecureChannelHostConnection
       std::unique_ptr<secure_channel::ClientChannel> client_channel);
 
   std::unique_ptr<secure_channel::ClientChannel> client_channel_;
+
+  base::ScopedObservation<secure_channel::ClientChannel,
+                          secure_channel::ClientChannel::Observer>
+      client_channel_observation_{this};
 };
 
 }  // namespace ash::tether

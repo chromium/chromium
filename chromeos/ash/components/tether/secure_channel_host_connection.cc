@@ -144,12 +144,10 @@ SecureChannelHostConnection::SecureChannelHostConnection(
     std::unique_ptr<secure_channel::ClientChannel> channel)
     : HostConnection(payload_listener, std::move(on_disconnection)),
       client_channel_(std::move(channel)) {
-  client_channel_->AddObserver(this);
+  client_channel_observation_.Observe(client_channel_.get());
 }
 
-SecureChannelHostConnection::~SecureChannelHostConnection() {
-  client_channel_->RemoveObserver(this);
-}
+SecureChannelHostConnection::~SecureChannelHostConnection() = default;
 
 void SecureChannelHostConnection::SendMessage(
     std::unique_ptr<MessageWrapper> message,
