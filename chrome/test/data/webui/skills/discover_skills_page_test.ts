@@ -233,9 +233,9 @@ suite('DiscoverSkillsPage', function() {
   test('SkillsFilteredBySearchTerm', async function() {
     await setFirstPartySkills({
       'Produce': [
-        {id: '1', name: 'Apple', prompt: 'A tasty fruit'},
-        {id: '2', name: 'Banana', prompt: 'Yellow fruit'},
-        {id: '3', name: 'Carrot', prompt: 'Orange vegetable'},
+        {id: '1', name: 'Apple', description: 'A tasty fruit'},
+        {id: '2', name: 'Banana', description: 'Yellow fruit'},
+        {id: '3', name: 'Carrot', description: 'Orange vegetable'},
       ],
     });
     let cards = page.shadowRoot.querySelectorAll('skill-card');
