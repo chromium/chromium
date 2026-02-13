@@ -59,7 +59,7 @@ public class PdfPage extends BasicNativePage {
                         ? PdfUtils.getFileNameFromUrl(decodedUrl, defaultTitle)
                         : pdfInfo.filename;
         mUrl = url;
-        mPdfCoordinator = new PdfCoordinator(profile, activity, filepath, tabId);
+        mPdfCoordinator = new PdfCoordinator(host, profile, activity, filepath, tabId, url);
         mIsIncognito = profile.isOffTheRecord();
         initWithView(mPdfCoordinator.getView());
         // PDF is downloading when the filepath is null.

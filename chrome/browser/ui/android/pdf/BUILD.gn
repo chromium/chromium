@@ -23,6 +23,7 @@ generate_jni("pdf_jni_headers") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/pdf/PdfActionsDelegate.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfCoordinator.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfInfo.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfPage.java",
@@ -48,6 +49,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_pdf_pdf_document_service_java",
     "//third_party/androidx:androidx_pdf_pdf_viewer_fragment_java",
+    "//third_party/androidx:androidx_pdf_pdf_viewer_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:url_java",
@@ -65,6 +67,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.pdf"
   sources = [
     "java/src/org/chromium/chrome/browser/pdf/PdfContentProviderUnitTest.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfPageUnitTest.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfUtilsUnitTest.java",
   ]
@@ -76,6 +79,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/android/javatests:common_unit_test_deps_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/url_constants/android:java",
@@ -91,6 +95,7 @@ robolectric_library("junit") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+    "//url:url_java",
   ]
 }
 

@@ -20,6 +20,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -357,6 +358,16 @@ public class PdfUtils {
             return PdfUtils.encodePdfPageUrl(uri);
         }
         return null;
+    }
+
+    /**
+     * Checks whether the inline PDF V2 feature is enabled.
+     *
+     * @return {@code true} if the inline PDF V2 feature is enabled, {@code false} otherwise.
+     */
+    public static boolean isInlinePdfV2Enabled() {
+        // TODO(crbug.com/484388543): Add a check for minimum SDK version.
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.INLINE_PDF_V2);
     }
 
     static void recordPdfLoad() {
