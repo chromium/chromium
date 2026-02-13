@@ -2212,10 +2212,6 @@
       status: "stable",
     },
     {
-      name: "EditEmojiUnicode11",
-      status: "stable",
-    },
-    {
       public: true,
       name: "ElementCapture",
       status: {"Android": "experimental", "iOS": "", "default": "stable"},
