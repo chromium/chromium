@@ -262,7 +262,17 @@ impl<C: DateFieldsResolver> ArithmeticDate<C> {
                             (Some(month_code), None) => {
                                 let validated = ValidMonthCode::try_from_utf8(month_code)?;
                                 valid_month_code = Some(validated);
-                                calendar.reference_year_from_month_day(validated, day)?
+
+                                let ref_year = calendar.reference_year_from_month_day(validated, day);
+                                if ref_year == Err(EcmaReferenceYearError::UseRegularIfConstrain)
+                                    && options.overflow == Some(Overflow::Constrain)
+                                {
+                                    let new_valid_month = ValidMonthCode::new_unchecked(validated.number(), false);
+                                    valid_month_code = Some(new_valid_month);
+                                    calendar.reference_year_from_month_day(new_valid_month, day)?
+                                } else {
+                                    ref_year?
+                                }
                             }
                             _ => return Err(DateFromFieldsError::NotEnoughFields),
                         }

@@ -29,6 +29,75 @@ mod qing_data;
 #[path = "east_asian_traditional/simple.rs"]
 mod simple;
 
+#[derive(PartialEq)]
+enum EastAsianCalendarKind {
+    Chinese,
+    Korean,
+}
+
+/// Implements https://tc39.es/proposal-intl-era-monthcode/#chinese-dangi-iso-reference-years
+///
+/// `generate_reference_years` is helpful for generating this data if the spec needs to be updated.
+fn ecma_reference_year_common(
+    month_code: (u8, bool),
+    day: u8,
+    cal: EastAsianCalendarKind,
+) -> Result<i32, EcmaReferenceYearError> {
+    let (number, is_leap) = month_code;
+    let extended_year = match (number, is_leap, day > 29) {
+        (1, false, false) => 1972,
+        (1, false, true) => 1970,
+        (1, true, _) => return Err(EcmaReferenceYearError::UseRegularIfConstrain),
+        (2, false, _) => 1972,
+        (2, true, false) => 1947,
+        (2, true, true) => return Err(EcmaReferenceYearError::UseRegularIfConstrain),
+        (3, false, false) => 1972,
+        (3, false, true) if cal == EastAsianCalendarKind::Chinese => 1966,
+        (3, false, true) => 1968, // Korean
+        (3, true, false) => 1966,
+        (3, true, true) => 1955,
+        (4, false, false) => 1972,
+        (4, false, true) => 1970,
+        (4, true, false) => 1963,
+        (4, true, true) => 1944,
+        (5, false, _) => 1972,
+        (5, true, false) => 1971,
+        (5, true, true) => 1952,
+        (6, false, false) => 1972,
+        (6, false, true) => 1971,
+        (6, true, false) => 1960,
+        (6, true, true) => 1941,
+        (7, false, _) => 1972,
+        (7, true, false) => 1968,
+        (7, true, true) => 1938,
+        (8, false, false) => 1972,
+        (8, false, true) => 1971,
+        (8, true, false) => 1957,
+        (8, true, true) => return Err(EcmaReferenceYearError::UseRegularIfConstrain),
+        (9, false, _) => 1972,
+        (9, true, false) => 2014,
+        (9, true, true) => return Err(EcmaReferenceYearError::UseRegularIfConstrain),
+        (10, false, _) => 1972,
+        (10, true, false) => 1984,
+        (10, true, true) => return Err(EcmaReferenceYearError::UseRegularIfConstrain),
+        // Dec 31, 1972 is 1972-M11-26, dates after that
+        // are in the next year
+        (11, false, false) if day > 26 => 1971,
+        (11, false, false) => 1972,
+        (11, false, true) => 1969,
+        // Spec has two years that map to the same extended year
+        (11, true, false) => 2033,
+        (11, true, true) => return Err(EcmaReferenceYearError::UseRegularIfConstrain),
+        // Spec says 1972, but that is extended year 1971
+        (12, false, _) => 1971,
+        (12, true, _) => return Err(EcmaReferenceYearError::UseRegularIfConstrain),
+
+        (0 | 13.., _, _) => return Err(EcmaReferenceYearError::MonthCodeNotInCalendar),
+    };
+
+    Ok(extended_year)
+}
+
 /// The traditional East-Asian lunisolar calendar.
 ///
 /// This calendar used traditionally in China as well as in other countries in East Asia is
@@ -221,63 +290,7 @@ impl Rules for China {
         month_code: (u8, bool),
         day: u8,
     ) -> Result<i32, EcmaReferenceYearError> {
-        let (number, is_leap) = month_code;
-        // Computed by `generate_reference_years`
-        let extended_year = match (number, is_leap, day > 29) {
-            (1, false, false) => 1972,
-            (1, false, true) => 1970,
-            (1, true, false) => 1898,
-            (1, true, true) => 1898,
-            (2, false, false) => 1972,
-            (2, false, true) => 1972,
-            (2, true, false) => 1947,
-            (2, true, true) => 1830,
-            (3, false, false) => 1972,
-            (3, false, true) => 1966,
-            (3, true, false) => 1966,
-            (3, true, true) => 1955,
-            (4, false, false) => 1972,
-            (4, false, true) => 1970,
-            (4, true, false) => 1963,
-            (4, true, true) => 1944,
-            (5, false, false) => 1972,
-            (5, false, true) => 1972,
-            (5, true, false) => 1971,
-            (5, true, true) => 1952,
-            (6, false, false) => 1972,
-            (6, false, true) => 1971,
-            (6, true, false) => 1960,
-            (6, true, true) => 1941,
-            (7, false, false) => 1972,
-            (7, false, true) => 1972,
-            (7, true, false) => 1968,
-            (7, true, true) => 1938,
-            (8, false, false) => 1972,
-            (8, false, true) => 1971,
-            (8, true, false) => 1957,
-            (8, true, true) => 1691,
-            (9, false, false) => 1972,
-            (9, false, true) => 1972,
-            (9, true, false) => 2014,
-            (9, true, true) => 1843,
-            (10, false, false) => 1972,
-            (10, false, true) => 1972,
-            (10, true, false) => 1984,
-            (10, true, true) => 1737,
-            // Dec 31, 1972 is 1972-M11-26, dates after that
-            // are in the next year
-            (11, false, false) if day > 26 => 1971,
-            (11, false, false) => 1972,
-            (11, false, true) => 1969,
-            (11, true, false) => 2033,
-            (11, true, true) => 1889,
-            (12, false, false) => 1971,
-            (12, false, true) => 1971,
-            (12, true, false) => 1878,
-            (12, true, true) => 1783,
-            _ => return Err(EcmaReferenceYearError::MonthCodeNotInCalendar),
-        };
-        Ok(extended_year)
+        ecma_reference_year_common(month_code, day, EastAsianCalendarKind::Chinese)
     }
 
     fn calendar_algorithm(&self) -> Option<CalendarAlgorithm> {
@@ -414,63 +427,7 @@ impl Rules for Korea {
         month_code: (u8, bool),
         day: u8,
     ) -> Result<i32, EcmaReferenceYearError> {
-        let (number, is_leap) = month_code;
-        // Computed by `generate_reference_years`
-        let extended_year = match (number, is_leap, day > 29) {
-            (1, false, false) => 1972,
-            (1, false, true) => 1970,
-            (1, true, false) => 1898,
-            (1, true, true) => 1898,
-            (2, false, false) => 1972,
-            (2, false, true) => 1972,
-            (2, true, false) => 1947,
-            (2, true, true) => 1830,
-            (3, false, false) => 1972,
-            (3, false, true) => 1968,
-            (3, true, false) => 1966,
-            (3, true, true) => 1955,
-            (4, false, false) => 1972,
-            (4, false, true) => 1970,
-            (4, true, false) => 1963,
-            (4, true, true) => 1944,
-            (5, false, false) => 1972,
-            (5, false, true) => 1972,
-            (5, true, false) => 1971,
-            (5, true, true) => 1952,
-            (6, false, false) => 1972,
-            (6, false, true) => 1971,
-            (6, true, false) => 1960,
-            (6, true, true) => 1941,
-            (7, false, false) => 1972,
-            (7, false, true) => 1972,
-            (7, true, false) => 1968,
-            (7, true, true) => 1938,
-            (8, false, false) => 1972,
-            (8, false, true) => 1971,
-            (8, true, false) => 1957,
-            (8, true, true) => 1691,
-            (9, false, false) => 1972,
-            (9, false, true) => 1972,
-            (9, true, false) => 2014,
-            (9, true, true) => 1843,
-            (10, false, false) => 1972,
-            (10, false, true) => 1972,
-            (10, true, false) => 1984,
-            (10, true, true) => 1737,
-            // Dec 31, 1972 is 1972-M11-26, dates after that
-            // are in the next year
-            (11, false, false) if day > 26 => 1971,
-            (11, false, false) => 1972,
-            (11, false, true) => 1969,
-            (11, true, false) => 2033,
-            (11, true, true) => 1889,
-            (12, false, false) => 1971,
-            (12, false, true) => 1971,
-            (12, true, false) => 1878,
-            (12, true, true) => 1783,
-            _ => return Err(EcmaReferenceYearError::MonthCodeNotInCalendar),
-        };
-        Ok(extended_year)
+        ecma_reference_year_common(month_code, day, EastAsianCalendarKind::Korean)
     }
 
     fn calendar_algorithm(&self) -> Option<CalendarAlgorithm> {
@@ -1940,5 +1897,83 @@ mod test {
         packed_roundtrip_single(RANDOM2, Some(2), 18 + 19);
         packed_roundtrip_single(RANDOM2, Some(5), 18 + 2);
         packed_roundtrip_single(RANDOM2, Some(12), 18 + 5);
+    }
+
+    /// This tests the following properties for reference year computations:
+    ///
+    /// * Reference year computations for East Asian Traditional
+    ///   calendars succesfully produce a date with the same month and day, or constrain/reject
+    /// * Constraining month day combos only changes the month from leap to regular
+    /// * Regular months do not need any constraining
+    /// * Constraining and rejecting occur at the same time
+    fn test_reference_years_common<C: Calendar + Copy>(cal: C) {
+        let mut options_constrain = DateFromFieldsOptions::default();
+        let mut options_reject = DateFromFieldsOptions::default();
+        options_constrain.missing_fields_strategy = Some(MissingFieldsStrategy::Ecma);
+        options_reject.missing_fields_strategy = Some(MissingFieldsStrategy::Ecma);
+        options_constrain.overflow = Some(Overflow::Constrain);
+        options_reject.overflow = Some(Overflow::Reject);
+
+        for m in 1..=12 {
+            for month in [Month::new(m), Month::leap(m)] {
+                for day in 1..=30 {
+                    let mut fields = DateFields::default();
+                    fields.month = Some(month);
+                    fields.day = Some(day);
+
+                    let date_constrain = Date::try_from_fields(fields, options_constrain, cal)
+                        .expect("Constrain must succeed");
+                    let day_constrain = date_constrain.day_of_month().0;
+                    let month_constrain = date_constrain.month().value;
+
+                    assert_eq!(
+                        month_constrain.number(),
+                        m,
+                        "Constraining should result in the same numerical month"
+                    );
+
+                    let date_reject = Date::try_from_fields(fields, options_reject, cal);
+
+                    if month_constrain != month || day_constrain != day {
+                        // We constrained, so the other date got rejected
+                        assert!(
+                            date_reject.is_err(),
+                            "{}-{day} should not parse",
+                            month.code()
+                        );
+
+                        assert!(
+                            month.is_leap(),
+                            "Constraining should only occur for leap months, occurred for {}-{day}, producing {date_constrain:?}",
+                            month.code()
+                        );
+                    } else {
+                        let date_reject = date_reject
+                            .expect("If we didn't constrain anything, Reject should succeed");
+                        // All input values should roundtrip and be identical between the two results
+                        assert_eq!(date_reject.day_of_month().0, day);
+                        assert_eq!(day_constrain, day);
+                        assert_eq!(date_constrain.month().value, month);
+                        assert_eq!(date_reject.month().value, month);
+                        assert_eq!(
+                            date_constrain.year().extended_year(),
+                            date_reject.year().extended_year()
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_reference_years_chinese() {
+        let c = ChineseTraditional::new();
+        test_reference_years_common(c);
+    }
+
+    #[test]
+    fn test_reference_years_korean() {
+        let c = KoreanTraditional::new();
+        test_reference_years_common(c);
     }
 }
