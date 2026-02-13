@@ -370,6 +370,9 @@ PrefetchOriginProber* PrefetchService::GetPrefetchOriginProber() const {
 
 base::WeakPtr<PrefetchContainer> PrefetchService::AddPrefetchRequestInternal(
     std::unique_ptr<const PrefetchRequest> prefetch_request) {
+  CHECK(prefetch_request);
+  CHECK_EQ(prefetch_request->browser_context(), GetBrowserContext());
+
   enum class Action {
     kTakeOldWithMigration,
     kReplaceOldWithNew,
