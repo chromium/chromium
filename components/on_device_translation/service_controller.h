@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -36,7 +37,8 @@ class ServiceControllerManager;
 // created for each pair of browser context and origin.
 // TODO(crbug.com/364795294): This class does not support Android yet.
 class OnDeviceTranslationServiceController
-    : public base::RefCounted<OnDeviceTranslationServiceController> {
+    : public base::RefCounted<OnDeviceTranslationServiceController>,
+      public OnDeviceTranslationInstaller::Observer {
  public:
   OnDeviceTranslationServiceController(PrefService* local_state,
                                        ServiceControllerManager* manager,
@@ -70,8 +72,14 @@ class OnDeviceTranslationServiceController
 
   // Returns true if the service is running.
   bool IsServiceRunning() const { return !!service_remote_; }
-  // The information of a language pack.
-  struct LanguagePackInfo;
+
+  // OnDeviceTranslationInstaller::Observer
+  void OnLanguagePackInstalled(const LanguagePackKey lang_pack) override;
+  // OnDeviceTranslationInstaller::Observer
+  void OnLanguagePackInstallationChanged(
+      const LanguagePackKey lang_pack) override;
+  // OnDeviceTranslationInstaller::Observer
+  void OnInstallationChanged() override;
 
  private:
   friend base::RefCounted<OnDeviceTranslationServiceController>;
@@ -93,7 +101,7 @@ class OnDeviceTranslationServiceController
     base::OnceClosure once_closure;
   };
 
-  ~OnDeviceTranslationServiceController();
+  ~OnDeviceTranslationServiceController() override;
 
   // Checks if the translate service can do translation from `source_lang` to
   // `target_lang`.
@@ -136,19 +144,12 @@ class OnDeviceTranslationServiceController
   // this amount of time, the service will be terminated.
   base::TimeDelta service_idle_timeout_;
   mojo::Remote<mojom::OnDeviceTranslationService> service_remote_;
-  // Used to listen for changes on the pref values of TranslateKit component and
-  // language pack components.
-  PrefChangeRegistrar pref_change_registrar_;
   // The file operation proxy to access the files on disk. This is deleted on
   // a background task runner.
   std::unique_ptr<FileOperationProxyImpl, base::OnTaskRunnerDeleter>
       file_operation_proxy_;
   // The pending tasks that are waiting for the language packs to be installed.
   std::vector<PendingTask> pending_tasks_;
-  // The LanguagePackInfo from the command line. This is nullopt if the command
-  // line flag `--translate-kit-packages` is not set.
-  const std::optional<std::vector<LanguagePackInfo>>
-      language_packs_from_command_line_;
 };
 
 }  // namespace on_device_translation

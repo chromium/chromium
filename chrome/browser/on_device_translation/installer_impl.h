@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/on_device_translation/installer.h"
+#include "components/on_device_translation/public/language_pack.h"
 
 namespace on_device_translation {
 
@@ -30,9 +31,16 @@ class OnDeviceTranslationInstallerImpl : public OnDeviceTranslationInstaller {
   void AddObserver(Observer* observer) override;
 
  private:
+  base::FilePath GetFilePathFromCommandLine(
+      LanguagePackKey language_pack) const;
+  std::set<LanguagePackKey> GetLanguagePackKeysFromCommandLine() const;
   // We hide away the logic to notify observers.
   class Notifier;
   std::unique_ptr<Notifier> notifier_;
+  // The LanguagePackInfo from the command line. This is nullopt if the
+  // command line flag `--translate-kit-packages` is not set.
+  const std::optional<std::map<LanguagePackKey, base::FilePath>>
+      language_packs_from_command_line_;
   base::WeakPtrFactory<OnDeviceTranslationInstallerImpl> weak_ptr_factory_{
       this};
 };
