@@ -173,7 +173,6 @@ class EcheSignalerTest : public AshTestBase {
     AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
-    eche_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
     eche_connection_status_handler_ =
         std::make_unique<eche_app::EcheConnectionStatusHandler>();
     apps_launch_info_provider_ = std::make_unique<AppsLaunchInfoProvider>(
@@ -244,7 +243,6 @@ class EcheSignalerTest : public AshTestBase {
   FakeEcheConnector fake_connector_{&task_runner_};
 
  private:
-  raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;
   secure_channel::FakeConnectionManager fake_connection_manager_;
   std::unique_ptr<EcheConnectionStatusHandler> eche_connection_status_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
