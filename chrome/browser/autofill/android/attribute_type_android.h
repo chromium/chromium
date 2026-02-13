@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace autofill {
@@ -28,7 +29,8 @@ struct AttributeTypeAndroid {
   explicit AttributeTypeAndroid(const AttributeType& attribute_type);
   AttributeTypeAndroid(AttributeTypeName type_name,
                        std::u16string type_name_as_string,
-                       AttributeType::DataType data_type);
+                       AttributeType::DataType data_type,
+                       FieldType field_type);
 
   AttributeTypeAndroid(const AttributeTypeAndroid&) = default;
   AttributeTypeAndroid& operator=(const AttributeTypeAndroid&) = default;
@@ -41,6 +43,7 @@ struct AttributeTypeAndroid {
   AttributeTypeName type_name;
   std::u16string type_name_as_string;
   AttributeType::DataType data_type;
+  FieldType field_type;
 };
 
 }  // namespace autofill

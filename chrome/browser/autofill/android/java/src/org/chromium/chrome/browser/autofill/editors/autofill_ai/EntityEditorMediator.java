@@ -134,7 +134,7 @@ class EntityEditorMediator {
                 TEXT_INPUT,
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
                         .with(LABEL, attributeType.getTypeNameAsString())
-                        .with(TEXT_FIELD_TYPE, attributeType.getTypeName())
+                        .with(TEXT_FIELD_TYPE, attributeType.getFieldType())
                         .with(VALUE, value)
                         .build(),
                 /* isFullLine= */ true);

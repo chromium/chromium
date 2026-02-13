@@ -566,28 +566,28 @@ public class AutofillUiUtils {
      *
      * @param context The context used for fetching the required resources.
      * @param titleTextView The TextView containing the title that the title and the logo should be
-     *         set on.
+     *     set on.
      * @param title The title string for the TextView.
      * @param logoResourceId The resource id for the icon to inlined within the title string.
      */
     public static void inlineTitleStringWithLogo(
             Context context, TextView titleTextView, String title, int logoResourceId) {
-        Drawable mInlineTitleIcon =
+        Drawable inlineTitleIcon =
                 ResourcesCompat.getDrawable(
                         context.getResources(), logoResourceId, context.getTheme());
-        assumeNonNull(mInlineTitleIcon);
+        assumeNonNull(inlineTitleIcon);
         // The first character will be replaced by the logo, and the consecutive spaces after
         // are used as padding.
         SpannableString titleWithLogo = new SpannableString("   " + title);
         // How much the original logo should scale up in size to match height of text.
-        float scaleFactor = titleTextView.getTextSize() / mInlineTitleIcon.getIntrinsicHeight();
-        mInlineTitleIcon.setBounds(
+        float scaleFactor = titleTextView.getTextSize() / inlineTitleIcon.getIntrinsicHeight();
+        inlineTitleIcon.setBounds(
                 /* left= */ 0,
                 /* top= */ 0,
-                /* right */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicWidth()),
-                /* bottom */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicHeight()));
+                /* right */ (int) (scaleFactor * inlineTitleIcon.getIntrinsicWidth()),
+                /* bottom */ (int) (scaleFactor * inlineTitleIcon.getIntrinsicHeight()));
         titleWithLogo.setSpan(
-                new ImageSpan(mInlineTitleIcon, ImageSpan.ALIGN_CENTER),
+                new ImageSpan(inlineTitleIcon, ImageSpan.ALIGN_CENTER),
                 /* start= */ 0,
                 /* end= */ 1,
                 /* flags= */ Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -963,6 +963,7 @@ public class AutofillUiUtils {
 
     public static int getInputTypeForField(@FieldType int type) {
         switch (type) {
+            // TODO: crbug.com/476755159 - Add Autofill AI field types.
             case FieldType.NAME_FULL:
                 return InputType.TYPE_CLASS_TEXT
                         | InputType.TYPE_TEXT_FLAG_CAP_WORDS

@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.autofill.FieldType;
 
 /** Represents information of an Autofill AI attribute type. */
 @JNINamespace("autofill")
@@ -21,15 +22,19 @@ public class AttributeType {
     // The `dataType` defined whether the input rendered for the attribute should be a country
     // selector, a date picker or a simple text field.
     private final @DataType int mDataType;
+    // The field type this attribute type describes.
+    private final @FieldType int mFieldType;
 
     @CalledByNative
     public AttributeType(
             @AttributeTypeName int typeName,
             @JniType("std::u16string") String typeNameAsString,
-            @DataType int dataType) {
+            @DataType int dataType,
+            @FieldType int fieldType) {
         mTypeName = typeName;
         mTypeNameAsString = typeNameAsString;
         mDataType = dataType;
+        mFieldType = fieldType;
     }
 
     @CalledByNative
@@ -43,5 +48,9 @@ public class AttributeType {
 
     public @DataType int getDataType() {
         return mDataType;
+    }
+
+    public @FieldType int getFieldType() {
+        return mFieldType;
     }
 }

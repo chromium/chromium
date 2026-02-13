@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.autofill.editors.common.EditorDialogToolbar;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.DropdownKeyValue;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance;
 import org.chromium.components.autofill.autofill_ai.AttributeType;
 import org.chromium.components.autofill.autofill_ai.AttributeTypeName;
@@ -90,15 +91,18 @@ public class EntityEditorModuleTest {
                             new AttributeType(
                                     /* typeName= */ AttributeTypeName.PASSPORT_NAME,
                                     /* typeNameAsString= */ "Passport name",
-                                    /* dataType= */ DataType.NAME),
+                                    /* dataType= */ DataType.NAME,
+                                    /* fieldType= */ FieldType.NAME_FULL),
                             new AttributeType(
                                     /* typeName= */ AttributeTypeName.PASSPORT_COUNTRY,
                                     /* typeNameAsString= */ "Passport country",
-                                    /* dataType= */ DataType.COUNTRY),
+                                    /* dataType= */ DataType.COUNTRY,
+                                    /* fieldType= */ FieldType.PASSPORT_ISSUING_COUNTRY),
                             new AttributeType(
                                     /* typeName= */ AttributeTypeName.PASSPORT_NUMBER,
                                     /* typeNameAsString= */ "Passport number",
-                                    /* dataType= */ DataType.STRING)));
+                                    /* dataType= */ DataType.STRING,
+                                    /* fieldType= */ FieldType.PASSPORT_NUMBER)));
 
     private static final EntityInstance LOCAL_PASSPORT =
             new EntityInstance.Builder(PASSPORT_TYPE)
@@ -111,7 +115,8 @@ public class EntityEditorModuleTest {
                                     new AttributeType(
                                             /* typeName= */ AttributeTypeName.PASSPORT_NUMBER,
                                             /* typeNameAsString= */ "Passport number",
-                                            /* dataType= */ DataType.STRING),
+                                            /* dataType= */ DataType.STRING,
+                                            /* fieldType= */ FieldType.PASSPORT_NUMBER),
                                     /* value= */ "AA123456"))
                     .build();
 
@@ -126,14 +131,16 @@ public class EntityEditorModuleTest {
                                     new AttributeType(
                                             /* typeName= */ AttributeTypeName.PASSPORT_NAME,
                                             /* typeNameAsString= */ "Passport name",
-                                            /* dataType= */ DataType.NAME),
+                                            /* dataType= */ DataType.NAME,
+                                            /* fieldType= */ FieldType.NAME_FULL),
                                     /* value= */ "John Doe"))
                     .addAttribute(
                             new AttributeInstance(
                                     new AttributeType(
                                             /* typeName= */ AttributeTypeName.PASSPORT_COUNTRY,
                                             /* typeNameAsString= */ "Passport country",
-                                            /* dataType= */ DataType.COUNTRY),
+                                            /* dataType= */ DataType.COUNTRY,
+                                            /* fieldType= */ FieldType.PASSPORT_ISSUING_COUNTRY),
                                     /* value= */ "Germany"))
                     .build();
 
@@ -272,33 +279,29 @@ public class EntityEditorModuleTest {
     private void verifyLocalPassportFields(ListModel<EditorItem> editorFields) {
         verifyTextFieldContent(
                 editorFields.get(0),
-                /* attributeTypeName= */ AttributeTypeName.PASSPORT_NAME,
+                /* fieldType= */ FieldType.NAME_FULL,
                 /* label= */ "Passport name",
                 /* value= */ "");
         // When the country attribute is not set, the country code returned by the
         // PersonalDataManager should be used.
         verifyDropdownFieldContent(
-                editorFields.get(1),
-                /* attributeTypeName= */ AttributeTypeName.PASSPORT_COUNTRY,
-                /* label= */ "Passport country",
-                /* value= */ "US");
+                editorFields.get(1), /* label= */ "Passport country", /* value= */ "US");
         verifyTextFieldContent(
                 editorFields.get(2),
-                /* attributeTypeName= */ AttributeTypeName.PASSPORT_NUMBER,
+                /* fieldType= */ FieldType.PASSPORT_NUMBER,
                 /* label= */ "Passport number",
                 /* value= */ "AA123456");
     }
 
     private void verifyTextFieldContent(
-            EditorItem item, @AttributeTypeName int attributeTypeName, String label, String value) {
+            EditorItem item, @FieldType int fieldType, String label, String value) {
         assertEquals(TEXT_INPUT, item.type);
-        assertEquals(attributeTypeName, item.model.get(TEXT_FIELD_TYPE));
+        assertEquals(fieldType, item.model.get(TEXT_FIELD_TYPE));
         assertEquals(label, item.model.get(LABEL));
         assertEquals(value, item.model.get(VALUE));
     }
 
-    private void verifyDropdownFieldContent(
-            EditorItem item, @AttributeTypeName int attributeTypeName, String label, String value) {
+    private void verifyDropdownFieldContent(EditorItem item, String label, String value) {
         assertEquals(DROPDOWN, item.type);
         // Country list gets sorted by the AutofillProfileBridge.
         assertEquals(
