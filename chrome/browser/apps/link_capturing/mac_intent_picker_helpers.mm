@@ -41,7 +41,8 @@ NSImage* CreateRedIconForTesting() {
                  }];
 }
 
-MacAppInfo AppInfoForAppUrl(NSURL* app_url, base::span<int> icon_sizes) {
+MacAppInfo AppInfoForAppUrl(NSURL* app_url,
+                            const std::vector<int>& icon_sizes) {
   CHECK(!icon_sizes.empty());
   NSString* app_name = nil;
   if (![app_url getResourceValue:&app_name
@@ -86,7 +87,7 @@ MacAppInfo AppInfoForAppUrl(NSURL* app_url, base::span<int> icon_sizes) {
 }  // namespace
 
 std::optional<MacAppInfo> FindMacAppForUrl(const GURL& url,
-                                           base::span<int> icon_sizes) {
+                                           const std::vector<int>& icon_sizes) {
   if (UseFakeAppForTesting()) {
     std::string fake_app = FakeAppForTesting();  // IN-TEST
     if (fake_app.empty()) {

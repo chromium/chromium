@@ -23,7 +23,7 @@ struct MacAppInfo : IntentPickerAppInfo {
 // not populate `icon_model` in the return value, but does populate `icon` with
 // an ImageFamily containing all requested sizes.
 std::optional<MacAppInfo> FindMacAppForUrl(const GURL& url,
-                                           base::span<int> icon_sizes);
+                                           const std::vector<int>& icon_sizes);
 
 // Launches a native Mac app, specified by the `launch_name` (the path) returned
 // by `FindMacAppForUrl` above, for the given `url`.

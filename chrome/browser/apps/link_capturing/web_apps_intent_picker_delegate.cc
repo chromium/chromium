@@ -106,7 +106,7 @@ void WebAppsIntentPickerDelegate::FindAllAppsForUrl(
   // this.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      base::BindOnce(&FindMacAppForUrl, url, base::span(icon_sizes_in_dep_)),
+      base::BindOnce(&FindMacAppForUrl, url, icon_sizes_in_dep_),
       base::BindOnce(
           &WebAppsIntentPickerDelegate::CacheMacAppInfoAndPostFinalCallback,
           weak_ptr_factory.GetWeakPtr(), std::move(apps_callback),
