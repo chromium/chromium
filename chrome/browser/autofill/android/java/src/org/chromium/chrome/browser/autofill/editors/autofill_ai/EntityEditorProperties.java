@@ -12,7 +12,6 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties defined here reflect the visible state of the {@link EntityEditorView}. */
 @NullMarked
@@ -39,8 +38,8 @@ public class EntityEditorProperties {
     public static final ReadableObjectPropertyKey<Runnable> DELETE_RUNNABLE =
             new ReadableObjectPropertyKey<>("delete_callback");
 
-    public static final WritableObjectPropertyKey<ListModel<EditorItem>> EDITOR_FIELDS =
-            new WritableObjectPropertyKey<>("editor_fields");
+    public static final ReadableObjectPropertyKey<ListModel<EditorItem>> EDITOR_FIELDS =
+            new ReadableObjectPropertyKey<>("editor_fields");
 
     public static final PropertyKey[] ALL_KEYS = {
         EDITOR_TITLE,
