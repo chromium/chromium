@@ -1302,6 +1302,10 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_USE_NONEMBEDDED_LOW_ENTROPY_SOURCE,
                 "When enabled, WebView uses the low entropy source provided by the "
                         + "nonembedded WebView service."),
+        Flag.baseFeature(
+                PaymentFeatureList.PAYMENT_REQUEST_USE_RENDERER_URL_LOADER,
+                "When enabled, the PaymentRequest will use the URL loader from the renderer instead"
+                        + " of the browser process."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
