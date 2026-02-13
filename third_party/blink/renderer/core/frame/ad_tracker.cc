@@ -401,17 +401,14 @@ bool AdTracker::IsAdScriptInStackHelper(
     MonkeyPatchableApi ignore_monkey_patch,
     std::optional<AdScriptIdentifier>* out_ad_script) {
   v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
-  ExecutionContext* execution_context = GetCurrentExecutionContext(isolate);
-  if (!execution_context) {
-    return false;
-  }
 
   // If we're in an ad context, then no matter what the executing script is it's
   // considered an ad. To enhance traceability, we attempt to return the
   // identifier of the ad script that created the targeted ad frame. Note that
   // this may still return `nullopt`; refer to `LocalFrame::CreationAdScript`
   // for details.
-  if (IsKnownAdExecutionContext(execution_context)) {
+  if (ExecutionContext* execution_context = GetCurrentExecutionContext(isolate);
+      execution_context && IsKnownAdExecutionContext(execution_context)) {
     if (out_ad_script) {
       if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
         if (LocalFrame* frame = window->GetFrame()) {
