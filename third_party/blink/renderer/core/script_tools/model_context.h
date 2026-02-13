@@ -25,7 +25,7 @@ namespace blink {
 
 class AbortSignal;
 
-class DeclarativeWebMCPTool {
+class DeclarativeWebMCPTool : public GarbageCollectedMixin {
  public:
   // Executes the associated tool and invokes `done_callback` with the result
   // when the execution is finished. The callback is invoked with a null string
@@ -113,7 +113,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
     // A JS-provided MCP tool:
     Member<V8ToolFunction> v8_tool_function;
     // Used for declarative (form-based) MCP tools only:
-    DeclarativeWebMCPTool* declarative_tool;
+    Member<DeclarativeWebMCPTool> declarative_tool;
   };
 
   bool RegisterTool(ScriptState* script_state,

@@ -283,7 +283,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
       return active_submit_button_;
     }
     void CallDoneCallback(McpToolCallbackResult result);
-    void Trace(Visitor* visitor) const;
+    void Trace(Visitor* visitor) const override;
 
    private:
     bool is_currently_running_ = false;
