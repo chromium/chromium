@@ -205,6 +205,22 @@ if (is_android) {
     android_protoc_bin = "//third_party/android_build_tools/protoc/cipd/protoc"
   }
 
+  if (!defined(android_protoc_import_dirs)) {
+    android_protoc_import_dirs = [ "//third_party/protobuf/src" ]
+  }
+
+  if (!defined(android_protoc_import_files)) {
+    # Add common, internal protobuf imports.
+    android_protoc_import_files = [
+      "//third_party/protobuf/src/google/protobuf/descriptor.proto",
+      # cpp_features.proto can be used for C++-specific codegen options.  While
+      # it's not particularly useful for Java, protos can be written for both
+      # Java and C++, so we need to support it here too in order not to throw
+      # an error.
+      "//third_party/protobuf/src/google/protobuf/cpp_features.proto",
+    ]
+  }
+
   webview_public_framework_dep =
       "//third_party/android_sdk:public_framework_system_java"
   if (!defined(webview_framework_dep)) {

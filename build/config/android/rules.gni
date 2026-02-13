@@ -4193,22 +4193,14 @@ if (!is_robolectric && enable_java_templates) {
 
       args += rebase_path(sources, root_build_dir)
 
-      # Add common, internal protobuf dependencies as inputs and make sure they
-      # can be imported.
-      #
-      # The cpp_features.proto file can be used for C++-specific codegen
-      # options.  While it's not particularly useful for Java, protos can be
-      # written for both Java and C++, so we need to support it here too in
-      # order not to throw an error.
-      inputs += [
-        "//third_party/protobuf/src/google/protobuf/descriptor.proto",
-        "//third_party/protobuf/src/google/protobuf/cpp_features.proto",
-      ]
+      # Add common imports as inputs and make sure they can be imported.
+      inputs += android_protoc_import_files
+      _import_dirs = android_protoc_import_dirs
 
-      _import_dirs = [ "//third_party/protobuf/src" ]
       if (defined(invoker.import_dirs)) {
         _import_dirs += invoker.import_dirs
       }
+
       foreach(_path, _import_dirs) {
         args += [
           "--import-dir",
