@@ -441,9 +441,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   // Sends metrics in response to a user with gaia account (regular) logging in.
   void SendGaiaUserLoginMetrics(const AccountId& account_id);
 
-  // Sends metrics for multi user sign-in.
-  void SendMultiUserSignInMetrics();
-
   // Updates user account after locale was resolved.
   void DoUpdateAccountLocale(const AccountId& account_id,
                              const std::string& resolved_locale);

@@ -292,7 +292,6 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
     local_state_->CommitPendingWrite();
     NotifyOnLogin();
   } else {
-    SendMultiUserSignInMetrics();
     NotifyUserAddedToSession(user);
   }
 }
@@ -1730,20 +1729,6 @@ void UserManagerImpl::SendGaiaUserLoginMetrics(const AccountId& account_id) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("UserManager.LogoutToLoginDelay",
                                 time_to_login.InSeconds(), 1,
                                 kLogoutToLoginDelayMaxSec, 50);
-  }
-}
-
-void UserManagerImpl::SendMultiUserSignInMetrics() {
-  size_t users = logged_in_users_.size();
-  if (!users) {
-    return;
-  }
-
-  // Write the user number as UMA stat when a multi user session is possible.
-  if (users + GetUsersAllowedForMultiUserSignIn().size() > 1) {
-    // Keep MultiProfile name here for compatibility of historical reason.
-    // It is for multi-user sign-in.
-    UMA_HISTOGRAM_COUNTS_100("MultiProfile.UsersPerSessionIncremental", users);
   }
 }
 
