@@ -16,8 +16,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/account_pref_utils.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync_bookmarks/constants.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -101,7 +101,7 @@ NSString* GetActionSheetCoordinatorMessage(
                                   kBookmarksLimitExceeded) {
         return l10n_util::GetNSStringF(
             IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_BOOKMARKS_LIMIT_EXCEEDED,
-            base::FormatNumber(syncer::kSyncBookmarksLimit));
+            base::FormatNumber(sync_bookmarks::kSyncBookmarksLimit));
       }
 
       return l10n_util::GetNSString(

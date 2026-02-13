@@ -286,7 +286,10 @@ public interface SyncService {
     /**
      * @return The limit for the number of bookmarks.
      */
-    int getBookmarksLimit();
+    // LINT.IfChange(SyncBookmarksLimit)
+    int SYNC_BOOKMARKS_LIMIT = 100000;
+
+    // LINT.ThenChange(//components/sync_bookmarks/constants.h:SyncBookmarksLimit)
 
     /**
      * @return Whether the user should be offered to opt in to trusted vault encryption.

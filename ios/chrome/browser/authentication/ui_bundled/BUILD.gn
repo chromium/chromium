@@ -33,6 +33,7 @@ source_set("ui_bundled") {
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/sync/base:features",
+    "//components/sync_bookmarks",
     "//components/unified_consent",
     "//google_apis",
     "//ios/chrome/app:change_profile_commands",

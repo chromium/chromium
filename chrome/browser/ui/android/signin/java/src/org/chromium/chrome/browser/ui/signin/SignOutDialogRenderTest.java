@@ -118,7 +118,6 @@ public class SignOutDialogRenderTest {
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         when(mSyncService.getUserActionableError())
                 .thenReturn(UserActionableError.BOOKMARKS_LIMIT_EXCEEDED);
-        when(mSyncService.getBookmarksLimit()).thenReturn(100000);
         doAnswer(
                         invocation -> {
                             Callback<Set<Integer>> callback = invocation.getArgument(0);

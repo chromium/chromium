@@ -67,7 +67,6 @@ BASE_DECLARE_FEATURE(kUnoPhase2FollowUp);
 // Controls whether to enable syncing of Autofill Wallet Credential Data.
 BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
 
-constexpr size_t kSyncBookmarksLimit = 100000;
 // If enabled, the error that the bookmarks count exceeded the limit during the
 // last initial merge is reset after a certain period.
 BASE_DECLARE_FEATURE(kSyncResetBookmarksInitialMergeLimitExceededError);

@@ -24,6 +24,7 @@ static_library("sync_bookmarks") {
     "bookmark_specifics_conversions.h",
     "bookmark_sync_service.cc",
     "bookmark_sync_service.h",
+    "constants.h",
     "local_bookmark_to_account_merger.cc",
     "local_bookmark_to_account_merger.h",
     "parent_guid_preprocessing.cc",

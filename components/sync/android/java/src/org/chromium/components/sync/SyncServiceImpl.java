@@ -409,13 +409,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public int getBookmarksLimit() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        return SyncServiceImplJni.get().getBookmarksLimit(mSyncServiceAndroidBridge);
-    }
-
-    @Override
     public boolean shouldOfferTrustedVaultOptIn() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -539,8 +532,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         // Please keep all methods below in the same order as sync_service_android_bridge.h.
         void acknowledgeBookmarksLimitExceededError(
                 long nativeSyncServiceAndroidBridge, int source);
-
-        int getBookmarksLimit(long nativeSyncServiceAndroidBridge);
 
         boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);
 

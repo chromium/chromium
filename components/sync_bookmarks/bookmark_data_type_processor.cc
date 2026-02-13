@@ -41,6 +41,7 @@
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_remote_updates_handler.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
+#include "components/sync_bookmarks/constants.h"
 #include "components/sync_bookmarks/parent_guid_preprocessing.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
@@ -699,7 +700,7 @@ bool BookmarkDataTypeProcessor::DoesCountExceedLocalBookmarksSyncLimit(
   if (sync_local_bookmarks_limit_for_tests_.has_value()) {
     return count > sync_local_bookmarks_limit_for_tests_.value() + offset;
   }
-  return count > syncer::kSyncBookmarksLimit + offset;
+  return count > kSyncBookmarksLimit + offset;
 }
 
 bool BookmarkDataTypeProcessor::
@@ -965,7 +966,7 @@ bool BookmarkDataTypeProcessor::ExceedsRemoteUpdatesLimit(size_t count) const {
   if (sync_local_bookmarks_limit_for_tests_.has_value()) {
     return count > 2 * sync_local_bookmarks_limit_for_tests_.value();
   }
-  return count > 2 * syncer::kSyncBookmarksLimit;
+  return count > 2 * kSyncBookmarksLimit;
 }
 
 void BookmarkDataTypeProcessor::StartTrackingMetadata() {

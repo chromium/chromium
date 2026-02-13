@@ -211,7 +211,6 @@ public class SignOutCoordinatorTest {
         setUpMocks();
         when(mSyncService.getUserActionableError())
                 .thenReturn(UserActionableError.BOOKMARKS_LIMIT_EXCEEDED);
-        when(mSyncService.getBookmarksLimit()).thenReturn(100000);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

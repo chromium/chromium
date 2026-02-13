@@ -154,7 +154,6 @@ public class SignOutCoordinator {
                                         context,
                                         dialogManager,
                                         signinManager,
-                                        syncService,
                                         userActionableError,
                                         signOutReason,
                                         onSignOut);
@@ -336,7 +335,6 @@ public class SignOutCoordinator {
             Context context,
             ModalDialogManager dialogManager,
             SigninManager signinManager,
-            SyncService syncService,
             @UserActionableError int userActionableError,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
@@ -346,7 +344,7 @@ public class SignOutCoordinator {
                     context.getString(
                             R.string.chrome_signout_confirmation_prompt_too_many_bookmarks_body,
                             NumberFormat.getIntegerInstance()
-                                    .format(syncService.getBookmarksLimit()));
+                                    .format(SyncService.SYNC_BOOKMARKS_LIMIT));
         }
         final PropertyModel model =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

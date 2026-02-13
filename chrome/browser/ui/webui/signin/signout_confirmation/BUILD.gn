@@ -37,6 +37,7 @@ source_set("signout_confirmation_impl") {
     "//chrome/browser/resources/signin/signout_confirmation:resources_grit",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui",
+    "//components/sync_bookmarks",
   ]
 
   if (enable_extensions) {
