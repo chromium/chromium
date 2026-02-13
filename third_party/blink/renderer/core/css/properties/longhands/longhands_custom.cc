@@ -1431,6 +1431,13 @@ const CSSValue* BorderBottomStyle::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.BorderBottomStyle());
 }
 
+void BorderBottomWidth::ApplyInitial(StyleResolverState& state) const {
+  int length = state.CssToLengthConversionData().ZoomedComputedPixels(
+      ComputedStyleInitialValues::InitialBorderBottomWidth(),
+      CSSPrimitiveValue::UnitType::kPixels);
+  state.StyleBuilder().SetBorderBottomWidth(length);
+}
+
 void BorderBottomWidth::ApplyInherit(StyleResolverState& state) const {
   if (state.GetDocument().StandardizedBrowserZoomEnabled()) {
     if (ApplyParentValueIfZoomChanged(state)) {
@@ -1725,6 +1732,13 @@ const CSSValue* BorderLeftStyle::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.BorderLeftStyle());
 }
 
+void BorderLeftWidth::ApplyInitial(StyleResolverState& state) const {
+  int length = state.CssToLengthConversionData().ZoomedComputedPixels(
+      ComputedStyleInitialValues::InitialBorderLeftWidth(),
+      CSSPrimitiveValue::UnitType::kPixels);
+  state.StyleBuilder().SetBorderLeftWidth(length);
+}
+
 void BorderLeftWidth::ApplyInherit(StyleResolverState& state) const {
   if (state.GetDocument().StandardizedBrowserZoomEnabled()) {
     if (ApplyParentValueIfZoomChanged(state)) {
@@ -1823,6 +1837,13 @@ const CSSValue* BorderRightStyle::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSIdentifierValue::Create(style.BorderRightStyle());
+}
+
+void BorderRightWidth::ApplyInitial(StyleResolverState& state) const {
+  int length = state.CssToLengthConversionData().ZoomedComputedPixels(
+      ComputedStyleInitialValues::InitialBorderRightWidth(),
+      CSSPrimitiveValue::UnitType::kPixels);
+  state.StyleBuilder().SetBorderRightWidth(length);
 }
 
 void BorderRightWidth::ApplyInherit(StyleResolverState& state) const {
@@ -1973,6 +1994,13 @@ const CSSValue* BorderTopStyle::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSIdentifierValue::Create(style.BorderTopStyle());
+}
+
+void BorderTopWidth::ApplyInitial(StyleResolverState& state) const {
+  int length = state.CssToLengthConversionData().ZoomedComputedPixels(
+      ComputedStyleInitialValues::InitialBorderTopWidth(),
+      CSSPrimitiveValue::UnitType::kPixels);
+  state.StyleBuilder().SetBorderTopWidth(length);
 }
 
 void BorderTopWidth::ApplyInherit(StyleResolverState& state) const {
@@ -7931,6 +7959,13 @@ void OutlineStyle::ApplyValue(StyleResolverState& state,
   builder.SetOutlineStyleIsAuto(
       static_cast<bool>(identifier_value.ConvertTo<OutlineIsAuto>()));
   builder.SetOutlineStyle(identifier_value.ConvertTo<EBorderStyle>());
+}
+
+void OutlineWidth::ApplyInitial(StyleResolverState& state) const {
+  int length = state.CssToLengthConversionData().ZoomedComputedPixels(
+      ComputedStyleInitialValues::InitialOutlineWidth(),
+      CSSPrimitiveValue::UnitType::kPixels);
+  state.StyleBuilder().SetOutlineWidth(length);
 }
 
 void OutlineWidth::ApplyInherit(StyleResolverState& state) const {
