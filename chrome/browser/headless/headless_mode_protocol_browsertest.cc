@@ -373,12 +373,8 @@ HEADLESS_MODE_PROTOCOL_TEST(MultipleScreenDetails,
                             "shared/multiple-screen-details.js")
 
 // TODO(crbug.com/40283476): MoveWindowBetweenScreens is failing on Mac
-#if !BUILDFLAG(IS_MAC)
-#define MAYBE_MoveWindowBetweenScreens MoveWindowBetweenScreens
-#else
-#define MAYBE_MoveWindowBetweenScreens DISABLED_MoveWindowBetweenScreens
-#endif
-HEADLESS_MODE_PROTOCOL_TEST(MAYBE_MoveWindowBetweenScreens,
+// TODO(crbug.com/484218769): Failing/flaky on other platforms as well
+HEADLESS_MODE_PROTOCOL_TEST(DISABLED_MoveWindowBetweenScreens,
                             "shared/move-window-between-screens.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowOpenOnSecondaryScreen,
