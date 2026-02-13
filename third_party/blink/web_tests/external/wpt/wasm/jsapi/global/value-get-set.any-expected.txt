@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Calling setter without argument
+  set WebAssembly.Global.value): Argument 0 is required
+Harness: the test ran to completion.
+
