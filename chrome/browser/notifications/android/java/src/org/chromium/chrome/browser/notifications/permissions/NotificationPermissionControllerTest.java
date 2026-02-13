@@ -50,7 +50,7 @@ public class NotificationPermissionControllerTest {
 
     @Before
     public void setUp() {
-        setupFeatureParams(false, null, null);
+        setupFeatureParams(false, null, null, null);
     }
 
     @Rule
@@ -126,7 +126,8 @@ public class NotificationPermissionControllerTest {
     private void setupFeatureParams(
             Boolean alwaysShowRationale,
             Integer permissionRequestMaxCount,
-            Integer requestIntervalDays) {
+            Integer requestIntervalDays,
+            Integer initialPromptDelayDays) {
         FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
         if (alwaysShowRationale != null) {
             overrides =
@@ -151,6 +152,13 @@ public class NotificationPermissionControllerTest {
                             NotificationPermissionController
                                     .FIELD_TRIAL_PERMISSION_REQUEST_INTERVAL_DAYS,
                             requestIntervalDays);
+        }
+        if (initialPromptDelayDays != null) {
+            overrides =
+                    overrides.param(
+                            ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                            NotificationPermissionController.FIELD_TRIAL_INITIAL_PROMPT_DELAY_DAYS,
+                            initialPromptDelayDays);
         }
         overrides.apply();
     }
@@ -364,7 +372,7 @@ public class NotificationPermissionControllerTest {
 
     @Test
     public void testNotificationPromptShownOnStartup_alwaysShowRationale() {
-        setupFeatureParams(true, 3, null);
+        setupFeatureParams(true, 3, null, null);
 
         mActivityScenarios
                 .getScenario()
@@ -956,7 +964,7 @@ public class NotificationPermissionControllerTest {
                                             rationaleDelegate, activity);
 
                             // Set field trial params to wait 14 days.
-                            setupFeatureParams(false, null, 14);
+                            setupFeatureParams(false, null, 14, null);
 
                             // Show and reject OS prompt for the first time.
                             setShouldShowRequestPermissionRationale(activity, false);
@@ -993,6 +1001,59 @@ public class NotificationPermissionControllerTest {
 
                             // The third call should have shown the rationale.
                             assertEquals(1, rationaleCallCountAfterThirdStartup);
+                        });
+    }
+
+    @Test
+    public void testNotificationPrompt_usesInitialPromptDelayFromFieldTrialParams() {
+        mActivityScenarios
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            TestRationaleDelegate rationaleDelegate = new TestRationaleDelegate();
+                            NotificationPermissionController notificationPermissionController =
+                                    createNotificationPermissionController(
+                                            rationaleDelegate, activity);
+
+                            // Set field trial params to wait 7 days before the first request.
+                            setupFeatureParams(false, null, null, 7);
+
+                            // First attempt, should NOT show OS prompt, but should store the
+                            // timestamp.
+                            notificationPermissionController.requestPermissionIfNeeded();
+                            long firstAttemptTimestamp =
+                                    ContextUtils.getAppSharedPreferences()
+                                            .getLong(
+                                                    ChromePreferenceKeys
+                                                            .NOTIFICATION_PERMISSION_FIRST_REQUEST_TIMESTAMP,
+                                                    0);
+                            assertNotEquals(
+                                    "First request timestamp should have been written.",
+                                    0,
+                                    firstAttemptTimestamp);
+                            assertEquals(
+                                    "Permission should not have been requested.",
+                                    0,
+                                    PermissionPrefs
+                                            .getAndroidNotificationPermissionRequestTimestamp());
+
+                            // Wait 5 days, nothing should happen yet.
+                            mFakeTimeRule.advanceMillis(5 * DateUtils.DAY_IN_MILLIS);
+                            notificationPermissionController.requestPermissionIfNeeded();
+                            assertEquals(
+                                    "Not enough time has expired to request permission.",
+                                    0,
+                                    PermissionPrefs
+                                            .getAndroidNotificationPermissionRequestTimestamp());
+
+                            // Wait 3 more days, now we should show the OS prompt.
+                            mFakeTimeRule.advanceMillis(3 * DateUtils.DAY_IN_MILLIS);
+                            notificationPermissionController.requestPermissionIfNeeded();
+                            assertNotEquals(
+                                    "Permission should have been requested.",
+                                    0,
+                                    PermissionPrefs
+                                            .getAndroidNotificationPermissionRequestTimestamp());
                         });
     }
 }

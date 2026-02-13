@@ -41,6 +41,9 @@ public class NotificationPermissionController {
     public static final String FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION =
             "always_show_rationale_before_requesting_permission";
 
+    /** Field trial param controlling number of days before the first permission request. */
+    public static final String FIELD_TRIAL_INITIAL_PROMPT_DELAY_DAYS = "initial_prompt_delay_days";
+
     /** Field trial param controlling number of days between permission requests. */
     public static final String FIELD_TRIAL_PERMISSION_REQUEST_INTERVAL_DAYS =
             "permission_request_interval_days";
@@ -235,7 +238,11 @@ public class NotificationPermissionController {
         }
 
         // Check if it is too soon to request permission again.
-        if (wasPermissionRequestShown() && !hasEnoughTimeExpiredForRetriggerSinceLastDenial()) {
+        if (wasPermissionRequestShown()) {
+            if (!hasEnoughTimeExpiredForRetriggerSinceLastDenial()) {
+                return PermissionRequestMode.DO_NOT_REQUEST;
+            }
+        } else if (!hasEnoughTimeExpiredForFirstRequest()) {
             return PermissionRequestMode.DO_NOT_REQUEST;
         }
 
@@ -388,6 +395,27 @@ public class NotificationPermissionController {
     }
 
     /** Gets the amount of time to wait between permission requests in milliseconds. */
+    private boolean hasEnoughTimeExpiredForFirstRequest() {
+        long firstRequestTimestamp =
+                ChromeSharedPreferences.getInstance()
+                        .readLong(
+                                ChromePreferenceKeys
+                                        .NOTIFICATION_PERMISSION_FIRST_REQUEST_TIMESTAMP,
+                                0);
+
+        if (firstRequestTimestamp == 0) {
+            ChromeSharedPreferences.getInstance()
+                    .writeLong(
+                            ChromePreferenceKeys.NOTIFICATION_PERMISSION_FIRST_REQUEST_TIMESTAMP,
+                            TimeUtils.currentTimeMillis());
+            return getInitialPromptDelayMs() == 0;
+        }
+
+        long elapsedTime = TimeUtils.currentTimeMillis() - firstRequestTimestamp;
+        return elapsedTime >= getInitialPromptDelayMs();
+    }
+
+    /** Gets the amount of time to wait between permission requests in milliseconds. */
     private static long getPermissionRequestRetriggerIntervalMs() {
         // Get number of days from param, or use 7 days as default.
         int retriggerIntervalDays =
@@ -397,6 +425,15 @@ public class NotificationPermissionController {
                         /* defaultValue= */ 7);
 
         return TimeUnit.DAYS.toMillis(retriggerIntervalDays);
+    }
+
+    private static long getInitialPromptDelayMs() {
+        int delayDays =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                        FIELD_TRIAL_INITIAL_PROMPT_DELAY_DAYS,
+                        /* defaultValue= */ 0);
+        return TimeUnit.DAYS.toMillis(delayDays);
     }
 
     private static boolean shouldAlwaysShowRationaleFirst() {

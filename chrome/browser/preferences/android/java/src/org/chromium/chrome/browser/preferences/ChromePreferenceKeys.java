@@ -592,6 +592,13 @@ public final class ChromePreferenceKeys {
     public static final String NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY =
             "Chrome.NotificationPermission.RationaleTimestamp";
 
+    /**
+     * Stores the system time in milliseconds when the notification permission was requested for the
+     * first time.
+     */
+    public static final String NOTIFICATION_PERMISSION_FIRST_REQUEST_TIMESTAMP =
+            "Chrome.NotificationPermission.FirstRequestTimestamp";
+
     // Number of times we've showed any prompt (either Android UI or Chrome rationale) related to
     // the notification permission.
     public static final String NOTIFICATION_PERMISSION_REQUEST_COUNT =
@@ -1299,6 +1306,7 @@ public final class ChromePreferenceKeys {
                 MULTI_WINDOW_MODE_DURATION_MS.pattern(),
                 MULTI_WINDOW_MODE_START_TIME.pattern(),
                 NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY,
+                NOTIFICATION_PERMISSION_FIRST_REQUEST_TIMESTAMP,
                 NOTIFICATION_PERMISSION_REQUEST_COUNT,
                 NTP_LOCATION_POLICY_ENABLED,
                 OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS,
