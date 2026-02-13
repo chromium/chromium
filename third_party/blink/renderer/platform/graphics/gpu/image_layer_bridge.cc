@@ -45,8 +45,6 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
     return source;
   }
 
-  const auto paint_image = source->PaintImageForCurrentFrame();
-  const auto image_info = paint_image.GetSkImageInfo();
 #if BUILDFLAG(IS_LINUX)
   // TODO(b/330865436): On Linux, CanvasResourceProvider doesn't always check
   // for SCANOUT support correctly on X11 and it's never supported in
@@ -61,15 +59,13 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 #endif  // BUILDFLAG(IS_LINUX)
   auto provider = CanvasNon2DResourceProviderSharedImage::Create(
-      source->Size(),
-      viz::SkColorTypeToSinglePlaneSharedImageFormat(image_info.colorType()),
-      image_info.alphaType(),
-      SkColorSpaceToGfxColorSpace(image_info.refColorSpace()),
-      CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
-      kSharedImageUsageFlags);
+      source->Size(), source->GetSharedImageFormat(), source->GetAlphaType(),
+      source->GetColorSpace(), CanvasResourceProvider::ShouldInitialize::kNo,
+      context_provider_wrapper, kSharedImageUsageFlags);
   if (!provider || !provider->IsAccelerated())
     return nullptr;
 
+  const auto paint_image = source->PaintImageForCurrentFrame();
   return provider->DoExternalDrawAndSnapshot(
       [paint_image](cc::PaintCanvas& canvas) {
         cc::PaintFlags paint;
