@@ -282,7 +282,7 @@ template <typename CharT>
 bool DoExtractScheme(std::basic_string_view<CharT> url, Component* scheme) {
   // Skip leading whitespace and control characters.
   size_t begin = 0;
-  while (begin < url.size() && ShouldTrimFromURL(url[begin])) {
+  while (begin < url.size() && ShouldTrimFromUrl(url[begin])) {
     begin++;
   }
   if (begin == url.size()) {

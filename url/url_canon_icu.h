@@ -18,16 +18,16 @@ namespace url {
 
 // An implementation of CharsetConverter that implementations can use to
 // interface the canonicalizer with ICU's conversion routines.
-class COMPONENT_EXPORT(URL) ICUCharsetConverter : public CharsetConverter {
+class COMPONENT_EXPORT(URL) IcuCharsetConverter : public CharsetConverter {
  public:
   // Constructs a converter using an already-existing ICU character set
   // converter. This converter is NOT owned by this object; the lifetime must
   // be managed by the creator such that it is alive as long as this is.
-  ICUCharsetConverter(UConverter* converter);
+  explicit IcuCharsetConverter(UConverter* converter);
 
-  ~ICUCharsetConverter() override;
+  ~IcuCharsetConverter() override;
 
-  void ConvertFromUTF16(std::u16string_view input,
+  void ConvertFromUtf16(std::u16string_view input,
                         CanonOutput* output) override;
 
  private:

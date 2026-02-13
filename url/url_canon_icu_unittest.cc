@@ -43,14 +43,14 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
   for (size_t i = 0; i < std::size(icu_cases); i++) {
     test::UConvScoper conv(icu_cases[i].encoding);
     ASSERT_TRUE(conv.converter() != NULL);
-    ICUCharsetConverter converter(conv.converter());
+    IcuCharsetConverter converter(conv.converter());
 
     std::string str;
     StdStringCanonOutput output(&str);
 
     std::u16string input_str(
         test_utils::TruncateWStringToUtf16(icu_cases[i].input));
-    converter.ConvertFromUTF16(input_str, &output);
+    converter.ConvertFromUtf16(input_str, &output);
     output.Complete();
 
     EXPECT_STREQ(icu_cases[i].expected, str.c_str());
@@ -61,7 +61,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
   const int static_size = 16;
   test::UConvScoper conv("utf-8");
   ASSERT_TRUE(conv.converter());
-  ICUCharsetConverter converter(conv.converter());
+  IcuCharsetConverter converter(conv.converter());
   for (int i = static_size - 2; i <= static_size + 2; i++) {
     // Make a string with the appropriate length.
     std::u16string input;
@@ -69,7 +69,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
       input.push_back('a');
 
     RawCanonOutput<static_size> output;
-    converter.ConvertFromUTF16(input, &output);
+    converter.ConvertFromUtf16(input, &output);
     EXPECT_EQ(input.length(), output.length());
   }
 }
@@ -102,7 +102,7 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
 
     test::UConvScoper conv(query_cases[i].encoding);
     ASSERT_TRUE(!query_cases[i].encoding || conv.converter());
-    ICUCharsetConverter converter(conv.converter());
+    IcuCharsetConverter converter(conv.converter());
 
     if (query_cases[i].input8) {
       std::string out_str;

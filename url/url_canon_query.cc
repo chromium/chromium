@@ -68,8 +68,8 @@ void RunConverter(std::string_view input,
   // This function will replace any misencoded values with the invalid
   // character. This is what we want so we don't have to check for error.
   RawCanonOutputW<1024> utf16;
-  ConvertUTF8ToUTF16(input, &utf16);
-  converter->ConvertFromUTF16(utf16.view(), output);
+  ConvertUtf8ToUtf16(input, &utf16);
+  converter->ConvertFromUtf16(utf16.view(), output);
 }
 
 // Runs the converter with the given UTF-16 input. We don't have to do
@@ -78,7 +78,7 @@ void RunConverter(std::string_view input,
 void RunConverter(std::u16string_view input,
                   CharsetConverter* converter,
                   CanonOutput* output) {
-  converter->ConvertFromUTF16(input, output);
+  converter->ConvertFromUtf16(input, output);
 }
 
 template <typename CHAR, typename UCHAR>

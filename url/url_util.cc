@@ -878,11 +878,11 @@ void DecodeURLEscapeSequences(std::string_view input,
       if (ReadUtfCharLossy(unescaped_chars.view(), &next_character,
                            &code_point)) {
         // Valid UTF-8 character, convert to UTF-16.
-        AppendUTF16Value(code_point, output);
+        AppendUtf16Value(code_point, output);
         i = next_character;
       } else if (mode == DecodeURLMode::kUTF8) {
         DCHECK_EQ(code_point, 0xFFFD);
-        AppendUTF16Value(code_point, output);
+        AppendUtf16Value(code_point, output);
         i = next_character;
       } else {
         // If there are any sequences that are not valid UTF-8, we

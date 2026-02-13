@@ -199,7 +199,7 @@ TEST_F(URLCanonTest, DoAppendUTF8) {
   for (const auto& utf_case : utf_cases) {
     out_str.clear();
     StdStringCanonOutput output(&out_str);
-    AppendUTF8Value(utf_case.input, &output);
+    AppendUtf8Value(utf_case.input, &output);
     output.Complete();
     EXPECT_EQ(utf_case.output, out_str);
   }
@@ -210,7 +210,7 @@ TEST_F(URLCanonTest, DoAppendUTF8Invalid) {
   StdStringCanonOutput output(&out_str);
   // Invalid code point (too large).
   EXPECT_DCHECK_DEATH({
-    AppendUTF8Value(0x110000, &output);
+    AppendUtf8Value(0x110000, &output);
     output.Complete();
   });
 }

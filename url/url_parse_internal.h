@@ -26,11 +26,11 @@ inline bool IsSlashOrBackslash(char ch) {
 
 // Returns true if we should trim this character from the URL because it is a
 // space or a control character.
-inline bool ShouldTrimFromURL(char16_t ch) {
+inline bool ShouldTrimFromUrl(char16_t ch) {
   return ch <= ' ';
 }
-inline bool ShouldTrimFromURL(char ch) {
-  return ShouldTrimFromURL(static_cast<char16_t>(ch));
+inline bool ShouldTrimFromUrl(char ch) {
+  return ShouldTrimFromUrl(static_cast<char16_t>(ch));
 }
 
 // This shrinks the input URL string to eliminate "should-be-trimmed"
@@ -42,14 +42,14 @@ inline std::pair<size_t, size_t> TrimUrl(std::basic_string_view<CHAR> spec,
   size_t begin = 0;
   size_t end = spec.length();
   // Strip leading whitespace and control characters.
-  while (begin < end && ShouldTrimFromURL(spec[begin])) {
+  while (begin < end && ShouldTrimFromUrl(spec[begin])) {
     ++begin;
   }
 
   if (trim_path_end) {
     // Strip trailing whitespace and control characters. We need the `begin <
     // end` test for when the input string is all blanks.
-    while (begin < end && ShouldTrimFromURL(spec[end - 1])) {
+    while (begin < end && ShouldTrimFromUrl(spec[end - 1])) {
       --end;
     }
   }

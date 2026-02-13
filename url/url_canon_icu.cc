@@ -80,13 +80,12 @@ class AppendHandlerInstaller {
 
 }  // namespace
 
-ICUCharsetConverter::ICUCharsetConverter(UConverter* converter)
-    : converter_(converter) {
-}
+IcuCharsetConverter::IcuCharsetConverter(UConverter* converter)
+    : converter_(converter) {}
 
-ICUCharsetConverter::~ICUCharsetConverter() = default;
+IcuCharsetConverter::~IcuCharsetConverter() = default;
 
-void ICUCharsetConverter::ConvertFromUTF16(std::u16string_view input,
+void IcuCharsetConverter::ConvertFromUtf16(std::u16string_view input,
                                            CanonOutput* output) {
   // Install our error handler. It will be called for character that can not
   // be represented in the destination character set.

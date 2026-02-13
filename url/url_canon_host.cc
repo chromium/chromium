@@ -391,7 +391,7 @@ bool DoComplexHost(std::string_view host,
   // Above, we may have used the output to write the unescaped values to, so
   // we have to rewind it to where we started after we convert it to UTF-16.
   StackBufferW utf16;
-  if (!ConvertUTF8ToUTF16(utf8_source, &utf16)) {
+  if (!ConvertUtf8ToUtf16(utf8_source, &utf16)) {
     // In this error case, the input may or may not be the output.
     StackBuffer utf8;
     for (size_t i = 0; i < utf8_source.length(); i++) {
@@ -426,7 +426,7 @@ bool DoComplexHost(std::u16string_view host,
     // very rare that host names have escaped characters, and it is relatively
     // fast to do the conversion anyway.
     StackBuffer utf8;
-    if (!ConvertUTF16ToUTF8(host, &utf8)) {
+    if (!ConvertUtf16ToUtf8(host, &utf8)) {
       AppendInvalidNarrowString(host, output);
       return false;
     }

@@ -246,7 +246,7 @@ class COMPONENT_EXPORT(URL) CharsetConverter {
   // decimal, (such as "&#20320;") with escaping of the ampersand, number
   // sign, and semicolon (in the previous example it would be
   // "%26%2320320%3B"). This rule is based on what IE does in this situation.
-  virtual void ConvertFromUTF16(std::u16string_view input,
+  virtual void ConvertFromUtf16(std::u16string_view input,
                                 CanonOutput* output) = 0;
 };
 
@@ -851,18 +851,18 @@ bool CanonicalizeMailtoUrl(std::u16string_view spec,
 // ensure that the data the pointers point to stays in scope and is not
 // modified.
 template <typename CHAR>
-struct URLComponentSource {
+struct UrlComponentSource {
   STACK_ALLOCATED();
 
  public:
   // Constructor normally used by callers wishing to replace components. This
   // will make them all null string_view, which is no replacement. The caller
   // would then override the components they want to replace.
-  URLComponentSource() = default;
+  UrlComponentSource() = default;
 
   // Constructor normally used internally to initialize all the components to
   // point to the same spec.
-  explicit URLComponentSource(std::basic_string_view<CHAR> default_value)
+  explicit UrlComponentSource(std::basic_string_view<CHAR> default_value)
       : scheme(default_value),
         username(default_value),
         password(default_value),
@@ -1081,7 +1081,7 @@ class Replacements {
 
   // Getters for the internal data. See the variables below for how the
   // information is encoded.
-  const URLComponentSource<CHAR>& sources() const { return sources_; }
+  const UrlComponentSource<CHAR>& sources() const { return sources_; }
   const Parsed& components() const { return components_; }
 
  private:
@@ -1106,7 +1106,7 @@ class Replacements {
   // Don't change component | null string_view      (unused)
   // Replace component      | (replacement string)  (replacement component)
   // Delete component       | empty string_view     (invalid component: (0,-1))
-  URLComponentSource<CHAR> sources_;
+  UrlComponentSource<CHAR> sources_;
   Parsed components_;
 };
 
