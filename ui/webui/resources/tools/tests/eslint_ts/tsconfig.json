@@ -15,6 +15,8 @@
     "with_webui_plugin_polymer_property_class_member_violations.ts",
     "with_webui_plugin_polymer_violations.ts",
     "with_webui_plugin_web_component_missing_deps_violations.html.ts",
-    "with_webui_plugin_web_component_missing_deps_violations.ts"
+    "with_webui_plugin_web_component_missing_deps_violations.ts",
+    "with_webui_plugin_web_component_missing_deps_violations_bar.html.ts",
+    "with_webui_plugin_web_component_missing_deps_violations_foo.html.ts"
   ]
 }

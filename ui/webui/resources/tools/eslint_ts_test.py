@@ -110,14 +110,17 @@ class EslintTsTest(unittest.TestCase):
 
   def testWebUiEslintPlugin_WebComponentMissingDeps(self):
     with self.assertRaises(RuntimeError) as context:
-      self._run_test(
-          ["with_webui_plugin_web_component_missing_deps_violations.html.ts"],
-          enable_web_component_missing_deps=True)
+      self._run_test([
+          "with_webui_plugin_web_component_missing_deps_violations.html.ts",
+          "with_webui_plugin_web_component_missing_deps_violations_bar.html.ts",
+          "with_webui_plugin_web_component_missing_deps_violations_foo.html.ts",
+      ],
+                     enable_web_component_missing_deps=True)
 
     _EXPECTED_STRING = "@webui-eslint/web-component-missing-deps"
     self.assertTrue(_EXPECTED_STRING in str(context.exception))
 
-    _EXPECTED_ERROR = "Missing explicit import statement for '%(tagName)s' in the class definition file 'with_webui_plugin_web_component_missing_deps_violations.ts'"
+    _EXPECTED_ERROR = "Missing explicit import statement for '%(tagName)s' in the class definition file 'with_webui_plugin_web_component_missing_deps_violations.ts' or in 'lazy_load.ts'"
 
     # The following strings *should* appear in the error output since the
     # referenced dependencies are imported.
@@ -130,6 +133,14 @@ class EslintTsTest(unittest.TestCase):
         },
         _EXPECTED_ERROR % {
             'tagName': 'other-button2'
+        },
+        # Testing missing dependencies check correctly identifies missing imports
+        # in helper html.ts files.
+        _EXPECTED_ERROR % {
+            'tagName': 'cr-input'
+        },
+        _EXPECTED_ERROR % {
+            'tagName': 'my-bar'
         },
     ]
     for e in errors:
@@ -157,6 +168,14 @@ class EslintTsTest(unittest.TestCase):
         # Imported via lazy_load.js (testing lazy loading detection).
         _EXPECTED_ERROR % {
             'tagName': 'foo-bar'
+        },
+        # Testing dependencies correctly imported for helper template files are
+        # not reported as missing.
+        _EXPECTED_ERROR % {
+            'tagName': 'cr-textarea'
+        },
+        _EXPECTED_ERROR % {
+            'tagName': 'my-foo'
         },
     ]
     for e in non_errors:
