@@ -8,14 +8,34 @@ use anyhow::{bail, Context, Result};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-fn get_field_at_ordinal(field_values: &[MojomValue], ordinal: Ordinal) -> Result<&MojomValue> {
-    let field_value = field_values.get(ordinal).with_context(|| {
-        format!(
+/// Return a reference to the field at index `ordinal`
+fn get_field_at_ordinal(field_values: &mut [MojomValue], ordinal: Ordinal) -> Result<&MojomValue> {
+    field_values.get(ordinal).with_context(|| {
+        anyhow::anyhow!(
             "Wire type asked for field with ordinal {}, but there are only {} fields.",
             ordinal,
             field_values.len()
         )
-    })?;
+    })
+}
+
+/// Take ownership of the field at index `ordinal` in the vector, replacing it
+/// with an invalid value. Fails if the value was already taken.
+fn take_field_at_ordinal(field_values: &mut [MojomValue], ordinal: Ordinal) -> Result<MojomValue> {
+    let Some(field_ref) = field_values.get_mut(ordinal) else {
+        anyhow::bail!(
+            "Wire type asked for field with ordinal {}, but there are only {} fields.",
+            ordinal,
+            field_values.len()
+        )
+    };
+    let field_value = std::mem::take(field_ref);
+    if field_value == MojomValue::Invalid {
+        anyhow::bail!(
+            "Wire type tried to retrieve the field with with ordinal {} multiple times!",
+            ordinal,
+        )
+    };
     Ok(field_value)
 }
 
@@ -39,15 +59,15 @@ fn get_field_at_ordinal(field_values: &[MojomValue], ordinal: Ordinal) -> Result
 ///   `MojomValue::Nullable`, because Mojom does not permit nested nullable
 ///   types.
 fn flatten_possibly_nullable_value(
-    maybe_nullable: &MojomValue,
+    maybe_nullable: MojomValue,
     expect_nullable: bool,
-) -> Result<Option<&MojomValue>> {
+) -> Result<Option<MojomValue>> {
     match maybe_nullable {
         MojomValue::Nullable(_) if !expect_nullable => {
             bail!("Got nullable value for non-nullable type")
         }
         MojomValue::Nullable(None) => Ok(None),
-        MojomValue::Nullable(Some(inner_value)) => Ok(Some(&**inner_value)),
+        MojomValue::Nullable(Some(inner_value)) => Ok(Some(*inner_value)),
         _ if expect_nullable => bail!("Got non-nullable value for nullable type"),
         _ => Ok(Some(maybe_nullable)),
     }
@@ -87,12 +107,12 @@ fn pad_to_alignment(data: &mut Vec<u8>, alignment: usize) {
 /// Write out the bytes for a leaf node
 fn deparse_leaf_value(
     data: &mut Vec<u8>,
-    value: &MojomValue,
+    value: MojomValue,
     leaf_type: &PackedLeafType,
 ) -> Result<()> {
     match (value, leaf_type) {
         (MojomValue::Bool(value), PackedLeafType::Bool) => {
-            data.extend((*value as u8).to_le_bytes())
+            data.extend(u8::from(value).to_le_bytes())
         }
         (MojomValue::Int8(value), PackedLeafType::Int8) => data.extend(value.to_le_bytes()),
         (MojomValue::UInt8(value), PackedLeafType::UInt8) => data.extend(value.to_le_bytes()),
@@ -105,7 +125,7 @@ fn deparse_leaf_value(
         (MojomValue::Float32(value), PackedLeafType::Float32) => data.extend(value.to_le_bytes()),
         (MojomValue::Float64(value), PackedLeafType::Float64) => data.extend(value.to_le_bytes()),
         (MojomValue::Enum(value), PackedLeafType::Enum { .. }) => data.extend(value.to_le_bytes()),
-        _ => wrong_type!(leaf_type, value),
+        (value, _) => wrong_type!(leaf_type, value),
     }
     Ok(())
 }
@@ -116,21 +136,21 @@ fn deparse_leaf_value(
 
 enum NestedData<'a> {
     Struct {
-        field_values: &'a [MojomValue],
+        field_values: Vec<MojomValue>,
         packed_fields: &'a [StructuredBodyElementOwned],
     },
     Array {
-        contents: &'a MojomValue,
+        contents: MojomValue,
         element_type: &'a Arc<MojomWireType>,
         array_type: &'a PackedArrayType,
     },
     Union {
         tag: u32,
-        value: &'a MojomValue,
+        value: MojomValue,
         variants: &'a BTreeMap<u32, MojomWireType>,
     },
     Map {
-        values_map: &'a BTreeMap<MojomValue, MojomValue>,
+        values_map: BTreeMap<MojomValue, MojomValue>,
         key_type: &'a Arc<MojomWireType>,
         value_type: &'a Arc<MojomWireType>,
     },
@@ -153,7 +173,7 @@ fn write_to_slice(data: &mut [u8], start: usize, len: usize, value: &[u8]) {
 
 pub fn deparse_struct(
     data: &mut Vec<u8>,
-    field_values: &[MojomValue],
+    field_values: Vec<MojomValue>,
     packed_fields: &[StructuredBodyElementOwned],
 ) -> Result<()> {
     // Write the struct's header
@@ -170,7 +190,7 @@ pub fn deparse_struct(
 
 fn deparse_array(
     data: &mut Vec<u8>,
-    contents: &MojomValue,
+    contents: MojomValue,
     element_type: &Arc<MojomWireType>,
     array_type: &PackedArrayType,
 ) -> Result<()> {
@@ -182,7 +202,9 @@ fn deparse_array(
             PackedArrayType::SizedArray(_) | PackedArrayType::UnsizedArray,
             MojomValue::Array(element_values),
         ) => element_values,
-        _ => bail!("deparse_array: Got mismatched type and value: {array_type:?} vs. {contents:?}"),
+        (array_type, contents) => {
+            bail!("deparse_array: Got mismatched type and value: {array_type:?} vs. {contents:?}")
+        }
     };
 
     let num_elements = element_values.len();
@@ -214,7 +236,7 @@ fn deparse_union<'a>(
     data: &mut Vec<u8>,
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
     tag: u32,
-    contained_value: &'a MojomValue,
+    contained_value: MojomValue,
     variants: &'a BTreeMap<u32, MojomWireType>,
 ) -> Result<()> {
     // Write the union's header
@@ -232,26 +254,18 @@ fn deparse_union<'a>(
         data,
         enclosing_nested_data_list,
         false,
-        std::slice::from_ref(contained_value),
+        vec![contained_value],
         std::iter::once(struct_ref_element),
     )
 }
 
 fn deparse_map(
     data: &mut Vec<u8>,
-    values_map: &BTreeMap<MojomValue, MojomValue>,
+    values_map: BTreeMap<MojomValue, MojomValue>,
     key_type: &Arc<MojomWireType>,
     value_type: &Arc<MojomWireType>,
 ) -> Result<()> {
-    // FOR_RELEASE: These clones are way too expensive for production. We could
-    // avoid them by:
-    // 1. Using an Arc<[MojomValue]> or similar
-    // 2. Packing maps differently in the first place (having pack.rs create the
-    //    struct body for us)
-    // 3. Having the deparser take things by value
-    // I'm delaying the fix because we might want to do (3) anyway, which solves the
-    // problem easily. If not, we'll have to choose (1) and (2)
-    let (keys, values) = values_map.iter().map(|(k, v)| (k.clone(), v.clone())).unzip();
+    let (keys, values) = values_map.into_iter().unzip();
     let field_values = vec![MojomValue::Array(keys), MojomValue::Array(values)];
     let packed_fields = [
         StructuredBodyElement::SingleValue(
@@ -277,10 +291,10 @@ fn deparse_map(
             },
         ),
     ];
-    deparse_struct(data, &field_values, &packed_fields)
+    deparse_struct(data, field_values, &packed_fields)
 }
 
-fn deparse_string(data: &mut Vec<u8>, value: &String) -> Result<()> {
+fn deparse_string(data: &mut Vec<u8>, value: String) -> Result<()> {
     let bytes = value.as_bytes();
     let num_bytes: u32 = bytes
         .len()
@@ -309,7 +323,7 @@ fn deparse_structured_body<'a, 'b, IterT, BitfieldT>(
     data: &mut Vec<u8>,
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
     is_array: bool,
-    field_values: &'a [MojomValue],
+    mut field_values: Vec<MojomValue>,
     packed_fields: IterT,
 ) -> Result<()>
 where
@@ -334,7 +348,7 @@ where
                 let mut bitfield: u8 = 0;
                 // Construct the bitfield bit-by-bit
                 while let Some((idx, Some((ordinal, is_tag_bit)))) = iter.next() {
-                    let bit_mojom_value = get_field_at_ordinal(field_values, *ordinal)?;
+                    let bit_mojom_value = get_field_at_ordinal(&mut field_values, *ordinal)?;
 
                     let bit_value = match bit_mojom_value {
                         MojomValue::Bool(bit) => *bit,
@@ -361,7 +375,7 @@ where
                 match wire_type {
                     MojomWireType::Leaf { leaf_type, is_nullable } => {
                         let num_bytes = wire_type.size();
-                        let leaf_value = get_field_at_ordinal(field_values, ordinal)?;
+                        let leaf_value = take_field_at_ordinal(&mut field_values, ordinal)?;
                         let leaf_value =
                             write_or_extract_nullable!(data, leaf_value, *is_nullable, num_bytes);
                         pad_to_alignment(data, packed_field.alignment());
@@ -369,7 +383,7 @@ where
                     }
 
                     MojomWireType::Pointer { nested_data_type, is_nullable } => {
-                        let nested_data_value = get_field_at_ordinal(field_values, ordinal)?;
+                        let nested_data_value = take_field_at_ordinal(&mut field_values, ordinal)?;
                         let nested_data_value =
                             write_or_extract_nullable!(data, nested_data_value, *is_nullable, 8);
                         let nested_data = match (nested_data_value, nested_data_type) {
@@ -385,7 +399,7 @@ where
                                 packed_fields: packed_field_types,
                             },
                             (
-                                MojomValue::Array(_) | MojomValue::String(_),
+                                nested_data_value @ (MojomValue::Array(_) | MojomValue::String(_)),
                                 PackedStructuredType::Array { element_type, array_type },
                             ) => NestedData::Array {
                                 contents: nested_data_value,
@@ -395,12 +409,12 @@ where
                             (
                                 MojomValue::Union(tag, value),
                                 PackedStructuredType::Union { variants, .. },
-                            ) => NestedData::Union { tag: *tag, value, variants },
+                            ) => NestedData::Union { tag, value: *value, variants },
                             (
                                 MojomValue::Map(values_map),
                                 PackedStructuredType::Map { key_type, value_type },
                             ) => NestedData::Map { values_map, key_type, value_type },
-                            _ => bail!(
+                            (_, nested_data_value) => bail!(
                                 "Unexpected type for nested data: Expected {:?}, got {:?}",
                                 nested_data_type,
                                 nested_data_value
@@ -412,7 +426,7 @@ where
                         data.extend([0; 8]);
                     }
                     MojomWireType::Union { variants, is_nullable } => {
-                        let union_value = get_field_at_ordinal(field_values, ordinal)?;
+                        let union_value = take_field_at_ordinal(&mut field_values, ordinal)?;
                         let union_value =
                             write_or_extract_nullable!(data, union_value, *is_nullable, 16);
                         let (tag, contained_value) = match union_value {
@@ -425,8 +439,8 @@ where
                         deparse_union(
                             data,
                             Some(nested_data_list),
-                            *tag,
-                            contained_value,
+                            tag,
+                            *contained_value,
                             variants,
                         )?;
                     }
@@ -484,12 +498,12 @@ where
 /// values in practice are members of a struct. The function only works for
 /// some mojom types, since e.g. booleans can't be parsed individually.
 pub fn deparse_single_value_for_testing(
-    value: &MojomValue,
+    value: MojomValue,
     wire_type: &MojomWireType,
 ) -> Result<Vec<u8>> {
     let mut data: Vec<u8> = vec![];
     match (wire_type, value) {
-        (MojomWireType::Leaf { leaf_type, .. }, _) => {
+        (MojomWireType::Leaf { leaf_type, .. }, value) => {
             deparse_leaf_value(&mut data, value, leaf_type)?
         }
         (
@@ -504,7 +518,7 @@ pub fn deparse_single_value_for_testing(
                 nested_data_type: PackedStructuredType::Array { element_type, array_type },
                 ..
             },
-            MojomValue::Array(_) | MojomValue::String(_),
+            value @ (MojomValue::Array(_) | MojomValue::String(_)),
         ) => deparse_array(&mut data, value, element_type, array_type)?,
         (
             MojomWireType::Union { variants, .. }
@@ -513,7 +527,7 @@ pub fn deparse_single_value_for_testing(
                 ..
             },
             MojomValue::Union(tag, value),
-        ) => deparse_union(&mut data, None, *tag, value, variants)?,
+        ) => deparse_union(&mut data, None, tag, *value, variants)?,
         (
             MojomWireType::Pointer {
                 nested_data_type: PackedStructuredType::Map { key_type, value_type },
@@ -525,7 +539,7 @@ pub fn deparse_single_value_for_testing(
             // Nullables only make sense in the context of an enclosing body
             panic!("Cannot deparse single nullable values for testing")
         }
-        _ => {
+        (_, value) => {
             wrong_type!(wire_type, value);
         }
     };

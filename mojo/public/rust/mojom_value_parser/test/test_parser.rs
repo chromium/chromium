@@ -33,6 +33,9 @@ fn validate_parsing<T>(value: T, data: &str) -> anyhow::Result<()>
 where
     T: MojomParse + PartialEq + std::fmt::Debug + Clone,
 {
+    // We have to compute this eagerly since `value ` will get consumed by the test
+    let err_str = format!("\nRust value: {value:?}\nWire Data: {data}");
+
     // Helper function so we can use the question mark operator, but also
     // append context to it regardless of where we return.
     let validate_parsing_internal = || -> anyhow::Result<()> {
@@ -43,24 +46,20 @@ where
 
         // FOR_RELEASE: It would be nice to use the `verify_` macros from googletest
         // that return a result, if we get access to them.
-        // FOR_RELEASE: We shouldn't need to clone here
-        // Doing deparse tests first is helpful when writing tests because it
-        // helps check that we wrote the wire data string correctly.
         expect_eq!(
-            wire_data.as_ref(),
-            deparse_single_value_for_testing(&value.clone().into(), T::wire_type())?
+            &value,
+            &parse_single_value_for_testing(wire_data.as_ref(), T::wire_type())?.try_into()?
         );
         expect_eq!(
-            value,
-            parse_single_value_for_testing(wire_data.as_ref(), T::wire_type())?.try_into()?
+            wire_data.as_ref(),
+            deparse_single_value_for_testing(value.into(), T::wire_type())?
         );
         Ok(())
     };
 
     // We could also use anyhow's Context trait, but that overwrites the old context
     // since we can't control the printing format gtest uses.
-    validate_parsing_internal()
-        .map_err(|err| anyhow::anyhow!("{}\nRust value: {:?}\nWire Data: {}", err, value, data))
+    validate_parsing_internal().map_err(|err| anyhow::anyhow!("{err}{err_str}"))
 }
 
 /// Check that we correctly fail to parse mismatching data.

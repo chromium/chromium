@@ -40,7 +40,6 @@ pub fn deserialize_exact<T: MojomParse>(data_slice: &[u8]) -> ParsingResult<T> {
 ///
 /// Panics if called on a non-struct (structs are the only valid top-level
 /// type).
-/// FOR_RELEASE: See if we can take a reference instead (or maybe in addition)
 pub fn serialize<T: MojomParse>(value: T) -> Vec<u8> {
     let mut data: Vec<u8> = vec![];
     let packed_format = T::wire_type();
@@ -56,7 +55,7 @@ pub fn serialize<T: MojomParse>(value: T) -> Vec<u8> {
         ) => (field_values, packed_field_types),
         _ => panic!("`serialize` can only be called on struct types"),
     };
-    crate::deparse_values::deparse_struct(&mut data, &field_values, packed_fields)
+    crate::deparse_values::deparse_struct(&mut data, field_values, packed_fields)
         // The Err return value is mostly useful for internal debugging
         .expect("Deparsing should always succeed");
     data

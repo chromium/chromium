@@ -398,8 +398,6 @@ fn parse_string(
     Ok(MojomValue::String(rust_string))
 }
 
-const DUMMY_MOJOMVALUE: MojomValue = MojomValue::Int8(0);
-
 /// Create a MojomValue::Nullable out of the given value, if appropriate.
 ///
 /// Our parser handles nullable primitives as follows: first, we read the tag
@@ -419,7 +417,7 @@ fn wrap_nullable_primitive(
     match ret_values[ordinal] {
         MojomValue::Bool(false) => MojomValue::Nullable(None),
         MojomValue::Bool(true) => MojomValue::Nullable(Some(Box::new(parsed_value))),
-        DUMMY_MOJOMVALUE => parsed_value,
+        MojomValue::Invalid => parsed_value,
         _ => panic!("We tried to overwrite an already-parsed value!"),
     }
 }
@@ -459,7 +457,7 @@ where
     // by index. We have to provide dummy values since rust won't allow
     // uninitialized memory.
     let mut ret_names: Vec<String> = vec![String::new(); num_elements_in_value];
-    let mut ret_values: Vec<MojomValue> = vec![DUMMY_MOJOMVALUE; num_elements_in_value];
+    let mut ret_values: Vec<MojomValue> = vec![MojomValue::Invalid; num_elements_in_value];
 
     for (index, struct_ref_element) in fields.enumerate() {
         // Make sure we're at the right alignment for this field
