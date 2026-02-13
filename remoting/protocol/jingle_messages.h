@@ -252,6 +252,21 @@ struct SessionInfo {
   ~SessionInfo();
 
   std::optional<JingleAuthentication> authentication;
+
+  // Generic info for session-info messages that are not authentication.
+  struct GenericInfo {
+    GenericInfo();
+    GenericInfo(const GenericInfo&);
+    GenericInfo(GenericInfo&&);
+    GenericInfo& operator=(const GenericInfo&);
+    GenericInfo& operator=(GenericInfo&&);
+    ~GenericInfo();
+
+    std::string name;
+    std::string namespace_uri;
+    std::string body;
+  };
+  std::optional<GenericInfo> generic_info;
 };
 
 struct SessionTerminate {
@@ -330,9 +345,6 @@ class JingleMessage {
 
   std::unique_ptr<ContentDescription> description;
   std::vector<Attachment> attachments;
-
-  // Legacy XML-based payloads, maintained for backward compatibility.
-  std::unique_ptr<jingle_xmpp::XmlElement> info_legacy;
 
   // Value from the <reason> tag if it is present in the
   // message. Useful mainly for session-terminate messages, but Jingle

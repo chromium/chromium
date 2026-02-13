@@ -402,9 +402,12 @@ TEST(JingleMessageTest, SessionInfo) {
   ParseFormatAndCompare(kTestSessionInfoMessage, &message);
 
   EXPECT_EQ(message.action(), ActionType::kSessionInfo);
-  ASSERT_TRUE(message.info_legacy.get() != nullptr);
-  EXPECT_TRUE(message.info_legacy->Name() ==
-              jingle_xmpp::QName("urn:xmpp:jingle:1", "test-info"));
+  auto* session_info = std::get_if<SessionInfo>(&message.payload());
+  ASSERT_TRUE(session_info);
+  ASSERT_TRUE(session_info->generic_info);
+  EXPECT_EQ(session_info->generic_info->name, "test-info");
+  EXPECT_EQ(session_info->generic_info->namespace_uri, "urn:xmpp:jingle:1");
+  EXPECT_EQ(session_info->generic_info->body, "TestMessage");
 }
 
 TEST(JingleMessageReplyTest, ToXml) {

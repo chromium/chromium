@@ -476,25 +476,9 @@ bool ParseTransportInfoAction(const XmlElement* jingle_tag,
 
 bool ParseSessionInfoAction(const XmlElement* jingle_tag,
                             JingleMessage* message) {
-  const XmlElement* child = jingle_tag->FirstElement();
-  // Plugin messages are action independent, which should not be considered
-  // as session-info.
-  while (child && child->Name() == kQNameAttachments) {
-    child = child->NextElement();
-  }
-
   SessionInfo session_info;
-  if (child) {
-    if (Authenticator::IsAuthenticatorMessage(child)) {
-      JingleAuthentication authentication;
-      if (JingleAuthenticationFromXml(child, &authentication)) {
-        session_info.authentication = std::move(authentication);
-      }
-    }
-    // session-info is allowed to be empty or contain non-auth messages.
-    message->info_legacy = std::make_unique<XmlElement>(*child);
-  } else {
-    message->info_legacy.reset();
+  if (!SessionInfoFromXml(jingle_tag, &session_info)) {
+    return false;
   }
   message->SetPayload(std::move(session_info));
   return true;
@@ -633,14 +617,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
 
   if (message.action() == JingleMessage::ActionType::kSessionInfo) {
     if (auto* session_info = std::get_if<SessionInfo>(&message.payload())) {
-      if (session_info->authentication) {
-        jingle_tag->AddElement(
-            JingleAuthenticationToXml(*session_info->authentication).release());
-      }
-    }
-    if (message.info_legacy &&
-        !Authenticator::IsAuthenticatorMessage(message.info_legacy.get())) {
-      jingle_tag->AddElement(new XmlElement(*message.info_legacy));
+      SessionInfoToXml(*session_info, jingle_tag);
     }
     return root;
   }
@@ -1180,6 +1157,48 @@ bool JingleAuthenticationFromXml(const jingle_xmpp::XmlElement* element,
   if (test_key_el) {
     authentication->test_key = base::Base64Decode(test_key_el->BodyText())
                                    .value_or(std::vector<uint8_t>());
+  }
+
+  return true;
+}
+
+void SessionInfoToXml(const SessionInfo& session_info,
+                      jingle_xmpp::XmlElement* jingle_element) {
+  if (session_info.authentication) {
+    jingle_element->AddElement(
+        JingleAuthenticationToXml(*session_info.authentication).release());
+  }
+  if (session_info.generic_info) {
+    auto generic_el = std::make_unique<XmlElement>(
+        QName(session_info.generic_info->namespace_uri,
+              session_info.generic_info->name));
+    generic_el->SetBodyText(session_info.generic_info->body);
+    jingle_element->AddElement(generic_el.release());
+  }
+}
+
+bool SessionInfoFromXml(const jingle_xmpp::XmlElement* jingle_element,
+                        SessionInfo* session_info) {
+  const XmlElement* child = jingle_element->FirstElement();
+  // Plugin messages are action independent, which should not be considered
+  // as session-info.
+  while (child && child->Name() == kQNameAttachments) {
+    child = child->NextElement();
+  }
+
+  if (child) {
+    if (Authenticator::IsAuthenticatorMessage(child)) {
+      JingleAuthentication authentication;
+      if (JingleAuthenticationFromXml(child, &authentication)) {
+        session_info->authentication = std::move(authentication);
+      }
+    } else {
+      SessionInfo::GenericInfo generic_info;
+      generic_info.name = child->Name().LocalPart();
+      generic_info.namespace_uri = child->Name().Namespace();
+      generic_info.body = child->BodyText();
+      session_info->generic_info = std::move(generic_info);
+    }
   }
 
   return true;
