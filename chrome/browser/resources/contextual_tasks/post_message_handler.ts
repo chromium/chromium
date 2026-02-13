@@ -89,7 +89,7 @@ export class PostMessageHandler {
     this.resetHandshake_();
   }
 
-  private onLoadStart_(event: any) {
+  private onLoadStart_(event: chrome.webviewTag.LoadStartEvent) {
     // This event is fired anytime a load starts in the webview, including
     // subframes and navigations within the same page. Only reset the handshake
     // if its the top level frame to avoid unnecessary resets.
@@ -105,7 +105,7 @@ export class PostMessageHandler {
   // used to determine if the webview is ready to receive messages. Doing this
   // in onLoadStart_ can cause a race condition where the handshake completes
   // with the page that is about to navigate away from.
-  private onLoadCommit_(event: any) {
+  private onLoadCommit_(event: chrome.webviewTag.LoadCommitEvent) {
     if (!event.isTopLevel) {
       return;
     }

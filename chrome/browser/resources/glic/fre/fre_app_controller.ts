@@ -175,7 +175,7 @@ export class FreAppController {
     }
   }
 
-  onLoadCommit(e: any) {
+  onLoadCommit(e: chrome.webviewTag.LoadCommitEvent) {
     if (!e.isTopLevel) {
       return;
     }
@@ -215,7 +215,7 @@ export class FreAppController {
     }
   }
 
-  onNewWindow(e: any) {
+  onNewWindow(e: chrome.webviewTag.NewWindowEvent) {
     e.preventDefault();
     this.freHandler.validateAndOpenLinkInNewTab(e.targetUrl);
     e.stopPropagation();
@@ -414,7 +414,7 @@ export class FreAppController {
     }, timeoutValue - MIN_HOLD_LOADING_TIME_MS);
   }
 
-  onSizeChanged(e: any): void {
+  onSizeChanged(e: chrome.webviewTag.SizeChangedEvent): void {
     window.resizeTo(e.newWidth, e.newHeight);
   }
 
@@ -491,7 +491,7 @@ export class FreAppController {
     }
   }
 
-  private onLoadAbort(e: any) {
+  private onLoadAbort(e: chrome.webviewTag.LoadAbortEvent) {
     const reasonEnum = this.reasonStringToEnum(e.reason);
     chrome.metricsPrivate.recordUserAction('Glic.Fre.WebviewLoadAborted');
     chrome.metricsPrivate.recordEnumerationValue(

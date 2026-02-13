@@ -9,6 +9,12 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 
 import {clearDocumentBody} from './parent_access_test_utils.js';
 
+declare global {
+  interface HTMLElementEventMap {
+    'loadabort': chrome.webviewTag.LoadAbortEvent;
+  }
+}
+
 interface OnSendHeadersDetails {
   requestHeaders: chrome.webRequest.HttpHeaders;
 }
@@ -80,10 +86,11 @@ suite('ParentAccessWebviewManagerTest', function() {
       chrome.test.fail('WebviewManager should have blocked request');
     }, {urls: ['<all_urls>']}, ['requestHeaders']);
 
-    webview.addEventListener('loadabort', (e: any) => {
-      assertEquals('ERR_BLOCKED_BY_CLIENT', e.reason);
-      done();
-    });
+    webview.addEventListener(
+        'loadabort', (e: chrome.webviewTag.LoadAbortEvent) => {
+          assertEquals('ERR_BLOCKED_BY_CLIENT', e.reason);
+          done();
+        });
 
     webview.src = TARGET_URL;
   });
