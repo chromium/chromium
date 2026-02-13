@@ -425,12 +425,12 @@ void PrefetchScheduler::ProgressOne(
     {
       base::AutoReset<bool> guard{&in_eviction_, true};
       prefetch_service_->EvictPrefetch(base::PassKey<PrefetchScheduler>(),
-                                       prefetch_to_evict);
+                                       *prefetch_to_evict);
     }
   }();
 
   const bool is_started = prefetch_service_->StartSinglePrefetch(
-      base::PassKey<PrefetchScheduler>(), prefetch_container);
+      base::PassKey<PrefetchScheduler>(), *prefetch_container);
   if (is_started) {
     active_set_.push_back(prefetch_container);
   }

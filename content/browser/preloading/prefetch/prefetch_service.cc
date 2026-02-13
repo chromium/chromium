@@ -184,9 +184,8 @@ void RecordPrefetchProxyPrefetchMainframeRespCode(int response_code) {
 
 // Returns true if the prefetch is heldback, and set the holdback status
 // correspondingly.
-bool CheckAndSetPrefetchHoldbackStatus(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
-  if (!prefetch_container->request().attempt()) {
+bool CheckAndSetPrefetchHoldbackStatus(PrefetchContainer& prefetch_container) {
+  if (!prefetch_container.request().attempt()) {
     return false;
   }
 
@@ -194,7 +193,7 @@ bool CheckAndSetPrefetchHoldbackStatus(
     // Currently DevTools only supports when the prefetch is initiated by
     // renderer.
     auto* renderer_initiator_info =
-        prefetch_container->request().GetRendererInitiatorInfo();
+        prefetch_container.request().GetRendererInitiatorInfo();
     if (!renderer_initiator_info) {
       return false;
     }
@@ -216,9 +215,9 @@ bool CheckAndSetPrefetchHoldbackStatus(
   if (devtools_client_exist) {
     // 1. When developers debug Speculation Rules Prefetch using DevTools,
     // always set status to kAllowed for developer experience.
-    prefetch_container->request().attempt()->SetHoldbackStatus(
+    prefetch_container.request().attempt()->SetHoldbackStatus(
         PreloadingHoldbackStatus::kAllowed);
-  } else if (prefetch_container->IsLikelyAheadOfPrerender()) {
+  } else if (prefetch_container.IsLikelyAheadOfPrerender()) {
     // 2. If PrefetchContainer is likely ahead of prerender, always set status
     // to kAllowed as it is likely used for prerender.
     //
@@ -227,19 +226,19 @@ bool CheckAndSetPrefetchHoldbackStatus(
     // purpose because it can't handle a prefetch that was not ahead of
     // prerender but another ahead of prerender one is migrated into it. We need
     // to update migration if we'd like to do it.
-    prefetch_container->request().attempt()->SetHoldbackStatus(
+    prefetch_container.request().attempt()->SetHoldbackStatus(
         PreloadingHoldbackStatus::kAllowed);
-  } else if (prefetch_container->request().holdback_status_override() !=
+  } else if (prefetch_container.request().holdback_status_override() !=
              PreloadingHoldbackStatus::kUnspecified) {
     // 3. If PrefetchContainer has custom overridden status, set that value.
-    prefetch_container->request().attempt()->SetHoldbackStatus(
-        prefetch_container->request().holdback_status_override());
+    prefetch_container.request().attempt()->SetHoldbackStatus(
+        prefetch_container.request().holdback_status_override());
   }
 
-  if (prefetch_container->request().attempt()->ShouldHoldback()) {
-    prefetch_container->SetLoadState(
+  if (prefetch_container.request().attempt()->ShouldHoldback()) {
+    prefetch_container.SetLoadState(
         PrefetchContainer::LoadState::kFailedHeldback);
-    prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchHeldback);
+    prefetch_container.SetPrefetchStatus(PrefetchStatus::kPrefetchHeldback);
     return true;
   }
   return false;
@@ -1281,7 +1280,7 @@ void PrefetchService::OnGotEligibilityForRedirect(
         std::move(redirect_head), /*update_headers_params=*/{});
     // The new ResponseReader is associated with the new streaming URL loader at
     // the PrefetchStreamingURLLoader constructor.
-    SendPrefetchRequest(prefetch_container);
+    SendPrefetchRequest(*prefetch_container);
 
     return;
   }
@@ -1405,46 +1404,42 @@ void PrefetchService::PrepareProgress(base::PassKey<PrefetchScheduler>) {
   }
 }
 
-void PrefetchService::EvictPrefetch(
-    base::PassKey<PrefetchScheduler>,
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
-  CHECK(prefetch_container);
-
-  prefetch_container->SetPrefetchStatus(
+void PrefetchService::EvictPrefetch(base::PassKey<PrefetchScheduler>,
+                                    PrefetchContainer& prefetch_container) {
+  prefetch_container.SetPrefetchStatus(
       PrefetchStatus::kPrefetchEvictedForNewerPrefetch);
-  ResetPrefetchContainer(std::move(prefetch_container));
+  ResetPrefetchContainer(prefetch_container.GetWeakPtr());
 }
 
 bool PrefetchService::StartSinglePrefetch(
     base::PassKey<PrefetchScheduler>,
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
-  return StartSinglePrefetch(std::move(prefetch_container));
+    PrefetchContainer& prefetch_container) {
+  return StartSinglePrefetch(prefetch_container);
 }
 
 bool PrefetchService::StartSinglePrefetchForTesting(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
-  return StartSinglePrefetch(std::move(prefetch_container));
+    PrefetchContainer& prefetch_container) {
+  return StartSinglePrefetch(prefetch_container);
 }
 
 bool PrefetchService::StartSinglePrefetch(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
+    PrefetchContainer& prefetch_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(prefetch_container);
-  CHECK_EQ(prefetch_container->GetLoadState(),
+  CHECK_EQ(prefetch_container.GetLoadState(),
            PrefetchContainer::LoadState::kEligible);
   TRACE_EVENT("loading", "PrefetchService::StartSinglePrefetch",
-              prefetch_container->request().preload_pipeline_info().GetFlow());
+              prefetch_container.request().preload_pipeline_info().GetFlow());
 
   // Do not prefetch for a Holdback control group. Called after the checks in
   // `PopNextPrefetchContainer` because we want to compare against the
   // prefetches that would have been dispatched.
   if (CheckAndSetPrefetchHoldbackStatus(prefetch_container)) {
-    DVLOG(1) << *prefetch_container
+    DVLOG(1) << prefetch_container
              << ": not prefetched (holdback control group)";
     return false;
   }
 
-  prefetch_container->OnPrefetchStarted();
+  prefetch_container.OnPrefetchStarted();
 
   // Checks if the `PrefetchContainer` has a specific TTL (Time-to-Live)
   // configured. If a TTL is configured, the prefetch container will be eligible
@@ -1454,34 +1449,34 @@ bool PrefetchService::StartSinglePrefetch(
   // The default TTL is determined by
   // `PrefetchContainerDefaultTtlInPrefetchService()`, which may return a zero
   // or negative value, indicating an indefinite TTL.
-  prefetch_container->StartTimeoutTimerIfNeeded(
-      base::BindOnce(&PrefetchService::OnPrefetchTimeout,
-                     weak_method_factory_.GetWeakPtr(), prefetch_container));
+  prefetch_container.StartTimeoutTimerIfNeeded(base::BindOnce(
+      &PrefetchService::OnPrefetchTimeout, weak_method_factory_.GetWeakPtr(),
+      prefetch_container.GetWeakPtr()));
 
-  if (!prefetch_container->IsDecoy()) {
+  if (!prefetch_container.IsDecoy()) {
     // The status is updated to be successful or failed when it finishes.
-    prefetch_container->SetPrefetchStatus(
+    prefetch_container.SetPrefetchStatus(
         PrefetchStatus::kPrefetchNotFinishedInTime);
   }
 
-  prefetch_container->MakeResourceRequest();
+  prefetch_container.MakeResourceRequest();
 
-  prefetch_container->NotifyPrefetchRequestWillBeSent(
+  prefetch_container.NotifyPrefetchRequestWillBeSent(
       /*redirect_head=*/nullptr);
 
   SendPrefetchRequest(prefetch_container);
 
   PrefetchDocumentManager* prefetch_document_manager = nullptr;
   if (auto* renderer_initiator_info =
-          prefetch_container->request().GetRendererInitiatorInfo()) {
+          prefetch_container.request().GetRendererInitiatorInfo()) {
     prefetch_document_manager =
         renderer_initiator_info->prefetch_document_manager();
   }
 
-  if (prefetch_container->request()
+  if (prefetch_container.request()
           .prefetch_type()
           .IsProxyRequiredWhenCrossOrigin() &&
-      !prefetch_container->IsDecoy() &&
+      !prefetch_container.IsDecoy() &&
       (!prefetch_document_manager ||
        !prefetch_document_manager->HaveCanaryChecksStarted())) {
     // TODO(crbug.com/40946257): Currently browser-initiated prefetch will
@@ -1513,10 +1508,10 @@ bool PrefetchService::StartSinglePrefetch(
 }
 
 void PrefetchService::SendPrefetchRequest(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
-  CHECK(prefetch_container);
+    PrefetchContainer& prefetch_container) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT("loading", "PrefetchService::SendPrefetchRequest",
-              prefetch_container->request().preload_pipeline_info().GetFlow());
+              prefetch_container.request().preload_pipeline_info().GetFlow());
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("speculation_rules_prefetch",
@@ -1542,37 +1537,39 @@ void PrefetchService::SendPrefetchRequest(
             policy_exception_justification: "Not implemented."
         })");
 
+  base::WeakPtr<PrefetchContainer> weak_prefetch_container =
+      prefetch_container.GetWeakPtr();
   auto streaming_loader = PrefetchStreamingURLLoader::CreateAndStart(
       GetURLLoaderFactoryForCurrentPrefetch(prefetch_container),
-      *prefetch_container->GetResourceRequest(), traffic_annotation,
+      *prefetch_container.GetResourceRequest(), traffic_annotation,
       PrefetchTimeoutDuration(),
       base::BindOnce(&PrefetchService::OnPrefetchResponseStarted,
-                     base::Unretained(this), prefetch_container),
+                     base::Unretained(this), weak_prefetch_container),
       base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
-                          base::Unretained(this), prefetch_container),
-      prefetch_container->GetResponseReaderForCurrentPrefetch(),
-      prefetch_container->service_worker_state(), browser_context_,
+                          base::Unretained(this), weak_prefetch_container),
+      prefetch_container.GetResponseReaderForCurrentPrefetch(),
+      prefetch_container.service_worker_state(), browser_context_,
       base::BindOnce(&PrefetchContainer::OnServiceWorkerStateDetermined,
-                     prefetch_container),
-      prefetch_container->request().preload_pipeline_info().GetFlow());
-  prefetch_container->SetStreamingURLLoader(std::move(streaming_loader));
+                     weak_prefetch_container),
+      prefetch_container.request().preload_pipeline_info().GetFlow());
+  prefetch_container.SetStreamingURLLoader(std::move(streaming_loader));
 
-  DVLOG(1) << *prefetch_container << ": PrefetchStreamingURLLoader is created.";
+  DVLOG(1) << prefetch_container << ": PrefetchStreamingURLLoader is created.";
 }
 
 void PrefetchService::MaybeSetPrefetchMatchMissedTimeForMetrics(
-    base::WeakPtr<PrefetchContainer> prefetch_container) const {
+    PrefetchContainer& prefetch_container) const {
   // Check if the prefetch could've been matched to a recently navigated URL.
   // We will log the event to UMA in order to understand if a potential race
   // condition has occurred.
   // TODO(crbug.com/433478563): Introduce another variant of
   // `no_vary_search::MatchUrl` that doesn't require a map.
-  std::map<PrefetchKey, base::WeakPtr<PrefetchContainer>> candidates{
-      {prefetch_container->key(), prefetch_container}};
+  std::map<PrefetchKey, base::WeakPtr<PrefetchContainer>> candidates;
+  candidates[prefetch_container.key()] = prefetch_container.GetWeakPtr();
   for (auto& it : recent_unmatched_navigated_keys_for_metrics_) {
     bool urls_match = !!no_vary_search::MatchUrl(it.first, candidates);
     if (urls_match) {
-      prefetch_container->SetPrefetchMatchMissedTimeForMetrics(it.second);
+      prefetch_container.SetPrefetchMatchMissedTimeForMetrics(it.second);
       break;
     }
   }
@@ -1686,17 +1683,16 @@ PrefetchService::CreateIsolatedNetworkContextForTesting(  // IN-TEST
 
 scoped_refptr<network::SharedURLLoaderFactory>
 PrefetchService::GetURLLoaderFactoryForCurrentPrefetch(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
-  DCHECK(prefetch_container);
+    PrefetchContainer& prefetch_container) {
   if (g_url_loader_factory_for_testing) {
     return base::WrapRefCounted(g_url_loader_factory_for_testing);
   }
 
   const bool is_isolated_network_context_required =
-      prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch();
+      prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch();
 
   if (PrefetchNetworkContext* network_context =
-          prefetch_container->GetNetworkContext(
+          prefetch_container.GetNetworkContext(
               is_isolated_network_context_required)) {
     return network_context->GetURLLoaderFactory();
   }
@@ -1704,18 +1700,18 @@ PrefetchService::GetURLLoaderFactoryForCurrentPrefetch(
   mojo::Remote<network::mojom::NetworkContext> isolated_network_context;
   if (is_isolated_network_context_required) {
     const bool is_proxy_required_when_cross_origin =
-        prefetch_container->request()
+        prefetch_container.request()
             .prefetch_type()
             .IsProxyRequiredWhenCrossOrigin() &&
-        !prefetch_container->request()
+        !prefetch_container.request()
              .prefetch_type()
              .IsProxyBypassedForTesting();  // IN-TEST
     isolated_network_context =
         CreateIsolatedNetworkContext(is_proxy_required_when_cross_origin);
   }
   return prefetch_container
-      ->CreateNetworkContext(is_isolated_network_context_required,
-                             std::move(isolated_network_context))
+      .CreateNetworkContext(is_isolated_network_context_required,
+                            std::move(isolated_network_context))
       ->GetURLLoaderFactory();
 }
 

@@ -231,21 +231,16 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
 
   void PrepareProgress(base::PassKey<PrefetchScheduler>);
   // Evict `prefetch_container` before starting a new prefetch.
-  //
-  // Precondition: `prefetch_container` must be valid.
   void EvictPrefetch(base::PassKey<PrefetchScheduler>,
-                     base::WeakPtr<PrefetchContainer> prefetch_container);
+                     PrefetchContainer& prefetch_container);
   // Starts the loading of `prefetch_container`.
   //
   // Returns true iff a prefetch is started and the caller should regard this is
   // active.
-  //
-  // Precondition: `prefetch_container` must be valid.
   bool StartSinglePrefetch(base::PassKey<PrefetchScheduler>,
-                           base::WeakPtr<PrefetchContainer> prefetch_container);
+                           PrefetchContainer& prefetch_container);
 
-  bool StartSinglePrefetchForTesting(
-      base::WeakPtr<PrefetchContainer> prefetch_container);
+  bool StartSinglePrefetchForTesting(PrefetchContainer& prefetch_container);
 
   const PrefetchScheduler& GetPrefetchSchedulerForMetrics() {
     return *scheduler_;
@@ -334,12 +329,12 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // or equal to zero, the prefetch is kept indefinitely.
   void OnPrefetchTimeout(base::WeakPtr<PrefetchContainer> prefetch);
 
-  bool StartSinglePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
+  bool StartSinglePrefetch(PrefetchContainer& prefetch_container);
 
   // Creates a new URL loader and starts a network request for
   // |prefetch_container|. |MakePrefetchRequest| must have been previously
   // called.
-  void SendPrefetchRequest(base::WeakPtr<PrefetchContainer> prefetch_container);
+  void SendPrefetchRequest(PrefetchContainer& prefetch_container);
 
   // Creates an isolated network context for prefetching. While the returned
   // `NetworkContext` will be owned/used by a `PrefetchContainer`, the creation
@@ -350,8 +345,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // Gets the URL loader for the given |prefetch_container|. If an override was
   // set by |SetURLLoaderFactoryForTesting|, then that will be returned instead.
   scoped_refptr<network::SharedURLLoaderFactory>
-  GetURLLoaderFactoryForCurrentPrefetch(
-      base::WeakPtr<PrefetchContainer> prefetch_container);
+  GetURLLoaderFactoryForCurrentPrefetch(PrefetchContainer& prefetch_container);
 
   // Called when the request for |prefetch_container| is redirected.
   void OnPrefetchRedirect(base::WeakPtr<PrefetchContainer> prefetch_container,
@@ -449,7 +443,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // could've been served to, sets the time that the latest unmatch happened to
   // this prefetch for metrics.
   void MaybeSetPrefetchMatchMissedTimeForMetrics(
-      base::WeakPtr<PrefetchContainer> prefetch_container) const;
+      PrefetchContainer& prefetch_container) const;
 
   // Returns `true` if the `prefetch_container` is stale. I.e.
   // the prefetch either is not or never will be servable to a
