@@ -426,6 +426,7 @@ void ContextualTasksComposeboxHandler::OnTabContextualizationFetched(
 
 void ContextualTasksComposeboxHandler::OnTaskChanged() {
   ClearFiles();
+  InitializeInputStateModel();
 }
 
 void ContextualTasksComposeboxHandler::AddFileContextFromBrowser(
