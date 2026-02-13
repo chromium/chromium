@@ -2876,16 +2876,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.InstalledApp.RelatedAppType" enum="RelatedAppType"
-    expires_after="2026-03-08">
-  <owner>mthiesse@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records the app type of a getInstalledRelatedApps request, for each app
-    being checked.
-  </summary>
-</histogram>
-
 <histogram name="Android.Intent.HasNonSpoofablePackageName" enum="Boolean"
     expires_after="2024-12-01">
   <owner>katzz@google.com</owner>
