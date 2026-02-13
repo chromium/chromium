@@ -13,9 +13,6 @@
   }
 </style>
 
-<!-- The blue sector of the image should be at 12 o'clock. -->
-<img onload="fade(this)" width="400px" src="resources/red-at-12-oclock-with-color-profile.jpg">
-
 <script>
 function fade(element) {
   element.addEventListener('animationend', end, false);
@@ -30,4 +27,8 @@ function end(event) {
 if (window.testRunner)
   testRunner.waitUntilDone();
 </script>
+
+<!-- The blue sector of the image should be at 12 o'clock. -->
+<img onload="fade(this)" width="400px" src="resources/red-at-12-oclock-with-color-profile.jpg">
+
 </html>
