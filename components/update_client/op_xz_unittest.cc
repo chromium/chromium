@@ -15,6 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
+#include "components/update_client/protocol_definition.h"
 #include "components/update_client/test_utils.h"
 #include "components/update_client/unzip/in_process_unzipper.h"
 #include "components/update_client/unzipper.h"
@@ -99,6 +100,36 @@ TEST_F(XzOperationTest, BadPatch) {
   ASSERT_EQ(pings_.size(), 1u);
   EXPECT_EQ(pings_[0].FindInt("eventtype"), 60);
   EXPECT_EQ(pings_[0].FindInt("eventresult"), 0);
+}
+
+TEST_F(XzOperationTest, Cancel) {
+  base::FilePath in_file = CopyToTemp("file1.xz");
+  base::OnceClosure cancel = XzOperation(
+      base::MakeRefCounted<InProcessUnzipperFactory>(
+          InProcessUnzipperFactory::SymlinkOption::DONT_PRESERVE)
+          ->Create(),
+      MakePingCallback(), MakeStateCallback(), in_file,
+      base::BindLambdaForTesting(
+          [&](base::expected<base::FilePath, CategorizedError> result) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+            ASSERT_FALSE(result.has_value());
+            EXPECT_EQ(result.error().code,
+                      static_cast<int>(UnpackerError::kXzFailed));
+          })
+          .Then(loop_.QuitClosure()));
+  std::move(cancel).Run();
+  loop_.Run();
+
+  EXPECT_FALSE(base::PathExists(in_file));
+  ASSERT_EQ(pings_.size(), 1u);
+  EXPECT_EQ(pings_[0].FindInt("eventtype"), protocol_request::kEventXz);
+  EXPECT_EQ(pings_[0].FindInt("eventresult"),
+            protocol_request::kEventResultError);
+  EXPECT_EQ(pings_[0].FindInt("errorcat"),
+            static_cast<int>(ErrorCategory::kUnpack));
+  EXPECT_EQ(pings_[0].FindInt("errorcode"),
+            static_cast<int>(UnpackerError::kXzFailed));
+  EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
 }
 
 }  // namespace update_client
