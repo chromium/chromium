@@ -50,6 +50,11 @@ class OobeScreensHandlerFactory
       mojo::PendingReceiver<screens_common::mojom::FjordStationSetupPageHandler>
           receiver) override;
 
+  void EstablishFjordTouchControllerScreenPipe(
+      mojo::PendingReceiver<
+          screens_common::mojom::FjordTouchControllerPageHandler> receiver)
+      override;
+
   void EstablishGaiaInfoScreenPipe(
       mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler>
           receiver,

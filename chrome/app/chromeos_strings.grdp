@@ -1284,6 +1284,9 @@
   <message name="IDS_FJORD_FW_UPDATE_SUBTITLE" desc="Subtitle shown to indicate the peripheral updates may take up to 30 minutes.">
     This may take up to 30 minutes
   </message>
+  <message name="IDS_FJORD_TOUCH_CONTROLLER_NEXT_BUTTON_TEXT" desc="Button shown to the user to go to the next step.">
+    Next
+  </message>
 
   <!-- Strings for parental handoff login screen -->
   <message name="IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_TITLE" desc="Title of screen which tells user that the parent can handoff the device to supervised user.">

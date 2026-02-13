@@ -38,6 +38,12 @@ interface ScreensFactory {
     pending_receiver<ash.screens_common.mojom.FjordStationSetupPageHandler>
       handler);
 
+  // Esablish a FjordTouchControllerScreen pipe for handling the communication
+  // for the FjordTouchControllerPageHandler component.
+  EstablishFjordTouchControllerScreenPipe(
+    pending_receiver<ash.screens_common.mojom.FjordTouchControllerPageHandler>
+      handler);
+
   // Establish a GaiaInfoScreen pipe for handling the communication for the
   // GaiaInfoPageHandler and the GaiaInfoPage component.
   EstablishGaiaInfoScreenPipe(

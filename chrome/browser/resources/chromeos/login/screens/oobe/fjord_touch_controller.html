@@ -1,11 +1,22 @@
 <style>
   webview {
     display: flex;
-    height: 100vh;
+    height: 90%;
     overflow: hidden;
     width: 100%;
+  }
+
+  oobe-text-button {
+    float: inline-end;
+    padding-inline-end: var(--oobe-adaptive-dialog-buttons-horizontal-padding);
   }
 </style>
 
 <webview id="oobeFrame" src="http://codec.localhost:27702/oobe/tc-setup">
 </webview>
+
+<oobe-text-button on-click="onDoneButtonClicked"
+    text-key="fjordTouchControllerNextButton"
+    inverse
+    id="primaryButton">
+</oobe-text-button>

@@ -424,6 +424,7 @@ source_set("browser_tests") {
     "fingerprint_setup_browsertest.cc",
     "fjord_fw_update_screen_browsertest.cc",
     "fjord_station_setup_screen_browsertest.cc",
+    "fjord_touch_controller_screen_browsertest.cc",
     "gaia_info_screen_browsertest.cc",
     "gemini_intro_screen_browsertest.cc",
     "gesture_navigation_screen_browsertest.cc",

@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/fjord_station_setup_screen.h"
+#include "chrome/browser/ash/login/screens/fjord_touch_controller_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 #include "chrome/browser/ash/login/screens/gemini_intro_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_station_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_touch_controller_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
@@ -97,6 +99,15 @@ void OobeScreensHandlerFactory::EstablishFjordStationSetupScreenPipe(
       CHECK_DEREF(WizardController::default_controller())
           .GetScreen<FjordStationSetupScreen>();
   station_setup->BindPageHandlerReceiver(std::move(receiver));
+}
+
+void OobeScreensHandlerFactory::EstablishFjordTouchControllerScreenPipe(
+    mojo::PendingReceiver<
+        screens_common::mojom::FjordTouchControllerPageHandler> receiver) {
+  FjordTouchControllerScreen* touch_controller =
+      CHECK_DEREF(WizardController::default_controller())
+          .GetScreen<FjordTouchControllerScreen>();
+  touch_controller->BindPageHandlerReceiver(std::move(receiver));
 }
 
 void OobeScreensHandlerFactory::EstablishGaiaInfoScreenPipe(
