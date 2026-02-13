@@ -21,7 +21,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApkInfo;
-import org.chromium.base.BaseFeatureList;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
@@ -316,12 +315,6 @@ public class ChildProcessConnection {
     @GuardedBy("mProcessStateLock")
     private boolean mCleanExit;
 
-    // Whether the UseIsUnboundCheck feature is enabled.
-    //
-    // The feature status has to stay consistent throughout the lifetime of this object, and can't
-    // have it flip half way in the middle.
-    private final boolean mUseIsUnboundCheck;
-
     public ChildProcessConnection(
             Context context,
             ComponentName serviceName,
@@ -371,7 +364,6 @@ public class ChildProcessConnection {
         mBindToCaller = bindToCaller;
         mIndependentFallback = independentFallback;
         mIsSandboxedForHistograms = isSandboxedForHistograms;
-        mUseIsUnboundCheck = BaseFeatureList.sUseIsUnboundCheck.isEnabled();
 
         // Incremental install does not work with isolatedProcess, and externalService requires
         // isolatedProcess, so both need to be turned off for incremental install.
@@ -1244,11 +1236,8 @@ public class ChildProcessConnection {
      *
      * <p>Historically, we used `isConnected()`. But mConnectionController.isUnbound() is more
      * accurate.
-     *
-     * <p>TODO(crbug.com/447057423): Remove the flag and always use
-     * mConnectionController.isUnbound() after verifying it's safe.
      */
     private boolean isUnboundForStateChange() {
-        return mUseIsUnboundCheck ? mConnectionController.isUnbound() : !isConnected();
+        return mConnectionController.isUnbound();
     }
 }

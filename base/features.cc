@@ -154,10 +154,6 @@ BASE_FEATURE(kRebindingChildServiceConnectionController,
 // Use a batch API to rebind service connections.
 BASE_FEATURE(kRebindServiceBatchApi, FEATURE_DISABLED_BY_DEFAULT);
 
-// Use ChildServiceConnectionController.isUnbound() instead of isConnected() to
-// check the connection state in ChildProcessConnection.
-BASE_FEATURE(kUseIsUnboundCheck, FEATURE_ENABLED_BY_DEFAULT);
-
 // Use shared service connection to rebind a service binding to update the LRU
 // in the ProcessList of OomAdjuster.
 BASE_FEATURE(kUseSharedRebindServiceConnection, FEATURE_ENABLED_BY_DEFAULT);
