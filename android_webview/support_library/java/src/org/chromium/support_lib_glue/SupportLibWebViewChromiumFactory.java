@@ -132,7 +132,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.BACK_FORWARD_CACHE_SETTINGS_V3,
                 Features.PAGE_GET_URL,
                 Features.JS_INJECTION_IN_FRAME_AND_WORLD,
-                Features.NAVIGATION_GET_WEB_RESOURCE_ERROR + Features.DEV_SUFFIX,
+                Features.NAVIGATION_GET_WEB_RESOURCE_ERROR,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
