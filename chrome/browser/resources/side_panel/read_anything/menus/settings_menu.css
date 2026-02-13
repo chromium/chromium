@@ -75,7 +75,9 @@
   padding-bottom: 12px;
   padding-top: 12px;
   width: clamp(92px, 100%, 340px);
-  z-index: 9999;
+  /* Ensure submenu z-index (9999) > parent to prevent hit-testing overlaps
+        and race conditions where the parent "shadows" the submenu. */
+  z-index: 9998;
 }
 
 .separator {
