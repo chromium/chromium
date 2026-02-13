@@ -136,8 +136,7 @@ bool IsCreditCardFooterSuggestion(
 
 // Helper function to decide whether to show the virtual card option for
 // `candidate_card`.
-// TODO(crbug.com/326950201): Pass the argument by reference.
-bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
+bool ShouldShowVirtualCardOption(const CreditCard& candidate_card,
                                  const AutofillClient& client);
 
 // Determines whether the "Save and Fill" suggestion should be shown in the
@@ -230,7 +229,7 @@ std::u16string GetBnplPriceLowerBoundForTest(
 void SetCreditCardUploadEnabledForTest(bool credit_card_upload_enabled);
 
 // Exposes `ShouldShowVirtualCardOption` in tests.
-bool ShouldShowVirtualCardOptionForTest(const CreditCard* candidate_card,
+bool ShouldShowVirtualCardOptionForTest(const CreditCard& candidate_card,
                                         const AutofillClient& client);
 
 // Filter `cards_to_suggest` for CVC fields based on parameters such as field

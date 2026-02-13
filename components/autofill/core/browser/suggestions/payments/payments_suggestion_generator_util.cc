@@ -1143,7 +1143,7 @@ std::u16string GetBnplPriceLowerBoundForTest(
   return GetBnplPriceLowerBound(bnpl_issuers);
 }
 
-bool ShouldShowVirtualCardOptionForTest(const CreditCard* candidate_card,
+bool ShouldShowVirtualCardOptionForTest(const CreditCard& candidate_card,
                                         const AutofillClient& client) {
   return ShouldShowVirtualCardOption(candidate_card, client);
 }
@@ -1232,7 +1232,7 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
       continue;
     }
     if (include_virtual_cards &&
-        ShouldShowVirtualCardOption(credit_card, client)) {
+        ShouldShowVirtualCardOption(*credit_card, client)) {
       cards_to_suggest.push_back(CreditCard::CreateVirtualCard(*credit_card));
     }
     cards_to_suggest.push_back(*credit_card);
@@ -1483,17 +1483,17 @@ GetVirtualCreditCardsForStandaloneCvcField(
   return virtual_card_guid_to_last_four_map;
 }
 
-bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
+bool ShouldShowVirtualCardOption(const CreditCard& candidate_card,
                                  const AutofillClient& client) {
   const CreditCard* candidate_server_card = nullptr;
-  switch (candidate_card->record_type()) {
+  switch (candidate_card.record_type()) {
     case CreditCard::RecordType::kLocalCard:
       candidate_server_card = client.GetPersonalDataManager()
                                   .payments_data_manager()
-                                  .GetServerCardForLocalCard(candidate_card);
+                                  .GetServerCardForLocalCard(&candidate_card);
       break;
     case CreditCard::RecordType::kMaskedServerCard:
-      candidate_server_card = candidate_card;
+      candidate_server_card = &candidate_card;
       break;
     case CreditCard::RecordType::kFullServerCard:
     case CreditCard::RecordType::kVirtualCard:
@@ -1504,11 +1504,10 @@ bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
   if (!candidate_server_card) {
     return false;
   }
-  candidate_card = candidate_server_card;
 
   // Virtual card suggestion is shown only when the card is enrolled into
   // virtual cards.
-  return candidate_card->virtual_card_enrollment_state() ==
+  return candidate_server_card->virtual_card_enrollment_state() ==
          CreditCard::VirtualCardEnrollmentState::kEnrolled;
 }
 
