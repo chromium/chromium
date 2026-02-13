@@ -44,7 +44,6 @@ import java.util.List;
         shadows = {ShadowLooper.class},
         sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Features.EnableFeatures({
-    BaseFeatures.EFFECTIVE_BINDING_STATE,
     BaseFeatures.REBINDING_CHILD_SERVICE_CONNECTION_CONTROLLER,
     BaseFeatures.REBIND_SERVICE_BATCH_API
 })

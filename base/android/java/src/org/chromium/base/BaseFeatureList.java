@@ -17,10 +17,6 @@ public class BaseFeatureList {
                     BaseFeatures.BACKGROUND_NOT_PERCEPTIBLE_BINDING,
                     true);
 
-    public static final MutableFlagWithSafeDefault sEffectiveBindingState =
-            new MutableFlagWithSafeDefault(
-                    BaseFeatureMap.getInstance(), BaseFeatures.EFFECTIVE_BINDING_STATE, true);
-
     public static final MutableFlagWithSafeDefault sRebindingChildServiceConnectionController =
             new MutableFlagWithSafeDefault(
                     BaseFeatureMap.getInstance(),

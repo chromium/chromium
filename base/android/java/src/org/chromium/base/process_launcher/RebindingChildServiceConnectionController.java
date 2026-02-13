@@ -18,8 +18,6 @@ import javax.annotation.concurrent.GuardedBy;
 /**
  * Manages the bindings of a {@link ChildProcessConnection} using a single service connection and
  * the rebindService() API.
- *
- * <p>This requires the EffectiveBindingState feature to be enabled.
  */
 @NullMarked
 /* package */ class RebindingChildServiceConnectionController
@@ -166,35 +164,7 @@ import javax.annotation.concurrent.GuardedBy;
         }
     }
 
-    @Override
-    public void setStrongBinding() {
-        throw new UnsupportedOperationException();
-    }
 
-    @Override
-    public void unsetStrongBinding() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setVisibleBinding() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void unsetVisibleBinding() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setNotPerceptibleBinding() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void unsetNotPerceptibleBinding() {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public @ChildBindingState int getBindingState() {

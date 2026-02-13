@@ -93,8 +93,7 @@ import org.chromium.build.annotations.Nullable;
         // of RebindingChildServiceConnectionController.isEnabled() to bypass
         // AconfigFlaggedApiDelegate check in test.
         boolean isFeatureEnabled =
-                BaseFeatureList.sEffectiveBindingState.isEnabled()
-                        && BaseFeatureList.sRebindingChildServiceConnectionController.isEnabled()
+                BaseFeatureList.sRebindingChildServiceConnectionController.isEnabled()
                         && BaseFeatureList.sRebindServiceBatchApi.isEnabled();
         if (!isFeatureEnabled) {
             return false;

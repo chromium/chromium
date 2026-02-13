@@ -280,38 +280,7 @@ import javax.annotation.concurrent.GuardedBy;
         }
     }
 
-    @Override
-    public void setStrongBinding() {
-        mStrongBinding.bindServiceConnection();
-        updateBindingState();
-    }
 
-    @Override
-    public void unsetStrongBinding() {
-        mStrongBinding.unbindServiceConnection(() -> updateBindingState());
-    }
-
-    @Override
-    public void setVisibleBinding() {
-        mVisibleBinding.bindServiceConnection();
-        updateBindingState();
-    }
-
-    @Override
-    public void unsetVisibleBinding() {
-        mVisibleBinding.unbindServiceConnection(() -> updateBindingState());
-    }
-
-    @Override
-    public void setNotPerceptibleBinding() {
-        mNotPerceptibleBinding.bindServiceConnection();
-        updateBindingState();
-    }
-
-    @Override
-    public void unsetNotPerceptibleBinding() {
-        mNotPerceptibleBinding.unbindServiceConnection(() -> updateBindingState());
-    }
 
     @Override
     public @ChildBindingState int getBindingState() {

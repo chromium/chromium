@@ -65,53 +65,7 @@ import org.chromium.build.annotations.NullMarked;
      */
     void setEffectiveBindingState(@ChildBindingState int effectiveBindingState);
 
-    /**
-     * Adds a strong binding to the service, making it a foreground priority process.
-     *
-     * <p>TODO(crbug.com/444561927): Remove this method once the EffectiveBindingState feature is
-     * enabled.
-     */
-    void setStrongBinding();
 
-    /**
-     * Removes a strong binding.
-     *
-     * <p>TODO(crbug.com/444561927): Remove this method once the EffectiveBindingState feature is
-     * enabled.
-     */
-    void unsetStrongBinding();
-
-    /**
-     * Adds a visible binding to the service.
-     *
-     * <p>TODO(crbug.com/444561927): Remove this method once the EffectiveBindingState feature is
-     * enabled.
-     */
-    void setVisibleBinding();
-
-    /**
-     * Removes a visible binding.
-     *
-     * <p>TODO(crbug.com/444561927): Remove this method once the EffectiveBindingState feature is
-     * enabled.
-     */
-    void unsetVisibleBinding();
-
-    /**
-     * Adds a "not perceptible" binding.
-     *
-     * <p>TODO(crbug.com/444561927): Remove this method once the EffectiveBindingState feature is
-     * enabled.
-     */
-    void setNotPerceptibleBinding();
-
-    /**
-     * Removes a "not perceptible" binding.
-     *
-     * <p>TODO(crbug.com/444561927): Remove this method once the EffectiveBindingState feature is
-     * enabled.
-     */
-    void unsetNotPerceptibleBinding();
 
     /**
      * @return the current connection binding state. This method is threadsafe.
