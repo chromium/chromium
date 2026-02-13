@@ -11,23 +11,30 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
-#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/api/context_menus.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/models/menu_model.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -57,9 +64,12 @@ class ExtensionContextMenuApiTestWithContextType
       const ExtensionContextMenuApiTestWithContextType&) = delete;
 };
 
+// Android only supports service worker.
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionContextMenuApiTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
+#endif
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionContextMenuApiTestWithContextType,
                          ::testing::Values(ContextType::kServiceWorker));
@@ -69,9 +79,12 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 using ExtensionContextMenuApiLazyTest =
     ExtensionContextMenuApiTestWithContextType;
 
+// Android only supports service worker.
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          ExtensionContextMenuApiLazyTest,
                          ::testing::Values(ContextType::kEventPage));
+#endif
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionContextMenuApiLazyTest,
                          ::testing::Values(ContextType::kServiceWorker));
@@ -97,16 +110,16 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
   {
     // Tell the extension to update the page action state.
     ResultCatcher catcher;
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension->GetResourceURL("popup.html")));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                              extension->GetResourceURL("popup.html")));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
   {
     // Tell the extension to update the page action state again.
     ResultCatcher catcher;
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension->GetResourceURL("popup2.html")));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                              extension->GetResourceURL("popup2.html")));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 }
@@ -126,6 +139,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
   ASSERT_TRUE(RunExtensionTest("context_menus/item_ids")) << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/484087596): These tests are tied to the Win/Mac/Linux
+// RenderViewContextMenu, which is not used on Android. They need to be
+// refactored for Android to verify menu items from a different source.
 class ExtensionContextMenuVisibilityApiTest
     : public ExtensionContextMenuApiTest {
  public:
@@ -580,5 +597,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
   VerifyMenuItem(e2->name(), top_level_model_, top_level_index() + 1,
                  ui::MenuModel::TYPE_SUBMENU, true);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

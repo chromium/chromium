@@ -13,9 +13,12 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/context_menus.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/url_pattern_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::ErrorUtils;
 
