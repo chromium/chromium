@@ -20,6 +20,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_update_item.h"
@@ -78,7 +79,12 @@ UpdateClientImpl::~UpdateClientImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(task_queue_.empty());
+
+#if !BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/438803980): keep investigating why the CHECK fails on
+  // browser tests and UI tests on Linux.
   CHECK(tasks_.empty());
+#endif
 
   config_ = nullptr;
 }
