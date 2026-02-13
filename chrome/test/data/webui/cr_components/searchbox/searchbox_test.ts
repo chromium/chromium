@@ -154,6 +154,12 @@ suite('NewTabPageRealboxTest', () => {
         disabledModels: [],
         disabledTools: [],
         disabledInputTypes: [],
+        inputTypeConfigs: [],
+        toolConfigs: [],
+        modelConfigs: [],
+        toolsSectionConfig: null,
+        modelSectionConfig: null,
+        hintText: '',
       },
     });
     realbox = await createAndAppendRealbox();
@@ -3157,6 +3163,7 @@ suite('NewTabPageRealboxTest', () => {
       disabledModels: [],
       disabledTools: [],
       disabledInputTypes: [],
+      inputTypeConfigs: [],
       toolConfigs: [],
       modelConfigs: [],
       toolsSectionConfig: null,

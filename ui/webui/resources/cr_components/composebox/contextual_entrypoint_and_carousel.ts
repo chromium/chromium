@@ -321,6 +321,26 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         !this.shouldShowLensSearchChip_;
   }
 
+  protected getToolChipLabel_(tool: ComposeboxToolMode): string {
+    if (this.inputState && this.inputState.toolConfigs) {
+      const config = this.inputState.toolConfigs.find(c => c.tool === tool);
+      if (config && config.chipLabel) {
+        return config.chipLabel;
+      }
+    }
+    // Fallback to i18n strings
+    switch (tool) {
+      case ComposeboxToolMode.kDeepSearch:
+        return this.i18n('deepSearch');
+      case ComposeboxToolMode.kImageGen:
+        return this.i18n('createImages');
+      case ComposeboxToolMode.kCanvas:
+        return this.i18n('canvas');
+      default:
+        return '';
+    }
+  }
+
   // TODO(b/481755889): Move property declarations above methods and remove
   // getters.
   private eventTracker_: EventTracker = new EventTracker();

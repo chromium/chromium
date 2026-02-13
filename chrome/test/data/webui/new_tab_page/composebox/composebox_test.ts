@@ -70,6 +70,12 @@ suite('NewTabPageComposeboxTest', () => {
         disabledModels: [],
         disabledTools: [],
         disabledInputTypes: [],
+        inputTypeConfigs: [],
+        toolConfigs: [],
+        modelConfigs: [],
+        toolsSectionConfig: null,
+        modelSectionConfig: null,
+        hintText: '',
       },
     }));
     searchboxCallbackRouterRemote =
@@ -2628,6 +2634,7 @@ suite('NewTabPageComposeboxTest', () => {
       disabledModels: [],
       disabledTools: [],
       disabledInputTypes: [],
+      inputTypeConfigs: [],
       toolConfigs: [],
       modelConfigs: [],
       toolsSectionConfig: null,

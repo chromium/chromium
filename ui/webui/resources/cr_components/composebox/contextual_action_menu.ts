@@ -188,19 +188,42 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   }
 
   protected getToolLabel_(tool: ToolMode): string {
-    if (!this.inputState) {
-      return '';
+    if (this.inputState) {
+      const config = this.inputState.toolConfigs.find(c => c.tool === tool);
+      if (config && config.menuLabel) {
+        return config.menuLabel;
+      }
     }
-    const config = this.inputState.toolConfigs.find(c => c.tool === tool);
-    return config ? config.menuLabel : '';
+    switch (tool) {
+      case ToolMode.kDeepSearch:
+        return this.i18n('deepSearch');
+      case ToolMode.kImageGen:
+        return this.i18n('createImages');
+      case ToolMode.kCanvas:
+        return this.i18n('canvas');
+      default:
+        return '';
+    }
   }
 
   protected getModelLabel_(model: ModelMode): string {
-    if (!this.inputState) {
-      return '';
+    if (this.inputState) {
+      const config = this.inputState.modelConfigs.find(c => c.model === model);
+      if (config && config.menuLabel) {
+        return config.menuLabel;
+      }
     }
-    const config = this.inputState.modelConfigs.find(c => c.model === model);
-    return config ? config.menuLabel : '';
+    switch (model) {
+      // We don't have a string for the regular model in the client code.
+      case ModelMode.kGeminiRegular:
+        return '';
+      case ModelMode.kGeminiProAutoroute:
+        return this.i18n('geminiModelAuto');
+      case ModelMode.kGeminiPro:
+        return this.i18n('geminiModelThinking');
+      default:
+        return '';
+    }
   }
 
   protected get modelHeader_(): string {
@@ -208,6 +231,26 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
       return this.inputState.modelSectionConfig.header;
     }
     return '';
+  }
+
+  protected getInputTypeLabel_(inputType: InputType): string {
+    if (this.inputState && this.inputState.inputTypeConfigs) {
+      const config =
+          this.inputState.inputTypeConfigs.find(c => c.inputType === inputType);
+      if (config && config.menuLabel) {
+        return config.menuLabel;
+      }
+    }
+    switch (inputType) {
+      case InputType.kBrowserTab:
+        return this.i18n('addTab');
+      case InputType.kLensImage:
+        return this.i18n('addImage');
+      case InputType.kLensFile:
+        return this.i18n('uploadFile');
+      default:
+        return '';
+    }
   }
 
   // Checks if the image upload item in the context menu should be visible.

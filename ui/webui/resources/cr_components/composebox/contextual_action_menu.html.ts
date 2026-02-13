@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {InputType} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import type {ContextualActionMenuElement} from './contextual_action_menu.js';
 
@@ -11,12 +12,14 @@ export function getHtml(this: ContextualActionMenuElement) {
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}"
       @close="${this.onMenuClose_}">
     ${this.tabSuggestions?.length > 0 && this.browserTabAllowed_ ? html`
-      ${this.showContextMenuHeaders_ ? html`<h4 id="tabHeader">${this.i18n('addTab')}</h4>` : ''}
+      ${this.showContextMenuHeaders_ ? html`<h4 id="tabHeader">${
+          this.getInputTypeLabel_(InputType.kBrowserTab)}</h4>` : ''}
       ${this.tabSuggestions.map((tab, index) => html`
         <div class="suggestion-container">
           <button class="dropdown-item"
               title="${tab.title}" data-index="${index}"
-              aria-label="${this.i18n('addTab')}, ${tab.title}"
+              aria-label="${this.getInputTypeLabel_(InputType.kBrowserTab)}, ${
+                  tab.title}"
               ?disabled="${this.isTabDisabled_(tab)}"
               @pointerenter="${this.onTabPointerenter_}"
               @click="${this.onTabClick_}">
@@ -45,13 +48,13 @@ export function getHtml(this: ContextualActionMenuElement) {
           @click="${this.openImageUpload_}"
           ?disabled="${this.imageUploadDisabled_}">
         <cr-icon icon="composebox:imageUpload"></cr-icon>
-        ${this.i18n('addImage')}
+        ${this.getInputTypeLabel_(InputType.kLensImage)}
       </button>` : ''}
     ${this.fileUploadAllowed_ ? html`<button id="fileUpload" class="dropdown-item"
         @click="${this.openFileUpload_}"
         ?disabled="${this.fileUploadDisabled_}">
       <cr-icon icon="composebox:fileUpload"></cr-icon>
-      ${this.i18n('uploadFile')}
+      ${this.getInputTypeLabel_(InputType.kLensFile)}
     </button>`: ''}
     ${Array.from(this.supportedTools_.keys()).some(mode => this.isToolAllowed_(mode)) &&
         (this.imageUploadAllowed_ || this.fileUploadAllowed_) ?

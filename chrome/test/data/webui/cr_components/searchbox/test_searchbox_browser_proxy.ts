@@ -177,6 +177,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
         disabledInputTypes: [],
         toolConfigs: [],
         modelConfigs: [],
+        inputTypeConfigs: [],
         toolsSectionConfig: null,
         modelSectionConfig: null,
         hintText: '',

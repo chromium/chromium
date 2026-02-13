@@ -132,6 +132,7 @@ suite('NewTabPageContextualEntrypointAndCarouselTest', () => {
       disabledInputTypes: [],
       toolConfigs: [],
       modelConfigs: [],
+      inputTypeConfigs: [],
       toolsSectionConfig: null,
       modelSectionConfig: null,
       hintText: '',

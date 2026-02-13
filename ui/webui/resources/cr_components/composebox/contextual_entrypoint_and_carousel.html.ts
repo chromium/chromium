@@ -16,9 +16,9 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         return html`
         <cr-composebox-tool-chip
             icon="composebox:deepSearch"
-            label="${this.i18n('deepSearch')}"
-            remove-chip-aria-label="${
-            this.i18n('removeToolChipAriaLabel', this.i18n('deepSearch'))}"
+            label="${this.getToolChipLabel_(ComposeboxToolMode.kDeepSearch)}"
+            remove-chip-aria-label="${this.i18n('removeToolChipAriaLabel',
+                this.getToolChipLabel_(ComposeboxToolMode.kDeepSearch))}"
             ?visible="${true}"
             @click="${this.handleDeepSearchClick_}">
         </cr-composebox-tool-chip>
@@ -27,9 +27,9 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         return html`
         <cr-composebox-tool-chip
             icon="composebox:nanoBanana"
-            label="${this.i18n('createImages')}"
-            remove-chip-aria-label="${
-            this.i18n('removeToolChipAriaLabel', this.i18n('createImages'))}"
+            label="${this.getToolChipLabel_(ComposeboxToolMode.kImageGen)}"
+            remove-chip-aria-label="${this.i18n('removeToolChipAriaLabel',
+                this.getToolChipLabel_(ComposeboxToolMode.kImageGen))}"
             ?visible="${true}"
             @click="${this.handleImageGenClick_}">
         </cr-composebox-tool-chip>
@@ -38,9 +38,9 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         return html`
         <cr-composebox-tool-chip
             icon="composebox:canvas"
-            label="${this.i18n('canvas')}"
-            remove-chip-aria-label="${
-            this.i18n('removeToolChipAriaLabel', this.i18n('canvas'))}"
+            label="${this.getToolChipLabel_(ComposeboxToolMode.kCanvas)}"
+            remove-chip-aria-label="${this.i18n('removeToolChipAriaLabel',
+                this.getToolChipLabel_(ComposeboxToolMode.kCanvas))}"
             ?visible="${true}"
             @click="${this.handleCanvasClick_}">
         </cr-composebox-tool-chip>

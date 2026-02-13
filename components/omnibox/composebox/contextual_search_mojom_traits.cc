@@ -16,6 +16,8 @@ using UsedModelMode = composebox_query::mojom::ModelMode;
 using UsedInputType = composebox_query::mojom::InputType;
 using UsedToolConfigDataView = composebox_query::mojom::ToolConfigDataView;
 using UsedModelConfigDataView = composebox_query::mojom::ModelConfigDataView;
+using UsedInputTypeConfigDataView =
+    composebox_query::mojom::InputTypeConfigDataView;
 using UsedSectionConfigDataView =
     composebox_query::mojom::SectionConfigDataView;
 using UsedInputStateDataView = composebox_query::mojom::InputStateDataView;
@@ -506,6 +508,40 @@ bool StructTraits<UsedSectionConfigDataView, omnibox::SectionConfig>::Read(
 }
 
 // static
+omnibox::InputType
+StructTraits<UsedInputTypeConfigDataView, omnibox::InputTypeConfig>::input_type(
+    const omnibox::InputTypeConfig& config) {
+  return config.input_type();
+}
+
+// static
+const std::string&
+StructTraits<UsedInputTypeConfigDataView, omnibox::InputTypeConfig>::menu_label(
+    const omnibox::InputTypeConfig& config) {
+  return config.menu_label();
+}
+
+// static
+bool StructTraits<UsedInputTypeConfigDataView, omnibox::InputTypeConfig>::Read(
+    UsedInputTypeConfigDataView data,
+    omnibox::InputTypeConfig* output) {
+  omnibox::InputType input_type = omnibox::InputType::INPUT_TYPE_UNSPECIFIED;
+  if (!data.ReadInputType(&input_type)) {
+    return false;
+  }
+
+  output->set_input_type(input_type);
+
+  std::string menu_label;
+  if (!data.ReadMenuLabel(&menu_label)) {
+    return false;
+  }
+  output->set_menu_label(menu_label);
+
+  return true;
+}
+
+// static
 const std::vector<omnibox::ModelMode>&
 StructTraits<UsedInputStateDataView, omnibox::InputState>::allowed_models(
     const omnibox::InputState& input) {
@@ -576,6 +612,13 @@ StructTraits<UsedInputStateDataView, omnibox::InputState>::model_configs(
 }
 
 // static
+const std::vector<omnibox::InputTypeConfig>&
+StructTraits<UsedInputStateDataView, omnibox::InputState>::input_type_configs(
+    const omnibox::InputState& input) {
+  return input.input_type_configs;
+}
+
+// static
 const std::optional<omnibox::SectionConfig>&
 StructTraits<UsedInputStateDataView, omnibox::InputState>::tools_section_config(
     const omnibox::InputState& input) {
@@ -610,6 +653,7 @@ bool StructTraits<UsedInputStateDataView, omnibox::InputState>::Read(
          data.ReadDisabledInputTypes(&output->disabled_input_types) &&
          data.ReadToolConfigs(&output->tool_configs) &&
          data.ReadModelConfigs(&output->model_configs) &&
+         data.ReadInputTypeConfigs(&output->input_type_configs) &&
          data.ReadToolsSectionConfig(&output->tools_section_config) &&
          data.ReadModelSectionConfig(&output->model_section_config) &&
          data.ReadHintText(&output->hint_text);

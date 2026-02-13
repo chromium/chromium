@@ -28,6 +28,7 @@ function createInputState(overrides?: Partial<InputState>): InputState {
         modelSectionConfig: {header: ''},
         allowedInputTypes: [],
         disabledInputTypes: [],
+        inputTypeConfigs: [],
       },
       overrides);
 }
@@ -438,5 +439,45 @@ suite('ContextualActionMenu', () => {
     const items = actionMenu.$.menu.querySelectorAll('.dropdown-item');
     // 1 tab item.
     assertEquals(1, items.length);
+  });
+
+  test('Uses configured menu labels', async () => {
+    const deepSearchLabel = 'Custom Deep Search Label';
+    const geminiLabel = 'Custom Gemini Label';
+    const imageUploadLabel = 'Custom Image Upload Label';
+
+    actionMenu.inputState = createInputState({
+      allowedTools: [ToolMode.kDeepSearch],
+      toolConfigs: [{
+        tool: ToolMode.kDeepSearch,
+        menuLabel: deepSearchLabel,
+        disableActiveModelSelection: false,
+        chipLabel: '',
+        hintText: '',
+        aimUrlParams: [],
+      }],
+      allowedModels: [ModelMode.kGeminiRegular],
+      modelConfigs: [{
+        model: ModelMode.kGeminiRegular,
+        menuLabel: geminiLabel,
+        hintText: '',
+        aimUrlParams: [],
+      }],
+      allowedInputTypes: [InputType.kLensImage],
+      inputTypeConfigs: [{
+        inputType: InputType.kLensImage,
+        menuLabel: imageUploadLabel,
+      }],
+    });
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    const deepSearch = $$(actionMenu, '#deepSearch');
+    const geminiRegular = $$(actionMenu, '#geminiModelRegular');
+    const imageUpload = $$(actionMenu, '#imageUpload');
+
+    assertTrue(deepSearch!.textContent.includes(deepSearchLabel));
+    assertTrue(geminiRegular!.textContent.includes(geminiLabel));
+    assertTrue(imageUpload!.textContent.includes(imageUploadLabel));
   });
 });
