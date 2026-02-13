@@ -264,6 +264,33 @@
       ],
     },
     {
+      "name": "LanguageModelParams",
+      "message": "LanguageModel.params() is deprecated and now only available in extension contexts. The topK and temperature related fields within its result are also deprecated.",
+      "translation_note": "Warning message for web developers when they call the deprecated LanguageModel.params() method.",
+      "web_features": [
+        "kLanguageModel_Params"
+      ],
+      "chrome_status_feature": 5134603979063296
+    },
+    {
+      "name": "LanguageModelTemperature",
+      "message": "The 'temperature' parameter/attribute for LanguageModel is deprecated. It is only functional within extensions and may be removed in the future.",
+      "translation_note": "Warning message for web developers when they use the deprecated 'temperature' option in LanguageModel.create() or access the .temperature attribute.",
+      "web_features": [
+        "kLanguageModel_Temperature"
+      ],
+      "chrome_status_feature": 5134603979063296
+    },
+    {
+      "name": "LanguageModelTopK",
+      "message": "The 'topK' parameter/attribute for LanguageModel is deprecated. It is only functional within extensions and may be removed in the future.",
+      "translation_note": "Warning message for web developers when they use the deprecated 'topK' option in LanguageModel.create() or access the .topK attribute.",
+      "web_features": [
+        "kLanguageModel_TopK"
+      ],
+      "chrome_status_feature": 5134603979063296
+    },
+    {
       name: "LocalCSSFileExtensionRejected",
       message: "CSS cannot be loaded from `file:` URLs unless they end in a `.css` file extension.",
       translation_note: "This warning occurs when a stylesheet loaded from a local file directive does not end in the file type `.css`.",

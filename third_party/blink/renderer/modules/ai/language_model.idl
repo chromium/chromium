@@ -40,8 +40,11 @@ interface LanguageModel : EventTarget {
   static Promise<Availability> availability(
     optional LanguageModelCreateCoreOptions options = {}
   );
+  // LanguageModel.params() is deprecated for non-extension contexts and will be
+  // removed in a future version.
   [
     MeasureAs=LanguageModel_Params,
+    RuntimeEnabled=LanguageModelLegacyParamsAndAttributes,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -95,9 +98,12 @@ interface LanguageModel : EventTarget {
   [MeasureAs=LanguageModel_InputQuota]
   readonly attribute unrestricted double inputQuota;
 
-  [MeasureAs=LanguageModel_TopK]
+  // LanguageModel.topK and LanguageModel.temperature are deprecated for
+  // non-extension contexts and will be removed in a future
+  // version.
+  [MeasureAs=LanguageModel_TopK, RuntimeEnabled=LanguageModelLegacyParamsAndAttributes]
   readonly attribute unsigned long topK;
-  [MeasureAs=LanguageModel_Temperature]
+  [MeasureAs=LanguageModel_Temperature, RuntimeEnabled=LanguageModelLegacyParamsAndAttributes]
   readonly attribute float temperature;
 
   attribute EventHandler onquotaoverflow;

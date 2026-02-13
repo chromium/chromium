@@ -19,6 +19,7 @@
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_content.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -460,6 +462,16 @@ ScriptPromise<LanguageModel> LanguageModel::create(
     return promise;
   }
 
+  if (options->hasTopK()) {
+    Deprecation::CountDeprecation(
+        execution_context, mojom::blink::WebFeature::kLanguageModel_TopK);
+  }
+  if (options->hasTemperature()) {
+    Deprecation::CountDeprecation(
+        execution_context,
+        mojom::blink::WebFeature::kLanguageModel_Temperature);
+  }
+
   LogCreateOptionMetrics(*options, "create");
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(execution_context);
@@ -508,6 +520,17 @@ ScriptPromise<V8Availability> LanguageModel::availability(
     return EmptyPromise();
   }
 
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (options->hasTopK()) {
+    Deprecation::CountDeprecation(
+        execution_context, mojom::blink::WebFeature::kLanguageModel_TopK);
+  }
+  if (options->hasTemperature()) {
+    Deprecation::CountDeprecation(
+        execution_context,
+        mojom::blink::WebFeature::kLanguageModel_Temperature);
+  }
+
   if (!ValidateAndCanonicalizeExpectedInputLanguages(script_state->GetIsolate(),
                                                      options)) {
     return EmptyPromise();
@@ -518,9 +541,8 @@ ScriptPromise<V8Availability> LanguageModel::availability(
   auto promise = resolver->Promise();
 
   // Return unavailable if the Permission Policy is not enabled.
-  if (!ExecutionContext::From(script_state)
-           ->IsFeatureEnabled(
-               network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
+  if (!execution_context->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
     resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
     return promise;
   }
@@ -579,6 +601,10 @@ ScriptPromise<IDLNullable<LanguageModelParams>> LanguageModel::params(
     ThrowInvalidContextException(exception_state);
     return EmptyPromise();
   }
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  Deprecation::CountDeprecation(
+      execution_context, mojom::blink::WebFeature::kLanguageModel_Params);
 
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolver<IDLNullable<LanguageModelParams>>>(script_state);

@@ -1492,6 +1492,8 @@ void ChromeContentRendererClient::
     blink::WebRuntimeFeatures::EnableAIWriterAPIForWorkers(true);
     blink::WebRuntimeFeatures::EnableLanguageDetectionAPIForWorkers(true);
     blink::WebRuntimeFeatures::EnableTranslationAPIForWorkers(true);
+    blink::WebRuntimeFeatures::EnableLanguageModelLegacyParamsAndAttributes(
+        true);
   }
 }
 

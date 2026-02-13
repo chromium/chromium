@@ -135,8 +135,8 @@ dictionary LanguageModelToolDeclaration {
 dictionary LanguageModelCreateCoreOptions {
   // Note: these two have custom out-of-range handling behavior, not in the IDL layer.
   // They are unrestricted double so as to allow +Infinity without failing.
-  unrestricted double topK;
-  unrestricted double temperature;
+  [RuntimeEnabled=LanguageModelLegacyParamsAndAttributes] unrestricted double topK;
+  [RuntimeEnabled=LanguageModelLegacyParamsAndAttributes] unrestricted double temperature;
 
   // The expected types and languages for the session.
   sequence<LanguageModelExpected> expectedInputs;

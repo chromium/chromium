@@ -1,0 +1,16 @@
+Tests that LanguageModel legacy features do not cause deprecation issues in web context.
+Test Results: {
+    results : {
+        createWithOptionsFailed : false
+        createWithoutOptionsFailed : false
+        languageModelExists : true
+        languageModelParamsExists : false
+        paramsExists : false
+        session1TemperatureExists : false
+        session1TopKExists : false
+        session2TemperatureExists : false
+        session2TopKExists : false
+    }
+}
+No unexpected LanguageModel deprecation issues found.
+

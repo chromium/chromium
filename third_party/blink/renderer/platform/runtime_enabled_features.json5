@@ -3255,6 +3255,10 @@
       public: true,
     },
     {
+      name: "LanguageModelLegacyParamsAndAttributes",
+      public: true,
+    },
+    {
       name: "LayoutFlexCacheFix",
       status: "stable",
     },
