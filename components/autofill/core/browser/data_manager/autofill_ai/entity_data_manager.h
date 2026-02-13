@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/accessibility_annotator_data_adapter.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -39,6 +40,7 @@ class SyncService;
 namespace autofill {
 
 class AutofillAiSaveStrikeDatabaseByHost;
+class AccessibilityAnnotatorDataAdapter;
 
 // Loads, adds, updates, and removes EntityInstances. Deletes data from
 // AutofillAI strike databases on history deletion.
@@ -52,7 +54,8 @@ class AutofillAiSaveStrikeDatabaseByHost;
 // from an incognito session is persisted unintentionally.
 class EntityDataManager : public KeyedService,
                           public AutofillWebDataServiceObserverOnUISequence,
-                          history::HistoryServiceObserver {
+                          history::HistoryServiceObserver,
+                          AccessibilityAnnotatorDataAdapter::Observer {
  public:
   // Autofill AI enabled pref migration status.
   //
@@ -88,6 +91,7 @@ class EntityDataManager : public KeyedService,
       scoped_refptr<AutofillWebDataService> profile_database,
       history::HistoryService* history_service,
       strike_database::StrikeDatabaseBase* strike_database,
+      AccessibilityAnnotatorDataAdapter* accessibility_annotator_data_adapter,
       GeoIpCountryCode variation_country_code);
   EntityDataManager(const EntityDataManager&) = delete;
   EntityDataManager& operator=(const EntityDataManager&) = delete;
@@ -131,6 +135,10 @@ class EntityDataManager : public KeyedService,
   // history::HistoryServiceObserver:
   void OnHistoryDeletions(history::HistoryService*,
                           const history::DeletionInfo& deletion_info) override;
+
+  // AccessibilityAnnotatorDataAdapter::Observer:
+  void OnAccessibilityAnnotatorDataChanged(
+      AccessibilityAnnotatorDataAdapter& adapter) override;
 
   // Records the date an entity was used and also increments the number of times
   // it was used.
@@ -179,6 +187,11 @@ class EntityDataManager : public KeyedService,
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
+
+  // AccessibilityAnnotatorDataAdapter will outlive the EntityDataManager.
+  base::ScopedObservation<AccessibilityAnnotatorDataAdapter,
+                          AccessibilityAnnotatorDataAdapter::Observer>
+      accessibility_annotator_data_adapter_observation_{this};
 
   std::unique_ptr<AutofillAiSaveStrikeDatabaseByHost> save_strike_db_by_host_;
 

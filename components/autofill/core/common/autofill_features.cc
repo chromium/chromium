@@ -983,6 +983,10 @@ BASE_FEATURE_PARAM(std::string,
 BASE_FEATURE(kAutofillUploadManualFallbackFieldsToServer,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the use of the Accessibility Annotator data adapter for Autofill AI.
+BASE_FEATURE(kAutofillUseAccessibilityAnnotator,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables using a custom address model for India, overriding the legacy one.
 BASE_FEATURE(kAutofillUseINAddressModel, base::FEATURE_DISABLED_BY_DEFAULT);
 

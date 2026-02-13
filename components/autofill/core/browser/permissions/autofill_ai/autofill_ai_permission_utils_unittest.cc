@@ -116,6 +116,7 @@ class AutofillAiPermissionUtilsTest : public ::testing::Test {
         client().GetSyncService(), webdata_helper_.autofill_webdata_service(),
         /*history_service=*/nullptr,
         /*strike_database=*/nullptr,
+        /*accessibility_annotator_data_adapter=*/nullptr,
         /*variation_country_code=*/GeoIpCountryCode("US")));
     client().SetUpPrefsAndIdentityForAutofillAi();
     client().set_sync_service(&sync_service_);
