@@ -87,7 +87,8 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
   }
 
   protected isItemSelected_(index: number, item: MenuStateItem<any>): boolean {
-    return item.selected || index === this.currentSelectedIndex;
+    // Only use currentSelectedIndex if item.selected is undefined.
+    return item.selected ?? (index === this.currentSelectedIndex);
   }
 
   protected doesItemHaveIcon_(item: MenuStateItem<any>): boolean {
