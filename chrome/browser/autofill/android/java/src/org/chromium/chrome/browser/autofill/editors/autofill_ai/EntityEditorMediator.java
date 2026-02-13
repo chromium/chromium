@@ -14,12 +14,16 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
+import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_ALL_KEYS;
@@ -31,6 +35,8 @@ import android.text.TextUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
@@ -51,12 +57,18 @@ class EntityEditorMediator {
     private final Context mContext;
     private final Delegate mDelegate;
     private final IdentityManager mIdentityManager;
+    private final PersonalDataManager mPersonalDataManager;
     private @Nullable PropertyModel mEditorModel;
 
-    EntityEditorMediator(Context context, Delegate delegate, IdentityManager identityManager) {
+    EntityEditorMediator(
+            Context context,
+            Delegate delegate,
+            IdentityManager identityManager,
+            PersonalDataManager personalDataManager) {
         mContext = context;
         mDelegate = delegate;
         mIdentityManager = identityManager;
+        mPersonalDataManager = personalDataManager;
     }
 
     @EnsuresNonNull("mEditorModel")
@@ -105,6 +117,9 @@ class EntityEditorMediator {
                 case DataType.STRING:
                     editorFields.add(getTextFieldItem(entityInstance, attributeType));
                     break;
+                case DataType.COUNTRY:
+                    editorFields.add(getCountryDropdownItem(entityInstance, attributeType));
+                    break;
                     // TODO: crbug.com/476755159 - Implement other data types.
             }
         }
@@ -114,6 +129,36 @@ class EntityEditorMediator {
 
     private EditorItem getTextFieldItem(
             EntityInstance entityInstance, AttributeType attributeType) {
+        String value = getStringAttribute(entityInstance, attributeType);
+        return new EditorItem(
+                TEXT_INPUT,
+                new PropertyModel.Builder(TEXT_ALL_KEYS)
+                        .with(LABEL, attributeType.getTypeNameAsString())
+                        .with(TEXT_FIELD_TYPE, attributeType.getTypeName())
+                        .with(VALUE, value)
+                        .build(),
+                /* isFullLine= */ true);
+    }
+
+    private EditorItem getCountryDropdownItem(
+            EntityInstance entityInstance, AttributeType attributeType) {
+        String value = getStringAttribute(entityInstance, attributeType);
+        if (TextUtils.isEmpty(value)) {
+            value = mPersonalDataManager.getDefaultCountryCodeForNewAddress();
+        }
+        return new EditorItem(
+                DROPDOWN,
+                new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
+                        .with(LABEL, attributeType.getTypeNameAsString())
+                        .with(
+                                DROPDOWN_KEY_VALUE_LIST,
+                                AutofillProfileBridge.getSupportedCountries())
+                        .with(IS_REQUIRED, false)
+                        .with(VALUE, value)
+                        .build());
+    }
+
+    private String getStringAttribute(EntityInstance entityInstance, AttributeType attributeType) {
         @Nullable AttributeInstance attribute =
                 entityInstance.getAttribute(attributeType.getTypeName());
         String attributeValue = "";
@@ -122,14 +167,7 @@ class EntityEditorMediator {
             attributeValue =
                     ((AttributeInstance.StringValue) attribute.getAttributeValue()).getValue();
         }
-        return new EditorItem(
-                TEXT_INPUT,
-                new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(LABEL, attributeType.getTypeNameAsString())
-                        .with(TEXT_FIELD_TYPE, attributeType.getTypeName())
-                        .with(VALUE, attributeValue)
-                        .build(),
-                /* isFullLine= */ true);
+        return attributeValue;
     }
 
     private void maybeAddEntitySourceNoticeItem(

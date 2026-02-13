@@ -11,6 +11,7 @@ import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
@@ -39,7 +40,8 @@ public class EntityEditorCoordinator {
                 new EntityEditorMediator(
                         activity,
                         delegate,
-                        assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile)));
+                        assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile)),
+                        PersonalDataManagerFactory.getForProfile(profile));
         mEditorView = new EntityEditorView(activity);
     }
 
