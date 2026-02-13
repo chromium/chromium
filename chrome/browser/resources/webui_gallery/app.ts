@@ -6,7 +6,7 @@ import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import type {CrMenuSelectorElement} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from '//resources/js/assert.js';
 import {CrRouter} from '//resources/js/cr_router.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -23,7 +23,7 @@ interface Demo {
 export interface WebuiGalleryAppElement {
   $: {
     main: HTMLElement,
-    selector: CrMenuSelector,
+    selector: CrMenuSelectorElement,
   };
 }
 

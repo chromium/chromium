@@ -11,7 +11,7 @@ import './shared_icons.html.js';
 import './shared_vars.css.js';
 import '/strings.m.js';
 
-import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -30,7 +30,7 @@ export interface FooterInfo {
 export interface HistorySideBarElement {
   $: {
     'history': HTMLAnchorElement,
-    'menu': CrMenuSelector,
+    'menu': CrMenuSelectorElement,
     'syncedTabs': HTMLElement,
   };
 }

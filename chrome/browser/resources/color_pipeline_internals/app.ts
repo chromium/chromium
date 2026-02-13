@@ -9,7 +9,7 @@ import '//resources/cr_elements/icons.html.js';
 import './color_data.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
@@ -20,7 +20,7 @@ import type {ThemeData, ThemeSection} from './color_data.js';
 export interface ColorPipelineInternalsAppElement {
   $: {
     content: HTMLElement,
-    menu: CrMenuSelector,
+    menu: CrMenuSelectorElement,
   };
 }
 

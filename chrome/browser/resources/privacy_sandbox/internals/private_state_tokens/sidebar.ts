@@ -6,7 +6,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_ripple/cr_ripple.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 
-import type {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import type {CrMenuSelectorElement} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './sidebar.css.js';
@@ -19,7 +19,7 @@ interface MenuItem {
 
 export interface PrivateStateTokensSidebarElement {
   $: {
-    selector: CrMenuSelector,
+    selector: CrMenuSelectorElement,
   };
 }
 export class PrivateStateTokensSidebarElement extends CrLitElement {

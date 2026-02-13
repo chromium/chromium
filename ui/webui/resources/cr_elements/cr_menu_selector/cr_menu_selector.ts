@@ -10,9 +10,9 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {getHtml} from './cr_menu_selector.html.js';
 import {CrSelectableMixin} from '../cr_selectable_mixin.js';
 
-const CrMenuSelectorBase = CrSelectableMixin(CrLitElement);
+const CrMenuSelectorElementBase = CrSelectableMixin(CrLitElement);
 
-export class CrMenuSelector extends CrMenuSelectorBase {
+export class CrMenuSelectorElement extends CrMenuSelectorElementBase {
   static get is() {
     return 'cr-menu-selector';
   }
@@ -119,8 +119,8 @@ export class CrMenuSelector extends CrMenuSelectorBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-menu-selector': CrMenuSelector;
+    'cr-menu-selector': CrMenuSelectorElement;
   }
 }
 
-customElements.define(CrMenuSelector.is, CrMenuSelector);
+customElements.define(CrMenuSelectorElement.is, CrMenuSelectorElement);

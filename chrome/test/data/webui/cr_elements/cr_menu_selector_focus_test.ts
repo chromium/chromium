@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 
-import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -14,7 +14,7 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 
 suite('CrMenuSelectorFocusTest', () => {
-  let element: CrMenuSelector;
+  let element: CrMenuSelectorElement;
 
   setup(async () => {
     document.body.innerHTML = getTrustedHTML`

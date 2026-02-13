@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './icons.html.js';
 
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
-import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -40,7 +40,7 @@ enum PasswordCheckReferrer {
 
 export interface PasswordManagerSideBarElement {
   $: {
-    menu: CrMenuSelector,
+    menu: CrMenuSelectorElement,
     compromisedPasswords: HTMLElement,
     settings: HTMLElement,
   };
