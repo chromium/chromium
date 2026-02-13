@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_DRAGGED_TABS_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_DRAGGED_TABS_CONTAINER_H_
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
+#include "chrome/browser/ui/views/tabs/vertical/tab_drag_scroll_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/view_observer.h"
@@ -154,6 +156,10 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
 
   void ResetCollectionNode();
 
+  // Handles updates, both visually and in the model, for whenever the dragged
+  // tabs' position changes.
+  void ApplyUpdatesForDragPositionChange();
+
   const raw_ref<const views::View> host_view_;
   raw_ptr<TabCollectionNode> collection_node_;
 
@@ -174,6 +180,11 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
 
   base::ScopedObservation<views::View, views::ViewObserver>
       host_view_observation_{this};
+
+  TabDragScrollHandler scroll_handler_;
+
+  std::optional<base::CallbackListSubscription> on_scrolled_subscription_ =
+      std::nullopt;
 
   base::OnceClosureList on_will_destroy_callback_list_;
 };

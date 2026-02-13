@@ -88,9 +88,6 @@ TabDragContext* VerticalDraggedTabsContainer::OnTabDragUpdated(
     return GetDragHandler().GetDragContext();
   }
 
-  gfx::Point point_in_container = views::View::ConvertPointFromScreen(
-      base::to_address(host_view_), point_in_screen);
-
   // Used to determine whether the layout should snap into position without
   // animating at the end of this drag cycle.
   bool is_initial_drag = dragging_views_.empty();
@@ -99,11 +96,7 @@ TabDragContext* VerticalDraggedTabsContainer::OnTabDragUpdated(
     InitializeDragState(drag_controller);
   }
 
-  gfx::Rect dragged_bounds_in_container =
-      GetDraggingViewsBoundsAtPoint(point_in_container);
-  HandleTabDragInContainer(dragged_bounds_in_container);
-
-  UpdateDraggingViewTransforms(point_in_container);
+  ApplyUpdatesForDragPositionChange();
 
   if (is_initial_drag) {
     // This is needed so that the transformation takes over without animating
@@ -116,13 +109,34 @@ TabDragContext* VerticalDraggedTabsContainer::OnTabDragUpdated(
   return GetDragHandler().GetDragContext();
 }
 
+void VerticalDraggedTabsContainer::ApplyUpdatesForDragPositionChange() {
+  gfx::Point point_in_container = views::View::ConvertPointFromScreen(
+      base::to_address(host_view_), last_drag_point_in_screen_);
+
+  gfx::Rect dragged_bounds_in_container =
+      GetDraggingViewsBoundsAtPoint(point_in_container);
+
+  auto* scroll_view = GetScrollViewForContainer();
+  CHECK(scroll_view);
+  scroll_handler_.OnDraggedTabPositionUpdated(
+      *scroll_view, views::View::ConvertRectToTarget(
+                        base::to_address(host_view_), scroll_view,
+                        dragged_bounds_in_container));
+
+  HandleTabDragInContainer(dragged_bounds_in_container);
+
+  UpdateDraggingViewTransforms(point_in_container);
+}
+
 void VerticalDraggedTabsContainer::OnTabDragExited(
     const gfx::Point& point_in_screen) {
   ResetDragState();
+  scroll_handler_.StopScrolling();
 }
 
 void VerticalDraggedTabsContainer::OnTabDragEnded() {
   ResetDragState();
+  scroll_handler_.StopScrolling();
 }
 
 bool VerticalDraggedTabsContainer::CanDropTab() {
@@ -158,6 +172,13 @@ void VerticalDraggedTabsContainer::OnViewBoundsChanged(
 void VerticalDraggedTabsContainer::InitializeDragState(
     TabDragTarget::DragController& controller) {
   CHECK(dragging_views_.empty());
+
+  auto* scroll_view = GetScrollViewForContainer();
+  CHECK(scroll_view);
+  on_scrolled_subscription_ =
+      scroll_view->AddContentsScrolledCallback(base::BindRepeating(
+          &VerticalDraggedTabsContainer::ApplyUpdatesForDragPositionChange,
+          base::Unretained(this)));
 
   tab_strip_padding_ = GetLayoutConstant(
       IsTabStripCollapsed()
@@ -250,6 +271,8 @@ void VerticalDraggedTabsContainer::ResetDragState() {
   UpdateLayoutForDrag();
   dragging_views_.clear();
   dragging_views_bounds_ = gfx::Rect();
+
+  on_scrolled_subscription_.reset();
 }
 
 // TODO(crbug.com/476084253): Support laying out with multiple dragged tabs.
