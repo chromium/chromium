@@ -22,12 +22,15 @@ input[type='text'] {
 
 #main-container {
   display: flex;
+  flex-flow: column wrap;
+  align-content: flex-start;
+  height: calc(100vh - 40px);
   gap: 20px;
-  align-items: flex-start;
 }
 
 #left-column {
-  flex: 0 0 600px;
+  flex: 0 0 auto;
+  width: 600px;
 }
 
 #console-container {
@@ -45,9 +48,8 @@ input[type='text'] {
 }
 
 #logs {
-  margin-top: 20px;
-  flex: 1;
-  max-width: 800px;
+  flex: 0 0 auto;
+  width: 600px;
 }
 
 #input-container {

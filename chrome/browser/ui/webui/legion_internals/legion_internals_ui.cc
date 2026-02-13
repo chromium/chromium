@@ -81,7 +81,8 @@ void LegionInternalsUI::BindInterface(
   auto* network_context =
       profile->GetDefaultStoragePartition()->GetNetworkContext();
   page_handler_ = std::make_unique<LegionInternalsPageHandler>(
-      token_manager, network_context, std::move(receiver));
+      token_manager, network_context, private_ai_service->GetClient(),
+      std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(LegionInternalsUI)

@@ -42,7 +42,6 @@ function registerOnCreateConnectionButtonListener() {
 
   createConnectionButton.addEventListener('click', () => {
     connectionConsole.classList.remove('hidden');
-    document.getElementById('logs')?.classList.remove('hidden');
     createConnectionButton.classList.add('hidden');
 
     proxy.connect(getServerURL(), getAPIKey()).then(() => {
