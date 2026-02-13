@@ -75,7 +75,8 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
     CreateForVirtualCardSuccess() {
   return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
       /*is_success=*/true,
-      /*should_display_wallet_logo=*/true,
+      /*should_display_wallet_logo=*/
+      !base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding),
       /*title_text=*/
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_TITLE_TEXT),
