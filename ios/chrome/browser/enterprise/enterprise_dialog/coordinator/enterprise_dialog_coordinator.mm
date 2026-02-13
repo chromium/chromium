@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/data_controls/coordinator/data_controls_dialog_coordinator.h"
+#import "ios/chrome/browser/enterprise/enterprise_dialog/coordinator/enterprise_dialog_coordinator.h"
 
 #import "base/functional/callback.h"
 #import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
-@implementation DataControlsDialogCoordinator {
+@implementation EnterpriseDialogCoordinator {
   // The underlying alert controller used to show the dialog.
   UIAlertController* _alertController;
   // The type of warning dialog to be displayed.
@@ -65,7 +65,7 @@
                                           message:warningDialog.label
                                    preferredStyle:UIAlertControllerStyleAlert];
 
-  __weak DataControlsDialogCoordinator* weakSelf = self;
+  __weak EnterpriseDialogCoordinator* weakSelf = self;
 
   UIAlertAction* cancelAction =
       [UIAlertAction actionWithTitle:warningDialog.cancel_button_id

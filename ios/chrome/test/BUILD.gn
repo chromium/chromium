@@ -603,9 +603,9 @@ test("ios_chrome_unittests") {
 
   if (enterprise_data_controls) {
     deps += [
-      "//ios/chrome/browser/enterprise/data_controls/coordinator:unit_tests",
       "//ios/chrome/browser/enterprise/data_controls/model:unit_tests",
       "//ios/chrome/browser/enterprise/data_controls/utils:unit_tests",
+      "//ios/chrome/browser/enterprise/enterprise_dialog/coordinator:unit_tests",
     ]
   }
 

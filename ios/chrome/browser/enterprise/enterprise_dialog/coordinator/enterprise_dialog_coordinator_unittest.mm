@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/data_controls/coordinator/data_controls_dialog_coordinator.h"
+#import "ios/chrome/browser/enterprise/enterprise_dialog/coordinator/enterprise_dialog_coordinator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/callback.h"
@@ -32,10 +32,10 @@ UIAlertAction* GetActionWithTitle(UIAlertController* alert_controller,
   return nil;
 }
 
-// Test fixture for DataControlsDialogCoordinator.
-class DataControlsDialogCoordinatorTest : public PlatformTest {
+// Test fixture for EnterpriseDialogCoordinator.
+class EnterpriseDialogCoordinatorTest : public PlatformTest {
  public:
-  DataControlsDialogCoordinatorTest() {
+  EnterpriseDialogCoordinatorTest() {
     base_view_controller_ = [[UIViewController alloc] init];
   }
 
@@ -61,9 +61,9 @@ class DataControlsDialogCoordinatorTest : public PlatformTest {
 };
 
 // Tests that the coordinator is initialized correctly.
-TEST_F(DataControlsDialogCoordinatorTest, Initialization) {
+TEST_F(EnterpriseDialogCoordinatorTest, Initialization) {
   base::test::TestFuture<bool> future;
-  auto coordinator = [[DataControlsDialogCoordinator alloc]
+  auto coordinator = [[EnterpriseDialogCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
                       dialogType:data_controls::DataControlsDialog::Type::
@@ -76,9 +76,9 @@ TEST_F(DataControlsDialogCoordinatorTest, Initialization) {
 }
 
 // Tests that the start method presents a UIAlertController.
-TEST_F(DataControlsDialogCoordinatorTest, StartPresentsAlert) {
+TEST_F(EnterpriseDialogCoordinatorTest, StartPresentsAlert) {
   base::test::TestFuture<bool> future;
-  auto coordinator = [[DataControlsDialogCoordinator alloc]
+  auto coordinator = [[EnterpriseDialogCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
                       dialogType:data_controls::DataControlsDialog::Type::
@@ -95,9 +95,9 @@ TEST_F(DataControlsDialogCoordinatorTest, StartPresentsAlert) {
 }
 
 // Tests that the presented UIAlertController has the correct contents.
-TEST_F(DataControlsDialogCoordinatorTest, AlertContents) {
+TEST_F(EnterpriseDialogCoordinatorTest, AlertContents) {
   base::test::TestFuture<bool> future;
-  auto coordinator = [[DataControlsDialogCoordinator alloc]
+  auto coordinator = [[EnterpriseDialogCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
                       dialogType:data_controls::DataControlsDialog::Type::
@@ -134,9 +134,9 @@ TEST_F(DataControlsDialogCoordinatorTest, AlertContents) {
 }
 
 // Tests that tapping the cancel button invokes the callback with false.
-TEST_F(DataControlsDialogCoordinatorTest, CancelButton) {
+TEST_F(EnterpriseDialogCoordinatorTest, CancelButton) {
   base::test::TestFuture<bool> future;
-  auto coordinator = [[DataControlsDialogCoordinator alloc]
+  auto coordinator = [[EnterpriseDialogCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
                       dialogType:data_controls::DataControlsDialog::Type::
@@ -163,9 +163,9 @@ TEST_F(DataControlsDialogCoordinatorTest, CancelButton) {
 }
 
 // Tests that tapping the OK button invokes the callback with true.
-TEST_F(DataControlsDialogCoordinatorTest, OkButton) {
+TEST_F(EnterpriseDialogCoordinatorTest, OkButton) {
   base::test::TestFuture<bool> future;
-  auto coordinator = [[DataControlsDialogCoordinator alloc]
+  auto coordinator = [[EnterpriseDialogCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
                       dialogType:data_controls::DataControlsDialog::Type::
@@ -192,9 +192,9 @@ TEST_F(DataControlsDialogCoordinatorTest, OkButton) {
 
 // Tests that calling stop invokes the callback with false and dismisses the
 // alert.
-TEST_F(DataControlsDialogCoordinatorTest, Stop) {
+TEST_F(EnterpriseDialogCoordinatorTest, Stop) {
   base::test::TestFuture<bool> future;
-  auto coordinator = [[DataControlsDialogCoordinator alloc]
+  auto coordinator = [[EnterpriseDialogCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
                       dialogType:data_controls::DataControlsDialog::Type::

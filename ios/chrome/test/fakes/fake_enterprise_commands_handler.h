@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_TEST_FAKES_FAKE_DATA_CONTROLS_COMMANDS_HANDLER_H_
-#define IOS_CHROME_TEST_FAKES_FAKE_DATA_CONTROLS_COMMANDS_HANDLER_H_
+#ifndef IOS_CHROME_TEST_FAKES_FAKE_ENTERPRISE_COMMANDS_HANDLER_H_
+#define IOS_CHROME_TEST_FAKES_FAKE_ENTERPRISE_COMMANDS_HANDLER_H_
 
-#import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
+#import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
 
 // Fake commands handler for DataControlsTabHelper.
-@interface FakeDataControlsCommandsHandler : NSObject <DataControlsCommands> {
+@interface FakeEnterpriseCommandsHandler : NSObject <EnterpriseCommands> {
  @public
   base::OnceCallback<void(bool)> _callback;
 }
@@ -17,4 +17,4 @@
 @property(readonly, nonatomic) std::string organizationDomain;
 @end
 
-#endif  // IOS_CHROME_TEST_FAKES_FAKE_DATA_CONTROLS_COMMANDS_HANDLER_H_
+#endif  // IOS_CHROME_TEST_FAKES_FAKE_ENTERPRISE_COMMANDS_HANDLER_H_

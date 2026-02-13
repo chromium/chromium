@@ -130,8 +130,8 @@ bool DataControlsTabHelper::ShouldAllowShare() {
   return verdict.level() != Rule::Level::kBlock;
 }
 
-void DataControlsTabHelper::SetDataControlsCommandsHandler(
-    id<DataControlsCommands> handler) {
+void DataControlsTabHelper::SetEnterpriseCommandsHandler(
+    id<EnterpriseCommands> handler) {
   commands_handler_ = handler;
 }
 
@@ -263,9 +263,9 @@ void DataControlsTabHelper::ShowWarningDialog(
     base::OnceCallback<void(bool)> on_bypassed_callback) {
   if (commands_handler_) {
     [commands_handler_
-        showDataControlsWarningDialog:dialog_type
-                   organizationDomain:org_domain
-                             callback:std::move(on_bypassed_callback)];
+        showEnterpriseWarningDialog:dialog_type
+                 organizationDomain:org_domain
+                           callback:std::move(on_bypassed_callback)];
   } else {
     if (on_bypassed_callback) {
       std::move(on_bypassed_callback).Run(false);

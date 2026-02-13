@@ -37,7 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
-#import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
+#import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -162,8 +162,8 @@
       _overscrollActionsDelegate);
 
   data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
-      ->SetDataControlsCommandsHandler(
-          HandlerForProtocol(_commandDispatcher, DataControlsCommands));
+      ->SetEnterpriseCommandsHandler(
+          HandlerForProtocol(_commandDispatcher, EnterpriseCommands));
   data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
       ->SetSnackbarHandler(
           static_cast<id<SnackbarCommands>>(_commandDispatcher));
@@ -337,7 +337,7 @@
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
 
   data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
-      ->SetDataControlsCommandsHandler(nil);
+      ->SetEnterpriseCommandsHandler(nil);
   data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
       ->SetSnackbarHandler(nil);
 

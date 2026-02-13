@@ -28,12 +28,12 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
+#import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
-#import "ios/chrome/test/fakes/fake_data_controls_commands_handler.h"
+#import "ios/chrome/test/fakes/fake_enterprise_commands_handler.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -427,8 +427,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Allowed) {
 TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_NotBypassed) {
   SetCopyWarnRule();
   web_state_->SetCurrentURL(GURL(kWarnUrl));
-  auto* handler = [[FakeDataControlsCommandsHandler alloc] init];
-  tab_helper()->SetDataControlsCommandsHandler(handler);
+  auto* handler = [[FakeEnterpriseCommandsHandler alloc] init];
+  tab_helper()->SetEnterpriseCommandsHandler(handler);
   EXPECT_CALL(*reporting_router_, ReportCopy(_, _)).Times(1);
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
@@ -466,8 +466,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_NotBypassed) {
 TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_Bypassed) {
   SetCopyWarnRule();
   web_state_->SetCurrentURL(GURL(kWarnUrl));
-  auto* handler = [[FakeDataControlsCommandsHandler alloc] init];
-  tab_helper()->SetDataControlsCommandsHandler(handler);
+  auto* handler = [[FakeEnterpriseCommandsHandler alloc] init];
+  tab_helper()->SetEnterpriseCommandsHandler(handler);
   EXPECT_CALL(*reporting_router_, ReportCopyWarningBypassed(_, _)).Times(1);
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
@@ -510,8 +510,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_Bypassed_WithDomain) {
       signin::ConsentLevel::kSignin);
   SetCopyWarnRule();
   web_state_->SetCurrentURL(GURL(kWarnUrl));
-  auto* handler = [[FakeDataControlsCommandsHandler alloc] init];
-  tab_helper()->SetDataControlsCommandsHandler(handler);
+  auto* handler = [[FakeEnterpriseCommandsHandler alloc] init];
+  tab_helper()->SetEnterpriseCommandsHandler(handler);
   EXPECT_CALL(*reporting_router_, ReportCopyWarningBypassed(_, _)).Times(1);
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
@@ -657,8 +657,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Blocked_WithDomain) {
 TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_NotBypassed) {
   SetPasteWarnRule();
   web_state_->SetCurrentURL(GURL(kWarnUrl));
-  auto* handler = [[FakeDataControlsCommandsHandler alloc] init];
-  tab_helper()->SetDataControlsCommandsHandler(handler);
+  auto* handler = [[FakeEnterpriseCommandsHandler alloc] init];
+  tab_helper()->SetEnterpriseCommandsHandler(handler);
   EXPECT_CALL(*reporting_router_, ReportPaste(_, _)).Times(1);
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
@@ -696,8 +696,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_NotBypassed) {
 TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_Bypassed) {
   SetPasteWarnRule();
   web_state_->SetCurrentURL(GURL(kWarnUrl));
-  auto* handler = [[FakeDataControlsCommandsHandler alloc] init];
-  tab_helper()->SetDataControlsCommandsHandler(handler);
+  auto* handler = [[FakeEnterpriseCommandsHandler alloc] init];
+  tab_helper()->SetEnterpriseCommandsHandler(handler);
   EXPECT_CALL(*reporting_router_, ReportPasteWarningBypassed(_, _)).Times(1);
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
@@ -740,8 +740,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_Bypassed_WithDomain) {
       signin::ConsentLevel::kSignin);
   SetPasteWarnRule();
   web_state_->SetCurrentURL(GURL(kWarnUrl));
-  auto* handler = [[FakeDataControlsCommandsHandler alloc] init];
-  tab_helper()->SetDataControlsCommandsHandler(handler);
+  auto* handler = [[FakeEnterpriseCommandsHandler alloc] init];
+  tab_helper()->SetEnterpriseCommandsHandler(handler);
   EXPECT_CALL(*reporting_router_, ReportPasteWarningBypassed(_, _)).Times(1);
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {

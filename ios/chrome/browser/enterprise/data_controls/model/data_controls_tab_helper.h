@@ -11,7 +11,7 @@
 #import "components/enterprise/data_controls/core/browser/verdict.h"
 #import "ios/chrome/browser/enterprise/data_controls/utils/clipboard_utils.h"
 #import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
-#import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
+#import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
 #import "ios/web/public/lazy_web_state_user_data.h"
 #import "url/gurl.h"
 
@@ -46,8 +46,8 @@ class DataControlsTabHelper
   // Determines if sharing should be allowed.
   bool ShouldAllowShare();
 
-  // Sets the command handler for Data Controls.
-  void SetDataControlsCommandsHandler(id<DataControlsCommands> handler);
+  // Sets the command handler for Enterprise.
+  void SetEnterpriseCommandsHandler(id<EnterpriseCommands> handler);
 
   // Sets the snackbar handler.
   void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
@@ -102,8 +102,8 @@ class DataControlsTabHelper
   // outlive `this`.
   raw_ptr<web::WebState> web_state_;
 
-  // The data controller command handler.
-  __weak id<DataControlsCommands> commands_handler_ = nil;
+  // The enterprise command handler.
+  __weak id<EnterpriseCommands> commands_handler_ = nil;
 
   // The snackbar command handler.
   __weak id<SnackbarCommands> snackbar_handler_ = nil;

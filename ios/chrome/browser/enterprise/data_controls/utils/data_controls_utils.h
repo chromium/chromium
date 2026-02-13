@@ -11,6 +11,8 @@
 
 #import "components/enterprise/data_controls/core/browser/data_controls_dialog.h"
 
+// TODO(crbug.com/481679210): Move and redesign this class to accept not only
+// data_controls dialog type.
 namespace data_controls {
 
 // IOS implementation of `DataControlsDialog`. The warning dialog or blocking
