@@ -1613,8 +1613,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   rgb_shared_image_cache_->UpdateSyncToken(rgb_sync_token);
 
   // video_frame->UpdateReleaseSyncToken is not necessary since the video frame
-  // data we used was CPU-side (IsMappable) to begin with. If there were any
-  // textures, we didn't use them.
+  // data we used was CPU-side to begin with. If there were any textures, we
+  // didn't use them.
 
   // Kick off a timer to release the cache.
   cache_deleting_timer_.Reset();
