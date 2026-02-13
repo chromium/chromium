@@ -133,9 +133,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
       frame->metadata().transformation.value_or(media::kNoTransformation);
 
   // If the provider isn't accelerated, avoid GPU round trips to upload frame
-  // data from MappableSI-backed frames which don't have direct CPU access.
-  if (frame->HasMappableSharedImage() && !frame->HasDirectCpuAccess() &&
-      !snapshot_provider->IsAccelerated()) {
+  // data from MappableSI-backed frames.
+  if (frame->HasMappableSharedImage() && !snapshot_provider->IsAccelerated()) {
     frame = media::ConvertToMemoryMappedFrame(std::move(frame));
     if (!frame) {
       DLOG(ERROR) << "Failed to map VideoFrame.";
