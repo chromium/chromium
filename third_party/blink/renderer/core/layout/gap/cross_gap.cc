@@ -40,10 +40,30 @@ String CrossGap::ToString(bool verbose) const {
     } else {
       edge_state = "kNone";
     }
-    return StrCat({"CrossStartOffset(",
-                   gap_logical_offset_.inline_offset.ToString(), ", ",
-                   gap_logical_offset_.block_offset.ToString(), "); ",
-                   "EdgeState: ", edge_state, ";"});
+
+    String segment_state_ranges_str;
+    if (gap_segment_state_ranges_.has_value()) {
+      segment_state_ranges_str = "[";
+      for (const auto& range : gap_segment_state_ranges_.value()) {
+        segment_state_ranges_str = StrCat(
+            {segment_state_ranges_str, "[", String::Number(range.start), ", ",
+             String::Number(range.end), ") ", range.state.ToString(), ", "});
+      }
+      segment_state_ranges_str = StrCat({segment_state_ranges_str, "]"});
+    }
+
+    return StrCat({
+        "CrossStartOffset(",
+        gap_logical_offset_.inline_offset.ToString(),
+        ", ",
+        gap_logical_offset_.block_offset.ToString(),
+        "); ",
+        "EdgeState: ",
+        edge_state,
+        "; ",
+        "SegmentStateRanges: ",
+        segment_state_ranges_str,
+    });
   }
 
   return StrCat({"CrossStartOffset(",

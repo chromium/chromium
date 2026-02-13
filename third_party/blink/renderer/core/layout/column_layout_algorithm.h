@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 
 namespace blink {
@@ -130,6 +131,9 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // of a row gap, or before or after a spanner.
   void AddMainGap(LayoutUnit block_offset,
                   SpannerMainGapType gap_type = SpannerMainGapType::kNone);
+
+  // Add a cross gap at the given inline offset of the current column.
+  void AddCrossGap(LayoutUnit column_inline_start_offset);
 
   // Populates `range_of_cross_gaps_before_current_main_gap_` with
   // `CrossGapRanges` for each group of `CrossGap`s before each `MainGap`.
@@ -296,14 +300,19 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // One entry for each column gap.
   Vector<CrossGap> cross_gaps_;
 
-  // Index of the first column gap that gets terminated by any subsequent main
-  // gap (row gap or spanner).
-  std::optional<wtf_size_t> first_trailing_column_gap_idx_;
-
   // Offset to the first column (in the first row), from the start border edge
   // of the resulting multicol fragment. Will only be set if needed, i.e. for
   // gap decorations.
   std::optional<LogicalOffset> first_column_offset_;
+
+  // Tracks the maximum number of columns in any row.
+  wtf_size_t max_columns_in_row_ = 0;
+
+  // The state of ranges of gap segments for cross gaps, used for gap
+  // decorations. Each entry corresponds to a cross gap in `cross_gaps_`. The
+  // range is marked as `kBlocked` for decoration segments that would be blocked
+  // by spanners.
+  std::optional<Vector<GapSegmentStateRange>> state_ranges_for_cross_gaps_;
 
   // This will be set during (outer) block fragmentation once we've processed
   // the first piece of content of the multicol container. It is used to check

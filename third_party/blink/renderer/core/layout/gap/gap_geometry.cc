@@ -126,12 +126,6 @@ LayoutUnit GapGeometry::GetGapCenterOffset(GridTrackSizingDirection direction,
                                            wtf_size_t gap_index) const {
   if (IsMainDirection(direction)) {
     LayoutUnit center = GetMainGaps()[gap_index].GetGapOffset();
-    // In multicol the main gaps are placed in layout at the start of gaps
-    // rather than at the middle, so we must adjust the `center` as such.
-    if (GetContainerType() == ContainerType::kMultiColumn) {
-      CHECK(direction == kForRows);
-      center += GetBlockGapSize() / 2;
-    }
     return center;
   } else {
     return direction == kForColumns
@@ -184,15 +178,8 @@ Vector<LayoutUnit> GapGeometry::GenerateMainIntersectionList(
         return Vector<LayoutUnit>();
       }
 
-      const MainGap& main_gap = GetMainGaps()[gap_index];
-
-      if (main_gap.HasCrossGapsBefore()) {
-        wtf_size_t cross_gap_start_index = main_gap.GetCrossGapBeforeStart();
-        for (wtf_size_t i = cross_gap_start_index;
-             i <= main_gap.GetCrossGapBeforeEnd(); ++i) {
-          const CrossGap& cross_gap = GetCrossGaps()[i];
-          intersections.push_back(cross_gap.GetGapOffset().inline_offset);
-        }
+      for (const auto& cross_gap : GetCrossGaps()) {
+        intersections.push_back(cross_gap.GetGapOffset().inline_offset);
       }
 
       break;
@@ -325,9 +312,8 @@ void GapGeometry::GenerateCrossIntersectionListForFlex(
                           ? cross_gap.GetGapOffset().block_offset
                           : cross_gap.GetGapOffset().inline_offset;
   intersections.push_back(offset);
-  LayoutUnit end_offset_for_flex_cross_gap =
-      ComputeEndOffsetForFlexOrMulticolCrossGap(gap_index, direction,
-                                                cross_gap.EndsAtEdge());
+  LayoutUnit end_offset_for_flex_cross_gap = ComputeEndOffsetForFlexCrossGap(
+      gap_index, direction, cross_gap.EndsAtEdge());
   intersections.push_back(end_offset_for_flex_cross_gap);
 }
 
@@ -350,34 +336,25 @@ void GapGeometry::GenerateCrossIntersectionListForMulticol(
 
   intersections.push_back(cross_gap.GetGapOffset().block_offset);
 
-  // If there are no spanners or row gaps, the end offset is the content
-  // end.
-  if (main_gaps_.empty()) {
-    intersections.push_back(content_block_end_);
-    return;
-  }
+  for (const auto& main_gap : GetMainGaps()) {
+    intersections.push_back(main_gap.GetGapOffset());
 
-  LayoutUnit end_offset = ComputeEndOffsetForFlexOrMulticolCrossGap(
-      gap_index, direction, /*cross_gap_is_at_end=*/false);
-
-  intersections.push_back(end_offset);
-  if (main_gap_running_index_ < main_gaps_.size() &&
-      main_gaps_[main_gap_running_index_].IsStartSpannerMainGap()) {
-    // The intersection at an end spanner main gap must still be added to
-    // the vector, so we can paint behind spanners with `rule-break: none`.
-    wtf_size_t spanner_index = main_gap_running_index_ + 1;
-    if (spanner_index < main_gaps_.size()) {
-      CHECK(main_gaps_[spanner_index].IsEndSpannerMainGap());
-      intersections.push_back(main_gaps_[spanner_index].GetGapOffset());
-    } else {
-      // If there is no column content after a spanner, there'll be no
-      // EndSpannerMainGap.
-      intersections.push_back(content_block_end_);
+    // We mark intersections that are adjacent to spanner main gaps as an
+    // "edge". This is so that the inset applies correctly to these
+    // intersections. This is because at least right now, percentage insets in
+    // grid with spanners apply that percentage to the crossing gap width.
+    // Intersections with spanners in multicol dont have a crossing gap, and as
+    // such need to be treated as "edge" intersections which also share that
+    // same property.
+    if (main_gap.IsSpannerMainGap()) {
+      multicol_spanner_adjacent_intersections_.insert(intersections.size() - 1);
     }
   }
+
+  intersections.push_back(content_block_end_);
 }
 
-LayoutUnit GapGeometry::ComputeEndOffsetForFlexOrMulticolCrossGap(
+LayoutUnit GapGeometry::ComputeEndOffsetForFlexCrossGap(
     wtf_size_t cross_gap_index,
     GridTrackSizingDirection direction,
     bool cross_gap_is_at_end) const {
@@ -455,42 +432,16 @@ bool GapGeometry::IsEdgeIntersection(
     } else if (cross_gap_edge_state == CrossGap::EdgeIntersectionState::kEnd) {
       return intersection_index == last_intersection_index;
     }
-  } else if (GetContainerType() == ContainerType::kMultiColumn) {
-    DCHECK(!is_main_gap);
-    DCHECK_GE(intersection_count, 2u);
-    DCHECK_LE(intersection_count, 3u);
+  }
 
-    // All `CrossGap`s in multicol have either 2 or 3 intersections. 2 in cases
-    // where it is not adjacent to a spanner, and 3 when it is. This is because
-    // each spanner creates two main gaps (start and end), both of which
-    // intersect with the cross gap. So cross gaps that don't intersect a
-    // spanner will only have a start intersection and an end intersection,
-    // which will be at the end of the content or before a row gap. On the other
-    // hand, cross gaps adjacent to a spanner will have a start intersection, as
-    // well as an intersection at the start and end of the spanner.
-    //
-    // For multicol cross-axis gaps:
-    // - First, determine the edge state of the gap (start, end, or both).
-    // - Based on this state, decide which intersections qualify as edges:
-    //     * kBoth: All (2 or 3) intersections are considered edges.
-    //     * kStart: Only the first intersection is an edge.
-    //     * kEnd: Only the last intersection is an edge, or the last two if
-    //     there are three intersections in this gap (since there is an adjacent
-    //     spanner in that case).
-    //
-    // TODO(crbug.com/446616449): This might change depending on the spec
-    // discussions happening in the linked bug, but it is trending to being this
-    // way. https://github.com/w3c/csswg-drafts/issues/12784.
-    CrossGap::EdgeIntersectionState cross_gap_edge_state =
-        GetCrossGaps()[gap_index].GetEdgeIntersectionState();
-    if (cross_gap_edge_state == CrossGap::EdgeIntersectionState::kBoth) {
-      return true;
-    } else if (cross_gap_edge_state ==
-               CrossGap::EdgeIntersectionState::kStart) {
-      return intersection_index == 0;
-    } else if (cross_gap_edge_state == CrossGap::EdgeIntersectionState::kEnd) {
-      return intersection_index != 0;
-    }
+  if (GetContainerType() == ContainerType::kMultiColumn) {
+    CHECK(!is_main_gap);
+    // For multicol cross gaps, we may have additional edge intersections.
+    // These occur when the cross gap intersects with a spanner main gap.
+    return intersection_index == 0 ||
+           intersection_index == last_intersection_index ||
+           multicol_spanner_adjacent_intersections_.Contains(
+               intersection_index);
   }
 
   return false;
@@ -555,17 +506,6 @@ BlockedStatus GapGeometry::GetIntersectionBlockedStatus(
     wtf_size_t secondary_index,
     const Vector<LayoutUnit>& intersections) const {
   BlockedStatus status;
-
-  // In muticol, the only intersections that are blocked are those that are
-  // adjacent to a spanner. For painting purposes in multicol we only care about
-  // those that are `kBlockedAfter`.
-  if (GetContainerType() == ContainerType::kMultiColumn &&
-      track_direction == kForColumns &&
-      MulticolCrossGapIntersectionsEndAtSpanner(secondary_index,
-                                                intersections)) {
-    status.SetBlockedStatus(BlockedStatus::kBlockedAfter);
-    return status;
-  }
 
   if (secondary_index > 0 &&
       IsTrackCovered(track_direction, primary_index, secondary_index - 1)) {

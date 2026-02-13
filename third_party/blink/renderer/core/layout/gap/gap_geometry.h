@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -290,10 +291,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // - The offset of the main gap where this cross gap ends (tracked by
   // `main_gap_running_index_`) which occurs when the cross gap occurs on any
   // line but the last.
-  LayoutUnit ComputeEndOffsetForFlexOrMulticolCrossGap(
-      wtf_size_t cross_gap_index,
-      GridTrackSizingDirection direction,
-      bool cross_gap_is_at_end) const;
+  LayoutUnit ComputeEndOffsetForFlexCrossGap(wtf_size_t cross_gap_index,
+                                             GridTrackSizingDirection direction,
+                                             bool cross_gap_is_at_end) const;
 
   // In multicol, the intersections of a given `CrossGap` will be spanner
   // adjacent if and only if there are 3 intersections in the gap, and we are at
@@ -353,6 +353,14 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // TODO(samomekarajr): Explore removing this in favour of having this state
   // live at the parent paint call and passing in as an input/output param.
   mutable wtf_size_t main_gap_running_index_ = kNotFound;
+
+  // For multicol containers, this set tracks which intersection indices are
+  // considered to be spanner-adjacent "edges". These intersections are
+  // adjacent to spanner main gaps and need to be treated as edge
+  // intersections so that insets are applied correctly.
+  // TODO(crbug.com/440123087): If we get rid of percentage insets for gaps, we
+  // can remove this.
+  mutable HashSet<wtf_size_t> multicol_spanner_adjacent_intersections_;
 };
 
 }  // namespace blink

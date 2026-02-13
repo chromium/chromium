@@ -98,6 +98,24 @@ void GapSegmentStateAggregator::UpdateGapStateFor(
   }
 }
 
+String GapSegmentState::ToString() const {
+  if (status_ == kNone) {
+    return "NONE";
+  } else {
+    if (HasGapStatus(kEmptyBefore)) {
+      return "EMPTY_BEFORE ";
+    }
+    if (HasGapStatus(kEmptyAfter)) {
+      return "EMPTY_AFTER ";
+    }
+    if (HasGapStatus(kBlocked)) {
+      return "BLOCKED ";
+    }
+  }
+
+  return "UNKNOWN";
+}
+
 template void GapSegmentStateAggregator::FinalizeGapSegmentStateRangesFor<
     MainGap>(MainGap& gap, wtf_size_t gap_index) const;
 template void GapSegmentStateAggregator::FinalizeGapSegmentStateRangesFor<

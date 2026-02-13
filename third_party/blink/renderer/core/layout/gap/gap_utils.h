@@ -96,6 +96,8 @@ class CORE_EXPORT GapSegmentState {
     return !(*this == other);
   }
 
+  String ToString() const;
+
   wtf_size_t status_;
 };
 
