@@ -1128,6 +1128,33 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
   }
 }
 
+void RuleSet::FlattenMixinLocals(
+    base::span<const Member<StyleRuleBase>> rules,
+    const MediaQueryEvaluator& medium,
+    HeapHashMap<String, Member<CSSVariableData>>& locals) {
+  for (StyleRuleBase* rule : rules) {
+    if (auto* media_rule = DynamicTo<StyleRuleMedia>(rule)) {
+      if (MatchMediaForAddRules(medium, media_rule->MediaQueries())) {
+        FlattenMixinLocals(media_rule->ChildRules(), medium, locals);
+      }
+    } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {
+      if (supports_rule->ConditionIsSupported()) {
+        FlattenMixinLocals(supports_rule->ChildRules(), medium, locals);
+      }
+    } else if (StyleRuleFunctionDeclarations* function_declarations =
+                   DynamicTo<StyleRuleFunctionDeclarations>(rule)) {
+      for (const CSSPropertyValue& value :
+           function_declarations->Properties().Properties()) {
+        const AtomicString& name = value.CustomPropertyName();
+        CSSVariableData* variable_data =
+            To<CSSUnparsedDeclarationValue>(value.Value()).VariableDataValue();
+
+        locals.Set(name, variable_data);
+      }
+    }
+  }
+}
+
 void RuleSet::ApplyMixin(StyleRule* parent_rule,
                          StyleRuleApplyMixin* apply_mixin_rule,
                          const MediaQueryEvaluator& medium,
@@ -1183,22 +1210,9 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
     }
 
     // Collect any locals from the mixin.
-    // TODO(sesse): Support locals wrapped in conditional rules.
+    // TODO(sesse): Handle @container around locals.
     HeapHashMap<String, Member<CSSVariableData>> locals;
-    for (StyleRuleBase* child_rule : mixin_rule->ChildRules()) {
-      if (StyleRuleFunctionDeclarations* function_declarations =
-              DynamicTo<StyleRuleFunctionDeclarations>(child_rule)) {
-        for (const CSSPropertyValue& value :
-             function_declarations->Properties().Properties()) {
-          const AtomicString& name = value.CustomPropertyName();
-          CSSVariableData* variable_data =
-              To<CSSUnparsedDeclarationValue>(value.Value())
-                  .VariableDataValue();
-
-          locals.insert(name, variable_data);
-        }
-      }
-    }
+    FlattenMixinLocals(mixin_rule->ChildRules(), medium, locals);
 
     MixinParameterBindings* mixin_parameter_bindings =
         MakeGarbageCollected<MixinParameterBindings>(

@@ -79,5 +79,36 @@
       }, '@container wrapping @result');
     </script>
 
+
+    <style>
+      @mixin --m3() {
+        --some-color: red;
+        @media (width < 3000px) {
+          --some-color: green;
+        }
+        @supports (color: green) {
+          --some-other-color: blue;
+        }
+        @media (width > 3000px) {
+          --some-color: red;
+        }
+        @result {
+          color: var(--some-color);
+          --custom-property: var(--some-other-color);
+        }
+      }
+      #e3 {
+        @apply --m3;
+      }
+    </style>
+    <div id="e3">This text should be green.</div>
+    <script>
+      test(() => {
+        let e3 = document.getElementById('e3');
+        assert_equals(getComputedStyle(e3).color, 'rgb(0, 128, 0)');
+        assert_equals(getComputedStyle(e3).getPropertyValue('--custom-property'), 'blue');
+      }, '@media and @supports wrapping locals');
+    </script>
+
   </body>
 </html>

@@ -657,6 +657,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                      CascadeLayer*,
                      const StyleScope*,
                      ApplyMixinsStack& apply_mixins_stack);
+  void FlattenMixinLocals(base::span<const Member<StyleRuleBase>> rules,
+                          const MediaQueryEvaluator& medium,
+                          HeapHashMap<String, Member<CSSVariableData>>& locals);
 
   // Determines whether or not CSSSelector::is_covered_by_bucketing_ should
   // be computed during calls to FindBestBucketAndAdd.
