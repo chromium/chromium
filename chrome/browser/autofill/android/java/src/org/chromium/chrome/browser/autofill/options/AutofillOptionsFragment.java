@@ -206,13 +206,9 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                 @Override
                 public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
                     indexData.removeEntry(getUniqueId(PREF_THIRD_PARTY_TOGGLE_HINT));
-                    if (ChromeFeatureList.isEnabled(
+                    if (!ChromeFeatureList.isEnabled(
                             ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)) {
-                        indexData.addEntryForKey(
-                                getPrefFragmentName(),
-                                PREF_AUTOFILL_AI_SWITCH,
-                                R.string.settings_autofill_ai_page_title,
-                                R.string.settings_autofill_ai_description);
+                        indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AI_SWITCH));
                     }
                 }
             };
