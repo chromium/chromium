@@ -59,6 +59,9 @@ export function getHtml(this: ContextualActionMenuElement) {
     ${Array.from(this.supportedTools_.keys()).some(mode => this.isToolAllowed_(mode)) &&
         (this.imageUploadAllowed_ || this.fileUploadAllowed_) ?
         html`<hr/>` : ''}
+    ${Array.from(this.supportedTools_.keys()).some(mode => this.isToolAllowed_(mode)) ? html`
+        ${this.showContextMenuHeaders_ && this.toolHeader_ ? html`
+        <h4 id="toolHeader">${this.toolHeader_}</h4>` : ''}` : ''}
     ${Array.from(this.supportedTools_.entries()).map(([mode, tool]) => this.isToolAllowed_(mode) ? html`
       <button id="${tool.id}" class="dropdown-item" data-mode="${mode}"
           @click="${this.onToolClick_}"
@@ -70,7 +73,7 @@ export function getHtml(this: ContextualActionMenuElement) {
       (Array.from(this.supportedTools_.keys()).some(mode => this.isToolAllowed_(mode)) ||
        this.imageUploadAllowed_ || this.fileUploadAllowed_) ? html`<hr/>` : ''}
     ${Array.from(this.supportedModels_.keys()).some(mode => this.isModelAllowed_(mode)) ? html`
-        ${this.showContextMenuHeaders_ ? html`
+        ${this.showContextMenuHeaders_ && this.modelHeader_ ? html`
         <h4 id="modelHeader">${this.modelHeader_}</h4>` : ''}` : ''}
     ${Array.from(this.supportedModels_.entries()).map(([mode, model]) => this.isModelAllowed_(mode) ? html`
       <button id="${model.id}" class="dropdown-item"
