@@ -68,9 +68,7 @@ const CGFloat kTopCornerRadius = 10;
       kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
   self.view.clipsToBounds = YES;
 
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
                      withAction:@selector(updateUIOnTraitChange)];
 }
 
