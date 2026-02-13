@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +40,10 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
     SessionID test_session_id = SessionID::FromSerializedValue(kSessionIDValue);
     EXPECT_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
         .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
+    EXPECT_CALL(mock_browser_window_interface_, GetProfile())
+        .WillRepeatedly(testing::Return(&profile_));
+    EXPECT_CALL(std::as_const(mock_browser_window_interface_), GetProfile())
+        .WillRepeatedly(testing::Return(&profile_));
     pref_service_.registry()->RegisterBooleanPref(prefs::kVerticalTabsEnabled,
                                                   true);
     controller_ = std::make_unique<tabs::VerticalTabStripStateController>(
@@ -99,6 +105,7 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
   std::unique_ptr<tabs::VerticalTabStripStateController> controller_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   ui::UnownedUserDataHost unowned_user_data_host_;
+  TestingProfile profile_;
   MockBrowserWindowInterface mock_browser_window_interface_;
   std::unique_ptr<actions::ActionItem> action_item_;
 };

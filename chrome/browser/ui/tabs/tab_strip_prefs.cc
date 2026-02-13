@@ -5,12 +5,15 @@
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "ui/actions/actions.h"
 
 namespace {
 
@@ -31,9 +34,38 @@ bool GetDefaultTabSearchRightAligned() {
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kTabSearchRightAligned,
                                 GetDefaultTabSearchRightAligned());
+  registry->RegisterBooleanPref(prefs::kTabSearchPinnedToTabstrip, true);
+  registry->RegisterBooleanPref(
+      prefs::kTabSearchPinnedToTabstripMigrationComplete, false);
+  registry->RegisterBooleanPref(prefs::kProjectsPanelPinnedToTabstrip, true);
+  registry->RegisterBooleanPref(prefs::kEverythingMenuPinnedToTabstrip, true);
   registry->RegisterBooleanPref(
       prefs::kVerticalTabsEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+}
+
+void MigrateTabSearchPref(PrefService* profile_prefs) {
+  if (profile_prefs->GetBoolean(
+          prefs::kTabSearchPinnedToTabstripMigrationComplete)) {
+    return;
+  }
+
+  const std::optional<std::string>& tab_search_action_id =
+      actions::ActionIdMap::ActionIdToString(kActionTabSearch);
+  if (tab_search_action_id.has_value()) {
+    const base::ListValue& pinned_actions =
+        profile_prefs->GetList(prefs::kPinnedActions);
+    bool is_pinned = false;
+    for (const auto& action : pinned_actions) {
+      if (action.is_string() && action.GetString() == *tab_search_action_id) {
+        is_pinned = true;
+        break;
+      }
+    }
+    profile_prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, is_pinned);
+  }
+  profile_prefs->SetBoolean(prefs::kTabSearchPinnedToTabstripMigrationComplete,
+                            true);
 }
 
 TabSearchPosition GetTabSearchPosition(const Profile* profile) {
