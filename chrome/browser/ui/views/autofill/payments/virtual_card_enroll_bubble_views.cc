@@ -187,6 +187,8 @@ void VirtualCardEnrollBubbleViews::Init() {
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
   description_view->SetMainAxisAlignment(
       views::BoxLayout::MainAxisAlignment::kStart);
+  description_view->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   const VirtualCardEnrollmentFields virtual_card_enrollment_fields =
       controller_->GetUiModel().enrollment_fields();
