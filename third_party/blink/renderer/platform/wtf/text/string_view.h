@@ -293,6 +293,8 @@ class WTF_EXPORT StringView {
   // Find characters. Returns the index of the match, or `kNotFound`.
   wtf_size_t Find(CharacterMatchFunctionPtr match_function,
                   wtf_size_t start = 0) const;
+  // Find a substring. Returns the index of the match, or `kNotFound`.
+  wtf_size_t find(const StringView& value, wtf_size_t start = 0) const;
 
   // Find the last occurrence of a character. Returns the index of the match, or
   // `kNotFound`.

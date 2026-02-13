@@ -66,10 +66,9 @@ inline CharacterRange StrippedMatchedCharactersRange(base::span<CharType> chars,
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
-ALWAYS_INLINE wtf_size_t
-FindInternal(base::span<const SearchCharacterType> search,
-             base::span<const MatchCharacterType> match,
-             wtf_size_t index) {
+inline wtf_size_t FindInternal(base::span<const SearchCharacterType> search,
+                               base::span<const MatchCharacterType> match,
+                               wtf_size_t index) {
   // Optimization: keep a running hash of the strings,
   // only call equal() if the hashes match.
 

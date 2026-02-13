@@ -225,6 +225,11 @@ wtf_size_t StringView::find(UChar ch, wtf_size_t start) const {
                   : blink::Find(Span16(), ch, start);
 }
 
+wtf_size_t StringView::find(const StringView& match_string,
+                            wtf_size_t start) const {
+  return internal::Find(*this, match_string, start);
+}
+
 wtf_size_t StringView::rfind(UChar ch, wtf_size_t start) const {
   if (empty()) {
     return kNotFound;
