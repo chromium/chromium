@@ -24,7 +24,7 @@ WebUIReloadControl::WebUIReloadControl(
                                    IDS_RELOAD_MENU_EMPTY_AND_HARD_RELOAD_ITEM);
 
   menu_runner_ = std::make_unique<views::MenuRunner>(
-      menu_model_.get(), views::MenuRunner::CONTEXT_MENU,
+      menu_model_.get(), views::MenuRunner::HAS_MNEMONICS,
       base::BindRepeating(&WebUIReloadControl::OnContextMenuClosed,
                           base::Unretained(this)));
 
