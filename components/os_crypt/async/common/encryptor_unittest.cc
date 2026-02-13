@@ -11,9 +11,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/async/common/encryptor.mojom.h"
+#include "components/os_crypt/async/common/features.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "crypto/hkdf.h"
@@ -162,7 +164,11 @@ class EncryptorTestBase : public ::testing::Test {
 
 class EncryptorTestWithOSCrypt : public EncryptorTestBase {
  protected:
-  void SetUp() override { OSCryptMocker::SetUp(); }
+  void SetUp() override {
+    OSCryptMocker::SetUp();
+    scoped_feature_list_.InitAndDisableFeature(
+        kOSCryptAsyncPreventFallbackToSync);
+  }
 
   void TearDown() override {
     OSCryptMocker::TearDown();
@@ -170,6 +176,9 @@ class EncryptorTestWithOSCrypt : public EncryptorTestBase {
     OSCrypt::ResetStateForTesting();
 #endif  // BUILDFLAG(IS_WIN)
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class EncryptorTest : public EncryptorTestWithOSCrypt,
@@ -867,6 +876,57 @@ TEST_F(EncryptorTraitsTest, TraitsRoundTrip) {
     EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::Encryptor>(
         encryptor, roundtripped));
   }
+}
+
+class EncryptorFeatureTest : public EncryptorTestWithOSCrypt {};
+
+TEST_F(EncryptorFeatureTest, FallbackPrevented) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kOSCryptAsyncPreventFallbackToSync);
+
+  const Encryptor encryptor = GetEncryptor();
+  std::string ciphertext;
+  // Encryption should fail because no keys are loaded and fallback is
+  // prevented.
+  EXPECT_FALSE(encryptor.EncryptString("secrets", &ciphertext));
+
+  // Decryption should also fail.
+  EXPECT_TRUE(OSCrypt::EncryptString("secrets", &ciphertext));
+  std::string plaintext;
+  EXPECT_FALSE(encryptor.DecryptString(ciphertext, &plaintext));
+
+  // Availability should also be false.
+  EXPECT_FALSE(encryptor.IsEncryptionAvailable());
+  EXPECT_FALSE(encryptor.IsDecryptionAvailable());
+
+  {
+    // If fallback is prevented, and OSCrypt is "locked", then
+    // temporarily_unavailable should not be set by OSCrypt.
+    auto cleanup = MaybeSimulateLockedKeyChain();
+    if (cleanup.has_value()) {
+      Encryptor::DecryptFlags locked_flags;
+      std::string locked_plaintext;
+      EXPECT_FALSE(encryptor.DecryptString("any data", &locked_plaintext,
+                                           &locked_flags));
+      EXPECT_FALSE(locked_flags.temporarily_unavailable);
+    }
+  }
+}
+
+TEST_F(EncryptorFeatureTest, FallbackAllowed) {
+  const Encryptor encryptor = GetEncryptor();
+  std::string ciphertext;
+  // Encryption should succeed because fallback is allowed (flag disabled).
+  EXPECT_TRUE(encryptor.EncryptString("secrets", &ciphertext));
+
+  // Decryption should also succeed.
+  std::string plaintext;
+  EXPECT_TRUE(encryptor.DecryptString(ciphertext, &plaintext));
+  EXPECT_EQ("secrets", plaintext);
+
+  // Availability should also be true.
+  EXPECT_TRUE(encryptor.IsEncryptionAvailable());
+  EXPECT_TRUE(encryptor.IsDecryptionAvailable());
 }
 
 }  // namespace os_crypt_async

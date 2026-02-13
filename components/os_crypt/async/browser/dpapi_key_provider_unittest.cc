@@ -19,12 +19,14 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/win/scoped_localalloc.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/os_crypt/async/common/features.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,6 +69,11 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
 // compatible with OSCrypt.
 class DPAPIKeyProviderTestBase : public ::testing::Test {
  protected:
+  DPAPIKeyProviderTestBase() {
+    scoped_feature_list_.InitAndDisableFeature(
+        kOSCryptAsyncPreventFallbackToSync);
+  }
+
   void TearDown() override {
     if (expected_histogram_) {
       histograms_.ExpectBucketCount("OSCrypt.DPAPIProvider.Status",
@@ -96,6 +103,7 @@ class DPAPIKeyProviderTestBase : public ::testing::Test {
 
  private:
   base::HistogramTester histograms_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
 };
 

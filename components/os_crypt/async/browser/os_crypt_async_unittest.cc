@@ -12,12 +12,14 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/os_crypt/async/common/features.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "crypto/hkdf.h"
@@ -510,7 +512,11 @@ class FailingKeyProvider : public TestKeyProvider {
 // Some tests require a working OSCrypt.
 class OSCryptAsyncTestWithOSCrypt : public OSCryptAsyncTest {
  protected:
-  void SetUp() override { OSCryptMocker::SetUp(); }
+  void SetUp() override {
+    OSCryptMocker::SetUp();
+    scoped_feature_list_.InitAndDisableFeature(
+        kOSCryptAsyncPreventFallbackToSync);
+  }
 
   void TearDown() override {
     OSCryptMocker::TearDown();
@@ -518,6 +524,9 @@ class OSCryptAsyncTestWithOSCrypt : public OSCryptAsyncTest {
     OSCrypt::ResetStateForTesting();
 #endif  // BUILDFLAG(IS_WIN)
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // This test merely verifies that OSCryptAsync can operate with no key providers
