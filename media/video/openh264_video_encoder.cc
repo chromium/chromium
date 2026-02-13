@@ -411,7 +411,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat,
                       "Unexpected frame format.")
-            .WithData("IsMappable", frame->HasDirectCpuAccess())
+            .WithData("HasDirectCpuAccess", frame->HasDirectCpuAccess())
             .WithData("storage type", frame->storage_type())
             .WithData("format", frame->format()));
     return;
