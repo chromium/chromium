@@ -786,7 +786,11 @@ GPUCanvasContext::GetFrontBufferMailboxTexture() {
   wgpu::DawnTextureInternalUsageDescriptor front_buffer_usage_desc = {{
       .internalUsage = front_buffer_usage,
   }};
+
+  // Note: By spec all WebGPU textures must have some usage (i.e. can't have
+  // only internal usages), so specify the internal usages in `usage` as well.
   wgpu::TextureDescriptor desc = {
+      .usage = front_buffer_usage,
       .size = {base::checked_cast<uint32_t>(front_buffer_si->size().width()),
                base::checked_cast<uint32_t>(front_buffer_si->size().height())},
       .format = swap_buffers_->TextureFormat(),
