@@ -55,6 +55,7 @@
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
+#include "extensions/common/api/messaging/messaging_util.h"
 #include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -62,6 +63,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/manifest_handlers/message_serialization_info.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ipc/constants.mojom.h"
@@ -83,6 +85,9 @@ namespace {
 
 const char kReceivingEndDoesntExistError[] =
     "Could not establish connection. Receiving end does not exist.";
+const char kReceivingEndIncompatibleMessageSerializationFormat[] =
+    "Could not establish connection. Receiving end uses different message "
+    "serialization format.";
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 const char kMissingPermissionError[] =
@@ -480,6 +485,35 @@ void MessageService::OpenChannelToExtension(
       message_tracker->StopTrackingMessagingStage(
           tracking_id, MessageTracker::OpenChannelMessagePipelineResult::
                            kOpenChannelToNonEnabledExtension);
+    }
+    return;
+  }
+
+  // Ensure the sender isn't using a serialization format that the receiver
+  // doesn't support.
+  mojom::SerializationFormat receiver_format =
+      MessageSerializationInfo::UsesStructuredClone(target_extension)
+          ? mojom::SerializationFormat::kStructuredClone
+          : mojom::SerializationFormat::kJson;
+
+  // We strictly enforce that the sender and receiver must use the same
+  // serialization format. This prevents ambiguity and potential security/data
+  // issues where a sender might think it's sending JSON but the receiver treats
+  // it as a structured clone (or vice versa), even if the data payload happens
+  // to be compatible.
+  // TODO(crbug.com/40321352): Add the ability to force web pages that
+  // communicate to extensions to use the serialization format that the receiver
+  // extensions has specified. Currently web pages default to JSON so this will
+  // stop any web page from sending a message to an extension that uses
+  // structured clone message serialization.
+  if (source_port_id.serialization_format != receiver_format) {
+    opener_port->DispatchOnDisconnect(
+        kReceivingEndIncompatibleMessageSerializationFormat);
+    for (const auto& tracking_id : open_channel_tracking_ids) {
+      message_tracker->StopTrackingMessagingStage(
+          tracking_id,
+          MessageTracker::OpenChannelMessagePipelineResult::
+              kOpenChannelFailIncompatibleMessageSerializationFormat);
     }
     return;
   }

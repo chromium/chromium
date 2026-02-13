@@ -6,10 +6,13 @@
 
 #include "base/feature_list.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/manifest_handlers/message_serialization_info.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 
 namespace extensions::messaging_util {
 
+// TODO(crbug.com/40321352): This isn't used outside of renderer so move into
+// renderer-specific directory.
 mojom::SerializationFormat GetSerializationFormat(
     const Extension* extension,
     mojom::ChannelType channel_type) {
@@ -21,8 +24,7 @@ mojom::SerializationFormat GetSerializationFormat(
   switch (channel_type) {
     case mojom::ChannelType::kSendMessage:
     case mojom::ChannelType::kConnect:
-      if (base::FeatureList::IsEnabled(
-              extensions_features::kStructuredCloningForMessaging)) {
+      if (MessageSerializationInfo::UsesStructuredClone(extension)) {
         return mojom::SerializationFormat::kStructuredClone;
       }
       return mojom::SerializationFormat::kJson;

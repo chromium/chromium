@@ -1,0 +1,6 @@
+{
+  "name": "message_serialization_invalid",
+  "version": "1.0",
+  "manifest_version": 3,
+  "message_serialization": "invalid_value"
+}

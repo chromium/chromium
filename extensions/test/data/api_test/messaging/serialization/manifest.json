@@ -17,5 +17,6 @@
         "serialization_common_tests.js",
         "test_cases.js"
      ]
-  }]
+  }],
+  "message_serialization": "structured_clone"
 }

@@ -3516,7 +3516,7 @@ Called by update_extension_permission.py.-->
   <int value="5" label="Channel not opened (not externally connectable)"/>
   <int value="6" label="Worker started for channel open"/>
   <int value="7"
-      label="Channel not opened (source channel invalid, opener port invaid,
+      label="Channel not opened (source channel invalid, opener port invalid,
              no receiver port, or receiver port invalid)"/>
   <int value="8" label="Channel not opened (receiver port isn't valid)"/>
   <int value="9"
@@ -3537,6 +3537,9 @@ Called by update_extension_permission.py.-->
   <int value="17"
       label="Channel not opened (extension uninstalled/disabled while channel
              open in-flight)"/>
+  <int value="18"
+      label="Channel not opened (opener port using different message
+             serialization format)"/>
 </enum>
 
 <enum name="ReadDynamicRulesJSONStatus">

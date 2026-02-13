@@ -20,6 +20,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/message_serialization_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/renderer/extension_interaction_provider.h"
@@ -178,11 +179,6 @@ std::optional<Message> MessageFromV8(v8::Local<v8::Context> context,
   DCHECK(!value.IsEmpty());
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   CHECK(isolate);
-
-  if (format == mojom::SerializationFormat::kStructuredClone) {
-    CHECK(base::FeatureList::IsEnabled(
-        extensions_features::kStructuredCloningForMessaging));
-  }
 
   size_t message_size = 0;
   std::string json_message;

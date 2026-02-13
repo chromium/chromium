@@ -70,6 +70,7 @@ constexpr const char* kDisallowedFeatures[] = {
     extensions::manifest_keys::kKioskSecondaryApps,
     extensions::manifest_keys::kLaunch,
     extensions::manifest_keys::kLinkedAppIcons,
+    extensions::manifest_keys::kMessageSerialization,
     extensions::manifest_keys::kMIMETypes,
     extensions::manifest_keys::kMimeTypesHandler,
     extensions::manifest_keys::kNativelyConnectable,

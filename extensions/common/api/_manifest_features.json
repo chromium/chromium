@@ -343,6 +343,11 @@
       "platform_app"
     ]
   },
+  "message_serialization": {
+    "channel": "canary",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
+  },
   "manifest_version": {
     "channel": "stable",
     "extension_types": "all"

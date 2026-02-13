@@ -1,0 +1,6 @@
+{
+  "name": "message_serialization_valid_json",
+  "version": "1.0",
+  "manifest_version": 3,
+  "message_serialization": "json"
+}
