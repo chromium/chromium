@@ -49,8 +49,35 @@ if (!is_android) {
   source_set("interactive_ui_tests") {
     testonly = true
 
-    # This is in the browser_tests target on Android
-    sources = [ "internal/global_browser_collection_interactive_ui_test.cc" ]
+    sources = []
+    deps = []
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    # TODO(crbug.com/483366391): Enable this on ChromeOS once the
+    # BaseWindow::Activate() behaviour is fixed.
+    if (!is_chromeos) {
+      # This is in the browser_tests target on Android
+      sources += [ "internal/global_browser_collection_interactive_ui_test.cc" ]
+      deps += [
+        ":browser_window",
+        ":create_browser_window",
+        "//base",
+        "//base/test:test_support",
+        "//chrome/browser/ui",
+        "//chrome/test:test_support",
+        "//content/test:test_support",
+        "//testing/gtest",
+      ]
+    }
+  }
+}
+
+# These tests don't work on mobile Android due to the lack of multi-window
+# support.
+if (!is_android || is_desktop_android) {
+  source_set("browser_tests") {
+    testonly = true
+    sources = []
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     deps = [
       ":browser_window",
@@ -62,32 +89,19 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gtest",
     ]
-  }
-}
 
-source_set("browser_tests") {
-  testonly = true
-  sources = []
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  deps = [
-    ":browser_window",
-    ":create_browser_window",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser/ui",
-    "//chrome/test:test_support",
-    "//content/test:test_support",
-    "//testing/gtest",
-  ]
-
-  if (is_android) {
-    # This is in the interactive_ui_tests target on non-Android
-    sources += [ "internal/global_browser_collection_interactive_ui_test.cc" ]
-  } else {
-    sources += [
-      "internal/create_browser_window_browsertest.cc",
-      "internal/profile_browser_collection_non_android_browsertest.cc",
-      "public/browser_window_interface_iterator_browsertest.cc",
-    ]
+    if (is_android) {
+      # This is in the interactive_ui_tests target on non-Android
+      sources += [ "internal/global_browser_collection_interactive_ui_test.cc" ]
+      deps += [
+        "//chrome/browser/ui/browser_window/test:android_browser_test_support",
+      ]
+    } else {
+      sources += [
+        "internal/create_browser_window_browsertest.cc",
+        "internal/profile_browser_collection_non_android_browsertest.cc",
+        "public/browser_window_interface_iterator_browsertest.cc",
+      ]
+    }
   }
 }

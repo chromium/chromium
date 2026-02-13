@@ -2019,7 +2019,6 @@ if (is_android) {
       "//chrome/browser/ui/android/hats:browser_tests",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/browser_window:browser_tests",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/hats",
@@ -2170,6 +2169,7 @@ if (is_android) {
       sources +=
           [ "../browser/ui/android/browser_navigator_android_browsertest.cc" ]
       deps += [
+        "//chrome/browser/ui/browser_window:browser_tests",
         "//chrome/browser/ui/browser_window/internal:android_browsertests",
         "//chrome/browser/ui/browser_window/test:android_browser_test_support",
       ]
