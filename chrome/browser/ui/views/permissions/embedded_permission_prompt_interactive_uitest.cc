@@ -75,7 +75,7 @@ class EmbeddedPermissionPromptInteractiveTest
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     feature_list_.InitWithFeatures(
-        {blink::features::kPermissionElement,
+        {blink::features::kGeolocationElement,
          blink::features::kUserMediaElement,
          blink::features::kBypassPepcSecurityForTesting},
         {});
@@ -551,17 +551,6 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
-                       BasicFlowGeolocation) {
-  TestAskBlockAllowFlow(
-      "geolocation", {permissions::PermissionUtil::GetGeolocationType()},
-      std::vector<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
-           u"You have allowed location for this site",
-           u"You previously didn't allow location for this site"}),
-      std::vector<std::u16string>({u"Know your location"}));
-}
-
-IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        BasicFlowCameraMicrophone) {
   TestAskBlockAllowFlow(
       "camera-microphone",
@@ -583,12 +572,6 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        TestAllowThisTimeFlowCamera) {
   TestAllowThisTimeFlow("camera", {ContentSettingsType::MEDIASTREAM_CAMERA});
-}
-
-IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
-                       TestAllowThisTimeFlowGeolocation) {
-  TestAllowThisTimeFlow("geolocation",
-                        {permissions::PermissionUtil::GetGeolocationType()});
 }
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
@@ -1261,7 +1244,7 @@ class EmbeddedPermissionPromptPositioningInteractiveTest
     feature_list_.Reset();
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {blink::features::kPermissionElement, {}},
+            {blink::features::kGeolocationElement, {}},
             {blink::features::kUserMediaElement, {}},
             {permissions::features::kPermissionElementPromptPositioning,
              {{"PermissionElementPromptPositioningParam", "near_element"}}},
@@ -1559,18 +1542,6 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
   TestPolicy(policies, "camera-microphone",
              EmbeddedPermissionPromptPolicyView::kMainViewId,
              u"Your administrator allows camera and microphone for this site");
-}
-
-IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
-                       GeolocationPolicyAllow) {
-  policy::PolicyMap policies;
-  policies.Set(policy::key::kDefaultGeolocationSetting,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(CONTENT_SETTING_ALLOW),
-               nullptr);
-  TestPolicy(policies, "geolocation",
-             EmbeddedPermissionPromptPolicyView::kMainViewId,
-             u"Your administrator allows location for this site");
 }
 
 // Setting up to run all tests with two screen scale factors.

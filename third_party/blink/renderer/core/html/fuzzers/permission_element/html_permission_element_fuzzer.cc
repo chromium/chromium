@@ -1,5 +1,3 @@
-#include "third_party/blink/renderer/core/html/html_permission_element.h"
-
 #include <string>
 
 #include "base/test/bind.h"
@@ -10,6 +8,8 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_base.h"
+#include "third_party/blink/renderer/core/html/html_geolocation_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_test_helper.h"
 #include "third_party/blink/renderer/core/testing/fuzztest_utils/css_domains.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -81,7 +81,7 @@ class HTMLPermissionElementFuzzer
     Compositor().BeginFrame();
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-    auto* permission_element = To<HTMLPermissionElement>(
+    auto* permission_element = To<HTMLGeolocationElement>(
         GetDocument().getElementById(AtomicString("target")));
 
     // If the element doesn't exist (e.g. if style caused it to not render or be

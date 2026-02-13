@@ -418,7 +418,7 @@ public class EmbeddedPermissionPromptTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
     @DisabledTest(message = "crbug.com/394097674")
     public void testAskPromptTextWithOneTime() throws Exception {
         String[] requestablePermission =
@@ -443,7 +443,7 @@ public class EmbeddedPermissionPromptTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
     @DisabledTest(message = "crbug.com/394097674")
     public void testPreviouslyDeniedPromptTextWithOneTime() throws Exception {
         String[] requestablePermission =
@@ -468,7 +468,7 @@ public class EmbeddedPermissionPromptTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
     @DisabledTest(message = "crbug.com/392083174")
     public void testPreviouslyGrantedPromptText() throws Exception {
         String[] requestablePermission =
@@ -493,7 +493,7 @@ public class EmbeddedPermissionPromptTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
     public void testDisableLocationSettingsPromptText() throws Exception {
         String productName = "Chromium";
         if (BuildConfig.IS_CHROME_BRANDED) {
@@ -522,7 +522,8 @@ public class EmbeddedPermissionPromptTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
+    @DisabledTest(message = "crbug.com/456384544")
     public void testOsSettingsPromptText() throws Exception {
         String productName = "Chromium";
         if (BuildConfig.IS_CHROME_BRANDED) {
@@ -544,42 +545,42 @@ public class EmbeddedPermissionPromptTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
     public void testAskPromptInteractionAllow() throws Exception {
         testAskPromptInteraction(EmbeddedPermissiontResponse.POSITIVE);
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
     public void testAskPromptInteractionAllowEphemeral() throws Exception {
         testAskPromptInteraction(EmbeddedPermissiontResponse.POSITIVE_EPHEMERAL);
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
     public void testAskPromptInteractionDeny() throws Exception {
         testAskPromptInteraction(EmbeddedPermissiontResponse.NEGATIVE);
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
     public void testPreviousDeniedInteractionContinue() throws Exception {
         testPreviousDeniedInteraction(EmbeddedPermissiontResponse.POSITIVE);
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
     public void testPreviousDeniedInteractionAllow() throws Exception {
         testPreviousDeniedInteraction(EmbeddedPermissiontResponse.NEGATIVE);
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
     @DisabledTest(message = "crbug.com/392083174")
     public void testPreviousGrantedInteractionContinue() throws Exception {
         testPreviousGrantedInteraction(EmbeddedPermissiontResponse.POSITIVE);
@@ -587,7 +588,7 @@ public class EmbeddedPermissionPromptTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
     @DisabledTest(message = "crbug.com/392083174")
     public void testPreviousGrantedInteractionStop() throws Exception {
         testPreviousGrantedInteraction(EmbeddedPermissiontResponse.NEGATIVE);

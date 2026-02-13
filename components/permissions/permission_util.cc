@@ -389,9 +389,9 @@ bool PermissionUtil::IsLowPriorityPermissionRequest(
 
 bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
     PermissionPrompt::Delegate* delegate) {
-  if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement) &&
-      !base::FeatureList::IsEnabled(blink::features::kGeolocationElement) &&
-      !base::FeatureList::IsEnabled(blink::features::kUserMediaElement)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kGeolocationElement) &&
+      !base::FeatureList::IsEnabled(blink::features::kUserMediaElement) &&
+      !base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {
     return false;
   }
 

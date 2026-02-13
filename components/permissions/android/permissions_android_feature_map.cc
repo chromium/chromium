@@ -30,8 +30,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kPermissionHeuristicAutoGrant,
     &content_settings::features::kApproximateGeolocationPermission,
     &media::kAutoPictureInPictureAndroid,
-    &blink::features::kPermissionElement,
     &blink::features::kBypassPepcSecurityForTesting,
+    &blink::features::kUserMediaElement,
     &blink::features::kGeolocationElement,
 };
 

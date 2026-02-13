@@ -52,7 +52,9 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
   ~AccessibilityActionBrowserTest() override {}
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({blink::features::kPermissionElement}, {});
+    feature_list_.InitWithFeatures({blink::features::kGeolocationElement,
+                                    blink::features::kUserMediaElement},
+                                   {});
     ContentBrowserTest::SetUp();
   }
 
@@ -1456,8 +1458,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, OpenSelectPopup) {
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusPermissionElement) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <body>
-        <permission type="invalid" aria-label="invalid-pepc"></permission>
-        <permission type="camera" aria-label="valid-pepc"></permission>
+        <usermedia type="invalid" aria-label="invalid-pepc"></usermedia>
+        <usermedia type="camera" aria-label="valid-pepc"></usermedia>
       </body>
       )HTML");
 

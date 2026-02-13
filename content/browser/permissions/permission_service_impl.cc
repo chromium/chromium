@@ -184,8 +184,8 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
   }
 
   if (!descriptor->detail &&
-      !base::FeatureList::IsEnabled(blink::features::kPermissionElement) &&
-      !base::FeatureList::IsEnabled(blink::features::kUserMediaElement)) {
+      !base::FeatureList::IsEnabled(blink::features::kUserMediaElement) &&
+      !base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {
     bad_message::ReceivedBadMessage(
         context_->render_frame_host()->GetProcess(),
         bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
@@ -262,7 +262,7 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
     return;
   }
 
-  const base::Feature* required_feature = &blink::features::kPermissionElement;
+  const base::Feature* required_feature = &blink::features::kUserMediaElement;
   if (descriptor->detail) {
     if (descriptor->detail->is_geolocation()) {
       required_feature = &blink::features::kGeolocationElement;
@@ -275,7 +275,6 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
     bad_message::ReceivedBadMessage(
         context_->render_frame_host()->GetProcess(),
         bad_message::PSI_REQUEST_EMBEDDED_PERMISSION_WITHOUT_FEATURE);
-    std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
     return;
   }
 

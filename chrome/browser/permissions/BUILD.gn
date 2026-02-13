@@ -298,7 +298,6 @@ if (!is_android) {
       "one_time_permissions_browsertest.cc",
       "permission_delegation_browsertest.cc",
       "permission_element_browsertest.cc",
-      "permission_element_origin_trial_browsertest.cc",
       "permission_manager_browsertest.cc",
       "permission_request_manager_browsertest.cc",
       "permission_settings_page_browsertest.cc",

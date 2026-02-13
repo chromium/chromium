@@ -47,8 +47,12 @@ using blink::mojom::PermissionName;
 class PEPCInitiatedPermissionRequestTest
     : public content::RenderViewHostTestHarness {
  public:
-  PEPCInitiatedPermissionRequestTest()
-      : scoped_feature_list_(blink::features::kPermissionElement) {}
+  PEPCInitiatedPermissionRequestTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features */ {blink::features::kUserMediaElement,
+                                blink::features::kGeolocationElement},
+        /* disabled_features */ {});
+  }
   PEPCInitiatedPermissionRequestTest(
       const PEPCInitiatedPermissionRequestTest&) = delete;
   PEPCInitiatedPermissionRequestTest& operator=(

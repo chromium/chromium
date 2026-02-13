@@ -80,8 +80,12 @@ class MockEmbeddedPermissionControlClient
 class EmbeddedPermissionControlCheckerTest
     : public content::RenderViewHostTestHarness {
  public:
-  EmbeddedPermissionControlCheckerTest()
-      : scoped_feature_list_(blink::features::kPermissionElement) {}
+  EmbeddedPermissionControlCheckerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features */ {blink::features::kUserMediaElement,
+                                blink::features::kGeolocationElement},
+        /* disabled_features */ {});
+  }
   EmbeddedPermissionControlCheckerTest(
       const EmbeddedPermissionControlCheckerTest&) = delete;
   EmbeddedPermissionControlCheckerTest& operator=(

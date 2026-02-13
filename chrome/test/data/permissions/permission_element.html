@@ -2,7 +2,7 @@
 <html>
 <head>
   <style>
-    permission, usermedia {
+    usermedia, geolocation {
       font-size: xxx-large;
       margin: 0px;
       border: 0px;
@@ -13,10 +13,10 @@
 </head>
 <body>
   <div id="parent">
-    <permission id="geolocation" type="geolocation"></permission>
-    <permission id="microphone" type="microphone"></permission>
-    <permission id="camera" type="camera"></permission>
-    <permission id="invalid" type="invalid microphone"></permission>
+    <geolocation id="geolocation"></geolocation>
+    <usermedia id="microphone" type="microphone"></usermedia>
+    <usermedia id="camera" type="camera"></usermedia>
+    <usermedia id="invalid" type="invalid microphone"></usermedia>
     <usermedia id="camera-microphone" type="camera microphone"></usermedia>
   </div>
   <script>
@@ -47,7 +47,10 @@
     }
 
     function setFontSizeSmall() {
-      document.querySelectorAll('permission').forEach((el) => {
+      document.querySelectorAll('usermedia').forEach((el) => {
+        el.style.fontSize = 'small';
+      });
+      document.querySelectorAll('geolocation').forEach((el) => {
         el.style.fontSize = 'small';
       });
     }

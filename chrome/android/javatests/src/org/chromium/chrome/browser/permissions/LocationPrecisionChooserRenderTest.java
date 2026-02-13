@@ -186,7 +186,7 @@ public class LocationPrecisionChooserRenderTest {
     @Feature({"Prompt", "RenderTest"})
     @EnableFeatures({
         "ApproximateGeolocationPermission:prompt_arm/1",
-        PermissionsAndroidFeatureList.PERMISSION_ELEMENT
+        PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT
     })
     public void testGeolocationElementPrompt() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);

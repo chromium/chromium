@@ -4,17 +4,17 @@
 <body>
   <div id="grandparent">
     <div id="parent">
-      <permission id="camera" type="camera"></permission>
+      <usermedia id="camera" type="camera"></usermedia>
     </div>
   </div>
-  <permission
+  <usermedia
     id="microphone"
     type="microphone"
     ondismiss="console.log(this.id + '-dismiss');"
     onresolve="console.log(this.id + '-resolve');"
     onpromptdismiss="console.log(this.id + '-promptdismiss');"
     onpromptaction="console.log(this.id + '-promptaction');">
-  </permission>
+  </usermedia>
   <script>
     function logEventToConsole(prefix, event) {
       console.log(prefix + event.target.id + '-' + event.type);
