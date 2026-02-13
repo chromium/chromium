@@ -106,10 +106,9 @@ void UmaHistogramRetryCountWithSuffix(std::string_view histogram_suffix,
 }
 #endif
 
-void UmaHistogramTimesWithSuffix(const char* histogram_name,
+void UmaHistogramTimesWithSuffix(std::string_view histogram_name,
                                  std::string_view histogram_suffix,
                                  base::TimeDelta sample) {
-  DCHECK(histogram_name);
   // Log with the given suffix and the aggregated ".All" suffix.
   if (histogram_suffix.empty()) {
     UmaHistogramTimes(histogram_name, sample);
@@ -118,6 +117,19 @@ void UmaHistogramTimesWithSuffix(const char* histogram_name,
                       sample);
   }
   UmaHistogramTimes(base::JoinString({histogram_name, "All"}, "."), sample);
+}
+
+void UmaHistogramCounts10MWithSuffix(std::string_view histogram_name,
+                                     std::string_view histogram_suffix,
+                                     int sample) {
+  // Log with the given suffix and the aggregated ".All" suffix.
+  if (histogram_suffix.empty()) {
+    UmaHistogramCounts10M(histogram_name, sample);
+  } else {
+    UmaHistogramCounts10M(
+        base::JoinString({histogram_name, histogram_suffix}, "."), sample);
+  }
+  UmaHistogramCounts10M(base::JoinString({histogram_name, "All"}, "."), sample);
 }
 
 // Deletes the file named |tmp_file_path| (which may be open as |tmp_file|),
@@ -456,6 +468,10 @@ void ImportantFileWriter::DoScheduledWrite() {
     }
 
     previous_data_size_ = data->size();
+    UmaHistogramCounts10MWithSuffix("ImportantFile.SerializationSize",
+                                    histogram_suffix_,
+                                    static_cast<int>(previous_data_size_));
+
     data_producer_for_background_sequence = base::BindOnce(
         [](std::string data) { return std::make_optional(std::move(data)); },
         std::move(data).value());

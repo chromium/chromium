@@ -4970,7 +4970,6 @@ chromium-metrics-reviews@google.com.
     location. Recorded on every write with ImportantFileWriter. If retries were
     needed, the retry count is recorded in ImportantFile.FileReplaceRetryCount2.
   </summary>
-  <token key="ImportantFileClients" variants="ImportantFileClients"/>
 </histogram>
 
 <histogram name="ImportantFile.FileReplaceRetryCount" units="attempt count"
@@ -4997,7 +4996,6 @@ chromium-metrics-reviews@google.com.
     ImportantFile.FileReplaceRetryCount, this is only logged if a retry is
     needed.
   </summary>
-  <token key="ImportantFileClients" variants="ImportantFileClients"/>
 </histogram>
 
 <histogram name="ImportantFile.SerializationDuration{ImportantFileClients}"
@@ -5011,7 +5009,19 @@ chromium-metrics-reviews@google.com.
     serialization (e.g. bookmarks), it excludes the time spent on the background
     thread, and only logs the time spent on the foreground thread.
   </summary>
-  <token key="ImportantFileClients" variants="ImportantFileClients"/>
+</histogram>
+
+<histogram name="ImportantFile.SerializationSize{ImportantFileClients}"
+    units="bytes" expires_after="2026-07-26">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Size of the serialized data to be written into an important file. Recorded
+    when the file is written.
+
+    Note: As client suffixes are added the volume of the unsufixed variant will
+    decline. This needs to be taken into account when analyzing overall counts.
+  </summary>
 </histogram>
 
 <histogram name="ImportantFile.WriteDuration{ImportantFileClients}" units="ms"
@@ -5025,7 +5035,6 @@ chromium-metrics-reviews@google.com.
     Note: As client suffixes are added the volume of the unsufixed variant will
     decline. This needs to be taken into account when analyzing overall counts.
   </summary>
-  <token key="ImportantFileClients" variants="ImportantFileClients"/>
 </histogram>
 
 <histogram name="Incognito.ClearBrowsingDataDialog.ActionType"
