@@ -1,7 +1,7 @@
 Name: clap_builder
 URL: https://crates.io/crates/clap_builder
-Version: 4.5.57
-Revision: 48c3b1139785a29f24cf18989f551622123275c0
+Version: 4.5.58
+Revision: 05bac738ebc886143cceb80dd6905a41b42952bf
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/clap_builder-v4/LICENSE-APACHE

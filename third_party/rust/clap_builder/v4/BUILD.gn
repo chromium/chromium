@@ -79,13 +79,13 @@ cargo_crate("lib") {
   cargo_pkg_name = "clap_builder"
   cargo_pkg_description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
   cargo_pkg_repository = "https://github.com/clap-rs/clap"
-  cargo_pkg_version = "4.5.57"
+  cargo_pkg_version = "4.5.58"
 
   allow_unsafe = false
 
   deps = [
     "//third_party/rust/anstyle/v1:lib",
-    "//third_party/rust/clap_lex/v0_7:lib",
+    "//third_party/rust/clap_lex/v1:lib",
     "//third_party/rust/strsim/v0_11:lib",
   ]
   features = [

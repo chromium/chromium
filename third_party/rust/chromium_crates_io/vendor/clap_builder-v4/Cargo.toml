@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap_builder"
-version = "4.5.57"
+version = "4.5.58"
 build = false
 include = [
     "build.rs",
@@ -113,7 +113,7 @@ version = "0.3.73"
 optional = true
 
 [dependencies.clap_lex]
-version = "0.7.4"
+version = "1.0.0"
 
 [dependencies.strsim]
 version = "0.11.0"
