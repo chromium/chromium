@@ -2768,9 +2768,6 @@ crbug.com/420443621 external/wpt/css/css-viewport/zoom/text-decoration-thickness
 
 crbug.com/424798906 external/wpt/pointerevents/pointerevent_element_haspointercapture.html?touch [ Failure ]
 
-# [0722/141043.336307:FATAL:third_party/blink/renderer/core/css/style_traversal_root.cc:31] DCHECK failed: !document_element || (!root_node_ && root_type_ == RootType::kSingleRoot).
-crbug.com/433696404 external/wpt/dom/nodes/moveBefore/moveBefore-from-light-to-shadow.html [ Crash ]
-
 crbug.com/433565190 external/wpt/css/css-counter-styles/japanese-formal/counter-japanese-formal-extended.html [ Failure ]
 crbug.com/433565190 external/wpt/css/css-counter-styles/japanese-informal/counter-japanese-informal-extended.html [ Failure ]
 crbug.com/433565190 external/wpt/css/css-counter-styles/korean-hangul-formal/counter-korean-hangul-formal-extended.html [ Failure ]

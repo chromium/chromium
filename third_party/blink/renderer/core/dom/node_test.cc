@@ -589,6 +589,27 @@ TEST_F(NodeTest, FlatTreeParentForChildDirty) {
   EXPECT_EQ(fallback2->FlatTreeParentForChildDirty(), slot2);
 }
 
+TEST_F(NodeTest, moveBefore_DetachAfterSlotReassignment) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <!DOCTYPE html>
+    <div id="host">
+      <template shadowRootMode="open"><slot></slot></template>
+    </div>
+    <span id="span" slot="foo"></span>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* span = GetDocument().getElementById(AtomicString("span"));
+
+  host->moveBefore(span, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(span->GetComputedStyle());
+
+  GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
+  EXPECT_FALSE(span->GetComputedStyle());
+}
+
 #if DCHECK_IS_ON()
 TEST_F(NodeTest, ToStringDisallowedAssignmentRecalc) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(

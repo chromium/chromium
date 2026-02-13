@@ -1471,39 +1471,68 @@ bool Node::ShouldSkipMarkingStyleDirty() const {
   return true;
 }
 
+namespace {
+
+bool IsNodeInFlatTree(const Node& node, const Element* style_parent) {
+  const ComputedStyle* current_style = nullptr;
+  if (const Element* element = DynamicTo<Element>(node)) {
+    current_style = element->GetComputedStyle();
+    if (current_style && !style_parent && !element->IsDocumentElement()) {
+      // An element which does not have a GetStyleRecalcParent(), and is not
+      // the documentElement, does not take part in the flat tree with the
+      // current slot assignments. They still may have a non-null ComputedStyle
+      // if they have been inserted in their current position with moveBefore().
+      //
+      // The ComputedStyle will be cleared if the next slot assignment decides
+      // it is not part of the flat tree.
+      //
+      // Return early here to make sure we do not attempt to use elements
+      // outside the flat to update the recalc root below since they won't be
+      // reached during the style recalc pass when outside the flat tree.
+      return false;
+    }
+  }
+  if (!current_style && style_parent) {
+    current_style = style_parent->GetComputedStyle();
+  }
+  if (current_style && current_style->IsEnsuredOutsideFlatTree()) {
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+
 void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
   Element* style_parent = GetStyleRecalcParent();
   bool parent_dirty = style_parent && style_parent->IsDirtyForStyleRecalc();
   Element* ancestor = style_parent;
   for (; ancestor && !ancestor->ChildNeedsStyleRecalc();
        ancestor = ancestor->GetStyleRecalcParent()) {
-    if (!ancestor->isConnected())
+    if (!ancestor->isConnected()) {
       return;
+    }
     ancestor->SetChildNeedsStyleRecalc();
-    if (ancestor->IsDirtyForStyleRecalc())
+    if (ancestor->IsDirtyForStyleRecalc()) {
       break;
-
+    }
     // If we reach a locked ancestor, we should abort since the ancestor marking
     // will be done when the lock is committed.
-    if (ancestor->ChildStyleRecalcBlockedByDisplayLock())
+    if (ancestor->ChildStyleRecalcBlockedByDisplayLock()) {
       break;
+    }
   }
-  if (!isConnected())
+  if (!isConnected()) {
     return;
+  }
   // If the parent node is already dirty, we can keep the same recalc root. The
   // early return here is a performance optimization.
-  if (parent_dirty)
+  if (parent_dirty) {
     return;
+  }
   // If we are outside the flat tree we should not update the recalc root
   // because we should not traverse those nodes from StyleEngine::RecalcStyle().
-  const ComputedStyle* current_style = nullptr;
-  if (Element* element = DynamicTo<Element>(this)) {
-    current_style = element->GetComputedStyle();
-  }
-  if (!current_style && style_parent) {
-    current_style = style_parent->GetComputedStyle();
-  }
-  if (current_style && current_style->IsEnsuredOutsideFlatTree()) {
+  if (!IsNodeInFlatTree(*this, style_parent)) {
     return;
   }
   // If we're in a locked subtree, then we should not update the style recalc
@@ -1514,8 +1543,9 @@ void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
       0) {
     for (Element* ancestor_copy = ancestor; ancestor_copy;
          ancestor_copy = ancestor_copy->GetStyleRecalcParent()) {
-      if (ancestor_copy->ChildStyleRecalcBlockedByDisplayLock())
+      if (ancestor_copy->ChildStyleRecalcBlockedByDisplayLock()) {
         return;
+      }
     }
   }
 
