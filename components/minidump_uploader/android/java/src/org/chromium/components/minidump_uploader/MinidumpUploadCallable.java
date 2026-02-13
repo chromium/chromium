@@ -8,11 +8,9 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,7 +20,7 @@ import java.util.concurrent.Callable;
 /**
  * This class tries to upload a minidump to the crash server.
  *
- * It is implemented as a Callable<Boolean> and returns true on successful uploads, and false
+ * <p>It is implemented as a Callable<Boolean> and returns true on successful uploads, and false
  * otherwise.
  */
 @NullMarked
@@ -113,7 +111,7 @@ public class MinidumpUploadCallable implements Callable<Integer> {
 
             try {
                 String localId = CrashFileManager.getCrashLocalIdFromFileName(crashFileName);
-                appendUploadedEntryToLog(localId, uploadId);
+                CrashFileManager.appendUploadedEntryToLog(mLogfile, localId, uploadId);
             } catch (IOException ioe) {
                 Log.e(TAG, "Fail to write uploaded entry to log file");
             }
@@ -144,36 +142,5 @@ public class MinidumpUploadCallable implements Callable<Integer> {
                             + result.message());
         }
         return MinidumpUploadStatus.FAILURE;
-    }
-
-    /**
-     * Records the upload entry to a log file
-     * similar to what is done in chrome/app/breakpad_linux.cc
-     *
-     * @param localId The local ID when crash happened.
-     * @param uploadId The crash ID return from the server.
-     */
-    private void appendUploadedEntryToLog(@Nullable String localId, String uploadId)
-            throws IOException {
-        FileWriter writer = new FileWriter(mLogfile, /* append= */ true);
-
-        // The log entries are formated like so:
-        //  seconds_since_epoch,crash_id
-        StringBuilder sb = new StringBuilder();
-        sb.append(System.currentTimeMillis() / 1000);
-        sb.append(",");
-        sb.append(uploadId);
-        if (localId != null) {
-            sb.append(",");
-            sb.append(localId);
-        }
-        sb.append('\n');
-
-        try {
-            // Since we are writing one line at a time, lets forget about BufferWriters.
-            writer.write(sb.toString());
-        } finally {
-            writer.close();
-        }
     }
 }
