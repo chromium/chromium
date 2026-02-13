@@ -60,6 +60,16 @@ namespace glic {
 // PNG.
 BASE_FEATURE(kGlicBitmapsEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Sets the maximum number of in-flight requests to the guest.
+BASE_FEATURE(kGlicMaxInFlightRequests, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kGlicMaxInFlightRequestLimit,
+                   &kGlicMaxInFlightRequests,
+                   "max_in_flight_request_limit",
+                   200);
+BASE_FEATURE(kGlicSendResponsesForAllRequests,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler {
  public:
   explicit GlicPreloadHandler(
@@ -185,6 +195,14 @@ GlicUI::GlicUI(content::WebUI* web_ui)
 
   source->AddBoolean("loggingEnabled",
                      command_line->HasSwitch(::switches::kGlicHostLogging));
+
+  source->AddInteger("maxInFlightRequests",
+                     base::FeatureList::IsEnabled(kGlicMaxInFlightRequests)
+                         ? kGlicMaxInFlightRequestLimit.Get()
+                         : INT_MAX);
+  source->AddBoolean(
+      "sendResponsesForAllRequests",
+      base::FeatureList::IsEnabled(kGlicSendResponsesForAllRequests));
 
   // Set up guest URL via cli flag or default to finch param value.
   const GURL guest_url = GetGuestURL();

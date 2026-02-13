@@ -45,6 +45,7 @@ ts_library("build_extra_ts") {
     "test_client/sections/additional_context.ts",
     "test_client/sections/interaction.ts",
     "test_client/sections/view.ts",
+    "test_client/sections/stress.ts",
   ]
   deps = [ "//chrome/browser/resources/glic:build_ts" ]
 

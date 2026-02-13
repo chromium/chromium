@@ -15,8 +15,9 @@ import {ObservableValue} from '../../observable.js';
 import type {ObservableValueReadOnly} from '../../observable.js';
 import {OneShotTimer} from '../../timer.js';
 
-import type {PostMessageRequestHandler, ResponseExtras} from './../post_message_transport.js';
-import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './../post_message_transport.js';
+import type {PostMessageRequestHandler, PostMessageRouter, ResponseExtras} from './../post_message_transport.js';
+import {createBidirectionalPostMessageTransport, newSenderId} from './../post_message_transport.js';
+import type {PostMessageRequestReceiver, PostMessageRequestSender} from './../post_message_transport.js';
 import {HOST_REQUEST_TYPES, requestTypeToHistogramSuffix} from './../request_types.js';
 import {urlFromClient} from './conversions.js';
 import {GatedSender} from './gated_sender.js';
@@ -77,6 +78,7 @@ export class GlicApiCommunicator implements PostMessageRequestHandler {
   private senderId = newSenderId();
   readonly postMessageReceiver: PostMessageRequestReceiver;
   readonly postMessageSender: PostMessageRequestSender;
+  readonly router: PostMessageRouter;
   private bootstrapPingIntervalId: number|undefined;
   private loggingEnabled = loadTimeData.getBoolean('loggingEnabled');
   private host?: GlicApiHost;
@@ -84,12 +86,16 @@ export class GlicApiCommunicator implements PostMessageRequestHandler {
 
   constructor(
       private embeddedOrigin: string, private windowProxy: WindowProxy) {
-    this.postMessageReceiver = new PostMessageRequestReceiver(
+    const {router, sender, receiver} = createBidirectionalPostMessageTransport(
         embeddedOrigin, this.senderId, windowProxy, this, 'glic_api_host');
-    this.postMessageReceiver.setLoggingEnabled(this.loggingEnabled);
-    this.postMessageSender = new PostMessageRequestSender(
-        windowProxy, embeddedOrigin, this.senderId, 'glic_api_host');
-    this.postMessageSender.setLoggingEnabled(this.loggingEnabled);
+    this.router = router;
+    this.postMessageReceiver = receiver;
+    this.postMessageSender = sender;
+    this.router.setLoggingEnabled(this.loggingEnabled);
+    this.postMessageSender.setMaxInFlightRequests(
+        loadTimeData.getInteger('maxInFlightRequests'));
+    this.postMessageSender.sendResponsesForAllRequests =
+        loadTimeData.getBoolean('sendResponsesForAllRequests');
 
     this.bootstrapPingIntervalId =
         window.setInterval(this.bootstrapPing.bind(this), 50);
@@ -98,8 +104,7 @@ export class GlicApiCommunicator implements PostMessageRequestHandler {
 
   destroy() {
     window.clearInterval(this.bootstrapPingIntervalId);
-    this.postMessageReceiver.destroy();
-    this.postMessageSender.destroy();
+    this.router.destroy();
   }
 
   // Should be called only once.
@@ -338,13 +343,26 @@ export class GlicApiHost implements PostMessageRequestHandler {
         }
         await this.clientActiveObs.waitUntil((active) => active);
       }
+      const SMALL_QUEUE_SIZE = 50;
+      const hostSendMessageQueueLength =
+          this.sender.getRawSender().messageQueueLength() +
+          this.sender.getRawSender().inFlightRequestCount();
+      if (hostSendMessageQueueLength >= SMALL_QUEUE_SIZE) {
+        chrome.metricsPrivate.recordMediumCount(
+            'Glic.Host.HostSendMessageQueueLength', hostSendMessageQueueLength);
+      }
 
       let gotResponse = false;
       const responsePromise =
           this.sender
               .requestWithResponse('glicWebClientCheckResponsive', undefined)
-              .then(() => {
+              .then((response: {clientSendMessageQueueLength: number}) => {
                 gotResponse = true;
+                if (response.clientSendMessageQueueLength >= SMALL_QUEUE_SIZE) {
+                  chrome.metricsPrivate.recordMediumCount(
+                      'Glic.Host.ClientSendMessageQueueLength',
+                      response.clientSendMessageQueueLength);
+                }
               });
       const responseTimeout = sleep(timeoutMs);
 

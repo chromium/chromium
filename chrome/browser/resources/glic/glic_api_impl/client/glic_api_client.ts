@@ -7,8 +7,8 @@ import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapabilit
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 
 import {replaceProperties} from './../conversions.js';
-import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './../post_message_transport.js';
-import type {ResponseExtras} from './../post_message_transport.js';
+import {createBidirectionalPostMessageTransport, newSenderId} from './../post_message_transport.js';
+import type {PostMessageRequestSender, PostMessageRouter, ResponseExtras} from './../post_message_transport.js';
 import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientRequestTypes} from './../request_types.js';
 import {ConfirmationRequestErrorReason, ErrorWithReasonImpl, ImageAlphaType, ImageColorType, newTransferableException, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason} from './../request_types.js';
 import {rgbaImageToBmpBlob} from './image_utils.js';
@@ -161,8 +161,13 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.panelActiveValue.assignAndSignal(payload.panelActive);
   }
 
-  async glicWebClientCheckResponsive(): Promise<void> {
-    return this.webClient.checkResponsive?.();
+  async glicWebClientCheckResponsive():
+      Promise<{clientSendMessageQueueLength: number}> {
+    await this.webClient.checkResponsive?.();
+    return {
+      clientSendMessageQueueLength: this.host.sender.messageQueueLength() +
+          this.host.sender.inFlightRequestCount(),
+    };
   }
 
   glicWebClientNotifyManualResizeChanged(payload: {resizing: boolean}) {
@@ -515,8 +520,8 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
   private readonly hostId = newSenderId();
-  private sender: PostMessageRequestSender;
-  private receiver: PostMessageRequestReceiver;
+  private readonly router: PostMessageRouter;
+  readonly sender: PostMessageRequestSender;
   private handlerFunctionNames: Set<string> = new Set();
   private webClientMessageHandler: WebClientMessageHandler;
   private chromeVersion?: ChromeVersion;
@@ -585,10 +590,15 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     // as it would require reloading the webview page and initializing a new
     // web client very quickly, and in normal operation, the webview does not
     // reload after successful load.
-    this.sender = new PostMessageRequestSender(
-        windowProxy, 'chrome://glic', this.hostId, 'glic_api_client');
-    this.receiver = new PostMessageRequestReceiver(
-        'chrome://glic', this.hostId, windowProxy, this, 'glic_api_client');
+    const {router, sender} = createBidirectionalPostMessageTransport(
+        'chrome://glic',
+        this.hostId,
+        windowProxy,
+        this,
+        'glic_api_client',
+    );
+    this.router = router;
+    this.sender = sender;
     this.getTabByIdSubscriberSet =
         new GetTabByIdSubscriberSet(this.sender, this.idGenerator);
     this.webClientMessageHandler =
@@ -605,7 +615,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   }
 
   destroy() {
-    this.receiver.destroy();
+    this.router.destroy();
   }
 
   async webClientCreated() {
@@ -613,8 +623,9 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserWebClientCreated', undefined);
     const state = response.initialState;
     enableRgbaToBmp = state.rgbaToBmp;
-    this.receiver.setLoggingEnabled(state.loggingEnabled);
-    this.sender.setLoggingEnabled(state.loggingEnabled);
+    this.router.setLoggingEnabled(state.loggingEnabled);
+    this.sender.setMaxInFlightRequests(state.maxInFlightRequests);
+    this.sender.sendResponsesForAllRequests = state.sendResponsesForAllRequests;
     this.panelState.assignAndSignal(state.panelState);
     const focusedTabData =
         convertFocusedTabDataFromPrivate(state.focusedTabData);

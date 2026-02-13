@@ -2,19 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
+
 import type {AllRequestTypes, AllRequestTypesWithoutReturn, RequestRequestType, RequestResponseType, TransferableException} from './request_types.js';
 import {exceptionFromTransferable, newTransferableException} from './request_types.js';
 
 // This file contains helpers to send and receive messages over postMessage.
 
-// Requests sent over postMessage have this structure.
-export declare interface RequestMessage {
-  // Unique ID of the sender.
+export declare interface MessageBase {
+  // In RequestMessage, this is the Unique ID of the sender in RequestMessage.
+  // In ResponseMessage, this is the round-tripped senderId (id of the other
+  // side).
   senderId: string;
-  // Present for any Glic request message.
-  glicRequest: true;
   // The type of request.
   type: string;
+}
+
+// Requests sent over postMessage have this structure.
+export declare interface RequestMessage extends MessageBase {
+  // Present for any Glic request message.
+  glicRequest: true;
   // A unique ID of the request. Round-tripped in the response. `undefined` if a
   // response is not desired.
   requestId?: number;
@@ -24,11 +31,7 @@ export declare interface RequestMessage {
 
 // Responses sent over postMessage have this structure. Responses are messages
 // sent in response to a `RequestMessage`.
-declare interface ResponseMessage {
-  // Round-tripped RequestMessage.senderId.
-  senderId: string;
-  // The type of request.
-  type: string;
+declare interface ResponseMessage extends MessageBase {
   // The round-tripped `RequestMessage.requestId`.
   responseId: number;
   // A payload. Each type of response has a distinct payload type. Not set if
@@ -87,18 +90,54 @@ class MessageLogger {
   }
 }
 
-// Sends requests over postMessage. Ideally this type would be parameterized by
-// only one of HostRequestTypes or WebClientRequestTypes, but typescript
-// cannot represent this. Instead, this class can send messages of any type.
-export class PostMessageRequestSender extends MessageLogger {
-  requestId = 1;
-  responseHandlers: Map<number, (response: ResponseMessage) => void> =
-      new Map();
-  onDestroy: () => void;
+// Implements a simple queue with O(1) push and shift.
+export class Queue<T> {
+  // An array where elements are always pushed.
+  next: T[] = [];
+  // An array frozen in size from which elements are consumed.
+  // When all elements are consumed, `next` is swapped into `current`.
+  current: Array<T|undefined> = [];
+  // Next element index in `current`.
+  index = 0;
+
+  push(item: T): void {
+    this.next.push(item);
+  }
+
+  popFront(): T|undefined {
+    if (this.index < this.current.length) {
+      const result = this.current[this.index]!;
+      this.current[this.index] = undefined;
+      this.index++;
+      return result;
+    }
+    if (this.next.length === 0) {
+      return undefined;
+    }
+    this.current = this.next;
+    this.next = [];
+    this.index = 0;
+    return this.popFront();
+  }
+
+  get length(): number {
+    return this.current.length - this.index + this.next.length;
+  }
+
+  empty(): boolean {
+    return this.next.length === 0 && this.index === this.current.length;
+  }
+}
+
+// Shared functionality between the sender and receiver.
+export class PostMessageRouter extends MessageLogger {
+  private onDestroy: () => void;
+  sender?: PostMessageRequestSender;
+  receiver?: PostMessageRequestReceiver;
 
   constructor(
-      private messageSender: PostMessageSender, private remoteOrigin: string,
-      private senderId: string, logPrefix: string) {
+      public readonly remoteOrigin: string, readonly senderId: string,
+      readonly messageSender: PostMessageSender, logPrefix: string) {
     super(senderId, logPrefix);
     const handler = this.onMessage.bind(this);
     window.addEventListener('message', handler);
@@ -111,22 +150,121 @@ export class PostMessageRequestSender extends MessageLogger {
     this.onDestroy();
   }
 
-  // Handles responses from the host.
-  private onMessage(event: MessageEvent) {
-    // Ignore all messages that don't look like responses.
-    if (event.origin !== this.remoteOrigin ||
-        event.data.senderId !== this.senderId ||
-        event.data.type === undefined || event.data.responseId === undefined) {
+  onMessage(event: MessageEvent) {
+    if (event.origin !== this.remoteOrigin) {
       return;
     }
-    const response = event.data as ResponseMessage;
-    const handler = this.responseHandlers.get(response.responseId);
-    if (!handler) {
+    // Check properties on MessageBase.
+    const data = event.data;
+    if (data.type === undefined || data.senderId === undefined ||
+        !event.source) {
+      return;
+    }
+
+    if (data.responseId === undefined) {
+      // For RequestMessage, only process messages if they are not from this
+      // sender.
+      if (this.receiver && data.senderId !== this.senderId &&
+          data.glicRequest === true) {
+        this.receiver?.onMessage(data);
+      }
+    } else {
+      // For ResponseMessage, only process messages if they are from this
+      // sender.
+      if (this.sender && data.senderId === this.senderId) {
+        this.sender?.onMessage(data);
+      }
+    }
+  }
+
+  sendRequest(
+      type: string, requestId: number|undefined, requestPayload: any,
+      transfer: Transferable[] = []) {
+    const request = {
+      glicRequest: true,
+      type,
+      requestId,
+      requestPayload,
+      senderId: this.senderId,
+    } satisfies RequestMessage;
+    this.maybeLogMessage(type, 'sending request', request);
+    this.messageSender.postMessage(request, this.remoteOrigin, transfer);
+  }
+
+  sendResponse(
+      type: string, senderId: string, responseId: number, responsePayload: any,
+      exception: TransferableException|undefined,
+      transfer: Transferable[] = []) {
+    const response: ResponseMessage = {
+      type,
+      responseId,
+      responsePayload,
+      senderId,
+    };
+    if (exception) {
+      response.exception = exception;
+    }
+    this.maybeLogMessage(type, 'sending response', response);
+    this.messageSender.postMessage(response, this.remoteOrigin, transfer);
+  }
+}
+
+// Sends requests over postMessage. Ideally this type would be parameterized by
+// only one of HostRequestTypes or WebClientRequestTypes, but typescript
+// cannot represent this. Instead, this class can send messages of any type.
+export class PostMessageRequestSender {
+  requestId = 1;
+  responseHandlers:
+      Map<number,
+          {type: string, handler: (response: ResponseMessage) => void}> =
+          new Map();
+
+  // We limit the number of in-flight requests because it fails in a better way
+  // than doing no limiting. The WebUI code heavily relies on promises to
+  // dispatch work in processing mojo requests and requests over postMessage.
+  // Ideally, we could prioritize processing of mojo requests, but that's not
+  // currently tractable. Instead, we limit the number of in-flight requests
+  // which in practice prevents the situation where the WebUI is too busy
+  // processing new postMessage requests to respond to existing ones.
+
+  private maxInFlightRequests = Infinity;
+  // If true, send responses for all requests even if the request doesn't
+  // require one. This ensures in-flight request tracking is accurate.
+  // Without this, in-flight request tracking just ignores requests that don't
+  // require a response until after the `maxInFlightRequests` limit is reached.
+  sendResponsesForAllRequests = false;
+  sendQueue = new Queue<() => void>();
+  queueNoticeLogged = false;
+
+  constructor(private router: PostMessageRouter) {
+    assert(router.sender === undefined);
+    router.sender = this;
+  }
+
+  inFlightRequestCount(): number {
+    return this.responseHandlers.size;
+  }
+
+  messageQueueLength(): number {
+    return this.sendQueue.length;
+  }
+
+  // Handles responses from the host.
+  onMessage(response: ResponseMessage) {
+    const entry = this.responseHandlers.get(response.responseId);
+    if (!entry) {
       // No handler for this request.
       return;
     }
     this.responseHandlers.delete(response.responseId);
-    handler(response);
+    if (!this.sendQueue.empty() &&
+        this.responseHandlers.size < this.maxInFlightRequests) {
+      // Running a queued send will always register another response handler.
+      // This should ensure a steady state of MAX_IN_FLIGHT_REQUESTS until
+      // the queue is empty.
+      this.sendQueue.popFront()!();
+    }
+    entry.handler(response);
   }
 
   // Sends a request to the host, and returns a promise that resolves with its
@@ -137,26 +275,38 @@ export class PostMessageRequestSender extends MessageLogger {
     const {promise, resolve, reject} =
         Promise.withResolvers<RequestResponseType<T>>();
     const requestId = this.requestId++;
-    this.responseHandlers.set(requestId, (response: ResponseMessage) => {
-      if (response.exception !== undefined) {
-        this.maybeLogMessage(
-            requestType, 'received with exception', response.exception);
-        reject(exceptionFromTransferable(response.exception));
-      } else {
-        this.maybeLogMessage(requestType, 'received', response.responsePayload);
-        resolve(response.responsePayload as RequestResponseType<T>);
-      }
-    });
+    const processFn = () => {
+      this.responseHandlers.set(requestId, {
+        type: requestType,
+        handler: (response: ResponseMessage) => {
+          if (response.exception !== undefined) {
+            this.router.maybeLogMessage(
+                requestType, 'received response with exception',
+                response.exception);
+            reject(exceptionFromTransferable(response.exception));
+          } else {
+            this.router.maybeLogMessage(
+                requestType, 'received response', response.responsePayload);
+            resolve(response.responsePayload as RequestResponseType<T>);
+          }
+        },
+      });
 
-    this.maybeLogMessage(requestType, 'sending', request);
-    const message: RequestMessage = {
-      senderId: this.senderId,
-      glicRequest: true,
-      requestId,
-      type: requestType,
-      requestPayload: request,
+      this.router.sendRequest(requestType, requestId, request, transfer);
     };
-    this.messageSender.postMessage(message, this.remoteOrigin, transfer);
+    if (this.isQueueing()) {
+      if (!this.queueNoticeLogged) {
+        console.warn(
+            `WARNING! ${this.router.loggingPrefix}:` +
+            ` Too many in-flight requests, starting to queue them.`);
+        this.logInFlightRequestsForDebugging();
+        this.queueNoticeLogged = true;
+      }
+      this.sendQueue.push(processFn);
+    } else {
+      processFn();
+    }
+
     return promise;
   }
 
@@ -164,15 +314,40 @@ export class PostMessageRequestSender extends MessageLogger {
   requestNoResponse<T extends keyof AllRequestTypesWithoutReturn>(
       requestType: T, request: RequestRequestType<T>,
       transfer: Transferable[] = []): void {
-    const message: RequestMessage = {
-      senderId: this.senderId,
-      glicRequest: true,
-      requestId: undefined,
-      type: requestType,
-      requestPayload: request,
-    };
-    this.maybeLogMessage(requestType, 'sending', request);
-    this.messageSender.postMessage(message, this.remoteOrigin, transfer);
+    if (!this.sendResponsesForAllRequests && !this.isQueueing()) {
+      this.router.sendRequest(requestType, undefined, request, transfer);
+      return;
+    }
+    // When queueing, use requestWithResponse because it supports queueing.
+    // This ensures that queued requests are sent steadily as responses are
+    // received.
+    this.requestWithResponse(requestType, request, transfer);
+  }
+
+  setMaxInFlightRequests(maxInFlightRequests: number) {
+    if (maxInFlightRequests < 1) {
+      this.maxInFlightRequests = Infinity;
+    } else {
+      this.maxInFlightRequests = maxInFlightRequests;
+    }
+  }
+
+  private isQueueing() {
+    return this.inFlightRequestCount() >= this.maxInFlightRequests ||
+        this.sendQueue.length > 0;
+  }
+
+  private logInFlightRequestsForDebugging() {
+    const counts: Map<string, number> = new Map();
+    for (const entry of this.responseHandlers.values()) {
+      counts.set(entry.type, (counts.get(entry.type) || 0) + 1);
+    }
+    const entries = Array.from(counts.entries());
+    entries.sort((a, b) => b[1] - a[1]);
+    const entriesString =
+        entries.map(([type, count]) => `${type}: ${count}`).join(', ');
+    console.info(
+        `${this.router.loggingPrefix}: In-flight requests: ${entriesString}`);
   }
 }
 
@@ -206,38 +381,21 @@ export interface PostMessageRequestHandler {
 
 // Receives requests over postMessage and forward them to a
 // `PostMessageRequestHandler`.
-export class PostMessageRequestReceiver extends MessageLogger {
-  private onDestroy: () => void;
+export class PostMessageRequestReceiver {
   constructor(
-      private embeddedOrigin: string, senderId: string,
-      private postMessageSender: PostMessageSender,
-      public handler: PostMessageRequestHandler, logPrefix: string) {
-    super(senderId, logPrefix);
-    const handlerFunction = this.onMessage.bind(this);
-    window.addEventListener('message', handlerFunction);
-    this.onDestroy = () => {
-      window.removeEventListener('message', handlerFunction);
-    };
+      private router: PostMessageRouter,
+      public handler: PostMessageRequestHandler) {
+    assert(router.receiver === undefined);
+    router.receiver = this;
   }
 
-  destroy() {
-    this.onDestroy();
-  }
-
-  async onMessage(event: MessageEvent) {
-    // This receives all messages to the window, so ignore them if they don't
-    // look compatible.
-    if (event.origin !== this.embeddedOrigin || !event.source ||
-        !event.data.glicRequest) {
-      return;
-    }
-    const requestMessage = event.data as RequestMessage;
-    const {requestId, type, requestPayload, senderId} = requestMessage;
+  async onMessage(requestMessage: RequestMessage) {
+    const {senderId, requestId, type, requestPayload} = requestMessage;
     let response;
     let exception: TransferableException|undefined;
     const extras = new ResponseExtras();
     this.handler.onRequestReceived(type);
-    this.maybeLogMessage(type, 'processing request', requestPayload);
+    this.router.maybeLogMessage(type, 'processing request', requestPayload);
     try {
       response =
           await this.handler.handleRawRequest(type, requestPayload, extras);
@@ -260,22 +418,25 @@ export class PostMessageRequestReceiver extends MessageLogger {
     if (!requestId) {
       return;
     }
-    this.maybeLogMessage(type, 'sending response', response?.payload);
-    const responseMessage: ResponseMessage = {
-      type,
-      responseId: requestId,
-      responsePayload: response?.payload,
-      senderId,
-    };
-    if (exception) {
-      responseMessage.exception = exception;
-    }
-    this.postMessageSender.postMessage(
-        responseMessage,
-        this.embeddedOrigin,
-        extras.transfers,
-    );
+    this.router.sendResponse(
+        type, senderId, requestId, response?.payload, exception,
+        extras.transfers);
   }
+}
+
+export function createBidirectionalPostMessageTransport(
+    remoteOrigin: string,
+    senderId: string,
+    postMessageSender: PostMessageSender,
+    handler: PostMessageRequestHandler,
+    logPrefix: string,
+) {
+  const router = new PostMessageRouter(
+      remoteOrigin, senderId, postMessageSender, logPrefix);
+  const sender = new PostMessageRequestSender(router);
+  const receiver = new PostMessageRequestReceiver(router, handler);
+  // Note: receiver is returned to allow replacing the handler.
+  return {router, sender, receiver};
 }
 
 // Converts a value to JSON for debug logging.

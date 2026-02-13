@@ -114,6 +114,9 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
         },
         platform: platformToClient(platform),
         loggingEnabled: loadTimeData.getBoolean('loggingEnabled'),
+        maxInFlightRequests: loadTimeData.getInteger('maxInFlightRequests'),
+        sendResponsesForAllRequests:
+            loadTimeData.getBoolean('sendResponsesForAllRequests'),
         hostCapabilities: hostCapabilitiesToClient(hostCapabilities),
         rgbaToBmp: loadTimeData.getBoolean('glicBitmapsEnabled'),
       }),
@@ -553,6 +556,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     }
 
     let avatarIcon: RgbaImage|undefined;
+    bitmapN32ToRGBAImage;
     if (mojoProfileInfo.avatarIcon) {
       avatarIcon = bitmapN32ToRGBAImage(mojoProfileInfo.avatarIcon);
       if (avatarIcon) {

@@ -18,6 +18,7 @@ import './sections/view.js';
 import './sections/additional_context.js';
 import './sections/interaction.js';
 import './sections/skills.js';
+import './sections/stress.js';
 
 import type {OpenSettingsOptions} from '/glic/glic_api/glic_api.js';
 import {SettingsPageField, WebClientMode} from '/glic/glic_api/glic_api.js';

@@ -688,6 +688,9 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     backgroundAllowed: true,
   },
   glicWebClientCheckResponsive: {
+    response: {
+      clientSendMessageQueueLength: number,
+    },
     backgroundAllowed: true,
   },
   glicWebClientNotifyManualResizeChanged: {
@@ -1031,6 +1034,8 @@ export type WebClientInitialStatePrivate =
       platform: Platform,
       focusedTabData: FocusedTabDataPrivate,
       loggingEnabled: boolean,
+      maxInFlightRequests: number,
+      sendResponsesForAllRequests: boolean,
       enableZeroStateSuggestions: boolean,
       enableCachedGetUserProfileInfo: boolean,
       hostCapabilities: HostCapability[],

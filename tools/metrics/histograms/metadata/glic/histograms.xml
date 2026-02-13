@@ -590,6 +590,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Host.ClientSendMessageQueueLength" units="message count"
+    expires_after="2027-02-06">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the number of messages in flight or queued, sent from the glic
+    client at the time of the responsiveness check. Not recorded if the number
+    is less then 50.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Host.HostSendMessageQueueLength" units="message count"
+    expires_after="2027-02-06">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the number of messages in flight or queued, sent from the glic host
+    at the time of the responsiveness check. Not recorded if the number is less
+    then 50.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Host.LoadingStageAtTimeOut" enum="LoadingStage"
     expires_after="2026-07-17">
   <owner>iwells@chromium.org</owner>
