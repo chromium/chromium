@@ -37,6 +37,7 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.BoundedMatcher;
+import androidx.test.espresso.util.HumanReadables;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Description;
@@ -487,6 +488,8 @@ public class ManualFillingTestHelper {
                         (KeyboardAccessoryButtonGroupView) view;
                 if (tabIndex >= buttonGroupView.getButtons().size()) {
                     throw new PerformException.Builder()
+                            .withActionDescription(getDescription())
+                            .withViewDescription(HumanReadables.describe(view))
                             .withCause(new Throwable("No button at index " + tabIndex))
                             .build();
                 }
@@ -530,6 +533,8 @@ public class ManualFillingTestHelper {
                     }
                 }
                 throw new PerformException.Builder()
+                        .withActionDescription(getDescription())
+                        .withViewDescription(HumanReadables.describe(view))
                         .withCause(
                                 new Throwable("No button with description: " + descriptionToMatch))
                         .build();
@@ -559,6 +564,8 @@ public class ManualFillingTestHelper {
                 int itemCount = recyclerView.getAdapter().getItemCount();
                 if (itemCount <= 0) {
                     throw new PerformException.Builder()
+                            .withActionDescription(getDescription())
+                            .withViewDescription(HumanReadables.describe(view))
                             .withCause(new Throwable("RecyclerView has no items."))
                             .build();
                 }
