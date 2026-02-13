@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -105,7 +106,7 @@ Value UnguessableTokenToValue(UnguessableToken token) {
   UnguessableTokenRepresentation repr;
   repr.field.high = token.GetHighForSerialization();
   repr.field.low = token.GetLowForSerialization();
-  return Value(HexEncode(repr.buffer, sizeof(repr.buffer)));
+  return Value(HexEncode(base::span(repr.buffer)));
 }
 
 std::optional<UnguessableToken> ValueToUnguessableToken(const Value* value) {

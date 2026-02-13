@@ -234,7 +234,7 @@ std::vector<Instruction> MaybeSkipCoverageHook(
 TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   std::vector<Instruction> body;
   ASSERT_NO_FATAL_FAILURE(GetTestFunctionInstructions(&body));
-  SCOPED_TRACE(HexEncode(body.data(), body.size() * sizeof(Instruction)));
+  SCOPED_TRACE(HexEncode(base::as_byte_span(body)));
 
   // In non-official builds, we std::abort instead, so the result will be
   // false - but let's still go through the motions above so we spot any
