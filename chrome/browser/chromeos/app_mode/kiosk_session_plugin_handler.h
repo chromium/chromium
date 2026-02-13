@@ -18,10 +18,6 @@
 #error "Plugins should be enabled"
 #endif
 
-namespace base {
-class FilePath;
-}
-
 namespace content {
 class WebContents;
 }
@@ -66,7 +62,6 @@ class KioskSessionPluginHandler {
   std::vector<Observer*> GetWatchersForTesting() const;
 
  private:
-  void OnPluginCrashed(const base::FilePath& plugin_path);
   void OnPluginHung(const std::set<int>& hung_plugins);
   void OnWebContentsDestroyed(Observer* observer);
 

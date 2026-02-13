@@ -52,11 +52,6 @@ void KioskSessionPluginHandler::Observe(content::WebContents* contents) {
   watchers_.push_back(std::make_unique<Observer>(contents, this));
 }
 
-void KioskSessionPluginHandler::OnPluginCrashed(
-    const base::FilePath& plugin_path) {
-  delegate_->OnPluginCrashed(plugin_path);
-}
-
 void KioskSessionPluginHandler::OnPluginHung(
     const std::set<int>& hung_plugins) {
   delegate_->OnPluginHung(hung_plugins);

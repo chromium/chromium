@@ -153,16 +153,6 @@ class KioskBrowserSession::PluginHandlerDelegateImpl
     // to be updated when adding more plugin types here.
     return false;
   }
-  void OnPluginCrashed(const base::FilePath& plugin_path) override {
-    if (owner_->is_shutting_down()) {
-      return;
-    }
-    owner_->metrics_service_->RecordKioskSessionPluginCrashed();
-    owner_->is_shutting_down_ = true;
-
-    LOG(ERROR) << "Reboot due to plugin crash, path=" << plugin_path.value();
-    RebootDevice();
-  }
 
   void OnPluginHung(const std::set<int>& hung_plugins) override {
     if (owner_->is_shutting_down()) {

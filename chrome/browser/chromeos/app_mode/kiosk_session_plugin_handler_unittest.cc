@@ -32,16 +32,7 @@ class TestKioskSessionPluginHandlerDelegate
     return plugin_path.AsUTF8Unsafe() == kValidPluginPath;
   }
 
-  void OnPluginCrashed(const base::FilePath& plugin_path) override {
-    has_crashed_ = true;
-  }
-
   void OnPluginHung(const std::set<int>& hung_plugins) override {}
-
-  bool has_crashed() const { return has_crashed_; }
-
- private:
-  bool has_crashed_ = false;
 };
 
 class KioskSessionPluginHandlerTest : public testing::Test {

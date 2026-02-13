@@ -21,9 +21,6 @@ class KioskSessionPluginHandlerDelegate {
   // Whether the plugin identified by the path should be handled.
   virtual bool ShouldHandlePlugin(const base::FilePath& plugin_path) const = 0;
 
-  // Invoked after a plugin is crashed.
-  virtual void OnPluginCrashed(const base::FilePath& plugin_path) = 0;
-
   // Invoked after plugins are hung.
   virtual void OnPluginHung(const std::set<int>& hung_plugins) = 0;
 

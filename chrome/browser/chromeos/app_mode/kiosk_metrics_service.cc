@@ -130,12 +130,6 @@ void KioskMetricsService::RecordKioskSessionStopped() {
                              kKioskSessionDurationInDaysNormalHistogram);
 }
 
-void KioskMetricsService::RecordKioskSessionPluginCrashed() {
-  RecordKioskSessionState(KioskSessionState::kPluginCrashed);
-  RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
-                             kKioskSessionDurationInDaysCrashedHistogram);
-}
-
 void KioskMetricsService::RecordKioskSessionPluginHung() {
   RecordKioskSessionState(KioskSessionState::kPluginHung);
   RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,

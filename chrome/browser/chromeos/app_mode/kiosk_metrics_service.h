@@ -36,7 +36,8 @@ enum class KioskSessionState {
   kWebStarted = 1,
   kCrashed = 2,
   kStopped = 3,
-  kPluginCrashed = 4,
+  // No longer used, There are no plugins now.
+  // kPluginCrashed = 4,
   kPluginHung = 5,
   // No longer used, use kWebStarted for lacros platform.
   // kWebWithLacrosStarted = 6,
@@ -61,7 +62,6 @@ class KioskMetricsService {
   void RecordKioskSessionWebStarted();
   void RecordKioskSessionIwaStarted();
   void RecordKioskSessionStopped();
-  void RecordKioskSessionPluginCrashed();
   void RecordKioskSessionPluginHung();
 
  protected:

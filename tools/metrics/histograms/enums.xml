@@ -6760,7 +6760,7 @@ shown properly on the user-facing crash UI.
   <int value="1" label="Web kiosk started/"/>
   <int value="2" label="Session crashed"/>
   <int value="3" label="Successfully stopped"/>
-  <int value="4" label="Plugin crashed"/>
+  <int value="4" label="Plugin crashed (obsolete)"/>
   <int value="5" label="Plugin hung"/>
   <int value="6" label="Web kiosk with lacros started (obsolete)"/>
   <int value="7" label="Restored session"/>
