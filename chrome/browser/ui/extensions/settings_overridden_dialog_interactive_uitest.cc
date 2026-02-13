@@ -177,20 +177,14 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
   }
 
   auto ScreenshotDialog() {
-    auto steps = Steps(
-        // TODO(http://crbug.com/461806299): Add support for supplying the
-        // dialog's ElementIdentifier via DialogModel, to eliminate the need for
-        // Views-specific code here.
-        NameViewRelative(kSettingsOverriddenDialogSaveButtonId, "Dialog",
-                         [](views::View* save_button) {
-                           return save_button->GetWidget()->GetRootView();
-                         }),
-        SetOnIncompatibleAction(
-            OnIncompatibleAction::kIgnoreAndContinue,
-            "Screenshot can only run in pixel_tests on Windows."),
-        Screenshot("Dialog",
-                   /*screenshot_name=*/std::string(),
-                   /*baseline_cl=*/"7563250"));
+    auto steps =
+        Steps(SetOnIncompatibleAction(
+                  OnIncompatibleAction::kIgnoreAndContinue,
+                  "Screenshot can only run in pixel_tests on Windows."),
+              ScreenshotSurface(
+                  kSettingsOverriddenDialogId,
+                  /*screenshot_name=*/"ExtensionSettingsOverridenDialog",
+                  /*baseline_cl=*/"7568622"));
     return steps;
   }
 
