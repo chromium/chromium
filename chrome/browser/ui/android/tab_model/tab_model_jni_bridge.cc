@@ -80,13 +80,11 @@ constexpr int kInvalidTabGroupColorId = -1;
 template <typename Container>
 std::vector<TabAndroid*> GetAllTabsFromHandles(const Container& handles) {
   std::vector<TabAndroid*> tabs;
-  tabs.reserve(tabs.size());
+  tabs.reserve(handles.size());
   for (tabs::TabHandle handle : handles) {
-    TabAndroid* tab_android = TabAndroid::FromTabHandle(handle);
-    if (!tab_android) {
-      continue;
+    if (TabAndroid* tab_android = TabAndroid::FromTabHandle(handle)) {
+      tabs.push_back(tab_android);
     }
-    tabs.push_back(tab_android);
   }
   return tabs;
 }
