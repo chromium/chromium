@@ -842,10 +842,6 @@ void PrefetchMatchResolver::UnblockInternal(
 }
 
 void PrefetchMatchResolver::AttachPrefetchMatchPrerenderDebugMetrics() {
-  if (!UsePrefetchScheduler()) {
-    return;
-  }
-
   if (!prerender_host_for_metrics_) {
     return;
   }

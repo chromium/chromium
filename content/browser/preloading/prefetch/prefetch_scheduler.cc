@@ -92,11 +92,6 @@ PrefetchSchedulerPriority CalculatePriorityImpl(
 }
 
 bool IsReadyToStartPrefetch(const PrefetchQueue::Item& item) {
-  // Keep this method as similar as much as possible to a lambda in
-  // `PrefetchService::PopNextPrefetchContainer()`.
-  //
-  // TODO(crbug.com/406754449): Remove this comment.
-
   // `prefetch_container` must be valid. It will be ensured by `PrefetchService`
   // in the future.
   //

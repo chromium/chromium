@@ -229,14 +229,18 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   PrefetchContainer* FindPrefetchAheadOfPrerenderForMetrics(
       const PreloadPipelineInfo& pipeline_info);
 
-  // Exposes methods for `PrefetchScheduler`. See documentation of private
-  // methods with the same names except for `PrepareProgress()`.
-  //
-  // See the implementation for `PrepareProgress()`.
   void PrepareProgress(base::PassKey<PrefetchScheduler>);
-  void PrepareProgress();
+  // Evict `prefetch_container` before starting a new prefetch.
+  //
+  // Precondition: `prefetch_container` must be valid.
   void EvictPrefetch(base::PassKey<PrefetchScheduler>,
                      base::WeakPtr<PrefetchContainer> prefetch_container);
+  // Starts the loading of `prefetch_container`.
+  //
+  // Returns true iff a prefetch is started and the caller should regard this is
+  // active.
+  //
+  // Precondition: `prefetch_container` must be valid.
   bool StartSinglePrefetch(base::PassKey<PrefetchScheduler>,
                            base::WeakPtr<PrefetchContainer> prefetch_container);
 
@@ -323,18 +327,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   base::WeakPtr<PrefetchContainer> CreatePrefetchContainer(
       std::unique_ptr<const PrefetchRequest> prefetch_request);
 
-  // Starts the network requests for as many prefetches in |prefetch_queue_| as
-  // possible.
-  void Prefetch();
-
-  // Pops the first valid prefetch (determined by PrefetchDocumentManager) from
-  // |prefetch_queue_|. Returns a tuple containing the popped prefetch and
-  // (optionally) an already completed prefetch that needs to be evicted to make
-  // space for the new prefetch. If there are no valid prefetches in the queue,
-  // then (nullptr, nullptr) is returned.
-  std::tuple<base::WeakPtr<PrefetchContainer>, base::WeakPtr<PrefetchContainer>>
-  PopNextPrefetchContainer();
-
   // The prefetch is reset after
   // `PrefetchContainerDefaultTtlInPrefetchService()`
   // or the overridden TTL duration. If
@@ -342,16 +334,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // or equal to zero, the prefetch is kept indefinitely.
   void OnPrefetchTimeout(base::WeakPtr<PrefetchContainer> prefetch);
 
-  // Evict `prefetch_container` before starting a new prefetch.
-  //
-  // Precondition: `prefetch_container` must be valid.
-  void EvictPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
-  // Starts the given |prefetch_container|.
-  //
-  // Returns true iff a prefetch is started and the caller should regard this is
-  // active.
-  //
-  // Precondition: `prefetch_container` must be valid.
   bool StartSinglePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Creates a new URL loader and starts a network request for
@@ -444,7 +426,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
       PrefetchMatchResolver& prefetch_match_resolver);
 
   // If `should_progress` is true, calls `PrefetchScheduler::ProgressAsync()`
-  // (implicitly). This argument is meaningful only if `UsePrefetchScheduler()`.
+  // (implicitly).
   void ResetPrefetchContainer(
       base::WeakPtr<PrefetchContainer> prefetch_container,
       bool should_progress = true);
@@ -478,10 +460,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // its dependencies).
   bool IsPrefetchStale(base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  // Returns if the `prefetch_container` is in active set.
-  bool IsPrefetchContainerInActiveSet(
-      const PrefetchContainer& prefetch_container);
-
   void DumpPrefetchesForDebug() const;
 
   // Wrappers for `owned_prefetches_`. Use these wrappers and do not directly
@@ -504,21 +482,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
 
   // The origin prober class which manages all logic for origin probing.
   std::unique_ptr<PrefetchOriginProber> origin_prober_;
-
-  // A FIFO queue of prefetches that have been confirmed to be eligible but have
-  // not started yet.
-  //
-  // It is used only if `!UsePrefetchScheduler()`.
-  //
-  // TODO(crbug.com/406754449): Remove it.
-  std::vector<base::WeakPtr<PrefetchContainer>> prefetch_queue_;
-
-  // Current prefetch with an in-progress request (if any).
-  //
-  // It is used only if `!UsePrefetchScheduler()`.
-  //
-  // TODO(crbug.com/406754449): Remove it.
-  std::optional<PrefetchKey> active_prefetch_;
 
   // Prefetches owned by `this`. All `PrefetchContainer`s will be stored here.
   //
@@ -554,16 +517,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   base::LRUCache<PrefetchKey, base::TimeTicks>
       recent_unmatched_navigated_keys_for_metrics_{10};
 
-// Protects against Prefetch() being called recursively.
-#if DCHECK_IS_ON()
-  bool prefetch_reentrancy_guard_ = false;
-#endif
-
   // Manages queue of prefetches, active set, and scheduling.
-  //
-  // It is used only if `UsePrefetchScheduler()`.
-  //
-  // TODO(crbug.com/406754449): Remove the last sentence.
   std::unique_ptr<PrefetchScheduler> scheduler_;
 
   SEQUENCE_CHECKER(sequence_checker_);

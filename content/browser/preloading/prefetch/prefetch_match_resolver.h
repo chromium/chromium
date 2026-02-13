@@ -31,7 +31,7 @@ class PrefetchService;
 // purpose.
 //
 // This is a value per (prefetch matching, `PrefetchContainer`) representing the
-// result of `PrefetchScheduler::CollectMatchCandidate()`. This is typically
+// result of `PrefetchService::CollectMatchCandidate()`. This is typically
 // used as follows:
 //
 // - To record trace events for `CollectPotentialMatchPrefetchContainers()`

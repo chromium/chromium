@@ -1008,50 +1008,46 @@ IN_PROC_BROWSER_TEST_P(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "FallbackAborted.Match0.PrefetchMatchMetrics.IsPotentialMatch",
       true, 1);
-  // Currently, `PrefetchMatchPrerenderDebugMetrics` is set only if
-  // `UsePrefetchScheduler()`.
-  if (UsePrefetchScheduler()) {
-    histogram_tester().ExpectUniqueSample(
-        "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
-        "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaop",
-        true, 1);
-    histogram_tester().ExpectUniqueSample(
-        "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
-        "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
-        "PrefetchStatus",
-        PrefetchStatus::kPrefetchNotFinishedInTime, 1);
-    histogram_tester().ExpectUniqueSample(
-        "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
-        "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
-        "ServableStateAndMatcherAction",
-        // 2 = PrefetchServableState::kShouldBlockUntilHeadReceived
-        // 2 = PrefetchMatchResolverAction::ActionKind::kWait
-        // 3 =
-        // PrefetchMatchResolverAction::ActionReason::kWaitingNonRedirectHeader
-        // 1 = is_expired == false
-        2231, 1);
-    histogram_tester().ExpectUniqueSample(
-        "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
-        "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
-        "PotentialCandidateServingResultAndServableStateAndMatcherAction",
-        // 8 =
-        // PrefetchPotentialCandidateServingResult::kNotServedBlockUntilHeadTimeout
-        // 2 = PrefetchServableState::kShouldBlockUntilHeadReceived
-        // 2 = PrefetchMatchResolverAction::ActionKind::kWait
-        // 3 =
-        // PrefetchMatchResolverAction::ActionReason::kWaitingNonRedirectHeader
-        // 1 = is_expired == false
-        82231, 1);
-    histogram_tester().ExpectUniqueSample(
-        "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
-        "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen.QueueSize",
-        0, 1);
-    histogram_tester().ExpectUniqueSample(
-        "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
-        "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
-        "QueueIndexPlus1",
-        0, 1);
-  }
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaop",
+      true, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
+      "PrefetchStatus",
+      PrefetchStatus::kPrefetchNotFinishedInTime, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
+      "ServableStateAndMatcherAction",
+      // 2 = PrefetchServableState::kShouldBlockUntilHeadReceived
+      // 2 = PrefetchMatchResolverAction::ActionKind::kWait
+      // 3 =
+      // PrefetchMatchResolverAction::ActionReason::kWaitingNonRedirectHeader
+      // 1 = is_expired == false
+      2231, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
+      "PotentialCandidateServingResultAndServableStateAndMatcherAction",
+      // 8 =
+      // PrefetchPotentialCandidateServingResult::kNotServedBlockUntilHeadTimeout
+      // 2 = PrefetchServableState::kShouldBlockUntilHeadReceived
+      // 2 = PrefetchMatchResolverAction::ActionKind::kWait
+      // 3 =
+      // PrefetchMatchResolverAction::ActionReason::kWaitingNonRedirectHeader
+      // 1 = is_expired == false
+      82231, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen.QueueSize",
+      0, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
+      "QueueIndexPlus1",
+      0, 1);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},

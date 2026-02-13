@@ -76,17 +76,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchServiceWorker);
 bool IsPrefetchServiceWorkerEnabled(content::BrowserContext* browser_context);
 
-// Replace current prefetch queue with a new queue and scheduler, which allows
-// prioritization, concurrent prefetches, bursting.
-//
-// For more details, see
-// https://docs.google.com/document/d/1W0Nk3Nq6NaUXkBppOUC5zyNmhVqMjYShm1bydGYd9qc
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchScheduler);
-
-// Call `PrefetchScheduler::Progress()` synchronously as much as possible.
-CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kPrefetchSchedulerProgressSyncBestEffort;
-
 // Controls params for tests of `PrefetchScheduler`.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchSchedulerTesting);
 CONTENT_EXPORT extern const base::FeatureParam<size_t>

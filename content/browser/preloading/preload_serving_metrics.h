@@ -186,10 +186,6 @@ struct CONTENT_EXPORT PrefetchMatchMetrics final {
   std::unique_ptr<PrefetchContainerMetrics>
       prefetch_container_metrics_ahead_of_prerender = nullptr;
 
-  // Null if `!UsePrefetchScheduler()`.
-  //
-  // TODO(crbug.com/406402069): Remove the above comment.
-  //
   // Non null if the navigation is prerender initial navigation.
   std::unique_ptr<PrefetchMatchPrerenderDebugMetrics> prerender_debug_metrics;
 };

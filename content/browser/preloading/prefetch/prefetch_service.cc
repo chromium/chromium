@@ -344,9 +344,7 @@ PrefetchService::PrefetchService(BrowserContext* browser_context)
           PrefetchTLSCanaryCheckURL(
               delegate_ ? delegate_->GetDefaultTLSCanaryCheckURL()
                         : GURL("")))),
-      scheduler_(UsePrefetchScheduler()
-                     ? std::make_unique<PrefetchScheduler>(this)
-                     : nullptr) {}
+      scheduler_(std::make_unique<PrefetchScheduler>(this)) {}
 
 PrefetchService::~PrefetchService() {  // NOLINT(modernize-use-equals-default)
   // This is to avoid notifying `PrefetchService::OnWillBeDestroyed()` in the
@@ -454,10 +452,8 @@ base::WeakPtr<PrefetchContainer> PrefetchService::AddPrefetchRequestInternal(
     case Action::kTakeOldWithMigration:
       prefetch_iter->second->MergeNewPrefetchRequest(
           std::move(prefetch_request));
-      if (UsePrefetchScheduler()) {
-        scheduler_->NotifyAttributeMightChangedAndProgressAsync(
-            *prefetch_iter->second, /*should_progress=*/false);
-      }
+      scheduler_->NotifyAttributeMightChangedAndProgressAsync(
+          *prefetch_iter->second, /*should_progress=*/false);
       return nullptr;
     case Action::kReplaceOldWithNew:
       ResetPrefetchContainer(prefetch_iter->second->GetWeakPtr(),
@@ -1185,16 +1181,7 @@ void PrefetchService::OnGotEligibilityForNonRedirect(
     return;
   }
 
-  if (!UsePrefetchScheduler()) {
-    prefetch_queue_.push_back(std::move(prefetch_container));
-    Prefetch();
-  } else {
-    if (features::kPrefetchSchedulerProgressSyncBestEffort.Get()) {
-      ScheduleAndProgress(std::move(prefetch_container));
-    } else {
-      ScheduleAndProgressAsync(std::move(prefetch_container));
-    }
-  }
+  ScheduleAndProgress(std::move(prefetch_container));
 }
 
 void PrefetchService::OnGotEligibilityForRedirect(
@@ -1224,16 +1211,11 @@ void PrefetchService::OnGotEligibilityForRedirect(
     if (streaming_url_loader) {
       return true;
     }
-    if (!UsePrefetchScheduler()) {
-      if (active_prefetch_ == prefetch_container->key()) {
-        active_prefetch_ = std::nullopt;
-        Prefetch();
-      }
-    } else {
-      // TODO(crbug.com/400761083): Use
-      // `ResetPrefetchContainerAndProgressAsync()` instead.
-      RemoveFromSchedulerAndProgressAsync(*prefetch_container);
-    }
+
+    // TODO(crbug.com/400761083): Use
+    // `ResetPrefetchContainerAndProgressAsync()` instead.
+    RemoveFromSchedulerAndProgressAsync(*prefetch_container);
+
     return false;
   };
 
@@ -1266,26 +1248,17 @@ void PrefetchService::OnGotEligibilityForRedirect(
   // If the redirect is not eligible and the prefetch is not a decoy, then stop
   // the prefetch.
   if (!eligible && !prefetch_container->IsDecoy()) {
-    CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
+    CHECK(scheduler_->IsInActiveSet(*prefetch_container));
 
-    if (!UsePrefetchScheduler()) {
-      active_prefetch_ = std::nullopt;
-      streaming_url_loader->HandleRedirect(
-          PrefetchRedirectStatus::kFail, redirect_info,
-          std::move(redirect_head), /*update_headers_params=*/{});
+    // Remove first as it requires that `PrefetchContainer` is available.
+    RemoveFromSchedulerAndProgressAsync(*prefetch_container);
 
-      Prefetch();
-    } else {
-      // Remove first as it requires that `PrefetchContainer` is available.
-      RemoveFromSchedulerAndProgressAsync(*prefetch_container);
+    streaming_url_loader->HandleRedirect(
+        PrefetchRedirectStatus::kFail, redirect_info, std::move(redirect_head),
+        /*update_headers_params=*/{});
 
-      streaming_url_loader->HandleRedirect(
-          PrefetchRedirectStatus::kFail, redirect_info,
-          std::move(redirect_head), /*update_headers_params=*/{});
-
-      // TODO(crbug.com/400761083): Use
-      // `ResetPrefetchContainerAndProgressAsync()` instead.
-    }
+    // TODO(https://crbug.com/400761083): Use
+    // `ResetPrefetchContainerAndProgressAsync()` instead.
     return;
   }
 
@@ -1322,106 +1295,10 @@ void PrefetchService::OnGotEligibilityForRedirect(
       prefetch_container->GetResponseReaderForCurrentPrefetch());
 }
 
-void PrefetchService::Prefetch() {
-  CHECK(!UsePrefetchScheduler());
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-// Asserts that re-entrancy doesn't happen.
-#if DCHECK_IS_ON()
-  DCHECK(!prefetch_reentrancy_guard_);
-  base::AutoReset reset_guard(&prefetch_reentrancy_guard_, true);
-#endif
-
-  PrepareProgress();
-
-  base::WeakPtr<PrefetchContainer> next_prefetch = nullptr;
-  base::WeakPtr<PrefetchContainer> prefetch_to_evict = nullptr;
-  while ((std::tie(next_prefetch, prefetch_to_evict) =
-              PopNextPrefetchContainer()) !=
-         std::make_tuple(nullptr, nullptr)) {
-    if (prefetch_to_evict) {
-      EvictPrefetch(std::move(prefetch_to_evict));
-    }
-    StartSinglePrefetch(next_prefetch);
-  }
-}
-
-std::tuple<base::WeakPtr<PrefetchContainer>, base::WeakPtr<PrefetchContainer>>
-PrefetchService::PopNextPrefetchContainer() {
-  CHECK(!UsePrefetchScheduler());
-
-  auto new_end = std::remove_if(
-      prefetch_queue_.begin(), prefetch_queue_.end(),
-      [&](const base::WeakPtr<PrefetchContainer>& prefetch_container) {
-        // Remove all prefetches from queue that no longer exist.
-        return !prefetch_container;
-      });
-  prefetch_queue_.erase(new_end, prefetch_queue_.end());
-
-  // Don't start any new prefetches if we are currently running one.
-  if (active_prefetch_.has_value()) {
-    DVLOG(1) << "PrefetchService::PopNextPrefetchContainer: already running a "
-                "prefetch.";
-    return std::make_tuple(nullptr, nullptr);
-  }
-
-  base::WeakPtr<PrefetchContainer> prefetch_to_evict;
-  // Get the first prefetch can be prefetched currently. For the triggers
-  // managed by PrefetchDocumentManager, this depends on the state of the
-  // initiating document, and the number of completed prefetches (this can also
-  // result in previously completed prefetches being evicted).
-  auto prefetch_iter = std::ranges::find_if(
-      prefetch_queue_,
-      [&](const base::WeakPtr<PrefetchContainer>& prefetch_container) {
-        // Keep this method as similar as much as possible to
-        // `IsReadyToStartLoading` in
-        // //content/browser/preloading/prefetch/prefetch_scheduler.cc.
-
-        auto* renderer_initiator_info =
-            prefetch_container->request().GetRendererInitiatorInfo();
-        if (!renderer_initiator_info) {
-          // TODO(crbug.com/40946257): Revisit the resource limits and
-          // conditions for starting browser-initiated prefetch.
-          return true;
-        }
-
-        auto* prefetch_document_manager =
-            renderer_initiator_info->prefetch_document_manager();
-        // If there is no manager in renderer-initiated prefetch (can happen
-        // only in tests), just bypass the check.
-        if (!prefetch_document_manager) {
-          CHECK_IS_TEST();
-          return true;
-        }
-        bool can_prefetch_now = false;
-        std::tie(can_prefetch_now, prefetch_to_evict) =
-            prefetch_document_manager->CanPrefetchNow(prefetch_container.get());
-        // |prefetch_to_evict| should only be set if |can_prefetch_now| is true.
-        DCHECK(!prefetch_to_evict || can_prefetch_now);
-        return can_prefetch_now;
-      });
-  if (prefetch_iter == prefetch_queue_.end()) {
-    return std::make_tuple(nullptr, nullptr);
-  }
-
-  base::WeakPtr<PrefetchContainer> next_prefetch_container = *prefetch_iter;
-  prefetch_queue_.erase(prefetch_iter);
-  return std::make_tuple(next_prefetch_container, prefetch_to_evict);
-}
-
 void PrefetchService::OnPrefetchTimeout(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchIsStale);
-  if (!UsePrefetchScheduler()) {
-    ResetPrefetchContainer(prefetch_container);
-
-    if (!active_prefetch_) {
-      Prefetch();
-    }
-  } else {
-    ResetPrefetchContainerAndProgressAsync(std::move(prefetch_container));
-  }
+  ResetPrefetchContainerAndProgressAsync(std::move(prefetch_container));
 }
 
 void PrefetchService::MayReleasePrefetch(
@@ -1434,16 +1311,7 @@ void PrefetchService::MayReleasePrefetch(
     return;
   }
 
-  if (!UsePrefetchScheduler()) {
-    ResetPrefetchContainer(prefetch_container);
-    if (!active_prefetch_) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&PrefetchService::Prefetch,
-                                    weak_method_factory_.GetWeakPtr()));
-    }
-  } else {
-    ResetPrefetchContainerAndProgressAsync(std::move(prefetch_container));
-  }
+  ResetPrefetchContainerAndProgressAsync(std::move(prefetch_container));
 }
 
 void PrefetchService::ResetPrefetchContainer(
@@ -1451,15 +1319,9 @@ void PrefetchService::ResetPrefetchContainer(
     bool should_progress) {
   CHECK(prefetch_container);
 
-  if (!UsePrefetchScheduler()) {
-    if (active_prefetch_ == prefetch_container->key()) {
-      active_prefetch_ = std::nullopt;
-    }
-  } else {
-    // Remove before calling `PrefetchContainer::dtor()` as `PrefetchScheduler`
-    // manages them with weak pointers.
-    scheduler_->RemoveAndProgressAsync(*prefetch_container, should_progress);
-  }
+  // Remove before calling `PrefetchContainer::dtor()` as `PrefetchScheduler`
+  // manages them with weak pointers.
+  scheduler_->RemoveAndProgressAsync(*prefetch_container, should_progress);
 
   auto it = owned_prefetches().find(prefetch_container->key());
   CHECK(it != owned_prefetches().end());
@@ -1469,7 +1331,6 @@ void PrefetchService::ResetPrefetchContainer(
 
 void PrefetchService::ScheduleAndProgress(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
-  CHECK(UsePrefetchScheduler());
   CHECK(prefetch_container);
 
   scheduler_->PushAndProgress(*prefetch_container);
@@ -1477,7 +1338,6 @@ void PrefetchService::ScheduleAndProgress(
 
 void PrefetchService::ScheduleAndProgressAsync(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
-  CHECK(UsePrefetchScheduler());
   CHECK(prefetch_container);
 
   scheduler_->PushAndProgressAsync(*prefetch_container);
@@ -1487,8 +1347,6 @@ void PrefetchService::ScheduleAndProgressAsync(
 
 void PrefetchService::ResetPrefetchContainerAndProgressAsync(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
-  CHECK(UsePrefetchScheduler());
-
   ResetPrefetchContainer(std::move(prefetch_container));
 
   // `PrefetchScheduler::Progress()` will be called asynchronously.
@@ -1496,8 +1354,6 @@ void PrefetchService::ResetPrefetchContainerAndProgressAsync(
 
 void PrefetchService::ResetPrefetchContainersAndProgressAsync(
     std::vector<base::WeakPtr<PrefetchContainer>> prefetch_containers) {
-  CHECK(UsePrefetchScheduler());
-
   for (auto& prefetch_container : prefetch_containers) {
     ResetPrefetchContainer(std::move(prefetch_container));
   }
@@ -1507,33 +1363,27 @@ void PrefetchService::ResetPrefetchContainersAndProgressAsync(
 
 void PrefetchService::RemoveFromSchedulerAndProgressAsync(
     const PrefetchContainer& prefetch_container) {
-  CHECK(UsePrefetchScheduler());
-
   scheduler_->RemoveAndProgressAsync(prefetch_container);
 
   // `PrefetchScheduler::Progress()` will be called asynchronously.
 }
 
 void PrefetchService::OnCandidatesUpdated() {
-  if (!UsePrefetchScheduler()) {
-    if (!active_prefetch_) {
-      Prefetch();
-    }
-  } else {
-    // Before `kPrefetchScheduler`, calling `Prefetch()` here was necessary to
-    // progress scheduling as modifying `PrefetchService::queue_` doesn't set
-    // `active_prefetch_`.
-    //
-    // After `kPrefetchScheduler`, `PrefetchScheduler` ensures that modifying
-    // `PrefetchQueue` triggers `PrefetchScheduler::Progress()` eventually. So,
-    // we believe that this explicit `Progress()` call is not necessary. But we
-    // keep it because 1. It's safe (as it's not reentrancy) and noop if not
-    // necessary. 2. We should another experiment to remove the call as we are
-    // using `PrefetchScheduler` in some experiments.
-    //
-    // TODO(crbug.com/406754449): Consider to remove it.
-    scheduler_->Progress();
-  }
+  // Call `PrefetchScheduler::Progress()` by a historical reason.
+  //
+  // Prior to `PrefetchScheduler`, we used a naive FIFO queue to manage pending
+  // prefetches. This sometimes caused livelocks where an active prefetch failed
+  // to deque after loading completed, causing the queue to stall.
+  //
+  // `PrefetchScheduler` ensures that modifying `PrefetchQueue` triggers
+  // `PrefetchScheduler::Progress()` eventually. So, we believe that this
+  // explicit `Progress()` call is not necessary. But we keep it because 1. It's
+  // safe (as it's not reentrancy) and noop if not necessary. 2. We should
+  // another experiment to remove the call as we are using `PrefetchScheduler`
+  // in some experiments.
+  //
+  // TODO(crbug.com/406754449): Consider to remove it.
+  scheduler_->Progress();
 }
 
 void PrefetchService::AddRecentUnmatchedNavigatedKeysForMetrics(
@@ -1543,12 +1393,6 @@ void PrefetchService::AddRecentUnmatchedNavigatedKeysForMetrics(
 }
 
 void PrefetchService::PrepareProgress(base::PassKey<PrefetchScheduler>) {
-  PrepareProgress();
-}
-
-void PrefetchService::PrepareProgress() {
-  // Corresponds to the same code in `Prefetch()`.
-  //
   // For necessity, see
   // https://docs.google.com/document/d/1U1J8VvvVhhLL2YQSRDPH2x4tH-Vl38UjJvojMmENK0I
   //
@@ -1563,11 +1407,6 @@ void PrefetchService::PrepareProgress() {
 
 void PrefetchService::EvictPrefetch(
     base::PassKey<PrefetchScheduler>,
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
-  EvictPrefetch(std::move(prefetch_container));
-}
-
-void PrefetchService::EvictPrefetch(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   CHECK(prefetch_container);
 
@@ -1618,10 +1457,6 @@ bool PrefetchService::StartSinglePrefetch(
   prefetch_container->StartTimeoutTimerIfNeeded(
       base::BindOnce(&PrefetchService::OnPrefetchTimeout,
                      weak_method_factory_.GetWeakPtr(), prefetch_container));
-
-  if (!UsePrefetchScheduler()) {
-    active_prefetch_.emplace(prefetch_container->key());
-  }
 
   if (!prefetch_container->IsDecoy()) {
     // The status is updated to be successful or failed when it finishes.
@@ -1897,7 +1732,7 @@ void PrefetchService::OnPrefetchRedirect(
     return;
   }
 
-  CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
+  CHECK(scheduler_->IsInActiveSet(*prefetch_container));
 
   std::optional<PrefetchRedirectResult> failure;
   if (redirect_info.new_method != "GET") {
@@ -1929,40 +1764,25 @@ void PrefetchService::OnPrefetchRedirect(
   }
 
   if (failure) {
-    CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
+    CHECK(scheduler_->IsInActiveSet(*prefetch_container));
 
-    if (!UsePrefetchScheduler()) {
-      active_prefetch_ = std::nullopt;
-      prefetch_container->SetPrefetchStatus(
-          PrefetchStatus::kPrefetchFailedInvalidRedirect);
-      if (auto streaming_url_loader =
-              prefetch_container->GetStreamingURLLoader()) {
-        streaming_url_loader->HandleRedirect(
-            PrefetchRedirectStatus::kFail, redirect_info,
-            std::move(redirect_head), /*update_headers_params=*/{});
-      }
+    RecordRedirectResult(*failure);
 
-      Prefetch();
-      RecordRedirectResult(*failure);
-    } else {
-      RecordRedirectResult(*failure);
+    prefetch_container->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchFailedInvalidRedirect);
 
-      prefetch_container->SetPrefetchStatus(
-          PrefetchStatus::kPrefetchFailedInvalidRedirect);
+    // Remove first as it requires that `PrefetchContainer` is available.
+    RemoveFromSchedulerAndProgressAsync(*prefetch_container);
 
-      // Remove first as it requires that `PrefetchContainer` is available.
-      RemoveFromSchedulerAndProgressAsync(*prefetch_container);
-
-      if (auto streaming_url_loader =
-              prefetch_container->GetStreamingURLLoader()) {
-        streaming_url_loader->HandleRedirect(
-            PrefetchRedirectStatus::kFail, redirect_info,
-            std::move(redirect_head), /*update_headers_params=*/{});
-      }
-
-      // TODO(crbug.com/400761083): Use
-      // `ResetPrefetchContainerAndProgressAsync()` instead.
+    if (auto streaming_url_loader =
+            prefetch_container->GetStreamingURLLoader()) {
+      streaming_url_loader->HandleRedirect(
+          PrefetchRedirectStatus::kFail, redirect_info,
+          std::move(redirect_head), /*update_headers_params=*/{});
     }
+
+    // TODO(crbug.com/400761083): Use
+    // `ResetPrefetchContainerAndProgressAsync()` instead.
     return;
   }
 
@@ -2078,25 +1898,9 @@ void PrefetchService::OnPrefetchCompletedOrFailed(
               "prefetch_url", prefetch_container.GetURL().spec(),
               "completion_status.error_code", completion_status.error_code);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(IsPrefetchContainerInActiveSet(prefetch_container));
+  CHECK(scheduler_->IsInActiveSet(prefetch_container));
 
-  if (!UsePrefetchScheduler()) {
-    active_prefetch_ = std::nullopt;
-    Prefetch();
-  } else {
-    RemoveFromSchedulerAndProgressAsync(prefetch_container);
-  }
-}
-
-// TODO(crbug.com/406754449): Inline this function when removing the feature
-// flag.
-bool PrefetchService::IsPrefetchContainerInActiveSet(
-    const PrefetchContainer& prefetch_container) {
-  if (!UsePrefetchScheduler()) {
-    return active_prefetch_ == prefetch_container.key();
-  } else {
-    return scheduler_->IsInActiveSet(prefetch_container);
-  }
+  RemoveFromSchedulerAndProgressAsync(prefetch_container);
 }
 
 void PrefetchService::DumpPrefetchesForDebug() const {
@@ -2210,13 +2014,7 @@ void PrefetchService::EvictPrefetchesForBrowsingDataRemoval(
     }
   }
 
-  if (!UsePrefetchScheduler()) {
-    for (const auto& prefetch_container : prefetches_to_reset) {
-      ResetPrefetchContainer(prefetch_container);
-    }
-  } else {
-    ResetPrefetchContainersAndProgressAsync(std::move(prefetches_to_reset));
-  }
+  ResetPrefetchContainersAndProgressAsync(std::move(prefetches_to_reset));
 }
 
 }  // namespace content

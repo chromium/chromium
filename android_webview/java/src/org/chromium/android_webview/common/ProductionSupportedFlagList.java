@@ -1003,7 +1003,6 @@ public final class ProductionSupportedFlagList {
                 NetworkServiceFeatures.INCREASE_COOKIE_ACCESS_CACHE_SIZE,
                 "When enabled, keep more cookies in the cache to be able to skip redundant access"
                         + " notifications."),
-        Flag.baseFeature("PrefetchScheduler"),
         Flag.baseFeature(
                 BlinkFeatures.RENDER_BLOCKING_FULL_FRAME_RATE,
                 "Enable the <link blocking=\"full-frame-rate\"/> API to lower the frame rate during"

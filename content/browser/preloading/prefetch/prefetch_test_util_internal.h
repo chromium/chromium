@@ -334,9 +334,6 @@ class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
 struct PrefetchRearchParam final {
  public:
   static std::vector<PrefetchRearchParam> Params();
-
-  bool prefetch_scheduler;
-  bool prefetch_scheduler_progress_sync_best_effort;
 };
 
 class WithPrefetchRearchParam {
@@ -350,7 +347,6 @@ class WithPrefetchRearchParam {
 
  private:
   PrefetchRearchParam param_;
-  base::test::ScopedFeatureList feature_list_prefetch_scheduler_;
 };
 
 // A wrapper for `PrefetchService::SetInjectedEligibilityCheckForTesting`.

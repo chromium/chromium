@@ -749,33 +749,12 @@ WithPrefetchRearchParam::~WithPrefetchRearchParam() = default;
 
 // static
 std::vector<PrefetchRearchParam> PrefetchRearchParam::Params() {
-  return {PrefetchRearchParam{
-              .prefetch_scheduler = false,
-              .prefetch_scheduler_progress_sync_best_effort = false,
-          },
-          PrefetchRearchParam{
-              .prefetch_scheduler = true,
-              .prefetch_scheduler_progress_sync_best_effort = false,
-          },
-          PrefetchRearchParam{
-              .prefetch_scheduler = true,
-              .prefetch_scheduler_progress_sync_best_effort = true,
-          }};
+  return {
+      PrefetchRearchParam{},
+  };
 }
 
 void WithPrefetchRearchParam::InitRearchFeatures() {
-  if (param_.prefetch_scheduler) {
-    feature_list_prefetch_scheduler_.InitWithFeaturesAndParameters(
-        {{
-            features::kPrefetchScheduler,
-            {
-                {"kPrefetchSchedulerProgressSyncBestEffort",
-                 param_.prefetch_scheduler_progress_sync_best_effort ? "true"
-                                                                     : "false"},
-            },
-        }},
-        {});
-  }
 }
 
 PrefetchServiceInjectedEligibilityCheckFuture::

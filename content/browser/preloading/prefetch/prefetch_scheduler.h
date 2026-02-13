@@ -185,7 +185,7 @@ class CONTENT_EXPORT PrefetchScheduler {
                               bool should_progress = true);
   void NotifyAttributeMightChangedAndProgressAsync(
       PrefetchContainer& prefetch_container,
-      bool should_proggress = true);
+      bool should_progress = true);
 
   // Progress scheduling
   //
