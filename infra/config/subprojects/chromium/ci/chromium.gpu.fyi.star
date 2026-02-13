@@ -3238,30 +3238,29 @@ ci.thin_tester(
         # should have the same test suites as "Win10 FYI x64 Release (AMD
         # RX 5500XT)".
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_amd_release_telemetry_tests",
+            "gpu_noop_sleep_telemetry_test",
         ],
         mixins = [
             "limited_capacity_bot",
             "win11_amd_rx_5500_xt_experimental",
         ],
-        per_test_modifications = {
-            "gl_unittests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.5500xt.gl_unittests.filter",
-                ],
-            ),
-        },
+        # per_test_modifications = {
+        #     "gl_unittests": targets.mixin(
+        #         args = [
+        #             "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.5500xt.gl_unittests.filter",
+        #         ],
+        #     ),
+        # },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,
         os_type = targets.os_type.WINDOWS,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|11|x64|AMD",
-        short_name = "rel",
-    ),
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Windows|11|x64|AMD",
+    #     short_name = "rel",
+    # ),
     list_view = "chromium.gpu.experimental",
 )
 
