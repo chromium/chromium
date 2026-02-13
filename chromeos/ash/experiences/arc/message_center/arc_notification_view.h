@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_EXPERIENCES_ARC_MESSAGE_CENTER_ARC_NOTIFICATION_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/experiences/arc/message_center/arc_notification_item.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/views/message_view.h"
@@ -100,6 +101,9 @@ class ArcNotificationView : public message_center::MessageView,
   bool is_group_child_;
 
   raw_ptr<views::View> collapsed_summary_view_ = nullptr;
+
+  base::ScopedObservation<ArcNotificationItem, ArcNotificationItem::Observer>
+      item_observation_{this};
 
   base::WeakPtrFactory<ArcNotificationView> weak_factory_{this};
 };

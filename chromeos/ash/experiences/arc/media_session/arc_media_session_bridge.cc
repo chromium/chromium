@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
-#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "content/public/browser/media_session_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/features.h"
@@ -62,12 +61,10 @@ ArcMediaSessionBridge* ArcMediaSessionBridge::GetForBrowserContextForTesting(
 ArcMediaSessionBridge::ArcMediaSessionBridge(content::BrowserContext* context,
                                              ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {
-  arc_bridge_service_->media_session()->AddObserver(this);
+  arc_bridge_service_observation_.Observe(arc_bridge_service_->media_session());
 }
 
-ArcMediaSessionBridge::~ArcMediaSessionBridge() {
-  arc_bridge_service_->media_session()->RemoveObserver(this);
-}
+ArcMediaSessionBridge::~ArcMediaSessionBridge() = default;
 
 void ArcMediaSessionBridge::OnConnectionReady() {
   DVLOG(2) << "ArcMediaSessionBridge::OnConnectionReady";

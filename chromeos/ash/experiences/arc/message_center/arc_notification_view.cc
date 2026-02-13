@@ -102,7 +102,7 @@ ArcNotificationView::ArcNotificationView(
 
   SetProperty(kArcNotificationViewPropertyKey, this);
 
-  item_->AddObserver(this);
+  item_observation_.Observe(item_);
 
   AddChildViewRaw(content_view_.get());
 
@@ -143,11 +143,7 @@ ArcNotificationView::ArcNotificationView(
   GetViewAccessibility().SetIsIgnored(true);
 }
 
-ArcNotificationView::~ArcNotificationView() {
-  if (item_) {
-    item_->RemoveObserver(this);
-  }
-}
+ArcNotificationView::~ArcNotificationView() = default;
 
 void ArcNotificationView::OnContentFocused() {
   SchedulePaint();
@@ -445,7 +441,7 @@ bool ArcNotificationView::HandleAccessibleAction(
 
 void ArcNotificationView::OnItemDestroying() {
   DCHECK(item_);
-  item_->RemoveObserver(this);
+  item_observation_.Reset();
   item_ = nullptr;
 }
 

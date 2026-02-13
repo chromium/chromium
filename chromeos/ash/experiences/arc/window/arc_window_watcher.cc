@@ -9,6 +9,7 @@
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
@@ -21,7 +22,7 @@ namespace {
 class Tracker : public aura::WindowObserver {
  public:
   explicit Tracker(aura::Window* window) : window_(window) {
-    window->AddObserver(this);
+    window_observation_.Observe(window);
 
     // If the app type of `window` is ARC, add it to `arc_window_`. Note that
     // the app type might be not set yet at this point. In such case, `window`
@@ -35,7 +36,7 @@ class Tracker : public aura::WindowObserver {
   Tracker(const Tracker&) = delete;
   Tracker& operator=(const Tracker&) = delete;
 
-  ~Tracker() override { window_->RemoveObserver(this); }
+  ~Tracker() override = default;
 
   void OnPackageNameChanged() {
     if (display_reported_) {
@@ -91,6 +92,8 @@ class Tracker : public aura::WindowObserver {
   raw_ptr<aura::Window> arc_window_ =
       nullptr;  // set to window_ when we know it is ARC.
   bool display_reported_ = false;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 };
 
 }  // namespace

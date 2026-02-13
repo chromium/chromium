@@ -6,8 +6,10 @@
 #define CHROMEOS_ASH_EXPERIENCES_ARC_CHROME_FEATURE_FLAGS_ARC_CHROME_FEATURE_FLAGS_BRIDGE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/experiences/arc/mojom/chrome_feature_flags.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -52,6 +54,10 @@ class ArcChromeFeatureFlagsBridge
 
   const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
+
+  base::ScopedObservation<ConnectionHolder<mojom::ChromeFeatureFlagsInstance>,
+                          ConnectionObserver<mojom::ChromeFeatureFlagsInstance>>
+      arc_bridge_service_observation_{this};
 };
 
 }  // namespace arc

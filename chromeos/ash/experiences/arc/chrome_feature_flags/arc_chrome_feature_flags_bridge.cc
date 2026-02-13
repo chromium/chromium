@@ -10,7 +10,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
-#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -58,12 +57,11 @@ ArcChromeFeatureFlagsBridge::ArcChromeFeatureFlagsBridge(
     content::BrowserContext* context,
     ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {
-  arc_bridge_service_->chrome_feature_flags()->AddObserver(this);
+  arc_bridge_service_observation_.Observe(
+      arc_bridge_service_->chrome_feature_flags());
 }
 
-ArcChromeFeatureFlagsBridge::~ArcChromeFeatureFlagsBridge() {
-  arc_bridge_service_->chrome_feature_flags()->RemoveObserver(this);
-}
+ArcChromeFeatureFlagsBridge::~ArcChromeFeatureFlagsBridge() = default;
 
 void ArcChromeFeatureFlagsBridge::OnConnectionReady() {
   NotifyFeatureFlags();
