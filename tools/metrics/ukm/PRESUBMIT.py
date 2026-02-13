@@ -8,16 +8,21 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into gcl.
 """
 
-import os
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(
-  os.path.abspath('__file__')), '..', 'common'))
-import presubmit_util
+# PRESUBMIT infrastructure doesn't guarantee that the cwd() will be on
+# path requiring manual path manipulation to call setup_modules.
+# TODO(crbug.com/482274154): Consider using subprocesses to run actual
+#                            test as recommended by presubmit docs:
+# https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts/
+sys.path.append('.')
+import setup_modules
 
+sys.path.remove('.')
+
+import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
 
 UKM_XML = 'ukm.xml'
-
 
 def CheckChangeOnUpload(input_api, output_api):
   return presubmit_util.CheckChange(UKM_XML, input_api, output_api)

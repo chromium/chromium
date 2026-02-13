@@ -4,11 +4,13 @@
 
 import unittest
 from unittest.mock import MagicMock, patch
-import PRESUBMIT
 import sys
+import os
 import tempfile
 
-import os
+import setup_modules
+
+import chromium_src.tools.metrics.actions.PRESUBMIT as PRESUBMIT
 
 _CONFLICTING_NAME_1 = "UserEducation.MessageAction.Cancel" \
                       ".IPH_ScalableIphUnlockedBasedOne"
@@ -49,21 +51,19 @@ class PresubmitTest(unittest.TestCase):
         'Test.Action.Removed'
     ])
 
-    # Add the mock to sys.modules
-    sys.modules['print_action_names'] = mock_print_action_names
-
     mock_generate_histogram_list = MagicMock()
     mock_generate_histogram_list.GetActualActionNames.return_value = {
         'Test.Action.Removed'
     }
-    sys.modules['generate_histogram_list'] = mock_generate_histogram_list
 
-    errors = PRESUBMIT.CheckRemovedSegmentationUserActions(
-        mock_input_api, mock_output_api)
-
-    # Clean up sys.modules
-    del sys.modules['print_action_names']
-    del sys.modules['generate_histogram_list']
+    with patch.object(PRESUBMIT,
+                      'generate_histogram_list',
+                      mock_generate_histogram_list), \
+        patch.object(PRESUBMIT,
+                     'print_action_names',
+                     mock_print_action_names):
+      errors = PRESUBMIT.CheckRemovedSegmentationUserActions(
+          mock_input_api, mock_output_api)
 
     self.assertEqual(len(errors), 1)
     # Check that PresubmitError was called with the correct message

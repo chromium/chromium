@@ -11,10 +11,26 @@ PRESUBMIT_VERSION = '2.0.0'
 import enum
 import os
 import pathlib
-import sys
 import tempfile
 from typing import Any, Callable, List, Type
 
+import sys
+
+# PRESUBMIT infrastructure doesn't guarantee that the cwd() will be on
+# path requiring manual path manipulation to call setup_modules.
+# TODO(crbug.com/482274154): Consider using subprocesses to run actual
+#                            test as recommended by presubmit docs:
+# https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts/
+sys.path.append('.')
+import setup_modules
+
+sys.path.remove('.')
+
+import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
+import chromium_src.tools.metrics.histograms.histograms_allowlist_check as histograms_allowlist_check
+import chromium_src.components.segmentation_platform.tools.generate_histogram_list as generate_histogram_list
+import chromium_src.tools.metrics.histograms.presubmit_caching_support as presubmit_caching_support
+import chromium_src.tools.metrics.histograms.print_histogram_names as print_histogram_names
 
 # Cannot be called CheckType because by convention PRESUBMIT will try to call
 # anything with a Check prefix as a function.
@@ -51,16 +67,12 @@ def _RunCheckWithCache(check_method: Callable[[Type, Type, Any], List[Any]],
     *args: The extra args to pass to the check method (see: check_method).
     **kwargs: The extra kwargs to pass to the check method (see: check_method).
   """
-  # As the path for import is relative to InputApi importing is done within
-  # the function that already has a reference to the InputApi.
-  sys.path.append(input_api.PresubmitLocalPath())
-  import presubmit_caching_support
   cache = presubmit_caching_support.PresubmitCache(
       cache_file_path, input_api.PresubmitLocalPath())
   cached_result = cache.RetrieveResultFromCache(check_id)
 
   if cached_result is not None:
-    sys.stdout.write(f'Using cached result for {check_id}\n')
+    print(f'Using cached result for {check_id}\n')
     return cached_result
 
   new_result = check_method(input_api, output_api, *args, **kwargs)
@@ -290,12 +302,7 @@ def ExecuteCheckWebViewHistogramsAllowlistOnUpload(input_api, output_api,
   if not xml_files:
     return []
 
-  sys.path.append(input_api.PresubmitLocalPath())
-  from histogram_paths import ALL_XMLS
-  from histograms_allowlist_check import check_histograms_allowlist
-  from histograms_allowlist_check import WellKnownAllowlistPath
-
-  xml_files_paths = ALL_XMLS
+  xml_files_paths = histogram_paths.ALL_XMLS
   if xml_paths_override is not None:
     xml_files_paths = xml_paths_override
 
@@ -303,12 +310,15 @@ def ExecuteCheckWebViewHistogramsAllowlistOnUpload(input_api, output_api,
   src_path = os.path.join(input_api.PresubmitLocalPath(), '..', '..', '..')
 
   allowlist_path = os.path.join(
-      src_path, WellKnownAllowlistPath.ANDROID_WEBVIEW.relative_path())
+      src_path,
+      histograms_allowlist_check.WellKnownAllowlistPath.ANDROID_WEBVIEW.
+      relative_path())
 
   if allowlist_path_override is not None:
     allowlist_path = allowlist_path_override
 
-  result = check_histograms_allowlist(output_api, allowlist_path, xml_files)
+  result = histograms_allowlist_check.check_histograms_allowlist(
+      output_api, allowlist_path, xml_files)
   for f in xml_files:
     f.close()
   return result
@@ -364,7 +374,6 @@ def CheckRemovedSegmentationHistograms(input_api, output_api):
   if not affected_xml_files:
     return []
 
-  import print_histogram_names
   removed_histograms = set()
   for f in affected_xml_files:
     old_histograms = set()
@@ -381,31 +390,6 @@ def CheckRemovedSegmentationHistograms(input_api, output_api):
 
   if not removed_histograms:
     return []
-
-  # It's important to add the directory of generate_histogram_list.py to
-  # sys.path. PRESUBMIT.py is in src/tools/metrics/histograms.
-  # generate_histogram_list.py is in
-  # src/components/segmentation_platform/tools.
-  tools_dir = input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..',
-                                     '..', 'components',
-                                     'segmentation_platform', 'tools')
-  sys_path_modified = False
-  if tools_dir not in sys.path:
-    sys.path.append(tools_dir)
-    sys_path_modified = True
-
-  try:
-    import generate_histogram_list
-  except ImportError:
-    return [
-        output_api.PresubmitError(
-            'Could not import generate_histogram_list.py. Make sure the path '
-            'is correct.')
-    ]
-  finally:
-    if sys_path_modified:
-      # Avoid polluting sys.path.
-      sys.path.remove(tools_dir)
 
   # Load the list of all histograms required by segmentation models.
   segmentation_histograms = generate_histogram_list.GetActualHistogramNames()

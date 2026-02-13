@@ -8,12 +8,26 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
-import copy
 import hashlib
 import os
-import sys
 import struct
 from typing import Sequence, Any
+
+import sys
+
+# PRESUBMIT infrastructure doesn't guarantee that the cwd() will be on
+# path requiring manual path manipulation to call setup_modules.
+# TODO(crbug.com/482274154): Consider using subprocesses to run actual
+#                            test as recommended by presubmit docs:
+# https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts/
+sys.path.append('.')
+import setup_modules
+
+sys.path.remove('.')
+
+import chromium_src.components.segmentation_platform.tools.generate_histogram_list as generate_histogram_list
+import chromium_src.tools.metrics.actions.action_utils as action_utils
+import chromium_src.tools.metrics.actions.print_action_names as print_action_names
 
 
 # TODO: Unify with hashing library to avoid copying it directly.
@@ -92,10 +106,6 @@ def _CheckForHashConflicts(actions_xml_path: str, input_api: Any,
   includes a hash that is used for a bucket in action histogram at the end
   of the process.
   """
-  actions_dir = input_api.PresubmitLocalPath()
-  sys.path.append(actions_dir)
-  import action_utils
-
   with open(actions_xml_path, 'r') as f:
     data = f.read()
 
@@ -141,33 +151,14 @@ def CheckRemovedSegmentationUserActions(input_api, output_api):
       for f in input_api.AffectedFiles(include_deletes=True)):
     return []
 
-  # Add actions dir to sys.path to import print_action_names
-  actions_dir = input_api.PresubmitLocalPath()
-  sys.path.append(actions_dir)
-
   removed_actions = []
   try:
-    import print_action_names
     # get_action_diff compares the working directory with HEAD~, which is
     # what we wantfor presubmit.
     _, removed_names = print_action_names.get_action_diff('HEAD~')
     removed_actions = removed_names
   except Exception as e:
     return [output_api.PresubmitError(f'Error getting user action diff: {e}')]
-
-  tools_dir = input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..',
-                                     '..', 'components',
-                                     'segmentation_platform', 'tools')
-  sys.path.append(tools_dir)
-
-  try:
-    import generate_histogram_list
-  except ImportError:
-    return [
-        output_api.PresubmitError(
-            'Could not import generate_histogram_list.py. Make sure the path '
-            'is correct.')
-    ]
 
   # Load the list of all actions required by segmentation models.
   segmentation_actions = generate_histogram_list.GetActualActionNames()
@@ -193,20 +184,7 @@ def CheckRemovedSegmentationUserActions(input_api, output_api):
 
 
 def CheckChangeOnUpload(input_api, output_api):
-  # Store sys path to avoid its pollution by the PRESUBMIT
-  original_sys_path = copy.deepcopy(sys.path)
-  try:
-    results = CheckChange(input_api, output_api)
-  finally:
-    sys.path = original_sys_path
-  return results
-
+  return CheckChange(input_api, output_api)
 
 def CheckChangeOnCommit(input_api, output_api):
-  # Store sys path to avoid its pollution by the PRESUBMIT
-  original_sys_path = copy.deepcopy(sys.path)
-  try:
-    results = CheckChange(input_api, output_api)
-  finally:
-    sys.path = original_sys_path
-  return results
+  return CheckChange(input_api, output_api)

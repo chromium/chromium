@@ -3,23 +3,15 @@
 # found in the LICENSE file.
 
 import os.path
-import sys
 import tempfile
 import unittest
 
-# Force local directory to be in front of sys.path to avoid importing different
-# version of PRESUBMIT.py which can be added in different files within python
-# invocation.
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import PRESUBMIT
-from presubmit_caching_support import PresubmitCache
+import setup_modules
 
-# Append chrome source root to import `PRESUBMIT_test_mocks.py`.
-sys.path.append(
-    os.path.dirname(
-        os.path.dirname(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
-from PRESUBMIT_test_mocks import MockAffectedFile, MockInputApi, MockOutputApi
+import chromium_src.tools.metrics.histograms.PRESUBMIT as PRESUBMIT
+from chromium_src.tools.metrics.histograms.presubmit_caching_support import PresubmitCache
+
+from chromium_src.PRESUBMIT_test_mocks import MockAffectedFile, MockInputApi, MockOutputApi
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 _TOP_LEVEL_ENUMS_PATH = (f'{os.path.dirname(__file__)}/enums.xml')
