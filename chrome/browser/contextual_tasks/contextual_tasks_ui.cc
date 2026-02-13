@@ -560,9 +560,7 @@ bool ContextualTasksUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   // Check if the user should have landed on the WebUI via an entry point. If
   // not, refuse to load the WebUI to prevent a broken experience.
-  return base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
-         contextual_tasks::EntryPointEligibilityManager::IsEligible(
-             Profile::FromBrowserContext(browser_context));
+  return base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
 }
 
 std::unique_ptr<content::WebUIController>

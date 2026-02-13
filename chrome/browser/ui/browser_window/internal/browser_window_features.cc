@@ -727,17 +727,17 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
             browser_,
             contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
                 browser_->GetProfile()));
+    contextual_tasks_entry_point_eligibility_manager_ =
+        GetUserDataFactory()
+            .CreateInstance<contextual_tasks::EntryPointEligibilityManager>(
+                *browser_, browser_);
     contextual_tasks_side_panel_coordinator_ =
         GetUserDataFactory()
             .CreateInstance<
                 contextual_tasks::ContextualTasksSidePanelCoordinator>(
                 *browser_, browser_,
-                contextual_tasks_active_task_context_provider_.get());
-
-    contextual_tasks_entry_point_eligibility_manager_ =
-        GetUserDataFactory()
-            .CreateInstance<contextual_tasks::EntryPointEligibilityManager>(
-                *browser_, browser_);
+                contextual_tasks_active_task_context_provider_.get(),
+                contextual_tasks_entry_point_eligibility_manager_.get());
 
     if (contextual_tasks::kShowEntryPoint.Get() ==
         contextual_tasks::EntryPointOption::kToolbarRevisit) {
@@ -907,6 +907,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 #endif
 
   contextual_tasks_side_panel_coordinator_.reset();
+  contextual_tasks_entry_point_eligibility_manager_.reset();
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (download_toolbar_ui_controller_) {
