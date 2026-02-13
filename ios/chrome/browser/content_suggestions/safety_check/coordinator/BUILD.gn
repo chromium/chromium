@@ -20,6 +20,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_suggestions/safety_check/model:utils",
     "//ios/chrome/browser/content_suggestions/safety_check/public:constants",
     "//ios/chrome/browser/content_suggestions/safety_check/ui",
+    "//ios/chrome/browser/content_suggestions/safety_check/ui:item_types",
     "//ios/chrome/browser/content_suggestions/ui",
     "//ios/chrome/browser/content_suggestions/ui:public",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",

@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/content_suggestions/safety_check/public/safety_check_constants.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_audience.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_consumer_source.h"
+#import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_item_type.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_magic_stack_consumer.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
@@ -345,6 +346,8 @@
                            : RunningSafetyCheckState::kDefault;
   state.audience = self;
   state.safetyCheckConsumerSource = self;
+  state.itemType = [state isRunning] ? SafetyCheckItemType::kRunning
+                                     : SafetyCheckItemType::kDefault;
 
   return state;
 }
