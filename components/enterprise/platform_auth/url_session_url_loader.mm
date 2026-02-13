@@ -104,6 +104,10 @@ void URLSessionURLLoader::CreateAndStartForTesting(  // IN-TEST
 
   url_session_test_util::ResponseConfig config;
   config.body = kTestServerResponseBody;
+  if (request.request_initiator.has_value()) {
+    config.headers = {{"Access-Control-Allow-Origin",
+                       request.request_initiator.value().Serialize()}};
+  }
   url_loader->SetAttachProtocolCallbackForTesting(  // IN-TEST
       base::BindOnce(url_session_test_util::AttachProtocolToSessionForTesting,
                      std::move(config)));
