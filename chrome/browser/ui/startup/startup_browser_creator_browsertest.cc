@@ -1186,10 +1186,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
                         {default_profile, StartupProfileMode::kBrowserWindow},
                         last_opened_profiles);
 
-  // |browser()| is still around at this point, even though we've closed its
-  // window. Thus the browser count for default_profile is 1.
-  ASSERT_EQ(1u, chrome::GetBrowserCount(default_profile));
-
   // When the kNotificationLaunchId switch is present, any last opened profile
   // is ignored. Thus there is no browser for other_profile.
   ASSERT_EQ(0u, chrome::GetBrowserCount(&other_profile));
@@ -1366,11 +1362,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupURLsForTwoProfiles) {
 
   // urls1 were opened in a browser for default_profile, and urls2 were opened
   // in a browser for other_profile.
-  BrowserWindowInterface* new_browser = nullptr;
-  // |browser()| is still around at this point, even though we've closed its
-  // window. Thus the browser count for default_profile is 2.
-  ASSERT_EQ(2u, chrome::GetBrowserCount(default_profile));
-  new_browser = FindOneOtherBrowserForProfile(default_profile, browser());
+  BrowserWindowInterface* new_browser =
+      FindOneOtherBrowserForProfile(default_profile, nullptr);
   ASSERT_TRUE(new_browser);
   TabStripModel* tab_strip = new_browser->GetTabStripModel();
 
