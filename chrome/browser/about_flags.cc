@@ -11754,6 +11754,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidOpenIncognitoAsWindowDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kAndroidOpenIncognitoAsWindow)},
 
+    {"android-desktop-ua-platform",
+     flag_descriptions::kAndroidDesktopUAPlatformName,
+     flag_descriptions::kAndroidDesktopUAPlatformDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kAndroidDesktopUAPlatform)},
+
     {"android-desktop-webprefs-large-display",
      flag_descriptions::kAndroidDesktopWebPrefsLargeDisplaysName,
      flag_descriptions::kAndroidDesktopWebPrefsLargeDisplaysDescription,

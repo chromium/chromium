@@ -285,6 +285,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-desktop-ua-platform",
+    "owners": [ "victortan@chromium.org", "miketaylr@chromium.org" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "android-desktop-webprefs-large-display",
     "owners": [ "lokeric@google.com", "clank-large-form-factors@google.com"],
     "expiry_milestone": 149

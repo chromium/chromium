@@ -10544,6 +10544,7 @@ from previous Chrome versions.
   <int value="-1326463296" label="SSLCommittedInterstitials:disabled"/>
   <int value="-1325887476" label="NewPrintPreview:enabled"/>
   <int value="-1325821173" label="WaylandSessionManagement:enabled"/>
+  <int value="-1325494847" label="AndroidDesktopUAPlatform:enabled"/>
   <int value="-1325230610" label="TailoredSecurityRetryForSyncUsers:enabled"/>
   <int value="-1324982303" label="MacAddressRandomization:disabled"/>
   <int value="-1324972952" label="WallpaperGooglePhotosSharedAlbums:disabled"/>
@@ -19228,6 +19229,7 @@ from previous Chrome versions.
   <int value="1651141490" label="SaveEditedPDFForm:enabled"/>
   <int value="1651143136" label="BrowserControlsDebugging:enabled"/>
   <int value="1651488964" label="AndroidWindowPopupCustomTabUi:enabled"/>
+  <int value="1651639176" label="AndroidDesktopUAPlatform:disabled"/>
   <int value="1651829920" label="CrOSEnforceMonoAudioCapture:enabled"/>
   <int value="1652700594" label="PlatformKeysAesEncryption:disabled"/>
   <int value="1652798696"

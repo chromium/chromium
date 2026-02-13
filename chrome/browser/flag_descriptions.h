@@ -4857,6 +4857,12 @@ inline constexpr char kAndroidDataImporterServiceName[] =
 inline constexpr char kAndroidDataImporterServiceDescription[] =
     "Enables the service for importing user data from other browsers.";
 
+inline constexpr char kAndroidDesktopUAPlatformName[] =
+    "Android platform client hint for Desktop Android";
+inline constexpr char kAndroidDesktopUAPlatformDescription[] =
+    "Enables the 'Android' platform client hint value for users on Desktop "
+    "Android.";
+
 inline constexpr char kAndroidDesktopWebPrefsLargeDisplaysName[] =
     "Android Desktop WebPrefs for Large Displays";
 inline constexpr char kAndroidDesktopWebPrefsLargeDisplaysDescription[] =
