@@ -1228,7 +1228,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/android_webview/tools/orderfiles/arm64',
-              'version': '_sSZjDMIzcv8FAPGuJlMpnq2rcelmftBGAatZ1Mq4f4C',
+              'version': 'zWDlRt6LfvHD5z9mfP0r5PxMxZquwDFxcAdcGM4hbeYC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
