@@ -6,12 +6,44 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/features/gemini_antiscam_protection.pb.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
+
+bool ContainsFieldType(content::WebContents* web_contents,
+                       autofill::FieldTypeGroup field_type_group) {
+  autofill::AutofillDriverFactory* adf =
+      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents);
+  if (!adf) {
+    return false;
+  }
+  return std::ranges::any_of(
+      adf->GetExistingDrivers(), [&](autofill::AutofillDriver* d) {
+        if (!d->IsActive()) {
+          return false;
+        }
+        bool found = false;
+        d->GetAutofillManager().ForEachCachedForm(
+            [&found, field_type_group](const autofill::FormStructure& form) {
+              found = found ||
+                      std::ranges::any_of(
+                          form.fields(),
+                          [&](const std::unique_ptr<autofill::AutofillField>&
+                                  field) {
+                            return field->Type().GetGroups().contains(
+                                field_type_group);
+                          });
+            });
+        return found;
+      });
+}
 
 optimization_guide::proto::GeminiAntiscamProtectionRequest
 BuildGeminiAntiscamProtectionRequest(GURL url, std::string page_inner_text) {
@@ -86,6 +118,8 @@ std::string GetContentCategory(
 void LogsGeminiAntiscamProtectionMQLS(
     base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService>
         logs_uploader_service,
+    optimization_guide::proto::GeminiAntiscamProtectionMetadata
+        metadata_proto_log,
     GURL url,
     std::string page_inner_text,
     float scam_score,
@@ -107,6 +141,7 @@ void LogsGeminiAntiscamProtectionMQLS(
           optimization_guide::proto::GeminiAntiscamProtectionLoggingData>();
   *logging_data->mutable_request() = request_proto_log;
   *logging_data->mutable_response() = response_proto_log;
+  *logging_data->mutable_metadata() = metadata_proto_log;
 
   // Upload log.
   auto mqls_log_entry =
@@ -129,7 +164,24 @@ GeminiAntiscamProtectionService::GeminiAntiscamProtectionService(
 
 GeminiAntiscamProtectionService::~GeminiAntiscamProtectionService() = default;
 
+// static
+optimization_guide::proto::GeminiAntiscamProtectionMetadata
+GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+    content::WebContents* web_contents) {
+  optimization_guide::proto::GeminiAntiscamProtectionMetadata metadata;
+  metadata.set_page_contains_financial_fields(
+      ContainsFieldType(web_contents, autofill::FieldTypeGroup::kCreditCard) ||
+      ContainsFieldType(web_contents,
+                        autofill::FieldTypeGroup::kStandaloneCvcField));
+  metadata.set_page_contains_password_field(ContainsFieldType(
+      web_contents, autofill::FieldTypeGroup::kPasswordField));
+  metadata.set_page_contains_identity_fields(
+      ContainsFieldType(web_contents, autofill::FieldTypeGroup::kAutofillAi));
+  return metadata;
+}
+
 void GeminiAntiscamProtectionService::MaybeStartAntiscamProtection(
+    optimization_guide::proto::GeminiAntiscamProtectionMetadata metadata,
     GURL url,
     ClientSideDetectionType request_type,
     bool did_match_high_confidence_allowlist,
@@ -156,11 +208,13 @@ void GeminiAntiscamProtectionService::MaybeStartAntiscamProtection(
   history_service_->GetVisibleVisitCountToHost(
       url,
       base::BindOnce(&GeminiAntiscamProtectionService::DidGetVisibleVisitCount,
-                     weak_factory_.GetWeakPtr(), url, page_inner_text),
+                     weak_factory_.GetWeakPtr(), metadata, url,
+                     page_inner_text),
       &task_tracker_);
 }
 
 void GeminiAntiscamProtectionService::DidGetVisibleVisitCount(
+    optimization_guide::proto::GeminiAntiscamProtectionMetadata metadata,
     GURL url,
     std::string page_inner_text,
     history::VisibleVisitCountToHostResult result) {
@@ -189,11 +243,12 @@ void GeminiAntiscamProtectionService::DidGetVisibleVisitCount(
       optimization_guide::ModelBasedCapabilityKey::kGeminiAntiscamProtection,
       request, {},
       base::BindOnce(&GeminiAntiscamProtectionService::OnModelResponse,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now(), url,
-                     page_inner_text));
+                     weak_factory_.GetWeakPtr(), metadata,
+                     base::TimeTicks::Now(), url, page_inner_text));
 }
 
 void GeminiAntiscamProtectionService::OnModelResponse(
+    optimization_guide::proto::GeminiAntiscamProtectionMetadata metadata,
     base::TimeTicks start_time,
     GURL url,
     std::string page_inner_text,
@@ -237,7 +292,7 @@ void GeminiAntiscamProtectionService::OnModelResponse(
     return;
   }
   LogsGeminiAntiscamProtectionMQLS(
-      logs_uploader_service->GetWeakPtr(), url,
+      logs_uploader_service->GetWeakPtr(), metadata, url,
       scam_score_is_suspicious ? page_inner_text : "",
       response->has_scam_score() ? response->scam_score() : -1.0f,
       response->has_content_category() ? response->content_category() : "",

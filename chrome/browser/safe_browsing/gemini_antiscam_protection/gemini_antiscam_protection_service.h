@@ -34,6 +34,11 @@ class GeminiAntiscamProtectionService : public KeyedService {
       history::HistoryService* history_service);
   ~GeminiAntiscamProtectionService() override;
 
+  // Builds a GeminiAntiscamProtectionMetadata proto based on the given
+  // WebContents.
+  static optimization_guide::proto::GeminiAntiscamProtectionMetadata
+  BuildGeminiAntiscamProtectionMetadata(content::WebContents* web_contents);
+
   base::WeakPtr<GeminiAntiscamProtectionService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -42,23 +47,28 @@ class GeminiAntiscamProtectionService : public KeyedService {
   // |last_committed_url| parameter values to determine whether to trigger a
   // history service check with the |DidGetVisibleVisitCount| method as a
   // callback.
-  void MaybeStartAntiscamProtection(GURL url,
-                                    ClientSideDetectionType request_type,
-                                    bool did_match_high_confidence_allowlist,
-                                    GURL last_committed_url,
-                                    std::string page_inner_text);
+  void MaybeStartAntiscamProtection(
+      optimization_guide::proto::GeminiAntiscamProtectionMetadata metadata,
+      GURL url,
+      ClientSideDetectionType request_type,
+      bool did_match_high_confidence_allowlist,
+      GURL last_committed_url,
+      std::string page_inner_text);
 
  private:
   // Callback for querying the history service. Depending on the value of
   // |result|, maybe trigger a call to Gemini to determine scamminess using
   // |url| and |page_inner_text|.
-  void DidGetVisibleVisitCount(GURL url,
-                               std::string page_inner_text,
-                               history::VisibleVisitCountToHostResult result);
+  void DidGetVisibleVisitCount(
+      optimization_guide::proto::GeminiAntiscamProtectionMetadata metadata,
+      GURL url,
+      std::string page_inner_text,
+      history::VisibleVisitCountToHostResult result);
 
   // Callback for querying the Gemini model. Log UMA histograms and MQLS data,
   // based on model response.
   void OnModelResponse(
+      optimization_guide::proto::GeminiAntiscamProtectionMetadata metadata,
       base::TimeTicks start_time,
       GURL url,
       std::string page_inner_text,

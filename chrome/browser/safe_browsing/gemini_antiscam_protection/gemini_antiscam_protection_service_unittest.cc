@@ -13,8 +13,10 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_utils.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,6 +64,10 @@ class GeminiAntiscamProtectionServiceTest : public testing::Test {
         OptimizationGuideKeyedServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestOptimizationGuideKeyedService));
     profile_ = profile_builder.Build();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
+    content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
+        ->InitializeRenderFrameIfNeeded();
     mock_history_service_ =
         static_cast<MockHistoryService*>(HistoryServiceFactory::GetForProfile(
             profile_.get(), ServiceAccessType::EXPLICIT_ACCESS));
@@ -112,7 +118,9 @@ class GeminiAntiscamProtectionServiceTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler enabler_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<GeminiAntiscamProtectionService> service_;
   raw_ptr<MockHistoryService> mock_history_service_;
   raw_ptr<MockOptimizationGuideKeyedService>
@@ -128,10 +136,12 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
               ExecuteModel(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   service_->MaybeStartAntiscamProtection(
-      GURL("https://example.com"),
+      GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+          web_contents_.get()),
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
       ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED,
       /*did_match_high_confidence_allowlist=*/false,
-      GURL("https://example.com"), "page text");
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(), "page text");
   task_environment_.RunUntilIdle();
 }
 
@@ -144,9 +154,12 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
               ExecuteModel(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   service_->MaybeStartAntiscamProtection(
-      GURL("https://example.com"), ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/true, GURL("https://example.com"),
-      "page text");
+      GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+          web_contents_.get()),
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      ClientSideDetectionType::FORCE_REQUEST,
+      /*did_match_high_confidence_allowlist=*/true,
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(), "page text");
   task_environment_.RunUntilIdle();
 }
 
@@ -159,23 +172,31 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
               ExecuteModel(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   service_->MaybeStartAntiscamProtection(
-      GURL("https://example1.com"), ClientSideDetectionType::FORCE_REQUEST,
+      GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+          web_contents_.get()),
+      GURL("https://example.com"), ClientSideDetectionType::FORCE_REQUEST,
       /*did_match_high_confidence_allowlist=*/false,
-      GURL("https://example2.com"), "page text");
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(), "page text");
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(GeminiAntiscamProtectionServiceTest,
        TestMaybeStartAntiscamProtection_HistoryCheckFails) {
   base::HistogramTester histogram_tester;
-  GURL url("https://example.com");
-  ExpectGetVisibleVisitCountToHost(/*count=*/0, /*success=*/false, url);
+  web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL();
+  ExpectGetVisibleVisitCountToHost(
+      /*count=*/0, /*success=*/false,
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               ExecuteModel(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   service_->MaybeStartAntiscamProtection(
-      url, ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/false, url, "page text");
+      GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+          web_contents_.get()),
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      ClientSideDetectionType::FORCE_REQUEST,
+      /*did_match_high_confidence_allowlist=*/false,
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(), "page text");
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
@@ -189,14 +210,19 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
 TEST_F(GeminiAntiscamProtectionServiceTest,
        TestMaybeStartAntiscamProtection_VisitedBefore) {
   base::HistogramTester histogram_tester;
-  GURL url("https://example.com");
-  ExpectGetVisibleVisitCountToHost(/*count=*/2, /*success=*/true, url);
+  ExpectGetVisibleVisitCountToHost(
+      /*count=*/2, /*success=*/true,
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               ExecuteModel(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   service_->MaybeStartAntiscamProtection(
-      url, ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/false, url, "page text");
+      GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+          web_contents_.get()),
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      ClientSideDetectionType::FORCE_REQUEST,
+      /*did_match_high_confidence_allowlist=*/false,
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(), "page text");
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
@@ -212,8 +238,9 @@ TEST_F(
     GeminiAntiscamProtectionServiceTest,
     TestMaybeStartAntiscamProtection_EmptyContentCategory) {
   base::HistogramTester histogram_tester;
-  GURL url("https://example.com");
-  ExpectGetVisibleVisitCountToHost(/*count=*/0, /*success=*/true, url);
+  ExpectGetVisibleVisitCountToHost(
+      /*count=*/0, /*success=*/true,
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   auto response = optimization_guide::proto::GeminiAntiscamProtectionResponse();
   // response.set_content_category("phishing");
@@ -223,8 +250,12 @@ TEST_F(
       /*execution_info=*/nullptr);
   ExpectExecuteModel(std::move(result));
   service_->MaybeStartAntiscamProtection(
-      url, ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/false, url, "page text");
+      GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+          web_contents_.get()),
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      ClientSideDetectionType::FORCE_REQUEST,
+      /*did_match_high_confidence_allowlist=*/false,
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(), "page text");
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
@@ -243,8 +274,9 @@ TEST_F(
     GeminiAntiscamProtectionServiceTest,
     TestMaybeStartAntiscamProtection_ContentCategoryNoMatchFound) {
   base::HistogramTester histogram_tester;
-  GURL url("https://example.com");
-  ExpectGetVisibleVisitCountToHost(/*count=*/0, /*success=*/true, url);
+  ExpectGetVisibleVisitCountToHost(
+      /*count=*/0, /*success=*/true,
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   auto response = optimization_guide::proto::GeminiAntiscamProtectionResponse();
   response.set_content_category("no_match_found");
@@ -254,8 +286,12 @@ TEST_F(
       /*execution_info=*/nullptr);
   ExpectExecuteModel(std::move(result));
   service_->MaybeStartAntiscamProtection(
-      url, ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/false, url, "page text");
+      GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+          web_contents_.get()),
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      ClientSideDetectionType::FORCE_REQUEST,
+      /*did_match_high_confidence_allowlist=*/false,
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(), "page text");
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
@@ -273,8 +309,9 @@ TEST_F(
 TEST_F(GeminiAntiscamProtectionServiceTest,
        TestMaybeStartAntiscamProtection_PhishingContentCategory) {
   base::HistogramTester histogram_tester;
-  GURL url("https://example.com");
-  ExpectGetVisibleVisitCountToHost(/*count=*/0, /*success=*/true, url);
+  ExpectGetVisibleVisitCountToHost(
+      /*count=*/0, /*success=*/true,
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   auto response = optimization_guide::proto::GeminiAntiscamProtectionResponse();
   response.set_content_category("phishing");
@@ -284,8 +321,12 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       /*execution_info=*/nullptr);
   ExpectExecuteModel(std::move(result));
   service_->MaybeStartAntiscamProtection(
-      url, ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/false, url, "page text");
+      GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+          web_contents_.get()),
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      ClientSideDetectionType::FORCE_REQUEST,
+      /*did_match_high_confidence_allowlist=*/false,
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(), "page text");
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
@@ -299,5 +340,7 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       "SafeBrowsing.GeminiAntiscamProtection.Phishing.ScamScore",
       /*sample=*/50, /*expected_bucket_count=*/1);
 }
+
+// TODO(crbug.com/467358093): Add tests, where autofill fields are present.
 
 }  // namespace safe_browsing

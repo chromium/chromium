@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/features/gemini_antiscam_protection.pb.h"
@@ -111,6 +112,13 @@ class GeminiAntiscamProtectionServiceBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(scam_score, log.response().scam_score());
     EXPECT_EQ(content_category, log.response().content_category());
     EXPECT_EQ(justification, log.response().justification());
+    EXPECT_EQ(false, log.metadata().page_contains_financial_fields());
+    EXPECT_EQ(false, log.metadata().page_contains_password_field());
+    EXPECT_EQ(false, log.metadata().page_contains_identity_fields());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  protected:
@@ -148,14 +156,20 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
                        EnhancedProtection_EmptyResponse) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                                true);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
   base::HistogramTester histogram_tester;
   auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
       browser()->profile());
   ASSERT_NE(nullptr, service);
   service->MaybeStartAntiscamProtection(
-      GURL("https://example.com"), ClientSideDetectionType::FORCE_REQUEST,
+      GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+          web_contents()),
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      ClientSideDetectionType::FORCE_REQUEST,
       /*did_match_high_confidence_allowlist=*/false,
-      GURL("https://example.com"), "page text");
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      "page text");
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(
       3u, histogram_tester
@@ -177,15 +191,21 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
                        EnhancedProtection_FailedParsingError) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                                true);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
   base::HistogramTester histogram_tester;
   auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
       browser()->profile());
   ASSERT_NE(nullptr, service);
   SetUpFailedParsingModelExecution();
   service->MaybeStartAntiscamProtection(
-      GURL("https://example.com"), ClientSideDetectionType::FORCE_REQUEST,
+      GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+          web_contents()),
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      ClientSideDetectionType::FORCE_REQUEST,
       /*did_match_high_confidence_allowlist=*/false,
-      GURL("https://example.com"), "page text");
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      "page text");
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(
       3u, histogram_tester
@@ -208,6 +228,8 @@ IN_PROC_BROWSER_TEST_F(
     EnhancedProtection_SuccessfulResponseReturnsScamVerdict) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                                true);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
   base::HistogramTester histogram_tester;
   auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
       browser()->profile());
@@ -220,12 +242,14 @@ IN_PROC_BROWSER_TEST_F(
   base::test::TestFuture<void> log_uploaded_signal;
   logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
 
-  GURL url("https://example.com");
   std::string page_text = "page text";
   service->MaybeStartAntiscamProtection(
-      url, ClientSideDetectionType::FORCE_REQUEST,
+      GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+          web_contents()),
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      ClientSideDetectionType::FORCE_REQUEST,
       /*did_match_high_confidence_allowlist=*/false,
-      GURL("https://example.com"), page_text);
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(), page_text);
   ASSERT_TRUE(log_uploaded_signal.Wait());
 
   EXPECT_EQ(
@@ -245,8 +269,9 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.GeminiAntiscamProtection.Investment.ScamScore",
       /*sample=*/scam_score * 100, /*expected_bucket_count=*/1);
-  VerifyUniqueQualityLog(url, page_text, scam_score, content_category,
-                         justification);
+  VerifyUniqueQualityLog(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(), page_text,
+      scam_score, content_category, justification);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -254,6 +279,8 @@ IN_PROC_BROWSER_TEST_F(
     EnhancedProtection_SuccessfulResponseReturnsBenignVerdict) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                                true);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
   base::HistogramTester histogram_tester;
   auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
       browser()->profile());
@@ -266,12 +293,14 @@ IN_PROC_BROWSER_TEST_F(
   base::test::TestFuture<void> log_uploaded_signal;
   logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
 
-  GURL url("https://example.com");
   std::string page_text = "page text";
   service->MaybeStartAntiscamProtection(
-      url, ClientSideDetectionType::FORCE_REQUEST,
+      GeminiAntiscamProtectionService::BuildGeminiAntiscamProtectionMetadata(
+          web_contents()),
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      ClientSideDetectionType::FORCE_REQUEST,
       /*did_match_high_confidence_allowlist=*/false,
-      GURL("https://example.com"), page_text);
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(), page_text);
   ASSERT_TRUE(log_uploaded_signal.Wait());
 
   EXPECT_EQ(
@@ -292,8 +321,9 @@ IN_PROC_BROWSER_TEST_F(
       "SafeBrowsing.GeminiAntiscamProtection.Charity.ScamScore",
       /*sample=*/scam_score * 100, /*expected_bucket_count=*/1);
   // Page text is not logged for benign verdicts.
-  VerifyUniqueQualityLog(url, /*page_text=*/"", scam_score, content_category,
-                         justification);
+  VerifyUniqueQualityLog(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      /*page_text=*/"", scam_score, content_category, justification);
 }
 
 }  // namespace safe_browsing
