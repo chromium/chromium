@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -2442,9 +2441,6 @@ void WebRequestEventRouter::LoadPersistedLazyListeners(
     for (const auto& [event_name, listeners] : *listener_map) {
       for (const auto& listener : listeners) {
         if (listener->id.extension_id == extension_id) {
-          // TODO(crbug.com/448893426): remove these for loops if we can verify
-          // this never happens.
-          base::debug::DumpWithoutCrashing();
           return;
         }
       }
