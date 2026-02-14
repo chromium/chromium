@@ -78,18 +78,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
-                       TabSearchOpenedPrefUpdates) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  EXPECT_FALSE(prefs->GetBoolean(tab_search_prefs::kTabSearchOpened));
-
-  tab_search_bubble_host()->ShowTabSearchBubble();
-  EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchOpened));
-
-  tab_search_bubble_host()->CloseTabSearchBubble();
-  RunUntilBubbleWidgetDestroyed();
-}
-
-IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
                        BubbleShowCorrectlyInFullscreen) {
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
 

@@ -993,6 +993,9 @@ constexpr char kDiceMigrationBackup[] = "signin.dice_migration.backup";
 constexpr char kDiceMigrationRestoredFromBackup[] =
     "signin.dice_migration.restored_from_backup";
 
+// Deprecated 02/2026.
+inline constexpr char kTabSearchOpened[] = "tab_search.opened";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1382,6 +1385,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterTimePref(kDiceMigrationDialogLastShownTime, base::Time());
   registry->RegisterDictionaryPref(kDiceMigrationBackup);
   registry->RegisterBooleanPref(kDiceMigrationRestoredFromBackup, false);
+
+  // Deprecated 02/2026.
+  registry->RegisterBooleanPref(kTabSearchOpened, false);
 }
 
 }  // namespace
@@ -2675,6 +2681,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 02/2026.
   profile_prefs->ClearPref(kExplicitBrowserSigninWithoutFeatureEnabled);
+
+  // Added 02/2026.
+  profile_prefs->ClearPref(kTabSearchOpened);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
