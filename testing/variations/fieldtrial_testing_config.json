@@ -6123,6 +6123,28 @@
             ]
         }
     ],
+    "ChromnientNonBlockingPrivacyNotice": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "id": "4"
+                    },
+                    "enable_features": [
+                        "LensOverlayEntrypointLabelAlt",
+                        "LensOverlayNonBlockingPrivacyNotice"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientReinvocationAffordance": [
         {
             "platforms": [
@@ -7276,27 +7298,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ContentVerifyJobUseJobVersionForHashing"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ContextualSearchBoxExpansion": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LensOverlayContextualSearchbox",
-                        "LensOverlayEntrypointLabelAlt",
-                        "LensOverlayNonBlockingPrivacyNotice",
-                        "LensOverlayVisualSelectionUpdates"
                     ]
                 }
             ]
