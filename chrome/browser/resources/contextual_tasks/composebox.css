@@ -17,8 +17,11 @@
   --composebox-border-radius: 24px;
   --composebox-collapsed-height: 90px;
   --composebox-margin-bottom: 30px;
-  --context-carousel-inline-end-spacing: 24px;
-  --context-carousel-inline-start-spacing: 24px;
+  --context-carousel-inline-end-spacing: 56px;
+  --context-carousel-inline-start-spacing: 20px;
+  --context-carousel-top-position: 20px;
+  --context-top-carousel-bottom-margin: 0;
+  --context-top-carousel-top-margin: 0;
   --composebox-container-height:
     calc(var(--composebox-height) + var(--composebox-dropdown-height)
       + var(--composebox-margin-bottom)
@@ -198,7 +201,7 @@
 
 #composebox[show-file-carousel_]::part(carousel-container) {
   /* Give room for the close button in the top right. */
-  --context-carousel-inline-end-spacing: 62px;
+  --context-carousel-inline-end-spacing: 56px;
 }
 
 #composebox:not([expanding_])[show-file-carousel_]::part(cr-composebox-file-carousel) {

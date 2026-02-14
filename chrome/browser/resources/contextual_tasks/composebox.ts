@@ -346,8 +346,6 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
 
   startExpandAnimation() {
     const composebox = this.$.composebox;
-
-
     composebox.animationState = GlowAnimationState.NONE;
     composebox.animationState = GlowAnimationState.EXPANDING;
   }
