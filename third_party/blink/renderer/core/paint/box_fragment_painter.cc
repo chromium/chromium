@@ -2323,6 +2323,12 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     // Also check border-radius and border-shape clipping.
     if (!skip_children && style.HasBorderShape()) {
       PhysicalRect rect(physical_offset, size);
+      if (const auto* layout_box =
+              DynamicTo<LayoutBox>(box_fragment_.GetLayoutObject())) {
+        if (layout_box->ShouldApplyOverflowClipMargin()) {
+          rect.Expand(layout_box->BorderOutsetsForClipping());
+        }
+      }
       const Path outer_path = ComputeBorderShapeOuterPath(
           style, rect, box_fragment_.GetLayoutObject());
       skip_children = !hit_test.location.Intersects(outer_path);

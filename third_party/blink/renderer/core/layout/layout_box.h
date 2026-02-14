@@ -846,6 +846,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const PhysicalOffset& location) const;
   PhysicalRect ClipRect(const PhysicalOffset& location) const;
 
+  // The outsets from this box's border-box that the element's content should be
+  // clipped to, including overflow-clip-margin.
+  PhysicalBoxStrut BorderOutsetsForClipping() const;
+
   // Returns the combination of overflow clip, contain: paint clip and CSS clip
   // for this object.
   PhysicalRect ClippingRect(const PhysicalOffset& location) const;
@@ -1317,10 +1321,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     CheckIsVisualOverflowComputed();
     return overflow_ && overflow_->visual_overflow;
   }
-
-  // The outsets from this box's border-box that the element's content should be
-  // clipped to, including overflow-clip-margin.
-  PhysicalBoxStrut BorderOutsetsForClipping() const;
 
   void SetVisualOverflow(const PhysicalRect& self,
                          const PhysicalRect& contents);

@@ -2835,17 +2835,24 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderShapeClip() {
     if (NeedsInnerBorderShapeClip(object_)) {
       const auto& box = To<LayoutBox>(object_);
       PhysicalRect box_rect(context_.current.paint_offset, box.StitchedSize());
+      // Expand the reference rect by overflow-clip-margin if applicable, so
+      // that the border-shape clip accounts for the additional visible
+      // overflow area allowed by the margin.
+      PhysicalRect expanded_box_rect = box_rect;
+      if (box.ShouldApplyOverflowClipMargin()) {
+        expanded_box_rect.Expand(box.BorderOutsetsForClipping());
+      }
       std::optional<BorderShapeReferenceRects> border_shape_rects =
-          ComputeBorderShapeReferenceRects(box_rect, box.StyleRef(), box);
+          ComputeBorderShapeReferenceRects(expanded_box_rect, box.StyleRef(),
+                                           box);
       const PhysicalRect inner_reference_rect =
-          border_shape_rects ? border_shape_rects->inner : box_rect;
+          border_shape_rects ? border_shape_rects->inner : expanded_box_rect;
       const Path inner_path =
           BorderShapePainter::InnerPath(box.StyleRef(), inner_reference_rect);
-      gfx::RectF layout_clip_rect(box_rect);
+      gfx::RectF layout_clip_rect(expanded_box_rect);
       PhysicalOffset offset = -OffsetInStitchedFragments(BoxFragment());
       layout_clip_rect.Offset(gfx::Vector2dF(offset));
       box_rect.offset += offset;
-      // TODO(nrosenthal): apply overflow-clip-margin
       ClipPaintPropertyNode::State state(
           *context_.current.transform, layout_clip_rect,
           FloatRoundedRect(inner_path.BoundingRect()));
