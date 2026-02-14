@@ -1787,10 +1787,6 @@ BASE_FEATURE(kShimlessRMAFlexibleSerialNumberName,
 // page.
 BASE_FEATURE(kShimlessRMAHideGoogleSKU, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, system shortcuts will utilize state machiens instead of
-// keeping track of entire history of keys pressed.
-BASE_FEATURE(kShortcutStateMachines, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables a toggle to enable Bluetooth debug logs.
 BASE_FEATURE(kShowBluetoothDebugLogToggle, base::FEATURE_ENABLED_BY_DEFAULT);
 
