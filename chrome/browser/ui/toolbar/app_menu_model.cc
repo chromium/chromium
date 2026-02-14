@@ -996,7 +996,10 @@ void ToolsMenuModel::Build(Browser* browser) {
     if (features::HasTabSearchToolbarButton() ||
         base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton)) {
       AddItemWithStringIdAndVectorIcon(
-          this, IDC_TAB_SEARCH, IDS_TAB_SEARCH_MENU, kTabSearchToolbarIcon);
+          this, IDC_TAB_SEARCH, IDS_TAB_SEARCH_MENU,
+          base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton)
+              ? kTabSearchTabStripIcon
+              : kTabSearchToolbarIcon);
     }
 
     if (base::FeatureList::IsEnabled(features::kTabOrganizationAppMenuItem) &&
