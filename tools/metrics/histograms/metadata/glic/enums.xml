@@ -491,6 +491,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="From the handoff button"/>
   <int value="15" label="From invoking skills"/>
   <int value="16" label="Automatically opened by contextual cueing"/>
+  <int value="17" label="User clicked the summarize button in the PDF viewer"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -665,6 +666,10 @@ chromium-metrics-reviews@google.com.
   <int value="66" label="Auto-opened by contextual cue, attached, audio mode."/>
   <int value="67" label="Auto-opened by contextual cue, detached, text mode."/>
   <int value="68" label="Auto-opened by contextual cue, detached, audio mode."/>
+  <int value="69" label="PDF summarize button, attached, text mode."/>
+  <int value="70" label="PDF summarize button, attached, audio mode."/>
+  <int value="71" label="PDF summarize button, detached, text mode."/>
+  <int value="72" label="PDF summarize button, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ResponseSegmentation) -->

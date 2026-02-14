@@ -5136,6 +5136,7 @@ if (!is_android) {
         "//chrome/browser/devtools:test_support",
         "//chrome/browser/extensions:test_support",
         "//chrome/browser/extensions/api/braille_display_private:controller",
+        "//chrome/browser/extensions/api/pdf_viewer_private:browser_tests",
         "//chrome/browser/hid",
         "//chrome/browser/prefetch",
         "//chrome/browser/tab_list",
