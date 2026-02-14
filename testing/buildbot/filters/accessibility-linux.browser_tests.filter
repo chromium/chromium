@@ -2,13 +2,6 @@
 # followed by tests which are also flaky on other bots. Tests which are not
 # appropriate for this bot should be placed at the end of this file.
 
-# Flaky mostly on the accessibility bot, due to a timeout: crbug.com/483542952
--HistogramsInternalsUIBrowserTest.NoDummyHistograms
--HistogramsInternalsUIBrowserTest.RefreshHistograms
--HistogramsInternalsUIBrowserTest.StopMonitoring
--HistogramsInternalsUIBrowserTest.SubprocessCheckbox
--PrefsInternalsTest.TestPrefsAreServed
-
 # Flaky on Linux: crbug.com/483413077
 -AccessCodeCastTest.PasscodeInput
 -AccessCodeCastTest.PasscodeInput__PasscodeInputElementTest_cursor_is_rendered_correctly

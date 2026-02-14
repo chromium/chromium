@@ -138,21 +138,24 @@ void AXTreeFormatterAuraLinux::RecursiveBuildTree(AtkObject* atk_node,
   if (!ShouldDumpChildren(*node))
     return;
 
-  auto child_count = atk_object_get_n_accessible_children(atk_node);
-  if (child_count <= 0)
+  gfx::NativeViewAccessible native_child = node->GetFirstChild();
+  if (!native_child) {
     return;
+  }
 
   base::ListValue children;
-  for (auto i = 0; i < child_count; i++) {
+  while (native_child) {
     base::DictValue child_dict;
-
-    AtkObject* atk_child = atk_object_ref_accessible_child(atk_node, i);
-    CHECK(atk_child);
-
-    RecursiveBuildTree(atk_child, &child_dict);
-    g_object_unref(atk_child);
-
+    RecursiveBuildTree(native_child, &child_dict);
     children.Append(std::move(child_dict));
+
+    AXPlatformNodeAuraLinux* platform_child =
+        AXPlatformNodeAuraLinux::FromAtkObject(native_child);
+    if (platform_child && platform_child->GetDelegate()) {
+      native_child = platform_child->GetDelegate()->GetNextSibling();
+    } else {
+      native_child = nullptr;
+    }
   }
 
   dict->Set(kChildrenDictAttr, std::move(children));
