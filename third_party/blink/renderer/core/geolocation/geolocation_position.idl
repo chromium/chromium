@@ -25,11 +25,6 @@
 
 // https://www.w3.org/TR/geolocation-API/#position_interface
 
-enum AccuracyMode {
-    "approximate",
-    "precise",
-};
-
 [
     Exposed=Window,
     ImplementedAs=Geoposition

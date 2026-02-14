@@ -141,6 +141,9 @@ PositionOptions* OverrideAccuracyHint(const PositionOptions* options) {
   copied_options->setTimeout(options->timeout());
   copied_options->setMaximumAge(options->maximumAge());
   copied_options->setEnableHighAccuracy(true);
+  if (RuntimeEnabledFeatures::ApproximateGeolocationWebVisibleAPIEnabled()) {
+    copied_options->setAccuracyMode(options->accuracyMode());
+  }
   return copied_options;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -707,14 +710,29 @@ void Geolocation::HandlePermissionError() {
 }
 
 void Geolocation::UpdateAccuracyHint() {
-  const bool new_enable_high_accuracy =
-      std::ranges::any_of(*one_shots_,
-                          [](const auto& notifier) {
-                            return notifier->Options()->enableHighAccuracy();
-                          }) ||
-      std::ranges::any_of(watchers_->Notifiers(), [](const auto& notifier) {
-        return notifier->Options()->enableHighAccuracy();
-      });
+  auto is_approximate = [](const auto& notifier) {
+    return notifier->Options()->accuracyMode().AsEnum() ==
+           V8AccuracyMode::Enum::kApproximate;
+  };
+
+  // AccuracyMode::kApproximate takes precedence. If any request is approximate,
+  // we must respect that constraint.
+  const bool has_approximate_request =
+      std::ranges::any_of(*one_shots_, is_approximate) ||
+      std::ranges::any_of(watchers_->Notifiers(), is_approximate);
+
+  bool new_enable_high_accuracy = false;
+  if (!has_approximate_request) {
+    auto wants_high_accuracy = [](const auto& notifier) {
+      return notifier->Options()->enableHighAccuracy();
+    };
+
+    // If there are no approximate requests, we enable high accuracy if at least
+    // one request has enableHighAccuracy is true.
+    new_enable_high_accuracy =
+        std::ranges::any_of(*one_shots_, wants_high_accuracy) ||
+        std::ranges::any_of(watchers_->Notifiers(), wants_high_accuracy);
+  }
 
   if (new_enable_high_accuracy != enable_high_accuracy_) {
     enable_high_accuracy_ = new_enable_high_accuracy;

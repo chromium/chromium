@@ -6,4 +6,5 @@ dictionary PositionOptions {
     boolean enableHighAccuracy = false;
     [Clamp] unsigned long timeout = 0xFFFFFFFF;
     [Clamp] unsigned long maximumAge = 0;
+    [RuntimeEnabled=ApproximateGeolocationWebVisibleAPI] AccuracyMode accuracyMode="precise";
 };
