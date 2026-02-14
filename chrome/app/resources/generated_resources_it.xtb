@@ -1339,6 +1339,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1891362123137972260">Lo spazio sul disco sta per esaurirsi. Libera spazio.</translation>
 <translation id="189210018541388520">Apri a schermo intero</translation>
 <translation id="1892341345406963517">Ciao <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Fai clic su <ph name="BUTTON_LABEL" /> qui sotto. Fai clic su <ph name="BUTTON_2" /> nelle impostazioni di Windows</translation>
 <translation id="189358972401248634">Altre lingue</translation>
 <translation id="1895658205118569222">Chiusura</translation>
 <translation id="1896043844785689584">Per configurare l'impronta, chiedi a tuo figlio di toccare il sensore di impronte digitali nell'angolo in basso a destra della tastiera. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
@@ -3153,6 +3154,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3105820656234755131">Password aggiornata</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Il sito sta usando il Bluetooth</translation>
+<translation id="3108122610701115301">Imposta come predefinito</translation>
 <translation id="3108931485517391283">Impossibile ricevere</translation>
 <translation id="3108957152224931571">Colore di evidenziazione</translation>
 <translation id="3109206895301430738">Gruppi di schede salvati</translation>
@@ -5104,6 +5106,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4415815425191869676">Mantieni questi siti sempre attivi</translation>
 <translation id="4416582610654027550">Digita un URL valido</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Metti in pausa questa scheda}other{Metti in pausa queste schede}}</translation>
+<translation id="4421823557207751899">Accesso eseguito come <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">I suggerimenti di bozza si basano sui tuoi prompt e sui contenuti della pagina web</translation>
 <translation id="4421932782753506458">Micio</translation>
 <translation id="4423376891418188461">Ripristina impostazioni</translation>
@@ -6204,6 +6207,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5191251636205085390">Scopri e gestisci le nuove tecnologie che mirano a sostituire i cookie di terze parti</translation>
 <translation id="519185197579575131">Usa QT</translation>
 <translation id="5192062846343383368">Per vedere le impostazioni della supervisione, apri l'app Family Link</translation>
+<translation id="5193602404493965468">* Il campo <ph name="FIELD_LIST" /> è obbligatorio</translation>
 <translation id="5193978546360574373">Verrà rimosso l'accesso a Google Drive su questo Chromebook, incluso l'accesso a tutti i file resi disponibili offline</translation>
 <translation id="5193988420012215838">Copiata nei tuoi appunti</translation>
 <translation id="5194256020863090856">L'azione viene applicata soltanto per le finestre di navigazione in incognito</translation>
@@ -6346,6 +6350,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5288678174502918605">Riapri sch&amp;eda chiusa</translation>
 <translation id="5290020561438336792">PC e dispositivo di trasmissione su diverse reti Wi-Fi (ad es. 2,4 GHz
     e 5 GHz)</translation>
+<translation id="5290322819358431297">Compila automaticamente le tue password</translation>
 <translation id="52912272896845572">Il file della chiave privata non è valido.</translation>
 <translation id="529175790091471945">Formatta questo dispositivo</translation>
 <translation id="529296195492126134">La modalità temporanea non è supportata. Contatta l'amministratore.</translation>
@@ -6963,6 +6968,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5734697361979786483">Aggiungi condivisione file</translation>
 <translation id="573520097779121706">Usa i tasti "7", "8", "9", "U", "O", "J", "K" e "L" per spostare il cursore</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Questi dati o il tuo dispositivo non rispettano alcune policy di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}=1{Questo file o il tuo dispositivo non rispetta alcune policy di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}other{Questi file non rispettano alcune policy di sicurezza della tua organizzazione. Verifica con il tuo amministratore cosa occorre sistemare.}}</translation>
+<translation id="5736345781200955827">Crea, salva e gestisci le tue password in modo da poter accedere facilmente ai siti e alle app utilizzando Chrome</translation>
 <translation id="5738093759615225354">Questa passkey è necessaria per accedere al tuo computer</translation>
 <translation id="5738386565827477765">Dispositivo audio</translation>
 <translation id="5739017626473506901">Accedi per aiutare <ph name="USER_NAME" /> ad aggiungere un account della scuola</translation>
@@ -7215,6 +7221,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5901089233978050985">Passa alla scheda in fase di acquisizione</translation>
 <translation id="5901494423252125310">Sportello della stampante aperto</translation>
 <translation id="5901630391730855834">Giallo</translation>
+<translation id="5902400038326841449">Il Gestore delle password di Google è disattivato</translation>
 <translation id="5902892210366342391">Visualizza gli avvisi prima di visitare siti non sicuri in modalità di navigazione in incognito</translation>
 <translation id="5904614460720589786">Impossibile installare <ph name="APP_NAME" /> a causa di un problema di configurazione. Contatta l'amministratore. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Continua a consentire a questo sito di usare identificatori per riprodurre contenuti protetti</translation>
@@ -7995,6 +8002,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> completato</translation>
 <translation id="6452961788130242735">Problema di rete o area di autenticazione non valida</translation>
 <translation id="6453191633103419909">Qualità di proiezione schede/schermo</translation>
+<translation id="6453306703004115497">Tradotto in <ph name="LANGUAGE" />.</translation>
 <translation id="6453687572758515877">Raggruppa tutte le schede</translation>
 <translation id="6453921811609336127">Per passare al metodo di immissione successivo, premi <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Maiusc<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Spazio<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Su siti specifici</translation>
@@ -8153,6 +8161,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="656293578423618167">Il percorso o il nome del file è troppo lungo. Salva il file con un nome più corto o in un'altra posizione.</translation>
 <translation id="6563002009564846727">Visualizza i certificati importati da Windows</translation>
 <translation id="6563055593659435495">Impossibile mantenere una connessione con lo smartphone. Assicurati che il tuo smartphone sia nelle vicinanze e sbloccato e che il Bluetooth e il Wi-Fi siano attivi.</translation>
+<translation id="6564343790052433242">Per creare una passkey per <ph name="APP_NAME" />, il Gestore delle password di Google deve essere attivo</translation>
 <translation id="6565144332292237355">I siti possono usare questa funzionalità per cercare e connettersi a qualsiasi dispositivo sulla tua rete locale</translation>
 <translation id="6568283005472142698">Ricerca di schede</translation>
 <translation id="6569931898053264308">Medi risparmi</translation>
@@ -11069,7 +11078,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8536810348276651776">Uscirai dalla maggior parte dei siti, ma non dal tuo Account Google, quindi si applicano le tue impostazioni di Family Link relative a Chrome.</translation>
 <translation id="8536956381488731905">Suono tasti</translation>
 <translation id="8539727552378197395">No (solo Http)</translation>
-<translation id="8539766201049804895">Esegui l'upgrade</translation>
+<translation id="8539766201049804895">Fai l'upgrade</translation>
 <translation id="8540136935098276800">Inserisci un URL nel formato corretto</translation>
 <translation id="8540503336857689453">Per motivi di sicurezza non è consigliabile usare una rete nascosta.</translation>
 <translation id="854071720451629801">Contrassegna come letta</translation>
@@ -11424,6 +11433,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8761945298804995673">Questo utente esiste già</translation>
 <translation id="8762886931014513155">Il dispositivo <ph name="DEVICE_TYPE" /> richiede un aggiornamento</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
+<translation id="8765940060470412555">Stacca la modalità Lettura</translation>
 <translation id="8766156860774051068">Selezionati da te</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Mostra tutte le ricerche per <ph name="QUERY_CLUSTER_NAME" /></translation>

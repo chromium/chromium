@@ -1799,6 +1799,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="219283042927675668">Tab dalam kumpulan</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> mengurus halaman tab baharu anda, yang akan dibuka pada tab baharu</translation>
 <translation id="2192982266585216032">&amp;Pembayaran</translation>
+<translation id="2193567467390483943">Ibu/bapa anda tidak meluluskan sambungan ini</translation>
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
 <translation id="2195331105963583686">Anda masih boleh menggunakan <ph name="DEVICE_TYPE" /> ini selepas waktu itu tetapi tidak akan mendapat perisian automatik dan kemas kini keselamatan lagi</translation>
 <translation id="2195729137168608510">Perlindungan E-mel</translation>
@@ -5120,6 +5121,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4415815425191869676">Sentiasa pastikan laman ini aktif</translation>
 <translation id="4416582610654027550">Taip URL yang sah</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Jeda Tab Ini}other{Jeda Tab Ini}}</translation>
+<translation id="4421823557207751899">Dilog masuk sebagai <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Cadangan penulisan adalah berdasarkan gesaan anda dan kandungan halaman web</translation>
 <translation id="4421932782753506458">Gebu</translation>
 <translation id="4423376891418188461">Pulihkan Tetapan</translation>

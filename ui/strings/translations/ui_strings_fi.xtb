@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 minuutti sitten}other{# minuuttia sitten}}</translation>
 <translation id="1450753235335490080">Jakaminen ei onnistu: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 kuukausi sitten}other{# kuukautta sitten}}</translation>
+<translation id="1591017414891297549">ESIKATSELU</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuutti ja }other{# minuuttia ja }}</translation>
 <translation id="1643823602425662293">Ilmoitus</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kt/s</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> lisää</translation>
 <translation id="8730621377337864115">Valmis</translation>
+<translation id="8741385002816058621">Tämä on ominaisuuden ennakkoversio</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 h}other{# h}}</translation>
 <translation id="8798099450830957504">Oletus</translation>
 <translation id="8841375032071747811">Takaisin-painike</translation>

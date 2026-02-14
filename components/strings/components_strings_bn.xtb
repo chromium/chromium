@@ -705,6 +705,7 @@
 <translation id="2137891579555018930">অনুমতির জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="213826338245044447">মোবাইল বুকমার্ক</translation>
 <translation id="2141000681034340397">আপনার ইনপুট এডিট করুন</translation>
+<translation id="2141475438898772664">৪ বারে অথবা প্রতি মাসে পেমেন্ট করুন</translation>
 <translation id="2144171668675205303">কোনও অ্যাক্টিভ বিষয় নেই</translation>
 <translation id="2145193671493396738">অর্থনীতির খবর</translation>
 <translation id="214556005048008348">পেমেন্ট বাতিল করুন</translation>
@@ -2850,6 +2851,7 @@
 <translation id="5543564889050342791">চিড়িয়াখানা, অ্যাকোয়ারিয়াম এবং সংরক্ষণ</translation>
 <translation id="5543722831081909240">১৮০ ডিগ্রী</translation>
 <translation id="5544836308113951378">ক্রুজ ও চার্টারস</translation>
+<translation id="5545314360139398232">কিস্তিতে পেমেন্ট করতে <ph name="ISSUER_NAME" /> লিঙ্ক করুন</translation>
 <translation id="5547939254150808298">প্রিন্টিং ও প্রকাশনা</translation>
 <translation id="554815783948612276">ফোরাম ও চ্যাট প্রদানকারী</translation>
 <translation id="5548606607480005320">নিরাপত্তা সংক্রান্ত পরীক্ষা</translation>
@@ -3696,6 +3698,7 @@
 <translation id="6926216138694948720">বডি আর্ট</translation>
 <translation id="692638818576287323">ব্যবসায়িক গাড়ি</translation>
 <translation id="6927878187051807444">ক্যামেরার ফাইল ও স্ক্রিনশট</translation>
+<translation id="6929949393612835405">বন্ধ করুন এবং "<ph name="OPENER_TITLE" />"-এ ফিরে যান</translation>
 <translation id="6930607614725241390">সাইড প্যানেলে সার্চ করুন</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />আপনার ডিফল্ট সার্চ ইঞ্জিন আপনাকে ওয়েবে খুঁজে নিতে এবং Chrome ফিচার ব্যবহারের সুবিধায় দেয়,<ph name="END_BOLD" /> যেমন অ্যাড্রেস বার এবং ওয়েব পেজের ছবি থেকে সার্চ করা। আপনার সার্চ ইঞ্জিনে এটি কাজ না করলে ফিচার উপলভ্য নাও হতে পারে।</translation>
 <translation id="6934672428414710184">এই নাম আপনার Google অ্যাকাউন্ট থেকে নেওয়া</translation>

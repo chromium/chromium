@@ -704,6 +704,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2137891579555018930">İzin bekleniyor...</translation>
 <translation id="213826338245044447">Mobil Yer İşaretleri</translation>
 <translation id="2141000681034340397">Girişinizi düzenleyin</translation>
+<translation id="2141475438898772664">4 taksitle veya aylık olarak ödeme yapın</translation>
 <translation id="2144171668675205303">Etkin konu yok</translation>
 <translation id="2145193671493396738">Ekonomi Haberleri</translation>
 <translation id="214556005048008348">Ödemeyi iptal et</translation>
@@ -2849,6 +2850,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5543564889050342791">Hayvanat Bahçeleri, Akvaryumlar ve Doğa Koruma Alanları</translation>
 <translation id="5543722831081909240">180 derece</translation>
 <translation id="5544836308113951378">Gemi Yolculukları ve Tekne Kiralama</translation>
+<translation id="5545314360139398232">Daha sonra ödeme yapmak için <ph name="ISSUER_NAME" /> hesabı bağlayın</translation>
 <translation id="5547939254150808298">Baskı ve Yayıncılık</translation>
 <translation id="554815783948612276">Forum ve Sohbet Sağlayıcıları</translation>
 <translation id="5548606607480005320">Güvenlik kontrolü</translation>
@@ -3696,6 +3698,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6926216138694948720">Beden Sanatı</translation>
 <translation id="692638818576287323">Ticari Araçlar</translation>
 <translation id="6927878187051807444">kamera dosyaları ve ekran görüntüleri</translation>
+<translation id="6929949393612835405">Kapat ve "<ph name="OPENER_TITLE" />" sayfasına dön</translation>
 <translation id="6930607614725241390">Yan panelde ara</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Varsayılan arama motorunuz web'de arama yapmanızı sağlar, ayrıca adres çubuğundan ve web sayfalarındaki görsellerden arama gibi Chrome özelliklerini destekler<ph name="END_BOLD" />. Arama motorunuzun desteklemediği özellikler kullanılamayabilir.</translation>
 <translation id="6934672428414710184">Bu ad Google Hesabınızdan gelmektedir</translation>

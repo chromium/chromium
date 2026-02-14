@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{Duela minutu bat}other{Duela # minutu}}</translation>
 <translation id="1450753235335490080">Ezin da partekatu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{Duela hilabete}other{Duela # hilabete}}</translation>
+<translation id="1591017414891297549">AURREBISTA</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minutu eta }other{# minutu eta }}</translation>
 <translation id="1643823602425662293">Jakinarazpena</translation>
 <translation id="169515659049020177">Maius</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>
 <translation id="8725488761726303204">eta beste <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">Eginda</translation>
+<translation id="8741385002816058621">Aurrebista-eginbide bat da hau</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 h}other{# h}}</translation>
 <translation id="8798099450830957504">Lehenetsia</translation>
 <translation id="8841375032071747811">Atzera botoia</translation>

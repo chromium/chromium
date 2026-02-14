@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Padėkite mums tobulinti „Chrome“ nurodydami, kodėl leidote trečiųjų šalių slapukus. <ph name="BEGIN_LINK" />Išsiųskite atsiliepimą<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Galite prašyti peržiūrėti svetainių versiją staliniams kompiuteriams</translation>
 <translation id="1085696779717592361">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
+<translation id="1126523729897810826">Atlikite toliau nurodytus siūlomus veiksmus, kad išnaudotumėte visas „Chrome“ galimybes</translation>
 <translation id="113098737392899175">Naršykite puslapius naudodami teksto žymeklį, kai prijungta klaviatūra</translation>
 <translation id="1149644372535087155">Slaptažodžių išsaugojimas naršyklėje „Chrome“</translation>
 <translation id="1178015372320901893">Mano sparčiųjų klavišų apatinis lapas</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Paspartinti svetaines naudojant „Chrome“ V8 variklį, bet padaryti „Chrome“ šiek tiek mažiau atsparią atakoms</translation>
 <translation id="1593426485665524382">Nauji veiksmai pasiekiami netoli ekrano viršaus</translation>
 <translation id="1594521731409209842">Suimkite ekraną, kad pakeistumėte nuotraukos dydį</translation>
+<translation id="1599268789440304082">Sąrankos lapas atidarytas</translation>
 <translation id="1601560923496285236">Taikyti</translation>
 <translation id="1615755956145364867">Svetainėse gali būti prašoma leisti apsaugotą turinį</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="4505788138578415521">URL išskleistas</translation>
 <translation id="4522570452068850558">Išsami informacija</translation>
 <translation id="4523472416386354622">Prisijungti ir pradėti</translation>
+<translation id="4529207923544043455">Apatinis lapas, kuriame rodomos baigtos ir nebaigtos sąrašo užduotys</translation>
 <translation id="4534723447064627427">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų mikrofoną, taip pat įjunkite jį <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Sąrankos lapas uždarytas</translation>
 <translation id="4566417217121906555">Nutildyti mikrofoną</translation>
 <translation id="4570913071927164677">Išsami informacija</translation>
 <translation id="4578289292431526768">Pirmyn</translation>

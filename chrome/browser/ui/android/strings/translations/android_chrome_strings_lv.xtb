@@ -476,6 +476,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2992473221983447149">Attēlu apraksti</translation>
 <translation id="2996291259634659425">Ieejas frāzes izveide</translation>
 <translation id="2996809686854298943">URL ir jānorāda obligāti.</translation>
+<translation id="3008916997590006706">Pieskarieties vienumam “Saglabāt”, lai ērti piekļūtu šai parolei nākamreiz, kad pierakstīsieties.</translation>
 <translation id="3024215143424744261">Lasīšanas režīma preferences ir aizvērtas</translation>
 <translation id="3026955690410463085">Iekļaut saiti</translation>
 <translation id="3027644380269727216">Pamatojoties uz jūsu darbībām vietnē. Šis iestatījums ir ieslēgts.</translation>
@@ -1006,6 +1007,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5267572070504076962">Ieslēdziet funkciju Droša pārlūkošana, lai iegūtu aizsardzību pret bīstamām vietnēm.</translation>
 <translation id="5271967389191913893">Ierīcē nevar atvērt lejupielādējamo saturu.</translation>
 <translation id="5273031377282080577">Šo iestatījumu pārvalda jūsu administrators.</translation>
+<translation id="5290322819358431297">Automātiska paroļu aizpilde</translation>
 <translation id="5292796745632149097">Sūtīt uz:</translation>
 <translation id="5301876394151419436">Jūs esat pierakstījies ar kontu <ph name="EMAIL" />. Jebkurā brīdī iestatījumos varat apturēt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="5304593522240415983">Šis lauks nevar būt tukšs.</translation>
@@ -1098,6 +1100,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="572328651809341494">Nesen atvērtas cilnes</translation>
 <translation id="5728072125198221967">Saistītie Google pakalpojumi</translation>
 <translation id="5734658507307260911">Piesprausta inkognito cilne <ph name="TAB_TITLE" />, kurā tiek atskaņots audio</translation>
+<translation id="5736345781200955827">Izveidojiet, saglabājiet un pārvaldiet paroles, lai varētu ērti pierakstīties vietnēs un lietotnēs, izmantojot pārlūku Chrome.</translation>
 <translation id="5744751019568455640">Šīs ir balsis, ko varat izvēlēties savu tīmekļa lapu lasīšanai. Ja jums patīk šī balss un vēlaties, lai tā tiktu izmantota arī turpmāk, pieskarieties balss nosaukumam.</translation>
 <translation id="574845902699630049">Kopīgosiet no profila <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome ir nepieciešama piekļuve krātuvei, lai varētu lejupielādēt failus.</translation>

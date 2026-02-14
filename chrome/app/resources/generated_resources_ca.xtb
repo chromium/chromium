@@ -1339,6 +1339,8 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1891362123137972260">Queda molt poc espai de disc. Allibera'n.</translation>
 <translation id="189210018541388520">Obre en pantalla completa</translation>
 <translation id="1892341345406963517">Hola, <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Fes clic a <ph name="BUTTON_LABEL" /> a continuació.
+2. Fes clic a <ph name="BUTTON_2" /> a la configuració de Windows.</translation>
 <translation id="189358972401248634">Altres idiomes</translation>
 <translation id="1895658205118569222">Aturada</translation>
 <translation id="1896043844785689584">Per configurar una impremta digital, fes que el teu fill o filla toqui el sensor d'empremtes digitals que hi ha a l'extrem inferior dret del teclat. Les dades de la seva empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />.</translation>
@@ -1787,6 +1789,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="219283042927675668">Pestanyes al grup</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> gestiona la teva pàgina Pestanya nova; s'obre en una pestanya nova.</translation>
 <translation id="2192982266585216032">&amp;Pagaments</translation>
+<translation id="2193567467390483943">El teu pare o mare no ha aprovat aquesta extensió</translation>
 <translation id="2194856509914051091">Aspectes que cal tenir en compte</translation>
 <translation id="2195331105963583686">Podràs continuar utilitzant aquest <ph name="DEVICE_TYPE" /> després d'aquest període de temps, pero no rebràs cap més actualització automàtica de programari i seguretat.</translation>
 <translation id="2195729137168608510">Protecció del correu electrònic</translation>
@@ -3153,6 +3156,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3105820656234755131">S'ha actualitzat la contrasenya</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">El lloc web està utilitzant el Bluetooth</translation>
+<translation id="3108122610701115301">Defineix com a predeterminat</translation>
 <translation id="3108931485517391283">No es pot rebre</translation>
 <translation id="3108957152224931571">Color de marcatge</translation>
 <translation id="3109206895301430738">Grups de pestanyes desats</translation>
@@ -5101,6 +5105,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4415815425191869676">Mantén aquests llocs web sempre actius</translation>
 <translation id="4416582610654027550">Escriu un URL vàlid</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Posa en pausa aquesta pestanya}other{Posa en pausa aquestes pestanyes}}</translation>
+<translation id="4421823557207751899">Sessió iniciada com a <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Els suggeriments d'escriptura es basen en les teves indicacions i en el contingut de la pàgina web.</translation>
 <translation id="4421932782753506458">Gatet</translation>
 <translation id="4423376891418188461">Restaura la configuració</translation>
@@ -6344,6 +6349,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5288106344236929384">Més accions, opcions de clau d'accés per a <ph name="USERNAME" /> a <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">T&amp;orna a obrir la pestanya tancada</translation>
 <translation id="5290020561438336792">PC i dispositiu d'emissió en xarxes Wi-Fi diferents (per exemple, 2,4 GHz i 5 GHz)</translation>
+<translation id="5290322819358431297">Emplena autom. les contrasenyes</translation>
 <translation id="52912272896845572">El fitxer de clau privada no és vàlid.</translation>
 <translation id="529175790091471945">Formata aquest dispositiu</translation>
 <translation id="529296195492126134">El mode efímer no s'admet. Contacta amb l'administrador.</translation>
@@ -6962,6 +6968,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5734697361979786483">Afegeix compartició de fitxers</translation>
 <translation id="573520097779121706">Utilitza les tecles 7, 8, 9, U, O, J, K i L per moure el cursor</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Aquestes dades o el dispositiu no compleixen algunes de les polítiques de seguretat de la teva organització. Consulta al teu administrador què cal corregir.}=1{Aquest fitxer o el dispositiu no compleixen algunes de les polítiques de seguretat de la teva organització. Consulta al teu administrador què cal corregir.}other{Aquests fitxers no compleixen algunes de les polítiques de seguretat de la teva organització. Consulta al teu administrador què cal corregir.}}</translation>
+<translation id="5736345781200955827">Crea, desa i gestiona les teves contrasenyes de manera que puguis iniciar la sessió fàcilment en llocs web i aplicacions amb Chrome</translation>
 <translation id="5738093759615225354">Necessites aquesta clau d'accés per iniciar la sessió a l'ordinador</translation>
 <translation id="5738386565827477765">Dispositiu d'àudio</translation>
 <translation id="5739017626473506901">Inicia la sessió per ajudar <ph name="USER_NAME" /> a afegir un compte de centre educatiu</translation>
@@ -7214,6 +7221,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5901089233978050985">Canvia a la pestanya en procés de captura</translation>
 <translation id="5901494423252125310">La porta de la impressora és oberta</translation>
 <translation id="5901630391730855834">Groc</translation>
+<translation id="5902400038326841449">El gestor de contrasenyes de Google està desactivat</translation>
 <translation id="5902892210366342391">Mostra advertiments abans d'anar a llocs web no segurs en mode d'incògnit</translation>
 <translation id="5904614460720589786">No s'ha pogut configurar <ph name="APP_NAME" /> a causa d'un problema de configuració. Contacta amb l'administrador. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Continua permetent que aquest lloc web utilitzi identificadors per reproduir contingut protegit</translation>
@@ -7994,6 +8002,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> completat</translation>
 <translation id="6452961788130242735">S'ha produït un problema de xarxa o el domini no és correcte</translation>
 <translation id="6453191633103419909">Qualitat de projecció de la pestanya o de la pantalla</translation>
+<translation id="6453306703004115497">Traduït a <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Agrupa totes les pestanyes</translation>
 <translation id="6453921811609336127">Per canviar al mètode d'introducció de text següent, prem <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Maj<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espai<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">En llocs web específics</translation>
@@ -8152,6 +8161,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="656293578423618167">El camí o el nom del fitxer és massa llarg. Deseu-ho amb un nom més curt o en una altra ubicació.</translation>
 <translation id="6563002009564846727">Mostra els certificats importats de Windows</translation>
 <translation id="6563055593659435495">No es pot mantenir la connexió amb el teu telèfon. Comprova que el telèfon sigui a prop teu, que estigui desbloquejat i que tingui el Bluetooth i la Wi-Fi activats.</translation>
+<translation id="6564343790052433242">Si vols crear una clau d'accés per a <ph name="APP_NAME" />, el gestor de contrasenyes de Google ha d'estar activat</translation>
 <translation id="6565144332292237355">Els llocs web poden utilitzar aquesta funció per cercar qualsevol dispositiu a la teva xarxa local i connectar-s'hi</translation>
 <translation id="6568283005472142698">Cerca de pestanyes</translation>
 <translation id="6569931898053264308">Estalvi mitjà</translation>
@@ -11423,6 +11433,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8761945298804995673">Aquest usuari ja existeix</translation>
 <translation id="8762886931014513155">S'ha d'actualitzar <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">Dispositiu USB</translation>
+<translation id="8765940060470412555">Deixa de fixar el mode de lectura</translation>
 <translation id="8766156860774051068">Seleccionats per tu</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Mostra totes les cerques per a <ph name="QUERY_CLUSTER_NAME" /></translation>

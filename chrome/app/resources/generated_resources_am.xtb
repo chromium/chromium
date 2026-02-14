@@ -1347,6 +1347,8 @@
 <translation id="1891362123137972260">የዲስክ ቦታ በጣም ዝቅተኛ ነው። እባክዎ የዲስክ ቦታ ያስለቅቁ።</translation>
 <translation id="189210018541388520">ሙሉ ማያ ገፅ ክፈት</translation>
 <translation id="1892341345406963517">ሰላም <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. ከታች <ph name="BUTTON_LABEL" /> ጠቅ ያድርጉ
+2. በWindows ቅንብሮችዎ ውስጥ <ph name="BUTTON_2" /> ላይ ጠቅ ያድርጉ</translation>
 <translation id="189358972401248634">ሌሎች ቋንቋዎች</translation>
 <translation id="1895658205118569222">አጥፋ</translation>
 <translation id="1896043844785689584">የጣት አሻራን ለማዋቀር በቁልፍ ሰሌዳው ከታች በስተቀኝ ጥግ የሚገኘውን የጣት አሻራ ዳሳሽ ልጅዎ እንዲነካው ያድርጉ። የልጅዎ የጣት አሻራ ውሂብ ደህንነቱ በተጠበቀ ሁኔታ ይከማቻል እና በጭራሽ ከዚህ <ph name="DEVICE_TYPE" /> አይወጣም።</translation>
@@ -1795,6 +1797,7 @@
 <translation id="219283042927675668">በቡድን ውስጥ ያሉ ትሮች</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> አዲሱን የትር ገፅዎን በማስተዳደር ላይ ነው፣ በአዲስ ትር ውስጥ ይከፍታል</translation>
 <translation id="2192982266585216032">&amp;ክፍያዎች</translation>
+<translation id="2193567467390483943">ወላጅዎ ይህን ቅጥያ አላጸደቁትም</translation>
 <translation id="2194856509914051091">ከግምት ውስጥ መግባት ያለባቸው ነገሮች</translation>
 <translation id="2195331105963583686">ከዚያ ጊዜ በኋላ አሁንም ይህን <ph name="DEVICE_TYPE" /> መጠቀም ይችላሉ፣ ነገር ግን ከእንግዲህ ራስ-ሰር የሶፍትዌር እና የደህንነት ዝማኔዎችን አያገኝም</translation>
 <translation id="2195729137168608510">የኢሜይል መከላከያ</translation>
@@ -3162,6 +3165,7 @@
 <translation id="3105820656234755131">የይለፍ ቃል ተዘምኗል</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ብሉቱዝ)</translation>
 <translation id="310671807099593501">ጣቢያ ብሉቱዝን እየተጠቀመ ነው</translation>
+<translation id="3108122610701115301">ነባሪ አዘጋጅ</translation>
 <translation id="3108931485517391283">መቀበል አልተቻለም።</translation>
 <translation id="3108957152224931571">የማድመቂያ ቀለም</translation>
 <translation id="3109206895301430738">የተቀመጡ የትር ቡድኖች</translation>
@@ -5111,6 +5115,7 @@
 <translation id="4415815425191869676">እነዚህን ጣቢያዎች ሁልጊዜ ንቁ ያድርጓቸው</translation>
 <translation id="4416582610654027550">የሚሠራ ዩአርኤል ይተይቡ</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{ይህን ትር ባለበት ያቁሙ}one{ይህን ትር ባለበት ያቁሙ}other{እነዚህን ትሮች ባሉበት ያቁሙ}}</translation>
+<translation id="4421823557207751899">እንደ <ph name="USERNAME" /> ሆነው ገብተዋል</translation>
 <translation id="4421932172707401417">የአጻጻፍ ጥቆማዎች በእርስዎ ጥያቄዎች እና በድረ-ገፁ ይዘት ላይ የተመሰረቱ ናቸው</translation>
 <translation id="4421932782753506458">ለስላሳ</translation>
 <translation id="4423376891418188461">ቅንብሮችን ወደነበሩበት መልስ</translation>
@@ -6355,6 +6360,7 @@
 <translation id="5288678174502918605">የተ&amp;ዘጋውን ትር ዳግም ክፈት</translation>
 <translation id="5290020561438336792">ፒሲ እና cast ማድረጊያ መሣሪያ በተለያዩ የWi-Fi አውታረ መረቦች ላይ (ለምሳሌ. 2.4ጊኸ
     እና. 5ጊኸ)</translation>
+<translation id="5290322819358431297">የእርስዎን የይለፍ ቃላት በራስ-ይሙሉ</translation>
 <translation id="52912272896845572">የግል ቁልፍ ፋይል ልክ አይደለም።</translation>
 <translation id="529175790091471945">ይህን መሣሪያ ቅርጸት ይስሩለት</translation>
 <translation id="529296195492126134">የበጣም አጭር ጊዜ ሁነታ አይደገፍም እባክዎ አስተዳዳሪዎን ያነጋግሩ</translation>
@@ -6974,6 +6980,7 @@
 <translation id="5734697361979786483">ፋይል አጋራን ያክሉ</translation>
 <translation id="573520097779121706">ጠቋሚውን ለማንቀሳቀስ 7፣ 8፣ 9፣ u፣ o፣ j፣ k፣ l ቁልፎችን ይጠቀሙ</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{ይህ ውሂብ ወይም የእርስዎ መሣሪያ አንዳንድ የድርጅትዎን የደህንነት መመሪያዎች አያሟላም። ምን መስተካከል እንዳለበት ለማወቅ አስተዳዳሪዎን ያነጋግሩ።}=1{ይህ ፋይል ወይም የእርስዎ መሣሪያ አንዳንድ የድርጅትዎን የደህንነት መመሪያዎች አያሟላም። ምን መስተካከል እንዳለበት ለማወቅ አስተዳዳሪዎን ያነጋግሩ።}one{ይህ ፋይል አንዳንድ የድርጅትዎን የደህንነት መመሪያዎች አያሟላም። ምን መስተካከል እንዳለበት ለማወቅ አስተዳዳሪዎን ያነጋግሩ።}other{እነዚህ ፋይሎች አንዳንድ የድርጅትዎን የደህንነት መመሪያዎች አያሟሉም። ምን መስተካከል እንዳለበት ለማወቅ አስተዳዳሪዎን ያነጋግሩ።}}</translation>
+<translation id="5736345781200955827">Chromeን በመጠቀም በቀላሉ ወደ ጣቢያዎች እና መተግበሪያዎች መግባት እንዲችሉ የይለፍ ቃላትዎን ይፍጠሩ፣ ያስቀምጡ እና ያቀናብሩ</translation>
 <translation id="5738093759615225354">ወደ የእርስዎ ኮምፒውተር ለመግባት ይህ የይለፍ ቁልፍ ያስፈልገዎታል</translation>
 <translation id="5738386565827477765">የኦዲዮ መሣሪያ</translation>
 <translation id="5739017626473506901"><ph name="USER_NAME" /> የትምህርት መለያ እንዲያክሉ ለማገዝ ወደ መለያ ይግቡ</translation>
@@ -7226,6 +7233,7 @@
 <translation id="5901089233978050985">ወደ የሚቀርጽ ትር ይቀይሩ</translation>
 <translation id="5901494423252125310">የማተሚያ በር ክፍት ነው</translation>
 <translation id="5901630391730855834">ቢጫ</translation>
+<translation id="5902400038326841449">Google የይለፍ ቃል አስተዳዳሪ ጠፍቷል</translation>
 <translation id="5902892210366342391">ማንነትን በማያሳውቅ ሁነታ ወደ ደህንነታቸው ያልተጠበቁ ጣቢያዎች ከመሄድዎ በፊት ማስጠንቀቂያዎችን ይመልከቱ</translation>
 <translation id="5904614460720589786">በውቅረት ችግር ምክንያት <ph name="APP_NAME" />ን ማቀናበር አልተቻለም። እባክዎ አስተዳዳሪዎን ያነጋግሩ። የስሕተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
 <translation id="5906457147959147328">ጥበቃ የሚደረግለትን ይዘት ለማጫወት ይህ ጣቢያ ለዪዎችን እንዲጠቀም መፍቀድ ቀጥል</translation>
@@ -8007,6 +8015,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> ተጠናቅቋል።</translation>
 <translation id="6452961788130242735">የአውታረ መረብ ችግር ወይም መጥፎ ይዞታ</translation>
 <translation id="6453191633103419909">የትር/ማያ ገፅ የማሳየት ጥራት</translation>
+<translation id="6453306703004115497">ወደ <ph name="LANGUAGE" /> ተተርጉሟል።</translation>
 <translation id="6453687572758515877">ሁሉንም ትሮች መድብ</translation>
 <translation id="6453921811609336127">ወደ ቀጣዩ የግቤት ስልት ለመቀየር <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />ቀያይር<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />ክፍተት<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> ይጫኑ</translation>
 <translation id="6455264371803474013">በተወሰኑ ጣቢያዎች ላይ</translation>
@@ -8165,6 +8174,7 @@
 <translation id="656293578423618167">የፋይል ዱካው ወይም ስሙ በጣም ረጅም ነው። እባክዎ ባጠረ ስም ወይም ሌላ ቦታ ላይ ያስቀምጡ።</translation>
 <translation id="6563002009564846727">ከWindows የመጡ የዕውቅና ማረጋገጫዎችን አሳይ</translation>
 <translation id="6563055593659435495">ከስልክዎ ጋር ያለውን ግንኙነት መጠበቅ አልተቻለም። ስልክዎ በአቅራቢያ መሆኑን፣ መከፈቱን እና ብሉቱዝ እና Wi-Fi መብራታቸውን ያረጋግጡ</translation>
+<translation id="6564343790052433242">ለ<ph name="APP_NAME" /> የይለፍ ቁልፍ ለመፍጠር Google የይለፍ ቃል አስተዳዳሪ መብራት አለበት</translation>
 <translation id="6565144332292237355">ጣቢያዎች ይህን ባህሪ በአካባቢያዊ አውታረ መረብዎ ላይ ያለ ማንኛውም መሣሪያ ለመፈለግ እና ለመገናኘት መጠቀም ይችላሉ</translation>
 <translation id="6568283005472142698">የትር ፍለጋ</translation>
 <translation id="6569931898053264308">መካከለኛ ቁጠባዎች</translation>
@@ -11443,6 +11453,7 @@ nil</translation>
 <translation id="8761945298804995673">ይህ ተጠቃሚ አስቀድሞ አለ</translation>
 <translation id="8762886931014513155">የእርስዎ <ph name="DEVICE_TYPE" /> ዝማኔ ያስፈልገዋል</translation>
 <translation id="8763927697961133303">የዩኤስቢ መሣሪያ</translation>
+<translation id="8765940060470412555">የንባብ ሁኔታን ንቀል</translation>
 <translation id="8766156860774051068">በእርስዎ ተመርጦ የተሰበሰበ</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">የ<ph name="QUERY_CLUSTER_NAME" /> ሁሉንም ፍለጋዎች ያሳዩ</translation>

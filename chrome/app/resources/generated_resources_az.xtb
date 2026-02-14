@@ -1339,6 +1339,8 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1891362123137972260">Diskdə boş yer çox azdır. Diskdə yer boşaldın.</translation>
 <translation id="189210018541388520">Tam ekran açın</translation>
 <translation id="1892341345406963517">Salam <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Aşağıdakı <ph name="BUTTON_LABEL" /> düyməsinə klikləyin
+2. Windows ayarlarında <ph name="BUTTON_2" /> seçiminə klikləyin</translation>
 <translation id="189358972401248634">Digər dillərdə</translation>
 <translation id="1895658205118569222">Söndürün</translation>
 <translation id="1896043844785689584">Barmaq izini ayarlamaq üçün uşağınızdan klaviaturanın aşağı sağ küncündə olan barmaq izi sensoruna toxunmasını istəyin. Övladınızın barmaq izi datası təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazından kənara ötürülmür.</translation>
@@ -3156,6 +3158,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3105820656234755131">Parol yeniləndi</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Sayt bluetooth istifadə edir</translation>
+<translation id="3108122610701115301">Defolt olaraq ayarlayın</translation>
 <translation id="3108931485517391283">Qəbul etmək olmur</translation>
 <translation id="3108957152224931571">Vurğulama rəngi</translation>
 <translation id="3109206895301430738">Yadda Saxlanmış Tab Qrupları</translation>
@@ -5105,6 +5108,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4415815425191869676">Bu saytları həmişə aktiv saxlayın</translation>
 <translation id="4416582610654027550">Düzgün link daxil edin</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Bu tabı durdurun}other{Bu tabları durdurun}}</translation>
+<translation id="4421823557207751899"><ph name="USERNAME" /> kimi daxil olunub...</translation>
 <translation id="4421932172707401417">Yazı təklifləri sorğulara və veb-səhifənin kontentinə əsaslanır</translation>
 <translation id="4421932782753506458">Tüklü</translation>
 <translation id="4423376891418188461">Ayarları Bərpa Edin</translation>
@@ -6206,6 +6210,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5191251636205085390">Üçüncü tərəf kukilərini əvəzləmək üçün hazırlanmış yeni texnologiyalar barədə öyrənin və onlara nəzarət edin</translation>
 <translation id="519185197579575131">QT istifadə edin</translation>
 <translation id="5192062846343383368">Nəzarət ayarlarına baxmaq üçün Family Link tətbiqini açın</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> tələb olunur</translation>
 <translation id="5193978546360574373">Chromebook-da Google Diskə giriş, o cümlədən oflayn əlçatan olan fayllara giriş silinəcək</translation>
 <translation id="5193988420012215838">Buferə kopyalandı</translation>
 <translation id="5194256020863090856">Bu, yalnız Anonim pəncərələrə təsir göstərir</translation>
@@ -6348,6 +6353,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5288678174502918605">Bağlanmış Paneli yenidən açın</translation>
 <translation id="5290020561438336792">Kompüter və yayım cihazı fərqli Wi-Fi şəbəkələrində (məsələn, 2.4GHz
     və 5GHz qarşı-qarşıya)</translation>
+<translation id="5290322819358431297">Parollarınızı avtomatik doldurun</translation>
 <translation id="52912272896845572">Xüsusi açar faylı yanlışdır.</translation>
 <translation id="529175790091471945">Bu cihazı format edin</translation>
 <translation id="529296195492126134">Efemer rejim dəstəklənmir. Administratorunuz ilə əlaqə saxlayın</translation>
@@ -6967,6 +6973,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5734697361979786483">Fayl paylaşımı əlavə edin</translation>
 <translation id="573520097779121706">Kursoru hərəkət etdirmək üçün 7, 8, 9, u, o, j, k, l düymələrindən istifadə edin</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Bu data və ya cihazınız təşkilatınızın bəzi təhlükəsizlik siyasətlərinə uyğun gəlmir. Nəyin düzəldilməli olduğunu admininizlə dəqiqləşdirin.}=1{Bu fayl və ya cihazınız təşkilatınızın bəzi təhlükəsizlik siyasətlərinə uyğun gəlmir. Nəyin düzəldilməli olduğunu admininizlə dəqiqləşdirin.}other{Bu fayllar təşkilatınızın bəzi təhlükəsizlik siyasətlərinə uyğun gəlmir. Nəyin düzəldilməli olduğunu admininizlə dəqiqləşdirin.}}</translation>
+<translation id="5736345781200955827">Chrome-dan istifadə edərək sayt və tətbiqlərə asanlıqla daxil olmaq üçün parollar yaradın, yadda saxlayın və idarə edin</translation>
 <translation id="5738093759615225354">Kompüterinizə daxil olmaq üçün bu parola ehtiyacınız var</translation>
 <translation id="5738386565827477765">Audio cihaz</translation>
 <translation id="5739017626473506901"><ph name="USER_NAME" /> adlı istifadəçiyə məktəb hesabı əlavə etməkdə yardım etmək üçün daxil olun</translation>
@@ -7219,6 +7226,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5901089233978050985">Çəkilənlər tabına keçin</translation>
 <translation id="5901494423252125310">Printerin qapağı açıqdır</translation>
 <translation id="5901630391730855834">Sarı</translation>
+<translation id="5902400038326841449">Google Parol Meneceri deaktiv edilib</translation>
 <translation id="5902892210366342391">Anonim rejimdə təhlükəli saytlara keçməzdən əvvəl xəbərdarlıqlara baxın</translation>
 <translation id="5904614460720589786">Konfiqurasiya xətasına görə <ph name="APP_NAME" /> tətbiqini ayarlamaq mümkün olmadı. Administratorunuz ilə əlaqə saxlayın. Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Bu sayta qorunan kontenti oxutmaq üçün identifikatorlardan istifadə imkanı verməyə davam edin</translation>
@@ -7998,6 +8006,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> tamamlanıb</translation>
 <translation id="6452961788130242735">Şəbəkə problemi və ya uyğunsuz sahə</translation>
 <translation id="6453191633103419909">Tab/Ekran Proyeksiya Keyfiyyəti</translation>
+<translation id="6453306703004115497"><ph name="LANGUAGE" /> dilinə tərcümə edildi</translation>
 <translation id="6453687572758515877">Bütün tabları qruplaşdırın</translation>
 <translation id="6453921811609336127">Növbəti giriş metoduna keçmək üçün buna basın: <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Boşluq<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Xüsusi saytlarda</translation>
@@ -8156,6 +8165,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="656293578423618167">Fayl yolu və ya adı çox uzundur. Qısa ad ilə və ya başqa yerə saxlayın.</translation>
 <translation id="6563002009564846727">Windows-dan import edilmiş sertifikatlara baxın</translation>
 <translation id="6563055593659435495">Telefonunuzla bağlantını saxlamaq mümkün deyil. Telefonunuzun yaxınlıqda, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi-ın yandırılmış olduğuna əmin olun.</translation>
+<translation id="6564343790052433242"><ph name="APP_NAME" /> üçün giriş açarı yaratmaq məqsədilə Google Parol Meneceri aktiv olmalıdır</translation>
 <translation id="6565144332292237355">Saytlar bu funksiyadan lokal şəbəkənizdəki hər hansı cihazı axtarmaq və ona qoşulmaq üçün istifadə edə bilər</translation>
 <translation id="6568283005472142698">Tab Axtarışı</translation>
 <translation id="6569931898053264308">Orta səviyyədə qənaət</translation>
@@ -11423,6 +11433,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8761945298804995673">Bu istifadəçi artıq mövcuddur</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> cihazınız güncəllənməlidir</translation>
 <translation id="8763927697961133303">USB cihazı</translation>
+<translation id="8765940060470412555">Oxu rejiminin bərkidilməsini ləğv edin</translation>
 <translation id="8766156860774051068">Sizin tərəfinizdən seçilənlər</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> üzrə bütün axtarışları göstərin</translation>

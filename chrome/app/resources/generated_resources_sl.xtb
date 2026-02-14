@@ -1352,6 +1352,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1891362123137972260">Na disku kritično primanjkuje prostora. Sprostite prostor na disku.</translation>
 <translation id="189210018541388520">Odpri v celozaslonskem načinu</translation>
 <translation id="1892341345406963517">Pozdravljeni, <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Kliknite <ph name="BUTTON_LABEL" /> spodaj. V nastavitvah sistema Windows kliknite <ph name="BUTTON_2" />.</translation>
 <translation id="189358972401248634">Drugi jeziki</translation>
 <translation id="1895658205118569222">Zaprt</translation>
 <translation id="1896043844785689584">Če želite nastaviti prstni odtis, naj se otrok dotakne tipala prstnih odtisov v spodnjem desnem kotu tipkovnice. Podatki o prstnih odtisih otroka so varno shranjeni in nikoli ne zapustijo naprave <ph name="DEVICE_TYPE" />.</translation>
@@ -3169,6 +3170,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3105820656234755131">Geslo je bilo posodobljeno</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Spletno mesto uporablja Bluetooth</translation>
+<translation id="3108122610701115301">Nastavi za privzeto</translation>
 <translation id="3108931485517391283">Ni mogoče prejemati</translation>
 <translation id="3108957152224931571">Barva za označevanje</translation>
 <translation id="3109206895301430738">Shranjene skupine zavihkov</translation>
@@ -5120,6 +5122,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4415815425191869676">Ta spletna mesta naj bodo vedno aktivna</translation>
 <translation id="4416582610654027550">Vnesite veljaven URL</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Začasno zaustavi ta zavihek}one{Začasno zaustavi te zavihke}two{Začasno zaustavi te zavihke}few{Začasno zaustavi te zavihke}other{Začasno zaustavi te zavihke}}</translation>
+<translation id="4421823557207751899">Prijavljeni ste kot <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Predlogi besedila temeljijo na vaših pozivih in vsebini spletne strani</translation>
 <translation id="4421932782753506458">Puhek</translation>
 <translation id="4423376891418188461">Obnovi nastavitve</translation>
@@ -6364,6 +6367,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5288678174502918605">&amp;Znova odpri zaprt zavihek</translation>
 <translation id="5290020561438336792">Osebni računalnik in naprava za predvajanje v različnih omrežjih Wi-Fi (npr. 2,4 GHz
     in 5 GHz)</translation>
+<translation id="5290322819358431297">Samodejno izpolnjevanje gesel</translation>
 <translation id="52912272896845572">Datoteka z zasebnim ključem je neveljavna.</translation>
 <translation id="529175790091471945">Formatiraj to napravo</translation>
 <translation id="529296195492126134">Kratkotrajni način ni podprt. Obrnite se na skrbnika.</translation>
@@ -6985,6 +6989,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5734697361979786483">Dodajanje datotečnega sredstva v skupni rabi</translation>
 <translation id="573520097779121706">Za premikanje kazalca uporabite tipke 7, 8, 9, u, o, j, k, l</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Ti podatki ali vaša naprava niso skladni z nekaterimi varnostnimi pravilniki organizacije. Pri skrbniku preverite, kaj je treba popraviti.}=1{Ta datoteka ali vaša naprava ni skladna z nekaterimi varnostnimi pravilniki organizacije. Pri skrbniku preverite, kaj je treba popraviti.}one{Te datoteke niso skladne z nekaterimi varnostnimi pravilniki organizacije. Pri skrbniku preverite, kaj je treba popraviti.}two{Te datoteke niso skladne z nekaterimi varnostnimi pravilniki organizacije. Pri skrbniku preverite, kaj je treba popraviti.}few{Te datoteke niso skladne z nekaterimi varnostnimi pravilniki organizacije. Pri skrbniku preverite, kaj je treba popraviti.}other{Te datoteke niso skladne z nekaterimi varnostnimi pravilniki organizacije. Pri skrbniku preverite, kaj je treba popraviti.}}</translation>
+<translation id="5736345781200955827">Ustvarite, shranite in upravljajte gesla, da se boste lahko s Chromom preprosto prijavili na spletnih mestih in v aplikacijah</translation>
 <translation id="5738093759615225354">Za prijavo v računalnik potrebujete to geslo.</translation>
 <translation id="5738386565827477765">Naprava za zvok</translation>
 <translation id="5739017626473506901">Prijavite se, če želite uporabniku <ph name="USER_NAME" /> pomagati dodati šolski račun</translation>
@@ -7237,6 +7242,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5901089233978050985">Preklop na zajemanje zavihka</translation>
 <translation id="5901494423252125310">Vrata tiskalnika so odprta</translation>
 <translation id="5901630391730855834">Rumena</translation>
+<translation id="5902400038326841449">Googlov upravitelj gesel je izklopljen</translation>
 <translation id="5902892210366342391">Ogled opozoril, preden v anonimnem načinu obiščete spletna mesta, ki niso varna</translation>
 <translation id="5904614460720589786">Aplikacije <ph name="APP_NAME" /> ni bilo mogoče nastaviti zaradi težave s konfiguracijo. Obrnite se na skrbnika. Koda napake: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Temu spletnemu mestu še naprej dovoli uporabo identifikatorjev za predvajanje zaščitene vsebine</translation>
@@ -8018,6 +8024,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6452251728599530347">Dokončano: <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Težava z omrežjem ali neustrezno območje</translation>
 <translation id="6453191633103419909">Kakovost predvajanja zavihka/zaslona</translation>
+<translation id="6453306703004115497">Prevedeno v jezik <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Združi vse zavihke</translation>
 <translation id="6453921811609336127">Če želite preklopiti na naslednji način vnosa, pritisnite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />preslednico<ph name="END_SPACE" /><ph name="END_SHORTCUT" />.</translation>
 <translation id="6455264371803474013">Na določenih spletnih mestih</translation>
@@ -8176,6 +8183,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="656293578423618167">Pot datoteke ali ime je predolgo. Shranite s krajšim imenom ali na drugo mesto.</translation>
 <translation id="6563002009564846727">Ogled uvoženih potrdil iz sistema Windows</translation>
 <translation id="6563055593659435495">Povezave s telefonom ni mogoče ohraniti. Preverite, ali imate telefon v bližini, ali je odklenjen ter ima vklopljeno povezavo Bluetooth in omrežje Wi-Fi.</translation>
+<translation id="6564343790052433242">Če želite ustvariti ključ za dostop za <ph name="APP_NAME" />, mora biti Googlov upravitelj gesel vklopljen</translation>
 <translation id="6565144332292237355">Spletna mesta lahko s to funkcijo iščejo in vzpostavljajo povezave s katero koli napravo v lokalnem omrežju</translation>
 <translation id="6568283005472142698">Iskanje po zavihkih</translation>
 <translation id="6569931898053264308">Srednji prihranki</translation>
@@ -11453,6 +11461,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8761945298804995673">Ta uporabnik že obstaja</translation>
 <translation id="8762886931014513155">Naprava <ph name="DEVICE_TYPE" /> potrebuje posodobitev</translation>
 <translation id="8763927697961133303">Naprava USB</translation>
+<translation id="8765940060470412555">Odpni način za branje</translation>
 <translation id="8766156860774051068">Izbrano za vas</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Pokaži vsa iskanja poizvedbe <ph name="QUERY_CLUSTER_NAME" /></translation>

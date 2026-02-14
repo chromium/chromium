@@ -476,6 +476,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2992473221983447149">Opisi slik</translation>
 <translation id="2996291259634659425">Ustvarjanje gesla</translation>
 <translation id="2996809686854298943">URL je obvezen</translation>
+<translation id="3008916997590006706">Dotaknite se »Shrani«, če želite preprosto dostopati do tega gesla, ko se naslednjič prijavite.</translation>
 <translation id="3024215143424744261">Nastavitve načina za branje so zaprte</translation>
 <translation id="3026955690410463085">Vključi povezavo</translation>
 <translation id="3027644380269727216">Na podlagi vaše dejavnosti na spletnem mestu. Ta nastavitev je vklopljena.</translation>
@@ -1006,6 +1007,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5267572070504076962">Vklopite Varno brskanje, da si zagotovite zaščito pred nevarnimi spletnimi mesti</translation>
 <translation id="5271967389191913893">Naprava ne more odpreti vsebine za prenos.</translation>
 <translation id="5273031377282080577">To nastavitev upravlja skrbnik.</translation>
+<translation id="5290322819358431297">Samodejno izpolnjevanje gesel</translation>
 <translation id="5292796745632149097">Pošiljanje v napravo</translation>
 <translation id="5301876394151419436">Prijavljeni ste kot <ph name="EMAIL" />. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="5304593522240415983">To polje ne sme biti prazno</translation>
@@ -1098,6 +1100,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="572328651809341494">Nedavni zavihki</translation>
 <translation id="5728072125198221967">Povezane Googlove storitve</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, pripeti anonimni zavihek z zvokom</translation>
+<translation id="5736345781200955827">Ustvarite, shranite in upravljajte gesla, da se boste lahko s Chromom preprosto prijavili na spletnih mestih in v aplikacijah</translation>
 <translation id="5744751019568455640">Tu so glasovi, ki jih lahko izberete za branje spletnih strani. Če vam je všeč ta glas in želite, da ga še naprej uporabljam, se preprosto dotaknite imena glasu.</translation>
 <translation id="574845902699630049">Delite kot <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome za prenos datotek potrebuje dostop do shrambe.</translation>

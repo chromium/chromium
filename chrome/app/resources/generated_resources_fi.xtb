@@ -5115,6 +5115,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4415815425191869676">Pidä nämä sivustot aina aktiivisina</translation>
 <translation id="4416582610654027550">Kirjoita kelvollinen URL-osoite</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Keskeytä välilehti}other{Keskeytä välilehdet}}</translation>
+<translation id="4421823557207751899">Kirjautunut käyttäjänä <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Kirjoitusehdotukset perustuvat kehotteisiisi ja verkkosivun sisältöön</translation>
 <translation id="4421932782753506458">Pörrö</translation>
 <translation id="4423376891418188461">Palauta asetukset</translation>
@@ -6216,6 +6217,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5191251636205085390">Lue lisää uusista teknologioista, joilla on tarkoitus korvata kolmannen osapuolen evästeet, ja tee haluamasi valinnat</translation>
 <translation id="519185197579575131">Käytä QT:tä</translation>
 <translation id="5192062846343383368">Avaa Family Link ‑sovellus, niin näet valvonta-asetukset</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> on pakollinen</translation>
 <translation id="5193978546360574373">Tämä estää pääsyn Google Driveen tällä Chromebookilla, mukaan lukien pääsyn offline-tilassa saatavilla oleviin tiedostoihin</translation>
 <translation id="5193988420012215838">Kopioitu leikepöydälle</translation>
 <translation id="5194256020863090856">Tämä vaikuttaa vain incognito-ikkunoihin</translation>

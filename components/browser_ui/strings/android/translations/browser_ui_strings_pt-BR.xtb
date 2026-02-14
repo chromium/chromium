@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Ajude a melhorar o Chrome informando por que você permitiu cookies de terceiros. <ph name="BEGIN_LINK" />Enviar feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Você pode pedir para ver a versão para computador dos sites</translation>
 <translation id="1085696779717592361">Usar o Chrome por padrão</translation>
+<translation id="1126523729897810826">Para aproveitar o Chrome ao máximo, use as configurações sugeridas abaixo.</translation>
 <translation id="113098737392899175">Acessar páginas com um cursor de texto quando um teclado está conectado</translation>
 <translation id="1149644372535087155">Salvar senhas no Chrome</translation>
 <translation id="1178015372320901893">Página inferior "Meus atalhos"</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Tornar os sites mais rápidos com o mecanismo V8 do Chrome, mas deixar o navegador um pouco menos resistente a ataques</translation>
 <translation id="1593426485665524382">Novas ações disponíveis perto da parte de cima da tela</translation>
 <translation id="1594521731409209842">Faça o gesto de pinça na tela para redimensionar a foto</translation>
+<translation id="1599268789440304082">A página de configurações está aberta</translation>
 <translation id="1601560923496285236">Aplicar</translation>
 <translation id="1615755956145364867">Os sites podem pedir para reproduzir conteúdo protegido</translation>
 <translation id="1620510694547887537">Câmera</translation>
@@ -352,7 +354,9 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="4505788138578415521">URL expandido</translation>
 <translation id="4522570452068850558">Saiba mais</translation>
 <translation id="4523472416386354622">Fazer login para começar</translation>
+<translation id="4529207923544043455">A página inferior está mostrando as tarefas concluídas e pendentes na lista de configurações</translation>
 <translation id="4534723447064627427">Para permitir que o app <ph name="APP_NAME" /> acesse seu microfone, também é preciso ativá-lo nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">A página de configurações foi fechada</translation>
 <translation id="4566417217121906555">Desativar microfone</translation>
 <translation id="4570913071927164677">Detalhes</translation>
 <translation id="4578289292431526768">Vamos lá</translation>

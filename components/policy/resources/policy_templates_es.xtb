@@ -6472,6 +6472,13 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="5303080953475303561">Esta política controla la frecuencia con la que la pantalla de bloqueo solicita la contraseña para el desbloqueo rápido. Cuando aparece la pantalla de bloqueo, si el tiempo transcurrido desde la última vez que se introdujo la contraseña es mayor al del valor elegido, el desbloqueo rápido no estará disponible. Si los usuarios permanecen en la pantalla de bloqueo pasado ese tiempo, la próxima vez que introduzcan un código incorrecto o vuelvan a acceder a la pantalla de bloqueo (lo que suceda primero), se les pedirá la contraseña.
 
       Si no se establece esta política, los usuarios que utilicen el desbloqueo rápido deben introducir su contraseña en la pantalla de bloqueo cada día.</translation>
+<translation id="530488290401810961">Configura cómo descarga <ph name="PRODUCT_NAME" /> el modelo fundacional de IA generativa y lo usa para la inferencia de forma local.
+
+Si se permite esta política (valor 0) o no se define, el modelo se descargará automáticamente y se usará para la inferencia.
+
+Si se inhabilita esta política (valor 1), el modelo no se descargará y el modelo ya descargado (si lo hay) se eliminará.
+
+En las plataformas de ordenadores, <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> también puede inhabilitar la descarga del modelo.</translation>
 <translation id="5306186200045823863">Confiar en la infraestructura de PKI antigua de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilidad del modo Incógnito</translation>
 <translation id="5308551343115571396">Después de que se inhabilite <ph name="LACROS_NAME" />, intentaremos conservar tantos datos de usuario como sea posible y eliminaremos todos los datos del navegador.</translation>

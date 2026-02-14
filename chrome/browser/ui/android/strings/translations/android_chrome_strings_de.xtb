@@ -476,6 +476,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2992473221983447149">Bildbeschreibungen</translation>
 <translation id="2996291259634659425">Passphrase erstellen</translation>
 <translation id="2996809686854298943">URL erforderlich</translation>
+<translation id="3008916997590006706">Tippe auf „Speichern“, um bei der nächsten Anmeldung einfach auf dieses Passwort zuzugreifen</translation>
 <translation id="3024215143424744261">Einstellungen für den Lesemodus sind geschlossen</translation>
 <translation id="3026955690410463085">Link hinzufügen</translation>
 <translation id="3027644380269727216">Basierend auf deinen Aktivitäten auf einer Website. Diese Einstellung ist aktiviert.</translation>
@@ -1006,6 +1007,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5267572070504076962">Du kannst Safe Browsing aktivieren, um den Schutz vor gefährlichen Websites zu verbessern</translation>
 <translation id="5271967389191913893">Das Gerät kann den Inhalt, der heruntergeladen werden soll, nicht öffnen.</translation>
 <translation id="5273031377282080577">Diese Einstellung wird von deinem Administrator verwaltet.</translation>
+<translation id="5290322819358431297">Passwort-Autofill</translation>
 <translation id="5292796745632149097">Senden an</translation>
 <translation id="5301876394151419436">Du bist als <ph name="EMAIL" /> angemeldet. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="5304593522240415983">Dieses Feld darf nicht leer sein.</translation>
@@ -1098,6 +1100,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
 <translation id="5728072125198221967">Verknüpfte Google-Dienste</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, angepinnter Inkognitotab mit Audio</translation>
+<translation id="5736345781200955827">Du kannst Passwörter erstellen, speichern und verwalten, um dich auf Websites und in Apps ganz einfach mit Chrome anzumelden</translation>
 <translation id="5744751019568455640">Hier kannst du die Stimme auswählen, mit der deine Webseiten vorgelesen werden. Wenn dir diese Stimme gefällt und du möchtest, dass ich sie weiterhin verwende, tippe einfach auf den Namen der Stimme.</translation>
 <translation id="574845902699630049">Als <ph name="OWNER_FULL_NAME" /> freigeben</translation>
 <translation id="5749068826913805084">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können.</translation>

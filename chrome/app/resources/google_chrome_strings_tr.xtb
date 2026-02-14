@@ -251,6 +251,7 @@
 <translation id="3622716124581627104">Nesneleri veya yerleri tanımlayın ve metni kopyalayın ya da çevirin. Google Lens kullanıldığında sayfanın ekran görüntüsü Google'a gönderilir. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Chrome'u Google Hesabınızla ve paylaşılan bilgisayarlarda kullanmak artık daha kolay.</translation>
 <translation id="3635073343384702370">Kaydetmeniz halinde Chrome, şifrelerinizi kontrol edebilir</translation>
+<translation id="3636970668267555808">Chrome'u varsayılan tarayıcınız olarak ayarlayarak bildiğiniz, sevdiğiniz ve güvendiğiniz özelliklere kolayca erişin.</translation>
 <translation id="3667616615096815454">Uygulama, sunucu tarafından bilinmediği için yüklenemedi.</translation>
 <translation id="3673813398384385993">Chrome, "<ph name="EXTENSION_NAME" />" uzantısında kötü amaçlı yazılım tespit etti</translation>
 <translation id="3697952514309507634">Diğer Chrome profilleri</translation>
@@ -260,6 +261,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome, bu uzantıyı kaldırmanızı önerir. <ph name="BEGIN_LINK" />Desteklenen uzantılar hakkında daha fazla bilgi edinin.<ph name="END_LINK" />}other{Chrome, bu uzantıları kaldırmanızı önerir. <ph name="BEGIN_LINK" />Desteklenen uzantılar hakkında daha fazla bilgi edinin.<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">"Sekme ve daha fazla içerik ekle" düğmesiyle birden fazla sekme, dosya ve araç ekleyerek aramanızı derinleştirin.</translation>
 <translation id="3756724684201900923">Chrome'u yükleme hakkında daha fazla bilgi</translation>
+<translation id="3772152698251011058">Bu siteyi Google'a bildirin</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex, oturum açma hatası nedeniyle verilerinizi senkronize edemedi.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -408,6 +410,8 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5430073640787465221">Tercih dosyanız bozuk veya geçersiz. Google Chrome, ayarlarınızı kurtaramıyor.</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> ile kullanılacak bir Chrome profili seçin</translation>
 <translation id="5468572406162360320">Chrome, özelliklerle olan etkileşimlerinizi Google'a göndererek bu özelliklerin iyileştirilmesini sağlar. İnceleme uzmanları bu verileri okuyabilir, işleyebilir ve bunlara ek açıklama ekleyebilir.</translation>
+<translation id="547202872422499512">Chrome artık Windows başlatıldığında açılıyor. Böylece hemen göz atmaya başlayabilirsiniz. Bu özelliği ayarlardan kapatabilirsiniz.</translation>
+<translation id="5486346529181556467">Zararlı olduğunu düşündüğünüz siteleri bildirerek herkes için internet güvenliğini artırın. <ph name="BEGIN_LINK" />Google'ın güvenli olmayan site politikası<ph name="END_LINK" /> hakkında daha fazla bilgi edinin.</translation>
 <translation id="5524890928877629608">arama alanının sol üst köşesi: sol %<ph name="LEFT" />, üst %<ph name="TOP" /></translation>
 <translation id="5550137307985173298">Chrome'a yeni bir görünüm kazandırmak için Yeni Sekme sayfasındaki Chrome'u Özelleştir düğmesini tıklayın</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -567,6 +571,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6967962315388095737">Google Chrome Beta'nın mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
 <translation id="6979589607440534284">Chrome'un bazı dosyaları neden engellediğini öğrenin, yeni sekmede açılır</translation>
+<translation id="6985817499499247940">Hemen göz atmaya başlamak için Chrome'u otomatik olarak açın.</translation>
 <translation id="6991926986715044139">Google Lens Kısayolunu Her Zaman Göster</translation>
 <translation id="6999131147875565462">Chrome daha hızlı çalışır ve JavaScript kullanan özellikler tasarlandığı şekilde çalışır</translation>
 <translation id="7011190694940573312">İşletim sisteminin bu sürümü desteklenmediğinden yükleme işlemi başarısız oldu.</translation>
@@ -595,6 +600,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7288567540154601580">Sekmeler ve uzantılar</translation>
 <translation id="7296210096911315575">Önemli kullanım ve güvenlik bilgileri</translation>
 <translation id="7302361266603927550">Chrome verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi. Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
+<translation id="7306401458628386911">Hemen göz atmaya başlayın: Chrome artık Windows başlatıldığında açılabilir.</translation>
 <translation id="7308322188646931570">Dosya indirmek için Chrome'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
 <translation id="7352651011704765696">Bir hata oluştu</translation>
@@ -657,6 +663,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7827099906024714326">Bazı verilerin Google Hesabınıza kaydedilip tüm cihazlarınızda kullanılabilmesi için Chrome'un kimliğinizi doğrulaması gerekir. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="7832314606810669113">Yer işaretlerinizi ve diğer öğelerinizi tüm cihazlarınızda kullanmak için Chrome'da oturum açın. Bu şifre, oturum açtıktan sonra Google Hesabınıza kaydedilir.</translation>
 <translation id="7845233973568007926">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce bilgisayarınızı yeniden başlatmanız gerekir.</translation>
+<translation id="7847170235260850604">Windows başlatıldığında Chrome'u aç</translation>
 <translation id="7849037457735762883">Kaldığınız yerden devam edin: Chrome tarayıcısını kapatıp yeniden açtığınız her seferinde sekmeleriniz geri yüklenebilir. Bu özelliği etkinleştirmek için şuraya gidin:</translation>
 <translation id="7869620795354551924">Kayıtlı şifrelerinizi kullanmak için QR kodunu tarayın, iOS için Chrome'u indirin ve Google Hesabınızda oturum açın</translation>
 <translation id="7872446069773932638">İndiriliyor... <ph name="SECONDS" /> saniye kaldı</translation>

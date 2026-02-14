@@ -703,6 +703,7 @@
 <translation id="2137891579555018930">正在等待許可...</translation>
 <translation id="213826338245044447">行動版書籤</translation>
 <translation id="2141000681034340397">編輯輸入內容</translation>
+<translation id="2141475438898772664">分 4 期或月付</translation>
 <translation id="2144171668675205303">沒有有效主題</translation>
 <translation id="2145193671493396738">經濟新聞</translation>
 <translation id="214556005048008348">取消付款</translation>
@@ -2847,6 +2848,7 @@
 <translation id="5543564889050342791">動物園、水族館與保護區</translation>
 <translation id="5543722831081909240">180 度</translation>
 <translation id="5544836308113951378">遊艇與租船</translation>
+<translation id="5545314360139398232">連結「<ph name="ISSUER_NAME" />」即可分期付款</translation>
 <translation id="5547939254150808298">印刷與出版</translation>
 <translation id="554815783948612276">論壇與即時通訊服務供應商</translation>
 <translation id="5548606607480005320">安全檢查</translation>
@@ -3694,6 +3696,7 @@
 <translation id="6926216138694948720">人體藝術</translation>
 <translation id="692638818576287323">商用車</translation>
 <translation id="6927878187051807444">相機檔案和螢幕截圖</translation>
+<translation id="6929949393612835405">關閉並返回「<ph name="OPENER_TITLE" />」</translation>
 <translation id="6930607614725241390">在側邊面板中搜尋</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />預設搜尋引擎可提供網路搜尋服務並支援 Chrome 的各項功能<ph name="END_BOLD" />，例如透過網址列和運用網頁上的圖片進行搜尋。請注意，如果搜尋引擎不支援某項功能，你可能就無法使用該功能。</translation>
 <translation id="6934672428414710184">這是你在 Google 帳戶中設定的名稱</translation>

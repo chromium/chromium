@@ -1339,6 +1339,8 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1891362123137972260">Queda muy poco espacio en el disco. Libera espacio ahora.</translation>
 <translation id="189210018541388520">Abrir en pantalla completa</translation>
 <translation id="1892341345406963517">Hola, <ph name="PARENT_NAME" />:</translation>
+<translation id="1892453608039100484">1. Haz clic en <ph name="BUTTON_LABEL" /> a continuación
+2. Haz clic en <ph name="BUTTON_2" /> en la configuración de Windows</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
 <translation id="1895658205118569222">Cierre del navegador</translation>
 <translation id="1896043844785689584">Para configurar la huella digital, pídele a tu hijo/a que toque el sensor de huellas digitales, que está en la esquina inferior derecha del teclado. Los datos de la huella digital de tu hijo/a se almacenan de forma segura y nunca salen de este <ph name="DEVICE_TYPE" />.</translation>
@@ -3154,6 +3156,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3105820656234755131">Contraseña actualizada</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">El sitio web está usando el Bluetooth</translation>
+<translation id="3108122610701115301">Establecer como predeterminado</translation>
 <translation id="3108931485517391283">Error al recibir</translation>
 <translation id="3108957152224931571">Color de resaltado</translation>
 <translation id="3109206895301430738">Grupos de pestañas guardados</translation>
@@ -5104,6 +5107,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4415815425191869676">Mantener siempre activos estos sitios</translation>
 <translation id="4416582610654027550">Escribe una URL válida</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Pausar esta pestaña}other{Pausar estas pestañas}}</translation>
+<translation id="4421823557207751899">Has iniciado sesión como <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Las sugerencias de escritura se basan en tus peticiones y en el contenido de la página web.</translation>
 <translation id="4421932782753506458">Gatito</translation>
 <translation id="4423376891418188461">Restaurar configuración</translation>
@@ -6204,6 +6208,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5191251636205085390">Más información sobre las nuevas tecnologías que aspiran a reemplazar las cookies de terceros y cómo controlarlas</translation>
 <translation id="519185197579575131">Usar QT</translation>
 <translation id="5192062846343383368">Abre la aplicación Family Link para ver la configuración de supervisión</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> es obligatorio</translation>
 <translation id="5193978546360574373">Se retirará el acceso a Google Drive en este Chromebook, lo que incluye el acceso a los archivos que estén disponibles sin conexión</translation>
 <translation id="5193988420012215838">Se ha copiado al portapapeles</translation>
 <translation id="5194256020863090856">Esto solo afecta a las ventanas de Incógnito</translation>
@@ -6345,6 +6350,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5288106344236929384">Más acciones, opciones de llave de acceso para <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Volv&amp;er a abrir pestaña cerrada</translation>
 <translation id="5290020561438336792">PC y dispositivo de emisión en distintas redes Wi-Fi (por ejemplo, una de 2,4 GHz y otra de 5 GHz)</translation>
+<translation id="5290322819358431297">Autocompleta tus contraseñas</translation>
 <translation id="52912272896845572">El archivo de clave privada no es válido.</translation>
 <translation id="529175790091471945">Formatear este dispositivo</translation>
 <translation id="529296195492126134">El modo Efímero no está admitido. Ponte en contacto con tu administrador.</translation>
@@ -6964,6 +6970,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5734697361979786483">Añadir sistema de archivos compartidos</translation>
 <translation id="573520097779121706">Usa las teclas 7, 8, 9, u, o, j, k y l para mover el cursor</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Estos datos o tu dispositivo no cumplen algunas de las políticas de seguridad de tu organización. Consulta con tu administrador qué debes corregir.}=1{Este archivo o tu dispositivo no cumplen algunas de las políticas de seguridad de tu organización. Consulta con tu administrador qué debes corregir.}other{Estos archivos no cumplen algunas de las políticas de seguridad de tu organización. Consulta con tu administrador qué debes corregir.}}</translation>
+<translation id="5736345781200955827">Crea, guarda y gestiona tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones con Chrome</translation>
 <translation id="5738093759615225354">Necesitas esta llave de acceso para iniciar sesión en tu ordenador</translation>
 <translation id="5738386565827477765">Dispositivo de audio</translation>
 <translation id="5739017626473506901">Inicia sesión para ayudar a <ph name="USER_NAME" /> a añadir una cuenta de centro educativo</translation>
@@ -7216,6 +7223,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5901089233978050985">Cambiar a pestaña de captura</translation>
 <translation id="5901494423252125310">La cubierta de la impresora está abierta</translation>
 <translation id="5901630391730855834">Amarillo</translation>
+<translation id="5902400038326841449">El Gestor de contraseñas de Google está desactivado</translation>
 <translation id="5902892210366342391">Mostrar advertencias antes de acceder a sitios no seguros en el modo Incógnito</translation>
 <translation id="5904614460720589786">No se ha podido configurar <ph name="APP_NAME" /> debido a un problema de configuración. Ponte en contacto con tu administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Seguir permitiendo que este sitio use identificadores para reproducir contenido protegido</translation>
@@ -7997,6 +8005,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6452251728599530347"><ph name="PERCENT" /> completado</translation>
 <translation id="6452961788130242735">Problema de red o dominio erróneo</translation>
 <translation id="6453191633103419909">Calidad de proyección de pestaña/pantalla</translation>
+<translation id="6453306703004115497">Se ha traducido al <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Agrupar todas las pestañas</translation>
 <translation id="6453921811609336127">Para cambiar al siguiente método de introducción de texto, pulsa <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Mayús<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espacio<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
@@ -8155,6 +8164,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="656293578423618167">La ruta o el nombre del archivo es demasiado largo. Especifica un nombre más corto o guarda el archivo en otra ubicación.</translation>
 <translation id="6563002009564846727">Ver certificados importados desde Windows</translation>
 <translation id="6563055593659435495">No se puede mantener una conexión con tu teléfono. Asegúrate de tener el teléfono cerca, que esté desbloqueado y que el Bluetooth y la Wi-Fi estén activados.</translation>
+<translation id="6564343790052433242">Para crear una llave de acceso para <ph name="APP_NAME" />, el Gestor de contraseñas de Google debe estar activado</translation>
 <translation id="6565144332292237355">Los sitios pueden usar esta función para buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="6568283005472142698">Búsqueda en pestañas</translation>
 <translation id="6569931898053264308">Ahorro medio</translation>
@@ -11426,6 +11436,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8761945298804995673">El usuario indicado ya existe</translation>
 <translation id="8762886931014513155">Es necesario actualizar tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
+<translation id="8765940060470412555">Desfijar modo Lectura</translation>
 <translation id="8766156860774051068">Seleccionado por ti</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Mostrar todas las búsquedas de <ph name="QUERY_CLUSTER_NAME" /></translation>

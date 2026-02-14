@@ -476,6 +476,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2992473221983447149">Descriptions des images</translation>
 <translation id="2996291259634659425">Créer une phrase de passe</translation>
 <translation id="2996809686854298943">URL requise</translation>
+<translation id="3008916997590006706">Touchez Enregistrer pour accéder facilement à ce mot de passe lors de votre prochaine connexion</translation>
 <translation id="3024215143424744261">Préférences du mode Lecture fermées</translation>
 <translation id="3026955690410463085">Ajouter le lien</translation>
 <translation id="3027644380269727216">En fonction de votre activité sur un site. Ce paramètre est activé.</translation>
@@ -1006,6 +1007,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5267572070504076962">Activez la Navigation sécurisée pour profiter d'une protection contre les sites dangereux</translation>
 <translation id="5271967389191913893">L'appareil ne peut pas ouvrir le contenu à télécharger.</translation>
 <translation id="5273031377282080577">Votre administrateur gère ce paramètre.</translation>
+<translation id="5290322819358431297">Remplissez autom. mots de passe</translation>
 <translation id="5292796745632149097">Envoyer à</translation>
 <translation id="5301876394151419436">Vous êtes connecté en tant que <ph name="EMAIL" />. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="5304593522240415983">Ce champ ne peut être vide</translation>
@@ -1098,6 +1100,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="572328651809341494">Onglets récents</translation>
 <translation id="5728072125198221967">Services Google associés</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé avec son</translation>
+<translation id="5736345781200955827">Créez, enregistrez et gérez vos mots de passe pour pouvoir vous connecter facilement aux sites et aux applis à l'aide de Chrome</translation>
 <translation id="5744751019568455640">Voici les voix que vous pouvez choisir pour lire vos pages Web. Si vous aimez cette voix et souhaitez que je continue à l'utiliser, touchez simplement le nom de la voix.</translation>
 <translation id="574845902699630049">Partager en tant que <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome a besoin d'accéder au stockage pour télécharger des fichiers.</translation>

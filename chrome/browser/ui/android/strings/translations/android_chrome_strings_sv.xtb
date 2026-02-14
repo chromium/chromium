@@ -476,6 +476,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2992473221983447149">Bildbeskrivningar</translation>
 <translation id="2996291259634659425">Skapa lösenfras</translation>
 <translation id="2996809686854298943">En webbadress måste anges.</translation>
+<translation id="3008916997590006706">Tryck på Spara för att enkelt komma åt lösenordet nästa gång du loggar in</translation>
 <translation id="3024215143424744261">Inställningarna för läsläget har stängts</translation>
 <translation id="3026955690410463085">Inkludera länk</translation>
 <translation id="3027644380269727216">Baserat på din aktivitet på en webbplats. Inställningen är aktiverad.</translation>
@@ -1007,6 +1008,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5267572070504076962">Aktivera Säker webbsökning för skydd mot farliga webbplatser</translation>
 <translation id="5271967389191913893">Innehållet som skulle laddas ned gick inte att öppna på enheten.</translation>
 <translation id="5273031377282080577">Administratören hanterar den här inställningen.</translation>
+<translation id="5290322819358431297">Autofyll dina lösenord</translation>
 <translation id="5292796745632149097">Skicka till</translation>
 <translation id="5301876394151419436">Du är inloggad som <ph name="EMAIL" />. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="5304593522240415983">Fältet får inte vara tomt</translation>
@@ -1099,6 +1101,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="572328651809341494">Senaste flikarna</translation>
 <translation id="5728072125198221967">Länkade Google-tjänster</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, fäst inkognitoflik med ljud</translation>
+<translation id="5736345781200955827">Skapa, spara och hantera dina lösenord så att du enkelt kan logga in på webbplatser och i appar i Chrome</translation>
 <translation id="5744751019568455640">Du kan välja en av de här rösterna till att läsa upp dina webbsidor. Om du gillar den här rösten och vill att jag ska fortsätta använda den kan du trycka på röstens namn.</translation>
 <translation id="574845902699630049">Dela som <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome måste ha åtkomst till lagringsutrymmet om det ska gå att ladda ned filer.</translation>

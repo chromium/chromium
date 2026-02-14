@@ -1339,6 +1339,8 @@
 <translation id="1891362123137972260">ڈسک اسپیس انتہائی کم ہے۔ براہ کرم ڈسک اسپیس خالی کریں۔</translation>
 <translation id="189210018541388520">پوری سکرین کھولیں</translation>
 <translation id="1892341345406963517">آداب <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">‏1۔ <ph name="BUTTON_LABEL" /> نیچے کلک کریں
+2۔ اپنی Windows کی ترتیبات میں <ph name="BUTTON_2" /> پر کلک کریں</translation>
 <translation id="189358972401248634">دوسری زبانیں</translation>
 <translation id="1895658205118569222">بند کریں</translation>
 <translation id="1896043844785689584">فنگر پرنٹ سیٹ اپ کرنے کے لیے، اپنے بچے سے کی بورڈ کے نیچے دائیں کونے میں موجود فنگر پرنٹ سینسر کو ٹچ کرنے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی اس <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
@@ -1788,6 +1790,7 @@
 <translation id="219283042927675668">گروپ میں موجود ٹیبز</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> آپ کے نئے ٹیب صفحے کا نظم کر رہا ہے ایک نئے ٹیب میں کھلتا ہے</translation>
 <translation id="2192982266585216032">‫&amp;ادائیگیاں</translation>
+<translation id="2193567467390483943">آپ کے والدین نے اس ایکسٹینشن کو منظور نہیں کیا</translation>
 <translation id="2194856509914051091">قابل غور چیزیں</translation>
 <translation id="2195331105963583686">اس وقت کے بعد، آپ اب بھی اس <ph name="DEVICE_TYPE" /> کا استعمال کر سکیں گے، لیکن اب اسے خودکار سافٹ ویئر اور سیکیورٹی اپ ڈیٹس حاصل نہیں ہوں گی</translation>
 <translation id="2195729137168608510">ای میل کا تحفظ</translation>
@@ -3155,6 +3158,7 @@
 <translation id="3105820656234755131">اپ ڈیٹ کردہ پاس ورڈ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوٹوتھ)</translation>
 <translation id="310671807099593501">سائٹ بلوٹوتھ استعمال کر رہی ہے</translation>
+<translation id="3108122610701115301">ڈیفالٹ طے کریں</translation>
 <translation id="3108931485517391283">موصول نہیں کر سکتے</translation>
 <translation id="3108957152224931571">ہائی لائٹ کا رنگ</translation>
 <translation id="3109206895301430738">محفوظ کردہ ٹیب گروپس</translation>
@@ -5104,6 +5108,7 @@
 <translation id="4415815425191869676">ان سائٹس کو ہمیشہ فعال رکھیں</translation>
 <translation id="4416582610654027550">‏ایک درست URL ٹائپ کریں</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{اس ٹیب کو روکیں}other{ان ٹیبز کو روکیں}}</translation>
+<translation id="4421823557207751899"><ph name="USERNAME" /> کے بطور سائن ان ہیں</translation>
 <translation id="4421932172707401417">لکھنے سے متعلق تجاویز آپ کے پرامپٹس اور ویب صفحہ کے مواد پر مبنی ہیں</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">ترتیبات بحال کریں</translation>
@@ -6204,6 +6209,7 @@
 <translation id="5191251636205085390">ان نئی ٹیکنالوجیز کے بارے میں جانیں اور کنٹرول کریں جن کا مقصد فریق ثالث کے کوکیز کو تبدیل کرنا ہے</translation>
 <translation id="519185197579575131">‏QT کا استعمال کریں</translation>
 <translation id="5192062846343383368">‏اپنی نگرانی کی ترتیبات دیکھنے کیلئے، Family Link ایپ کھولیں</translation>
+<translation id="5193602404493965468">‫* <ph name="FIELD_LIST" /> درکار ہے</translation>
 <translation id="5193978546360574373">‏اس سے اس Chromebook پر Google Drive تک رسائی ہٹ جائے گی، بشمول کسی بھی فائل تک رسائی جو آف لائن دستیاب کرائی گئی ہے</translation>
 <translation id="5193988420012215838">آپ کے کلپ بورڈ پر کاپی کر دیا گیا</translation>
 <translation id="5194256020863090856">یہ صرف پوشیدگی ونڈوز کو متاثر کرتا ہے</translation>
@@ -6345,6 +6351,7 @@
 <translation id="5288106344236929384">مزید کارروائیاں، <ph name="DOMAIN" /> پر <ph name="USERNAME" /> کے لیے پاس کے اختیارات</translation>
 <translation id="5288678174502918605">بند ٹیب کو &amp;دوبارہ کھولیں</translation>
 <translation id="5290020561438336792">‏‫PC اور کاسٹنگ آلہ ایک ہی Wi-Fi نیٹ ورک پر ہیں (جیسے، 2.4GHz بمقابلہ 5GHz)</translation>
+<translation id="5290322819358431297">اپنے پاس ورڈز کو آٹو فل کریں</translation>
 <translation id="52912272896845572">نجی کلید کی فائل غلط ہے۔</translation>
 <translation id="529175790091471945">اس آلہ کو فارمیٹ کریں</translation>
 <translation id="529296195492126134">عارضی موڈ سیٹ نہیں ہے۔ براہ کرم اپنے منتظم سے رابطہ کریں</translation>
@@ -6963,6 +6970,7 @@
 <translation id="5734697361979786483">فائل کا اشتراک شامل کریں</translation>
 <translation id="573520097779121706">‏کرسر کو حرکت دینے کیلئے ‎7, 8, 9, u, o, j, k, l‎ کلیدوں کا استعمال کریں</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{یہ ڈیٹا یا آپ کا آلہ آپ کی تنظیم کی سیکیورٹی کی کچھ پالیسیوں کی تعمیل نہیں کرتا ہے۔ اپنے منتظم کے ساتھ چیک کریں کہ کیا ٹھیک کرنے کی ضرورت ہے۔}=1{یہ فائل یا آپ کا آلہ آپ کی تنظیم کی سیکیورٹی کی کچھ پالیسیوں کی تعمیل نہیں کرتا ہے۔ اپنے منتظم کے ساتھ چیک کریں کہ کیا ٹھیک کرنے کی ضرورت ہے۔}other{یہ فائلز آپ کی تنظیم کی سیکیورٹی کی کچھ پالیسیوں کی تعمیل نہیں کرتی ہیں۔ اپنے منتظم کے ساتھ چیک کریں کہ کیا ٹھیک کرنے کی ضرورت ہے۔}}</translation>
+<translation id="5736345781200955827">‏اپنے پاس ورڈز تخلیق کریں، محفوظ کریں اور ان کا نظم کریں تاکہ آپ Chrome کا استعمال کرتے ہوئے آسانی سے سائٹس اور ایپس میں سائن ان کر سکیں</translation>
 <translation id="5738093759615225354">آپ کو اپنے کمپیوٹر میں سائن ان کرنے کے لیے اس پاس کی ضرورت ہے</translation>
 <translation id="5738386565827477765">آڈیو آلہ</translation>
 <translation id="5739017626473506901">اسکول کا اکاؤنٹ شامل کرنے میں <ph name="USER_NAME" /> کی مدد کرنے کیلئے سائن ان کریں</translation>
@@ -7215,6 +7223,7 @@
 <translation id="5901089233978050985">کیپچر کرنے والے ٹیب پر سوئچ کریں</translation>
 <translation id="5901494423252125310">پرنٹر کا دروازہ کھلا ہے</translation>
 <translation id="5901630391730855834">پیلا</translation>
+<translation id="5902400038326841449">‏‫Google پاس ورڈ مینیجر آف ہے</translation>
 <translation id="5902892210366342391">پوشیدگی وضع میں غیر محفوظ سائٹس پر جانے سے پہلے وارننگز دیکھیں</translation>
 <translation id="5904614460720589786">کنفیگریشن میں مسئلہ پیش آنے کی وجہ سے <ph name="APP_NAME" /> کو سیٹ اپ نہیں کیا جا سکا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="5906457147959147328">اس سائٹ کو تحفظ یافتہ مواد چلانے کے لیے شناخت کنندگان کو استعمال کرنے کی اجازت دینا جاری رکھیں</translation>
@@ -7996,6 +8005,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> مکمل</translation>
 <translation id="6452961788130242735">نیٹ ورک کا مسئلہ یا خراب دائرہ کار</translation>
 <translation id="6453191633103419909">ٹیب/اسکرین پروجیکشن کوالٹی</translation>
+<translation id="6453306703004115497"><ph name="LANGUAGE" /> میں ترجمہ کر دیا گیا</translation>
 <translation id="6453687572758515877">تمام ٹیبز کی گروپ بندی کریں</translation>
 <translation id="6453921811609336127">‏اندراج کے اگلے طریقے پر سوئچ کرنے کیلئے <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> دبائیں۔</translation>
 <translation id="6455264371803474013">مخصوص سائٹس پر</translation>
@@ -8154,6 +8164,7 @@
 <translation id="656293578423618167">فائل کا پاتھ یا نام کافی طویل ہیں۔ براہ کرم ایک چھوٹے نام کے ساتھ یا کسی دوسرے مقام میں محفوظ کریں۔</translation>
 <translation id="6563002009564846727">‏‫Windows سے درآمد شدہ سرٹیفکیٹس دیکھیں</translation>
 <translation id="6563055593659435495">‏آپ کے فون کے ساتھ کنکشن برقرار نہیں رکھا جا سکتا۔ یقینی بنائیں کہ آپ کا فون قریب میں ہے، غیر مقفل ہے اور اس میں بلوٹوتھ اور Wi-Fi آن ہے۔</translation>
+<translation id="6564343790052433242">‏<ph name="APP_NAME" /> کے لیے پاس کی تخلیق کرنے کے لیے، Google پاس ورڈ مینیجر کا آن ہونا ضروری ہے</translation>
 <translation id="6565144332292237355">آپ کے مقامی نیٹ ورک پر کوئی آلہ تلاش کرنے اور کسی آلے سے منسلک ہونے کیلئے، سائٹس اس خصوصیت کا استعمال کر سکتی ہیں</translation>
 <translation id="6568283005472142698">ٹیب تلاش</translation>
 <translation id="6569931898053264308">درمیانی بچتیں</translation>
@@ -11423,6 +11434,7 @@
 <translation id="8761945298804995673">یہ صارف پہلے سے موجود ہے</translation>
 <translation id="8762886931014513155">آپ کے <ph name="DEVICE_TYPE" /> کو اپ ڈیٹ کی ضرورت ہے</translation>
 <translation id="8763927697961133303">‏USB آلہ</translation>
+<translation id="8765940060470412555">ریڈنگ موڈ سے پن ہٹائیں</translation>
 <translation id="8766156860774051068">آپ کے ذریعے کیوریٹ کردہ</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> کی تمام تلاشیں دکھائیں</translation>

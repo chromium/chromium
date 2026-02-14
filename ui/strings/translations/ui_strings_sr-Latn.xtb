@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{Pre 1 minut}one{Pre # minut}few{Pre # minuta}other{Pre # minuta}}</translation>
 <translation id="1450753235335490080">Nije uspelo deljenje: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{Pre 1 mesec}one{Pre # mesec}few{Pre # meseca}other{Pre # meseci}}</translation>
+<translation id="1591017414891297549">PREGLED</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minut i }one{# minut i }few{# minuta i }other{# minuta i }}</translation>
 <translation id="1643823602425662293">Obaveštenje</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">i još <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">Gotovo</translation>
+<translation id="8741385002816058621">Ovo je funkcija u pregledu</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 s}one{# s}few{# s}other{# s}}</translation>
 <translation id="8798099450830957504">Podrazumevano</translation>
 <translation id="8841375032071747811">Dugme Nazad</translation>

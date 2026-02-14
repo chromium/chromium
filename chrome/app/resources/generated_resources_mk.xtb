@@ -1350,6 +1350,8 @@
 <translation id="1891362123137972260">Дискот е речиси полн. Ослободете простор на дискот.</translation>
 <translation id="189210018541388520">Отвори на цел екран</translation>
 <translation id="1892341345406963517">Здраво <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Кликнете <ph name="BUTTON_LABEL" /> подолу
+2. Кликнете <ph name="BUTTON_2" /> во поставките за Windows</translation>
 <translation id="189358972401248634">Други јазици</translation>
 <translation id="1895658205118569222">Исклучување</translation>
 <translation id="1896043844785689584">За да поставите отпечаток, детето треба да го допре сензорот за отпечатоци долу десно на тастатурата. Податоците за отпечатокот на детето безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
@@ -3167,6 +3169,7 @@
 <translation id="3105820656234755131">Лозинката е ажурирана</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Сајтот користи Bluetooth</translation>
+<translation id="3108122610701115301">Постави го како стандарден</translation>
 <translation id="3108931485517391283">Не може да се прими</translation>
 <translation id="3108957152224931571">Боја за нагласување</translation>
 <translation id="3109206895301430738">Зачувани групи картички</translation>
@@ -5118,6 +5121,7 @@
 <translation id="4415815425191869676">Овие сајтови секогаш ќе бидат активни</translation>
 <translation id="4416582610654027550">Внесете валидна URL</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Паузирај ја картичкава}one{Паузирај ги картичкиве}other{Паузирај ги картичкиве}}</translation>
+<translation id="4421823557207751899">Најавени сте како: <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Предлозите за пишување се засноваат на вашите барања и на содржините на веб-страницата</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">Обнови поставки</translation>
@@ -6361,6 +6365,7 @@
 <translation id="5288678174502918605">Повторно&amp; отвори затворена картичка</translation>
 <translation id="5290020561438336792">Компјутер и уред со Cast на различни Wi-Fi мрежи (на пр., 2,4 GHz
     наспроти 5 GHz)</translation>
+<translation id="5290322819358431297">Автоматско пополнување на лозинките</translation>
 <translation id="52912272896845572">Неважечка датотека со приватен клуч.</translation>
 <translation id="529175790091471945">Форматирај го овој уред</translation>
 <translation id="529296195492126134">Ефемерниот режим не е поддржан. Контактирајте со администраторот</translation>
@@ -6980,6 +6985,7 @@
 <translation id="5734697361979786483">Додајте споделување датотеки</translation>
 <translation id="573520097779121706">Користете ги копчињата 7, 8, 9, U, O, J, K, L за да го движите курсорот</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Податоциве или вашиот уред не исполнува некои од правилата за безбедност на вашата организација. Проверете со администраторот околу тоа што треба да се коригира.}=1{Датотекава или вашиот уред не исполнува некои од правилата за безбедност на вашата организација. Проверете со администраторот околу тоа што треба да се коригира.}one{Датотекиве не исполнуваат некои од правилата за безбедност на вашата организација. Проверете со администраторот околу тоа што треба да се коригира.}other{Датотекивте не исполнуваат некои од правилата за безбедност на вашата организација. Проверете со администраторот околу тоа што треба да се коригира.}}</translation>
+<translation id="5736345781200955827">Создавајте, зачувувајте и управувајте со лозинки за да може лесно да се најавувате на сајтови и апликации со Chrome</translation>
 <translation id="5738093759615225354">Овој криптографски клуч ви е потребен за најавување на вашиот компјутер</translation>
 <translation id="5738386565827477765">Аудиоуред</translation>
 <translation id="5739017626473506901">Најавете се за да му помогнете на корисникот <ph name="USER_NAME" /> да додаде училишна сметка</translation>
@@ -7232,6 +7238,7 @@
 <translation id="5901089233978050985">Префрли на снимање картичка</translation>
 <translation id="5901494423252125310">Отворена е вратата на печатачот</translation>
 <translation id="5901630391730855834">Жолта боја</translation>
+<translation id="5902400038326841449">Google Password Manager е исклучена</translation>
 <translation id="5902892210366342391">Прикажувај предупредувања пред одење на небезбедни сајтови во режим „Инкогнито“</translation>
 <translation id="5904614460720589786">Не може да се постави <ph name="APP_NAME" /> поради конфигурациски проблем. Контактирајте со администраторот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Продолжи да му дозволуваш на сајтов да користи идентификатори за да пушта заштитени содржини</translation>
@@ -8013,6 +8020,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> завршено</translation>
 <translation id="6452961788130242735">Проблем со мрежата или лош домен</translation>
 <translation id="6453191633103419909">Квалитет на проекција на картичка/екран</translation>
+<translation id="6453306703004115497">Преведено на <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Групирајте ги сите картички</translation>
 <translation id="6453921811609336127">За да се префрлите на следниот метод за внесување, притиснете <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Празно место<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">На одредени сајтови</translation>
@@ -8171,6 +8179,7 @@
 <translation id="656293578423618167">Патеката на датотеката или нејзиното име се многу долги. Зачувајте ја со пократко име или на друга локација.</translation>
 <translation id="6563002009564846727">Прегледајте ги увезените сертификати од Windows</translation>
 <translation id="6563055593659435495">Не може да се одржи врска со телефонот. Погрижете се телефонот да биде во близина, отклучен и со вклучени Bluetooth и Wi-Fi.</translation>
+<translation id="6564343790052433242">За да создадете криптографски клуч за <ph name="APP_NAME" />, Google Password Manager мора да биде вклучена</translation>
 <translation id="6565144332292237355">Сајтовите може да ја користат функцијава за да ги бараат и да се поврзуваат на сите уреди на локалната мрежа</translation>
 <translation id="6568283005472142698">Пребарување картички</translation>
 <translation id="6569931898053264308">Средни заштеди</translation>
@@ -11445,6 +11454,7 @@
 <translation id="8761945298804995673">Корисников веќе постои</translation>
 <translation id="8762886931014513155">На вашиот <ph name="DEVICE_TYPE" /> му е потребно ажурирање</translation>
 <translation id="8763927697961133303">USB-уред</translation>
+<translation id="8765940060470412555">Откачи го „Режимот за читање“</translation>
 <translation id="8766156860774051068">Избрано од вас</translation>
 <translation id="8766796754185931010">Котоери</translation>
 <translation id="8767069439158587614">Прикажи ги сите пребарувања за <ph name="QUERY_CLUSTER_NAME" /></translation>

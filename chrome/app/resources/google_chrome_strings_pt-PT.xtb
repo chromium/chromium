@@ -261,6 +261,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{O Chrome recomenda que a remova. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões suportadas<ph name="END_LINK" />}other{O Chrome recomenda que as remova. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões suportadas<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Aprofunde a sua pesquisa adicionando vários separadores, ficheiros e ferramentas com o botão "Adicionar separador e muito mais".</translation>
 <translation id="3756724684201900923">Saiba como instalar o Chrome</translation>
+<translation id="3772152698251011058">Denuncie este site à Google</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">O ChromeOS Flex não conseguiu sincronizar os dados devido a um erro de início de sessão.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -408,6 +409,8 @@
 <translation id="5430073640787465221">O ficheiro de preferências está danificado ou não é válido. O Google Chrome não consegue recuperar as suas definições.</translation>
 <translation id="5465210843490471889">Escolha um perfil do Chrome para usar com o <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Para ajudar a melhorar estas funcionalidades, o Chrome envia as suas interações com as funcionalidades para a Google. Estes dados podem ser lidos, processados e anotados por revisores humanos.</translation>
+<translation id="547202872422499512">O Chrome agora é iniciado quando o Windows arranca para poder começar a navegar instantaneamente. Pode desativar esta opção nas definições.</translation>
+<translation id="5486346529181556467">Melhore a segurança online para todos quando denuncia um site que considera prejudicial. Saiba mais sobre a <ph name="BEGIN_LINK" />Política de Sites Não Seguros da Google<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">canto superior esquerdo da área de pesquisa: esquerda <ph name="LEFT" />%, parte superior <ph name="TOP" />%</translation>
 <translation id="5550137307985173298">Clique no botão Personalizar o Chrome na página Novo separador para dar um novo aspeto ao Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -567,6 +570,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Regra de importação para o Google Chrome Beta permitir o tráfego mDNS.</translation>
 <translation id="6979589607440534284">Saiba por que motivo o Chrome bloqueia alguns ficheiros, abre num novo separador</translation>
+<translation id="6985817499499247940">Inicie o Chrome automaticamente para começar a navegar instantaneamente.</translation>
 <translation id="6991926986715044139">Mostrar sempre o atalho do Google Lens</translation>
 <translation id="6999131147875565462">O Chrome é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto</translation>
 <translation id="7011190694940573312">A instalação falhou porque esta versão do sistema operativo não é suportada.</translation>
@@ -595,6 +599,7 @@
 <translation id="7288567540154601580">Separadores e extensões</translation>
 <translation id="7296210096911315575">Informações de utilização e segurança importantes</translation>
 <translation id="7302361266603927550">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google. Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
+<translation id="7306401458628386911">Comece a navegar instantaneamente: agora pode iniciar o Chrome quando o Windows arranca.</translation>
 <translation id="7308322188646931570">O Chrome necessita de acesso ao armazenamento para transferir ficheiros.</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
@@ -657,6 +662,7 @@
 <translation id="7827099906024714326">O Chrome precisa de validar a sua identidade antes de ser possível guardar alguns dados na sua Conta Google e usá-los em todos os seus dispositivos. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="7832314606810669113">Para ter os seus marcadores e muito mais em todos os seus dispositivos, inicie sessão no Chrome. Este marcador é guardado na sua Conta Google depois de iniciar sessão.</translation>
 <translation id="7845233973568007926">Agradecemos a instalação. Tem de reiniciar o computador antes de usar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847170235260850604">Iniciar o Chrome quando o Windows arrancar</translation>
 <translation id="7849037457735762883">Continue a partir de onde ficou: o Chrome pode restaurar os seus separadores sempre que reiniciar. Para ativar esta opção, aceda às</translation>
 <translation id="7869620795354551924">Para usar as palavras-passe guardadas, siga o código QR, transfira o Chrome para iOS e inicie sessão na sua Conta Google</translation>
 <translation id="7872446069773932638">A transferir… Falta(m) <ph name="SECONDS" /> segundo(s)</translation>

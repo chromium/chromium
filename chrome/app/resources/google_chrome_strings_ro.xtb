@@ -251,6 +251,7 @@
 <translation id="3622716124581627104">Identifică lucruri sau locuri și copiază sau traduce text. Când folosești Google Lens, se trimite la Google o captură de ecran a paginii. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Acum este mai ușor să folosiți Chrome cu Contul Google și pe computerele utilizate în comun.</translation>
 <translation id="3635073343384702370">Chrome îți poate verifica parolele dacă le salvezi</translation>
+<translation id="3636970668267555808">Accesează cu ușurință funcțiile pe care le cunoști, le apreciezi și în care ai încredere setând Chrome ca browser prestabilit.</translation>
 <translation id="3667616615096815454">Nu se poate instala. Aplicația nu este cunoscută de server.</translation>
 <translation id="3673813398384385993">Chrome a descoperit că <ph name="EXTENSION_NAME" /> conține programe malware</translation>
 <translation id="3697952514309507634">Alte profiluri Chrome</translation>
@@ -260,6 +261,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome recomandă să o elimini. <ph name="BEGIN_LINK" />Află mai multe despre extensiile acceptate<ph name="END_LINK" />}few{Chrome recomandă să le elimini. <ph name="BEGIN_LINK" />Află mai multe despre extensiile acceptate<ph name="END_LINK" />}other{Chrome recomandă să le elimini. <ph name="BEGIN_LINK" />Află mai multe despre extensiile acceptate<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Aprofundează căutarea adăugând mai multe file, fișiere și instrumente folosind butonul Adaugă o filă și altele.</translation>
 <translation id="3756724684201900923">Află mai multe despre instalarea Chrome</translation>
+<translation id="3772152698251011058">Raportează acest site la Google</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="3795971588916395511">Sistemul de operare Google Chrome</translation>
@@ -407,6 +409,8 @@
 <translation id="5430073640787465221">Fișierul dvs. de preferințe este fie deteriorat, fie nevalid. Google Chrome nu poate recupera setările dvs.</translation>
 <translation id="5465210843490471889">Alege un profil Chrome pe care să-l folosești cu <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Pentru a contribui la îmbunătățirea acestor funcții, Chrome îți trimite interacțiunile cu acestea la Google. Aceste date pot fi citite, procesate și adnotate de evaluatori umani.</translation>
+<translation id="547202872422499512">Chrome se lansează acum când pornește Windows, astfel că poți începe să navighezi instantaneu. Poți dezactiva această opțiune din setări.</translation>
+<translation id="5486346529181556467">Îmbunătățește siguranța online pentru toată lumea raportând un site pe care îl consideri dăunător. Află mai multe despre <ph name="BEGIN_LINK" />politica Google privind site-urile nesigure<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">colțul din stânga sus al zonei de căutare: stânga <ph name="LEFT" /> %, sus <ph name="TOP" /> %</translation>
 <translation id="5550137307985173298">Dă clic pe butonul Personalizează Chrome din pagina Filă nouă pentru a-i oferi browserului Chrome un aspect nou</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -566,6 +570,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Regula de intrare pentru Google Chrome Beta pentru a permite traficul mDNS.</translation>
 <translation id="6979589607440534284">Află de ce Chrome blochează unele fișiere; se deschide într-o filă nouă</translation>
+<translation id="6985817499499247940">Lansează automat Chrome pentru a începe să navighezi instantaneu.</translation>
 <translation id="6991926986715044139">Afișează întotdeauna comanda rapidă Google Lens</translation>
 <translation id="6999131147875565462">Chrome rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze corespunzător</translation>
 <translation id="7011190694940573312">Nu s-a instalat deoarece această versiune a sistemului de operare nu este acceptată.</translation>
@@ -594,6 +599,7 @@
 <translation id="7288567540154601580">File și extensii</translation>
 <translation id="7296210096911315575">Informații importante cu privire la folosire și siguranță</translation>
 <translation id="7302361266603927550">Unele date Chrome nu au fost salvate încă în Contul Google. Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
+<translation id="7306401458628386911">Începe să navighezi instantaneu: Chrome se poate lansa acum când pornește Windows.</translation>
 <translation id="7308322188646931570">Pentru a descărca fișiere, Chrome necesită acces la stocare</translation>
 <translation id="7339898014177206373">Fereastră nouă</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
@@ -656,6 +662,7 @@
 <translation id="7827099906024714326">Chrome trebuie să-ți confirme identitatea pentru ca unele date să poată fi salvate în Contul Google și folosite pe toate dispozitivele. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
 <translation id="7832314606810669113">Pentru a accesa marcajele și alte date pe toate dispozitivele, conectează-te la Chrome. Marcajul se va salva în Contul Google după ce te conectezi.</translation>
 <translation id="7845233973568007926">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești computerul.</translation>
+<translation id="7847170235260850604">Lansează Chrome când pornește Windows</translation>
 <translation id="7849037457735762883">Continuă de unde ai rămas: Chrome poate restabili filele de fiecare dată când repornești. Pentru a activa opțiunea, accesează</translation>
 <translation id="7869620795354551924">Ca să-ți folosești parolele salvate, urmează codul QR, descarcă browserul Chrome pentru iOS și conectează-te la Contul Google.</translation>
 <translation id="7872446069773932638">Se descarcă… Timp rămas: <ph name="SECONDS" /> secunde</translation>

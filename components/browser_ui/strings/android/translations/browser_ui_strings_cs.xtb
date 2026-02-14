@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Pomozte nám vylepšit Chrome tím, že nám sdělíte, proč jste povolili soubory cookie třetích stran. <ph name="BEGIN_LINK" />Odeslat zpětnou vazbu<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Můžete požádat o zobrazení verze webů pro počítače</translation>
 <translation id="1085696779717592361">Používejte Chrome ve výchozím nastavení</translation>
+<translation id="1126523729897810826">Pokud Chrome chcete využít na maximum, proveďte níže uvedené navrhované akce</translation>
 <translation id="113098737392899175">Když je připojená klávesnice, procházet stránky pomocí textového kurzoru</translation>
 <translation id="1149644372535087155">Ukládejte si v Chromu hesla</translation>
 <translation id="1178015372320901893">Spodní panel Moje zkratky</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Zrychlit weby v Chromu pomocí modulu V8, čímž se ale o trochu sníží odolnost Chromu vůči útokům</translation>
 <translation id="1593426485665524382">V horní části obrazovky jsou k dispozici nové akce</translation>
 <translation id="1594521731409209842">Velikost fotky změníte stažením nebo roztažením prstů</translation>
+<translation id="1599268789440304082">Byl otevřen panel nastavení</translation>
 <translation id="1601560923496285236">Použít</translation>
 <translation id="1615755956145364867">Weby mohou žádat o přehrání chráněného obsahu</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="4505788138578415521">Rozbalená adresa URL</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4523472416386354622">Nejdřív se přihlaste</translation>
+<translation id="4529207923544043455">Spodní panel zobrazující dokončené a nedokončené úkoly ze seznamu nastavení</translation>
 <translation id="4534723447064627427">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k mikrofonu, zapněte mikrofon také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Panel nastavení byl zavřen</translation>
 <translation id="4566417217121906555">Vypnout mikrofon</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4578289292431526768">Jdeme na to</translation>

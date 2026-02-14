@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1분 전}other{#분 전}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1개월 전}other{#개월 전}}</translation>
+<translation id="1591017414891297549">프리뷰</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1분 }other{#분 }}</translation>
 <translation id="1643823602425662293">알림</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" />KB/초</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" />개</translation>
 <translation id="8730621377337864115">완료</translation>
+<translation id="8741385002816058621">프리뷰로 제공되는 기능입니다.</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1시간}other{#시간}}</translation>
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8841375032071747811">뒤로 버튼</translation>

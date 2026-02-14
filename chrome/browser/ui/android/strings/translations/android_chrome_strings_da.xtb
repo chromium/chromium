@@ -476,6 +476,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2992473221983447149">Billedbeskrivelser</translation>
 <translation id="2996291259634659425">Opret adgangssætning</translation>
 <translation id="2996809686854298943">En webadresse er påkrævet</translation>
+<translation id="3008916997590006706">Tryk på Gem for nemt at få adgang til denne adgangskode, næste gang du logger ind</translation>
 <translation id="3024215143424744261">Præferencer for læsetilstand er lukket</translation>
 <translation id="3026955690410463085">Medtag link</translation>
 <translation id="3027644380269727216">Baseret på din aktivitet på et website. Denne indstilling er aktiveret.</translation>
@@ -1006,6 +1007,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5267572070504076962">Aktivér Beskyttet browsing for at blive beskyttet mod skadelige websites</translation>
 <translation id="5271967389191913893">Enheden kan ikke åbne det indhold, der skal downloades.</translation>
 <translation id="5273031377282080577">Din administrator styrer denne indstilling.</translation>
+<translation id="5290322819358431297">Udfyld dine adgangskoder automatisk</translation>
 <translation id="5292796745632149097">Send til</translation>
 <translation id="5301876394151419436">Du er logget ind som <ph name="EMAIL" />. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester til dig personligt baseret på din historik.</translation>
 <translation id="5304593522240415983">Dette felt må ikke være tomt</translation>
@@ -1098,6 +1100,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="572328651809341494">Seneste faner</translation>
 <translation id="5728072125198221967">Tilknyttede Google-tjenester</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, fastgjort inkognitofane, der afspiller lyd</translation>
+<translation id="5736345781200955827">Opret, gem og administrer dine adgangskoder, så du nemt kan logge ind på websites og i apps ved hjælp af Chrome</translation>
 <translation id="5744751019568455640">Her er de stemmer, som du kan vælge imellem til højtlæsning af dine websider. Hvis du kan lide denne stemme og vil have, at jeg fortsætter med at bruge den, skal du bare trykke på stemmenavnet.</translation>
 <translation id="574845902699630049">Del som <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome skal have lageradgang for at kunne downloade filer.</translation>

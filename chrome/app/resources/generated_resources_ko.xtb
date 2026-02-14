@@ -1349,6 +1349,8 @@
 <translation id="1891362123137972260">디스크 저장 공간이 매우 부족합니다. 디스크 저장 공간을 확보하세요.</translation>
 <translation id="189210018541388520">전체화면 열기</translation>
 <translation id="1892341345406963517"><ph name="PARENT_NAME" />님, 안녕하세요</translation>
+<translation id="1892453608039100484">1. 아래의 <ph name="BUTTON_LABEL" /> 버튼을 클릭합니다.
+2. Windows 설정에서 <ph name="BUTTON_2" /> 버튼을 클릭합니다.</translation>
 <translation id="189358972401248634">다른 언어</translation>
 <translation id="1895658205118569222">종료</translation>
 <translation id="1896043844785689584">지문을 설정하려면 자녀가 키보드의 오른쪽 하단에 있는 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
@@ -1798,6 +1800,7 @@
 <translation id="219283042927675668">그룹에 포함된 탭</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" />에서 새 탭 페이지를 관리하고 새 탭에서 열립니다</translation>
 <translation id="2192982266585216032">결제(&amp;P)</translation>
+<translation id="2193567467390483943">부모님이 이 확장 프로그램을 승인하지 않았습니다.</translation>
 <translation id="2194856509914051091">고려사항</translation>
 <translation id="2195331105963583686">이후로도 이 <ph name="DEVICE_TYPE" /> 기기를 계속 사용할 수는 있지만, 소프트웨어 및 보안 업데이트를 자동으로 받을 수 없게 됩니다.</translation>
 <translation id="2195729137168608510">이메일 보호</translation>
@@ -3168,6 +3171,7 @@
 <translation id="3105820656234755131">비밀번호가 업데이트됨</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />(블루투스)</translation>
 <translation id="310671807099593501">사이트에서 블루투스를 사용하고 있습니다.</translation>
+<translation id="3108122610701115301">기본으로 설정</translation>
 <translation id="3108931485517391283">수신할 수 없습니다.</translation>
 <translation id="3108957152224931571">강조 색상</translation>
 <translation id="3109206895301430738">저장된 탭 그룹</translation>
@@ -5117,6 +5121,7 @@
 <translation id="4415815425191869676">다음 사이트를 항상 활성 상태로 유지</translation>
 <translation id="4416582610654027550">유효한 URL을 입력하세요.</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{이 탭 일시중지}other{이 탭 일시중지}}</translation>
+<translation id="4421823557207751899"><ph name="USERNAME" />(으)로 로그인됨</translation>
 <translation id="4421932172707401417">작성 제안은 사용자의 프롬프트와 웹페이지의 콘텐츠를 기반으로 합니다.</translation>
 <translation id="4421932782753506458">복실이</translation>
 <translation id="4423376891418188461">설정 복원</translation>
@@ -6219,6 +6224,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5191251636205085390">타사 쿠키를 대체하는 것을 목표로 하는 새로운 기술을 알아보고 관리하세요.</translation>
 <translation id="519185197579575131">QT 사용</translation>
 <translation id="5192062846343383368">Family Link 앱을 열어 감독 설정을 확인합니다.</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> 입력란은 필수 항목입니다.</translation>
 <translation id="5193978546360574373">오프라인으로 사용 가능했던 모든 파일에 대한 액세스 권한을 비롯해 이 Chromebook에서의 Google Drive 액세스 권한이 삭제됩니다.</translation>
 <translation id="5193988420012215838">클립보드에 복사됨</translation>
 <translation id="5194256020863090856">이 작업은 시크릿 창에만 영향을 줍니다.</translation>
@@ -6361,6 +6367,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5288678174502918605">닫은 탭 다시 열기(&amp;E)</translation>
 <translation id="5290020561438336792">PC와 전송 기기가 서로 다른 Wi-Fi 네트워크(예: 2.4GHz와
     5GHz)에 연결되어 있음</translation>
+<translation id="5290322819358431297">비밀번호 자동 완성</translation>
 <translation id="52912272896845572">비공개 키 파일이 잘못되었습니다.</translation>
 <translation id="529175790091471945">이 기기 포맷</translation>
 <translation id="529296195492126134">임시 모드는 지원되지 않습니다. 관리자에게 문의해 주세요.</translation>
@@ -6980,6 +6987,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5734697361979786483">파일 공유 추가</translation>
 <translation id="573520097779121706">커서를 이동하려면 7, 8, 9, u, o, j, k, l 키를 사용하세요.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{데이터 또는 기기가 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.}=1{파일 또는 기기가 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.}other{파일이 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.}}</translation>
+<translation id="5736345781200955827">Chrome을 사용하여 사이트와 앱에 쉽게 로그인할 수 있도록 비밀번호를 만들고, 저장하고, 관리하세요.</translation>
 <translation id="5738093759615225354">컴퓨터에 로그인하려면 이 패스키가 필요합니다.</translation>
 <translation id="5738386565827477765">오디오 기기</translation>
 <translation id="5739017626473506901"><ph name="USER_NAME" />님이 학교 계정을 추가할 수 있도록 로그인하세요.</translation>
@@ -7232,6 +7240,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5901089233978050985">캡처 중인 탭으로 전환</translation>
 <translation id="5901494423252125310">프린터 덮개 열림</translation>
 <translation id="5901630391730855834">노란색</translation>
+<translation id="5902400038326841449">Google 비밀번호 관리자가 사용 중지됨</translation>
 <translation id="5902892210366342391">시크릿 모드에서 안전하지 않은 사이트로 이동하기 전에 경고를 표시합니다.</translation>
 <translation id="5904614460720589786">구성 문제로 인해 <ph name="APP_NAME" /> 앱을 설정할 수 없습니다. 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="5906457147959147328">이 사이트에서 보호된 콘텐츠를 재생하기 위해 식별자를 계속 사용하도록 허용</translation>
@@ -8013,6 +8022,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> 완료</translation>
 <translation id="6452961788130242735">네트워크 문제 또는 잘못된 영역</translation>
 <translation id="6453191633103419909">탭/화면 프로젝션 품질</translation>
+<translation id="6453306703004115497"><ph name="LANGUAGE" />로 번역했습니다.</translation>
 <translation id="6453687572758515877">모든 탭 그룹화</translation>
 <translation id="6453921811609336127">다음 입력 방법으로 전환하려면 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" />를 누르세요.</translation>
 <translation id="6455264371803474013">특정 사이트에서</translation>
@@ -8171,6 +8181,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="656293578423618167">파일 경로 또는 이름이 너무 깁니다. 짧은 이름으로 변경하거나 다른 위치에 저장하세요.</translation>
 <translation id="6563002009564846727">Windows에서 가져온 인증서 보기</translation>
 <translation id="6563055593659435495">휴대전화와 연결을 유지할 수 없습니다. 휴대전화가 근처에 있고 잠금 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
+<translation id="6564343790052433242"><ph name="APP_NAME" />의 패스키를 만들려면 Google 비밀번호 관리자가 사용 설정되어 있어야 합니다.</translation>
 <translation id="6565144332292237355">사이트에서 이 기능을 사용하여 로컬 네트워크의 기기를 찾고 연결할 수 있습니다.</translation>
 <translation id="6568283005472142698">탭 검색</translation>
 <translation id="6569931898053264308">메모리 다소 절약</translation>
@@ -11442,6 +11453,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8761945298804995673">이미 존재하는 사용자입니다.</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> 업데이트 필요</translation>
 <translation id="8763927697961133303">USB 기기</translation>
+<translation id="8765940060470412555">읽기 모드 고정 해제</translation>
 <translation id="8766156860774051068">내가 선별함</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" />에 관한 모든 검색어 표시</translation>

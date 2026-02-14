@@ -476,6 +476,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2992473221983447149">Opisy obrazów</translation>
 <translation id="2996291259634659425">Utwórz hasło wielowyrazowe</translation>
 <translation id="2996809686854298943">Wymagany adres URL</translation>
+<translation id="3008916997590006706">Kliknij Zapisz, aby łatwo uzyskać dostęp do tego hasła przy następnym logowaniu</translation>
 <translation id="3024215143424744261">Ustawienia trybu czytania zostały zamknięte</translation>
 <translation id="3026955690410463085">Dołącz link</translation>
 <translation id="3027644380269727216">Na podstawie Twojej aktywności w witrynie. To ustawienie jest włączone.</translation>
@@ -1006,6 +1007,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5267572070504076962">Włącz Bezpieczne przeglądanie, aby korzystać z ochrony przed niebezpiecznymi stronami</translation>
 <translation id="5271967389191913893">Na tym urządzeniu nie można otworzyć treści, które chcesz pobrać.</translation>
 <translation id="5273031377282080577">Tym ustawieniem zarządza administrator.</translation>
+<translation id="5290322819358431297">Ustaw autouzupełnianie haseł</translation>
 <translation id="5292796745632149097">Wyślij na</translation>
 <translation id="5301876394151419436">W tej chwili korzystasz z konta <ph name="EMAIL" />. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="5304593522240415983">To pole nie może być puste</translation>
@@ -1098,6 +1100,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="572328651809341494">Ostatnie karty</translation>
 <translation id="5728072125198221967">Połączone usługi Google</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, przypięta karta incognito z dźwiękiem</translation>
+<translation id="5736345781200955827">Twórz i zapisuj hasła oraz nimi zarządzaj, aby łatwo logować się na stronach i w aplikacjach za pomocą Chrome</translation>
 <translation id="5744751019568455640">Oto głosy, którymi mogę czytać dla Ciebie strony internetowe. Jeśli podoba Ci się ten głos i chcesz go dalej używać, kliknij jego nazwę.</translation>
 <translation id="574845902699630049">Udostępnij jako <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome musi mieć dostęp do pamięci, by pobierać pliki.</translation>

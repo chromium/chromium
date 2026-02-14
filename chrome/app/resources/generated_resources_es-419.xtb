@@ -1336,6 +1336,8 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1891362123137972260">Hay muy poco espacio disponible en el disco, por lo que debes liberar espacio.</translation>
 <translation id="189210018541388520">Abrir pantalla completa</translation>
 <translation id="1892341345406963517">Hola, <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Haz clic en <ph name="BUTTON_LABEL" /> a continuación.
+2. Haz clic en <ph name="BUTTON_2" /> en la configuración de Windows.</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
 <translation id="1895658205118569222">Cierre</translation>
 <translation id="1896043844785689584">Para configurar una huella dactilar, haz que tu hijo toque el sensor de huellas dactilares en la esquina inferior derecha del teclado. Los datos de la huella dactilar de tu hijo se almacenan de forma segura y no salen nunca de este dispositivo <ph name="DEVICE_TYPE" />.</translation>
@@ -3150,6 +3152,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3105820656234755131">Se actualizó la contraseña</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">El sitio está usando la conexión Bluetooth</translation>
+<translation id="3108122610701115301">Establecer como predeterminado</translation>
 <translation id="3108931485517391283">No se puede recibir el archivo</translation>
 <translation id="3108957152224931571">Color de resaltado</translation>
 <translation id="3109206895301430738">Grupos de pestañas guardados</translation>
@@ -5101,6 +5104,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4415815425191869676">Mantener estos sitios siempre activos</translation>
 <translation id="4416582610654027550">Escribe una URL válida</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Pausar esta pestaña}other{Pausar estas pestañas}}</translation>
+<translation id="4421823557207751899">Accediste como <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Las sugerencias de escritura se basan en tus instrucciones y en el contenido de la página web.</translation>
 <translation id="4421932782753506458">Peludito</translation>
 <translation id="4423376891418188461">Restaurar configuración</translation>
@@ -6202,6 +6206,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5191251636205085390">Conoce y domina nuevas tecnologías diseñadas para reemplazar cookies de terceros.</translation>
 <translation id="519185197579575131">Usar QT</translation>
 <translation id="5192062846343383368">Abre la app de Family Link para administrar la supervisión</translation>
+<translation id="5193602404493965468">* El campo <ph name="FIELD_LIST" /> es obligatorio</translation>
 <translation id="5193978546360574373">Esta acción quitará el acceso a Google Drive en esta Chromebook, incluido el acceso a todos los archivos que estén disponibles sin conexión</translation>
 <translation id="5193988420012215838">Se copió en tu portapapeles</translation>
 <translation id="5194256020863090856">Esta acción solo afecta a las ventanas de incógnito</translation>
@@ -6344,6 +6349,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5288678174502918605">Volv&amp;er a abrir una pestaña cerrada</translation>
 <translation id="5290020561438336792">Computadora y dispositivo de transmisión en redes Wi-Fi distintas (p. ej., una de 2.4 GHz
     y otra de 5 GHz)</translation>
+<translation id="5290322819358431297">Autocompleta tus contraseñas</translation>
 <translation id="52912272896845572">Archivo de clave privada no válido</translation>
 <translation id="529175790091471945">Formatear este dispositivo</translation>
 <translation id="529296195492126134">El modo efímero no es compatible. Comunícate con tu administrador</translation>
@@ -6963,6 +6969,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5734697361979786483">Agregar sistema de archivos compartidos</translation>
 <translation id="573520097779121706">Usa las teclas “7”, “8”, “9”, “u”, “o”, “j”, “k” y “l” para mover el cursor</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Estos datos o tu dispositivo no cumplen con algunas de las políticas de seguridad de tu organización. Consulta con el administrador qué tienes que corregir.}=1{Este archivo o tu dispositivo no cumplen con algunas de las políticas de seguridad de tu organización. Consulta con el administrador qué tienes que corregir.}other{Estos archivos no cumplen con algunas de las políticas de seguridad de tu organización. Consulta con el administrador qué tienes que corregir.}}</translation>
+<translation id="5736345781200955827">Crea, guarda y administra tus contraseñas para acceder fácilmente a sitios y apps con Chrome</translation>
 <translation id="5738093759615225354">Necesitas esta clave de acceso para acceder a tu computadora</translation>
 <translation id="5738386565827477765">Dispositivo de audio</translation>
 <translation id="5739017626473506901">Accede para ayudar a <ph name="USER_NAME" /> a agregar una cuenta de una institución educativa</translation>
@@ -7215,6 +7222,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5901089233978050985">Cambiar a la pestaña que se capturará</translation>
 <translation id="5901494423252125310">La tapa de la impresora está abierta</translation>
 <translation id="5901630391730855834">Amarillo</translation>
+<translation id="5902400038326841449">El Administrador de contraseñas de Google está desactivado</translation>
 <translation id="5902892210366342391">Mostrar advertencias antes de acceder a sitios no seguros en el modo Incógnito</translation>
 <translation id="5904614460720589786">No se pudo instalar <ph name="APP_NAME" /> debido a un problema de configuración. Comunícate con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Seguir permitiendo que este sitio use identificadores para reproducir contenido protegido</translation>
@@ -7996,6 +8004,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6452251728599530347">Se completó en un <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Problema en la red o dominio incorrecto</translation>
 <translation id="6453191633103419909">Calidad de proyección de pantalla o pestaña</translation>
+<translation id="6453306703004115497">Traducido al <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Agrupar todas las pestañas</translation>
 <translation id="6453921811609336127">Para cambiar al siguiente método de entrada, presiona <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Mayúsculas<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Barra espaciadora<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
@@ -8154,6 +8163,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="656293578423618167">La ruta de acceso o el nombre del archivo es demasiado largo. Guarda con un nombre más corto o en otra ubicación.</translation>
 <translation id="6563002009564846727">Ver certificados importados desde Windows</translation>
 <translation id="6563055593659435495">No se puede mantener la conexión con tu teléfono. Asegúrate de que el teléfono esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
+<translation id="6564343790052433242">Para crear una llave de acceso para <ph name="APP_NAME" />, el Administrador de contraseñas de Google debe estar activado</translation>
 <translation id="6565144332292237355">Los sitios pueden usar esta función para buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="6568283005472142698">Búsqueda de pestañas</translation>
 <translation id="6569931898053264308">Ahorro: moderado</translation>
@@ -11425,6 +11435,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8761945298804995673">Ya existe este usuario</translation>
 <translation id="8762886931014513155">Tu <ph name="DEVICE_TYPE" /> necesita una actualización</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
+<translation id="8765940060470412555">Dejar de fijar el modo de lectura</translation>
 <translation id="8766156860774051068">Seleccionados por ti</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Mostrar todas las búsquedas de <ph name="QUERY_CLUSTER_NAME" /></translation>

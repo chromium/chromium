@@ -476,6 +476,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2992473221983447149">Myndalýsingar</translation>
 <translation id="2996291259634659425">Búa til aðgangsorð</translation>
 <translation id="2996809686854298943">Vefslóð nauðsynleg</translation>
+<translation id="3008916997590006706">Ýttu á „Vista“ til að nálgast aðgangsorðið á auðveldan hátt næst þegar þú skráir þig inn</translation>
 <translation id="3024215143424744261">Kjörstillingum Lesstillingar lokað</translation>
 <translation id="3026955690410463085">Deila tengli</translation>
 <translation id="3027644380269727216">Byggt á virkni þinni á vefsvæði. Kveikt er á þessari stillingu.</translation>
@@ -1006,6 +1007,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5267572070504076962">Kveiktu á öruggri vefskoðun til að verjast hættulegum vefsvæðum</translation>
 <translation id="5271967389191913893">Tækið getur ekki opnað efnið sem á að sækja.</translation>
 <translation id="5273031377282080577">Kerfisstjórinn þinn stjórnar þessari stillingu.</translation>
+<translation id="5290322819358431297">Fylla sjálfkrafa út aðgangsorð</translation>
 <translation id="5292796745632149097">Senda í</translation>
 <translation id="5301876394151419436">Þú ert skráð(ur) inn sem <ph name="EMAIL" />. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="5304593522240415983">Þessi reitur má ekki vera auður</translation>
@@ -1098,6 +1100,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="572328651809341494">Nýlegir flipar</translation>
 <translation id="5728072125198221967">Tengdar Google-þjónustur</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, festur huliðsflipi með hljóði</translation>
+<translation id="5736345781200955827">Búðu til, vistaðu og stjórnaðu aðgangsorðunum þínum til að skrá þig inn á vefsvæði og forrit á einfaldan hátt með því að nota Chrome</translation>
 <translation id="5744751019568455640">Hér eru raddirnar sem þú getur valið um til að lesa af vefsíðunum þínum. Ef þér líkar við þessa rödd og vilt að ég haldi áfram að nota hana skaltu ýta á heiti raddarinnar.</translation>
 <translation id="574845902699630049">Deilir sem <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome þarf aðgang að geymslu til að geta sótt skrár.</translation>

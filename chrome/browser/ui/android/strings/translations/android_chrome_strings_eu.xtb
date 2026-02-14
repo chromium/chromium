@@ -476,6 +476,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2992473221983447149">Irudi-azalpenak</translation>
 <translation id="2996291259634659425">Sortu pasaesaldia</translation>
 <translation id="2996809686854298943">URLa nahitaezkoa da</translation>
+<translation id="3008916997590006706">Saioa hasten duzun hurrengo aldian pasahitz hau erraz atzitzeko, sakatu Gorde</translation>
 <translation id="3024215143424744261">Irakurtzeko modua, hobespenak itxita daude</translation>
 <translation id="3026955690410463085">Gehitu esteka</translation>
 <translation id="3027644380269727216">Webgune batean egin dituzun jardueretan oinarrituta. Aktibatuta dago ezarpena.</translation>
@@ -1006,6 +1007,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5267572070504076962">Webgune arriskutsuen aurkako babesa lortzeko, aktibatu Arakatze segurua</translation>
 <translation id="5271967389191913893">Gailuak ezin du ireki deskargatu beharreko edukia.</translation>
 <translation id="5273031377282080577">Administratzaileak kudeatzen du ezarpena.</translation>
+<translation id="5290322819358431297">Bete pasahitzak automatikoki</translation>
 <translation id="5292796745632149097">Bidali hona:</translation>
 <translation id="5301876394151419436"><ph name="EMAIL" /> gisa hasi duzu saioa. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="5304593522240415983">Ezin da eremua hutsik utzi</translation>
@@ -1098,6 +1100,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="572328651809341494">Azkenaldiko fitxak</translation>
 <translation id="5728072125198221967">Lotutako Google-ren zerbitzuak</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" /> fitxa, ezkutuko modukoa, ainguratuta, audioa erreproduzitzen</translation>
+<translation id="5736345781200955827">Sortu, gorde eta kudeatu pasahitzak, Chrome bidez webgune eta aplikazioetan erraz hasi ahal izateko saioa</translation>
 <translation id="5744751019568455640">Hona hemen web-orriak ozen irakurtzeko aukera ditzakezun ahotsak. Ahots hau gogoko baduzu eta hura erabiltzen jarraitu nahi baduzu, sakatu haren izena.</translation>
 <translation id="574845902699630049">Partekatu <ph name="OWNER_FULL_NAME" /> gisa</translation>
 <translation id="5749068826913805084">Chrome-k memorian sartzeko baimena behar du fitxategiak deskargatu ahal izateko.</translation>

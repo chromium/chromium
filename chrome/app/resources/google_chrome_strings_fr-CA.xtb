@@ -255,6 +255,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3622716124581627104">Identifiez des objets ou des lieux et copiez ou traduisez du texte. Lorsque vous utilisez Lentille Google, une capture d'écran de la page est envoyée à Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Il est maintenant plus facile d'utiliser Google Chrome avec votre compte Google et sur des ordinateurs partagés.</translation>
 <translation id="3635073343384702370">Chrome peut vérifier vos mots de passe lorsque vous les enregistrez</translation>
+<translation id="3636970668267555808">Accédez facilement aux fonctionnalités que vous connaissez et aimez, et auxquelles vous faites confiance en définissant Chrome comme navigateur par défaut.</translation>
 <translation id="3667616615096815454">Installation impossible, l'application est inconnue du serveur.</translation>
 <translation id="3673813398384385993">Chrome a constaté que « <ph name="EXTENSION_NAME" /> » contient un logiciel malveillant</translation>
 <translation id="3697952514309507634">Autres profils Chrome</translation>
@@ -264,6 +265,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome vous recommande de la retirer. <ph name="BEGIN_LINK" />En savoir plus sur les extensions prises en charge<ph name="END_LINK" />}one{Chrome vous recommande de la retirer. <ph name="BEGIN_LINK" />En savoir plus sur les extensions prises en charge<ph name="END_LINK" />}other{Chrome vous recommande de les retirer. <ph name="BEGIN_LINK" />En savoir plus sur les extensions prises en charge<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Approfondissez votre recherche en ajoutant plusieurs onglets, fichiers et outils à l'aide du bouton « Ajouter un onglet et plus ».</translation>
 <translation id="3756724684201900923">En savoir plus sur l'installation de Chrome</translation>
+<translation id="3772152698251011058">Signaler ce site à Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex n'a pas pu synchroniser vos données parce qu'une erreur s'est produite lors de la connexion.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -414,6 +416,8 @@ Certaines fonctionnalités peuvent être inaccessibles. Veuillez spécifier un r
 Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5465210843490471889">Choisissez un profil Chrome à utiliser avec <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Pour contribuer à améliorer ces fonctionnalités, Chrome envoie vos interactions avec celles-ci à Google. Ces données peuvent être lues, traitées et annotées par des réviseurs humains.</translation>
+<translation id="547202872422499512">Chrome se lance désormais au démarrage de Windows afin que vous puissiez commencer à naviguer instantanément. Vous pouvez désactiver cette option dans les paramètres.</translation>
+<translation id="5486346529181556467">Améliorez la sécurité en ligne pour tous en signalant un site que vous pensez dangereux. Apprenez-en plus sur la <ph name="BEGIN_LINK" />politique relative aux sites dangereux de Google<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">Coin supérieur gauche de la zone de recherche : gauche <ph name="LEFT" /> %, haut <ph name="TOP" /> %</translation>
 <translation id="5550137307985173298">Cliquez sur le bouton Personnaliser Chrome sur la page Nouvel onglet pour donner un nouveau style à Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -572,6 +576,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Règle de trafic entrant pour Google Chrome bêta autorisant le trafic mDNS.</translation>
 <translation id="6979589607440534284">Découvrir pourquoi Chrome bloque certains fichiers, s'ouvre dans un nouvel onglet</translation>
+<translation id="6985817499499247940">Lancez Chrome automatiquement pour commencer à naviguer instantanément.</translation>
 <translation id="6991926986715044139">Toujours afficher le raccourci Lentille Google</translation>
 <translation id="6999131147875565462">Chrome s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu</translation>
 <translation id="7011190694940573312">L'installation a échoué, car cette version du système d'exploitation n'est pas prise en charge.</translation>
@@ -600,6 +605,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="7288567540154601580">Onglets et extensions</translation>
 <translation id="7296210096911315575">Renseignements importants sur l'utilisation et la sécurité</translation>
 <translation id="7302361266603927550">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google. Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
+<translation id="7306401458628386911">Commencez à naviguer instantanément : Chrome peut désormais se lancer au démarrage de Windows.</translation>
 <translation id="7308322188646931570">Chrome a besoin d'accéder au stockage pour télécharger des fichiers</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7352651011704765696">Une erreur s’est produite</translation>
@@ -662,6 +668,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="7827099906024714326">Chrome doit confirmer votre identité avant que certaines données puissent être enregistrées dans votre compte Google et utilisées sur tous vos appareils. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="7832314606810669113">Pour obtenir vos favoris et plus encore sur tous vos appareils, connectez-vous à Chrome. Ce favori sera enregistré dans votre compte Google après votre connexion.</translation>
 <translation id="7845233973568007926">Merci pour l'installation. Vous devez redémarrer votre ordinateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847170235260850604">Lancer Chrome au démarrage de Windows</translation>
 <translation id="7849037457735762883">Reprenez là où vous en étiez : Chrome peut restaurer vos onglets à chaque redémarrage. Pour activer cette option, accédez à</translation>
 <translation id="7869620795354551924">Pour utiliser vos mots de passe enregistrés, balayez le code QR, téléchargez Chrome pour iOS et connectez-vous à votre compte Google</translation>
 <translation id="7872446069773932638">Téléchargement en cours… <ph name="SECONDS" /> seconde(s) restante(s)</translation>

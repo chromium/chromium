@@ -1802,6 +1802,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="219283042927675668">Skirtukai grupėje</translation>
 <translation id="2192881772486983655">„<ph name="THIRD_PARTY_NTP_MANAGER" />“ tvarko jūsų naujo skirtuko puslapį (atidaroma naujame skirtuke)</translation>
 <translation id="2192982266585216032">&amp;Mokėjimai</translation>
+<translation id="2193567467390483943">Vienas iš tėvų nepatvirtino šio plėtinio</translation>
 <translation id="2194856509914051091">Į ką reikėtų atsižvelgti</translation>
 <translation id="2195331105963583686">Po to vis tiek galėsite naudoti „<ph name="DEVICE_TYPE" />“, bet nebebus teikiami automatiniai programinės įrangos ir saugos naujiniai</translation>
 <translation id="2195729137168608510">El. pašto apsauga</translation>
@@ -5123,6 +5124,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4415815425191869676">Visada suaktyvinti šias svetaines</translation>
 <translation id="4416582610654027550">Įveskite tinkamą URL</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Pristabdyti šį skirtuką}one{Pristabdyti šiuos skirtukus}few{Pristabdyti šiuos skirtukus}many{Pristabdyti šiuos skirtukus}other{Pristabdyti šiuos skirtukus}}</translation>
+<translation id="4421823557207751899">Prisijungta kaip <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Rašymo pasiūlymai pagrįsti jūsų užklausomis ir tinklalapio turiniu</translation>
 <translation id="4421932782753506458">Pūkuotasis</translation>
 <translation id="4423376891418188461">Atkurti nustatymus</translation>

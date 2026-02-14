@@ -1351,6 +1351,8 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1891362123137972260">Der er næsten ikke mere diskplads. Frigør plads.</translation>
 <translation id="189210018541388520">Åbn fuld skærm</translation>
 <translation id="1892341345406963517">Hej <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Klik på <ph name="BUTTON_LABEL" /> nedenfor
+2. Klik på <ph name="BUTTON_2" /> i dine Windows-indstillinger</translation>
 <translation id="189358972401248634">Andre sprog</translation>
 <translation id="1895658205118569222">Nedlukning</translation>
 <translation id="1896043844785689584">Du kan konfigurere et fingeraftryk ved at få dit barn til at sætte fingeren på fingeraftrykssensoren nederst til højre på tastaturet. Dit barns fingeraftryksdata gemmes sikkert og forlader aldrig denne <ph name="DEVICE_TYPE" />.</translation>
@@ -3168,6 +3170,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3105820656234755131">Adgangskoden er opdateret</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Websitet anvender Bluetooth</translation>
+<translation id="3108122610701115301">Indstil standard</translation>
 <translation id="3108931485517391283">Kan ikke modtage</translation>
 <translation id="3108957152224931571">Fremhævningsfarve</translation>
 <translation id="3109206895301430738">Gemte fanegrupper</translation>
@@ -5119,6 +5122,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4415815425191869676">Sørg for, at disse websites altid er aktive</translation>
 <translation id="4416582610654027550">Angiv en gyldig webadresse</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Sæt denne fane på pause}one{Sæt denne fane på pause}other{Sæt disse faner på pause}}</translation>
+<translation id="4421823557207751899">Logget ind som <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Skriveforslag er baseret på dine prompter og indholdet på websiden</translation>
 <translation id="4421932782753506458">Pjuske</translation>
 <translation id="4423376891418188461">Gendan indstillinger</translation>
@@ -6220,6 +6224,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5191251636205085390">Få indblik i og styr nye teknologier, der har til formål at erstatte tredjepartscookies</translation>
 <translation id="519185197579575131">Brug QT</translation>
 <translation id="5192062846343383368">Åbn Family Link-appen for at se dine indstillinger for forældrestyring</translation>
+<translation id="5193602404493965468"><ph name="FIELD_LIST" /> skal udfyldes</translation>
 <translation id="5193978546360574373">Dette fjerner adgangen til Google Drev på denne Chromebook, herunder adgang til filer, som er blevet gjort tilgængelige offline</translation>
 <translation id="5193988420012215838">Kopieret til din udklipsholder</translation>
 <translation id="5194256020863090856">Dette påvirker kun inkognitovinduer</translation>
@@ -6362,6 +6367,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5288678174502918605">G&amp;enåbn lukket fane</translation>
 <translation id="5290020561438336792">Pc'en og Cast-enheden er på forskellige Wi-Fi-netværk (f.eks. 2,4 GHz
     i forhold til 5 GHz)</translation>
+<translation id="5290322819358431297">Udfyld dine adgangskoder automatisk</translation>
 <translation id="52912272896845572">Den private nøglefil er ugyldig.</translation>
 <translation id="529175790091471945">Formatér denne enhed</translation>
 <translation id="529296195492126134">Engangsbruger understøttes ikke. Kontakt din administrator</translation>
@@ -6981,6 +6987,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5734697361979786483">Tilføj fildeling</translation>
 <translation id="573520097779121706">Brug tasterne 7, 8, 9, u, o, j, k, l til at flytte markøren</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Disse data eller din enhed overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}=1{Denne fil eller din enhed overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}one{Denne fil overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}other{Disse filer overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}}</translation>
+<translation id="5736345781200955827">Opret, gem og administrer dine adgangskoder, så du nemt kan logge ind på websites og i apps ved hjælp af Chrome</translation>
 <translation id="5738093759615225354">Du skal bruge denne adgangsnøgle for at logge ind på din computer</translation>
 <translation id="5738386565827477765">Lydenhed</translation>
 <translation id="5739017626473506901">Log ind for at hjælpe <ph name="USER_NAME" /> med at tilføje en skolekonto</translation>
@@ -7233,6 +7240,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5901089233978050985">Skift til den fane, der registreres</translation>
 <translation id="5901494423252125310">Lågen på printeren er åben</translation>
 <translation id="5901630391730855834">Gul</translation>
+<translation id="5902400038326841449">Google Adgangskodeadministrator er deaktiveret</translation>
 <translation id="5902892210366342391">Få advarsler, inden du går til usikre websites i inkognitotilstand</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> kunne ikke konfigureres, da der opstod et konfigurationsproblem. Kontakt din administrator. Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Tillad fortsat, at dette website bruger id'er til at afspille beskyttet indhold</translation>
@@ -8014,6 +8022,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> fuldført</translation>
 <translation id="6452961788130242735">Netværksproblem eller ugyldigt domæne</translation>
 <translation id="6453191633103419909">Visningskvalitet for fane/skærm</translation>
+<translation id="6453306703004115497">Oversat til <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Gruppér alle faner</translation>
 <translation id="6453921811609336127">Du kan skifte til næste indtastningsmetode ved at trykke på <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />mellemrum<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">På specifikke websites</translation>
@@ -8172,6 +8181,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="656293578423618167">Filstien eller -navnet er for langt. Gem med et kortere navn eller på en anden placering.</translation>
 <translation id="6563002009564846727">Se importerede certifikater fra Windows</translation>
 <translation id="6563055593659435495">Forbindelsen til din telefon kan ikke opretholdes. Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
+<translation id="6564343790052433242">Google Adgangskodeadministrator skal være aktiveret for at oprette en adgangsnøgle til <ph name="APP_NAME" /></translation>
 <translation id="6565144332292237355">Websites kan bruge denne funktion til at søge efter og oprette tilknytning til enheder på dit lokale netværk</translation>
 <translation id="6568283005472142698">Fanesøgning</translation>
 <translation id="6569931898053264308">Mellemstore hukommelsesbesparelser</translation>
@@ -11446,6 +11456,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8761945298804995673">Denne bruger eksisterer allerede</translation>
 <translation id="8762886931014513155">Din <ph name="DEVICE_TYPE" /> skal opdateres</translation>
 <translation id="8763927697961133303">USB-enhed</translation>
+<translation id="8765940060470412555">Frigør læsetilstand</translation>
 <translation id="8766156860774051068">Udvalgt af dig</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Vis alle søgninger efter <ph name="QUERY_CLUSTER_NAME" /></translation>

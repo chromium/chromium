@@ -255,6 +255,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3622716124581627104">Identifiera saker eller platser och kopiera eller översätt text. När du använder Google Lens skickas en skärmbild av sidan till Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nu är det enklare att använda Chrome med ditt Google-konto och på delade datorer.</translation>
 <translation id="3635073343384702370">Chrome kan bara kontrollera dina lösenord om du sparar dem</translation>
+<translation id="3636970668267555808">Få enkel åtkomst till funktionerna du känner till, gillar och litar på genom att ställa in Chrome som standardwebbläsare.</translation>
 <translation id="3667616615096815454">Det gick inte att installera appen. Appen är okänd för servern.</translation>
 <translation id="3673813398384385993">Chrome har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig kod</translation>
 <translation id="3697952514309507634">Andra Chrome-profiler</translation>
@@ -264,6 +265,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Vi rekommenderar att du tar bort det. <ph name="BEGIN_LINK" />Läs mer om tillägg som stöds<ph name="END_LINK" />}other{Vi rekommenderar att du tar bort dem. <ph name="BEGIN_LINK" />Läs mer om tillägg som stöds<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Fördjupa sökningen genom att lägga till flera flikar, filer och verktyg med knappen Lägg till en flik med mera.</translation>
 <translation id="3756724684201900923">Läs mer om hur du installerar Chrome</translation>
+<translation id="3772152698251011058">Rapportera den här webbplatsen till Google</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Det gick inte att synkronisera data med ChromeOS Flex på grund av ett inloggningsfel.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -415,6 +417,8 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om d
 Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5465210843490471889">Välj en Chrome-profil som du vill använda med <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Din interaktion med dessa funktioner skickas till Google i syfte att förbättra dem. Denna data kan läsas, bearbetas och kommenteras av mänskliga granskare.</translation>
+<translation id="547202872422499512">Chrome startas nu när Windows startas så att du kan börja surfa direkt. Du kan inaktivera detta i inställningarna.</translation>
+<translation id="5486346529181556467">Förbättra onlinesäkerheten för alla när du rapporterar en webbplats som du tror är skadlig. Läs mer om <ph name="BEGIN_LINK" />Googles policy för osäkra webbplatser<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">övre vänstra hörnet av sökområdet: <ph name="LEFT" /> % åt vänster, <ph name="TOP" /> % uppåt</translation>
 <translation id="5550137307985173298">Klicka på knappen Anpassa Chrome på sidan Ny flik för att ge Chrome ett nytt utseende</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -574,6 +578,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Regel som tillåter inkommande mDNS-trafik för Google Chrome Beta.</translation>
 <translation id="6979589607440534284">Läs mer om varför vissa filer blockeras i Chrome (öppnas på en ny flik)</translation>
+<translation id="6985817499499247940">Starta Chrome automatiskt och börja surfa direkt.</translation>
 <translation id="6991926986715044139">Visa alltid genväg till Google Lens</translation>
 <translation id="6999131147875565462">Chrome körs snabbare och funktioner som använder JavaScript bör fungera som de ska</translation>
 <translation id="7011190694940573312">Installationen misslyckades eftersom den här versionen av operativsystemet inte stöds.</translation>
@@ -602,6 +607,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7288567540154601580">Flikar och tillägg</translation>
 <translation id="7296210096911315575">Viktig användnings- och säkerhetsinformation</translation>
 <translation id="7302361266603927550">Viss Chrome-data har inte sparats i ditt Google-konto ännu. Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
+<translation id="7306401458628386911">Börja surfa direkt: Chrome kan nu startas när Windows startas.</translation>
 <translation id="7308322188646931570">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
@@ -664,6 +670,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7827099906024714326">Chrome måste verifiera din identitet innan viss data kan sparas i Google-kontot och användas på alla dina enheter. Om du loggar ut nu raderas denna data.</translation>
 <translation id="7832314606810669113">Logga in i Chrome om du vill få tillgång till dina bokmärken med mera på alla dina enheter. Bokmärket sparas i ditt Google-konto när du har loggat in.</translation>
 <translation id="7845233973568007926">Tack för att du installerat programmet. Du måste starta om datorn innan du använder <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847170235260850604">Starta Chrome när Windows startas</translation>
 <translation id="7849037457735762883">Fortsätt där du slutade: Chrome kan återställa dina flikar varje gång du startar om. Aktivera detta genom att öppna</translation>
 <translation id="7869620795354551924">Om du vill använda sparade lösenord skannar du QR-koden, laddar ned Chrome för iOS och loggar in på ditt Google-konto</translation>
 <translation id="7872446069773932638">Laddar ned … <ph name="SECONDS" /> sekund/sekunder återstår</translation>

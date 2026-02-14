@@ -6443,6 +6443,13 @@ Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
 <translation id="5303080953475303561">Mit dieser Richtlinie kannst du festlegen, wie oft auf dem Sperrbildschirm das Passwort zum schnellen Entsperren angefordert wird. Immer dann, wenn der Sperrbildschirm angezeigt wird und die letzte Passworteingabe vor dem über den ausgewählten Wert festgelegten Zeitfenster liegt, steht schnelles Entsperren nicht zur Verfügung. Wenn Nutzer auf dem Sperrbildschirm bleiben, bis diese Zeit abgelaufen ist, wird das nächste Mal, wenn sie einen falschen Code eingeben oder wieder auf den Sperrbildschirm gelangen, ein Passwort angefordert, je nachdem, welche Situation zuerst eintritt.
 
       Wenn die Richtlinie nicht konfiguriert ist, müssen Nutzer, die schnelles Entsperren verwenden, ihr Passwort einmal am Tag eingeben.</translation>
+<translation id="530488290401810961">Mit dieser Richtlinie kann konfiguriert werden, wie <ph name="PRODUCT_NAME" /> das Foundation Model für generative KI herunterlädt und lokal für die Inferenz verwendet.
+
+Wenn die Richtlinie auf „Zulässig (0)“ gesetzt oder nicht konfiguriert ist, wird das Modell automatisch heruntergeladen und für die Inferenz verwendet.
+
+Ist die Richtlinie auf „Deaktiviert (1)“ gesetzt, wird das Modell nicht heruntergeladen und das vorhandene Modell (sofern bereits heruntergeladen) gelöscht.
+
+Auf Desktop-Plattformen kann das Herunterladen von Modellen auch über die Richtlinie „<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />“ deaktiviert werden.</translation>
 <translation id="5306186200045823863">Der veralteten Symantec-PKI vertrauen</translation>
 <translation id="5307432759655324440">Inkognitomodus - Verfügbarkeit</translation>
 <translation id="5308551343115571396">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, versuchen wir, so viele Nutzerdaten wie möglich zu speichern und gleichzeitig alle Browserdaten zu entfernen.</translation>

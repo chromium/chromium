@@ -704,6 +704,7 @@
 <translation id="2137891579555018930">अनुमति प्राप्त गर्न बाँकी छ…</translation>
 <translation id="213826338245044447">मोबाइल बुकमार्कहरू</translation>
 <translation id="2141000681034340397">आफ्नो इनपुट बदल्नुहोस्</translation>
+<translation id="2141475438898772664">४ किस्तामा वा मासिक रूपमा भुक्तानी गर्नुहोस्</translation>
 <translation id="2144171668675205303">कुनै पनि सक्रिय विषय छैन</translation>
 <translation id="2145193671493396738">आर्थिक समाचार</translation>
 <translation id="214556005048008348">भुक्तानी रद्द गर्नुहोस्</translation>
@@ -2847,6 +2848,7 @@
 <translation id="5543564889050342791">चिडियाखाना, एक्वारियम तथा आरक्षहरू</translation>
 <translation id="5543722831081909240">१८० डिग्री</translation>
 <translation id="5544836308113951378">क्रुज तथा चार्टर गरिएका जलयातायातका साधन</translation>
+<translation id="5545314360139398232">किस्तामा भुक्तानी गर्न <ph name="ISSUER_NAME" /> लिंक गर्नुहोस्</translation>
 <translation id="5547939254150808298">मुद्रण तथा प्रकाशन</translation>
 <translation id="554815783948612276">फोरम तथा च्याट प्रदायकहरू</translation>
 <translation id="5548606607480005320">सुरक्षा जाँच</translation>
@@ -3694,6 +3696,7 @@
 <translation id="6926216138694948720">शरीरमा बनाइने कला</translation>
 <translation id="692638818576287323">व्यावसायिक प्रयोजनका लागि प्रयोग हुने सवारी साधन</translation>
 <translation id="6927878187051807444">क्यामेरा फाइल र स्क्रिनसटहरू</translation>
+<translation id="6929949393612835405">बन्द गर्नुहोस् र "<ph name="OPENER_TITLE" />" मा फर्कनुहोस्</translation>
 <translation id="6930607614725241390">साइड प्यानलमा खोज्नुहोस्</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />तपाईं आफ्नो डिफल्ट सर्च इन्जिन प्रयोग गरेर वेबमार्फत सामग्री खोज्न र Chrome का सुविधाहरू<ph name="END_BOLD" /> (जस्तै, वेबपेजमा उपलब्ध एड्रेस बार तथा फोटोहरू प्रयोग गरेर सामग्री खोज्ने सुविधा) प्राप्त गर्न सक्नुहुन्छ। तपाईंको सर्च इन्जिनमा काम नगर्ने सुविधा उपलब्ध नहुन सक्छ।</translation>
 <translation id="6934672428414710184">यो नाम तपाईंको Google खाताबाट लिइएको हो</translation>

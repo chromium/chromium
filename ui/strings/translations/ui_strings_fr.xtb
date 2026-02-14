@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{Il y a une minute}one{il y a # minute}other{il y a # minutes}}</translation>
 <translation id="1450753235335490080">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{il y a un mois}one{il y a # mois}other{il y a # mois}}</translation>
+<translation id="1591017414891297549">PREVIEW</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minute et  }one{# minute et  }other{# minutes et  }}</translation>
 <translation id="1643823602425662293">Notification</translation>
 <translation id="169515659049020177">Maj</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> Ko/s</translation>
 <translation id="8725488761726303204"><ph name="NUMBER" /> autres</translation>
 <translation id="8730621377337864115">OK</translation>
+<translation id="8741385002816058621">Il s'agit d'une fonctionnalité en preview</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 h}one{# h}other{# h}}</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8841375032071747811">Bouton Retour</translation>

@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">የሦስተኛ ወገን ኩኪዎችን ለምን እንደፈቀዱ ለእኛ በመንገር Chrome እንድናሻሽል ያግዙን። <ph name="BEGIN_LINK" />ግብረመልስ ይላኩ<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">የጣቢያዎችን የዴስክቶፕ ስሪት ለማየት መጠየቅ ይችላሉ</translation>
 <translation id="1085696779717592361">በነባሪነት Chromeን ይጠቀሙ</translation>
+<translation id="1126523729897810826">ከChrome ምርጡን ለማግኘት ከታች ያሉትን እነዚህን የተጠቆሙ ድርጊቶች ያጠናቅቁ።</translation>
 <translation id="113098737392899175">የቁልፍ ሰሌዳ ተያይዞ ሳለ በጽሑፍ ጠቋሚ ገጾችን ያስሱ</translation>
 <translation id="1149644372535087155">የይለፍ ቃላትን በChrome ውስጥ ያስቀምጡ</translation>
 <translation id="1178015372320901893">የእኔ አቋራጮች የግርጌ ሉህ</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">በChrome V8 ፕሮግራም ጣቢያዎችን አፋጥን ነገር ግን Chrome ለጥቃቶች ያለውን የመቋቋም ኃይል በትንሹ ቀንስ</translation>
 <translation id="1593426485665524382">ከማያ ገጹ አቅራቢያ አዲስ እርምጃዎች ይገኛሉ</translation>
 <translation id="1594521731409209842">የፎቶን መጠን ለመቀየር ማያ ገጽን ይቆንጥጡ</translation>
+<translation id="1599268789440304082">የማዋቀር ሉህ ተከፍቷል</translation>
 <translation id="1601560923496285236">ተግብር</translation>
 <translation id="1615755956145364867">ጣቢያዎች የተጠበቀ ይዘትን ለማጫወት መጠየቅ ይችላሉ</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">ዩአርኤል ተዘርግቷል</translation>
 <translation id="4522570452068850558">ዝርዝሮች</translation>
 <translation id="4523472416386354622">ለመጀመር ግባ</translation>
+<translation id="4529207923544043455">የተጠናቀቁ እና ያልተጠናቀቁ የማዋቀር ዝርዝር ተግባራትን የሚያሳይ የግርጌ ሉህ</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> የእርስዎን ማይክራፎን እንዲደርስ ለማድረግ፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ማይክራፎንን በተጨማሪ ያብሩ።</translation>
+<translation id="4545694195887112015">የማዋቀር ሉህ ተዘግቷል</translation>
 <translation id="4566417217121906555">የማይክሮፎን ድምፀ-ከል አድርግ</translation>
 <translation id="4570913071927164677">ዝርዝሮች</translation>
 <translation id="4578289292431526768">እንሂድ</translation>

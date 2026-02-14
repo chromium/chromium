@@ -476,6 +476,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2992473221983447149">Piltide kirjeldused</translation>
 <translation id="2996291259634659425">Parooli loomine</translation>
 <translation id="2996809686854298943">Vaja on URL-i</translation>
+<translation id="3008916997590006706">Puudutage valikut Salvesta, et järgmisel sisselogimiskorral sellele paroolile hõlpsasti juurde pääseda.</translation>
 <translation id="3024215143424744261">Lugemisrežiim, eelistused on suletud</translation>
 <translation id="3026955690410463085">Link on kaasatud</translation>
 <translation id="3027644380269727216">Põhinevad teie tegevusel konkreetsel saidil. See seade on sisse lülitatud.</translation>
@@ -1006,6 +1007,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5267572070504076962">Ohtlike saitide eest kaitsmiseks lülitage Google'i ohutu sirvimine sisse</translation>
 <translation id="5271967389191913893">Seade ei saa allalaaditavat sisu avada.</translation>
 <translation id="5273031377282080577">Teie administraator haldab seda seadet.</translation>
+<translation id="5290322819358431297">Paroolide automaatne täitmine</translation>
 <translation id="5292796745632149097">Saatmine</translation>
 <translation id="5301876394151419436">Olete logitud sisse e-posti aadressiga <ph name="EMAIL" />. Võite sünkroonimise seadete kaudu igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="5304593522240415983">See väli ei tohi olla tühi</translation>
@@ -1098,6 +1100,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
 <translation id="5728072125198221967">Lingitud Google’i teenused</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, kinnitatud kuuldav inkognito vaheleht</translation>
+<translation id="5736345781200955827">Looge, salvestage ja hallake oma paroole, et saaksite Chrome'i abil hõlpsalt saitidele ja rakendustesse sisse logida.</translation>
 <translation id="5744751019568455640">Siin on hääled, mida saate oma veebilehtede ettelugemiseks valida. Kui teile meeldib see hääl ja soovite, et jätkaksin selle kasutamist, puudutage lihtsalt hääle nime.</translation>
 <translation id="574845902699630049">Jagamine kasutajana <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome vajab failide allalaadimiseks juurdepääsu salvestusruumile.</translation>

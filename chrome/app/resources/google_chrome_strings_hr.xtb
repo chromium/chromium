@@ -251,6 +251,7 @@
 <translation id="3622716124581627104">Identificirajte stvari ili mjesta i kopirajte ili prevedite tekst. Kada upotrebljavate Google objektiv, snimka zaslona stranice šalje se Googleu. <ph name="LEARN_MORE" />.</translation>
 <translation id="3622797965165704966">Upotreba Chromea s vašim Google računom te na dijeljenim računalima sada je još jednostavnija.</translation>
 <translation id="3635073343384702370">Chrome može provjeriti vaše zaporke kad ih spremite</translation>
+<translation id="3636970668267555808">Postavite Chrome kao zadani preglednik da biste jednostavno pristupali svojim omiljenim pouzdanim značajkama.</translation>
 <translation id="3667616615096815454">Nije moguće instalirati, aplikacija nije poznata poslužitelju.</translation>
 <translation id="3673813398384385993">Chrome je otkrio da <ph name="EXTENSION_NAME" /> sadrži zlonamjerni softver</translation>
 <translation id="3697952514309507634">Ostali profili na Chromeu</translation>
@@ -260,6 +261,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome preporučuje da ga uklonite. <ph name="BEGIN_LINK" />Saznajte više o podržanim proširenjima<ph name="END_LINK" />}one{Chrome preporučuje da ih uklonite. <ph name="BEGIN_LINK" />Saznajte više o podržanim proširenjima<ph name="END_LINK" />}few{Chrome preporučuje da ih uklonite. <ph name="BEGIN_LINK" />Saznajte više o podržanim proširenjima<ph name="END_LINK" />}other{Chrome preporučuje da ih uklonite. <ph name="BEGIN_LINK" />Saznajte više o podržanim proširenjima<ph name="END_LINK" />.}}</translation>
 <translation id="3729187154190517324">Produbite pretraživanje dodavanjem više kartica, datoteka i alata pomoću gumba Dodajte karticu i druge datoteke.</translation>
 <translation id="3756724684201900923">Saznajte više o instaliranju Chromea</translation>
+<translation id="3772152698251011058">Prijavite tu web-lokaciju Googleu</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex nije mogao sinkronizirati vaše podatke zbog pogreške prilikom prijave.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -407,6 +409,8 @@
 <translation id="5430073640787465221">Datoteka vaših postavki oštećena je ili nevažeća. Google Chrome nema mogućnost oporavka vaših postavki.</translation>
 <translation id="5465210843490471889">Odaberite profil na Chromeu koji ćete upotrebljavati s <ph name="START_GLIC_STYLING" />Geminijem<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Radi poboljšanja tih značajki Chrome šalje Googleu vaše interakcije s njim. Pregledatelji te podatke mogu čitati, obrađivati i označavati.</translation>
+<translation id="547202872422499512">Chrome se sada pokreće kad se pokrene Windows kako biste mogli odmah početi pregledavati. To možete isključiti u postavkama.</translation>
+<translation id="5486346529181556467">Poboljšajte online sigurnost za sve kad prijavite web-lokaciju za koju mislite da je štetna. Saznajte više o <ph name="BEGIN_LINK" />Googleovim pravilima o nesigurnim web-lokacijama<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">gornji lijevi kut područja za pretraživanje: lijevo <ph name="LEFT" />%, vrh <ph name="TOP" />%</translation>
 <translation id="5550137307985173298">Kliknite gumb Prilagodi Chrome na stranici Nova kartica da biste Chromeu dali novi izgled</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -566,6 +570,7 @@
 <translation id="6965382102122355670">U redu</translation>
 <translation id="6967962315388095737">Ulazno pravilo kako bi Google Chrome Beta dopustio mDNS promet.</translation>
 <translation id="6979589607440534284">Saznajte zašto Chrome blokira neke datoteke, otvara se u novoj kartici</translation>
+<translation id="6985817499499247940">Automatski pokrenite Chrome da biste odmah počeli pregledavati.</translation>
 <translation id="6991926986715044139">Uvijek prikaži prečac za Google objektiv</translation>
 <translation id="6999131147875565462">Chrome se pokreće brže, a značajke koje upotrebljavaju JavaScript trebale bi funkcionirati kako je predviđeno</translation>
 <translation id="7011190694940573312">Instalacija nije uspjela jer ova verzija operativnog sustava nije podržana.</translation>
@@ -594,6 +599,7 @@
 <translation id="7288567540154601580">Kartice i proširenja</translation>
 <translation id="7296210096911315575">Važne informacije o upotrebi i sigurnosti</translation>
 <translation id="7302361266603927550">Neki vaši podaci iz Chromea još nisu spremljeni na vaš Google račun. Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
+<translation id="7306401458628386911">Odmah počnite pregledavati: Chrome se sada može pokrenuti kad se pokrene Windows.</translation>
 <translation id="7308322188646931570">Chrome treba pristup pohrani radi preuzimanja datoteka</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7352651011704765696">Nešto nije u redu</translation>
@@ -656,6 +662,7 @@
 <translation id="7827099906024714326">Chrome treba potvrditi da ste to vi da bi se neki podaci mogli spremiti na vaš Google račun i upotrebljavati na svim vašim uređajima. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
 <translation id="7832314606810669113">Da biste mogli pristupati svojim oznakama i drugim podacima na svim svojim uređajima, prijavite se u Chrome. Oznaka će se spremiti na vaš Google račun nakon što se prijavite.</translation>
 <translation id="7845233973568007926">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti računalo.</translation>
+<translation id="7847170235260850604">Pokreni Chrome pri pokretanju Windowsa</translation>
 <translation id="7849037457735762883">Nastavite tamo gdje ste stali: Chrome može vratiti vaše kartice svaki put kada ponovno pokrenete sesiju. Da biste to uključili, otvorite</translation>
 <translation id="7869620795354551924">Da biste upotrebljavali spremljene zaporke, slijedite QR kôd, preuzmite Chrome za iOS i prijavite se na svoj Google račun</translation>
 <translation id="7872446069773932638">Preuzimanje... Još <ph name="SECONDS" /> s</translation>

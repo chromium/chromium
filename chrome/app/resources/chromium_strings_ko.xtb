@@ -100,6 +100,7 @@
 <translation id="2099452623287920103">Google 계정에 저장된 비밀번호 및 기타 Chromium 데이터가 이 기기에서 삭제됩니다. Chromium에서 다시 사용하려면 다시 로그인하세요</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}}</translation>
 <translation id="2126108037660393668">다운로드한 파일을 확인할 수 없습니다.</translation>
+<translation id="2135919691573380097">이 사이트 신고</translation>
 <translation id="2137162749895930932">번역 화면 닫기</translation>
 <translation id="215352261310130060">사이트에서 보안 연결을 사용하고 있지 않으며 파일이 조작되었을 가능성이 있기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="2170098639895543546">페이지에서 항목 선택</translation>
@@ -312,6 +313,7 @@
 <translation id="4304713468139749426">비밀번호 관리자</translation>
 <translation id="4334241893986177674">이 스크린샷을 검색합니다.</translation>
 <translation id="4334294535648607276">다운로드가 완료되었습니다.</translation>
+<translation id="4384331407722351213">Windows 시작 시 Chromium 실행</translation>
 <translation id="4384993550046411228">Chromium을 기본 브라우저로 설정하여 잘 알고 즐겨 사용하며 신뢰하는 기능에 간편하게 액세스하세요. 빠른 액세스를 위해 Chromium이 작업 표시줄에 고정됩니다.</translation>
 <translation id="439358628917130594">기기를 사용하기 전에 <ph name="MANAGER" />에서 다음 서비스 약관을 읽고 이에 동의해야 합니다. 이 약관은 ChromiumOS 약관을 확대, 수정 또는 제한하지 않습니다</translation>
 <translation id="4407044323746248786">Chromium을 종료하시겠습니까?</translation>
@@ -332,6 +334,7 @@
 <translation id="4531137820806573936">Chromium에서 주변 환경을 매핑하고 손을 추적하려면 권한이 필요합니다</translation>
 <translation id="4536805923587466102">이미 다른 Chromium 프로필에 <ph name="USER_EMAIL_ADDRESS" /> 계정으로 로그인되어 있습니다</translation>
 <translation id="4548534452171747496">Chromium에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다. <ph name="BEGIN_LINK" />페이지 미리 로드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">유해하다고 생각되는 사이트를 신고하면 모든 사용자를 위해 온라인 안전을 개선할 수 있습니다.</translation>
 <translation id="4570813286784708942">사용자가 세이프 브라우징을 사용 중지했으며 파일을 확인할 수 없기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="4583692638088316420">휴대전화에서 Chromium으로 Google 렌즈를 사용해 보세요</translation>
 <translation id="4594305310729380060">기기의 비밀번호 관리자에 저장합니다.</translation>
@@ -371,6 +374,7 @@
 <translation id="5174969993834422967">기본적으로 알림을 차단하는 중입니다. 이 사이트의 알림을 허용하려면 위치 표시줄의 오른쪽 모서리에 있는 알림 아이콘을 클릭하세요.</translation>
 <translation id="5174983315706567306">디스크 공간이 충분하지 않습니다.</translation>
 <translation id="5187123684706427865">Chromium 계정에 재인증이 필요함</translation>
+<translation id="5219681158518957165">권장 브라우저 설정 사용</translation>
 <translation id="5224391634244552924">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chromium에서 확인할 수 있습니다.</translation>
 <translation id="5231355151045086930">Chromium에서 로그아웃</translation>
 <translation id="5234764350956374838">닫기</translation>
@@ -474,6 +478,7 @@
 <translation id="6327105987658262776">사용 가능한 업데이트가 없습니다.</translation>
 <translation id="6333502561965082103">Chromium에서 다른 작업이 진행 중입니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="6334986366598267305">이제 Google 계정으로 공유 컴퓨터에서 Chromium을 손쉽게 사용할 수 있습니다.</translation>
+<translation id="6347002662287820329">Chromium을 기본 브라우저로 설정하여 잘 알고 즐겨 사용하며 신뢰하는 기능에 간편하게 액세스하세요.</translation>
 <translation id="6347933965114150440">Chromium 바로가기</translation>
 <translation id="6366160072964553914">일반적으로 다운로드하지 않는 파일이며 위험할 가능성이 있기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="6373523479360886564">Chromium을 제거하시겠습니까?</translation>
@@ -504,6 +509,7 @@
 <translation id="6598877126913850652">Chromium 알림 설정으로 이동</translation>
 <translation id="6600016381025017075">이 페이지에 표시된 모든 항목을 검색하세요</translation>
 <translation id="6613594504749178791">변경사항은 다음에 Chromium을 다시 시작할 때 적용됩니다.</translation>
+<translation id="6637908313088374648">이제 Windows 시작 시 Chromium이 실행되므로 즉시 탐색을 시작할 수 있습니다. 설정에서 이 기능을 사용 중지할 수 있습니다</translation>
 <translation id="6648212540664651655">중단한 위치에서 계속하기: Chromium에서 마지막 세션의 탭을 복원했습니다. 다음에서 이 기능을 사용 중지할 수 있습니다.</translation>
 <translation id="665732753414869868">Chromium에서 주변의 3D 지도를 만들려면 카메라 권한이 필요합니다.</translation>
 <translation id="6669284030132180248">Google 계정에도 북마크를 저장하면 Chromium에서 제품 가격을 추적하고 가격이 인하되면 알림을 받을 수 있습니다.</translation>
@@ -562,6 +568,7 @@
 <translation id="7213407614656404070">언제든지 메시지, 문서 및 다른 앱에서 링크를 클릭하여 Chromium을 사용하세요</translation>
 <translation id="7223968959479464213">작업 관리자 - Chromium</translation>
 <translation id="7246575524853130370">Chromium에서 예측한 내 관심분야</translation>
+<translation id="7252276985725323153">즉시 탐색 시작: 이제 Windows 시작 시 Chromium을 실행할 수 있습니다.</translation>
 <translation id="7274695763216404502">고정되었습니다. 툴바에서 이미지 검색을 다시 사용해 보세요.</translation>
 <translation id="7288567540154601580">탭 및 확장 프로그램</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium에서 삭제할 것을 권장합니다.}other{Chromium에서 삭제할 것을 권장합니다.}}</translation>
@@ -591,6 +598,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="751935028865900641">사이트가 정상적으로 작동할 것입니다. Chromium에 로그인한 경우 Google 계정을 제외한 모든 Chromium 창을 닫으면 대부분의 사이트에서 로그아웃됩니다.</translation>
 <translation id="753534427205733210">{0,plural, =1{1분 후 Chromium이 다시 시작됩니다}other{#분 후 Chromium이 다시 시작됩니다}}</translation>
 <translation id="7565444033145385702">데이터를 보호하려면 최근에 방문하지 않은 사이트의 권한을 Chromium에서 삭제하도록 허용하세요.</translation>
+<translation id="7583104404158659071">Chromium을 자동으로 실행하여 즉시 탐색을 시작하세요.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 설치 프로그램</translation>
 <translation id="761356813943268536">Chromium이 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="7617377681829253106">더욱 업그레이드된 Chromium</translation>

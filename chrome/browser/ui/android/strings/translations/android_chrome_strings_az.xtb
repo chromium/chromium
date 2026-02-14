@@ -476,6 +476,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2992473221983447149">Şəkil təsvirləri</translation>
 <translation id="2996291259634659425">Parol söz yaradın</translation>
 <translation id="2996809686854298943">URL tələb olunur</translation>
+<translation id="3008916997590006706">Növbəti dəfə daxil olanda bu parola asanlıqla daxil olmaq üçün Yadda saxlayın seçiminə toxunun</translation>
 <translation id="3024215143424744261">Oxu rejimi tərcihləri bağlandı</translation>
 <translation id="3026955690410463085">Keçid daxil edin</translation>
 <translation id="3027644380269727216">Saytdakı fəaliyyətinizə əsaslanır. Bu ayar aktivdir.</translation>
@@ -1006,6 +1007,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5267572070504076962">Təhlükəli saytlardan qorunmaq üçün Güvənli Baxışı aktiv edin</translation>
 <translation id="5271967389191913893">Endirilməli olan kontenti cihaz aça bilmir.</translation>
 <translation id="5273031377282080577">Administrator bu ayarı idarə edir.</translation>
+<translation id="5290322819358431297">Parollarınızı avtomatik doldurun</translation>
 <translation id="5292796745632149097">Kimə</translation>
 <translation id="5301876394151419436"><ph name="EMAIL" /> kimi daxil olmusunuz. Ayarlarda sinxronlaşdırmanı dayandıra bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="5304593522240415983">Bu hissə boş ola bilməz</translation>
@@ -1098,6 +1100,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="572328651809341494">Son panellər</translation>
 <translation id="5728072125198221967">Əlaqələndirilmiş Google xidmətləri</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, Bərkidilmiş səsli anonim tab</translation>
+<translation id="5736345781200955827">Chrome-dan istifadə edərək sayt və tətbiqlərə asanlıqla daxil olmaq üçün parollar yaradın, yadda saxlayın və idarə edin</translation>
 <translation id="5744751019568455640">Veb-səhifələri oxutmaq üçün seçə biləcəyiniz səslər. Bu səsi bəyənirsinizsə və ondan istifadəyə davam etməyimi istəyirsinizsə, səsin adına toxunun.</translation>
 <translation id="574845902699630049"><ph name="OWNER_FULL_NAME" /> olaraq paylaşın</translation>
 <translation id="5749068826913805084">Faylları endirmək üçün Chrome yaddaşa giriş tələb edir.</translation>

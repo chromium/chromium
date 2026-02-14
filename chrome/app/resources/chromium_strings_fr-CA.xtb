@@ -100,6 +100,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2099452623287920103">Vos mots de passe et d'autres données Chromium que vous avez enregistrés dans votre compte Google seront retirés de cet appareil. Pour les utiliser à nouveau dans Chromium, reconnectez-vous.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Votre organisation supprime automatiquement les données de navigation lorsque Chromium n'est pas utilisé pendant 1 minute. Cela peut inclure l'historique, le remplissage automatique et les téléchargements. Vos onglets resteront ouverts.}one{Votre organisation supprime automatiquement les données de navigation lorsque Chromium n'est pas utilisé pendant # minute. Cela peut inclure l'historique, le remplissage automatique et les téléchargements. Vos onglets resteront ouverts.}other{Votre organisation supprime automatiquement les données de navigation lorsque Chromium n'est pas utilisé pendant # minutes. Cela peut inclure l'historique, le remplissage automatique et les téléchargements. Vos onglets resteront ouverts.}}</translation>
 <translation id="2126108037660393668">La vérification du fichier téléchargé a échoué.</translation>
+<translation id="2135919691573380097">Signaler ce site</translation>
 <translation id="2137162749895930932">Fermer l'écran de traduction</translation>
 <translation id="215352261310130060">Chromium a bloqué ce téléchargement, car le site n'utilise pas de connexion sécurisée et le fichier a peut-être été altéré</translation>
 <translation id="2170098639895543546">Sélectionnez n'importe quel élément sur la page</translation>
@@ -312,6 +313,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4334241893986177674">Recherchez dans cette capture d'écran</translation>
 <translation id="4334294535648607276">Téléchargement terminé.</translation>
+<translation id="4384331407722351213">Lancer Chromium au démarrage de Windows</translation>
 <translation id="4384993550046411228">Accédez facilement aux fonctionnalités que vous connaissez et aimez, et auxquelles vous faites confiance en définissant Chromium comme navigateur par défaut. Chromium sera épinglé à votre barre des tâches pour un accès rapide.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les conditions d'utilisation suivantes pour utiliser cet appareil. Ces dernières n'étendent pas, ne modifient pas ni ne restreignent pas les conditions d'utilisation de Chromium OS.</translation>
 <translation id="4407044323746248786">Quitter Chromium quand même?</translation>
@@ -332,6 +334,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="4531137820806573936">Chromium a besoin d'une autorisation pour cartographier votre environnement et suivre vos mains</translation>
 <translation id="4536805923587466102">Vous êtes déjà connecté en tant que <ph name="USER_EMAIL_ADDRESS" /> dans un autre profil Chromium</translation>
 <translation id="4548534452171747496">Chromium précharge les pages, ce qui accélère la navigation et la recherche. <ph name="BEGIN_LINK" />En savoir plus sur les pages de préchargement<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">Améliorez la sécurité en ligne pour tous en signalant un site que vous pensez dangereux.</translation>
 <translation id="4570813286784708942">Chromium a bloqué ce téléchargement, car vous avez désactivé la Navigation sécurisée et le fichier ne peut pas être vérifié</translation>
 <translation id="4583692638088316420">Essayez Lentille Google avec Chromium sur votre téléphone</translation>
 <translation id="4594305310729380060">Dans le gestionnaire de mots de passe sur cet appareil</translation>
@@ -371,6 +374,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="5174969993834422967">Vous bloquez généralement les notifications. Pour permettre à ce site de vous envoyer des notifications, cliquez sur l'icône de notification dans le coin droit de votre barre d'adresse.</translation>
 <translation id="5174983315706567306">Espace disque insuffisant.</translation>
 <translation id="5187123684706427865">Le compte Chromium nécessite une réauthentification</translation>
+<translation id="5219681158518957165">Utilisez les paramètres du navigateur recommandés</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="5231355151045086930">Se déconnecter de Chromium</translation>
 <translation id="5234764350956374838">Fermer</translation>
@@ -474,6 +478,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="6327105987658262776">Aucune mise à jour n'est proposée.</translation>
 <translation id="6333502561965082103">Une autre opération est en cours sur Chromium. Veuillez réessayer plus tard.</translation>
 <translation id="6334986366598267305">Il est maintenant plus facile d'utiliser Chromium avec votre compte Google et sur des ordinateurs partagés.</translation>
+<translation id="6347002662287820329">Accédez facilement aux fonctionnalités que vous connaissez et aimez, et auxquelles vous faites confiance en définissant Chromium comme navigateur par défaut.</translation>
 <translation id="6347933965114150440">Raccourci Chromium</translation>
 <translation id="6366160072964553914">Chromium a bloqué ce téléchargement, car le fichier n'est pas souvent téléchargé et pourrait être dangereux</translation>
 <translation id="6373523479360886564">Voulez-vous vraiment désinstaller Chromium?</translation>
@@ -504,6 +509,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="6598877126913850652">Accéder aux paramètres de notification Chromium</translation>
 <translation id="6600016381025017075">Recherchez n'importe quoi sur cette page</translation>
 <translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
+<translation id="6637908313088374648">Chromium se lance désormais au démarrage de Windows afin que vous puissiez commencer à naviguer instantanément. Vous pouvez désactiver cette option dans les paramètres.</translation>
 <translation id="6648212540664651655">Reprenez là où vous en étiez : Chromium restaure les onglets de votre dernière session. Vous pouvez désactiver cette option dans</translation>
 <translation id="665732753414869868">Chromium requiert l'autorisation d'accéder à l'appareil photo pour créer une carte 3D de votre environnement</translation>
 <translation id="6669284030132180248">Si vous enregistrez également vos favoris dans votre compte Google, vous pouvez suivre les prix des produits dans Chromium et être informé lors d'une baisse de prix</translation>
@@ -562,6 +568,7 @@ Vous ne pouvez pas enregistrer de nouveaux favoris dans votre compte tant que vo
 <translation id="7213407614656404070">Utilisez Chromium chaque fois que vous cliquez sur des liens dans des messages, des documents et d'autres applications</translation>
 <translation id="7223968959479464213">Gestionnaire de tâches – Chromium</translation>
 <translation id="7246575524853130370">Vos centres d'intérêt estimés par Chromium</translation>
+<translation id="7252276985725323153">Commencez à naviguer instantanément : Chromium peut désormais se lancer au démarrage de Windows.</translation>
 <translation id="7274695763216404502">La fonctionnalité a été épinglée! Utilisez à nouveau la recherche d'images à partir de la barre d'outils</translation>
 <translation id="7288567540154601580">Onglets et extensions</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium vous recommande de la retirer}one{Chromium vous recommande de la retirer}other{Chromium vous recommande de les retirer}}</translation>
@@ -591,6 +598,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="751935028865900641">Les sites fonctionneront probablement comme prévu. Vous serez déconnecté de la plupart des sites lorsque vous fermerez toutes les fenêtres Chromium, à l'exception de votre compte Google si vous êtes connecté à Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium redémarrera dans 1 minute}one{Chromium redémarrera dans # minute}other{Chromium redémarrera dans # minutes}}</translation>
 <translation id="7565444033145385702">Pour protéger vos données, laissez Chromium retirer les autorisations des sites que vous n'avez pas visités récemment.</translation>
+<translation id="7583104404158659071">Lancez Chromium automatiquement pour commencer à naviguer instantanément.</translation>
 <translation id="7583399374488819119">Programme d'installation de <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">Chromium utilise votre caméra et votre microphone</translation>
 <translation id="7617377681829253106">Chrome vient de s'améliorer</translation>

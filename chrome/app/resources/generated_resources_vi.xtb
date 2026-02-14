@@ -1349,6 +1349,8 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1891362123137972260">Dung lượng ổ đĩa quá thấp. Vui lòng giải phóng dung lượng ổ đĩa.</translation>
 <translation id="189210018541388520">Mở chế độ toàn màn hình</translation>
 <translation id="1892341345406963517">Xin chào <ph name="PARENT_NAME" />!</translation>
+<translation id="1892453608039100484">1. Nhấp vào <ph name="BUTTON_LABEL" /> bên dưới
+2. Nhấp vào <ph name="BUTTON_2" /> trong phần cài đặt Windows</translation>
 <translation id="189358972401248634">Ngôn ngữ khác</translation>
 <translation id="1895658205118569222">Tắt</translation>
 <translation id="1896043844785689584">Để thiết lập vân tay, con bạn cần chạm vào cảm biến vân tay ở góc dưới bên phải bàn phím. Dữ liệu vân tay của con bạn được lưu trữ an toàn và chỉ có trên <ph name="DEVICE_TYPE" /> này.</translation>
@@ -1797,6 +1799,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="219283042927675668">Các thẻ trong nhóm</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> đang quản lý trang thẻ mới của bạn, mở trong một thẻ mới</translation>
 <translation id="2192982266585216032">&amp;Thông tin thanh toán</translation>
+<translation id="2193567467390483943">Cha mẹ bạn không phê duyệt tiện ích này</translation>
 <translation id="2194856509914051091">Những yếu tố cần xem xét</translation>
 <translation id="2195331105963583686">Bạn vẫn có thể sử dụng <ph name="DEVICE_TYPE" /> này sau thời gian đó, nhưng thiết bị sẽ không nhận được các bản cập nhật bảo mật và phần mềm tự động nữa</translation>
 <translation id="2195729137168608510">Bảo vệ Email</translation>
@@ -3166,6 +3169,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3105820656234755131">Đã cập nhật mật khẩu</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Trang web đang sử dụng Bluetooth</translation>
+<translation id="3108122610701115301">Đặt làm mặc định</translation>
 <translation id="3108931485517391283">Không thể nhận</translation>
 <translation id="3108957152224931571">Màu đánh dấu</translation>
 <translation id="3109206895301430738">Nhóm thẻ đã lưu</translation>
@@ -5117,6 +5121,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4415815425191869676">Luôn duy trì các trang web này ở trạng thái hoạt động</translation>
 <translation id="4416582610654027550">Nhập một URL hợp lệ</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Tạm dừng thẻ này}other{Tạm dừng các thẻ này}}</translation>
+<translation id="4421823557207751899">Đã đăng nhập với tên <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Gợi ý viết dựa trên các câu lệnh do bạn nhập và nội dung của trang web</translation>
 <translation id="4421932782753506458">Mèo con dễ thương</translation>
 <translation id="4423376891418188461">Khôi phục cài đặt</translation>
@@ -6218,6 +6223,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5191251636205085390">Tìm hiểu và kiểm soát các công nghệ mới giúp thay thế cookie của bên thứ ba</translation>
 <translation id="519185197579575131">Dùng QT</translation>
 <translation id="5192062846343383368">Mở ứng dụng Family Link để xem các tùy chọn cài đặt giám sát của bạn</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> là bắt buộc</translation>
 <translation id="5193978546360574373">Thao tác này sẽ xoá quyền truy cập vào Google Drive trên Chromebook này, bao gồm cả quyền truy cập vào các tệp có thể sử dụng khi không có mạng</translation>
 <translation id="5193988420012215838">Đã sao chép vào bảng nhớ tạm</translation>
 <translation id="5194256020863090856">Thao tác này chỉ ảnh hưởng đến các Cửa sổ ẩn danh</translation>
@@ -6360,6 +6366,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5288678174502918605">&amp;Mở lại Thẻ đã Đóng</translation>
 <translation id="5290020561438336792">Máy tính và thiết bị truyền sử dụng mạng Wi-Fi khác nhau (ví dụ: 2,4 GHz
     và 5 GHz)</translation>
+<translation id="5290322819358431297">Tự động điền mật khẩu</translation>
 <translation id="52912272896845572">Tệp khóa cá nhân không hợp lệ.</translation>
 <translation id="529175790091471945">Định dạng thiết bị này</translation>
 <translation id="529296195492126134">Chế độ tạm thời không được hỗ trợ. Vui lòng liên hệ với quản trị viên của bạn</translation>
@@ -6979,6 +6986,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5734697361979786483">Thêm mục chia sẻ tệp</translation>
 <translation id="573520097779121706">Dùng các phím 7, 8, 9, u, o, j, k, l để di chuyển con trỏ</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Dữ liệu này hoặc thiết bị của bạn không đáp ứng một số chính sách bảo mật của tổ chức. Hãy trao đổi với quản trị viên của bạn để biết những vấn đề cần khắc phục.}=1{Tệp này hoặc thiết bị của bạn không đáp ứng một số chính sách bảo mật của tổ chức. Hãy trao đổi với quản trị viên của bạn để biết những vấn đề cần khắc phục.}other{Những tệp này không đáp ứng một số chính sách bảo mật của tổ chức. Hãy trao đổi với quản trị viên của bạn để biết những vấn đề cần khắc phục.}}</translation>
+<translation id="5736345781200955827">Tạo, lưu và quản lý mật khẩu để dễ dàng đăng nhập vào các trang web và ứng dụng bằng Chrome</translation>
 <translation id="5738093759615225354">Bạn cần khoá đăng nhập này để đăng nhập vào máy tính của mình</translation>
 <translation id="5738386565827477765">Thiết bị âm thanh</translation>
 <translation id="5739017626473506901">Đăng nhập để giúp <ph name="USER_NAME" /> thêm tài khoản trường học</translation>
@@ -7231,6 +7239,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5901089233978050985">Chuyển sang thẻ phát nội dung ghi hình</translation>
 <translation id="5901494423252125310">Chưa đóng nắp máy in</translation>
 <translation id="5901630391730855834">Vàng</translation>
+<translation id="5902400038326841449">Trình quản lý mật khẩu của Google hiện đang tắt</translation>
 <translation id="5902892210366342391">Hiện cảnh báo trước khi truy cập vào các trang web không an toàn ở Chế độ ẩn danh</translation>
 <translation id="5904614460720589786">Không thiết lập được <ph name="APP_NAME" /> do sự cố cấu hình. Vui lòng liên hệ với quản trị viên. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Tiếp tục cho phép trang web này dùng giá trị nhận dạng để phát nội dung được bảo vệ</translation>
@@ -8012,6 +8021,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6452251728599530347">Đã hoàn tất <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Vấn đề về mạng hoặc vùng không hợp lệ</translation>
 <translation id="6453191633103419909">Chất lượng chiếu màn hình/thẻ</translation>
+<translation id="6453306703004115497">Đã được dịch sang <ph name="LANGUAGE" />.</translation>
 <translation id="6453687572758515877">Nhóm tất cả các thẻ</translation>
 <translation id="6453921811609336127">Để chuyển sang phương thức nhập tiếp theo, hãy nhấn tổ hợp phím <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Phím cách<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Trên các trang web cụ thể</translation>
@@ -8170,6 +8180,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="656293578423618167">Tên hoặc đường dẫn của tệp quá dài.  Hãy lưu với tên ngắn hơn hoặc lưu vào một vị trí khác.</translation>
 <translation id="6563002009564846727">Xem các chứng chỉ được nhập từ Windows</translation>
 <translation id="6563055593659435495">Không duy trì được kết nối với điện thoại của bạn. Hãy đảm bảo điện thoại của bạn ở gần, đã mở khoá, đang bật Bluetooth và Wi-Fi.</translation>
+<translation id="6564343790052433242">Để tạo khoá truy cập cho <ph name="APP_NAME" />, bạn phải bật Trình quản lý mật khẩu của Google</translation>
 <translation id="6565144332292237355">Các trang web có thể sử dụng tính năng này để tìm và kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn</translation>
 <translation id="6568283005472142698">Tìm thẻ</translation>
 <translation id="6569931898053264308">Mức tiết kiệm trung bình</translation>
@@ -11443,6 +11454,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8761945298804995673">Người dùng này đã tồn tại</translation>
 <translation id="8762886931014513155">Bạn cần cập nhật <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">Thiết bị USB</translation>
+<translation id="8765940060470412555">Bỏ ghim chế độ đọc</translation>
 <translation id="8766156860774051068">Do bạn tuyển chọn</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Hiển thị tất cả kết quả tìm kiếm cho <ph name="QUERY_CLUSTER_NAME" /></translation>

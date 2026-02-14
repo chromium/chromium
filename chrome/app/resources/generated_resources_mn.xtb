@@ -5115,6 +5115,7 @@
 <translation id="4415815425191869676">Эдгээр сайтыг үргэлж идэвхтэй байлгах</translation>
 <translation id="4416582610654027550">Хүчинтэй URL оруулна уу</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Энэ табыг түр зогсоох}other{Эдгээр табыг түр зогсоох}}</translation>
+<translation id="4421823557207751899"><ph name="USERNAME" />-ээр нэвтэрлээ</translation>
 <translation id="4421932172707401417">Бичих зөвлөмжийг таны заавар, веб хуудасны контентод тулгуурладаг</translation>
 <translation id="4421932782753506458">Найдваргүй</translation>
 <translation id="4423376891418188461">Тохиргоог сэргээх</translation>
@@ -6216,6 +6217,7 @@
 <translation id="5191251636205085390">Гуравдагч талын күүкиг орлох зорилготой шинэ технологийн талаар мэдэж авч мөн хянаарай</translation>
 <translation id="519185197579575131">QT ашиглах</translation>
 <translation id="5192062846343383368">Хяналтынхаа тохиргоог харахын тулд Family Link аппыг нээнэ үү</translation>
+<translation id="5193602404493965468">*<ph name="FIELD_LIST" />-г бөглөх шаардлагатай</translation>
 <translation id="5193978546360574373">Энэ нь офлайнд боломжтой болгосон аливаа файлыг оруулаад уг Chromebook-н Google Драйвын хандалтыг хасна</translation>
 <translation id="5193988420012215838">Түр санах ой руу хуулсан</translation>
 <translation id="5194256020863090856">Энэ нь зөвхөн нууцлалтай цонхнуудад нөлөөлнө</translation>

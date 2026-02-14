@@ -704,6 +704,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2137891579555018930">Aguardando permissão...</translation>
 <translation id="213826338245044447">Favoritos nos Dispositivos Móveis</translation>
 <translation id="2141000681034340397">Editar entrada</translation>
+<translation id="2141475438898772664">Pagar em 4 parcelas ou mensalmente</translation>
 <translation id="2144171668675205303">Nenhum tema ativo</translation>
 <translation id="2145193671493396738">Notícias econômicas</translation>
 <translation id="214556005048008348">Cancelar pagamento</translation>
@@ -2849,6 +2850,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5543564889050342791">Zoológicos, aquários e reservas</translation>
 <translation id="5543722831081909240">180 graus</translation>
 <translation id="5544836308113951378">Cruzeiros e fretes</translation>
+<translation id="5545314360139398232">Vincular <ph name="ISSUER_NAME" /> para pagamento parcelado</translation>
 <translation id="5547939254150808298">Impressão e publicação</translation>
 <translation id="554815783948612276">Provedores de fórum e chat</translation>
 <translation id="5548606607480005320">Confirmação de segurança</translation>
@@ -3696,6 +3698,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>
 <translation id="6927878187051807444">arquivos da câmera e capturas de tela</translation>
+<translation id="6929949393612835405">Fechar e voltar para "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Pesquise no painel lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O mecanismo de pesquisa padrão é o que vai ser usado para pesquisas na Internet, além de servir de base para recursos do Chrome<ph name="END_BOLD" />, como a pesquisa na barra de endereço e em imagens de páginas da Web. Alguns recursos podem ficar indisponíveis se o mecanismo de pesquisa escolhido não tiver suporte para ele.</translation>
 <translation id="6934672428414710184">Este nome é da sua Conta do Google</translation>

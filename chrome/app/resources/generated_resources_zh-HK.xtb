@@ -1349,6 +1349,8 @@
 <translation id="1891362123137972260">磁碟空間嚴重不足。請騰出磁碟空間。</translation>
 <translation id="189210018541388520">開啟全螢幕</translation>
 <translation id="1892341345406963517"><ph name="PARENT_NAME" />，您好</translation>
+<translation id="1892453608039100484">1. 點擊下方的 [<ph name="BUTTON_LABEL" />]
+2. 在 Windows 設定中按一下 [<ph name="BUTTON_2" />]</translation>
 <translation id="189358972401248634">其他語言</translation>
 <translation id="1895658205118569222">關閉</translation>
 <translation id="1896043844785689584">如要設定指紋，請讓子女輕觸鍵盤右下角的指紋感應器。子女的指紋資料會安全儲存在此 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
@@ -3165,6 +3167,7 @@
 <translation id="3105820656234755131">已更新密碼</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (藍牙)</translation>
 <translation id="310671807099593501">網站正在使用藍牙</translation>
+<translation id="3108122610701115301">設為預設</translation>
 <translation id="3108931485517391283">無法接收</translation>
 <translation id="3108957152224931571">突顯顏色</translation>
 <translation id="3109206895301430738">儲存咗嘅分頁群組</translation>
@@ -5111,6 +5114,7 @@
 <translation id="4415815425191869676">一律保持這些網站在啟用狀態</translation>
 <translation id="4416582610654027550">輸入有效的網址</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{暫停此分頁}other{暫停這些分頁}}</translation>
+<translation id="4421823557207751899">以 <ph name="USERNAME" /> 的身分登入</translation>
 <translation id="4421932172707401417">系統會根據你的提示和網頁內容提供撰寫建議</translation>
 <translation id="4421932782753506458">長毛貓</translation>
 <translation id="4423376891418188461">還原設定</translation>
@@ -6211,6 +6215,7 @@
 <translation id="5191251636205085390">瞭解及控制用於取代第三方 Cookie 的全新技術</translation>
 <translation id="519185197579575131">使用 QT</translation>
 <translation id="5192062846343383368">開啟 Family Link 應用程式以查看監控設定</translation>
+<translation id="5193602404493965468">*「<ph name="FIELD_LIST" />」為必填欄位</translation>
 <translation id="5193978546360574373">這麼做會移除此 Chromebook 的「Google 雲端硬碟」存取權，包括已設定為可離線存取的所有檔案存取權</translation>
 <translation id="5193988420012215838">已複製至剪貼簿</translation>
 <translation id="5194256020863090856">此操作只會影響無痕式視窗</translation>
@@ -6352,6 +6357,7 @@
 <translation id="5288106344236929384">其他操作，<ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 的密碼金鑰選項</translation>
 <translation id="5288678174502918605">重新開啟先前關閉的分頁(&amp;E)</translation>
 <translation id="5290020561438336792">電腦和投放裝置連線至不同的 Wi-Fi 網絡 (例如分別使用 2.4 GHz 和 5 GHz)</translation>
+<translation id="5290322819358431297">自動填入密碼</translation>
 <translation id="52912272896845572">私密金鑰檔案無效。</translation>
 <translation id="529175790091471945">將此裝置格式化</translation>
 <translation id="529296195492126134">不支援暫時模式。請聯絡您的管理員</translation>
@@ -6969,6 +6975,7 @@
 <translation id="5734697361979786483">新增檔案共用</translation>
 <translation id="573520097779121706">按下 7、8、9、u、o、j、k、l 鍵可移動游標</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{此項資料或您的裝置不符合您機構的部分安全政策規定。請向您的管理員查詢，瞭解需要修正的項目。}=1{此檔案或您的裝置不符合您機構的部分安全政策規定。請向您的管理員查詢，瞭解需要修正的項目。}other{這些檔案不符合您機構的部分安全政策規定。請向您的管理員查詢，瞭解需要修正的項目。}}</translation>
+<translation id="5736345781200955827">建立、儲存及管理密碼，方便使用 Chrome 登入網站和應用程式</translation>
 <translation id="5738093759615225354">您需要使用此密鑰，才能在電腦上登入帳戶</translation>
 <translation id="5738386565827477765">音響裝置</translation>
 <translation id="5739017626473506901">需要登入才能為 <ph name="USER_NAME" /> 新增學校帳戶</translation>
@@ -7221,6 +7228,7 @@
 <translation id="5901089233978050985">切換至正在擷取的分頁</translation>
 <translation id="5901494423252125310">打印機的外蓋應關上</translation>
 <translation id="5901630391730855834">黃色</translation>
+<translation id="5902400038326841449">「Google 密碼管理工具」已關閉</translation>
 <translation id="5902892210366342391">在透過無痕模式前往不安全的網站前先顯示警告</translation>
 <translation id="5904614460720589786">設定發生問題，因此無法設定 <ph name="APP_NAME" />。請聯絡您的管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5906457147959147328">繼續允許此網站使用識別碼來播放受保護的內容</translation>
@@ -8001,6 +8009,7 @@
 <translation id="6452251728599530347">已完成 <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">網絡發生問題或領域錯誤</translation>
 <translation id="6453191633103419909">分頁/螢幕畫面投影品質</translation>
+<translation id="6453306703004115497">已翻譯成<ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">將所有分頁加入群組</translation>
 <translation id="6453921811609336127">如要切換至下一個輸入法，請按下 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> 鍵</translation>
 <translation id="6455264371803474013">在特定網站上</translation>
@@ -8159,6 +8168,7 @@
 <translation id="656293578423618167">檔案路徑或名稱太長。請選用較短的名稱或將其儲存至其他位置。</translation>
 <translation id="6563002009564846727">查看從 Windows 匯入的憑證</translation>
 <translation id="6563055593659435495">無法與手機保持連線。請確認你的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi。</translation>
+<translation id="6564343790052433242">如要為 <ph name="APP_NAME" /> 建立密鑰，必須開啟「Google 密碼管理工具」</translation>
 <translation id="6565144332292237355">網站可使用此功能來搜尋和連線至區域網絡上的任何裝置</translation>
 <translation id="6568283005472142698">分頁搜尋</translation>
 <translation id="6569931898053264308">節省中量記憶體</translation>
@@ -11427,6 +11437,7 @@
 <translation id="8761945298804995673">這位使用者已存在。</translation>
 <translation id="8762886931014513155">您的 <ph name="DEVICE_TYPE" /> 需要更新</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
+<translation id="8765940060470412555">取消固定閱讀模式</translation>
 <translation id="8766156860774051068">由你精選</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">顯示所有關於 <ph name="QUERY_CLUSTER_NAME" /> 嘅搜尋結果</translation>

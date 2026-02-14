@@ -704,6 +704,7 @@
 <translation id="2137891579555018930">正在等待授权…</translation>
 <translation id="213826338245044447">移动设备书签</translation>
 <translation id="2141000681034340397">修改输入内容</translation>
+<translation id="2141475438898772664">分 4 期支付或按月支付</translation>
 <translation id="2144171668675205303">没有活跃的主题</translation>
 <translation id="2145193671493396738">经济新闻</translation>
 <translation id="214556005048008348">取消付款</translation>
@@ -2845,6 +2846,7 @@
 <translation id="5543564889050342791">动物园、水族馆与保护区</translation>
 <translation id="5543722831081909240">180 度</translation>
 <translation id="5544836308113951378">乘船游览与租船</translation>
+<translation id="5545314360139398232">关联 <ph name="ISSUER_NAME" /> 以便分期付款</translation>
 <translation id="5547939254150808298">印刷与出版</translation>
 <translation id="554815783948612276">论坛与聊天服务</translation>
 <translation id="5548606607480005320">安全检查</translation>
@@ -3691,6 +3693,7 @@
 <translation id="6926216138694948720">人体艺术</translation>
 <translation id="692638818576287323">商用车</translation>
 <translation id="6927878187051807444">相机文件和屏幕截图</translation>
+<translation id="6929949393612835405">关闭并返回“<ph name="OPENER_TITLE" />”</translation>
 <translation id="6930607614725241390">在侧边栏中搜索</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />默认搜索引擎让您可在网络中搜索信息，并支持 Chrome 功能<ph name="END_BOLD" />，例如通过地址栏和运用网页上的图片进行搜索。如果您所用的搜索引擎不支持某项功能，您可能无法使用该功能。</translation>
 <translation id="6934672428414710184">此名称来自您的 Google 账号</translation>

@@ -255,6 +255,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3622716124581627104">Identifica objetos o lugares y copia o traduce texto. Al usar Google Lens, se envía una captura de pantalla de la página a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Ahora es más fácil utilizar Chrome con tu cuenta de Google y en ordenadores compartidos.</translation>
 <translation id="3635073343384702370">Chrome puede comprobar tus contraseñas cuando las guardas</translation>
+<translation id="3636970668267555808">Accede fácilmente a las funciones que conoces, te encantan y en las que confías estableciendo Chrome como navegador predeterminado.</translation>
 <translation id="3667616615096815454">No se puede realizar la instalación porque se trata de una aplicación desconocida para el servidor.</translation>
 <translation id="3673813398384385993">Chrome ha detectado que "<ph name="EXTENSION_NAME" />" contiene malware</translation>
 <translation id="3697952514309507634">Otros perfiles de Chrome</translation>
@@ -264,6 +265,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome te recomienda que la elimines. <ph name="BEGIN_LINK" />Más información sobre las extensiones compatibles<ph name="END_LINK" />}other{Chrome te recomienda que las elimines. <ph name="BEGIN_LINK" />Más información sobre las extensiones compatibles<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Profundiza en tu búsqueda añadiendo varias pestañas, archivos y herramientas con el botón Añade una pestaña u otros elementos.</translation>
 <translation id="3756724684201900923">Más información sobre cómo instalar Chrome</translation>
+<translation id="3772152698251011058">Denunciar este sitio a Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex no ha podido sincronizar tus datos debido a un error de inicio de sesión.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -415,6 +417,8 @@ Puede que algunas funciones no estén disponibles. Especifica otro directorio de
 Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5465210843490471889">Elige un perfil de Chrome para usarlo con <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Para ayudar a mejorar estas funciones, Chrome envía a Google tus interacciones con ellas. Estos datos pueden ser leídos, procesados y anotados por revisores humanos.</translation>
+<translation id="547202872422499512">Ahora Chrome se inicia cuando se inicia Windows para que puedas empezar a navegar al instante. Puedes desactivar esta opción en la configuración.</translation>
+<translation id="5486346529181556467">Mejora la seguridad online de todos los usuarios denunciando los sitios que creas que son dañinos. Consulta más información sobre la <ph name="BEGIN_LINK" />política de Google sobre sitios que no son seguros<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">esquina superior izquierda del área de búsqueda: un <ph name="LEFT" /> % a la izquierda y un <ph name="TOP" /> % arriba</translation>
 <translation id="5550137307985173298">Haz clic en el botón Personalizar Chrome de la página Nueva pestaña para cambiar el diseño de Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (tráfico mDNS entrante)</translation>
@@ -574,6 +578,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6967962315388095737">Regla entrante para que Google Chrome Beta permita tráfico mDNS.</translation>
 <translation id="6979589607440534284">Averigua por qué Chrome bloquea algunos archivos (se abre en una nueva pestaña)</translation>
+<translation id="6985817499499247940">Inicia Chrome automáticamente para empezar a navegar al instante.</translation>
 <translation id="6991926986715044139">Mostrar siempre el acceso directo a Google Lens</translation>
 <translation id="6999131147875565462">Chrome se ejecuta más rápido y las funciones que usan JavaScript deberían funcionar según lo previsto</translation>
 <translation id="7011190694940573312">No se ha podido realizar la instalación porque esta versión del sistema operativo no es compatible.</translation>
@@ -602,6 +607,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7288567540154601580">Pestañas y extensiones</translation>
 <translation id="7296210096911315575">Información importante sobre el uso y la seguridad</translation>
 <translation id="7302361266603927550">Algunos de tus datos de Chrome aún no se han guardado en tu cuenta de Google. Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
+<translation id="7306401458628386911">Empieza a navegar al instante: ahora Chrome puede iniciarse cuando se inicia Windows.</translation>
 <translation id="7308322188646931570">Chrome necesita acceso de almacenamiento para descargar archivos</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
@@ -664,6 +670,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7827099906024714326">Chrome debe verificar que eres tú para poder guardar algunos datos en tu cuenta de Google y usarlos en todos tus dispositivos. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="7832314606810669113">Inicia sesión en Chrome para acceder a tus marcadores y otros en todos tus dispositivos. Este marcador se guardará en tu cuenta de Google cuando inicies sesión.</translation>
 <translation id="7845233973568007926">Gracias por realizar la instalación. Debes reiniciar tu ordenador para poder usar <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847170235260850604">Iniciar Chrome cuando se inicie Windows</translation>
 <translation id="7849037457735762883">Continúa por donde lo dejaste: Chrome puede restaurar tus pestañas cada vez que lo reinicies. Para activar esta opción, ve a</translation>
 <translation id="7869620795354551924">Para usar las contraseñas guardadas, escanea el código QR, descarga Chrome para iOS e inicia sesión en tu cuenta de Google</translation>
 <translation id="7872446069773932638">Descargando... Segundos restantes: <ph name="SECONDS" />.</translation>

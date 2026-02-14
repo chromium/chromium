@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{මිනිත්තු 1කට පෙර}one{මිනිත්තු #කට පෙර}other{මිනිත්තු #කට පෙර}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> බෙදා ගත නොහැක</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{මාස 1කට පෙර}one{මාස #කට පෙර}other{මාස #කට පෙර}}</translation>
+<translation id="1591017414891297549">පෙරදසුන</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{මිනිත්තු 1 ක් සහ }one{මිනිත්තු # ක් සහ }other{මිනිත්තු # ක් සහ }}</translation>
 <translation id="1643823602425662293">දැනුම්දීම</translation>
 <translation id="169515659049020177">SHIFT</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">තව +<ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">අවසන්</translation>
+<translation id="8741385002816058621">මෙය පෙරදසුනෙහි විශේෂාංගයකි</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1h}one{#h}other{#h}}</translation>
 <translation id="8798099450830957504">පෙරනිමි</translation>
 <translation id="8841375032071747811">ආපසු බොත්තම</translation>

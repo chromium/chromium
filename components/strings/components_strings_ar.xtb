@@ -704,6 +704,7 @@
 <translation id="2137891579555018930">في انتظار الحصول على الإذن...</translation>
 <translation id="213826338245044447">الإشارات المرجعية للجوّال</translation>
 <translation id="2141000681034340397">تعديل الإدخال</translation>
+<translation id="2141475438898772664">الدفع على 4 أقساط أو شهريًا</translation>
 <translation id="2144171668675205303">ما مِن مواضيع نشِطة</translation>
 <translation id="2145193671493396738">أخبار عن الاقتصاد</translation>
 <translation id="214556005048008348">إلغاء الدفع</translation>
@@ -2849,6 +2850,7 @@
 <translation id="5543564889050342791">حدائق حيوان وأحواض سمك ومحميات</translation>
 <translation id="5543722831081909240">180 درجة</translation>
 <translation id="5544836308113951378">رحلات بحرية وتأجير سفن</translation>
+<translation id="5545314360139398232">ننصحك بربط حسابك "<ph name="ISSUER_NAME" />" للدفع على أقساط</translation>
 <translation id="5547939254150808298">طباعة ونشر</translation>
 <translation id="554815783948612276">منتديات وخدمات دردشة وتواصل</translation>
 <translation id="5548606607480005320">التحقّق من الأمان</translation>
@@ -3696,6 +3698,7 @@
 <translation id="6926216138694948720">فن الجسد</translation>
 <translation id="692638818576287323">مركبات تجارية</translation>
 <translation id="6927878187051807444">ملفات الكاميرا ولقطات الشاشة</translation>
+<translation id="6929949393612835405">إغلاق والرجوع إلى "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">البحث في اللوحة الجانبية</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />يتيح لك محرك البحث التلقائي البحث على الإنترنت ويفعِّل ميزات Chrome<ph name="END_BOLD" />، مثل البحث من شريط العناوين ومن الصور على صفحات الويب. قد لا تتوفر إحدى الميزات إذا لم يكن محرك البحث الخاص بك يتيحها.</translation>
 <translation id="6934672428414710184">‏هذا الاسم من حسابك على Google</translation>

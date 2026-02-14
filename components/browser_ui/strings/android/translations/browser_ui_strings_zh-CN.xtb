@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">请告诉我们您允许使用第三方 Cookie 的原因，以帮助我们改进 Chrome<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">您可以查看桌面版网站</translation>
 <translation id="1085696779717592361">默认使用 Chrome</translation>
+<translation id="1126523729897810826">完成下方操作建议，充分利用 Chrome</translation>
 <translation id="113098737392899175">连接到键盘时，使用文本光标浏览网页</translation>
 <translation id="1149644372535087155">在 Chrome 中保存密码</translation>
 <translation id="1178015372320901893">“我的快捷方式”底部动作条</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">使用 Chrome 的 V8 引擎加速网站，但 Chrome 的防攻击能力会略微降低</translation>
 <translation id="1593426485665524382">屏幕顶部附近有多项可查看的新操作</translation>
 <translation id="1594521731409209842">在屏幕上张合双指即可调整照片大小</translation>
+<translation id="1599268789440304082">已打开设置工作表</translation>
 <translation id="1601560923496285236">应用</translation>
 <translation id="1615755956145364867">网站可以请求播放受保护内容</translation>
 <translation id="1620510694547887537">摄像头</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">网址已展开</translation>
 <translation id="4522570452068850558">详情</translation>
 <translation id="4523472416386354622">登录即可开始定制</translation>
+<translation id="4529207923544043455">底部动作条，显示的是已完成和未完成的设置列表任务</translation>
 <translation id="4534723447064627427">若要允许 <ph name="APP_NAME" /> 使用您的麦克风，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启麦克风。</translation>
+<translation id="4545694195887112015">已关闭设置工作表</translation>
 <translation id="4566417217121906555">将麦克风静音</translation>
 <translation id="4570913071927164677">详情</translation>
 <translation id="4578289292431526768">开始查看</translation>

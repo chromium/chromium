@@ -251,6 +251,7 @@
 <translation id="3622716124581627104">ものや場所を特定したり、テキストをコピーまたは翻訳したりできます。Google レンズを使用すると、ページのスクリーンショットが Google に送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">共有パソコンの Chrome で Google アカウントが簡単に使用できるようになりました。</translation>
 <translation id="3635073343384702370">パスワードを保存すると、Chrome による確認が可能になります</translation>
+<translation id="3636970668267555808">Chrome を既定のブラウザに設定すると、お馴染みの信頼できる機能を簡単に利用できるようになります。</translation>
 <translation id="3667616615096815454">インストールできません。このアプリはサーバーに認識されていません。</translation>
 <translation id="3673813398384385993">Chrome で「<ph name="EXTENSION_NAME" />」に不正なソフトウェアが含まれていることが検出されました</translation>
 <translation id="3697952514309507634">その他の Chrome プロファイル</translation>
@@ -260,6 +261,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{削除することをおすすめします。<ph name="BEGIN_LINK" />サポートされている拡張機能の詳細<ph name="END_LINK" />}other{削除することをおすすめします。<ph name="BEGIN_LINK" />サポートされている拡張機能の詳細<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">[タブなどを追加] ボタンを使用して複数のタブ、ファイル、ツールを追加すると、対象を掘り下げて検索できます。</translation>
 <translation id="3756724684201900923">Chrome のインストールの詳細</translation>
+<translation id="3772152698251011058">このサイトを Google に報告する</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ログイン時にエラーが発生したため、ChromeOS Flex はデータを同期できませんでした。</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -406,6 +408,8 @@
 <translation id="5430073640787465221">ユーザー設定ファイルが壊れているか無効です。設定を復元できません。</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> を使用する Chrome プロファイルを選択してください</translation>
 <translation id="5468572406162360320">Chrome では、これらの機能を改善するため、ユーザーの操作内容を Google に送信します。このデータは人間のレビュアーによって読み取られ、処理され、注釈が付けられる可能性があります。</translation>
+<translation id="547202872422499512">Windows の起動時に Chrome を自動で起動して、すぐにブラウジングを開始できるようになりました。この動作は設定でオフにできます。</translation>
+<translation id="5486346529181556467">有害と思われるサイトを報告すると、他のユーザーのオンライン セキュリティの向上に役立てられます。詳しくは、<ph name="BEGIN_LINK" />Google の安全でないサイトに関するポリシー<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5524890928877629608">検索範囲の左上隅: 左 <ph name="LEFT" />%、上 <ph name="TOP" />%</translation>
 <translation id="5550137307985173298">新しいタブページで [Chrome をカスタマイズ] ボタンをクリックして、Chrome のレイアウトを変更できます</translation>
 <translation id="5566025111015594046">Google Chrome（mDNS インバウンド）</translation>
@@ -565,6 +569,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">mDNS トラフィックを許可する Google Chrome ベータ版のインバウンド ルールです。</translation>
 <translation id="6979589607440534284">新しいタブを開いて、Chrome で一部のファイルがブロックされる理由を確認します</translation>
+<translation id="6985817499499247940">Chrome を自動で起動して、すぐにブラウジングを開始できます。</translation>
 <translation id="6991926986715044139">Google レンズのショートカットを常に表示する</translation>
 <translation id="6999131147875565462">Chrome の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します</translation>
 <translation id="7011190694940573312">このバージョンのオペレーティング システムはサポートされていないため、インストールできませんでした。</translation>
@@ -593,6 +598,7 @@
 <translation id="7288567540154601580">タブと拡張機能</translation>
 <translation id="7296210096911315575">使用と安全に関する重要事項</translation>
 <translation id="7302361266603927550">Chrome データの一部が Google アカウントにまだ保存されていません。数分待ってからログアウトしてください。今すぐログアウトすると、このデータは削除されます。</translation>
+<translation id="7306401458628386911">すぐにブラウジングを開始: Windows の起動時に Chrome を自動で起動できるようになりました。</translation>
 <translation id="7308322188646931570">ファイルをダウンロードするには、Chrome でストレージへのアクセスを許可する必要があります</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
@@ -655,6 +661,7 @@
 <translation id="7827099906024714326">Google アカウントに一部のデータを保存してすべてのデバイスで使用できるようにするには、Chrome で本人確認を行う必要があります。今すぐログアウトすると、このデータは削除されます。</translation>
 <translation id="7832314606810669113">すべてのデバイスで同じブックマークやその他の設定を使用するには、Chrome にログインしてください。このブックマークは、ログイン後に Google アカウントに保存されます。</translation>
 <translation id="7845233973568007926">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはコンピュータを再起動してください。</translation>
+<translation id="7847170235260850604">Windows の起動時に Chrome を自動で起動する</translation>
 <translation id="7849037457735762883">前回開いていたページを開く: Chrome で再起動するたびにタブを復元できます。この機能をオンにするには、</translation>
 <translation id="7869620795354551924">保存したパスワードを使用するには、QR コードのサイトから iOS 版 Chrome をダウンロードして Google アカウントにログインします</translation>
 <translation id="7872446069773932638">ダウンロードしています... 残り <ph name="SECONDS" /> 秒です</translation>

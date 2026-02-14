@@ -1340,6 +1340,8 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1891362123137972260">L'espace de stockage du disque est presque plein. Veuillez libérer de l'espace.</translation>
 <translation id="189210018541388520">Ouvrir en mode plein écran.</translation>
 <translation id="1892341345406963517">Bonjour <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Cliquez sur <ph name="BUTTON_LABEL" /> ci-dessous.
+2. Cliquez sur <ph name="BUTTON_2" /> dans vos paramètres Windows.</translation>
 <translation id="189358972401248634">Autres langues</translation>
 <translation id="1895658205118569222">Arrêt</translation>
 <translation id="1896043844785689584">Pour configurer l'empreinte digitale, demandez à votre enfant de toucher le capteur d'empreintes digitales dans le coin inférieur droit du clavier. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
@@ -3156,6 +3158,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3105820656234755131">Mot de passe mis à jour</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Le site utilise le Bluetooth</translation>
+<translation id="3108122610701115301">Définir par défaut</translation>
 <translation id="3108931485517391283">Impossible de recevoir le fichier</translation>
 <translation id="3108957152224931571">Couleur de surbrillance</translation>
 <translation id="3109206895301430738">Groupes d'onglets enregistrés</translation>
@@ -5107,6 +5110,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4415815425191869676">Toujours garder ces sites actifs</translation>
 <translation id="4416582610654027550">Entrez une URL valide</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Suspendre cet onglet}one{Suspendre cet onglet}other{Suspendre ces onglets}}</translation>
+<translation id="4421823557207751899">Connecté(e) en tant que <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Les suggestions de rédaction sont basées sur vos requêtes et sur le contenu de la page Web.</translation>
 <translation id="4421932782753506458">Félix</translation>
 <translation id="4423376891418188461">Restaurer les paramètres</translation>
@@ -6207,6 +6211,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5191251636205085390">Découvrez les nouvelles technologies qui visent à remplacer les témoins tiers et apprenez à les utiliser.</translation>
 <translation id="519185197579575131">Utiliser QT</translation>
 <translation id="5192062846343383368">Ouvrez l'application Family Link pour afficher vos paramètres de supervision</translation>
+<translation id="5193602404493965468">* Le champ <ph name="FIELD_LIST" /> est obligatoire</translation>
 <translation id="5193978546360574373">L'accès à Google Disque sur ce Chromebook sera retiré, y compris l'accès à tous les fichiers qui ont été rendus accessibles hors ligne</translation>
 <translation id="5193988420012215838">Copié dans votre presse-papier</translation>
 <translation id="5194256020863090856">Seules les fenêtres de navigation privée sont concernées</translation>
@@ -6348,6 +6353,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5288106344236929384">Plus d'actions, d'options de clé d'accès pour <ph name="USERNAME" /> sur <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Rouvrir l'ongl&amp;et fermé</translation>
 <translation id="5290020561438336792">Le PC et l'appareil de diffusion sont connectés à différents réseaux Wi-Fi (p. ex. 2,4 GHz et 5 GHz)</translation>
+<translation id="5290322819358431297">Remplissez autom. mots de passe</translation>
 <translation id="52912272896845572">Le fichier de clé privée est incorrect.</translation>
 <translation id="529175790091471945">Formater cet appareil</translation>
 <translation id="529296195492126134">Le mode Éphémère n'est pas pris en charge. Veuillez communiquer avec votre administrateur.</translation>
@@ -6967,6 +6973,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5734697361979786483">Ajouter un partage de fichier</translation>
 <translation id="573520097779121706">Utilisez les touches 7, 8, 9, u, o, j, k, l pour déplacer le curseur</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Cette donnée ou votre appareil ne respecte pas certaines des politiques de sécurité de votre organisation. Vérifiez auprès de votre administrateur ce qui doit être corrigé.}=1{Ce fichier ou votre appareil ne respecte pas certaines des politiques de sécurité de votre organisation. Vérifiez auprès de votre administrateur ce qui doit être corrigé.}one{Ce fichier ne respecte pas certaines des politiques de sécurité de votre organisation. Vérifiez auprès de votre administrateur ce qui doit être corrigé.}other{Ces fichiers ne respectent pas certaines des politiques de sécurité de votre organisation. Vérifiez auprès de votre administrateur ce qui doit être corrigé.}}</translation>
+<translation id="5736345781200955827">Créez, enregistrez et gérez vos mots de passe pour pouvoir vous connecter facilement aux sites et aux applis à l'aide de Chrome</translation>
 <translation id="5738093759615225354">Vous avez besoin de cette clé d'accès pour vous connecter à votre ordinateur</translation>
 <translation id="5738386565827477765">Appareil audio</translation>
 <translation id="5739017626473506901">Connectez-vous pour aider <ph name="USER_NAME" /> à ajouter un compte scolaire</translation>
@@ -7219,6 +7226,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5901089233978050985">Passer à l'onglet de capture</translation>
 <translation id="5901494423252125310">La porte de l'imprimante est ouverte</translation>
 <translation id="5901630391730855834">Jaune</translation>
+<translation id="5902400038326841449">Le gestionnaire de mots de passe Google est désactivé</translation>
 <translation id="5902892210366342391">Afficher les avertissements avant d'accéder à des sites non sécurisés en mode Navigation privée</translation>
 <translation id="5904614460720589786">Impossible de configurer <ph name="APP_NAME" /> en raison d'une erreur de configuration. Veuillez communiquer avec votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Continuer à autoriser ce site à utiliser des identifiants pour faire jouer du contenu protégé</translation>
@@ -8000,6 +8008,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> terminé</translation>
 <translation id="6452961788130242735">Problème de réseau ou domaine non valide</translation>
 <translation id="6453191633103419909">Qualité de projection d'onglet ou d'écran</translation>
+<translation id="6453306703004115497">Traduit en <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Regrouper tous les onglets</translation>
 <translation id="6453921811609336127">Pour basculer vers la prochaine méthode d'entrée, appuyez sur <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Majuscule<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espace<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Sur certains sites</translation>
@@ -8158,6 +8167,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="656293578423618167">Le chemin d'accès ou le nom du fichier est trop long. Veuillez raccourcir le nom ou enregistrer le fichier à un autre endroit.</translation>
 <translation id="6563002009564846727">Afficher les certificats importés de Windows</translation>
 <translation id="6563055593659435495">Impossible de maintenir une connexion avec votre téléphone. Assurez-vous que votre téléphone est à proximité et déverrouillé, et que le Bluetooth et le Wi-Fi sont activés.</translation>
+<translation id="6564343790052433242">Pour créer une clé d'accès pour <ph name="APP_NAME" />, le gestionnaire de mots de passe Google doit être activé</translation>
 <translation id="6565144332292237355">Les sites peuvent utiliser cette fonctionnalité pour rechercher n'importe quel appareil sur votre réseau local et s'y connecter</translation>
 <translation id="6568283005472142698">Recherche d'onglet</translation>
 <translation id="6569931898053264308">Économies moyennes</translation>
@@ -11428,6 +11438,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8761945298804995673">Cet utilisateur existe déjà</translation>
 <translation id="8762886931014513155">Votre <ph name="DEVICE_TYPE" /> a besoin d'une mise à jour</translation>
 <translation id="8763927697961133303">Appareil USB</translation>
+<translation id="8765940060470412555">Annuler l'épinglage du mode Lecture</translation>
 <translation id="8766156860774051068">Sélectionnés par vous</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Afficher toutes les recherches de <ph name="QUERY_CLUSTER_NAME" /></translation>

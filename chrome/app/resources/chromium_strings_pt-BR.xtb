@@ -99,6 +99,7 @@
 <translation id="2099452623287920103">As senhas e outros dados do Chromium salvos na sua Conta do Google serão removidos deste dispositivo. Para os usar de novo no Chromium, faça login outra vez.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por 1 minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}one{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}other{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minutos. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}}</translation>
 <translation id="2126108037660393668">Falha na verificação do arquivo baixado.</translation>
+<translation id="2135919691573380097">Denunciar este site</translation>
 <translation id="2137162749895930932">Fechar o tradutor</translation>
 <translation id="215352261310130060">O Chromium bloqueou o download porque o site não está usando uma conexão segura e o arquivo pode ter sido adulterado</translation>
 <translation id="2170098639895543546">Selecione o que quiser na página</translation>
@@ -309,6 +310,7 @@
 <translation id="4304713468139749426">Gerenciador de Senhas</translation>
 <translation id="4334241893986177674">Pesquisar esta captura de tela</translation>
 <translation id="4334294535648607276">Download concluído</translation>
+<translation id="4384331407722351213">Iniciar o Chromium junto com o Windows</translation>
 <translation id="4384993550046411228">Defina o Chromium como o navegador padrão para acessar com facilidade seus recursos favoritos. O Chromium será fixado na barra de tarefas para agilizar seu acesso.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> requer que você leia e aceite os Termos de Serviço a seguir antes de usar o dispositivo. Esses termos não ampliam, modificam nem limitam os Termos do ChromiumOS.</translation>
 <translation id="4407044323746248786">Sair do Chromium mesmo assim?</translation>
@@ -329,6 +331,7 @@
 <translation id="4531137820806573936">O Chromium precisa de permissão para mapear o ambiente ao seu redor e acompanhar suas mãos</translation>
 <translation id="4536805923587466102">Você já fez login na conta <ph name="USER_EMAIL_ADDRESS" /> em outro perfil do Chromium</translation>
 <translation id="4548534452171747496">O Chromium pré-carrega páginas, deixando a navegação e a pesquisa mais rápidas. <ph name="BEGIN_LINK" />Saiba mais sobre o pré-carregamento de páginas<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">Ao denunciar sites que podem ser perigosos, você melhora a segurança on-line de todo mundo.</translation>
 <translation id="4570813286784708942">O Chromium bloqueou o download porque você desativou o recurso Navegação segura e não é possível verificar o arquivo</translation>
 <translation id="4583692638088316420">Teste o Google Lens com o Chromium no seu celular</translation>
 <translation id="4594305310729380060">No Gerenciador de senhas neste dispositivo</translation>
@@ -368,6 +371,7 @@
 <translation id="5174969993834422967">Você geralmente bloqueia notificações. Para permitir que este site envie notificações, clique no ícone de notificação no canto direito da barra de local.</translation>
 <translation id="5174983315706567306">Não há espaço em disco suficiente.</translation>
 <translation id="5187123684706427865">A conta do Chromium precisa ser autenticada de novo</translation>
+<translation id="5219681158518957165">Use as configurações do navegador recomendadas</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5231355151045086930">Sair do Chromium</translation>
 <translation id="5234764350956374838">Dispensar</translation>
@@ -471,6 +475,7 @@
 <translation id="6327105987658262776">Nenhuma atualização disponível.</translation>
 <translation id="6333502561965082103">Outra operação está em progresso no Chromium. Tente novamente mais tarde.</translation>
 <translation id="6334986366598267305">Agora ficou mais fácil usar o Chromium com sua Conta do Google e em computadores compartilhados.</translation>
+<translation id="6347002662287820329">Defina o Chromium como o navegador padrão para acessar seus recursos favoritos com facilidade.</translation>
 <translation id="6347933965114150440">Atalho do Chromium</translation>
 <translation id="6366160072964553914">O Chromium bloqueou o download porque o arquivo não é transferido com frequência e pode ser perigoso</translation>
 <translation id="6373523479360886564">Você quer mesmo desinstalar o Chromium?</translation>
@@ -501,6 +506,7 @@
 <translation id="6598877126913850652">Acessar as configurações de notificação do Chromium</translation>
 <translation id="6600016381025017075">Pesquise o que quiser nesta página</translation>
 <translation id="6613594504749178791">As alterações entrarão em vigor na próxima vez que você reiniciar o Chromium.</translation>
+<translation id="6637908313088374648">Agora o Chromium é iniciado junto com o Windows para você começar a navegar na hora. Desative essa opção nas configurações quando quiser.</translation>
 <translation id="6648212540664651655">Continue de onde você parou: o Chromium restaurou as guias da sua última sessão. Para desativar essa opção, acesse as</translation>
 <translation id="665732753414869868">O Chromium precisa da permissão de acesso à câmera para criar um mapa 3D do ambiente</translation>
 <translation id="6669284030132180248">Se você também salvar seus favoritos na Conta do Google, poderá monitorar os preços dos produtos no Chromium e receber notificações quando houver reduções</translation>
@@ -557,6 +563,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="7213407614656404070">Usar o Chromium sempre que clicar em links em mensagens, documentos e outros apps</translation>
 <translation id="7223968959479464213">Gerenciador de tarefas - Chromium</translation>
 <translation id="7246575524853130370">Seus interesses estimados pelo Chromium</translation>
+<translation id="7252276985725323153">Comece a navegar instantaneamente: o Chromium agora pode ser iniciado com o Windows.</translation>
 <translation id="7274695763216404502">Fixado. Use a pesquisa por imagens de novo pela barra de ferramentas</translation>
 <translation id="7288567540154601580">Guias e extensões</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{O Chromium recomenda que você a remova}one{O Chromium recomenda que você a remova}other{O Chromium recomenda que você as remova}}</translation>
@@ -584,6 +591,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="751935028865900641">Os sites provavelmente funcionarão como esperado. Sua conta será desconectada da maioria dos sites quando você fechar todas as janelas do Chromium, exceto sua Conta do Google, se tiver feito login no Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{O Chromium será reiniciado em 1 minuto}one{O Chromium será reiniciado em # minuto}other{O Chromium será reiniciado em # minutos}}</translation>
 <translation id="7565444033145385702">Para proteger seus dados, permita que o Chromium remova permissões de sites que você não visitou recentemente.</translation>
+<translation id="7583104404158659071">Inicie o Chromium automaticamente para começar a navegar na hora.</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">O Chromium está usando sua câmera e seu microfone.</translation>
 <translation id="7617377681829253106">O Chromium ficou ainda melhor</translation>

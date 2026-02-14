@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Помогите нам улучшить Chrome – расскажите, почему вы разрешили сторонние файлы cookie. <ph name="BEGIN_LINK" />Отправить отзыв<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Вы можете открывать версии сайтов, предназначенные для компьютеров.</translation>
 <translation id="1085696779717592361">Используйте Chrome по умолчанию</translation>
+<translation id="1126523729897810826">Ознакомьтесь со всеми возможностями Chrome.</translation>
 <translation id="113098737392899175">Навигация по страницам с помощью курсора при подключенной клавиатуре</translation>
 <translation id="1149644372535087155">Сохраняйте пароли в Chrome</translation>
 <translation id="1178015372320901893">Нижний экран с моими ярлыками</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Ускорить работу сайтов на движке Chrome V8, а Chrome сделать чуть менее устойчивым к атакам</translation>
 <translation id="1593426485665524382">Новые действия доступны в верхней части экрана</translation>
 <translation id="1594521731409209842">Чтобы изменить размер фото, сведите или разведите два пальца на экране</translation>
+<translation id="1599268789440304082">Экран с описанием настройки открыт</translation>
 <translation id="1601560923496285236">Применить</translation>
 <translation id="1615755956145364867">Разрешить сайтам отправлять запрос на воспроизведение защищенного контента</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">URL развернут</translation>
 <translation id="4522570452068850558">Сведения</translation>
 <translation id="4523472416386354622">Войти</translation>
+<translation id="4529207923544043455">На нижнем экране показывается список выполненных и невыполненных задач по настройке</translation>
 <translation id="4534723447064627427">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к микрофону, предоставьте разрешение в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Экран с описанием настройки закрыт</translation>
 <translation id="4566417217121906555">Отключить микрофон</translation>
 <translation id="4570913071927164677">Подробнее…</translation>
 <translation id="4578289292431526768">Начать</translation>

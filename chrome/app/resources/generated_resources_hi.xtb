@@ -1350,6 +1350,8 @@
 <translation id="1891362123137972260">डिस्क में बहुत कम जगह है. कृपया डिस्क में थोड़ी जगह खाली करें.</translation>
 <translation id="189210018541388520">पूरी स्‍क्रीन खोलें</translation>
 <translation id="1892341345406963517">नमस्ते <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. नीचे <ph name="BUTTON_LABEL" /> पर क्लिक करें
+2. Windows की सेटिंग में जाकर, <ph name="BUTTON_2" /> पर क्लिक करें</translation>
 <translation id="189358972401248634">अन्य भाषाएं</translation>
 <translation id="1895658205118569222">बंद करें</translation>
 <translation id="1896043844785689584">फ़िंगरप्रिंट सेट अप करने के लिए, अपने बच्चे से कीबोर्ड के सबसे नीचे दाएं कोने पर मौजूद, फ़िंगरप्रिंट सेंसर को छूने के लिए कहें. आपके बच्चे के फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है. साथ ही, यह हमेशा इस <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
@@ -3167,6 +3169,7 @@
 <translation id="3105820656234755131">पासवर्ड अपडेट किया गया</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लूटूथ)</translation>
 <translation id="310671807099593501">साइट ब्लूटूथ का इस्तेमाल कर रही है</translation>
+<translation id="3108122610701115301">डिफ़ॉल्ट के तौर पर सेट करें</translation>
 <translation id="3108931485517391283">फ़ाइल नहीं मिल सकी</translation>
 <translation id="3108957152224931571">हाइलाइट करने के लिए रंग</translation>
 <translation id="3109206895301430738">सेव किए हुए टैब ग्रुप</translation>
@@ -5117,6 +5120,7 @@
 <translation id="4415815425191869676">इन साइटों को हमेशा ऐक्टिव रखें</translation>
 <translation id="4416582610654027550">एक मान्य यूआरएल टाइप करें</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{इस टैब को रोकें}one{इस टैब को रोकें}other{इन टैब को रोकें}}</translation>
+<translation id="4421823557207751899"><ph name="USERNAME" /> के रूप में प्रवेश किया हुआ है</translation>
 <translation id="4421932172707401417">लिखने से जुड़े सुझाव, आपके प्रॉम्प्ट और वेब पेज पर मौजूद कॉन्टेंट के आधार पर दिए जाते हैं</translation>
 <translation id="4421932782753506458">फ्लफ़ी</translation>
 <translation id="4423376891418188461">सेटिंग फिर से स्थापित करें</translation>
@@ -6217,6 +6221,7 @@
 <translation id="5191251636205085390">तीसरे पक्ष की कुकी की जगह इस्तेमाल करने के मकसद से बनाई गई नई टेक्नोलॉजी के बारे में जानें और उन्हें कंट्रोल करें</translation>
 <translation id="519185197579575131">QT का इस्तेमाल करें</translation>
 <translation id="5192062846343383368">निगरानी करने की सेटिग देखने के लिए Family Link ऐप्लिकेशन खोलें</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> डालना ज़रूरी है</translation>
 <translation id="5193978546360574373">ऐसा करने से, इस Chromebook में मौजूद Google Drive का ऐक्सेस हट जाएगा. साथ ही, ऑफ़लाइन इस्तेमाल करने के लिए उपलब्ध कराई गई सभी फ़ाइलों का ऐक्सेस भी हट जाएगा</translation>
 <translation id="5193988420012215838">आपके क्लिपबोर्ड पर कॉपी की गई</translation>
 <translation id="5194256020863090856">इसका असर सिर्फ़ गुप्त विंडो पर होता है</translation>
@@ -6358,6 +6363,7 @@
 <translation id="5288106344236929384"><ph name="DOMAIN" /> पर <ph name="USERNAME" /> के लिए ज़्यादा कार्रवाइयां और पासकी के ज़्यादा विकल्प</translation>
 <translation id="5288678174502918605">बंद किए गए टैब पु&amp;न: खोलें</translation>
 <translation id="5290020561438336792">पीसी और कास्ट करने वाला डिवाइस, अलग-अलग वाई-फ़ाई नेटवर्क से कनेक्ट हैं (जैसे, 2.4 गीगाहर्ट्ज़ बनाम 5 गीगाहर्ट्ज़)</translation>
+<translation id="5290322819358431297">पासवर्ड ऑटोमैटिक तरीके से भरें</translation>
 <translation id="52912272896845572">निजी कुंजी फ़ाइल अमान्य है.</translation>
 <translation id="529175790091471945">यह डिवाइस फ़ॉर्मेट करें</translation>
 <translation id="529296195492126134">अल्पकालिक मोड में वीएम सॉफ़्टवेयर इस्तेमाल नहीं किया जा सकता. कृपया अपने एडमिन से संपर्क करें</translation>
@@ -6977,6 +6983,7 @@
 <translation id="5734697361979786483">फ़ाइल शेयर जोड़ें</translation>
 <translation id="573520097779121706">कर्सर को मूव करने के लिए, 7, 8, 9, u, o, j, k, और l बटन इस्तेमाल करें</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{यह डेटा या आपका डिवाइस, आपके संगठन की कुछ सुरक्षा नीतियों का पालन नहीं करता. किन समस्याओं को ठीक करना है, इसके बारे में अपने एडमिन से संपर्क करें.}=1{यह फ़ाइल या आपका डिवाइस, आपके संगठन की सुरक्षा नीतियों का पालन नहीं करता. किन समस्याओं को ठीक करना है, इसके बारे में अपने एडमिन से संपर्क करें.}one{यह फ़ाइल आपके संगठन की सुरक्षा नीतियों का पालन नहीं करती. किन समस्याओं को ठीक करना है, इसके बारे में अपने एडमिन से संपर्क करें.}other{ये फ़ाइलें आपके संगठन की सुरक्षा नीतियों का पालन नहीं करतीं. किन समस्याओं को ठीक करना है, इसके बारे में अपने एडमिन से संपर्क करें.}}</translation>
+<translation id="5736345781200955827">Chrome पर, ऐप्लिकेशन और साइटों में आसानी से साइन इन करने के लिए, पासवर्ड बनाएं, उन्हें सेव करें, और मैनेज करें</translation>
 <translation id="5738093759615225354">आपको अपने कंप्यूटर में साइन इन करने के लिए, इस पासवर्ड की ज़रूरत है</translation>
 <translation id="5738386565827477765">ऑडियो डिवाइस</translation>
 <translation id="5739017626473506901">साइन इन करके, स्कूल वाला खाता जोड़ने में <ph name="USER_NAME" /> की मदद करें</translation>
@@ -7229,6 +7236,7 @@
 <translation id="5901089233978050985">कैप्चर करने वाले टैब पर जाएं</translation>
 <translation id="5901494423252125310">प्रिंटर का दरवाज़ा खुला है</translation>
 <translation id="5901630391730855834">पीला</translation>
+<translation id="5902400038326841449">Google Password Manager की सुविधा बंद है</translation>
 <translation id="5902892210366342391">गुप्त मोड में असुरक्षित साइटों पर जाने से पहले चेतावनियां दिखेंगी</translation>
 <translation id="5904614460720589786">कॉन्फ़िगर करते समय हुई गड़बड़ी की वजह से <ph name="APP_NAME" /> को सेट अप नहीं किया जा सका. कृपया अपने एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">इस साइट को आइडेंटिफ़ायर इस्तेमाल करने की अनुमति देना जारी रखें, ताकि आपको सुरक्षित कॉन्टेंट दिखाया जा सके</translation>
@@ -8010,6 +8018,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> पूरा हुआ</translation>
 <translation id="6452961788130242735">नेटवर्क समस्या या गलत क्षेत्र</translation>
 <translation id="6453191633103419909">टैब/स्क्रीन प्रोजेक्शन की क्वालिटी</translation>
+<translation id="6453306703004115497"><ph name="LANGUAGE" /> में अनुवाद किया गया</translation>
 <translation id="6453687572758515877">सभी टैब का ग्रुप बनाएं</translation>
 <translation id="6453921811609336127">अगले इनपुट के तरीके पर जाने के लिए, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> दबाएं</translation>
 <translation id="6455264371803474013">कुछ खास साइटों पर</translation>
@@ -8168,6 +8177,7 @@
 <translation id="656293578423618167">फ़ाइल पाथ या नाम बहुत बड़ा है.  कृपया छोटे नाम के साथ या किसी दूसरी जगह पर सेव करें.</translation>
 <translation id="6563002009564846727">Windows से इंपोर्ट किए गए सर्टिफ़िकेट देखें</translation>
 <translation id="6563055593659435495">फ़ोन से कनेक्ट नहीं रखा जा सका. पक्का करें कि आपका फ़ोन आस-पास हो और अनलॉक हो. साथ ही, उसका ब्लूटूथ और वाई-फ़ाई चालू हो.</translation>
+<translation id="6564343790052433242"><ph name="APP_NAME" /> के लिए पासकी बनाना है, तो Google Password Manager चालू होना चाहिए</translation>
 <translation id="6565144332292237355">साइटें इस सुविधा का इस्तेमाल करके, आपके लोकल नेटवर्क पर मौजूद किसी भी डिवाइस को खोज सकती हैं और उससे कनेक्ट कर सकती हैं</translation>
 <translation id="6568283005472142698">टैब सर्च</translation>
 <translation id="6569931898053264308">ठीक-ठाक बचत</translation>
@@ -11440,6 +11450,7 @@
 <translation id="8761945298804995673">यह उपयोगकर्ता पहले से मौजूद है</translation>
 <translation id="8762886931014513155">आपके <ph name="DEVICE_TYPE" /> को अपडेट की ज़रूरत है</translation>
 <translation id="8763927697961133303">USB डिवाइस</translation>
+<translation id="8765940060470412555">रीडिंग मोड को अनपिन करें</translation>
 <translation id="8766156860774051068">आपके बनाए गए शॉर्टकट</translation>
 <translation id="8766796754185931010">कोटोएरी</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> की सभी खोजें दिखाएं</translation>

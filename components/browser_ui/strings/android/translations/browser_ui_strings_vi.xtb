@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Hãy chia sẻ lý do bạn cho phép cookie của bên thứ ba để giúp chúng tôi cải thiện Chrome. <ph name="BEGIN_LINK" />Gửi phản hồi<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Bạn có thể yêu cầu xem phiên bản trang web dành cho máy tính</translation>
 <translation id="1085696779717592361">Sử dụng Chrome theo mặc định</translation>
+<translation id="1126523729897810826">Làm theo các đề xuất dưới đây để sử dụng Chrome hiệu quả nhất</translation>
 <translation id="113098737392899175">Di chuyển giữa các trang bằng con trỏ văn bản khi kết nối bàn phím</translation>
 <translation id="1149644372535087155">Lưu mật khẩu trong Chrome</translation>
 <translation id="1178015372320901893">Bảng các lối tắt của tôi ở dưới cùng</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Tăng tốc độ tải trang web bằng công cụ V8 của Chrome nhưng làm giảm khả năng chống lại các cuộc tấn công của Chrome</translation>
 <translation id="1593426485665524382">Có các thao tác mới ở gần đầu màn hình</translation>
 <translation id="1594521731409209842">Chụm hai ngón tay trên màn hình để đổi kích thước ảnh</translation>
+<translation id="1599268789440304082">Đã mở trang thiết lập</translation>
 <translation id="1601560923496285236">Áp dụng</translation>
 <translation id="1615755956145364867">Các trang web có thể yêu cầu phát nội dung được bảo vệ</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -351,7 +353,9 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="4505788138578415521">URL đã được mở rộng</translation>
 <translation id="4522570452068850558">Chi tiết</translation>
 <translation id="4523472416386354622">Đăng nhập để bắt đầu</translation>
+<translation id="4529207923544043455">Bảng dưới cùng hiển thị các việc cần làm đã hoàn thành và chưa hoàn thành trong danh sách thiết lập</translation>
 <translation id="4534723447064627427">Để cho phép <ph name="APP_NAME" /> truy cập vào micrô của bạn, hãy bật cả micrô trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Đã đóng trang thiết lập</translation>
 <translation id="4566417217121906555">Tắt micrô</translation>
 <translation id="4570913071927164677">Chi tiết</translation>
 <translation id="4578289292431526768">Bắt đầu nào!</translation>

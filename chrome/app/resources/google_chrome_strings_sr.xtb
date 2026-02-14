@@ -255,6 +255,7 @@
 <translation id="3622716124581627104">Идентификујте ствари или места и копирајте или преводите текст. Када користите Google објектив, снимак екрана странице се шаље Google-у. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Сада можете лакше да користите Chrome са Google налогом и на дељеним рачунарима.</translation>
 <translation id="3635073343384702370">Chrome може да проверава лозинке када их сачувате</translation>
+<translation id="3636970668267555808">Подесите Chrome као подразумевани прегледач да бисте лако приступали функцијама које знате, волите и којима верујете.</translation>
 <translation id="3667616615096815454">Инсталирање није успело, апликације је непозната серверу.</translation>
 <translation id="3673813398384385993">Chrome је открио да <ph name="EXTENSION_NAME" /> садржи малвер</translation>
 <translation id="3697952514309507634">Други Chrome профили</translation>
@@ -264,6 +265,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome препоручује да га уклоните. <ph name="BEGIN_LINK" />Сазнајте више о подржаним додацима<ph name="END_LINK" />}one{Chrome препоручује да их уклоните. <ph name="BEGIN_LINK" />Сазнајте више о подржаним додацима<ph name="END_LINK" />}few{Chrome препоручује да их уклоните. <ph name="BEGIN_LINK" />Сазнајте више о подржаним додацима<ph name="END_LINK" />}other{Chrome препоручује да их уклоните. <ph name="BEGIN_LINK" />Сазнајте више о подржаним додацима<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Продубите претрагу додавањем више картица, фајлова и алатки помоћу дугмета Додај картицу и друго.</translation>
 <translation id="3756724684201900923">Сазнајте више о инсталирању Chrome-а</translation>
+<translation id="3772152698251011058">Пријавите овај сајт Google-у</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex није успео да синхронизује податке због грешке при пријављивању.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -415,6 +417,8 @@
 Google Chrome не може да врати подешавања.</translation>
 <translation id="5465210843490471889">Одаберите Chrome профил који ћете користити са <ph name="START_GLIC_STYLING" />Gemini-јем<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Да би побољшао ове функције, Chrome Google-у шаље ваше интеракције са њима. Особе које прегледају могу да читају, обрађују и коментаришу ове податке.</translation>
+<translation id="547202872422499512">Chrome се сада покреће када се покрене Windows, па можете одмах да почнете да прегледате. То можете да искључите у подешавањима.</translation>
+<translation id="5486346529181556467">Пријавите сајт за који мислите да је штетан да бисте побољшали онлајн безбедност за свакога. Сазнајте више о <ph name="BEGIN_LINK" />Google смерницама за небезбедне сајтове<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">горњи леви угао области претраге: улево <ph name="LEFT" />%, нагоре <ph name="TOP" />%</translation>
 <translation id="5550137307985173298">Кликните на дугме Прилагоди Chrome на страници нове картице да бисте Chrome-у дали нов изглед</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -574,6 +578,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6967962315388095737">Правило за долазни саобраћај за Google Chrome бета да бисте омогућили mDNS саобраћај.</translation>
 <translation id="6979589607440534284">Сазнајте зашто Chrome блокира неке фајлове, отвара се на новој картици</translation>
+<translation id="6985817499499247940">Аутоматски покрените Chrome да бисте одмах почели да прегледате.</translation>
 <translation id="6991926986715044139">Увек приказуј пречицу за Google објектив</translation>
 <translation id="6999131147875565462">Chrome ради брже и функције које користе JavaScript би требало да раде како је предвиђено</translation>
 <translation id="7011190694940573312">Инсталирање није успело зато што ова верзија оперативног система није подржана.</translation>
@@ -602,6 +607,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7288567540154601580">Картице и додаци</translation>
 <translation id="7296210096911315575">Важне информације о употреби и безбедности</translation>
 <translation id="7302361266603927550">Неки Chrome подаци још нису сачувани на Google налогу. Сачекајте неколико минута пре него што се одјавите. Ако се одјавите одмах, ови подаци ће бити избрисани.</translation>
+<translation id="7306401458628386911">Одмах почните да прегледате: Chrome сада може да се покрене када се покрене Windows.</translation>
 <translation id="7308322188646931570">Chrome тражи приступ меморијском простору да би преузимао датотеке</translation>
 <translation id="7339898014177206373">Нови прозор</translation>
 <translation id="7352651011704765696">Дошло је до грешке</translation>
@@ -664,6 +670,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7827099906024714326">Chrome мора да верификује да сте то ви да би неки подаци могли да се чувају на Google налогу и користе на свим уређајима. Ако се одјавите одмах, ови подаци ће бити избрисани.</translation>
 <translation id="7832314606810669113">Да би вам обележивачи и други садржај били доступни на свим уређајима, пријавите се у Chrome. Овај обележивач ће бити сачуван на Google налогу када се пријавите.</translation>
 <translation id="7845233973568007926">Хвала вам на инсталацији. Морате да рестартујете рачунар пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847170235260850604">Покрени Chrome када се Windows покрене</translation>
 <translation id="7849037457735762883">Наставите тамо где сте стали: Chrome може да врати картице сваки пут када га рестартујете. Да бисте то укључили, идите у</translation>
 <translation id="7869620795354551924">Да бисте користили сачуване лозинке, пратите QR кôд, преузмите Chrome за iOS и пријавите се на Google налог</translation>
 <translation id="7872446069773932638">Преузима се... Још <ph name="SECONDS" /> сек</translation>

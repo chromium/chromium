@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Ajuda'ns a millorar Chrome explicant-nos per què has permès les galetes de tercers. <ph name="BEGIN_LINK" />Envia suggeriments<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Pots sol·licitar que es mostri la versió per a ordinadors dels llocs web</translation>
 <translation id="1085696779717592361">Utilitza Chrome de manera predeterminada</translation>
+<translation id="1126523729897810826">Completa aquestes accions suggerides per treure el màxim profit de Chrome</translation>
 <translation id="113098737392899175">Navega per les pàgines amb un cursor de text quan hi hagi un teclat connectat</translation>
 <translation id="1149644372535087155">Desa les contrasenyes a Chrome</translation>
 <translation id="1178015372320901893">Full inferior Les meves dreceres</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Agilitza els llocs web amb el motor V8 de Chrome, però fa que Chrome sigui una mica menys resistent als atacs</translation>
 <translation id="1593426485665524382">Hi ha noves accions disponibles a prop de la part superior de la pantalla</translation>
 <translation id="1594521731409209842">Pinça la pantalla per canviar la mida de la foto</translation>
+<translation id="1599268789440304082">S'ha obert el full de configuració</translation>
 <translation id="1601560923496285236">Aplica</translation>
 <translation id="1615755956145364867">Els llocs web poden demanar permís per reproduir contingut protegit</translation>
 <translation id="1620510694547887537">Càmera</translation>
@@ -352,7 +354,9 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="4505788138578415521">L'URL s'ha ampliat</translation>
 <translation id="4522570452068850558">Detalls</translation>
 <translation id="4523472416386354622">Inicia la sessió per començar</translation>
+<translation id="4529207923544043455">Full inferior que mostra les tasques de la llista de configuració completades i no completades</translation>
 <translation id="4534723447064627427">Perquè <ph name="APP_NAME" /> pugui accedir al micròfon, també has d'activar-lo a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">S'ha tancat el full de configuració</translation>
 <translation id="4566417217121906555">Silencia el micròfon</translation>
 <translation id="4570913071927164677">Detalls</translation>
 <translation id="4578289292431526768">Som-hi</translation>

@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">રિવ્યૂ પૂર્ણ થયો!</translation>
 <translation id="1094555143448724771">તમારા અન્ય ડિવાઇસમાંના ટૅબ જોવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો</translation>
 <translation id="1095761715416917775">ખાતરી કરો કે તમે તમારો સિંક કરેલો ડેટા ગમે ત્યારે ઍક્સેસ કરી શકો છો</translation>
+<translation id="1096091316906284742">Chrome Finds સુવિધા પસંદ કરવા માટેની બોટમ શીટ</translation>
 <translation id="1100066534610197918">ગ્રૂપમાં નવા ટૅબમાં ખોલો</translation>
 <translation id="1103142993930332957">Chromeને બહેતર બનાવવામાં સહાય કરશો?</translation>
 <translation id="1105960400813249514">સ્ક્રીન કૅપ્ચર</translation>
@@ -608,6 +609,7 @@
 <translation id="3635073343384702370">જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chrome તેને ચેક કરી શકે છે</translation>
 <translation id="3636940436873918441">પસંદગીની ભાષાઓ</translation>
 <translation id="3637744895182738742">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
+<translation id="3641581193271938629">Chrome Finds સુવિધા પસંદ કરવાનો વિકલ્પ બંધ કર્યો</translation>
 <translation id="3647019414263135904">સંદર્ભ પૉપઅપ ખોલો અથવા બંધ કરો</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google ઍપના હોમ ટૅબ પર જાઓ</translation>
@@ -782,6 +784,7 @@
 <translation id="4384468725000734951">શોધ માટે Sogouનો ઉપયોગ કરી રહ્યાં છીએ</translation>
 <translation id="4387647248986092471">કાર પ્રોફાઇલ લૉક બનાવો</translation>
 <translation id="4387817230000841154">ડાઉનલોડ પેજ ખોલો</translation>
+<translation id="4395046795145457714">Chrome Finds સુવિધા પસંદ કરવાનો વિકલ્પ સંપૂર્ણ ઊંચાઈએ ખોલ્યો</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, પસંદ કરેલું, પિન કરેલું, રેકોર્ડ કરતું છૂપું ટૅબ</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> ડાઉનલોડ કરી રહ્યાં છીએ…</translation>
 <translation id="4404568932422911380">કોઈ બુકમાર્ક નથી</translation>
@@ -1050,6 +1053,7 @@
 <translation id="5469852975082458401">તમે ટેક્સ્ટ કર્સર વડે કોઈપણ પેજ પર નૅવિગેટ કરી શકશો. બંધ કરવા માટે, F7 દબાવો.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ટૅબને ખસેડી શકાતું નથી</translation>
 <translation id="548278423535722844">નકશા અ‍ૅપ્લિકેશનમાં ખોલો</translation>
+<translation id="5489222148748465285">શું Chrome શોધવાનું ચાલુ રાખે?</translation>
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> તરીકે જોડાઓ</translation>
 <translation id="5517326820028369152">તાજેતરની ઍક્ટિવિટી બોટમ શીટ</translation>
@@ -1345,6 +1349,7 @@
 <translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">છબીને પ્રીવ્યૂ કરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">Chrome Finds સુવિધા પસંદ કરવાનો વિકલ્પ અડધી ઊંચાઈએ ખોલ્યો</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> માં ખોલો</translation>
 <translation id="6669390930482049506">મને સૂચિત કરો</translation>
 <translation id="6671495933530132209">છબી કૉપિ કરો</translation>
@@ -1396,6 +1401,7 @@
 <translation id="6828070228333235514">કિંમત ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="6830728435402077660">સુરક્ષિત નથી</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>
+<translation id="6835182496791325827">જ્યારે તમે હાજર ન હો, ત્યારે Chromeને તમારી શોધ માટે શ્રેષ્ઠ પરિણામો મળે, ત્યારે નોટિફિકેશન મેળવો.</translation>
 <translation id="6846298663435243399">લોડ કરી રહ્યાં છે…</translation>
 <translation id="6850409657436465440">તમારું ડાઉનલોડ હજી પણ પ્રક્રિયામાં છે</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ટેબ્સ બંધ કર્યા</translation>

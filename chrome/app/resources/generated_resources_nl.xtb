@@ -1789,6 +1789,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="219283042927675668">Tabbladen in groep</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> beheert je pagina Nieuw tabblad (wordt geopend in een nieuw tabblad)</translation>
 <translation id="2192982266585216032">&amp;Betalingen</translation>
+<translation id="2193567467390483943">Je ouder heeft deze extensie niet goedgekeurd</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2195331105963583686">Je kunt deze <ph name="DEVICE_TYPE" /> daarna nog steeds gebruiken, maar je apparaat ontvangt geen automatische software- en beveiligingsupdates meer.</translation>
 <translation id="2195729137168608510">E-mail beveiligen</translation>
@@ -5104,6 +5105,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4415815425191869676">Deze sites altijd actief houden</translation>
 <translation id="4416582610654027550">Voer een geldige URL in</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Dit tabblad onderbreken}other{Deze tabbladen onderbreken}}</translation>
+<translation id="4421823557207751899">Ingelogd als <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Schrijfsuggesties zijn gebaseerd op je prompts en de content van de webpagina.</translation>
 <translation id="4421932782753506458">Pluisje</translation>
 <translation id="4423376891418188461">Instellingen herstellen</translation>

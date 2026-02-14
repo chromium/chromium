@@ -1349,6 +1349,8 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1891362123137972260">Mycket ont om diskutrymme. Frigör diskutrymme.</translation>
 <translation id="189210018541388520">Öppna helskärmsläge</translation>
 <translation id="1892341345406963517">Hej <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Klicka på <ph name="BUTTON_LABEL" /> nedan
+2. Klicka på <ph name="BUTTON_2" /> i Windows-inställningarna</translation>
 <translation id="189358972401248634">Övriga språk</translation>
 <translation id="1895658205118569222">Stängning</translation>
 <translation id="1896043844785689584">Låt ditt barn trycka på fingeravtryckssensorn nere till höger på tangentbordet för att ställa in fingeravtryck. Ditt barns fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig denna <ph name="DEVICE_TYPE" />.</translation>
@@ -3166,6 +3168,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3105820656234755131">Lösenordet har uppdaterats</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Webbplatsen använder Bluetooth</translation>
+<translation id="3108122610701115301">Ange standard</translation>
 <translation id="3108931485517391283">Det går inte att ta emot</translation>
 <translation id="3108957152224931571">Markeringsfärg</translation>
 <translation id="3109206895301430738">Sparade flikgrupper</translation>
@@ -5117,6 +5120,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4415815425191869676">Låt alltid dessa webbplatser vara aktiva</translation>
 <translation id="4416582610654027550">Ange en giltig webbadress</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Pausa den här fliken}other{Pausa de här flikarna}}</translation>
+<translation id="4421823557207751899">Inloggad som <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Skrivförslag baseras på dina promptar och innehållet på webbsidan</translation>
 <translation id="4421932782753506458">Misse</translation>
 <translation id="4423376891418188461">Återställ inställningar</translation>
@@ -6218,6 +6222,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5191251636205085390">Läs mer om ny teknik som med tiden kan ersätta tredjepartscookies och hur du kan styra den</translation>
 <translation id="519185197579575131">Använd Qt</translation>
 <translation id="5192062846343383368">Öppna Family Link-appen om du vill se inställningarna för kontroll</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> måste anges</translation>
 <translation id="5193978546360574373">Detta tar bort åtkomsten till Google Drive på denna Chromebook, inklusive åtkomsten till filer som gjorts tillgängliga offline</translation>
 <translation id="5193988420012215838">Kopierat till urklipp</translation>
 <translation id="5194256020863090856">Detta påverkar bara inkognitofönster</translation>
@@ -6360,6 +6365,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5288678174502918605">Ö&amp;ppna en stängd flik igen</translation>
 <translation id="5290020561438336792">Datorn och Cast-enheten är på olika wifi-nätverk (t.ex. 2,4 GHz
     gentemot 5 GHz)</translation>
+<translation id="5290322819358431297">Autofyll dina lösenord</translation>
 <translation id="52912272896845572">Den privata nyckelfilen är ogiltig.</translation>
 <translation id="529175790091471945">Formatera enheten</translation>
 <translation id="529296195492126134">Tillfälligt läge stöds inte. Kontakta administratören</translation>
@@ -6979,6 +6985,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5734697361979786483">Lägg till filresurs</translation>
 <translation id="573520097779121706">Använd tangenterna 7, 8, 9, u, o, j, k, l för att flytta markören</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Datan eller enheten efterlever inte vissa av organisationens säkerhetspolicyer. Kontakta administratören om vad som behöver åtgärdas.}=1{Filen eller enheten efterlever inte vissa av organisationens säkerhetspolicyer. Kontakta administratören om vad som behöver åtgärdas.}other{Filerna efterlever inte vissa av organisationens säkerhetspolicyer. Kontakta administratören om vad som behöver åtgärdas.}}</translation>
+<translation id="5736345781200955827">Skapa, spara och hantera dina lösenord så att du enkelt kan logga in på webbplatser och i appar i Chrome</translation>
 <translation id="5738093759615225354">Du behöver den här nyckeln för att logga in på datorn</translation>
 <translation id="5738386565827477765">Ljudenhet</translation>
 <translation id="5739017626473506901">Logga in för att hjälpa <ph name="USER_NAME" /> att lägga till ett skolkonto</translation>
@@ -7231,6 +7238,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5901089233978050985">Byt till fliken som spelar in</translation>
 <translation id="5901494423252125310">Skrivarens lucka är öppen</translation>
 <translation id="5901630391730855834">Gul</translation>
+<translation id="5902400038326841449">Google Lösenordshantering är inaktiverad</translation>
 <translation id="5902892210366342391">Visa varningar innan du besöker osäkra webbplatser i inkognitoläge</translation>
 <translation id="5904614460720589786">Det gick inte att installera <ph name="APP_NAME" /> på grund av ett konfigurationsproblem. Kontakta administratören. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Fortsätt tillåta att den här webbplatsen använder identifierare för att spela upp skyddat innehåll</translation>
@@ -8012,6 +8020,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> slutfört</translation>
 <translation id="6452961788130242735">Nätverksproblem eller felaktig sfär</translation>
 <translation id="6453191633103419909">Projektionskvalitet för flik/skärm</translation>
+<translation id="6453306703004115497">Översatt till <ph name="LANGUAGE" />.</translation>
 <translation id="6453687572758515877">Gruppera alla flikar</translation>
 <translation id="6453921811609336127">Om du vill byta till nästa inmatningsmetod trycker du på <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Skift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />blanksteg<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">På valda webbplatser</translation>
@@ -8170,6 +8179,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="656293578423618167">För lång sökväg eller för långt filnamn. Spara med ett kortare namn eller på en annan plats.</translation>
 <translation id="6563002009564846727">Visa importerade certifikat från Windows</translation>
 <translation id="6563055593659435495">Det gick inte att upprätthålla anslutningen till telefonen. Se till att telefonen finns i närheten, är olåst och att Bluetooth och wifi har aktiverats på den.</translation>
+<translation id="6564343790052433242">Google Lösenordshantering måste vara aktiverad om du vill skapa en nyckel för <ph name="APP_NAME" /></translation>
 <translation id="6565144332292237355">Webbplatser kan använda den här funktionen för att söka efter och ansluta till enheter i det lokala nätverket</translation>
 <translation id="6568283005472142698">Sök bland flikar</translation>
 <translation id="6569931898053264308">Medelstora besparingar</translation>
@@ -11441,6 +11451,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8761945298804995673">Användaren finns redan</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> behöver uppdateras</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
+<translation id="8765940060470412555">Lossa läsläge</translation>
 <translation id="8766156860774051068">Utvalt av dig</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Visa alla sökningar efter <ph name="QUERY_CLUSTER_NAME" /></translation>

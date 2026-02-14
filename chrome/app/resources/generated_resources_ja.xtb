@@ -1336,6 +1336,7 @@
 <translation id="1891362123137972260">ディスクの空き領域が非常に少なくなっています。空き容量を増やしてください。</translation>
 <translation id="189210018541388520">全画面表示</translation>
 <translation id="1892341345406963517"><ph name="PARENT_NAME" /> さん</translation>
+<translation id="1892453608039100484">1. 下の <ph name="BUTTON_LABEL" /> をクリックしますWindows の設定で [<ph name="BUTTON_2" />] をクリックします</translation>
 <translation id="189358972401248634">その他の言語</translation>
 <translation id="1895658205118569222">シャットダウン</translation>
 <translation id="1896043844785689584">指紋を設定するには、キーボードの右下にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
@@ -3148,6 +3149,7 @@
 <translation id="3105820656234755131">パスワードを更新しました</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（Bluetooth）</translation>
 <translation id="310671807099593501">サイトで Bluetooth が使用されています</translation>
+<translation id="3108122610701115301">デフォルトに設定</translation>
 <translation id="3108931485517391283">受信できません</translation>
 <translation id="3108957152224931571">ハイライトの色</translation>
 <translation id="3109206895301430738">保存したタブグループ</translation>
@@ -5095,6 +5097,7 @@
 <translation id="4415815425191869676">常にアクティブにするサイト</translation>
 <translation id="4416582610654027550">有効な URL を入力してください</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{このタブを一時停止}other{これらのタブを一時停止}}</translation>
+<translation id="4421823557207751899"><ph name="USERNAME" /> としてログインしています</translation>
 <translation id="4421932172707401417">プロンプトとウェブページのコンテンツに基づく文章作成の提案が表示されます</translation>
 <translation id="4421932782753506458">フワフワ</translation>
 <translation id="4423376891418188461">設定を元に戻す</translation>
@@ -6193,6 +6196,7 @@
 <translation id="5191251636205085390">サードパーティの Cookie に代わる新しい技術の詳細と管理方法について</translation>
 <translation id="519185197579575131">QT を使用</translation>
 <translation id="5192062846343383368">管理設定を確認するにはファミリー リンク アプリを開いてください</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> は必須です</translation>
 <translation id="5193978546360574373">この操作を行うと、この Chromebook で Google ドライブ（オフラインで使用可能になったファイルを含む）にアクセスできなくなります</translation>
 <translation id="5193988420012215838">クリップボードにコピーされました</translation>
 <translation id="5194256020863090856">この操作はシークレット ウィンドウのみに影響します</translation>
@@ -6333,6 +6337,7 @@
 <translation id="5288106344236929384">その他の操作、<ph name="DOMAIN" /> の <ph name="USERNAME" /> 用のパスキー オプション</translation>
 <translation id="5288678174502918605">閉じたタブを開く(&amp;E)</translation>
 <translation id="5290020561438336792">PC とキャスト デバイスが別の Wi-Fi ネットワーク（例: 2.4 GHz と 5 GHz）に接続されている</translation>
+<translation id="5290322819358431297">パスワードを自動入力</translation>
 <translation id="52912272896845572">秘密鍵ファイルが無効です。</translation>
 <translation id="529175790091471945">このデバイスをフォーマット</translation>
 <translation id="529296195492126134">一時的ログインモードはサポートされていません。管理者にお問い合わせください</translation>
@@ -6951,6 +6956,7 @@
 <translation id="5734697361979786483">ファイル共有を追加</translation>
 <translation id="573520097779121706">7、8、9、U、O、J、K、L キーを使用してカーソルを動かす</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{このデータまたはお使いのデバイスは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}=1{このファイルまたはお使いのデバイスは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}other{これらのファイルは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}}</translation>
+<translation id="5736345781200955827">パスワードを作成、保存、管理して、Chrome でサイトやアプリに簡単にログインできるようにします</translation>
 <translation id="5738093759615225354">パソコンにログインするには、このパスキーが必要です</translation>
 <translation id="5738386565827477765">オーディオ機器</translation>
 <translation id="5739017626473506901">ログインして、<ph name="USER_NAME" /> さんの学校アカウントの追加を許可してください</translation>
@@ -7203,6 +7209,7 @@
 <translation id="5901089233978050985">キャプチャ中のタブに切り替え</translation>
 <translation id="5901494423252125310">プリンタの扉が開いています</translation>
 <translation id="5901630391730855834">黄</translation>
+<translation id="5902400038326841449">Google パスワード マネージャーはオフになっています</translation>
 <translation id="5902892210366342391">シークレット モードで安全でないサイトにアクセスする前に警告を表示する</translation>
 <translation id="5904614460720589786">設定に問題があったため、<ph name="APP_NAME" /> をセットアップできませんでした。管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="5906457147959147328">このサイトによる識別子の使用と保護されたコンテンツの再生を引き続き許可する</translation>
@@ -7984,6 +7991,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> 完了</translation>
 <translation id="6452961788130242735">ネットワークに問題があるか、レルムが正しくありません</translation>
 <translation id="6453191633103419909">タブや画面投影の品質</translation>
+<translation id="6453306703004115497"><ph name="LANGUAGE" /> に翻訳</translation>
 <translation id="6453687572758515877">すべてのタブをグループ化</translation>
 <translation id="6453921811609336127">次の入力方法に切り替えるには、<ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> キーを押します</translation>
 <translation id="6455264371803474013">特定のサイト</translation>
@@ -8141,6 +8149,7 @@
 <translation id="656293578423618167">ファイルのパスまたは名前が長すぎます。名前を短くするか、別の場所に保存してください。</translation>
 <translation id="6563002009564846727">Windows からインポートした証明書を表示する</translation>
 <translation id="6563055593659435495">スマートフォンとの接続を維持できません。スマートフォンが近くにあってロックが解除され、Bluetooth と Wi−Fi がオンになっていることを確認してください。</translation>
+<translation id="6564343790052433242"><ph name="APP_NAME" /> のパスキーを作成するには、Google パスワード マネージャーをオンにする必要があります</translation>
 <translation id="6565144332292237355">サイトはこの機能を使用して、ローカル ネットワーク上のデバイスを検索して接続できます</translation>
 <translation id="6568283005472142698">タブ検索</translation>
 <translation id="6569931898053264308">中量の節約</translation>
@@ -11410,6 +11419,7 @@
 <translation id="8761945298804995673">このユーザーはすでに存在しています</translation>
 <translation id="8762886931014513155">ご利用の <ph name="DEVICE_TYPE" /> は更新が必要です</translation>
 <translation id="8763927697961133303">USB デバイス</translation>
+<translation id="8765940060470412555">リーディング モードの固定を解除</translation>
 <translation id="8766156860774051068">自分で選択</translation>
 <translation id="8766796754185931010">ことえり</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> のすべての検索を表示</translation>

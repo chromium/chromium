@@ -704,6 +704,7 @@
 <translation id="2137891579555018930">Очікування дозволу…</translation>
 <translation id="213826338245044447">Закладки на мобільному</translation>
 <translation id="2141000681034340397">Редагувати введені дані</translation>
+<translation id="2141475438898772664">Погашення: щомісяця або 4 платежі на виплат</translation>
 <translation id="2144171668675205303">Немає активних тем</translation>
 <translation id="2145193671493396738">Економічні новини</translation>
 <translation id="214556005048008348">Скасувати оплату</translation>
@@ -2849,6 +2850,7 @@
 <translation id="5543564889050342791">Зоопарки, акваріуми й заповідники</translation>
 <translation id="5543722831081909240">180 градусів</translation>
 <translation id="5544836308113951378">Круїзи й чартерні поїздки</translation>
+<translation id="5545314360139398232">Підключіть обліковий запис <ph name="ISSUER_NAME" />, щоб здійснювати покупки на виплат</translation>
 <translation id="5547939254150808298">Друк і видавництво</translation>
 <translation id="554815783948612276">Форуми й чати</translation>
 <translation id="5548606607480005320">Перевірка безпеки</translation>
@@ -3696,6 +3698,7 @@
 <translation id="6926216138694948720">Боді-арт</translation>
 <translation id="692638818576287323">Комерційні транспортні засоби</translation>
 <translation id="6927878187051807444">файли з камери й знімки екрана</translation>
+<translation id="6929949393612835405">Закрити й повернутися до розділу "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Пошук на бічній панелі</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Пошукова система за умовчанням дає змогу здійснювати пошук в Інтернеті й підтримує такі функції Chrome,<ph name="END_BOLD" /> як пошук з адресного рядка й за зображеннями на веб-сторінках. Функція може бути недоступна, якщо ваша пошукова система її не підтримує.</translation>
 <translation id="6934672428414710184">Це ім’я з вашого облікового запису Google</translation>

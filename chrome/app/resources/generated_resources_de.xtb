@@ -1336,6 +1336,8 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1891362123137972260">Es ist nur noch sehr wenig Speicherplatz vorhanden. Gib bitte Speicherplatz frei.</translation>
 <translation id="189210018541388520">In Vollbildmodus öffnen</translation>
 <translation id="1892341345406963517">Hallo <ph name="PARENT_NAME" />!</translation>
+<translation id="1892453608039100484">1. Klicke unten auf <ph name="BUTTON_LABEL" />
+2. Klicke in den Windows-Einstellungen auf <ph name="BUTTON_2" /></translation>
 <translation id="189358972401248634">Sonstige Sprachen</translation>
 <translation id="1895658205118569222">Herunterfahren</translation>
 <translation id="1896043844785689584">Bitte dein Kind, seinen Finger auf den Fingerabdrucksensor rechts unten an der Tastatur zu legen, um den Fingerabdruck einzurichten. Sein Fingerabdruck wird sicher gespeichert und verlässt dieses <ph name="DEVICE_TYPE" /> nie.</translation>
@@ -3150,6 +3152,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3105820656234755131">Passwort aktualisiert</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Die Website verwendet Bluetooth</translation>
+<translation id="3108122610701115301">Als Standard festlegen</translation>
 <translation id="3108931485517391283">Empfang nicht möglich</translation>
 <translation id="3108957152224931571">Hervorhebungsfarbe</translation>
 <translation id="3109206895301430738">Gespeicherte Tabgruppen</translation>
@@ -5099,6 +5102,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4415815425191869676">Diese Websites immer aktiv lassen</translation>
 <translation id="4416582610654027550">Gib eine gültige URL ein</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Diesen Tab pausieren}other{Diese Tabs pausieren}}</translation>
+<translation id="4421823557207751899">Angemeldet als <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Vorschläge für Formulierungen basieren auf deinen Prompts und dem Inhalt der Webseite</translation>
 <translation id="4421932782753506458">Miez</translation>
 <translation id="4423376891418188461">Einstellungen wiederherstellen</translation>
@@ -6199,6 +6203,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5191251636205085390">Weitere Informationen zu neuen Technologien als Ersatz für Drittanbieter-Cookies und ihrer Nutzung</translation>
 <translation id="519185197579575131">Qt verwenden</translation>
 <translation id="5192062846343383368">Die Einstellungen für die Elternaufsicht lassen sich in der Family Link App anpassen</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> ist erforderlich</translation>
 <translation id="5193978546360574373">Dadurch wird der Zugriff auf Google Drive auf diesem Chromebook entfernt. Dies betrifft auch alle Dateien, die offline verfügbar gemacht wurden.</translation>
 <translation id="5193988420012215838">In die Zwischenablage kopiert</translation>
 <translation id="5194256020863090856">Dies betrifft nur Inkognitofenster</translation>
@@ -6340,6 +6345,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5288106344236929384">Weitere Aktionen und Passkey-Optionen für <ph name="USERNAME" /> auf <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Geschlossenen Tab wieder öffn&amp;en</translation>
 <translation id="5290020561438336792">PC und Übertragungsgerät in verschiedenen WLANs (z. B. 2,4 GHz und 5 GHz)</translation>
+<translation id="5290322819358431297">Passwort-Autofill</translation>
 <translation id="52912272896845572">Private Schlüsseldatei ist ungültig.</translation>
 <translation id="529175790091471945">Gerät formatieren</translation>
 <translation id="529296195492126134">Flüchtiger Modus wird nicht unterstützt. Bitte wende dich an deinen Administrator.</translation>
@@ -6957,6 +6963,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5734697361979786483">Dateifreigabe hinzufügen</translation>
 <translation id="573520097779121706">Verwende die Tasten „7“, „8“, „9“, „u“, „o“, „j“, „k“ und „l“, um den Cursor zu bewegen</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Diese Daten oder dein Gerät entsprechen nicht allen Sicherheitsrichtlinien deiner Organisation. Frage deinen Administrator, was korrigiert werden muss.}=1{Diese Datei oder dein Gerät entspricht nicht allen Sicherheitsrichtlinien deiner Organisation. Frage deinen Administrator, was korrigiert werden muss.}other{Diese Dateien entsprechen nicht allen Sicherheitsrichtlinien deiner Organisation. Frage deinen Administrator, was korrigiert werden muss.}}</translation>
+<translation id="5736345781200955827">Du kannst Passwörter erstellen, speichern und verwalten, um dich auf Websites und in Apps ganz einfach mit Chrome anzumelden</translation>
 <translation id="5738093759615225354">Du benötigst diesen Passkey, um dich auf deinem Computer anzumelden</translation>
 <translation id="5738386565827477765">Audiogerät</translation>
 <translation id="5739017626473506901">Melde dich an, damit <ph name="USER_NAME" /> ein Konto einer Bildungseinrichtung hinzufügen kann</translation>
@@ -7209,6 +7216,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5901089233978050985">Zum empfangenden Tab wechseln</translation>
 <translation id="5901494423252125310">Druckerklappe offen</translation>
 <translation id="5901630391730855834">Gelb</translation>
+<translation id="5902400038326841449">Der Google Passwortmanager ist deaktiviert</translation>
 <translation id="5902892210366342391">Vor dem Aufrufen unsicherer Websites im Inkognitomodus Warnungen einblenden</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> konnte aufgrund eines Konfigurationsproblems nicht eingerichtet werden. Bitte wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Weiterhin zulassen, dass diese Website Kennungen verwendet, um geschützte Inhalte wiederzugeben</translation>
@@ -7989,6 +7997,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> abgeschlossen</translation>
 <translation id="6452961788130242735">Netzwerkproblem oder falscher Bereich</translation>
 <translation id="6453191633103419909">Projektionsqualität auf Tab oder Bildschirm</translation>
+<translation id="6453306703004115497">In <ph name="LANGUAGE" /> übersetzt</translation>
 <translation id="6453687572758515877">Alle Tabs gruppieren</translation>
 <translation id="6453921811609336127">Wenn du zur nächsten Eingabemethode wechseln möchtest, drücke <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Strg<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Umschalttaste<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Leertaste<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Auf bestimmten Websites</translation>
@@ -8147,6 +8156,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="656293578423618167">Der Dateipfad oder Dateiname ist zu lang. Verwende bitte einen kürzeren Namen oder einen anderen Speicherort.</translation>
 <translation id="6563002009564846727">Aus Windows importierte Zertifikate ansehen</translation>
 <translation id="6563055593659435495">Verbindung mit deinem Smartphone kann nicht aufrechterhalten werden. Dein Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
+<translation id="6564343790052433242">Damit du einen Passkey für <ph name="APP_NAME" /> erstellen kannst, muss der Google Passwortmanager aktiviert sein</translation>
 <translation id="6565144332292237355">Websites können diese Funktion verwenden, um nach Geräten in deinem lokalen Netzwerk zu suchen und sich mit ihnen zu verbinden</translation>
 <translation id="6568283005472142698">Tab-Suche</translation>
 <translation id="6569931898053264308">Mittlere Einsparungen</translation>
@@ -11418,6 +11428,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8761945298804995673">Dieser Nutzer ist bereits vorhanden</translation>
 <translation id="8762886931014513155">Dein <ph name="DEVICE_TYPE" /> muss aktualisiert werden</translation>
 <translation id="8763927697961133303">USB-Gerät</translation>
+<translation id="8765940060470412555">Lesemodus loslösen</translation>
 <translation id="8766156860774051068">Von dir ausgewählt</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Alle Suchanfragen für <ph name="QUERY_CLUSTER_NAME" /> anzeigen</translation>

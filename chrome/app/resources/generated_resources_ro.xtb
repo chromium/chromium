@@ -1340,6 +1340,8 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1891362123137972260">Spațiul de pe disc este foarte redus. Eliberează spațiu pe disc.</translation>
 <translation id="189210018541388520">Deschide ecranul complet</translation>
 <translation id="1892341345406963517">Bună, <ph name="PARENT_NAME" />!</translation>
+<translation id="1892453608039100484">1. Dă clic pe <ph name="BUTTON_LABEL" /> mai jos
+2. Dă clic pe <ph name="BUTTON_2" /> în setările Windows</translation>
 <translation id="189358972401248634">Alte limbi</translation>
 <translation id="1895658205118569222">Închideți</translation>
 <translation id="1896043844785689584">Pentru a configura amprenta, solicită-i copilului tău să atingă senzorul de amprentă în colțul din dreapta jos al tastaturii. Datele privind amprentele copilului sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
@@ -3154,6 +3156,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3105820656234755131">Parola s-a actualizat</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Site-ul folosește Bluetooth</translation>
+<translation id="3108122610701115301">Setează ca prestabilit</translation>
 <translation id="3108931485517391283">Nu se poate primi</translation>
 <translation id="3108957152224931571">Culoare de evidențiere</translation>
 <translation id="3109206895301430738">Grupuri de file salvate</translation>
@@ -5104,6 +5107,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4415815425191869676">Menține întotdeauna active aceste site-uri</translation>
 <translation id="4416582610654027550">Introdu o adresă URL validă</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Întrerupe această filă}few{Întrerupe aceste file}other{Întrerupe aceste file}}</translation>
+<translation id="4421823557207751899">Conectat(ă) ca <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Sugestiile de scris se bazează pe solicitările tale și pe conținutul paginii web</translation>
 <translation id="4421932782753506458">Pufoșel</translation>
 <translation id="4423376891418188461">Restabilește setările</translation>
@@ -6204,6 +6208,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5191251636205085390">Află despre și folosește tehnologii noi, destinate să înlocuiască cookie-urile terță parte</translation>
 <translation id="519185197579575131">Folosește QT</translation>
 <translation id="5192062846343383368">Deschide aplicația Family Link și vezi setările de supraveghere</translation>
+<translation id="5193602404493965468">* Câmpul pentru <ph name="FIELD_LIST" /> este obligatoriu</translation>
 <translation id="5193978546360574373">Astfel, va fi eliminat accesul la Google Drive de pe acest Chromebook, inclusiv accesul la fișierele care au devenit disponibile offline</translation>
 <translation id="5193988420012215838">Copiat în clipboard</translation>
 <translation id="5194256020863090856">Acțiunea afectează numai ferestrele incognito</translation>
@@ -6345,6 +6350,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5288106344236929384">Mai multe acțiuni, opțiuni pentru cheia de acces pentru <ph name="USERNAME" /> pe <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">R&amp;edeschide fila închisă</translation>
 <translation id="5290020561438336792">PC și dispozitiv de proiecție în rețele Wi-Fi diferite (de exemplu, 2,4 GHz vs. 5 GHz)</translation>
+<translation id="5290322819358431297">Completează automat parolele</translation>
 <translation id="52912272896845572">Fișierul cu cheia privată este nevalid.</translation>
 <translation id="529175790091471945">Formatează acest dispozitiv</translation>
 <translation id="529296195492126134">Modul efemer nu este acceptat. Contactează administratorul.</translation>
@@ -6964,6 +6970,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5734697361979786483">Adaugă un dispozitiv de stocare în rețea</translation>
 <translation id="573520097779121706">Folosește tastele 7, 8, 9, u, o, j, k, l pentru a muta cursorul</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Aceste date sau dispozitivul nu respectă unele dintre politicile de securitate ale organizației. Consultă administratorul pentru a afla ce trebuie remediat.}=1{Acest fișier sau dispozitivul nu respectă unele dintre politicile de securitate ale organizației. Consultă administratorul pentru a afla ce trebuie remediat.}few{Aceste fișiere nu respectă unele dintre politicile de securitate ale organizației. Consultă administratorul pentru a afla ce trebuie remediat.}other{Aceste fișiere nu respectă unele dintre politicile de securitate ale organizației. Consultă administratorul pentru a afla ce trebuie remediat.}}</translation>
+<translation id="5736345781200955827">Creează, salvează și gestionează parolele ca să te poți conecta cu ușurință la site-uri și aplicații folosind Chrome</translation>
 <translation id="5738093759615225354">Ai nevoie de această cheie de acces pentru a te conecta la computer</translation>
 <translation id="5738386565827477765">Dispozitiv audio</translation>
 <translation id="5739017626473506901">Conectează-te pentru a ajuta utilizatorul <ph name="USER_NAME" /> să adauge un cont de la școală</translation>
@@ -7216,6 +7223,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5901089233978050985">Comută la capturarea filei</translation>
 <translation id="5901494423252125310">Capacul imprimantei este deschis</translation>
 <translation id="5901630391730855834">Galben</translation>
+<translation id="5902400038326841449">Managerul de parole Google este dezactivat</translation>
 <translation id="5902892210366342391">Vezi avertismente înainte de a accesa site-uri nesigure în modul incognito</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> nu s-a instalat din cauza unei probleme de configurație. Contactează administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Permite în continuare acestui site să folosească identificatori pentru a reda conținut protejat</translation>
@@ -7997,6 +8005,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> finalizat</translation>
 <translation id="6452961788130242735">Problemă de rețea sau domeniu greșit</translation>
 <translation id="6453191633103419909">Calitatea proiecției filelor / ecranului</translation>
+<translation id="6453306703004115497">Traducere în <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Grupează toate filele</translation>
 <translation id="6453921811609336127">Pentru a trece la următoarea metodă de introducere a textului, apasă pe <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />tasta de spațiu<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Pe anumite site-uri</translation>
@@ -8155,6 +8164,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="656293578423618167">Calea sau numele fișierului sunt prea lungi. Salvați utilizând un nume mai scurt sau într-o altă locație.</translation>
 <translation id="6563002009564846727">Vezi certificatele importate din Windows</translation>
 <translation id="6563055593659435495">Nu se poate păstra conexiunea cu telefonul. Asigură-te că telefonul este în apropiere, deblocat, cu Bluetooth și Wi-Fi activate.</translation>
+<translation id="6564343790052433242">Ca să creezi o cheie de acces pentru <ph name="APP_NAME" />, trebuie să activezi Managerul de parole Google</translation>
 <translation id="6565144332292237355">Site-urile pot folosi această funcție pentru a căuta și a se conecta la orice dispozitiv din rețeaua locală</translation>
 <translation id="6568283005472142698">Căutarea filelor</translation>
 <translation id="6569931898053264308">Economii medii de memorie</translation>
@@ -11428,6 +11438,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8761945298804995673">Acest utilizator există deja</translation>
 <translation id="8762886931014513155">Dispozitivul <ph name="DEVICE_TYPE" /> are nevoie de actualizare</translation>
 <translation id="8763927697961133303">Dispozitiv USB</translation>
+<translation id="8765940060470412555">Anulează fixarea modului de lectură</translation>
 <translation id="8766156860774051068">Selectate de tine</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Afișează toate căutările pentru <ph name="QUERY_CLUSTER_NAME" /></translation>

@@ -1350,6 +1350,8 @@
 <translation id="1891362123137972260">ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਬਹੁਤ ਘੱਟ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਡਿਸਕ ਵਿਚਲੀ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰੋ।</translation>
 <translation id="189210018541388520">ਪੂਰੀ ਸਕ੍ਰੀਨ ਖੋਲ੍ਹੋ</translation>
 <translation id="1892341345406963517">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. ਹੇਠਾਂ ਦਿੱਤੇ <ph name="BUTTON_LABEL" /> 'ਤੇ ਕਲਿੱਕ ਕਰੋ
+2. ਆਪਣੀਆਂ Windows ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ <ph name="BUTTON_2" /> 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="189358972401248634">ਹੋਰ ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="1895658205118569222">ਸ਼ਟਡਾਊਨ</translation>
 <translation id="1896043844785689584">ਫਿੰਗਰਪ੍ਰਿੰਟ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ, ਆਪਣੇ ਬੱਚੇ ਨੂੰ ਕੀ-ਬੋਰਡ ਦੇ ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ 'ਤੇ ਸਪਰਸ਼ ਕਰਨ ਲਈ ਕਹੋ। ਤੁਹਾਡੇ ਬੱਚੇ ਦਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਡਾਟਾ ਸੁਰੱਖਿਅਤ ਤਰੀਕੇ ਨਾਲ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਕਦੇ ਵੀ ਇਸ <ph name="DEVICE_TYPE" /> ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਜਾਂਦਾ।</translation>
@@ -3168,6 +3170,7 @@
 <translation id="3105820656234755131">ਪਾਸਵਰਡ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ਬਲੂਟੁੱਥ)</translation>
 <translation id="310671807099593501">ਸਾਈਟ ਬਲੂਟੁੱਥ ਵਰਤ ਰਹੀ ਹੈ</translation>
+<translation id="3108122610701115301">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="3108931485517391283">ਪ੍ਰਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="3108957152224931571">ਉਜਾਗਰ ਕਰਨ ਦਾ ਰੰਗ</translation>
 <translation id="3109206895301430738">ਰੱਖਿਅਤ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪ</translation>
@@ -5119,6 +5122,7 @@
 <translation id="4415815425191869676">ਇਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਹਮੇਸ਼ਾਂ ਕਿਰਿਆਸ਼ੀਲ ਰੱਖੋ</translation>
 <translation id="4416582610654027550">ਕੋਈ ਵੈਧ URL ਟਾਈਪ ਕਰੋ</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{ਇਸ ਟੈਬ ਨੂੰ ਰੋਕੋ}one{ਇਸ ਟੈਬ ਨੂੰ ਰੋਕੋ}other{ਇਨ੍ਹਾਂ ਟੈਬਾਂ ਨੂੰ ਰੋਕੋ}}</translation>
+<translation id="4421823557207751899"><ph name="USERNAME" /> ਦੇ ਤੌਰ ਤੇ ਸਾਈਨ ਇਨ ਕੀਤਾ</translation>
 <translation id="4421932172707401417">ਲਿਖਣ ਸੰਬੰਧੀ ਸੁਝਾਅ ਤੁਹਾਡੇ ਪ੍ਰੋਂਪਟਾਂ ਅਤੇ ਵੈੱਬ ਪੰਨੇ ਦੀ ਸਮੱਗਰੀ 'ਤੇ ਆਧਾਰਿਤ ਹਨ</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">ਸੈਟਿੰਗਾਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
@@ -6362,6 +6366,7 @@
 <translation id="5288678174502918605">ਬੰਦ ਟੈਬ ਦੁ&amp;ਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="5290020561438336792">PC ਅਤੇ ਕਾਸਟ ਡੀਵਾਈਸ ਵੱਖ-ਵੱਖ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕਾਂ 'ਤੇ ਹਨ (ਜਿਵੇਂ ਕਿ 2.4GHz
     ਬਨਾਮ 5GHz)</translation>
+<translation id="5290322819358431297">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਟੋਫਿਲ ਕਰੋ</translation>
 <translation id="52912272896845572">ਨਿੱਜੀ ਕੁੰਜੀ ਫ਼ਾਈਲ ਅਵੈਧ ਹੈ।</translation>
 <translation id="529175790091471945">ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਫੌਰਮੈਟ ਕਰੋ</translation>
 <translation id="529296195492126134">ਅਲਪਜੀਵੀ ਮੋਡ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ</translation>
@@ -6981,6 +6986,7 @@
 <translation id="5734697361979786483">ਫ਼ਾਈਲ ਸਾਂਝਾਕਰਨ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="573520097779121706">ਕਰਸਰ ਨੂੰ ਹਿਲਾਉਣ ਲਈ 7, 8, 9, u, o, j, k, l ਕੁੰਜੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{ਇਹ ਡਾਟਾ ਜਾਂ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਕੁਝ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਦਾ ਪਾਲਣ ਨਹੀਂ ਕਰਦਾ। ਇਹ ਦੇਖਣ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਗੱਲ ਕਰੋ ਕਿ ਕੀ ਠੀਕ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।}=1{ਇਹ ਫ਼ਾਈਲ ਜਾਂ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਕੁਝ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਦਾ ਪਾਲਣ ਨਹੀਂ ਕਰਦਾ। ਇਹ ਦੇਖਣ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਗੱਲ ਕਰੋ ਕਿ ਕੀ ਠੀਕ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।}other{ਇਹ ਫ਼ਾਈਲਾਂ ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਕੁਝ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਦਾ ਪਾਲਣ ਨਹੀਂ ਕਰਦੀਆਂ। ਇਹ ਦੇਖਣ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਗੱਲ ਕਰੋ ਕਿ ਕੀ ਠੀਕ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।}}</translation>
+<translation id="5736345781200955827">ਆਪਣੇ ਪਾਸਵਰਡ ਬਣਾਓ, ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ, ਤਾਂ ਜੋ ਤੁਸੀਂ Chrome ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਆਸਾਨੀ ਨਾਲ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰ ਸਕੋ</translation>
 <translation id="5738093759615225354">ਤੁਹਾਨੂੰ ਆਪਣੇ ਕੰਪਿਊਟਰ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਇਸ ਪਾਸਕੀ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="5738386565827477765">ਆਡੀਓ ਡੀਵਾਈਸ</translation>
 <translation id="5739017626473506901">ਸਕੂਲੀ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰਨ ਵਿੱਚ <ph name="USER_NAME" /> ਦੀ ਮਦਦ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
@@ -7233,6 +7239,7 @@
 <translation id="5901089233978050985">ਕੈਪਚਰ ਕੀਤੀ ਜਾਣ ਵਾਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="5901494423252125310">ਪ੍ਰਿੰਟਰ ਦਾ ਢੱਕਣ ਖੁੱਲ੍ਹਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="5901630391730855834">ਪੀਲਾ</translation>
+<translation id="5902400038326841449">Google Password Manager ਬੰਦ ਹੈ</translation>
 <translation id="5902892210366342391">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਅਸੁਰੱਖਿਅਤ ਸਾਈਟਾਂ 'ਤੇ ਜਾਣ ਤੋਂ ਪਹਿਲਾਂ ਚਿਤਾਵਨੀਆਂ ਦੇਖੋ</translation>
 <translation id="5904614460720589786">ਕਿਸੇ ਸੰਰੂਪਣ ਸੰਬੰਧੀ ਸਮੱਸਿਆ ਕਰਕੇ <ph name="APP_NAME" /> ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ। ਗੜਬੜ ਕੋਡ: <ph name="ERROR_CODE" />।</translation>
 <translation id="5906457147959147328">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣ ਲਈ, ਇਸ ਸਾਈਟ ਨੂੰ ਪਛਾਣਕਰਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣੀ ਜਾਰੀ ਰੱਖੋ</translation>
@@ -8014,6 +8021,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> ਪੂਰਾ</translation>
 <translation id="6452961788130242735">ਨੈੱਟਵਰਕ ਸਮੱਸਿਆ ਜਾਂ ਖਰਾਬ ਖੇਤਰ</translation>
 <translation id="6453191633103419909">ਟੈਬ/ਸਕ੍ਰੀਨ ਪ੍ਰੋਜੈਕਸ਼ਨ ਕੁਆਲਿਟੀ</translation>
+<translation id="6453306703004115497"><ph name="LANGUAGE" /> ਵਿੱਚ ਅਨੁਵਾਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6453687572758515877">ਸਾਰੀਆਂ ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰੋ</translation>
 <translation id="6453921811609336127">ਅਗਲੀ ਇਨਪੁੱਟ ਵਿਧੀ 'ਤੇ ਜਾਣ ਲਈ, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> ਦਬਾਓ</translation>
 <translation id="6455264371803474013">ਕੁਝ ਖਾਸ ਸਾਈਟਾਂ 'ਤੇ</translation>
@@ -8172,6 +8180,7 @@
 <translation id="656293578423618167">ਫਾਈਲ ਪਾਥ ਜਾਂ ਨਾਮ ਬਹੁਤ ਜ਼ਿਆਦਾ ਵੱਡਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਛੋਟੇ ਨਾਮ ਨਾਲ ਜਾਂ ਦੂਜੇ ਨਿਰਧਾਰਿਤ ਟਿਕਾਣੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।</translation>
 <translation id="6563002009564846727">Windows ਤੋਂ ਆਯਾਤ ਕੀਤੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੇਖੋ</translation>
 <translation id="6563055593659435495">ਤੁਹਾਡੇ ਫ਼ੋਨ ਨਾਲ ਕਨੈਕਸ਼ਨ ਬਰਕਰਾਰ ਨਹੀਂ ਰੱਖਿਆ ਜਾ ਸਕਦਾ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਫ਼ੋਨ ਨਜ਼ਦੀਕ ਹੈ, ਅਣਲਾਕ ਹੈ ਅਤੇ ਬਲੂਟੁੱਥ ਅਤੇ ਵਾਈ-ਫਾਈ ਚਾਲੂ ਹਨ।</translation>
+<translation id="6564343790052433242"><ph name="APP_NAME" /> ਲਈ ਪਾਸਕੀ ਬਣਾਉਣ ਵਾਸਤੇ, Google Password Manager ਦਾ ਚਾਲੂ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="6565144332292237355">ਸਾਈਟਾਂ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਦੀ ਵਰਤੋਂ ਤੁਹਾਡੇ ਸਥਾਨਕ ਨੈੱਟਵਰਕ 'ਤੇ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਨੂੰ ਲੱਭਣ ਅਤੇ ਉਸ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="6568283005472142698">ਟੈਬ ਖੋਜ</translation>
 <translation id="6569931898053264308">ਦਰਮਿਆਨੀਆਂ ਬਚਤਾਂ</translation>
@@ -11443,6 +11452,7 @@
 <translation id="8761945298804995673">ਇਹ ਵਰਤੋਂਕਾਰ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="8762886931014513155">ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਇੱਕ ਅੱਪਡੇਟ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="8763927697961133303">USB ਡੀਵਾਈਸ</translation>
+<translation id="8765940060470412555">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਨੂੰ ਅਣਪਿੰਨ ਕਰੋ</translation>
 <translation id="8766156860774051068">ਤੁਹਾਡੇ ਵੱਲੋਂ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="8766796754185931010">ਕੋਟੋਇਰੀ</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> ਦੀਆਂ ਸਾਰੀਆਂ ਖੋਜਾਂ ਦਿਖਾਓ</translation>

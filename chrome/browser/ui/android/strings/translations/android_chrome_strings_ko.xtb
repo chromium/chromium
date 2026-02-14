@@ -476,6 +476,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2992473221983447149">이미지 설명</translation>
 <translation id="2996291259634659425">암호 만들기</translation>
 <translation id="2996809686854298943">URL이 필요합니다.</translation>
+<translation id="3008916997590006706">다음에 로그인할 때 이 비밀번호를 자동으로 입력하려면 저장을 탭하세요.</translation>
 <translation id="3024215143424744261">읽기 모드 환경설정 닫힘</translation>
 <translation id="3026955690410463085">링크 포함</translation>
 <translation id="3027644380269727216">사이트 내 활동을 기반으로 추천됩니다. 이 설정을 사용하고 있습니다.</translation>
@@ -1006,6 +1007,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5267572070504076962">세이프 브라우징을 사용 설정하여 위험한 사이트로부터 보호받으세요.</translation>
 <translation id="5271967389191913893">기기에서 다운로드하려는 콘텐츠를 열 수 없습니다.</translation>
 <translation id="5273031377282080577">관리자가 이 설정을 관리합니다.</translation>
+<translation id="5290322819358431297">비밀번호 자동 완성</translation>
 <translation id="5292796745632149097">전송할 기기</translation>
 <translation id="5301876394151419436"><ph name="EMAIL" /> 계정으로 로그인했습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="5304593522240415983">필수 입력란입니다.</translation>
@@ -1098,6 +1100,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="572328651809341494">최근 탭</translation>
 <translation id="5728072125198221967">연결된 Google 서비스</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, 고정되고 청취 가능한 시크릿 탭</translation>
+<translation id="5736345781200955827">Chrome을 사용하여 사이트와 앱에 쉽게 로그인할 수 있도록 비밀번호를 만들고, 저장하고, 관리하세요.</translation>
 <translation id="5744751019568455640">다음은 웹페이지를 소리 내어 읽을 때 사용하실 수 있는 음성입니다. 이 음성이 마음에 들어 계속 사용하고 싶다면 음성 이름을 탭하세요.</translation>
 <translation id="574845902699630049"><ph name="OWNER_FULL_NAME" /> 이름으로 공유</translation>
 <translation id="5749068826913805084">Chrome에서 파일을 다운로드하려면 저장소 액세스 권한이 있어야 합니다.</translation>

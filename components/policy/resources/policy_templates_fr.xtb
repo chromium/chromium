@@ -6445,6 +6445,13 @@ Remarque : Cette règle ne s'applique pas aux mises à niveau HSTS.</translatio
 <translation id="5303080953475303561">Cette règle permet de contrôler la fréquence à laquelle l'écran de verrouillage exige un mot de passe pour le déverrouillage rapide. Si la dernière saisie du mot de passe est antérieure à la période définie, le déverrouillage rapide n'est pas disponible. Si l'utilisateur reste sur l'écran de verrouillage au-delà de cette période, il devra saisir son mot de passe la prochaine fois qu'il saisira un code erroné ou accédera de nouveau à l'écran de verrouillage, selon la situation qui se présente en premier.
 
       Si cette règle n'est pas configurée, les utilisateurs ayant recours au déverrouillage rapide devront saisir leur mot de passe tous les jours sur l'écran de verrouillage.</translation>
+<translation id="530488290401810961">Configurez la manière dont <ph name="PRODUCT_NAME" /> télécharge le modèle de fondation de l'IA générative et l'utilise pour l'inférence en local.
+
+Si cette règle est définie sur "Autorisé" (0) ou qu'elle n'est pas configurée, le modèle est téléchargé automatiquement et est utilisé pour l'inférence.
+
+Si elle est définie sur "Désactivé" (1), le modèle n'est pas téléchargé, et le modèle existant (s'il a déjà été téléchargé) est supprimé.
+
+Sur les plates-formes de bureau, le téléchargement du modèle peut également être désactivé par <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5306186200045823863">Faire confiance à l'ancienne infrastructure PKI de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilité du mode navigation privée</translation>
 <translation id="5308551343115571396">Une fois <ph name="LACROS_NAME" /> désactivé, nous essayons de conserver le plus de données utilisateur possible, tout en supprimant toutes les données du navigateur.</translation>

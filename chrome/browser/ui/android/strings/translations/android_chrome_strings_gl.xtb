@@ -476,6 +476,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2992473221983447149">Descricións de imaxes</translation>
 <translation id="2996291259634659425">Crear contrasinal</translation>
 <translation id="2996809686854298943">O URL é obrigatorio</translation>
+<translation id="3008916997590006706">Toca Gardar para acceder facilmente a este contrasinal a próxima vez que inicies sesión</translation>
 <translation id="3024215143424744261">Pecháronse as preferencias do modo de lectura</translation>
 <translation id="3026955690410463085">Incluír ligazón</translation>
 <translation id="3027644380269727216">En función da túa actividade nun sitio. Esta opción de configuración está activada.</translation>
@@ -1006,6 +1007,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5267572070504076962">Activa Navegación segura para obter protección contra os sitios perigosos</translation>
 <translation id="5271967389191913893">O dispositivo non pode abrir o contido que se debe descargar.</translation>
 <translation id="5273031377282080577">A persoa administradora xestiona esta opción de configuración.</translation>
+<translation id="5290322819358431297">Autocompleta os contrasinais</translation>
 <translation id="5292796745632149097">Enviar a</translation>
 <translation id="5301876394151419436">Tes a sesión iniciada como <ph name="EMAIL" />. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="5304593522240415983">Este campo non pode quedar baleiro</translation>
@@ -1098,6 +1100,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="572328651809341494">Pestanas recentes</translation>
 <translation id="5728072125198221967">Servizos de Google vinculados</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, pestana do modo de incógnito con son fixada</translation>
+<translation id="5736345781200955827">Crea, garda e xestiona os teus contrasinais para que poidas iniciar sesión facilmente nos sitios e nas aplicacións mediante Chrome.</translation>
 <translation id="5744751019568455640">Estas son as voces que podo usar para ler o contido das páxinas web. Se che gusta esta voz e queres que a siga usando, só tes que tocar o seu nome.</translation>
 <translation id="574845902699630049">Comparte o grupo como <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome precisa acceder ao almacenamento para descargar ficheiros.</translation>

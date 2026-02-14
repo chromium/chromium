@@ -476,6 +476,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2992473221983447149">Descripcions d'imatges</translation>
 <translation id="2996291259634659425">Creeu una frase de contrasenya</translation>
 <translation id="2996809686854298943">Es necessita un URL</translation>
+<translation id="3008916997590006706">Toca Desa per accedir fàcilment a aquesta contrasenya la propera vegada que iniciïs la sessió</translation>
 <translation id="3024215143424744261">Preferències del mode de lectura tancades</translation>
 <translation id="3026955690410463085">Inclou l'enllaç</translation>
 <translation id="3027644380269727216">Segons la teva activitat en un lloc web. Aquesta opció de configuració està activada.</translation>
@@ -1006,6 +1007,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5267572070504076962">Activa Navegació segura per obtenir protecció contra llocs web perillosos</translation>
 <translation id="5271967389191913893">El dispositiu no pot obrir el contingut que s'ha de baixar.</translation>
 <translation id="5273031377282080577">El teu administrador gestiona aquesta opció de configuració.</translation>
+<translation id="5290322819358431297">Emplena autom. les contrasenyes</translation>
 <translation id="5292796745632149097">Envia a</translation>
 <translation id="5301876394151419436">Has iniciat la sessió com a <ph name="EMAIL" />. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="5304593522240415983">Aquest camp no pot estar en blanc</translation>
@@ -1098,6 +1100,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="572328651809341494">Pestanyes recents</translation>
 <translation id="5728072125198221967">Serveis de Google enllaçats</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, pestanya d'incògnit audible fixada</translation>
+<translation id="5736345781200955827">Crea, desa i gestiona les teves contrasenyes de manera que puguis iniciar la sessió fàcilment en llocs web i aplicacions amb Chrome</translation>
 <translation id="5744751019568455640">Aquestes són les veus que pots triar perquè llegeixin en veu alta el contingut de les pàgines web. Si t'agrada aquesta veu i vols que la continuï fent servir, només cal que toquis el seu nom.</translation>
 <translation id="574845902699630049">Comparteix com a <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome necessita accedir a l'emmagatzematge per poder baixar fitxers.</translation>

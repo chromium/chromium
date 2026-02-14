@@ -476,6 +476,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2992473221983447149">Descrizioni delle immagini</translation>
 <translation id="2996291259634659425">Crea passphrase</translation>
 <translation id="2996809686854298943">URL obbligatorio</translation>
+<translation id="3008916997590006706">Tocca Salva per trovare facilmente questa password al prossimo accesso</translation>
 <translation id="3024215143424744261">Preferenze della modalità Lettura chiuse</translation>
 <translation id="3026955690410463085">Includi link</translation>
 <translation id="3027644380269727216">In base alla tua attività svolta su un sito. Questa impostazione è attiva.</translation>
@@ -1006,6 +1007,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5267572070504076962">Attiva Navigazione sicura per proteggerti da siti pericolosi</translation>
 <translation id="5271967389191913893">Non è possibile aprire i contenuti da scaricare sul dispositivo.</translation>
 <translation id="5273031377282080577">Questa impostazione è gestita dall'amministratore.</translation>
+<translation id="5290322819358431297">Compila automaticamente le tue password</translation>
 <translation id="5292796745632149097">Invia a</translation>
 <translation id="5301876394151419436">Hai eseguito l'accesso come <ph name="EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle Impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="5304593522240415983">Questo campo non può essere vuoto</translation>
@@ -1098,6 +1100,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="572328651809341494">Schede recenti</translation>
 <translation id="5728072125198221967">Servizi Google collegati</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, scheda Incognito udibile bloccata</translation>
+<translation id="5736345781200955827">Crea, salva e gestisci le tue password in modo da poter accedere facilmente ai siti e alle app utilizzando Chrome</translation>
 <translation id="5744751019568455640">Ecco le voci che puoi scegliere per la lettura ad alta voce delle pagine web. Se ti piace questa voce e vuoi che continui a utilizzarla, tocca il suo nome.</translation>
 <translation id="574845902699630049">Condividi come <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome deve avere accesso allo spazio di archiviazione per poter scaricare file.</translation>

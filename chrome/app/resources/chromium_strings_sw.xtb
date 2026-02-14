@@ -101,6 +101,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2099452623287920103">Manenosiri na data yako nyingine ya Chromium uliyohifadhi kwenye Akaunti yako ya Google itaondolewa kwenye kifaa hiki. Ili uzitumie tena kwenye Chromium, ingia tena katika akaunti.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Shirika lako hufuta kiotomatiki data ya kuvinjari Chromium isipotumika kwa dakika 1. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa. Vichupo vyako havitafungwa.}other{Shirika lako hufuta kiotomatiki data ya kuvinjari Chromium isipotumika kwa dakika #. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa. Vichupo vyako havitafungwa.}}</translation>
 <translation id="2126108037660393668">Faili iliyopakuliwa imeshindwa kuthibitishwa.</translation>
+<translation id="2135919691573380097">Ripoti tovuti hii</translation>
 <translation id="2137162749895930932">Funga skrini ya kutafsiri</translation>
 <translation id="215352261310130060">Chromium imezuia upakuaji huu kwa sababu tovuti haitumii muunganisho salama na huenda faili imeharibiwa</translation>
 <translation id="2170098639895543546">Chagua chochote kwenye ukurasa</translation>
@@ -313,6 +314,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4304713468139749426">Kidhibiti cha Manenosiri</translation>
 <translation id="4334241893986177674">Tafuta picha hii ya skrini</translation>
 <translation id="4334294535648607276">Upakuaji umekamilika.</translation>
+<translation id="4384331407722351213">Fungua Chromium unapowasha Windows</translation>
 <translation id="4384993550046411228">Pata uwezo wa kufikia vipengele unavyovifahamu, kuvipenda na kuviamini kwa urahisi kwa kuweka Chromium iwe kivinjari chako chaguomsingi. Chromium itabandikwa kwenye upauzana wako ili uifikie kwa haraka.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> inahitaji usome na ukubali Sheria na Masharti yafuatayo kabla ya kutumia kifaa hiki. Masharti haya hayapanui, hayarekebishi wala hayapunguzi Sheria na Masharti ya Mfumo wa Uendeshaji wa Chromium.</translation>
 <translation id="4407044323746248786">Ungependa kufunga Chromium?</translation>
@@ -333,6 +335,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4531137820806573936">Chromium inahitaji ruhusa ili kuweka ramani ya mazingira yako na kufuatilia mikono yako</translation>
 <translation id="4536805923587466102">Tayari umeingia katika akaunti ukitumia <ph name="USER_EMAIL_ADDRESS" /> katika wasifu mwingine wa Chromium</translation>
 <translation id="4548534452171747496">Chromium hupakia kurasa mapema, hali inayofanya shughuli za utafutaji na kuvinjari ziwe za haraka zaidi. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu kurasa zinazopakiwa mapema<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">Imarisha usalama wa mtandaoni kwa kila mtu unaporipoti tovuti unayofikiri kuwa ni hatari.</translation>
 <translation id="4570813286784708942">Chromium imezuia upakuaji huu kwa sababu umezima kipengele cha Kuvinjari Salama na faili husika haiwezi kuthibitishwa</translation>
 <translation id="4583692638088316420">Jaribu Lenzi ya Google ukitumia Chromium kwenye simu yako</translation>
 <translation id="4594305310729380060">Kwenye Kidhibiti cha Manenosiri katika kifaa hiki</translation>
@@ -372,6 +375,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="5174969993834422967">Kawaida unazuia arifa. Ili uruhusu tovuti hii ikuarifu, bofya aikoni ya arifa kwenye kona ya kulia ya upau wa eneo uliko.</translation>
 <translation id="5174983315706567306">Nafasi ya hifadhi ya diski haitoshi.</translation>
 <translation id="5187123684706427865">Akaunti ya Chromium inahitaji kuthibitisha upya</translation>
+<translation id="5219681158518957165">Tumia mipangilio ya kivinjari inayopendekezwa</translation>
 <translation id="5224391634244552924">Hakuna manenosiri yaliyohifadhiwa. Chromium inaweza kukagua manenosiri yako ukiyahifadhi.</translation>
 <translation id="5231355151045086930">Ondoka kwenye Chromium</translation>
 <translation id="5234764350956374838">Ondoa</translation>
@@ -475,6 +479,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="6327105987658262776">Hakuna sasisho linalopatikana.</translation>
 <translation id="6333502561965082103">Shughuli nyingine zinaendelea kwenye Chromium. Tafadhali jaribu tena baadaye.</translation>
 <translation id="6334986366598267305">Sasa ni rahisi zaidi kutumia Chromium pamoja na Akaunti yako ya Google na kwenye kompyuta zinazoshirikiwa.</translation>
+<translation id="6347002662287820329">Weka Chromium iwe kivinjari chako chaguomsingi ili upate uwezo wa kufikia kwa urahisi vipengele unavyovifahamu, unavyopenda na unavyoamini.</translation>
 <translation id="6347933965114150440">Njia ya Mkato ya Chromium</translation>
 <translation id="6366160072964553914">Chromium imezuia upakuaji huu kwa sababu faili hii kwa kawaida haipakuliwi na huenda si salama</translation>
 <translation id="6373523479360886564">Je, una hakika unataka kusanidua Chromium?</translation>
@@ -505,6 +510,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="6598877126913850652">Nenda kwenye mipangilio ya arifa ya Chromium</translation>
 <translation id="6600016381025017075">Tafuta chochote kwenye ukurasa huu</translation>
 <translation id="6613594504749178791">Mabadiliko yako yataanza kufanya kazi wakati ujao utakapozindua upya Chromium.</translation>
+<translation id="6637908313088374648">Sasa Chromium hufunguka unapowasha Windows ili uanze kuvinjari papo hapo. Unaweza kuzima hii katika Mipangilio.</translation>
 <translation id="6648212540664651655">Endelea ulikoachia: Chromium imerejesha vichupo vyako kutoka kwenye kipindi chako kilichopita Unaweza kuzima hili katika</translation>
 <translation id="665732753414869868">Chromium inahitaji ruhusa ya kufikia kamera ili iunde ramani ya 3D ya mazingira yako</translation>
 <translation id="6669284030132180248">Iwapo pia unahifadhi alamisho kwenye Akaunti yako ya Google, unaweza kufuatilia bei za bidhaa katika Chromium na upokee arifa bei inapopunguzwa</translation>
@@ -563,6 +569,7 @@ Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho
 <translation id="7213407614656404070">Tumia Chromium wakati wowote unabofya viungo kwenye ujumbe, hati na programu nyinginezo</translation>
 <translation id="7223968959479464213">Kidhibiti cha Shughuli - Chromium</translation>
 <translation id="7246575524853130370">Mambo yanayokuvutia kama yanavyokadiriwa na Chromium</translation>
+<translation id="7252276985725323153">Anza kuvinjari papo hapo: Sasa Chromium inaweza kufunguka unapowasha Windows.</translation>
 <translation id="7274695763216404502">Kimebandikwa! Tumia kipengele cha Kutafuta kwa Picha tena katika upau wa vidhibiti</translation>
 <translation id="7288567540154601580">Vichupo na viendelezi</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium inapendekeza ukiondoe}other{Chromium inapendekeza uviondoe}}</translation>
@@ -592,6 +599,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="751935028865900641">Huenda tovuti zitafanya kazi kama inavyotarajiwa. Utaondolewa kwenye tovuti nyingi ukifunga madirisha yote ya Chromium, isipokuwa katika Akaunti yako ya Google ikiwa umeingia katika Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium itafunguka upya ndani ya dakika 1}other{Chromium itafunguka upya ndani ya dakika #}}</translation>
 <translation id="7565444033145385702">Ili kulinda data yako, ruhusu Chromium iondoe ruhusa kwenye tovuti ambazo hujatembelea hivi karibuni.</translation>
+<translation id="7583104404158659071">Fungua Chromium kiotomatiki ili uanze kuvinjari papo hapo.</translation>
 <translation id="7583399374488819119">Kisakinishaji cha <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">Chromium inatumia kamera na maikrofoni yako.</translation>
 <translation id="7617377681829253106">Chromium imeboreshwa</translation>

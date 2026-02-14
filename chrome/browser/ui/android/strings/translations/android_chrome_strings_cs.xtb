@@ -476,6 +476,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2992473221983447149">Popisy obrázků</translation>
 <translation id="2996291259634659425">Vytvoření heslové fráze</translation>
 <translation id="2996809686854298943">Je požadována adresa URL</translation>
+<translation id="3008916997590006706">Když kliknete na Uložit, budete mít heslo při příštím přihlášení snadno k dispozici</translation>
 <translation id="3024215143424744261">Nastavení režimu čtení je zavřené</translation>
 <translation id="3026955690410463085">Zahrnout odkaz</translation>
 <translation id="3027644380269727216">Na základě vaší aktivity na webu. Toto nastavení je zapnuté.</translation>
@@ -1006,6 +1007,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5267572070504076962">Zapněte Bezpečné prohlížení, abyste získali ochranu před nebezpečnými weby</translation>
 <translation id="5271967389191913893">Zařízení obsah ke stažení nemůže otevřít.</translation>
 <translation id="5273031377282080577">Toto nastavení spravuje váš administrátor.</translation>
+<translation id="5290322819358431297">Vyplňujte hesla automaticky</translation>
 <translation id="5292796745632149097">Odeslat do zařízení</translation>
 <translation id="5301876394151419436">Jste přihlášeni jako <ph name="EMAIL" />. Synchronizaci můžete v nastavení kdykoli zastavit. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="5304593522240415983">Toto pole nesmí být prázdné</translation>
@@ -1098,6 +1100,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="572328651809341494">Nedávno použité karty</translation>
 <translation id="5728072125198221967">Propojené služby Google</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, připnutá slyšitelná anonymní karta</translation>
+<translation id="5736345781200955827">Vytvářejte, ukládejte a spravujte svá hesla, ať se můžete na weby a do aplikací přihlašovat snadno pomocí Chromu</translation>
 <translation id="5744751019568455640">Tohle jsou hlasy, které si můžete vybrat ke čtení webových stránek. Pokud se vám tento hlas líbí a chcete, aby byl používán i nadále, klepněte na jeho název.</translation>
 <translation id="574845902699630049">Sdílet jako <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Aby bylo možné stahovat soubory, Chrome potřebuje přístup k úložišti.</translation>

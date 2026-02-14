@@ -1800,6 +1800,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="219283042927675668">Mga tab sa grupo</translation>
 <translation id="2192881772486983655">Pinapamahalaan ng <ph name="THIRD_PARTY_NTP_MANAGER" /> ang iyong page ng bagong tab, magbubukas sa bagong tab</translation>
 <translation id="2192982266585216032">&amp;Mga Pagbabayad</translation>
+<translation id="2193567467390483943">Hindi inaprubahan ng iyong magulang ang extension na ito</translation>
 <translation id="2194856509914051091">Mga bagay na dapat isaalang-alang</translation>
 <translation id="2195331105963583686">Magagamit mo pa rin ang <ph name="DEVICE_TYPE" /> na ito pagkatapos noon, pero hindi na ito makakakuha ng mga awtomatikong update sa software at seguridad</translation>
 <translation id="2195729137168608510">Proteksyon sa Email</translation>
@@ -5121,6 +5122,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4415815425191869676">Palaging panatilihing aktibo ang mga site na ito</translation>
 <translation id="4416582610654027550">Mag-type ng valid na URL</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{I-pause ang Tab na Ito}one{I-pause ang Mga Tab na Ito}other{I-pause ang Mga Tab na Ito}}</translation>
+<translation id="4421823557207751899">Naka-sign in bilang <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Nakabatay ang mga suhestyon sa pagsusulat sa iyong mga prompt at sa content ng web page</translation>
 <translation id="4421932782753506458">Mingming</translation>
 <translation id="4423376891418188461">I-restore ang Mga Setting</translation>

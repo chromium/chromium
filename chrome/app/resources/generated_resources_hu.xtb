@@ -5117,6 +5117,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4415815425191869676">Ezek a webhelyek mindig legyenek aktívak</translation>
 <translation id="4416582610654027550">Érvényes URL-t írjon be</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Lap szüneteltetése}other{Lapok szüneteltetése}}</translation>
+<translation id="4421823557207751899"><ph name="USERNAME" /> e-mail címmel bejelentkezve</translation>
 <translation id="4421932172707401417">Az írási javaslatok az Ön utasításain és a weboldal tartalmán alapulnak.</translation>
 <translation id="4421932782753506458">Bolyhos</translation>
 <translation id="4423376891418188461">A beállítások visszaállítása</translation>

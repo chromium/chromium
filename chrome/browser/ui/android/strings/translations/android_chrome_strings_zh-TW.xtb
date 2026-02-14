@@ -476,6 +476,7 @@
 <translation id="2992473221983447149">圖片說明</translation>
 <translation id="2996291259634659425">建立通關密語</translation>
 <translation id="2996809686854298943">必須要有網址</translation>
+<translation id="3008916997590006706">輕觸「儲存」，下次登入時就能輕鬆存取這組密碼</translation>
 <translation id="3024215143424744261">閱讀模式偏好設定已關閉</translation>
 <translation id="3026955690410463085">加入連結</translation>
 <translation id="3027644380269727216">以你的網站活動做為依據。這項設定已開啟。</translation>
@@ -1006,6 +1007,7 @@
 <translation id="5267572070504076962">開啟安全瀏覽功能即可防範危險網站</translation>
 <translation id="5271967389191913893">裝置無法開啟您要下載的這項內容。</translation>
 <translation id="5273031377282080577">系統管理員會管理這項設定。</translation>
+<translation id="5290322819358431297">自動填入密碼</translation>
 <translation id="5292796745632149097">傳送到</translation>
 <translation id="5301876394151419436">目前登入的帳戶是 <ph name="EMAIL" />。你隨時可以前往設定停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="5304593522240415983">這個欄位不能留空</translation>
@@ -1098,6 +1100,7 @@
 <translation id="572328651809341494">最近開啟的分頁</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />，已固定的無痕分頁，正在播放音訊</translation>
+<translation id="5736345781200955827">建立、儲存及管理密碼，用 Chrome 即可輕鬆登入網站和應用程式</translation>
 <translation id="5744751019568455640">你可以在這裡挑選讓我朗讀網頁內容的聲音。如果你喜歡這個聲音，只要輕觸語音名稱即可繼續使用。</translation>
 <translation id="574845902699630049">以<ph name="OWNER_FULL_NAME" />的身分共用</translation>
 <translation id="5749068826913805084">Chrome 必須取得儲存空間的存取權才能下載檔案。</translation>

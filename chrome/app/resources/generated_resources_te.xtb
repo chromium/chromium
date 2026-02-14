@@ -1796,6 +1796,7 @@
 <translation id="219283042927675668">గ్రూప్‌లోని ట్యాబ్‌లు</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> మీ కొత్త ట్యాబ్ పేజీని మేనేజ్ చేస్తోంది, ఇది కొత్త ట్యాబ్‌లో తెరవబడుతుంది</translation>
 <translation id="2192982266585216032">&amp;పేమెంట్‌లు</translation>
+<translation id="2193567467390483943">మీ తల్లి/తండ్రి ఈ ఎక్స్‌టెన్షన్‌ను ఆమోదించలేదు</translation>
 <translation id="2194856509914051091">పరిగణించాల్సిన విషయాలు</translation>
 <translation id="2195331105963583686">మీరు ఆ సమయం తర్వాత కూడా ఈ <ph name="DEVICE_TYPE" />ను ఉపయోగించగలరు, కానీ ఆపై ఆటోమేటిక్ సాఫ్ట్‌వేర్, భద్రతాపరమైన అప్‌డేట్‌లు దీనికి అందించబడవు</translation>
 <translation id="2195729137168608510">ఈమెయిల్‌ రక్షణ</translation>
@@ -5117,6 +5118,7 @@
 <translation id="4415815425191869676">ఈ సైట్‌లను ఎల్లప్పుడూ యాక్టివ్‌గా ఉంచుకోండి</translation>
 <translation id="4416582610654027550">చెల్లుబాటు అయ్యే URLను టైప్ చేయండి</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{ఈ ట్యాబ్‌ను పాజ్ చేయండి}other{ఈ ట్యాబ్‌లను పాజ్ చేయండి}}</translation>
+<translation id="4421823557207751899"><ph name="USERNAME" />గా సైన్ ఇన్ చేశారు</translation>
 <translation id="4421932172707401417">టెక్స్ట్ సూచనలు అనేవి మీ ప్రాంప్ట్‌లపై, అలాగే వెబ్ పేజీలోని కంటెంట్‌పై ఆధారపడి ఉంటాయి</translation>
 <translation id="4421932782753506458">ఫ్లఫ్ఫీ</translation>
 <translation id="4423376891418188461">సెట్టింగ్‌లను పునరుద్ధరించు</translation>

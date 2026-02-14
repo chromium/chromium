@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Aidake meil Chrome’i täiustada, andes teada, miks lubasite kolmanda osapoole küpsisefailid. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Saate paluda saitide lauaarvuti versiooni nägemist</translation>
 <translation id="1085696779717592361">Vaikimisi Chrome'i kasutamine</translation>
+<translation id="1126523729897810826">Viige lõpule allolevad soovitatavad toimingud, et Chrome'i parimal moel kasutada.</translation>
 <translation id="113098737392899175">Lehtedel navigeerimine tekstikursoriga, kui klaviatuur on ühendatud</translation>
 <translation id="1149644372535087155">Paroolide salvestamine Chrome'is</translation>
 <translation id="1178015372320901893">Minu otseteede alumine leht</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Kiirenda saite Chrome’i V8 mootoriga, aga vähenda pisut Chrome’i vastupanuvõimet rünnetele</translation>
 <translation id="1593426485665524382">Uued toimingud on saadaval ekraanikuva ülaosas</translation>
 <translation id="1594521731409209842">Foto suuruse muutmiseks liigutage ekraanil sõrmi kokku-lahku</translation>
+<translation id="1599268789440304082">Seadistusleht on avatud</translation>
 <translation id="1601560923496285236">Rakenda</translation>
 <translation id="1615755956145364867">Saidid saavad paluda esitada kaitstud sisu</translation>
 <translation id="1620510694547887537">Kaamera</translation>
@@ -352,7 +354,9 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="4505788138578415521">Laiendatud URL</translation>
 <translation id="4522570452068850558">Üksikasjad</translation>
 <translation id="4523472416386354622">Alustamiseks logige sisse</translation>
+<translation id="4529207923544043455">Alumine leht, mis kuvab lõpetatud ja lõpetamata seadistusloendi ülesandeid</translation>
 <translation id="4534723447064627427">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie mikrofonile, lülitage mikrofon sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Seadistusleht on suletud</translation>
 <translation id="4566417217121906555">Vaigista mikrofon</translation>
 <translation id="4570913071927164677">Üksikasjad</translation>
 <translation id="4578289292431526768">Alustage</translation>

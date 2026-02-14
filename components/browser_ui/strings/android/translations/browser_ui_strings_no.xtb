@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Hjelp oss med å forbedre Chrome ved å fortelle oss hvorfor du tillot informasjonskapsler fra tredjeparter. <ph name="BEGIN_LINK" />Send tilbakemelding<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kan be om å få datamaskinversjonen av nettsteder</translation>
 <translation id="1085696779717592361">Bruk Chrome som standard</translation>
+<translation id="1126523729897810826">Fullfør de foreslåtte handlingene nedenfor for å få mest mulig ut av Chrome</translation>
 <translation id="113098737392899175">Naviger på sider med en tekstmarkør når et tastatur er koblet til</translation>
 <translation id="1149644372535087155">Lagre passord i Chrome</translation>
 <translation id="1178015372320901893">Bunnfelt i mine snarveier</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Gjør nettsteder raskere med V8-motoren i Chrome, men gjør Chrome litt mindre motstandsdyktig mot angrep</translation>
 <translation id="1593426485665524382">Nye handlinger er tilgjengelige nær toppen av skjermen</translation>
 <translation id="1594521731409209842">Klyp på skjermen for å endre størrelsen på bildet</translation>
+<translation id="1599268789440304082">Konfigureringsarket er åpnet</translation>
 <translation id="1601560923496285236">Bruk</translation>
 <translation id="1615755956145364867">Nettsteder kan be om å få spille av beskyttet innhold</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="4505788138578415521">Nettadressen er utvidet</translation>
 <translation id="4522570452068850558">Detaljer</translation>
 <translation id="4523472416386354622">Logg på for å komme i gang</translation>
+<translation id="4529207923544043455">Feltet nederst som viser fullførte og ufullførte oppgaver i konfigurasjonslisten</translation>
 <translation id="4534723447064627427">For å gi <ph name="APP_NAME" /> tilgang til mikrofonen må du også slå på mikrofonen i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Konfigureringsarket er lukket</translation>
 <translation id="4566417217121906555">Slå av mikrofonen</translation>
 <translation id="4570913071927164677">Detaljer</translation>
 <translation id="4578289292431526768">Sett i gang</translation>

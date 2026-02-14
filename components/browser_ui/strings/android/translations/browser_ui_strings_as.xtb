@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">আপুনি তৃতীয় পক্ষৰ কুকিসমূহক কিয় অনুমতি দিছে সেয়া আমাক জনাই আমি Chrome উন্নত কৰাত সহায় কৰক। <ph name="BEGIN_LINK" />মতামত পঠিয়াওক<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">আপুনি ছাইটসমূহৰ ডেস্কটপ সংস্কৰণ চাবলৈ ক’ব পাৰে</translation>
 <translation id="1085696779717592361">ডিফ’ল্ট হিচাপে Chrome ব্যৱহাৰ কৰক</translation>
+<translation id="1126523729897810826">Chromeৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ তলত উল্লেখিত পৰমৰ্শিত কাৰ্যসমূহ সম্পূৰ্ণ কৰক</translation>
 <translation id="113098737392899175">কোনো কীব’ৰ্ড সংলগ্ন কৰিলে পাঠৰ কাৰ্ছৰৰ জৰিয়তে পৃষ্ঠাসমূহ নেভিগে’ট কৰক</translation>
 <translation id="1149644372535087155">Chromeত পাছৱৰ্ড ছেভ কৰক</translation>
 <translation id="1178015372320901893">মোৰ শ্বৰ্টকাটৰ তলৰ শ্বীট</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Chromeৰ V8 ইঞ্জিন ব্যৱহাৰ কৰি ছাইটসমূহ দ্ৰুত কৰে কিন্তু ইয়ে Chromeৰ আক্ৰমণ প্ৰতিৰোধ কৰাৰ ক্ষমতা কম কৰে</translation>
 <translation id="1593426485665524382">স্ক্ৰীনখনৰ একেবাৰে ওপৰৰ অংশৰ ওচৰত নতুন কাৰ্য উপলব্ধ</translation>
 <translation id="1594521731409209842">ফট’ৰ আকাৰ সলনি কৰিবলৈ স্ক্ৰীনত পিঞ্চ কৰক</translation>
+<translation id="1599268789440304082">ছেটআপ শ্বীট খোলা হৈছে</translation>
 <translation id="1601560923496285236">প্ৰয়োগ কৰক</translation>
 <translation id="1615755956145364867">ছাইটে সুৰক্ষিত সমল প্লে’ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="1620510694547887537">কেমেৰা</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">URL বিস্তাৰ কৰা হৈছে</translation>
 <translation id="4522570452068850558">সবিশেষ</translation>
 <translation id="4523472416386354622">আৰম্ভ কৰিবলৈ ছাইন ইন কৰক</translation>
+<translation id="4529207923544043455">সম্পূৰ্ণ আৰু অসম্পূৰ্ণ ছেট আপৰ সূচীৰ কাৰ্যসমূহ প্ৰদৰ্শন কৰা তলৰ শ্বীট</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" />ক আপোনাৰ মাইক্ৰ’ফ’ন এক্সেছ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো মাইক্ৰ’ফ’ন অন কৰক।</translation>
+<translation id="4545694195887112015">ছেটআপ শ্বীট বন্ধ কৰা হৈছে</translation>
 <translation id="4566417217121906555">মাইক্ৰ’ফ’ন মিউট কৰক</translation>
 <translation id="4570913071927164677">সবিশেষ</translation>
 <translation id="4578289292431526768">আৰম্ভ কৰক</translation>

@@ -1349,6 +1349,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1891362123137972260">Ruang disk hampir habis. Kosongkan ruang disk.</translation>
 <translation id="189210018541388520">Buka layar penuh</translation>
 <translation id="1892341345406963517">Halo <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Klik <ph name="BUTTON_LABEL" /> di bawah Klik <ph name="BUTTON_2" /> di setelan Windows Anda</translation>
 <translation id="189358972401248634">Bahasa lain</translation>
 <translation id="1895658205118569222">Mati</translation>
 <translation id="1896043844785689584">Untuk menyiapkan sidik jari, minta anak Anda menyentuh sensor sidik jari di pojok kanan bawah keyboard. Data sidik jari anak Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" /> ini.</translation>
@@ -3166,6 +3167,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3105820656234755131">Sandi Diperbarui</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Situs sedang menggunakan bluetooth</translation>
+<translation id="3108122610701115301">Jadikan default</translation>
 <translation id="3108931485517391283">Tidak dapat menerima</translation>
 <translation id="3108957152224931571">Warna sorotan</translation>
 <translation id="3109206895301430738">Grup Tab Tersimpan</translation>
@@ -5117,6 +5119,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4415815425191869676">Selalu aktifkan situs ini</translation>
 <translation id="4416582610654027550">Ketik URL yang valid</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Jeda Tab Ini}other{Jeda Tab Ini}}</translation>
+<translation id="4421823557207751899">Login sebagai <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Saran penulisan didasarkan pada perintah Anda dan konten halaman web</translation>
 <translation id="4421932782753506458">Si Manis</translation>
 <translation id="4423376891418188461">Pulihkan Setelan</translation>
@@ -6361,6 +6364,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5288678174502918605">Buka K&amp;embali Tab yang Tertutup</translation>
 <translation id="5290020561438336792">PC dan perangkat transmisi di jaringan Wi-Fi yang berbeda (misalnya 2,4 GHz
     vs. 5 GHz)</translation>
+<translation id="5290322819358431297">Isikan otomatis sandi Anda</translation>
 <translation id="52912272896845572">File kunci pribadi tidak valid.</translation>
 <translation id="529175790091471945">Format perangkat ini</translation>
 <translation id="529296195492126134">Mode singkat tidak didukung. Harap hubungi administrator Anda</translation>
@@ -6980,6 +6984,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5734697361979786483">Tambahkan berbagi file</translation>
 <translation id="573520097779121706">Gunakan tombol 7, 8, 9, u, o, j, k, l untuk memindahkan kursor</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Data ini atau perangkat Anda tidak memenuhi beberapa kebijakan keamanan organisasi Anda. Hubungi admin Anda untuk mengetahui hal yang perlu diperbaiki.}=1{File ini atau perangkat Anda tidak memenuhi beberapa kebijakan keamanan organisasi Anda. Hubungi admin Anda untuk mengetahui hal yang perlu diperbaiki.}other{File ini tidak memenuhi beberapa kebijakan keamanan organisasi Anda. Hubungi admin Anda untuk mengetahui hal yang perlu diperbaiki.}}</translation>
+<translation id="5736345781200955827">Buat, simpan, dan kelola sandi Anda agar Anda dapat mudah login ke situs dan aplikasi menggunakan Chrome</translation>
 <translation id="5738093759615225354">Anda memerlukan kunci sandi ini untuk login ke komputer Anda</translation>
 <translation id="5738386565827477765">Perangkat audio</translation>
 <translation id="5739017626473506901">Login untuk membantu <ph name="USER_NAME" /> menambahkan akun sekolah</translation>
@@ -7232,6 +7237,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5901089233978050985">Beralih ke tab yang sedang direkam</translation>
 <translation id="5901494423252125310">Tutup printer terbuka</translation>
 <translation id="5901630391730855834">Kuning</translation>
+<translation id="5902400038326841449">Pengelola Sandi Google dinonaktifkan</translation>
 <translation id="5902892210366342391">Berikan peringatan sebelum membuka situs yang tidak aman dalam mode Samaran</translation>
 <translation id="5904614460720589786">Tidak dapat menyiapkan <ph name="APP_NAME" /> karena ada masalah konfigurasi. Harap hubungi administrator Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Terus izinkan situs ini menggunakan ID untuk memutar konten yang dilindungi</translation>
@@ -8013,6 +8019,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> selesai</translation>
 <translation id="6452961788130242735">Masalah jaringan atau area yang buruk</translation>
 <translation id="6453191633103419909">Kualitas Proyeksi Tab/Layar</translation>
+<translation id="6453306703004115497">Diterjemahkan ke <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Kelompokkan Semua Tab</translation>
 <translation id="6453921811609336127">Untuk beralih ke metode input berikutnya, tekan <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Spasi<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Di situs tertentu</translation>
@@ -8171,6 +8178,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="656293578423618167">Jalur atau nama file terlalu panjang. Simpan dengan nama yang lebih pendek atau ke lokasi lain.</translation>
 <translation id="6563002009564846727">Lihat sertifikat yang diimpor dari Windows</translation>
 <translation id="6563055593659435495">Tidak dapat mempertahankan koneksi dengan ponsel Anda. Pastikan ponsel berada di dekat Anda, tidak terkunci, dan Bluetooth serta Wi-Fi aktif.</translation>
+<translation id="6564343790052433242">Untuk membuat kunci sandi untuk <ph name="APP_NAME" />, Pengelola Sandi Google harus aktif</translation>
 <translation id="6565144332292237355">Situs dapat menggunakan fitur ini untuk mencari dan terhubung ke perangkat apa pun di jaringan lokal Anda</translation>
 <translation id="6568283005472142698">Penelusuran Tab</translation>
 <translation id="6569931898053264308">Penghematan Sedang</translation>
@@ -11441,6 +11449,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8761945298804995673">Pengguna ini sudah ada</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> Anda perlu diupdate</translation>
 <translation id="8763927697961133303">Perangkat USB</translation>
+<translation id="8765940060470412555">Lepas pin mode baca</translation>
 <translation id="8766156860774051068">Dipilih oleh Anda</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Tampilkan semua penelusuran untuk <ph name="QUERY_CLUSTER_NAME" /></translation>

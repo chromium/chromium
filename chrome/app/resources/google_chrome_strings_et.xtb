@@ -253,6 +253,7 @@
 <translation id="3622716124581627104">Tuvastage asju ja kohti ning kopeerige või tõlkige teksti. Kui kasutate Google Lensi, saadetakse Google'ile lehe ekraanipilt. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nüüd on Chrome'i lihtsam kasutada Google'i kontoga ja jagatud arvutites.</translation>
 <translation id="3635073343384702370">Chrome saab teie paroole kontrollida, kui olete need salvestanud</translation>
+<translation id="3636970668267555808">Määrake Chrome oma vaikebrauseriks, et saada hõlpsasti juurdepääs funktsioonidele, mida teate, armastate ja usaldate.</translation>
 <translation id="3667616615096815454">Ei saa installida, rakendus on serverile tundmatu.</translation>
 <translation id="3673813398384385993">Chrome leidis, et laiendus „<ph name="EXTENSION_NAME" />“ sisaldab pahavara</translation>
 <translation id="3697952514309507634">Muud Chrome'i profiilid</translation>
@@ -262,6 +263,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome soovitab selle eemaldada. <ph name="BEGIN_LINK" />Lisateave toetatud laienduste kohta<ph name="END_LINK" />}other{Chrome soovitab need eemaldada. <ph name="BEGIN_LINK" />Lisateave toetatud laienduste kohta<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Otsingu süvendamiseks lisage mitu vahekaarti, faili ja tööriista, kasutades nuppu „Vahekaardi lisamine ja muu“.</translation>
 <translation id="3756724684201900923">Lisateave Chrome’i installimise kohta</translation>
+<translation id="3772152698251011058">Teavitage Google'it sellest saidist</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex ei saanud sisselogimisvea tõttu teie andmeid sünkroonida.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -411,6 +413,8 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5430073640787465221">Teie eelistuste fail on rikutud või kehtetu. Google Chrome ei saa teie seadeid taastada.</translation>
 <translation id="5465210843490471889">Valige Chrome'i profiil, mida <ph name="START_GLIC_STYLING" />Geminiga<ph name="END_GLIC_STYLING" /> kasutada</translation>
 <translation id="5468572406162360320">Nende funktsioonide täiustamiseks saadab Chrome teie interaktsioonid funktsioonidega Google'ile. Ülevaatajad võivad neid andmeid lugeda, töödelda ja nende kohta märkmeid teha.</translation>
+<translation id="547202872422499512">Chrome käivitub nüüd Windowsi käivitamisel, et saaksite kohe sirvimist alustada. Saate selle seadetes välja lülitada.</translation>
+<translation id="5486346529181556467">Kui teatate saidist, mis on teie arvates kahjulik, aitate kõigi jaoks veebiturvalisust parandada. Vaadake lisateavet <ph name="BEGIN_LINK" />Google'i ohtlike saitide eeskirjade kohta.<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">otsinguala vasak ülanurk: <ph name="LEFT" />% vasakul, <ph name="TOP" />% üleval</translation>
 <translation id="5550137307985173298">Chrome'ile uue ilme andmiseks klõpsake uuel vahelehel nupul Chrome'i kohandamine</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -570,6 +574,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Sissetuleku reegel Google Chrome'i beetaversioonile mDNS-liikluse lubamiseks.</translation>
 <translation id="6979589607440534284">Vaadake, miks Chrome blokeerib mõned failid ja avaneb uuel vahelehel</translation>
+<translation id="6985817499499247940">Käivitage Chrome automaatselt, et kohe sirvimist alustada.</translation>
 <translation id="6991926986715044139">Kuva alati Google Lensi otsetee</translation>
 <translation id="6999131147875565462">Chrome töötab kiiremini ja JavaScripti kasutavad funktsioonid peaksid töötama kavandatud viisil</translation>
 <translation id="7011190694940573312">Installimine ebaõnnestus, kuna operatsioonisüsteemi seda versiooni ei toetata.</translation>
@@ -598,6 +603,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7288567540154601580">Vahelehed ja laiendused</translation>
 <translation id="7296210096911315575">Tähtis kasutus- ja ohutusteave</translation>
 <translation id="7302361266603927550">Teatud Chrome’i andmeid pole veel teie Google’i kontole salvestatud. Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed kustutatakse.</translation>
+<translation id="7306401458628386911">Alustage sirvimist kohe: Chrome saab nüüd käivituda Windowsi käivitamisel.</translation>
 <translation id="7308322188646931570">Chrome vajab failide allalaadimiseks juurdepääsu salvestusruumile</translation>
 <translation id="7339898014177206373">Uus aken</translation>
 <translation id="7352651011704765696">Midagi läks valesti</translation>
@@ -660,6 +666,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7827099906024714326">Selleks et teatud andmeid saaks teie Google'i kontole salvestada ja kõigis teie seadmetes kasutada, peab Chrome teie isiku kinnitama. Kui logite praegu välja, siis need andmed kustutatakse.</translation>
 <translation id="7832314606810669113">Kõigis seadmetes oma järjehoidjate ja muu sisu kasutamiseks logige Chrome’i sisse. See järjehoidja salvestatakse pärast sisselogimist teie Google’i kontole.</translation>
 <translation id="7845233973568007926">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate oma arvuti taaskäivitama.</translation>
+<translation id="7847170235260850604">Käivita Chrome Windowsi käivitamisel</translation>
 <translation id="7849037457735762883">Jätkake sealt, kus pooleli jäite: Chrome saab teie vahelehed taastada iga kord, kui brauseri uuesti käivitate. Selle sisselülitamiseks avage</translation>
 <translation id="7869620795354551924">Salvestatud paroolide kasutamiseks skannige QR-kood, laadige alla Chrome iOS-ile ja logige sisse oma Google’i kontole.</translation>
 <translation id="7872446069773932638">Allalaadimine … <ph name="SECONDS" /> sekund(it) on jäänud</translation>

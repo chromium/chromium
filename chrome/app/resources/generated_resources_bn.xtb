@@ -1350,6 +1350,8 @@
 <translation id="1891362123137972260">ডিস্কে জায়গা খুবই কম। ডিস্কে জায়গা বের করুন।</translation>
 <translation id="189210018541388520">পূর্ণ স্ক্রিন খুলুন</translation>
 <translation id="1892341345406963517">হাই <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">১. নিচে <ph name="BUTTON_LABEL" /> বোতামে ক্লিক করুন
+২. আপনার Windows সেটিংসে <ph name="BUTTON_2" /> বোতামে ক্লিক করুন</translation>
 <translation id="189358972401248634">অন্যান্য ভাষা</translation>
 <translation id="1895658205118569222">বন্ধ করুন</translation>
 <translation id="1896043844785689584">ফিঙ্গারপ্রিন্ট সেট-আপ করতে, আপনার সন্তানকে কীবোর্ডের নিচের ডানদিকের কোণে থাকা ফিঙ্গারপ্রিন্ট সেন্সর টাচ করতে বলুন। আপনার সন্তানের ফিঙ্গারপ্রিন্ট ডেটা নিরাপদে সেভ করা হয় এবং সবসময় <ph name="DEVICE_TYPE" />-এ থাকে।</translation>
@@ -3167,6 +3169,7 @@
 <translation id="3105820656234755131">পাসওয়ার্ড আপডেট করা হয়েছে</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ব্লুটুথ)</translation>
 <translation id="310671807099593501">সাইটটি ব্লুটুথ ব্যবহার করছে</translation>
+<translation id="3108122610701115301">ডিফল্ট হিসেবে সেট করুন</translation>
 <translation id="3108931485517391283">রিসিভ করা যাচ্ছে না</translation>
 <translation id="3108957152224931571">হাইলাইট করার রঙ</translation>
 <translation id="3109206895301430738">সেভ করা ট্যাব গ্রুপ</translation>
@@ -5118,6 +5121,7 @@
 <translation id="4415815425191869676">সবসময় এই সাইটটি অ্যাক্টিভ রাখুন</translation>
 <translation id="4416582610654027550">একটি সঠিক URL লিখুন</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{এই ট্যাপ পজ করুন}one{এই ট্যাপ পজ করুন}other{এই ট্যাবগুলি পজ করুন}}</translation>
+<translation id="4421823557207751899"><ph name="USERNAME" /> হিসেবে প্রবেশ করুন হয়েছেন</translation>
 <translation id="4421932172707401417">লেখার ব্যাপারে সাজেশন আপনার প্রম্পট ও ওয়েব পৃষ্ঠার কন্টেন্টের উপর নির্ভর করে</translation>
 <translation id="4421932782753506458">ফুঁয়োফুঁয়ো</translation>
 <translation id="4423376891418188461">সেটিংস পুনরুদ্ধার করুন</translation>
@@ -6219,6 +6223,7 @@
 <translation id="5191251636205085390">থার্ড-পার্টি কুকি সরানোর নতুন প্রযুক্তি ও তা নিয়ন্ত্রণ সংক্রান্ত তথ্যগুলি জানুন</translation>
 <translation id="519185197579575131">QT ব্যবহার করুন</translation>
 <translation id="5192062846343383368">আপনার তত্ত্বাবধান সেটিংস দেখতে Family Link অ্যাপ খুলুন</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> প্রয়োজন</translation>
 <translation id="5193978546360574373">এটি এই Chromebook-এ Google Drive-এর অ্যাক্সেস সরিয়ে দেবে, যেসব ফাইল অফলাইনে উপলভ্য আছে তার অ্যাক্সেসও এর মধ্যে অন্তর্ভুক্ত আছে</translation>
 <translation id="5193988420012215838">আপনার ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="5194256020863090856">এটি শুধুমাত্র ছদ্মবেশী উইন্ডোকেই প্রভাবিত করবে</translation>
@@ -6361,6 +6366,7 @@
 <translation id="5288678174502918605">বন্ধ হওয়া ট্যাব পুনরায়&amp;খুলুন</translation>
 <translation id="5290020561438336792">PC ও কাস্ট ডিভাইস আলাদা ওয়াই-ফাই নেটওয়ার্কে আছে (যেমন ২.৪ GHz
     বনাম ৫ GHz)</translation>
+<translation id="5290322819358431297">আপনার পাসওয়ার্ড অটোফিল করুন</translation>
 <translation id="52912272896845572">ব্যক্তিগত কী ফাইলটি ভুল৷</translation>
 <translation id="529175790091471945">এই ডিভাইসটি ফর্ম্যাট করুন</translation>
 <translation id="529296195492126134">ক্ষণস্থায়ী মোড কাজ করে না। অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন</translation>
@@ -6981,6 +6987,7 @@
 <translation id="5734697361979786483">'ফাইল শেয়ার' যোগ করুন</translation>
 <translation id="573520097779121706">কার্সর সরাতে 7, 8, 9, u, o, j, k, l 'কী' ব্যবহার করুন</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{এই ডেটা বা আপনার ডিভাইস, সংস্থার কিছু নিরাপত্তা সংক্রান্ত নীতি পূরণ করেনি। সমাধানের জন্য কী করতে হবে তা জানতে আপনার অ্যাডমিনের সাথে যোগাযোগ করুন।}=1{এই ফাইল বা আপনার ডিভাইস, সংস্থার কিছু নিরাপত্তা সংক্রান্ত নীতি পূরণ করেনি। সমাধানের জন্য কী করতে হবে তা জানতে আপনার অ্যাডমিনের সাথে যোগাযোগ করুন।}one{এইসব ফাইল সংস্থার কিছু নিরাপত্তা সংক্রান্ত নীতি পূরণ করেনি। সমাধানের জন্য কী করতে হবে তা জানতে আপনার অ্যাডমিনের সাথে যোগাযোগ করুন।}other{এইসব ফাইল সংস্থার কিছু নিরাপত্তা সংক্রান্ত নীতি পূরণ করেনি। সমাধানের জন্য কী করতে হবে তা জানতে আপনার অ্যাডমিনের সাথে যোগাযোগ করুন।}}</translation>
+<translation id="5736345781200955827">পাসওয়ার্ড তৈরি, সেভ ও ম্যানেজ করুন যাতে আপনি Chrome ব্যবহার করে সহজেই সাইট ও অ্যাপে সাইন-ইন করতে পারেন</translation>
 <translation id="5738093759615225354">আপনার কম্পিউটারে সাইন-ইন করতে, এই 'পাসকী' প্রয়োজন হবে</translation>
 <translation id="5738386565827477765">অডিও ডিভাইস</translation>
 <translation id="5739017626473506901">একটি স্কুল অ্যাকাউন্ট যোগ করার জন্য <ph name="USER_NAME" />-কে সাহায্য করতে সাইন-ইন করুন</translation>
@@ -7233,6 +7240,7 @@
 <translation id="5901089233978050985">ক্যাপচারিং ট্যাবে পাল্টান</translation>
 <translation id="5901494423252125310">প্রিন্টারের ঢাকনা খোলা আছে</translation>
 <translation id="5901630391730855834">হলুদ</translation>
+<translation id="5902400038326841449">Google Password Manager বন্ধ করা আছে</translation>
 <translation id="5902892210366342391">ছদ্মবেশী মোডে অসুরক্ষিত সাইটে যাওয়ার আগে সতর্কতা দেখুন</translation>
 <translation id="5904614460720589786">কনফিগার করার সময় সমস্যা হওয়ার জন্য <ph name="APP_NAME" /> সেট-আপ করা যায়নি। আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
 <translation id="5906457147959147328">সুরক্ষিত কন্টেন্ট চালানোর জন্য এই সাইটকে শনাক্তকারী ব্যবহার করার অনুমোদন দেওয়ার প্রসেস চালিয়ে যান</translation>
@@ -8014,6 +8022,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> হয়েছে</translation>
 <translation id="6452961788130242735">নেটওয়ার্কের সমস্যা বা ভুল রিলম</translation>
 <translation id="6453191633103419909">ট্যাব/স্ক্রিন প্রোজেকশন কোয়ালিটি</translation>
+<translation id="6453306703004115497"><ph name="LANGUAGE" /> ভাষায় অনুবাদ করা হয়েছে</translation>
 <translation id="6453687572758515877">সব ট্যাব গ্রুপ করুন</translation>
 <translation id="6453921811609336127">পরের ইনপুট পদ্ধতিতে পাল্টাতে <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> টিপুন</translation>
 <translation id="6455264371803474013">নির্দিষ্ট সাইটগুলিতে</translation>
@@ -8172,6 +8181,7 @@
 <translation id="656293578423618167">ফাইল পাথ অথবা নাম অত্যন্ত বড়৷ অনুগ্রহ করে একটি সংক্ষিপ্ত নামে বা অন্য কোনো স্থানে সেভণ করুন৷</translation>
 <translation id="6563002009564846727">Windows থেকে ইমপোর্ট করা সার্টিফিকেট দেখুন</translation>
 <translation id="6563055593659435495">আপনার ফোনের সাথে কানেকশন বজায় রাখা যাচ্ছে না। আপনার ফোন কাছাকাছি, আনলক অবস্থায় রয়েছে এবং তাতে ব্লুটুথ আর ওয়াই-ফাই চালু আছে কিনা তা ভালো করে দেখে নিন।</translation>
+<translation id="6564343790052433242"><ph name="APP_NAME" />-এর জন্য পাসকী তৈরি করতে, Google Password Manager চালু থাকতে হবে</translation>
 <translation id="6565144332292237355">আপনার স্থানীয় নেটওয়ার্কে, যেকোনও ডিভাইস খুঁজতে ও কানেক্ট করার জন্য, সাইট এই ফিচার ব্যবহার করতে পারে</translation>
 <translation id="6568283005472142698">ট্যাব সার্চ করা</translation>
 <translation id="6569931898053264308">মাঝারি পরিমাণে সেভ করা</translation>
@@ -11445,6 +11455,7 @@
 <translation id="8761945298804995673">এই ব্যবহারকারী আগে থেকেই আছেন</translation>
 <translation id="8762886931014513155">আপনার <ph name="DEVICE_TYPE" /> আপডেট করা প্রয়োজন</translation>
 <translation id="8763927697961133303">USB ডিভাইস</translation>
+<translation id="8765940060470412555">রিডিং মোড আনপিন করুন</translation>
 <translation id="8766156860774051068">আপনার কিউরেট করা</translation>
 <translation id="8766796754185931010">কোটোয়েরি</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" />-এর সবকটি সার্চ ফলাফল দেখান</translation>

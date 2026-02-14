@@ -704,6 +704,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2137891579555018930">Esperando el permiso…</translation>
 <translation id="213826338245044447">Favoritos del dispositivo</translation>
 <translation id="2141000681034340397">Editar tu entrada</translation>
+<translation id="2141475438898772664">Pagar en 4 cuotas o mensualmente</translation>
 <translation id="2144171668675205303">No hay temas activos</translation>
 <translation id="2145193671493396738">Noticias económicas</translation>
 <translation id="214556005048008348">Cancelar pago</translation>
@@ -2850,6 +2851,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5543564889050342791">Zoológicos, acuarios y reservas</translation>
 <translation id="5543722831081909240">180 grados</translation>
 <translation id="5544836308113951378">Cruceros y chárteres</translation>
+<translation id="5545314360139398232">Vincula <ph name="ISSUER_NAME" /> para pagar en cuotas</translation>
 <translation id="5547939254150808298">Impresión y publicación</translation>
 <translation id="554815783948612276">Proveedores de foros y chats</translation>
 <translation id="5548606607480005320">Verificación de seguridad</translation>
@@ -3697,6 +3699,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Vehículos comerciales</translation>
 <translation id="6927878187051807444">archivos de la cámara y capturas de pantalla</translation>
+<translation id="6929949393612835405">Cerrar y volver a "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Buscar en el panel lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Tu motor de búsqueda predeterminado te permite buscar en la Web y potencia las funciones de Chrome<ph name="END_BOLD" />, como la búsqueda desde la barra de direcciones o desde imágenes de páginas web. Es posible que una función no esté disponible si tu motor de búsqueda no la admite.</translation>
 <translation id="6934672428414710184">Este nombre es de tu Cuenta de Google</translation>

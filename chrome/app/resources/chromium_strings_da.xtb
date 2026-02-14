@@ -99,6 +99,7 @@
 <translation id="2099452623287920103">Dine adgangskoder og andre Chromium-data, som du har gemt på din Google-konto, fjernes fra denne enhed. Hvis du vil bruge dem igen i Chromium, skal du logge ind igen.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Din organisation sletter automatisk browserdata, når Chromium ikke bruges i 1 minut. Disse kan omfatte historik, autofyld og downloads. Dine faner forbliver åbne.}one{Din organisation sletter automatisk browserdata, når Chromium ikke bruges i # minut. Disse kan omfatte historik, autofyld og downloads. Dine faner forbliver åbne.}other{Din organisation sletter automatisk browserdata, når Chromium ikke bruges i # minutter. Disse kan omfatte historik, autofyld og downloads. Dine faner forbliver åbne.}}</translation>
 <translation id="2126108037660393668">Verificering af den downloadede fil mislykkedes.</translation>
+<translation id="2135919691573380097">Rapportér dette website</translation>
 <translation id="2137162749895930932">Luk oversættelsesskærmen</translation>
 <translation id="215352261310130060">Chromium har blokeret denne download, fordi websitet ikke anvender en sikker forbindelse, og der kan være blevet manipuleret med filen</translation>
 <translation id="2170098639895543546">Markér hvad som helst på siden</translation>
@@ -311,6 +312,7 @@
 <translation id="4304713468139749426">Adgangs­kode­admin­istrator</translation>
 <translation id="4334241893986177674">Søg i dette screenshot</translation>
 <translation id="4334294535648607276">Download fuldført.</translation>
+<translation id="4384331407722351213">Åbn Chromium, når Windows starter</translation>
 <translation id="4384993550046411228">Få nem adgang til de funktioner, du kender, elsker og har tillid til, ved at angive Chromium som din standardbrowser. Chromium fastgøres til proceslinjen, så du hurtigt kan tilgå den.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> kræver, at du læser og accepterer følgende servicevilkår, inden du bruger denne enhed. Disse vilkår udvider, ændrer eller begrænser på ingen måde vilkårene for Chromium OS.</translation>
 <translation id="4407044323746248786">Vil du afslutte Chromium alligevel?</translation>
@@ -331,6 +333,7 @@
 <translation id="4531137820806573936">Chromium skal have tilladelse til at registrere dine omgivelser og håndbevægelser</translation>
 <translation id="4536805923587466102">Du er allerede logget ind som <ph name="USER_EMAIL_ADDRESS" /> på en anden Chromium-profil</translation>
 <translation id="4548534452171747496">Chromium forudindlæser sider, hvilket gør det hurtigere at browse og søge. <ph name="BEGIN_LINK" />Få flere oplysninger om forudindlæsning af sider<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">Vær med til at forbedre onlinesikkerheden for alle ved at rapportere et website, du mener er skadeligt.</translation>
 <translation id="4570813286784708942">Chromium har blokeret denne download, fordi du har deaktiveret Beskyttet browsing, og filen ikke kan verificeres</translation>
 <translation id="4583692638088316420">Prøv Google Lens med Chromium på din telefon</translation>
 <translation id="4594305310729380060">I Adgangs­kode­admin­istrator på denne enhed</translation>
@@ -370,6 +373,7 @@
 <translation id="5174969993834422967">Du blokerer som regel notifikationer. Klik på notifikationsikonet i højre hjørne af din adresselinje for at give websitet tilladelse til at sende notifikationer.</translation>
 <translation id="5174983315706567306">Der er ikke nok diskplads.</translation>
 <translation id="5187123684706427865">Chromium-kontoen kræver fornyet godkendelse</translation>
+<translation id="5219681158518957165">Brug de anbefalede browserindstillinger</translation>
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="5231355151045086930">Log ud af Chromium</translation>
 <translation id="5234764350956374838">Luk</translation>
@@ -473,6 +477,7 @@
 <translation id="6327105987658262776">Der er ingen opdatering tilgængelig.</translation>
 <translation id="6333502561965082103">En anden handling i Chromium er i gang. Prøv igen senere.</translation>
 <translation id="6334986366598267305">Det er nu blevet nemmere at bruge Chromium med din Google-konto og på delte computere.</translation>
+<translation id="6347002662287820329">Få nem adgang til de funktioner, du kender, elsker og har tillid til, ved at angive Chromium som din standardbrowser.</translation>
 <translation id="6347933965114150440">Chromium-genvej</translation>
 <translation id="6366160072964553914">Chromium har blokeret denne download, fordi filen normalt ikke downloades og kan være skadelig</translation>
 <translation id="6373523479360886564">Er du sikker på, at du vil afinstallere Chromium?</translation>
@@ -503,6 +508,7 @@
 <translation id="6598877126913850652">Gå til indstillinger for Chromium-notifikationer</translation>
 <translation id="6600016381025017075">Søg efter hvad som helst på denne side</translation>
 <translation id="6613594504749178791">Dine ændringer træder i kraft, næste gang du genstarter Chromium.</translation>
+<translation id="6637908313088374648">Chromium åbnes nu, når Windows starter, så du kan begynde at browse med det samme. Du kan deaktivere dette i indstillingerne.</translation>
 <translation id="6648212540664651655">Fortsæt, hvor du slap: Chromium har gendannet dine faner fra din seneste session. Du kan deaktivere dette i</translation>
 <translation id="665732753414869868">Chromium skal have kameratilladelse for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="6669284030132180248">Hvis du også gemmer dine bogmærker på din Google-konto, kan du holde øje med produktpriser i Chromium og få besked, når prisen falder</translation>
@@ -561,6 +567,7 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="7213407614656404070">Brug Chromium, hver gang du klikker på links i beskeder, dokumenter og andre apps</translation>
 <translation id="7223968959479464213">Jobliste – Chromium</translation>
 <translation id="7246575524853130370">Dine interesser, sådan som de er estimeret af Chromium</translation>
+<translation id="7252276985725323153">Begynd at browse med det samme: Chromium kan nu åbnes, når Windows starter.</translation>
 <translation id="7274695763216404502">Panelet er fastgjort. Brug billedsøgning igen via værktøjslinjen</translation>
 <translation id="7288567540154601580">Faner og udvidelser</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium anbefaler, at du fjerner den}one{Chromium anbefaler, at du fjerner den}other{Chromium anbefaler, at du fjerner dem}}</translation>
@@ -590,6 +597,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="751935028865900641">Websites fungerer sandsynligvis som forventet. Du logges ud af de fleste websites, når du lukker alle Chromium-vinduer, med undtagelse af din Google-konto, hvis du er logget ind i Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium genstarter om 1 minut}one{Chromium genstarter om # minut}other{Chromium genstarter om # minutter}}</translation>
 <translation id="7565444033145385702">Du kan beskytte dine data ved at lade Chromium fjerne tilladelser fra websites, du ikke har besøgt for nylig.</translation>
+<translation id="7583104404158659071">Åbn Chromium automatisk for at begynde at browse med det samme.</translation>
 <translation id="7583399374488819119">Installationsprogram til <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">Chromium bruger dit kamera og din mikrofon.</translation>
 <translation id="7617377681829253106">Chromium er blevet bedre</translation>

@@ -98,6 +98,7 @@
 <translation id="2099452623287920103">系统将从此设备中移除您已保存在 Google 账号中的密码和其他 Chromium 数据。如需在 Chromium 中重新使用这些数据，请重新登录。</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{您的组织会在 Chromium 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{您的组织会在 Chromium 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
 <translation id="2126108037660393668">所下载的文件未能顺利通过验证。</translation>
+<translation id="2135919691573380097">举报此网站</translation>
 <translation id="2137162749895930932">关闭翻译屏幕</translation>
 <translation id="215352261310130060">Chromium 阻止了此项下载操作，因为网站未使用安全连接，该文件可能已被篡改</translation>
 <translation id="2170098639895543546">选择页面上的任何内容</translation>
@@ -310,6 +311,7 @@
 <translation id="4304713468139749426">密码管理工具</translation>
 <translation id="4334241893986177674">搜索此屏幕截图</translation>
 <translation id="4334294535648607276">下载完毕。</translation>
+<translation id="4384331407722351213">在 Windows 启动时启动 Chromium</translation>
 <translation id="4384993550046411228">将 Chromium 设为默认浏览器，即可轻松使用您熟悉、喜爱和信任的功能。Chromium 将固定到任务栏，以便您快速访问。</translation>
 <translation id="439358628917130594">根据 <ph name="MANAGER" /> 的要求，您必须先阅读并接受以下《服务条款》才能使用此设备。这些条款不会扩展、修改或限制 Chromium 操作系统条款。</translation>
 <translation id="4407044323746248786">仍要退出 Chromium？</translation>
@@ -330,6 +332,7 @@
 <translation id="4531137820806573936">Chromium 需要获得权限，才能绘制您周边环境的地图并跟踪您的双手</translation>
 <translation id="4536805923587466102">您已使用另一份 Chromium 个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录</translation>
 <translation id="4548534452171747496">Chromium 会预加载网页，以便您更快速地浏览和搜索内容。<ph name="BEGIN_LINK" />详细了解预加载网页<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">举报您认为有害的网站，帮助我们为所有人改善网络安全环境。</translation>
 <translation id="4570813286784708942">Chromium 阻止了此项下载操作，因为您关闭了安全浏览功能，系统无法验证该文件</translation>
 <translation id="4583692638088316420">借助 Chromium 在手机上试用 Google 智能镜头</translation>
 <translation id="4594305310729380060">保存到此设备上的密码管理工具中</translation>
@@ -504,6 +507,7 @@
 <translation id="6598877126913850652">转到 Chromium 通知设置部分</translation>
 <translation id="6600016381025017075">搜索此页面上的任何内容</translation>
 <translation id="6613594504749178791">您所做的更改会在下次重新启动 Chromium 时生效。</translation>
+<translation id="6637908313088374648">现在，Chromium 会在 Windows 启动时启动，让您可以即刻开启浏览之旅。您可在“设置”中关闭此功能。</translation>
 <translation id="6648212540664651655">从上次停下的地方继续：Chromium 已恢复您上次会话中的标签页。如需关闭此功能，请前往</translation>
 <translation id="665732753414869868">Chromium 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
 <translation id="6669284030132180248">如果您还将书签保存在 Google 账号中，则可在 Chromium 中跟踪商品价格，并在降价时收到通知</translation>
@@ -562,6 +566,7 @@
 <translation id="7213407614656404070">随时使用 Chromium 打开您在消息、文档和其他应用内点击的链接</translation>
 <translation id="7223968959479464213">任务管理器 - Chromium</translation>
 <translation id="7246575524853130370">Chromium 推测出的您的兴趣</translation>
+<translation id="7252276985725323153">即刻开启浏览之旅：Chromium 现在可以在 Windows 启动时启动。</translation>
 <translation id="7274695763216404502">已固定！可通过工具栏再次使用图片搜索功能</translation>
 <translation id="7288567540154601580">标签页和扩展程序</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium 建议您移除它}other{Chromium 建议您移除它们}}</translation>
@@ -591,6 +596,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="751935028865900641">网站很可能会按预期运行。关闭所有 Chromium 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chromium，则您的 Google 账号不会退出。</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 将在 1 分钟后重新启动}other{Chromium 将在 # 分钟后重新启动}}</translation>
 <translation id="7565444033145385702">为保护您的数据，对于您近期未访问的网站，请允许 Chromium 移除网站权限。</translation>
+<translation id="7583104404158659071">自动启动 Chromium，即刻开启浏览之旅。</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安装程序</translation>
 <translation id="761356813943268536">Chromium 正在使用您的摄像头和麦克风。</translation>
 <translation id="7617377681829253106">Chromium现在更好用了</translation>

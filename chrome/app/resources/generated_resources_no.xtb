@@ -1343,6 +1343,8 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1891362123137972260">Det er kritisk lite diskplass. Frigjør diskplass.</translation>
 <translation id="189210018541388520">Åpne fullskjerm</translation>
 <translation id="1892341345406963517">Hei, <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Klikk på <ph name="BUTTON_LABEL" /> nedenfor
+2. Klikk på <ph name="BUTTON_2" /> i Windows-innstillingene</translation>
 <translation id="189358972401248634">Andre språk</translation>
 <translation id="1895658205118569222">Avslutning</translation>
 <translation id="1896043844785689584">For å konfigurere fingeravtrykk, få barnet ditt til å trykke på fingeravtrykkssensoren nederst til høyre på tastaturet. Barnets fingeravtrykksdata lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
@@ -1791,6 +1793,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="219283042927675668">Faner i gruppen</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> administrerer Ny fane-siden din – åpnes på en ny fane</translation>
 <translation id="2192982266585216032">&amp;Betalinger</translation>
+<translation id="2193567467390483943">Forelderen din har ikke godkjent denne utvidelsen</translation>
 <translation id="2194856509914051091">Ting å tenke på</translation>
 <translation id="2195331105963583686">Du kan fortsette å bruke <ph name="DEVICE_TYPE" />-enheten etter dette tidspunktet, men den kommer ikke til å få automatiske programvare- og sikkerhetsoppdateringer lenger</translation>
 <translation id="2195729137168608510">Beskyttelse av e-post </translation>
@@ -3160,6 +3163,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3105820656234755131">Passordet er oppdatert</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Nettstedet bruker Bluetooth</translation>
+<translation id="3108122610701115301">Angi som standard</translation>
 <translation id="3108931485517391283">Kan ikke motta</translation>
 <translation id="3108957152224931571">Fremhevingsfarge</translation>
 <translation id="3109206895301430738">Lagrede fanegrupper</translation>
@@ -5109,6 +5113,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4415815425191869676">La disse nettstedene alltid være aktive</translation>
 <translation id="4416582610654027550">Skriv inn en gyldig nettadresse</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Sett denne fanen på pause}other{Sett disse fanene på pause}}</translation>
+<translation id="4421823557207751899">Pålogget som <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Skriveforslagene er basert på forespørslene dine og innholdet på nettsiden</translation>
 <translation id="4421932782753506458">Pus</translation>
 <translation id="4423376891418188461">Gjenopprett innstillingene</translation>
@@ -6209,6 +6214,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5191251636205085390">Finn ut om og kontroller nye teknologier som tar sikte på å erstatte tredjeparts informasjonskapsler</translation>
 <translation id="519185197579575131">Bruk QT</translation>
 <translation id="5192062846343383368">Åpne Family Link-appen for å se tilsynsinnstillingene dine</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> er obligatorisk.</translation>
 <translation id="5193978546360574373">Dette fjerner tilgangen til Google Disk på denne Chromebooken, inkludert tilgang til filer som er gjort tilgjengelige uten nett</translation>
 <translation id="5193988420012215838">Kopiert til utklippstavlen</translation>
 <translation id="5194256020863090856">Dette berører kun inkognitovinduer</translation>
@@ -6350,6 +6356,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5288106344236929384">Flere handlinger og alternativer for passnøkler for <ph name="USERNAME" /> på <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Gj&amp;enåpne den lukkede fanen</translation>
 <translation id="5290020561438336792">PC og Cast-enhet på ulike wifi-nettverk (f.eks. 2,4 GHz og 5 GHz)</translation>
+<translation id="5290322819358431297">Fyll ut passord automatisk</translation>
 <translation id="52912272896845572">Den private nøkkelfilen er ugyldig.</translation>
 <translation id="529175790091471945">Formatér denne enheten</translation>
 <translation id="529296195492126134">Engangsmodus støttes ikke. Kontakt administratoren din</translation>
@@ -6968,6 +6975,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5734697361979786483">Legg til delt nettverksressurs</translation>
 <translation id="573520097779121706">Bruk tastene 7, 8, 9, U, O, J, K og L for å bevege markøren</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Disse dataene eller enheten din oppfyller ikke alle sikkerhetsreglene til organisasjonen din. Snakk med administratoren din om hva som må fikses.}=1{Denne filen eller enheten din oppfyller ikke alle sikkerhetsreglene til organisasjonen din. Snakk med administratoren din om hva som må fikses.}other{Disse filene oppfyller ikke alle sikkerhetsreglene til organisasjonen din. Snakk med administratoren din om hva som må fikses.}}</translation>
+<translation id="5736345781200955827">Opprett, lagre og administrer passordene dine, slik at det blir enkelt å logge på nettsteder og apper med Chrome</translation>
 <translation id="5738093759615225354">Du trenger denne tilgangsnøkkelen for å logge på datamaskinen din</translation>
 <translation id="5738386565827477765">Lydenhet</translation>
 <translation id="5739017626473506901">Logg på for å hjelpe <ph name="USER_NAME" /> med å legge til en skolekonto</translation>
@@ -7220,6 +7228,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5901089233978050985">Bytt til fanen som tar opp</translation>
 <translation id="5901494423252125310">Skriverdekselet er åpent</translation>
 <translation id="5901630391730855834">Gul</translation>
+<translation id="5902400038326841449">Google Passordlagring er slått av</translation>
 <translation id="5902892210366342391">Få advarsler før du går til usikre nettsteder i inkognitomodus</translation>
 <translation id="5904614460720589786">Kunne ikke konfigurere <ph name="APP_NAME" /> på grunn av et konfigurasjonsproblem. Kontakt administratoren din. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Fortsett å la dette nettstedet bruke identifikatorer til å spille av beskyttet innhold</translation>
@@ -8001,6 +8010,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> fullført</translation>
 <translation id="6452961788130242735">Nettverksproblem eller ugyldig område</translation>
 <translation id="6453191633103419909">Projeksjonskvalitet for faner og skjermer</translation>
+<translation id="6453306703004115497">Oversatt til <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Gruppér alle faner</translation>
 <translation id="6453921811609336127">For å bytte til neste inndatametode, trykk på <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />mellomrom<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">På bestemte nettsteder</translation>
@@ -8159,6 +8169,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="656293578423618167">Filbanen- eller -navnet er for langt. Lagre med et annet navn eller på et annet sted.</translation>
 <translation id="6563002009564846727">Se importerte sertifikater fra Windows</translation>
 <translation id="6563055593659435495">Kan ikke opprette forbindelse med telefonen din. Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og wifi er slått på.</translation>
+<translation id="6564343790052433242">For å opprette en passnøkkel for <ph name="APP_NAME" /> må Google Passordlagring være på</translation>
 <translation id="6565144332292237355">Nettsteder kan bruke denne funksjonen for å se etter og koble til enheter på det lokale nettverket ditt</translation>
 <translation id="6568283005472142698">Fanesøk</translation>
 <translation id="6569931898053264308">Middels store besparelser</translation>
@@ -11430,6 +11441,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8761945298804995673">Denne brukeren finnes allerede</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> trenger en oppdatering</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
+<translation id="8765940060470412555">Løsne lesemodus</translation>
 <translation id="8766156860774051068">Utvalgt av deg</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Vis alle søk etter <ph name="QUERY_CLUSTER_NAME" /></translation>

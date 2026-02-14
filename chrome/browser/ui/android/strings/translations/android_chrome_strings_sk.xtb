@@ -476,6 +476,7 @@
 <translation id="2992473221983447149">Popisy obrázkov</translation>
 <translation id="2996291259634659425">Vytvorenie prístupovej frázy</translation>
 <translation id="2996809686854298943">Vyžaduje sa webová adresa</translation>
+<translation id="3008916997590006706">Ak chcete mať k tomuto heslu ľahký prístup pri ďalšom prihlasovaní, klepnite na Uložiť</translation>
 <translation id="3024215143424744261">Režim čítania: predvoľby sú zavreté</translation>
 <translation id="3026955690410463085">Zahŕňať odkaz</translation>
 <translation id="3027644380269727216">Založené na vašej aktivite na webe. Toto nastavenie je zapnuté.</translation>
@@ -1006,6 +1007,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5267572070504076962">Ak chcete získať ochranu pred nebezpečnými webmi, zapnite Bezpečné prehliadanie</translation>
 <translation id="5271967389191913893">Zariadenie nemôže otvoriť obsah na stiahnutie</translation>
 <translation id="5273031377282080577">Toto nastavenie ovláda váš správca.</translation>
+<translation id="5290322819358431297">Dopĺňajte heslá automaticky</translation>
 <translation id="5292796745632149097">Odoslanie do zariadení</translation>
 <translation id="5301876394151419436">Máte prihlásený účet <ph name="EMAIL" />. Synchronizáciu môžete kedykoľvek zastaviť v nastaveniach. Google môže prispôsobovať Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="5304593522240415983">Toto pole nesmie byť prázdne</translation>
@@ -1098,6 +1100,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="572328651809341494">Nedávne karty</translation>
 <translation id="5728072125198221967">Prepojené služby Googlu</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, pripnutá karta inkognito so zvukom</translation>
+<translation id="5736345781200955827">Vytvárajte, ukladajte a spravujte svoje heslá, aby ste sa mohli jednoducho prihlasovať na weboch a v aplikáciách pomocou Chromu</translation>
 <translation id="5744751019568455640">Toto sú hlasy, ktoré si môžete vybrať na čítanie webových stránok. Ak sa vám tento hlas páči a chcete ho používať, klepnite na jeho názov.</translation>
 <translation id="574845902699630049">Zdieľať ako <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome potrebuje na sťahovanie súborov prístup k úložisku.</translation>

@@ -251,6 +251,7 @@
 <translation id="3622716124581627104">Identifica cose o luoghi e copia o traduci testi. Quando usi Google Lens, viene inviato uno screenshot della pagina a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Ora è più facile utilizzare Chrome con il tuo Account Google e sui computer condivisi.</translation>
 <translation id="3635073343384702370">Chrome può controllare le password quando le salvi</translation>
+<translation id="3636970668267555808">Accedi facilmente alle funzionalità che conosci, che ami e di cui ti fidi impostando Chrome come browser predefinito.</translation>
 <translation id="3667616615096815454">Impossibile installare l'applicazione. Applicazione sconosciuta al server.</translation>
 <translation id="3673813398384385993">Chrome ha rilevato che l'estensione "<ph name="EXTENSION_NAME" />" contiene malware</translation>
 <translation id="3697952514309507634">Altri profili Chrome</translation>
@@ -260,6 +261,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome consiglia di rimuoverla. <ph name="BEGIN_LINK" />Scopri di più sulle estensioni supportate<ph name="END_LINK" />}other{Chrome consiglia di rimuoverle. <ph name="BEGIN_LINK" />Scopri di più sulle estensioni supportate<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Approfondisci la ricerca aggiungendo più schede, file e strumenti utilizzando il pulsante "Aggiungi una scheda e altro".</translation>
 <translation id="3756724684201900923">Scopri di più sull'installazione di Chrome</translation>
+<translation id="3772152698251011058">Segnala questo sito a Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Impossibile sincronizzare i dati in ChromeOS Flex a causa di un errore durante l'accesso.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -406,6 +408,8 @@
 <translation id="5430073640787465221">Il file delle preferenze è danneggiato o non valido. Google Chrome non è in grado di recuperare le impostazioni.</translation>
 <translation id="5465210843490471889">Scegli un profilo Chrome da utilizzare con <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Per contribuire a migliorare queste funzionalità, Chrome invia le tue interazioni a Google. Questi dati potrebbero essere letti, elaborati e annotati da revisori.</translation>
+<translation id="547202872422499512">Ora Chrome si avvia all'avvio di Windows, così puoi iniziare a navigare all'istante. Puoi disattivare questo comportamento nelle impostazioni.</translation>
+<translation id="5486346529181556467">Migliora la sicurezza online per tutti segnalando un sito che ritieni dannoso. Scopri di più sulle <ph name="BEGIN_LINK" />norme di Google relative ai siti non sicuri<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">angolo in alto a sinistra dell'area di ricerca: sinistra <ph name="LEFT" />%, in alto <ph name="TOP" />%</translation>
 <translation id="5550137307985173298">Fai clic sul pulsante Personalizza Chrome nella pagina Nuova scheda per dare un nuovo aspetto a Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -565,6 +569,7 @@
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6967962315388095737">Regola inbound per consentire il traffico mDNS in Google Chrome Beta.</translation>
 <translation id="6979589607440534284">Scopri perché Chrome blocca alcuni file (si apre in una nuova scheda)</translation>
+<translation id="6985817499499247940">Avvia Chrome automaticamente per iniziare subito a navigare.</translation>
 <translation id="6991926986715044139">Mostra sempre la scorciatoia di Google Lens</translation>
 <translation id="6999131147875565462">Chrome funziona più velocemente e le funzionalità che utilizzano JavaScript dovrebbero avere il comportamento previsto</translation>
 <translation id="7011190694940573312">Installazione non riuscita perché questa versione del sistema operativo non è supportata.</translation>
@@ -593,6 +598,7 @@
 <translation id="7288567540154601580">Schede ed estensioni</translation>
 <translation id="7296210096911315575">Informazioni importanti sull'utilizzo e sulla sicurezza</translation>
 <translation id="7302361266603927550">Alcuni dati di Chrome non sono ancora stati salvati nel tuo Account Google. Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verranno eliminati.</translation>
+<translation id="7306401458628386911">Inizia subito a navigare: ora Chrome può essere avviato all'avvio di Windows.</translation>
 <translation id="7308322188646931570">Chrome deve avere accesso allo spazio di archiviazione per poter scaricare file</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
@@ -655,6 +661,7 @@
 <translation id="7827099906024714326">Chrome deve verificare la tua identità per poter salvare alcuni dati nel tuo Account Google e utilizzarli su tutti i tuoi dispositivi. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="7832314606810669113">Accedi a Chrome per vedere preferiti e altro ancora su tutti i tuoi dispositivi. Questo preferito verrà salvato nel tuo Account Google dopo che avrai eseguito l'accesso.</translation>
 <translation id="7845233973568007926">L'installazione è terminata. Dovrai riavviare il computer per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847170235260850604">Avvia Chrome all'avvio di Windows</translation>
 <translation id="7849037457735762883">Continua da dove avevi interrotto: Chrome può ripristinare le schede ogni volta che ricominci. Per attivare questa opzione, vai a</translation>
 <translation id="7869620795354551924">Per usare le password salvate, segui il codice QR, scarica Chrome per iOS e accedi al tuo Account Google</translation>
 <translation id="7872446069773932638">Download in corso… Secondi rimanenti: <ph name="SECONDS" /></translation>

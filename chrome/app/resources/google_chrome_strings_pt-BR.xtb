@@ -251,6 +251,7 @@
 <translation id="3622716124581627104">Identifique itens ou lugares e copie ou traduza textos. Quando você usa o Lens, uma captura de tela da página é enviada ao Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Agora ficou mais fácil usar o Chrome com sua Conta do Google e em computadores compartilhados.</translation>
 <translation id="3635073343384702370">O Chrome poderá verificar suas senhas quando elas forem salvas</translation>
+<translation id="3636970668267555808">Defina o Chrome como o navegador padrão para acessar seus recursos favoritos com facilidade.</translation>
 <translation id="3667616615096815454">Não foi possível fazer a instalação. O app é desconhecido para o servidor.</translation>
 <translation id="3673813398384385993">O Chrome encontrou malware na extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="3697952514309507634">Outros perfis do Chrome</translation>
@@ -260,6 +261,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{O Chrome recomenda a remoção dela. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões compatíveis<ph name="END_LINK" />}one{O Chrome recomenda a remoção dela. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões compatíveis<ph name="END_LINK" />}other{O Chrome recomenda a remoção delas. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões compatíveis<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Pressione o botão "Adicione uma guia e muito mais" e aprofunde sua pesquisa adicionando várias guias, arquivos e ferramentas.</translation>
 <translation id="3756724684201900923">Saiba como instalar o Chrome</translation>
+<translation id="3772152698251011058">Denunciar este site ao Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">O ChromeOS Flex não pôde sincronizar seus dados devido a um erro ao fazer login.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -407,6 +409,8 @@
 <translation id="5430073640787465221">Seu arquivo de preferências está corrompido ou é inválido. O Google Chrome não foi capaz de recuperar suas configurações.</translation>
 <translation id="5465210843490471889">Escolha um perfil do Chrome para usar com o <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Para melhorar esses recursos, o Chrome envia ao Google suas interações com eles. Esses dados podem ser lidos, processados e anotados por revisores humanos.</translation>
+<translation id="547202872422499512">Agora o Chrome é iniciado junto com o Windows para você começar a navegar na hora. Desative essa opção nas configurações quando quiser.</translation>
+<translation id="5486346529181556467">Ao denunciar sites que podem ser perigosos, você melhora a segurança on-line de todo mundo. Saiba mais sobre a <ph name="BEGIN_LINK" />política do Google para sites não seguros<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">canto superior esquerdo da área de pesquisa: <ph name="LEFT" />% à esquerda, <ph name="TOP" />% acima</translation>
 <translation id="5550137307985173298">Clique no botão "Personalizar o Chrome" na página "Nova guia" para mudar o visual do navegador</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -566,6 +570,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Regra interna do Google Chrome Beta que permite o tráfego mDNS.</translation>
 <translation id="6979589607440534284">Saiba por que o Chrome bloqueia alguns arquivos (abre em uma nova guia)</translation>
+<translation id="6985817499499247940">Inicie o Chrome automaticamente para começar a navegar na hora.</translation>
 <translation id="6991926986715044139">Sempre mostrar o atalho do Google Lens</translation>
 <translation id="6999131147875565462">O Chrome fica mais rápido e os recursos que usam JavaScript vão funcionar conforme projetado</translation>
 <translation id="7011190694940573312">A instalação falhou porque não há suporte para esta versão do sistema operacional.</translation>
@@ -594,6 +599,7 @@
 <translation id="7288567540154601580">Guias e extensões</translation>
 <translation id="7296210096911315575">Informações importantes sobre uso e segurança</translation>
 <translation id="7302361266603927550">Alguns dos seus dados do Chrome ainda não foram salvos na sua Conta do Google. Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão excluídos.</translation>
+<translation id="7306401458628386911">Comece a navegar instantaneamente: o Chrome agora pode ser iniciado com o Windows.</translation>
 <translation id="7308322188646931570">O Chrome precisa de acesso para fazer o download e armazenar arquivos</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7352651011704765696">Algo deu errado</translation>
@@ -656,6 +662,7 @@
 <translation id="7827099906024714326">O Chrome precisa confirmar sua identidade para que alguns dados sejam salvos na sua Conta do Google e usados em todos os seus dispositivos. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="7832314606810669113">Para acessar seus favoritos e muito mais em todos os seus dispositivos, faça login no Chrome. Este favorito será salvo na sua Conta do Google depois que você fizer login.</translation>
 <translation id="7845233973568007926">Agradecemos por fazer a instalação. É necessário reiniciar o computador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847170235260850604">Iniciar o Chrome junto com o Windows</translation>
 <translation id="7849037457735762883">Continue de onde você parou: o Chrome pode restaurar suas guias sempre que você reinicia. Para ativar essa opção, acesse as</translation>
 <translation id="7869620795354551924">Para usar as senhas salvas, leia o QR code, baixe o Chrome para iOS e faça login na sua Conta do Google.</translation>
 <translation id="7872446069773932638">Fazendo o download… <ph name="SECONDS" /> segundo(s) restante(s)</translation>

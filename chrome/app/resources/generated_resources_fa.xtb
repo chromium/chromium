@@ -5117,6 +5117,7 @@
 <translation id="4415815425191869676">این سایت‌ها همیشه فعال نگه داشته شود</translation>
 <translation id="4416582610654027550">نشانی وب معتبری تایپ کنید</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{توقف موقت این زبانه}one{توقف موقت این زبانه}other{توقف موقت این زبانه‌ها}}</translation>
+<translation id="4421823557207751899">ورود به سیستم به‌عنوان <ph name="USERNAME" />…</translation>
 <translation id="4421932172707401417">پیشنهادهای نوشتاری براساس پیام‌واره‌های شما و محتوای صفحه وب است</translation>
 <translation id="4421932782753506458">پشمالو</translation>
 <translation id="4423376891418188461">بازیابی تنظیمات</translation>
@@ -6218,6 +6219,7 @@
 <translation id="5191251636205085390">با فناوری‌های جدیدی که قرار است جایگزین کوکی‌های طرف سوم شود آشنا شوید و آن‌ها را کنترل کنید</translation>
 <translation id="519185197579575131">‏استفاده از QT</translation>
 <translation id="5192062846343383368">‏برای مشاهده تنظیمات نظارت، برنامه Family Link را باز کنید</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> الزامی است</translation>
 <translation id="5193978546360574373">‏با این کار، دسترسی به Google Drive در این Chromebook، ازجمله دسترسی به فایل‌هایی که به‌صورت آفلاین دردسترس قرار گرفته‌اند برداشته می‌شود</translation>
 <translation id="5193988420012215838">در بریده‌دان کپی شد</translation>
 <translation id="5194256020863090856">این امر فقط بر پنجره‌های ناشناس تأثیر می‌گذارد</translation>

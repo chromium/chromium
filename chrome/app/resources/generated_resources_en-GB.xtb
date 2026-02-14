@@ -1349,6 +1349,8 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1891362123137972260">Disk space is critically low. Please free up disk space.</translation>
 <translation id="189210018541388520">Open full screen</translation>
 <translation id="1892341345406963517">Hi <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Click <ph name="BUTTON_LABEL" /> below
+2. Click <ph name="BUTTON_2" /> in your Windows settings</translation>
 <translation id="189358972401248634">Other languages</translation>
 <translation id="1895658205118569222">Shutdown</translation>
 <translation id="1896043844785689584">To set up fingerprint, have your child touch the fingerprint sensor at the bottom right corner of the keyboard. Your child's fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
@@ -3166,6 +3168,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3105820656234755131">Password updated</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Site is using Bluetooth</translation>
+<translation id="3108122610701115301">Set default</translation>
 <translation id="3108931485517391283">Can't receive</translation>
 <translation id="3108957152224931571">Highlight colour</translation>
 <translation id="3109206895301430738">Saved tab groups</translation>
@@ -5117,6 +5120,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4415815425191869676">Always keep these sites active</translation>
 <translation id="4416582610654027550">Type a valid URL</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Pause this tab}other{Pause these tabs}}</translation>
+<translation id="4421823557207751899">Signed in as <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Writing suggestions are based on your prompts and the content of the web page</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">Restore Settings</translation>
@@ -6361,6 +6365,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5288678174502918605">R&amp;eopen Closed Tab</translation>
 <translation id="5290020561438336792">PC and casting device on different Wi-Fi networks (e.g. 2.4 GHz
     vs 5 GHz)</translation>
+<translation id="5290322819358431297">Autofill your passwords</translation>
 <translation id="52912272896845572">Private key file is invalid.</translation>
 <translation id="529175790091471945">Format this device</translation>
 <translation id="529296195492126134">Ephemeral mode is not supported. Please contact your administrator</translation>
@@ -6980,6 +6985,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5734697361979786483">Add file share</translation>
 <translation id="573520097779121706">Use the 7, 8, 9, u, o, j, k, l keys to move the cursor</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{This data or your device doesn’t meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.}=1{This file or your device doesn’t meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.}other{These files don't meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.}}</translation>
+<translation id="5736345781200955827">Create, save and manage your passwords so that you can easily sign in to sites and apps using Chrome</translation>
 <translation id="5738093759615225354">You need this passkey to sign in to your computer</translation>
 <translation id="5738386565827477765">Audio device</translation>
 <translation id="5739017626473506901">Sign in to help <ph name="USER_NAME" /> add a school account</translation>
@@ -7232,6 +7238,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5901089233978050985">Switch to capturing tab</translation>
 <translation id="5901494423252125310">Printer door open</translation>
 <translation id="5901630391730855834">Yellow</translation>
+<translation id="5902400038326841449">Google Password Manager is turned off</translation>
 <translation id="5902892210366342391">See warnings before going to insecure sites in Incognito mode</translation>
 <translation id="5904614460720589786">Couldn't set up <ph name="APP_NAME" /> because of a configuration problem. Please contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Continue allowing this site to use identifiers to play protected content</translation>
@@ -8013,6 +8020,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> complete</translation>
 <translation id="6452961788130242735">Network problem or bad realm</translation>
 <translation id="6453191633103419909">Tab/screen projection quality</translation>
+<translation id="6453306703004115497">Translated to <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Group all tabs</translation>
 <translation id="6453921811609336127">To switch to the next input method, press <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">On specific sites</translation>
@@ -8171,6 +8179,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="656293578423618167">The file path or name is too long.  Please save with a shorter name or to another location.</translation>
 <translation id="6563002009564846727">View imported certificates from Windows</translation>
 <translation id="6563055593659435495">Can't maintain a connection with your phone. Make sure that your phone is nearby, unlocked and that Bluetooth and Wi-Fi are turned on.</translation>
+<translation id="6564343790052433242">To create a passkey for <ph name="APP_NAME" />, Google Password Manager must be on</translation>
 <translation id="6565144332292237355">Sites can use this feature to look for and connect to any device on your local network</translation>
 <translation id="6568283005472142698">Tab search</translation>
 <translation id="6569931898053264308">Medium savings</translation>
@@ -11442,6 +11451,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8761945298804995673">This user already exists</translation>
 <translation id="8762886931014513155">Your <ph name="DEVICE_TYPE" /> needs an update</translation>
 <translation id="8763927697961133303">USB device</translation>
+<translation id="8765940060470412555">Unpin reading mode</translation>
 <translation id="8766156860774051068">Curated by you</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Show all searches for <ph name="QUERY_CLUSTER_NAME" /></translation>

@@ -1341,6 +1341,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1891362123137972260">Na dysku jest bardzo mało miejsca. Zwolnij miejsce.</translation>
 <translation id="189210018541388520">Otwórz na pełnym ekranie</translation>
 <translation id="1892341345406963517">Cześć, <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Kliknij <ph name="BUTTON_LABEL" /> poniżej. Kliknij <ph name="BUTTON_2" /> w ustawieniach systemu Windows</translation>
 <translation id="189358972401248634">Inne języki</translation>
 <translation id="1895658205118569222">Wyłączenie</translation>
 <translation id="1896043844785689584">Aby skonfigurować odcisk palca, poproś dziecko, aby dotknęło czytnika linii papilarnych w prawym dolnym rogu klawiatury. Odciski palców Twojego dziecka są przechowywane w bezpieczny sposób i wyłącznie na tym urządzeniu <ph name="DEVICE_TYPE" />.</translation>
@@ -3139,6 +3140,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3105820656234755131">Hasło zostało zaktualizowane</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Strona używa Bluetootha</translation>
+<translation id="3108122610701115301">Ustaw jako wartość domyślną</translation>
 <translation id="3108931485517391283">Nie udało się odebrać</translation>
 <translation id="3108957152224931571">Kolor wyróżnienia</translation>
 <translation id="3109206895301430738">Zapisane grupy kart</translation>
@@ -5084,6 +5086,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4415815425191869676">Zawsze pozostawiaj te witryny aktywne</translation>
 <translation id="4416582610654027550">Wpisz prawidłowy URL</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Wstrzymaj tę kartę}few{Wstrzymaj te karty}many{Wstrzymaj te karty}other{Wstrzymaj te karty}}</translation>
+<translation id="4421823557207751899">Jesteś zalogowany(a) jako <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Propozycje tekstów są tworzone na podstawie Twoich promptów i zawartości strony internetowej</translation>
 <translation id="4421932782753506458">Puszysty</translation>
 <translation id="4423376891418188461">Przywróć ustawienia</translation>
@@ -6326,6 +6329,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5288106344236929384">Więcej czynności, opcje klucza dla użytkownika <ph name="USERNAME" /> w domenie <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">O&amp;twórz ponownie zamkniętą kartę</translation>
 <translation id="5290020561438336792">Komputer i urządzenie przesyłające w różnych sieciach Wi-Fi (np. 2,4 GHz i 5 GHz)</translation>
+<translation id="5290322819358431297">Ustaw autouzupełnianie haseł</translation>
 <translation id="52912272896845572">Plik kluczy prywatnych jest nieprawidłowy.</translation>
 <translation id="529175790091471945">Sformatuj urządzenie</translation>
 <translation id="529296195492126134">Tryb tymczasowy nie jest obsługiwany. Skontaktuj się z administratorem</translation>
@@ -6944,6 +6948,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5734697361979786483">Dodaj udział plików</translation>
 <translation id="573520097779121706">Aby przesuwać kursor, używaj klawiszy 7, 8, 9, U, O, J, K, L</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Te dane lub Twoje urządzenie nie są zgodne z niektórymi zasadami bezpieczeństwa obowiązującymi w Twojej organizacji. Zapytaj administratora, co trzeba poprawić.}=1{Ten plik lub Twoje urządzenie nie są zgodne z niektórymi zasadami bezpieczeństwa obowiązującymi w Twojej organizacji. Zapytaj administratora, co trzeba poprawić.}few{Te pliki nie są zgodne z niektórymi zasadami bezpieczeństwa obowiązującymi w Twojej organizacji. Zapytaj administratora, co trzeba poprawić.}many{Te pliki nie są zgodne z niektórymi zasadami bezpieczeństwa obowiązującymi w Twojej organizacji. Zapytaj administratora, co trzeba poprawić.}other{Te pliki nie są zgodne z niektórymi zasadami bezpieczeństwa obowiązującymi w Twojej organizacji. Zapytaj administratora, co trzeba poprawić.}}</translation>
+<translation id="5736345781200955827">Twórz i zapisuj hasła oraz nimi zarządzaj, aby łatwo logować się na stronach i w aplikacjach za pomocą Chrome</translation>
 <translation id="5738093759615225354">Ten klucz jest potrzebny do zalogowania się na komputerze</translation>
 <translation id="5738386565827477765">Urządzenie audio</translation>
 <translation id="5739017626473506901">Zaloguj się, by pomóc użytkownikowi <ph name="USER_NAME" /> w dodawaniu konta szkolnego</translation>
@@ -7196,6 +7201,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5901089233978050985">Przełącz na przechwytywanie karty</translation>
 <translation id="5901494423252125310">Otwarte drzwiczki drukarki</translation>
 <translation id="5901630391730855834">Żółty</translation>
+<translation id="5902400038326841449">Menedżer haseł Google jest wyłączony</translation>
 <translation id="5902892210366342391">Wyświetlaj ostrzeżenia przed wejściem na niezabezpieczone strony w trybie incognito</translation>
 <translation id="5904614460720589786">Z powodu błędu konfiguracji nie udało się skonfigurować <ph name="APP_NAME" />. Skontaktuj się z administratorem. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Nadal zezwalaj tej stronie na używanie identyfikatorów do odtwarzania treści chronionych</translation>
@@ -7977,6 +7983,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6452251728599530347">Ukończono <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Problem z siecią lub niewłaściwy obszar</translation>
 <translation id="6453191633103419909">Jakość wyświetlania karty/ekranu</translation>
+<translation id="6453306703004115497">Przetłumaczono na <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Grupuj wszystkie karty</translation>
 <translation id="6453921811609336127">Aby przełączyć się na następną metodę wprowadzania, naciśnij <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /> <ph name="SEPARATOR1" /> <ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /> <ph name="SEPARATOR2" /> <ph name="BEGIN_SPACE" />Spacja<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">W określonych witrynach</translation>
@@ -8135,6 +8142,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="656293578423618167">Ścieżka do pliku lub jego nazwa jest zbyt długa. Zapisz pod krótszą nazwą lub w innej lokalizacji.</translation>
 <translation id="6563002009564846727">Wyświetl certyfikaty zaimportowane z systemu Windows</translation>
 <translation id="6563055593659435495">Nie można utrzymać połączenia z telefonem. Sprawdź, czy telefon jest w pobliżu, jest odblokowany i ma włączone Bluetooth oraz Wi-Fi.</translation>
+<translation id="6564343790052433242">Aby utworzyć klucz dostępu do aplikacji <ph name="APP_NAME" />, musisz włączyć Menedżera haseł Google</translation>
 <translation id="6565144332292237355">Witryny mogą używać tej funkcji do wyszukiwania urządzeń w Twojej sieci lokalnej i łączenia się z nimi</translation>
 <translation id="6568283005472142698">Wyszukiwanie kart</translation>
 <translation id="6569931898053264308">Średnia oszczędność</translation>
@@ -11403,6 +11411,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8761945298804995673">Ten użytkownik już istnieje</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> wymaga aktualizacji</translation>
 <translation id="8763927697961133303">Urządzenie USB</translation>
+<translation id="8765940060470412555">Odepnij tryb czytania</translation>
 <translation id="8766156860774051068">Wybrane przez Ciebie</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Pokaż wszystkie wyszukiwania związane z: <ph name="QUERY_CLUSTER_NAME" /></translation>

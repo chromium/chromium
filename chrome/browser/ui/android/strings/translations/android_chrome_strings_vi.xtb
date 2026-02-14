@@ -476,6 +476,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2992473221983447149">Nội dung mô tả hình ảnh</translation>
 <translation id="2996291259634659425">Tạo cụm mật khẩu</translation>
 <translation id="2996809686854298943">Cần có URL</translation>
+<translation id="3008916997590006706">Nhấn vào Lưu để dễ dàng truy cập mật khẩu này vào lần tới bạn đăng nhập</translation>
 <translation id="3024215143424744261">Đã đóng các lựa chọn ưu tiên của Chế độ đọc</translation>
 <translation id="3026955690410463085">Thêm đường liên kết</translation>
 <translation id="3027644380269727216">Dựa vào hoạt động của bạn trên một trang web. Chế độ cài đặt này đang bật.</translation>
@@ -1006,6 +1007,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5267572070504076962">Bật tính năng Duyệt web an toàn để được bảo vệ khỏi các trang web nguy hiểm</translation>
 <translation id="5271967389191913893">Thiết bị không thể mở nội dung được tải xuống.</translation>
 <translation id="5273031377282080577">Quản trị viên của bạn quản lý chế độ cài đặt này.</translation>
+<translation id="5290322819358431297">Tự động điền mật khẩu</translation>
 <translation id="5292796745632149097">Gửi đến</translation>
 <translation id="5301876394151419436">Bạn đã đăng nhập bằng <ph name="EMAIL" />. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="5304593522240415983">Không được để trống trường này</translation>
@@ -1098,6 +1100,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="572328651809341494">Thẻ gần đây</translation>
 <translation id="5728072125198221967">Các dịch vụ của Google được liên kết</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, Thẻ ẩn danh đang phát âm thanh và được ghim</translation>
+<translation id="5736345781200955827">Tạo, lưu và quản lý mật khẩu để dễ dàng đăng nhập vào các trang web và ứng dụng bằng Chrome</translation>
 <translation id="5744751019568455640">Đây là những giọng nói mà bạn có thể chọn để tôi đọc to nội dung các trang web. Nếu bạn thích giọng nói này và muốn tôi dùng tiếp, chỉ cần nhấn vào tên giọng nói.</translation>
 <translation id="574845902699630049">Chia sẻ dưới tên <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome cần quyền truy cập vào bộ nhớ để tải tệp xuống.</translation>

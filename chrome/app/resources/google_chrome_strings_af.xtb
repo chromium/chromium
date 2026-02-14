@@ -255,6 +255,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3622716124581627104">Identifiseer dinge of plekke en kopieer of vertaal teks. Wanneer jy Google Lens gebruik, word ’n skermskoot van die bladsy na Google toe gestuur. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nou is dit makliker om Chrome met jou Google-rekening en op gedeelde rekenaars te gebruik.</translation>
 <translation id="3635073343384702370">Chrome kan jou wagwoorde nagaan wanneer jy hulle stoor</translation>
+<translation id="3636970668267555808">Kry maklik toegang tot die kenmerke wat jy ken, van hou en vertrou deur Chrome as jou verstekblaaier te stel.</translation>
 <translation id="3667616615096815454">Kan nie installeer nie, die app is onbekend aan die bediener.</translation>
 <translation id="3673813398384385993">Chrome het bevind dat "<ph name="EXTENSION_NAME" />" wanware bevat</translation>
 <translation id="3697952514309507634">Ander Chrome-profiele</translation>
@@ -264,6 +265,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome beveel aan dat jy dit verwyder. <ph name="BEGIN_LINK" />Kry meer inligting oor gesteunde uitbreidings<ph name="END_LINK" />}other{Chrome beveel aan dat jy hulle verwyder. <ph name="BEGIN_LINK" />Kry meer inligting oor gesteunde uitbreidings<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Voeg verskeie oortjies, lêers en nutsgoed by met die “Voeg ’n oortjie en meer by”-knoppie om dieper te soek.</translation>
 <translation id="3756724684201900923">Kry meer inligting oor hoe om Chrome te installeer</translation>
+<translation id="3772152698251011058">Gee hierdie werf by Google aan</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex kon nie jou data sinkroniseer nie weens ’n fout met aanmelding.</translation>
 <translation id="3795971588916395511">Google Chrome-bedryfstelsel</translation>
@@ -415,6 +417,8 @@ Sommige kenmerke kan dalk onbeskikbaar wees. Spesifiseer 'n ander profielgids of
 Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5465210843490471889">Kies ’n Chrome-profiel om met <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> te gebruik</translation>
 <translation id="5468572406162360320">Om hierdie kenmerke te help verbeter, stuur Chrome jou interaksies daarmee na Google. Hierdie data kan deur menslike kontroleerders gelees, verwerk en geannoteer word.</translation>
+<translation id="547202872422499512">Chrome begin nou wanneer Windows begin sodat jy dadelik kan begin blaai. Jy kan dit in instellings afskakel.</translation>
+<translation id="5486346529181556467">Verbeter aanlyn veiligheid vir almal wanneer jy ’n werf aangee wat jy dink skadelik is. Kry meer inligting oor <ph name="BEGIN_LINK" />Google se beleid oor onveilige werwe.<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">boonste linkerhoek van soekgebied: links <ph name="LEFT" />%, bo <ph name="TOP" />%</translation>
 <translation id="5550137307985173298">Klik die Pasmaak Chrome-knoppie op die Nuwe Oortjie-bladsy om vir Chrome ’n nuwe voorkoms te gee</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -574,6 +578,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Inkomende reël vir Google Chrome Beta om mDNS-verkeer toe te laat.</translation>
 <translation id="6979589607440534284">Vind uit hoekom Chrome sommige lêers blokkeer – maak in ’n nuwe oortjie oop</translation>
+<translation id="6985817499499247940">Maak Chrome outomaties oop om dadelik te begin blaai.</translation>
 <translation id="6991926986715044139">Wys altyd Google Lens-kortpad</translation>
 <translation id="6999131147875565462">Chrome werk vinniger en kenmerke wat JavaScript gebruik, behoort te werk soos ontwerp</translation>
 <translation id="7011190694940573312">Installering het misluk omdat hierdie weergawe van die bedryfstelsel nie gesteun word nie.</translation>
@@ -602,6 +607,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7288567540154601580">Oortjies en uitbreidings</translation>
 <translation id="7296210096911315575">Belangrike gebruik- en veiligheidinligting</translation>
 <translation id="7302361266603927550">Sommige van jou Chrome-data is nog nie in jou Google-rekening gestoor nie. Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hierdie data uitgevee word.</translation>
+<translation id="7306401458628386911">Begin dadelik blaai: Chrome kan nou begin wanneer Windows begin.</translation>
 <translation id="7308322188646931570">Chrome het bergingtoegang nodig om lêers af te laai</translation>
 <translation id="7339898014177206373">Nuwe venster</translation>
 <translation id="7352651011704765696">Iets het verkeerd geloop</translation>
@@ -664,6 +670,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7827099906024714326">Chrome moet verifieer dat dit jy is voordat sommige data in jou Google-rekening gestoor kan word en op al jou toestelle gebruik kan word. As jy nou afmeld, sal hierdie data uitgevee word.</translation>
 <translation id="7832314606810669113">Meld aan by Chrome om jou boekmerke en meer op al jou toestelle te kry. Hierdie boekmerk sal in jou Google-rekening gestoor word nadat jy aangemeld het.</translation>
 <translation id="7845233973568007926">Dankie dat jy geïnstalleer het. Jy moet jou rekenaar herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
+<translation id="7847170235260850604">Begin Chrome wanneer Windows begin</translation>
 <translation id="7849037457735762883">Gaan voort waar jy opgehou het: Chrome kan elke keer as jy herbegin, jou oortjies terugstel. Om dit aan te skakel, gaan na</translation>
 <translation id="7869620795354551924">Volg die QR-kode, laai Chrome vir iOS af en meld by jou Google-rekening aan om jou gestoorde wagwoorde te gebruik</translation>
 <translation id="7872446069773932638">Laai tans af … <ph name="SECONDS" /> sekonde(s) oor.</translation>

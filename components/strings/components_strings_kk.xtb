@@ -704,6 +704,7 @@
 <translation id="2137891579555018930">Рұқсат күтілуде…</translation>
 <translation id="213826338245044447">Ұялы телефондағы бетбелгілер</translation>
 <translation id="2141000681034340397">Кірісті өзгерту</translation>
+<translation id="2141475438898772664">4-ке бөліп немесе ай сайын төлеңіз.</translation>
 <translation id="2144171668675205303">Қолданыстағы тақырыптар жоқ.</translation>
 <translation id="2145193671493396738">Экономика жаңалықтары</translation>
 <translation id="214556005048008348">Төлемнен бас тарту</translation>
@@ -2848,6 +2849,7 @@
 <translation id="5543564889050342791">Хайуанаттар бағы, аквариумдер мен қорықтар</translation>
 <translation id="5543722831081909240">180 градус</translation>
 <translation id="5544836308113951378">Круиздер мен чартерлер</translation>
+<translation id="5545314360139398232">Бөліп төлеу үшін <ph name="ISSUER_NAME" /> қызметін байланыстырыңыз.</translation>
 <translation id="5547939254150808298">Баспалар</translation>
 <translation id="554815783948612276">Форум және чат провайдерлері</translation>
 <translation id="5548606607480005320">Қауіпсіздік тексерісі</translation>
@@ -3695,6 +3697,7 @@
 <translation id="6926216138694948720">Денені безендіру өнері</translation>
 <translation id="692638818576287323">Коммерциялық көліктер</translation>
 <translation id="6927878187051807444">камера файлдары мен скриншоттар</translation>
+<translation id="6929949393612835405">Жабу және "<ph name="OPENER_TITLE" />" бетіне оралу</translation>
 <translation id="6930607614725241390">Бүйірлік панельден іздеу</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Әдепкі іздеу жүйесі интернеттен іздеуге мүмкіндік береді және Chrome функцияларының (мысалы, мекенжай жолағынан және веб-беттердегі кескіндерден іздеу) жұмысын қамтамасыз етеді.<ph name="END_BOLD" /> Іздеу жүйесі қолдау көрсетпесе, функция қолжетімді болмауы мүмкін.</translation>
 <translation id="6934672428414710184">Бұл атау Google аккаунтыңызда бар.</translation>

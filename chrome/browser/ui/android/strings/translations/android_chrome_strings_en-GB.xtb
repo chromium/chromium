@@ -476,6 +476,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2992473221983447149">Image descriptions</translation>
 <translation id="2996291259634659425">Create passphrase</translation>
 <translation id="2996809686854298943">URL required</translation>
+<translation id="3008916997590006706">Tap Save to easily access this password the next time that you sign in</translation>
 <translation id="3024215143424744261">Reading mode preferences closed</translation>
 <translation id="3026955690410463085">Include link</translation>
 <translation id="3027644380269727216">Based on your activity on a site. This setting is on.</translation>
@@ -1006,6 +1007,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5267572070504076962">Turn on Safe Browsing to get protection against dangerous sites</translation>
 <translation id="5271967389191913893">Device cannot open the content to be downloaded.</translation>
 <translation id="5273031377282080577">Your administrator manages this setting.</translation>
+<translation id="5290322819358431297">Autofill your passwords</translation>
 <translation id="5292796745632149097">Send to</translation>
 <translation id="5301876394151419436">You are signed in as <ph name="EMAIL" />. You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="5304593522240415983">This field cannot be blank</translation>
@@ -1098,6 +1100,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="572328651809341494">Recent tabs</translation>
 <translation id="5728072125198221967">Linked Google services</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, pinned audible Incognito tab</translation>
+<translation id="5736345781200955827">Create, save and manage your passwords so that you can easily sign in to sites and apps using Chrome</translation>
 <translation id="5744751019568455640">Here are the voices that you can pick for reading out your web pages. If you like this voice and want me to keep using it, just tap the voice name.</translation>
 <translation id="574845902699630049">Share as <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome needs storage access to download files.</translation>

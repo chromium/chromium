@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{एक मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेअर करू शकत नाही</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{एक महिन्यापूर्वी}other{# महिन्यांपूर्वी}}</translation>
+<translation id="1591017414891297549">पूर्वावलोकन</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 मिनिट आणि }other{# मिनिटे आणि }}</translation>
 <translation id="1643823602425662293">सूचना</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">+आणखी <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
+<translation id="8741385002816058621">हे पूर्वावलोकनामधील वैशिष्ट्य आहे</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1ता}other{#ता}}</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
 <translation id="8841375032071747811">मागे जा बटण</translation>

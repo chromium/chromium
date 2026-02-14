@@ -101,6 +101,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2099452623287920103">Lozinke i drugi Chromium podaci koje ste sačuvali na Google nalogu biće uklonjeni sa ovog uređaja. Da biste ih ponovo koristili u Chromium-u, ponovo se prijavite.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organizacija automatski briše podatke pregledanja kada se Chromium ne koristi 1 minut. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}one{Organizacija automatski briše podatke pregledanja kada se Chromium ne koristi # minut. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}few{Organizacija automatski briše podatke pregledanja kada se Chromium ne koristi # minuta. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}other{Organizacija automatski briše podatke pregledanja kada se Chromium ne koristi # minuta. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}}</translation>
 <translation id="2126108037660393668">Verifikacija preuzetog fajla nije uspela.</translation>
+<translation id="2135919691573380097">Prijavite ovaj sajt</translation>
 <translation id="2137162749895930932">Zatvorite ekran za prevođenje</translation>
 <translation id="215352261310130060">Chromium je blokirao ovo preuzimanje jer ovaj sajt ne koristi bezbednu vezu, pa je fajl možda neovlašćeno menjan</translation>
 <translation id="2170098639895543546">Izaberite bilo šta na stranici</translation>
@@ -313,6 +314,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4304713468139749426">Menadžer lozinki</translation>
 <translation id="4334241893986177674">Pretražite ovaj snimak ekrana</translation>
 <translation id="4334294535648607276">Preuzimanje je dovršeno.</translation>
+<translation id="4384331407722351213">Pokreni Chromium kada se Windows pokrene</translation>
 <translation id="4384993550046411228">Podesite Chromium kao podrazumevani pregledač da biste lako pristupali funkcijama koje znate, volite i kojima verujete. Chromium će biti zakačen na traku zadataka radi brzog pristupa.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> zahteva da pročitate i prihvatite sledeće Uslove korišćenja usluge pre korišćenja ovog uređaja. Ovi uslovi ne proširuju, menjaju niti ograničavaju Uslove za Chromium OS.</translation>
 <translation id="4407044323746248786">Želite li ipak da zatvorite Chromium?</translation>
@@ -333,6 +335,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4531137820806573936">Chromium-u treba dozvola za mapiranje okruženja i praćenje ruku</translation>
 <translation id="4536805923587466102">Već ste prijavljeni kao <ph name="USER_EMAIL_ADDRESS" /> na drugom Chromium profilu</translation>
 <translation id="4548534452171747496">Chromium predučitava stranice, što ubrzava pregledanje i pretraživanje. <ph name="BEGIN_LINK" />Saznajte više o predučitavanju stranica<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">Prijavite sajt za koji mislite da je štetan da biste poboljšali onlajn bezbednost za svakoga.</translation>
 <translation id="4570813286784708942">Chromium je blokirao ovo preuzimanje jer ste isključili Bezbedno pregledanje, pa fajl ne može da se verifikuje</translation>
 <translation id="4583692638088316420">Isprobajte Google objektiv uz Chromium na telefonu</translation>
 <translation id="4594305310729380060">U Menadžer lozinki na ovom uređaju</translation>
@@ -372,6 +375,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="5174969993834422967">Obično blokirate obaveštenja. Da biste dozvolili ovom sajtu da vas obaveštava, kliknite na ikonu obaveštenja u desnom uglu trake za lokaciju.</translation>
 <translation id="5174983315706567306">Nema dovoljno prostora na disku.</translation>
 <translation id="5187123684706427865">Chromium nalog zahteva ponovnu potvrdu identiteta</translation>
+<translation id="5219681158518957165">Koristite preporučena podešavanja pregledača</translation>
 <translation id="5224391634244552924">Nema sačuvanih lozinki. Chromium može da proverava lozinke kada ih sačuvate.</translation>
 <translation id="5231355151045086930">Odjavite se iz Chromium-a</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -475,6 +479,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="6327105987658262776">Nema dostupnih ažuriranja.</translation>
 <translation id="6333502561965082103">Druga radnja u Chromium-u je u toku. Probajte ponovo kasnije.</translation>
 <translation id="6334986366598267305">Sada možete lakše da koristite Chromium sa Google nalogom i na deljenim računarima.</translation>
+<translation id="6347002662287820329">Podesite Chromium kao podrazumevani pregledač da biste lako pristupali funkcijama koje znate, volite i kojima verujete.</translation>
 <translation id="6347933965114150440">Chromium prečica</translation>
 <translation id="6366160072964553914">Chromium je blokirao ovo preuzimanje jer se ovaj fajl ne preuzima često i može da bude opasan</translation>
 <translation id="6373523479360886564">Jeste li sigurni da želite da deinstalirate Chromium?</translation>
@@ -505,6 +510,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="6598877126913850652">Idi na podešavanja obaveštenja za Chromium</translation>
 <translation id="6600016381025017075">Pretražite bilo šta na ovoj stranici</translation>
 <translation id="6613594504749178791">Promene će stupiti na snagu kada sledeći put ponovo pokrenete Chromium.</translation>
+<translation id="6637908313088374648">Chromium se sada pokreće kada se pokrene Windows da biste mogli odmah da počnete da pregledate. To možete da isključite u podešavanjima.</translation>
 <translation id="6648212540664651655">Nastavite tamo gde ste stali: Chromium je vratio kartice iz poslednje sesije. To možete da isključite u</translation>
 <translation id="665732753414869868">Chromium-u treba dozvola za kameru da bi napravio 3D mapu okruženja</translation>
 <translation id="6669284030132180248">Ako sačuvate obeleživače i na Google nalogu, možete da pratite cene proizvoda u Chromium-u i da dobijate obaveštenja kada padne cena</translation>
@@ -563,6 +569,7 @@ Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako
 <translation id="7213407614656404070">Koristite Chromium svaki put kada kliknete na linkove u porukama, dokumentima i drugim aplikacijama</translation>
 <translation id="7223968959479464213">Menadžer zadataka – Chromium</translation>
 <translation id="7246575524853130370">Vaša interesovanja prema proceni Chromium-a</translation>
+<translation id="7252276985725323153">Odmah počnite da pregledate: Chromium sada može da se pokrene kada se pokrene Windows.</translation>
 <translation id="7274695763216404502">Zakačeno je. Ponovo koristite pretragu slika sa trake s alatkama</translation>
 <translation id="7288567540154601580">Kartice i dodaci</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium preporučuje da ovo uklonite}one{Chromium preporučuje da ih uklonite}few{Chromium preporučuje da ih uklonite}other{Chromium preporučuje da ih uklonite}}</translation>
@@ -592,6 +599,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="751935028865900641">Sajtovi će verovatno raditi na očekivani način. Bićete odjavljeni sa većine sajtova kada zatvorite sve Chromium prozore, osim sa Google naloga ako ste prijavljeni u Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Ponovo ćemo pokrenuti Chromium za 1 minut}one{Ponovo ćemo pokrenuti Chromium # minut}few{Ponovo ćemo pokrenuti Chromium # minuta}other{Ponovo ćemo pokrenuti Chromium # minuta}}</translation>
 <translation id="7565444033145385702">Da biste zaštitili podatke, dozvolite da Chromium uklanja dozvole sa sajtova koje duže niste posećivali.</translation>
+<translation id="7583104404158659071">Automatski pokrenite Chromium da biste odmah počeli da pregledate.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> program za instalaciju</translation>
 <translation id="761356813943268536">Chromium koristi kameru i mikrofon.</translation>
 <translation id="7617377681829253106">Upravo smo poboljšali Chromium</translation>

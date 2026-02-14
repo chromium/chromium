@@ -255,6 +255,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3622716124581627104">Identifikujte věci nebo místa a kopírujte nebo překládejte text. Při použití Google Lens se do Googlu odešle snímek obrazovky stránky. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Používání Chromu se spravovaným účtem Google a sdílenými počítači je teď snazší.</translation>
 <translation id="3635073343384702370">Chrome může hesla zkontrolovat, pouze když si je uložíte</translation>
+<translation id="3636970668267555808">Nastavte si Chrome jako výchozí prohlížeč. Budete tak mít snadno přístup k funkcím, které znáte, máte rádi a kterým důvěřujete.</translation>
 <translation id="3667616615096815454">Aplikaci nelze nainstalovat, protože ji server nezná.</translation>
 <translation id="3673813398384385993">Prohlížeč Chrome zjistil, že rozšíření <ph name="EXTENSION_NAME" /> obsahuje malware</translation>
 <translation id="3697952514309507634">Další profily Chrome</translation>
@@ -264,6 +265,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome vám doporučuje odstranit ho. <ph name="BEGIN_LINK" />Další informace o podporovaných rozšířeních<ph name="END_LINK" />}few{Chrome vám doporučuje odstranit je. <ph name="BEGIN_LINK" />Další informace o podporovaných rozšířeních<ph name="END_LINK" />}many{Chrome vám doporučuje odstranit je. <ph name="BEGIN_LINK" />Další informace o podporovaných rozšířeních<ph name="END_LINK" />}other{Chrome vám doporučuje odstranit je. <ph name="BEGIN_LINK" />Další informace o podporovaných rozšířeních<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Prohloubit vyhledávání přidáním několika karet, souborů a nástrojů pomocí tlačítka Přidat kartu a další položky.</translation>
 <translation id="3756724684201900923">Další informace o instalaci Chromu</translation>
+<translation id="3772152698251011058">Nahlásit tento web Googlu</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Systém ChromeOS Flex nemůže synchronizovat data kvůli chybě při přihlašování.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -414,6 +416,8 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5465210843490471889">Vyberte profil Chromu, který chcete používat s <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Za účelem zlepšení těchto funkcí odesílá Chrome vaše interakce do Googlu. Tato data mohou číst, zpracovávat a opatřovat poznámkami kontroloři.</translation>
+<translation id="547202872422499512">Chrome se teď spouští zároveň s Windows a umožňuje tak začít hned procházet internet. Tuto možnost můžete vypnout v nastavení.</translation>
+<translation id="5486346529181556467">Nahlášením webu, který považujete za škodlivý, pomůžete zlepšit bezpečnost na internetu pro všechny. <ph name="BEGIN_LINK" />Další informace o zásadách společnosti Google ohledně nebezpečných webů<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">levý horní roh oblasti hledání: vlevo <ph name="LEFT" /> %, nahoře <ph name="TOP" /> %</translation>
 <translation id="5550137307985173298">Kliknutím na tlačítko Přizpůsobit Chrome na stránce Nová karta můžete dát Chromu nový vzhled</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -573,6 +577,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Pravidlo příchozího provozu pro aplikaci Google Chrome Beta, které povolí provoz mDNS.</translation>
 <translation id="6979589607440534284">Proč Chrome některé soubory blokuje, otevře se na nové kartě</translation>
+<translation id="6985817499499247940">Spouštět Chrome automaticky, aby bylo možné okamžitě začít procházet internet.</translation>
 <translation id="6991926986715044139">Vždy zobrazovat zástupce Google Lens</translation>
 <translation id="6999131147875565462">Chrome běží rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy</translation>
 <translation id="7011190694940573312">Instalace se nezdařila, protože tato verze operačního systému není podporována.</translation>
@@ -601,6 +606,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7288567540154601580">Karty a rozšíření</translation>
 <translation id="7296210096911315575">Důležité informace o použití a bezpečnosti</translation>
 <translation id="7302361266603927550">Některá data prohlížeče Chrome ještě nebyla uložena do vašeho účtu Google. Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
+<translation id="7306401458628386911">Začněte hned procházet internet: Chrome se teď může spouštět zároveň s Windows.</translation>
 <translation id="7308322188646931570">Aby bylo možné stahovat soubory, potřebuje Chrome přístup k úložišti</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
@@ -663,6 +669,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7827099906024714326">Před uložením některých dat do vašeho účtu Google k použití na všech vašich zařízeních potřebuje Chrome ověřit, že jste to vy. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="7832314606810669113">Pokud své záložky a další položky chcete mít na všech svých zařízeních, přihlaste se do Chromu. Tato záložka se po přihlášení uloží do vašeho účtu Google.</translation>
 <translation id="7845233973568007926">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je třeba restartovat počítač.</translation>
+<translation id="7847170235260850604">Spustit Chrome při spuštění Windows</translation>
 <translation id="7849037457735762883">Pokračujte od stavu, ve kterém jste skončili: Chrome může při každém restartu obnovit karty. Tuto funkci můžete zapnout v</translation>
 <translation id="7869620795354551924">Pokud chcete používat svá uložená hesla, naskenujte QR kód, stáhněte si Chrome pro iOS a přihlaste se ke svému účtu Google</translation>
 <translation id="7872446069773932638">Stahování… Zbývající čas: <ph name="SECONDS" /> s</translation>

@@ -476,6 +476,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2992473221983447149">Bildebeskrivelser</translation>
 <translation id="2996291259634659425">Opprett en passordfrase</translation>
 <translation id="2996809686854298943">Nettadresse kreves</translation>
+<translation id="3008916997590006706">Trykk på Lagre for å få enkel tilgang til dette passordet neste gang du logger på</translation>
 <translation id="3024215143424744261">Innstillingene for lesemodus er lukket</translation>
 <translation id="3026955690410463085">Inkluder link</translation>
 <translation id="3027644380269727216">Basert på aktiviteten din på et nettsted. Denne innstillingen er på.</translation>
@@ -1006,6 +1007,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5267572070504076962">Slå på Safe Browsing for å beskytte deg mot farlige nettsteder</translation>
 <translation id="5271967389191913893">Enheten kan ikke åpne innholdet som skal lastes ned.</translation>
 <translation id="5273031377282080577">Administratoren din administrerer denne innstillingen.</translation>
+<translation id="5290322819358431297">Fyll ut passord automatisk</translation>
 <translation id="5292796745632149097">Send til</translation>
 <translation id="5301876394151419436">Du er pålogget som <ph name="EMAIL" />. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="5304593522240415983">Dette feltet må fylles ut</translation>
@@ -1098,6 +1100,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="572328651809341494">Nylige faner</translation>
 <translation id="5728072125198221967">Sammenknyttede Google-tjenester</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, festet inkognitofane med lyd</translation>
+<translation id="5736345781200955827">Opprett, lagre og administrer passordene dine, slik at det blir enkelt å logge på nettsteder og apper med Chrome</translation>
 <translation id="5744751019568455640">Dette er stemmene du kan velge for opplesing av nettsidene dine. Hvis du liker denne stemmen og vil at jeg skal fortsette å bruke den, er det bare å trykke på stemmenavnet.</translation>
 <translation id="574845902699630049">Del som <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome må ha lagringstilgang for å laste ned filer.</translation>

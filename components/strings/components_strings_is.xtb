@@ -704,6 +704,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2137891579555018930">Bíður heimildar…</translation>
 <translation id="213826338245044447">Bókamerki fartækis</translation>
 <translation id="2141000681034340397">Breyta inntaki</translation>
+<translation id="2141475438898772664">Skiptu greiðslu í fernt eða greiddu mánaðarlega</translation>
 <translation id="2144171668675205303">Engin virk umfjöllunarefni</translation>
 <translation id="2145193671493396738">Fjármálafréttir</translation>
 <translation id="214556005048008348">Hætta við greiðslu</translation>
@@ -2849,6 +2850,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5543564889050342791">Dýragarðar, sædýrasöfn og friðuð landsvæði</translation>
 <translation id="5543722831081909240">180 gráður</translation>
 <translation id="5544836308113951378">Skemmtisiglingar og leigusiglingar</translation>
+<translation id="5545314360139398232">Tengdu <ph name="ISSUER_NAME" /> til að greiða með raðgreiðslum</translation>
 <translation id="5547939254150808298">Prent og útgáfa</translation>
 <translation id="554815783948612276">Umræðasvæða- og spjallveitur</translation>
 <translation id="5548606607480005320">Öryggisathugun</translation>
@@ -3696,6 +3698,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6926216138694948720">Líkamsskreyting</translation>
 <translation id="692638818576287323">Flutningabifreiðir</translation>
 <translation id="6927878187051807444">myndavélarskrár og skjámyndir</translation>
+<translation id="6929949393612835405">Loka og fara aftur í „<ph name="OPENER_TITLE" />“</translation>
 <translation id="6930607614725241390">Leit í hliðarglugga</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Sjálfgefin leitarvél gerir þér kleift að leita á netinu og knýr Chrome-eiginleika<ph name="END_BOLD" /> á borð við að leita frá veffangastikunni og út frá myndum á vefsíðum. Eiginleiki er hugsanlega ekki í boði ef leitarvélin styður hann ekki.</translation>
 <translation id="6934672428414710184">Þetta nafn kemur af Google reikningnum þínum</translation>

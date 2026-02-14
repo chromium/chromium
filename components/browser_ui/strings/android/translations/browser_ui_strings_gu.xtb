@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">તમે ત્રીજા પક્ષની કુકીને કેમ મંજૂરી આપી છે તે અમને જણાવીને Chromeને બહેતર બનાવવામાં અમારી સહાય કરો. <ph name="BEGIN_LINK" />પ્રતિસાદ મોકલો<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">તમે સાઇટના ડેસ્કટૉપ વર્ઝન જોવાનું પૂછી શકો છો</translation>
 <translation id="1085696779717592361">ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
+<translation id="1126523729897810826">Chromeનો સૌથી વધુ લાભ મેળવવા માટે આ નીચે સૂચવેલી ઍક્શન પૂર્ણ કરો</translation>
 <translation id="113098737392899175">જ્યારે કીબોર્ડ જોડેલું હોય, ત્યારે કોઈ ટેક્સ્ટ કર્સર વડે પેજ નૅવિગેટ કરો</translation>
 <translation id="1149644372535087155">Chromeમાં પાસવર્ડ સાચવો</translation>
 <translation id="1178015372320901893">મારા શૉર્ટકટની બોટમ શીટ</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Chromeના V8 એન્જિન વડે સાઇટની ગતિ વધારો, પણ Chromeને અટૅક પ્રતિ થોડું ઓછું પ્રતિરોધક બનાવો</translation>
 <translation id="1593426485665524382">સ્ક્રીનમાં સૌથી ઉપરની નજીક ક્રિયાઓ ઉપલબ્ધ છે</translation>
 <translation id="1594521731409209842">ફોટાનું કદ બદલવા માટે સ્ક્રીનને પિન્ચ કરો</translation>
+<translation id="1599268789440304082">સેટઅપ શીટ ખોલી</translation>
 <translation id="1601560923496285236">લાગુ કરો</translation>
 <translation id="1615755956145364867">સાઇટ, તમને સંરક્ષિત કન્ટેન્ટ ચલાવવાનું પૂછી શકે છે</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">URL મોટી કરી છે</translation>
 <translation id="4522570452068850558">વિગતો</translation>
 <translation id="4523472416386354622">શરૂ કરવા માટે સાઇન ઇન કરો</translation>
+<translation id="4529207923544043455">સેટઅપની સૂચિના પૂર્ણ થયેલા અને પૂર્ણ ન થયેલા કાર્યો બતાવતી બોટમ શીટ</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> તમારું માઇક્રોફોન ઍક્સેસ કરી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ માઇક્રોફોન ચાલુ કરો.</translation>
+<translation id="4545694195887112015">સેટઅપ શીટ બંધ કરી</translation>
 <translation id="4566417217121906555">માઇક્રોફોન મ્યૂટ કરો</translation>
 <translation id="4570913071927164677">વિગતો</translation>
 <translation id="4578289292431526768">ચાલો, શરૂ કરીએ</translation>

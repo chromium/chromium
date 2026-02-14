@@ -1338,6 +1338,8 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1891362123137972260">Queda pouquísimo espazo no disco. Libera algo de espazo.</translation>
 <translation id="189210018541388520">Abrir pantalla completa</translation>
 <translation id="1892341345406963517">Ola, <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Fai clic na opción <ph name="BUTTON_LABEL" /> que aparece máis abaixo
+2. Fai clic en <ph name="BUTTON_2" /> dentro da configuración de Windows</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
 <translation id="1895658205118569222">Apagar</translation>
 <translation id="1896043844785689584">Para configurar a impresión dixital, pídelle ao teu fillo ou filla que toque o sensor correspondente situado na esquina inferior dereita do teclado. Os datos da súa impresión dixital almacenaranse de maneira segura neste dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
@@ -3152,6 +3154,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3105820656234755131">Actualizouse o contrasinal</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">O sitio está usando o Bluetooth</translation>
+<translation id="3108122610701115301">Definir como predeterminado</translation>
 <translation id="3108931485517391283">Non se puido recibir o ficheiro</translation>
 <translation id="3108957152224931571">Cor de realzado</translation>
 <translation id="3109206895301430738">Grupos de pestanas gardados</translation>
@@ -5106,6 +5109,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4415815425191869676">Sitios que se manteñen sempre activos</translation>
 <translation id="4416582610654027550">Escribe un URL válido</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Pór en pausa esta pestana}other{Pór en pausa estas pestanas}}</translation>
+<translation id="4421823557207751899">Iniciaches sesión como <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">As suxestións de escritura baséanse nas túas solicitudes e no contido da páxina web</translation>
 <translation id="4421932782753506458">Gatiño</translation>
 <translation id="4423376891418188461">Restaurar configuración</translation>
@@ -6349,6 +6353,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5288678174502918605">&amp;Volver abrir pestana pechada</translation>
 <translation id="5290020561438336792">O PC e o dispositivo de emisión están conectados a redes wifi diferentes
    (por exemplo, a unha de 2,4 GHz e a outra de 5 GHz)</translation>
+<translation id="5290322819358431297">Autocompleta os contrasinais</translation>
 <translation id="52912272896845572">O ficheiro da clave privada non é válido.</translation>
 <translation id="529175790091471945">Formatar este dispositivo</translation>
 <translation id="529296195492126134">O modo efémero non é compatible. Ponte en contacto co teu administrador</translation>
@@ -6966,6 +6971,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5734697361979786483">Engadir un sistema de ficheiros compartido</translation>
 <translation id="573520097779121706">Usa as teclas 7, 8, 9, U, O, J, K e L para mover o cursor</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Estes datos ou o teu dispositivo non cumpren algunhas das políticas de seguranza da túa organización. Consulta o administrador para saber o que debes corrixir.}=1{Este ficheiro ou o teu dispositivo non cumpre algunhas das políticas de seguranza da túa organización. Consulta o administrador para saber o que debes corrixir.}other{Estes ficheiros non cumpren algunhas das políticas de seguranza da túa organización. Consulta o administrador para saber o que debes corrixir.}}</translation>
+<translation id="5736345781200955827">Crea, garda e xestiona os teus contrasinais para que poidas iniciar sesión facilmente nos sitios e nas aplicacións mediante Chrome.</translation>
 <translation id="5738093759615225354">Precisas esta clave de acceso para iniciar sesión no teu ordenador</translation>
 <translation id="5738386565827477765">Dispositivo de audio</translation>
 <translation id="5739017626473506901">Inicia sesión para axudarlle a <ph name="USER_NAME" /> a engadir unha conta de centro educativo</translation>
@@ -7218,6 +7224,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5901089233978050985">Cambiar á pestana que se vai mostrar</translation>
 <translation id="5901494423252125310">A porta da impresora está aberta</translation>
 <translation id="5901630391730855834">Amarelo</translation>
+<translation id="5902400038326841449">O xestor de contrasinais de Google está desactivado</translation>
 <translation id="5902892210366342391">Mostrar advertencias antes de acceder a sitios pouco seguros no modo de incógnito</translation>
 <translation id="5904614460720589786">Non se puido configurar a aplicación <ph name="APP_NAME" /> debido a un problema de configuración. Ponte en contacto co teu administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Continuar permitindo que este sitio use identificadores para reproducir contido protexido</translation>
@@ -7998,6 +8005,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6452251728599530347">Completouse o <ph name="PERCENT" /> da operación</translation>
 <translation id="6452961788130242735">Houbo un problema de rede ou o dominio é incorrecto</translation>
 <translation id="6453191633103419909">Calidade da proxección da pantalla/pestana</translation>
+<translation id="6453306703004115497">Traducida ao <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Agrupar todas as pestanas</translation>
 <translation id="6453921811609336127">Para cambiar ao seguinte método de introdución de texto, preme <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Control<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Maiúsculas<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espazo<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
@@ -8156,6 +8164,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="656293578423618167">A ruta ou o nome do ficheiro é demasiado longo. Gárdao con outro nome máis curto ou noutra localización.</translation>
 <translation id="6563002009564846727">Ver os certificados importados de Windows</translation>
 <translation id="6563055593659435495">Non se puido manter a conexión co teléfono. Asegúrate de ter o teléfono preto, desbloqueado e co Bluetooth e a wifi activados.</translation>
+<translation id="6564343790052433242">Se queres crear unha clave de acceso para <ph name="APP_NAME" />, o xestor de contrasinais de Google debe estar activado</translation>
 <translation id="6565144332292237355">Os sitios poden usar esta función para buscar calquera dispositivo da túa rede local ou conectarse a el</translation>
 <translation id="6568283005472142698">Busca de pestanas</translation>
 <translation id="6569931898053264308">Aforro moderado</translation>
@@ -11425,6 +11434,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8761945298804995673">Este usuario xa existe</translation>
 <translation id="8762886931014513155">O dispositivo <ph name="DEVICE_TYPE" /> necesita unha actualización</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
+<translation id="8765940060470412555">Deixar de fixar o modo de lectura</translation>
 <translation id="8766156860774051068">Seleccionados por ti</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Mostrar todas as buscas de <ph name="QUERY_CLUSTER_NAME" /></translation>

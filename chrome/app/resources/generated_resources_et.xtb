@@ -1340,6 +1340,8 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1891362123137972260">Kettaruumi on kriitiliselt vähe. Vabastage kettaruumi.</translation>
 <translation id="189210018541388520">Ava täisekraanil</translation>
 <translation id="1892341345406963517">Tere, <ph name="PARENT_NAME" />!</translation>
+<translation id="1892453608039100484">1. Klõpsake alloleval nupul <ph name="BUTTON_LABEL" />
+2. Klõpsake Windowsi seadetes nupul <ph name="BUTTON_2" /></translation>
 <translation id="189358972401248634">Teised keeled</translation>
 <translation id="1895658205118569222">Sulgemine</translation>
 <translation id="1896043844785689584">Sõrmejälje seadistamiseks paluge lapsel puudutada klaviatuuri paremas alanurgas olevat sõrmejäljeandurit. Teie lapse sõrmejäljeandmed talletatakse turvaliselt ja neid ei edastata kunagi seadmest <ph name="DEVICE_TYPE" /> väljapoole.</translation>
@@ -1788,6 +1790,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="219283042927675668">Grupi vahelehed</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> haldab teie uut vahelehte, avaneb uuel vahelehel</translation>
 <translation id="2192982266585216032">Maksed</translation>
+<translation id="2193567467390483943">Sinu vanem ei kiitnud seda laiendust heaks.</translation>
 <translation id="2194856509914051091">Olulised aspektid</translation>
 <translation id="2195331105963583686">Saate seadet <ph name="DEVICE_TYPE" /> pärast seda siiski kasutada, kuid see ei saa enam automaatseid tarkvara- ja turvavärskendusi</translation>
 <translation id="2195729137168608510">Meilikaitse</translation>
@@ -3157,6 +3160,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3105820656234755131">Parooli värskendati</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Sait kasutab Bluetoothi</translation>
+<translation id="3108122610701115301">Määra vaikeseadeks</translation>
 <translation id="3108931485517391283">Ei saa vastu võtta</translation>
 <translation id="3108957152224931571">Esiletõstu värv</translation>
 <translation id="3109206895301430738">Salvestatud vahelehegrupid</translation>
@@ -5108,6 +5112,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4415815425191869676">Järgmised saidid hoitakse alati aktiivsena</translation>
 <translation id="4416582610654027550">Sisestage kehtiv URL</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Peata see vaheleht}other{Peata need vahelehed}}</translation>
+<translation id="4421823557207751899">Sisse logitud kasutajana <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Kirjutussoovitused põhinevad teie päringutel ja veebilehe sisul</translation>
 <translation id="4421932782753506458">Miisu</translation>
 <translation id="4423376891418188461">Taasta seaded</translation>
@@ -6209,6 +6214,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5191251636205085390">Vaadake lisateavet uute tehnoloogiate kohta, mille eesmärk on kolmandate osapoolte küpsisefailid asendada, ja õppige neid haldama.</translation>
 <translation id="519185197579575131">Kasuta teemat QT</translation>
 <translation id="5192062846343383368">Avage rakendus Family Link, et näha järelevalve seadeid</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> on kohustuslik</translation>
 <translation id="5193978546360574373">See eemaldab selle Chromebooki juurdepääsu Google Drive'ile, sh juurdepääsu kõikidele failidele, mis on võrguväliselt kättesaadavaks tehtud</translation>
 <translation id="5193988420012215838">Kopeeritud lõikelauale</translation>
 <translation id="5194256020863090856">See mõjutab ainult inkognito aknaid</translation>
@@ -6351,6 +6357,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5288678174502918605">Ava suletud vaheleht &amp;uuesti</translation>
 <translation id="5290020561438336792">Arvuti ja ülekandeseade on erinevates WiFi-võrkudes (nt 2,4 GHz
     vs. 5 GHz)</translation>
+<translation id="5290322819358431297">Paroolide automaatne täitmine</translation>
 <translation id="52912272896845572">Privaatvõtme fail on kehtetu.</translation>
 <translation id="529175790091471945">Vorminda see seade</translation>
 <translation id="529296195492126134">Ajutist režiimi ei toetata. Võtke ühendust administraatoriga.</translation>
@@ -6970,6 +6977,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5734697361979786483">Lisa failide võrguhoidla</translation>
 <translation id="573520097779121706">Kasutage kursori liigutamiseks klahve 7, 8, 9, u, o, j, k, l</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Need andmed või teie seade ei vasta teie organisatsiooni teatud turvareeglitele. Pöörduge administraatori poole, et teada saada, mida on vaja parandada.}=1{See fail või teie seade ei vasta teie organisatsiooni teatud turvareeglitele. Pöörduge administraatori poole, et teada saada, mida on vaja parandada.}other{Need failid ei vasta teie organisatsiooni teatud turvareeglitele. Pöörduge administraatori poole, et teada saada, mida on vaja parandada.}}</translation>
+<translation id="5736345781200955827">Looge, salvestage ja hallake oma paroole, et saaksite Chrome'i abil hõlpsalt saitidele ja rakendustesse sisse logida.</translation>
 <translation id="5738093759615225354">Vajate seda pääsuvõtit oma arvutisse sisselogimiseks</translation>
 <translation id="5738386565827477765">Audioseade</translation>
 <translation id="5739017626473506901">Logige sisse, et aidata kasutajal <ph name="USER_NAME" /> lisada koolikonto</translation>
@@ -7222,6 +7230,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5901089233978050985">Lülitu jäädvustavale vahelehele</translation>
 <translation id="5901494423252125310">Printeri luuk on avatud</translation>
 <translation id="5901630391730855834">Kollane</translation>
+<translation id="5902400038326841449">Google'i paroolihaldur on välja lülitatud</translation>
 <translation id="5902892210366342391">Inkognito režiimis enne ebaturvalistele saitidele minemist kuvatakse hoiatused</translation>
 <translation id="5904614460720589786">Rakendust <ph name="APP_NAME" /> ei saanud konfiguratsiooniprobleemi tõttu seadistada. Võtke ühendust administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Luba sellel saidil jätkuvalt kaitstud sisu esitamiseks identifikaatoreid kasutada</translation>
@@ -8003,6 +8012,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> valmis</translation>
 <translation id="6452961788130242735">Võrguprobleem või halb valdus</translation>
 <translation id="6453191633103419909">Vahelehe/ekraanikuva projektsiooni kvaliteet</translation>
+<translation id="6453306703004115497">Tõlgitud <ph name="LANGUAGE" /> keelde.</translation>
 <translation id="6453687572758515877">Kõigi vahelehtede rühmitamine</translation>
 <translation id="6453921811609336127">Järgmisele sisestusmeetodile lülitamiseks vajutage klahvikombinatsiooni <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Tõstuklahv<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Tühik<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Konkreetsetel saitidel</translation>
@@ -8161,6 +8171,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="656293578423618167">Faili tee või nimi on liiga pikk. Salvestage lühema nimega või muusse asukohta.</translation>
 <translation id="6563002009564846727">Windowsist imporditud sertifikaatide vaatamine</translation>
 <translation id="6563055593659435495">Teie telefoniga ei saa ühendust säilitada. Veenduge, et teie telefon oleks läheduses, avatud ning Bluetooth ja WiFi oleksid sisse lülitatud.</translation>
+<translation id="6564343790052433242">Rakenduse <ph name="APP_NAME" /> jaoks pääsuvõtme loomiseks peab Google'i paroolihaldur olema sisse lülitatud.</translation>
 <translation id="6565144332292237355">Saidid saavad selle funktsiooni abil otsida teie kohalikust võrgust seadmeid ja luua nendega ühenduse</translation>
 <translation id="6568283005472142698">Otsing vahelehtedelt</translation>
 <translation id="6569931898053264308">Keskmine sääst</translation>
@@ -11432,6 +11443,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8761945298804995673">See kasutaja on juba olemas</translation>
 <translation id="8762886931014513155">Teie <ph name="DEVICE_TYPE" /> vajab värskendamist</translation>
 <translation id="8763927697961133303">USB-seade</translation>
+<translation id="8765940060470412555">Lugemisrežiimi vabastamine</translation>
 <translation id="8766156860774051068">Teie kureeritud</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Kuva kõik otsingud päringule<ph name="QUERY_CLUSTER_NAME" /></translation>

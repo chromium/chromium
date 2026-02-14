@@ -1787,6 +1787,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Për të kyçur skedat e tua "e fshehta", konfiguro Touch ID, Face ID, ose Passcode.</translation>
 <translation id="750886945254958667">Mbaje këtë grup për të shtuar skeda më vonë ose largohu nga ai nëse nuk dëshiron më të kesh qasje në të</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Shto deri në 1 skedë}other{Shto deri në {COUNT} skeda}}</translation>
 <translation id="7512909159512473473">Fut frazën e kalimit…</translation>
 <translation id="7514365320538308">Shkarko</translation>
 <translation id="7514530647142300459">Vazhdo të përdorësh fjalëkalimet në "Llogarinë tënde të Google" <ph name="EMAIL" /></translation>

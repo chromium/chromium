@@ -1338,6 +1338,8 @@
 <translation id="1891362123137972260">Простор на диску је изузетно мали. Ослободите простор на диску.</translation>
 <translation id="189210018541388520">Отвори цео екран</translation>
 <translation id="1892341345406963517">Здраво, <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. Кликните на <ph name="BUTTON_LABEL" /> у наставку
+2. Кликните на <ph name="BUTTON_2" /> у подешавањима Windows-а</translation>
 <translation id="189358972401248634">Други језици</translation>
 <translation id="1895658205118569222">Затварање</translation>
 <translation id="1896043844785689584">Да бисте подесили отисак прста, нека дете додирне сензор за отисак прста у доњем десном углу тастатуре. Подаци о отиску прста детета се безбедно чувају на овом <ph name="DEVICE_TYPE" /> уређају и увек остају на њему.</translation>
@@ -3151,6 +3153,7 @@
 <translation id="3105820656234755131">Лозинка је ажурирана</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Сајт користи Bluetooth</translation>
+<translation id="3108122610701115301">Постави на подразумевано</translation>
 <translation id="3108931485517391283">Примање није успело</translation>
 <translation id="3108957152224931571">Боја за истицање</translation>
 <translation id="3109206895301430738">Сачуване групе картица</translation>
@@ -5102,6 +5105,7 @@
 <translation id="4415815425191869676">Нека ови сајтови увек буду активни</translation>
 <translation id="4416582610654027550">Унесите важећи URL</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Паузирај ову картицу}one{Паузирај ове картице}few{Паузирај ове картице}other{Паузирај ове картице}}</translation>
+<translation id="4421823557207751899">Пријављени сте као <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Предлози за писање се заснивају на упитима и садржају веб-странице</translation>
 <translation id="4421932782753506458">Пуфница</translation>
 <translation id="4423376891418188461">Врати подешавања</translation>
@@ -6203,6 +6207,7 @@
 <translation id="5191251636205085390">Сазнајте више о новим технологијама чији је циљ да замене колачиће трећих страна и управљајте њима</translation>
 <translation id="519185197579575131">Користи QT</translation>
 <translation id="5192062846343383368">Отворите апликацију Family Link да бисте видели подешавања надзора</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> је обавезно поље</translation>
 <translation id="5193978546360574373">Ово ће уклонити приступ Google диску на овом Chromebook-у, укључујући приступ свим фајловима који су постали доступни офлајн</translation>
 <translation id="5193988420012215838">Копирано је у привремену меморију</translation>
 <translation id="5194256020863090856">Ово утиче само на прозоре без архивирања</translation>
@@ -6344,6 +6349,7 @@
 <translation id="5288106344236929384">Још радњи, опција за приступни кôд за <ph name="USERNAME" /> на <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">П&amp;оново отвори затворену картицу</translation>
 <translation id="5290020561438336792">Рачунар и уређај за пребацивање на различите WiFi мреже (нпр. 2,4 GHz и 5 GHz)</translation>
+<translation id="5290322819358431297">Аутоматски попуњавајте лозинке</translation>
 <translation id="52912272896845572">Датотека приватног кључа је неважећа.</translation>
 <translation id="529175790091471945">Форматирај овај уређај</translation>
 <translation id="529296195492126134">Једнократни режим није подржан. Обратите се администратору</translation>
@@ -6963,6 +6969,7 @@
 <translation id="5734697361979786483">Додај дељење датотека</translation>
 <translation id="573520097779121706">Користите тастере 7, 8, 9, u, o, j, k, l да бисте померили курсор</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Ови подаци или уређај нису у складу са неким безбедносним смерницама организације. Проверите са администратором шта треба да поправите.}=1{Овај фајл или уређај није у складу са неким безбедносним смерницама организације. Проверите са администратором шта треба да поправите.}one{Ови фајлови нису у складу са неким безбедносним смерницама организације. Проверите са администратором шта треба да поправите.}few{Ови фајлови нису у складу са неким безбедносним смерницама организације. Проверите са администратором шта треба да поправите.}other{Ови фајлови нису у складу са неким безбедносним смерницама организације. Проверите са администратором шта треба да поправите.}}</translation>
+<translation id="5736345781200955827">Правите и чувајте лозинке и управљајте њима да бисте се лако пријављивали на сајтове и у апликације помоћу Chrome-а</translation>
 <translation id="5738093759615225354">Треба вам овај приступни кôд да бисте се пријавили на рачунар</translation>
 <translation id="5738386565827477765">Аудио уређај</translation>
 <translation id="5739017626473506901">Пријавите се и омогућите да <ph name="USER_NAME" /> дода школски налог</translation>
@@ -7215,6 +7222,7 @@
 <translation id="5901089233978050985">Пређи на снимање картице</translation>
 <translation id="5901494423252125310">Врата штампача су отворена</translation>
 <translation id="5901630391730855834">Жута</translation>
+<translation id="5902400038326841449">Google менаџер лозинки је искључен</translation>
 <translation id="5902892210366342391">Прикажи упозорења пре одласка на небезбедне сајтове у режиму без архивирања</translation>
 <translation id="5904614460720589786">Подешавање апликације <ph name="APP_NAME" /> није успело због проблема са конфигурацијом. Обратите се администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Настави да дозвољаваш овом сајту да користи идентификаторе за пуштање заштићеног садржаја</translation>
@@ -7996,6 +8004,7 @@
 <translation id="6452251728599530347">Довршено је <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Проблем са мрежом или погрешан домен</translation>
 <translation id="6453191633103419909">Квалитет пројекције за картицу/екран</translation>
+<translation id="6453306703004115497">Преведено на <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">Групиши све картице</translation>
 <translation id="6453921811609336127">Да бисте прешли на следећи метод уноса, притисните <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Тастер за размак<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">На одређеним сајтовима</translation>
@@ -8154,6 +8163,7 @@
 <translation id="656293578423618167">Путања или назив датотеке су предугачки. Сачувајте са краћим називом или на другој локацији.</translation>
 <translation id="6563002009564846727">Прегледајте увезене сертификате из Windows-а</translation>
 <translation id="6563055593659435495">Нисмо успели да одржимо везу са телефоном. Уверите се да је телефон у близини, да је откључан и да су Bluetooth и WiFi укључени.</translation>
+<translation id="6564343790052433242">Да бисте направили приступни кључ за <ph name="APP_NAME" />, Google менаџер лозинки мора да буде укључен</translation>
 <translation id="6565144332292237355">Сајтови могу да користе ову функцију да би тражили уређаје на локалној мрежи и повезивали се са њима</translation>
 <translation id="6568283005472142698">Претрага картица</translation>
 <translation id="6569931898053264308">Средње уштеде</translation>
@@ -11429,6 +11439,7 @@
 <translation id="8761945298804995673">Овај корисник већ постоји</translation>
 <translation id="8762886931014513155">Треба да ажурирате <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">USB уређај</translation>
+<translation id="8765940060470412555">Откачи режим за читање</translation>
 <translation id="8766156860774051068">Припремили сте ви</translation>
 <translation id="8766796754185931010">Котоери</translation>
 <translation id="8767069439158587614">Приказује све претраге за <ph name="QUERY_CLUSTER_NAME" /></translation>

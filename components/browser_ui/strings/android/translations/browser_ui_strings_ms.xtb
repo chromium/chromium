@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Bantu kami meningkatkan Chrome dengan memberitahu kami sebab anda membenarkan kuki pihak ketiga. <ph name="BEGIN_LINK" />Hantar maklum balas<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Anda boleh meminta untuk melihat versi desktop laman</translation>
 <translation id="1085696779717592361">Gunakan Chrome Secara Lalai</translation>
+<translation id="1126523729897810826">Lengkapkan tindakan yang dicadangkan di bawah untuk memanfaatkan Chrome sepenuhnya</translation>
 <translation id="113098737392899175">Navigasi halaman dengan kursor teks apabila papan kekunci disambungkan</translation>
 <translation id="1149644372535087155">Simpan kata laluan dalam Chrome</translation>
 <translation id="1178015372320901893">Helaian bawah pintasan saya</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Mempercepat laman dengan enjin V8 Chrome tetapi Chrome menjadi kurang tahan sedikit terhadap serangan</translation>
 <translation id="1593426485665524382">Tindakan baharu tersedia berdekatan bahagian atas skrin</translation>
 <translation id="1594521731409209842">Cubit skrin untuk mengubah saiz foto</translation>
+<translation id="1599268789440304082">Helaian persediaan dibuka</translation>
 <translation id="1601560923496285236">Gunakan</translation>
 <translation id="1615755956145364867">Laman boleh meminta untuk memainkan kandungan yang dilindungi</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="4505788138578415521">URL dikembangkan</translation>
 <translation id="4522570452068850558">Butiran</translation>
 <translation id="4523472416386354622">Log masuk untuk bermula</translation>
+<translation id="4529207923544043455">Helaian bawah memaparkan tugasan senarai persediaan yang telah selesai dan belum selesai</translation>
 <translation id="4534723447064627427">Untuk membolehkan <ph name="APP_NAME" /> mengakses mikrofon anda, hidupkan juga mikrofon dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Helaian persediaan ditutup</translation>
 <translation id="4566417217121906555">Redamkan mikrofon</translation>
 <translation id="4570913071927164677">Butiran</translation>
 <translation id="4578289292431526768">Mari mulakan</translation>

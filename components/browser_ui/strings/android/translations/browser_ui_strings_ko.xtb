@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">서드 파티 쿠키를 허용한 이유를 알려주시면 Chrome을 개선하는 데 도움이 됩니다. <ph name="BEGIN_LINK" />의견 보내기<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">사이트의 데스크톱 버전을 표시하도록 요청할 수 있습니다.</translation>
 <translation id="1085696779717592361">Chrome을 기본 브라우저로 사용</translation>
+<translation id="1126523729897810826">아래의 추천 작업을 완료하여 Chrome을 최대한 활용하세요.</translation>
 <translation id="113098737392899175">키보드가 연결되어 있을 때 텍스트 커서로 페이지 탐색</translation>
 <translation id="1149644372535087155">Chrome에 비밀번호 저장</translation>
 <translation id="1178015372320901893">내 바로가기 하단 시트</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Chrome의 V8 엔진으로 사이트 속도를 높이지만 Chrome이 공격에 약간 더 취약해집니다.</translation>
 <translation id="1593426485665524382">화면 상단에서 새로운 작업 가능</translation>
 <translation id="1594521731409209842">손가락을 모으거나 벌려 사진 크기 조절</translation>
+<translation id="1599268789440304082">설정 시트 열림</translation>
 <translation id="1601560923496285236">적용</translation>
 <translation id="1615755956145364867">사이트에서 보호된 콘텐츠 재생을 요청할 수 있음</translation>
 <translation id="1620510694547887537">카메라</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">URL 펼쳐짐</translation>
 <translation id="4522570452068850558">세부정보</translation>
 <translation id="4523472416386354622">로그인하여 시작하기</translation>
+<translation id="4529207923544043455">완료된 설정 목록 작업과 완료되지 않은 설정 목록 작업을 표시하는 하단 시트</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" />에서 마이크에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 마이크를 사용 설정하세요.</translation>
+<translation id="4545694195887112015">설정 시트 닫힘</translation>
 <translation id="4566417217121906555">마이크 음소거</translation>
 <translation id="4570913071927164677">세부정보</translation>
 <translation id="4578289292431526768">시작</translation>

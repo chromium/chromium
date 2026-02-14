@@ -2237,6 +2237,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="9055291197094969722">Créez des groupes d'onglets pour organiser vos onglets ouverts et rester productif</translation>
 <translation id="9055580485132823283">Vous êtes sur le point de supprimer {password_count} mots de passe, {passkey_count} clés d'accès et la liste des sites et des applis pour lesquels vous avez choisi de ne jamais enregistrer les renseignements de connexion. Tout compte que vous avez créé pour des sites ou des applis ne sera pas supprimé.</translation>
 <translation id="9057030985451135243">En savoir plus sur les groupes d'onglets partagés</translation>
+<translation id="9064106978262828592">Problème lors de l'exportation de vos données</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9066097352053395362">Masquer Modifier le favori</translation>
 <translation id="9070824521421603770">Vous serez déconnecté et les onglets seront fermés</translation>

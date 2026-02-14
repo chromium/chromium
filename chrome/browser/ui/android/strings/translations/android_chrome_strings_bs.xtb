@@ -476,6 +476,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2992473221983447149">Opisi slike</translation>
 <translation id="2996291259634659425">Kreirajte pristupni izraz</translation>
 <translation id="2996809686854298943">Potreban je URL</translation>
+<translation id="3008916997590006706">Dodirnite Sačuvaj da lako pristupite ovoj lozinci prilikom sljedeće prijave</translation>
 <translation id="3024215143424744261">Postavke načina rada za čitanje su zatvorene</translation>
 <translation id="3026955690410463085">Uvrsti link</translation>
 <translation id="3027644380269727216">Na osnovu vaše aktivnosti na web lokaciji. Postavka je uključena.</translation>
@@ -1006,6 +1007,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5267572070504076962">Uključite Sigurno pregledanje da dobijete zaštitu od opasnih web lokacija</translation>
 <translation id="5271967389191913893">Uređaj ne može otvoriti sadržaj za preuzimanje.</translation>
 <translation id="5273031377282080577">Ovom postavkom upravlja administrator.</translation>
+<translation id="5290322819358431297">Automatski popunjavajte lozinke</translation>
 <translation id="5292796745632149097">Pošalji na</translation>
 <translation id="5301876394151419436">Prijavljeni ste kao <ph name="EMAIL" />. Sinhronizaciju možete zaustaviti bilo kada u postavkama. Google može personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
 <translation id="5304593522240415983">Ovo polje ne može biti prazno</translation>
@@ -1098,6 +1100,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="572328651809341494">Nedavne kartice</translation>
 <translation id="5728072125198221967">Povezane Googleove usluge</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, zakačena anonimna kartica sa zvukom</translation>
+<translation id="5736345781200955827">Kreirajte i sačuvajte lozinke te upravljajte njima da se možete lako prijaviti na web lokacije i u aplikacije putem Chromea</translation>
 <translation id="5744751019568455640">Evo glasova koje možete odabrati za čitanje web stranica naglas. Ako vam se sviđa ovaj glas i želite da ga nastavim koristiti, samo dodirnite naziv glasa.</translation>
 <translation id="574845902699630049">Dijelite kao <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chromeu treba pristup pohrani za preuzimanje fajlova.</translation>

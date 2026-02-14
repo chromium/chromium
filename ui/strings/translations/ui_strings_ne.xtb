@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{१ मिनेटअघि}other{# मिनेटअघि}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> आदान प्रदान गर्न सकिएन</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{१ महिनाअघि}other{# महिनाअघि}}</translation>
+<translation id="1591017414891297549">प्रिभ्यू</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{ १ मिनेट र }other{ # मिनेट र }}</translation>
 <translation id="1643823602425662293">सूचना</translation>
 <translation id="169515659049020177">सिफ्ट</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> थप</translation>
 <translation id="8730621377337864115">गरियो</translation>
+<translation id="8741385002816058621">यो प्रिभ्यू संस्करणमा उपलब्ध सुविधा हो</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{१ घन्टा}other{# घन्टा}}</translation>
 <translation id="8798099450830957504">डिफल्ट</translation>
 <translation id="8841375032071747811">पछाडि नामक बटन</translation>

@@ -1341,6 +1341,8 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1891362123137972260">Diskā gandrīz nav vietas. Lūdzu, atbrīvojiet vietu diskā.</translation>
 <translation id="189210018541388520">Atvērt pilnekrāna režīmu</translation>
 <translation id="1892341345406963517">Sveiki, <ph name="PARENT_NAME" />!</translation>
+<translation id="1892453608039100484">1. Noklikšķiniet uz tālāk redzamās pogas <ph name="BUTTON_LABEL" />.
+2. Windows iestatījumos noklikšķiniet uz <ph name="BUTTON_2" />.</translation>
 <translation id="189358972401248634">Citas valodas</translation>
 <translation id="1895658205118569222">Izslēgšana</translation>
 <translation id="1896043844785689584">Lai iestatītu pirksta nospiedumu, bērnam ir jāpieskaras pirksta nospieduma sensoram tastatūras apakšējā labajā stūrī. Bērna pirksta nospieduma dati tiek glabāti drošībā un vienmēr atrodas tikai šajā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
@@ -3155,6 +3157,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3105820656234755131">Parole ir atjaunināta</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="310671807099593501">Vietne izmanto Bluetooth savienojumu.</translation>
+<translation id="3108122610701115301">Iestatīt kā noklusējumu</translation>
 <translation id="3108931485517391283">Nevar saņemt saturu</translation>
 <translation id="3108957152224931571">Atzīmēšanas krāsa</translation>
 <translation id="3109206895301430738">Saglabātās ciļņu grupas</translation>
@@ -5104,6 +5107,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4415815425191869676">Vienmēr saglabāt šīs vietnes aktīvas</translation>
 <translation id="4416582610654027550">Ievadiet derīgu URL.</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Pārtraukt šīs cilnes darbību}zero{Pārtraukt šo ciļņu darbību}one{Pārtraukt šo ciļņu darbību}other{Pārtraukt šo ciļņu darbību}}</translation>
+<translation id="4421823557207751899">Pierakstījies kā <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">Rakstīšanas ieteikumu pamatā ir jūsu uzvednes un tīmekļa lapas saturs.</translation>
 <translation id="4421932782753506458">Minka</translation>
 <translation id="4423376891418188461">Atjaunot iestatījumus</translation>
@@ -6205,6 +6209,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5191251636205085390">Uzziniet par jaunām tehnoloģijām, kas izstrādātas, lai aizstātu trešo pušu sīkfailus, un pārvaldiet tās.</translation>
 <translation id="519185197579575131">Izmantot QT</translation>
 <translation id="5192062846343383368">Atveriet lietotni Family Link, lai skatītu uzraudzības iestatījumus.</translation>
+<translation id="5193602404493965468">* Lauks “<ph name="FIELD_LIST" />” ir jāaizpilda obligāti.</translation>
 <translation id="5193978546360574373">Tādējādi tiks noņemta piekļuve pakalpojumam Google disks šajā Chromebook datorā, tostarp piekļuve visiem failiem, kas padarīti pieejami bezsaistē.</translation>
 <translation id="5193988420012215838">Kopēts jūsu starpliktuvē</translation>
 <translation id="5194256020863090856">Šī darbība ietekmē tikai inkognito režīma logus</translation>
@@ -6346,6 +6351,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5288106344236929384">Vairāk darbību, piekļuves atslēgas iespēju lietotājam <ph name="USERNAME" /> domēnā <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Vēlr&amp;eiz atvērt aizvērto cilni</translation>
 <translation id="5290020561438336792">Dators un apraides ierīce ir dažādos Wi-Fi tīklos (piemēram, 2,4 GHz un 5 GHz)</translation>
+<translation id="5290322819358431297">Automātiska paroļu aizpilde</translation>
 <translation id="52912272896845572">Privātās atslēgas fails ir nederīgs.</translation>
 <translation id="529175790091471945">Formatēt šo ierīci</translation>
 <translation id="529296195492126134">Īslaicīgais režīms netiek atbalstīts. Lūdzu, sazinieties ar administratoru.</translation>
@@ -6963,6 +6969,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5734697361979786483">Pievienot failu kopīgošanu</translation>
 <translation id="573520097779121706">Lai pārvietotu kursoru, izmantojiet taustiņus “7”, “8”, “9”, “u”, “o”, “j”, “k”, “l”</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Šie dati vai jūsu ierīce neatbilst dažām jūsu organizācijas drošības politikām. Sazinieties ar administratoru, lai noskaidrotu, kādas problēmas jānovērš.}=1{Šis fails vai jūsu ierīce neatbilst dažām jūsu organizācijas drošības politikām. Sazinieties ar administratoru, lai noskaidrotu, kādas problēmas jānovērš.}zero{Šie faili neatbilst dažām jūsu organizācijas drošības politikām. Sazinieties ar administratoru, lai noskaidrotu, kādas problēmas jānovērš.}one{Šie faili neatbilst dažām jūsu organizācijas drošības politikām. Sazinieties ar administratoru, lai noskaidrotu, kādas problēmas jānovērš.}other{Šie faili neatbilst dažām jūsu organizācijas drošības politikām. Sazinieties ar administratoru, lai noskaidrotu, kādas problēmas jānovērš.}}</translation>
+<translation id="5736345781200955827">Izveidojiet, saglabājiet un pārvaldiet paroles, lai varētu ērti pierakstīties vietnēs un lietotnēs, izmantojot pārlūku Chrome.</translation>
 <translation id="5738093759615225354">Šī piekļuves atslēga jums ir nepieciešama, lai pierakstītos datorā.</translation>
 <translation id="5738386565827477765">Audioierīce</translation>
 <translation id="5739017626473506901">Pierakstieties, lai palīdzētu lietotājam <ph name="USER_NAME" /> pievienot mācību iestādes kontu</translation>
@@ -7215,6 +7222,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5901089233978050985">Pāriet uz ierakstošo cilni</translation>
 <translation id="5901494423252125310">Printera durvis ir atvērtas</translation>
 <translation id="5901630391730855834">Dzeltena</translation>
+<translation id="5902400038326841449">Google paroļu pārvaldnieks ir izslēgts</translation>
 <translation id="5902892210366342391">Skatīt brīdinājumus pirms nedrošu vietņu apmeklēšanas inkognito režīmā</translation>
 <translation id="5904614460720589786">Konfigurācijas problēmas dēļ nevarēja iestatīt lietotni <ph name="APP_NAME" />. Lūdzu, sazinieties ar administratoru. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906457147959147328">Arī turpmāk atļaut šai vietnei izmantot identifikatorus, lai atskaņotu aizsargātu saturu</translation>
@@ -7995,6 +8003,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6452251728599530347">Pabeigts: <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Tīkla problēma vai slikts nozarojums</translation>
 <translation id="6453191633103419909">Cilnes/ekrāna satura projekcijas kvalitāte</translation>
+<translation id="6453306703004115497">Tulkots šādā valodā: <ph name="LANGUAGE" />.</translation>
 <translation id="6453687572758515877">Grupēt visas cilnes</translation>
 <translation id="6453921811609336127">Lai pārietu pie nākamās ievades metodes, nospiediet <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />atstarpes taustiņu<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Konkrētās vietnēs</translation>
@@ -8153,6 +8162,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="656293578423618167">Faila ceļš vai nosaukums ir pārāk garš. Saglabājiet ar īsāku nosaukumu vai citā atrašanās vietā.</translation>
 <translation id="6563002009564846727">Skatīt no operētājsistēmas Windows importētos sertifikātus</translation>
 <translation id="6563055593659435495">Nevar uzturēt savienojumu ar jūsu tālruni. Tālrunim ir jāatrodas tuvumā, tam jābūt atbloķētam, un tajā ir jābūt ieslēgtam Bluetooth un Wi-Fi savienojumam.</translation>
+<translation id="6564343790052433242">Lai izveidotu piekļuves atslēgu vietnei <ph name="APP_NAME" />, Google paroļu pārvaldniekam ir jābūt ieslēgtam.</translation>
 <translation id="6565144332292237355">Vietnes var izmantot šo funkciju, lai meklētu un izveidotu savienojumu ar jebkuru ierīci jūsu lokālajā tīklā.</translation>
 <translation id="6568283005472142698">Meklēšana cilnēs</translation>
 <translation id="6569931898053264308">Vidējs ietaupījums</translation>
@@ -11428,6 +11438,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8761945298804995673">Šis lietotājs jau pastāv.</translation>
 <translation id="8762886931014513155">Ierīcei <ph name="DEVICE_TYPE" /> nepieciešams atjauninājums</translation>
 <translation id="8763927697961133303">USB ierīce</translation>
+<translation id="8765940060470412555">Atspraust lasīšanas režīmu</translation>
 <translation id="8766156860774051068">Jūsu atlasītais saturs</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Rādīt visus meklēšanas vienumus vaicājumam “<ph name="QUERY_CLUSTER_NAME" />”</translation>

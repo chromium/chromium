@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 منٹ پہلے}other{# منٹ پہلے}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> کا اشتراک نہیں کیا جا سکتا</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 ماہ پہلے}other{# ماہ پہلے}}</translation>
+<translation id="1591017414891297549">پیش منظر</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 منٹ اور }other{# منٹ اور }}</translation>
 <translation id="1643823602425662293">اطلاع</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> مزید</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
+<translation id="8741385002816058621">یہ پیش منظر میں ایک خصوصیت ہے</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1h}other{#h}}</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
 <translation id="8841375032071747811">'پیچھے' بٹن</translation>

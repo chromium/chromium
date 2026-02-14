@@ -6683,6 +6683,13 @@ Observação: esta política não se aplica a HSTS Upgrades.</translation>
 <translation id="5303080953475303561">Se a política for definida, ela controlará a frequência com que a tela de bloqueio solicita a senha para o desbloqueio rápido. Quando a tela de bloqueio aparece, se a última senha digitada tiver sido inserida antes da janela de tempo especificada pelo valor escolhido, o desbloqueio rápido não ficará disponível. Se os usuários continuarem na tela de bloqueio após esse período, uma senha será solicitada na próxima vez que o código errado for digitado ou que eles acessarem a tela de bloqueio, o que ocorrer primeiro.
 
       Se a política não for definida, os usuários usando o desbloqueio rápido terão que inserir a senha na tela de bloqueio diariamente.</translation>
+<translation id="530488290401810961">Defina como o <ph name="PRODUCT_NAME" /> vai baixar o modelo básico de IA generativa e usá-lo para inferência local.
+
+Se a política estiver definida como Permitida (0), ou não tiver sido configurada, o modelo será baixado automaticamente e usado para inferência.
+
+Se a política estiver definida como Desativada (1), o modelo não será baixado e o anterior (se houver) será excluído.
+
+Em plataformas para computador, também é possível usar <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> para desativar o download desse modelo.</translation>
 <translation id="5306186200045823863">Ativar confiança na infraestrutura de ICP legada da Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilidade do modo de navegação anônima</translation>
 <translation id="5308551343115571396">Após a desativação do <ph name="LACROS_NAME" />, vamos tentar manter o máximo possível de dados do usuário, removendo todos os dados do navegador.</translation>

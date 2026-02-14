@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Help ons Chrome te verbeteren door ons te vertellen waarom je cookies van derden hebt toegestaan. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Je kunt vragen om de desktopversie van sites te bekijken</translation>
 <translation id="1085696779717592361">Chrome standaard gebruiken</translation>
+<translation id="1126523729897810826">Voer de voorgestelde acties hieronder uit om het maximale uit Chrome te halen</translation>
 <translation id="113098737392899175">Navigeren op pagina's met een tekstcursor als er een toetsenbord is aangesloten</translation>
 <translation id="1149644372535087155">Wachtwoorden opslaan in Chrome</translation>
 <translation id="1178015372320901893">Blad onderaan voor Mijn snelkoppelingen</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Sites versnellen met de V8-engine van Chrome, maar Chrome iets minder goed bestand maken tegen aanvallen</translation>
 <translation id="1593426485665524382">Er zijn nieuwe acties beschikbaar bovenaan het scherm</translation>
 <translation id="1594521731409209842">Knijp op het scherm om het formaat van de foto aan te passen</translation>
+<translation id="1599268789440304082">Instelblad geopend</translation>
 <translation id="1601560923496285236">Toepassen</translation>
 <translation id="1615755956145364867">Sites kunnen vragen of ze beschermde content mogen afspelen</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -352,7 +354,9 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="4505788138578415521">URL uitgevouwen</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4523472416386354622">Inloggen om te starten</translation>
+<translation id="4529207923544043455">Blad onderaan met afgeronde en niet-afgeronde taken uit de instellijst</translation>
 <translation id="4534723447064627427">Als je <ph name="APP_NAME" /> toegang wilt geven tot je microfoon, moet je de microfoon ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Instelblad gesloten</translation>
 <translation id="4566417217121906555">Microfoon uitzetten</translation>
 <translation id="4570913071927164677">Details</translation>
 <translation id="4578289292431526768">Aan de slag</translation>

@@ -99,6 +99,7 @@
 <translation id="2099452623287920103">Passordene dine og andre Chromium-data du har lagret i Google-kontoen din, blir fjernet fra denne enheten. For å bruke dem i Chromium igjen, logg på igjen.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisasjonen din sletter nettlesingsdata automatisk når Chromium ikke har vært i bruk på 1 minutt. Dette kan omfatte loggen, autofyll og nedlastinger. Fanene dine forblir åpne.}other{Organisasjonen din sletter nettlesingsdata automatisk når Chromium ikke har vært i bruk på # minutter. Dette kan omfatte loggen, autofyll og nedlastinger. Fanene dine forblir åpne.}}</translation>
 <translation id="2126108037660393668">Kunne ikke bekrefte den nedlastede filen.</translation>
+<translation id="2135919691573380097">Rapportér dette nettstedet</translation>
 <translation id="2137162749895930932">Lukk oversettelsesskjermen</translation>
 <translation id="215352261310130060">Chromium har blokkert denne nedlastingen fordi nettstedet ikke bruker en sikker tilkobling, så filen kan ha blitt tuklet med</translation>
 <translation id="2170098639895543546">Velg hva som helst på siden</translation>
@@ -311,6 +312,7 @@
 <translation id="4304713468139749426">Passordlagring</translation>
 <translation id="4334241893986177674">Søk i dette skjermbildet</translation>
 <translation id="4334294535648607276">Nedlastingen er fullført.</translation>
+<translation id="4384331407722351213">Start Chromium når Windows starter</translation>
 <translation id="4384993550046411228">Få enkel tilgang til funksjonene du kjenner, liker og stoler på, ved å angi Chromium som standardnettleser. Chromium festes til oppgavelinjen for rask tilgang.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> krever at du leser og godtar følgende vilkår før du bruker denne enheten. Disse vilkårene verken utvider, endrer eller begrenser ChromiumOS-vilkårene.</translation>
 <translation id="4407044323746248786">Vil du avslutte Chromium likevel?</translation>
@@ -331,6 +333,7 @@
 <translation id="4531137820806573936">Chromium trenger tillatelse til å kartlegge omgivelsene dine og spore hendene dine</translation>
 <translation id="4536805923587466102">Du er allerede logget på som <ph name="USER_EMAIL_ADDRESS" /> i en annen Chromium-profil</translation>
 <translation id="4548534452171747496">Chromium forhåndslaster sider, slik at det går raskere å surfe og søke. <ph name="BEGIN_LINK" />Finn ut mer om forhåndslasting av sider<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">Gjør nettet tryggere for alle ved å rapportere nettsteder du mener er skadelige.</translation>
 <translation id="4570813286784708942">Chromium har blokkert denne nedlastingen fordi du har slått av Safe Browsing, så filen kan ikke bekreftes</translation>
 <translation id="4583692638088316420">Prøv Google Lens med Chromium på telefonen</translation>
 <translation id="4594305310729380060">I Passordlagring på denne enheten</translation>
@@ -370,6 +373,7 @@
 <translation id="5174969993834422967">Du blokkerer vanligvis varsler. For å la dette nettstedet sende deg varsler, klikk på varselikonet i høyre hjørne av adressefeltet.</translation>
 <translation id="5174983315706567306">Det er for lite diskplass.</translation>
 <translation id="5187123684706427865">Chromium-kontoen krever ny autentisering</translation>
+<translation id="5219681158518957165">Bruk de anbefalte nettleserinnstillingene</translation>
 <translation id="5224391634244552924">Ingen lagrede passord. Chromium kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="5231355151045086930">Vil du logge av Chromium?</translation>
 <translation id="5234764350956374838">Lukk</translation>
@@ -473,6 +477,7 @@
 <translation id="6327105987658262776">Ingen oppdatering er tilgjengelig.</translation>
 <translation id="6333502561965082103">En annen handling er i gang på Chromium. Prøv på nytt senere.</translation>
 <translation id="6334986366598267305">Nå er det enklere å bruke Chromium med Google-kontoen din og på datamaskiner du deler med andre.</translation>
+<translation id="6347002662287820329">Få enkel tilgang til funksjonene du kjenner, liker og stoler på, ved å angi Chromium som standardnettleser.</translation>
 <translation id="6347933965114150440">Chromium-snarvei</translation>
 <translation id="6366160072964553914">Chromium har blokkert denne nedlastingen fordi filen ikke lastes ned ofte, så den kan være farlig</translation>
 <translation id="6373523479360886564">Er du sikker på at du vil avinstallere Chromium?</translation>
@@ -503,6 +508,7 @@
 <translation id="6598877126913850652">Gå til innstillinger for Chromium-varsler</translation>
 <translation id="6600016381025017075">Søk etter hva som helst på denne siden</translation>
 <translation id="6613594504749178791">Endringene dine trer i kraft neste gang du starter Chromium.</translation>
+<translation id="6637908313088374648">Nå starter Chromium når Windows starter, slik at du kan begynne å surfe umiddelbart. Du kan slå dette av i innstillingene.</translation>
 <translation id="6648212540664651655">Fortsett der du avsluttet: Chromium har gjenopprettet fanene dine fra den forrige økten. Du kan slå av dette i</translation>
 <translation id="665732753414869868">Chromium trenger kameratillatelse for å lage et 3D-kart av omgivelsene dine</translation>
 <translation id="6669284030132180248">Hvis du også lagrer bokmerkene i Google-kontoen din, kan du spore produktpriser i Chromium og bli varslet om avslag</translation>
@@ -561,6 +567,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="7213407614656404070">Bruk Chromium hver gang du klikker på linker i meldinger, dokumenter og andre apper</translation>
 <translation id="7223968959479464213">Oppgavebehandling – Chromium</translation>
 <translation id="7246575524853130370">Interessene dine som Chromium har anslått</translation>
+<translation id="7252276985725323153">Begynn å surfe umiddelbart: Nå kan Chromium startes når Windows starter.</translation>
 <translation id="7274695763216404502">Festet. Bruk bildesøk igjen fra verktøylinjen</translation>
 <translation id="7288567540154601580">Faner og utvidelser</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium anbefaler at du fjerner den}other{Chromium anbefaler at du fjerner dem}}</translation>
@@ -590,6 +597,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="751935028865900641">Nettsteder fungerer sannsynligvis som forventet. Du blir logget av de fleste nettsteder når du lukker alle Chromium-vinduer, unntatt Google-kontoen din hvis du er logget på Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium startes på nytt om 1 minutt}other{Chromium startes på nytt om # minutter}}</translation>
 <translation id="7565444033145385702">Du kan beskytte dataene dine ved å la Chromium fjerne tillatelser fra nettsteder du ikke har besøkt nylig.</translation>
+<translation id="7583104404158659071">Start Chromium automatisk for å begynne å surfe med en gang.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-installasjonsprogram</translation>
 <translation id="761356813943268536">Chromium bruker kameraet og mikrofonen din.</translation>
 <translation id="7617377681829253106">Nå er Chromium blitt enda bedre</translation>

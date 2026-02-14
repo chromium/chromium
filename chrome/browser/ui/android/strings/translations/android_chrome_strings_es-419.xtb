@@ -476,6 +476,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2992473221983447149">Descripciones de imágenes</translation>
 <translation id="2996291259634659425">Crear frase de contraseña</translation>
 <translation id="2996809686854298943">URL obligatoria</translation>
+<translation id="3008916997590006706">Presiona Guardar para acceder fácilmente a esta contraseña la próxima vez que accedas</translation>
 <translation id="3024215143424744261">Se cerraron las preferencias del Modo de lectura</translation>
 <translation id="3026955690410463085">Incluir vínculo</translation>
 <translation id="3027644380269727216">Según tu actividad en un sitio. Este parámetro de configuración está activado.</translation>
@@ -1006,6 +1007,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5267572070504076962">Activa la Navegación segura para obtener protección contra sitios peligrosos</translation>
 <translation id="5271967389191913893">El dispositivo no puede abrir el contenido que se descargará.</translation>
 <translation id="5273031377282080577">El administrador gestiona este parámetro de configuración.</translation>
+<translation id="5290322819358431297">Autocompleta tus contraseñas</translation>
 <translation id="5292796745632149097">Enviar a</translation>
 <translation id="5301876394151419436">Accediste como <ph name="EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="5304593522240415983">Este campo no puede quedar en blanco.</translation>
@@ -1098,6 +1100,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5728072125198221967">Servicios de Google vinculados</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, pestaña de incógnito con sonido fijada</translation>
+<translation id="5736345781200955827">Crea, guarda y administra tus contraseñas para acceder fácilmente a sitios y apps con Chrome</translation>
 <translation id="5744751019568455640">Estas son las voces que puedes seleccionar para la lectura de páginas web. Si te gusta esta voz y quieres que siga usándola, presiona el nombre de la voz.</translation>
 <translation id="574845902699630049">Compartir como <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Chrome necesita acceder al almacenamiento para descargar archivos.</translation>

@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">तुम्ही तृतीय पक्ष कुकीना अनुमती का दिली हे सांगून Chrome मध्ये सुधारणा करण्यात आम्हाला मदत करा. <ph name="BEGIN_LINK" />फीडबॅक पाठवणे<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">तुम्ही साइटची डेस्कटॉप आवृत्ती पाहण्याची विनंती करू शकता</translation>
 <translation id="1085696779717592361">बाय डीफॉल्ट Chrome वापरा</translation>
+<translation id="1126523729897810826">Chrome चा पुरेपूर वापर करण्यासाठी या सुचवलेल्या कृती पूर्ण करा</translation>
 <translation id="113098737392899175">कीबोर्ड अटॅच केलेला असताना मजकुराचा कर्सर वापरून पेज नेव्हिगेट करा</translation>
 <translation id="1149644372535087155">Chrome मध्ये पासवर्ड सेव्ह करा</translation>
 <translation id="1178015372320901893">माझे शॉर्टकट पेजच्या तळाशी असलेली शीट</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Chrome चे V8 इंजीन वापरून साइटचा वेग वाढवा, पण Chrome ला हल्ल्यांबाबत किंचित कमी प्रतिरोधक बनवा</translation>
 <translation id="1593426485665524382">स्क्रीनच्या सर्वात वरच्या बाजूच्या जवळ नवीन कृती उपलब्ध आहेत</translation>
 <translation id="1594521731409209842">फोटोचा आकार बदलण्यासाठी स्क्रीन पिंच करा</translation>
+<translation id="1599268789440304082">सेटअप शीट उघडली आहे</translation>
 <translation id="1601560923496285236">लागू करा</translation>
 <translation id="1615755956145364867">साइट संरक्षित आशय प्ले करण्यासाठी विचारू शकतात</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">URL चा विस्तार केला गेला</translation>
 <translation id="4522570452068850558">तपशील</translation>
 <translation id="4523472416386354622">सुरू करण्यासाठी साइन इन करा</translation>
+<translation id="4529207923544043455">सेटअप सूचीमधील पूर्ण आणि अपूर्ण टास्क दाखवणारी तळाशी असलेली शीट</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> ला तुमचा मायक्रोफोन ॲक्सेस करू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील मायक्रोफोन सुरू करा.</translation>
+<translation id="4545694195887112015">सेटअप शीट बंद केली आहे</translation>
 <translation id="4566417217121906555">मायक्रोफोन म्यूट करा</translation>
 <translation id="4570913071927164677">तपशील</translation>
 <translation id="4578289292431526768">चला सुरू करू या</translation>

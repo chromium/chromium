@@ -704,6 +704,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2137891579555018930">A aguardar autorização…</translation>
 <translation id="213826338245044447">Marcadores de Telemóvel</translation>
 <translation id="2141000681034340397">Editar entrada</translation>
+<translation id="2141475438898772664">Pague em 4 prestações ou mensalmente</translation>
 <translation id="2144171668675205303">Sem tópicos ativos</translation>
 <translation id="2145193671493396738">Notícias de economia</translation>
 <translation id="214556005048008348">Cancelar pagamento</translation>
@@ -2849,6 +2850,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5543564889050342791">Jardins zoológicos, aquários e reservas</translation>
 <translation id="5543722831081909240">180 graus</translation>
 <translation id="5544836308113951378">Cruzeiros e charters</translation>
+<translation id="5545314360139398232">Associe o emissor <ph name="ISSUER_NAME" /> para pagar ao longo do tempo</translation>
 <translation id="5547939254150808298">Impressão e publicação</translation>
 <translation id="554815783948612276">Fornecedores de fóruns e chats</translation>
 <translation id="5548606607480005320">Verificação de segurança</translation>
@@ -3696,6 +3698,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>
 <translation id="6927878187051807444">ficheiros da câmara e capturas de ecrã</translation>
+<translation id="6929949393612835405">Fechar e voltar a "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Pesquise no painel lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O seu motor de pesquisa predefinido permite-lhe pesquisar na Web e ativar as funcionalidades do Chrome<ph name="END_BOLD" />, como pesquisar a partir da barra de endereço e de imagens em páginas Web. É possível que uma funcionalidade não esteja disponível se o seu motor de busca não a suportar.</translation>
 <translation id="6934672428414710184">Este nome é proveniente da sua Conta Google.</translation>

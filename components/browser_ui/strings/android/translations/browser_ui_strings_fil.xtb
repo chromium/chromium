@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Tulungan kaming pahusayin ang Chrome sa pamamagitan ng pagsasabi sa amin kung bakit mo pinayagan ang third-party na cookies. <ph name="BEGIN_LINK" />Magpadala ng feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Puwede mong hilinging makita ang desktop na bersyon ng mga site</translation>
 <translation id="1085696779717592361">Gamitin ang Chrome Bilang Default</translation>
+<translation id="1126523729897810826">Kumpletuhin ang mga iminumungkahing aksyong ito sa ibaba para masulit ang Chrome</translation>
 <translation id="113098737392899175">Mag-navigate sa mga page gamit ang cursor ng text kapag may nakakabit na keyboard</translation>
 <translation id="1149644372535087155">Mag-save ng mga password sa Chrome</translation>
 <translation id="1178015372320901893">Bottom sheet ng aking mga shortcut</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Pabilisin ang mga site gamit ang V8 na engine ng Chrome pero gawing bahagyang hindi gaanong resistant sa mga attack ang Chrome</translation>
 <translation id="1593426485665524382">Available ang mga bagong pagkilos malapit sa itaas ng screen</translation>
 <translation id="1594521731409209842">I-pinch ang screen para i-resize ang larawan</translation>
+<translation id="1599268789440304082">Binuksan ang sheet ng pag-set up</translation>
 <translation id="1601560923496285236">Ilapat</translation>
 <translation id="1615755956145364867">Puwedeng hilingin ng mga site na mag-play ng pinoprotektahang content</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -352,7 +354,9 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="4505788138578415521">Na-expand ang URL</translation>
 <translation id="4522570452068850558">Mga Detalye</translation>
 <translation id="4523472416386354622">Mag-sign in para makapagsimula</translation>
+<translation id="4529207923544043455">Bottom sheet na nagpapakita ng mga kumpleto at hindi pa kumpletong gawain sa listahan ng pag-set up</translation>
 <translation id="4534723447064627427">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong mikropono, i-on din ang mikropono sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Isinara ang sheet ng pag-set up</translation>
 <translation id="4566417217121906555">I-mute ang mikropono</translation>
 <translation id="4570913071927164677">Mga Detalye</translation>
 <translation id="4578289292431526768">Tara na</translation>

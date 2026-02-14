@@ -704,6 +704,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2137891579555018930">Heakskiidu ootel …</translation>
 <translation id="213826338245044447">Mobiili järjehoidjad</translation>
 <translation id="2141000681034340397">Sisendi muutmine</translation>
+<translation id="2141475438898772664">Makske neljas osas või iga kuu</translation>
 <translation id="2144171668675205303">Aktiivseid teemasid ei ole</translation>
 <translation id="2145193671493396738">Majandusuudised</translation>
 <translation id="214556005048008348">Tühista makse</translation>
@@ -2849,6 +2850,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5543564889050342791">Loomaaiad, akvaariumid, kaitsealad</translation>
 <translation id="5543722831081909240">180 kraadi</translation>
 <translation id="5544836308113951378">Kruiisid ja tšarterreisid</translation>
+<translation id="5545314360139398232">Linkige teenuse <ph name="ISSUER_NAME" /> konto, et maksegraafiku alusel maksta</translation>
 <translation id="5547939254150808298">Trükkimine ja kirjastamine</translation>
 <translation id="554815783948612276">Foorumite ja vestlusteenuste pakkujad</translation>
 <translation id="5548606607480005320">Ohutuskontroll</translation>
@@ -3696,6 +3698,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6926216138694948720">Kehamaalingud</translation>
 <translation id="692638818576287323">Tarbesõidukid</translation>
 <translation id="6927878187051807444">kaamera failid ja ekraanipildid</translation>
+<translation id="6929949393612835405">Sule ja naase lehele „<ph name="OPENER_TITLE" />“</translation>
 <translation id="6930607614725241390">Otsimine külgpaneelilt</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Teie vaikeotsingumootor võimaldab teil veebist otsida ja toetab Chrome'i funktsioone<ph name="END_BOLD" />, nagu otsimine aadressiribalt ja veebilehtedel olevatelt piltidelt. Funktsioon ei pruugi olla saadaval, kui teie otsingumootor seda ei toeta.</translation>
 <translation id="6934672428414710184">Nimi pärineb teie Google'i kontolt</translation>

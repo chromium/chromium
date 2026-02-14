@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">‏ہمیں یہ بتا کر Chrome کو بہتر بنانے میں ہماری مدد کریں کہ آپ نے فریق ثالث کوکیز کی اجازت کیوں دی۔ <ph name="BEGIN_LINK" />تاثرات بھیجیں<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">آپ سائٹس کے ڈیسک ٹاپ ورژن کو دیکھنے کیلئے کہہ سکتے ہیں</translation>
 <translation id="1085696779717592361">‏بطور ڈیفالٹ Chrome کا استعمال کریں</translation>
+<translation id="1126523729897810826">‏Chrome سے بھرپور فائدہ اٹھانے کے لیے ذیل میں تجویز کردہ ان کارروائیوں کو مکمل کریں</translation>
 <translation id="113098737392899175">کی بورڈ منسلک ہو جانے پر، ٹیکسٹ کرسر کی مدد سے صفحات پر نیویگیٹ کریں</translation>
 <translation id="1149644372535087155">‏‫Chrome میں پاس ورڈز محفوظ کریں</translation>
 <translation id="1178015372320901893">میری شارٹ کٹس کی نیچے کی شیٹ</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">‏‫Chrome کے V8 انجن کے ساتھ سائٹس کو تیز کریں لیکن Chrome کو حملوں کے لیے قدرے کم مزاحم بنائیں</translation>
 <translation id="1593426485665524382">اسکرین کے اوپری حصے کے قریب نئے ایکشنز دستیاب ہیں</translation>
 <translation id="1594521731409209842">تصویر کا سائز تبدیل کرنے کیلئے اسکرین پر چٹکی بھریں</translation>
+<translation id="1599268789440304082">سیٹ اپ شیٹ کھول دی گئی</translation>
 <translation id="1601560923496285236">لاگو کریں</translation>
 <translation id="1615755956145364867">سائٹس تحفظ یافتہ مواد چلانے کیلئے پوچھ سکتی ہیں</translation>
 <translation id="1620510694547887537">کیمرا</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">‏URL کو پھیلا دیا گیا</translation>
 <translation id="4522570452068850558">تفصیلات</translation>
 <translation id="4523472416386354622">شروع کرنے کیلئے سائن ان کریں</translation>
+<translation id="4529207923544043455">مکمل اور نامکمل سیٹ اپ کی فہرست کے ٹاسکس کو ڈسپلے کرنے والی نیچے کی شیٹ</translation>
 <translation id="4534723447064627427">‏<ph name="APP_NAME" /> کو اپنے مائیکروفون تک رسائی دینے کے لیے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں بھی مائیکروفون آن کریں۔</translation>
+<translation id="4545694195887112015">سیٹ اپ شیٹ بند ہو گئی</translation>
 <translation id="4566417217121906555">مائیکروفون کو خاموش کریں</translation>
 <translation id="4570913071927164677">تفاصیل</translation>
 <translation id="4578289292431526768">آئیے شروع کریں</translation>

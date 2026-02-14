@@ -1799,6 +1799,7 @@
 <translation id="219283042927675668">गटामधील टॅब</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> हे तुमचे नवीन टॅब हे पेज व्यवस्थापित करत आहे, नवीन टॅबमध्ये उघडते</translation>
 <translation id="2192982266585216032">&amp;पेमेंट</translation>
+<translation id="2193567467390483943">तुमच्या पालकांनी या एक्स्टेंशनला मंजुरी दिली नाही</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
 <translation id="2195331105963583686">तुम्ही त्यानंतर तरीही हे <ph name="DEVICE_TYPE" /> वापरू शकाल पण ते यापुढे ऑटोमॅटिक सॉफ्टवेअर आणि सुरक्षा अपडेट मिळवू शकणार नाही</translation>
 <translation id="2195729137168608510">ईमेल संरक्षण</translation>
@@ -5118,6 +5119,7 @@
 <translation id="4415815425191869676">या साइट नेहमी अ‍ॅक्टिव्ह ठेवा</translation>
 <translation id="4416582610654027550">योग्य URL टाइप करा</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{हा टॅब थांबवा}other{हे टॅब थांबवा}}</translation>
+<translation id="4421823557207751899"><ph name="USERNAME" /> म्हणून साइन इन केले</translation>
 <translation id="4421932172707401417">लेखनासाठी सूचना या तुमचे प्रॉम्प्ट आणि वेब पेजवरील आशय यांवर आधारित असतात</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">सेटिंग्ज पुनर्संचयित करा</translation>
@@ -6219,6 +6221,7 @@
 <translation id="5191251636205085390">तृतीय पक्षाच्या कुकी बदलण्याचा उद्देश असलेल्या नवीन तंत्रज्ञान आणि ते कसे नियंत्रित करायचे याविषयी जाणून घ्या</translation>
 <translation id="519185197579575131">QT वापरा</translation>
 <translation id="5192062846343383368">तुमची पर्यवेक्षण सेटिंग्ज पाहण्यासाठी Family Link अ‍ॅप उघडा</translation>
+<translation id="5193602404493965468">* <ph name="FIELD_LIST" /> आवश्यक आहे</translation>
 <translation id="5193978546360574373">हे या Chromebook वरील ऑफलाइन उपलब्ध केलेल्या कोणत्याही फायलच्या अ‍ॅक्सेससह, Google Drive चा अ‍ॅक्सेस काढून टाकेल</translation>
 <translation id="5193988420012215838">तुमच्या क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="5194256020863090856">हे फक्त गुप्त विंडोवर परिणाम करते</translation>

@@ -1339,6 +1339,8 @@
 <translation id="1891362123137972260">พื้นที่ดิสก์เกือบเต็มแล้ว โปรดเพิ่มพื้นที่ว่างในดิสก์</translation>
 <translation id="189210018541388520">เปิดการแสดงแบบเต็มหน้าจอ</translation>
 <translation id="1892341345406963517">สวัสดี <ph name="PARENT_NAME" /></translation>
+<translation id="1892453608039100484">1. คลิก <ph name="BUTTON_LABEL" /> ด้านล่าง
+2. คลิก <ph name="BUTTON_2" /> ในการตั้งค่า Windows</translation>
 <translation id="189358972401248634">ภาษาอื่นๆ</translation>
 <translation id="1895658205118569222">ปิด</translation>
 <translation id="1896043844785689584">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือที่มุมขวาล่างของแป้นพิมพ์ ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> เครื่องนี้เสมอ</translation>
@@ -3153,6 +3155,7 @@
 <translation id="3105820656234755131">อัปเดตรหัสผ่านแล้ว</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (บลูทูธ)</translation>
 <translation id="310671807099593501">เว็บไซต์กำลังใช้บลูทูธ</translation>
+<translation id="3108122610701115301">ตั้งเป็นค่าเริ่มต้น</translation>
 <translation id="3108931485517391283">รับไม่ได้</translation>
 <translation id="3108957152224931571">สีไฮไลต์</translation>
 <translation id="3109206895301430738">กลุ่มแท็บที่บันทึกไว้</translation>
@@ -5102,6 +5105,7 @@
 <translation id="4415815425191869676">ให้เว็บไซต์เหล่านี้ทำงานอยู่เสมอ</translation>
 <translation id="4416582610654027550">พิมพ์ URL ที่ถูกต้อง</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{หยุดแท็บนี้ชั่วคราว}other{หยุดแท็บเหล่านี้ชั่วคราว}}</translation>
+<translation id="4421823557207751899">ลงชื่อเข้าใช้ด้วย <ph name="USERNAME" /></translation>
 <translation id="4421932172707401417">คำแนะนำในการเขียนจะอิงตามพรอมต์และเนื้อหาของหน้าเว็บ</translation>
 <translation id="4421932782753506458">ฟลัฟฟี</translation>
 <translation id="4423376891418188461">กู้คืนการตั้งค่า</translation>
@@ -6344,6 +6348,7 @@
 <translation id="5288106344236929384">การดําเนินการเพิ่มเติม ตัวเลือกพาสคีย์สําหรับ <ph name="USERNAME" /> ใน <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">เ&amp;ปิดแท็บที่ถูกปิดขึ้นใหม่</translation>
 <translation id="5290020561438336792">PC และอุปกรณ์แคสต์ใช้เครือข่าย Wi-Fi ต่างกัน (เช่น 2.4 GHz กับ 5 GHz)</translation>
+<translation id="5290322819358431297">ป้อนรหัสผ่านของคุณโดยอัตโนมัติ</translation>
 <translation id="52912272896845572">ไฟล์กุญแจส่วนตัวไม่ถูกต้อง</translation>
 <translation id="529175790091471945">ฟอร์แมตอุปกรณ์นี้</translation>
 <translation id="529296195492126134">ไม่รองรับโหมดชั่วคราว โปรดติดต่อผู้ดูแลระบบ</translation>
@@ -6961,6 +6966,7 @@
 <translation id="5734697361979786483">เพิ่มพื้นที่แชร์ไฟล์</translation>
 <translation id="573520097779121706">ใช้ปุ่ม 7, 8, 9, u, o, j, k, l เพื่อเลื่อนเคอร์เซอร์</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{ข้อมูลนี้หรืออุปกรณ์ของคุณไม่เป็นไปตามนโยบายความปลอดภัยบางประการขององค์กร โปรดสอบถามผู้ดูแลระบบเกี่ยวกับสิ่งที่ต้องแก้ไข}=1{ไฟล์นี้หรืออุปกรณ์ของคุณไม่เป็นไปตามนโยบายความปลอดภัยบางประการขององค์กร โปรดสอบถามผู้ดูแลระบบเกี่ยวกับสิ่งที่ต้องแก้ไข}other{ไฟล์เหล่านี้ไม่เป็นไปตามนโยบายความปลอดภัยบางประการขององค์กร โปรดสอบถามผู้ดูแลระบบเกี่ยวกับสิ่งที่ต้องแก้ไข}}</translation>
+<translation id="5736345781200955827">สร้าง บันทึก และจัดการรหัสผ่านเพื่อให้ลงชื่อเข้าใช้เว็บไซต์และแอปโดยใช้ Chrome ได้ง่าย</translation>
 <translation id="5738093759615225354">คุณต้องมีพาสคีย์นี้เพื่อลงชื่อเข้าใช้คอมพิวเตอร์</translation>
 <translation id="5738386565827477765">อุปกรณ์เสียง</translation>
 <translation id="5739017626473506901">ลงชื่อเข้าใช้เพื่อช่วย <ph name="USER_NAME" /> เพิ่มบัญชีโรงเรียน</translation>
@@ -7213,6 +7219,7 @@
 <translation id="5901089233978050985">เปลี่ยนเป็นแท็บที่ใช้จับภาพ</translation>
 <translation id="5901494423252125310">ฝาเครื่องพิมพ์เปิดอยู่</translation>
 <translation id="5901630391730855834">สีเหลือง</translation>
+<translation id="5902400038326841449">เครื่องมือจัดการรหัสผ่านบน Google ปิดอยู่</translation>
 <translation id="5902892210366342391">ดูคำเตือนก่อนไปยังเว็บไซต์ที่ไม่ปลอดภัยในโหมดไม่ระบุตัวตน</translation>
 <translation id="5904614460720589786">ตั้งค่า <ph name="APP_NAME" /> ไม่ได้เนื่องจากมีปัญหาเกี่ยวกับการกำหนดค่า โปรดติดต่อผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="5906457147959147328">อนุญาตให้เว็บไซต์นี้ใช้ตัวระบุเพื่อเล่นเนื้อหาที่มีการคุ้มครองต่อไป</translation>
@@ -7993,6 +8000,7 @@
 <translation id="6452251728599530347">สมบูรณ์แล้ว <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">พบปัญหาเกี่ยวกับเครือข่ายหรือขอบเขตไม่ดี</translation>
 <translation id="6453191633103419909">คุณภาพการฉายภาพของแท็บ/หน้าจอ</translation>
+<translation id="6453306703004115497">แปลเป็น <ph name="LANGUAGE" /></translation>
 <translation id="6453687572758515877">จัดกลุ่มแท็บทั้งหมด</translation>
 <translation id="6453921811609336127">หากต้องการเปลี่ยนวิธีการป้อนข้อมูลครั้งต่อไป ให้กด <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">ในบางเว็บไซต์</translation>
@@ -8151,6 +8159,7 @@
 <translation id="656293578423618167">เส้นทางหรือชื่อของไฟล์ยาวเกินไป โปรดบันทึกด้วยชื่อที่สั้นกว่านี้หรือบันทึกลงในตำแหน่งอื่น</translation>
 <translation id="6563002009564846727">ดูใบรับรองที่นำเข้าจาก Windows</translation>
 <translation id="6563055593659435495">คงการเชื่อมต่อกับโทรศัพท์ไว้ไม่ได้ ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกแล้ว และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
+<translation id="6564343790052433242">หากต้องการสร้างพาสคีย์สำหรับ <ph name="APP_NAME" /> เครื่องมือจัดการรหัสผ่านบน Google จะต้องเปิดอยู่</translation>
 <translation id="6565144332292237355">เว็บไซต์สามารถใช้ฟีเจอร์นี้เพื่อค้นหาและเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณ</translation>
 <translation id="6568283005472142698">การค้นหาแท็บ</translation>
 <translation id="6569931898053264308">ประหยัดหน่วยความจำได้ปานกลาง</translation>
@@ -11421,6 +11430,7 @@
 <translation id="8761945298804995673">มีผู้ใช้รายนี้แล้ว</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> ต้องการการอัปเดต</translation>
 <translation id="8763927697961133303">อุปกรณ์ USB</translation>
+<translation id="8765940060470412555">เลิกปักหมุดโหมดการอ่าน</translation>
 <translation id="8766156860774051068">คุณเป็นผู้ดูแลจัดการ</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">แสดงการค้นหาทั้งหมดสําหรับ <ph name="QUERY_CLUSTER_NAME" /></translation>
