@@ -218,10 +218,7 @@ void PowerNotificationController::OnPowerStatusChanged() {
     return;
   }
 
-  if (ash::features::IsHybridChargerNotificationsEnabled()) {
-    MaybeShowIncompatibleChargerNotification();
-  }
-
+  MaybeShowIncompatibleChargerNotification();
   MaybeShowUsbChargerNotification();
   MaybeShowDualRoleNotification();
 

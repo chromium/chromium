@@ -429,8 +429,7 @@ std::u16string PowerStatus::GetAccessibleNameString(
   const std::optional<base::TimeDelta> time =
       IsBatteryCharging() ? GetBatteryTimeToFull() : GetBatteryTimeToEmpty();
 
-  if (ash::features::IsHybridChargerNotificationsEnabled() &&
-      IsIncompatibleChargerConnected()) {
+  if (IsIncompatibleChargerConnected()) {
     battery_time_accessible = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BATTERY_INCOMPATIBLE_CHARGER_ACCESSIBLE);
   } else if (IsUsbChargerConnected()) {
