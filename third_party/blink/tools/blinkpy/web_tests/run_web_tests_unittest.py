@@ -2408,6 +2408,12 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
                 '--ignore-default-expectations', 'failures/expected/text.html'
             ]))
 
+    def test_timeout_multiplier(self):
+        # Tests that --timeout-multiplier is reflected in the logs.
+        _, regular_output, _ = logging_run(['--timeout-multiplier', '2'])
+        self.assertRegex(regular_output.getvalue(),
+                         r'Regular timeout: 12000\b')
+
 
 class RebaselineTest(unittest.TestCase, StreamTestingMixin):
     """Tests for flags which cause new baselines to be written.

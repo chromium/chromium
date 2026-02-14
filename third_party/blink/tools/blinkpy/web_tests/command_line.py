@@ -298,6 +298,11 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
         action='store_true',
         help='Enable the leak detection of DOM objects.')
     testing_group.add_argument(
+        '--timeout-multiplier',
+        type=float,
+        default=1.0,
+        help='Multiplier to apply to default test timeouts.')
+    testing_group.add_argument(
         '--enable-sanitizer',
         action='store_true',
         help='Only alert on sanitizer-related errors and crashes')
@@ -579,10 +584,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                   'failures are expected in *-expected.txt.'))
     else:
         test_types = get_args(TestType)
-        testing_group.add_argument(
-            '--timeout-multiplier',
-            type=float,
-            help='Multiplier relative to standard test timeouts to use')
         testing_group.add_argument(
             '--test-types',
             nargs='*',
