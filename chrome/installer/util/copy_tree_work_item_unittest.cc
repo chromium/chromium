@@ -96,8 +96,6 @@ TEST_F(CopyTreeWorkItemTest, CopyFile) {
 }
 
 // Copy one file, overwriting the existing one in destination.
-// Test with always_overwrite being true or false. The file is overwritten
-// regardless since the content at destination file is different from source.
 TEST_F(CopyTreeWorkItemTest, CopyFileOverwrite) {
   // Create source file
   base::FilePath file_name_from(test_dir_.GetPath());
@@ -116,30 +114,9 @@ TEST_F(CopyTreeWorkItemTest, CopyFileOverwrite) {
   CreateTextFile(file_name_to.value(), text_content_2);
   ASSERT_TRUE(base::PathExists(file_name_to));
 
-  // test Do() with always_overwrite being true.
+  // test Do() with always overwrite.
   std::unique_ptr<CopyTreeWorkItem> work_item(WorkItem::CreateCopyTreeWorkItem(
       file_name_from, file_name_to, temp_dir_.GetPath(), WorkItem::ALWAYS,
-      base::FilePath()));
-
-  EXPECT_TRUE(work_item->Do());
-
-  EXPECT_TRUE(base::PathExists(file_name_from));
-  EXPECT_TRUE(base::PathExists(file_name_to));
-  EXPECT_EQ(0, ReadTextFile(file_name_from.value()).compare(text_content_1));
-  EXPECT_EQ(0, ReadTextFile(file_name_to.value()).compare(text_content_1));
-
-  // test rollback()
-  work_item->Rollback();
-
-  EXPECT_TRUE(base::PathExists(file_name_from));
-  EXPECT_TRUE(base::PathExists(file_name_to));
-  EXPECT_EQ(0, ReadTextFile(file_name_from.value()).compare(text_content_1));
-  EXPECT_EQ(0, ReadTextFile(file_name_to.value()).compare(text_content_2));
-
-  // test Do() with always_overwrite being false.
-  // the file is still overwritten since the content is different.
-  work_item.reset(WorkItem::CreateCopyTreeWorkItem(
-      file_name_from, file_name_to, temp_dir_.GetPath(), WorkItem::IF_DIFFERENT,
       base::FilePath()));
 
   EXPECT_TRUE(work_item->Do());
@@ -161,7 +138,6 @@ TEST_F(CopyTreeWorkItemTest, CopyFileOverwrite) {
 // Copy one file, with the existing one in destination having the same
 // content.
 // If always_overwrite being true, the file is overwritten.
-// If always_overwrite being false, the file is unchanged.
 TEST_F(CopyTreeWorkItemTest, CopyFileSameContent) {
   // Create source file
   base::FilePath file_name_from(test_dir_.GetPath());
@@ -180,7 +156,7 @@ TEST_F(CopyTreeWorkItemTest, CopyFileSameContent) {
   CreateTextFile(file_name_to.value(), text_content_1);
   ASSERT_TRUE(base::PathExists(file_name_to));
 
-  // test Do() with always_overwrite being true.
+  // test Do() with always overwrite being true.
   std::unique_ptr<CopyTreeWorkItem> work_item(WorkItem::CreateCopyTreeWorkItem(
       file_name_from, file_name_to, temp_dir_.GetPath(), WorkItem::ALWAYS,
       base::FilePath()));
@@ -210,30 +186,6 @@ TEST_F(CopyTreeWorkItemTest, CopyFileSameContent) {
   EXPECT_EQ(0, ReadTextFile(file_name_to.value()).compare(text_content_1));
   // the backup file should be gone after rollback
   EXPECT_FALSE(base::PathExists(backup_file));
-
-  // test Do() with always_overwrite being false. nothing should change.
-  work_item.reset(WorkItem::CreateCopyTreeWorkItem(
-      file_name_from, file_name_to, temp_dir_.GetPath(), WorkItem::IF_DIFFERENT,
-      base::FilePath()));
-
-  EXPECT_TRUE(work_item->Do());
-
-  EXPECT_TRUE(base::PathExists(file_name_from));
-  EXPECT_TRUE(base::PathExists(file_name_to));
-  EXPECT_EQ(0, ReadTextFile(file_name_from.value()).compare(text_content_1));
-  EXPECT_EQ(0, ReadTextFile(file_name_to.value()).compare(text_content_1));
-  // we verify the file is not overwritten by checking that the backup
-  // file does not exist.
-  EXPECT_FALSE(base::PathExists(backup_file));
-
-  // test rollback(). nothing should happen here.
-  work_item->Rollback();
-
-  EXPECT_TRUE(base::PathExists(file_name_from));
-  EXPECT_TRUE(base::PathExists(file_name_to));
-  EXPECT_EQ(0, ReadTextFile(file_name_from.value()).compare(text_content_1));
-  EXPECT_EQ(0, ReadTextFile(file_name_to.value()).compare(text_content_1));
-  EXPECT_FALSE(base::PathExists(backup_file));
 }
 
 // Copy one file and without rollback. Verify all temporary files are deleted.
@@ -260,9 +212,9 @@ TEST_F(CopyTreeWorkItemTest, CopyFileAndCleanup) {
   {
     // test Do().
     std::unique_ptr<CopyTreeWorkItem> work_item(
-        WorkItem::CreateCopyTreeWorkItem(
-            file_name_from, file_name_to, temp_dir_.GetPath(),
-            WorkItem::IF_DIFFERENT, base::FilePath()));
+        WorkItem::CreateCopyTreeWorkItem(file_name_from, file_name_to,
+                                         temp_dir_.GetPath(), WorkItem::ALWAYS,
+                                         base::FilePath()));
 
     EXPECT_TRUE(work_item->Do());
 
@@ -284,9 +236,9 @@ TEST_F(CopyTreeWorkItemTest, CopyFileAndCleanup) {
   EXPECT_FALSE(base::PathExists(backup_file));
 }
 
-// Copy one file, with the existing one in destination being used with
-// overwrite option as IF_DIFFERENT. This destination-file-in-use should
-// be moved to backup location after Do() and moved back after Rollback().
+// Copy one file, with the existing one in destination being used with always
+// overwrite. This destination-file-in-use should be moved to backup location
+// after Do() and moved back after Rollback().
 TEST_F(CopyTreeWorkItemTest, CopyFileInUse) {
   // Create source file
   base::FilePath file_name_from(test_dir_.GetPath());
@@ -322,7 +274,7 @@ TEST_F(CopyTreeWorkItemTest, CopyFileInUse) {
 
   // test Do().
   std::unique_ptr<CopyTreeWorkItem> work_item(WorkItem::CreateCopyTreeWorkItem(
-      file_name_from, file_name_to, temp_dir_.GetPath(), WorkItem::IF_DIFFERENT,
+      file_name_from, file_name_to, temp_dir_.GetPath(), WorkItem::ALWAYS,
       base::FilePath()));
 
   EXPECT_TRUE(work_item->Do());
@@ -465,87 +417,6 @@ TEST_F(CopyTreeWorkItemTest, NewNameAndCopyTest) {
   EXPECT_FALSE(base::PathExists(alternate_to));
 }
 
-// Test overwrite option IF_NOT_PRESENT:
-// 1. If destination file/directory exist, the source should not be copied
-// 2. If destination file/directory do not exist, the source should be copied
-//    in the destination folder after Do() and should be rolled back after
-//    Rollback().
-// Flaky, http://crbug.com/59785.
-TEST_F(CopyTreeWorkItemTest, DISABLED_IfNotPresentTest) {
-  // Create source file
-  base::FilePath file_name_from(test_dir_.GetPath());
-  file_name_from = file_name_from.AppendASCII("File_From");
-  CreateTextFile(file_name_from.value(), text_content_1);
-  ASSERT_TRUE(base::PathExists(file_name_from));
-
-  // Create an executable in destination path by copying ourself to it.
-  wchar_t exe_full_path_str[MAX_PATH];
-  ::GetModuleFileName(nullptr, exe_full_path_str, MAX_PATH);
-  base::FilePath exe_full_path(exe_full_path_str);
-
-  base::FilePath dir_name_to(test_dir_.GetPath());
-  dir_name_to = dir_name_to.AppendASCII("Copy_To_Subdir");
-  base::CreateDirectory(dir_name_to);
-  ASSERT_TRUE(base::PathExists(dir_name_to));
-  base::FilePath file_name_to(dir_name_to);
-  file_name_to = file_name_to.AppendASCII("File_To");
-  base::CopyFile(exe_full_path, file_name_to);
-  ASSERT_TRUE(base::PathExists(file_name_to));
-
-  // Get the path of backup file
-  base::FilePath backup_file(temp_dir_.GetPath());
-  backup_file = backup_file.AppendASCII("File_To");
-
-  // test Do().
-  std::unique_ptr<CopyTreeWorkItem> work_item(WorkItem::CreateCopyTreeWorkItem(
-      file_name_from, file_name_to, temp_dir_.GetPath(),
-      WorkItem::IF_NOT_PRESENT, base::FilePath()));
-  EXPECT_TRUE(work_item->Do());
-
-  // verify that the source, destination have not changed and backup path
-  // does not exist
-  EXPECT_TRUE(base::PathExists(file_name_from));
-  EXPECT_TRUE(base::PathExists(file_name_to));
-  EXPECT_EQ(0, ReadTextFile(file_name_from.value()).compare(text_content_1));
-  EXPECT_TRUE(base::ContentsEqual(exe_full_path, file_name_to));
-  EXPECT_FALSE(base::PathExists(backup_file));
-
-  // test rollback()
-  work_item->Rollback();
-
-  // verify that the source, destination have not changed and backup path
-  // does not exist after rollback also
-  EXPECT_TRUE(base::PathExists(file_name_from));
-  EXPECT_TRUE(base::PathExists(file_name_to));
-  EXPECT_EQ(0, ReadTextFile(file_name_from.value()).compare(text_content_1));
-  EXPECT_TRUE(base::ContentsEqual(exe_full_path, file_name_to));
-  EXPECT_FALSE(base::PathExists(backup_file));
-
-  // Now delete the destination and try copying the file again.
-  base::DeleteFile(file_name_to);
-  work_item.reset(WorkItem::CreateCopyTreeWorkItem(
-      file_name_from, file_name_to, temp_dir_.GetPath(),
-      WorkItem::IF_NOT_PRESENT, base::FilePath()));
-  EXPECT_TRUE(work_item->Do());
-
-  // verify that the source, destination are the same and backup path
-  // does not exist
-  EXPECT_TRUE(base::PathExists(file_name_from));
-  EXPECT_TRUE(base::PathExists(file_name_to));
-  EXPECT_EQ(0, ReadTextFile(file_name_from.value()).compare(text_content_1));
-  EXPECT_EQ(0, ReadTextFile(file_name_to.value()).compare(text_content_1));
-  EXPECT_FALSE(base::PathExists(backup_file));
-
-  // test rollback()
-  work_item->Rollback();
-
-  // verify that the destination does not exist anymore
-  EXPECT_TRUE(base::PathExists(file_name_from));
-  EXPECT_FALSE(base::PathExists(file_name_to));
-  EXPECT_EQ(0, ReadTextFile(file_name_from.value()).compare(text_content_1));
-  EXPECT_FALSE(base::PathExists(backup_file));
-}
-
 // Copy one file without rollback. The existing one in destination is in use.
 // Verify it is moved to backup location and stays there.
 // Flaky, http://crbug.com/59783.
@@ -587,9 +458,9 @@ TEST_F(CopyTreeWorkItemTest, DISABLED_CopyFileInUseAndCleanup) {
   // test Do().
   {
     std::unique_ptr<CopyTreeWorkItem> work_item(
-        WorkItem::CreateCopyTreeWorkItem(
-            file_name_from, file_name_to, temp_dir_.GetPath(),
-            WorkItem::IF_DIFFERENT, base::FilePath()));
+        WorkItem::CreateCopyTreeWorkItem(file_name_from, file_name_to,
+                                         temp_dir_.GetPath(), WorkItem::ALWAYS,
+                                         base::FilePath()));
 
     EXPECT_TRUE(work_item->Do());
 

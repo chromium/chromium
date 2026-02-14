@@ -32,17 +32,7 @@ bool CopyTreeWorkItem::DoImpl() {
   }
 
   bool dest_exist = base::PathExists(dest_path_);
-  // handle overwrite_option_ = IF_DIFFERENT case.
   if ((dest_exist) &&
-      (overwrite_option_ == WorkItem::IF_DIFFERENT) &&  // only for single file
-      (!base::DirectoryExists(source_path_)) &&
-      (!base::DirectoryExists(dest_path_)) &&
-      (base::ContentsEqual(source_path_, dest_path_))) {
-    VLOG(1) << "Source file " << source_path_.value()
-            << " and destination file " << dest_path_.value()
-            << " are exactly same. Returning true.";
-    return true;
-  } else if ((dest_exist) &&
              (overwrite_option_ == WorkItem::NEW_NAME_IF_IN_USE) &&
              (!base::DirectoryExists(source_path_)) &&
              (!base::DirectoryExists(dest_path_)) &&
@@ -59,9 +49,6 @@ bool CopyTreeWorkItem::DoImpl() {
               << " to alternative path " << alternative_path_.value();
       return true;
     }
-  } else if ((dest_exist) && (overwrite_option_ == WorkItem::IF_NOT_PRESENT)) {
-    // handle overwrite_option_ = IF_NOT_PRESENT case.
-    return true;
   }
 
   // In all cases that reach here, move dest to a backup path.
