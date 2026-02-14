@@ -3053,7 +3053,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5943775258256265106">{NUM_MINS,plural, =1{Izrađeno prije jednu minutu}one{Izrađeno prije {NUM_MINS} minutu}few{Izrađeno prije {NUM_MINS} minute}other{Izrađeno prije {NUM_MINS} minuta}}</translation>
 <translation id="5944297261866530437">Tkanina (sjajni)</translation>
 <translation id="5950901984834744590">Britvice i brijači</translation>
-<translation id="5951495562196540101">Prijava s računom potrošača nije moguća (dostupna je paketna licenca).</translation>
+<translation id="5951495562196540101">Prijava osobnim računom nije moguća (dostupna je paketna licenca).</translation>
 <translation id="5952076224478208938">Proizvođač</translation>
 <translation id="5953516610448771166">Automatski titlovi nisu dostupni za ovaj medij. Da biste dobili titlove, blokirajte <ph name="CONTENT_SETTINGS" /> za ovu web-lokaciju.</translation>
 <translation id="5960795367348889467">Potvrda</translation>
