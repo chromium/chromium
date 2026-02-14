@@ -52,7 +52,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     private static final String DISABLED_FLEDGE_PREFERENCE = "fledge_disabled";
     private static final String ALL_SITES_PREFERENCE = "fledge_all_sites";
     private static final String FOOTER_PREFERENCE = "fledge_page_footer";
-    private static final String FLEDGE_HEADING_PREFERENCE = "flegde_heading";
+    private static final String FLEDGE_HEADING_PREFERENCE = "fledge_heading";
     private static final String FLEDGE_BLOCKED_SITES_PREFERENCE = "fledge_blocked_sites";
     private static final String FLEDGE_PAGE_DISCLAIMER_PREFERENCE = "fledge_page_disclaimer";
 
