@@ -31,8 +31,17 @@
 
 namespace {
 
-constexpr base::TimeDelta kKeyFetchTimeout = base::Seconds(3);
-
+// In practice, the key response is currently always below 100 bytes.
+// It will get larger if we decide to support post-quantum cryptography,
+// but even with that it will never reach 1MB. If it is larger than this,
+// stop reading the response because it will be bogus anyway. This limit
+// ensures we don't buffer arbitrarily large amounts of data.
+constexpr size_t kMaxKeyResponseSize = 1048576;
+// Time after which |GetOhttpKey| calls will be timed out and called with
+// |nullopt|.
+constexpr base::TimeDelta kKeyFetchApiTimeout = base::Seconds(3);
+// Time after which the URL loader will time out a network key fetch.
+constexpr base::TimeDelta kKeyFetchNetworkTimeout = base::Seconds(30);
 // Key older than 3 days is considered expired and should be refetched.
 constexpr base::TimeDelta kKeyExpirationDuration = base::Days(3);
 
@@ -60,9 +69,9 @@ constexpr char kKeyRotatedHeader[] = "X-OhttpPublickey-Rotated";
 constexpr int kServerTriggeredFetchMaxDelayTimeSec = 60;
 
 // Backoff constants
-const size_t kNumFailuresToEnforceBackoff = 3;
-const size_t kMinBackOffResetDurationInSeconds = 5 * 60;        //  5 minutes.
-const size_t kMaxBackOffResetDurationInSeconds = 24 * 60 * 60;  // 1 day.
+constexpr size_t kNumFailuresToEnforceBackoff = 3;
+constexpr size_t kMinBackOffResetDurationInSeconds = 5 * 60;  //  5 minutes.
+constexpr size_t kMaxBackOffResetDurationInSeconds = 24 * 60 * 60;  // 1 day.
 
 constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("safe_browsing_ohttp_key_fetch",
@@ -205,7 +214,8 @@ void OhttpKeyService::SetEnabled(bool enable) {
   enabled_ = enable;
   if (!enabled_) {
     url_loader_.reset();
-    pending_callbacks_.Notify(std::nullopt);
+    pending_callbacks_timer_.Stop();
+    NotifyPendingCallbacks(std::nullopt);
     async_fetch_timer_.Stop();
     return;
   }
@@ -304,7 +314,22 @@ void OhttpKeyService::StartFetch(Callback callback,
     return;
   }
 
-  pending_callbacks_.AddUnsafe(std::move(callback));
+  pending_callbacks_.emplace_back();
+  PendingCallback& pending_callback = pending_callbacks_.back();
+  pending_callback.callback = std::move(callback);
+  if (trigger_reason == FetchTriggerReason::kDuringHashRealTimeLookup) {
+    pending_callback.timeout_time =
+        base::TimeTicks::Now() + kKeyFetchApiTimeout;
+  }
+
+  if (!pending_callbacks_timer_.IsRunning() &&
+      pending_callback.timeout_time.has_value()) {
+    pending_callbacks_timer_.Start(
+        FROM_HERE, *pending_callback.timeout_time, this,
+        &OhttpKeyService::PendingCallbacksTimerFired,
+        base::subtle::DelayPolicy::kFlexibleNoSooner);
+  }
+
   // If url_loader_ is not null, that means a request is already in progress.
   // Will notify the callback when it is completed.
   if (url_loader_) {
@@ -317,11 +342,12 @@ void OhttpKeyService::StartFetch(Callback callback,
   resource_request->headers.SetHeader("Accept", "application/ohttp-keys");
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kOhttpKeyTrafficAnnotation);
-  url_loader_->SetTimeoutDuration(kKeyFetchTimeout);
-  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  url_loader_->SetTimeoutDuration(kKeyFetchNetworkTimeout);
+  url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&OhttpKeyService::OnURLLoaderComplete,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+      kMaxKeyResponseSize);
 }
 
 void OhttpKeyService::OnURLLoaderComplete(
@@ -334,8 +360,10 @@ void OhttpKeyService::OnURLLoaderComplete(
     response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
 
+  base::TimeDelta request_duration =
+      base::TimeTicks::Now() - request_start_time;
   base::UmaHistogramTimes("SafeBrowsing.HPRT.OhttpKeyService.Network.Time",
-                          base::TimeTicks::Now() - request_start_time);
+                          request_duration);
   RecordHttpResponseOrErrorCode(
       "SafeBrowsing.HPRT.OhttpKeyService.Network.Result", net_error,
       response_code);
@@ -344,15 +372,22 @@ void OhttpKeyService::OnURLLoaderComplete(
   bool is_key_fetch_successful =
       response_body && net_error == net::OK && response_code == net::HTTP_OK;
   if (is_key_fetch_successful) {
+    base::UmaHistogramTimes(
+        "SafeBrowsing.HPRT.OhttpKeyService.Network.Time.Success",
+        request_duration);
     ohttp_key_ = {*response_body, base::Time::Now() + kKeyExpirationDuration};
     StoreKeyToPref();
     has_received_lookup_response_from_current_key_ = false;
     backoff_operator_->ReportSuccess();
   } else {
+    base::UmaHistogramTimes(
+        "SafeBrowsing.HPRT.OhttpKeyService.Network.Time.Failure",
+        request_duration);
     backoff_operator_->ReportError();
   }
-  pending_callbacks_.Notify(is_key_fetch_successful ? std::move(response_body)
-                                                    : std::nullopt);
+  pending_callbacks_timer_.Stop();
+  NotifyPendingCallbacks(is_key_fetch_successful ? std::move(response_body)
+                                                 : std::nullopt);
 }
 
 void OhttpKeyService::MaybeStartOrRescheduleAsyncFetch() {
@@ -448,7 +483,8 @@ void OhttpKeyService::StoreKeyToPref() {
 
 void OhttpKeyService::Shutdown() {
   url_loader_.reset();
-  pending_callbacks_.Notify(std::nullopt);
+  pending_callbacks_timer_.Stop();
+  NotifyPendingCallbacks(std::nullopt);
   pref_change_registrar_.RemoveAll();
   local_state_pref_change_registrar_.RemoveAll();
   async_fetch_timer_.Stop();
@@ -463,5 +499,46 @@ std::optional<OhttpKeyService::OhttpKeyAndExpiration>
 OhttpKeyService::get_ohttp_key_for_testing() {
   return ohttp_key_;
 }
+
+void OhttpKeyService::NotifyPendingCallbacks(
+    std::optional<std::string> ohttp_key) {
+  base::OnceCallbackList<Callback::RunType> callbacks_to_run;
+  auto it = pending_callbacks_.begin();
+  while (it != pending_callbacks_.end()) {
+    callbacks_to_run.AddUnsafe(std::move(it->callback));
+    it = pending_callbacks_.erase(it);
+  }
+  callbacks_to_run.Notify(ohttp_key);
+}
+
+void OhttpKeyService::PendingCallbacksTimerFired() {
+  base::OnceCallbackList<Callback::RunType> callbacks_to_run;
+  base::TimeTicks now = base::TimeTicks::Now();
+  auto it = pending_callbacks_.begin();
+  while (it != pending_callbacks_.end()) {
+    if (!it->timeout_time.has_value()) {
+      ++it;
+      continue;
+    }
+    if (now >= *it->timeout_time) {
+      callbacks_to_run.AddUnsafe(std::move(it->callback));
+      it = pending_callbacks_.erase(it);
+      continue;
+    }
+    pending_callbacks_timer_.Start(
+        FROM_HERE, *it->timeout_time, this,
+        &OhttpKeyService::PendingCallbacksTimerFired,
+        base::subtle::DelayPolicy::kFlexibleNoSooner);
+    break;
+  }
+  callbacks_to_run.Notify(std::nullopt);
+}
+
+OhttpKeyService::PendingCallback::PendingCallback() = default;
+
+OhttpKeyService::PendingCallback::~PendingCallback() = default;
+
+OhttpKeyService::PendingCallback::PendingCallback(PendingCallback&& other)
+    : callback(std::move(other.callback)), timeout_time(other.timeout_time) {}
 
 }  // namespace safe_browsing

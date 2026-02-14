@@ -224,6 +224,68 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Backoff) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(OhttpKeyServiceTest, GetOhttpKey_ApiTimeoutThenSuccess) {
+  // Ensure that the API timeout lets the network call continue.
+  base::MockCallback<OhttpKeyService::Callback> response_callback1;
+  base::MockCallback<OhttpKeyService::Callback> response_callback2;
+  EXPECT_CALL(response_callback1, Run(Eq(std::nullopt))).Times(1);
+  EXPECT_CALL(response_callback2, Run(Optional(std::string(kTestOhttpKey))))
+      .Times(1);
+  ohttp_key_service_->GetOhttpKey(response_callback1.Get());
+  task_environment_.FastForwardBy(base::Seconds(2));
+  task_environment_.RunUntilIdle();
+  ohttp_key_service_->GetOhttpKey(response_callback2.Get());
+  task_environment_.FastForwardBy(base::Seconds(2));
+  task_environment_.RunUntilIdle();
+  SetupSuccessResponse();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+}
+
+TEST_F(OhttpKeyServiceTest, GetOhttpKey_AsyncThenApiTimeout) {
+  // Ensure the API timeout is triggered even if there is an ongoing async call.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+  base::MockCallback<OhttpKeyService::Callback> response_callback1;
+  base::MockCallback<OhttpKeyService::Callback> response_callback2;
+  EXPECT_CALL(response_callback1, Run(Eq(std::nullopt))).Times(1);
+  EXPECT_CALL(response_callback2, Run(Optional(std::string(kTestOhttpKey))))
+      .Times(1);
+  ohttp_key_service_->GetOhttpKey(response_callback1.Get());
+  task_environment_.FastForwardBy(base::Seconds(2));
+  task_environment_.RunUntilIdle();
+  ohttp_key_service_->GetOhttpKey(response_callback2.Get());
+  task_environment_.FastForwardBy(base::Seconds(2));
+  task_environment_.RunUntilIdle();
+  SetupSuccessResponse();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+}
+
+TEST_F(OhttpKeyServiceTest, GetOhttpKey_MultipleTimeouts) {
+  base::MockCallback<OhttpKeyService::Callback> response_callback1;
+  base::MockCallback<OhttpKeyService::Callback> response_callback2;
+  base::MockCallback<OhttpKeyService::Callback> response_callback3;
+  ohttp_key_service_->GetOhttpKey(response_callback1.Get());
+  task_environment_.FastForwardBy(base::Seconds(1));
+  task_environment_.RunUntilIdle();
+  ohttp_key_service_->GetOhttpKey(response_callback2.Get());
+  task_environment_.FastForwardBy(base::Seconds(1));
+  task_environment_.RunUntilIdle();
+  ohttp_key_service_->GetOhttpKey(response_callback3.Get());
+  EXPECT_CALL(response_callback1, Run(Eq(std::nullopt))).Times(1);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  task_environment_.RunUntilIdle();
+  EXPECT_CALL(response_callback2, Run(Eq(std::nullopt))).Times(1);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  task_environment_.RunUntilIdle();
+  EXPECT_CALL(response_callback3, Run(Eq(std::nullopt))).Times(1);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+}
+
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_MultipleRequests) {
   base::MockCallback<OhttpKeyService::Callback> response_callback1;
   base::MockCallback<OhttpKeyService::Callback> response_callback2;
@@ -352,7 +414,7 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_ValidKey) {
 
   std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service->get_ohttp_key_for_testing();
-  EXPECT_TRUE(ohttp_key.has_value());
+  ASSERT_TRUE(ohttp_key.has_value());
   EXPECT_EQ(ohttp_key.value().expiration, base::Time::Now() + base::Days(10));
   EXPECT_EQ(ohttp_key.value().key, kTestOhttpKey);
 
@@ -620,7 +682,7 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_Backoff) {
                                         kTestOhttpKey);
   // Enter the backoff mode again with a longer duration.
   forward_and_check(base::Minutes(9), /*expected_key=*/std::nullopt);
-  // The key is succesfully fetched after exiting the backoff mode.
+  // The key is successfully fetched after exiting the backoff mode.
   forward_and_check(base::Minutes(1), /*expected_key=*/kTestOhttpKey);
 
   test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),

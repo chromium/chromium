@@ -362,6 +362,22 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*expected_bucket_count=*/1);
     histogram_tester_->ExpectTotalCount(
         /*name=*/"SafeBrowsing.HPRT.Network.Time", /*expected_count=*/1);
+    histogram_tester_->ExpectTotalCount(
+        /*name=*/"SafeBrowsing.HPRT.Network.Time.Hash", /*expected_count=*/1);
+    if (expected_network_result != net::HTTP_OK) {
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/"SafeBrowsing.HPRT.Network.Time.Success",
+          /*expected_count=*/0);
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/"SafeBrowsing.HPRT.Network.Time.Failure",
+          /*expected_count=*/1);
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/"SafeBrowsing.HPRT.Network.Time.Hash.Success",
+          /*expected_count=*/0);
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/"SafeBrowsing.HPRT.Network.Time.Hash.Failure",
+          /*expected_count=*/1);
+    }
     histogram_tester_->ExpectUniqueSample(
         /*name=*/"SafeBrowsing.HPRT.Network.Result",
         /*sample=*/expected_network_result,

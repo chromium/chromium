@@ -2010,7 +2010,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.HPRT.Network.Time" units="ms"
+<histogram name="SafeBrowsing.HPRT.Network.Time{Suffix}" units="ms"
     expires_after="2027-02-05">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
@@ -2020,8 +2020,24 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     Logs the roundtrip time it took to perform a Safe Browsing hash-prefix
     real-time lookup. Logged on each resource check for which a lookup request
-    is sent to the server.
+    is sent to the server. Note that this {Suffix}.
   </summary>
+  <token key="Suffix">
+    <variant name="" summary="includes the time to get the OHTTP key"/>
+    <variant name=".Failure"
+        summary="includes the time to get the OHTTP key, and is only logged
+                 when the network request fails"/>
+    <variant name=".Hash" summary="excludes the time to get the OHTTP key"/>
+    <variant name=".Hash.Failure"
+        summary="excludes the time to get the OHTTP key, and is only logged
+                 when the network request fails"/>
+    <variant name=".Hash.Success"
+        summary="excludes the time to get the OHTTP key, and is only logged
+                 when the network request succeeds"/>
+    <variant name=".Success"
+        summary="includes the time to get the OHTTP key, and is only logged
+                 when the network request succeeds"/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.Network.{ResponseSource}Result"
@@ -2102,14 +2118,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.HPRT.OhttpKeyService.Network.Time" units="ms"
-    expires_after="2027-02-05">
+<histogram name="SafeBrowsing.HPRT.OhttpKeyService.Network.Time{Suffix}"
+    units="ms" expires_after="2027-02-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the roundtrip time it took to fetch a new OHTTP key. Logged on each key
-    fetch request that is sent to the server.
+    fetch request that {Suffix}.
   </summary>
+  <token key="Suffix">
+    <variant name="" summary="is sent to the server"/>
+    <variant name=".Failure" summary="fails"/>
+    <variant name=".Success" summary="succeeds"/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.OperationOutcome"

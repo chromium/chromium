@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_OHTTP_KEY_SERVICE_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_OHTTP_KEY_SERVICE_H_
 
+#include <list>
 #include <optional>
 #include <string>
 
@@ -144,14 +145,37 @@ class OhttpKeyService : public KeyedService {
   // |ohttp_key_|.
   void StoreKeyToPref();
 
+  // Calls all pending callbacks with |ohttp_key|.
+  void NotifyPendingCallbacks(std::optional<std::string> ohttp_key);
+  // Calls all pending callbacks whose |timeout_time| is in the past with
+  // |nullopt|.
+  void PendingCallbacksTimerFired();
+
   // The URLLoaderFactory we use to issue a network request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // |url_loader_| is not null iff there is a network request in progress.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
+  // Represents a |GetOhttpKey| callback with an associated timeout.
+  struct PendingCallback {
+    Callback callback;
+    // If set, time at which the callback will be called with |nullopt| if no
+    // response has been received yet.
+    std::optional<base::TimeTicks> timeout_time;
+
+    PendingCallback();
+    ~PendingCallback();
+    PendingCallback(const PendingCallback&) = delete;
+    PendingCallback& operator=(const PendingCallback&) = delete;
+    PendingCallback(PendingCallback&& other);
+    PendingCallback& operator=(PendingCallback&& other) = delete;
+  };
+
   // All callbacks that have requested an OHTTP key but haven't received a
-  // response yet.
-  base::OnceCallbackList<Callback::RunType> pending_callbacks_;
+  // response yet. Ordered such that the front of the list will fire first.
+  std::list<PendingCallback> pending_callbacks_;
+  // Timer that will fire on the next pending callback timeout time.
+  base::DeadlineTimer pending_callbacks_timer_;
 
   // The key cached in memory.
   std::optional<OhttpKeyAndExpiration> ohttp_key_;
