@@ -240,6 +240,10 @@ void BuildFallbackConfig(const omnibox::AimEligibilityResponse& response,
   }
   if (response.is_pdf_upload_eligible()) {
     rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+    rule_set->add_allowed_input_types(
+        omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+    rule_set->add_allowed_input_types(
+        omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
   }
 }
 
