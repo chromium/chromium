@@ -257,43 +257,7 @@ FYI_BUILDERS = {
             'pool': 'chrome.tests',
         },
     },
-    'fuchsia-perf-nsn-pgo': {
-        'tests': [{
-            'isolate':
-            'performance_web_engine_test_suite',
-            'extra_args': ['--output-format=histograms'] +
-            bot_platforms.FUCHSIA_EXEC_ARGS['nelson'],
-            'type':
-            TEST_TYPES.TELEMETRY,
-        }],
-        'platform':
-        'fuchsia-wes',
-        'dimension': {
-            'cpu': None,
-            'device_type': 'Nelson',
-            'os': 'Fuchsia',
-            'pool': 'chrome.tests',
-        },
-    },
     'fuchsia-perf-shk': {
-        'tests': [{
-            'isolate':
-            'performance_web_engine_test_suite',
-            'extra_args': ['--output-format=histograms'] +
-            bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
-            'type':
-            TEST_TYPES.TELEMETRY,
-        }],
-        'platform':
-        'fuchsia-wes',
-        'dimension': {
-            'cpu': None,
-            'device_type': 'Sherlock',
-            'os': 'Fuchsia',
-            'pool': 'chrome.tests',
-        },
-    },
-    'fuchsia-perf-shk-pgo': {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
@@ -369,12 +333,6 @@ FYI_BUILDERS = {
         },
     },
     'fuchsia-builder-perf-arm64': {
-        'additional_compile_targets': [
-            'web_engine_shell_pkg', 'cast_runner_pkg', 'chromium_builder_perf',
-            'base_perftests'
-        ],
-    },
-    'fuchsia-builder-perf-arm64-pgo': {
         'additional_compile_targets': [
             'web_engine_shell_pkg', 'cast_runner_pkg', 'chromium_builder_perf',
             'base_perftests'
