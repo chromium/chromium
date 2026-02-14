@@ -66,6 +66,10 @@ message GlicCueingConfiguration {
   // This label will only be populated on eligible pages.
   string dynamic_cue_label = 4;
 
+  // This label will only be populated on eligible pages for clients that
+  // support the secondary label.
+  string dynamic_cue_secondary_label = 8;
+
   // The text to prefill in glic if a dynamic cue is clicked.
   string default_text = 5;
 
