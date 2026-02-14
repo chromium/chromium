@@ -108,8 +108,9 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
             }
             Preference preference = new Preference(requireContext());
             preference.setKey(info.key);
-            preference.setTitle(info.title);
-            preference.setSummary(info.summary);
+            boolean useSummaryAsTitle = (info.title == null);
+            preference.setTitle(useSummaryAsTitle ? info.summary : info.title);
+            preference.setSummary(useSummaryAsTitle ? null : info.summary);
             preference.setOnPreferenceClickListener(
                     pref -> {
                         // For top-level entries, open the fragment itself, not MainSettings,
