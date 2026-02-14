@@ -468,3 +468,33 @@ IN_PROC_BROWSER_TEST_F(SidePanelAnimationCoordinatorBrowserTest,
   EXPECT_EQ(animation_coordinator->animation_for_testing()->GetCurrentValue(),
             1.0);
 }
+
+IN_PROC_BROWSER_TEST_F(SidePanelAnimationCoordinatorBrowserTest,
+                       AnimationUsesFinalValueOnly) {
+  SidePanelAnimationCoordinator* animation_coordinator =
+      GetAnimationCoordinator();
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestAnimationId);
+
+  // Add a test animation for open animation type that uses final value only.
+  AddAnimationSequence(SidePanelAnimationCoordinator::AnimationType::kOpen,
+                       {.animation_id = kTestAnimationId,
+                        .start = base::Milliseconds(0),
+                        .duration = base::Milliseconds(100),
+                        .snap_to_final_value = true});
+
+  // Start animation
+  animation_coordinator->Start(
+      SidePanelAnimationCoordinator::AnimationType::kOpen);
+
+  // Value should be 1.0 immediately (since it's opening)
+  EXPECT_EQ(1.0, animation_coordinator->GetAnimationValueFor(kTestAnimationId));
+
+  // Progress animation
+  auto* animation = static_cast<gfx::SlideAnimation*>(
+      animation_coordinator->animation_for_testing());
+  animation->SetCurrentValue(0.5);
+
+  // Value should still be 1.0
+  EXPECT_EQ(1.0, animation_coordinator->GetAnimationValueFor(kTestAnimationId));
+}

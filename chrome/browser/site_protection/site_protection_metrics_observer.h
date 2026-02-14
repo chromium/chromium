@@ -135,6 +135,8 @@ class SiteProtectionMetricsObserver
 
   void LogMetrics(std::unique_ptr<MetricsData> metrics_data);
 
+  void FetchHistoryData(std::unique_ptr<MetricsData> metrics_data);
+
   // Logs UMA metrics related to the v8-optimizer state.
   void LogV8OptimizerUma(content::NavigationHandle* navigation_handle);
 

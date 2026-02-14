@@ -29,12 +29,4 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentLeftBoundAnimation);
 // transitioned from the provided starting bounds.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentWidthBoundAnimation);
 
-// Maps to the side panel content's opacity animation when it is opened and
-// transitioned from the provided starting bounds.
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentOpacityAnimation);
-
-// Maps to the side panel content's corner radius animation when it is opened
-// and transitioned from the provided starting bounds.
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentCornerRadiusAnimation);
-
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ANIMATION_IDS_H_

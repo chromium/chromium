@@ -59,8 +59,9 @@ class SidePanelAnimationCoordinator : public views::AnimationDelegateViews {
   // Represents a single animation sequence for a specific animation id.
   struct AnimationSequence {
     SidePanelAnimationId animation_id;
-    base::TimeDelta start;
-    base::TimeDelta duration;
+    base::TimeDelta start = base::Milliseconds(0);
+    base::TimeDelta duration = base::Milliseconds(0);
+    bool snap_to_final_value = false;
   };
 
   // Defines the overall specification for an animation, including its tween

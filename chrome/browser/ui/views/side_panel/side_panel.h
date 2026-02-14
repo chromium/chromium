@@ -201,6 +201,9 @@ class SidePanel : public views::AccessiblePaneView,
   PrefChangeRegistrar pref_change_registrar_;
 
   State state_ = State::kClosed;
+
+  std::map<SidePanelAnimationCoordinator::SidePanelAnimationId, double>
+      last_animation_values_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_
