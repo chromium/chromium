@@ -1796,54 +1796,29 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void testMoveTabGroupToWindow_validInput() {
+    public void testMoveTabGroupToWindowByIdChecked_toActiveDestWindow() {
+        // Setup.
         setupTwoInstances();
 
         // Act.
-        int tabAtIndex = 0;
-        mMultiInstanceManager.moveTabGroupToWindow(
-                mTabbedActivityTask63, mTabGroupMetadata, tabAtIndex);
-
-        // Verify.
-        verify(mMultiInstanceManager)
-                .moveTabGroupToWindow(any(Activity.class), eq(mTabGroupMetadata), eq(tabAtIndex));
-        verify(mMultiInstanceManager).getInstanceInfoFor(any());
-    }
-
-    @Test
-    public void testMoveTabGroupToWindow_toValidTabIndex() {
-        setupTwoInstances();
-
-        // Act.
-        InstanceInfo info = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
-        mMultiInstanceManager.moveTabGroupToWindow(
-                info, mTabGroupMetadata, /* startIndex= */ 0, NewWindowAppSource.OTHER);
+        int destTabIndex = 0;
+        mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
+                /* destWindowId= */ 1, mTabGroupMetadata, destTabIndex);
 
         // Verify.
         verify(mTabReparentingDelegate)
-                .reparentTabGroupToExistingWindow(any(), eq(mTabGroupMetadata), eq(0));
+                .reparentTabGroupToExistingWindow(
+                        eq(mTabbedActivityTask63), eq(mTabGroupMetadata), eq(destTabIndex));
     }
 
     @Test
-    public void testMoveTabGroupToWindow_toInactiveDestWindow() {
+    public void testMoveTabGroupToWindowByIdChecked_toInactiveDestWindow() {
+        // Setup.
         setupTwoInstances();
 
         // Act.
-        InstanceInfo info =
-                new InstanceInfo(
-                        /* instanceId= */ NONEXISTENT_INSTANCE_ID,
-                        /* taskId= */ NONEXISTENT_INSTANCE_ID,
-                        InstanceInfo.Type.ADJACENT,
-                        "https://id-4.com",
-                        /* title= */ "",
-                        /* customTitle= */ null,
-                        /* tabCount= */ 0,
-                        /* incognitoTabCount= */ 0,
-                        /* isIncognitoSelected= */ false,
-                        /* lastAccessedTime= */ 0,
-                        /* closureTime= */ 0);
-        mMultiInstanceManager.moveTabGroupToWindow(
-                info, mTabGroupMetadata, /* startIndex= */ 0, NewWindowAppSource.OTHER);
+        mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
+                NONEXISTENT_INSTANCE_ID, mTabGroupMetadata, /* destTabIndex= */ 0);
 
         // Verify.
         verify(mTabReparentingDelegate)
@@ -1965,18 +1940,18 @@ public class MultiInstanceManagerApi31UnitTest {
         long accessTime0 = MultiInstancePersistentStore.readLastAccessedTime(0);
         long accessTime1 = MultiInstancePersistentStore.readLastAccessedTime(1);
 
-        InstanceInfo info0 = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask62);
-        InstanceInfo info1 = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
+        List<InstanceInfo> instances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
 
         // Verify the lastAccessedTime for both instances.
         assertEquals(
                 "InstanceInfo.lastAccessedTime for instance0 is incorrect.",
                 accessTime0,
-                info0.lastAccessedTime);
+                instances.get(0).lastAccessedTime);
         assertEquals(
                 "InstanceInfo.lastAccessedTime for instance1 is incorrect.",
                 accessTime1,
-                info1.lastAccessedTime);
+                instances.get(1).lastAccessedTime);
         assertTrue(
                 "Access time for instance0 should be older than access time for instance1.",
                 accessTime0 < accessTime1);

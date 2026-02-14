@@ -1822,8 +1822,8 @@ public class TabStripDragHandlerTest {
             mSourceInstance.onDrag(mTabsToolbarView, event);
 
             // Verify - Move to new window not invoked.
-            verify(mDestMultiInstanceManager, times(0))
-                    .moveTabGroupToWindow(any(Activity.class), any(), anyInt());
+            verify(mDestMultiInstanceManager, never())
+                    .moveTabGroupToWindowByIdChecked(anyInt(), any(), anyInt());
         } else {
             event =
                     mockDragEvent(
@@ -2243,8 +2243,8 @@ public class TabStripDragHandlerTest {
     private void verifyViewNotMovedToWindow(boolean isGroupDrag) {
         if (isGroupDrag) {
             // Verify tab group is not moved.
-            verify(mDestMultiInstanceManager, times(0))
-                    .moveTabGroupToWindow(any(Activity.class), eq(mTabGroupMetadata), anyInt());
+            verify(mDestMultiInstanceManager, never())
+                    .moveTabGroupToWindowByIdChecked(anyInt(), any(), anyInt());
         } else {
             // Verify tab is not moved.
             verify(mDestMultiInstanceManager, never())
@@ -2255,8 +2255,9 @@ public class TabStripDragHandlerTest {
     private void verifyViewMovedToWindow(boolean isGroupDrag, int index) {
         if (isGroupDrag) {
             // Verify tab group is moved.
-            verify(mDestMultiInstanceManager, times(1))
-                    .moveTabGroupToWindow(any(Activity.class), eq(mTabGroupMetadata), eq(index));
+            verify(mDestMultiInstanceManager)
+                    .moveTabGroupToWindowByIdChecked(
+                            eq(ANOTHER_INSTANCE_ID), eq(mTabGroupMetadata), eq(index));
         } else {
             // Verify tab is moved.
             verify(mDestMultiInstanceManager)

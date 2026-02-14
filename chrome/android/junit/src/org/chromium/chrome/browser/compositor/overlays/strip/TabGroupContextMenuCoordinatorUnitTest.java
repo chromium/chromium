@@ -617,12 +617,11 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToWindowRow(
                 modelList, 4, WINDOW_TITLE_2, mMenuView);
 
-        verify(mMultiInstanceManager, times(1))
-                .moveTabGroupToWindow(
-                        eq(INSTANCE_INFO_2),
+        verify(mMultiInstanceManager)
+                .moveTabGroupToWindowByIdChecked(
+                        eq(INSTANCE_ID_2),
                         any(TabGroupMetadata.class),
-                        eq(TabList.INVALID_TAB_INDEX),
-                        eq(NewWindowAppSource.MENU));
+                        eq(TabList.INVALID_TAB_INDEX));
     }
 
     private List<Tab> setUpTabGroupModelFilter() {

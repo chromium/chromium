@@ -234,8 +234,8 @@ public abstract class MultiInstanceManager {
 
     /**
      * Moves the specified tabs to a selected ChromeTabbedActivity instance. If there is only one
-     * window currently, tabs will be moved to a new window. Otherwise, the user will be presented
-     * with a UI to select a window to move the tabs to.
+     * eligible window currently, tabs will be moved to a new window. Otherwise, the user will be
+     * presented with a UI to select a window to move the tabs to.
      *
      * @param tabs The list of tabs to move.
      * @param source The new window creation source used for metrics.
@@ -245,10 +245,9 @@ public abstract class MultiInstanceManager {
     }
 
     /**
-     * Open a new instance of the ChromeTabbedActivity window and move the specified tab group from
-     * existing instance to the new one.
+     * Moves the specified tab group to a new ChromeTabbedActivity instance.
      *
-     * @param tabGroupMetadata The object containing the metadata of the tab group.
+     * @param tabGroupMetadata The {@link TabGroupMetadata} describing the tab group being moved.
      * @param source The new window creation source used for metrics.
      */
     public void moveTabGroupToNewWindow(
@@ -257,30 +256,29 @@ public abstract class MultiInstanceManager {
     }
 
     /**
-     * Move an entire tab group to the current instance of the ChromeTabbedActivity window.
+     * Moves a tab group to the specified position in the specified ChromeTabbedActivity instance.
+     * The operation will fail if the instance is not found.
      *
-     * @param activity Activity of the Chrome Window in which the tab group is to be moved.
-     * @param tabGroupMetadata The object containing the metadata of the tab group.
-     * @param atIndex Tab position index in the destination window instance.
+     * @param destWindowId The id of the destination window.
+     * @param tabGroupMetadata The {@link TabGroupMetadata} describing the tab group being moved.
+     * @param destTabIndex The tab index in the destination window where the tab group will be
+     *     positioned. To use the default tab index, set this to {@code TabList.INVALID_TAB_INDEX}.
      */
-    public void moveTabGroupToWindow(
-            @Nullable Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
+    public void moveTabGroupToWindowByIdChecked(
+            int destWindowId, TabGroupMetadata tabGroupMetadata, int destTabIndex) {
         // Not implemented
     }
 
     /**
-     * Move an entire tab group to the specified instance of the ChromeTabbedActivity window.
+     * Moves the specified tab group to a selected ChromeTabbedActivity instance. If there is only
+     * one eligible window currently, the tab group will be moved to a new window. Otherwise, the
+     * user will be presented with a UI to select a window to move the tab group to.
      *
-     * @param info {@link InstanceInfo} describing the destination window.
-     * @param tabGroupMetadata The object containing the metadata of the tab group.
-     * @param atIndex Tab position index in the destination window instance.
+     * @param tabGroupMetadata The {@link TabGroupMetadata} describing the tab group being moved.
      * @param source The new window creation source used for metrics.
      */
-    public void moveTabGroupToWindow(
-            InstanceInfo info,
-            TabGroupMetadata tabGroupMetadata,
-            int atIndex,
-            @NewWindowAppSource int source) {
+    public void moveTabGroupToOtherWindow(
+            TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
         // Not implemented
     }
 
@@ -299,18 +297,6 @@ public abstract class MultiInstanceManager {
             boolean preferNew,
             @PersistedInstanceType int instanceType) {
         // not implemented
-    }
-
-    /**
-     * If there's only one window currently, moves the matching group to a new window. Otherwise,
-     * opens a dialog to select which window to move the matching group to.
-     *
-     * @param tabGroupMetadata The metadata for the group to move.
-     * @param source The new window creation source used for metrics.
-     */
-    public void moveTabGroupToOtherWindow(
-            TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
-        // Not implemented
     }
 
     /**

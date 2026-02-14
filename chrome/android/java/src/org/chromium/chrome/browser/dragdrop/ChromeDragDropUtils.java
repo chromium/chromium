@@ -91,13 +91,13 @@ public class ChromeDragDropUtils {
     /**
      * Determines the destination index when a tab is dropped into a different model.
      *
-     * @param context The application context.
+     * @param context The activity context.
      * @param isSourceIncognito Whether the source tab is in incognito mode.
      * @param selector The current {@link TabModelSelector} to act on.
      * @return The index where the tab should be inserted in the destination model.
      */
     public static int handleDropInDifferentModel(
-            @Nullable Context context, boolean isSourceIncognito, TabModelSelector selector) {
+            Context context, boolean isSourceIncognito, TabModelSelector selector) {
         assert selector != null;
 
         // Determine the destination index for drop. If the source and destination window belong to
@@ -114,10 +114,7 @@ public class ChromeDragDropUtils {
                             + 1;
         } else {
             destIndex = selector.getModel(isSourceIncognito).getCount();
-            if (context != null) {
-                Toast.makeText(context, R.string.tab_dropped_different_model, Toast.LENGTH_LONG)
-                        .show();
-            }
+            Toast.makeText(context, R.string.tab_dropped_different_model, Toast.LENGTH_LONG).show();
         }
         return destIndex;
     }

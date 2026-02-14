@@ -386,7 +386,9 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         if (tabGroupMetadata == null) return;
 
         assert mMultiInstanceManager != null;
-        mMultiInstanceManager.moveTabGroupToWindow(activity, tabGroupMetadata, newIndex);
+        int destWindowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
+        mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
+                destWindowId, tabGroupMetadata, newIndex);
     }
 
     /**

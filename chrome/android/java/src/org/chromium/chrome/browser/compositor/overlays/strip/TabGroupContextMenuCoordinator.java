@@ -544,8 +544,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         @Nullable TabGroupMetadata tabGroupMetadata = getTabGroupMetadata(groupId);
         if (tabGroupMetadata == null) return;
         RecordUserAction.record("MobileToolbarTabGroupMenu.MoveGroupToAnotherWindow");
-        mMultiInstanceManager.moveTabGroupToWindow(
-                instanceInfo, tabGroupMetadata, TabList.INVALID_TAB_INDEX, NewWindowAppSource.MENU);
+        mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
+                instanceInfo.instanceId, tabGroupMetadata, TabList.INVALID_TAB_INDEX);
     }
 
     @Override
