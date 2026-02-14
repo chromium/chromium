@@ -20,12 +20,14 @@
 namespace autofill {
 
 class AddressDataManager;
+class AddressProfileSaveManager;
 class AutofillClient;
 class AutofillField;
 class AutofillProfile;
 class FormStructure;
 class LogBuffer;
 class PhoneCombineHelper;
+class SourceId;
 
 // Owned by `FormDataImporter`. Responsible for address-related form data
 // importing functionality, including form extraction and processing.
@@ -101,6 +103,15 @@ class AddressFormDataImporter {
       std::vector<ExtractedAddressProfile>* extracted_address_profiles,
       LogBuffer* import_log_buffer);
 
+  // Processes the extracted address profiles. `extracted_address_profiles`
+  // contains the addresses extracted from the form. `allow_prompt` denotes if a
+  // prompt can be shown. Returns `true` if the import of a complete profile is
+  // initiated.
+  bool ProcessExtractedAddressProfiles(
+      const std::vector<ExtractedAddressProfile>& extracted_address_profiles,
+      bool allow_prompt,
+      ukm::SourceId ukm_source_id);
+
   // Clears all setting-inaccessible values from `profile`.
   void RemoveInaccessibleProfileValues(AutofillProfile& profile);
 
@@ -122,6 +133,9 @@ class AddressFormDataImporter {
 
   // Enables importing from multi-step import flows.
   MultiStepImportMerger multistep_importer_;
+
+  // Responsible for managing address profiles save flows.
+  std::unique_ptr<AddressProfileSaveManager> address_profile_save_manager_;
 };
 
 }  // namespace autofill

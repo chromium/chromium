@@ -29,7 +29,6 @@ class HistoryService;
 
 namespace autofill {
 
-class AddressProfileSaveManager;
 class AutofillClient;
 class CreditCardSaveManager;
 class IbanSaveManager;
@@ -204,16 +203,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   // false.
   bool ProceedWithCardMandatoryReauthOptInIfApplicable();
 
-  // Processes the extracted address profiles. `extracted_address_profiles`
-  // contains the addresses extracted from the form. |allow_prompt| denotes if a
-  // prompt can be shown. Returns true if the import of a complete profile is
-  // initiated.
-  bool ProcessExtractedAddressProfiles(
-      const std::vector<AddressFormDataImporter::ExtractedAddressProfile>&
-          extracted_address_profiles,
-      bool allow_prompt,
-      ukm::SourceId ukm_source_id);
-
   // Extracts the GUIDs of profiles used to autofill `submitted_form`, returning
   // an empty set if any field was manually edited.
   base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(
@@ -226,9 +215,6 @@ class FormDataImporter : public AddressDataManager::Observer,
 
   // Responsible for managing credit card save flows (local or upload).
   std::unique_ptr<CreditCardSaveManager> credit_card_save_manager_;
-
-  // Responsible for managing address profiles save flows.
-  std::unique_ptr<AddressProfileSaveManager> address_profile_save_manager_;
 
   // Responsible for managing IBAN save flows. It is guaranteed to be non-null.
   std::unique_ptr<IbanSaveManager> iban_save_manager_;

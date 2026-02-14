@@ -107,8 +107,6 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
     : client_(CHECK_DEREF(client)),
       credit_card_save_manager_(
           std::make_unique<CreditCardSaveManager>(client)),
-      address_profile_save_manager_(
-          std::make_unique<AddressProfileSaveManager>(client)),
 #if !BUILDFLAG(IS_IOS)
       iban_save_manager_(std::make_unique<IbanSaveManager>(client)),
 #endif  // !BUILDFLAG(IS_IOS)
@@ -197,7 +195,7 @@ void FormDataImporter::ImportAndProcessFormData(
     }
   }
 
-  ProcessExtractedAddressProfiles(
+  GetAddressFormDataImporter().ProcessExtractedAddressProfiles(
       extracted_data.extracted_address_profiles,
       // If a payments prompt is potentially shown, do not allow for a second
       // address profile import dialog.
@@ -258,30 +256,6 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
   }
 
   return extracted_form_data;
-}
-
-bool FormDataImporter::ProcessExtractedAddressProfiles(
-    const std::vector<AddressFormDataImporter::ExtractedAddressProfile>&
-        extracted_address_profiles,
-    bool allow_prompt,
-    ukm::SourceId ukm_source_id) {
-  int imported_profiles = 0;
-  // `allow_prompt` is true if no credit card or IBAN prompt was shown. If it is
-  // true, we know there is no UI currently displaying, so we can display UI to
-  // import addresses. If it is false, we should not display UI to import
-  // addresses due to a possible dialog or bubble conflict.
-  bool allow_only_silent_updates = !allow_prompt;
-  for (const AddressFormDataImporter::ExtractedAddressProfile& candidate :
-       extracted_address_profiles) {
-    address_profile_save_manager_->ImportProfileFromForm(
-        candidate.profile, client_->GetAppLocale(), candidate.url,
-        ukm_source_id, allow_only_silent_updates, candidate.import_metadata);
-    // Limit the number of importable profiles to 2.
-    if (!allow_only_silent_updates && ++imported_profiles >= 2) {
-      return true;
-    }
-  }
-  return imported_profiles > 0;
 }
 
 bool FormDataImporter::ProcessExtractedCreditCard(

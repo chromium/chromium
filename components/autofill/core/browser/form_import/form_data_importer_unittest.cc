@@ -611,14 +611,14 @@ class FormDataImporterTest : public testing::Test {
                 .ExtractAddressProfiles(form, &extracted_address_profiles) > 0);
 
     if (!extraction_successful) {
-      EXPECT_FALSE(test_api(form_data_importer())
+      EXPECT_FALSE(test_api(form_data_importer().GetAddressFormDataImporter())
                        .ProcessExtractedAddressProfiles(
                            extracted_address_profiles, allow_save_prompts,
                            ukm_source_id()));
       return;
     }
 
-    EXPECT_EQ(test_api(form_data_importer())
+    EXPECT_EQ(test_api(form_data_importer().GetAddressFormDataImporter())
                   .ProcessExtractedAddressProfiles(extracted_address_profiles,
                                                    allow_save_prompts,
                                                    ukm_source_id()),
@@ -660,7 +660,7 @@ class FormDataImporterTest : public testing::Test {
         test_api(form_data_importer())
             .ExtractFormData(form, profile_autofill_enabled,
                              payment_methods_autofill_enabled);
-    test_api(form_data_importer())
+    test_api(form_data_importer().GetAddressFormDataImporter())
         .ProcessExtractedAddressProfiles(
             extracted_data.extracted_address_profiles,
             /*allow_prompt=*/true, ukm_source_id());

@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_import/addresses/address_profile_save_manager.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -38,6 +39,7 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -170,7 +172,9 @@ bool HasSynthesizedTypes(
 AddressFormDataImporter::AddressFormDataImporter(AutofillClient* client)
     : client_(CHECK_DEREF(client)),
       multistep_importer_(client_->GetAppLocale(),
-                          client_->GetVariationConfigCountryCode()) {}
+                          client_->GetVariationConfigCountryCode()),
+      address_profile_save_manager_(
+          std::make_unique<AddressProfileSaveManager>(client)) {}
 
 AddressFormDataImporter::~AddressFormDataImporter() = default;
 
@@ -552,6 +556,28 @@ bool AddressFormDataImporter::ExtractAddressProfileFromSection(
   extracted_address_profile.import_metadata = import_metadata;
   extracted_address_profiles->push_back(std::move(extracted_address_profile));
   return true;
+}
+
+bool AddressFormDataImporter::ProcessExtractedAddressProfiles(
+    const std::vector<ExtractedAddressProfile>& extracted_address_profiles,
+    bool allow_prompt,
+    ukm::SourceId ukm_source_id) {
+  int imported_profiles = 0;
+  // `allow_prompt` is true if no credit card or IBAN prompt was shown. If it is
+  // true, we know there is no UI currently displaying, so we can display UI to
+  // import addresses. If it is false, we should not display UI to import
+  // addresses due to a possible dialog or bubble conflict.
+  bool allow_only_silent_updates = !allow_prompt;
+  for (const ExtractedAddressProfile& candidate : extracted_address_profiles) {
+    address_profile_save_manager_->ImportProfileFromForm(
+        candidate.profile, client_->GetAppLocale(), candidate.url,
+        ukm_source_id, allow_only_silent_updates, candidate.import_metadata);
+    // Limit the number of importable profiles to 2.
+    if (!allow_only_silent_updates && ++imported_profiles >= 2) {
+      return true;
+    }
+  }
+  return imported_profiles > 0;
 }
 
 void AddressFormDataImporter::RemoveInaccessibleProfileValues(

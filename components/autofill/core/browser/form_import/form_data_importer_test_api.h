@@ -65,14 +65,6 @@ class FormDataImporterTestApi {
     return fdi_->ExtractGUIDsOfProfilesWithoutManualEdits(submitted_form);
   }
 
-  bool ProcessExtractedAddressProfiles(
-      const std::vector<ExtractedAddressProfile>& extracted_address_profiles,
-      bool allow_prompt,
-      ukm::SourceId ukm_source_id) {
-    return fdi_->ProcessExtractedAddressProfiles(extracted_address_profiles,
-                                                 allow_prompt, ukm_source_id);
-  }
-
   ExtractedFormData ExtractFormData(const FormStructure& form,
                                     bool profile_autofill_enabled,
                                     bool payment_methods_autofill_enabled) {
