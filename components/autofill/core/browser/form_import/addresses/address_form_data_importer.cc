@@ -11,6 +11,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -620,6 +621,22 @@ bool AddressFormDataImporter::SetPhoneNumber(
       combined_phone, client_->GetAppLocale(), profile);
   autofill_metrics::LogPhoneNumberImportParsingResult(parsed_successfully);
   return parsed_successfully;
+}
+
+base::flat_set<std::string>
+AddressFormDataImporter::ExtractGUIDsOfProfilesWithoutManualEdits(
+    const FormStructure& submitted_form) const {
+  base::flat_set<std::string> unedited_source_profile_guids;
+  for (const std::unique_ptr<AutofillField>& field : submitted_form) {
+    if (field->is_user_edited()) {
+      return {};
+    }
+    if (const std::optional<std::string>& guid =
+            field->autofill_source_profile_guid()) {
+      unedited_source_profile_guids.insert(guid.value());
+    }
+  }
+  return unedited_source_profile_guids;
 }
 
 }  // namespace autofill

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -128,6 +129,11 @@ class AddressFormDataImporter {
   // Returns false if the provided `combined_phone` is invalid.
   bool SetPhoneNumber(AutofillProfile& profile,
                       const PhoneNumber::PhoneCombineHelper& combined_phone);
+
+  // Extracts the GUIDs of profiles used to autofill `submitted_form`, returning
+  // an empty set if any field was manually edited.
+  base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(
+      const FormStructure& submitted_form) const;
 
   const raw_ref<AutofillClient> client_;
 

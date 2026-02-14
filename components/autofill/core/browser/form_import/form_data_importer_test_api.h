@@ -60,11 +60,6 @@ class FormDataImporterTestApi {
     return fdi_->ExtractCreditCard(form);
   }
 
-  base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(
-      const FormStructure& submitted_form) const {
-    return fdi_->ExtractGUIDsOfProfilesWithoutManualEdits(submitted_form);
-  }
-
   ExtractedFormData ExtractFormData(const FormStructure& form,
                                     bool profile_autofill_enabled,
                                     bool payment_methods_autofill_enabled) {

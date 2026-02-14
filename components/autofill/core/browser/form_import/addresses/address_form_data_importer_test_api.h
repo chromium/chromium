@@ -5,13 +5,16 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESSES_ADDRESS_FORM_DATA_IMPORTER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESSES_ADDRESS_FORM_DATA_IMPORTER_TEST_API_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_import/addresses/address_form_data_importer.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill {
@@ -29,6 +32,12 @@ class AddressFormDataImporterTestApi {
       std::vector<ExtractedAddressProfile>* extracted_address_profiles) {
     return address_fdi_->ExtractAddressProfiles(form,
                                                 extracted_address_profiles);
+  }
+
+  base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(
+      const FormStructure& submitted_form) const {
+    return address_fdi_->ExtractGUIDsOfProfilesWithoutManualEdits(
+        submitted_form);
   }
 
   bool ProcessExtractedAddressProfiles(

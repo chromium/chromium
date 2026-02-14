@@ -203,11 +203,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   // false.
   bool ProceedWithCardMandatoryReauthOptInIfApplicable();
 
-  // Extracts the GUIDs of profiles used to autofill `submitted_form`, returning
-  // an empty set if any field was manually edited.
-  base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(
-      const FormStructure& submitted_form) const;
-
   PaymentsDataManager& payments_data_manager();
 
   // The associated autofill client.

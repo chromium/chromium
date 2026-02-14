@@ -4055,7 +4055,7 @@ TEST_F(FormDataImporterTest, ExtractGUIDsOfProfilesWithoutManualEdits) {
     ++counter;
   }
   base::flat_set<std::string> guids =
-      test_api(form_data_importer())
+      test_api(form_data_importer().GetAddressFormDataImporter())
           .ExtractGUIDsOfProfilesWithoutManualEdits(*form_structure);
   EXPECT_THAT(guids, UnorderedElementsAre(kDefaultGuid, kSecondGuid));
 }
@@ -4073,7 +4073,7 @@ TEST_F(FormDataImporterTest,
   }
   form_structure->field(0)->set_is_user_edited(true);
   base::flat_set<std::string> guids =
-      test_api(form_data_importer())
+      test_api(form_data_importer().GetAddressFormDataImporter())
           .ExtractGUIDsOfProfilesWithoutManualEdits(*form_structure);
   EXPECT_THAT(guids, IsEmpty());
 }
