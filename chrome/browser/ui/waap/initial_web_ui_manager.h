@@ -36,7 +36,7 @@ class InitialWebUIManager {
   void SetWebUIReadyCallback(base::OnceClosure callback);
 
  private:
-  // This callback is triggered when the initial WebUI is ready.
+  // The callback is triggered when the initial WebUI is ready.
   base::OnceClosure web_ui_ready_callback_;
   bool is_initial_web_ui_pending_;
 

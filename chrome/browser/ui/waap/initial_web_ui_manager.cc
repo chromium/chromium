@@ -41,5 +41,8 @@ void InitialWebUIManager::SetWebUIReadyCallback(base::OnceClosure callback) {
     std::move(callback).Run();
     return;
   }
+  // The `web_ui_ready_callback_` should be set only once per
+  // `InitialWebUIManager`.
+  CHECK(!web_ui_ready_callback_);
   web_ui_ready_callback_ = std::move(callback);
 }
