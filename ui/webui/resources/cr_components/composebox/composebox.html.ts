@@ -98,7 +98,8 @@ export function getHtml(this: ComposeboxElement) {
           class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}"
           exportparts="context-menu-entrypoint-icon,
               cr-composebox-file-carousel, upload-container, voice-icon,
-              carousel-divider, carousel-container, thumbnail"
+              carousel-divider, carousel-container, thumbnail,
+              thumbnail-title, tool-chip-label"
           in-composebox
           .tabSuggestions="${this.tabSuggestions_}"
           .showMenuOnClick="${this.showMenuOnClick}"

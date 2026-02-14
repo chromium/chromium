@@ -43,6 +43,7 @@
   --color-suggestions-background-loading: rgba(241, 243, 244, 1);
   --color-zero-state-greeting: rgba(10, 10, 10, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(31, 31, 31, 1);
+  --composebox-max-width: 692px;
   /* 20px on right side. */
   --composebox-start-indent: 20px;
   --composebox-width: calc(100% -
@@ -55,8 +56,11 @@
   --error-bottom-line-color: #70757A;
   --error-top-line-color: #202124;
   --flex-center-height: 100%;
+  --ghost-loader-base: #F3F5F6;
+  --ghost-loader-highlight: #DEE1E3;
+  --google-sans-font:
+      'Google Sans', Roboto, Arial, sans-serif;
   --gradient-protection-width: 100%;
-  --composebox-max-width: 692px;
   --min-composebox-width: 150px;
   --paper-tooltip-background:rgba(255, 255, 255, 1);
   --paper-tooltip-text-color: rgba(0, 0, 0, 1);
@@ -71,8 +75,6 @@
   --thumbnail-chip-overlay-width: 100%;
   --thumbnail-chip-padding: 6px;
   --thumbnail-chip-width: 154px;
-  --ghost-loader-base: #F3F5F6;
-  --ghost-loader-highlight: #DEE1E3;
 
   /* Toolbar colors */
   --toolbar-background-color: var(--search-background-color);
@@ -466,7 +468,7 @@ error-page {
 
 .thread-header {
   color: var(--color-zero-state-greeting);
-  font-family: Google Sans, Roboto, Arial, sans-serif;
+  font-family: var(--google-sans-font);
   font-size: 32px;
   font-weight: 500;
   line-height: 100%;

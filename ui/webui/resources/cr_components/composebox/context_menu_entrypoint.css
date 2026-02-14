@@ -292,6 +292,7 @@ cr-button#entrypoint {
 
 #tabHeader {
   color: var(--cr-primary-text-color);
+  font-family: var(--cr-composebox-context-menu-font-family, inherit);
   font-size: 11px;
   font-weight: 500;
   line-height: 16px;
@@ -308,6 +309,7 @@ cr-button#entrypoint {
   color: var(--cr-primary-text-color);
   cursor: pointer;
   display: flex;
+  font-family: var(--cr-composebox-context-menu-font-family, inherit);
   font-size: 13px;
   font-weight: 400;
   gap: 8px;
