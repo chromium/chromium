@@ -7,12 +7,14 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -34,6 +36,8 @@ class AddressFormDataImporter {
   virtual ~AddressFormDataImporter();
 
   AddressDataManager& address_data_manager();
+
+  MultiStepImportMerger& multi_step_import_merger();
 
  private:
   friend class AddressFormDataImporterTestApi;
@@ -78,6 +82,14 @@ class AddressFormDataImporter {
       LogBuffer* import_log_buffer,
       ProfileImportMetadata& import_metadata);
 
+  // Helper method for `ExtractAddressProfiles` which only considers the fields
+  // for the specified `section_fields`.
+  bool ExtractAddressProfileFromSection(
+      base::span<const AutofillField* const> section_fields,
+      const GURL& source_url,
+      std::vector<ExtractedAddressProfile>* extracted_address_profiles,
+      LogBuffer* import_log_buffer);
+
   // Clears all setting-inaccessible values from `profile`.
   void RemoveInaccessibleProfileValues(AutofillProfile& profile);
 
@@ -96,6 +108,9 @@ class AddressFormDataImporter {
                       const PhoneNumber::PhoneCombineHelper& combined_phone);
 
   const raw_ref<AutofillClient> client_;
+
+  // Enables importing from multi-step import flows.
+  MultiStepImportMerger multistep_importer_;
 };
 
 }  // namespace autofill

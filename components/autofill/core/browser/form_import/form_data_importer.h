@@ -18,7 +18,6 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/form_import/addresses/address_form_data_importer.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
-#include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -93,8 +92,9 @@ class FormDataImporter : public AddressDataManager::Observer,
   void AddMultiStepImportCandidate(const AutofillProfile& profile,
                                    const ProfileImportMetadata& import_metadata,
                                    bool is_imported) {
-    multistep_importer_.AddMultiStepImportCandidate(profile, import_metadata,
-                                                    is_imported);
+    GetAddressFormDataImporter()
+        .multi_step_import_merger()
+        .AddMultiStepImportCandidate(profile, import_metadata, is_imported);
   }
 
   // AddressDataManager::Observer
@@ -163,16 +163,6 @@ class FormDataImporter : public AddressDataManager::Observer,
       const FormStructure& form,
       std::vector<AddressFormDataImporter::ExtractedAddressProfile>*
           extracted_address_profiles);
-
-  // Helper method for ExtractAddressProfiles which only considers the fields
-  // for a specified `section`. If no section is passed, the import is
-  // performed on the union of all sections.
-  bool ExtractAddressProfileFromSection(
-      base::span<const AutofillField* const> section_fields,
-      const GURL& source_url,
-      std::vector<AddressFormDataImporter::ExtractedAddressProfile>*
-          extracted_address_profiles,
-      LogBuffer* import_log_buffer);
 
   // Returns the extracted card if one was found in the form.
   //
@@ -265,9 +255,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   // Will be passed to `credit_card_save_manager_` for metrics. If no credit
   // card was found in the form, the type will be `kNoCard`.
   CreditCardImportType credit_card_import_type_ = CreditCardImportType::kNoCard;
-
-  // Enables importing from multi-step import flows.
-  MultiStepImportMerger multistep_importer_;
 
   // Enables associating recently submitted forms with each other.
   FormAssociator form_associator_;
