@@ -13,6 +13,8 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
@@ -20,7 +22,6 @@
 
 namespace autofill {
 
-class AddressDataManager;
 class AddressProfileSaveManager;
 class AutofillClient;
 class AutofillField;
@@ -32,12 +33,15 @@ class SourceId;
 
 // Owned by `FormDataImporter`. Responsible for address-related form data
 // importing functionality, including form extraction and processing.
-class AddressFormDataImporter {
+class AddressFormDataImporter : public AddressDataManager::Observer {
  public:
   explicit AddressFormDataImporter(AutofillClient* client);
   AddressFormDataImporter(const AddressFormDataImporter&) = delete;
   AddressFormDataImporter& operator=(const AddressFormDataImporter&) = delete;
-  virtual ~AddressFormDataImporter();
+  ~AddressFormDataImporter() override;
+
+  // AddressDataManager::Observer:
+  void OnAddressDataChanged() override;
 
   void AddMultiStepImportCandidate(const AutofillProfile& profile,
                                    const ProfileImportMetadata& import_metadata,
@@ -138,6 +142,9 @@ class AddressFormDataImporter {
   // an empty set if any field was manually edited.
   base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(
       const FormStructure& submitted_form) const;
+
+  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
+      address_data_manager_observation_{this};
 
   const raw_ref<AutofillClient> client_;
 

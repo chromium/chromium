@@ -38,8 +38,7 @@ enum class NonInteractivePaymentMethodType;
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the `AddressDataManager` and
 // the `PaymentsDataManager`. Owned by `AutofillClient` implementations.
-class FormDataImporter : public AddressDataManager::Observer,
-                         public history::HistoryServiceObserver {
+class FormDataImporter : public history::HistoryServiceObserver {
  public:
   // Record type of the credit card extracted from the form, if one exists.
   // TODO(crbug.com/40255227): Remove this enum and user CreditCard::RecordType
@@ -87,9 +86,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   CreditCardSaveManager* GetCreditCardSaveManager() {
     return credit_card_save_manager_.get();
   }
-
-  // AddressDataManager::Observer
-  void OnAddressDataChanged() override;
 
   // history::HistoryServiceObserver
   void OnHistoryDeletions(history::HistoryService* history_service,
@@ -208,9 +204,6 @@ class FormDataImporter : public AddressDataManager::Observer,
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
-
-  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
-      address_data_manager_observation_{this};
 
   // Represents the type of the credit card import candidate from the submitted
   // form. It will be used to determine whether to offer upload save or not.

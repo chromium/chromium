@@ -112,8 +112,6 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 #endif  // !BUILDFLAG(IS_IOS)
       address_form_data_importer_(client),
       payments_form_data_importer_(client) {
-  address_data_manager_observation_.Observe(
-      &GetAddressFormDataImporter().address_data_manager());
   if (history_service) {
     history_service_observation_.Observe(history_service);
   }
@@ -611,11 +609,6 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   extract_data_and_remove_field_if(fields, &AutofillField::is_autofilled);
   extract_data_and_remove_field_if(fields, [](const auto&) { return true; });
   return result;
-}
-
-void FormDataImporter::OnAddressDataChanged() {
-  GetAddressFormDataImporter().multi_step_import_merger().OnAddressDataChanged(
-      GetAddressFormDataImporter().address_data_manager());
 }
 
 void FormDataImporter::OnHistoryDeletions(

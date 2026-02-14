@@ -175,9 +175,15 @@ AddressFormDataImporter::AddressFormDataImporter(AutofillClient* client)
       multistep_importer_(client_->GetAppLocale(),
                           client_->GetVariationConfigCountryCode()),
       address_profile_save_manager_(
-          std::make_unique<AddressProfileSaveManager>(client)) {}
+          std::make_unique<AddressProfileSaveManager>(client)) {
+  address_data_manager_observation_.Observe(&address_data_manager());
+}
 
 AddressFormDataImporter::~AddressFormDataImporter() = default;
+
+void AddressFormDataImporter::OnAddressDataChanged() {
+  multistep_importer_.OnAddressDataChanged(address_data_manager());
+}
 
 void AddressFormDataImporter::AddMultiStepImportCandidate(
     const AutofillProfile& profile,
