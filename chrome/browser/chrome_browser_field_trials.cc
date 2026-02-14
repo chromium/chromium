@@ -141,18 +141,12 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // low-memory scenarios.
   feature_overrides.EnableFeature(chrome::android::kChangeUnfocusedPriority);
 
-  // Enable desktop tab management features.
-  // TODO(crbug.com/422902625): Remove when rollout is complete to all form
-  // factors.
-  feature_overrides.EnableFeature(chrome::android::kProcessRankPolicyAndroid);
-  feature_overrides.EnableFeature(chrome::android::kProtectedTabsAndroid);
   // Enable background media capturing on desktop devices.
   // TODO(crbug.com/426461170): Remove once we enable this feature for all form
   // factors. Currently we have no conclusion whether to enable this on mobile
   // phones yet.
   feature_overrides.EnableFeature(
       features::kAndroidEnableBackgroundMediaCapturing);
-  feature_overrides.EnableFeature(features::kSubframeImportance);
   // TODO(crbug.com/465596248): Remove when experiment is complete.
   feature_overrides.EnableFeature(chrome::android::kProtectRecentlyVisibleTab);
   // TODO(crbug.com/422903297): Remove when tablet rollout is complete.

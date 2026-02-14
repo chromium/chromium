@@ -21216,26 +21216,6 @@
             ]
         }
     ],
-    "ProcessRankPolicyAndroid2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledProtectedTabsAndroid_20260126",
-                    "enable_features": [
-                        "ProcessRankPolicyAndroid",
-                        "ProtectedTabsAndroid",
-                        "SubframeImportance"
-                    ],
-                    "disable_features": [
-                        "ChangeUnfocusedPriority"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProcessReuseOnPrerenderCOOPSwapAndroid": [
         {
             "platforms": [

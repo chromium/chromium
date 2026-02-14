@@ -719,12 +719,12 @@ BASE_FEATURE(kPersistAcrossRebootsDebugLogs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPowerSavingModeBroadcastReceiverInBackground, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPreconnectOnTabCreation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPriceChangeModule, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kProcessRankPolicyAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProcessRankPolicyAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kProtectRecentlyVisibleTab, base::FEATURE_DISABLED_BY_DEFAULT);
 // Put a higher memory priority to protected background tabs (e.g. tabs with
 // user edits in forms) to prevent them from being killed by LMKD before any
 // other non-protected tabs.
-BASE_FEATURE(kProtectedTabsAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProtectedTabsAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPwaRestoreUi, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPwaRestoreUiAtStartup, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kReadAloud, base::FEATURE_ENABLED_BY_DEFAULT);
