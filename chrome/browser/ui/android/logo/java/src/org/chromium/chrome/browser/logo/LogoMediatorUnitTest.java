@@ -35,9 +35,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -94,36 +92,9 @@ public class LogoMediatorUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR)
-    public void testDseChangedAndGoogleIsDseAndDoodleIsSupported_disabled() {
-        LogoMediator logoMediator = createMediator();
-        Assert.assertNotNull(logoMediator.getDefaultGoogleLogo(mContext));
-
-        verify(mTemplateUrlService)
-                .addObserver(mTemplateUrlServiceObserverArgumentCaptor.capture());
-        mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
-
-        verify(mLogoBridge, times(1)).getCurrentLogo(any());
-    }
-
-    @Test
     public void testDseChangedAndGoogleIsDseAndDoodleIsSupported() {
         LogoMediator logoMediator = createMediator(mContext.getDrawable(R.drawable.ic_google_logo));
         Assert.assertNotNull(logoMediator.getDefaultGoogleLogoDrawable());
-
-        verify(mTemplateUrlService)
-                .addObserver(mTemplateUrlServiceObserverArgumentCaptor.capture());
-        mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
-
-        verify(mLogoBridge, times(1)).getCurrentLogo(any());
-    }
-
-    @Test
-    @Features.DisableFeatures(ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR)
-    public void testDseChangedAndGoogleIsNotDse_disabled() {
-        LogoMediator logoMediator = createMediator();
-        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
-        Assert.assertNull(logoMediator.getDefaultGoogleLogo(mContext));
 
         verify(mTemplateUrlService)
                 .addObserver(mTemplateUrlServiceObserverArgumentCaptor.capture());
@@ -291,13 +262,10 @@ public class LogoMediatorUnitTest {
     private LogoMediator createMediatorWithoutNative(@Nullable Drawable defaultGoogleLogoDrawable) {
         LogoMediator logoMediator =
                 new LogoMediator(
-                        mContext,
                         mLogoClickedCallback,
                         mLogoModel,
                         mOnLogoAvailableCallback,
                         null,
-                        new CachedTintedBitmap(
-                                R.drawable.google_logo, R.color.google_logo_tint_color),
                         defaultGoogleLogoDrawable);
         logoMediator.setLogoBridgeForTesting(mLogoBridge);
         return logoMediator;

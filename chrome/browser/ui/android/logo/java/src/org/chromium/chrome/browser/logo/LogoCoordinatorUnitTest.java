@@ -75,20 +75,14 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
-    })
+    @DisableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testMaybeInitHomepageStateListener_featuresDisabled() {
         createLogoCoordinator();
         verify(mNtpCustomizationConfigManager, never()).addListener(any(), any(), anyBoolean());
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testMaybeInitHomepageStateListener_disabledByPolicy() {
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
         NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
@@ -99,10 +93,7 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testMaybeInitHomepageStateListener_featuresEnabled() {
         createLogoCoordinator();
         verify(mNtpCustomizationConfigManager)
@@ -110,10 +101,7 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testHomepageStateListener_logoNotShown() {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         BackgroundImageInfo backgroundImageInfo = mock(BackgroundImageInfo.class);
@@ -136,10 +124,7 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testHomepageStateListener_onBackgroundImageChanged() {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         BackgroundImageInfo backgroundImageInfo = mock(BackgroundImageInfo.class);
@@ -162,10 +147,7 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testHomepageStateListener_onBackgroundColorChanged() {
         @ColorInt int backgroundColor = Color.RED;
         @ColorInt int primaryColor = Color.BLUE;
@@ -190,10 +172,7 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testDestroyRemovesListener() {
         mLogoCoordinator = createLogoCoordinator();
         verify(mNtpCustomizationConfigManager)

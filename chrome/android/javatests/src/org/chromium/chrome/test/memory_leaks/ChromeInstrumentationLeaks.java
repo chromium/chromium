@@ -44,19 +44,6 @@ public class ChromeInstrumentationLeaks implements LeakCanaryConfigProvider {
                 sFieldPersistencePolicyCleanup);
     }
 
-    // crbug.com/478251814
-    @IdentifierNameString
-    private static String sClass478251814 = "org.chromium.chrome.browser.logo.LogoMediator";
-
-    @IdentifierNameString
-    private static String sField478251814 =
-            "org.chromium.chrome.browser.logo.LogoMediator#mContext";
-
-    @Override
-    public Map<String, String> getInstanceFieldLeaks() {
-        return Map.of(sClass478251814, sField478251814);
-    }
-
     @Override
     public List<String> getJavaLocalLeaks() {
         // crbug.com/465145691

@@ -15,8 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -96,12 +94,9 @@ public class LogoUtils {
      * Returns the default Google logo drawable.
      *
      * @param context The context used to load the resource.
-     * @return The Google logo drawable if the logo view refactor feature is enabled; otherwise
-     *     null.
+     * @return The Google logo drawable.
      */
-    public static @Nullable Drawable getGoogleLogoDrawable(Context context) {
-        if (!ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()) return null;
-
+    public static Drawable getGoogleLogoDrawable(Context context) {
         return ContextCompat.getDrawable(context, R.drawable.ic_google_logo);
     }
 

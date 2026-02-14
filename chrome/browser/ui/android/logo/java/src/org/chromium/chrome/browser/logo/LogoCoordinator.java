@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -37,10 +36,6 @@ public class LogoCoordinator {
     private LogoMediator mMediator;
     private LogoView mLogoView;
     private NtpCustomizationConfigManager.@Nullable HomepageStateListener mHomepageStateListener;
-
-    // The default google logo that is shared across all NTPs.
-    static final CachedTintedBitmap sDefaultGoogleLogo =
-            new CachedTintedBitmap(R.drawable.google_logo, R.color.google_logo_tint_color);
 
     /** Interface for the observers of the logo visibility change. */
     public interface VisibilityObserver {
@@ -73,12 +68,10 @@ public class LogoCoordinator {
 
         mMediator =
                 new LogoMediator(
-                        context,
                         logoClickedCallback,
                         mLogoModel,
                         onLogoAvailableCallback,
                         visibilityObserver,
-                        sDefaultGoogleLogo,
                         defaultGoogleLogoDrawable);
 
         // Should be called after mMediator is created.
@@ -86,8 +79,7 @@ public class LogoCoordinator {
     }
 
     private void maybeInitHomepageStateListener(Context context) {
-        if (!ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()
-                || !NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
             return;
         }
 

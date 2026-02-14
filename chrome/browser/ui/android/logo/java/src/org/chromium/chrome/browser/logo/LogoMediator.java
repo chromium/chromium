@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.logo;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.doesDefaultSearchEngineHaveLogo;
 
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;
 import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.Drawable;
@@ -86,16 +84,13 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     }
 
     private final PropertyModel mLogoModel;
-    private final Context mContext;
     private @Nullable Profile mProfile;
     private @Nullable LogoBridge mLogoBridge;
     private @Nullable ImageFetcher mImageFetcher;
     private final Callback<LoadUrlParams> mLogoClickedCallback;
     private boolean mHasLogoLoadedForCurrentSearchEngine;
     private final LogoCoordinator.@Nullable VisibilityObserver mVisibilityObserver;
-    private final CachedTintedBitmap mDefaultGoogleLogo;
     private @Nullable Drawable mDefaultGoogleLogoDrawable;
-    private final boolean mIsRefactorEnabled;
     private boolean mShouldShowLogo;
     private boolean mIsLoadPending;
     private @Nullable String mOnLogoClickUrl;
@@ -109,35 +104,27 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     /**
      * Creates a LogoMediator object.
      *
-     * @param context Used to load colors and resources.
      * @param logoClickedCallback Supplies the StartSurface's parent tab.
      * @param logoModel The model that is required to build the logo on start surface or ntp.
      * @param onLogoAvailableCallback The callback for when logo is available.
      * @param visibilityObserver Observer object monitoring logo visibility.
-     * @param defaultGoogleLogo The google logo shared across all NTPs when Google is the default
-     *     search engine.
      * @param defaultGoogleLogoDrawable The google logo drawable shared across all NTPs when Google
      *     is the default search engine.
      */
     LogoMediator(
-            Context context,
             Callback<LoadUrlParams> logoClickedCallback,
             PropertyModel logoModel,
             Callback<Logo> onLogoAvailableCallback,
             @Nullable VisibilityObserver visibilityObserver,
-            CachedTintedBitmap defaultGoogleLogo,
             @Nullable Drawable defaultGoogleLogoDrawable) {
-        mContext = context;
         mLogoModel = logoModel;
         mLogoClickedCallback = logoClickedCallback;
         mVisibilityObserver = visibilityObserver;
         if (mVisibilityObserver != null) {
             mVisibilityObservers.addObserver(mVisibilityObserver);
         }
-        mDefaultGoogleLogo = defaultGoogleLogo;
         mDefaultGoogleLogoDrawable = defaultGoogleLogoDrawable;
         mLogoModel.set(LogoProperties.LOGO_AVAILABLE_CALLBACK, onLogoAvailableCallback);
-        mIsRefactorEnabled = ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled();
     }
 
     /**
@@ -278,15 +265,10 @@ public class LogoMediator implements TemplateUrlServiceObserver {
                                 // fresh one before making any further decisions.
                                 return;
                             }
-                            if (mIsRefactorEnabled) {
-                                mLogoModel.set(
-                                        LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE,
-                                        getDefaultGoogleLogoDrawable());
-                            } else {
-                                mLogoModel.set(
-                                        LogoProperties.DEFAULT_GOOGLE_LOGO,
-                                        getDefaultGoogleLogo(mContext));
-                            }
+
+                            mLogoModel.set(
+                                    LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE,
+                                    getDefaultGoogleLogoDrawable());
                         }
                         mLogoModel.set(
                                 LogoProperties.LOGO_CLICK_HANDLER,
@@ -297,12 +279,8 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     }
 
     private void showSearchProviderInitialView() {
-        if (mIsRefactorEnabled) {
-            mLogoModel.set(
-                    LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE, getDefaultGoogleLogoDrawable());
-        } else {
-            mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO, getDefaultGoogleLogo(mContext));
-        }
+        mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE, getDefaultGoogleLogoDrawable());
+
         mLogoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
     }
 
@@ -312,20 +290,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         for (LogoCoordinator.VisibilityObserver observer : mVisibilityObservers) {
             observer.onLogoVisibilityChanged();
         }
-    }
-
-    /**
-     * Get the default Google logo if available.
-     *
-     * @param context Used to load colors and resources.
-     * @return The default Google logo.
-     */
-    @VisibleForTesting
-    @Nullable Bitmap getDefaultGoogleLogo(Context context) {
-        if (mProfile == null) return null;
-        return TemplateUrlServiceFactory.getForProfile(mProfile).isDefaultSearchEngineGoogle()
-                ? mDefaultGoogleLogo.getBitmap(context)
-                : null;
     }
 
     /**

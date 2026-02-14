@@ -8,7 +8,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
-    "java/src/org/chromium/chrome/browser/logo/CachedTintedBitmap.java",
     "java/src/org/chromium/chrome/browser/logo/LogoBridge.java",
     "java/src/org/chromium/chrome/browser/logo/LogoCoordinator.java",
     "java/src/org/chromium/chrome/browser/logo/LogoMediator.java",
@@ -62,21 +61,9 @@ android_library("utils_java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-hdpi/google_logo.png",
-    "java/res/drawable-mdpi/google_logo.png",
-    "java/res/drawable-sw600dp-hdpi/google_logo.png",
-    "java/res/drawable-sw600dp-mdpi/google_logo.png",
-    "java/res/drawable-sw600dp-xhdpi/google_logo.png",
-    "java/res/drawable-sw600dp-xxhdpi/google_logo.png",
-    "java/res/drawable-sw600dp-xxxhdpi/google_logo.png",
     "java/res/drawable-sw600dp/ic_google_logo.xml",
-    "java/res/drawable-xhdpi/google_logo.png",
-    "java/res/drawable-xxhdpi/google_logo.png",
-    "java/res/drawable-xxxhdpi/google_logo.png",
     "java/res/drawable/ic_google_logo.xml",
-    "java/res/values-night/colors.xml",
     "java/res/values-sw600dp/dimens.xml",
-    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
 
@@ -86,7 +73,6 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.logo"
   sources = [
-    "java/src/org/chromium/chrome/browser/logo/CachedTintedBitmapUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoUtilsUnitTest.java",

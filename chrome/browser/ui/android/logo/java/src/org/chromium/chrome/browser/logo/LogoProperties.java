@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.logo;
 
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.base.Callback;
@@ -39,7 +38,6 @@ interface LogoProperties {
     //  into one property that takes an object generic/powerful enough to represent all three of
     //  these if possible.
     WritableObjectPropertyKey<LogoBridge.Logo> LOGO = new WritableObjectPropertyKey<>();
-    WritableObjectPropertyKey<Bitmap> DEFAULT_GOOGLE_LOGO = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Drawable> DEFAULT_GOOGLE_LOGO_DRAWABLE =
             new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Boolean> SHOW_LOADING_VIEW =
@@ -64,7 +62,6 @@ interface LogoProperties {
                 LOGO_CLICK_HANDLER,
                 SHOW_SEARCH_PROVIDER_INITIAL_VIEW,
                 LOGO,
-                DEFAULT_GOOGLE_LOGO,
                 DEFAULT_GOOGLE_LOGO_DRAWABLE,
                 SHOW_LOADING_VIEW,
                 ANIMATED_LOGO,

@@ -42,8 +42,6 @@ class LogoViewBinder
             logoView.showSearchProviderInitialView();
         } else if (LogoProperties.LOGO == propertyKey) {
             logoView.updateLogo(model.get(LogoProperties.LOGO));
-        } else if (LogoProperties.DEFAULT_GOOGLE_LOGO == propertyKey) {
-            logoView.setDefaultGoogleLogo(model.get(LogoProperties.DEFAULT_GOOGLE_LOGO));
         } else if (LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE == propertyKey) {
             logoView.setDefaultGoogleLogoDrawable(
                     model.get(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE));
