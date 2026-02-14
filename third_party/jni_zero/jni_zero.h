@@ -17,6 +17,8 @@
 #include "third_party/jni_zero/type_conversions.h"
 // IWYU pragma: end_exports
 
+#define DEFINE_JNI(className) DEFINE_JNI_FOR_##className()
+
 namespace jni_zero {
 
 
@@ -30,7 +32,24 @@ extern JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef<jobject>
     g_empty_list;
 extern JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef<jobject> g_empty_map;
 
-#define DEFINE_JNI(className) DEFINE_JNI_FOR_##className()
+// Cast JavaRef<From>& to ScopedJavaLocalRef<To>.
+template <typename From, typename To>
+jni_zero::ScopedJavaLocalRef<To> Cast(JNIEnv* env,
+                                      const jni_zero::JavaRef<From>& ref) {
+  jni_zero::ScopedJavaLocalRef<From> owned_ref =
+      jni_zero::ScopedJavaLocalRef<From>(ref);
+  return jni_zero::ScopedJavaLocalRef<To>::Adopt(
+      env, static_cast<To>(owned_ref.Release()));
+}
+
+// Cast ScopedJavaLocalRef<From>&& to ScopedJavaLocalRef<To>.
+template <typename From, typename To>
+jni_zero::ScopedJavaLocalRef<To> Cast(
+    JNIEnv* env,
+    jni_zero::ScopedJavaLocalRef<From>&& ref) {
+  return jni_zero::ScopedJavaLocalRef<To>::Adopt(
+      env, static_cast<To>(ref.Release()));
+}
 
 }  // namespace jni_zero
 
