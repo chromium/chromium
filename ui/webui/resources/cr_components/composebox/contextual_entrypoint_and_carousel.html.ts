@@ -15,6 +15,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       case ComposeboxToolMode.kDeepSearch:
         return html`
         <cr-composebox-tool-chip
+            id="deepSearchChip"
             icon="composebox:deepSearch"
             label="${this.getToolChipLabel_(ComposeboxToolMode.kDeepSearch)}"
             remove-chip-aria-label="${this.i18n('removeToolChipAriaLabel',
@@ -26,6 +27,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       case ComposeboxToolMode.kImageGen:
         return html`
         <cr-composebox-tool-chip
+            id="nanoBananaChip"
             icon="composebox:nanoBanana"
             label="${this.getToolChipLabel_(ComposeboxToolMode.kImageGen)}"
             remove-chip-aria-label="${this.i18n('removeToolChipAriaLabel',
@@ -37,6 +39,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       case ComposeboxToolMode.kCanvas:
         return html`
         <cr-composebox-tool-chip
+            id="canvasChip"
             icon="composebox:canvas"
             label="${this.getToolChipLabel_(ComposeboxToolMode.kCanvas)}"
             remove-chip-aria-label="${this.i18n('removeToolChipAriaLabel',
@@ -85,7 +88,8 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       this.showModelPicker ?
           html`
           ${
-              this.shouldHideEntrypointButton_ ? '' :
+              this.shouldHideEntrypointButton_ ?
+                  '' :
                   html`
             <cr-composebox-contextual-entrypoint-button id="contextEntrypoint"
                 part="composebox-entrypoint"
@@ -136,7 +140,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       this.searchboxLayoutMode === 'Compact' && this.showVoiceSearch ?
           voiceSearchButton :
           ''}
-        ${this.shouldShowToolChipsForTallMode_ ? toolChips : ''}
+      ${this.shouldShowToolChipsForTallMode_ ? toolChips : ''}
         ${
       this.searchboxLayoutMode === 'TallTopContext' && this.showVoiceSearch ?
           voiceSearchButton :

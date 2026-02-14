@@ -1227,6 +1227,12 @@ export class ComposeboxElement extends I18nMixinLit
 
     this.animationState = GlowAnimationState.SUBMITTING;
 
+    // Nano banana and deep search allow for follow ups, so
+    // do not clear them.
+    if (this.activeToolMode_ === ToolMode.kCanvas) {
+      this.resetModes();
+    }
+
     // If the composebox is expandable, collapse it and clear the input after
     // submitting.
     if (this.isCollapsible || this.clearAllInputsWhenSubmittingQuery_) {

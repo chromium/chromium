@@ -224,6 +224,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         !this.fileUploadsComplete;
   }
 
+  getActiveToolMode() {
+    return this.activeTool_;
+  }
+
   hasAutomaticActiveTabChipToken(): boolean {
     return this.automaticActiveTabChipToken_ !== null;
   }
@@ -402,6 +406,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       this.isOmniboxInCompactMode_ = this.entrypointName === 'Omnibox' &&
           this.searchboxLayoutMode === 'Compact';
     }
+  }
+
+  onToolClickForTesting(toolMode: ComposeboxToolMode) {
+    this.handleToolClick_(toolMode);
   }
 
   addDroppedFiles(files: FileList|null) {
