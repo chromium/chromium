@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -34,6 +35,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -52,7 +54,10 @@
 #include "third_party/omnibox_proto/answer_data.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
+#include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
+#include "third_party/omnibox_proto/rule_set.pb.h"
+#include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -431,6 +436,36 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                     l10n_util::GetPluralStringFUTF16(
                         IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR,
                         composebox_config.composebox().max_num_files()));
+  int max_images = 0;
+  int max_pdfs = 0;
+  AimEligibilityService* service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  const omnibox::SearchboxConfig* config =
+      service ? service->GetSearchboxConfig() : nullptr;
+
+  if (config && config->has_rule_set()) {
+    for (const auto& rule : config->rule_set().input_type_rules()) {
+      if (rule.input_type() == omnibox::INPUT_TYPE_LENS_IMAGE) {
+        max_images = rule.max_instance();
+      } else if (rule.input_type() == omnibox::INPUT_TYPE_LENS_FILE) {
+        max_pdfs = rule.max_instance();
+      }
+    }
+  }
+  // TODO(crbug.com/483852166): Update the error messages to be more specific to
+  // the input type.
+  source->AddString(
+      "maxImagesReachedError",
+      l10n_util::GetPluralStringFUTF16(
+          IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR,
+          max_images > 0 ? max_images
+                         : composebox_config.composebox().max_num_files()));
+  source->AddString(
+      "maxPdfsReachedError",
+      l10n_util::GetPluralStringFUTF16(
+          IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR,
+          max_pdfs > 0 ? max_pdfs
+                       : composebox_config.composebox().max_num_files()));
   source->AddBoolean(
       "searchboxShowComposeAnimation",
       profile->GetPrefs()->GetInteger(

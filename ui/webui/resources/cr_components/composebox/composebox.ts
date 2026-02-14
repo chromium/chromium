@@ -553,10 +553,13 @@ export class ComposeboxElement extends I18nMixinLit
       text: string = '', files: ContextualUpload[] = [],
       mode: ToolMode = ToolMode.kUnspecified,
       model: ModelMode = ModelMode.kUnspecified,
-      inputState: InputState|null = null) {
+      inputState: InputState|null = null, errorMessage: string = '') {
     if (text) {
       this.input_ = text;
       this.lastQueriedInput_ = text;
+    }
+    if (errorMessage) {
+      this.errorMessage_ = errorMessage;
     }
     if (this.showZps && files.length === 0) {
       this.queryAutocomplete_(/* clearMatches= */ false);

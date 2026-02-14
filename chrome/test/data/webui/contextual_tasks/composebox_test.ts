@@ -272,6 +272,8 @@ suite('ContextualTasksComposeboxTest', () => {
         disabledModels: [],
         disabledTools: [],
         disabledInputTypes: [],
+        maxInstances: { 1: 10, 2: 10, 3: 10 }, // LensImage, LensFile, BrowserTab mapped from InputType
+        maxTotalInputs: 3,
       },
     }));
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
@@ -2300,6 +2302,8 @@ suite('ContextualTasksComposeboxTest', () => {
         disabledModels: [],
         disabledTools: [],
         disabledInputTypes: [],
+        maxInstances: { 1: 10, 2: 10, 3: 10 }, // LensImage, LensFile, BrowserTab mapped from InputType
+        maxTotalInputs: 3,
       },
     }));
 
@@ -2389,6 +2393,8 @@ suite('ContextualTasksComposeboxTest', () => {
             disabledModels: [],
             disabledTools: [],
             disabledInputTypes: [],
+            maxInstances: { 1: 10, 2: 10, 3: 10 }, // LensImage, LensFile, BrowserTab mapped from InputType
+            maxTotalInputs: 3,
           },
         }));
 

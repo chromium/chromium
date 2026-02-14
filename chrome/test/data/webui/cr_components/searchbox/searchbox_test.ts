@@ -160,6 +160,8 @@ suite('NewTabPageRealboxTest', () => {
         toolsSectionConfig: null,
         modelSectionConfig: null,
         hintText: '',
+        maxInstances: {},
+        maxTotalInputs: 0,
       },
     });
     realbox = await createAndAppendRealbox();
@@ -3169,6 +3171,8 @@ suite('NewTabPageRealboxTest', () => {
       toolsSectionConfig: null,
       modelSectionConfig: null,
       hintText: '',
+      maxInstances: {},
+      maxTotalInputs: 0,
     } as InputState;
     testProxy.callbackRouterRemote.onInputStateChanged(inputState);
     await microtasksFinished();
