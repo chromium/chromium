@@ -72,12 +72,12 @@ void AppMigrationDataReadCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
       old_app_id_,
       base::BindOnce(&AppMigrationDataReadCommand::SetOldIconForIdentityUpdate,
                      weak_factory_.GetWeakPtr())
-          .Then(std::move(barrier_closure)));
+          .Then(barrier_closure));
   ReadSingleIcon(
       new_app_id_,
       base::BindOnce(&AppMigrationDataReadCommand::SetNewIconForIdentityUpdate,
                      weak_factory_.GetWeakPtr())
-          .Then(std::move(barrier_closure)));
+          .Then(barrier_closure));
 }
 
 void AppMigrationDataReadCommand::ReadSingleIcon(
