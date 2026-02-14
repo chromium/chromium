@@ -147,6 +147,7 @@ void PaymentsNetworkInterface::UploadCard(
 
 void PaymentsNetworkInterface::GetIbanUploadDetails(
     const std::string& app_locale,
+    const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     int64_t billing_customer_number,
     const std::string& country_code,
     base::OnceCallback<void(PaymentsRpcResult,
@@ -155,7 +156,8 @@ void PaymentsNetworkInterface::GetIbanUploadDetails(
                             std::unique_ptr<base::DictValue>)> callback) {
   IssueRequest(std::make_unique<GetIbanUploadDetailsRequest>(
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
-      app_locale, billing_customer_number, country_code, std::move(callback)));
+      app_locale, client_behavior_signals, billing_customer_number,
+      country_code, std::move(callback)));
 }
 
 void PaymentsNetworkInterface::UploadIban(

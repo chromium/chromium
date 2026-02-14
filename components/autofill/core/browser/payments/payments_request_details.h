@@ -351,6 +351,7 @@ struct UploadIbanRequestDetails {
   std::u16string value;
   std::u16string nickname;
   std::string risk_data;
+  std::vector<ClientBehaviorConstants> client_behavior_signals;
 };
 
 // A collection of information received in the response for an

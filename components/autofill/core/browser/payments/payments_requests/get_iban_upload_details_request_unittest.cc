@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
@@ -21,9 +22,14 @@ constexpr char16_t kCapitalizedIbanRegex[] =
 class GetIbanUploadDetailsRequestTest : public testing::Test {
  public:
   void SetUp() override {
+    std::vector<ClientBehaviorConstants> client_behavior_signals;
+#if BUILDFLAG(IS_ANDROID)
+    client_behavior_signals.push_back(
+        ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
+#endif
     request_ = std::make_unique<GetIbanUploadDetailsRequest>(
-        /*full_sync_enabled=*/true, kAppLocale, kBillingCustomerNumber,
-        kCountryCode, base::DoNothing());
+        /*full_sync_enabled=*/true, kAppLocale, client_behavior_signals,
+        kBillingCustomerNumber, kCountryCode, base::DoNothing());
   }
 
   GetIbanUploadDetailsRequest* GetRequest() { return request_.get(); }
@@ -39,6 +45,10 @@ class GetIbanUploadDetailsRequestTest : public testing::Test {
   }
   base::DictValue* legal_message() const {
     return request_->legal_message_for_testing();
+  }
+
+  std::vector<ClientBehaviorConstants> client_behavior_signals() const {
+    return request_->client_behavior_signals_for_testing();
   }
 
  private:
@@ -71,6 +81,13 @@ TEST_F(GetIbanUploadDetailsRequestTest,
             std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find("iban_region_code"),
             std::string::npos);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(client_behavior_signals(),
+              testing::ElementsAre(
+                  ClientBehaviorConstants::kShowAccountEmailInLegalMessage));
+#else
+  EXPECT_TRUE(client_behavior_signals().empty());
+#endif
 }
 
 TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_ResponseIsComplete) {

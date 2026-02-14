@@ -132,17 +132,20 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
 
   // Determine if the user meets the Payments service conditions for upload.
   // The service uses `app_locale` and `billing_customer_number` to determine
-  // which legal message to display. `country_code` is the first two characters
-  // of the IBAN, representing its country of origin. `callback` is the
-  // callback function that is triggered when a response is received from the
-  // server, and the callback is triggered with that response's result. The
-  // `validation_regex` is used to validate whether the given IBAN can be saved
-  // to the server. The legal message will always be returned upon a successful
-  // response via `callback`. A successful response does not guarantee that the
-  // legal message is valid, callers should parse the legal message and use it
-  // to decide if IBAN upload save should be offered.
+  // which legal message to display. `client_behavior_signals` is used by
+  // Payments server to track Chrome behaviors. `country_code` is the first
+  // two characters of the IBAN, representing its country of origin.
+  // `callback` is the callback function that is triggered when a response is
+  // received from the server, and the callback is triggered with that
+  // response's result. The `validation_regex` is used to validate whether the
+  // given IBAN can be saved to the server. The legal message will always be
+  // returned upon a successful response via `callback`. A successful response
+  // does not guarantee that the legal message is valid, callers should parse
+  // the legal message and use it to decide if IBAN upload save should be
+  // offered.
   virtual void GetIbanUploadDetails(
       const std::string& app_locale,
+      const std::vector<ClientBehaviorConstants>& client_behavior_signals,
       int64_t billing_customer_number,
       const std::string& country_code,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult result,

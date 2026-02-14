@@ -19,6 +19,7 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
   GetIbanUploadDetailsRequest(
       const bool full_sync_enabled,
       const std::string& app_locale,
+      const std::vector<ClientBehaviorConstants>& client_behavior_signals,
       int64_t billing_customer_number,
       const std::string& country_code,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
@@ -43,10 +44,15 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
   base::DictValue* legal_message_for_testing() const {
     return legal_message_.get();
   }
+  std::vector<ClientBehaviorConstants> client_behavior_signals_for_testing()
+      const {
+    return client_behavior_signals_;
+  }
 
  private:
   const bool full_sync_enabled_;
   std::string app_locale_;
+  const std::vector<ClientBehaviorConstants> client_behavior_signals_;
   std::u16string context_token_;
   std::u16string validation_regex_;
   std::unique_ptr<base::DictValue> legal_message_;

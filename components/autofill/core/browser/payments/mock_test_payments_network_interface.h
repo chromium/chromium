@@ -20,6 +20,7 @@ class MockTestPaymentsNetworkInterface : public payments::TestPaymentsNetworkInt
   MOCK_METHOD(void,
               GetIbanUploadDetails,
               (const std::string&,
+               const std::vector<ClientBehaviorConstants>&,
                int64_t,
                const std::string&,
                (base::OnceCallback<

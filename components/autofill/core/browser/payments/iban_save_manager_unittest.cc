@@ -86,7 +86,10 @@ class IbanSaveManagerTest : public testing::Test {
     ON_CALL(*payments_network_interface(), GetIbanUploadDetails)
         .WillByDefault(
             [is_successful, regex, includes_invalid_legal_message](
-                const std::string& app_locale, int64_t billing_customer_number,
+                const std::string& app_locale,
+                const std::vector<ClientBehaviorConstants>&
+                    client_behavior_signals,
+                int64_t billing_customer_number,
                 const std::string& country_code,
                 base::OnceCallback<void(
                     payments::PaymentsAutofillClient::PaymentsRpcResult,
