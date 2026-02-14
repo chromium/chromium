@@ -1376,8 +1376,16 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
 // Tests that the browser process can handle the case that the frame is deleted
 // while creating a translator.
+// Flaky. See crbug.com/484300734
+#if defined(MEMORY_SANITIZER) || defined(UNDEFINED_SANITIZER)
+#define MAYBE_FrameDeletedWhileCreatingATranslator \
+  DISABLED_FrameDeletedWhileCreatingATranslator
+#else
+#define MAYBE_FrameDeletedWhileCreatingATranslator \
+  FrameDeletedWhileCreatingATranslator
+#endif
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       FrameDeletedWhileCreatingATranslator) {
+                       MAYBE_FrameDeletedWhileCreatingATranslator) {
   MockComponentManager mock_component_manager(GetTempDir());
 
   base::RunLoop run_loop_for_register_translate_kit;
