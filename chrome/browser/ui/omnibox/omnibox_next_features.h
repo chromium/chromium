@@ -29,8 +29,6 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopup);
 }  // namespace internal
 
 enum class AddContextButtonVariant {
-  // No "Add Context" button.
-  kNone = 0,
   // Variant 1.
   kBelowResults = 1,
   // Variant 2.
