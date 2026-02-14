@@ -170,6 +170,13 @@ bool HasSynthesizedTypes(
 
 }  // namespace
 
+AddressFormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile() =
+    default;
+AddressFormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile(
+    const AddressFormDataImporter::ExtractedAddressProfile& other) = default;
+AddressFormDataImporter::ExtractedAddressProfile::~ExtractedAddressProfile() =
+    default;
+
 AddressFormDataImporter::AddressFormDataImporter(AutofillClient* client)
     : client_(CHECK_DEREF(client)),
       multistep_importer_(client_->GetAppLocale(),
@@ -192,21 +199,6 @@ void AddressFormDataImporter::AddMultiStepImportCandidate(
   multistep_importer_.AddMultiStepImportCandidate(profile, import_metadata,
                                                   is_imported);
 }
-
-AddressDataManager& AddressFormDataImporter::address_data_manager() {
-  return client_->GetPersonalDataManager().address_data_manager();
-}
-
-MultiStepImportMerger& AddressFormDataImporter::multi_step_import_merger() {
-  return multistep_importer_;
-}
-
-AddressFormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile() =
-    default;
-AddressFormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile(
-    const AddressFormDataImporter::ExtractedAddressProfile& other) = default;
-AddressFormDataImporter::ExtractedAddressProfile::~ExtractedAddressProfile() =
-    default;
 
 size_t AddressFormDataImporter::ExtractAddressProfiles(
     const FormStructure& form,
@@ -270,6 +262,52 @@ size_t AddressFormDataImporter::ExtractAddressProfiles(
   LOG_AF(log_manager) << std::move(import_log_buffer);
 
   return num_complete_profiles;
+}
+
+bool AddressFormDataImporter::ProcessExtractedAddressProfiles(
+    const std::vector<ExtractedAddressProfile>& extracted_address_profiles,
+    bool allow_prompt,
+    ukm::SourceId ukm_source_id) {
+  int imported_profiles = 0;
+  // `allow_prompt` is true if no credit card or IBAN prompt was shown. If it is
+  // true, we know there is no UI currently displaying, so we can display UI to
+  // import addresses. If it is false, we should not display UI to import
+  // addresses due to a possible dialog or bubble conflict.
+  bool allow_only_silent_updates = !allow_prompt;
+  for (const ExtractedAddressProfile& candidate : extracted_address_profiles) {
+    address_profile_save_manager_->ImportProfileFromForm(
+        candidate.profile, client_->GetAppLocale(), candidate.url,
+        ukm_source_id, allow_only_silent_updates, candidate.import_metadata);
+    // Limit the number of importable profiles to 2.
+    if (!allow_only_silent_updates && ++imported_profiles >= 2) {
+      return true;
+    }
+  }
+  return imported_profiles > 0;
+}
+
+base::flat_set<std::string>
+AddressFormDataImporter::ExtractGUIDsOfProfilesWithoutManualEdits(
+    const FormStructure& submitted_form) const {
+  base::flat_set<std::string> unedited_source_profile_guids;
+  for (const std::unique_ptr<AutofillField>& field : submitted_form) {
+    if (field->is_user_edited()) {
+      return {};
+    }
+    if (const std::optional<std::string>& guid =
+            field->autofill_source_profile_guid()) {
+      unedited_source_profile_guids.insert(guid.value());
+    }
+  }
+  return unedited_source_profile_guids;
+}
+
+AddressDataManager& AddressFormDataImporter::address_data_manager() {
+  return client_->GetPersonalDataManager().address_data_manager();
+}
+
+MultiStepImportMerger& AddressFormDataImporter::multi_step_import_merger() {
+  return multistep_importer_;
 }
 
 base::flat_map<FieldType, std::u16string>
@@ -573,28 +611,6 @@ bool AddressFormDataImporter::ExtractAddressProfileFromSection(
   return true;
 }
 
-bool AddressFormDataImporter::ProcessExtractedAddressProfiles(
-    const std::vector<ExtractedAddressProfile>& extracted_address_profiles,
-    bool allow_prompt,
-    ukm::SourceId ukm_source_id) {
-  int imported_profiles = 0;
-  // `allow_prompt` is true if no credit card or IBAN prompt was shown. If it is
-  // true, we know there is no UI currently displaying, so we can display UI to
-  // import addresses. If it is false, we should not display UI to import
-  // addresses due to a possible dialog or bubble conflict.
-  bool allow_only_silent_updates = !allow_prompt;
-  for (const ExtractedAddressProfile& candidate : extracted_address_profiles) {
-    address_profile_save_manager_->ImportProfileFromForm(
-        candidate.profile, client_->GetAppLocale(), candidate.url,
-        ukm_source_id, allow_only_silent_updates, candidate.import_metadata);
-    // Limit the number of importable profiles to 2.
-    if (!allow_only_silent_updates && ++imported_profiles >= 2) {
-      return true;
-    }
-  }
-  return imported_profiles > 0;
-}
-
 void AddressFormDataImporter::RemoveInaccessibleProfileValues(
     AutofillProfile& profile) {
   const FieldTypeSet inaccessible_fields =
@@ -635,22 +651,6 @@ bool AddressFormDataImporter::SetPhoneNumber(
       combined_phone, client_->GetAppLocale(), profile);
   autofill_metrics::LogPhoneNumberImportParsingResult(parsed_successfully);
   return parsed_successfully;
-}
-
-base::flat_set<std::string>
-AddressFormDataImporter::ExtractGUIDsOfProfilesWithoutManualEdits(
-    const FormStructure& submitted_form) const {
-  base::flat_set<std::string> unedited_source_profile_guids;
-  for (const std::unique_ptr<AutofillField>& field : submitted_form) {
-    if (field->is_user_edited()) {
-      return {};
-    }
-    if (const std::optional<std::string>& guid =
-            field->autofill_source_profile_guid()) {
-      unedited_source_profile_guids.insert(guid.value());
-    }
-  }
-  return unedited_source_profile_guids;
 }
 
 }  // namespace autofill

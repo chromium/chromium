@@ -35,32 +35,6 @@ class SourceId;
 // importing functionality, including form extraction and processing.
 class AddressFormDataImporter : public AddressDataManager::Observer {
  public:
-  explicit AddressFormDataImporter(AutofillClient* client);
-  AddressFormDataImporter(const AddressFormDataImporter&) = delete;
-  AddressFormDataImporter& operator=(const AddressFormDataImporter&) = delete;
-  ~AddressFormDataImporter() override;
-
-  // AddressDataManager::Observer:
-  void OnAddressDataChanged() override;
-
-  void AddMultiStepImportCandidate(const AutofillProfile& profile,
-                                   const ProfileImportMetadata& import_metadata,
-                                   bool is_imported);
-
-  AddressDataManager& address_data_manager();
-
-  MultiStepImportMerger& multi_step_import_merger();
-
- private:
-  friend class AddressFormDataImporterTestApi;
-  // TODO(crbug.com/481379161): Remove `FormDataImporter` and
-  //    `FormDataImporterTestApi` as friend classes once the FDI->AddressFDI
-  //    migration is complete. This is very much not ideal and temporary, but
-  //    the alternative is having most functions be public until the last
-  //    second, which probably carries slightly higher risk.
-  friend class FormDataImporter;
-  friend class FormDataImporterTestApi;
-
   // Defines an extracted address profile, which is a candidate for address
   // profile import.
   struct ExtractedAddressProfile {
@@ -77,6 +51,18 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
     ProfileImportMetadata import_metadata;
   };
 
+  explicit AddressFormDataImporter(AutofillClient* client);
+  AddressFormDataImporter(const AddressFormDataImporter&) = delete;
+  AddressFormDataImporter& operator=(const AddressFormDataImporter&) = delete;
+  ~AddressFormDataImporter() override;
+
+  // AddressDataManager::Observer:
+  void OnAddressDataChanged() override;
+
+  void AddMultiStepImportCandidate(const AutofillProfile& profile,
+                                   const ProfileImportMetadata& import_metadata,
+                                   bool is_imported);
+
   // Attempts to construct `ExtractedAddressProfile` by extracting values
   // from the fields in the `form`'s sections. Extraction can fail if the
   // fields' values don't pass validation. Apart from complete address profiles,
@@ -86,6 +72,27 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
   size_t ExtractAddressProfiles(
       const FormStructure& form,
       std::vector<ExtractedAddressProfile>* extracted_address_profiles);
+
+  // Processes the extracted address profiles. `extracted_address_profiles`
+  // contains the addresses extracted from the form. `allow_prompt` denotes if a
+  // prompt can be shown. Returns `true` if the import of a complete profile is
+  // initiated.
+  bool ProcessExtractedAddressProfiles(
+      const std::vector<ExtractedAddressProfile>& extracted_address_profiles,
+      bool allow_prompt,
+      ukm::SourceId ukm_source_id);
+
+  // Extracts the GUIDs of profiles used to autofill `submitted_form`, returning
+  // an empty set if any field was manually edited.
+  base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(
+      const FormStructure& submitted_form) const;
+
+  AddressDataManager& address_data_manager();
+
+  MultiStepImportMerger& multi_step_import_merger();
+
+ private:
+  friend class AddressFormDataImporterTestApi;
 
   // Iterates over `section_fields` and builds a map from field type to observed
   // value for that field type.
@@ -112,15 +119,6 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
       std::vector<ExtractedAddressProfile>* extracted_address_profiles,
       LogBuffer* import_log_buffer);
 
-  // Processes the extracted address profiles. `extracted_address_profiles`
-  // contains the addresses extracted from the form. `allow_prompt` denotes if a
-  // prompt can be shown. Returns `true` if the import of a complete profile is
-  // initiated.
-  bool ProcessExtractedAddressProfiles(
-      const std::vector<ExtractedAddressProfile>& extracted_address_profiles,
-      bool allow_prompt,
-      ukm::SourceId ukm_source_id);
-
   // Clears all setting-inaccessible values from `profile`.
   void RemoveInaccessibleProfileValues(AutofillProfile& profile);
 
@@ -137,11 +135,6 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
   // Returns false if the provided `combined_phone` is invalid.
   bool SetPhoneNumber(AutofillProfile& profile,
                       const PhoneNumber::PhoneCombineHelper& combined_phone);
-
-  // Extracts the GUIDs of profiles used to autofill `submitted_form`, returning
-  // an empty set if any field was manually edited.
-  base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(
-      const FormStructure& submitted_form) const;
 
   base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
       address_data_manager_observation_{this};
