@@ -4,7 +4,14 @@
 
 #include "components/autofill/core/browser/form_import/addresses/address_form_data_importer.h"
 
+#include <map>
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/check_deref.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
@@ -18,14 +25,20 @@
 #include "components/autofill/core/browser/data_model/addresses/phone_number.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -175,6 +188,70 @@ AddressFormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile(
     const AddressFormDataImporter::ExtractedAddressProfile& other) = default;
 AddressFormDataImporter::ExtractedAddressProfile::~ExtractedAddressProfile() =
     default;
+
+size_t AddressFormDataImporter::ExtractAddressProfiles(
+    const FormStructure& form,
+    std::vector<ExtractedAddressProfile>* extracted_address_profiles) {
+  // Create a buffer to collect logging output for the autofill-internals.
+  LogManager* log_manager = client_->GetCurrentLogManager();
+  LogBuffer import_log_buffer(IsLoggingActive(log_manager));
+  LOG_AF(import_log_buffer) << LoggingScope::kAddressProfileFormImport;
+  // Print the full form into the logging scope.
+  LOG_AF(import_log_buffer)
+      << LogMessage::kImportAddressProfileFromForm << form << CTag{};
+
+  // We save a maximum of 2 profiles per submitted form (e.g. for shipping and
+  // billing).
+  static const size_t kMaxNumAddressProfilesSaved = 2;
+  size_t num_complete_profiles = 0;
+
+  if (!form.field_count()) {
+    LOG_AF(import_log_buffer) << LogMessage::kImportAddressProfileFromFormFailed
+                              << "Form is empty." << CTag{};
+  } else {
+    // Relevant sections for address fields.
+    std::map<Section, std::vector<const AutofillField*>> section_fields;
+    for (const auto& field : form) {
+      if (field->Type().GetAddressType() != UNKNOWN_TYPE) {
+        section_fields[field->section()].push_back(field.get());
+      }
+    }
+
+    for (const auto& [section, fields] : section_fields) {
+      if (num_complete_profiles == kMaxNumAddressProfilesSaved) {
+        break;
+      }
+      // Log the output from a section in a separate div for readability.
+      LOG_AF(import_log_buffer)
+          << Tag{"div"} << Attrib{"class", "profile_import_from_form_section"};
+      LOG_AF(import_log_buffer)
+          << LogMessage::kImportAddressProfileFromFormSection << section
+          << CTag{};
+      // Try to extract an address profile from the form fields of this section.
+      // Only allow for a prompt if no other complete profile was found so far.
+      if (ExtractAddressProfileFromSection(fields, form.source_url(),
+                                           extracted_address_profiles,
+                                           &import_log_buffer)) {
+        num_complete_profiles++;
+      }
+      // And close the div of the section import log.
+      LOG_AF(import_log_buffer) << CTag{"div"};
+    }
+    autofill_metrics::LogAddressFormImportStatusMetric(
+        num_complete_profiles == 0
+            ? autofill_metrics::AddressProfileImportStatusMetric::kNoImport
+            : autofill_metrics::AddressProfileImportStatusMetric::
+                  kRegularImport);
+  }
+  LOG_AF(import_log_buffer)
+      << LogMessage::kImportAddressProfileFromFormNumberOfImports
+      << num_complete_profiles << CTag{};
+
+  // Write log buffer to autofill-internals.
+  LOG_AF(log_manager) << std::move(import_log_buffer);
+
+  return num_complete_profiles;
+}
 
 base::flat_map<FieldType, std::u16string>
 AddressFormDataImporter::GetAddressObservedFieldValues(

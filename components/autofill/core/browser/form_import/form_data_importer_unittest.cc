@@ -607,7 +607,7 @@ class FormDataImporterTest : public testing::Test {
 
     EXPECT_EQ(
         extraction_successful,
-        test_api(form_data_importer())
+        test_api(form_data_importer().GetAddressFormDataImporter())
                 .ExtractAddressProfiles(form, &extracted_address_profiles) > 0);
 
     if (!extraction_successful) {

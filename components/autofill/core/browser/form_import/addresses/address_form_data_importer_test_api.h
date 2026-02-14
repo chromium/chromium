@@ -15,8 +15,18 @@ namespace autofill {
 
 class AddressFormDataImporterTestApi {
  public:
+  using ExtractedAddressProfile =
+      AddressFormDataImporter::ExtractedAddressProfile;
+
   explicit AddressFormDataImporterTestApi(AddressFormDataImporter* address_fdi)
       : address_fdi_(*address_fdi) {}
+
+  size_t ExtractAddressProfiles(
+      const FormStructure& form,
+      std::vector<ExtractedAddressProfile>* extracted_address_profiles) {
+    return address_fdi_->ExtractAddressProfiles(form,
+                                                extracted_address_profiles);
+  }
 
   base::flat_map<FieldType, std::u16string> GetObservedFieldValues(
       base::span<const AutofillField* const> section_fields) {

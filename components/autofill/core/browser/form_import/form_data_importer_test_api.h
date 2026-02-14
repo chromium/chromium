@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_TEST_API_H_
 
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -15,6 +16,8 @@
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 
 namespace autofill {
+
+class FormStructure;
 
 class FormDataImporterTestApi {
  public:
@@ -55,12 +58,6 @@ class FormDataImporterTestApi {
 
   std::optional<CreditCard> ExtractCreditCard(const FormStructure& form) {
     return fdi_->ExtractCreditCard(form);
-  }
-
-  size_t ExtractAddressProfiles(
-      const FormStructure& form,
-      std::vector<ExtractedAddressProfile>* extracted_address_profiles) {
-    return fdi_->ExtractAddressProfiles(form, extracted_address_profiles);
   }
 
   base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(

@@ -23,6 +23,7 @@ class AddressDataManager;
 class AutofillClient;
 class AutofillField;
 class AutofillProfile;
+class FormStructure;
 class LogBuffer;
 class PhoneCombineHelper;
 
@@ -41,8 +42,8 @@ class AddressFormDataImporter {
 
  private:
   friend class AddressFormDataImporterTestApi;
-  // TODO(crbug.com/481379161): Remove FormDataImporter and
-  //    FormDataImporterTestApi as friend classes once the FDI->AddressFDI
+  // TODO(crbug.com/481379161): Remove `FormDataImporter` and
+  //    `FormDataImporterTestApi` as friend classes once the FDI->AddressFDI
   //    migration is complete. This is very much not ideal and temporary, but
   //    the alternative is having most functions be public until the last
   //    second, which probably carries slightly higher risk.
@@ -64,6 +65,16 @@ class AddressFormDataImporter {
     // ProfileImportProcess after the user's decision.
     ProfileImportMetadata import_metadata;
   };
+
+  // Attempts to construct `ExtractedAddressProfile` by extracting values
+  // from the fields in the `form`'s sections. Extraction can fail if the
+  // fields' values don't pass validation. Apart from complete address profiles,
+  // partial profiles for silent updates are extracted. All are stored in
+  // `extracted_form_data`'s `extracted_address_profiles`.
+  // The function returns the number of _complete_ extracted profiles.
+  size_t ExtractAddressProfiles(
+      const FormStructure& form,
+      std::vector<ExtractedAddressProfile>* extracted_address_profiles);
 
   // Iterates over `section_fields` and builds a map from field type to observed
   // value for that field type.

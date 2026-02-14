@@ -153,17 +153,6 @@ class FormDataImporter : public AddressDataManager::Observer,
                                     bool profile_autofill_enabled,
                                     bool payment_methods_autofill_enabled);
 
-  // Attempts to construct ExtractedAddressProfile by extracting values
-  // from the fields in the `form`'s sections. Extraction can fail if the
-  // fields' values don't pass validation. Apart from complete address profiles,
-  // partial profiles for silent updates are extracted. All are stored in
-  // `extracted_form_data`'s `extracted_address_profiles`.
-  // The function returns the number of _complete_ extracted profiles.
-  size_t ExtractAddressProfiles(
-      const FormStructure& form,
-      std::vector<AddressFormDataImporter::ExtractedAddressProfile>*
-          extracted_address_profiles);
-
   // Returns the extracted card if one was found in the form.
   //
   // The returned card is, unless nullopt,
