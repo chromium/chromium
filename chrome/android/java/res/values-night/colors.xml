@@ -20,4 +20,8 @@ found in the LICENSE file.
     <color name="settings_search_logo_color_2">@color/material_primary_60</color>
     <color name="settings_search_logo_color_3">@color/material_primary_90</color>
     <color name="settings_search_clear_text">@color/baseline_neutral_80</color>
+
+    <!-- Tab strip media indicators-->
+    <color name="tab_recording_media_color">@color/google_red_300</color>
+    <color name="tab_sharing_media_color">@color/baseline_primary_80</color>
 </resources>
