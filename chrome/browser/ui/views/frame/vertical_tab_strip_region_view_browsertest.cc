@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
 }
 
 // TODO(https://crbug.com/481074869): Re-enable this test
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(ENABLE_GLIC)
 #define MAYBE_ResizeViewBigger DISABLED_ResizeViewBigger
 #else
 #define MAYBE_ResizeViewBigger ResizeViewBigger

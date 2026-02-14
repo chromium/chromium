@@ -1,0 +1,52 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(enable_glic)
+
+source_set("glic") {
+  sources = []
+
+  if (!is_android) {
+    sources += [ "toolbar_glic_button.h" ]
+    deps = [
+      "//base",
+      "//chrome/browser/glic",
+      "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui/views",
+      "//ui/base/metadata",
+      "//ui/gfx/geometry",
+      "//ui/views",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("impl") {
+    sources = [ "toolbar_glic_button.cc" ]
+    deps = [
+      ":glic",
+      "//base",
+      "//chrome/app:command_ids",
+      "//chrome/app:generated_resources_grit",
+      "//chrome/app/vector_icons",
+      "//chrome/browser:browser_public_dependencies",
+      "//chrome/browser/actor/resources:grit",
+      "//chrome/browser/background/glic",
+      "//chrome/browser/glic",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/interaction",
+      "//chrome/common:chrome_features",
+      "//ui/base",
+      "//ui/base/metadata",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//ui/views",
+    ]
+  }
+}
