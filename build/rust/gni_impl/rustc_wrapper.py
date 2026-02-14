@@ -25,7 +25,8 @@ import action_helpers
 # * To enable use of .rsp files.
 # * To work around two gn bugs on Windows
 # * Saving `rustc` command-line flags and environment, so that it can be reused
-#   when invoking `cc_bindings_from_rs` or `clippy-driver`
+#   when invoking `cc_bindings_from_rs`, `clippy-driver`, or
+#   `build/rust/apply_fixes.py`.
 #
 # LDFLAGS ESCAPING
 #
@@ -236,7 +237,20 @@ def LoadRustEnvAndFlags(path):
   return rustenv, rustflags
 
 
-def ExpandNestedRustStyleRspFiles(rsp_args):
+def RecommendApplyFixesScript(tool, rustc_env_and_flags):
+  source_root = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             os.pardir, os.pardir, os.pardir)
+  rel_build_dir = os.path.relpath(os.getcwd(), source_root)
+
+  print(f"NOTE: To apply machine-applicable fix suggestions (if any), run:",
+        file=sys.stderr,
+        end='')
+  print(f" build/rust/apply_fixes.py", file=sys.stderr, end='')
+  print(f" {rel_build_dir}", file=sys.stderr, end='')
+  print(f" {os.path.basename(tool)} {rustc_env_and_flags}", file=sys.stderr)
+
+
+def _ExpandNestedRustStyleRspFiles(rsp_args):
   # `rustc` doesn't support using `@<file.rsp>` from **inside** `@another.rsp`.
   # And things like `@cargo_flags.rs` (see build script handling inside
   # `cargo_crate.gni`) may end up in `rustflags`.  And since `rustflags` are
@@ -307,7 +321,7 @@ def main():
     rsp_args = [remove_lib_suffix_from_l_args(arg) for arg in rsp_args]
     rustc_args = [remove_lib_suffix_from_l_args(arg) for arg in rustc_args]
   rsp_args = [remove_gn_escaping_from_rsp_args(arg) for arg in rsp_args]
-  rsp_args = ExpandNestedRustStyleRspFiles(rsp_args)
+  rsp_args = _ExpandNestedRustStyleRspFiles(rsp_args)
   out_rsp = str(args.rsp) + ".rust"
   with open(out_rsp, 'w') as rspfile:
     # rustc needs the rsp file to be separated by newlines. Note that GN
@@ -330,6 +344,7 @@ def main():
           shlex.join(rustc_args))
   r = subprocess.run([args.rustc, *rustc_args], env=env, check=False)
   if r.returncode != 0:
+    RecommendApplyFixesScript(args.rustc, args.rustc_env_and_flags)
     sys.exit(r.returncode)
 
   final_depfile_lines = []

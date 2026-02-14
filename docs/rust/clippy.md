@@ -30,15 +30,72 @@ Chromium engineers primarily working with C, C++, or Java.
 
 Next steps:
 
-* Experiment with tooling for automatically applying
-  fixes suggested by Clippy (and/or `rustc`)
 * Add a very brief section documenting the Chromium policy for Clippy.
   Initial draft: https://docs.google.com/document/d/1S3gs-PV_lrS6Sshw7x-We0WkQN28cskL02F9ZS6L6oo/edit?usp=sharing
-* Enable Clippy on some CQ bots + do a broader announcement
+* Enable Clippy on `linux-rel` (CI + CQ)
+* Enable Clippy on `mac-rel` and `win-rel` and `android-arm64-rel` (CI + CQ)
 * Figure out how Chromium-specific lints can be added
 * Consider opting into additional lints.  Examples:
     - [`undocumented_unsafe_blocks`](https://rust-lang.github.io/rust-clippy/master/index.html#undocumented_unsafe_blocks)
     - [`multiple_unsafe_ops_per_block`](https://rust-lang.github.io/rust-clippy/master/index.html?groups=restriction#multiple_unsafe_ops_per_block)
+
+## Automatically applying fix suggestions
+
+### IDE integration
+
+TODO: See if/how this works + write this section.
+
+
+### Command-line
+
+When build fails because of Clippy, then
+a note toward the end spells out a command
+for using `build/rust/apply_fixes.py`
+to apply machine-applicable fix suggestions
+from this particular Clippy invocation.
+
+Example:
+
+```
+$ autoninja -C out/rel ...
+...
+error: this expression creates a reference which is immediately dereferenced by the compiler
+   --> ../../third_party/blink/renderer/core/xml/parser/xml_ffi.rs:271:33
+    |
+271 |                 q_name.push_str(&pref);
+    |                                 ^^^^^ help: change this to: `pref`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#needless_borrow
+    = note: `-D clippy::needless-borrow` implied by `-D clippy::style`
+    = help: to override `-D clippy::style` add `#[allow(clippy::needless_borrow)]`
+
+error: aborting due to 1 previous error
+
+NOTE: See `//docs/rust/clippy.md` for more Clippy info.
+NOTE: To apply machine-applicable fix suggestions (if any) run: build/rust/apply_fixes.py out/rel clippy-driver obj/third_party/blink/renderer/core/xml_ffi.rustflags.json
+...
+
+$ build/rust/apply_fixes.py out/rel clippy-driver obj/third_party/blink/renderer/core/xml_ffi.rustflags.json
+Invoking clippy-driver to repro the build problem...
+Looking for machine-applicable fixes...
+Applying fixes to `../../third_party/blink/renderer/core/xml/parser/xml_ffi.rs`...
+  Applying a fix on line 271...
+
+$ git diff
+diff --git a/third_party/blink/renderer/core/xml/parser/xml_ffi.rs b/third_party/blink/renderer/core/xml/parser/xml_ffi.rs
+index 707c74bf87784..b02eaf1266d2c 100644
+--- a/third_party/blink/renderer/core/xml/parser/xml_ffi.rs
++++ b/third_party/blink/renderer/core/xml/parser/xml_ffi.rs
+@@ -268,7 +268,7 @@ fn attributes_next<'a>(
+         match &name.prefix {
+             Some(pref) => {
+                 let mut q_name = String::with_capacity(pref.len() + 1 + name.local_name.len());
+-                q_name.push_str(&pref);
++                q_name.push_str(pref);
+                 q_name.push(':');
+                 q_name.push_str(&name.local_name);
+                 attribute_view.as_mut().Populate(
+```
 
 ## Implementation detail: When exactly does Clippy run?
 

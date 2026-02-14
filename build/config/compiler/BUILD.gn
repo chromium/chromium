@@ -2306,6 +2306,8 @@ config("default_warnings") {
   if (is_apple) {
     ldflags += [ "-Wl,-no_warn_duplicate_libraries" ]
   }
+
+  rustflags = [ "-Dclippy::all" ]
 }
 
 # prevent_unsafe_narrowing ----------------------------------------------------

@@ -10,7 +10,8 @@ import pathlib
 import sys
 import tempfile
 
-from rustc_wrapper import (ConvertPathsToAbsolute, LoadRustEnvAndFlags)
+from rustc_wrapper import (ConvertPathsToAbsolute, LoadRustEnvAndFlags,
+                           RecommendApplyFixesScript)
 
 
 def main():
@@ -22,22 +23,6 @@ def main():
 
   (rustenv, rustflags) = LoadRustEnvAndFlags(args.rustc_env_and_flags)
   ConvertPathsToAbsolute(rustenv)
-
-  rustflags += [
-      # Ask `clippy` to treat lint failures either as errors, or ignore
-      # them altogether (i.e. avoid reporting failures as warnings which
-      # are noisy but ignorable).  We cover lint categories from
-      # https://doc.rust-lang.org/stable/clippy/lints.html that are either
-      # `deny` or `warn` by default.
-      #
-      # If certain targets want to opt into additional lints, then they can
-      # do so by using `#![deny(clippy::pedantic)]` or a similar attribute.
-      "-Dclippy::correctness",
-      "-Dclippy::suspicious",
-      "-Dclippy::complexity",
-      "-Dclippy::perf",
-      "-Dclippy::style",
-  ]
 
   # `clippy-driver` should not write any files into the build directory
   # (e.g. into `out/`).
@@ -61,6 +46,7 @@ def main():
   else:
     print("NOTE: See `//docs/rust/clippy.md` for more Clippy info.",
           file=sys.stderr)
+    RecommendApplyFixesScript(args.clippy_driver, args.rustc_env_and_flags)
   return r.returncode
 
 
