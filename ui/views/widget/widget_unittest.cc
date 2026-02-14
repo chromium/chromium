@@ -2963,6 +2963,44 @@ TEST_F(DesktopWidgetTest, TestWindowVisibilityAfterHide) {
   EXPECT_TRUE(IsNativeWindowVisible(widget->GetNativeWindow()));
 }
 
+// Verifies that Widget::IsVisible() returns true inside the
+// OnWidgetVisibilityChanged(widget, true) callback.
+TEST_F(DesktopWidgetTest, IsVisibleDuringVisibilityChangedCallback) {
+  // Observer that checks Widget::IsVisible() matches the |visible| parameter
+  // during OnWidgetVisibilityChanged callbacks.
+  class VisibilityCheckObserver : public WidgetObserver {
+   public:
+    void OnWidgetVisibilityChanged(Widget* widget, bool visible) override {
+      notified_visible_ = visible;
+      queried_visible_ = widget->IsVisible();
+    }
+
+    bool notified_visible() const { return notified_visible_; }
+    bool queried_visible() const { return queried_visible_; }
+
+   private:
+    bool notified_visible_ = false;
+    bool queried_visible_ = false;
+  };
+
+  std::unique_ptr<Widget> widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+
+  VisibilityCheckObserver observer;
+  widget->AddObserver(&observer);
+
+  // Show: Widget::IsVisible() should agree with the notification parameter.
+  widget->Show();
+  EXPECT_EQ(observer.notified_visible(), observer.queried_visible());
+
+  // Hide: Widget::IsVisible() should agree with the notification parameter.
+  widget->Hide();
+  EXPECT_EQ(observer.notified_visible(), observer.queried_visible());
+
+  widget->RemoveObserver(&observer);
+  widget->CloseNow();
+}
+
 // Tests that wheel events generated from scroll events are targeted to the
 // views under the cursor when the focused view does not processed them.
 TEST_F(WidgetTest, WheelEventsFromScrollEventTarget) {

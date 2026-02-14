@@ -322,9 +322,11 @@ void DesktopWindowTreeHostWin::Show(ui::mojom::WindowShowState show_state,
     pixel_restore_bounds =
         display::win::GetScreenWin()->DIPToScreenRect(nullptr, restore_bounds);
   }
-  message_handler_->Show(show_state, pixel_restore_bounds);
 
+  // Show content window first so that Widget::IsVisible() returns true during
+  // the synchronous HandleVisibilityChanged(true) triggered by ShowWindow().
   content_window()->Show();
+  message_handler_->Show(show_state, pixel_restore_bounds);
 }
 
 bool DesktopWindowTreeHostWin::IsVisible() const {

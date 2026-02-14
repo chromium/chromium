@@ -440,7 +440,7 @@ void DesktopWindowTreeHostPlatform::Show(ui::mojom::WindowShowState show_state,
                                          const gfx::Rect& restore_bounds) {
   OnAcceleratedWidgetMadeVisible(true);
   if (compositor()) {
-    SetVisible(true);
+    compositor()->SetVisible(true);
   }
 
   platform_window()->Show(DetermineInactivity(show_state));
@@ -487,6 +487,10 @@ void DesktopWindowTreeHostPlatform::Show(ui::mojom::WindowShowState show_state,
   if (!GetContentWindow()->IsVisible()) {
     GetContentWindow()->Show();
   }
+
+  // Notify visibility change after both platform_window and content_window are
+  // visible, so that Widget::IsVisible() returns true during the callback.
+  native_widget_delegate_->OnNativeWidgetVisibilityChanged(true);
 }
 
 bool DesktopWindowTreeHostPlatform::IsVisible() const {
