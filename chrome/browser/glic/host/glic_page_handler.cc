@@ -2033,6 +2033,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         std::move(contextual_skill_previews));
   }
 
+  void Invoke(mojom::InvokeOptionsPtr options,
+              base::OnceClosure callback) override {
+    web_client_->Invoke(std::move(options), std::move(callback));
+  }
+
 // NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
 // from Skills backend.
 #if !BUILDFLAG(IS_ANDROID)

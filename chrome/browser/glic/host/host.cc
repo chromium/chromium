@@ -227,6 +227,14 @@ void Host::NotifyContextualSkillsChanged(
   }
 }
 
+void Host::Invoke(mojom::InvokeOptionsPtr options, base::OnceClosure callback) {
+  if (auto* client = GetPrimaryWebClient()) {
+    client->Invoke(std::move(options), std::move(callback));
+  } else {
+    std::move(callback).Run();
+  }
+}
+
 void Host::Close() {
   delegate_->ClosePanel();
 }

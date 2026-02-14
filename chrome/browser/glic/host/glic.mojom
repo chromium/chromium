@@ -1327,6 +1327,43 @@ enum InvocationSource {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation)
 
+
+// @generate glic_api
+// Mode for specific feature behaviors.
+[Stable, Extensible]
+enum FeatureMode {
+  [Default] kUnspecified = 0,
+  kImageGeneration = 1,
+  kBluedog = 2,
+};
+
+// @generate glic_api
+// Options for the Invoke method.
+struct InvokeOptions {
+  // Source that triggered this invocation.
+  InvocationSource invocation_source;
+
+  // Prompts to pre-populate or suggest.
+  array<string>? prompts;
+
+  // Additional context to attach.
+  AdditionalContext? context;
+
+  // Whether to automatically submit the prompt. May be ignored (e.g. if
+  // multiple prompts are provided for an invocation source that requires
+  // user-selection before submission).
+  bool auto_submit;
+
+  // Feature mode to use.
+  FeatureMode feature_mode;
+
+  // Whether to suppress Zero State Suggestions.
+  bool disable_zero_state_suggestions;
+
+  // If this invocation is for a skill, the ID of the skill to use.
+  string? skill_id;
+};
+
 // @generate glic_api
 // Web client's operation modes.
 // LINT.IfChange(WebClientMode)
@@ -1585,6 +1622,9 @@ interface WebClient {
   // Notifies the client that the user has clicked on a row in the actor task
   // list bubble.
   NotifyActorTaskListRowClicked(int32 task_id);
+
+  // Invokes Glic with specific options. Expects a return to signal completion.
+  Invoke(InvokeOptions options) => ();
 };
 
 // Information extracted from a tab.

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, Journal, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 
 import {replaceProperties} from './../conversions.js';
 import {createBidirectionalPostMessageTransport, newSenderId} from './../post_message_transport.js';
 import type {PostMessageRequestSender, PostMessageRouter, ResponseExtras} from './../post_message_transport.js';
-import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientRequestTypes} from './../request_types.js';
+import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, InvokeOptionsPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientRequestTypes} from './../request_types.js';
 import {ConfirmationRequestErrorReason, ErrorWithReasonImpl, ImageAlphaType, ImageColorType, newTransferableException, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason} from './../request_types.js';
 import {rgbaImageToBmpBlob} from './image_utils.js';
 
@@ -141,6 +141,16 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     enabled: boolean,
   }) {
     this.host.closedCaptioningState.assignAndSignal(payload.enabled);
+  }
+
+  async glicWebClientInvoke(payload: {options: InvokeOptionsPrivate}):
+      Promise<void> {
+    try {
+      const options = convertInvokeOptionsFromPrivate(payload.options);
+      await this.webClient.invoke?.(options);
+    } catch (e) {
+      console.warn(e);
+    }
   }
 
   glicWebClientNotifyActuationOnWebSettingChanged(payload: {
@@ -403,29 +413,8 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   glicWebClientNotifyAdditionalContext(payload: {
     context: AdditionalContextPrivate,
   }): void {
-    const context = payload.context;
-    const parts = context.parts.map(p => {
-      const annotatedPageData = p.annotatedPageData &&
-          convertAnnotatedPageDataFromPrivate(p.annotatedPageData);
-      const pdf = p.pdf && convertPdfDocumentDataFromPrivate(p.pdf);
-      const data = p.data && new Blob([p.data.data], {type: p.data.mimeType});
-      const tabContext =
-          p.tabContext && convertTabContextResultFromPrivate(p.tabContext);
-      return {
-        ...p,
-        data,
-        annotatedPageData,
-        pdf,
-        tabContext,
-      };
-    });
-    this.host.additionalContextSubject.next({
-      name: context.name,
-      tabId: context.tabId,
-      origin: context.origin,
-      frameUrl: context.frameUrl,
-      parts,
-    });
+    const context = convertAdditionalContextFromPrivate(payload.context);
+    this.host.additionalContextSubject.next(context);
   }
 
   glicWebClientCaptureRegionUpdate(payload: {
@@ -1838,4 +1827,37 @@ function convertTabContextResultFromPrivate(
   const annotatedPageData = data.annotatedPageData &&
       convertAnnotatedPageDataFromPrivate(data.annotatedPageData);
   return replaceProperties(data, {tabData, pdfDocumentData, annotatedPageData});
+}
+
+function convertAdditionalContextFromPrivate(context: AdditionalContextPrivate):
+    AdditionalContext {
+  const parts = context.parts.map(p => {
+    const annotatedPageData = p.annotatedPageData &&
+        convertAnnotatedPageDataFromPrivate(p.annotatedPageData);
+    const pdf = p.pdf && convertPdfDocumentDataFromPrivate(p.pdf);
+    const data = p.data && new Blob([p.data.data], {type: p.data.mimeType});
+    const tabContext =
+        p.tabContext && convertTabContextResultFromPrivate(p.tabContext);
+    return {
+      ...p,
+      data,
+      annotatedPageData,
+      pdf,
+      tabContext,
+    };
+  });
+  return {
+    ...context,
+    parts,
+  };
+}
+
+function convertInvokeOptionsFromPrivate(options: InvokeOptionsPrivate):
+    InvokeOptions {
+  return {
+    ...options,
+    context: options.context ?
+        convertAdditionalContextFromPrivate(options.context) :
+        undefined,
+  };
 }

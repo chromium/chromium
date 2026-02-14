@@ -182,6 +182,8 @@ export interface PageElementTypes {
   manageSkillsBtn: HTMLButtonElement;
   stressTestEngageBtn: HTMLButtonElement;
   stressTestEngageRetainBtn: HTMLButtonElement;
+  invocationLog: HTMLDivElement;
+  clearInvocationLog: HTMLButtonElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {

@@ -403,6 +403,8 @@ class Host : public GlicSharingManagerProvider {
 
   void NotifySkillToInvokeChanged(mojom::SkillPtr skill);
 
+  void Invoke(mojom::InvokeOptionsPtr options, base::OnceClosure callback);
+
   void NotifyContextualSkillsChanged(
       std::vector<mojom::SkillPreviewPtr> contextual_skill_previews);
 
