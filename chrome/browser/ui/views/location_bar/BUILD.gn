@@ -210,6 +210,7 @@ source_set("omnibox_popup_file_selector_browsertest") {
     ":location_bar",
     "//chrome/browser/ui",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
     "//chrome/test:test_support",
     "//content/test:test_support",
