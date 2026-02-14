@@ -94,13 +94,10 @@ bool GlicPinCandidateComparator::operator()(content::WebContents* a,
 }
 
 const SearchResult GlicPinCandidateComparator::GetSearchResults(
-    std::u16string_view title) {
-  std::u16string title_str(title);
-  auto it = search_results_cache_.find(title_str);
+    const std::u16string& title) {
+  auto it = search_results_cache_.find(title);
   if (it == search_results_cache_.end()) {
-    it = search_results_cache_
-             .insert({std::move(title_str), Search(title, query_)})
-             .first;
+    it = search_results_cache_.insert({title, Search(title, query_)}).first;
   }
   return it->second;
 }

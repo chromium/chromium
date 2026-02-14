@@ -42,7 +42,7 @@ class GlicPinCandidateComparator {
   bool operator()(content::WebContents* a, content::WebContents* b);
 
  private:
-  const SearchResult GetSearchResults(std::u16string_view title);
+  const SearchResult GetSearchResults(const std::u16string& title);
 
   std::u16string query_;
   absl::flat_hash_map<std::u16string, SearchResult> search_results_cache_;
