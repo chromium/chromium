@@ -43,9 +43,14 @@ class MockWebContentsTaskManager : public TaskProviderObserver {
   // Helper to get the titles of all `tasks_`. Can be used with
   // `EXPECT_THAT(TaskTitles(), ElementsAre(...))`.
   std::vector<std::string> TaskTitles() {
+    return MockWebContentsTaskManager::TaskTitles(tasks_);
+  }
+
+  static std::vector<std::string> TaskTitles(
+      std::vector<raw_ptr<Task, VectorExperimental>> tasks) {
     std::vector<std::string> task_titles;
     std::ranges::transform(
-        tasks_, std::back_inserter(task_titles),
+        tasks, std::back_inserter(task_titles),
         [&](const auto& task) { return base::UTF16ToUTF8(task->title()); });
     return task_titles;
   }
