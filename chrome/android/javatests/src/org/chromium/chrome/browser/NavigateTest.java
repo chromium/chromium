@@ -54,7 +54,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
@@ -91,11 +91,11 @@ public class NavigateTest {
 
     private OmniboxTestUtils mOmnibox;
     private EmbeddedTestServer mTestServer;
-    private RegularNewTabPageStation mStartingNtp;
+    private WebPageStation mStartingPage;
 
     @Before
     public void setUp() {
-        mStartingNtp = mActivityTestRule.startOnNtp();
+        mStartingPage = mActivityTestRule.startOnBlankPage();
         mTestServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
@@ -804,7 +804,7 @@ public class NavigateTest {
                             checkAction);
 
             // Navigate to the spoofable URL
-            mStartingNtp.loadWebPageProgrammatically(
+            mStartingPage.loadWebPageProgrammatically(
                     UrlUtils.encodeHtmlDataUri(
                             "<head>  <meta name=\"viewport\"     "
                                 + " content=\"initial-scale=0.5,maximum-scale=0.5,user-scalable=no\"></head><script>"
