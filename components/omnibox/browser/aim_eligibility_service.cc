@@ -450,11 +450,8 @@ bool AimEligibilityService::IsCreateImagesEligible() const {
   if (is_off_the_record_) {
     return false;
   }
-  bool server_eligible =
-      IsToolAllowed(*GetSearchboxConfig(),
-                    omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) &&
-      IsToolAllowed(*GetSearchboxConfig(),
-                    omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+  bool server_eligible = IsToolAllowed(*GetSearchboxConfig(),
+                                       omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
   return IsEligibleByServer(server_eligible);
 }
 
