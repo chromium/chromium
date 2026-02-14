@@ -54,6 +54,10 @@ template("cpp_api_from_rust") {
   _h_out = "${target_gen_dir}/${_rust_target_name}.h"
   _rs_out = "${_h_out}.impl.rs"
 
+  _original_attributes = invoker.original_attributes
+  assert(defined(_original_attributes.cpp_namespace))
+  _cpp_namespace = _original_attributes.cpp_namespace
+
   _crubit_support_path_format =
       "\"third_party/rust-toolchain/lib/crubit/support/{header}\""
   _cpp_api_from_rust_exe_path =
@@ -77,9 +81,12 @@ template("cpp_api_from_rust") {
   _action_rsp_path = "$target_out_dir/$_action_target_name.rsp"
   generated_file(_rspgen_target_name) {
     forward_variables_from(invoker, [ "testonly" ])
-    forward_variables_from(invoker.original_attributes, [ "deps" ])
+    forward_variables_from(_original_attributes, [ "deps" ])
     outputs = [ _action_rsp_path ]
-    data_keys = [ "crate_header" ]
+    data_keys = [
+      "crate_header",
+      "crate_namespace",
+    ]
     walk_keys = []  # Only metadata of direct, non-transitive `deps`.
     visibility = [ ":${_action_target_name}" ]
   }
@@ -142,9 +149,8 @@ template("cpp_api_from_rust") {
       "--rustfmt-config-path",
       rebase_path(_rustfmt_config_path, root_build_dir),
 
-      # TODO(crbug.com/470466915): Start using `--crate-namespace...` to stop
-      # leaking mangled crate name via namespace of the generated bindings.
-      # This may be blocked by b/473633643.
+      "--crate-namespace",
+      "self=${_cpp_namespace}",
     ]
     if (defined(_clang_format_exe_path)) {
       inputs += [ _clang_format_exe_path ]
@@ -201,7 +207,7 @@ template("cpp_api_from_rust") {
   source_set(_h_target_name) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-    forward_variables_from(invoker.original_attributes, [ "deps" ])
+    forward_variables_from(_original_attributes, [ "deps" ])
     if (!defined(deps)) {
       deps = []
     }
@@ -215,6 +221,7 @@ template("cpp_api_from_rust") {
     metadata = {
       crate_header =
           [ "--crate-header=${_crate_name}=${_gen_dir_relative_h_out}" ]
+      crate_namespace = [ "--crate-namespace=${_crate_name}=${_cpp_namespace}" ]
     }
 
     public = [ _h_out ]

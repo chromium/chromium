@@ -68,6 +68,7 @@ rust_static_library("rust_lib") {
   sources = [ crate_root ]
   cpp_api_from_rust = {
     target_name = "rust_lib_bindings"
+    cpp_namespace = "rust_lib"
   }
 }
 
@@ -158,6 +159,7 @@ rust_static_library("rust_lib") {
 
   cpp_api_from_rust = {
     target_name = "rust_lib_bindings"
+    cpp_namespace = "rust_lib"
     deps = [ "//some/other/lib:other_lib_bindings" ]
   }
 }

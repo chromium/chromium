@@ -10,6 +10,7 @@ rust_static_library("other_lib") {
   testonly = true
   cpp_api_from_rust = {
     target_name = "other_lib_bindings"
+    cpp_namespace = "other_lib"
   }
 }
 
@@ -19,6 +20,7 @@ rust_static_library("rust_lib") {
   testonly = true
   cpp_api_from_rust = {
     target_name = "rust_lib_bindings"
+    cpp_namespace = "rust_lib"
     deps = [ ":other_lib_bindings" ]
   }
   deps = [ ":other_lib" ]
