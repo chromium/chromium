@@ -16,6 +16,7 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
@@ -72,6 +73,7 @@ class ModelContextTest : public SimTest {
 
  private:
   ScopedWebMCPForTest scoped_webmcp_{true};
+  ScopedWebMCPTestingForTest scoped_webmcp_testing_{true};
 };
 
 TEST_F(ModelContextTest, ExecuteTool) {
@@ -962,6 +964,81 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_FlexibleTypes) {
 
   EXPECT_FALSE(EvalJsBoolean("window.check_val"));
   EXPECT_EQ(EvalJsString("window.select_val"), "3");
+}
+
+class ReentrantListener : public NativeEventListener {
+ public:
+  explicit ReentrantListener(ModelContext* model_context)
+      : model_context_(model_context) {}
+  void Invoke(ExecutionContext*, Event*) override {
+    // Trigger HashMap modification by adding a new execution.
+    model_context_->ExecuteTool("echo", "{}", nullptr, base::DoNothing());
+  }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(model_context_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  Member<ModelContext> model_context_;
+};
+
+TEST_F(ModelContextTest, CancelToolReentrancy) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+
+  main_resource.Complete(R"(
+    <body>
+    <script>
+    async function hang(obj) {
+      return new Promise(() => {});
+    }
+
+    navigator.modelContext.registerTool({
+      execute: hang,
+      name: "hang",
+      description: "never resolves",
+    });
+
+    // We also need another tool that can be executed.
+    navigator.modelContext.registerTool({
+      execute: async () => "done",
+      name: "echo",
+      description: "echo",
+    });
+  </script>
+)");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  Window().addEventListener(
+      event_type_names::kToolcancel,
+      MakeGarbageCollected<ReentrantListener>(model_context), false);
+
+  base::RunLoop run_loop;
+
+  std::optional<uint32_t> execution_id = model_context->ExecuteTool(
+      "hang", "{}", /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            EXPECT_FALSE(res.has_value());
+            EXPECT_EQ(res.error(),
+                      WebDocument::ScriptToolError::kToolCancelled);
+            run_loop.Quit();
+          }));
+
+  ASSERT_TRUE(execution_id.has_value());
+
+  // This should trigger the toolcancel event, which re-enters and modifies
+  // pending_executions_.
+  model_context->CancelTool(*execution_id);
+
+  run_loop.Run();
 }
 
 }  // namespace blink

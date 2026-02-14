@@ -254,17 +254,24 @@ std::optional<uint32_t> ModelContext::ExecuteTool(
 }
 
 void ModelContext::CancelTool(uint32_t execution_id) {
+  auto it = pending_executions_.find(execution_id);
+  if (it == pending_executions_.end()) {
+    return;
+  }
+  String tool_name = it->value.tool_name;
+
+  if (LocalDOMWindow* window = document_->domWindow()) {
+    // This is a synchronous, non-cancelable event. Note that this can re-enter
+    // JavaScript and modify `pending_executions_`.
+    window->DispatchEvent(
+        *WebMCPEvent::Create(event_type_names::kToolcancel, tool_name));
+  }
+
+  // The pending_executions_ map might have been rehashed during DispatchEvent.
   auto pending_execution = pending_executions_.find(execution_id);
   if (pending_execution == pending_executions_.end()) {
     return;
   }
-
-  if (LocalDOMWindow* window = document_->domWindow()) {
-    // This is a synchronous, non-cancelable event.
-    window->DispatchEvent(*WebMCPEvent::Create(
-        event_type_names::kToolcancel, pending_execution->value.tool_name));
-  }
-
   task_runner_->PostTask(
       FROM_HERE,
       blink::BindOnce(std::move(pending_execution->value.callback),
