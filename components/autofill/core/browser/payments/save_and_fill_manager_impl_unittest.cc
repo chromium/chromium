@@ -236,7 +236,8 @@ UserProvidedCardSaveAndFillDetails CreateUserProvidedCardDetails(
     std::u16string cardholder_name,
     std::u16string expiration_date_month,
     std::u16string expiration_date_year,
-    std::optional<std::u16string> security_code) {
+    std::optional<std::u16string> security_code,
+    std::optional<std::u16string> nickname = std::nullopt) {
   UserProvidedCardSaveAndFillDetails user_provided_card_details;
   user_provided_card_details.card_number = std::move(card_number);
   user_provided_card_details.cardholder_name = std::move(cardholder_name);
@@ -245,6 +246,9 @@ UserProvidedCardSaveAndFillDetails CreateUserProvidedCardDetails(
   user_provided_card_details.expiration_date_year =
       std::move(expiration_date_year);
   user_provided_card_details.security_code = std::move(security_code);
+#if BUILDFLAG(IS_IOS)
+  user_provided_card_details.nickname = nickname;
+#endif
   return user_provided_card_details;
 }
 
@@ -617,7 +621,8 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
                                        /*cardholder_name=*/u"Jane Smith",
                                        /*expiration_date_month=*/u"06",
                                        /*expiration_date_year=*/u"2035",
-                                       /*security_code=*/u"456")));
+                                       /*security_code=*/u"456",
+                                       /*nickname=*/u"My Card")));
 
   EXPECT_CALL(payments_autofill_client(), LoadRiskData)
       .WillOnce(RunOnceCallback<0>("some risk data"));
@@ -636,6 +641,11 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
   EXPECT_EQ(u"06", card_to_fill.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(u"2035", card_to_fill.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
   EXPECT_EQ(u"456", card_to_fill.cvc());
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(u"My Card", card_to_fill.nickname());
+#else
+  EXPECT_EQ(card_to_fill.nickname(), std::u16string());
+#endif
 
   // Make sure that all strikes are cleared upon user acceptance.
   EXPECT_EQ(0, save_and_fill_strike_database.GetStrikes());

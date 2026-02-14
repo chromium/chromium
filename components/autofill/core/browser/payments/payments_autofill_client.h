@@ -243,7 +243,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Used to hold the data entered by the user in the Save and Fill dialog,
   // including card number, expiration date, name on card, and an optional
-  // security code.
+  // security code and nickname if it's on iOS platform.
   struct UserProvidedCardSaveAndFillDetails : public UserProvidedCardDetails {
     UserProvidedCardSaveAndFillDetails();
     UserProvidedCardSaveAndFillDetails(
@@ -254,6 +254,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
     std::u16string card_number;
     std::optional<std::u16string> security_code;
+#if BUILDFLAG(IS_IOS)
+    std::optional<std::u16string> nickname;
+#endif
   };
 
   // Callback to run after the local/upload card Save and Fill dialog is shown.

@@ -221,6 +221,10 @@ void SaveAndFillManagerImpl::PopulateCreditCardInfo(
   card.SetInfo(CREDIT_CARD_EXP_2_DIGIT_YEAR,
                user_provided_card_save_and_fill_details.expiration_date_year,
                app_locale);
+#if BUILDFLAG(IS_IOS)
+  card.SetNickname(
+      user_provided_card_save_and_fill_details.nickname.value_or(u""));
+#endif
 }
 
 bool SaveAndFillManagerImpl::IsCreditCardUploadEnabled() const {
