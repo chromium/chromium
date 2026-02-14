@@ -33,8 +33,6 @@
   --composebox-submit-container-inline-end:
       var(--composebox-last-icon-inline-end);
   --composebox-last-icon-inline-end: 12px;
-  --cr-composebox-file-chip-url-text-size: 11px;
-  --cr-composebox-file-chip-title-text-size: 14px;
   --cr-searchbox-height: 52px;
   --cr-searchbox-min-width: min(calc(100%), 1100px);
   --icon-menu-spacing: 6px;
@@ -124,7 +122,6 @@
 }
 
 #composebox {
-  --composebox-thumbnail-img-chip-size: 44px;
   --expanded-border-radius: var(--composebox-border-radius);
   --input-bottom-spacing: 16px;
   --text-input-left-spacing: 24px;
@@ -154,7 +151,7 @@
 }
 
 #composebox::part(thumbnail) {
-  --thumbnail-size_: 28px;
+  --thumbnail-size_: var(--file-chip-thumbnail-full-size);
   height: var(--thumbnail-size_);
   padding: 0;
   width: var(--thumbnail-size_);

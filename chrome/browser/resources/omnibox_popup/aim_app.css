@@ -10,10 +10,11 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --color-file-chip-remove-button-fill: var(--color-omnibox-results-icon);
   --composebox-context-menu-entrypoint-button-color: var(--color-sys-on-surface);
+  --cr-composebox-cancel-button-top: 5px;
   --cr-composebox-custom-font-size: var(--omnibox-font-size);
   --cr-composebox-expanded-border-radius: 16px;
-  --cr-composebox-file-thumbnail-remove-button-fill-color: var(--color-omnibox-results-icon);
   --cr-composebox-input-bottom-spacing: 8px;
   --cr-composebox-input-placeholder-font-size: var(--omnibox-font-size);
   --cr-composebox-match-height: 40px;
@@ -25,9 +26,8 @@
   --cr-composebox-match-text-padding-inline-end: 4px;
   --cr-composebox-max-height: 800px;
   --cr-composebox-text-container-padding-block-start: 0;
-  --search-animated-glif-rotation-duration: 2000ms;
-  --cr-composebox-cancel-button-top: 5px;
   --cr-composebox-voice-icon-fill-color: var(--color-sys-on-surface);
+  --search-animated-glif-rotation-duration: 2000ms;
 }
 
 cr-composebox {
