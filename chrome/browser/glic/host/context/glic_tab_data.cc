@@ -26,6 +26,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/skia_util.h"
 
 namespace glic {
 
@@ -331,15 +332,7 @@ bool FaviconEquals(const ::SkBitmap& a, const ::SkBitmap& b) {
   if (a.info() != b.info()) {
     return false;
   }
-  // Compare image pixels.
-  for (int y = 0; y < a.height(); ++y) {
-    for (int x = 0; x < a.width(); ++x) {
-      if (a.getColor(x, y) != b.getColor(x, y)) {
-        return false;
-      }
-    }
-  }
-  return true;
+  return gfx::BitmapsAreEqual(a, b);
 }
 
 }  // namespace glic
