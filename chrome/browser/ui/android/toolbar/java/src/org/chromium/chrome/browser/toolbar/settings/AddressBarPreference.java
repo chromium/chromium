@@ -123,6 +123,7 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
             @ToolbarPositionAndSource int positionAndSource = fromLocalState(existingLocalState);
             sharedPreferencesManager.writeInt(
                     ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, positionAndSource);
+            return positionAndSource;
         }
         // Neither is set.
         return DEFAULT_POSITION_AND_SOURCE;

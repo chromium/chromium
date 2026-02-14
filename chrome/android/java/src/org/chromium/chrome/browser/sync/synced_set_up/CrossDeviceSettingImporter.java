@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.XPLAT_SYNCED_SETUP;
 import static org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsMediator.MODULE_TYPE_TO_USER_PREFS_KEY;
 import static org.chromium.chrome.browser.sync.synced_set_up.SyncedSetUpUtilsBridge.getCrossDevicePrefsFromRemoteDevice;
+import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.computeToolbarPositionAndSource;
+import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.setToolbarPositionAndSource;
 import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.TYPE_ACTION;
 import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.UMA_CROSS_DEVICE_SETTING_IMPORT;
 import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.UMA_CROSS_DEVICE_SETTING_REDO;
@@ -388,16 +390,23 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
 
     /** Returns the user's current settings. */
     private Map<String, Object> getCurrentSettings() {
+        Map<String, Object> result = new HashMap<>();
+
+        PrefService localStatePrefs = LocalStatePrefs.get();
+        if (localStatePrefs != null) {
+            String omniboxPositionPref = Pref.IS_OMNIBOX_IN_BOTTOM_POSITION;
+            result.put(omniboxPositionPref, localStatePrefs.getBoolean(omniboxPositionPref));
+        }
+
         // Assumes mTab.getProfile() is non-null and UserPrefs.areNativePrefsLoaded is true.
         Profile profile = assumeNonNull(mActivityTabSupplier.get()).getProfile();
         PrefService userPrefs = UserPrefs.get(profile);
-        if (userPrefs == null) return Map.of();
-
-        Map<String, Object> result = new HashMap<>();
-        String allCardsPref = Pref.MAGIC_STACK_HOME_MODULE_ENABLED;
-        result.put(allCardsPref, userPrefs.getBoolean(allCardsPref));
-        for (String key : MODULE_TYPE_TO_USER_PREFS_KEY.values()) {
-            result.put(key, userPrefs.getBoolean(key));
+        if (userPrefs != null) {
+            String allCardsPref = Pref.MAGIC_STACK_HOME_MODULE_ENABLED;
+            result.put(allCardsPref, userPrefs.getBoolean(allCardsPref));
+            for (String key : MODULE_TYPE_TO_USER_PREFS_KEY.values()) {
+                result.put(key, userPrefs.getBoolean(key));
+            }
         }
 
         return result;
@@ -544,6 +553,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (preferencesToApply.get(omniboxKey) instanceof Boolean booleanValue) {
             localStatePrefs.setBoolean(omniboxKey, booleanValue);
         }
+
+        // Force an update from LocalStatePrefs to AddressBarPreference.
+        setToolbarPositionAndSource(computeToolbarPositionAndSource());
     }
 
     /**
