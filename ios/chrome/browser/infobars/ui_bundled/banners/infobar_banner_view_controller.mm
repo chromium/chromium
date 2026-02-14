@@ -342,11 +342,11 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
       kLongPressTimeDuration.InSecondsF();
   [self.view addGestureRecognizer:longPressGestureRecognizer];
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+  NSArray<UITrait>* traits = @[
     UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
     UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
     UITraitUserInterfaceLevel.class
-  ]);
+  ];
   __weak __typeof(self) weakSelf = self;
   UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                    UITraitCollection* previousCollection) {
