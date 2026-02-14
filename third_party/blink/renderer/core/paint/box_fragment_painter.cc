@@ -2216,10 +2216,15 @@ PhysicalRect BoxFragmentPainter::AdjustRectForScrolledContent(
   context.Clip(gfx::RectF(physical.OverflowClipRect(rect.offset)));
 
   PhysicalRect scrolled_paint_rect = rect;
+
   // Adjust the paint rect to reflect a scrolled content box with borders at
   // the ends.
-  scrolled_paint_rect.offset -=
-      PhysicalOffset(physical.PixelSnappedScrolledContentOffset());
+  if (PaintLayerScrollableArea* scrollable_area =
+          To<LayoutBox>(physical.GetLayoutObject())->GetScrollableArea()) {
+    scrolled_paint_rect.offset -=
+        PhysicalOffset::FromPointFFloor(scrollable_area->ScrollPosition());
+  }
+
   scrolled_paint_rect.size =
       physical.ScrollSize() +
       PhysicalSize(borders.HorizontalSum(), borders.VerticalSum());
