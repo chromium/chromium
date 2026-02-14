@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "content/common/content_export.h"
@@ -73,6 +74,19 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   // current process.
   void UpdateConsumers(MemoryCoordinatorPolicy* policy,
                        std::vector<MemoryConsumerUpdate> updates);
+
+  using ConsumerFilter =
+      base::FunctionRef<bool(std::string_view consumer_id,
+                             base::MemoryConsumerTraits traits,
+                             ProcessType process_type,
+                             ChildProcessId child_process_id)>;
+
+  // Called by policies to request actions on all consumer groups that match the
+  // filter.
+  void UpdateConsumers(MemoryCoordinatorPolicy* policy,
+                       ConsumerFilter filter,
+                       std::optional<int> percentage,
+                       bool release_memory);
 
   // For testing only. Notifies all registered consumer groups.
   void NotifyReleaseMemoryForTesting();

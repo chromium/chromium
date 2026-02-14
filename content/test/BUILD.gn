@@ -3071,6 +3071,7 @@ test("content_unittests") {
     "../common/input/synthetic_pointer_action_unittest.cc",
     "../common/memory_coordinator/memory_consumer_registry_unittest.cc",
     "../common/memory_coordinator/memory_coordinator_policy_manager_unittest.cc",
+    "../common/memory_coordinator/memory_pressure_listener_policy_unittest.cc",
     "../common/memory_coordinator/mojom/memory_consumer_traits_unittest.cc",
     "../common/pseudonymization_salt_unittest.cc",
     "../common/service_worker/race_network_request_read_buffer_manager_unittest.cc",

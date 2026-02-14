@@ -10,6 +10,7 @@
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_consumer_registry.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
+#include "content/common/memory_coordinator/memory_pressure_listener_policy.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom-forward.h"
 
 namespace content {
@@ -39,7 +40,10 @@ class CONTENT_EXPORT ChildMemoryCoordinator {
   base::ScopedMemoryConsumerRegistry<MemoryConsumerRegistry> registry_{
       PROCESS_TYPE_UNKNOWN, ChildProcessId(), policy_manager_};
 
-  BrowserMemoryCoordinatorBridge browser_memory_coordinator_bridge_;
+  BrowserMemoryCoordinatorBridge browser_memory_coordinator_bridge_{
+      policy_manager_};
+  MemoryPressureListenerPolicy memory_pressure_listener_policy_{
+      policy_manager_};
 };
 
 }  // namespace content

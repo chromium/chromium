@@ -463,4 +463,52 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, UpdateConsumers_MultipleProcesses) {
   policy_manager().RemovePolicy(&policy);
 }
 
+TEST_F(MemoryCoordinatorPolicyManagerTest, UpdateConsumers_Filter) {
+  MockMemoryConsumerGroupHost host1;
+  MockMemoryConsumerGroupHost host2;
+  const ChildProcessId kChildId1(1);
+  const ChildProcessId kChildId2(2);
+
+  policy_manager().AddMemoryConsumerGroupHost(kChildId1, &host1);
+  policy_manager().AddMemoryConsumerGroupHost(kChildId2, &host2);
+
+  const base::MemoryConsumerTraits kTraits1{
+      .supports_memory_limit =
+          base::MemoryConsumerTraits::SupportsMemoryLimit::kYes};
+  const base::MemoryConsumerTraits kTraits2{
+      .supports_memory_limit =
+          base::MemoryConsumerTraits::SupportsMemoryLimit::kNo};
+
+  policy_manager().OnConsumerGroupAdded("consumer1", kTraits1,
+                                        PROCESS_TYPE_RENDERER, kChildId1);
+  policy_manager().OnConsumerGroupAdded("consumer2", kTraits2,
+                                        PROCESS_TYPE_RENDERER, kChildId2);
+
+  MockPolicy policy(policy_manager());
+  policy_manager().AddPolicy(&policy);
+
+  // Update only consumers with kTraits1.
+  EXPECT_CALL(host1, UpdateConsumers(ElementsAre(
+                         MemoryConsumerUpdate{"consumer1", 50, true})));
+  EXPECT_CALL(host2, UpdateConsumers(_)).Times(0);
+
+  policy.manager().UpdateConsumers(
+      &policy,
+      [](std::string_view consumer_id, base::MemoryConsumerTraits traits,
+         ProcessType process_type, ChildProcessId child_process_id) {
+        return traits.supports_memory_limit ==
+               base::MemoryConsumerTraits::SupportsMemoryLimit::kYes;
+      },
+      50, true);
+
+  Mock::VerifyAndClearExpectations(&host1);
+  Mock::VerifyAndClearExpectations(&host2);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved("consumer1", kChildId1);
+  policy_manager().OnConsumerGroupRemoved("consumer2", kChildId2);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId1);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId2);
+  policy_manager().RemovePolicy(&policy);
+}
 }  // namespace content

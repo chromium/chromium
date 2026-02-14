@@ -29,9 +29,13 @@ BrowserMemoryCoordinator& BrowserMemoryCoordinator::Get() {
 BrowserMemoryCoordinator::BrowserMemoryCoordinator() {
   CHECK(!g_instance);
   g_instance = this;
+
+  policy_manager_.AddPolicy(&memory_pressure_listener_policy_);
 }
 
 BrowserMemoryCoordinator::~BrowserMemoryCoordinator() {
+  policy_manager_.RemovePolicy(&memory_pressure_listener_policy_);
+
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }

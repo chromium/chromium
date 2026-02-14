@@ -150,6 +150,8 @@ source_set("common") {
     "memory_coordinator/memory_coordinator_policy.h",
     "memory_coordinator/memory_coordinator_policy_manager.cc",
     "memory_coordinator/memory_coordinator_policy_manager.h",
+    "memory_coordinator/memory_pressure_listener_policy.cc",
+    "memory_coordinator/memory_pressure_listener_policy.h",
     "navigation_params_utils.h",
     "origin_util.cc",
     "page_state_mojom_traits.h",

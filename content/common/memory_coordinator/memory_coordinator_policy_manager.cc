@@ -196,6 +196,25 @@ void MemoryCoordinatorPolicyManager::UpdateConsumers(
   UpdateConsumersForProcess(policy, ChildProcessId(), std::move(updates));
 }
 
+void MemoryCoordinatorPolicyManager::UpdateConsumers(
+    MemoryCoordinatorPolicy* policy,
+    ConsumerFilter filter,
+    std::optional<int> percentage,
+    bool release_memory) {
+  for (auto const& [child_id, host_state] : hosts_) {
+    std::vector<MemoryConsumerUpdate> updates;
+    for (auto const& [consumer_id, group_state] : host_state->groups) {
+      if (filter(consumer_id, group_state->traits(),
+                 group_state->process_type(), child_id)) {
+        updates.push_back({consumer_id, percentage, release_memory});
+      }
+    }
+    if (!updates.empty()) {
+      UpdateConsumersForProcess(policy, child_id, std::move(updates));
+    }
+  }
+}
+
 void MemoryCoordinatorPolicyManager::UpdateConsumersForProcess(
     MemoryCoordinatorPolicy* policy,
     ChildProcessId child_process_id,

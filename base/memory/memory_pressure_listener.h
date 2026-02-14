@@ -100,6 +100,7 @@ enum class MemoryPressureListenerTag {
   kProgramCache = 66,
   kBackForwardCacheImpl = 67,
   kGrShaderCache = 68,
+  kMemoryPressureListenerPolicy = 69,
 };
 
 // To start listening, derive from MemoryPressureListener, and use
