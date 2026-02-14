@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 минут бұрын}other{# минут бұрын}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> бөлісу мүмкін емес</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 ай бұрын}other{# ай бұрын}}</translation>
+<translation id="1591017414891297549">АЛДЫН АЛА ҚАРАУ</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 минут және }other{# минут және }}</translation>
 <translation id="1643823602425662293">Хабарландыру</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> КБ/с</translation>
 <translation id="8725488761726303204">+ тағы <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">Дайын</translation>
+<translation id="8741385002816058621">Бұл — функцияның алғы нұсқасы.</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 сағ}other{# сағ}}</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
 <translation id="8841375032071747811">"Артқа" түймесі</translation>

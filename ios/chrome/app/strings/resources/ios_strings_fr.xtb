@@ -140,7 +140,7 @@
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
 <translation id="1497590942294823549">Menu → Gestionnaire de mots depasse</translation>
 <translation id="1498283581832036924">Votre compte <ph name="WEBSITE" /> ne sera pas supprimé.</translation>
-<translation id="1503814213414825943">Sélectionnez les comptes que vous souhaitez exporter vers une autre appli.</translation>
+<translation id="1503814213414825943">Sélectionnez les comptes à exporter vers une autre appli.</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
 <translation id="1506063256525392513">Cela vous permet de prendre et d'importer des photos, et de scanner des codes QR</translation>
 <translation id="1508263560970797965">Continuer en navigation privée</translation>
@@ -2237,6 +2237,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="9055291197094969722">Créez des groupes d'onglets pour organiser vos onglets ouverts et rester productif</translation>
 <translation id="9055580485132823283">Vous êtes sur le point de supprimer {password_count} mots de passe, {passkey_count} clés d'accès et la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
 <translation id="9057030985451135243">En savoir plus sur les groupes d'onglets partagés</translation>
+<translation id="9064106978262828592">Problème lors de l'exportation de vos données</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9066097352053395362">Masquer "Modifier le favori"</translation>
 <translation id="9070824521421603770">Vous allez être déconnecté et les onglets seront fermés</translation>

@@ -262,6 +262,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{‏ينصح متصفِّح Chrome بإزالة هذه الإضافة. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" />}zero{‏ينصح المتصفّح Chrome بإزالة هذه الإضافات. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" />}two{‏ينصح Chrome بإزالة هاتين الإضافتيَن. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" />}few{‏ينصح المتصفّح Chrome بإزالة هذه الإضافات. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" />}many{‏ينصح المتصفّح Chrome بإزالة هذه الإضافات. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" />}other{‏ينصح المتصفّح Chrome بإزالة هذه الإضافات. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">يمكنك تعزيز نتائج بحثك عن طريق إضافة علامات تبويب وملفات وأدوات متعدّدة باستخدام زر "إضافة علامة تبويب والمزيد".</translation>
 <translation id="3756724684201900923">‏مزيد من المعلومات حول تثبيت Chrome</translation>
+<translation id="3772152698251011058">‏إبلاغ Google عن هذا الموقع الإلكتروني</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">‏تعذَّر على ChromeOS Flex مزامنة البيانات بسبب حدوث خطأ أثناء تسجيل الدخول.</translation>
 <translation id="3795971588916395511">‏نظام التشغيل Chrome من Google</translation>
@@ -412,6 +413,8 @@
 <translation id="5430073640787465221">‏ملف الإعدادات المفضّلة تالف أو غير صالح. يتعذر على Google Chrome استرداد إعداداتك.</translation>
 <translation id="5465210843490471889">‏يُرجى اختيار ملف شخصي على Chrome لاستخدامه مع <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">‏يُرسل Chrome تفاعلاتك مع هذه الميزات إلى Google للمساعدة في تحسينها. وقد يقرأ المراجعون هذه البيانات ويعالجونها ويضيفون تعليقات توضيحية إليها.</translation>
+<translation id="547202872422499512">‏يتم الآن فتح Chrome تلقائيًا عند بدء تشغيل Windows، ما يتيح لك بدء التصفّح على الفور. ويمكنك إيقاف هذا الإجراء من خلال الإعدادات.</translation>
+<translation id="5486346529181556467">‏يمكنك المساهمة في تحسين الأمان على الإنترنت للجميع عند الإبلاغ عن أي موقع إلكتروني في اعتقادك أنّه ضار. <ph name="BEGIN_LINK" />مزيد من المعلومات حول سياسة Google بشأن المواقع الإلكترونية غير الآمنة<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">أعلى يمين مساحة البحث: %<ph name="LEFT" /> من الجهة اليمنى و%<ph name="TOP" /> من الأعلى</translation>
 <translation id="5550137307985173298">‏يمكنك النقر على زر "تخصيص Chrome" في صفحة "علامة تبويب جديدة" لإضفاء مظهر جديد عليه</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -571,6 +574,7 @@
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6967962315388095737">‏قاعدة الوارد إلى الإصدار التجريبي من Google Chrome للسماح بحركة مرور mDNS.</translation>
 <translation id="6979589607440534284">‏التعرّف على سبب حظر بعض الملفات في Chrome، يتم فتح الرابط في علامة تبويب جديدة</translation>
+<translation id="6985817499499247940">‏يمكنك فتح Chrome تلقائيًا لبدء التصفّح على الفور.</translation>
 <translation id="6991926986715044139">‏إظهار اختصار "عدسة Google" دائمًا</translation>
 <translation id="6999131147875565462">‏سيعمل Chrome بشكل أسرع ومن المفترض أن تعمل الميزات التي تستخدِم JavaScript على النحو المطلوب</translation>
 <translation id="7011190694940573312">تعذّر تثبيت هذا الإصدار من نظام التشغيل لأنّه غير متوافق.</translation>
@@ -599,6 +603,7 @@
 <translation id="7288567540154601580">علامات التبويب والإضافات</translation>
 <translation id="7296210096911315575">معلومات مهمّة حول الأمان والاستخدام</translation>
 <translation id="7302361266603927550">‏لم يتم حفظ بعض بيانات Chrome في حسابك على Google إلى الآن. يُرجى الانتظار بضع دقائق قبل تسجيل الخروج. إذا سجّلت الخروج الآن، فسيتم حذف هذه البيانات.</translation>
+<translation id="7306401458628386911">‏بدء التصفّح على الفور: يمكن الآن فتح Chrome تلقائيًا عند بدء تشغيل Windows.</translation>
 <translation id="7308322188646931570">‏يحتاج Chrome للوصول إلى مساحة التخزين لتنزيل الملفات.</translation>
 <translation id="7339898014177206373">نافذة جديدة</translation>
 <translation id="7352651011704765696">حدث خطأ</translation>
@@ -662,6 +667,7 @@
 <translation id="7827099906024714326">‏يحتاج Chrome إلى إثبات هويتك قبل حفظ بعض البيانات في حسابك على Google واستخدامها على جميع أجهزتك. إذا سجّلت الخروج الآن، فسيتم حذف هذه البيانات.</translation>
 <translation id="7832314606810669113">‏يتيح لك تسجيل الدخول إلى Chrome الوصول إلى الإشارات المرجعية وغيرها على جميع أجهزتك. وسيتم حفظ هذه الإشارة المرجعية في حسابك على Google بعد تسجيل الدخول إليه.</translation>
 <translation id="7845233973568007926">شكرًا على التثبيت. عليك إعادة تشغيل الكمبيوتر قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847170235260850604">‏فتح Chrome تلقائيًا عند بدء تشغيل Windows</translation>
 <translation id="7849037457735762883">‏المتابعة من حيث توقفت: يمكن لمتصفح Chrome استعادة علامات التبويب كلما أعدت تشغيله. لتفعيل هذه الميزة، يُرجى الانتقال إلى</translation>
 <translation id="7869620795354551924">‏لاستخدام كلمات المرور المحفوظة، يُرجى مسح رمز الاستجابة السريعة ضوئيًا وتنزيل Chrome لجهاز iOS، ثم تسجيل الدخول إلى حسابك على Google</translation>
 <translation id="7872446069773932638">جارٍ التنزيل… الثواني المتبقّية: <ph name="SECONDS" /></translation>

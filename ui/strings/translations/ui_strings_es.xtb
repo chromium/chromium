@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{hace 1 minuto}other{hace # minutos}}</translation>
 <translation id="1450753235335490080">No se ha podido compartir: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{hace 1 mes}other{hace # meses}}</translation>
+<translation id="1591017414891297549">VERSIÓN PRELIMINAR</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuto y }other{# minutos y }}</translation>
 <translation id="1643823602425662293">Notificación</translation>
 <translation id="169515659049020177">Mayús</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204"><ph name="NUMBER" /> más</translation>
 <translation id="8730621377337864115">Hecho</translation>
+<translation id="8741385002816058621">Es una función en versión preliminar</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 h}other{# h}}</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>

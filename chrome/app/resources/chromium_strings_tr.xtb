@@ -98,6 +98,7 @@
 <translation id="2099452623287920103">Google Hesabınıza kaydettiğiniz şifreler ve diğer Chromium verileri bu cihazdan kaldırılır. Bu bilgileri Chromium'da tekrar kullanmak için yeniden oturum açın.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium 1 dakika boyunca kullanılmadığında kuruluşunuz tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Sekmeleriniz açık kalır.}other{Chromium # dakika boyunca kullanılmadığında kuruluşunuz tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Sekmeleriniz açık kalır.}}</translation>
 <translation id="2126108037660393668">İndirilen dosya doğrulanamadı.</translation>
+<translation id="2135919691573380097">Bu siteyi bildirin</translation>
 <translation id="2137162749895930932">Çeviri ekranını kapat</translation>
 <translation id="215352261310130060">Sitede güvenli bağlantı kullanılmadığı ve dosya üzerinde oynanmış olabileceği için Chromium bu indirme işlemini engelledi</translation>
 <translation id="2170098639895543546">Sayfada herhangi bir şeyi seçin</translation>
@@ -309,6 +310,7 @@
 <translation id="4304713468139749426">Şifre Yöneticisi</translation>
 <translation id="4334241893986177674">Bu ekran görüntüsünde arama yapın</translation>
 <translation id="4334294535648607276">İndirme işlemi tamamlandı.</translation>
+<translation id="4384331407722351213">Windows başlatıldığında Chromium'u aç</translation>
 <translation id="4384993550046411228">Chromium'u varsayılan tarayıcınız olarak ayarlayarak bildiğiniz, sevdiğiniz ve güvendiğiniz özelliklere kolayca erişin. Chromium, hızlı erişim için görev çubuğunuza sabitlenir.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" />, bu cihazı kullanmadan önce aşağıdaki Hizmet Şartları'nı okuyup kabul etmenizi zorunlu tutmaktadır. Bu şartlar, ChromiumOS Şartları'nın kapsamını genişletmez, değiştirmez veya sınırlamaz.</translation>
 <translation id="4407044323746248786">Yine de Chromium'dan çıkılsın mı?</translation>
@@ -329,6 +331,7 @@
 <translation id="4531137820806573936">Çevrenizin haritasını çıkarması ve ellerinizi takip etmesi için Chromium'a izin vermeniz gerekir.</translation>
 <translation id="4536805923587466102">Başka bir Chromium profilinde <ph name="USER_EMAIL_ADDRESS" /> olarak zaten oturum açmış durumdasınız.</translation>
 <translation id="4548534452171747496">Chromium, sayfaları önceden yükleyerek internette gezinme ve arama işlemlerini hızlandırır. <ph name="BEGIN_LINK" />Önceden yükleme sayfaları hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
+<translation id="4549180975214802957">Zararlı olduğunu düşündüğünüz siteleri bildirerek herkes için internet güvenliğini artırın.</translation>
 <translation id="4570813286784708942">Güvenli Tarama'yı devre dışı bıraktığınız ve dosya doğrulanamadığı için Chromium bu indirme işlemini engelledi</translation>
 <translation id="4583692638088316420">Telefonunuzda Chromium ile Google Lens'i deneyin</translation>
 <translation id="4594305310729380060">Bu cihazdaki Şifre Yöneticisi'ne</translation>
@@ -501,6 +504,7 @@
 <translation id="6598877126913850652">Chromium bildirim ayarlarına git</translation>
 <translation id="6600016381025017075">Bu sayfada istediğiniz şeyi arayın</translation>
 <translation id="6613594504749178791">Değişiklikleriniz, Chromium tekrar başlatıldığında geçerli olacak.</translation>
+<translation id="6637908313088374648">Chromium artık Windows başlatıldığında açılıyor. Böylece hemen göz atmaya başlayabilirsiniz. Bu özelliği ayarlardan kapatabilirsiniz.</translation>
 <translation id="6648212540664651655">Kaldığınız yerden devam edin: Chromium, son oturumunuzdaki sekmeleri geri yükledi. Bu özelliği şu bölümde devre dışı bırakabilirsiniz:</translation>
 <translation id="665732753414869868">Çevrenizin 3D haritasını oluşturmak için Chromium'un kamera iznine ihtiyacı var</translation>
 <translation id="6669284030132180248">Google Hesabınıza yer işaretlerinizi de kaydederseniz Chromium'da ürün fiyatlarını takip edebilir ve fiyat düştüğünde bildirim alabilirsiniz</translation>
@@ -559,6 +563,7 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="7213407614656404070">Mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chromium'u kullanabilirsiniz</translation>
 <translation id="7223968959479464213">Görev Yöneticisi - Chromium</translation>
 <translation id="7246575524853130370">Chromium'un tahmin ettiği ilgi alanlarınız</translation>
+<translation id="7252276985725323153">Hemen göz atmaya başlayın: Chromium artık Windows başlatıldığında açılabilir.</translation>
 <translation id="7274695763216404502">Sabitlendi. Araç çubuğundan Görsel Arama'yı tekrar kullanabilirsiniz</translation>
 <translation id="7288567540154601580">Sekmeler ve uzantılar</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium bunu kaldırmanızı öneriyor}other{Chromium bunları kaldırmanızı öneriyor}}</translation>
@@ -589,6 +594,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="751935028865900641">Siteler muhtemelen beklendiği gibi çalışır. Tüm Chromium pencerelerini kapattığınızda çoğu sitedeki oturumunuz kapatılır. Chromium'da oturum açtıysanız Google Hesabınız buna dahil değildir.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 1 dakika içinde yeniden başlatılacak}other{Chromium # dakika içinde yeniden başlatılacak}}</translation>
 <translation id="7565444033145385702">Verilerinizin korunması için Chromium'un, yakın zamanda ziyaret etmediğiniz sitelerin izinlerini kaldırmasına izin verin.</translation>
+<translation id="7583104404158659071">Hemen göz atmaya başlamak için Chromium'u otomatik olarak açın.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> Yükleyici</translation>
 <translation id="761356813943268536">Chromium kameranızı ve mikrofonunuzu kullanıyor.</translation>
 <translation id="7617377681829253106">Chromium daha da iyi bir hale geldi</translation>

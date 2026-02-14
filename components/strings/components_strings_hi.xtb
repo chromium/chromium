@@ -706,6 +706,7 @@
 <translation id="2137891579555018930">अनुमति मिलने का इंतज़ार किया जा रहा है...</translation>
 <translation id="213826338245044447">मोबाइल बुकमार्क</translation>
 <translation id="2141000681034340397">अपने इनपुट में बदलाव करें</translation>
+<translation id="2141475438898772664">दो-दो हफ़्तों की अवधि वाली चार किस्तों में या हर महीने पेमेंट करें</translation>
 <translation id="2144171668675205303">कोई विषय ऐक्टिव नहीं है</translation>
 <translation id="2145193671493396738">आर्थिक मामलों से जुड़ी खबरें</translation>
 <translation id="214556005048008348">भुगतान न करें</translation>
@@ -2849,6 +2850,7 @@
 <translation id="5543564889050342791">चिड़ियाघर, अक्वेरियम, और अभयारण्य</translation>
 <translation id="5543722831081909240">180 डिग्री</translation>
 <translation id="5544836308113951378">क्रूज़ और चार्टर</translation>
+<translation id="5545314360139398232">किस्तों में पेमेंट करने के लिए, <ph name="ISSUER_NAME" /> को लिंक करें</translation>
 <translation id="5547939254150808298">प्रिंट करना और पब्लिश करना</translation>
 <translation id="554815783948612276">फ़ोरम और चैट की सुविधा देने वाले</translation>
 <translation id="5548606607480005320">सुरक्षा जांच</translation>
@@ -3696,6 +3698,7 @@
 <translation id="6926216138694948720">बॉडी आर्ट</translation>
 <translation id="692638818576287323">व्यावसायिक वाहन</translation>
 <translation id="6927878187051807444">कैमरे से ली गई फ़ोटो और स्क्रीनशॉट</translation>
+<translation id="6929949393612835405">इसे बंद करें और "<ph name="OPENER_TITLE" />" पर वापस जाएं</translation>
 <translation id="6930607614725241390">साइड पैनल में खोजें</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />आपका डिफ़ॉल्ट सर्च इंजन आपको वेब पर खोज करने और Chrome की सुविधाएं इस्तेमाल करने की अनुमति देता है.<ph name="END_BOLD" /> जैसे, पता बार से और वेब पेजों पर मौजूद इमेज की मदद से खोज करना. अगर आपका सर्च इंजन, किसी सुविधा के साथ काम नहीं करता, तो हो सकता है कि वह सुविधा उपलब्ध न हो.</translation>
 <translation id="6934672428414710184">यह नाम आपके Google खाते से है</translation>

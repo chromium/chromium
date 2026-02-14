@@ -260,6 +260,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome 建議你移除。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充功能<ph name="END_LINK" />}other{Chrome 建議你移除。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充功能<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">使用「新增分頁和其他相關資訊」按鈕，新增多個分頁、檔案和工具，進一步搜尋所需資訊。</translation>
 <translation id="3756724684201900923">進一步瞭解如何安裝 Chrome</translation>
+<translation id="3772152698251011058">向 Google 檢舉這個網站</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">登入時發生錯誤，因此 ChromeOS Flex 無法同步處理你的資料。</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -409,6 +410,8 @@
 Google Chrome 無法復原你的設定。</translation>
 <translation id="5465210843490471889">選擇要搭配 <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> 使用的 Chrome 設定檔</translation>
 <translation id="5468572406162360320">為協助改善這些功能，Chrome 會將你和功能的互動資料傳送給 Google。人工審查員可能會讀取、處理這些資料，並加上註解。</translation>
+<translation id="547202872422499512">現在 Windows 啟動時會開啟 Chrome，讓你可以立即開始瀏覽。你可以前往設定頁面關閉這項功能。</translation>
+<translation id="5486346529181556467">回報有害網站，協助提升所有人的網路安全。進一步瞭解 <ph name="BEGIN_LINK" />Google 的不安全網站政策<ph name="END_LINK" />。</translation>
 <translation id="5524890928877629608">搜尋區域的左上角：左側 <ph name="LEFT" />%，頂端 <ph name="TOP" />%</translation>
 <translation id="5550137307985173298">點選新分頁的「自訂 Chrome」按鈕，即可變更 Chrome 外觀</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -568,6 +571,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6967962315388095737">允許 mDNS 流量的 Google Chrome Beta 版輸入規則。</translation>
 <translation id="6979589607440534284">瞭解 Chrome 封鎖某些檔案的原因 (在新分頁中開啟)</translation>
+<translation id="6985817499499247940">自動啟動 Chrome，立即開始瀏覽。</translation>
 <translation id="6991926986715044139">一律顯示 Google 智慧鏡頭捷徑</translation>
 <translation id="6999131147875565462">提高 Chrome 執行速度，使用 JavaScript 的功能應該會正常運作</translation>
 <translation id="7011190694940573312">安裝失敗，因為應用程式不支援這個版本的作業系統。</translation>
@@ -596,6 +600,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7288567540154601580">分頁和擴充功能</translation>
 <translation id="7296210096911315575">重要的使用與安全資訊</translation>
 <translation id="7302361266603927550">部分 Chrome 資料尚未儲存到 Google 帳戶，請稍候幾分鐘後再登出。如果現在登出，系統將刪除這類資料。</translation>
+<translation id="7306401458628386911">立即開始瀏覽：Chrome 現在可以在 Windows 啟動時開啟。</translation>
 <translation id="7308322188646931570">Chrome 需要儲存空間存取權，才能下載檔案</translation>
 <translation id="7339898014177206373">開啟新視窗</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
@@ -659,6 +664,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7827099906024714326">Chrome 必須先驗證身分，才能將這些資料儲存到 Google 帳戶，讓你在所有裝置上使用。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="7832314606810669113">如要在所有裝置上存取書籤和其他資料，請登入 Chrome。登入後，這個書籤就會儲存到 Google 帳戶。</translation>
 <translation id="7845233973568007926">感謝你安裝本服務。你必須重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="7847170235260850604">在 Windows 啟動時開啟 Chrome</translation>
 <translation id="7849037457735762883">接續上次的瀏覽內容：Chrome 每次重新啟動時都能還原分頁。如要開啟這項功能，請前往</translation>
 <translation id="7869620795354551924">如要使用儲存的密碼，請掃描 QR code 下載 Chrome iOS 版，並登入 Google 帳戶</translation>
 <translation id="7872446069773932638">下載中... 還剩 <ph name="SECONDS" /> 秒</translation>

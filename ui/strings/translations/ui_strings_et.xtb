@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 minut tagasi}other{# minutit tagasi}}</translation>
 <translation id="1450753235335490080">Üksust <ph name="CONTENT_TYPE" /> ei saa jagada</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 kuu tagasi}other{# kuud tagasi}}</translation>
+<translation id="1591017414891297549">EELVAADE</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minut ja }other{# minutit ja }}</translation>
 <translation id="1643823602425662293">Märguanne</translation>
 <translation id="169515659049020177">Tõstuklahv</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>
 <translation id="8725488761726303204">ja veel <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">Valmis</translation>
+<translation id="8741385002816058621">See on eelvaatefunktsioon.</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1h}other{#h}}</translation>
 <translation id="8798099450830957504">Vaikimisi</translation>
 <translation id="8841375032071747811">Nupp Tagasi</translation>

@@ -705,6 +705,7 @@
 <translation id="2137891579555018930">承認待ち...</translation>
 <translation id="213826338245044447">モバイルのブックマーク</translation>
 <translation id="2141000681034340397">入力内容を編集</translation>
+<translation id="2141475438898772664">4 回払いまたは毎月の分割払い</translation>
 <translation id="2144171668675205303">アクティブなトピックはありません</translation>
 <translation id="2145193671493396738">経済ニュース</translation>
 <translation id="214556005048008348">支払いをキャンセル</translation>
@@ -2849,6 +2850,7 @@
 <translation id="5543564889050342791">動物園、水族館、自然保護地域</translation>
 <translation id="5543722831081909240">180°</translation>
 <translation id="5544836308113951378">クルーズ、チャーター船</translation>
+<translation id="5545314360139398232"><ph name="ISSUER_NAME" /> をリンクして分割払い</translation>
 <translation id="5547939254150808298">印刷、出版</translation>
 <translation id="554815783948612276">掲示板、チャット サービス</translation>
 <translation id="5548606607480005320">安全チェック</translation>
@@ -3696,6 +3698,7 @@
 <translation id="6926216138694948720">ボディアート</translation>
 <translation id="692638818576287323">商用自動車</translation>
 <translation id="6927878187051807444">カメラファイルとスクリーンショット</translation>
+<translation id="6929949393612835405">閉じて「<ph name="OPENER_TITLE" />」に戻る</translation>
 <translation id="6930607614725241390">サイドパネルで検索</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />デフォルトの検索サービスではウェブ検索ができるだけでなく、Chrome の機能を活用<ph name="END_BOLD" />してアドレスバーからの検索、ウェブページの画像からの検索なども行うことができます。ただし検索サービスでサポートされていない機能は利用できない場合があります。</translation>
 <translation id="6934672428414710184">Google アカウントで設定されている名前です</translation>

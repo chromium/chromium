@@ -6553,6 +6553,13 @@ Not: Bu politika HSTS yükseltmeleri için geçerli değildir.</translation>
 <translation id="5303080953475303561">Politikanın ayarlanması, hızlı kilit açma için kilit ekranında ne sıklıkta şifre isteneceğini kontrol eder. Kilit ekranı her görüntülendiğinde, son şifre girişi, seçilen değer tarafından belirtilen zaman aralığından önce yapılmışsa hızlı kilit açma kullanılamaz. Kullanıcı bu süreden daha uzun bir zaman kilit ekranında kalırsa yanlış kod girdiğinde veya kilit ekranına tekrar girdiğinde (hangisi önce olursa) şifre sorulur.
 
       Politika ayarlanmadan bırakılırsa hızlı kilit açmayı kullanan kullanıcıların kilit ekranında şifrelerini her gün girmeleri gerekir.</translation>
+<translation id="530488290401810961"><ph name="PRODUCT_NAME" /> uygulamasının, üretken yapay zekanın temel modelini indirme ve yerel çıkarım için kullanma şeklini yapılandırın.
+
+Politika, İzin Verildi (0) değerine ayarlanır veya ayarlanmadan bırakılırsa model otomatik olarak indirilir ve çıkarım için kullanılır.
+
+Politika, Devre Dışı (1) değerine ayarlanırsa model indirilmez ve mevcut model (daha önce indirilmişse) silinir.
+
+Masaüstü platformlarda model indirme işlemi, <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> tarafından da devre dışı bırakılabilir.</translation>
 <translation id="5306186200045823863">Symantec Corporation'ın Eski PKI Altyapısına güveni etkinleştir</translation>
 <translation id="5307432759655324440">Gizli modun kullanılabilirliği</translation>
 <translation id="5308551343115571396"><ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra tüm tarayıcı verilerini kaldırırken mümkün olduğunca fazla kullanıcı verisini saklamaya çalışırız.</translation>
@@ -6572,7 +6579,6 @@ Not: Bu politika HSTS yükseltmeleri için geçerli değildir.</translation>
 <translation id="530949964068726932">Sistem tepsisi menüsündeki erişilebilirlik seçeneklerini gizle</translation>
 <translation id="5309944663104291505">Zorunlu yüklenmiş, yalıtılmış web uygulamalarının ve kiosk uygulamalarının Device Attributes API'yi kullanmasına izin verme</translation>
 <translation id="5311275381462687162">Varsayılan eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> çerez davranışı ayarı</translation>
-<translation id="5311430612584074035">Profildeki tüm sekmeler için ön plan önceliğini zorla</translation>
 <translation id="5312253627576569499">Ekran kararmış durumdayken veya kapandıktan hemen sonra bir kullanıcı etkinliği algılandığında, ekran kararma gecikmesinin ölçekleneceği yüzdeyi belirtir</translation>
 <translation id="5316856058059940708">Büyük imleci devre dışı bırak</translation>
 <translation id="5318185076587284965">Uzaktan erişen ana makine tarafından geçiş sunucuları kullanılmasını etkinleştir</translation>

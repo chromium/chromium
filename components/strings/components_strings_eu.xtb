@@ -705,6 +705,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2137891579555018930">Baimenaren zain…</translation>
 <translation id="213826338245044447">Mugikorreko laster-markak</translation>
 <translation id="2141000681034340397">Editatu idatzitakoa</translation>
+<translation id="2141475438898772664">Ordaindu 4 kuotatan edo hilean behin</translation>
 <translation id="2144171668675205303">Ez dago gai aktiborik</translation>
 <translation id="2145193671493396738">Ekonomia-albisteak</translation>
 <translation id="214556005048008348">Utzi bertan behera ordainketa</translation>
@@ -2845,6 +2846,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5543564889050342791">Zooak, akuarioak eta erreserbak</translation>
 <translation id="5543722831081909240">180 gradu</translation>
 <translation id="5544836308113951378">Itsas bidaiak eta charterrak</translation>
+<translation id="5545314360139398232">Lotu <ph name="ISSUER_NAME" /> beranduago odaintzeko</translation>
 <translation id="5547939254150808298">Inprenta eta argitalpenak</translation>
 <translation id="554815783948612276">Foro- eta txat-hornitzaileak</translation>
 <translation id="5548606607480005320">Segurtasun-egiaztapena</translation>
@@ -3691,6 +3693,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6926216138694948720">Gorputz-artea</translation>
 <translation id="692638818576287323">Merkataritza-ibilgailuak</translation>
 <translation id="6927878187051807444">Kamerako fitxategiak eta pantaila-argazkiak</translation>
+<translation id="6929949393612835405">Itxi eta itzuli hona: "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Bilatu alboko panelean</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Bilatzaile lehenetsiari esker, sareko bilaketak egin ditzakezu, baita Chrome-ren eginbideak erabili ere,<ph name="END_BOLD" /> hala nola helbide-barraren eta web-orrietako irudien bidez bilaketak egiteko eginbideak. Baliteke eginbideren bat erabili ezin izatea, bilatzaileak onartzen ez badu.</translation>
 <translation id="6934672428414710184">Izen hori Google-ko kontukoa da</translation>

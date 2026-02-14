@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{Пре 1 минут}one{Пре # минут}few{Пре # минутa}other{Пре # минутa}}</translation>
 <translation id="1450753235335490080">Није успело дељење: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{Пре 1 месец}one{Пре # месец}few{Пре # месеца}other{Пре # месеци}}</translation>
+<translation id="1591017414891297549">ПРЕГЛЕД</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 минут и }one{# минут и }few{# минута и }other{# минута и }}</translation>
 <translation id="1643823602425662293">Обавештење</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">и још <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8741385002816058621">Ово је функција у прегледу</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 с}one{# с}few{# с}other{# с}}</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
 <translation id="8841375032071747811">Дугме Назад</translation>

@@ -6529,6 +6529,13 @@ Nota: questa policy non viene applicata agli upgrade a HSTS.</translation>
 <translation id="5303080953475303561">La configurazione della policy consente di stabilire la frequenza della richiesta della password nella schermata di blocco per lo sblocco rapido. Ogni volta che viene visualizzata la schermata di blocco, se l'ultimo inserimento della password si è verificato prima del periodo di tempo specificato dal valore scelto, lo sblocco rapido non sarà disponibile. Se l'utente rimane nella schermata di blocco per un tempo superiore a quello specificato in questa policy, viene richiesta la password la volta successiva che inserisce il codice sbagliato o accede di nuovo alla schermata di blocco, a seconda dell'evento che si verifica per primo.
 
       Se la policy non viene configurata, gli utenti che usano lo sblocco rapido devono inserire la password nella schermata di blocco ogni giorno.</translation>
+<translation id="530488290401810961">Configura il modo in cui <ph name="PRODUCT_NAME" /> scarica il modello di base GenAI e lo utilizza localmente per l'inferenza.
+
+Se la policy viene impostata su Consentito (0) o se non viene configurata, il modello viene scaricato automaticamente e utilizzato per l'inferenza.
+
+Se la policy viene impostata su Disattivato (1), il modello non viene scaricato e il modello esistente (se già scaricato) viene eliminato.
+
+Sulle piattaforme desktop, il download del modello può essere disattivato anche da <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5306186200045823863">Considera attendibile l'infrastruttura PKI precedente di Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilità della modalità di navigazione in incognito</translation>
 <translation id="5308551343115571396">Dopo la disattivazione di <ph name="LACROS_NAME" />, tentiamo di conservare il maggior numero possibile di dati utente, rimuovendo tutti i dati del browser.</translation>
@@ -6548,7 +6555,6 @@ Nota: questa policy non viene applicata agli upgrade a HSTS.</translation>
 <translation id="530949964068726932">Nascondi opzioni di accessibilità nel menu della barra delle applicazioni</translation>
 <translation id="5309944663104291505">Non consentire alle app web isolate e alle applicazioni kiosk con installazione forzata di utilizzare l'API Device Attributes</translation>
 <translation id="5311275381462687162">Impostazione del comportamento precedente predefinito <ph name="ATTRIBUTE_SAMESITE_NAME" /> per i cookie</translation>
-<translation id="5311430612584074035">Forza la priorità in primo piano per tutte le schede nel profilo</translation>
 <translation id="5312253627576569499">La percentuale di regolazione del ritardo di oscuramento dello schermo quando viene osservata l'attività dell'utente mentre lo schermo è oscurato o subito dopo la disattivazione dello schermo.</translation>
 <translation id="5316856058059940708">Disabilita cursore grande</translation>
 <translation id="5318185076587284965">Attiva l'utilizzo dei server relay per l'host di accesso remoto</translation>

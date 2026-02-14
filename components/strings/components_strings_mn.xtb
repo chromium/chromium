@@ -705,6 +705,7 @@
 <translation id="2137891579555018930">Зөвшөөрөл хүлээж байна...</translation>
 <translation id="213826338245044447">Гар утасны хавчуургууд</translation>
 <translation id="2141000681034340397">Оролтоо засах</translation>
+<translation id="2141475438898772664">4 хувааж эсвэл сар тутам төлөх</translation>
 <translation id="2144171668675205303">Ямар ч идэвхтэй сэдэв байхгүй</translation>
 <translation id="2145193671493396738">Эдийн засгийн мэдээ</translation>
 <translation id="214556005048008348">Төлбөрийг цуцлах</translation>
@@ -2850,6 +2851,7 @@
 <translation id="5543564889050342791">Амьтны хүрээлэн, аквариум болон дархан цаазат газрууд</translation>
 <translation id="5543722831081909240">180 хэм</translation>
 <translation id="5544836308113951378">Далайн аялал, түрээсний онгоцууд</translation>
+<translation id="5545314360139398232"><ph name="ISSUER_NAME" />-г холбоод төлбөрөө тодорхой хугацаанд төлөх</translation>
 <translation id="5547939254150808298">Хэвлэх, нийтлэх</translation>
 <translation id="554815783948612276">Форум, чатын үйлчилгээ үзүүлэгчид</translation>
 <translation id="5548606607480005320">Аюулгүй байдлын шалгалт</translation>
@@ -3696,6 +3698,7 @@
 <translation id="6926216138694948720">Боди арт</translation>
 <translation id="692638818576287323">Худалдааны тээврийн хэрэгслүүд</translation>
 <translation id="6927878187051807444">камерын файл, дэлгэцийн агшин</translation>
+<translation id="6929949393612835405">Хаагаад, "<ph name="OPENER_TITLE" />" руу буцах</translation>
 <translation id="6930607614725241390">Хажуугийн самбараас хайх</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Таны өгөгдмөл хайлтын систем нь танд вебээс хайх боломжийг олгодог бөгөөд Chrome-н онцлогуудыг дэмждэг<ph name="END_BOLD" />. Үүнд хаяг оруулах хэсэг болон веб хуудаснуудын зургуудаас хайх зэрэг орно. Хэрэв таны хайлтын систем онцлогийг дэмждэггүй бол энэ нь боломжгүй байж магадгүй.</translation>
 <translation id="6934672428414710184">Энэ нэрийг таны Google Бүртгэлээс гаргасан байна</translation>

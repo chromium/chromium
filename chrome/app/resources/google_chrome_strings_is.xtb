@@ -264,6 +264,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome mælir með að þú fjarlægir hana. <ph name="BEGIN_LINK" />Nánar um studdar viðbætur<ph name="END_LINK" />}one{Chrome mælir með að þú fjarlægir þær. <ph name="BEGIN_LINK" />Nánar um studdar viðbætur<ph name="END_LINK" />}other{Chrome mælir með að þú fjarlægir þær. <ph name="BEGIN_LINK" />Nánar um studdar viðbætur<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Þrengdu leitina með því að bæta við mörgum flipum, skrám og verkfærum með því að nota hnappinn „Bæta við flipa og fleiru“.</translation>
 <translation id="3756724684201900923">Nánar um uppsetningu Chrome</translation>
+<translation id="3772152698251011058">Tilkynna þetta vefsvæði til Google</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex gat ekki samstillt gögnin þín vegna innskráningarvillu.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -416,6 +417,8 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5465210843490471889">Veldu Chrome-prófíl til að nota með <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Til að hjálpa til við að bæta þessa eiginleika sendir Chrome upplýsingar um notkun þína á þeim til Google. Mennskir yfirlesarar kunna að lesa, vinna úr og skrifa skýringar við þessi gögn.</translation>
+<translation id="547202872422499512">Chrome ræsist nú þegar Windows ræsist, svo að þú getur byrjað að vafra samstundis. Þú getur slökkt á þessu í stillingunum.</translation>
+<translation id="5486346529181556467">Auktu netöryggi allra með því að tilkynna vefsvæði sem þú telur að sé skaðlegt. Nánar um <ph name="BEGIN_LINK" />reglur Google um óörugg vefsvæði.<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">efsta horn leitarsvæðis vinstra megin: til vinstri <ph name="LEFT" />%, efst <ph name="TOP" />%</translation>
 <translation id="5550137307985173298">Smelltu á hnappinn „Sérsníða Chrome“ á síðu nýrra flipa til að gefa Chrome nýtt útlit</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-inn)</translation>
@@ -575,6 +578,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6967962315388095737">Innleiðarregla til að láta Google Chrome Beta leyfa mDNS-umferð.</translation>
 <translation id="6979589607440534284">Kynntu þér hvers vegna Chrome lokar fyrir vissar skrár (opnast í nýjum flipa)</translation>
+<translation id="6985817499499247940">Ræstu Chrome sjálfkrafa til að byrja að vafra samstundis.</translation>
 <translation id="6991926986715044139">Alltaf sýna flýtileið Google-linsu</translation>
 <translation id="6999131147875565462">Chrome virkar hraðar og eiginleikar sem nota JavaScript ættu að virka sem skyldi</translation>
 <translation id="7011190694940573312">Uppsetning mistókst vegna þess að þessi útgáfa af stýrikerfinu er ekki studd.</translation>
@@ -603,6 +607,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7288567540154601580">Flipar og viðbætur</translation>
 <translation id="7296210096911315575">Mikilvægar notkunar- og öryggisupplýsingar</translation>
 <translation id="7302361266603927550">Einhver Chrome-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum. Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
+<translation id="7306401458628386911">Byrjaðu að vafra samstundis: Chrome getur nú ræst þegar Windows ræsist.</translation>
 <translation id="7308322188646931570">Chrome þarf aðgang að geymslu til að geta sótt skrár</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
@@ -666,6 +671,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7827099906024714326">Chrome þarf að staðfesta að þetta sért þú svo að þú getir vistað tiltekin gögn á Google-reikningnum þínum og notað þau í öllum tækjunum þínum. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="7832314606810669113">Skráðu þig inn á Chrome til að fá aðgang að bókamerkjum og fleiru í öllum tækjunum þínum Þetta bókamerki verður vistað á Google-reikningnum þínum eftir að þú skráir þig inn.</translation>
 <translation id="7845233973568007926">Takk fyrir að setja upp. Þú þarft að endurræsa tölvuna áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847170235260850604">Ræsa Chrome þegar Windows er ræst</translation>
 <translation id="7849037457735762883">Haltu áfram þaðan sem frá var horfið: Chrome getur endurheimt flipana þína í hvert skipti sem þú hefst handa. Þú getur kveikt á þessu í</translation>
 <translation id="7869620795354551924">Til að nota vistuð aðgangsorð skaltu skanna QR-kóðann, sækja Chrome fyrir iOS og skrá þig inn á Google-reikninginn þinn</translation>
 <translation id="7872446069773932638">Sækir... <ph name="SECONDS" /> sek. eftir</translation>

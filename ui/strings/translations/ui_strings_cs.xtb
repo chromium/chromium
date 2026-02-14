@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{Před 1 minutou}few{Před # minutami}many{Před # minuty}other{Před # minutami}}</translation>
 <translation id="1450753235335490080">Sdílení obsahu typu <ph name="CONTENT_TYPE" /> se nezdařilo</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{Před měsícem}few{Před # měsíci}many{Před # měsíce}other{Před # měsíci}}</translation>
+<translation id="1591017414891297549">NÁHLED</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuta a  }few{# minuty a  }many{# minuty a  }other{# minut a  }}</translation>
 <translation id="1643823602425662293">Oznámení</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>
 <translation id="8725488761726303204">a ještě <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">Hotovo</translation>
+<translation id="8741385002816058621">Tato funkce je náhled</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 h}few{# h}many{# h}other{# h}}</translation>
 <translation id="8798099450830957504">Výchozí</translation>
 <translation id="8841375032071747811">Tlačítko Zpět</translation>

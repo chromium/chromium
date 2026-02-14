@@ -705,6 +705,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2137891579555018930">Afventer tilladelse ...</translation>
 <translation id="213826338245044447">Bogmærker på mobil</translation>
 <translation id="2141000681034340397">Rediger dit input</translation>
+<translation id="2141475438898772664">Betal i 4 rater eller månedligt</translation>
 <translation id="2144171668675205303">Der er ingen aktive emner</translation>
 <translation id="2145193671493396738">Nyheder om økonomi</translation>
 <translation id="214556005048008348">Annuller betaling</translation>
@@ -2849,6 +2850,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5543564889050342791">Zoologiske haver, akvarier og reservater</translation>
 <translation id="5543722831081909240">180 grader</translation>
 <translation id="5544836308113951378">Krydstogter og charterrejser</translation>
+<translation id="5545314360139398232">Tilknyt <ph name="ISSUER_NAME" /> for at betale over tid</translation>
 <translation id="5547939254150808298">Trykkeri og udgivelse</translation>
 <translation id="554815783948612276">Udbydere af fora og chatprogrammer</translation>
 <translation id="5548606607480005320">Sikkerhedstjek</translation>
@@ -3696,6 +3698,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6926216138694948720">Kropskunst</translation>
 <translation id="692638818576287323">Erhvervskøretøjer</translation>
 <translation id="6927878187051807444">kamerafiler og screenshots</translation>
+<translation id="6929949393612835405">Luk, og gå tilbage til "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Søg i sidepanel</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Din standardsøgemaskine giver dig mulighed for at søge på nettet og understøtter Chrome-funktioner<ph name="END_BOLD" /> som f.eks. søgning via adresselinjen og billeder på websider. En funktion er muligvis ikke tilgængelig, hvis din søgemaskine ikke understøtter den.</translation>
 <translation id="6934672428414710184">Dette navn er fra din Google-konto</translation>

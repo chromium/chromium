@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 минутын өмнө}other{# минутын өмнө}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />-г хуваалцах боломжгүй байна</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 сарын өмнө}other{# сарын өмнө}}</translation>
+<translation id="1591017414891297549">УРЬДЧИЛАН ҮЗЭХ</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 минут }other{# минут }}</translation>
 <translation id="1643823602425662293">Мэдэгдэл</translation>
 <translation id="169515659049020177">Солих</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> КБ/с</translation>
 <translation id="8725488761726303204">бусад +<ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">хийсэн</translation>
+<translation id="8741385002816058621">Энэ бол урьдчилан үзэж буй онцлог</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 цаг}other{# цаг}}</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
 <translation id="8841375032071747811">Буцах товчлуур</translation>

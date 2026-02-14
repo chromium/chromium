@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{১ মিনিট আগে}one{# মিনিট আগে}other{# মিনিট আগে}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শেয়ার করা যাচ্ছে না</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{১ মাস আগে}one{# মাস আগে}other{# মাস আগে}}</translation>
+<translation id="1591017414891297549">প্রিভিউ</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{১ মিনিট এবং }one{# মিনিট এবং }other{# মিনিট এবং }}</translation>
 <translation id="1643823602425662293">বিজ্ঞপ্তি</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> কেবি/সেকেণ্ড</translation>
 <translation id="8725488761726303204">আরও <ph name="NUMBER" />টি</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
+<translation id="8741385002816058621">এটি প্রিভিউতে থাকা ফিচার</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{১ ঘণ্টা}one{# ঘণ্টা}other{# ঘণ্টা}}</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
 <translation id="8841375032071747811">ফিরে যাওয়ার বোতাম</translation>

@@ -262,6 +262,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome khuyên bạn nên loại bỏ tiện ích này. <ph name="BEGIN_LINK" />Tìm hiểu thêm về các tiện ích được hỗ trợ<ph name="END_LINK" />}other{Chrome khuyên bạn nên loại bỏ các tiện ích này. <ph name="BEGIN_LINK" />Tìm hiểu thêm về các tiện ích được hỗ trợ<ph name="END_LINK" />.}}</translation>
 <translation id="3729187154190517324">Mở rộng phạm vi tìm kiếm bằng cách thêm nhiều thẻ, tệp và công cụ bằng nút "Thêm một thẻ và các nội dung khác".</translation>
 <translation id="3756724684201900923">Tìm hiểu thêm về cách cài đặt Chrome</translation>
+<translation id="3772152698251011058">Báo cáo trang web này cho Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex không đồng bộ hoá được dữ liệu của bạn do xảy ra lỗi khi đăng nhập.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -412,6 +413,8 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5430073640787465221">Tệp tùy chọn của bạn bị hỏng hoặc không hợp lệ. Google Chrome không thể khôi phục cài đặt của bạn.</translation>
 <translation id="5465210843490471889">Chọn một hồ sơ Chrome để dùng với <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Chrome sẽ gửi cho Google thông tin về hoạt động tương tác của bạn với những tính năng này để giúp cải thiện tính năng. Nhân viên đánh giá có thể đọc, xử lý và chú thích dữ liệu này.</translation>
+<translation id="547202872422499512">Chrome hiện khởi chạy khi Windows khởi động để bạn có thể bắt đầu duyệt web ngay lập tức. Bạn có thể tắt lựa chọn này trong phần cài đặt.</translation>
+<translation id="5486346529181556467">Cải thiện mức độ an toàn trên mạng cho mọi người khi bạn báo cáo một trang web mà bạn cho là có hại. Tìm hiểu thêm về <ph name="BEGIN_LINK" />chính sách của Google về trang web không an toàn.<ph name="END_LINK" /></translation>
 <translation id="5524890928877629608">góc trên cùng bên trái của khu vực tìm kiếm: <ph name="LEFT" />% từ bên trái sang, <ph name="TOP" />% từ trên cùng xuống</translation>
 <translation id="5550137307985173298">Nhấp vào nút Tuỳ chỉnh Chrome trên Trang thẻ mới để mang lại giao diện mới cho Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -571,6 +574,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Quy tắc kết nối để Google Chrome Beta cho phép lưu lượng truy cập mDNS.</translation>
 <translation id="6979589607440534284">Tìm hiểu lý do Chrome chặn một số tệp, mở trong thẻ mới</translation>
+<translation id="6985817499499247940">Tự động khởi chạy Chrome để bắt đầu duyệt web ngay lập tức.</translation>
 <translation id="6991926986715044139">Luôn hiện lối tắt đến Google Ống kính</translation>
 <translation id="6999131147875565462">Chrome sẽ hoạt động nhanh hơn và các tính năng sử dụng JavaScript sẽ hoạt động như dự kiến</translation>
 <translation id="7011190694940573312">Cài đặt không thành công vì phiên bản hệ điều hành này không được hỗ trợ.</translation>
@@ -599,6 +603,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7288567540154601580">Thẻ và tiện ích</translation>
 <translation id="7296210096911315575">Thông tin quan trọng về sử dụng và an toàn</translation>
 <translation id="7302361266603927550">Một số dữ liệu Chrome của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này sẽ bị xoá.</translation>
+<translation id="7306401458628386911">Bắt đầu duyệt web ngay lập tức: Chrome hiện có thể khởi chạy khi Windows khởi động.</translation>
 <translation id="7308322188646931570">Chrome cần quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
@@ -662,6 +667,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7827099906024714326">Chrome cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất bây giờ, dữ liệu này sẽ bị xoá.</translation>
 <translation id="7832314606810669113">Để sử dụng dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome. Dấu trang này sẽ được lưu trong Tài khoản Google của bạn sau khi bạn đăng nhập.</translation>
 <translation id="7845233973568007926">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại máy tính trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847170235260850604">Khởi chạy Chrome khi Windows khởi động</translation>
 <translation id="7849037457735762883">Tiếp tục từ nơi bạn đã dừng lại: Chrome có thể khôi phục các thẻ của bạn mỗi khi bạn khởi động lại. Để bật tính năng này, hãy chuyển đến</translation>
 <translation id="7869620795354551924">Để sử dụng mật khẩu bạn đã lưu, hãy quét mã QR, tải Chrome dành cho iOS xuống rồi đăng nhập vào Tài khoản Google của bạn</translation>
 <translation id="7872446069773932638">Đang tải xuống... Còn <ph name="SECONDS" /> giây</translation>

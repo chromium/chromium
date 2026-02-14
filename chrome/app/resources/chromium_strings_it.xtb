@@ -98,6 +98,7 @@
 <translation id="2099452623287920103">Le tue password e altri dati di Chromium salvati nel tuo Account Google verranno rimossi da questo dispositivo. Per usarli di nuovo in Chromium, accedi nuovamente.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{La tua organizzazione elimina automaticamente i dati di navigazione quando Chromium non viene utilizzato per 1 minuto. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede rimarranno aperte.}other{La tua organizzazione elimina automaticamente i dati di navigazione quando Chromium non viene utilizzato per # minuti. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede rimarranno aperte.}}</translation>
 <translation id="2126108037660393668">Il file scaricato non ha superato la verifica.</translation>
+<translation id="2135919691573380097">Segnala questo sito</translation>
 <translation id="2137162749895930932">Chiudi la schermata di traduzione</translation>
 <translation id="215352261310130060">Chromium ha bloccato questo download perché il sito non utilizza una connessione sicura e il file potrebbe essere stato manomesso</translation>
 <translation id="2170098639895543546">Seleziona qualsiasi elemento sulla pagina</translation>
@@ -311,6 +312,7 @@
 <translation id="4304713468139749426">Gestore delle password</translation>
 <translation id="4334241893986177674">Cerca questo screenshot</translation>
 <translation id="4334294535648607276">Download completato.</translation>
+<translation id="4384331407722351213">Avvia Chromium all'avvio di Windows</translation>
 <translation id="4384993550046411228">Accedi facilmente alle funzionalità che conosci, che ami e di cui ti fidi impostando Chromium come browser predefinito. Chromium verrà fissato sulla barra delle app per un accesso rapido.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Chromium OS.</translation>
 <translation id="4407044323746248786">Vuoi uscire comunque da Chromium?</translation>
@@ -331,6 +333,7 @@
 <translation id="4531137820806573936">Chromium deve avere l'autorizzazione per mappare l'ambiente circostante e monitorare le tue mani</translation>
 <translation id="4536805923587466102">Hai già eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" /> in un altro profilo Chromium</translation>
 <translation id="4548534452171747496">Chromium precarica le pagine per velocizzare la navigazione e la ricerca. <ph name="BEGIN_LINK" />Scopri di più sul precaricamento delle pagine<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">Migliora la sicurezza online per tutti segnalando un sito che ritieni dannoso.</translation>
 <translation id="4570813286784708942">Chromium ha bloccato questo download perché hai disattivato Navigazione sicura e non è possibile verificare il file</translation>
 <translation id="4583692638088316420">Prova Google Lens con Chromium sul tuo smartphone</translation>
 <translation id="4594305310729380060">In Gestore delle password su questo dispositivo</translation>
@@ -503,6 +506,7 @@
 <translation id="6598877126913850652">Vai alle impostazioni di notifica di Chromium</translation>
 <translation id="6600016381025017075">Cerca qualsiasi cosa in questa pagina</translation>
 <translation id="6613594504749178791">Le modifiche verranno applicate al prossimo riavvio di Chromium.</translation>
+<translation id="6637908313088374648">Ora Chromium si avvia all'avvio di Windows, così puoi iniziare a navigare all'istante. Puoi disattivare questo comportamento nelle impostazioni.</translation>
 <translation id="6648212540664651655">Continua da dove avevi interrotto: Chromium ha ripristinato le schede dell'ultima sessione. Puoi disattivare questa opzione in</translation>
 <translation id="665732753414869868">Chromium deve avere l'autorizzazione di accesso alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="6669284030132180248">Se salvi anche i preferiti nel tuo Account Google, puoi monitorare i prezzi dei prodotti in Chromium e ricevere notifiche quando il prezzo scende</translation>
@@ -561,6 +565,7 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="7213407614656404070">Usa Chromium ogni volta che fai clic sui link in messaggi, documenti e altre app</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7246575524853130370">I tuoi interessi stimati da Chromium</translation>
+<translation id="7252276985725323153">Inizia subito a navigare: ora Chromium può essere avviato all'avvio di Windows.</translation>
 <translation id="7274695763216404502">Riquadro fissato. Usa di nuovo la ricerca immagini dalla barra degli strumenti</translation>
 <translation id="7288567540154601580">Schede ed estensioni</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium ti consiglia di rimuoverla}other{Chromium ti consiglia di rimuoverle}}</translation>
@@ -591,6 +596,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="751935028865900641">È probabile che i siti funzionino come previsto. Quando chiudi tutte le finestre di Chromium, uscirai dalla maggior parte dei siti, ma se hai eseguito l'accesso a Chromium non uscirai dal tuo Account Google.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium verrà riavviato tra 1 minuto}other{Chromium verrà riavviato tra # minuti}}</translation>
 <translation id="7565444033145385702">Per proteggere i tuoi dati, consenti a Chromium di rimuovere le autorizzazioni dai siti che non hai visitato di recente.</translation>
+<translation id="7583104404158659071">Avvia Chromium automaticamente per iniziare subito a navigare.</translation>
 <translation id="7583399374488819119">Programma di installazione di <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">Chromium sta utilizzando videocamera e microfono.</translation>
 <translation id="7617377681829253106">Da oggi Chromium è ancora meglio</translation>

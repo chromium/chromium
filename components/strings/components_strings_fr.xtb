@@ -705,6 +705,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2137891579555018930">En attente d'autorisation…</translation>
 <translation id="213826338245044447">Favoris sur mobile</translation>
 <translation id="2141000681034340397">Modifier votre saisie</translation>
+<translation id="2141475438898772664">Payer en quatre fois ou mensuellement</translation>
 <translation id="2144171668675205303">Aucun thème actif</translation>
 <translation id="2145193671493396738">Actualités économiques</translation>
 <translation id="214556005048008348">Annuler le paiement</translation>
@@ -2849,6 +2850,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5543564889050342791">Zoos, aquariums et réserves</translation>
 <translation id="5543722831081909240">180 degrés</translation>
 <translation id="5544836308113951378">Croisières et vols charters</translation>
+<translation id="5545314360139398232">Associez <ph name="ISSUER_NAME" /> pour payer en plusieurs fois</translation>
 <translation id="5547939254150808298">Édition et imprimerie</translation>
 <translation id="554815783948612276">Services de forum et de chat</translation>
 <translation id="5548606607480005320">Contrôle de sécurité</translation>
@@ -3696,6 +3698,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6926216138694948720">Tatouages/Piercings</translation>
 <translation id="692638818576287323">Véhicules commerciaux</translation>
 <translation id="6927878187051807444">fichiers de l'appareil photo et des captures d'écran</translation>
+<translation id="6929949393612835405">Fermer et revenir à "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Rechercher dans le panneau latéral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Votre moteur de recherche par défaut vous permet d'effectuer des recherches sur le Web et alimente des fonctionnalités Chrome<ph name="END_BOLD" /> telles que la recherche à partir de la barre d'adresse et d'images issues de pages Web. Une fonctionnalité peut ne pas être disponible si votre moteur de recherche ne la prend pas en charge.</translation>
 <translation id="6934672428414710184">Ce nom provient de votre compte Google</translation>

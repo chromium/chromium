@@ -98,6 +98,7 @@
 <translation id="2099452623287920103">Google 帳戶中儲存的密碼和其他 Chromium 資料將從這部裝置上移除。如要在 Chromium 中再次使用這些資料，請重新登入。</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{貴機構會在 Chromium 閒置 1 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}other{貴機構會在 Chromium 閒置 # 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}}</translation>
 <translation id="2126108037660393668">下載的檔案驗證失敗。</translation>
+<translation id="2135919691573380097">檢舉這個網站</translation>
 <translation id="2137162749895930932">關閉翻譯畫面</translation>
 <translation id="215352261310130060">這個網站沒有使用安全連線，檔案可能已經遭人竄改，因此 Chromium 已禁止下載</translation>
 <translation id="2170098639895543546">選取網頁上的任何內容</translation>
@@ -311,6 +312,7 @@
 <translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4334241893986177674">搜尋這張螢幕截圖</translation>
 <translation id="4334294535648607276">下載完成。</translation>
+<translation id="4384331407722351213">在 Windows 啟動時執行 Chromium</translation>
 <translation id="4384993550046411228">將 Chromium 設為預設瀏覽器，輕鬆存取你熟悉、喜愛且信任的功能。Chromium 會釘選到工作列，方便你快速存取。</translation>
 <translation id="439358628917130594">根據 <ph name="MANAGER" /> 的規定，您必須先詳閱並接受下列《服務條款》，才能使用這部裝置。這些條款不會擴充、修改或限制《Chromium OS 條款》。</translation>
 <translation id="4407044323746248786">確定要結束 Chromium 嗎？</translation>
@@ -331,6 +333,7 @@
 <translation id="4531137820806573936">Chromium 需要適當權限，才能繪製周遭環境並進行手部追蹤</translation>
 <translation id="4536805923587466102">你已經以另一個 Chromium 設定檔的 <ph name="USER_EMAIL_ADDRESS" /> 身分登入</translation>
 <translation id="4548534452171747496">Chromium 會預先載入網頁，加快瀏覽與搜尋速度。<ph name="BEGIN_LINK" />進一步瞭解預先載入網頁功能<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">回報有害網站，協助提升所有人的網路安全。</translation>
 <translation id="4570813286784708942">安全瀏覽功能已關閉，系統無法驗證這個檔案，因此 Chromium 已禁止下載</translation>
 <translation id="4583692638088316420">在手機上透過 Chromium 試用 Google 智慧鏡頭</translation>
 <translation id="4594305310729380060">儲存至這部裝置的密碼管理工具中</translation>
@@ -503,6 +506,7 @@
 <translation id="6598877126913850652">前往 Chromium 通知設定</translation>
 <translation id="6600016381025017075">搜尋本頁內容</translation>
 <translation id="6613594504749178791">你的變更將於下次重新啟動 Chromium 時生效。</translation>
+<translation id="6637908313088374648">Chromium 現在會在 Windows 啟動時開啟，讓你可以立即開始瀏覽。你可以前往設定頁面關閉這項功能。</translation>
 <translation id="6648212540664651655">接續上次的瀏覽內容：Chromium 已還原上次開啟的分頁。如要關閉這項功能，請前往</translation>
 <translation id="665732753414869868">Chromium 需要相機權限，才能根據你的周遭環境製作 3D 地圖</translation>
 <translation id="6669284030132180248">如果一併將書籤儲存在 Google 帳戶中，就可以在 Chromium 中追蹤產品價格，並在降價時收到通知</translation>
@@ -561,6 +565,7 @@
 <translation id="7213407614656404070">你只要在訊息、文件和其他應用程式中點選連結，即可透過 Chromium 開啟</translation>
 <translation id="7223968959479464213">工作管理員 - Chromium</translation>
 <translation id="7246575524853130370">Chromium 推測的興趣喜好</translation>
+<translation id="7252276985725323153">立即開始瀏覽：Chromium 現在可以在 Windows 啟動時開啟。</translation>
 <translation id="7274695763216404502">已固定！之後可以透過工具列再次使用圖片搜尋</translation>
 <translation id="7288567540154601580">分頁和擴充功能</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium 建議你將其移除}other{Chromium 建議你將其移除}}</translation>
@@ -591,6 +596,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="751935028865900641">網站可能會正常運作。關閉所有 Chromium 視窗後，系統會將你登出大部分網站，但如果你已登入 Chromium，Google 帳戶就會維持登入狀態。</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 將在 1 分鐘後重新啟動}other{Chromium 將在 # 分鐘後重新啟動}}</translation>
 <translation id="7565444033145385702">如果有最近未造訪的網站，可以允許 Chromium 移除權限，保護你的資料。</translation>
+<translation id="7583104404158659071">自動啟動 Chromium，立即開始瀏覽。</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安裝程式</translation>
 <translation id="761356813943268536">Chromium 正在使用你的攝影機和麥克風。</translation>
 <translation id="7617377681829253106">Chromium 變得更進步了</translation>

@@ -260,6 +260,7 @@
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome suosittelee poistamaan sen. <ph name="BEGIN_LINK" />Lue lisää tuetuista laajennuksista<ph name="END_LINK" />}other{Chrome suosittelee poistamaan ne. <ph name="BEGIN_LINK" />Lue lisää tuetuista laajennuksista<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Tee hausta tarkempi lisäämällä useita välilehtiä, tiedostoja ja työkaluja "Lisää välilehti ja muuta" ‑painikkeella.</translation>
 <translation id="3756724684201900923">Lue lisää Chromen asentamisesta</translation>
+<translation id="3772152698251011058">Ilmoita tästä sivustosta Googlelle</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex ei voinut synkronoida tietoja kirjautumisvirheen vuoksi.</translation>
 <translation id="3795971588916395511">Google Chrome ‑käyttöjärjestelmä</translation>
@@ -408,6 +409,8 @@
 <translation id="5430073640787465221">Asetustiedostosi on virheellinen. Google Chrome ei voi palauttaa asetuksiasi.</translation>
 <translation id="5465210843490471889">Valitse Chrome-profiili, jota haluat käyttää <ph name="START_GLIC_STYLING" />Geminin<ph name="END_GLIC_STYLING" /> kanssa</translation>
 <translation id="5468572406162360320">Chrome lähettää toimintasi Googlelle näiden ominaisuuksien parantamiseksi. Tarkastajat voivat lukea, käsitellä ja tehdä merkintöjä dataan.</translation>
+<translation id="547202872422499512">Chrome käynnistyy nyt Windowsin käynnistyessä, joten voit aloittaa selaamisen heti. Voit poistaa tämän käytöstä asetuksissa.</translation>
+<translation id="5486346529181556467">Auta parantamaan kaikkien verkkoturvallisuutta ilmoittamalla sivustosta, jonka uskot olevan haitallinen. Lue lisää <ph name="BEGIN_LINK" />Googlen vaarallisia sivustoja koskevasta käytännöstä<ph name="END_LINK" />.</translation>
 <translation id="5524890928877629608">hakualueen vasen yläkulma: vasen <ph name="LEFT" /> %, ylä <ph name="TOP" /> %</translation>
 <translation id="5550137307985173298">Muokkaa Chromen ulkoasua klikkaamalla Uusi välilehti ‐sivun Yksilöi Chromea ‐painiketta</translation>
 <translation id="5566025111015594046">Google Chrome (saapuva mDNS)</translation>
@@ -567,6 +570,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Google Chromen betaversion saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
 <translation id="6979589607440534284">Lue lisää siitä, miksi Chrome estää joitakin tiedostoja ja avautuu uudelle välilehdelle</translation>
+<translation id="6985817499499247940">Käynnistä Chrome automaattisesti, niin voit aloittaa selaamisen heti.</translation>
 <translation id="6991926986715044139">Näytä aina Google Lens ‐pikanäppäin</translation>
 <translation id="6999131147875565462">Chrome toimii nopeammin ja JavaScriptiä käyttävien ominaisuuksien pitäisi toimia suunnitellusti</translation>
 <translation id="7011190694940573312">Asennus epäonnistui, koska tätä käyttöjärjestelmän versiota ei tueta.</translation>
@@ -595,6 +599,7 @@
 <translation id="7288567540154601580">Välilehdet ja laajennukset</translation>
 <translation id="7296210096911315575">Tärkeää käyttö- ja turvallisuustietoa</translation>
 <translation id="7302361266603927550">Osaa Chrome-datastasi ei ole vielä tallennettu Google-tilillesi. Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
+<translation id="7306401458628386911">Aloita selaaminen heti: Chrome voi nyt käynnistyä Windowsin käynnistyksen yhteydessä.</translation>
 <translation id="7308322188646931570">Chrome tarvitsee tallennustilan käyttöoikeuden tiedostojen lataamiseen.</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>
 <translation id="7352651011704765696">Tapahtui jokin virhe</translation>
@@ -658,6 +663,7 @@
 <translation id="7827099906024714326">Chromen on vahvistettava henkilöllisyytesi, ennen kuin tiettyä dataa voidaan tallentaa Google-tilillesi ja käyttää kaikilla laitteillasi. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="7832314606810669113">Kirjaudu sisään Chromeen, niin voit käyttää kirjanmerkkejä ja muita tietoja kaikilla laitteillasi. Tämä kirjanmerkki tallennetaan Google-tilillesi kirjautumisen jälkeen.</translation>
 <translation id="7845233973568007926">Kiitos asennuksesta. Tietokone pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
+<translation id="7847170235260850604">Käynnistä Chrome, kun Windows käynnistyy</translation>
 <translation id="7849037457735762883">Jatka siitä, mihin jäit: Chrome voi palauttaa välilehdet aina, kun käynnistät sen uudelleen. Voit laittaa asetuksen päälle täältä:</translation>
 <translation id="7869620795354551924">Jos haluat käyttää tallennettuja salasanoja, seuraa QR-koodia, lataa Chrome iOS:lle ja kirjaudu sisään Google-tilille</translation>
 <translation id="7872446069773932638">Ladataan… <ph name="SECONDS" /> sekuntia jäljellä</translation>

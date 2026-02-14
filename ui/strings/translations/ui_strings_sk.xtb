@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{Pred 1 minútou}few{pred # minútami}many{pred # minúty}other{pred # minútami}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> sa nedá zdieľať</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{Pred 1 mesiacom}few{Pred # mesiacmi}many{Pred # mesiaca}other{Pred # mesiacmi}}</translation>
+<translation id="1591017414891297549">UKÁŽKA</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minúta a }few{# minúty a }many{# minúty a }other{# minút a }}</translation>
 <translation id="1643823602425662293">Upozornenie</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>
 <translation id="8725488761726303204">ďalšie (<ph name="NUMBER" />)</translation>
 <translation id="8730621377337864115">Hotovo</translation>
+<translation id="8741385002816058621">Toto je funkcia v ukážkovej verzii</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 h}few{# h}many{# h}other{# h}}</translation>
 <translation id="8798099450830957504">Predvolené</translation>
 <translation id="8841375032071747811">Tlačidlo Späť</translation>

@@ -6279,6 +6279,13 @@ Protected Audience API 已淘汰，因此這項政策也已在 <ph name="PRODUCT
 <translation id="5303080953475303561">你可以透過這項政策，控管螢幕鎖定畫面要求使用者輸入密碼以快速解鎖的頻率。每當螢幕鎖定畫面顯示時，如果上一次輸入密碼的時間點落在所選值指定的時間範圍之前，裝置將無法快速解鎖。如果使用者停留在螢幕鎖定畫面的時間超過這個時間長度，則下次當他們輸入錯誤的解鎖碼或重新進入螢幕鎖定畫面時 (以先發生者為準)，系統就會要求輸入密碼。
 
       如果不設定這項政策，則使用快速解鎖功能的使用者每天都必須在螢幕鎖定畫面輸入密碼。</translation>
+<translation id="530488290401810961">設定 <ph name="PRODUCT_NAME" /> 如何下載基礎生成式 AI 模型，並在本機用於推論。
+
+如果將這項政策設為允許 (0) 或不設定，系統會自動下載模型並用於推論。
+
+如果將這項政策設為停用 (1)，系統就不會下載模型，並會刪除現有模型 (如果已下載)。
+
+在電腦平台上，<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 也可以停用模型下載功能。</translation>
 <translation id="5306186200045823863">信任 Symantec 公司的舊版 PKI 基礎架構</translation>
 <translation id="5307432759655324440">無痕模式適用性</translation>
 <translation id="5308551343115571396"><ph name="LACROS_NAME" /> 停用後，我們將移除所有瀏覽器資料，但會盡可能嘗試保留使用者資料。</translation>
@@ -6298,7 +6305,6 @@ Protected Audience API 已淘汰，因此這項政策也已在 <ph name="PRODUCT
 <translation id="530949964068726932">隱藏系統匣選單中的無障礙選項</translation>
 <translation id="5309944663104291505">禁止強制安裝的隔離網頁應用程式和資訊站應用程式使用 Device Attributes API</translation>
 <translation id="5311275381462687162">預設的舊版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行為設定</translation>
-<translation id="5311430612584074035">強制將設定檔中所有分頁設為前景優先</translation>
 <translation id="5312253627576569499">如果系統在螢幕調暗時或畫面關閉後不久便偵測到使用者活動，要將螢幕調暗延遲時間延長的百分比</translation>
 <translation id="5316856058059940708">停用大型游標</translation>
 <translation id="5318185076587284965">啟用遠端存取主機所使用的轉送伺服器</translation>

@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 分钟前}other{# 分钟前}}</translation>
 <translation id="1450753235335490080">无法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 个月前}other{# 个月前}}</translation>
+<translation id="1591017414891297549">预览版</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 分钟 }other{# 分钟 }}</translation>
 <translation id="1643823602425662293">通知</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">+ 另外 <ph name="NUMBER" /> 项</translation>
 <translation id="8730621377337864115">完成</translation>
+<translation id="8741385002816058621">这是一项预览版功能</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 小时}other{# 小时}}</translation>
 <translation id="8798099450830957504">默认</translation>
 <translation id="8841375032071747811">“返回”按钮</translation>

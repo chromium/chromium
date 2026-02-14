@@ -705,6 +705,7 @@
 <translation id="2137891579555018930">Чека се дозвола…</translation>
 <translation id="213826338245044447">Мобилни обележивачи</translation>
 <translation id="2141000681034340397">Измените унос</translation>
+<translation id="2141475438898772664">Плаћајте у 4 рате или месечно</translation>
 <translation id="2144171668675205303">Нема активних тема</translation>
 <translation id="2145193671493396738">Привредне вести</translation>
 <translation id="214556005048008348">Откажи плаћање</translation>
@@ -2849,6 +2850,7 @@
 <translation id="5543564889050342791">Зоолошки вртови, акваријуми и резервати</translation>
 <translation id="5543722831081909240">180 степени</translation>
 <translation id="5544836308113951378">Крстарења и нелинијска пловидба</translation>
+<translation id="5545314360139398232">Повежите издавача <ph name="ISSUER_NAME" /> да бисте плаћали током времена</translation>
 <translation id="5547939254150808298">Штампарство и издаваштво</translation>
 <translation id="554815783948612276">Добављачи за форуме и чет услуге</translation>
 <translation id="5548606607480005320">Безбедносна провера</translation>
@@ -3695,6 +3697,7 @@
 <translation id="6926216138694948720">Боди арт</translation>
 <translation id="692638818576287323">Комерцијална возила</translation>
 <translation id="6927878187051807444">фајлове камере и снимке екрана</translation>
+<translation id="6929949393612835405">Затвори и врати се на: <ph name="OPENER_TITLE" /></translation>
 <translation id="6930607614725241390">Претрага на бочној табли</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Подразумевани претраживач вам омогућава да претражујете веб и омогућава Chrome функције<ph name="END_BOLD" /> попут претраживања из траке за адресу и слика на веб-страницама. Функција можда није доступна ако је претраживач не подржава.</translation>
 <translation id="6934672428414710184">То је име са вашег Google налога</translation>

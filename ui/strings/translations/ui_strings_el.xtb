@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{Πριν από 1 λεπτό}other{Πριν από # λεπτά}}</translation>
 <translation id="1450753235335490080">Δεν είναι δυνατή η κοινοποίηση <ph name="CONTENT_TYPE" /></translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{Πριν από 1 μήνα}other{Πριν από # μήνες}}</translation>
+<translation id="1591017414891297549">ΠΡΟΕΠΙΣΚΟΠΗΣΗ</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 λεπτό και }other{# λεπτά και }}</translation>
 <translation id="1643823602425662293">Ειδοποίηση</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> ακόμη</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
+<translation id="8741385002816058621">Αυτή είναι μια λειτουργία σε προεπισκόπηση</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1ώρ.}other{#ώρ.}}</translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
 <translation id="8841375032071747811">Κουμπί "Πίσω"</translation>

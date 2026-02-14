@@ -705,6 +705,7 @@
 <translation id="2137891579555018930">허락을 기다리는 중…</translation>
 <translation id="213826338245044447">모바일 북마크</translation>
 <translation id="2141000681034340397">입력한 내용 수정</translation>
+<translation id="2141475438898772664">할부 4회 결제 또는 월별 결제</translation>
 <translation id="2144171668675205303">활성 주제 없음</translation>
 <translation id="2145193671493396738">경제 뉴스</translation>
 <translation id="214556005048008348">결제 취소</translation>
@@ -2849,6 +2850,7 @@
 <translation id="5543564889050342791">동물원, 수족관 및 보호구역</translation>
 <translation id="5543722831081909240">180도</translation>
 <translation id="5544836308113951378">크루즈 및 전세기</translation>
+<translation id="5545314360139398232"><ph name="ISSUER_NAME" /> 연결 후 할부 결제</translation>
 <translation id="5547939254150808298">인쇄 및 출판</translation>
 <translation id="554815783948612276">포럼 및 채팅 공급업체</translation>
 <translation id="5548606607480005320">안전 확인</translation>
@@ -3696,6 +3698,7 @@
 <translation id="6926216138694948720">바디아트</translation>
 <translation id="692638818576287323">상업용 차량</translation>
 <translation id="6927878187051807444">카메라 파일 및 스크린샷</translation>
+<translation id="6929949393612835405">닫고 "<ph name="OPENER_TITLE" />"(으)로 돌아가기</translation>
 <translation id="6930607614725241390">측면 패널에서 검색</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />기본 검색엔진을 사용하면 웹을 검색할 수 있으며 Chrome 기능<ph name="END_BOLD" />(예: 주소 표시줄 및 웹페이지의 이미지 검색)을 사용할 수 있습니다. 선택한 검색엔진에서 지원하지 않는 기능은 사용하지 못할 수도 있습니다.</translation>
 <translation id="6934672428414710184">Google 계정에 등록된 이름입니다.</translation>

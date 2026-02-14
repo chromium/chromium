@@ -705,6 +705,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2137891579555018930">Čekanje na dopuštenje...</translation>
 <translation id="213826338245044447">Mobilne oznake</translation>
 <translation id="2141000681034340397">Uredite unos</translation>
+<translation id="2141475438898772664">Platite u četiri obroka ili mjesečno</translation>
 <translation id="2144171668675205303">Nema aktivnih tema</translation>
 <translation id="2145193671493396738">Vijesti iz ekonomije</translation>
 <translation id="214556005048008348">Otkaži plaćanje</translation>
@@ -2848,6 +2849,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5543564889050342791">Zoološki vrtovi, akvariji i rezervati</translation>
 <translation id="5543722831081909240">180 stupnjeva</translation>
 <translation id="5544836308113951378">Krstarenja i najmovi</translation>
+<translation id="5545314360139398232">Povežite izdavatelja <ph name="ISSUER_NAME" /> za obročno plaćanje</translation>
 <translation id="5547939254150808298">Tisak i izdavaštvo</translation>
 <translation id="554815783948612276">Davatelji usluga foruma i chata</translation>
 <translation id="5548606607480005320">Sigurnosna provjera</translation>
@@ -3081,7 +3083,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5943775258256265106">{NUM_MINS,plural, =1{Izrađeno prije jednu minutu}one{Izrađeno prije {NUM_MINS} minutu}few{Izrađeno prije {NUM_MINS} minute}other{Izrađeno prije {NUM_MINS} minuta}}</translation>
 <translation id="5944297261866530437">Tkanina (sjajni)</translation>
 <translation id="5950901984834744590">Britvice i brijači</translation>
-<translation id="5951495562196540101">Prijava s računom potrošača nije moguća (dostupna je paketna licenca).</translation>
+<translation id="5951495562196540101">Prijava osobnim računom nije moguća (dostupna je paketna licenca).</translation>
 <translation id="5952076224478208938">Proizvođač</translation>
 <translation id="5953516610448771166">Automatski titlovi nisu dostupni za ovaj medij. Da biste dobili titlove, blokirajte <ph name="CONTENT_SETTINGS" /> za ovu web-lokaciju.</translation>
 <translation id="5960795367348889467">Potvrda</translation>
@@ -3695,6 +3697,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6926216138694948720">Body art</translation>
 <translation id="692638818576287323">Komercijalna vozila</translation>
 <translation id="6927878187051807444">datoteke kamere i snimke zaslona</translation>
+<translation id="6929949393612835405">Zatvori i vrati se na: <ph name="OPENER_TITLE" /></translation>
 <translation id="6930607614725241390">Pretraživanje na bočnoj ploči</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Vaša zadana tražilica omogućuje vam pretraživanje weba i omogućuje Chromeove značajke<ph name="END_BOLD" /> kao što su pretraživanje iz adresne trake i slika na web-stranicama. Značajka možda neće biti dostupna ako je vaša tražilica ne podržava.</translation>
 <translation id="6934672428414710184">To je ime s vašeg Google računa</translation>

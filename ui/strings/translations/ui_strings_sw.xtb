@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{Dakika 1 Iliyopita}other{Dakika # Zilizopita}}</translation>
 <translation id="1450753235335490080">Imeshindwa kushiriki <ph name="CONTENT_TYPE" /></translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{Mwezi 1 Uliopita}other{Miezi # Iliyopita}}</translation>
+<translation id="1591017414891297549">TOLEO TANGULIZI</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{Dakika 1 na }other{Dakika # na }}</translation>
 <translation id="1643823602425662293">Arifa</translation>
 <translation id="169515659049020177">Hama</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> zaidi</translation>
 <translation id="8730621377337864115">Nimemaliza</translation>
+<translation id="8741385002816058621">Hili ni toleo tangulizi la kipengele hiki</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{Saa 1}other{Saa #}}</translation>
 <translation id="8798099450830957504">Chaguomsingi</translation>
 <translation id="8841375032071747811">Kitufe cha Nyuma</translation>

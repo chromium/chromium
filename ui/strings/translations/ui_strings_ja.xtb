@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 分前}other{# 分前}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> を共有できません</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 か月前}other{# か月前}}</translation>
+<translation id="1591017414891297549">プレビュー</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 分 }other{# 分 }}</translation>
 <translation id="1643823602425662293">通知</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/秒</translation>
 <translation id="8725488761726303204">他 <ph name="NUMBER" /> 件</translation>
 <translation id="8730621377337864115">完了</translation>
+<translation id="8741385002816058621">これはプレビュー版の機能です</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1時間}other{#時間}}</translation>
 <translation id="8798099450830957504">既定</translation>
 <translation id="8841375032071747811">戻るボタン</translation>
