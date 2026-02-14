@@ -1263,6 +1263,10 @@ export class ComposeboxElement extends I18nMixinLit
         this.result_?.matches[this.selectedMatchIndex_] || null;
   }
 
+  getResultForTesting(): AutocompleteResult|null {
+    return this.result_;
+  }
+
   /**
    * Clears the autocomplete result on the page and on the autocomplete backend.
    */
@@ -1442,6 +1446,12 @@ export class ComposeboxElement extends I18nMixinLit
 
   clearAllInputs(querySubmitted: boolean) {
     this.clearInput();
+    // Let `querySubmit_` handle clearing files if the tool mode is a tool mode
+    // that should be cleared after submitting. For all other general
+    // clearing, clear input here.
+    if (!querySubmitted) {
+      this.resetModes();
+    }
     const remainingFiles = this.$.context.resetContextFiles();
     // Reset files in set to match remaining files in carousel.
     this.setPendingUploads(remainingFiles);

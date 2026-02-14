@@ -252,6 +252,13 @@ export class ContextualTasksAppElement extends CrLitElement {
       callbackRouter.setTaskDetails.addListener(updateTaskDetailsInUrl),
       callbackRouter.onZeroStateChange.addListener((isZeroState: boolean) => {
         this.isZeroState_ = isZeroState;
+        // If we just changed to zero state, that means
+        // it is a new thread or new AIM page. Otherwise,
+        // we are not in zero state anymore, or not in an AIM URL. In
+        // both thread/AIM cases for zero state, we clear input.
+        if (isZeroState) {
+          this.$.composebox.clearInputAndFocus();
+        }
       }),
       callbackRouter.onLensOverlayStateChanged.addListener(
           (isOverlayShowing: boolean) => {
