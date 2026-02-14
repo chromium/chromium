@@ -99,6 +99,40 @@ bool ExtensionSettingsOverriddenDialog::HasShownFor(Profile* profile,
 }
 
 // static
+bool ExtensionSettingsOverriddenDialog::ShouldShowForSimpleOverrideExtension(
+    Profile& profile,
+    const extensions::Extension& extension) {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kSearchEngineUnconditionalDialog)) {
+    // If the feature is disabled, clear the timestamp. This ensures that if the
+    // feature is re-enabled later, the grandfathering timestamp will be reset
+    // to the time of re-enabling. Any extensions installed while the feature
+    // was disabled will be grandfathered.
+    PrefService* prefs = profile.GetPrefs();
+    prefs->ClearPref(kSimpleOverrideBeginConfirmationTimestamp);
+    return false;
+  }
+
+  PrefService* prefs = profile.GetPrefs();
+  base::Time enforcement_time =
+      prefs->GetTime(kSimpleOverrideBeginConfirmationTimestamp);
+
+  // If the preference is not set, this is the first time the new logic is
+  // running. Set the timestamp to Now.
+  if (enforcement_time.is_null()) {
+    enforcement_time = base::Time::Now();
+    prefs->SetTime(kSimpleOverrideBeginConfirmationTimestamp, enforcement_time);
+  }
+
+  base::Time install_time = extensions::GetFirstInstallTime(
+      extensions::ExtensionPrefs::Get(&profile), extension.id());
+
+  // If the extension was installed after the enforcement logic began,
+  // show the dialog.
+  return install_time >= enforcement_time;
+}
+
+// static
 bool ExtensionSettingsOverriddenDialog::HasAcknowledgedExtension(
     Profile* profile,
     const ExtensionId& id,
@@ -143,7 +177,7 @@ bool ExtensionSettingsOverriddenDialog::ShouldShow() {
   // before the policy change was enabled to prevent spamming existing users.
   // See bug: https://crbug.com/463711704.
   if (simple_overrides::IsSimpleOverrideExtension(*extension)) {
-    return ShouldShowForSimpleOverrideExtension(*extension);
+    return ShouldShowForSimpleOverrideExtension(*profile_, *extension);
   }
 
   return true;
@@ -233,37 +267,4 @@ void ExtensionSettingsOverriddenDialog::AcknowledgeControllingExtension() {
   extensions::ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
       params_.controlling_extension_id,
       params_.extension_acknowledged_preference_name, base::Value(true));
-}
-
-bool ExtensionSettingsOverriddenDialog::ShouldShowForSimpleOverrideExtension(
-    const extensions::Extension& extension) {
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kSearchEngineUnconditionalDialog)) {
-    // If the feature is disabled, clear the timestamp. This ensures that if the
-    // feature is re-enabled later, the grandfathering timestamp will be reset
-    // to the time of re-enabling. Any extensions installed while the feature
-    // was disabled will be grandfathered.
-    PrefService* prefs = profile_->GetPrefs();
-    prefs->ClearPref(kSimpleOverrideBeginConfirmationTimestamp);
-    return false;
-  }
-
-  PrefService* prefs = profile_->GetPrefs();
-  base::Time enforcement_time =
-      prefs->GetTime(kSimpleOverrideBeginConfirmationTimestamp);
-
-  // If the preference is not set, this is the first time the new logic is
-  // running. Set the timestamp to Now.
-  if (enforcement_time.is_null()) {
-    enforcement_time = base::Time::Now();
-    prefs->SetTime(kSimpleOverrideBeginConfirmationTimestamp, enforcement_time);
-  }
-
-  base::Time install_time =
-      extensions::GetFirstInstallTime(extensions::ExtensionPrefs::Get(profile_),
-                                      params_.controlling_extension_id);
-
-  // If the extension was installed after the enforcement logic began,
-  // show the dialog.
-  return install_time >= enforcement_time;
 }

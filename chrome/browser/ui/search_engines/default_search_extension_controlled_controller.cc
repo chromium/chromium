@@ -119,7 +119,8 @@ bool DefaultSearchExtensionControlledController::
   //
   // 7) Don't show for "simple override" extensions.
   if (simple_overrides::IsSimpleOverrideExtension(*extension)) {
-    return false;
+    return ExtensionSettingsOverriddenDialog::
+        ShouldShowForSimpleOverrideExtension(*profile_, *extension);
   }
 
   // If we reach here, we should show the confirmation.

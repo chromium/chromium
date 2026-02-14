@@ -11,6 +11,8 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
@@ -27,6 +29,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_pref_names.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -40,6 +43,7 @@
 namespace {
 
 constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
+constexpr char kExtensionId2[] = "bcdefghijklmnopabcdefghijklmnopa";
 
 // Adds a "Complex" extension (has extra permissions) to ensure it is NOT
 // treated as a simple override.
@@ -155,13 +159,16 @@ scoped_refptr<const extensions::Extension> AddPolicyEnabledExtension(
 }
 
 // Creates an extension-controlled DSE and sets it as default.
-void InstallExtensionControlledDse(TestingProfile* profile,
-                                   TemplateURLService& service,
-                                   const extensions::Extension& extension) {
+void InstallExtensionControlledDse(
+    TestingProfile& profile,
+    TemplateURLService& service,
+    const extensions::Extension& extension,
+    const std::u16string& keyword = u"ext",
+    const std::string& url_str = "https://www.example.com/?q={searchTerms}") {
   TemplateURLData data;
   data.SetShortName(u"Ext Search");
-  data.SetKeyword(u"ext");
-  data.SetURL("https://www.example.com/?q={searchTerms}");
+  data.SetKeyword(keyword);
+  data.SetURL(url_str);
 
   auto turl = std::make_unique<TemplateURL>(
       data, TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, extension.id(),
@@ -170,21 +177,29 @@ void InstallExtensionControlledDse(TestingProfile* profile,
   TemplateURL* added = service.Add(std::move(turl));
   ASSERT_TRUE(added);
 
-  SetExtensionDefaultSearchInPrefs(profile->GetTestingPrefService(),
+  SetExtensionDefaultSearchInPrefs(profile.GetTestingPrefService(),
                                    added->data());
 
   const TemplateURL* dse = service.GetDefaultSearchProvider();
   ASSERT_TRUE(dse);
   ASSERT_EQ(dse->type(), TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION);
   ASSERT_EQ(dse->GetExtensionId(), extension.id());
+
+  // The helpers used in this test to install extensions register them directly
+  // in the registry. Therefore, the Prefs is not populated. As a result
+  // `extension::GetFirstInstallTime()` will return null Time. Set it here to
+  // ensure that the test is deterministic under mock time.
+  extensions::ExtensionPrefs::Get(&profile)->UpdateExtensionPref(
+      extension.id(), extensions::kPrefFirstInstallTime,
+      base::Value(base::NumberToString(
+          base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds())));
 }
 
 }  // namespace
 
-class DefaultSearchExtensionControlledControllerUnitTest
-    : public testing::Test {
+class DefaultSearchExtensionControlledControllerTest : public testing::Test {
  protected:
-  DefaultSearchExtensionControlledControllerUnitTest() {
+  DefaultSearchExtensionControlledControllerTest() {
     scoped_feature_list_.InitAndEnableFeature(
         extensions_features::kSearchEngineExplicitChoiceDialog);
   }
@@ -211,7 +226,8 @@ class DefaultSearchExtensionControlledControllerUnitTest
         .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
   raw_ptr<TemplateURLService> template_url_service_;
   ui::UnownedUserDataHost unowned_user_data_host_;
@@ -219,12 +235,12 @@ class DefaultSearchExtensionControlledControllerUnitTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
-       ShouldRequestConfirmation_True_ForGeneratedSearchUrl) {
+TEST_F(DefaultSearchExtensionControlledControllerTest,
+       ShouldRequestConfirmationTrueForGeneratedSearchUrl) {
   auto extension =
       AddEnabledExtension(&profile_, "Test Extension", kExtensionId);
 
-  InstallExtensionControlledDse(&profile_, *template_url_service_, *extension);
+  InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
 
   DefaultSearchExtensionControlledController owned_controller(browser_window_,
                                                               profile_);
@@ -234,13 +250,13 @@ TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
       owned_controller.ShouldRequestConfirmationForExtensionDse(search_url));
 }
 
-TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
-       ShouldRequestConfirmation_False_ForSimpleOverrideExtension) {
+TEST_F(DefaultSearchExtensionControlledControllerTest,
+       ShouldRequestConfirmationFalseForSimpleOverrideExtension) {
   // Use the Simple extension helper (no extra permissions).
   auto extension =
       AddSimpleEnabledExtension(&profile_, "Simple Extension", kExtensionId);
 
-  InstallExtensionControlledDse(&profile_, *template_url_service_, *extension);
+  InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
 
   DefaultSearchExtensionControlledController owned_controller(browser_window_,
                                                               profile_);
@@ -251,12 +267,12 @@ TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
       owned_controller.ShouldRequestConfirmationForExtensionDse(search_url));
 }
 
-TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
+TEST_F(DefaultSearchExtensionControlledControllerTest,
        ShouldRequestConfirmationFalseWhenUrlIsNotDseSearchUrl) {
   auto extension =
       AddEnabledExtension(&profile_, "Test Extension", kExtensionId);
 
-  InstallExtensionControlledDse(&profile_, *template_url_service_, *extension);
+  InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
 
   DefaultSearchExtensionControlledController owned_controller(browser_window_,
                                                               profile_);
@@ -265,7 +281,7 @@ TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
       GURL("https://www.example.com/about")));
 }
 
-TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
+TEST_F(DefaultSearchExtensionControlledControllerTest,
        ShouldRequestConfirmationFalseWhenExtensionNotEnabled) {
   // Create DSE controlled by kExtensionId, but do NOT add extension to
   // registry.
@@ -294,12 +310,12 @@ TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
       owned_controller.ShouldRequestConfirmationForExtensionDse(search_url));
 }
 
-TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
+TEST_F(DefaultSearchExtensionControlledControllerTest,
        ShouldRequestConfirmationFalseWhenAlreadyAcknowledged) {
   auto extension =
       AddEnabledExtension(&profile_, "Test Extension", kExtensionId);
 
-  InstallExtensionControlledDse(&profile_, *template_url_service_, *extension);
+  InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
 
   extensions::ExtensionPrefs::Get(&profile_)->UpdateExtensionPref(
       extension->id(), ControlledHomeDialogController::kAcknowledgedPreference,
@@ -316,11 +332,11 @@ TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
       owned_controller.ShouldRequestConfirmationForExtensionDse(search_url));
 }
 
-TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
+TEST_F(DefaultSearchExtensionControlledControllerTest,
        ShouldRequestConfirmationFalseWhenDialogAlreadyShown) {
   auto extension =
       AddEnabledExtension(&profile_, "Test Extension", kExtensionId);
-  InstallExtensionControlledDse(&profile_, *template_url_service_, *extension);
+  InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
 
   ExtensionSettingsOverriddenDialog::Params params(
       extension->id(), ControlledHomeDialogController::kAcknowledgedPreference,
@@ -338,12 +354,12 @@ TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
       owned_controller.ShouldRequestConfirmationForExtensionDse(search_url));
 }
 
-TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
+TEST_F(DefaultSearchExtensionControlledControllerTest,
        ShouldRequestConfirmationFalseWhenExtensionIsForceInstalled) {
   auto extension =
       AddPolicyEnabledExtension(&profile_, "Policy Extension", kExtensionId);
 
-  InstallExtensionControlledDse(&profile_, *template_url_service_, *extension);
+  InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
 
   DefaultSearchExtensionControlledController owned_controller(browser_window_,
                                                               profile_);
@@ -357,7 +373,75 @@ TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
       owned_controller.ShouldRequestConfirmationForExtensionDse(search_url));
 }
 
-TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
+TEST_F(DefaultSearchExtensionControlledControllerTest,
+       ShouldRequestConfirmationTrueForSimpleOverrideFeatureEnabledNewInstall) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {extensions_features::kSearchEngineExplicitChoiceDialog,
+       extensions_features::kSearchEngineUnconditionalDialog},
+      {});
+
+  DefaultSearchExtensionControlledController owned_controller(browser_window_,
+                                                              profile_);
+
+  // 1. Install an extension at T=0.
+  auto extension =
+      AddSimpleEnabledExtension(&profile_, "Initial", kExtensionId);
+  InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
+
+  // 2. Advance time to T=1s and trigger logic to set enforcement_time = T=1s.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  GURL search_url1("https://www.example.com/?q=foo");
+  // Grandfathered because install_time (T=0) < enforcement_time (T=1s).
+  EXPECT_FALSE(
+      owned_controller.ShouldRequestConfirmationForExtensionDse(search_url1));
+
+  // 3. Advance time to T=1m and install a NEW extension.
+  task_environment_.FastForwardBy(base::Minutes(1));
+  auto new_extension =
+      AddSimpleEnabledExtension(&profile_, "New Simple", kExtensionId2);
+  std::string new_url = "https://www.new-example.com/?q={searchTerms}";
+  InstallExtensionControlledDse(profile_, *template_url_service_,
+                                *new_extension, u"new-ext", new_url);
+
+  // 4. Check confirmation. New install_time (T=1m1s) >= enforcement_time
+  // (T=1s).
+  GURL search_url2("https://www.new-example.com/?q=foo");
+  EXPECT_TRUE(
+      owned_controller.ShouldRequestConfirmationForExtensionDse(search_url2));
+}
+
+TEST_F(
+    DefaultSearchExtensionControlledControllerTest,
+    ShouldRequestConfirmationFalseForSimpleOverrideFeatureEnabledGrandfathered) {
+  // Enable the UnconditionalDialog feature.
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/
+      {extensions_features::kSearchEngineExplicitChoiceDialog,
+       extensions_features::kSearchEngineUnconditionalDialog},
+      /*disabled_features=*/{});
+
+  // Install the extension *before* the controller logic ever runs.
+  auto extension =
+      AddSimpleEnabledExtension(&profile_, "Simple Extension", kExtensionId);
+  InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
+
+  DefaultSearchExtensionControlledController owned_controller(browser_window_,
+                                                              profile_);
+  GURL search_url("https://www.example.com/?q=foo");
+
+  // Advance time slightly to differentiate install time from "Now" when check
+  // runs.
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // The first call sets the enforcement timestamp to Now.
+  // Since the extension was installed in the past, it is grandfathered.
+  EXPECT_FALSE(
+      owned_controller.ShouldRequestConfirmationForExtensionDse(search_url));
+}
+
+TEST_F(DefaultSearchExtensionControlledControllerTest,
        ShouldRequestConfirmationFalseWhenDseIsNotExtensionControlled) {
   // Install a normal (non-extension) DSE.
   TemplateURLData data;
@@ -377,7 +461,7 @@ TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
       owned_controller.ShouldRequestConfirmationForExtensionDse(search_url));
 }
 
-TEST_F(DefaultSearchExtensionControlledControllerUnitTest,
+TEST_F(DefaultSearchExtensionControlledControllerTest,
        FromReturnsInstanceAttachedToWindow) {
   DefaultSearchExtensionControlledController owned_controller(browser_window_,
                                                               profile_);

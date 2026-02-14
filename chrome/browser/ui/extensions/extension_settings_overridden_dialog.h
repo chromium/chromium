@@ -82,6 +82,11 @@ class ExtensionSettingsOverriddenDialog
       const extensions::ExtensionId& id,
       const std::string& extension_acknowledged_preference_name);
 
+  // Returns true if a simple overridden extension should get a dialog shown.
+  static bool ShouldShowForSimpleOverrideExtension(
+      Profile& profile,
+      const extensions::Extension& extension);
+
   // SettingsOverriddenDialogController:
   bool ShouldShow() override;
   ShowParams GetShowParams() override;
@@ -99,10 +104,6 @@ class ExtensionSettingsOverriddenDialog
   // Acknowledges the extension controlling the setting, preventing future
   // prompting.
   void AcknowledgeControllingExtension();
-
-  // Returns true if a simple overridden extension should get a dialog shown.
-  bool ShouldShowForSimpleOverrideExtension(
-      const extensions::Extension& extension);
 
   const Params params_;
 
