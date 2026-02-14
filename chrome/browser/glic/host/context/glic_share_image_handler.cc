@@ -412,6 +412,7 @@ void GlicShareImageHandler::OnPastePolicyCheckComplete(
 
   if (!IsClientReady(*tab)) {
     ShareComplete(ShareImageResult::kFailedClientUnreadied);
+    return;
   }
 
   ShareComplete(ShareImageResult::kSuccess);
