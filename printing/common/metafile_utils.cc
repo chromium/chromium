@@ -180,6 +180,9 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       }
       break;
     }
+    case ax::mojom::Role::kFigcaption:
+      tag->fTypeString = chrome_pdf::kPDFStructureTypeCaption;
+      break;
     case ax::mojom::Role::kCode:
       tag->fTypeString = chrome_pdf::kPDFStructureTypeCode;
       break;

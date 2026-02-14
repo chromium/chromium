@@ -4,7 +4,7 @@
    "~children": [ {
       "type": "Figure",
       "~children": [ {
-         "alt": "Sample SVG image",
+         "alt": "Test image",
          "type": "Figure"
       }, {
          "type": "Caption",
