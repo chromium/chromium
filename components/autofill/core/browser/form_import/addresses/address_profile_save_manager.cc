@@ -36,8 +36,9 @@ void AddMultiStepComplementCandidate(FormDataImporter* form_data_importer,
   // The `import_metadata` is thus initialized to a neutral element.
   ProfileImportMetadata import_metadata;
   import_metadata.origin = origin;
-  form_data_importer->AddMultiStepImportCandidate(profile, import_metadata,
-                                                  /*is_imported=*/true);
+  form_data_importer->GetAddressFormDataImporter().AddMultiStepImportCandidate(
+      profile, import_metadata,
+      /*is_imported=*/true);
 }
 
 AutofillClient::SaveAddressBubbleType AutofillProfileImportTypeToBubbleType(

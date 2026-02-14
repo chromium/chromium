@@ -39,6 +39,10 @@ class AddressFormDataImporter {
   AddressFormDataImporter& operator=(const AddressFormDataImporter&) = delete;
   virtual ~AddressFormDataImporter();
 
+  void AddMultiStepImportCandidate(const AutofillProfile& profile,
+                                   const ProfileImportMetadata& import_metadata,
+                                   bool is_imported);
+
   AddressDataManager& address_data_manager();
 
   MultiStepImportMerger& multi_step_import_merger();

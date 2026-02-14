@@ -88,14 +88,6 @@ class FormDataImporter : public AddressDataManager::Observer,
     return credit_card_save_manager_.get();
   }
 
-  void AddMultiStepImportCandidate(const AutofillProfile& profile,
-                                   const ProfileImportMetadata& import_metadata,
-                                   bool is_imported) {
-    GetAddressFormDataImporter()
-        .multi_step_import_merger()
-        .AddMultiStepImportCandidate(profile, import_metadata, is_imported);
-  }
-
   // AddressDataManager::Observer
   void OnAddressDataChanged() override;
 
