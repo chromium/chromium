@@ -46,8 +46,9 @@ HRESULT FakeRadioWinrt::SetStateAsync(
   // |cancelable_closure_| gets destroyed first.
   cancelable_closure_.Reset(base::BindLambdaForTesting([this, value] {
     std::move(set_state_callback_).Run(RadioAccessStatus_Allowed);
-    if (std::exchange(state_, value) != value)
+    if (state_changed_handler_ && std::exchange(state_, value) != value) {
       state_changed_handler_->Invoke(this, nullptr);
+    }
   }));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
