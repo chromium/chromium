@@ -650,7 +650,8 @@ void VerticalTabView::ResetCollectionNode() {
   CHECK(collection_node_);
   TabHoverCardController* hover_card_controller =
       collection_node_->GetController()->GetHoverCardController();
-  if (hover_card_controller) {
+  if (hover_card_controller &&
+      hover_card_controller->IsHoverCardShowingForTab(this)) {
     hover_card_controller->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
   }
