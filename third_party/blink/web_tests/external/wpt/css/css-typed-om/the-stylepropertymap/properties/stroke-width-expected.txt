@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] Can set 'stroke-width' to a percent: -3.14%
-  assert_approx_equals: expected 0 +/- 0.000001 but got -3.140000104904175
+  assert_approx_equals: expected 0 +/- 0.00001 but got -3.140000104904175
 [FAIL] Can set 'stroke-width' to a number: 0
   Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 [FAIL] Can set 'stroke-width' to a number: -3.14

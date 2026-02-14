@@ -18,8 +18,8 @@ This is a testharness.js-based test.
 [FAIL] Can set 'font-stretch' to the 'ultra-expanded' keyword: ultra-expanded
   assert_equals: expected "CSSKeywordValue" but got "CSSUnitValue"
 [FAIL] Can set 'font-stretch' to a percent: -3.14%
-  assert_approx_equals: expected 0 +/- 0.000001 but got -3
+  assert_approx_equals: expected 0 +/- 0.00001 but got -3
 [FAIL] Can set 'font-stretch' to a percent: 3.14%
-  assert_approx_equals: expected 3.14 +/- 0.000001 but got 3
+  assert_approx_equals: expected 3.14 +/- 0.00001 but got 3
 Harness: the test ran to completion.
 
