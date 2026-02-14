@@ -11,17 +11,11 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "build/build_config.h"
-#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/form_import/addresses/address_form_data_importer.h"
-#include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/history/core/browser/history_service_observer.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace history {
 class HistoryService;
@@ -32,8 +26,9 @@ namespace autofill {
 class AutofillClient;
 class CreditCardSaveManager;
 class IbanSaveManager;
-class PaymentsDataManager;
 enum class NonInteractivePaymentMethodType;
+class PaymentsDataManager;
+class SourceId;
 
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the `AddressDataManager` and
