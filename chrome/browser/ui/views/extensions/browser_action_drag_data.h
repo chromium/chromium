@@ -55,8 +55,8 @@ class BrowserActionDragData {
   void WriteToPickle(Profile* profile, base::Pickle* pickle) const;
   bool ReadFromPickle(base::Pickle* pickle);
 
-  // The profile we originated from.
-  void* profile_;
+  // The unique ID of the profile we originated from.
+  std::string profile_unique_id_;
 
   // The id of the view being dragged.
   std::string id_;

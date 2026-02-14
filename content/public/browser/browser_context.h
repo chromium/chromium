@@ -327,7 +327,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   bool ShutdownStarted();
 
   // Returns a unique string associated with this browser context.
-  virtual const std::string& UniqueId();
+  virtual const std::string& UniqueId() const;
 
   // Gets media service for storing/retrieving video decoding performance stats.
   // Exposed here rather than StoragePartition because all SiteInstances should
