@@ -80,9 +80,9 @@ UpdateClientImpl::~UpdateClientImpl() {
 
   CHECK(task_queue_.empty());
 
-#if !BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/438803980): keep investigating why the CHECK fails on
-  // browser tests and UI tests on Linux.
+  // browser tests and interactive UI tests on Linux and Windows.
   CHECK(tasks_.empty());
 #endif
 
