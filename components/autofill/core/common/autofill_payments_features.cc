@@ -190,6 +190,9 @@ BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// When enabled, updates the American Express network art in Autofill.
+BASE_FEATURE(kAutofillEnableNewAmexNetworkArt,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the card benefits toggle in settings will show updated text.
 BASE_FEATURE(kAutofillEnableNewCardBenefitsToggleText,
