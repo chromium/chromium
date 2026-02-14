@@ -30,6 +30,9 @@ source_set("tests") {
     "equals_unittest.cc",
     "extra_cpp_template_unittest.cc",
     "feature_unittest.cc",
+    "fixed_array_size_unittest.cc",
+    "fixed_array_size_unittest_mojom_traits.cc",
+    "fixed_array_size_unittest_mojom_traits.h",
     "flush_async_unittest.cc",
     "handle_passing_unittest.cc",
     "hash_unittest.cc",
@@ -207,6 +210,7 @@ mojom("test_mojom") {
     "enum_headers_unittest.test-mojom",
     "feature_unittest.test-mojom",
     "feature_unittest_other.test-mojom",
+    "fixed_array_size_unittest.test-mojom",
     "flush_async_unittest.test-mojom",
     "idle_tracking_unittest.test-mojom",
     "interface_unittest.test-mojom",
@@ -238,6 +242,15 @@ mojom("test_mojom") {
         },
       ]
       traits_headers = [ "default_construct_unittest_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo.test.fixed_array_size_unittest.mojom.Struct3"
+          cpp = "::mojo::test::fixed_array_size_unittest::TypemappedStruct3"
+        },
+      ]
+      traits_headers = [ "fixed_array_size_unittest_mojom_traits.h" ]
     },
     {
       types = [

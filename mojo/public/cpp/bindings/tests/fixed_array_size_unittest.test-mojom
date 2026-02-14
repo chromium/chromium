@@ -1,0 +1,37 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo.test.fixed_array_size_unittest.mojom;
+
+struct Struct2 {
+  array<int32, 2> values;
+};
+
+interface Interface2 {
+  Send@1(Struct2 s);
+};
+
+struct Struct3 {
+  array<int32, 3> values;
+};
+
+interface Interface3 {
+  Send@1(Struct3 s);
+};
+
+struct Struct4 {
+  array<int32, 4> values;
+};
+
+interface Interface4 {
+  Send@1(Struct4 s);
+};
+
+struct StructVariable {
+  array<int32> values;
+};
+
+interface InterfaceVariable {
+  Send@1(StructVariable s);
+};
