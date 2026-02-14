@@ -16,11 +16,16 @@
   <br>
   <button id="request-cam">Request Cam</button>
   <button id="stop-cam">Stop Cam</button>
+  <br>
+  <button id="request-tab-capture">Request Tab Capture</button>
+  <button id="stop-tab-capture">Stop Tab Capture</button>
 
   <script>
     const video = document.getElementById('video');
     document.getElementById('mute').onclick = () => video.muted = true;
     document.getElementById('unmute').onclick = () => video.muted = false;
+
+    var stream;
 
     function requestMic() {
       navigator.mediaDevices.getUserMedia({audio: true})
@@ -38,8 +43,42 @@
         .catch(err => console.error('Cam access denied', err));
     }
 
+    function requestTabCapture() {
+      navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        preferCurrentTab: true
+      })
+      .then(s => {
+        stream = s;
+        document.title = 'stream_ready';
+        console.log('Tab capture access granted');
+      })
+      .catch(err => {
+        console.error('Tab capture access denied', err);
+        document.title = 'capture_error';
+      });
+    }
+
+    function stopTabCapture() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+        document.title = 'stopped_successfully';
+        console.log('Tab capture stopped');
+      }
+    }
+
+    function monitorStreamEnd() {
+      if (stream && stream.getVideoTracks().length > 0) {
+        stream.getVideoTracks()[0].onended = () => { document.title = 'ended'; };
+        document.title = 'listener_attached';
+      }
+    }
+
     document.getElementById('request-mic').onclick = requestMic;
     document.getElementById('request-cam').onclick = requestCam;
+    document.getElementById('request-tab-capture').onclick = requestTabCapture;
+    document.getElementById('stop-tab-capture').onclick = stopTabCapture;
   </script>
 </body>
 </html>
