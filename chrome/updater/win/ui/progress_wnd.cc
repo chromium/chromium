@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <typeinfo>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
@@ -607,7 +608,7 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
 
 HRESULT ProgressWnd::ChangeControlState() {
   for (const ControlState& ctl : ctls_) {
-    const size_t i = static_cast<size_t>(cur_state_);
+    const size_t i = std::to_underlying(cur_state_);
     CHECK_LE(i, std::size(ctl.attr));
     SetControlAttributes(ctl.id, ctl.attr[i]);
   }

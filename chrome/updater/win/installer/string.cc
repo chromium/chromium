@@ -120,9 +120,4 @@ const wchar_t* GetNameFromPathExt(const wchar_t* path, size_t size) {
              : (UNSAFE_TODO(current + 1));
 }
 
-wchar_t* GetNameFromPathExt(wchar_t* path, size_t size) {
-  return const_cast<wchar_t*>(
-      GetNameFromPathExt(const_cast<const wchar_t*>(path), size));
-}
-
 }  // namespace updater

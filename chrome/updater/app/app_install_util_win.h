@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <utility>
+
 #include "chrome/updater/app/app_install_progress.h"
 
 namespace updater {
@@ -36,7 +38,7 @@ inline constexpr CompletionCodes kCompletionCodesActionPriority[] = {
 // should match the last value in the enumeration.
 static_assert(
     std::size(kCompletionCodesActionPriority) ==
-        static_cast<size_t>(
+        std::to_underlying(
             CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL),
     "completion code is missing");
 

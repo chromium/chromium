@@ -5,6 +5,7 @@
 #include "chrome/updater/win/ui/l10n_util.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/debug/alias.h"
@@ -57,8 +58,7 @@ std::wstring GetLocalizedString(unsigned int base_message_id,
   }
 
   // Map `base_message_id` to the base id for the current install mode.
-  const unsigned int message_id =
-      static_cast<UINT>(base_message_id + GetLanguageOffset(lang));
+  const unsigned int message_id = base_message_id + GetLanguageOffset(lang);
   const ATLSTRINGRESOURCEIMAGE* image =
       AtlGetStringResourceImage(_AtlBaseModule.GetModuleInstance(), message_id);
   if (image) {
@@ -101,7 +101,7 @@ std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
                                                   DWORD windows_error,
                                                   const std::wstring& lang) {
 #define METAINSTALLER_ERROR_SWITCH_ENTRY(exit_code)                        \
-  case static_cast<int>(exit_code):                                        \
+  case std::to_underlying(exit_code):                                      \
     return GetLocalizedStringF(                                            \
         IDS_GENERIC_METAINSTALLER_ERROR_BASE,                              \
         {L#exit_code, windows_error ? GetTextForSystemError(windows_error) \

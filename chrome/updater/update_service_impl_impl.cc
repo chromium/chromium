@@ -257,11 +257,11 @@ std::wstring GetTextForDownloadError(int error, const std::wstring& language) {
 
 std::wstring GetTextForUnpackError(int error, const std::wstring& language) {
 #define UNPACK_SWITCH_ENTRY(error_code)                                     \
-  case static_cast<int>(error_code):                                        \
+  case std::to_underlying(error_code):                                      \
     return GetLocalizedStringF(IDS_GENERIC_UNPACK_ERROR_BASE, L#error_code, \
                                language)
 #define UNPACK_CACHING_SWITCH_ENTRY(error_code)                             \
-  case static_cast<int>(error_code):                                        \
+  case std::to_underlying(error_code):                                      \
     return GetLocalizedStringF(IDS_UNPACK_CACHING_ERROR_BASE, L#error_code, \
                                language)
 

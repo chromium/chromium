@@ -127,7 +127,7 @@ UpdateStateImpl::UpdateStateImpl(const UpdateService::UpdateState& update_state)
 
 STDMETHODIMP UpdateStateImpl::get_state(LONG* state) {
   CHECK(state);
-  *state = static_cast<LONG>(update_state_.state);
+  *state = std::to_underlying(update_state_.state);
   return S_OK;
 }
 
@@ -168,7 +168,7 @@ STDMETHODIMP UpdateStateImpl::get_installProgress(LONG* install_progress) {
 
 STDMETHODIMP UpdateStateImpl::get_errorCategory(LONG* error_category) {
   CHECK(error_category);
-  *error_category = static_cast<LONG>(update_state_.error_category);
+  *error_category = std::to_underlying(update_state_.error_category);
   return S_OK;
 }
 
@@ -460,7 +460,7 @@ HRESULT UpdaterImpl::CheckForUpdate2(const wchar_t* app_id,
               [](IUpdaterObserverPtr observer, UpdateService::Result result) {
                 HRESULT hr = observer->OnComplete(
                     MakeComObjectOrCrash<CompleteStatusImpl>(
-                        static_cast<int>(result), L"")
+                        std::to_underlying(result), L"")
                         .Get());
                 VLOG(2) << "IUpdaterImpl::CheckForUpdate. "
                         << "IUpdaterObserver::OnComplete returned " << std::hex
@@ -550,7 +550,7 @@ HRESULT UpdaterImpl::Update2(const wchar_t* app_id,
               [](IUpdaterObserverPtr observer, UpdateService::Result result) {
                 HRESULT hr = observer->OnComplete(
                     MakeComObjectOrCrash<CompleteStatusImpl>(
-                        static_cast<int>(result), L"")
+                        std::to_underlying(result), L"")
                         .Get());
                 VLOG(2) << "IUpdaterImpl::Update. "
                         << "IUpdaterObserver::OnComplete returned " << std::hex
@@ -602,7 +602,7 @@ HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
               [](IUpdaterObserverPtr observer, UpdateService::Result result) {
                 HRESULT hr = observer->OnComplete(
                     MakeComObjectOrCrash<CompleteStatusImpl>(
-                        static_cast<int>(result), L"")
+                        std::to_underlying(result), L"")
                         .Get());
                 VLOG(2) << "IUpdaterImpl::UpdateAll. "
                         << "IUpdaterObserver::OnComplete returned " << std::hex
@@ -700,7 +700,7 @@ HRESULT UpdaterImpl::Install2(const wchar_t* app_id,
               [](IUpdaterObserverPtr observer, UpdateService::Result result) {
                 HRESULT hr = observer->OnComplete(
                     MakeComObjectOrCrash<CompleteStatusImpl>(
-                        static_cast<int>(result), L"")
+                        std::to_underlying(result), L"")
                         .Get());
                 VLOG(2) << "IUpdaterImpl::Install. "
                         << "IUpdaterObserver::OnComplete returned " << std::hex
@@ -823,7 +823,7 @@ HRESULT UpdaterImpl::RunInstaller2(const wchar_t* app_id,
               [](IUpdaterObserverPtr observer, UpdateService::Result result) {
                 HRESULT hr = observer->OnComplete(
                     MakeComObjectOrCrash<CompleteStatusImpl>(
-                        static_cast<int>(result), L"")
+                        std::to_underlying(result), L"")
                         .Get());
                 VLOG(2) << "IUpdaterImpl::RunInstaller. "
                         << "IUpdaterObserver::OnComplete returned " << std::hex

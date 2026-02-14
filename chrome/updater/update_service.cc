@@ -72,8 +72,7 @@ std::ostream& operator<<(std::ostream& os,
             << ", next_version: " << version_formatter()
             << ", downloaded_bytes: " << update_state.downloaded_bytes
             << ", total_bytes: " << update_state.total_bytes
-            << ", install_progress: "
-            << static_cast<int16_t>(update_state.install_progress)
+            << ", install_progress: " << int16_t{update_state.install_progress}
             << ", error_category: " << error_category_formatter()
             << ", error_code: " << update_state.error_code
             << ", extra_code1: " << update_state.extra_code1 << "}";

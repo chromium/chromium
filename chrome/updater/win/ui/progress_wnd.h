@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -218,7 +219,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   struct ControlState {
    private:
     static constexpr size_t kNumControlAttributes =
-        1 + static_cast<size_t>(States::STATE_END);
+        1 + std::to_underlying(States::STATE_END);
 
    public:
     const int id;

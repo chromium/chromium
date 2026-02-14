@@ -291,17 +291,13 @@ void UpdateServiceStub::Update(
       MakeStateChangeObserverCallbacks(std::move(observer));
   if (do_update_check_only) {
     impl_->CheckForUpdate(
-        app_id, static_cast<updater::UpdateService::Priority>(priority),
-        static_cast<updater::UpdateService::PolicySameVersionUpdate>(
-            policy_same_version_update),
-        language.value_or(""), state_change_callback,
+        app_id, priority, policy_same_version_update, language.value_or(""),
+        state_change_callback,
         std::move(on_complete_callback).Then(task_end_listener_));
   } else {
-    impl_->Update(app_id, install_data_index,
-                  static_cast<updater::UpdateService::Priority>(priority),
-                  static_cast<updater::UpdateService::PolicySameVersionUpdate>(
-                      policy_same_version_update),
-                  language.value_or(""), state_change_callback,
+    impl_->Update(app_id, install_data_index, priority,
+                  policy_same_version_update, language.value_or(""),
+                  state_change_callback,
                   std::move(on_complete_callback).Then(task_end_listener_));
   }
 }
@@ -322,8 +318,8 @@ void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
       MakeStateChangeObserverCallbacks(std::move(observer));
   CHECK(registration);
   impl_->Install(*registration, client_install_data, install_data_index,
-                 static_cast<updater::UpdateService::Priority>(priority),
-                 language.value_or(""), std::move(state_change_callback),
+                 priority, language.value_or(""),
+                 std::move(state_change_callback),
                  std::move(on_complete_callback).Then(task_end_listener_));
 }
 
@@ -387,10 +383,8 @@ void UpdateServiceStub::CheckForUpdate(
   auto [state_change_callback, on_complete_callback] =
       MakeStateChangeObserverCallbacks(std::move(observer));
   impl_->CheckForUpdate(
-      app_id, static_cast<updater::UpdateService::Priority>(priority),
-      static_cast<updater::UpdateService::PolicySameVersionUpdate>(
-          policy_same_version_update),
-      language.value_or(""), state_change_callback,
+      app_id, priority, policy_same_version_update, language.value_or(""),
+      state_change_callback,
       std::move(on_complete_callback).Then(task_end_listener_));
 }
 

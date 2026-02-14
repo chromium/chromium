@@ -2269,7 +2269,7 @@ TEST_F(IntegrationTest, XattrTagWriteRead) {
   EXPECT_EQ(read_result->brand_code, "TEST");
   EXPECT_EQ(read_result->installation_id, "TestInstallId");
 
-  ASSERT_EQ(read_result->apps.size(), static_cast<size_t>(1));
+  ASSERT_EQ(read_result->apps.size(), 1u);
   const tagging::AppArgs& app_args = read_result->apps[0];
   EXPECT_EQ(app_args.app_id, "org.chromium.test");
   EXPECT_EQ(app_args.ap, "example");
