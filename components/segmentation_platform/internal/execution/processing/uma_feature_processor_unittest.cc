@@ -22,7 +22,7 @@
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
-#include "components/segmentation_platform/internal/database/ukm_database_backend.h"
+#include "components/segmentation_platform/internal/database/ukm_database_impl.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
@@ -95,9 +95,8 @@ class UmaFeatureProcessorTest : public testing::Test,
     db_provider_ = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
         temp_dir_.GetPath(), true);
 
-    ukm_db_ = std::make_unique<UkmDatabaseBackend>(
-        base::FilePath(), /*in_memory=*/true,
-        task_env_.GetMainThreadTaskRunner());
+    ukm_db_ = std::make_unique<UkmDatabaseImpl>(base::FilePath(),
+                                                /*in_memory=*/true);
     base::RunLoop wait_for_sql_init;
     ukm_db_->InitDatabase(base::BindOnce(
         [](base::OnceClosure quit_closure, bool success) {

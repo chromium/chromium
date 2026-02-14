@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/database/ukm_database_impl.h"
 
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/segmentation_platform/internal/database/ukm_database_backend.h"
@@ -12,100 +13,68 @@ namespace segmentation_platform {
 
 UkmDatabaseImpl::UkmDatabaseImpl(const base::FilePath& database_path,
                                  bool in_memory)
-    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
-      backend_(std::make_unique<UkmDatabaseBackend>(
-          database_path,
-          in_memory,
-          base::SequencedTaskRunner::GetCurrentDefault())) {}
+    : backend_(base::ThreadPool::CreateSequencedTaskRunner(
+                   {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
+               database_path,
+               in_memory) {}
 
-UkmDatabaseImpl::~UkmDatabaseImpl() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->DeleteSoon(FROM_HERE, std::move(backend_));
-}
+UkmDatabaseImpl::~UkmDatabaseImpl() = default;
 
 void UkmDatabaseImpl::InitDatabase(SuccessCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UkmDatabaseBackend::InitDatabase,
-                                backend_->GetWeakPtr(), std::move(callback)));
+  backend_.AsyncCall(&UkmDatabaseBackend::InitDatabase)
+      .Then(std::move(callback));
 }
 
 void UkmDatabaseImpl::StoreUkmEntry(ukm::mojom::UkmEntryPtr ukm_entry) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UkmDatabaseBackend::StoreUkmEntry,
-                                backend_->GetWeakPtr(), std::move(ukm_entry)));
+  backend_.AsyncCall(&UkmDatabaseBackend::StoreUkmEntry)
+      .WithArgs(std::move(ukm_entry));
 }
 
 void UkmDatabaseImpl::UpdateUrlForUkmSource(ukm::SourceId source_id,
                                             const GURL& url,
                                             bool is_validated,
                                             const std::string& profile_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UkmDatabaseBackend::UpdateUrlForUkmSource,
-                                backend_->GetWeakPtr(), source_id, url,
-                                is_validated, profile_id));
+  backend_.AsyncCall(&UkmDatabaseBackend::UpdateUrlForUkmSource)
+      .WithArgs(source_id, url, is_validated, profile_id);
 }
 
 void UkmDatabaseImpl::OnUrlValidated(const GURL& url,
                                      const std::string& profile_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UkmDatabaseBackend::OnUrlValidated,
-                                backend_->GetWeakPtr(), url, profile_id));
+  backend_.AsyncCall(&UkmDatabaseBackend::OnUrlValidated)
+      .WithArgs(url, profile_id);
 }
 
 void UkmDatabaseImpl::RemoveUrls(const std::vector<GURL>& urls, bool all_urls) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UkmDatabaseBackend::RemoveUrls,
-                                backend_->GetWeakPtr(), urls, all_urls));
+  backend_.AsyncCall(&UkmDatabaseBackend::RemoveUrls).WithArgs(urls, all_urls);
 }
 
 void UkmDatabaseImpl::AddUmaMetric(const std::string& profile_id,
                                    const UmaMetricEntry& row) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UkmDatabaseBackend::AddUmaMetric,
-                                backend_->GetWeakPtr(), profile_id, row));
+  backend_.AsyncCall(&UkmDatabaseBackend::AddUmaMetric)
+      .WithArgs(profile_id, row);
 }
 
 void UkmDatabaseImpl::RunReadOnlyQueries(QueryList&& queries,
                                          QueryCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UkmDatabaseBackend::RunReadOnlyQueries,
-                                backend_->GetWeakPtr(), std::move(queries),
-                                std::move(callback)));
+  backend_.AsyncCall(&UkmDatabaseBackend::RunReadOnlyQueries)
+      .WithArgs(std::move(queries))
+      .Then(std::move(callback));
 }
 
 void UkmDatabaseImpl::CleanupOldEntries(base::Time ukm_time_limit,
                                         base::Time uma_time_limit) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UkmDatabaseBackend::CleanupOldEntries,
-                     backend_->GetWeakPtr(), ukm_time_limit, uma_time_limit));
+  backend_.AsyncCall(&UkmDatabaseBackend::CleanupOldEntries)
+      .WithArgs(ukm_time_limit, uma_time_limit);
 }
 
 void UkmDatabaseImpl::CleanupItems(const std::string& profile_id,
                                    std::vector<CleanupItem> cleanup_items) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UkmDatabaseBackend::CleanupItems, backend_->GetWeakPtr(),
-                     profile_id, std::move(cleanup_items)));
+  backend_.AsyncCall(&UkmDatabaseBackend::CleanupItems)
+      .WithArgs(profile_id, std::move(cleanup_items));
 }
 
 void UkmDatabaseImpl::CommitTransactionForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UkmDatabaseBackend::CommitTransactionForTesting,
-                     backend_->GetWeakPtr()));
+  backend_.AsyncCall(&UkmDatabaseBackend::CommitTransactionForTesting);
 }
 
 }  // namespace segmentation_platform

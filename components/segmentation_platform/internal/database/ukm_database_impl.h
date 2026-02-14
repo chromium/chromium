@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
+#include "components/segmentation_platform/internal/database/ukm_database_backend.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
@@ -21,8 +21,8 @@
 
 namespace segmentation_platform {
 
-class UkmDatabaseBackend;
-
+// Created and run on the main UI thread, and hosts the `UkmDatabaseBackend`
+// which runs on a background thread.
 class UkmDatabaseImpl : public UkmDatabase {
  public:
   explicit UkmDatabaseImpl(const base::FilePath& database_path, bool in_memory);
@@ -49,10 +49,7 @@ class UkmDatabaseImpl : public UkmDatabase {
   void CommitTransactionForTesting() override;
 
  private:
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
-  std::unique_ptr<UkmDatabaseBackend> backend_;
-  SEQUENCE_CHECKER(sequence_checker_);
+  base::SequenceBound<UkmDatabaseBackend> backend_;
 };
 
 }  // namespace segmentation_platform

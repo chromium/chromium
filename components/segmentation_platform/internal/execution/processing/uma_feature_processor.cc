@@ -377,15 +377,14 @@ void UmaFeatureProcessor::ProcessUsingSqlDatabase(
                                          weak_ptr_factory_.GetWeakPtr()));
 }
 
-void UmaFeatureProcessor::OnSqlQueriesRun(bool success,
-                                          processing::IndexedTensors tensor) {
-  if (success) {
-    for (const auto& it : tensor) {
-      result_[it.first] = std::move(it.second);
+void UmaFeatureProcessor::OnSqlQueriesRun(
+    std::optional<processing::IndexedTensors> tensors) {
+  if (tensors.has_value()) {
+    for (auto& [index, tensor] : *tensors) {
+      result_[index] = std::move(tensor);
     }
   }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_), std::move(result_)));
+  std::move(callback_).Run(std::move(result_));
 }
 
 void UmaFeatureProcessor::ProcessSingleUmaFeature(

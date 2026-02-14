@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_UMA_FEATURE_PROCESSOR_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -50,7 +51,7 @@ class UmaFeatureProcessor : public QueryProcessor {
                                  std::vector<SignalDatabase::DbEntry> samples);
 
   void ProcessUsingSqlDatabase(FeatureProcessorState& feature_processor_state);
-  void OnSqlQueriesRun(bool success, processing::IndexedTensors tensor);
+  void OnSqlQueriesRun(std::optional<processing::IndexedTensors> tensor);
 
   // Function for processing the next UMAFeature type of input for ML model.
   void ProcessOnGotAllSamples(

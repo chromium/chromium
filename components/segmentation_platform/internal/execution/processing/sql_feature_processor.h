@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_SQL_FEATURE_PROCESSOR_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -51,8 +52,7 @@ class SqlFeatureProcessor : public QueryProcessor {
   // database.
   void OnQueriesRun(
       base::WeakPtr<FeatureProcessorState> feature_processor_state,
-      bool success,
-      IndexedTensors result);
+      std::optional<IndexedTensors> result);
 
   // List of sql features to process into input tensors.
   QueryList queries_;
@@ -74,9 +74,6 @@ class SqlFeatureProcessor : public QueryProcessor {
   // List of sql queries and bind values ready to be sent to the ukm database
   // for processing.
   base::flat_map<FeatureIndex, UkmDatabase::CustomSqlQuery> processed_queries_;
-
-  // List of resulting input tensors.
-  IndexedTensors result_;
 
   base::WeakPtrFactory<SqlFeatureProcessor> weak_ptr_factory_{this};
 };

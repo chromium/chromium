@@ -18,7 +18,7 @@
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
-#include "components/segmentation_platform/internal/database/ukm_database_backend.h"
+#include "components/segmentation_platform/internal/database/ukm_database_impl.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/mock_feature_aggregator.h"
 #include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
@@ -49,9 +49,8 @@ class FeatureListQueryProcessorTest : public testing::TestWithParam<bool> {
   void SetUp() override {
     InitFeatureList();
 
-    ukm_db_ = std::make_unique<UkmDatabaseBackend>(
-        base::FilePath(), /*in_memory=*/true,
-        task_environment_.GetMainThreadTaskRunner());
+    ukm_db_ = std::make_unique<UkmDatabaseImpl>(base::FilePath(),
+                                                /*in_memory=*/true);
     base::RunLoop wait_for_sql_init;
     ukm_db_->InitDatabase(base::BindOnce(
         [](base::OnceClosure quit_closure, bool success) {

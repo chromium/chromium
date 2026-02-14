@@ -101,17 +101,9 @@ class UkmDatabaseBackendTest : public testing::Test {
   void CreateAndInitBackend() {
     backend_ = std::make_unique<UkmDatabaseBackend>(
         temp_dir_.GetPath().Append(FILE_PATH_LITERAL("ukm_database")),
-        /*in_memory=*/false, task_runner_);
-    base::RunLoop wait_for_init;
-    backend_->InitDatabase(base::BindOnce(
-        [](base::OnceClosure quit,
-           scoped_refptr<base::SequencedTaskRunner> task_runner, bool success) {
-          EXPECT_TRUE(task_runner->RunsTasksInCurrentSequence());
-          std::move(quit).Run();
-          ASSERT_TRUE(success);
-        },
-        wait_for_init.QuitClosure(), task_runner_));
-    wait_for_init.Run();
+        /*in_memory=*/false);
+    bool success = backend_->InitDatabase();
+    ASSERT_TRUE(success);
   }
 
   void TearDown() override {
@@ -123,19 +115,12 @@ class UkmDatabaseBackendTest : public testing::Test {
   void ExpectQueryResult(UkmDatabase::QueryList&& queries,
                          bool expect_success,
                          const processing::IndexedTensors& expected_values) {
-    base::RunLoop wait_for_query3;
-    backend_->RunReadOnlyQueries(
-        std::move(queries),
-        base::BindOnce(
-            [](base::OnceClosure quit, bool expect_success,
-               const processing::IndexedTensors& expected_values, bool success,
-               processing::IndexedTensors tensors) {
-              EXPECT_EQ(expect_success, success);
-              EXPECT_EQ(expected_values, tensors);
-              std::move(quit).Run();
-            },
-            wait_for_query3.QuitClosure(), expect_success, expected_values));
-    wait_for_query3.Run();
+    std::optional<processing::IndexedTensors> result =
+        backend_->RunReadOnlyQueries(std::move(queries));
+    EXPECT_EQ(expect_success, result.has_value());
+    if (expect_success) {
+      EXPECT_EQ(expected_values, result.value());
+    }
   }
 
  protected:
@@ -662,17 +647,9 @@ class FailedUkmDatabaseTest : public UkmDatabaseBackendTest {
   void SetUp() override {
     task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
     backend_ = std::make_unique<UkmDatabaseBackend>(
-        base::FilePath(kBadFilePath), /*in_memory=*/false, task_runner_);
-    base::RunLoop wait_for_init;
-    backend_->InitDatabase(base::BindOnce(
-        [](base::OnceClosure quit,
-           scoped_refptr<base::SequencedTaskRunner> task_runner, bool success) {
-          EXPECT_TRUE(task_runner->RunsTasksInCurrentSequence());
-          std::move(quit).Run();
-          ASSERT_FALSE(success);
-        },
-        wait_for_init.QuitClosure(), task_runner_));
-    wait_for_init.Run();
+        base::FilePath(kBadFilePath), /*in_memory=*/false);
+    bool success = backend_->InitDatabase();
+    ASSERT_FALSE(success);
   }
   void TearDown() override {
     backend_.reset();
