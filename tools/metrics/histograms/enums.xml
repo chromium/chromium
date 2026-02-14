@@ -14482,6 +14482,8 @@ from previous Chrome versions.
   <int value="27632363" label="JourneysOmniboxHistoryClusterProvider:enabled"/>
   <int value="27970819" label="ProductSpecificationsMultiSpecifics:disabled"/>
   <int value="28182289" label="CastStreamingVp8:disabled"/>
+  <int value="28930887"
+      label="AimServerEligibilityIncludeClientLocale:enabled"/>
   <int value="29212695" label="OfflineIndicator:enabled"/>
   <int value="29769995" label="DataSharingNonProductionEnvironment:enabled"/>
   <int value="29924596" label="AiModeOmniboxEntryPoint:enabled"/>
@@ -16177,6 +16179,8 @@ from previous Chrome versions.
       label="GlanceablesTimeManagementClassroomStudentView:disabled"/>
   <int value="620189062" label="TabFreeze:enabled"/>
   <int value="620776830" label="VerticalTabs:enabled"/>
+  <int value="620977090"
+      label="AimServerEligibilityIncludeClientLocale:disabled"/>
   <int value="620989380" label="ImeInputLogicFst:enabled"/>
   <int value="621308804" label="LensSearchReinvocationAffordance:disabled"/>
   <int value="621484660" label="ReorderBookmarks:disabled"/>

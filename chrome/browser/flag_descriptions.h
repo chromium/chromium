@@ -62,6 +62,12 @@ inline constexpr char kOmniboxAimServerEligibilityName[] =
 inline constexpr char kOmniboxAimServerEligibilityDescription[] =
     "Enable AIM server eligibility checks.";
 
+inline constexpr char kAimServerEligibilityIncludeClientLocaleName[] =
+    "AIM Server Eligibility: Include Client Locale";
+inline constexpr char kAimServerEligibilityIncludeClientLocaleDescription[] =
+    "Configures whether to include the client locale in the AIM eligibility "
+    "request.";
+
 inline constexpr char kCanvasHibernationName[] = "Hibernation for 2D canvas";
 inline constexpr char kCanvasHibernationDescription[] =
     "Enables canvas hibernation for 2D canvas.";

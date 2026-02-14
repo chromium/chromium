@@ -35,4 +35,22 @@ const base::FeatureParam<bool> kRequestOnPrimaryAccountChanges{
 
 BASE_FEATURE(kAimUsePecApi, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAimServerEligibilityIncludeClientLocale,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<AimServerEligibilityIncludeClientLocaleMode>::
+    Option kAimServerEligibilityIncludeClientLocaleModeOptions[] = {
+        {AimServerEligibilityIncludeClientLocaleMode::kLegacyGet, "legacy_get"},
+        {AimServerEligibilityIncludeClientLocaleMode::kGetWithLocale,
+         "get_with_locale"},
+        {AimServerEligibilityIncludeClientLocaleMode::kPostWithProto,
+         "post_with_proto"},
+};
+
+const base::FeatureParam<AimServerEligibilityIncludeClientLocaleMode>
+    kAimServerEligibilityIncludeClientLocaleMode{
+        &kAimServerEligibilityIncludeClientLocale, "mode",
+        AimServerEligibilityIncludeClientLocaleMode::kGetWithLocale,
+        &kAimServerEligibilityIncludeClientLocaleModeOptions};
+
 }  // namespace omnibox
