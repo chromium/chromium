@@ -949,7 +949,7 @@ void ContextualTasksComposeboxHandler::OnLensThumbnailCreated(
   if (visual_selection_token_) {
     OnFileUploadStatusChanged(
         *visual_selection_token_, lens::MimeType::kUnknown,
-        contextual_search::FileUploadStatus::kUploadExpired, std::nullopt);
+        contextual_search::FileUploadStatus::kUploadReplaced, std::nullopt);
   }
 
   // Lens will handle the creation of the interaction request needed for this
@@ -966,8 +966,8 @@ void ContextualTasksComposeboxHandler::OnVisualSelectionAdded(
     const base::UnguessableToken& token) {
   // Remove old visual selection if it exists.
   if (visual_selection_token_.has_value()) {
-    DeleteContext(visual_selection_token_.value(),
-                  /*from_automatic_chip=*/false);
+    ComposeboxHandler::DeleteContext(visual_selection_token_.value(),
+                                     /*from_automatic_chip=*/false);
   }
   // Replace the visual selection token with the new one.
   visual_selection_token_ = token;
