@@ -8,16 +8,21 @@
 
 #include <optional>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/win/scoped_hglobal.h"
 #include "testing/platform_test.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -139,6 +144,12 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
   clipboard->ReadFilenames(ClipboardBuffer::kCopyPaste, nullptr, &file_infos);
   ASSERT_EQ(data_changed_count(), 0);
 
+  base::test::TestFuture<std::vector<FileInfo>> filenames_future;
+  clipboard->ReadFilenames(ClipboardBuffer::kCopyPaste, std::nullopt,
+                           filenames_future.GetCallback());
+  ASSERT_TRUE(filenames_future.Wait());
+  ASSERT_EQ(data_changed_count(), 0);
+
   std::u16string title;
   std::string bookmark_url;
   clipboard->ReadBookmark(nullptr, &title, &bookmark_url);
@@ -258,6 +269,40 @@ TEST_F(ClipboardWinTest, ReadHTMLAsyncEmptyClipboard) {
   EXPECT_EQ(html_future.Get<1>(), GURL());
   EXPECT_EQ(html_future.Get<2>(), 0u);
   EXPECT_EQ(html_future.Get<3>(), 0u);
+}
+
+TEST_F(ClipboardWinTest, ReadFilenamesAsyncReturnsWrittenData) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &file));
+
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteFilenames(
+        ui::FileInfosToURIList({ui::FileInfo(file, base::FilePath())}));
+  }
+
+  base::test::TestFuture<std::vector<ui::FileInfo>> filenames_future;
+  clipboard->ReadFilenames(ClipboardBuffer::kCopyPaste, std::nullopt,
+                           filenames_future.GetCallback());
+  ASSERT_TRUE(filenames_future.Wait());
+  const auto& filenames = filenames_future.Get();
+  ASSERT_EQ(1u, filenames.size());
+  EXPECT_EQ(file, filenames[0].path);
+}
+
+TEST_F(ClipboardWinTest, ReadFilenamesAsyncEmptyClipboard) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  clipboard->Clear(ClipboardBuffer::kCopyPaste);
+
+  base::test::TestFuture<std::vector<ui::FileInfo>> filenames_future;
+  clipboard->ReadFilenames(ClipboardBuffer::kCopyPaste, std::nullopt,
+                           filenames_future.GetCallback());
+  ASSERT_TRUE(filenames_future.Wait());
+  EXPECT_TRUE(filenames_future.Get().empty());
 }
 
 }  // namespace ui

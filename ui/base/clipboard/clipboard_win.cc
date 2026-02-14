@@ -424,6 +424,16 @@ void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
+void ClipboardWin::ReadFilenames(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadFilenamesCallback callback) const {
+  ReadAsync(base::BindOnce(ClipboardWin::ReadFilenamesInternal, buffer),
+            std::move(callback));
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
 void ClipboardWin::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst,
@@ -671,18 +681,29 @@ void ClipboardWin::ReadDataTransferCustomData(
 void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
                                  const DataTransferEndpoint* data_dst,
                                  std::vector<ui::FileInfo>* result) const {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  DCHECK(result);
-  RecordRead(ClipboardFormatMetric::kFilenames);
+  CHECK(result);
 
   result->clear();
-  if (!ReadFilenamesAvailable())
-    return;
+  *result = ReadFilenamesInternal(buffer, GetClipboardWindow());
+}
+
+// static
+std::vector<ui::FileInfo> ClipboardWin::ReadFilenamesInternal(
+    ClipboardBuffer buffer,
+    HWND owner_window) {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  RecordRead(ClipboardFormatMetric::kFilenames);
+
+  std::vector<ui::FileInfo> result;
+  if (!ReadFilenamesAvailable()) {
+    return result;
+  }
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
-  if (!clipboard.Acquire(GetClipboardWindow()))
-    return;
+  if (!clipboard.Acquire(owner_window)) {
+    return result;
+  }
 
   HANDLE data = GetClipboardDataWithLimit(
       ClipboardFormatType::CFHDropType().ToFormatEtc().cfFormat);
@@ -690,10 +711,10 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
     {
       base::win::ScopedHGlobal<HDROP> hdrop(data);
       for (const auto& filename : clipboard_util::GetFilenames(hdrop.data())) {
-        result->emplace_back(base::FilePath(filename), base::FilePath());
+        result.emplace_back(base::FilePath(filename), base::FilePath());
       }
     }
-    return;
+    return result;
   }
 
   data = GetClipboardDataWithLimit(
@@ -704,10 +725,10 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
       base::win::ScopedHGlobal<wchar_t*> filename(data);
       if (filename.data() && filename.data()[0]) {
         base::FilePath path(filename.data());
-        result->push_back(ui::FileInfo(path, base::FilePath()));
+        result.emplace_back(path, base::FilePath());
       }
     }
-    return;
+    return result;
   }
 
   data = GetClipboardDataWithLimit(
@@ -718,10 +739,12 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
       base::win::ScopedHGlobal<char*> filename(data);
       if (filename.data() && filename.data()[0]) {
         base::FilePath path(base::SysNativeMBToWide(filename.data()));
-        result->push_back(ui::FileInfo(path, base::FilePath()));
+        result.emplace_back(path, base::FilePath());
       }
     }
   }
+
+  return result;
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
