@@ -473,7 +473,13 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
     auto old_bitmaps_to_use =
         existing_trusted_icon_bitmaps_.GetBitmapsForPurpose(purpose);
     if (old_bitmaps_to_use.empty()) {
-      return SkBitmap();
+      // We may have fallen back to the normal bitmaps if the app was installed
+      // before trusted icons were supported.
+      old_bitmaps_to_use =
+          existing_manifest_icon_bitmaps_.GetBitmapsForPurpose(purpose);
+      if (old_bitmaps_to_use.empty()) {
+        return SkBitmap();
+      }
     }
     auto old_icon_it = old_bitmaps_to_use.lower_bound(kLogoSizeInDialog);
     CHECK(old_icon_it != old_bitmaps_to_use.end());
