@@ -4569,6 +4569,14 @@ const FeatureEntry::Choice kOmniboxAutofocusOnIncognitoNtpChoices[] = {
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kMediaIndicatorsAndroidSharingEnabled[] = {
+    {"sharing", "true"}};
+const FeatureEntry::FeatureVariation kMediaIndicatorsAndroidVariations[] = {
+    {"- With tab sharing indicator", kMediaIndicatorsAndroidSharingEnabled,
+     nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const FeatureEntry::FeatureParam
     kDeviceBoundSessionsForRestrictedSitesExperimentIdFromFlags[] = {
         {"Value", "set_from_flags"}};
@@ -11807,7 +11815,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"media-indicators-android", flag_descriptions::kMediaIndicatorsAndroidName,
      flag_descriptions::kMediaIndicatorsAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kMediaIndicatorsAndroid)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kMediaIndicatorsAndroid,
+                                    kMediaIndicatorsAndroidVariations,
+                                    "MediaIndicatorsAndroid")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
