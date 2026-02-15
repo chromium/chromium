@@ -459,6 +459,13 @@ public class SettingsSearchCoordinator
     }
 
     private void showUiInSingleColumn(View searchBox, boolean show) {
+        // Delay showing the UI until its width gets set. This mitigates the UI being seen
+        // with a wrong width initially.
+        if (show && searchBox.getLayoutParams().width == ViewGroup.LayoutParams.MATCH_PARENT) {
+            mHandler.post(() -> showUiInSingleColumn(searchBox, show));
+            return;
+        }
+
         Transition transition =
                 new TransitionSet()
                         .addTransition(new Fade(show ? Fade.IN : Fade.OUT))
