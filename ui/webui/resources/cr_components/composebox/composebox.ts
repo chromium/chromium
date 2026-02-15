@@ -515,6 +515,20 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.context.resetModes();
   }
 
+  setDefaultModel() {
+    if (this.inputState_?.activeModel === ModelMode.kUnspecified) {
+      this.searchboxHandler_.setActiveModelMode(
+          this.inputState_?.allowedModels[0] ?? ModelMode.kUnspecified);
+    }
+  }
+
+  resetToolsAndModels() {
+    if (this.inputState_) {
+      this.searchboxHandler_.setActiveToolMode(ToolMode.kUnspecified);
+      this.searchboxHandler_.setActiveModelMode(ModelMode.kUnspecified);
+    }
+  }
+
   closeDropdown() {
     this.clearAutocompleteMatches();
   }
@@ -1166,10 +1180,7 @@ export class ComposeboxElement extends I18nMixinLit
   private closeComposebox_() {
     this.resetModes();
     this.searchboxHandler_.clearFiles();
-    if (this.inputState_) {
-      this.searchboxHandler_.setActiveToolMode(ToolMode.kUnspecified);
-      this.searchboxHandler_.setActiveModelMode(ModelMode.kUnspecified);
-    }
+    this.resetToolsAndModels();
     this.fire('close-composebox', {composeboxText: this.input_});
 
     if (this.isCollapsible) {
