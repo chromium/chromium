@@ -2093,7 +2093,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
           match.associated_keyword, "");
       std::u16string replacement_string =
           turl ? turl->short_name() : match.contents;
-      bool ask_keyword = turl && turl->is_ask_starter_pack();
+      bool ask_keyword = turl && turl->is_ask_type();
       // For featured search engines, we also want to add the shortcut name.
       if (AutocompleteMatch::IsFeaturedSearchType(match.type)) {
         int message_id = ask_keyword ? IDS_ACC_ASK_KEYWORD_MODE_WITH_SHORTCUT
