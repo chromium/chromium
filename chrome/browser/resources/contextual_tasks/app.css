@@ -43,6 +43,10 @@
   --color-suggestions-background-loading: rgba(241, 243, 244, 1);
   --color-zero-state-greeting: rgba(10, 10, 10, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(31, 31, 31, 1);
+  /* 20px on right side. */
+  --composebox-start-indent: 20px;
+  --composebox-width: calc(100% -
+      var(--composebox-start-indent) - 20px);
   --cr-composebox-background-color: rgba(243, 245, 246, 1);
   --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
   --cr-composebox-submit-button-hover-color: rgba(32, 33, 36, .2);
@@ -50,6 +54,7 @@
   --cr-primary-text-color: rgba(31, 31, 31, 1);
   --error-bottom-line-color: #70757A;
   --error-top-line-color: #202124;
+  --flex-center-height: 100%;
   --gradient-protection-width: 100%;
   --composebox-max-width: 692px;
   --min-composebox-width: 150px;
@@ -251,6 +256,7 @@ error-page {
   align-self: end;
   grid-column: 1;
   grid-row: 2;
+  position: relative;
 }
 
 :host([is-zero-state_]) .flex-center {
@@ -259,10 +265,8 @@ error-page {
   display: flex;
   flex-direction: column;
   gap: 36px;
-  inset-inline-start: 0;
-  justify-content: center;
+  height: var(--flex-center-height);
   min-height: 300px;
-  overflow-anchor: none;
   pointer-events: none;
   position: absolute;
   width: 100%;
@@ -270,8 +274,21 @@ error-page {
 
 :host([is-zero-state_]:not([enable-native-zero-state-suggestions]))
     .flex-center {
+  --flex-center-height: 50%;
   justify-content: flex-end;
-  height: 42%;
+  overflow-anchor: none;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+:host([is-zero-state_][enable-native-zero-state-suggestions]) .flex-center {
+  box-sizing: border-box;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 50vh;
+  overflow-anchor: none;
+  padding-top: 20vh;
 }
 
 :host([is-zero-state_]:not([is-shown-in-tab_]):not([enable-native-zero-state-suggestions]))
@@ -280,25 +297,23 @@ error-page {
 }
 
 :host([is-zero-state_][is-shown-in-tab_]) .flex-center {
+  height: calc(var(--flex-center-height) - 88px);
   inset-inline-start: 76px;
   top: 88px;
   width: calc(100% - 76px);
 }
 
 :host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
+  --wrapper-indent_: 20px;
   align-items: flex-start;
   gap: 24px;
+  inset-inline-start: var(--wrapper-indent_);
   top: 0;
-}
-
-:host([is-zero-state_][enable-native-zero-state-suggestions][is-shown-in-tab_])
-    .flex-center {
-  height: calc(100% - 88px);
+  width: calc(100% - var(--wrapper-indent_) - 20px);
 }
 
 :host([is-zero-state_][enable-native-zero-state-suggestions]:not([is-shown-in-tab_]))
     .flex-center {
-  height: 100%;
   justify-content: flex-end;
 }
 
@@ -306,7 +321,6 @@ error-page {
     #composebox {
   bottom: 30px;
 }
-
 
 @media (min-width: 789px) {
   :host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
@@ -327,6 +341,48 @@ error-page {
     --wrapper-indent_: max(285px, calc(50% - 570px));
     inset-inline-start: var(--wrapper-indent_);
     width: calc(100% - var(--wrapper-indent_));
+  }
+}
+
+@media (max-height: 800px) {
+  :host([is-zero-state_]:not([enable-native-zero-state-suggestions]))
+      .flex-center {
+    padding-top: 30px;
+    height: 30%;
+  }
+
+  :host([is-zero-state_]:not([enable-native-zero-state-suggestions])
+      [is-shown-in-tab_]) .flex-center {
+    height: calc(30% - 88px);
+  }
+
+  :host([is-zero-state_]:not([enable-native-zero-state-suggestions]):not([is-shown-in-tab_]))
+      .flex-center {
+    padding-top: 50px;
+  }
+}
+
+@media (max-height: 500px) {
+  :host([is-zero-state_]:not([enable-native-zero-state-suggestions]))
+      .flex-center {
+    justify-content: flex-start;
+    gap: 18px;
+    overflow: hidden;
+    padding-top: 20px;
+  }
+
+  :host([is-zero-state_][enable-native-zero-state-suggestions])
+      .flex-center {
+    gap: 15px;
+    padding-top: 5vh;
+    overflow: hidden;
+  }
+
+  :host([is-zero-state_][enable-native-zero-state-suggestions]:not([is-shown-in-tab_]))
+      .flex-center {
+    min-height: 250px !important;
+    padding-top: 50px !important;
+    border: 5px solid yellow !important;
   }
 }
 
@@ -364,6 +420,12 @@ error-page {
   z-index: 2;
 }
 
+@media (max-width: 520px) {
+   .thread-header {
+     font-size: 5vw;
+   }
+}
+
 :host(:not([is-shown-in-tab_])) .thread-header {
   font-size: 28px;
   font-weight: 400;
@@ -378,7 +440,8 @@ error-page {
   /* Same width so stays at same centering as composebox with flexbox. */
   max-width: var(--composebox-max-width);
   position: relative;
-  width: 100%;
+  /* Must equal composebox width to have the same centering. */
+  width: var(--composebox-width);
 }
 
 :host([is-zero-state_]) #composeboxHeaderWrapper {
@@ -387,9 +450,13 @@ error-page {
 
 :host([is-zero-state_]:not([is-shown-in-tab_])) #composeboxHeaderWrapper {
   justify-content: flex-start;
-  inset-inline-start: 28px;
-  inset-inline-end: 20px;
-  width: calc(100% - 48px);  /* 20px space on right. */
+  inset-inline-start: 8px;
+  /* inset-inline-end: 20px; */
+  width: calc(100% - 8px);  /* 20px space on right. */
+}
+
+:host([is-zero-state_][is-shown-in-tab_]) #composeboxHeaderWrapper {
+  white-space: nowrap;
 }
 
 @media (max-width: 480px) {
@@ -402,22 +469,6 @@ error-page {
 @media (max-width: 440px) {
   :host([is-zero-state_]) #toolbarOverlay::after {
     height: 66px;
-  }
-}
-
-@media (max-height: 580px) {
-  :host([is-zero-state_]) #composeboxHeaderWrapper {
-    margin-top: 250px;
-  }
-}
-
-@media (max-width: 280px) {
-  :host([is-zero-state_]) .thread-header {
-    font-size: 11vw;
-    inset-inline-start: 10px;
-  }
-  :host([is-zero-state_]) #composeboxHeaderWrapper {
-    width: calc(100% - 58px);
   }
 }
 
