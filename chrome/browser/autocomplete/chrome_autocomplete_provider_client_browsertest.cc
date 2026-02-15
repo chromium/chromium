@@ -62,6 +62,10 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
             base::BindRepeating([](tabs::TabInterface& tab) {
               return std::make_unique<MockLensSearchController>(&tab);
             }));
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features*/ {omnibox::kWebUIOmniboxPopup,
+                              omnibox::internal::kWebUIOmniboxAimPopup},
+        /*disabled_features*/ {});
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -136,31 +140,24 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
   content::TestStoragePartition storage_partition_;
   ui::UserDataFactory::ScopedOverride lens_search_controller_override_;
   base::CallbackListSubscription create_services_subscription_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
                        OpenLensOverlay_Show) {
-  EXPECT_CALL(*GetLensSearchController(), OpenLensOverlay(testing::_, true))
-      .Times(1)
-      .WillOnce([](lens::LensOverlayInvocationSource invocation_source,
-                   bool should_show_csb) {
-        EXPECT_EQ(lens::LensOverlayInvocationSource::kOmniboxPageAction,
-                  invocation_source);
-        EXPECT_TRUE(should_show_csb);
-      });
-
+  EXPECT_CALL(*GetLensSearchController(),
+              OpenLensOverlay(
+                  lens::LensOverlayInvocationSource::kOmniboxPageAction, false))
+      .Times(1);
   GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
                        OpenLensOverlay_DontShow) {
-  EXPECT_CALL(*GetLensSearchController(), StartContextualization(testing::_))
-      .Times(1)
-      .WillOnce([](lens::LensOverlayInvocationSource invocation_source) {
-        EXPECT_EQ(lens::LensOverlayInvocationSource::kOmnibox,
-                  invocation_source);
-      });
-
+  EXPECT_CALL(
+      *GetLensSearchController(),
+      StartContextualization(lens::LensOverlayInvocationSource::kOmnibox))
+      .Times(1);
   GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/false);
 }
 
@@ -210,14 +207,9 @@ class ChromeAutocompleteProviderClientWithChipTest
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientWithChipTest,
                        OpenLensOverlay_Show) {
-  EXPECT_CALL(*GetLensSearchController(), OpenLensOverlay(testing::_, false))
-      .Times(1)
-      .WillOnce([](lens::LensOverlayInvocationSource invocation_source,
-                   bool should_show_csb) {
-        EXPECT_EQ(lens::LensOverlayInvocationSource::kOmniboxPageAction,
-                  invocation_source);
-        EXPECT_FALSE(should_show_csb);
-      });
-
+  EXPECT_CALL(*GetLensSearchController(),
+              OpenLensOverlay(
+                  lens::LensOverlayInvocationSource::kOmniboxPageAction, false))
+      .Times(1);
   GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/true);
 }
