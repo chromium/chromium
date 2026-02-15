@@ -234,22 +234,36 @@ error-page {
 }
 
 #composebox {
+  display: block;
+  height: auto;
+  inset-inline-start: var(--composebox-start-indent);
+  min-width: var(--min-composebox-width);
   max-width: var(--composebox-max-width);
+  position: relative;
+  width: var(--composebox-width);
 }
 
-:host([is-zero-state_][is-shown-in-tab_]) #composebox {
+:host([is-zero-state_][is-shown-in-tab_]) {
   --composebox-max-width: 750px;
 }
 
-:host([is-zero-state_]) #composebox {
+:host([is-zero-state_][is-shown-in-tab_]) #composebox {
+  /* Since is flexbox centered in this mode,
+   * does not need start indent. Just make composebox width
+   * shorter by desired amount of indent on each side.
+   */
+  --composebox-start-indent: 0px;
+  --composebox-width: calc(100% - 40px);
   bottom: 0;
-  height: auto;
-  min-width: var(--min-composebox-width);
   pointer-events: auto;
   position: relative;
   top: auto;
-  width: 100%;
   z-index: 2;
+}
+
+:host([is-zero-state_]:not([is-shown-in-tab_])) #composebox {
+  inset-inline-start: 0;
+  width: 100%;
 }
 
 .flex-center {
@@ -341,6 +355,53 @@ error-page {
     --wrapper-indent_: max(285px, calc(50% - 570px));
     inset-inline-start: var(--wrapper-indent_);
     width: calc(100% - var(--wrapper-indent_));
+  }
+}
+
+/* TODO(crbug.com/466201452): Check this relayout logic
+ * once Google.com AIM is RTL that this matches AIM.
+ */
+
+@media (min-width: 789px) {
+  :host(:not([is-zero-state_]):not([is-shown-in-tab_])) #composebox {
+    /* 96px gutter + 5px for text indentation in thread. */
+    --composebox-start-indent: 101px;
+    /* Refresh the width variable since we define --composebox-start-indent in
+     * the same class --composebox-width is defined, and --composebox-width
+     * will use old values of --composebox-start-indent otherwise.
+     */
+    --composebox-width: calc(100% - var(--composebox-start-indent) - 20px);
+  }
+}
+
+@media (min-width: 480px) {
+  :host(:not([is-zero-state_])[is-shown-in-tab_]) #composebox {
+    /* Google.com uses 96px for indent column, and 5px left padding.
+     * Aligns the input text of the composebox with the AIM thread.
+     */
+    --composebox-start-indent: 101px;
+    --composebox-width: calc(100% - var(--composebox-start-indent) - 20px);
+  }
+}
+
+/* W/more space, indent further to match AIM for both side panel and full tab.*/
+@media (min-width: 1420px) {
+  /* Need both selectors to have higher specificity. */
+  :host(:not([is-zero-state_])[is-shown-in-tab_]) #composebox,
+  :host(:not([is-zero-state_]):not([is-shown-in-tab_])) #composebox {
+    /* At this width, indent column should be 280px + 5px left padding.
+     * Google.com AIM has 20 other 36px columns as "inset end space",
+     * with 20px gaps, which = 720px of cols, 21 * 20px = 420px of gaps.
+     * Combined, this is 1140px of fixed space.
+     * The first and last columns are 1fr, so the remaining fluid
+     * space is (100% - 1140px) / 2 since we are splitting between the
+     * 2 columns, which = 50% - 570px per flex column. Since at this
+     * breakpoint, we need at least 280px of left indentation to match
+     * the AIM thread, we do not start growing until flexible
+     * indentation space > 280px of minimum left indentation.
+     */
+    --composebox-start-indent: max(285px, calc(50% - 570px));
+    --composebox-width: calc(100% - var(--composebox-start-indent) - 20px);
   }
 }
 
