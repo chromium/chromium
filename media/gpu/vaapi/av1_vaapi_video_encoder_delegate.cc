@@ -431,18 +431,40 @@ bool AV1VaapiVideoEncoderDelegate::Initialize(
       config.content_type ==
       VideoEncodeAccelerator::Config::ContentType::kDisplay;
 
+  // Treat 0 framerate as "use default". This matches the precedent set by
+  // VideoEncodeAccelerator::kDefaultFramerate and allows callers (e.g., WebRTC)
+  // to signal "encoder's choice" when the actual framerate is not yet known.
+  if (current_params_.framerate == 0) {
+    VLOGF(1) << "Framerate is 0, using default "
+             << VideoEncodeAccelerator::kDefaultFramerate << " fps";
+    current_params_.framerate = VideoEncodeAccelerator::kDefaultFramerate;
+  }
+
   level_idx_ = ComputeLevel(coded_size_, current_params_.framerate);
   if (level_idx_ < 0) {
-    LOG(ERROR) << "Could not compute level index";
-    return false;
+    // Fall back to Level 3.1 (index 5), which is a safe baseline for most
+    // WebRTC scenarios and common resolutions up to 1080p at 60fps.
+    // This prevents "level: not available" errors in the sequence header
+    // which can cause decoders to reject the bitstream (crbug.com/471780477).
+    VLOGF(1) << "Could not compute level index for " << coded_size_.ToString()
+             << " at " << current_params_.framerate
+             << "fps, falling back to Level 3.1 (index 5)";
+    level_idx_ = 5;
   }
 
   frame_num_ = current_params_.intra_period;
 
+  // Default to 8x8 (smallest supported) and let the driver request a larger
+  // minimum if needed.
+  seg_size_ = 8;
+
+  // If the driver query fails, keep the default.
   if (!vaapi_wrapper_->GetMinAV1SegmentSize(AV1PROFILE_PROFILE_MAIN,
                                             seg_size_)) {
-    LOG(ERROR) << "Could not get minimum segment size";
-    return false;
+    seg_size_ = 8;
+  }
+  if (seg_size_ < 8u) {
+    seg_size_ = 8u;
   }
 
   uint32_t seg_map_width =
@@ -464,6 +486,11 @@ AV1VaapiVideoEncoderDelegate::~AV1VaapiVideoEncoderDelegate() = default;
 bool AV1VaapiVideoEncoderDelegate::UpdateRates(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate) {
+  const uint32_t bitrate = bitrate_allocation.GetSumBps();
+  if (bitrate == 0 || framerate == 0) {
+    return false;
+  }
+
   current_params_.bitrate_allocation = bitrate_allocation;
   current_params_.framerate = framerate;
 
@@ -485,7 +512,7 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
   rc_config.frame_drop_thresh =
       base::strict_cast<int>(current_params_.drop_frame_thresh);
   rc_config.framerate = current_params_.framerate;
-  int bitrate_sum = 0;
+  uint64_t bitrate_sum = 0;
   for (int tid = 0; tid < num_temporal_layers_; ++tid) {
     UNSAFE_TODO(rc_config.ts_rate_decimator[tid]) =
         1u << (num_temporal_layers_ - tid - 1);
