@@ -64,7 +64,7 @@ export interface ContextualTasksComposeboxElement {
     composebox: ComposeboxElement,
     composeboxContainer: HTMLElement,
     onboardingTooltip: ContextualTasksOnboardingTooltipElement,
-    coBrSuggestionsContainer: ComposeboxDropdownElement,
+    contextualTasksSuggestionsContainer: ComposeboxDropdownElement,
   };
 }
 

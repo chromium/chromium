@@ -451,7 +451,7 @@
  box-shadow: 2px 17px 18px -10px rgba(0, 0, 0, 0.05);
 }
 
-:host([is-zero-state]) #coBrSuggestionsContainer {
+:host([is-zero-state]) #contextualTasksSuggestionsContainer {
   --cr-composebox-match-match-padding-bottom: 0px;
   --color-searchbox-results-background-hovered: transparent;
   --color-searchbox-results-background-selected: transparent;
@@ -467,7 +467,7 @@
   /* Do not set width since we are using padding + fitting children content. */
 }
 
-:host([is-zero-state][is-side-panel]) #coBrSuggestionsContainer  {
+:host([is-zero-state][is-side-panel]) #contextualTasksSuggestionsContainer  {
   margin-bottom: 24px;
   margin-top: 24px;
   /* Becomes 44px from the 28px ending padding in child. */
@@ -476,14 +476,14 @@
 }
 
 
-:host([is-zero-state]) #coBrSuggestionsContainer::part(match-focus-indicator) {
+:host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-focus-indicator) {
   /* 'Important' is used to override all higher-specificity
    * dynamic focusIndicator modifications.
    */
   display: none !important;
 }
 
-:host([is-zero-state]) #coBrSuggestionsContainer::part(match-container) {
+:host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-container) {
   align-items: center;
   border-radius: 8px;
   box-sizing: border-box;
@@ -498,20 +498,20 @@
   width: calc(100% - 8px);
 }
 
-:host([is-zero-state]) #coBrSuggestionsContainer::part(match-wrapper) {
+:host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-wrapper) {
   width: 100%;
 }
 
-:host([is-zero-state][is-side-panel]) #coBrSuggestionsContainer::part(match-container) {
+:host([is-zero-state][is-side-panel]) #contextualTasksSuggestionsContainer::part(match-container) {
   /* With bottom padding of host = 56px. */
   height: 55px;
 }
 
-:host([is-loading_]) #coBrSuggestionsContainer::part(match-container) {
+:host([is-loading_]) #contextualTasksSuggestionsContainer::part(match-container) {
   pointer-events: none;
 }
 
-:host([is-zero-state]) #coBrSuggestionsContainer::part(match-container):hover {
+:host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-container):hover {
   background-color: var(
       --color-composebox-zero-state-suggestions-background-hovered,
       rgba(247, 248, 250, 1));
@@ -524,7 +524,7 @@
   }
 }
 
-:host([is-zero-state]) #coBrSuggestionsContainer::part(match-icon-container) {
+:host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-icon-container) {
   height: 24px;
   padding-inline-end: 8px;
   padding-inline-start: 8px;
@@ -532,19 +532,19 @@
 }
 
 :host([is-zero-state][is-side-panel])
-    #coBrSuggestionsContainer::part(match-icon-container) {
+    #contextualTasksSuggestionsContainer::part(match-icon-container) {
   padding-inline-end: 12px;
   padding-inline-start: 16px;
 }
 
-:host([is-zero-state]) #coBrSuggestionsContainer::part(match-icon) {
+:host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-icon) {
   background-color: var(--color-composebox-font-dark);
   height: 20px;
   margin: 2px;
   width: 20px;
 }
 
-:host([is-zero-state]) #coBrSuggestionsContainer::part(match-text-container) {
+:host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-text-container) {
   border-radius: 4px;
   color: var(--color-composebox-font-dark);
   font-family: inherit;
@@ -557,14 +557,18 @@
 /* 'loading-bar-color-change' must be defined in child component
  * the animation modifies.
  */
-:host([is-zero-state][is-loading_]) #coBrSuggestionsContainer::part(match-text-container) {
+:host([is-zero-state][is-loading_]) #contextualTasksSuggestionsContainer::part(match-text-container) {
   animation: 2s loading-bar-color-change calc(0.1s * var(--loading-bar-animation-delay))
       infinite;
   background-color: var(--color-composebox-loading-start);
 }
 
 :host(:not([is-side-panel])[is-zero-state])
-    #coBrSuggestionsContainer::part(match-text-container) {
+    #contextualTasksSuggestionsContainer::part(match-text-container) {
   inset-inline-start: 8px;
   width: calc(100% - 8px);
+}
+
+#composeboxContainer:not(:has(#composebox[show-dropdown_])) ~ #contextualTasksSuggestionsContainer {
+  display: none;
 }
