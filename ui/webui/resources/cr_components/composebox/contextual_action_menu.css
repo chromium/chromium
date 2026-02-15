@@ -46,6 +46,7 @@
 }
 
 #tabHeader,
+#toolHeader,
 #modelHeader {
   color: var(--cr-primary-text-color);
   font-size: 11px;
