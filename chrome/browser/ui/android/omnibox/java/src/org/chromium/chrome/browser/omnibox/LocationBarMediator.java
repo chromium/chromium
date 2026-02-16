@@ -229,6 +229,7 @@ class LocationBarMediator
     private boolean mShouldShowButtonsWhenUnfocused;
     private float mUrlFocusChangeFraction;
     private boolean mUrlHasFocus;
+    private @Nullable Boolean mPreviousLensButtonVisible;
     private LensController mLensController;
     private final BooleanSupplier mIsToolbarMicEnabledSupplier;
     // Tracks if the location bar is laid out in a focused state due to an ntp scroll.
@@ -412,6 +413,9 @@ class LocationBarMediator
     }
 
     /*package */ void onUrlFocusChange(boolean hasFocus) {
+        if (!hasFocus) {
+            mPreviousLensButtonVisible = null;
+        }
         setUrlFocusChangeInProgress(true);
         mUrlHasFocus = hasFocus;
         // Intercept back press if it has focus.
@@ -1486,9 +1490,15 @@ class LocationBarMediator
     }
 
     private void setLensButtonVisibility(boolean shouldShowLensButton) {
-        LensMetrics.recordShown(LensEntryPoint.OMNIBOX, shouldShowLensButton);
-        mLocationBarLayout.setLensButtonVisibility(
-                shouldShowLensButton && mLensButtonToolbarWidthConsumer.hasSpaceToShow());
+        boolean actualLensButtonVisible =
+                shouldShowLensButton && mLensButtonToolbarWidthConsumer.hasSpaceToShow();
+
+        if (mPreviousLensButtonVisible == null
+                || actualLensButtonVisible != mPreviousLensButtonVisible) {
+            LensMetrics.recordShown(LensEntryPoint.OMNIBOX, actualLensButtonVisible);
+        }
+        mPreviousLensButtonVisible = actualLensButtonVisible;
+        mLocationBarLayout.setLensButtonVisibility(actualLensButtonVisible);
     }
 
     /** Updates the display of the composeplate button. */
