@@ -52,8 +52,9 @@ class LocaleSwitchScreen : public BaseScreen,
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  // `local_state` and `application_locale_storage` must be non-null and must
-  // outlive `this`.
+  // `local_state` must be non-null and must outlive `this`.
+  // `application_locale_storage` must be non-null and must be the one
+  // associated with browser process.
   LocaleSwitchScreen(PrefService* local_state,
                      ApplicationLocaleStorage* application_locale_storage,
                      base::WeakPtr<LocaleSwitchView> view,

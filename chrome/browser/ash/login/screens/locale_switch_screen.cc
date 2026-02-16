@@ -399,7 +399,8 @@ void LocaleSwitchScreen::SwitchLocale() {
     locale_util::SwitchLanguageCallback callback(base::BindOnce(
         &LocaleSwitchScreen::OnLanguageChangedNotificationCallback,
         weak_factory_.GetWeakPtr()));
-    LocaleSwitchNotification::Show(profile, locale_, std::move(callback));
+    LocaleSwitchNotification::Show(&application_locale_storage_.get(), profile,
+                                   locale_, std::move(callback));
     exit_callback_.Run(Result::kSwitchDelegated);
     return;
   }

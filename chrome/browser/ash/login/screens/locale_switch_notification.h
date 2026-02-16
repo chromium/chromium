@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/base/locale_util.h"
 
+class ApplicationLocaleStorage;
 class Profile;
 
 namespace ash {
@@ -19,7 +20,10 @@ namespace ash {
 class LocaleSwitchNotification {
  public:
   // Show locale switch notification.
-  static void Show(Profile* profile,
+  // `application_locale_storage` must be non-null and must outlive the created
+  // notification. It should be the one associated with the browser process.
+  static void Show(ApplicationLocaleStorage* application_locale_storage,
+                   Profile* profile,
                    std::string new_locale,
                    locale_util::SwitchLanguageCallback locale_switch_callback);
 };
