@@ -408,6 +408,64 @@ sync_pb::AutofillValuableSpecifics GetPassportSpecifics(
   return specifics;
 }
 
+// Reads the driver's license specifics message and extracts
+// attribute-information.
+base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+GetDriversLicenseAttributesFromSpecifics(
+    const sync_pb::AutofillValuableSpecifics& specifics,
+    AttributeInstance::MarkAsMaskedPasskey passkey) {
+  using enum AttributeTypeName;
+  CHECK_EQ(specifics.valuable_data_case(),
+           sync_pb::AutofillValuableSpecifics::kDriverLicense);
+  const sync_pb::DriverLicense& license = specifics.driver_license();
+  base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+      attributes;
+
+  AddAttribute(kDriversLicenseName, license.owner_name(), attributes);
+  AddAttribute(kDriversLicenseNumber, license.masked_number(), passkey,
+               attributes);
+  AddAttribute(kDriversLicenseState, license.region(), attributes);
+  // Chrome does not have an attribute for the driver license country.
+  AddDateAttribute(kDriversLicenseIssueDate,
+                   license.issue_date_unix_epoch_micros(), attributes);
+  AddDateAttribute(kDriversLicenseExpirationDate,
+                   license.expiration_date_unix_epoch_micros(), attributes);
+
+  FinalizeEntityAttributes(EntityType(EntityTypeName::kDriversLicense),
+                           specifics.serialized_chrome_valuables_metadata(),
+                           attributes);
+  return attributes;
+}
+
+// Takes an `entity` and returns a proto message with the information.
+// Note: Driver's licenses are read-only and not synced to the server. This
+// serialization is primarily for debugging (e.g., sync-internals).
+sync_pb::AutofillValuableSpecifics GetDriversLicenseSpecifics(
+    const EntityInstance& entity,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+  using enum AttributeTypeName;
+  CHECK_EQ(entity.type().name(), EntityTypeName::kDriversLicense);
+
+  sync_pb::AutofillValuableSpecifics specifics = base_specifics;
+  specifics.set_id(*entity.guid());
+  specifics.set_is_editable(!entity.are_attributes_read_only());
+
+  sync_pb::DriverLicense& license = *specifics.mutable_driver_license();
+  SET_OR_CLEAR_STRING_FIELD(entity, kDriversLicenseNumber, masked_number,
+                            license);
+  SET_OR_CLEAR_STRING_FIELD(entity, kDriversLicenseName, owner_name, license);
+  SET_OR_CLEAR_STRING_FIELD(entity, kDriversLicenseState, region, license);
+  SetDateInSpecifics(entity, kDriversLicenseIssueDate, license,
+                     &sync_pb::DriverLicense::set_issue_date_unix_epoch_micros);
+  SetDateInSpecifics(
+      entity, kDriversLicenseExpirationDate, license,
+      &sync_pb::DriverLicense::set_expiration_date_unix_epoch_micros);
+
+  *specifics.mutable_serialized_chrome_valuables_metadata() =
+      AnyWrapProto(SerializeChromeValuablesMetadata(entity));
+  return specifics;
+}
+
 #undef SET_OR_CLEAR_STRING_FIELD
 
 }  // namespace
@@ -473,6 +531,7 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
     case EntityTypeName::kPassport:
       return GetPassportSpecifics(entity, base_specifics);
     case EntityTypeName::kDriversLicense:
+      return GetDriversLicenseSpecifics(entity, base_specifics);
     case EntityTypeName::kNationalIdCard:
     case EntityTypeName::kKnownTravelerNumber:
     case EntityTypeName::kRedressNumber:
@@ -523,7 +582,17 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
-    case sync_pb::AutofillValuableSpecifics::kDriverLicense:
+    case sync_pb::AutofillValuableSpecifics::kDriverLicense: {
+      return EntityInstance(
+          EntityType(EntityTypeName::kDriversLicense),
+          GetDriversLicenseAttributesFromSpecifics(
+              specifics, AttributeInstance::MarkAsMaskedPasskey()),
+          guid,
+          /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
+          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
+          /*frecency_override=*/"");
+    }
     case sync_pb::AutofillValuableSpecifics::kNationalIdCard:
     case sync_pb::AutofillValuableSpecifics::kRedressNumber:
     case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:

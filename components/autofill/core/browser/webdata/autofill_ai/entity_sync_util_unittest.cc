@@ -23,15 +23,6 @@ namespace {
 using syncer::test::AddUnknownFieldToProto;
 using syncer::test::HasUnknownField;
 
-struct TestPassportOptions {
-  std::string id = "passport-id";
-  std::string masked_number = "12345";
-  std::string owner_name = "Passport Owner";
-  std::string country_code = "FR";
-  std::string issue_date = "2023-01-02";
-  std::string expiry_date = "2033-03-04";
-};
-
 // Returns the string value of the attribute with the given type in `entity`.
 std::string GetStringValue(const EntityInstance& entity,
                            AttributeTypeName attribute_type_name) {
@@ -102,26 +93,45 @@ sync_pb::AutofillValuableSpecifics TestVehicleSpecifics() {
   return specifics;
 }
 
-// Returns a `sync_pb::AutofillValuableSpecifics` message with
-// the passport entity type.
+// Converts date string to micros.
+int64_t ParseDateStrToMicros(std::u16string_view date_str) {
+  base::Time date;
+  CHECK(base::Time::FromUTCString(base::UTF16ToUTF8(date_str).c_str(), &date));
+  return date.InMillisecondsSinceUnixEpoch() * 1000;
+}
+
+// Returns a `sync_pb::AutofillValuableSpecifics` message with the passport
+// entity type.
 sync_pb::AutofillValuableSpecifics TestPassportSpecifics(
-    TestPassportOptions options = {}) {
+    test::PassportEntityOptions options = {}) {
   sync_pb::AutofillValuableSpecifics specifics;
-  specifics.set_id(options.id);
+  specifics.set_id(options.guid);
   sync_pb::Passport* passport = specifics.mutable_passport();
-  passport->set_masked_number(options.masked_number);
-  passport->set_owner_name(options.owner_name);
-  passport->set_country_code(options.country_code);
-
-  base::Time issue_date;
-  CHECK(base::Time::FromUTCString(options.issue_date.c_str(), &issue_date));
+  passport->set_masked_number(base::UTF16ToUTF8(options.number));
+  passport->set_owner_name(base::UTF16ToUTF8(options.name));
+  passport->set_country_code(base::UTF16ToUTF8(options.country));
   passport->set_issue_date_unix_epoch_micros(
-      issue_date.InMillisecondsSinceUnixEpoch() * 1000);
-
-  base::Time expiry_date;
-  CHECK(base::Time::FromUTCString(options.expiry_date.c_str(), &expiry_date));
+      ParseDateStrToMicros(options.issue_date));
   passport->set_expiration_date_unix_epoch_micros(
-      expiry_date.InMillisecondsSinceUnixEpoch() * 1000);
+      ParseDateStrToMicros(options.expiry_date));
+
+  return specifics;
+}
+
+// Returns a `sync_pb::AutofillValuableSpecifics` message with the driver's
+// license entity type.
+sync_pb::AutofillValuableSpecifics TestDriversLicenseSpecifics(
+    test::DriversLicenseOptions options = {}) {
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id(std::string(options.guid));
+  sync_pb::DriverLicense* license = specifics.mutable_driver_license();
+  license->set_masked_number(base::UTF16ToUTF8(options.number));
+  license->set_owner_name(base::UTF16ToUTF8(options.name));
+  license->set_region(base::UTF16ToUTF8(options.region));
+  license->set_issue_date_unix_epoch_micros(
+      ParseDateStrToMicros(options.issue_date));
+  license->set_expiration_date_unix_epoch_micros(
+      ParseDateStrToMicros(options.expiration_date));
 
   return specifics;
 }
@@ -690,7 +700,8 @@ TEST(EntitySyncUtilTest, EntityTypeToPassType) {
 // Tests that `CreateEntityInstanceFromSpecifics` correctly deserializes
 // the passport entity from its proto representation.
 TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_Passport) {
-  TestPassportOptions options;
+  // The specifics require country code.
+  test::PassportEntityOptions options{.country = u"DE"};
   sync_pb::AutofillValuableSpecifics specifics = TestPassportSpecifics(options);
   std::optional<EntityInstance> passport =
       CreateEntityInstanceFromSpecifics(specifics);
@@ -706,17 +717,20 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_Passport) {
             specifics.passport().owner_name());
   EXPECT_EQ(GetStringValue(*passport, AttributeTypeName::kPassportCountry),
             specifics.passport().country_code());
-  EXPECT_EQ(GetStringValue(*passport, AttributeTypeName::kPassportIssueDate),
-            options.issue_date);
-  EXPECT_EQ(
-      GetStringValue(*passport, AttributeTypeName::kPassportExpirationDate),
-      options.expiry_date);
+  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
+                *passport, AttributeTypeName::kPassportIssueDate))),
+            ParseDateStrToMicros(options.issue_date));
+  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
+                *passport, AttributeTypeName::kPassportExpirationDate))),
+            ParseDateStrToMicros(options.expiry_date));
+  EXPECT_EQ(passport->record_type(), EntityInstance::RecordType::kServerWallet);
 }
 
 // Tests that `CreateSpecificsFromEntityInstance` correctly serializes
 // fields.
 TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_Passport) {
-  TestPassportOptions options;
+  // The specifics require country code.
+  test::PassportEntityOptions options{.country = u"DE"};
   std::optional<EntityInstance> maybe_passport =
       CreateEntityInstanceFromSpecifics(TestPassportSpecifics(options));
   ASSERT_TRUE(maybe_passport.has_value());
@@ -734,10 +748,68 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_Passport) {
             specifics.passport().country_code());
 
   ExpectTimestampEquals(specifics.passport().issue_date_unix_epoch_micros(),
-                        options.issue_date);
+                        base::UTF16ToUTF8(options.issue_date));
   ExpectTimestampEquals(
       specifics.passport().expiration_date_unix_epoch_micros(),
-      options.expiry_date);
+      base::UTF16ToUTF8(options.expiry_date));
+}
+
+// Tests that `CreateEntityInstanceFromSpecifics` correctly deserializes
+// the driver's license entity from its proto representation.
+TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_DriverLicense) {
+  test::DriversLicenseOptions options;
+  sync_pb::AutofillValuableSpecifics specifics =
+      TestDriversLicenseSpecifics(options);
+  std::optional<EntityInstance> license =
+      CreateEntityInstanceFromSpecifics(specifics);
+
+  ASSERT_TRUE(license.has_value());
+  EXPECT_EQ(license->guid().value(), options.guid);
+  EXPECT_EQ(GetStringValue(*license, AttributeTypeName::kDriversLicenseNumber),
+            base::UTF16ToUTF8(options.number));
+  EXPECT_TRUE(
+      license
+          ->attribute(AttributeType(AttributeTypeName::kDriversLicenseNumber))
+          ->masked());
+  EXPECT_EQ(GetStringValue(*license, AttributeTypeName::kDriversLicenseName),
+            base::UTF16ToUTF8(options.name));
+  EXPECT_EQ(GetStringValue(*license, AttributeTypeName::kDriversLicenseState),
+            base::UTF16ToUTF8(options.region));
+  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
+                *license, AttributeTypeName::kDriversLicenseIssueDate))),
+            ParseDateStrToMicros(options.issue_date));
+  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
+                *license, AttributeTypeName::kDriversLicenseExpirationDate))),
+            ParseDateStrToMicros(options.expiration_date));
+  EXPECT_EQ(license->record_type(), EntityInstance::RecordType::kServerWallet);
+}
+
+// Tests that `CreateSpecificsFromEntityInstance` correctly serializes
+// fields.
+TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_DriverLicense) {
+  test::DriversLicenseOptions options;
+  std::optional<EntityInstance> maybe_license =
+      CreateEntityInstanceFromSpecifics(TestDriversLicenseSpecifics(options));
+  ASSERT_TRUE(maybe_license.has_value());
+  EntityInstance license = *maybe_license;
+
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(license, /*base_specifics=*/{});
+
+  EXPECT_EQ(license.guid().value(), specifics.id());
+  EXPECT_EQ(GetStringValue(license, AttributeTypeName::kDriversLicenseNumber),
+            specifics.driver_license().masked_number());
+  EXPECT_EQ(GetStringValue(license, AttributeTypeName::kDriversLicenseName),
+            specifics.driver_license().owner_name());
+  EXPECT_EQ(GetStringValue(license, AttributeTypeName::kDriversLicenseState),
+            specifics.driver_license().region());
+
+  ExpectTimestampEquals(
+      specifics.driver_license().issue_date_unix_epoch_micros(),
+      base::UTF16ToUTF8(options.issue_date));
+  ExpectTimestampEquals(
+      specifics.driver_license().expiration_date_unix_epoch_micros(),
+      base::UTF16ToUTF8(options.expiration_date));
 }
 
 }  // namespace
