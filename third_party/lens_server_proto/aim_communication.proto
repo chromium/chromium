@@ -31,6 +31,9 @@ enum FeatureCapability {
 
   // notifyZeroStateRendered() method
   NOTIFY_ZERO_STATE_RENDERED = 20;
+
+  // SetChromeDesktopInputPlateConfiguration() method
+  SET_CHROME_DESKTOP_INPUT_PLATE_CONFIGURATION = 24;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,6 +109,7 @@ message AimToClientMessage {
     ExitBasicMode exit_basic_mode = 5;
     UpdateThreadContextLibrary update_thread_context_library = 7;
     NotifyZeroStateRendered notify_zero_state_rendered = 8;
+    InputPlateParametersRequest set_chrome_desktop_input_plate_configuration = 9;
   }
 }
 
@@ -156,4 +160,11 @@ message Pdf {
 message Webpage {
   string title = 1;
   string url = 2;
+}
+
+message InputPlateParametersRequest {
+  int32 max_width = 1;
+  int32 max_height = 2;
+  int32 margin_bottom = 3;
+  int32 margin_left = 4;
 }

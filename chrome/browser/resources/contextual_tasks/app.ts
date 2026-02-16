@@ -18,6 +18,7 @@ import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.moj
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {ContextualTasksComposeboxElement} from './composebox.js';
+import type {ComposeboxPosition} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
@@ -277,6 +278,9 @@ export class ContextualTasksAppElement extends CrLitElement {
       callbackRouter.showOauthErrorDialog.addListener(() => {
         this.isErrorDialogVisible_ = true;
       }),
+      callbackRouter.updateComposeboxPosition.addListener(
+          this.onUpdateComposeboxPosition_.bind(this),
+          ),
     ];
 
     this.eventTracker_.add(window, 'popstate', async () => {
@@ -403,6 +407,33 @@ export class ContextualTasksAppElement extends CrLitElement {
     // TODO(crbug.com/463729504): Add checking to see if dark mode changed.
     if (changedPrivateProperties.has('isShownInTab_')) {
       this.updateCommonSearchParams();
+    }
+  }
+  private setStyleVariable(variable: string, value: string) {
+    this.$.composebox.style.setProperty(variable, `${value}px`);
+  }
+  /* Adjust composebox based on server notifications. Negatives are used if
+   * server wants to change marginTop, marginRight.
+   */
+  private onUpdateComposeboxPosition_(position: ComposeboxPosition) {
+    if (position.maxWidth !== null) {
+      this.setStyleVariable('--max-composebox-width', `${position.maxWidth}px`);
+    }
+    if (position.maxHeight !== null) {
+      // Set contextual task's composebox max-height.
+      this.setStyleVariable(
+          '--max-composebox-height', `${position.maxHeight}px`);
+      // Set cr-component's composebox max-height.
+      this.setStyleVariable(
+          '--cr-composebox-max-height', `${position.maxHeight}px`);
+    }
+    if (position.marginBottom !== null) {
+      this.setStyleVariable(
+          '--composebox-margin-bottom', `${position.marginBottom}px`);
+    }
+    if (position.marginLeft !== null) {
+      this.setStyleVariable(
+          '--composebox-margin-left', `${position.marginLeft}px`);
     }
   }
 

@@ -82,6 +82,10 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
   MOCK_METHOD(void, ShowErrorPage, (), (override));
   MOCK_METHOD(void, HideErrorPage, (), (override));
   MOCK_METHOD(void, ShowOauthErrorDialog, (), (override));
+  MOCK_METHOD(void,
+              UpdateComposeboxPosition,
+              (contextual_tasks::mojom::ComposeboxPositionPtr),
+              (override));
 
   mojo::PendingRemote<contextual_tasks::mojom::Page> BindAndGetRemote() {
     return receiver_.BindNewPipeAndPassRemote();
