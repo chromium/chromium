@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/command_observer.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
@@ -64,12 +63,7 @@ class PerformanceInterventionButton;
 
 namespace views {
 class FlexLayout;
-class FlexLayoutView;
-}  // namespace views
-
-namespace glic {
-class ToolbarGlicButton;
-}  // namespace glic
+}
 
 // The Browser Window's toolbar.
 class ToolbarView : public views::AccessiblePaneView,
@@ -281,19 +275,6 @@ class ToolbarView : public views::AccessiblePaneView,
 
   void NewTabButtonPressed(const ui::Event& event);
 
-  void OnVerticalTabStripModeChanged(
-      tabs::VerticalTabStripStateController* controller);
-
-#if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<glic::ToolbarGlicButton> CreateGlicButton();
-  void OnGlicButtonClicked();
-  void OnGlicButtonDismissed();
-  void OnGlicButtonHovered();
-  void OnGlicButtonMouseDown();
-  void OnGlicButtonAnimationEnded();
-  void ExecuteHideToolbarNudge(glic::ToolbarGlicButton* button);
-#endif
-
   gfx::SlideAnimation size_animation_{this};
 
   // Controls. Most of these can be null, e.g. in popup windows. Only
@@ -320,9 +301,6 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<BrowserAppMenuButton> app_menu_button_ = nullptr;
   raw_ptr<views::View> new_tab_button_ = nullptr;
   raw_ptr<PinnedActionToolbarButton> tab_search_button_ = nullptr;
-
-  raw_ptr<views::FlexLayoutView> glic_actor_button_container_ = nullptr;
-  raw_ptr<glic::ToolbarGlicButton> glic_button_ = nullptr;
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<BrowserView> browser_view_;
@@ -357,9 +335,6 @@ class ToolbarView : public views::AccessiblePaneView,
   // due to small toolbar view width. Visibility controlled by
   // `toolbar_controller_`.
   raw_ptr<OverflowButton> overflow_button_ = nullptr;
-
-  // Subscription for when tab strip mode changes
-  base::CallbackListSubscription vertical_tab_subscription_;
 };
 
 extern const ui::ClassProperty<bool>* const kActionItemUnderlineIndicatorKey;

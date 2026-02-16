@@ -23,9 +23,6 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,10 +45,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
@@ -91,7 +86,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_divider.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_glic_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
@@ -136,7 +130,6 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -250,6 +243,7 @@ bool IsPositionInWindowCaption(const views::View* view,
   // above centerline.
   return is_above_centerline;
 }
+
 // Gets the display mode for a given browser.
 ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
   // Checked in this order because even tabbed PWAs use the CUSTOM_TAB
@@ -505,24 +499,6 @@ void ToolbarView::Init() {
     media_button_ = AddChildView(std::move(media_button));
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
-  if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile())) {
-    auto* vertical_tab_strip_state_controller =
-        tabs::VerticalTabStripStateController::From(browser_view_->browser());
-    glic_button_ = AddChildView(CreateGlicButton());
-    if (vertical_tab_strip_state_controller) {
-      vertical_tab_subscription_ =
-          vertical_tab_strip_state_controller->RegisterOnModeChanged(
-              base::BindRepeating(&ToolbarView::OnVerticalTabStripModeChanged,
-                                  base::Unretained(this)));
-      glic_button_->SetVisible(
-          vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs());
-    } else {
-      glic_button_->SetVisible(false);
-    }
-  }
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
   avatar_ = AddChildView(std::make_unique<AvatarToolbarButton>(browser_view_));
   bool show_avatar_toolbar_button = true;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -604,134 +580,6 @@ void ToolbarView::Init() {
 
   initialized_ = true;
 }
-
-void ToolbarView::OnVerticalTabStripModeChanged(
-    tabs::VerticalTabStripStateController* controller) {
-  glic_button_->SetVisible(controller->ShouldDisplayVerticalTabs());
-}
-
-#if BUILDFLAG(ENABLE_GLIC)
-std::unique_ptr<glic::ToolbarGlicButton> ToolbarView::CreateGlicButton() {
-  glic::GlicKeyedService* service =
-      glic::GlicKeyedService::Get(browser_view_->GetProfile());
-  std::u16string tooltip_text = l10n_util::GetStringUTF16(
-      service->IsWindowOrFreShowing() ? IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE
-                                      : IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP);
-  std::unique_ptr<glic::ToolbarGlicButton> glic_button =
-      std::make_unique<glic::ToolbarGlicButton>(
-          browser_view_->browser(),
-          base::BindRepeating(&ToolbarView::OnGlicButtonHovered,
-                              base::Unretained(this)),
-          base::BindRepeating(&ToolbarView::OnGlicButtonMouseDown,
-                              base::Unretained(this)),
-          base::BindRepeating(&ToolbarView::OnGlicButtonAnimationEnded,
-                              base::Unretained(this)),
-          tooltip_text,
-          base::BindRepeating(&ToolbarView::OnGlicButtonClicked,
-                              base::Unretained(this)));
-
-  glic_button->SetProperty(views::kCrossAxisAlignmentKey,
-                           views::LayoutAlignment::kCenter);
-
-  return glic_button;
-}
-
-void ToolbarView::OnGlicButtonClicked() {
-  // Indicate that the glic button was pressed so that we can either close the
-  // IPH promo (if present) or note that it has already been used to prevent
-  // unnecessarily displaying the promo.
-  BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
-      feature_engagement::kIPHGlicPromoFeature,
-      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-
-  std::optional<std::string> prompt_suggestion;
-  tabs::GlicNudgeController* glic_nudge_controller =
-      browser_->browser_window_features()->glic_nudge_controller();
-  if (glic_nudge_controller) {
-    prompt_suggestion = glic_nudge_controller->GetPromptSuggestion();
-    glic_nudge_controller->ClearPromptSuggestion();
-  }
-
-  glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-      browser_view_->GetProfile())
-      ->ToggleUI(browser_view_->browser(),
-                 /*prevent_close=*/false,
-                 glic_button_->GetIsShowingNudge()
-                     ? glic::mojom::InvocationSource::kNudge
-                     : glic::mojom::InvocationSource::kTopChromeButton,
-                 prompt_suggestion);
-
-  if (glic_button_->GetIsShowingNudge()) {
-    glic_nudge_controller->OnNudgeActivity(
-        tabs::GlicNudgeActivity::kNudgeClicked);
-  }
-
-  ExecuteHideToolbarNudge(glic_button_);
-  // Reset state manually since there wont be a mouse up event as the
-  // animation moves the button out of the way.
-  glic_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
-}
-
-void ToolbarView::OnGlicButtonDismissed() {
-  browser_->browser_window_features()->glic_nudge_controller()->OnNudgeActivity(
-      tabs::GlicNudgeActivity::kNudgeDismissed);
-
-  // Force hide the button when pressed, bypassing locked expansion mode.
-  ExecuteHideToolbarNudge(glic_button_);
-}
-
-void ToolbarView::OnGlicButtonHovered() {
-  Profile* const profile = browser_view_->GetProfile();
-
-  glic::GlicKeyedService* glic_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  if (auto* instance =
-          glic_service->GetInstanceForActiveTab(browser_view_->browser())) {
-    instance->host().instance_delegate().PrepareForOpen();
-  }
-}
-
-void ToolbarView::OnGlicButtonMouseDown() {
-  Profile* const profile = browser_view_->GetProfile();
-  if (!glic::GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
-    // Do not do this optimization if user has not consented to GLIC.
-    return;
-  }
-  auto* glic_service = glic::GlicKeyedService::Get(profile);
-
-  // TODO(crbug.com/445934142): Create the instance here so that suggestions can
-  // be fetched, but don't show it yet.
-  if (auto* instance =
-          glic_service->GetInstanceForActiveTab(browser_view_->browser())) {
-    // This prefetches the results and allows the underlying implementation to
-    // cache the results for future calls. Which is why the callback does
-    // nothing.
-    instance->host().instance_delegate().FetchZeroStateSuggestions(
-        /*is_first_run=*/false, /*supported_tools=*/std::nullopt,
-        base::DoNothing());
-  }
-}
-
-void ToolbarView::OnGlicButtonAnimationEnded() {
-  // TODO(crbug.com/484389669): ToolbarGlicButton animations
-  return;
-}
-
-void ToolbarView::ExecuteHideToolbarNudge(glic::ToolbarGlicButton* button) {
-  if (!button->GetVisible()) {
-    return;
-  }
-
-  // Since the glic button is still visible in it's hidden state we need to have
-  // a special case to query if it's in its Hide state.
-  if (button == glic_button_ && button->GetWidthFactor() == 0.0 &&
-      base::FeatureList::IsEnabled(features::kGlicEntrypointVariations)) {
-    return;
-  }
-
-  button->SetIsShowingNudge(false);
-}
-#endif  // ENABLE_GLIC
 
 void ToolbarView::AnimationEnded(const gfx::Animation* animation) {
   if (animation->GetCurrentValue() == 0) {
