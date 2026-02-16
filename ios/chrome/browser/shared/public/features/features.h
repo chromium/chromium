@@ -286,6 +286,9 @@ BASE_DECLARE_FEATURE(kIOSSaveToDriveClientFolder);
 // Feature flag enabling the save to drive feature for signed out users.
 BASE_DECLARE_FEATURE(kIOSSaveToDriveSignedOut);
 
+// Feature flag enabling the save to photos feature for signed out users.
+BASE_DECLARE_FEATURE(kIOSSaveToPhotosSignedOut);
+
 // Feature flag to enable feed background refresh.
 // Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);

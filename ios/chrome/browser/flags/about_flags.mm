@@ -2724,6 +2724,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSChooseFromDriveSignedOutName,
      flag_descriptions::kIOSChooseFromDriveSignedOutDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSChooseFromDriveSignedOut)},
+    {"ios-save-to-photos-signed-out",
+     flag_descriptions::kIOSSaveToPhotosSignedOutName,
+     flag_descriptions::kIOSSaveToPhotosSignedOutDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSSaveToPhotosSignedOut)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

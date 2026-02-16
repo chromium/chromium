@@ -831,6 +831,10 @@ const char kIOSSaveToDriveSignedOutName[] = "Save to Drive Signed Out";
 const char kIOSSaveToDriveSignedOutDescription[] =
     "Enables the Save to Drive feature to signed out users.";
 
+const char kIOSSaveToPhotosSignedOutName[] = "Save to Photos Signed Out";
+const char kIOSSaveToPhotosSignedOutDescription[] =
+    "Enables the Save to Photos feature to signed out users.";
+
 const char kIOSSoftLockName[] = "Soft Lock on iOS";
 const char kIOSSoftLockDescription[] = "Enables experimental Soft Lock on iOS.";
 

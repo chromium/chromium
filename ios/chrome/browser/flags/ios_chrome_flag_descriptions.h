@@ -510,6 +510,9 @@ extern const char kIOSSaveToDriveClientFolderDescription[];
 extern const char kIOSSaveToDriveSignedOutName[];
 extern const char kIOSSaveToDriveSignedOutDescription[];
 
+extern const char kIOSSaveToPhotosSignedOutName[];
+extern const char kIOSSaveToPhotosSignedOutDescription[];
+
 extern const char kIOSSoftLockName[];
 extern const char kIOSSoftLockDescription[];
 
