@@ -374,6 +374,7 @@ void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
           /*is_prerender_initial_navigation=*/true,
           /*prefetch_match_metrics_force_use=*/&prefetch_match_metrics);
 
+      // See https://crbug.com/479983093 for more details.
       if (prefetch_match_metrics.prerender_debug_metrics &&
           prefetch_match_metrics.prerender_debug_metrics
               ->prefetch_ahead_of_prerender_debug_metrics) {
@@ -407,7 +408,11 @@ void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
               "PreloadServingMetrics", "non_urls_same",
               debug_metrics.prefetch_key_navigated.NonUrlPartIsSame(
                   debug_metrics.prefetch_key_ahead_of_prerender));
-          base::debug::DumpWithoutCrashing();
+          // Temporarily disable `DumpWithoutCrashing` as we collected data.
+          // Reenable it when we need it.
+          //
+          // Removal is managed by https://crbug.com/479983093.
+          // base::debug::DumpWithoutCrashing();
         }
       }
     }
