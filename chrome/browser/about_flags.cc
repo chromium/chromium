@@ -10277,6 +10277,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kShowSuggestionsOnAutofocus)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"password-save-in-context-error-resolution-on-desktop",
+     flag_descriptions::kPasswordSaveInContextErrorResolutionOnDesktopName,
+     flag_descriptions::
+         kPasswordSaveInContextErrorResolutionOnDesktopDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kPasswordSaveInContextErrorResolutionOnDesktop)},
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
     {"android-desktop-density", flag_descriptions::kAndroidDesktopDensityName,
      flag_descriptions::kAndroidDesktopDensityDescription, kOsAndroid,

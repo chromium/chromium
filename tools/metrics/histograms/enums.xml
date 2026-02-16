@@ -9011,6 +9011,8 @@ from previous Chrome versions.
   <int value="-1853050064" label="FullRestoreForLacros:enabled"/>
   <int value="-1851980281" label="TabGroupsCollapse:enabled"/>
   <int value="-1850988416" label="(Obsolete) ExplicitLanguageAsk:disabled"/>
+  <int value="-1850924290"
+      label="PasswordSaveInContextErrorResolutionOnDesktop:disabled"/>
   <int value="-1850193460" label="ForceListTabSwitcher:disabled"/>
   <int value="-1850155382" label="EnablePerfettoSystemTracing:enabled"/>
   <int value="-1849706663" label="enable-password-force-saving:disabled"/>
@@ -12984,6 +12986,8 @@ from previous Chrome versions.
   <int value="-495585885" label="enable-spdy-proxy-dev-auth-origin"/>
   <int value="-495265247" label="FedCmWithoutWellKnownEnforcement:enabled"/>
   <int value="-494722408" label="ContentSuggestionsLargeThumbnail:enabled"/>
+  <int value="-494693639"
+      label="PasswordSaveInContextErrorResolutionOnDesktop:enabled"/>
   <int value="-494595710" label="LargeFaviconFromGoogle:disabled"/>
   <int value="-493703626"
       label="AutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString:enabled"/>

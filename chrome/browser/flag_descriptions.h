@@ -3441,6 +3441,13 @@ inline constexpr char kPasswordManagerShowSuggestionsOnAutofocusDescription[] =
     "click on the already focused field if the field was autofocused on "
     "the page load.";
 
+inline constexpr char kPasswordSaveInContextErrorResolutionOnDesktopName[] =
+    "In-flow resolution of errors during password saving";
+inline constexpr char
+    kPasswordSaveInContextErrorResolutionOnDesktopDescription[] =
+        "Starts the password manager error resolution flow after offering to "
+        "save a password.";
+
 inline constexpr char kPasswordUploadUiUpdateName[] =
     "Password Upload UI Update";
 inline constexpr char kPasswordUploadUiUpdateDescription[] =

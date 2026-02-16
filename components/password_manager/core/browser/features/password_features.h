@@ -151,6 +151,10 @@ BASE_DECLARE_FEATURE(kPasswordFormGroupedAffiliations);
 BASE_DECLARE_FEATURE(kPasswordGenerationChunking);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_DECLARE_FEATURE(kPasswordSaveInContextErrorResolutionOnDesktop);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // Enables logging the content of chrome://password-manager-internals to the
 // terminal.
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
