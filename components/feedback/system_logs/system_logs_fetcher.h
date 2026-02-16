@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -46,8 +47,9 @@ class SystemLogsFetcher {
   // |first_party_extension_ids| is a null terminated array of all the 1st
   // party extension IDs whose URLs won't be redacted. It is OK to pass null for
   // that value if it's OK to redact those URLs or they won't be present.
-  explicit SystemLogsFetcher(bool scrub_data,
-                             const char* const first_party_extension_ids[]);
+  explicit SystemLogsFetcher(
+      bool scrub_data,
+      base::span<const char* const> first_party_extension_ids = {});
 
   SystemLogsFetcher(const SystemLogsFetcher&) = delete;
   SystemLogsFetcher& operator=(const SystemLogsFetcher&) = delete;

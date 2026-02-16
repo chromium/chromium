@@ -7,9 +7,13 @@
 
 #include <stdint.h>
 
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
+#include "extensions/common/constants.h"
 
 namespace extension_urls {
 
@@ -65,9 +69,6 @@ inline constexpr char kInAppPaymentsSupportAppId[] =
 // The extension id of virtual keyboard extension.
 inline constexpr char kKeyboardExtensionId[] =
     "mppnpdlheglhdfmldimlhpnegondlapf";
-
-// A list of all the first party extension IDs, last entry is null.
-extern const char* const kBuiltInFirstPartyExtensionIds[];
 
 // The buckets used for app launches.
 enum AppLaunchBucket {
@@ -323,6 +324,44 @@ inline constexpr char kExtensionRequestTimestamp[] = "timestamp";
 // The key name of the extension workflow request justification used by the
 // prefs::kCloudExtensionRequestIds preference.
 inline constexpr char kExtensionWorkflowJustification[] = "justification";
+
+inline constexpr auto kBuiltInFirstPartyExtensionIds =
+    std::to_array<const char* const>({
+        kCalculatorAppId,
+        kCalendarAppId,
+        kDataSaverExtensionId,
+        kDocsOfflineExtensionId,
+        kGoogleDriveAppId,
+        kGmailAppId,
+        kGoogleDocsAppId,
+        kGoogleMapsAppId,
+        kGooglePhotosAppId,
+        kGooglePlayBooksAppId,
+        kGooglePlayMoviesAppId,
+        kGooglePlayMusicAppId,
+        kGooglePlusAppId,
+        kGoogleSheetsAppId,
+        kGoogleSlidesAppId,
+        kTextEditorAppId,
+        kInAppPaymentsSupportAppId,
+#if BUILDFLAG(IS_CHROMEOS)
+        kAssessmentAssistantExtensionId,
+        kAccessibilityCommonExtensionId,
+        kSelectToSpeakExtensionId,
+        kSwitchAccessExtensionId,
+        kFilesManagerAppId,
+        kFirstRunDialogId,
+        kEspeakSpeechSynthesisExtensionId,
+        kGoogleSpeechSynthesisExtensionId,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        kReadingModeGDocsHelperExtensionId,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+        kTTSEngineExtensionId,
+        kComponentUpdaterTTSEngineExtensionId,
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+        nullptr,  // Null-terminated array.
+    });
+
 }  // namespace extension_misc
 
 #endif  // CHROME_COMMON_EXTENSIONS_EXTENSION_CONSTANTS_H_

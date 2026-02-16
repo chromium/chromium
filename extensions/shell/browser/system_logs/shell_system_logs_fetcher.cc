@@ -12,9 +12,7 @@ namespace system_logs {
 SystemLogsFetcher* BuildShellSystemLogsFetcher(
     content::BrowserContext* browser_context) {
   // Deletes itself after Fetch() is completes.
-  SystemLogsFetcher* fetcher =
-      new SystemLogsFetcher(/* scrub_data= */ true,
-                            /* first_party_extension_ids= */ nullptr);
+  SystemLogsFetcher* fetcher = new SystemLogsFetcher(/* scrub_data= */ true);
   fetcher->AddSource(std::make_unique<BasicLogSource>(browser_context));
   return fetcher;
 }
