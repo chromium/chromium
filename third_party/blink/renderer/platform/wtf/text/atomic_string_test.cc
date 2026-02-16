@@ -75,23 +75,4 @@ TEST(AtomicStringTest, ImplEquality) {
   EXPECT_NE(bar.Impl(), baz.Impl());
 }
 
-TEST(AtomicStringTest, Contains) {
-  EXPECT_TRUE(AtomicString("").contains(""));
-  EXPECT_FALSE(AtomicString("").contains("a"));
-
-  EXPECT_TRUE(AtomicString("foo").contains(""));
-  EXPECT_TRUE(AtomicString("foo").contains("f"));
-  EXPECT_FALSE(AtomicString("foo").contains("F"));
-}
-
-TEST(AtomicStringTest, ContainsIgnoringAsciiCase) {
-  EXPECT_TRUE(AtomicString("").ContainsIgnoringAsciiCase(""));
-  EXPECT_TRUE(AtomicString("foo").ContainsIgnoringAsciiCase(""));
-  EXPECT_TRUE(AtomicString("foo").ContainsIgnoringAsciiCase("f"));
-  EXPECT_TRUE(AtomicString("foo").ContainsIgnoringAsciiCase("F"));
-  // U+212A should not match to "k" because ContainsIgnoringAsciiCase() doesn't
-  // apply Unicode case-insensitive match.
-  EXPECT_FALSE(AtomicString("link").ContainsIgnoringAsciiCase(u"\u212A"));
-}
-
 }  // namespace blink

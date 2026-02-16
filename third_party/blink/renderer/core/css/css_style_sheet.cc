@@ -657,7 +657,7 @@ bool CSSStyleSheet::IsAlternate() const {
     auto* owner_element = DynamicTo<Element>(owner_node_.Get());
     return owner_element &&
            owner_element->FastGetAttribute(html_names::kRelAttr)
-               .contains("alternate");
+               .Contains("alternate");
   }
   return alternate_from_constructor_;
 }

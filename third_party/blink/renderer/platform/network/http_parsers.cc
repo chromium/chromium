@@ -922,7 +922,7 @@ CacheControlHeader ParseCacheControlDirectives(
     // This is deprecated and equivalent to Cache-control: no-cache
     // Don't bother tokenizing the value, it is not important
     cache_control_header.contains_no_cache =
-        pragma_value.LowerASCII().contains(kNoCacheDirective);
+        pragma_value.LowerASCII().Contains(kNoCacheDirective);
   }
   return cache_control_header;
 }

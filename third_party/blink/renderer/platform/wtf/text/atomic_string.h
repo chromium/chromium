@@ -139,16 +139,10 @@ class WTF_EXPORT AtomicString {
   }
 
   bool Contains(char c) const { return find(c) != kNotFound; }
-  // Returns `true` if this string contains the specified `value`.
-  // If `value` is empty, this returns `true`.
-  bool contains(const StringView& value) const {
-    return string_.find(value) != kNotFound;
-  }
-  // Returns `true` if this string contains the specified `value`, using ASCII
-  // case-insensitive matching.
-  // If `value` is empty, this returns `true`.
-  bool ContainsIgnoringAsciiCase(const StringView& value) const {
-    return string_.FindIgnoringASCIICase(value) != kNotFound;
+  bool Contains(
+      const StringView& value,
+      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+    return Find(value, 0, case_sensitivity) != kNotFound;
   }
 
   // Find the last instance of a single character or string.
