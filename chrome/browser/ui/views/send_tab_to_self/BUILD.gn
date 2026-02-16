@@ -1,0 +1,76 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("send_tab_to_self") {
+  public = [
+    "send_tab_to_self_bubble_controller.h",
+    "send_tab_to_self_bubble_view.h",
+    "send_tab_to_self_device_picker_bubble_view.h",
+    "send_tab_to_self_promo_bubble_view.h",
+    "send_tab_to_self_toolbar_bubble_controller.h",
+    "send_tab_to_self_toolbar_bubble_view.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/media_router",
+    "//chrome/browser/ui/views/location_bar",
+    "//components/send_tab_to_self",
+    "//components/sync_device_info",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "manage_account_devices_link_view.cc",
+    "manage_account_devices_link_view.h",
+    "send_tab_to_self_bubble.cc",
+    "send_tab_to_self_bubble_controller.cc",
+    "send_tab_to_self_bubble_device_button.cc",
+    "send_tab_to_self_bubble_device_button.h",
+    "send_tab_to_self_bubble_view.cc",
+    "send_tab_to_self_device_picker_bubble_view.cc",
+    "send_tab_to_self_promo_bubble_view.cc",
+    "send_tab_to_self_toolbar_bubble_controller.cc",
+    "send_tab_to_self_toolbar_bubble_view.cc",
+  ]
+
+  deps = [
+    ":send_tab_to_self",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:primitives",
+    "//chrome/browser/send_tab_to_self",
+    "//chrome/browser/sharing_hub",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui/actions",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/send_tab_to_self",
+    "//chrome/browser/ui/sharing_hub",
+    "//chrome/browser/ui/signin",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/toolbar",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/send_tab_to_self",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/url_formatter",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/color",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}

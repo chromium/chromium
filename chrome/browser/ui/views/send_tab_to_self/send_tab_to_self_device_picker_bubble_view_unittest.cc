@@ -11,7 +11,6 @@
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -21,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace send_tab_to_self {
 
@@ -116,8 +116,11 @@ TEST_F(SendTabToSelfDevicePickerBubbleViewTest, ButtonPressed) {
   EXPECT_CALL(*controller_, OnDeviceSelected("device_guid_3"));
   const views::View* button_container = bubble_->GetButtonContainerForTesting();
   ASSERT_EQ(3U, button_container->children().size());
-  bubble_->DeviceButtonPressed(static_cast<SendTabToSelfBubbleDeviceButton*>(
-      button_container->children()[2]));
+
+  // Simulate a click on the third device button.
+  views::test::ButtonTestApi(
+      static_cast<views::Button*>(button_container->children()[2]))
+      .NotifyDefaultMouseClick();
 }
 
 }  // namespace send_tab_to_self

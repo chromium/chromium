@@ -4340,23 +4340,6 @@ static_library("ui") {
       "views/select_audio_output/select_audio_output_dialog.h",
       "views/select_audio_output/select_audio_output_views.cc",
       "views/select_audio_output/select_audio_output_views.h",
-      "views/send_tab_to_self/manage_account_devices_link_view.cc",
-      "views/send_tab_to_self/manage_account_devices_link_view.h",
-      "views/send_tab_to_self/send_tab_to_self_bubble.cc",
-      "views/send_tab_to_self/send_tab_to_self_bubble_controller.cc",
-      "views/send_tab_to_self/send_tab_to_self_bubble_controller.h",
-      "views/send_tab_to_self/send_tab_to_self_bubble_device_button.cc",
-      "views/send_tab_to_self/send_tab_to_self_bubble_device_button.h",
-      "views/send_tab_to_self/send_tab_to_self_bubble_view.cc",
-      "views/send_tab_to_self/send_tab_to_self_bubble_view.h",
-      "views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.cc",
-      "views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h",
-      "views/send_tab_to_self/send_tab_to_self_promo_bubble_view.cc",
-      "views/send_tab_to_self/send_tab_to_self_promo_bubble_view.h",
-      "views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.cc",
-      "views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h",
-      "views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.cc",
-      "views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h",
       "views/session_crashed_bubble_view.cc",
       "views/session_crashed_bubble_view.h",
       "views/sharing/sharing_dialog_view.cc",
@@ -4780,6 +4763,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/permissions",
       "//chrome/browser/ui/views/permissions/chip",
       "//chrome/browser/ui/views/permissions/chip:impl",
+      "//chrome/browser/ui/views/send_tab_to_self",
+      "//chrome/browser/ui/views/send_tab_to_self:impl",
       "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
       "//chrome/browser/ui/views/tabs/projects",
       "//chrome/browser/ui/views/tabs/shared",
@@ -4915,6 +4900,14 @@ static_library("ui") {
       # - c/b/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h
       "//chrome/browser/ui/views/tabs/shared:impl",
       "//chrome/browser/ui/views/tabs/vertical:impl",
+
+      # TODO(crbug.com/434882143): Remove this circular dependency when the following
+      # headers get componentized:
+      # c/b/ui/browser.h, browser_finder.h, browser_navigator.h, browser_window.h
+      # c/b/ui/views/chrome_layout_provider.h, chrome_typography.h
+      # c/b/ui/views/controls/hover_button.h
+      # c/b/ui/views/frame/browser_view.h
+      "//chrome/browser/ui/views/send_tab_to_self:impl",
     ]
 
     if (is_linux) {

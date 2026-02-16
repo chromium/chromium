@@ -32,6 +32,7 @@ source_set("impl") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/send_tab_to_self",
     "//chrome/browser/ui/views/toolbar",
     "//components/send_tab_to_self",
   ]
@@ -47,6 +48,7 @@ if (!is_android) {
     deps = [
       ":send_tab_to_self",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/send_tab_to_self",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/test:test_support",
