@@ -8382,6 +8382,7 @@ test("unit_tests") {
       "../browser/search/search_unittest.cc",
       "../browser/sessions/restore_on_startup_policy_handler_unittest.cc",
       "../browser/sessions/tab_restore_service_unittest.cc",
+      "../browser/sharing/one_time_tokens/one_time_token_sharing_handler_unittest.cc",
       "../browser/sharing/shared_clipboard/remote_copy_message_handler_unittest.cc",
       "../browser/sharing/shared_clipboard/shared_clipboard_message_handler_desktop_unittest.cc",
       "../browser/sharing/shared_clipboard/shared_clipboard_test_base.cc",

@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
+#include "chrome/browser/autofill/gmail_otp_backend_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
@@ -28,6 +29,7 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -103,6 +105,7 @@ SharingServiceFactory::SharingServiceFactory()
   DependsOn(SharingMessageBridgeFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
+  DependsOn(GmailOtpBackendFactory::GetInstance());
 }
 
 SharingServiceFactory::~SharingServiceFactory() = default;
@@ -168,9 +171,11 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
       sync_service, local_device_info_provider, device_info_tracker);
 
   content::SmsFetcher* sms_fetcher = content::SmsFetcher::Get(context);
+  one_time_tokens::GmailOtpBackend* gmail_otp_backend =
+      GmailOtpBackendFactory::GetForProfile(profile);
   auto handler_registry = std::make_unique<SharingHandlerRegistryImpl>(
       profile, sharing_device_registration.get(), sharing_message_sender.get(),
-      device_source.get(), sms_fetcher);
+      device_source.get(), sms_fetcher, gmail_otp_backend);
 
   auto fcm_handler = std::make_unique<SharingFCMHandler>(
       gcm_driver, device_info_tracker, fcm_sender_ptr, handler_registry.get());

@@ -10,11 +10,16 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_handler_registry.h"
 
 namespace content {
 class SmsFetcher;
 }  // namespace content
+
+namespace one_time_tokens {
+class GmailOtpBackend;
+}  // namespace one_time_tokens
 
 class SharingMessageHandler;
 class SharingDeviceRegistration;
@@ -30,7 +35,8 @@ class SharingHandlerRegistryImpl : public SharingHandlerRegistry {
       SharingDeviceRegistration* sharing_device_registration,
       SharingMessageSender* message_sender,
       SharingDeviceSource* device_source,
-      content::SmsFetcher* sms_fetcher);
+      content::SmsFetcher* sms_fetcher,
+      one_time_tokens::GmailOtpBackend* gmail_otp_backend);
   ~SharingHandlerRegistryImpl() override;
 
   // Gets SharingMessageHandler registered for |payload_case|.
