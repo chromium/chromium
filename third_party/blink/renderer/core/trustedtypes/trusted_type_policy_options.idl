@@ -8,8 +8,10 @@ dictionary TrustedTypePolicyOptions {
    CreateHTMLCallback createHTML;
    CreateScriptCallback createScript;
    CreateURLCallback createScriptURL;
+   CreateParserOptionsCallback createParserOptions;
 };
 
 callback CreateHTMLCallback = DOMString? (DOMString input, any... args);
 callback CreateScriptCallback = DOMString? (DOMString input, any... args);
 callback CreateURLCallback = USVString? (DOMString input, any... args);
+callback CreateParserOptionsCallback = any (SetHTMLUnsafeOptions input);

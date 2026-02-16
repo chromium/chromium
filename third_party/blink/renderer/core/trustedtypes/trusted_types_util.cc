@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_parser_options.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script_url.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy.h"
@@ -55,6 +56,7 @@ enum TrustedTypeViolationKind {
   kScriptExecution,
   kScriptExecutionAndDefaultPolicyFailed,
   kTrustedHTMLParserOptionsTransform,
+  kTrustedHTMLParserOptionsTransformAndNoDefaultPolicyExisted,
 };
 
 // Strings to support building a sample, used in:
@@ -123,7 +125,10 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
              "assignment and the 'default' policy failed to execute.";
     case kTrustedHTMLParserOptionsTransform:
       CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-      return "This document requires 'TrustedParserOptions' assignment and no "
+      return "This document requires 'TrustedParserOptions' assignment.";
+    case kTrustedHTMLParserOptionsTransformAndNoDefaultPolicyExisted:
+      CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+      return "The TrustedParserOptions parser options transform failed and no "
              "'default' policy for 'TrustedParserOptions' has been defined.";
   }
   NOTREACHED();
@@ -622,7 +627,7 @@ TrustedTypesCheckForParserOptions(const SetHTMLUnsafeOptions* options,
     return options;
   }
 
-  const auto* default_policy = GetDefaultPolicy(execution_context);
+  auto* default_policy = GetDefaultPolicy(execution_context);
   if (!default_policy) {
     TrustedTypeFail(kTrustedHTMLParserOptionsTransform, execution_context,
                     interface_name, property_name, exception_state,
@@ -630,10 +635,26 @@ TrustedTypesCheckForParserOptions(const SetHTMLUnsafeOptions* options,
     return nullptr;
   }
 
-  // TODO: support createParserOptions, and throwing if that is not provided or
-  // returns null.
+  if (!default_policy->HasCreateParserOptions()) {
+    TrustedTypeFail(kTrustedHTMLParserOptionsTransformAndNoDefaultPolicyExisted,
+                    execution_context, interface_name, property_name,
+                    exception_state, g_empty_string);
+    return nullptr;
+  }
 
-  return options;
+  TryRethrowScope rethrow_scope(execution_context->GetIsolate(),
+                                exception_state);
+  TrustedParserOptions* result =
+      default_policy->createParserOptions(options, exception_state);
+  if (!result) {
+    return nullptr;
+  }
+
+  auto* new_options =
+      SetHTMLUnsafeOptions::Create(execution_context->GetIsolate());
+  new_options->setSanitizer(result->sanitizer());
+  new_options->setRunScripts(result->runScripts());
+  return new_options;
 }
 
 String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,

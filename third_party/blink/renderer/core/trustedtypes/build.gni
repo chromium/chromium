@@ -7,6 +7,7 @@ blink_core_sources_trustedtypes = [
   "global_trusted_types.h",
   "trusted_html.cc",
   "trusted_html.h",
+  "trusted_parser_options.h",
   "trusted_script.cc",
   "trusted_script.h",
   "trusted_script_url.cc",

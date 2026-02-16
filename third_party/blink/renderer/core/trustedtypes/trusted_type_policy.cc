@@ -5,9 +5,12 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_create_html_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_create_parser_options_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_create_script_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_create_url_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_parser_options.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script_url.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -154,6 +157,33 @@ TrustedScriptURL* TrustedTypePolicy::createScriptURLInternal(
   return MakeGarbageCollected<TrustedScriptURL>(script_url);
 }
 
+TrustedParserOptions* TrustedTypePolicy::createParserOptions(
+    const SetHTMLUnsafeOptions* options,
+    ExceptionState& exception_state) {
+  if (!policy_options_->hasCreateParserOptions()) {
+    exception_state.ThrowTypeError(
+        StrCat({"Policy ", name_,
+                "'s TrustedTypePolicyOptions did not specify a "
+                "'createParserOptions' member."}));
+    return nullptr;
+  }
+  ScriptValue out;
+  auto result =
+      policy_options_->createParserOptions()->Invoke(nullptr, options);
+  if (!result.To(&out)) {
+    return nullptr;
+  }
+
+  SetHTMLUnsafeOptions* new_options = SetHTMLUnsafeOptions::Create(
+      out.GetIsolate(), out.V8Value(), exception_state);
+  if (!new_options || exception_state.HadException()) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<TrustedParserOptions>(
+      new_options->sanitizer(),
+      new_options->runScripts() && options->runScripts());
+}
+
 bool TrustedTypePolicy::HasCreateHTML() const {
   return policy_options_->hasCreateHTML();
 }
@@ -164,6 +194,10 @@ bool TrustedTypePolicy::HasCreateScript() const {
 
 bool TrustedTypePolicy::HasCreateScriptURL() const {
   return policy_options_->hasCreateScriptURL();
+}
+
+bool TrustedTypePolicy::HasCreateParserOptions() const {
+  return policy_options_->hasCreateParserOptions();
 }
 
 String TrustedTypePolicy::name() const {
