@@ -41,6 +41,16 @@ chromium-metrics-reviews@google.com.
   <variant name="Unspecified" summary="unspecified pass category"/>
 </variants>
 
+<histogram name="Wallet.NetworkRequest.OauthError"
+    enum="GoogleServiceAuthError" expires_after="2026-12-31">
+  <owner>vizcay@google.com</owner>
+  <owner>1p-integrations-autofill@google.com</owner>
+  <summary>
+    Records the OAuth errors that occur when the WalletHttpClient requests an
+    access token.
+  </summary>
+</histogram>
+
 <histogram name="Wallet.NetworkRequest.{RequestType}.Latency" units="ms"
     expires_after="2026-12-31">
   <owner>vizcay@google.com</owner>

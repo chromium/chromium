@@ -90,9 +90,9 @@ void WalletHttpClientImpl::OnTokenFetched(
     signin::AccessTokenInfo access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_token_fetcher_.reset();
+  metrics::RecordNetworkRequestOauthError(error);
 
   std::optional<std::string> access_token;
-  // TODO(crbug.com/471165306): Report error to UMA.
   if (error.state() == GoogleServiceAuthError::NONE) {
     access_token = access_token_info.token;
   }

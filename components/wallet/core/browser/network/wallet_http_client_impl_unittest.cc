@@ -120,6 +120,7 @@ TEST_F(WalletHttpClientImplTest, ContentType) {
 // invokes the callback with a success result when the server responds with
 // success.
 TEST_F(WalletHttpClientImplTest, UpsertPublicPass_Success) {
+  base::HistogramTester histogram_tester;
   Pass pass;
   UpsertPublicPassCallback upsert_pass_callback;
   client()->UpsertPublicPass(pass, upsert_pass_callback.GetCallback());
@@ -146,11 +147,14 @@ TEST_F(WalletHttpClientImplTest, UpsertPublicPass_Success) {
   ASSERT_TRUE(upsert_pass_callback.Wait());
   EXPECT_TRUE(upsert_pass_callback.Get().has_value());
   EXPECT_EQ(upsert_pass_callback.Get().value(), "pass-id");
+  histogram_tester.ExpectUniqueSample("Wallet.NetworkRequest.OauthError",
+                                      GoogleServiceAuthError::NONE, 1);
 }
 
 // Tests that UpsertPublicPass correctly handles server errors by invoking the
 // callback with a failure result.
 TEST_F(WalletHttpClientImplTest, UpsertPublicPass_TokenFetchError) {
+  base::HistogramTester histogram_tester;
   Pass pass;
   Pass_LoyaltyCard* loyalty_card = pass.mutable_loyalty_card();
   loyalty_card->set_program_name("Program Name");
@@ -167,6 +171,9 @@ TEST_F(WalletHttpClientImplTest, UpsertPublicPass_TokenFetchError) {
   ASSERT_TRUE(upsert_pass_callback.Wait());
   EXPECT_EQ(upsert_pass_callback.Get().error(),
             WalletHttpClient::WalletRequestError::kAccessTokenFetchFailed);
+  histogram_tester.ExpectUniqueSample("Wallet.NetworkRequest.OauthError",
+                                      GoogleServiceAuthError::CONNECTION_FAILED,
+                                      1);
 }
 
 TEST_F(WalletHttpClientImplTest, UpsertPublicPass_Failure) {

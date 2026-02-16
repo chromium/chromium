@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/wallet/core/browser/data_models/data_model_utils.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace wallet::metrics {
 
@@ -34,6 +35,12 @@ void LogSaveEvent(PassCategory pass_category,
       base::StrCat({"Wallet.WalletablePass.Save.Funnel.",
                     PassCategoryToString(pass_category)}),
       event);
+}
+
+void RecordNetworkRequestOauthError(const GoogleServiceAuthError& error) {
+  base::UmaHistogramEnumeration("Wallet.NetworkRequest.OauthError",
+                                error.state(),
+                                GoogleServiceAuthError::NUM_STATES);
 }
 
 void RecordNetworkRequestLatency(WalletRequest::WalletNetworkRequestType type,

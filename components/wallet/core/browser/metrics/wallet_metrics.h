@@ -12,6 +12,8 @@ namespace base {
 class TimeDelta;
 }
 
+class GoogleServiceAuthError;
+
 namespace wallet::metrics {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -72,6 +74,9 @@ void LogServerExtractionEvent(PassCategory pass_category,
 
 void LogSaveEvent(PassCategory pass_category,
                   WalletablePassSaveFunnelEvents event);
+
+// Logs the OAuth errors that occur when WalletHttpClient requests a token.
+void RecordNetworkRequestOauthError(const GoogleServiceAuthError& error);
 
 // Logs latency of a `type` of network request.
 void RecordNetworkRequestLatency(WalletRequest::WalletNetworkRequestType type,
