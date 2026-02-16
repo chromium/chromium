@@ -5654,6 +5654,11 @@
     "expiry_milestone": 144
   },
   {
+    "name": "in-flow-trusted-vault-key-retrieval-android",
+    "owners": [ "izuzic@google.com", "anki-team@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "in-product-help-demo-mode-choice",
     "owners": [ "dtrainor@chromium.org", "nyquist@chromium.org" ],
     // This flag is used by teams as they develop in-product help integrations,

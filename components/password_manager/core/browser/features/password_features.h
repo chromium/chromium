@@ -109,6 +109,12 @@ BASE_DECLARE_FEATURE(kFillChangePasswordFormByTyping);
 // selection, rather than autofilling on page load, with highlighting of fields.
 BASE_DECLARE_FEATURE(kFillOnAccountSelect);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, the user can be prompted to retrieve the trusted vault key
+// during a password saving flow.
+BASE_DECLARE_FEATURE(kInFlowTrustedVaultKeyRetrievalAndroid);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_IOS)
 
 // Enables the clean up of hanging form extraction requests made by the

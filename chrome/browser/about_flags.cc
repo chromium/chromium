@@ -12944,6 +12944,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableNewAmexNetworkArtDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableNewAmexNetworkArt)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"in-flow-trusted-vault-key-retrieval-android",
+     flag_descriptions::kInFlowTrustedVaultKeyRetrievalAndroidName,
+     flag_descriptions::kInFlowTrustedVaultKeyRetrievalAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kInFlowTrustedVaultKeyRetrievalAndroid)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

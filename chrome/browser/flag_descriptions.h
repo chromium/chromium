@@ -5927,6 +5927,11 @@ inline constexpr char kEnableShouldShowPromotionName[] =
 inline constexpr char kEnableShouldShowPromotionDescription[] =
     "Enables showing the promotion banner on chromewebstore page.";
 
+inline constexpr char kInFlowTrustedVaultKeyRetrievalAndroidName[] =
+    "In-flow Trusted Vault key retrieval";
+inline constexpr char kInFlowTrustedVaultKeyRetrievalAndroidDescription[] =
+    "Starts the key retrieval flow after offering to save a password.";
+
 inline constexpr char kInfiniteTabsFreezingName[] = "Infinite Tabs Freezing";
 inline constexpr char kInfiniteTabsFreezingDescription[] =
     "Freezes eligible tabs which are not in the 5 most recently used ones, to "

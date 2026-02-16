@@ -9346,6 +9346,8 @@ from previous Chrome versions.
   <int value="-1731149013" label="AndroidMessagesIntegration:enabled"/>
   <int value="-1730315292"
       label="AndroidWindowPopupPredictFinalBounds:enabled"/>
+  <int value="-1729953886"
+      label="InFlowTrustedVaultKeyRetrievalAndroid:enabled"/>
   <int value="-1729926412" label="enable-webusb-notifications"/>
   <int value="-1729822987" label="PasswordsInCredMan:disabled"/>
   <int value="-1729808721" label="SubresourceRedirect:enabled"/>
@@ -15366,6 +15368,8 @@ from previous Chrome versions.
   <int value="327045548" label="SafeSearchUrlReporting:enabled"/>
   <int value="328355983" label="DisableSystemBlur:enabled"/>
   <int value="328722396" label="NTPCondensedLayout:disabled"/>
+  <int value="328803293"
+      label="InFlowTrustedVaultKeyRetrievalAndroid:disabled"/>
   <int value="329171361" label="DesktopPWAsDetailedInstallDialog:disabled"/>
   <int value="329891894" label="BookmarkPaneAndroid:disabled"/>
   <int value="330138076" label="enable-clear-browsing-data-counters"/>
