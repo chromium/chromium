@@ -578,7 +578,8 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
 
     // Show a toast if the browser is opened in an unexpected mode.
     if (self.startupParameters.isUnexpectedMode) {
-      [self showToastWhenOpenExternalIntentInUnexpectedMode];
+      userActivityBrowserAgent
+          ->ShowToastWhenOpenExternalIntentInUnexpectedMode();
     }
   }
   return NO;
@@ -681,7 +682,7 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
       !userActivityBrowserAgent->ProceedWithUserActivity(userActivity)) {
     // If users request opening url in a unavailable mode, don't open the url
     // but show a toast.
-    [self showToastWhenOpenExternalIntentInUnexpectedMode];
+    userActivityBrowserAgent->ShowToastWhenOpenExternalIntentInUnexpectedMode();
   } else {
     userActivityBrowserAgent->ContinueUserActivity(userActivity, sceneIsActive);
   }
@@ -1241,43 +1242,6 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           pattern, "domain", urlText, "count", numberOfTabs - 1);
   return base::SysUTF16ToNSString(formattedTitle);
-}
-
-// If users request to open tab or search and Chrome is not opened in the mode
-// they expected, show a toast to clarify that the expected mode is not
-// available.
-- (void)showToastWhenOpenExternalIntentInUnexpectedMode {
-  id<SnackbarCommands> handler = HandlerForProtocol(
-      self.mainInterface.browser->GetCommandDispatcher(), SnackbarCommands);
-  BOOL inIncognitoMode = [self isIncognitoForced];
-
-  UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUIManagementURL));
-  params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
-  ProceduralBlock moreAction = ^{
-    [self dismissModalsAndMaybeOpenSelectedTabInMode:
-              inIncognitoMode ? ApplicationModeForTabOpening::INCOGNITO
-                              : ApplicationModeForTabOpening::NORMAL
-                                   withUrlLoadParams:params
-                                      dismissOmnibox:YES
-                                          completion:nil];
-  };
-
-  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
-  action.handler = moreAction;
-  action.title = l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_MORE_BUTTON);
-  action.accessibilityHint =
-      l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_MORE_BUTTON);
-
-  NSString* text =
-      inIncognitoMode
-          ? l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_FORCED)
-          : l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED);
-
-  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
-  message.action = action;
-
-  [handler showSnackbarMessage:message
-                withHapticType:UINotificationFeedbackTypeError];
 }
 
 - (BOOL)isIncognitoDisabled {

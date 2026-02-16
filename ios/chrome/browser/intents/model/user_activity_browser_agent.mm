@@ -45,7 +45,11 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
@@ -53,8 +57,10 @@
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "net/base/apple/url_conversions.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/page_transition_types.h"
 
 using base::UserMetricsAction;
@@ -510,6 +516,46 @@ BOOL UserActivityBrowserAgent::ProceedWithUserActivity(
   }
   // Return YES if the compatible mode array is not nil.
   return array != nil;
+}
+
+void UserActivityBrowserAgent::
+    ShowToastWhenOpenExternalIntentInUnexpectedMode() {
+  id<SnackbarCommands> handler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), SnackbarCommands);
+
+  PrefService* prefs = profile_->GetPrefs();
+  BOOL force_incognito = IsIncognitoModeForced(prefs);
+
+  UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUIManagementURL));
+  params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
+
+  __weak id<TabOpening> weak_tab_opener = tab_opener_;
+  ProceduralBlock moreAction = ^{
+    [weak_tab_opener
+        dismissModalsAndMaybeOpenSelectedTabInMode:
+            force_incognito ? ApplicationModeForTabOpening::INCOGNITO
+                            : ApplicationModeForTabOpening::NORMAL
+                                 withUrlLoadParams:params
+                                    dismissOmnibox:YES
+                                        completion:nil];
+  };
+
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
+  action.handler = moreAction;
+  action.title = l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_MORE_BUTTON);
+  action.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_MORE_BUTTON);
+
+  NSString* text =
+      force_incognito
+          ? l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_FORCED)
+          : l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED);
+
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
+  message.action = action;
+
+  [handler showSnackbarMessage:message
+                withHapticType:UINotificationFeedbackTypeError];
 }
 
 #pragma mark - Internal methods.

@@ -48,6 +48,11 @@ class UserActivityBrowserAgent
   // browser will proceed the request.
   BOOL ProceedWithUserActivity(NSUserActivity* user_activity);
 
+  // If users request to open tab or search and Chrome is not opened in the mode
+  // they expected, show a toast to clarify that the expected mode is not
+  // available.
+  void ShowToastWhenOpenExternalIntentInUnexpectedMode();
+
  private:
   friend class BrowserUserData<UserActivityBrowserAgent>;
 
