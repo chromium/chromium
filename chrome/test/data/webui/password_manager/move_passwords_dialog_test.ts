@@ -5,10 +5,11 @@
 import 'chrome://password-manager/password_manager.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PasswordManagerImpl, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+import {PasswordManagerImpl, PluralStringProxyImpl, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 import type {MovePasswordsDialogElement} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -18,6 +19,7 @@ import {createPasswordEntry} from './test_util.js';
 suite('MovePasswordsDialogTest', function() {
   let passwordManager: TestPasswordManagerProxy;
   let syncProxy: TestSyncBrowserProxy;
+  let pluralStringProxy: TestPluralStringProxy;
   let dialog: MovePasswordsDialogElement;
 
   setup(function() {
@@ -28,6 +30,8 @@ suite('MovePasswordsDialogTest', function() {
     PasswordManagerImpl.setInstance(passwordManager);
     syncProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncProxy);
+    pluralStringProxy = new TestPluralStringProxy();
+    PluralStringProxyImpl.setInstance(pluralStringProxy);
     syncProxy.accountInfo = {
       email: 'test@gmail.com',
     };
@@ -55,10 +59,6 @@ suite('MovePasswordsDialogTest', function() {
     assertTrue(isChildVisible(dialog, '#passwordsSection'));
     assertTrue(isChildVisible(dialog, '#passwordsTitle'));
 
-    if (numberOfPasswords > 1) {
-      assertTrue(dialog.passwordsTitle.includes(numberOfPasswords.toString()));
-    }
-
     const passwordItems =
         dialog.shadowRoot!.querySelectorAll('password-preview-item');
     assertEquals(numberOfPasswords, passwordItems.length);
@@ -82,7 +82,11 @@ suite('MovePasswordsDialogTest', function() {
         const password = createPasswordEntry({id: 0, username: 'user1'});
         await createDialog([password], /*hasOnlyOneDeviceCredential=*/ false);
 
-        assertTrue(dialog.descriptionString.includes('1 password for'));
+        // Check that the correct version of the description and title would be
+        // displayed.
+        const pluralStringArgs =
+            await pluralStringProxy.whenCalled('getPluralString');
+        assertEquals(1, pluralStringArgs.itemCount);
         assertEquals(
             syncProxy.accountInfo.email,
             dialog.$.accountEmail.textContent.trim());
@@ -100,8 +104,11 @@ suite('MovePasswordsDialogTest', function() {
         ];
         await createDialog(passwords);
 
-        assertTrue(dialog.descriptionString.includes(
-            passwords.length.toString() + ' passwords for'));
+        // Check that the correct version of the description and title would be
+        // displayed.
+        const pluralStringArgs =
+            await pluralStringProxy.whenCalled('getPluralString');
+        assertEquals(passwords.length, pluralStringArgs.itemCount);
         assertEquals(
             syncProxy.accountInfo.email,
             dialog.$.accountEmail.textContent.trim());
