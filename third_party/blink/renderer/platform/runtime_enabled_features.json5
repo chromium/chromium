@@ -5781,11 +5781,6 @@
       status: "stable",
     },
     {
-      // Fix for https://crbug.com/354497121
-      name: "UseSpecValuesInTextFormatUpdateEventStyles",
-      status: "stable"
-    },
-    {
       name: "UseUndoStepElementDispatchBeforeInput",
       status: "stable",
     },

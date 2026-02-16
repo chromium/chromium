@@ -10,6 +10,6 @@
 dictionary TextFormatInit {
     unsigned long rangeStart;
     unsigned long rangeEnd;
-    DOMString underlineStyle;
-    DOMString underlineThickness;
+    UnderlineStyle underlineStyle;
+    UnderlineThickness underlineThickness;
 };

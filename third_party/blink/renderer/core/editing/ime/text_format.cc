@@ -7,17 +7,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_text_format_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_underline_style.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_underline_thickness.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
 TextFormat::TextFormat(wtf_size_t range_start,
                        wtf_size_t range_end,
-                       const String& underline_style,
-                       const String& underline_thickness,
-                       ExceptionState& exception_state)
+                       V8UnderlineStyle::Enum underline_style,
+                       V8UnderlineThickness::Enum underline_thickness)
     : range_start_(range_start),
       range_end_(range_end),
       underline_style_(underline_style),
@@ -25,67 +21,30 @@ TextFormat::TextFormat(wtf_size_t range_start,
 
 TextFormat* TextFormat::Create(wtf_size_t range_start,
                                wtf_size_t range_end,
-                               const String& underline_style,
-                               const String& underline_thickness,
-                               ExceptionState& exception_state) {
+                               V8UnderlineStyle::Enum underline_style,
+                               V8UnderlineThickness::Enum underline_thickness) {
   return MakeGarbageCollected<TextFormat>(range_start, range_end,
-                                          underline_style, underline_thickness,
-                                          exception_state);
+                                          underline_style, underline_thickness);
 }
 
-TextFormat::TextFormat(const TextFormatInit* dict,
-                       ExceptionState& exception_state) {
+TextFormat::TextFormat(const TextFormatInit* dict) {
   if (dict->hasRangeStart())
     range_start_ = dict->rangeStart();
 
   if (dict->hasRangeEnd())
     range_end_ = dict->rangeEnd();
 
-  const bool use_spec_values = RuntimeEnabledFeatures::
-      UseSpecValuesInTextFormatUpdateEventStylesEnabled();
-
   if (dict->hasUnderlineStyle()) {
-    String style = dict->underlineStyle();
-    if (use_spec_values && !V8UnderlineStyle::Create(style)) {
-      // Value was invalid, throw error.
-      StringBuilder error_message;
-      error_message.Append(
-          "Failed to read the 'underlineStyle' property from 'TextFormatInit': "
-          "The provided value '");
-      error_message.Append(style);
-      error_message.Append(
-          "' is not a valid enum value of type UnderlineStyle.");
-      exception_state.ThrowTypeError(error_message.ToString());
-      return;
-    }
-    underline_style_ = style;
-  } else if (use_spec_values) {
-    underline_style_ = "none";
+    underline_style_ = dict->underlineStyle().AsEnum();
   }
 
   if (dict->hasUnderlineThickness()) {
-    String thickness = dict->underlineThickness();
-    if (use_spec_values && !V8UnderlineThickness::Create(thickness)) {
-      // Value was invalid, throw error.
-      StringBuilder error_message;
-      error_message.Append(
-          "Failed to read the 'underlineThickness' property from "
-          "'TextFormatInit': The provided value '");
-      error_message.Append(thickness);
-      error_message.Append(
-          "' is not a valid enum value of type UnderlineThickness.");
-      exception_state.ThrowTypeError(error_message.ToString());
-      return;
-    }
-    underline_thickness_ = thickness;
-  } else if (use_spec_values) {
-    underline_thickness_ = "none";
+    underline_thickness_ = dict->underlineThickness().AsEnum();
   }
 }
 
-TextFormat* TextFormat::Create(const TextFormatInit* dict,
-                               ExceptionState& exception_state) {
-  return MakeGarbageCollected<TextFormat>(dict, exception_state);
+TextFormat* TextFormat::Create(const TextFormatInit* dict) {
+  return MakeGarbageCollected<TextFormat>(dict);
 }
 
 wtf_size_t TextFormat::rangeStart() const {
@@ -96,12 +55,12 @@ wtf_size_t TextFormat::rangeEnd() const {
   return range_end_;
 }
 
-String TextFormat::underlineStyle() const {
-  return underline_style_;
+V8UnderlineStyle TextFormat::underlineStyle() const {
+  return V8UnderlineStyle(underline_style_);
 }
 
-String TextFormat::underlineThickness() const {
-  return underline_thickness_;
+V8UnderlineThickness TextFormat::underlineThickness() const {
+  return V8UnderlineThickness(underline_thickness_);
 }
 
 }  // namespace blink
