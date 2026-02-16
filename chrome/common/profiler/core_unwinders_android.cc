@@ -172,7 +172,7 @@ void RequestUnwindPrerequisitesInstallation(
   if (AreUnwindPrerequisitesAvailable(channel, prerequites_delegate)) {
     return;
   }
-#if ARM32_UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
+#if UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
   ModuleUnwindPrerequisitesDelegate default_delegate;
   if (prerequites_delegate == nullptr) {
@@ -197,7 +197,7 @@ bool AreUnwindPrerequisitesAvailable(
     UnwindPrerequisitesDelegate* prerequites_delegate) {
 // While non-Android platforms do not need any specific prerequisites beyond
 // what is already bundled and available with Chrome for their platform-specific
-// unwinders to work, 32-bit Android requires a DFM to be installed.
+// unwinders to work, Android, in particular, requires a DFM to be installed.
 //
 // Therefore, unwind prerequisites for non-supported Android platforms are not
 // considered to be available by default, but prerequisites for non-Android
@@ -219,16 +219,11 @@ bool AreUnwindPrerequisitesAvailable(
     return false;
   }
 #endif  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if ARM32_UNWINDING_SUPPORTED
   ModuleUnwindPrerequisitesDelegate default_delegate;
   if (prerequites_delegate == nullptr) {
     prerequites_delegate = &default_delegate;
   }
   return prerequites_delegate->AreAvailable(channel);
-#else   // ARM32_UNWINDING_SUPPORTED
-  // 64 bit unwinding does not require the stack_unwinder module.
-  return true;
-#endif  // ARM32_UNWINDING_SUPPORTED
 #else   // UNWINDING_SUPPORTED
   return false;
 #endif  // UNWINDING_SUPPORTED
