@@ -82,8 +82,8 @@ class Replayer {
   raw_ref<RecordReplayManager> owner_;
   Recording recording_;
   base::OneShotTimer timer_;
-  // Do not access any members after running `on_finish_` because it may destroy
-  // `this`.
+  // Called after the last action. Since it may destroy `this`, we call it
+  // asynchronously.
   base::OnceClosure on_finish_;
   base::WeakPtrFactory<Replayer> weak_ptr_factory_{this};
 };

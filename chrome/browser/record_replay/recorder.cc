@@ -45,17 +45,18 @@ void Recorder::AddClick(std::string element_selector) {
   UpdateDelta(action);
 }
 
-void Recorder::AddSelectChange(std::string element_selector, std::string text) {
+void Recorder::AddSelectChange(std::string element_selector,
+                               std::string value) {
   Recording::Action& action = *recording_.mutable_actions()->Add();
   action.set_element_selector(std::move(element_selector));
-  action.mutable_select_specifics()->set_value(text);
+  action.mutable_select_specifics()->set_value(std::move(value));
   UpdateDelta(action);
 }
 
 void Recorder::AddTextChange(std::string element_selector, std::string text) {
   Recording::Action& action = *recording_.mutable_actions()->Add();
   action.set_element_selector(std::move(element_selector));
-  action.mutable_text_specifics()->set_value(text);
+  action.mutable_text_specifics()->set_value(std::move(text));
   UpdateDelta(action);
 }
 

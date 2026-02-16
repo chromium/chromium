@@ -26,7 +26,7 @@ class Recorder {
   base::Time start_time() const;
 
   void AddClick(std::string element_selector);
-  void AddSelectChange(std::string element_selector, std::string text);
+  void AddSelectChange(std::string element_selector, std::string value);
   void AddTextChange(std::string element_selector, std::string text);
   void AddAutofill(std::string element_selector,
                    Recording::Action::AutofillSpecifics::Type type,
