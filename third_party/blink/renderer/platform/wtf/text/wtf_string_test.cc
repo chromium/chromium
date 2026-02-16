@@ -325,41 +325,41 @@ TEST(StringTest, StartsWithIgnoringUnicodeCase) {
                   .DeprecatedStartsWithIgnoringCase("sk"));
 }
 
-TEST(StringTest, StartsWithIgnoringASCIICase) {
+TEST(StringTest, StartsWithIgnoringAsciiCase) {
   String all_ascii("LINK");
   String all_ascii_lower_case("link");
-  EXPECT_TRUE(all_ascii.StartsWithIgnoringASCIICase(all_ascii_lower_case));
+  EXPECT_TRUE(all_ascii.StartsWithIgnoringAsciiCase(all_ascii_lower_case));
   String all_ascii_mixed_case("lInK");
-  EXPECT_TRUE(all_ascii.StartsWithIgnoringASCIICase(all_ascii_mixed_case));
+  EXPECT_TRUE(all_ascii.StartsWithIgnoringAsciiCase(all_ascii_mixed_case));
   String all_ascii_different("foo");
-  EXPECT_FALSE(all_ascii.StartsWithIgnoringASCIICase(all_ascii_different));
+  EXPECT_FALSE(all_ascii.StartsWithIgnoringAsciiCase(all_ascii_different));
   String non_ascii = String::FromUTF8("LIN\xE2\x84\xAA");
-  EXPECT_FALSE(all_ascii.StartsWithIgnoringASCIICase(non_ascii));
+  EXPECT_FALSE(all_ascii.StartsWithIgnoringAsciiCase(non_ascii));
   EXPECT_TRUE(
-      all_ascii.StartsWithIgnoringASCIICase(non_ascii.DeprecatedLower()));
+      all_ascii.StartsWithIgnoringAsciiCase(non_ascii.DeprecatedLower()));
 
-  EXPECT_FALSE(non_ascii.StartsWithIgnoringASCIICase(all_ascii));
-  EXPECT_FALSE(non_ascii.StartsWithIgnoringASCIICase(all_ascii_lower_case));
-  EXPECT_FALSE(non_ascii.StartsWithIgnoringASCIICase(all_ascii_mixed_case));
-  EXPECT_FALSE(non_ascii.StartsWithIgnoringASCIICase(all_ascii_different));
+  EXPECT_FALSE(non_ascii.StartsWithIgnoringAsciiCase(all_ascii));
+  EXPECT_FALSE(non_ascii.StartsWithIgnoringAsciiCase(all_ascii_lower_case));
+  EXPECT_FALSE(non_ascii.StartsWithIgnoringAsciiCase(all_ascii_mixed_case));
+  EXPECT_FALSE(non_ascii.StartsWithIgnoringAsciiCase(all_ascii_different));
 }
 
-TEST(StringTest, EndsWithIgnoringASCIICase) {
+TEST(StringTest, EndsWithIgnoringAsciiCase) {
   String all_ascii("LINK");
   String all_ascii_lower_case("link");
-  EXPECT_TRUE(all_ascii.EndsWithIgnoringASCIICase(all_ascii_lower_case));
+  EXPECT_TRUE(all_ascii.EndsWithIgnoringAsciiCase(all_ascii_lower_case));
   String all_ascii_mixed_case("lInK");
-  EXPECT_TRUE(all_ascii.EndsWithIgnoringASCIICase(all_ascii_mixed_case));
+  EXPECT_TRUE(all_ascii.EndsWithIgnoringAsciiCase(all_ascii_mixed_case));
   String all_ascii_different("foo");
-  EXPECT_FALSE(all_ascii.EndsWithIgnoringASCIICase(all_ascii_different));
+  EXPECT_FALSE(all_ascii.EndsWithIgnoringAsciiCase(all_ascii_different));
   String non_ascii = String::FromUTF8("LIN\xE2\x84\xAA");
-  EXPECT_FALSE(all_ascii.EndsWithIgnoringASCIICase(non_ascii));
-  EXPECT_TRUE(all_ascii.EndsWithIgnoringASCIICase(non_ascii.DeprecatedLower()));
+  EXPECT_FALSE(all_ascii.EndsWithIgnoringAsciiCase(non_ascii));
+  EXPECT_TRUE(all_ascii.EndsWithIgnoringAsciiCase(non_ascii.DeprecatedLower()));
 
-  EXPECT_FALSE(non_ascii.EndsWithIgnoringASCIICase(all_ascii));
-  EXPECT_FALSE(non_ascii.EndsWithIgnoringASCIICase(all_ascii_lower_case));
-  EXPECT_FALSE(non_ascii.EndsWithIgnoringASCIICase(all_ascii_mixed_case));
-  EXPECT_FALSE(non_ascii.EndsWithIgnoringASCIICase(all_ascii_different));
+  EXPECT_FALSE(non_ascii.EndsWithIgnoringAsciiCase(all_ascii));
+  EXPECT_FALSE(non_ascii.EndsWithIgnoringAsciiCase(all_ascii_lower_case));
+  EXPECT_FALSE(non_ascii.EndsWithIgnoringAsciiCase(all_ascii_mixed_case));
+  EXPECT_FALSE(non_ascii.EndsWithIgnoringAsciiCase(all_ascii_different));
 }
 
 TEST(StringTest, EqualIgnoringASCIICase) {
@@ -380,21 +380,21 @@ TEST(StringTest, EqualIgnoringASCIICase) {
   EXPECT_FALSE(EqualIgnoringASCIICase(non_ascii, all_ascii_different));
 }
 
-TEST(StringTest, FindIgnoringASCIICase) {
+TEST(StringTest, FindIgnoringAsciiCase) {
   String needle = String::FromUTF8("a\xCC\x88qa\xCC\x88");
 
   // Multiple matches, non-overlapping
   String haystack1 = String::FromUTF8(
       "aA\xCC\x88QA\xCC\x88sA\xCC\x88qa\xCC\x88rfi\xC3\xA4q\xC3\xA4");
-  EXPECT_EQ(1u, haystack1.FindIgnoringASCIICase(needle));
-  EXPECT_EQ(7u, haystack1.FindIgnoringASCIICase(needle, 2));
-  EXPECT_EQ(kNotFound, haystack1.FindIgnoringASCIICase(needle, 8));
+  EXPECT_EQ(1u, haystack1.FindIgnoringAsciiCase(needle));
+  EXPECT_EQ(7u, haystack1.FindIgnoringAsciiCase(needle, 2));
+  EXPECT_EQ(kNotFound, haystack1.FindIgnoringAsciiCase(needle, 8));
 
   // Multiple matches, overlapping
   String haystack2 = String::FromUTF8("aA\xCC\x88QA\xCC\x88qa\xCC\x88rfi");
-  EXPECT_EQ(1u, haystack2.FindIgnoringASCIICase(needle));
-  EXPECT_EQ(4u, haystack2.FindIgnoringASCIICase(needle, 2));
-  EXPECT_EQ(kNotFound, haystack2.FindIgnoringASCIICase(needle, 5));
+  EXPECT_EQ(1u, haystack2.FindIgnoringAsciiCase(needle));
+  EXPECT_EQ(4u, haystack2.FindIgnoringAsciiCase(needle, 2));
+  EXPECT_EQ(kNotFound, haystack2.FindIgnoringAsciiCase(needle, 5));
 }
 
 TEST(StringTest, DeprecatedLower) {

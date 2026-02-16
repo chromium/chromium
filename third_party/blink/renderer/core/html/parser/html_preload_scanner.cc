@@ -1081,7 +1081,7 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
             token.GetAttributeItem(html_names::kSrcAttr);
         if (source_attribute) {
           String source_attribute_value(source_attribute->Value());
-          if (source_attribute_value.StartsWithIgnoringASCIICase("data:")) {
+          if (source_attribute_value.StartsWithIgnoringAsciiCase("data:")) {
             return;
           }
         }

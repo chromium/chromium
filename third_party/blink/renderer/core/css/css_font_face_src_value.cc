@@ -92,7 +92,7 @@ bool CSSFontFaceSrcValue::IsSupportedFormat() const {
   const String& resolved_url_string =
       src_value_->UrlData().ResolvedUrl().GetString();
   return ProtocolIs(resolved_url_string, "data") ||
-         !resolved_url_string.EndsWithIgnoringASCIICase(".eot");
+         !resolved_url_string.EndsWithIgnoringAsciiCase(".eot");
 }
 
 void CSSFontFaceSrcValue::AppendTechnology(FontTechnology technology) {

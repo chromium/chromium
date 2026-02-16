@@ -68,7 +68,7 @@ void InspectorEventBreakpointsAgent::DidFireWebGLWarning() {
 
 void InspectorEventBreakpointsAgent::DidFireWebGLErrorOrWarning(
     const String& message) {
-  if (message.FindIgnoringASCIICase("error") != kNotFound) {
+  if (message.FindIgnoringAsciiCase("error") != kNotFound) {
     DidFireWebGLError(String());
   } else {
     DidFireWebGLWarning();

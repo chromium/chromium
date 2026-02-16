@@ -337,7 +337,7 @@ FileList* FileInputType::CreateFileList(ExecutionContext& context,
 #endif
       if (relative_path.empty()) {
         DCHECK(
-            string_path.StartsWithIgnoringASCIICase(FilePathToString(base_dir)))
+            string_path.StartsWithIgnoringAsciiCase(FilePathToString(base_dir)))
             << "A path in a FileChooserFileInfo " << string_path
             << " should start with " << FilePathToString(base_dir);
         relative_path = string_path.Substring(root_length).Replace('\\', '/');

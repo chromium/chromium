@@ -127,7 +127,7 @@ inline bool ShouldUpdateHeaderAfterRevalidation(const AtomicString& header) {
   }
   for (const auto* header_prefix_to_ignore :
        kHeaderPrefixesToIgnoreAfterRevalidation) {
-    if (header.StartsWithIgnoringASCIICase(header_prefix_to_ignore)) {
+    if (header.StartsWithIgnoringAsciiCase(header_prefix_to_ignore)) {
       return false;
     }
   }

@@ -72,8 +72,9 @@ void SVGTests::SynchronizeAllSVGAttributes() const {
 
 static bool IsLangTagPrefix(const String& lang_tag,
                             const StringView& language) {
-  if (!lang_tag.StartsWithIgnoringASCIICase(language))
+  if (!lang_tag.StartsWithIgnoringAsciiCase(language)) {
     return false;
+  }
   return lang_tag.length() == language.length() ||
          lang_tag[language.length()] == '-';
 }

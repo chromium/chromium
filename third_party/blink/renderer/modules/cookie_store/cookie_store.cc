@@ -117,9 +117,9 @@ network::mojom::blink::RestrictedCanonicalCookieParamsPtr ToCookieParams(
   // Trying to set `__http-` prefixed cookie will be rejected further down by
   // CreateSanitizedCookie regardless of the condition below. Its role is to
   // provide a more meaningful exception message than "Cookie was malformed..".
-  const bool is_http_prefix = name.StartsWithIgnoringASCIICase("__http-");
+  const bool is_http_prefix = name.StartsWithIgnoringAsciiCase("__http-");
   const bool is_host_http_prefix =
-      name.StartsWithIgnoringASCIICase("__host-http-");
+      name.StartsWithIgnoringAsciiCase("__host-http-");
   if (is_http_prefix || is_host_http_prefix) {
     StringBuilder builder;
     UNSAFE_TODO(builder.AppendFormat(
@@ -129,7 +129,7 @@ network::mojom::blink::RestrictedCanonicalCookieParamsPtr ToCookieParams(
     return nullptr;
   }
   const bool is_host_prefixed_cookie =
-      name.StartsWithIgnoringASCIICase("__host-");
+      name.StartsWithIgnoringAsciiCase("__host-");
   if (!options->domain().IsNull()) {
     if (is_host_prefixed_cookie) {
       exception_state.ThrowTypeError(

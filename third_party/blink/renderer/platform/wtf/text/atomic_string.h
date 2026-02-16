@@ -133,9 +133,9 @@ class WTF_EXPORT AtomicString {
   }
 
   // ASCII case insensitive string matching.
-  wtf_size_t FindIgnoringASCIICase(const StringView& value,
+  wtf_size_t FindIgnoringAsciiCase(const StringView& value,
                                    wtf_size_t start = 0) const {
-    return string_.FindIgnoringASCIICase(value, start);
+    return string_.FindIgnoringAsciiCase(value, start);
   }
 
   bool Contains(char c) const { return find(c) != kNotFound; }
@@ -159,8 +159,8 @@ class WTF_EXPORT AtomicString {
       TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
     return string_.StartsWith(prefix, case_sensitivity);
   }
-  bool StartsWithIgnoringASCIICase(const StringView& prefix) const {
-    return string_.StartsWithIgnoringASCIICase(prefix);
+  bool StartsWithIgnoringAsciiCase(const StringView& prefix) const {
+    return string_.StartsWithIgnoringAsciiCase(prefix);
   }
   bool StartsWith(UChar character) const {
     return string_.StartsWith(character);

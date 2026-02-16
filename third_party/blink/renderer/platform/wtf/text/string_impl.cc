@@ -871,7 +871,7 @@ wtf_size_t StringImpl::DeprecatedFindIgnoringCase(
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
-ALWAYS_INLINE static wtf_size_t FindIgnoringASCIICaseInternal(
+ALWAYS_INLINE static wtf_size_t FindIgnoringAsciiCaseInternal(
     base::span<const SearchCharacterType> search,
     base::span<const MatchCharacterType> match,
     wtf_size_t index) {
@@ -894,7 +894,7 @@ ALWAYS_INLINE static wtf_size_t FindIgnoringASCIICaseInternal(
   return index + i;
 }
 
-wtf_size_t StringImpl::FindIgnoringASCIICase(const StringView& match_string,
+wtf_size_t StringImpl::FindIgnoringAsciiCase(const StringView& match_string,
                                              wtf_size_t index) const {
   if (match_string.IsNull()) [[unlikely]] {
     return kNotFound;
@@ -913,9 +913,9 @@ wtf_size_t StringImpl::FindIgnoringASCIICase(const StringView& match_string,
 
   return VisitCharacters(*this, [&](auto chars) {
     auto sub_span = chars.subspan(index);
-    return match_string.Is8Bit() ? FindIgnoringASCIICaseInternal(
+    return match_string.Is8Bit() ? FindIgnoringAsciiCaseInternal(
                                        sub_span, match_string.Span8(), index)
-                                 : FindIgnoringASCIICaseInternal(
+                                 : FindIgnoringAsciiCaseInternal(
                                        sub_span, match_string.Span16(), index);
   });
 }
@@ -1044,7 +1044,7 @@ std::u16string StringImpl::ToU16String() const {
   return blink::ToU16String(StringView(*this));
 }
 
-bool StringImpl::StartsWithIgnoringASCIICase(const StringView& prefix) const {
+bool StringImpl::StartsWithIgnoringAsciiCase(const StringView& prefix) const {
   if (prefix.length() > length())
     return false;
   return VisitCharacters(*this, [&prefix](auto chars) {
@@ -1082,7 +1082,7 @@ bool StringImpl::DeprecatedEndsWithIgnoringCase(
   });
 }
 
-bool StringImpl::EndsWithIgnoringASCIICase(const StringView& suffix) const {
+bool StringImpl::EndsWithIgnoringAsciiCase(const StringView& suffix) const {
   if (suffix.length() > length())
     return false;
   wtf_size_t start_offset = length() - suffix.length();

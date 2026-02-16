@@ -26,7 +26,7 @@ inline bool LocaleIdMatchesLang(const AtomicString& locale_id,
   const wtf_size_t lang_length = lang.length();
   CHECK(lang_length == 2u || lang_length == 3u);
   const StringImpl* locale_id_impl = locale_id.Impl();
-  if (!locale_id_impl || !locale_id_impl->StartsWithIgnoringASCIICase(lang)) {
+  if (!locale_id_impl || !locale_id_impl->StartsWithIgnoringAsciiCase(lang)) {
     return false;
   }
   if (locale_id_impl->length() == lang_length) {

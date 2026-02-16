@@ -243,10 +243,10 @@ bool ContentSecurityPolicy::IsNonceableElement(const Element* element) {
     for (const Attribute& attr : element->Attributes()) {
       const AtomicString& name = attr.LocalName();
       const AtomicString& value = attr.Value();
-      if (name.FindIgnoringASCIICase(kScriptString) != kNotFound ||
-          name.FindIgnoringASCIICase(kStyleString) != kNotFound ||
-          value.FindIgnoringASCIICase(kScriptString) != kNotFound ||
-          value.FindIgnoringASCIICase(kStyleString) != kNotFound) {
+      if (name.FindIgnoringAsciiCase(kScriptString) != kNotFound ||
+          name.FindIgnoringAsciiCase(kStyleString) != kNotFound ||
+          value.FindIgnoringAsciiCase(kScriptString) != kNotFound ||
+          value.FindIgnoringAsciiCase(kStyleString) != kNotFound) {
         nonceable = false;
         break;
       }

@@ -647,7 +647,7 @@ Value FunLang::Evaluate(EvaluationContext& context) const {
     return false;
 
   String lang_value = language_attribute->Value();
-  return lang_value.StartsWithIgnoringASCIICase(lang) &&
+  return lang_value.StartsWithIgnoringAsciiCase(lang) &&
          (lang.length() == lang_value.length() ||
           lang_value[lang.length()] == '-');
 }

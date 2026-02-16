@@ -714,122 +714,122 @@ void HTMLConstructionSite::SetCompatibilityModeFromDoctype(
 
   // Check for Quirks Mode.
   if (tag != html_names::HTMLTag::kHTML ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "+//Silmaril//dtd html Pro v0r11 19970101//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//AdvaSoft Ltd//DTD HTML 3.0 asWedit + extensions//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//AS//DTD HTML 3.0 asWedit + extensions//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//IETF//DTD HTML 2.0 Level 1//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//IETF//DTD HTML 2.0 Level 2//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//IETF//DTD HTML 2.0 Strict Level 1//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//IETF//DTD HTML 2.0 Strict Level 2//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML 2.0 Strict//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML 2.0//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML 2.1E//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML 3.0//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML 3.2 Final//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML 3.2//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML 3//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML Level 0//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML Level 1//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML Level 2//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML Level 3//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML 2.0 Strict//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML 2.0//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML 2.1E//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML 3.0//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML 3.2 Final//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML 3.2//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML 3//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML Level 0//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML Level 1//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML Level 2//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML Level 3//") ||
+      public_id.StartsWithIgnoringAsciiCase(
           "-//IETF//DTD HTML Strict Level 0//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//IETF//DTD HTML Strict Level 1//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//IETF//DTD HTML Strict Level 2//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//IETF//DTD HTML Strict Level 3//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML Strict//") ||
-      public_id.StartsWithIgnoringASCIICase("-//IETF//DTD HTML//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML Strict//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//IETF//DTD HTML//") ||
+      public_id.StartsWithIgnoringAsciiCase(
           "-//Metrius//DTD Metrius Presentational//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//Microsoft//DTD Internet Explorer 2.0 HTML Strict//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//Microsoft//DTD Internet Explorer 2.0 HTML//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//Microsoft//DTD Internet Explorer 2.0 Tables//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//Microsoft//DTD Internet Explorer 3.0 HTML Strict//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//Microsoft//DTD Internet Explorer 3.0 HTML//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//Microsoft//DTD Internet Explorer 3.0 Tables//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//Netscape Comm. Corp.//DTD HTML//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//Netscape Comm. Corp.//DTD Strict HTML//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//O'Reilly and Associates//DTD HTML 2.0//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//O'Reilly and Associates//DTD HTML Extended 1.0//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//O'Reilly and Associates//DTD HTML Extended Relaxed 1.0//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//SoftQuad Software//DTD HoTMetaL PRO "
           "6.0::19990601::extensions to HTML 4.0//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//SoftQuad//DTD HoTMetaL PRO "
           "4.0::19971010::extensions to HTML 4.0//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//Spyglass//DTD HTML 2.0 Extended//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//SQ//DTD HTML 2.0 HoTMetaL + extensions//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//Sun Microsystems Corp.//DTD HotJava HTML//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//Sun Microsystems Corp.//DTD HotJava Strict HTML//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//W3C//DTD HTML 3 1995-03-24//") ||
-      public_id.StartsWithIgnoringASCIICase("-//W3C//DTD HTML 3.2 Draft//") ||
-      public_id.StartsWithIgnoringASCIICase("-//W3C//DTD HTML 3.2 Final//") ||
-      public_id.StartsWithIgnoringASCIICase("-//W3C//DTD HTML 3.2//") ||
-      public_id.StartsWithIgnoringASCIICase("-//W3C//DTD HTML 3.2S Draft//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase("-//W3C//DTD HTML 3.2 Draft//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//W3C//DTD HTML 3.2 Final//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//W3C//DTD HTML 3.2//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//W3C//DTD HTML 3.2S Draft//") ||
+      public_id.StartsWithIgnoringAsciiCase(
           "-//W3C//DTD HTML 4.0 Frameset//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//W3C//DTD HTML 4.0 Transitional//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//W3C//DTD HTML Experimental 19960712//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//W3C//DTD HTML Experimental 970421//") ||
-      public_id.StartsWithIgnoringASCIICase("-//W3C//DTD W3 HTML//") ||
-      public_id.StartsWithIgnoringASCIICase("-//W3O//DTD W3 HTML 3.0//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//W3C//DTD W3 HTML//") ||
+      public_id.StartsWithIgnoringAsciiCase("-//W3O//DTD W3 HTML 3.0//") ||
       EqualIgnoringASCIICase(public_id,
                              "-//W3O//DTD W3 HTML Strict 3.0//EN//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//WebTechs//DTD Mozilla HTML 2.0//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//WebTechs//DTD Mozilla HTML//") ||
       EqualIgnoringASCIICase(public_id, "-/W3C/DTD HTML 4.0 Transitional/EN") ||
       EqualIgnoringASCIICase(public_id, "HTML") ||
       EqualIgnoringASCIICase(
           system_id,
           "http://www.ibm.com/data/dtd/v11/ibmxhtml1-transitional.dtd") ||
-      (system_id.empty() && public_id.StartsWithIgnoringASCIICase(
+      (system_id.empty() && public_id.StartsWithIgnoringAsciiCase(
                                 "-//W3C//DTD HTML 4.01 Frameset//")) ||
-      (system_id.empty() && public_id.StartsWithIgnoringASCIICase(
+      (system_id.empty() && public_id.StartsWithIgnoringAsciiCase(
                                 "-//W3C//DTD HTML 4.01 Transitional//"))) {
     SetCompatibilityMode(Document::kQuirksMode);
     return;
   }
 
   // Check for Limited Quirks Mode.
-  if (public_id.StartsWithIgnoringASCIICase(
+  if (public_id.StartsWithIgnoringAsciiCase(
           "-//W3C//DTD XHTML 1.0 Frameset//") ||
-      public_id.StartsWithIgnoringASCIICase(
+      public_id.StartsWithIgnoringAsciiCase(
           "-//W3C//DTD XHTML 1.0 Transitional//") ||
-      (!system_id.empty() && public_id.StartsWithIgnoringASCIICase(
+      (!system_id.empty() && public_id.StartsWithIgnoringAsciiCase(
                                  "-//W3C//DTD HTML 4.01 Frameset//")) ||
-      (!system_id.empty() && public_id.StartsWithIgnoringASCIICase(
+      (!system_id.empty() && public_id.StartsWithIgnoringAsciiCase(
                                  "-//W3C//DTD HTML 4.01 Transitional//"))) {
     SetCompatibilityMode(Document::kLimitedQuirksMode);
     return;

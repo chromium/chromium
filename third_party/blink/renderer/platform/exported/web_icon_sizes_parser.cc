@@ -67,7 +67,7 @@ std::vector<gfx::Size> WebIconSizesParser::ParseIconSizes(
       break;
 
     // See if the current size is "any".
-    if (sizes_string.Substring(i, 3).StartsWithIgnoringASCIICase("any") &&
+    if (sizes_string.Substring(i, 3).StartsWithIgnoringAsciiCase("any") &&
         (i + 3 == length || IsWhitespace(sizes_string[i + 3]))) {
       icon_sizes.push_back(gfx::Size());
       i = i + 3;

@@ -916,7 +916,7 @@ static SourceSizeValueResult SourceSizeValue(const Element* element,
   String sizes = element->FastGetAttribute(html_names::kSizesAttr);
   if (sizes.IsNull() && img != element && img && img->AllowAutoSizes() &&
       img->FastGetAttribute(html_names::kSizesAttr)
-          .StartsWithIgnoringASCIICase("auto")) {
+          .StartsWithIgnoringAsciiCase("auto")) {
     // Spec:
     // https://html.spec.whatwg.org/#the-source-element
     // If the img element allows auto-sizes, then the sizes attribute can be

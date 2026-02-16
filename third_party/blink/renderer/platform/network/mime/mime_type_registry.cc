@@ -163,9 +163,9 @@ bool MIMETypeRegistry::IsJavaAppletMIMEType(const String& mime_type) {
   // with the overhead of using a hash set.  Any of the MIME types below may be
   // followed by any number of specific versions of the JVM, which is why we use
   // startsWith()
-  return mime_type.StartsWithIgnoringASCIICase("application/x-java-applet") ||
-         mime_type.StartsWithIgnoringASCIICase("application/x-java-bean") ||
-         mime_type.StartsWithIgnoringASCIICase("application/x-java-vm");
+  return mime_type.StartsWithIgnoringAsciiCase("application/x-java-applet") ||
+         mime_type.StartsWithIgnoringAsciiCase("application/x-java-bean") ||
+         mime_type.StartsWithIgnoringAsciiCase("application/x-java-vm");
 }
 
 bool MIMETypeRegistry::IsSupportedStyleSheetMIMEType(const String& mime_type) {
@@ -174,8 +174,9 @@ bool MIMETypeRegistry::IsSupportedStyleSheetMIMEType(const String& mime_type) {
 
 bool MIMETypeRegistry::IsSupportedFontMIMEType(const String& mime_type) {
   static const unsigned kFontLen = 5;
-  if (!mime_type.StartsWithIgnoringASCIICase("font/"))
+  if (!mime_type.StartsWithIgnoringAsciiCase("font/")) {
     return false;
+  }
   String sub_type = mime_type.Substring(kFontLen).LowerASCII();
   return sub_type == "woff" || sub_type == "woff2" || sub_type == "otf" ||
          sub_type == "ttf" || sub_type == "sfnt";
@@ -199,8 +200,9 @@ bool MIMETypeRegistry::IsXMLMIMEType(const String& mime_type) {
     return false;
 
   if (mime_type[0] == '/' || mime_type[length - 5] == '/' ||
-      !mime_type.EndsWithIgnoringASCIICase("+xml"))
+      !mime_type.EndsWithIgnoringAsciiCase("+xml")) {
     return false;
+  }
 
   bool has_slash = false;
   for (int i = 0; i < length - 4; ++i) {
@@ -250,7 +252,7 @@ bool MIMETypeRegistry::IsXMLExternalEntityMIMEType(const String& mime_type) {
 }
 
 bool MIMETypeRegistry::IsPlainTextMIMEType(const String& mime_type) {
-  return mime_type.StartsWithIgnoringASCIICase("text/") &&
+  return mime_type.StartsWithIgnoringAsciiCase("text/") &&
          !(EqualIgnoringASCIICase(mime_type, "text/html") ||
            EqualIgnoringASCIICase(mime_type, "text/xml") ||
            EqualIgnoringASCIICase(mime_type, "text/xsl"));

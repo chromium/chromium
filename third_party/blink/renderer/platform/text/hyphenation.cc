@@ -12,7 +12,7 @@ namespace blink {
 void Hyphenation::Initialize(const AtomicString& locale) {
   // TODO(crbug.com/1318385): How to control hyphenating capitalized words is
   // still under discussion. https://github.com/w3c/csswg-drafts/issues/5157
-  hyphenate_capitalized_word_ = !locale.StartsWithIgnoringASCIICase("en");
+  hyphenate_capitalized_word_ = !locale.StartsWithIgnoringAsciiCase("en");
 }
 
 void Hyphenation::SetLimits(wtf_size_t min_prefix_length,

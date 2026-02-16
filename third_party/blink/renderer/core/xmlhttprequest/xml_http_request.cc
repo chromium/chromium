@@ -129,7 +129,7 @@ void FindCharsetInMediaType(const String& media_type,
   unsigned length = media_type.length();
 
   while (pos < length) {
-    pos = media_type.FindIgnoringASCIICase("charset", pos);
+    pos = media_type.FindIgnoringAsciiCase("charset", pos);
 
     if (pos == kNotFound)
       return;

@@ -55,7 +55,7 @@ namespace {
 bool IsExcludedHeaderForServiceWorkerFetchEvent(const String& header_name) {
   // Excluding Sec-Fetch-... headers as suggested in
   // https://crbug.com/949997#c4.
-  if (header_name.StartsWithIgnoringASCIICase("sec-fetch-")) {
+  if (header_name.StartsWithIgnoringAsciiCase("sec-fetch-")) {
     return true;
   }
 

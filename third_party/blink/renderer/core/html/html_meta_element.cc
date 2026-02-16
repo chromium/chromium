@@ -638,17 +638,17 @@ enum class ContentClassificationOpenGraph {
 ContentClassificationOpenGraph GetContentClassification(
     const AtomicString& open_graph_type) {
   const AtomicString lowercase_type(open_graph_type.LowerASCII());
-  if (lowercase_type.StartsWithIgnoringASCIICase("website")) {
+  if (lowercase_type.StartsWithIgnoringAsciiCase("website")) {
     return ContentClassificationOpenGraph::kWebsite;
-  } else if (lowercase_type.StartsWithIgnoringASCIICase("music")) {
+  } else if (lowercase_type.StartsWithIgnoringAsciiCase("music")) {
     return ContentClassificationOpenGraph::kMusic;
-  } else if (lowercase_type.StartsWithIgnoringASCIICase("video")) {
+  } else if (lowercase_type.StartsWithIgnoringAsciiCase("video")) {
     return ContentClassificationOpenGraph::kVideo;
-  } else if (lowercase_type.StartsWithIgnoringASCIICase("article")) {
+  } else if (lowercase_type.StartsWithIgnoringAsciiCase("article")) {
     return ContentClassificationOpenGraph::kArticle;
-  } else if (lowercase_type.StartsWithIgnoringASCIICase("book")) {
+  } else if (lowercase_type.StartsWithIgnoringAsciiCase("book")) {
     return ContentClassificationOpenGraph::kBook;
-  } else if (lowercase_type.StartsWithIgnoringASCIICase("profile")) {
+  } else if (lowercase_type.StartsWithIgnoringAsciiCase("profile")) {
     return ContentClassificationOpenGraph::kProfile;
   }
   return ContentClassificationOpenGraph::kUnknown;

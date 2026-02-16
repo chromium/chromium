@@ -613,9 +613,10 @@ static bool IsLibxmlDefaultCatalogFile(const String& url_string) {
 
   // On Windows, libxml with catalogs enabled computes a URL relative
   // to where its DLL resides.
-  if (url_string.StartsWithIgnoringASCIICase("file:///") &&
-      url_string.EndsWithIgnoringASCIICase("/etc/catalog"))
+  if (url_string.StartsWithIgnoringAsciiCase("file:///") &&
+      url_string.EndsWithIgnoringAsciiCase("/etc/catalog")) {
     return true;
+  }
   return false;
 }
 
@@ -628,12 +629,15 @@ static bool ShouldAllowExternalLoad(const KURL& url) {
 
   // The most common DTD. There isn't much point in hammering www.w3c.org by
   // requesting this URL for every XHTML document.
-  if (url_string.StartsWithIgnoringASCIICase("http://www.w3.org/TR/xhtml"))
+  if (url_string.StartsWithIgnoringAsciiCase("http://www.w3.org/TR/xhtml")) {
     return false;
+  }
 
   // Similarly, there isn't much point in requesting the SVG DTD.
-  if (url_string.StartsWithIgnoringASCIICase("http://www.w3.org/Graphics/SVG"))
+  if (url_string.StartsWithIgnoringAsciiCase(
+          "http://www.w3.org/Graphics/SVG")) {
     return false;
+  }
 
   // The libxml doesn't give us a lot of context for deciding whether to allow
   // this request. In the worst case, this load could be for an external

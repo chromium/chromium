@@ -98,19 +98,19 @@ static bool AllowMimeTypeAsScript(
   // Check for certain non-executable MIME types.
   // See:
   // https://fetch.spec.whatwg.org/#should-response-to-request-be-blocked-due-to-mime-type?
-  if (mime_type.StartsWithIgnoringASCIICase("image/")) {
+  if (mime_type.StartsWithIgnoringAsciiCase("image/")) {
     counter = WebFeature::kBlockedSniffingImageToScript;
     return false;
   }
-  if (mime_type.StartsWithIgnoringASCIICase("audio/")) {
+  if (mime_type.StartsWithIgnoringAsciiCase("audio/")) {
     counter = WebFeature::kBlockedSniffingAudioToScript;
     return false;
   }
-  if (mime_type.StartsWithIgnoringASCIICase("video/")) {
+  if (mime_type.StartsWithIgnoringAsciiCase("video/")) {
     counter = WebFeature::kBlockedSniffingVideoToScript;
     return false;
   }
-  if (mime_type.StartsWithIgnoringASCIICase("text/csv")) {
+  if (mime_type.StartsWithIgnoringAsciiCase("text/csv")) {
     counter = WebFeature::kBlockedSniffingCSVToScript;
     return false;
   }
@@ -132,15 +132,15 @@ static bool AllowMimeTypeAsScript(
     return true;
   }
 
-  if (mime_type.StartsWithIgnoringASCIICase("application/octet-stream")) {
+  if (mime_type.StartsWithIgnoringAsciiCase("application/octet-stream")) {
     counter = kApplicationOctetStreamFeatures[same_origin];
-  } else if (mime_type.StartsWithIgnoringASCIICase("application/xml")) {
+  } else if (mime_type.StartsWithIgnoringAsciiCase("application/xml")) {
     counter = kApplicationXmlFeatures[same_origin];
-  } else if (mime_type.StartsWithIgnoringASCIICase("text/html")) {
+  } else if (mime_type.StartsWithIgnoringAsciiCase("text/html")) {
     counter = kTextHtmlFeatures[same_origin];
-  } else if (mime_type.StartsWithIgnoringASCIICase("text/plain")) {
+  } else if (mime_type.StartsWithIgnoringAsciiCase("text/plain")) {
     counter = kTextPlainFeatures[same_origin];
-  } else if (mime_type.StartsWithIgnoringASCIICase("text/xml")) {
+  } else if (mime_type.StartsWithIgnoringAsciiCase("text/xml")) {
     counter = kTextXmlFeatures[same_origin];
   } else if (mime_type.DeprecatedStartsWithIgnoringCase("text/json") ||
              mime_type.DeprecatedStartsWithIgnoringCase("application/json")) {
@@ -206,9 +206,9 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
 
   // These record usages for two MIME types (without subtypes), per same/cross
   // origin.
-  if (mime_type.StartsWithIgnoringASCIICase("application/")) {
+  if (mime_type.StartsWithIgnoringAsciiCase("application/")) {
     use_counter.CountUse(kApplicationFeatures[same_origin]);
-  } else if (mime_type.StartsWithIgnoringASCIICase("text/")) {
+  } else if (mime_type.StartsWithIgnoringAsciiCase("text/")) {
     use_counter.CountUse(kTextFeatures[same_origin]);
   }
 

@@ -497,9 +497,9 @@ bool TrustedTypePolicyFactory::IsEventHandlerAttributeName(
     const AtomicString& attributeName) {
   // Check that the "on" prefix indeed filters out only non-event handlers.
   DCHECK(!FindEventHandlerAttributeInTable(attributeName) ||
-         attributeName.StartsWithIgnoringASCIICase("on"));
+         attributeName.StartsWithIgnoringAsciiCase("on"));
 
-  return attributeName.StartsWithIgnoringASCIICase("on") &&
+  return attributeName.StartsWithIgnoringAsciiCase("on") &&
          FindEventHandlerAttributeInTable(attributeName);
 }
 
