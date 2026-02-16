@@ -37,7 +37,6 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/chromeos/reporting",
   "+chrome/browser/extensions/browsertest_util.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/policy",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",

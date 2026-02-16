@@ -23,6 +23,7 @@ class FakeSessionManagerDelegate : public SessionManagerDelegate {
 
   // session_manager::SessionManagerDelegate override:
   void RequestSignOut() override;
+  void RequestRestart() override;
 
   // Returns the number of RequestSignOut() calls.
   int request_sign_out_count() const;

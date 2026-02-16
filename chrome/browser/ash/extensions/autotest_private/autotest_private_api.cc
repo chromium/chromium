@@ -131,7 +131,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -1304,7 +1303,7 @@ AutotestPrivateLogoutFunction::~AutotestPrivateLogoutFunction() = default;
 ExtensionFunction::ResponseAction AutotestPrivateLogoutFunction::Run() {
   DVLOG(1) << "AutotestPrivateLogoutFunction";
   if (!IsTestMode(browser_context())) {
-    chrome::AttemptUserExit();
+    session_manager::SessionManager::Get()->RequestSignOut();
   }
   return RespondNow(NoArguments());
 }
@@ -1318,7 +1317,7 @@ AutotestPrivateRestartFunction::~AutotestPrivateRestartFunction() = default;
 ExtensionFunction::ResponseAction AutotestPrivateRestartFunction::Run() {
   DVLOG(1) << "AutotestPrivateRestartFunction";
   if (!IsTestMode(browser_context())) {
-    chrome::AttemptRestart();
+    session_manager::SessionManager::Get()->RequestRestart();
   }
   return RespondNow(NoArguments());
 }
@@ -1336,7 +1335,7 @@ ExtensionFunction::ResponseAction AutotestPrivateShutdownFunction::Run() {
   DVLOG(1) << "AutotestPrivateShutdownFunction " << params->force;
 
   if (!IsTestMode(browser_context())) {
-    chrome::AttemptExit();
+    session_manager::SessionManager::Get()->RequestSignOut();
   }
   return RespondNow(NoArguments());
 }

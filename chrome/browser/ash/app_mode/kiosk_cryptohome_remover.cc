@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/app_mode/pref_names.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -23,6 +22,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
@@ -61,7 +61,9 @@ void KioskCryptohomeRemover::RemoveCryptohomesAndExitIfNeeded(
   }
   if (std::ranges::contains(account_ids, active_account_id)) {
     cryptohomes_barrier_closure = BarrierClosure(
-        account_ids.size() - 1, base::BindOnce(&chrome::AttemptUserExit));
+        account_ids.size() - 1, base::BindOnce([]() {
+          session_manager::SessionManager::Get()->RequestSignOut();
+        }));
   }
 
   // First schedule cryptohome removal in case there is a power failure during

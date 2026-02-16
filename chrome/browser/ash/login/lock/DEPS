@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/ash/assistant",

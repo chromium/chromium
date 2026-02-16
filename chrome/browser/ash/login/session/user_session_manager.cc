@@ -112,7 +112,6 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/global_features.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/metrics/first_web_contents_profiler.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -428,12 +427,6 @@ void LogCustomFeatureFlags(const std::set<std::string>& feature_flags) {
   ::about_flags::RecordUMAStatistics(&flags_storage, "Login.CustomFlags");
 }
 
-// Calls the real AttemptRestart method. This is used to avoid taking a function
-// pointer to chrome::AttemptRestart directly.
-void CallChromeAttemptRestart() {
-  chrome::AttemptRestart();
-}
-
 bool IsRunningTest() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
              ::switches::kTestName) ||
@@ -631,7 +624,8 @@ UserSessionManager::UserSessionManager()
       should_obtain_handles_(true),
       should_launch_browser_(true),
       waiting_for_child_account_status_(false),
-      attempt_restart_closure_(base::BindRepeating(&CallChromeAttemptRestart)) {
+      attempt_restart_closure_(base::BindRepeating(
+          []() { session_manager::SessionManager::Get()->RequestRestart(); })) {
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
   content::GetNetworkConnectionTrackerFromUIThread(
       base::BindOnce(&UserSessionManager::SetNetworkConnectionTracker,
@@ -1147,7 +1141,7 @@ void UserSessionManager::OnSessionRestoreStateChanged(
       state == OAuth2LoginManager::SESSION_RESTORE_FAILED) {
     SYSLOG(ERROR)
         << "Session restore failed for online sign-in, terminating session.";
-    chrome::AttemptUserExit();
+    session_manager::SessionManager::Get()->RequestSignOut();
     return;
   }
 

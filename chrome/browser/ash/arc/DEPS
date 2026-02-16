@@ -27,7 +27,6 @@ include_rules = [
   "+chrome/browser/chromeos/policy/dlp",
   "+chrome/browser/consent_auditor",
   "+chrome/browser/extensions/api/settings_private",
-  "+chrome/browser/lifetime",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/memory",
   "+chrome/browser/metrics",

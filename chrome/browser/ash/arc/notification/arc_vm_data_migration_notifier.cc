@@ -12,13 +12,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
 #include "chromeos/ash/experiences/arc/vm_data_migration/arc_vm_data_migration_confirmation_dialog.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -189,7 +189,7 @@ void ArcVmDataMigrationNotifier::OnRestartAccepted(bool accepted) {
         ArcVmDataMigrationStatus::kStarted) {
       SetArcVmDataMigrationStatus(prefs, ArcVmDataMigrationStatus::kConfirmed);
     }
-    chrome::AttemptRestart();
+    session_manager::SessionManager::Get()->RequestRestart();
   }
 }
 

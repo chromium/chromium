@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -74,7 +73,7 @@ constexpr base::TimeDelta kPolicyRefreshTimeout = base::Seconds(10);
 void OnUserPolicyFatalError(const AccountId& account_id) {
   user_manager::UserManager::Get()->SaveForceOnlineSignin(
       account_id, true /* force_online_signin */);
-  chrome::AttemptUserExit();
+  session_manager::SessionManager::Get()->RequestSignOut();
 }
 
 }  // namespace
@@ -156,7 +155,7 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
   if (policy_check_required && force_immediate_load) {
     LOG(ERROR) << "Exiting non-stub session because browser restarted before"
                << " profile was initialized.";
-    chrome::AttemptUserExit();
+    session_manager::SessionManager::Get()->RequestSignOut();
     return nullptr;
   }
 

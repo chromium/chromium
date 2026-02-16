@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -82,7 +81,7 @@ void MinimumVersionPolicyHandlerDelegateImpl::ShowUpdateRequiredScreen() {
 }
 
 void MinimumVersionPolicyHandlerDelegateImpl::RestartToLoginScreen() {
-  chrome::AttemptUserExit();
+  session_manager::SessionManager::Get()->RequestSignOut();
 }
 
 void MinimumVersionPolicyHandlerDelegateImpl::

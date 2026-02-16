@@ -152,7 +152,6 @@
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/global_features.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -2363,7 +2362,7 @@ void WizardController::OnEnrollmentDone() {
     LOG(WARNING) << "Restart Chrome to pick up the policy changes";
     EnrollmentScreen* screen = EnrollmentScreen::Get(screen_manager());
     screen->OnBrowserRestart();
-    chrome::AttemptRestart();
+    session_manager::SessionManager::Get()->RequestRestart();
     return;
   }
 
@@ -2679,7 +2678,7 @@ void WizardController::OnFactorSetupSuccessScreenExit(
       if (ash::features::IsRecoveryFlowReorderEnabled() &&
           wizard_context_->knowledge_factor_setup.auth_setup_flow ==
               WizardContext::AuthChangeFlow::kRecovery) {
-        chrome::AttemptUserExit();
+        session_manager::SessionManager::Get()->RequestSignOut();
         return;
       }
 

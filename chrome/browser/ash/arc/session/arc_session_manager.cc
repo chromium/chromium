@@ -45,7 +45,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -526,7 +525,8 @@ ArcSessionManager::ArcSessionManager(
       android_management_checker_factory_(
           ArcRequirementChecker::GetDefaultAndroidManagementCheckerFactory()),
       arc_dlc_installer_(arc_dlc_installer),
-      attempt_restart_callback_(base::BindRepeating(chrome::AttemptRestart)) {
+      attempt_restart_callback_(base::BindRepeating(
+          []() { session_manager::SessionManager::Get()->RequestRestart(); })) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!g_arc_session_manager);
   g_arc_session_manager = this;

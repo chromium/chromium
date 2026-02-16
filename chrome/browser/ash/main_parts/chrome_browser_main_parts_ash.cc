@@ -1135,7 +1135,9 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       // to finish before exiting to avoid dead-lock issues on D-Bus, as
       // encountered on crbug/836388.
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&chrome::AttemptUserExit));
+          FROM_HERE, base::BindOnce([]() {
+            session_manager::SessionManager::Get()->RequestSignOut();
+          }));
       return;
     }
 

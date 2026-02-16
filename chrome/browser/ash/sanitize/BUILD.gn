@@ -20,6 +20,7 @@ static_library("sanitize") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings",
+    "//components/session_manager/core",
   ]
 }
 

@@ -51,7 +51,6 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
@@ -694,7 +693,9 @@ class OobeInteractiveUITest : public OobeBaseTest,
     // If the login display is still showing, exit gracefully.
     if (LoginDisplayHost::default_host()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&chrome::AttemptExit));
+          FROM_HERE, base::BindOnce([]() {
+            session_manager::SessionManager::Get()->RequestSignOut();
+          }));
       RunUntilBrowserProcessQuits();
     }
     OobeBaseTest::TearDownOnMainThread();

@@ -45,12 +45,12 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_manager_wrapper.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -426,7 +426,7 @@ void KioskControllerImpl::OnLaunchCompleteAfterCrash(
     }
     InitializeKioskSystemSession(app, profile, app_name);
   } else {
-    chrome::AttemptUserExit();
+    session_manager::SessionManager::Get()->RequestSignOut();
   }
 
   // Delete launcher so it doesn't end up with dangling references.

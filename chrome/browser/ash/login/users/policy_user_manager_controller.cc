@@ -17,11 +17,11 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -267,7 +267,7 @@ void PolicyUserManagerController::OnUsersSignInConstraintsUpdated() {
     if (!user_manager_->IsUserAllowed(*user)) {
       SYSLOG(ERROR)
           << "The current user is not allowed, terminating the session.";
-      chrome::AttemptUserExit();
+      session_manager::SessionManager::Get()->RequestSignOut();
     }
   }
 }

@@ -38,9 +38,3 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
-
-specific_include_rules = {
-  "policy_user_manager_controller\\.cc": [
-    "+chrome/browser/lifetime/application_lifetime.h",
-  ]
-}

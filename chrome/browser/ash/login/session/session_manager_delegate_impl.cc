@@ -18,4 +18,8 @@ void SessionManagerDelegateImpl::RequestSignOut() {
   chrome::AttemptUserExit();
 }
 
+void SessionManagerDelegateImpl::RequestRestart() {
+  chrome::AttemptRestart();
+}
+
 }  // namespace ash

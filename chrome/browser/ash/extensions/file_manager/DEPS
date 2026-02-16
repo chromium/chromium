@@ -37,7 +37,6 @@ include_rules = [
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/extension_util.h",
   "+chrome/browser/feedback/show_feedback_page.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/net",
   "+chrome/browser/notifications",
   "+chrome/browser/pdf",

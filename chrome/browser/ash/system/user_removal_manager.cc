@@ -14,10 +14,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
@@ -81,7 +81,7 @@ void LogOut() {
     std::move(log_out_override_callback).Run();
     return;
   }
-  chrome::AttemptUserExit();
+  session_manager::SessionManager::Get()->RequestSignOut();
 }
 
 void OverrideLogOutForTesting(base::OnceClosure callback) {

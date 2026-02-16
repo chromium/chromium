@@ -7,11 +7,11 @@
 #include "ash/display/display_configuration_controller.h"
 #include "ash/shell.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/session_manager/core/session_manager.h"
 #include "ui/display/display.h"
 
 namespace em = enterprise_management;
@@ -105,7 +105,9 @@ void DeviceDisplayPolicyCrosBrowserTest::TearDownOnMainThread() {
   // If the login display is still showing, exit gracefully.
   if (ash::LoginDisplayHost::default_host()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&chrome::AttemptExit));
+        FROM_HERE, base::BindOnce([]() {
+          session_manager::SessionManager::Get()->RequestSignOut();
+        }));
     RunUntilBrowserProcessQuits();
   }
   DevicePolicyCrosBrowserTest::TearDownOnMainThread();

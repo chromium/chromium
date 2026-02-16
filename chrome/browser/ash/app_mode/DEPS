@@ -43,7 +43,6 @@ include_rules = [
   "+chrome/browser/extensions/webstore_data_fetcher_delegate.h",
   "+chrome/browser/extensions/webstore_data_fetcher.h",
   "+chrome/browser/extensions/webstore_install_helper.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/net",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
@@ -85,6 +84,9 @@ specific_include_rules = {
     "+chrome/browser/extensions/extension_service_test_base.h",
     "+chrome/browser/web_applications/test",
     "+chrome/test/base",
+  ],
+  "kiosk_crash_restore_browsertest\\.cc": [
+    "+chrome/browser/lifetime/termination_notification.h",
   ],
   "kiosk_guest_view_browsertest\\.cc": [
     "+chrome/browser/ui/browser_window/public",

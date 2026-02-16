@@ -608,7 +608,10 @@ class UserSessionManager
 
   scoped_refptr<HatsNotificationController> hats_notification_controller_;
 
-  // Mapped to `chrome::AttemptRestart`, except in tests.
+  // Mapped to `session_manager::SessionManager::Get()->RequestRestart()`,
+  // except in tests.
+  // TODO(crbug.com/479113713): Now we should be able to inject the behavior
+  // at SessionManager.
   base::RepeatingClosure attempt_restart_closure_;
 
   base::flat_set<raw_ptr<Profile, CtnExperimental>>

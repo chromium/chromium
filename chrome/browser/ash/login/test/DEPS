@@ -26,7 +26,6 @@ include_rules = [
   "+chrome/browser/chrome_browser_main_extra_parts.h",
   "+chrome/browser/chrome_browser_main.h",
   "+chrome/browser/extensions/chrome_test_extension_loader.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",

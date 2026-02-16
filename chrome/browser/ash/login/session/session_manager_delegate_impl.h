@@ -22,6 +22,7 @@ class SessionManagerDelegateImpl
 
   // session_manager::SessionManagerDelegate override:
   void RequestSignOut() override;
+  void RequestRestart() override;
 };
 
 }  // namespace ash

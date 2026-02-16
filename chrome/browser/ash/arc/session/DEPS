@@ -31,7 +31,6 @@ include_rules = [
   "+chrome/browser/ash/settings",
   "+chrome/browser/consent_auditor",
   "+chrome/browser/global_features.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/net",
   "+chrome/browser/notifications",
   "+chrome/browser/policy",

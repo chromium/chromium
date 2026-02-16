@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/policy/affiliation",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/lifetime",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/login",
 ]

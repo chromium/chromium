@@ -14,6 +14,10 @@ void FakeSessionManagerDelegate::RequestSignOut() {
   ++request_sign_out_count_;
 }
 
+void FakeSessionManagerDelegate::RequestRestart() {
+  // Do nothing.
+}
+
 int FakeSessionManagerDelegate::request_sign_out_count() const {
   return request_sign_out_count_;
 }

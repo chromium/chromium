@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
@@ -37,6 +36,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_test.h"
@@ -73,7 +73,9 @@ class OobeTest : public OobeBaseTest {
     // If the login display is still showing, exit gracefully.
     if (LoginDisplayHost::default_host()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&chrome::AttemptExit));
+          FROM_HERE, base::BindOnce([]() {
+            session_manager::SessionManager::Get()->RequestSignOut();
+          }));
       RunUntilBrowserProcessQuits();
     }
 

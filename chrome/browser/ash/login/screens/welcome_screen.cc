@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
@@ -45,6 +44,7 @@
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace ash {
@@ -341,7 +341,7 @@ void WelcomeScreen::SetDeviceRequisition(const std::string& requisition) {
   // Exit Chrome to force the restart as soon as a new requisition is set.
   if (initial_requisition !=
       policy::EnrollmentRequisitionManager::GetDeviceRequisition()) {
-    chrome::AttemptRestart();
+    session_manager::SessionManager::Get()->RequestRestart();
   }
 }
 

@@ -1212,6 +1212,8 @@ TEST_F(ArcSessionManagerTest, RemoveDataDir_Restart) {
 TEST_F(ArcSessionManagerTest, ArcVmDataMigrationInProgress_RequestEnable) {
   int restart_count = 0;
   // Replace chrome::AttemptRestart() for testing.
+  // TODO(crbug.com/479113713): now we can inject the behavior at
+  // session_manager::SessionManager via its delegate.
   arc_session_manager()->SetAttemptRestartCallbackForTesting(
       base::BindLambdaForTesting([&restart_count]() { ++restart_count; }));
 

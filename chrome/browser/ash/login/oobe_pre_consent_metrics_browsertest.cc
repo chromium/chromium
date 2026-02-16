@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
@@ -46,6 +45,7 @@
 #include "components/metrics/structured/test/test_structured_metrics_recorder.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_test_utils.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(OobePreConsentMetricsTest, GuestUserConsented) {
 
   // Validate pre-consent stage has completed and consent remains true before
   // first non-guest user sign in.
-  chrome::AttemptUserExit();
+  session_manager::SessionManager::Get()->RequestSignOut();
 
   ValidateMetricsConsent(/*enabled=*/true);
   CheckForMarkerFile();
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(OobePreConsentMetricsTest, GuestUserDissented) {
 
   // Validate pre-consent stage has completed and consent remains true before
   // first non-guest user sign in.
-  chrome::AttemptUserExit();
+  session_manager::SessionManager::Get()->RequestSignOut();
 
   ValidateMetricsConsent(/*enabled=*/true);
   CheckForMarkerFile();

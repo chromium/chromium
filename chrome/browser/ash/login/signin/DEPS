@@ -48,3 +48,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "oauth2_browsertest\\.cc": [
+    "+chrome/browser/lifetime/termination_notification.h",
+  ],
+}

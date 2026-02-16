@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
@@ -159,7 +158,9 @@ void LoginScreenDefaultPolicyLoginScreenBrowsertest::SetUpOnMainThread() {
 
 void LoginScreenDefaultPolicyLoginScreenBrowsertest::TearDownOnMainThread() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&chrome::AttemptExit));
+      FROM_HERE, base::BindOnce([]() {
+        session_manager::SessionManager::Get()->RequestSignOut();
+      }));
   base::RunLoop().RunUntilIdle();
   LoginScreenDefaultPolicyBrowsertestBase::TearDownOnMainThread();
 }

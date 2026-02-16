@@ -55,7 +55,6 @@ include_rules = [
   "+chrome/browser/extensions/extension_tab_util.h",
   "+chrome/browser/feedback/public/feedback_source.h",
   "+chrome/browser/feedback/show_feedback_page.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/manta/manta_service_factory.h",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/metrics",
@@ -104,26 +103,26 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "boca_app_integration_browsertest.cc": [
+  "boca_app_integration_browsertest\\.cc": [
     "+chrome/app/chrome_command_ids.h",
     "+chrome/browser/extensions/chrome_test_extension_loader.h",
     "+chrome/browser/ui/browser_command_controller.h",
     "+chrome/browser/ui/views",
   ],
-  "eche_app_integration_browsertest.cc": [
+  "eche_app_integration_browsertest\\.cc": [
     "+chrome/browser/ui/views",
   ],
-  "graduation_app_integration_browsertest.cc": [
+  "graduation_app_integration_browsertest\\.cc": [
     "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
   ],
-  "personalization_app_integration_browsertest.cc": [
+  "personalization_app_integration_browsertest\\.cc": [
     "+ash/ambient/test/ambient_ash_test_helper.h",
     "+ui/message_center/message_center.h",
   ],
-  "personalization_app_utils_unittest.cc": [
+  "personalization_app_utils_unittest\\.cc": [
     "+chrome/browser/signin/identity_manager_factory.h",
   ],
-  "demo_mode_app_integration_browsertest.cc": [
+  "demo_mode_app_integration_browsertest\\.cc": [
     "+chrome/browser/ash/policy/core/device_local_account.h",
   ],
   "media_app_integration_browsertest\\.cc": [

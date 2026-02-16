@@ -19,6 +19,9 @@ class SessionManagerDelegate {
   // This action attempts to shut down the Chrome process and may restart it
   // to complete the sign-out.
   virtual void RequestSignOut() = 0;
+
+  // Requests to restart the chrome.
+  virtual void RequestRestart() = 0;
 };
 
 }  // namespace session_manager

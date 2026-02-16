@@ -29,7 +29,6 @@ include_rules = [
   "+chrome/browser/extensions/error_console",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/extensions/extension_browser_test_util.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/speech",
@@ -55,7 +54,7 @@ include_rules = [
 
 specific_include_rules = {
   # Testing
-  ".*_browsertest\.cc": [
+  ".*_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/global_features.h",
     "+chrome/browser/ui/settings_window_manager_chromeos.h",
@@ -67,10 +66,10 @@ specific_include_rules = {
     "+ui/message_center/message_center.h",
     "+ui/views",
   ],
-  "speech_monitor\.(cc|h)": [
+  "speech_monitor\\.(cc|h)": [
     "+content/public/browser/tts_controller.h",
   ],
-  "accessibility_manager\.(cc|h)": [
+  "accessibility_manager\\.(cc|h)": [
     "+services/accessibility/buildflags.h",
     "+services/accessibility/public/mojom/assistive_technology_type.mojom.h",
   ],

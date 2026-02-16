@@ -77,6 +77,10 @@ void SessionManager::RequestSignOut() {
   observers_.Notify(&SessionManagerObserver::OnSignOutRequested);
 }
 
+void SessionManager::RequestRestart() {
+  delegate_->RequestRestart();
+}
+
 void SessionManager::OnUserManagerCreated(
     user_manager::UserManager* user_manager) {
   user_manager_ = user_manager;

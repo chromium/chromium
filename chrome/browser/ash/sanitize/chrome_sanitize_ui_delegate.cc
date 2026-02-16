@@ -8,18 +8,19 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/ash/sanitize/chrome_sanitize_ui_delegate.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace ash {
 
 ChromeSanitizeUIDelegate::~ChromeSanitizeUIDelegate() = default;
 
 ChromeSanitizeUIDelegate::ChromeSanitizeUIDelegate(content::WebUI* web_ui)
-    : restart_attempt_(base::BindRepeating(&chrome::AttemptRestart)) {
+    : restart_attempt_(base::BindRepeating(
+          []() { session_manager::SessionManager::Get()->RequestRestart(); })) {
   auto* profile = Profile::FromWebUI(web_ui);
   resetter_ = std::make_unique<ProfileResetter>(profile);
   pref_service_ = profile->GetPrefs();

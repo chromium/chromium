@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -45,6 +44,7 @@
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -66,7 +66,7 @@ bool g_ignore_sync_errors_for_test_ = false;
 
 void HandleDeviceAccountReauthNotificationClick(
     std::optional<int> button_index) {
-  chrome::AttemptUserExit();
+  session_manager::SessionManager::Get()->RequestSignOut();
 }
 
 bool AreAllAccountsMigrated(

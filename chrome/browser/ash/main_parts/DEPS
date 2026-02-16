@@ -64,7 +64,6 @@ include_rules = [
   "+chrome/browser/device_identity",
   "+chrome/browser/first_run",
   "+chrome/browser/global_features.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/memory",
   "+chrome/browser/metrics",
   "+chrome/browser/net",
@@ -83,3 +82,13 @@ include_rules = [
   "+chrome/common/logging_chrome.h",
   "+chrome/common/pref_names.h",
 ]
+
+specific_include_rules = {
+  "chrome_browser_main_parts_ash\\.cc": [
+    # For fake SIGTERM handler implementation.
+    "+chrome/browser/lifetime/application_lifetime.h",
+
+    # To bridge Chrome's termination notification to Ash system.
+    "+chrome/browser/lifetime/termination_notification.h",
+  ]
+}

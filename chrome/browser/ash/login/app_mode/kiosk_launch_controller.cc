@@ -336,7 +336,9 @@ KioskLaunchController::KioskLaunchController(
           /*app_launched_callback=*/std::move(app_launched_callback),
           /*done_callback=*/std::move(done_callback),
           /*attempt_relaunch=*/base::BindOnce(chrome::AttemptRelaunch),
-          /*attempt_logout=*/base::BindOnce(chrome::AttemptUserExit),
+          /*attempt_logout=*/base::BindOnce([]() {
+            session_manager::SessionManager::Get()->RequestSignOut();
+          }),
           /*app_launcher_factory=*/base::BindRepeating(&BuildKioskAppLauncher),
           std::make_unique<DefaultNetworkMonitor>(),
           std::make_unique<DefaultAcceleratorController>()) {}

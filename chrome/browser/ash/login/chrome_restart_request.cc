@@ -25,7 +25,6 @@
 #include "cc/base/switches.h"
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -41,6 +40,7 @@
 #include "components/policy/core/common/policy_switches.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/user_manager/user_names.h"
 #include "components/variations/variations_switches.h"
@@ -286,7 +286,7 @@ void DeriveFeatures(base::CommandLine* out_command_line) {
 // and exit current process.
 void ReLaunch(const base::CommandLine& command_line) {
   base::LaunchProcess(command_line.argv(), base::LaunchOptions());
-  chrome::AttemptUserExit();
+  session_manager::SessionManager::Get()->RequestSignOut();
 }
 
 // Wraps the work of sending chrome restart request to session manager.

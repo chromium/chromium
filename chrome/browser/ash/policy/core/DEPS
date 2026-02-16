@@ -55,7 +55,6 @@ include_rules = [
   "+chrome/browser/extensions/policy_handlers.h",
   "+chrome/browser/extensions/updater",
   "+chrome/browser/invalidation",
-  "+chrome/browser/lifetime",
   "+chrome/browser/metrics",
   "+chrome/browser/net",
   "+chrome/browser/policy",

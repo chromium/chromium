@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -45,6 +44,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -290,7 +290,9 @@ void PowerPolicyLoginScreenBrowserTest::SetUpOnMainThread() {
 
 void PowerPolicyLoginScreenBrowserTest::TearDownOnMainThread() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&chrome::AttemptExit));
+      FROM_HERE, base::BindOnce([]() {
+        session_manager::SessionManager::Get()->RequestSignOut();
+      }));
   base::RunLoop().RunUntilIdle();
   PowerPolicyBrowserTestBase::TearDownOnMainThread();
 }

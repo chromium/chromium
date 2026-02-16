@@ -28,7 +28,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/browser_process_platform_part.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/session",
@@ -38,3 +37,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "automatic_reboot_manager\\.cc": [
+    "+chrome/browser/lifetime/termination_notification.h",
+  ]
+}

@@ -54,8 +54,11 @@ class SESSION_EXPORT SessionManager
   // called in advance).
   void SwitchActiveSession(const AccountId& account_id);
 
-  // Request to sign out user from session.
+  // Requests to sign out user from session.
   void RequestSignOut();
+
+  // Requests to restart the chrome.
+  void RequestRestart();
 
   // Returns true if we're logged in and browser has been started i.e.
   // browser_creator.LaunchBrowser(...) was called after sign in

@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -67,7 +66,9 @@ class UnaffiliatedArcAllowedTest
     // If the login display is still showing, exit gracefully.
     if (ash::LoginDisplayHost::default_host()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&chrome::AttemptExit));
+          FROM_HERE, base::BindOnce([]() {
+            session_manager::SessionManager::Get()->RequestSignOut();
+          }));
       RunUntilBrowserProcessQuits();
     }
     arc::ArcSessionManager::Get()->Shutdown();
