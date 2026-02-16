@@ -35,9 +35,6 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
   bool IsValid() const override;
   bool IsAccelerated() const override { return false; }
   bool IsExternalBitmapProvider() const override { return true; }
-  scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
-      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-      ImageOrientation orientation) override;
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return info_.format;
   }

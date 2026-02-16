@@ -9,10 +9,6 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace cc {
-class PaintCanvas;
-}
-
 namespace blink {
 
 // This is an interface abstracting a class that can draw to a snapshot.
@@ -20,9 +16,6 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
  public:
   virtual ~CanvasSnapshotProvider() = default;
 
-  virtual scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
-      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-      ImageOrientation orientation) = 0;
   virtual bool IsAccelerated() const = 0;
   virtual gfx::Size Size() const = 0;
   virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;

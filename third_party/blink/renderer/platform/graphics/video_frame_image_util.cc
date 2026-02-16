@@ -182,8 +182,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
         snapshot_provider_bitmap->Info(), draw_callback, orientation);
   }
 
-  return snapshot_provider->DoExternalDrawAndSnapshot(draw_callback,
-                                                      orientation);
+  return static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider)
+      ->DoExternalDrawAndSnapshot(draw_callback, orientation);
 }
 
 void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,

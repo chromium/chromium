@@ -68,14 +68,6 @@ bool CanvasNon2DSnapshotProviderBitmap::IsValid() const {
   return true;
 }
 
-scoped_refptr<StaticBitmapImage>
-CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
-    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-    ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
-  return DoExternalDrawAndSnapshot(info_, std::move(draw_callback),
-                                   orientation);
-}
-
 // static
 scoped_refptr<StaticBitmapImage>
 CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
