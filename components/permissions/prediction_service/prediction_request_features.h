@@ -17,8 +17,8 @@ struct PredictionRequestFeatures {
   enum class ExperimentId {
     kNoExperimentId = 0,
     kCpssV3ExperimentId = 1,
-    kAiV1ExperimentId = 2,
-    kAiV3ExperimentId = 3,
+    kAiV1ExperimentId = 2,  // Deprecated
+    kAiV3ExperimentId = 3,  // Deprecated
     kAiV4ExperimentId = 4,
   };
 

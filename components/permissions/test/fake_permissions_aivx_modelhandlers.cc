@@ -6,20 +6,17 @@
 #include <memory>
 #include <string>
 
-#include "components/permissions/prediction_service/permissions_aiv3_executor.h"
+#include "components/permissions/prediction_service/permissions_aiv4_executor.h"
 
 namespace test {
-using permissions::PermissionsAiv3Executor;
-using permissions::PermissionsAiv3Handler;
 using permissions::PermissionsAiv4Executor;
 using permissions::PermissionsAiv4Handler;
 
-inline PermissionsAiv3HandlerFake::~PermissionsAiv3HandlerFake() = default;
 inline PermissionsAiv4HandlerFake::~PermissionsAiv4HandlerFake() = default;
 
 void PermissionsAivXHandlerFakeBase::ExecuteModelWrapper(
     PermissionsAivXHandlerFakeBase::ExecutionCallback callback,
-    const std::optional<PermissionsAiv3Executor::ModelOutput>& output) {
+    const std::optional<PermissionsAiv4Executor::ModelOutput>& output) {
   std::move(callback).Run(output);
   model_execute_run_loop_for_testing_.Quit();
 }
@@ -37,31 +34,6 @@ void PermissionsAivXHandlerFakeBase::OnModelUpdated(
   if (model_info.has_value()) {
     model_load_run_loop_for_testing_.Quit();
   }
-}
-
-PermissionsAiv3HandlerFake::PermissionsAiv3HandlerFake(
-    optimization_guide::OptimizationGuideModelProvider* model_provider,
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    permissions::RequestType request_type)
-    : PermissionsAiv3Handler(
-          model_provider,
-          optimization_target,
-          request_type,
-          std::make_unique<PermissionsAiv3Executor>(request_type)) {}
-
-void PermissionsAiv3HandlerFake::OnModelUpdated(
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
-  PermissionsAiv3Handler::OnModelUpdated(optimization_target, model_info);
-  PermissionsAivXHandlerFakeBase::OnModelUpdated(model_info);
-}
-void PermissionsAiv3HandlerFake::ExecuteModel(
-    PermissionsAiv3Handler::ExecutionCallback callback,
-    ModelInput model_input) {
-  PermissionsAiv3Handler::ExecuteModel(
-      base::BindOnce(&PermissionsAivXHandlerFakeBase::ExecuteModelWrapper,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      std::move(model_input));
 }
 
 PermissionsAiv4HandlerFake::PermissionsAiv4HandlerFake(

@@ -14,7 +14,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-   "permissions_aiv3_handler_unittest.cc": [
+     "permissions_aiv4_handler_unittest.cc": [
       "+components/optimization_guide/core",
    ],
 }

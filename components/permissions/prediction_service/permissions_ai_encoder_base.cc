@@ -9,7 +9,6 @@
 
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/permissions/prediction_service/permissions_aiv3_executor.h"
 #include "components/permissions/prediction_service/permissions_aiv4_executor.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
@@ -88,8 +87,7 @@ PermissionsAiEncoderBase<EncoderInput>::Postprocess(
   return PermissionRequestRelevance::kVeryHigh;
 }
 
-// Template instantiation for the Aiv3/Aiv4 model handlers.
-template class PermissionsAiEncoderBase<const PermissionsAiv3ExecutorInput&>;
+// Template instantiation for the Aiv4 model handlers.
 template class PermissionsAiEncoderBase<const PermissionsAiv4ExecutorInput&>;
 
 }  // namespace permissions

@@ -137,8 +137,7 @@ std::unique_ptr<GeneratePredictionsRequest> GetPredictionRequestProto(
   FillInStatsFeatures(entity.requested_permission_counts,
                       permission_features->mutable_permission_stats());
   // LINT.IfChange(PermissionsAiSetRelevance)
-  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3) ||
-      base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4)) {
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4)) {
     permission_features->set_permission_relevance(
         ConvertToProtoRelevance(entity.permission_relevance));
   }

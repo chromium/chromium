@@ -28,11 +28,11 @@ is handled in the browser and potentially presented to the user as a UI chip:
    `PermissionUiSelector` implementations to determine which UI to show.
 1. `PermissionsAiUiSelector` is one such implementation. When its
    `SelectUiToUse` method is called, it determines which prediction model to
-   use (server-side or one of several on-device models) based on feature flags
+   use (server-side or on-device model) based on feature flags
    and the availability of downloaded models.
 1. It then gathers the necessary features by creating a
-   `PredictionRequestFeatures` object. For some on-device models, this may also
-   involve capturing a snapshot of the page or extracting its text content.
+   `PredictionRequestFeatures` object. For the on-device model, this may also
+   involve capturing a snapshot of the page and extracting its text content.
 1. These features are passed to the appropriate handler in this component
    (e.g., `PredictionService` for remote predictions, or
    `PermissionsAiv4Handler` for on-device AI predictions). Here, the name
@@ -93,30 +93,25 @@ The key classes within `//components/permissions/prediction_service` that implem
 
 - **`PredictionSignatureModelExecutor`**: A variant of the above for the signature-based version of the statistical model. It maps feature names to the corresponding input tensors.
 
-- **`PermissionsAiv3Handler`**: Implements the `optimization_guide::ModelHandler` interface for the AIv3 model. It observes model file availability from the `OptimizationGuideModelProvider`. When a prediction is requested, it posts an inference task to a background thread and enforces a timeout. The resulting `PermissionRequestRelevance` score is returned asynchronously to the caller via a `base::OnceCallback`.
+- **`PermissionsAiv4Handler`**: Orchestrates the execution of the AIv4 model and returns its `PermissionRequestRelevance` score via a `base::OnceCallback`. It includes additional logic to prevent concurrent model executions: if a new request arrives while one is in progress, the new request is immediately answered with an empty result to avoid UI delays. The in-progress request continues, but its result is discarded.
 
-- **`PermissionsAiv4Handler`**: Similar to its v3 counterpart, this handler orchestrates the execution of the AIv4 model and returns its `PermissionRequestRelevance` score via a `base::OnceCallback`. It includes additional logic to prevent concurrent model executions: if a new request arrives while one is in progress, the new request is immediately answered with an empty result to avoid UI delays. The in-progress request continues, but its result is discarded.
-
-- **`PermissionsAiEncoderBase`**: A base class for the executors of the AIv3 and AIv4 models. It contains common logic for:
+- **`PermissionsAiEncoderBase`**: A base class for the executors of the AIv4 model. It contains common logic for:
 
   - Resizing and converting a `SkBitmap` snapshot into a normalized input tensor.
   - Post-processing the model's raw float output into a `PermissionRequestRelevance` enum by comparing it against a set of thresholds.
-
-- **`PermissionsAiv3Executor`**: The executor for the AIv3 model. Its `Preprocess` method prepares the snapshot input tensor. It can also parse model-specific thresholds from a `PermissionsAiv3ModelMetadata` protobuf.
 
 - **`PermissionsAiv4Executor`**: The executor for the AIv4 model. Its `Preprocess` method prepares two input tensors: one for the snapshot and one for text embeddings (`passage_embeddings::Embedding`).
 
 #### Model Comparison
 
-The on-device models can be categorized into two main types: a statistical model (CPSSv1) and more advanced AI models (AIv3, AIv4). Each serves a different purpose and uses different inputs to generate predictions.
+The on-device models can be categorized into two main types: a statistical model (CPSSv1) and a more advanced AI model (AIv4). Each serves a different purpose and uses different inputs to generate predictions.
 
 | Model Type | Key Inputs | Output | Model Flow |
 | ---------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | **CPSSv1** | User interaction history (e.g., grant/deny rates), presence of a user gesture, and other client signals. | Grant Likelihood (`DiscretizedLikelihood`) | Standalone on-device model. Its output is a final decision. |
-| **AIv3** | A snapshot of the web page content. | Permission Request Relevance | On-device model. Its output is used as an input feature for the server-side model. |
 | **AIv4** | A snapshot of the web page content and text embeddings from the page's inner text. | Permission Request Relevance | On-device model. Depends on a text embedder model for one of its inputs. Its output is used as an input feature for the server-side model. |
 
-The **`PermissionRequestRelevance`** output from the AIv3 and AIv4 models is an
+The **`PermissionRequestRelevance`** output from the AIv4 model is an
 enum that categorizes the relevance of a permission prompt into discrete
 levels, from `kVeryLow` to `kVeryHigh`. This score is determined by comparing
 the raw float output of the model against a set of predefined thresholds. A
@@ -126,7 +121,7 @@ and user-benefiting request.
 
 #### Model Stacking and Dependencies
 
-The prediction service employs a "model stacking" approach where the output of one model serves as an input to another. Specifically, the AIv3 and AIv4 on-device models act as the first stage in a two-stage process. They generate a `PermissionRequestRelevance` score, which is then combined with other statistical features and sent to the remote server-side model for a final grant likelihood prediction.
+The prediction service employs a "model stacking" approach where the output of one model serves as an input to another. Specifically, the AIv4 on-device model acts as the first stage in a two-stage process. It generates a `PermissionRequestRelevance` score, which is then combined with other statistical features and sent to the remote server-side model for a final grant likelihood prediction.
 
 The AIv4 model itself has a preceding dependency: it requires text embeddings generated from the page content, which are provided by a separate passage embedder model. This creates a chain: `Passage Embedder -> AIv4 -> Server-side Model`. The passage embedder model is implemented in [`//services/passage_embeddings/`](https://source.chromium.org/chromium/chromium/src/+/main:services/passage_embeddings/).
 
@@ -136,7 +131,7 @@ The on-device prediction models are delivered and executed through a set of clas
 
 The model handlers and encoders of the prediction service build upon two main abstractions from the optimization guide:
 
-- **`optimization_guide::ModelHandler`**: This is the primary interface for a feature that uses an on-device model. It is responsible for observing model updates from the `OptimizationGuideModelProvider`, managing the model's lifecycle, and posting inference tasks to a background thread. `PredictionModelHandler`, `PermissionsAiv3Handler`, and `PermissionsAiv4Handler` are all implementations of this class.
+- **`optimization_guide::ModelHandler`**: This is the primary interface for a feature that uses an on-device model. It is responsible for observing model updates from the `OptimizationGuideModelProvider`, managing the model's lifecycle, and posting inference tasks to a background thread. `PredictionModelHandler` and `PermissionsAiv4Handler` are implementations of this class.
 
 - **`optimization_guide::BaseModelExecutor`**: This class handles the low-level details of TFLite model execution. It loads the model file, runs the interpreter, and delegates the feature-specific logic of data transformation to its subclasses via `Preprocess` and `Postprocess` methods. Implementations in this component include `PredictionModelExecutor` and `PermissionsAiEncoderBase`.
 
@@ -146,16 +141,13 @@ The model handlers and encoders of the prediction service build upon two main ab
 
 Unit tests for the remote `PredictionService` are located in `prediction_service_unittest.cc`. These tests use a `TestURLLoaderFactory` to mock network responses from the remote service.
 
-Tests for the on-device model handlers can be found in:
-
-- `permissions_aiv3_handler_unittest.cc`
-- `permissions_aiv4_handler_unittest.cc`
+Tests for the on-device model handlers can be found in `permissions_aiv4_handler_unittest.cc`.
 
 These tests follow a common pattern:
 
 - A `TestOptimizationGuideModelProvider` is used to simulate the delivery of a model file to the handler being tested.
 - The tests use real, simple TFLite models (`//components/test/data/permissions/`) that are designed to return a constant, predictable value. This allows for testing the full execution flow.
-- Fake model executors (e.g., `PermissionsAiv3EncoderFake`) are used to inject hooks that can inspect the input tensors and verify that data is being correctly processed and passed to the TFLite interpreter.
+- Fake model executors (e.g., `PermissionsAiv4EncoderFake`) are used to inject hooks that can inspect the input tensors and verify that data is being correctly processed and passed to the TFLite interpreter.
 - Mock model handlers (e.g., `PermissionsAiv4HandlerMock`) are used to control the asynchronous execution flow, allowing for tests of timeout logic and the prevention of concurrent requests.
 - `base::test::TestFuture` is used to wait for and capture the results from the asynchronous `ExecutionCallback`.
 
@@ -190,20 +182,13 @@ To get a complete picture of the prediction service, consider the following key 
 - `//components/permissions/prediction_service/prediction_signature_model_executor.cc`
 - `//components/permissions/prediction_service/prediction_model_metadata.proto`
 
-### On-Device AI Model V3
-
-- `//components/permissions/prediction_service/permissions_aiv3_handler.h`
-- `//components/permissions/prediction_service/permissions_aiv3_handler.cc`
-- `//components/permissions/prediction_service/permissions_aiv3_executor.h`
-- `//components/permissions/prediction_service/permissions_aiv3_executor.cc`
-- `//components/permissions/prediction_service/permissions_aiv3_model_metadata.proto`
-
 ### On-Device AI Model V4
 
 - `//components/permissions/prediction_service/permissions_aiv4_handler.h`
 - `//components/permissions/prediction_service/permissions_aiv4_handler.cc`
 - `//components/permissions/prediction_service/permissions_aiv4_executor.h`
 - `//components/permissions/prediction_service/permissions_aiv4_executor.cc`
+- `//components/permissions/prediction_service/permissions_aiv4_model_metadata.proto`
 
 ### Common AI Model Components
 

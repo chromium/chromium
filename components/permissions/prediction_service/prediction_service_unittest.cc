@@ -42,8 +42,6 @@ constexpr auto kNoExperimentId =
     permissions::PredictionRequestFeatures::ExperimentId::kNoExperimentId;
 constexpr auto kCpssV3ExperimentId =
     permissions::PredictionRequestFeatures::ExperimentId::kCpssV3ExperimentId;
-constexpr auto kAiV3ExperimentId =
-    permissions::PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId;
 constexpr auto kAiV4ExperimentId =
     permissions::PredictionRequestFeatures::ExperimentId::kAiV4ExperimentId;
 
@@ -485,8 +483,8 @@ INSTANTIATE_TEST_SUITE_P(
         {createFeaturesAllCountsZero(kNoExperimentId),
          createRequestAllCountsZero(kNoExperimentId),
          "https://www.test.example/"},
-        {createFeaturesCountsNeedingRounding(kAiV3ExperimentId),
-         createRequestRoundedCounts(kAiV3ExperimentId), std::nullopt},
+        {createFeaturesCountsNeedingRounding(kAiV4ExperimentId),
+         createRequestRoundedCounts(kAiV4ExperimentId), std::nullopt},
         {createFeaturesEvenCountsOver100(kAiV4ExperimentId),
          createRequestEqualCountsTotal20(kAiV4ExperimentId), std::nullopt},
         {createFeaturesEvenCountsOver100Alt(kCpssV3ExperimentId),

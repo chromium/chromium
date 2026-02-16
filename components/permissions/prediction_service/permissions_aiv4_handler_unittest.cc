@@ -372,7 +372,7 @@ TEST_F(Aiv4HandlerTest, ModelHandlerTimeoutExecutions) {
           /*request_type=*/RequestType::kNotifications,
           std::move(geolocation_executor_mock));
 
-  // Because of `PermissionsAiv3ExecutorFake` the first execution will be hold
+  // Because of `PermissionsAiv4ExecutorFake` the first execution will be hold
   // until manually released. In this case we release the callback before we
   // try to execute the model again.
   ModelCallbackFuture future1;

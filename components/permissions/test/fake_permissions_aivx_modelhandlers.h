@@ -9,8 +9,6 @@
 #include <string>
 
 #include "base/run_loop.h"
-#include "components/permissions/prediction_service/permissions_aiv3_executor.h"
-#include "components/permissions/prediction_service/permissions_aiv3_handler.h"
 #include "components/permissions/prediction_service/permissions_aiv4_executor.h"
 #include "components/permissions/prediction_service/permissions_aiv4_handler.h"
 
@@ -21,12 +19,12 @@ class PermissionsAivXHandlerFakeBase {
  public:
   // All AivX models share the same model execution callback for now
   using ExecutionCallback =
-      permissions::PermissionsAiv3Handler::ExecutionCallback;
+      permissions::PermissionsAiv4Handler::ExecutionCallback;
   PermissionsAivXHandlerFakeBase() = default;
 
   void ExecuteModelWrapper(
       ExecutionCallback callback,
-      const std::optional<permissions::PermissionsAiv3Executor::ModelOutput>&
+      const std::optional<permissions::PermissionsAiv4Executor::ModelOutput>&
           output);
 
   void OnModelUpdated(
@@ -38,28 +36,6 @@ class PermissionsAivXHandlerFakeBase {
  protected:
   base::RunLoop model_execute_run_loop_for_testing_;
   base::RunLoop model_load_run_loop_for_testing_;
-};
-
-class PermissionsAiv3HandlerFake : public permissions::PermissionsAiv3Handler,
-                                   public PermissionsAivXHandlerFakeBase {
- public:
-  PermissionsAiv3HandlerFake(
-      optimization_guide::OptimizationGuideModelProvider* model_provider,
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      permissions::RequestType request_type);
-
-  ~PermissionsAiv3HandlerFake() override;
-
-  void OnModelUpdated(
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      base::optional_ref<const optimization_guide::ModelInfo> model_info)
-      override;
-
-  void ExecuteModel(PermissionsAiv3Handler::ExecutionCallback callback,
-                    ModelInput model_input) override;
-
- private:
-  base::WeakPtrFactory<PermissionsAiv3HandlerFake> weak_ptr_factory_{this};
 };
 
 class PermissionsAiv4HandlerFake : public permissions::PermissionsAiv4Handler,
