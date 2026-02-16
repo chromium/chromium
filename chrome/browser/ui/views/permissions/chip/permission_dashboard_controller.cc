@@ -260,10 +260,12 @@ bool PermissionDashboardController::Update(
 
   UpdateIndicatorsVisibilityFlags(location_bar_);
 
+  // Set the tooltip regardless of the `ShouldNotifyAccessibility`. The tooltip
+  // can be changed independently of the A11Y announcements.
+  indicator_chip->SetTooltipText(indicator_model->get_tooltip());
+
   if (indicator_model->ShouldNotifyAccessibility(
           location_bar_->GetWebContents())) {
-    indicator_chip->SetTooltipText(indicator_model->get_tooltip());
-
     std::u16string name = l10n_util::GetStringUTF16(
         indicator_model->AccessibilityAnnouncementStringId());
     permission_dashboard_view_->GetViewAccessibility().SetName(name);

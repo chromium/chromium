@@ -14,11 +14,13 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
@@ -106,6 +108,67 @@ class PermissionDashboardUnitTest : public TestWithBrowserView {
 
 // TODO(crbug.com/41492809): Test LHS indicators animation on macOS as well.
 #if !BUILDFLAG(IS_MAC)
+TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorTooltip) {
+  PermissionDashboardController* dashboard_controller =
+      location_bar_view()->permission_dashboard_controller();
+
+  PermissionChipView* indicator_chip =
+      dashboard_controller->permission_dashboard_view()->GetIndicatorChip();
+
+  content_settings::PageSpecificContentSettings* pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(pscs);
+
+  // 1. Test Camera
+  pscs->OnMediaStreamPermissionSet(
+      GURL("http://a.com"),
+      {content_settings::PageSpecificContentSettings::kCameraAccessed});
+
+  // Wait for the expand animation to finish.
+  WaitForAnimationCompletion();
+
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_EQ(indicator_chip->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_CAMERA_ACCESSED));
+
+  // 2. Test Microphone
+  // Turn off Camera first
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
+  // Turn on Mic
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_MIC, true);
+
+  WaitForAnimationCompletion();
+
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_EQ(indicator_chip->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_MICROPHONE_ACCESSED));
+
+  // 3. Test Camera + Microphone
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, true);
+
+  // Transitioning to both will not trigger animation if chip is already
+  // visible. No need to wait check WaitForAnimationCompletion, but just
+  // RunUntilIdle.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_EQ(indicator_chip->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_ALLOWED));
+
+  // 4. Test turn off Camera after Camera + Microphone were enabled
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
+
+  // Transitioning to both will not trigger animation if chip is already
+  // visible. No need to wait check WaitForAnimationCompletion, but just
+  // RunUntilIdle.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_EQ(indicator_chip->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_MICROPHONE_ACCESSED));
+}
+
 // This test verifies:
 // 1. Camera activity indicator chip is shown in verbose form after
 // `PageSpecificContentSettings` updates camera usage.
