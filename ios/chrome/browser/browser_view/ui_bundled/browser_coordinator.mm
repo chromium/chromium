@@ -3027,6 +3027,12 @@ const char kChromeAppStoreUrl[] =
   if (!tab_helper || !tab_helper->IsChoosingFiles()) {
     return;
   }
+  if (!AuthenticationServiceFactory::GetForProfile(self.profile)
+           ->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    // Drive can’t be accessed if the user has no primary identity.
+    tab_helper->SetIsPresentingFilePicker(false);
+    return;
+  }
   // The user should not have been offered to use the drive if they are in
   // incognito.
   CHECK_EQ(self.browser->type(), Browser::Type::kRegular);
@@ -3044,6 +3050,7 @@ const char kChromeAppStoreUrl[] =
 
 - (void)setDriveFilePickerSelectedIdentity:
     (id<SystemIdentity>)selectedIdentity {
+  CHECK(selectedIdentity);
   [_driveFilePickerCoordinator setSelectedIdentity:selectedIdentity];
 }
 

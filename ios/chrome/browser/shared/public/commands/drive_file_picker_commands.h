@@ -15,12 +15,14 @@ class WebState;
 @protocol DriveFilePickerCommands <NSObject>
 
 // Shows the Drive file picker for the current WebState.
+// The user must have a primary identity.
 - (void)showDriveFilePicker;
 
 // Hides the Drive file picker.
 - (void)hideDriveFilePicker;
 
 // Updates the identity of the root drive folder.
+// `selectedIdentity` must be non nil.
 - (void)setDriveFilePickerSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
 
 @end

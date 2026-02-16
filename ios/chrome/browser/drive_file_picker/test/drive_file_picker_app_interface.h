@@ -34,6 +34,7 @@
 
 // Presents the `DriveFilePickerNavigationController` using the
 // `DriveFilePickerCommands` of the current Browser.
+// The user must have a primary identity.
 + (void)showDriveFilePicker;
 
 // Stops presenting the `DriveFilePickerNavigationController` using the
