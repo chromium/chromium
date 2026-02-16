@@ -9,6 +9,11 @@
 
 namespace wallet {
 
+net::HttpRequestHeaders WalletRequest::GetRequestHeaders() const {
+  return net::HttpRequestHeaders();
+}
+
+// static
 ClientInfo WalletRequest::BuildClientInfo() {
   ClientInfo client_info;
   client_info.mutable_chrome_client_info()->set_version(

@@ -125,6 +125,7 @@ void WalletHttpClientImpl::SendRequestInternal(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       base::StrCat({"Bearer ", *access_token}));
+  resource_request->headers.MergeFrom(request->GetRequestHeaders());
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("wallet_http_request", R"(

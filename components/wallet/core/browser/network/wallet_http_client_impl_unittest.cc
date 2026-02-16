@@ -273,6 +273,29 @@ TEST_F(WalletHttpClientImplTest,
             version_info::GetVersionNumber());
 }
 
+TEST_F(WalletHttpClientImplTest, UpsertPrivatePass_RequestHeaders) {
+  PrivatePass pass;
+  pass.mutable_passport();
+  base::test::TestFuture<
+      const base::expected<PrivatePass, WalletHttpClient::WalletRequestError>&>
+      callback;
+  client()->UpsertPrivatePass(pass, callback.GetCallback());
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  GURL expected_url = GetUpsertPrivatePassUrl();
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      test_url_loader_factory()->GetPendingRequest(0);
+  ASSERT_TRUE(pending_request);
+
+  EXPECT_EQ(pending_request->request.headers.GetHeader("EES-S7E-Mode"),
+            "proto");
+  EXPECT_EQ(
+      pending_request->request.headers.GetHeader("EES-Proto-Tokenization"),
+      "1.3.2;574");
+}
+
 TEST_F(WalletHttpClientImplTest, UpsertPass_Latency) {
   base::HistogramTester histogram_tester;
   UpsertPublicPassCallback callback;
@@ -295,7 +318,9 @@ TEST_F(WalletHttpClientImplTest, UpsertPrivatePass_Latency) {
   base::test::TestFuture<
       const base::expected<PrivatePass, WalletHttpClient::WalletRequestError>&>
       callback;
-  client()->UpsertPrivatePass(PrivatePass(), callback.GetCallback());
+  PrivatePass pass;
+  pass.mutable_passport();
+  client()->UpsertPrivatePass(pass, callback.GetCallback());
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kAccessToken, base::Time::Max());
 

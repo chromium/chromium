@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/proto/client_info.pb.h"
+#include "net/http/http_request_headers.h"
 
 namespace wallet {
 
@@ -39,6 +40,9 @@ class WalletRequest {
 
   // Returns the content that should be provided in the HTTP request.
   virtual std::string GetRequestContent() const = 0;
+
+  // Returns the HTTP request headers that should be provided for this request.
+  virtual net::HttpRequestHeaders GetRequestHeaders() const;
 
   // Returns the type of the request.
   virtual WalletNetworkRequestType GetRequestType() const = 0;
