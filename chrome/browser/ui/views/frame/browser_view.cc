@@ -1540,8 +1540,8 @@ void BrowserView::OnProjectsPanelStateChanged(
 void BrowserView::Show() {
   if (auto* manager = InitialWebUIManager::From(browser())) {
     if (manager->ShouldDeferShow()) {
-      manager->SetWebUIReadyCallback(
-          base::BindOnce(&BrowserView::Show, weak_ptr_factory_.GetWeakPtr()));
+      manager->SetWebUIReadyCallback(base::BindOnce(
+          &BrowserView::OnInitialWebUIReady, weak_ptr_factory_.GetWeakPtr()));
       return;
     }
   }
@@ -1624,14 +1624,6 @@ void BrowserView::Close() {
 }
 
 void BrowserView::Activate() {
-  if (auto* manager = InitialWebUIManager::From(browser())) {
-    if (manager->ShouldDeferShow()) {
-      manager->SetWebUIReadyCallback(base::BindOnce(
-          &BrowserView::Activate, weak_ptr_factory_.GetWeakPtr()));
-      return;
-    }
-  }
-
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   // Update the list managed by `BrowserList` synchronously the same way
   // `BrowserView::Show()` does.
@@ -6186,6 +6178,10 @@ void BrowserView::OnFirstPresentation(
     manager->OnBrowserWindowFirstPresentation(
         frame_timing_details.presentation_feedback.timestamp);
   }
+}
+
+void BrowserView::OnInitialWebUIReady() {
+  Show();
 }
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)

@@ -1139,6 +1139,9 @@ class BrowserView : public BrowserWindow,
   // `frame_timing_details` contains the paint timing information of the frame.
   void OnFirstPresentation(const viz::FrameTimingDetails& frame_timing_details);
 
+  // Called when the initial WebUI components are ready.
+  void OnInitialWebUIReady();
+
   // TODO(crbug.com/461955649): Move ExclusiveAccessContextImpl out of
   // BrowserView and make it shared so BrowserWindowFeatures can own it
   // directly.
