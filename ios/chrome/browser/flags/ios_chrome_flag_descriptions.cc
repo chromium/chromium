@@ -726,6 +726,10 @@ const char kIOSChooseFromDriveName[] = "IOS Choose from Drive";
 const char kIOSChooseFromDriveDescription[] =
     "Enables the Choose from Drive feature on iOS.";
 
+const char kIOSChooseFromDriveSignedOutName[] = "Choose from Drive Signed Out";
+const char kIOSChooseFromDriveSignedOutDescription[] =
+    "Enables the Choose from Drive feature to signed out users.";
+
 const char kIOSCustomFileUploadMenuName[] = "Custom file upload menu";
 const char kIOSCustomFileUploadMenuDescription[] =
     "Enables the custom file upload menu implementation.";

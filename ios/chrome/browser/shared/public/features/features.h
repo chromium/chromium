@@ -274,6 +274,9 @@ bool IsOmahaServiceRefactorEnabled();
 // TODO(crbug.com/473788390): Clean-up feature once file upload menu is ready.
 BASE_DECLARE_FEATURE(kIOSChooseFromDrive);
 
+// Feature flag enabling Choose from Drive for signed out users.
+BASE_DECLARE_FEATURE(kIOSChooseFromDriveSignedOut);
+
 // Feature flag enabling a fix for the Download manager mediator.
 BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
 

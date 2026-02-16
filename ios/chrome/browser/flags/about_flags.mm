@@ -2720,6 +2720,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kPageActionMenuIcon,
                                     kPageActionMenuIconVariations,
                                     "PageActionMenuIcon")},
+    {"ios-choose-from-drive-signed-out",
+     flag_descriptions::kIOSChooseFromDriveSignedOutName,
+     flag_descriptions::kIOSChooseFromDriveSignedOutDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSChooseFromDriveSignedOut)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

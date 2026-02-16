@@ -209,6 +209,8 @@ bool IsOmahaServiceRefactorEnabled() {
 // TODO(crbug.com/473788390): Clean-up feature once file upload menu is ready.
 BASE_FEATURE(kIOSChooseFromDrive, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSChooseFromDriveSignedOut, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSDownloadNoUIUpdateInBackground,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -447,6 +447,9 @@ extern const char kIOSBrowserReportIncludeAllProfilesDescription[];
 extern const char kIOSChooseFromDriveName[];
 extern const char kIOSChooseFromDriveDescription[];
 
+extern const char kIOSChooseFromDriveSignedOutName[];
+extern const char kIOSChooseFromDriveSignedOutDescription[];
+
 extern const char kIOSCustomFileUploadMenuName[];
 extern const char kIOSCustomFileUploadMenuDescription[];
 
