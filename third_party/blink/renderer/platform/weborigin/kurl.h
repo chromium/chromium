@@ -349,7 +349,7 @@ PLATFORM_EXPORT String EncodeWithURLEscapeSequences(const StringView&);
 // A valid percent-encoding is '%' followed by exactly two hex-digits. This
 // function returns true if an occurrence of '%' is found and followed by
 // anything other than two hex-digits.
-PLATFORM_EXPORT bool HasInvalidURLEscapeSequences(const StringView&);
+PLATFORM_EXPORT bool HasInvalidUrlEscapeSequences(const StringView&);
 
 // Defined in kurl_hash.h.
 template <>

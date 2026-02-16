@@ -54,7 +54,7 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
 
   DCHECK(!directive.contains('&'));
 
-  if (HasInvalidURLEscapeSequences(directive)) {
+  if (HasInvalidUrlEscapeSequences(directive)) {
     return kInvalidSelector;
   }
 

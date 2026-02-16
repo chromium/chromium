@@ -555,7 +555,7 @@ TEST_F(URLUtilTest, TestCanonicalizeIdempotencyWithLeadingControlCharacters) {
   }
 }
 
-TEST_F(URLUtilTest, TestHasInvalidURLEscapeSequences) {
+TEST_F(URLUtilTest, TestHasInvalidUrlEscapeSequences) {
   struct TestCase {
     const char* input;
     bool is_invalid;
@@ -632,7 +632,7 @@ TEST_F(URLUtilTest, TestHasInvalidURLEscapeSequences) {
 
   for (TestCase test_case : cases) {
     const char* input = test_case.input;
-    bool result = HasInvalidURLEscapeSequences(input);
+    bool result = HasInvalidUrlEscapeSequences(input);
     EXPECT_EQ(test_case.is_invalid, result)
         << "Invalid result for '" << input << "'";
   }

@@ -304,7 +304,7 @@ bool IsURIComponentChar(char c);
 // function returns true if an occurrence of '%' is found and followed by
 // anything other than two hex-digits.
 COMPONENT_EXPORT(URL)
-bool HasInvalidURLEscapeSequences(std::string_view input);
+bool HasInvalidUrlEscapeSequences(std::string_view input);
 
 // Check if a scheme is affected by the Android WebView Hack.
 bool IsAndroidWebViewHackEnabledScheme(std::string_view scheme);
