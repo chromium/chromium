@@ -398,14 +398,13 @@ void SigninViewController::SignoutOrReauthWithPrompt(
           profile_signout_source, token_signout_source);
   // Fetch the unsynced datatypes, as this is required to decide whether the
   // confirmation prompt is needed.
-  if (sync_service &&
-      profile_->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
+  if (sync_service) {
     sync_service->GetTypesWithUnsyncedData(
         syncer::TypesRequiringUnsyncedDataCheckOnSignout(),
         std::move(signout_prompt_with_datatypes));
     return;
   }
-  // Dice users don't see the prompt, pass empty datatypes.
+  // No sync service pass empty datatypes.
   std::move(signout_prompt_with_datatypes)
       .Run(absl::flat_hash_map<syncer::DataType, size_t>());
 }
@@ -789,11 +788,6 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
                       [](size_t current_sum, const auto& pair) {
                         return current_sum + pair.second;
                       });
-
-  // Do not show the dialog to users with implicit signin.
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
-    sign_out_immediately = true;
-  }
 
   if (ShowAccountExtensionsOnSignout(GetProfile())) {
     sign_out_immediately = false;
