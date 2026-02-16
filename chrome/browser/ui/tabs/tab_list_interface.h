@@ -14,6 +14,7 @@
 #include "build/android_buildflags.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
@@ -33,6 +34,8 @@ class TabGroupVisualData;
 // Desktop.
 class TabListInterface {
  public:
+  DECLARE_USER_DATA(TabListInterface);
+
   TabListInterface() = default;
   virtual ~TabListInterface() = default;
 
@@ -40,6 +43,9 @@ class TabListInterface {
   void operator=(const TabListInterface& other) = delete;
 
   // Returns the TabListInterface associated with the given `browser`.
+  // In unit tests, this will return a mock if one has been registered via
+  // ui::ScopedUnownedUserData<TabListInterface> in the browser's
+  // UnownedUserDataHost.
   static TabListInterface* From(BrowserWindowInterface* browser);
 
   // Adds / removes observers from this tab list.

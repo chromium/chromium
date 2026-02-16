@@ -34,8 +34,6 @@
 // case of a tab being missing (if it's expected).
 class TabListBridge : public TabListInterface, public TabStripModelObserver {
  public:
-  DECLARE_USER_DATA(TabListBridge);
-
   TabListBridge(TabStripModel& tab_strip_model,
                 ui::UnownedUserDataHost& unowned_data_host);
   TabListBridge(const TabListBridge&) = delete;
@@ -102,7 +100,7 @@ class TabListBridge : public TabListInterface, public TabStripModelObserver {
 
   base::ObserverList<TabListInterfaceObserver> observers_;
 
-  ui::ScopedUnownedUserData<TabListBridge> scoped_data_holder_;
+  ui::ScopedUnownedUserData<TabListInterface> scoped_data_holder_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_LIST_BRIDGE_H_

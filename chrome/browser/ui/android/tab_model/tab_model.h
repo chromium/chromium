@@ -42,8 +42,6 @@ class TabModelObserver;
 // with Android's Tabs and Tab Model.
 class TabModel : public TabListInterface {
  public:
-  DECLARE_USER_DATA(TabModel);
-
   // LINT.IfChange(kInvalidIndex)
   // Keep this in sync with
   // chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java

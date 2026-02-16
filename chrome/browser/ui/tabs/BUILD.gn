@@ -51,6 +51,7 @@ source_set("utils") {
 # This is temporary until the tabstrip api is implemented on both platforms.
 source_set("tab_list_interface") {
   sources = [
+    "tab_list_interface.cc",
     "tab_list_interface.h",
     "tab_list_interface_observer.h",
   ]
@@ -58,9 +59,30 @@ source_set("tab_list_interface") {
   deps = [
     ":tabs_public",
     "//build:android_buildflags",
+    "//chrome/browser/ui/browser_window",
     "//components/tab_groups",
     "//components/tabs:public",
+    "//ui/base/unowned_user_data",
     "//url",
+  ]
+}
+
+source_set("tab_list_interface_test_support") {
+  testonly = true
+  sources = [
+    "mock_tab_list_interface.cc",
+    "mock_tab_list_interface.h",
+  ]
+
+  deps = [
+    ":tab_list_interface",
+    "//chrome/browser/ui/browser_window",
+    "//components/sessions:session_id",
+    "//components/tab_groups",
+    "//components/tabs:public",
+    "//testing/gmock",
+    "//ui/base/unowned_user_data",
+    "//ui/gfx/range",
   ]
 }
 

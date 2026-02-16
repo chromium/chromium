@@ -136,7 +136,7 @@ class TestTabModel : public TabModel {
   raw_ptr<TabModelObserver> observer_ = nullptr;
   std::vector<raw_ptr<content::WebContents>> web_contents_list_;
 
-  std::unique_ptr<ui::ScopedUnownedUserData<TabModel>>
+  std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
       scoped_unowned_user_data_;
 };
 

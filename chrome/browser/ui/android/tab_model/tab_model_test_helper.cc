@@ -286,7 +286,7 @@ bool TestTabModel::IsClosingAllTabs() {
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
 void TestTabModel::AssociateWithBrowserWindow(BrowserWindowInterface* browser) {
   scoped_unowned_user_data_ =
-      std::make_unique<ui::ScopedUnownedUserData<TabModel>>(
+      std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
           browser->GetUnownedUserDataHost(), *this);
 }
 #endif
