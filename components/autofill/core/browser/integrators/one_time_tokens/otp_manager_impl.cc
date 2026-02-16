@@ -203,4 +203,14 @@ bool OtpManagerImpl::IsOtpDeliveryBlocked() {
   return owner_->client().DocumentUsedWebOTP();
 }
 
+std::optional<one_time_tokens::OneTimeToken>
+OtpManagerImpl::SelectMostRecentToken() const {
+  if (received_otps_.empty()) {
+    return std::nullopt;
+  }
+  return *std::ranges::max_element(
+      received_otps_, {},
+      &one_time_tokens::OneTimeToken::on_device_arrival_time);
+}
+
 }  // namespace autofill

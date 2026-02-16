@@ -1270,6 +1270,7 @@ static_library("test_support") {
     "integrators/identity_credential/mock_identity_credential_delegate.h",
     "integrators/one_time_tokens/mock_otp_manager.cc",
     "integrators/one_time_tokens/mock_otp_manager.h",
+    "integrators/one_time_tokens/otp_manager_impl_test_api.h",
     "integrators/optimization_guide/mock_autofill_optimization_guide_decider.cc",
     "integrators/optimization_guide/mock_autofill_optimization_guide_decider.h",
     "integrators/password_manager/mock_password_manager_delegate.cc",
