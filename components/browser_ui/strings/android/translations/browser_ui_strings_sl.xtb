@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Pomagajte nam izboljšati Chrome, tako da nam poveste, zakaj ste dovolili piškotke tretjih oseb. <ph name="BEGIN_LINK" />Pošiljanje povratnih informacij<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Zahtevate lahko namizno različico spletnih mest</translation>
 <translation id="1085696779717592361">Privzeto uporabljajte Chrome</translation>
+<translation id="1126523729897810826">Če želite kar najbolje izkoristiti Chrome, upoštevajte ta predlagana dejanja</translation>
 <translation id="113098737392899175">Premikanje po straneh s kazalcem besedila, ko je priključena tipkovnica</translation>
 <translation id="1149644372535087155">Shranjevanje gesel v Chromu</translation>
 <translation id="1178015372320901893">Razdelek na dnu zaslona »Moje bližnjice«</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">S Chromovim mehanizmom V8 pospešite delovanje spletnih mest, vendar je Chrome zato nekoliko manj odporen proti napadom</translation>
 <translation id="1593426485665524382">Nova dejanja so na voljo pri vrhu zaslona.</translation>
 <translation id="1594521731409209842">Primaknite ali razmaknite prsta na zaslonu, če želite spremeniti velikost fotografije</translation>
+<translation id="1599268789440304082">Razdelek za nastavitev je odprt</translation>
 <translation id="1601560923496285236">Uporabi</translation>
 <translation id="1615755956145364867">Spletna mesta lahko zahtevajo predvajanje zaščitene vsebine.</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="4505788138578415521">URL je razširjen</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4523472416386354622">Prijavite se, če želite začeti</translation>
+<translation id="4529207923544043455">Razdelek na dnu zaslona, ki prikazuje dokončana in nedokončana opravila na seznamu nastavitev</translation>
 <translation id="4534723447064627427">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do mikrofona, mikrofon vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Razdelek za nastavitve je zaprt</translation>
 <translation id="4566417217121906555">Izklopi mikrofon</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4578289292431526768">Pa začnimo</translation>

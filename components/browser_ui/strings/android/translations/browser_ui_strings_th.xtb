@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">ช่วยปรับปรุง Chrome โดยแจ้งให้เราทราบถึงเหตุผลที่คุณอนุญาตคุกกี้ของบุคคลที่สาม <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">คุณสามารถขอดูเว็บไซต์เวอร์ชันเดสก์ท็อปได้</translation>
 <translation id="1085696779717592361">ใช้ Chrome โดยค่าเริ่มต้น</translation>
+<translation id="1126523729897810826">โปรดดำเนินการตามที่แนะนําด้านล่างเพื่อให้ใช้ Chrome ได้เกิดประโยชน์สูงสุด</translation>
 <translation id="113098737392899175">ไปยังส่วนต่างๆ ของหน้าได้ด้วยเคอร์เซอร์ข้อความเมื่อต่อแป้นพิมพ์</translation>
 <translation id="1149644372535087155">บันทึกรหัสผ่านใน Chrome</translation>
 <translation id="1178015372320901893">Bottom Sheet ในแป้นพิมพ์ลัดของฉัน</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">เร่งความเร็วเว็บไซต์ด้วยเครื่องมือ V8 ของ Chrome แต่ทำให้ Chrome ต้านทานการโจมตีได้น้อยลงเล็กน้อย</translation>
 <translation id="1593426485665524382">การดำเนินการใหม่ที่พร้อมใช้งานบริเวณด้านบนของหน้าจอ</translation>
 <translation id="1594521731409209842">บีบหน้าจอเพื่อปรับขนาดรูปภาพ</translation>
+<translation id="1599268789440304082">เปิดชีตการตั้งค่าแล้ว</translation>
 <translation id="1601560923496285236">นำไปใช้</translation>
 <translation id="1615755956145364867">เว็บไซต์ขอเล่นเนื้อหาที่มีการคุ้มครองได้</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">ขยาย URL แล้ว</translation>
 <translation id="4522570452068850558">รายละเอียด</translation>
 <translation id="4523472416386354622">ลงชื่อเข้าใช้เพื่อเริ่มต้น</translation>
+<translation id="4529207923544043455">Bottom Sheet แสดงงานที่เสร็จแล้วและยังไม่เสร็จในรายการการตั้งค่า</translation>
 <translation id="4534723447064627427">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงไมโครโฟน ให้เปิดใช้ไมโครโฟนใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
+<translation id="4545694195887112015">ปิดชีตการตั้งค่าแล้ว</translation>
 <translation id="4566417217121906555">ปิดเสียงไมโครโฟน</translation>
 <translation id="4570913071927164677">รายละเอียด</translation>
 <translation id="4578289292431526768">เริ่มเลย</translation>

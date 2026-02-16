@@ -716,7 +716,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4113030288477039509">Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="4116038641877404294">Sayfaları çevrimdışı olarak kullanmak için indirin</translation>
 <translation id="4121654769234887259">Bu şifreyi hatırlamanız gerekmez. <ph name="USERNAME" /> için Google Şifre Yöneticisi'ne kaydedilir.</translation>
-<translation id="4124152339699379357">Bildirim izni akışı tam ekranda açıldı</translation>
 <translation id="4132137475637520539">Bağlantıya sahip herkesin katılmasına izin ver</translation>
 <translation id="4135200667068010335">Sekme paylaşılacak cihazların listesi kapalı.</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, Medya Kaydeden Birden Çok Seçili Sabit Sekme</translation>
@@ -1837,7 +1836,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8506357771923193001">İndirdiğiniz içerikleri burada bulabilirsiniz</translation>
 <translation id="8512053371384421952">Artık <ph name="DOMAIN" /> sitesinden bildirim almayacaksınız.</translation>
 <translation id="8516012719330875537">Resim Düzenleyici</translation>
-<translation id="8526855376374973824">Bildirim izni akışı</translation>
 <translation id="8533670235862049797">Güvenli Tarama açık</translation>
 <translation id="8540136935098276800">Doğru biçimli bir URL girin</translation>
 <translation id="854522910157234410">Şu sayfayı aç:</translation>
@@ -1908,7 +1906,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8854223127042600341">Çevrimdışı dosyalarınızı görün</translation>
 <translation id="885480114717186641"><ph name="HOST_NAME" /> masaüstü sitesini isteyebilirsiniz</translation>
 <translation id="8856607253650333758">Açıklama al</translation>
-<translation id="8856931513242997049">Bildirim izni akışı kapatıldı</translation>
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> sitesine tekrar izin verildi</translation>
 <translation id="8865415417596392024">Hesabınızdaki Chrome verileri</translation>
 <translation id="8872506776304248286">Uygulamada aç</translation>

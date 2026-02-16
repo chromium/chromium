@@ -1801,6 +1801,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="219283042927675668">Zavihki v skupini</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> upravlja stran z novim zavihkom, odpre se na novem zavihku</translation>
 <translation id="2192982266585216032">&amp;Plačila</translation>
+<translation id="2193567467390483943">Starš ni odobril te razširitve</translation>
 <translation id="2194856509914051091">Kaj morate upoštevati</translation>
 <translation id="2195331105963583686">Po tem datumu boste še vedno lahko uporabljali to napravo <ph name="DEVICE_TYPE" />, vendar ne bo več prejemala samodejnih posodobitev programske opreme in varnostnih posodobitev.</translation>
 <translation id="2195729137168608510">E-poštna zaščita</translation>
@@ -9411,6 +9412,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7401559588859088661">Premakni in odpri</translation>
 <translation id="7401778920660465883">Opusti to sporočilo</translation>
 <translation id="7402198013420237102">Želite shranjena gesla premakniti v račun Google?</translation>
+<translation id="7402375256128852434">Dodajte nedavne zavihke</translation>
 <translation id="740333000181878130">Zvok ob zagonu naprave</translation>
 <translation id="7403642243184989645">Prenos sredstev</translation>
 <translation id="7406113532070524618">Ta nastavitev deluje, ne da bi prišlo do vaše osebne prepoznave ali da bi bil spletnim mestom omogočen ogled vaše zgodovine brskanja. vendar lahko spletna mesta v okviru preverjanja delijo majhno količino podatkov.</translation>

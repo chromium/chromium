@@ -716,7 +716,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4113030288477039509">Gestionat per l'administrador</translation>
 <translation id="4116038641877404294">Baixa pàgines per utilitzar-les sense connexió</translation>
 <translation id="4121654769234887259">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes de Google per a <ph name="USERNAME" />.</translation>
-<translation id="4124152339699379357">El flux del permís de notificacions s'ha obert a alçada completa</translation>
 <translation id="4132137475637520539">Permet que s'hi uneixi tothom que tingui l'enllaç</translation>
 <translation id="4135200667068010335">La llista de dispositius amb què es compartirà una pestanya està tancada.</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, pestanya de gravació fixada multiseleccionada</translation>
@@ -1837,7 +1836,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8506357771923193001">Trobaràs les baixades aquí</translation>
 <translation id="8512053371384421952">Ja no rebràs notificacions del domini <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Editor d'imatges</translation>
-<translation id="8526855376374973824">Flux del permís de notificacions</translation>
 <translation id="8533670235862049797">La funció Navegació segura està activada</translation>
 <translation id="8540136935098276800">Introdueix un URL amb el format correcte</translation>
 <translation id="854522910157234410">Obre aquesta pàgina</translation>
@@ -1908,7 +1906,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8854223127042600341">Consulta els fitxers sense connexió</translation>
 <translation id="885480114717186641">Pots sol·licitar el lloc web per a ordinadors de <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obtén les descripcions</translation>
-<translation id="8856931513242997049">El flux del permís de notificacions s'ha tancat</translation>
 <translation id="8863714995118816041">S'han tornat a concedir els permisos per a <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Dades de Chrome al teu compte</translation>
 <translation id="8872506776304248286">Obre a l'aplicació</translation>

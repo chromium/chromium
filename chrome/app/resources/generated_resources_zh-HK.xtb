@@ -1799,6 +1799,7 @@
 <translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2192881772486983655">「<ph name="THIRD_PARTY_NTP_MANAGER" />」管理緊你嘅新分頁，喺新分頁打開</translation>
 <translation id="2192982266585216032">&amp;付款資料</translation>
+<translation id="2193567467390483943">家長未核准此擴充程式</translation>
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="2195331105963583686">您仍可在該時間點後使用此 <ph name="DEVICE_TYPE" />，但屆時此裝置將無法自動取得軟件和安全性更新</translation>
 <translation id="2195729137168608510">電郵保護</translation>
@@ -9390,6 +9391,7 @@
 <translation id="7401559588859088661">移動並開啟</translation>
 <translation id="7401778920660465883">關閉此訊息</translation>
 <translation id="7402198013420237102">要將已儲存的密碼移至 Google 帳戶嗎？</translation>
+<translation id="7402375256128852434">新增最近開啟的分頁</translation>
 <translation id="740333000181878130">裝置啟動音效</translation>
 <translation id="7403642243184989645">下載資源</translation>
 <translation id="7406113532070524618">此設定運作時不需識別您的身份或允許網站查看您的瀏覽記錄，不過網站可在驗證過程中分享少量資料</translation>

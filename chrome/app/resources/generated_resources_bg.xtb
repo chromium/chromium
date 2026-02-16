@@ -1795,6 +1795,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="219283042927675668">Раздели в групата</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> управлява новия раздел в браузъра ви, отваря се в нов раздел</translation>
 <translation id="2192982266585216032">&amp;Плащания</translation>
+<translation id="2193567467390483943">Родителят ви не одобри това разширение</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
 <translation id="2195331105963583686">След това пак ще можете да използвате устройството <ph name="DEVICE_TYPE" />, но то няма да получава повече автоматични актуализации на софтуера и сигурността</translation>
 <translation id="2195729137168608510">Защита за имейли</translation>
@@ -9399,6 +9400,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7401559588859088661">Преместване и отваряне</translation>
 <translation id="7401778920660465883">Отхвърляне на това съобщение</translation>
 <translation id="7402198013420237102">Искате ли да преместите запазените пароли в профила си в Google?</translation>
+<translation id="7402375256128852434">Добавяне на скорошни раздели</translation>
 <translation id="740333000181878130">Звук при стартиране на устройството</translation>
 <translation id="7403642243184989645">Ресурсите се изтеглят</translation>
 <translation id="7406113532070524618">Тази настройка работи, без да разкрива самоличността ви или да разрешава на сайтовете да виждат историята ви на сърфиране. Те обаче могат да споделят малко количество информация като част от потвърждаването</translation>

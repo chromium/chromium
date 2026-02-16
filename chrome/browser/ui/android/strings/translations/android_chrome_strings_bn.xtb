@@ -716,7 +716,6 @@
 <translation id="4113030288477039509">আপনার প্রশাসকের দ্বারা পরিচালিত</translation>
 <translation id="4116038641877404294">পৃষ্ঠাগুলি অফলাইনে ব্যবহার করতে সেগুলি ডাউনলোড করুন</translation>
 <translation id="4121654769234887259">আপনাকে এই পাসওয়ার্ড মনে রাখতে হবে না। <ph name="USERNAME" />-এর জন্য এটি Google Password Manager-এ সেভ হয়ে যাবে।</translation>
-<translation id="4124152339699379357">বিজ্ঞপ্তির অনুমতি ফ্লো সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="4132137475637520539">যেসব ব্যক্তির কাছে এই লিঙ্ক আছে, তাদের সবাইকে যোগ দেওয়ার অনুমতি দিন</translation>
 <translation id="4135200667068010335">ট্যাব শেয়ার করা যাবে এমন ডিভাইসের সূচি বন্ধ আছে।</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, একাধিক বেছে নেওয়া পিন করা রেকর্ডিং ট্যাব</translation>
@@ -1837,7 +1836,6 @@
 <translation id="8506357771923193001">আপনার ডাউনলোড করা ফাইল এখানে দেখতে পাবেন</translation>
 <translation id="8512053371384421952">আপনি আর <ph name="DOMAIN" /> থেকে বিজ্ঞপ্তি পাবেন না।</translation>
 <translation id="8516012719330875537">ছবির এডিটর</translation>
-<translation id="8526855376374973824">বিজ্ঞপ্তির অনুমতি ফ্লো</translation>
 <translation id="8533670235862049797">Safe Browsing চালু আছে</translation>
 <translation id="8540136935098276800">সঠিকভাবে ফর্ম্যাট করা একটি ইউআরএল লিখুন</translation>
 <translation id="854522910157234410">এই পৃষ্ঠাটি খুলুন</translation>
@@ -1908,7 +1906,6 @@
 <translation id="8854223127042600341">অফলাইনে সেভ করা আপনার ফাইলগুলি দেখুন</translation>
 <translation id="885480114717186641"><ph name="HOST_NAME" />-এর জন্য আপনি ডেস্কটপ সাইটের অনুরোধ করতে পারেন</translation>
 <translation id="8856607253650333758">বিবরণ পান</translation>
-<translation id="8856931513242997049">বিজ্ঞপ্তির অনুমতি ফ্লো বন্ধ করা হয়েছে</translation>
 <translation id="8863714995118816041"><ph name="SITE_NAME" />-এর জন্য আবার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8865415417596392024">আপনার অ্যাকাউন্টের Chrome ডেটা</translation>
 <translation id="8872506776304248286">অ্যাপ্লিকেশানে খুলুন</translation>

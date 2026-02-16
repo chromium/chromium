@@ -717,7 +717,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4113030288477039509">Rheolir gan eich gweinyddwr</translation>
 <translation id="4116038641877404294">Lawrlwythwch dudalennau i'w defnyddio all-lein</translation>
 <translation id="4121654769234887259">Ni fydd angen i chi gofio'r cyfrinair hwn. Bydd yn cael ei gadw i'r Rheolwr Cyfrineiriau Google ar gyfer <ph name="USERNAME" />.</translation>
-<translation id="4124152339699379357">Mae'r llif caniatâd hysbysu wedi'i hagor ar uchder llawn</translation>
 <translation id="4132137475637520539">Gadewch i unrhyw un sydd â'r ddolen ymuno</translation>
 <translation id="4135200667068010335">Mae'r rhestr o ddyfeisiau i rannu tab â nhw ar gau.</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, Tab Recordio wedi'i Binio a Aml-ddewisir</translation>
@@ -1838,7 +1837,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8506357771923193001">Byddwch yn gweld eich lawrlwythiadau yma</translation>
 <translation id="8512053371384421952">Ni fyddwch yn derbyn hysbysiadau gan <ph name="DOMAIN" /> mwyach.</translation>
 <translation id="8516012719330875537">Golygydd Lluniau</translation>
-<translation id="8526855376374973824">Llif caniatâd hysbysu</translation>
 <translation id="8533670235862049797">Mae Pori'n Ddiogel ymlaen</translation>
 <translation id="8540136935098276800">Rhowch URL sydd wedi'i fformatio'n gywir</translation>
 <translation id="854522910157234410">Agor y dudalen hon</translation>
@@ -1909,7 +1907,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8854223127042600341">Gweld eich ffeiliau all-lein</translation>
 <translation id="885480114717186641">Gallwch ofyn am y wefan bwrdd gwaith ar gyfer <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Cael disgrifiadau</translation>
-<translation id="8856931513242997049">Mae'r llif caniatâd hysbysu ar gau</translation>
 <translation id="8863714995118816041">Cafwyd caniatâd eto ar gyfer <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Data Chrome yn eich cyfrif</translation>
 <translation id="8872506776304248286">Agor mewn ap</translation>

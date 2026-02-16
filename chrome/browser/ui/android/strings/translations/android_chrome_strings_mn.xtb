@@ -716,7 +716,6 @@
 <translation id="4113030288477039509">Администратор хариуцаж байна</translation>
 <translation id="4116038641877404294">Хуудсыг офлайн үед ашиглахын тулд татна уу</translation>
 <translation id="4121654769234887259">Та энэ нууц үгийг санах шаардлагагүй болно. Үүнийг <ph name="USERNAME" />-д зориулж Google Password Manager-т хадгална.</translation>
-<translation id="4124152339699379357">Мэдэгдлийн зөвшөөрлийн урсгалыг бүтэн өндрөөр нь нээсэн.</translation>
 <translation id="4132137475637520539">Холбоостой дурын хүнд нэгдэхийг зөвшөөрөх</translation>
 <translation id="4135200667068010335">Таб хуваалцах төхөөрөмжийн жагсаалтыг хаалаа.</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, Олноороо сонгогдож, бэхлэгдсэн, бичлэг хийж буй нууцлалтай таб</translation>
@@ -1837,7 +1836,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8506357771923193001">Та татаж авсан файлаа эндээс олно</translation>
 <translation id="8512053371384421952">Та цаашид <ph name="DOMAIN" />-с мэдэгдэл хүлээн авахгүй.</translation>
 <translation id="8516012719330875537">Зураг засагч</translation>
-<translation id="8526855376374973824">Мэдэгдлийн зөвшөөрлийн урсгал</translation>
 <translation id="8533670235862049797">Аюулгүй үзэх үйлчилгээ асаалттай байна</translation>
 <translation id="8540136935098276800">Зөв форматтай URL оруулна уу</translation>
 <translation id="854522910157234410">Энэ хуудсыг нээх</translation>
@@ -1908,7 +1906,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8854223127042600341">Офлайн файлуудаа харах</translation>
 <translation id="885480114717186641">Та <ph name="HOST_NAME" />-н компьютерын сайтыг хүсэх боломжтой</translation>
 <translation id="8856607253650333758">Тайлбар авах</translation>
-<translation id="8856931513242997049">Мэдэгдлийн зөвшөөрлийн урсгалыг хаасан</translation>
 <translation id="8863714995118816041"><ph name="SITE_NAME" />-н зөвшөөрлийг дахин зөвшөөрсөн</translation>
 <translation id="8865415417596392024">Таны бүртгэлийн Chrome-н өгөгдөл</translation>
 <translation id="8872506776304248286">Апп-д нээх</translation>

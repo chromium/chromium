@@ -716,7 +716,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4113030288477039509">तपाईंको व्यवस्थापकबाट व्यवस्थित गरिएको</translation>
 <translation id="4116038641877404294">पृष्ठहरूलाई अफलाइन हेर्न तिनीहरूलाई डाउनलोड गर्नुहोस्</translation>
 <translation id="4121654769234887259">तपाईंले यो पासवर्ड याद गरिराख्नु पर्दैन। यो पासवर्ड <ph name="USERNAME" /> को Google पासवर्ड म्यानेजरमा सेभ गरिने छ।</translation>
-<translation id="4124152339699379357">सूचनासम्बन्धी अनुमतिको फ्लो पूरै स्क्रिनमा खोलिएको छ</translation>
 <translation id="4132137475637520539">यो लिंक भएका सबैलाई सामेल हुन दिनुहोस्</translation>
 <translation id="4135200667068010335">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची बन्द छ।</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको पिन गरिएको रेकर्डिङ ट्याब</translation>
@@ -1836,7 +1835,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8506357771923193001">तपाईंले डाउनलोड गरेका सामग्री यहाँ देखिने छन्</translation>
 <translation id="8512053371384421952">तपाईं अबदेखि <ph name="DOMAIN" /> बाट सूचनाहरू प्राप्त गर्नु हुने छैन।</translation>
 <translation id="8516012719330875537">फोटो सम्पादक</translation>
-<translation id="8526855376374973824">सूचनासम्बन्धी अनुमतिको फ्लो</translation>
 <translation id="8533670235862049797">Safe Browsing अन छ</translation>
 <translation id="8540136935098276800">सही ढाँचा भएको URL प्रविष्टि गर्नुहोस्</translation>
 <translation id="854522910157234410">यो पृष्ठ खोल्नुहोस्:</translation>
@@ -1907,7 +1905,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8854223127042600341">आफ्ना अफलाइन फाइलहरू हेर्नुहोस्</translation>
 <translation id="885480114717186641">तपाईं <ph name="HOST_NAME" /> को डेस्कटप साइटको लिंक माग्न सक्नुहुन्छ</translation>
 <translation id="8856607253650333758">विवरणहरू प्राप्त गर्नुहोस्</translation>
-<translation id="8856931513242997049">सूचनासम्बन्धी अनुमतिको फ्लो बन्द गरियो</translation>
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> लाई फेरि अनुमतिहरू दिइएका छन्</translation>
 <translation id="8865415417596392024">तपाईंको खातामा रहेको Chrome को डेटा</translation>
 <translation id="8872506776304248286">एपमा खोल्नुहोस्</translation>

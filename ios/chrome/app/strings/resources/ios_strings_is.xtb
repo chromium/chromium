@@ -374,7 +374,6 @@
 <translation id="2306265833370324042">Sýna upplýsingar um <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Loka flipa</translation>
 <translation id="2311077293164383652">Loka festum flipa</translation>
-<translation id="2313392466694008052">Breyta mynd með Gemini</translation>
 <translation id="2316129865977710310">Nei, takk</translation>
 <translation id="2320166752086256636">Fela lyklaborð</translation>
 <translation id="2321086116217818302">Undirbýr aðgangsorð…</translation>
@@ -1787,6 +1786,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Settu upp snertiauðkenni, andlitskennsl eða aðgangskóða til að læsa huliðsflipunum þínum.</translation>
 <translation id="750886945254958667">Haltu hópnum ef þú vilt bæta flipum við síðar eða yfirgefðu hann ef þú vilt ekki hafa aðgang að honum lengur.</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Bættu við allt að einum flipa}one{Bættu allt að {COUNT} flipa við}other{Bættu allt að {COUNT} flipum við}}</translation>
 <translation id="7512909159512473473">Slá inn aðgangsorð…</translation>
 <translation id="7514365320538308">Sækja</translation>
 <translation id="7514530647142300459">Haltu áfram að nota aðgangsorðin á Google-reikningnum þínum <ph name="EMAIL" /></translation>

@@ -716,7 +716,6 @@
 <translation id="4113030288477039509">מנוהל על ידי מנהל המערכת שלך</translation>
 <translation id="4116038641877404294">הורדת דפים כדי להשתמש בהם אופליין</translation>
 <translation id="4121654769234887259">‏אין צורך לזכור את הסיסמה הזו. היא תישמר במנהל הסיסמאות של Google בחשבון <ph name="USERNAME" />.</translation>
-<translation id="4124152339699379357">תהליך ההרשאה לשליחת התראות נפתח בגובה מלא</translation>
 <translation id="4132137475637520539">כל מי שיש לו את הקישור יכול להצטרף</translation>
 <translation id="4135200667068010335">רשימת המכשירים שאפשר לשתף איתם כרטיסייה נסגרה.</translation>
 <translation id="4136632885151622181">‫<ph name="TAB_TITLE" />, כרטיסייה מתוך סדרת כרטיסיות שנבחרו והוצמדו, והתוכן בה מוקלט</translation>
@@ -1837,7 +1836,6 @@
 <translation id="8506357771923193001">ההורדות יופיעו כאן</translation>
 <translation id="8512053371384421952">לא יישלחו אליך יותר התראות מהאתר <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">עורך תמונות</translation>
-<translation id="8526855376374973824">תהליך ההרשאה לשליחת התראות</translation>
 <translation id="8533670235862049797">הגלישה הבטוחה מופעלת</translation>
 <translation id="8540136935098276800">‏יש להזין כתובת URL בפורמט חוקי</translation>
 <translation id="854522910157234410">פתיחת דף זה</translation>
@@ -1908,7 +1906,6 @@
 <translation id="8854223127042600341">הצגת הקבצים שזמינים ללא חיבור לאינטרנט.</translation>
 <translation id="885480114717186641">ניתן לבקש את האתר שמותאם למחשב של <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">ליצירת תיאורים</translation>
-<translation id="8856931513242997049">תהליך ההרשאה לשליחת התראות נסגר</translation>
 <translation id="8863714995118816041">הרשאות ניתנו מחדש לאתר <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>
 <translation id="8872506776304248286">פתח ביישום</translation>

@@ -716,7 +716,6 @@
 <translation id="4113030288477039509">თქვენი ადმინისტრატორის მიერ მართული</translation>
 <translation id="4116038641877404294">ჩამოტვირთეთ გვერდები ხაზგარეშე რეჟიმში გამოსაყენებლად</translation>
 <translation id="4121654769234887259">ამ პაროლის დამახსოვრება არ დაგჭირდებათ. ის შეინახება Google პაროლების მმართველში <ph name="USERNAME" />-ისთვის.</translation>
-<translation id="4124152339699379357">შეტყობინების ნებართვის ნაკადი გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="4132137475637520539">ყველას, ვისაც ბმული აქვს, შეეძლოს გაწევრიანება</translation>
 <translation id="4135200667068010335">მოწყობილობების სია, რომლებთანაც უნდა გაზიარდეს ჩანართი, დახურულია.</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, არჩეულია რამდენიმე ჩამაგრებული ჩანართი, რომლებშიც მიმდინარეობს ჩაწერა</translation>
@@ -1837,7 +1836,6 @@
 <translation id="8506357771923193001">აქ იპოვით თქვენს ჩამოტვირთვებს</translation>
 <translation id="8512053371384421952"><ph name="DOMAIN" />-ისგან შეტყობინებებს აღარ მიიღებთ.</translation>
 <translation id="8516012719330875537">სურათების რედაქტორი</translation>
-<translation id="8526855376374973824">შეტყობინების ნებართვის ნაკადი</translation>
 <translation id="8533670235862049797">Safe Browsing ჩართულია</translation>
 <translation id="8540136935098276800">შეიყვანეთ URL სწორი ფორმატით</translation>
 <translation id="854522910157234410">ამ გვერდის გახსნა</translation>
@@ -1908,7 +1906,6 @@
 <translation id="8854223127042600341">ხაზგარეშე ფაილების ნახვა</translation>
 <translation id="885480114717186641">შეგიძლიათ მოითხოვოთ დესკტოპის საიტი <ph name="HOST_NAME" />-ისთვის</translation>
 <translation id="8856607253650333758">აღწერილობების მიღება</translation>
-<translation id="8856931513242997049">შეტყობინების ნებართვის ნაკადი დახურულია</translation>
 <translation id="8863714995118816041">ნებართვების ხელახლა დაიშვა <ph name="SITE_NAME" />-ისთვის</translation>
 <translation id="8865415417596392024">თქვენს ანგარიშში შენახული Chrome მონაცემები</translation>
 <translation id="8872506776304248286">აპში გახსნა</translation>

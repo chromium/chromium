@@ -716,7 +716,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4113030288477039509">Géré par votre administrateur</translation>
 <translation id="4116038641877404294">Téléchargez des pages pour y accéder hors connexion</translation>
 <translation id="4121654769234887259">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe de Google pour <ph name="USERNAME" />.</translation>
-<translation id="4124152339699379357">Flux d'autorisation de notification ouvert à pleine hauteur</translation>
 <translation id="4132137475637520539">Autoriser toutes les personnes disposant du lien à rejoindre</translation>
 <translation id="4135200667068010335">La liste des appareils avec lesquels vous pouvez partager un onglet est fermée.</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, onglet épinglé multisélectionné avec enregistrement en cours</translation>
@@ -1837,7 +1836,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8506357771923193001">Vos téléchargements s'afficheront ici</translation>
 <translation id="8512053371384421952">Vous ne recevrez plus de notifications de <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Éditeur d'image</translation>
-<translation id="8526855376374973824">Flux d'autorisation de notification</translation>
 <translation id="8533670235862049797">La navigation sécurisée est activée</translation>
 <translation id="8540136935098276800">Saisissez une URL dont le format est correct</translation>
 <translation id="854522910157234410">Ouvrir cette page</translation>
@@ -1908,7 +1906,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8854223127042600341">Consultez vos fichiers hors connexion</translation>
 <translation id="885480114717186641">Vous pouvez demander la version standard de <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obtenir les descriptions</translation>
-<translation id="8856931513242997049">Flux d'autorisation de notification fermé</translation>
 <translation id="8863714995118816041">Autorisations de nouveau accordées pour <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Données Chrome de votre compte</translation>
 <translation id="8872506776304248286">Ouvrir dans l'appli</translation>

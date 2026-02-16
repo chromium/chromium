@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Pomôžte nám zlepšiť Chrome tým, že nám poviete, prečo ste povolili súbory cookie tretích strán. <ph name="BEGIN_LINK" />Odoslať spätnú väzbu<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Môžete požiadať o zobrazenie verzie webov pre počítače</translation>
 <translation id="1085696779717592361">Predvolené používanie Chromu</translation>
+<translation id="1126523729897810826">Vykonajte akcie navrhované nižšie, aby ste Chrome využívali naplno</translation>
 <translation id="113098737392899175">Prechádzať stránkami pomocou textového kurzora, keď je pripojená klávesnica</translation>
 <translation id="1149644372535087155">Ukladajte si heslá v Chrome</translation>
 <translation id="1178015372320901893">Dolný hárok Moje skratky</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Zrýchľovať weby pomocou nástroja V8 Chromu (Chrome bude o niečo menej odolný voči útokom)</translation>
 <translation id="1593426485665524382">Nové akcie sú k dispozícii hore na obrazovke</translation>
 <translation id="1594521731409209842">Zmeňte veľkosť fotky stiahnutím či roztiahnutím prstov na obrazovke</translation>
+<translation id="1599268789440304082">Hárok nastavenia je otvorený</translation>
 <translation id="1601560923496285236">Použiť</translation>
 <translation id="1615755956145364867">Weby môžu žiadať o prehranie chráneného obsahu</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="4505788138578415521">Webová adresa bola rozbalená</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4523472416386354622">Prihlásiť sa a začať</translation>
+<translation id="4529207923544043455">Dolný hárok s dokončenými a nedokončenými úlohami zo zoznamu k nastaveniu</translation>
 <translation id="4534723447064627427">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať mikrofón, zapnite ho aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Hárok nastavenia je zavretý</translation>
 <translation id="4566417217121906555">Vypnúť mikrofón</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4578289292431526768">Začať</translation>

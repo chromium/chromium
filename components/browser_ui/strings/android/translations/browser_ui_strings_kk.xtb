@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Үшінші тарап cookie файлдарын рұқсат ету себебін айтып, Chrome браузерін жақсартуға көмектесіңіз. <ph name="BEGIN_LINK" />Пікір жіберу<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Сайттардың компьютерге арналған нұсқасын көруді сұрай аласыз.</translation>
 <translation id="1085696779717592361">Chrome-ды әдепкі браузер ретінде пайдалану</translation>
+<translation id="1126523729897810826">Chrome браузерін барынша тиімді пайдалану үшін төменде ұсынылған әрекеттерді орындаңыз.</translation>
 <translation id="113098737392899175">Пернетақта тіркелген кезде, бір беттен екінші бетке мәтін курсорымен өту</translation>
 <translation id="1149644372535087155">Құпия сөздерді Chrome-ға сақтау</translation>
 <translation id="1178015372320901893">"Жылдам пәрмендерім" төменгі парақшасы</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Chrome-ның V8 жүйесімен сайттардың жылдамдығын арттыру, бірақ Chrome-ның шабуылдарға төзімділігін сәл азайту</translation>
 <translation id="1593426485665524382">Экранның жоғарғы жағында жаңа әрекеттер берілген</translation>
 <translation id="1594521731409209842">Фотосуреттің өлшемін өзгерту үшін экранда енді екі саусақ арасын ашыңыз.</translation>
+<translation id="1599268789440304082">Реттеу парағы ашылды</translation>
 <translation id="1601560923496285236">Қолдану</translation>
 <translation id="1615755956145364867">Сайттар қорғалған контентті ойнатуға рұқсат сұрай алады</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">URL жайылды</translation>
 <translation id="4522570452068850558">Мәліметтер</translation>
 <translation id="4523472416386354622">Бастау үшін кіру</translation>
+<translation id="4529207923544043455">Реттеу тізіміндегі орындалған және орындалмаған тапсырмаларды көрсететін төменгі парақша</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> браузері микрофонды пайдалануы үшін, <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> оны да қосыңыз.</translation>
+<translation id="4545694195887112015">Реттеу парағы жабылды</translation>
 <translation id="4566417217121906555">Микрофон дыбысын өшіру</translation>
 <translation id="4570913071927164677">Мәліметтер</translation>
 <translation id="4578289292431526768">Бастау</translation>

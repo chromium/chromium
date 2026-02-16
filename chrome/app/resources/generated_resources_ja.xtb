@@ -1785,6 +1785,7 @@
 <translation id="219283042927675668">グループ内のタブ</translation>
 <translation id="2192881772486983655">新しいタブページは <ph name="THIRD_PARTY_NTP_MANAGER" /> によって管理されています。新しいタブで開きます</translation>
 <translation id="2192982266585216032">お支払い方法(&amp;P)</translation>
+<translation id="2193567467390483943">保護者がこの拡張機能を承認しませんでした</translation>
 <translation id="2194856509914051091">留意事項</translation>
 <translation id="2195331105963583686">この期限を過ぎても <ph name="DEVICE_TYPE" /> は使用できますが、ソフトウェアとセキュリティは自動更新されなくなります。</translation>
 <translation id="2195729137168608510">電子メールの保護</translation>
@@ -9370,6 +9371,7 @@
 <translation id="7401559588859088661">移動して開く</translation>
 <translation id="7401778920660465883">このメッセージを表示しない</translation>
 <translation id="7402198013420237102">保存したパスワードを Google アカウントに移動しますか？</translation>
+<translation id="7402375256128852434">最近使ったタブを追加</translation>
 <translation id="740333000181878130">デバイスの起動音</translation>
 <translation id="7403642243184989645">リソースのダウンロード</translation>
 <translation id="7406113532070524618">この設定では、ユーザーを特定したり、ユーザーの閲覧履歴の参照をサイトに許可したりすることはありませんが、確認に必要な少量の情報を共有することがあります</translation>

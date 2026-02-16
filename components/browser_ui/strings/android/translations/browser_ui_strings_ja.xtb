@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Chrome の改善に役立てるため、サードパーティ Cookie を許可した理由をお聞かせください。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">サイトの PC 版を表示するようリクエストできます</translation>
 <translation id="1085696779717592361">Chrome をデフォルトに設定する</translation>
+<translation id="1126523729897810826">Chrome を最大限に活用するには、下記のおすすめの設定を行ってください</translation>
 <translation id="113098737392899175">キーボードが接続されているときにテキスト カーソルを使ってページ間を移動する</translation>
 <translation id="1149644372535087155">Chrome でパスワードを保存</translation>
 <translation id="1178015372320901893">カスタム ショートカットのボトムシート</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Chrome の V8 エンジンでサイトを高速化する（攻撃に対する Chrome の耐性は若干低下します）</translation>
 <translation id="1593426485665524382">画面上部付近で新しい操作が可能になりました</translation>
 <translation id="1594521731409209842">画面をピンチして写真のサイズを変更します</translation>
+<translation id="1599268789440304082">設定シートが開きました</translation>
 <translation id="1601560923496285236">適用</translation>
 <translation id="1615755956145364867">保護されたコンテンツの再生がサイトからリクエストされる場合があります</translation>
 <translation id="1620510694547887537">カメラ</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">URL のフルバージョンです</translation>
 <translation id="4522570452068850558">詳細</translation>
 <translation id="4523472416386354622">ログインして開始</translation>
+<translation id="4529207923544043455">設定リストの完了したタスクと未完了のタスクが表示されているボトムシート</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> にマイクへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもマイクをオンにしてください。</translation>
+<translation id="4545694195887112015">設定シートを閉じました</translation>
 <translation id="4566417217121906555">マイクをミュート</translation>
 <translation id="4570913071927164677">詳細</translation>
 <translation id="4578289292431526768">始める</translation>

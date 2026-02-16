@@ -716,7 +716,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4113030288477039509">Xestionado polo teu administrador</translation>
 <translation id="4116038641877404294">Descarga as páxinas para velas cando non teñas conexión</translation>
 <translation id="4121654769234887259">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google para <ph name="USERNAME" />.</translation>
-<translation id="4124152339699379357">Fluxo de permiso de notificación aberto completamente</translation>
 <translation id="4132137475637520539">Permitir que se una calquera persoa que teña a ligazón</translation>
 <translation id="4135200667068010335">A lista de dispositivos cos que compartir unha pestana está pechada.</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, pestana con gravación en curso fixada e multiseleccionada</translation>
@@ -1837,7 +1836,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8506357771923193001">Aquí atoparás as túas descargas</translation>
 <translation id="8512053371384421952">Xa non recibirás ningunha notificación de <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Editor de imaxes</translation>
-<translation id="8526855376374973824">Fluxo de permiso de notificación</translation>
 <translation id="8533670235862049797">A opción Navegación segura está activada</translation>
 <translation id="8540136935098276800">Pon un URL que teña un formato correcto</translation>
 <translation id="854522910157234410">Abrir esta páxina</translation>
@@ -1908,7 +1906,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8854223127042600341">Consultar os teus ficheiros sen conexión</translation>
 <translation id="885480114717186641">Podes solicitar o sitio para ordenadores para o anfitrión <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obter descricións</translation>
-<translation id="8856931513242997049">Fluxo de permiso de notificación pechado</translation>
 <translation id="8863714995118816041">Volvéronse conceder permisos a <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Datos de Chrome na túa conta</translation>
 <translation id="8872506776304248286">Abrir na aplicación</translation>

@@ -716,7 +716,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4113030288477039509">Gestito dall'amministratore</translation>
 <translation id="4116038641877404294">Scarica le pagine per usarle offline</translation>
 <translation id="4121654769234887259">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password di Google per <ph name="USERNAME" />.</translation>
-<translation id="4124152339699379357">Flusso di autorizzazione alle notifiche aperto a schermo intero</translation>
 <translation id="4132137475637520539">Consenti a chiunque abbia il link di partecipare</translation>
 <translation id="4135200667068010335">L'elenco di dispositivi con cui condividere una scheda è chiuso.</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, schede con registrazione bloccate selezionate</translation>
@@ -1837,7 +1836,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8506357771923193001">Qui troverai i tuoi download</translation>
 <translation id="8512053371384421952">Non riceverai più notifiche da <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Editor immagini</translation>
-<translation id="8526855376374973824">Flusso di autorizzazione alle notifiche</translation>
 <translation id="8533670235862049797">Navigazione sicura attiva</translation>
 <translation id="8540136935098276800">Inserisci un URL nel formato corretto</translation>
 <translation id="854522910157234410">Apri questa pagina</translation>
@@ -1908,7 +1906,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8854223127042600341">Vedi i tuoi file offline</translation>
 <translation id="885480114717186641">Puoi richiedere il sito desktop di <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Recupera descrizioni</translation>
-<translation id="8856931513242997049">Flusso di autorizzazione alle notifiche chiuso</translation>
 <translation id="8863714995118816041">Autorizzazioni consentite di nuovo per il sito <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Dati di Chrome nel tuo account</translation>
 <translation id="8872506776304248286">Apri nell'app</translation>

@@ -716,7 +716,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4113030288477039509">Administrado por tu administrador</translation>
 <translation id="4116038641877404294">Descarga las páginas para usarlas sin conexión</translation>
 <translation id="4121654769234887259">No será necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de Google de <ph name="USERNAME" />.</translation>
-<translation id="4124152339699379357">El flujo de permisos de notificaciones está abierto en su totalidad</translation>
 <translation id="4132137475637520539">Permite que se una cualquier persona que tenga el vínculo</translation>
 <translation id="4135200667068010335">La lista de dispositivos con los que se puede compartir una pestaña está cerrada.</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, pestaña con grabación fijada con selección múltiple</translation>
@@ -1837,7 +1836,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8506357771923193001">Encontrarás tus descargas aquí</translation>
 <translation id="8512053371384421952">Ya no recibirás notificaciones de <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Editor de imágenes</translation>
-<translation id="8526855376374973824">Flujo de permisos de notificaciones</translation>
 <translation id="8533670235862049797">Se activó la Navegación segura</translation>
 <translation id="8540136935098276800">Ingresa una URL con el formato correcto</translation>
 <translation id="854522910157234410">Abrir esta página</translation>
@@ -1908,7 +1906,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8854223127042600341">Ver tus archivos sin conexión</translation>
 <translation id="885480114717186641">Puedes solicitar el sitio para computadoras de <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obtener descripciones</translation>
-<translation id="8856931513242997049">El flujo de permisos de notificaciones está cerrado</translation>
 <translation id="8863714995118816041">Se volvieron a otorgar permisos para <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Datos de Chrome de tu cuenta</translation>
 <translation id="8872506776304248286">Abrir en la app</translation>

@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">ຊ່ວຍພວກເຮົາປັບປຸງ Chrome ໂດຍແຈ້ງໃຫ້ພວກເຮົາຮູ້ເຫດຜົນທີ່ທ່ານໄດ້ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມ. <ph name="BEGIN_LINK" />ສົ່ງຄຳຕິຊົມ<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">ທ່ານສາມາດຂໍເບິ່ງເວັບໄຊເວີຊັນເດັສທັອບໄດ້</translation>
 <translation id="1085696779717592361">ໃຊ້ Chrome ເປັນຄ່າເລີ່ມຕົ້ນ</translation>
+<translation id="1126523729897810826">ກະລຸນາດຳເນີນການຕາມຄຳສັ່ງທີ່ແນະນຳເຫຼົ່ານີ້ທາງລຸ່ມເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome</translation>
 <translation id="113098737392899175">ນຳທາງໜ້າດ້ວຍເຄີເຊີຂໍ້ຄວາມເມື່ອເຊື່ອມຕໍ່ແປ້ນພິມແລ້ວ</translation>
 <translation id="1149644372535087155">ບັນທຶກລະຫັດຜ່ານໃນ Chrome</translation>
 <translation id="1178015372320901893">ຊີດລຸ່ມສຸດໃນທາງລັດຂອງຂ້ອຍ</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">ເພີ່ມຄວາມໄວໃຫ້ເວັບໄຊດ້ວຍເຄື່ອງຈັກ V8 ຂອງ Chrome ແຕ່ເຮັດໃຫ້ Chrome ທົນທານຕໍ່ກັບການໂຈມຕີຫຼຸດລົງເລັກນ້ອຍ</translation>
 <translation id="1593426485665524382">ຄຳສັ່ງໃໝ່ພ້ອມໃຫ້ນຳໃຊ້ຢູ່ໃກ້ສ່ວນເທິງສຸດຂອງໜ້າຈໍ</translation>
 <translation id="1594521731409209842">ບີບໜ້າຈໍເພື່ອປັບຂະໜາດຮູບພາບ</translation>
+<translation id="1599268789440304082">ເປີດຊີດການຕັ້ງຄ່າແລ້ວ</translation>
 <translation id="1601560923496285236">ນໍາໃຊ້</translation>
 <translation id="1615755956145364867">ເວັບໄຊສາມາດຂໍຫຼິ້ນເນື້ອຫາທີ່ມີການປ້ອງກັນໄດ້</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">ຂະຫຍາຍ URL ແລ້ວ</translation>
 <translation id="4522570452068850558">ລາຍ​ລະ​ອຽດ</translation>
 <translation id="4523472416386354622">ເຂົ້າສູ່ລະບົບເພື່ອ​ເລີ່ມ​ຕົ້ນ​</translation>
+<translation id="4529207923544043455">ຊີດລຸ່ມສຸດສະແດງໜ້າວຽກທີ່ສຳເລັດແລ້ວ ແລະ ຍັງບໍ່ສຳເລັດໃນລາຍຊື່ການຕັ້ງຄ່າ</translation>
 <translation id="4534723447064627427">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເຂົ້າເຖິງໄມໂຄຣໂຟນ, ກະລຸນາເປີດໄມໂຄຣໂຟນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
+<translation id="4545694195887112015">ປິດຊີດການຕັ້ງຄ່າແລ້ວ</translation>
 <translation id="4566417217121906555">ປິດສຽງໄມໂຄຣໂຟນ</translation>
 <translation id="4570913071927164677">ລາຍລະອຽດ</translation>
 <translation id="4578289292431526768">ໄປກັນເລີຍ</translation>

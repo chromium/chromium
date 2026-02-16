@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Helpwch ni i wella Chrome trwy ddweud wrthym pam eich bod wedi caniatáu cwcis trydydd parti. <ph name="BEGIN_LINK" />Anfon adborth<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Gallwch ofyn am weld y fersiwn bwrdd gwaith o wefannau</translation>
 <translation id="1085696779717592361">Defnyddiwch Chrome yn Ddiofyn</translation>
+<translation id="1126523729897810826">Cwblhewch y gweithredoedd a awgrymir isod i gael y gorau o Chrome</translation>
 <translation id="113098737392899175">Llywio tudalennau gyda chyrchwr testun pan fydd bysellfwrdd wedi'i atodi</translation>
 <translation id="1149644372535087155">Cadw cyfrineiriau yn Chrome</translation>
 <translation id="1178015372320901893">Dalen waelod fy llwybrau byr</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Cyflymu gwefannau gydag injan V8 Chrome ond gwneud Chrome ychydig yn llai galluog i wrthsefyll ymosodiadau</translation>
 <translation id="1593426485665524382">Mae gweithredoedd newydd ar gael yn agos at frig y sgrîn</translation>
 <translation id="1594521731409209842">Pinsiwch y sgrîn i newid maint y llun</translation>
+<translation id="1599268789440304082">Taflen gosod wedi'i hagor</translation>
 <translation id="1601560923496285236">Defnyddio</translation>
 <translation id="1615755956145364867">Gall gwefannau ofyn am chwarae cynnwys gwarchodedig</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -352,7 +354,9 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="4505788138578415521">URL wedi'i ehangu</translation>
 <translation id="4522570452068850558">Manylion</translation>
 <translation id="4523472416386354622">Mewngofnodwch i ddechrau</translation>
+<translation id="4529207923544043455">Dalen waelod yn dangos tasgau rhestr gosod sydd wedi'u cwblhau a heb eu cwblhau</translation>
 <translation id="4534723447064627427">I ganiatáu i <ph name="APP_NAME" /> gael mynediad at eich meicroffon, trowch y meicroffon ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
+<translation id="4545694195887112015">Dalen gosod ar gau</translation>
 <translation id="4566417217121906555">Distewi'r meicroffon</translation>
 <translation id="4570913071927164677">Manylion</translation>
 <translation id="4578289292431526768">I ffwrdd â ni</translation>

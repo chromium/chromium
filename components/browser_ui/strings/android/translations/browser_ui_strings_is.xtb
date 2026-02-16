@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Hjálpaðu okkur að bæta Chrome með því að segja okkur hvers vegna þú leyfðir fótspor þriðju aðila. <ph name="BEGIN_LINK" />Senda ábendingu<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Þú getur beðið um að sjá borðtölvuútgáfu vefsvæða</translation>
 <translation id="1085696779717592361">Nota Chrome sjálfgefið</translation>
+<translation id="1126523729897810826">Ljúktu ráðlögðu aðgerðunum hér að neðan til að nýta Chrome sem best</translation>
 <translation id="113098737392899175">Skoða síður með textabendli þegar lyklaborðið er tengt</translation>
 <translation id="1149644372535087155">Vistaðu aðgangsorð í Chrome</translation>
 <translation id="1178015372320901893">Blað neðst í flýtileiðunum mínum</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Stytta hleðslutíma vefsvæða með V8-vél Chrome og gera Chrome örlítið berskjaldaðri gagnvart árásum</translation>
 <translation id="1593426485665524382">Nýjar aðgerðir tiltækar nálægt efsta hluta skjásins</translation>
 <translation id="1594521731409209842">Færðu fingur saman á skjánum til að breyta stærð myndar</translation>
+<translation id="1599268789440304082">Uppsetningarblað opnað</translation>
 <translation id="1601560923496285236">Nota</translation>
 <translation id="1615755956145364867">Vefsvæði geta beðið um að spila varið efni</translation>
 <translation id="1620510694547887537">Myndavél</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">Öll vefslóðin</translation>
 <translation id="4522570452068850558">Upplýsingar</translation>
 <translation id="4523472416386354622">Skráðu þig inn til að byrja</translation>
+<translation id="4529207923544043455">Neðsta blað sem sýnir kláruð og ókláruð uppsetningarverkefni</translation>
 <translation id="4534723447064627427">Til að veita <ph name="APP_NAME" /> aðgang að hljóðnemanum þarftu einnig að kveikja á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Uppsetningarblaði lokað</translation>
 <translation id="4566417217121906555">Slökkva á hljóðnema</translation>
 <translation id="4570913071927164677">Nánar</translation>
 <translation id="4578289292431526768">Hefjumst handa</translation>

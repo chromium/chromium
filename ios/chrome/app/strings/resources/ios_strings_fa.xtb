@@ -374,7 +374,6 @@
 <translation id="2306265833370324042">نشان دادن جزئیات <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">بستن زبانه</translation>
 <translation id="2311077293164383652">بستن زبانه سنجاق‌شده</translation>
-<translation id="2313392466694008052">‏ویرایش تصویر با Gemini</translation>
 <translation id="2316129865977710310">نه متشکرم</translation>
 <translation id="2320166752086256636">پنهان کردن صفحه‌کلید</translation>
 <translation id="2321086116217818302">درحال آماده‌سازی گذرواژه‌ها…</translation>
@@ -1787,6 +1786,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">برای قفل کردن برگه‌های ناشناس، راه‌اندازی شناسه لمسی، شناسه چهره، یا گذرنویسه.</translation>
 <translation id="750886945254958667">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر نمی‌خواهید به آن دسترسی داشته باشید، آن را ترک کنید</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{حداکثر تا یک زبانه اضافه کنید}one{حداکثر تا {COUNT} زبانه اضافه کنید}other{حداکثر تا {COUNT} زبانه اضافه کنید}}</translation>
 <translation id="7512909159512473473">وارد کردن گذرعبارت…</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7514530647142300459">‏همچنان از گذرواژه‌های ذخیره‌شده در «حساب Google» خود (<ph name="EMAIL" />) استفاده کنید</translation>

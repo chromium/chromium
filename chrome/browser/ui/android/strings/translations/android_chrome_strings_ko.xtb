@@ -716,7 +716,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4113030288477039509">관리자가 관리합니다.</translation>
 <translation id="4116038641877404294">페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
 <translation id="4121654769234887259">비밀번호를 기억하지 않아도 됩니다. 비밀번호가 <ph name="USERNAME" />님의 Google 비밀번호 관리자에 저장됩니다</translation>
-<translation id="4124152339699379357">알림 권한 흐름이 전체 높이로 열림</translation>
 <translation id="4132137475637520539">링크가 있는 모든 사용자 참여 허용</translation>
 <translation id="4135200667068010335">탭을 공유할 기기 목록이 닫혔습니다.</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, 여러 개 선택되고 고정되고 녹화 중인 탭</translation>
@@ -1837,7 +1836,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8506357771923193001">여기에서 다운로드한 파일을 확인할 수 있습니다.</translation>
 <translation id="8512053371384421952">더 이상 <ph name="DOMAIN" />에서 알림을 받지 않습니다.</translation>
 <translation id="8516012719330875537">이미지 편집기</translation>
-<translation id="8526855376374973824">알림 권한 흐름</translation>
 <translation id="8533670235862049797">세이프 브라우징 사용 설정됨</translation>
 <translation id="8540136935098276800">올바른 형식의 URL을 입력하세요.</translation>
 <translation id="854522910157234410">페이지 열기</translation>
@@ -1908,7 +1906,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8854223127042600341">오프라인 파일 보기</translation>
 <translation id="885480114717186641"><ph name="HOST_NAME" />의 데스크톱 사이트를 요청할 수 있습니다.</translation>
 <translation id="8856607253650333758">설명 보기</translation>
-<translation id="8856931513242997049">알림 권한 흐름 닫힘</translation>
 <translation id="8863714995118816041"><ph name="SITE_NAME" />에 대한 권한이 다시 허용됨</translation>
 <translation id="8865415417596392024">계정의 Chrome 데이터</translation>
 <translation id="8872506776304248286">앱에서 열기</translation>

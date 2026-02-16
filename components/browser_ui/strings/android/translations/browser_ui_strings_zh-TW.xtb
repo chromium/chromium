@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome。<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">你可以要求查看電腦版網站</translation>
 <translation id="1085696779717592361">使用 Chrome 做為預設瀏覽器</translation>
+<translation id="1126523729897810826">完成下列建議動作，充分運用 Chrome 的各項功能</translation>
 <translation id="113098737392899175">接上鍵盤時，使用文字游標瀏覽頁面</translation>
 <translation id="1149644372535087155">在 Chrome 儲存密碼</translation>
 <translation id="1178015372320901893">「我的捷徑」底部功能表</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">使用 Chrome 的 V8 引擎加快網站速度，但稍微降低 Chrome 防範攻擊的能力</translation>
 <translation id="1593426485665524382">畫面頂端附近有可執行的新動作</translation>
 <translation id="1594521731409209842">雙指撥動螢幕即可調整相片大小</translation>
+<translation id="1599268789440304082">已開啟設定工作表</translation>
 <translation id="1601560923496285236">套用</translation>
 <translation id="1615755956145364867">網站可以要求播放受著作權保護的內容</translation>
 <translation id="1620510694547887537">攝影機</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">已展開網址</translation>
 <translation id="4522570452068850558">詳細資料</translation>
 <translation id="4523472416386354622">登入即可開始使用</translation>
+<translation id="4529207923544043455">底部功能表，顯示已完成和未完成的設定清單工作</translation>
 <translation id="4534723447064627427">如要允許 <ph name="APP_NAME" /> 存取裝置的麥克風，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟麥克風。</translation>
+<translation id="4545694195887112015">已關閉設定工作表</translation>
 <translation id="4566417217121906555">關閉麥克風</translation>
 <translation id="4570913071927164677">詳細資料</translation>
 <translation id="4578289292431526768">開始設定</translation>

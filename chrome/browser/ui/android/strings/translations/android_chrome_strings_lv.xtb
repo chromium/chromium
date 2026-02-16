@@ -716,7 +716,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4113030288477039509">Pārvalda jūsu administrators</translation>
 <translation id="4116038641877404294">Lejupielādējiet lapas, lai izmantotu tās bezsaistē</translation>
 <translation id="4121654769234887259">Jums nebūs jāatceras šī parole. Tā tiks saglabāta konta <ph name="USERNAME" /> Google paroļu pārvaldniekā.</translation>
-<translation id="4124152339699379357">Paziņojumu atļaujas plūsma ir atvērta pilna ekrāna augstumā</translation>
 <translation id="4132137475637520539">Ļaut pievienoties ikvienam, kam ir saite</translation>
 <translation id="4135200667068010335">Ierīču saraksts, ar ko kopīgot cilni, ir aizvērts.</translation>
 <translation id="4136632885151622181">Piespraustā cilne <ph name="TAB_TITLE" /> ir viena no vairākām atlasītām cilnēm; tajā notiek ierakstīšana</translation>
@@ -1837,7 +1836,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8506357771923193001">Šeit būs atrodamas jūsu lejupielādes.</translation>
 <translation id="8512053371384421952">Jūs vairs nesaņemsiet paziņojumus no domēna <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Attēlu redaktors</translation>
-<translation id="8526855376374973824">Paziņojumu atļaujas plūsma</translation>
 <translation id="8533670235862049797">Ir ieslēgta droša pārlūkošana</translation>
 <translation id="8540136935098276800">Ievadiet pareizi formatētu URL.</translation>
 <translation id="854522910157234410">Atvērt šo lapu</translation>
@@ -1908,7 +1906,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8854223127042600341">Skatīt bezsaistes failus</translation>
 <translation id="885480114717186641">Varat pieprasīt vietnes <ph name="HOST_NAME" /> versiju datoriem.</translation>
 <translation id="8856607253650333758">Iegūt aprakstus</translation>
-<translation id="8856931513242997049">Paziņojumu atļaujas plūsma ir aizvērta</translation>
 <translation id="8863714995118816041">Vietnei <ph name="SITE_NAME" /> atkal ir piešķirtas atļaujas.</translation>
 <translation id="8865415417596392024">Chrome dati jūsu kontā</translation>
 <translation id="8872506776304248286">Atvērt lietotnē</translation>

@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">بازبینی تکمیل شد!</translation>
 <translation id="1094555143448724771">برای دیدن زبانه‌های دستگاه‌های دیگرتان، زبانه‌ها و سابقه را همگام‌سازی کنید</translation>
 <translation id="1095761715416917775">مطمئن شوید همیشه می‌توانید به داده‌های همگام‌سازی دسترسی داشته باشید</translation>
+<translation id="1096091316906284742">‏برگ زیرین موافقت کردن با «یافته‌های Chrome»</translation>
 <translation id="1100066534610197918">باز کردن در برگه جدید در گروه</translation>
 <translation id="1103142993930332957">‏مایلید به بهبود Chrome کمک کنید؟</translation>
 <translation id="1105960400813249514">گرفتن عکس از صفحه‌</translation>
@@ -608,6 +609,7 @@
 <translation id="3635073343384702370">‏‫Chrome زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید</translation>
 <translation id="3636940436873918441">زبان‌های ترجیحی</translation>
 <translation id="3637744895182738742">‏اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
+<translation id="3641581193271938629">‏موافقت کردن با «یافته‌های Chrome» بسته شده است</translation>
 <translation id="3647019414263135904">باز کردن یا بستن بالاپر بافت</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">‏رفتن به «صفحه اصلی برنامه Google»</translation>
@@ -716,7 +718,6 @@
 <translation id="4113030288477039509">مدیریت شده توسط سرپرست‌تان</translation>
 <translation id="4116038641877404294">برای استفاده از صفحه‌ها در حالت آفلاین، آن‌ها را بارگیری کنید</translation>
 <translation id="4121654769234887259">‏لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در «مدیر گذرواژه Google» برای <ph name="USERNAME" /> ذخیره خواهد شد.</translation>
-<translation id="4124152339699379357">جریان اجازه اعلان به‌صورت کامل باز شد</translation>
 <translation id="4132137475637520539">هر کسی پیوند را داشته باشد بتواند بپیوندد</translation>
 <translation id="4135200667068010335">فهرست دستگاه‌هایی که می‌توان با آن‌ها برگه هم‌رسانی کرد، بسته است.</translation>
 <translation id="4136632885151622181">‫<ph name="TAB_TITLE" />، زبانه ضبط سنجاق‌شده چندانتخابی</translation>
@@ -782,6 +783,7 @@
 <translation id="4384468725000734951">‏استفاده از Sogou برای جستجو</translation>
 <translation id="4387647248986092471">ایجاد قفل نمایه خودرو</translation>
 <translation id="4387817230000841154">باز کردن بارگیری‌ها</translation>
+<translation id="4395046795145457714">‏موافقت کردن با «یافته‌های Chrome» به‌صورت کامل باز شده است</translation>
 <translation id="4398561997852463382">‫<ph name="TAB_TITLE" />، زبانه ناشناس ضبط سنجاق‌شده انتخابی</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - درحال بارگیری…</translation>
 <translation id="4404568932422911380">هیچ نشانکی موجود نیست</translation>
@@ -1050,6 +1052,7 @@
 <translation id="5469852975082458401">‏با نشانگر نوشتار می‌توانید صفحه‌ها را پیمایش کنید. برای خاموش شدن، F7 را فشار دهید.</translation>
 <translation id="5471273988133666918">زبانه <ph name="TAB_TITLE" /> را نمی‌توان منتقل کرد</translation>
 <translation id="548278423535722844">‏باز کردن در برنامه Maps</translation>
+<translation id="5489222148748465285">‏Chrome به جستجو ادامه دهد؟</translation>
 <translation id="5494920125229734069">انتخاب همه</translation>
 <translation id="549660026907543296">پیوستن با نام <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">برگ زیرین فعالیت اخیر</translation>
@@ -1345,6 +1348,7 @@
 <translation id="6647441008198474441">‏نشانی‌های وبی که بازدید می‌کنید به Google ارسال می‌شود تا پیش‌بینی شود ممکن است بعداً از چه سایت‌هایی بازدید کنید</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}one{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}other{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}}</translation>
 <translation id="6649642165559792194">پیش‌نمایش تصویر <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">‏موافقت کردن با «یافته‌های Chrome» به‌صورت نیمه باز شده است</translation>
 <translation id="666731172850799929">باز کردن در <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">مطلع شوم</translation>
 <translation id="6671495933530132209">کپی تصویر</translation>
@@ -1396,6 +1400,7 @@
 <translation id="6828070228333235514">توقف پیگیری قیمت</translation>
 <translation id="6830728435402077660">امن نیست</translation>
 <translation id="6831043979455480757">ترجمه</translation>
+<translation id="6835182496791325827">‏حتی زمانی که در Chrome نیستید، وقتی بهترین نتایج را برای جستجوهایتان پیدا می‌کند، مطلع می‌شوید.</translation>
 <translation id="6846298663435243399">درحال بارگیری…</translation>
 <translation id="6850409657436465440">بارگیری هنوز درحال انجام است</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> برگه بسته شد</translation>
@@ -1837,7 +1842,6 @@
 <translation id="8506357771923193001">بارگیری‌هایتان را اینجا خواهید دید</translation>
 <translation id="8512053371384421952">دیگر اعلان‌های <ph name="DOMAIN" /> را دریافت نخواهید کرد.</translation>
 <translation id="8516012719330875537">ویرایشگر تصویر</translation>
-<translation id="8526855376374973824">جریان اجازه اعلان</translation>
 <translation id="8533670235862049797">«مرور ایمن» روشن است</translation>
 <translation id="8540136935098276800">نشانی وبی وارد کنید که به‌درستی قالب‌بندی شده باشد</translation>
 <translation id="854522910157234410">باز کردن این صفحه</translation>
@@ -1908,7 +1912,6 @@
 <translation id="8854223127042600341">مشاهده فایل‌های آفلاین</translation>
 <translation id="885480114717186641">می‌توانید درخواست دهید از سایت ویژه رایانه <ph name="HOST_NAME" /> استفاده کنید</translation>
 <translation id="8856607253650333758">دریافت توضیحات</translation>
-<translation id="8856931513242997049">جریان اجازه اعلان بسته شد</translation>
 <translation id="8863714995118816041">اجازه‌ها دوباره به <ph name="SITE_NAME" /> اعطا شد</translation>
 <translation id="8865415417596392024">‏داده‌های Chrome در حساب شما</translation>
 <translation id="8872506776304248286">باز کردن در برنامه</translation>
