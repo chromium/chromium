@@ -84,9 +84,9 @@ void OtpFieldDetector::OnAfterFormsSeen(
 
 void OtpFieldDetector::OnAutofillManagerStateChanged(
     AutofillManager& manager,
-    AutofillDriver::LifecycleState previous,
-    AutofillDriver::LifecycleState current) {
-  if (current != AutofillDriver::LifecycleState::kActive) {
+    AutofillDriver::LifecycleState old_state,
+    AutofillDriver::LifecycleState new_state) {
+  if (new_state != AutofillDriver::LifecycleState::kActive) {
     manager.ForEachCachedForm([&](const FormStructure& form) {
       RemoveFormAndNotifyIfNecessary(form.global_id());
     });

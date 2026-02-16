@@ -86,8 +86,8 @@ class OtpFieldDetector : public AutofillManager::Observer {
   // navigations without this event.
   void OnAutofillManagerStateChanged(
       AutofillManager& manager,
-      AutofillDriver::LifecycleState previous,
-      AutofillDriver::LifecycleState current) override;
+      AutofillDriver::LifecycleState old_state,
+      AutofillDriver::LifecycleState new_state) override;
 
  protected:
   // Protected to ensure that only derived classes can be instantiated.

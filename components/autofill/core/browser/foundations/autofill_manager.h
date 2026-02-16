@@ -95,7 +95,7 @@ class AutofillManager
    public:
     virtual void OnAutofillManagerStateChanged(AutofillManager& manager,
                                                LifecycleState previous,
-                                               LifecycleState current) {}
+                                               LifecycleState new_state) {}
 
     virtual void OnBeforeLanguageDetermined(AutofillManager& manager) {}
     virtual void OnAfterLanguageDetermined(AutofillManager& manager) {}

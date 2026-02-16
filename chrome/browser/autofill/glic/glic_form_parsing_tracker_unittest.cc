@@ -102,8 +102,8 @@ TEST_F(GlicFormParsingTrackerTest, CleanupOnLifecycleChange) {
   // Simulate the manager's frame becoming inactive.
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnAutofillManagerStateChanged,
-      /*previous=*/AutofillDriver::LifecycleState::kActive,
-      /*current=*/AutofillDriver::LifecycleState::kInactive);
+      /*old_state=*/AutofillDriver::LifecycleState::kActive,
+      /*new_state=*/AutofillDriver::LifecycleState::kInactive);
 
   // Verify only the form associated with the inactive frame was removed.
   const auto& status_map = test_api(tracker()).form_parsing_status();
@@ -127,8 +127,8 @@ TEST_F(GlicFormParsingTrackerTest, NoCleanupOnActivation) {
   // Transition from kInactive to kActive should NOT trigger erasure.
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnAutofillManagerStateChanged,
-      /*previous=*/AutofillDriver::LifecycleState::kInactive,
-      /*current=*/AutofillDriver::LifecycleState::kActive);
+      /*old_state=*/AutofillDriver::LifecycleState::kInactive,
+      /*new_state=*/AutofillDriver::LifecycleState::kActive);
 
   EXPECT_TRUE(test_api(tracker()).form_parsing_status().contains(form_id));
 }

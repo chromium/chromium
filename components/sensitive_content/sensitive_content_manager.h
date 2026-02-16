@@ -60,8 +60,8 @@ class SensitiveContentManager final
   // again.
   void OnAutofillManagerStateChanged(
       autofill::AutofillManager& manager,
-      autofill::AutofillDriver::LifecycleState previous,
-      autofill::AutofillDriver::LifecycleState current) override;
+      autofill::AutofillDriver::LifecycleState old_state,
+      autofill::AutofillDriver::LifecycleState new_state) override;
 
   // The last content sensitivity known by the `SensitiveContentClient` (by
   // default, initially, the content is considered not sensitive). Used to make

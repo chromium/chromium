@@ -80,10 +80,10 @@ void GlicFormParsingTracker::MaybeNotifyGlic() {
 
 void GlicFormParsingTracker::OnAutofillManagerStateChanged(
     AutofillManager& manager,
-    AutofillDriver::LifecycleState previous,
-    AutofillDriver::LifecycleState current) {
-  if (previous == AutofillDriver::LifecycleState::kActive &&
-      current != AutofillDriver::LifecycleState::kActive) {
+    AutofillDriver::LifecycleState old_state,
+    AutofillDriver::LifecycleState new_state) {
+  if (old_state == AutofillDriver::LifecycleState::kActive &&
+      new_state != AutofillDriver::LifecycleState::kActive) {
     autofill::LocalFrameToken local_frame_token =
         manager.driver().GetFrameToken();
     absl::erase_if(form_parsing_status_, [local_frame_token](const auto& pair) {

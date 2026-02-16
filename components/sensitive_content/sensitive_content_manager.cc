@@ -142,13 +142,13 @@ void SensitiveContentManager::OnBeforeFormsSeen(
 
 void SensitiveContentManager::OnAutofillManagerStateChanged(
     AutofillManager& manager,
-    LifecycleState previous,
-    LifecycleState current) {
+    LifecycleState old_state,
+    LifecycleState new_state) {
   autofill::LocalFrameToken local_frame_token =
       manager.driver().GetFrameToken();
 
-  if (previous == LifecycleState::kActive &&
-      current != LifecycleState::kActive) {
+  if (old_state == LifecycleState::kActive &&
+      new_state != LifecycleState::kActive) {
     // The frame is not active anymore, so its fields are not anymore in the
     // DOM.
     // If needed, the time complexity can be further improved here by exploiting
@@ -162,8 +162,8 @@ void SensitiveContentManager::OnAutofillManagerStateChanged(
                     FormGlobalId form_id = item.first;
                     return form_id.frame_token == local_frame_token;
                   });
-  } else if (previous != LifecycleState::kActive &&
-             current == LifecycleState::kActive) {
+  } else if (old_state != LifecycleState::kActive &&
+             new_state == LifecycleState::kActive) {
     // The frame became active, so its fields are present in the DOM again.
     manager.ForEachCachedForm([&](const autofill::FormStructure& form) {
       for (const std::unique_ptr<AutofillField>& field : form.fields()) {
