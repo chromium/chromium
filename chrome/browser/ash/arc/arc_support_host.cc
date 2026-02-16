@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/i18n/timezone.h"
@@ -24,14 +25,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/base/consent_level.h"
@@ -845,7 +846,11 @@ void ArcSupportHost::OnMessage(const base::DictValue& message) {
     error_delegate_->OnErrorPageShown(
         message.FindBool(kNetworkTestsShown).value_or(false));
   } else if (*event == kEventOnOpenPrivacySettingsPageClicked) {
-    chrome::ShowSettingsSubPageForProfile(profile_, chrome::kPrivacySubPage);
+    auto* user =
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_);
+    ash::SettingsAppManager::Get()->Open(
+        CHECK_DEREF(user),
+        {.sub_page = chromeos::settings::mojom::kPrivacyHubSubpagePath});
   } else if (*event == kEventRequestWindowBounds) {
     SetWindowBound(display::Screen::Get()->GetDisplayForNewWindows());
   } else {

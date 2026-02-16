@@ -87,6 +87,7 @@ static_library("arc") {
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_app_constants",
     "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/components/mgs",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
