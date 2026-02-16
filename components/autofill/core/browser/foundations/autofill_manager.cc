@@ -652,6 +652,10 @@ void AutofillManager::ParseFormAsync(
       kAutofillManagerMaxFormCacheSize) {
     LOG_AF(log_manager()) << LoggingScope::kAbortParsing
                           << LogMessage::kAbortParsingTooManyForms << form;
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillManagerFiresOnAfterFooIfCacheIsFull)) {
+      std::move(callback).Run(*this, form);
+    }
     return;
   }
 

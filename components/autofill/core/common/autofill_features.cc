@@ -745,6 +745,12 @@ BASE_FEATURE_PARAM(int,
                    "sampling_rate",
                    10);
 
+// Kill switch: If enabled, ParseFormAsync() calls the parsing callback even if
+// the cache is full before the parsing even starts.
+// TODO(crbug.com/484285907): Clean up after April 10, 2026 (M148 branch point).
+BASE_FEATURE(kAutofillManagerFiresOnAfterFooIfCacheIsFull,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, all behaviours related to the on-device machine learning
 // model for field type predictions will be guarded.
 // TODO(crbug.com/40276177): Remove when launched.
