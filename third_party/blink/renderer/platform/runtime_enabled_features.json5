@@ -648,7 +648,7 @@
     {
       // AudioContext.playbackStats interface.
       name: "AudioContextPlaybackStats",
-      status: "experimental",
+      status: "stable",
     },
     {
       // AudioContext.playoutStats interface.
