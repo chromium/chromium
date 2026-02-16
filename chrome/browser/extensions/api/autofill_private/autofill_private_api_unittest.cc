@@ -32,6 +32,8 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
@@ -54,6 +56,7 @@
 
 namespace {
 
+using autofill::EntityInstance;
 using ::base::test::RunOnceCallback;
 using ::testing::Bool;
 using ::testing::Combine;
@@ -505,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
   ON_CALL(mock_sync_service, GetActiveDataTypes())
       .WillByDefault(Return(syncer::DataTypeSet{syncer::AUTOFILL_VALUABLE}));
 
-  autofill::EntityInstance entity_instance =
+  EntityInstance entity_instance =
       autofill::test::GetVehicleEntityInstanceWithRandomGuid();
 
   extensions::api::autofill_private::EntityInstance api_entity =
@@ -532,12 +535,12 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
                                                       profile()));
 
   autofill::EntityDataChangedWaiter(entity_data_manager).Wait();
-  base::optional_ref<const autofill::EntityInstance> saved_entity =
+  base::optional_ref<const EntityInstance> saved_entity =
       entity_data_manager->GetEntityInstance(entity_instance.guid());
   ASSERT_TRUE(saved_entity.has_value()) << "Entity should exist after save";
 
   EXPECT_EQ(saved_entity->record_type(),
-            autofill::EntityInstance::RecordType::kServerWallet);
+            EntityInstance::RecordType::kServerWallet);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -554,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(
   test_sync_service.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPayments, false);
 
-  autofill::EntityInstance entity_instance =
+  EntityInstance entity_instance =
       autofill::test::GetVehicleEntityInstanceWithRandomGuid();
 
   extensions::api::autofill_private::EntityInstance api_entity =
@@ -580,12 +583,121 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(extensions::api_test_utils::RunFunction(function.get(), json_args,
                                                       profile()));
   autofill::EntityDataChangedWaiter(entity_data_manager).Wait();
-  base::optional_ref<const autofill::EntityInstance> saved_entity =
+  base::optional_ref<const EntityInstance> saved_entity =
       entity_data_manager->GetEntityInstance(entity_instance.guid());
   ASSERT_TRUE(saved_entity.has_value()) << "Entity should exist after save";
 
+  EXPECT_EQ(saved_entity->record_type(), EntityInstance::RecordType::kLocal);
+}
+
+class AutofillPrivateApiSavePrivatePassToWalletTest
+    : public AutofillPrivateApiBrowserTest {
+ public:
+  AutofillPrivateApiSavePrivatePassToWalletTest() = default;
+
+  void SetUpOnMainThread() override {
+    AutofillPrivateApiBrowserTest::SetUpOnMainThread();
+
+    autofill_client()->set_entity_data_manager(
+        autofill::AutofillEntityDataManagerFactory::GetForProfile(profile()));
+    autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
+    autofill_client()->SetVariationConfigCountryCode(
+        autofill::GeoIpCountryCode("US"));
+
+    autofill_client()->set_wallet_pass_access_manager(
+        std::make_unique<
+            testing::NiceMock<autofill::MockWalletPassAccessManager>>());
+    address_data_manager().SetSyncServiceForTest(&mock_sync_service_);
+    autofill_client()->set_sync_service(&mock_sync_service_);
+    autofill_client()->GetSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPayments, true);
+    ON_CALL(mock_sync_service_, GetActiveDataTypes())
+        .WillByDefault(Return(syncer::DataTypeSet{syncer::AUTOFILL_VALUABLE}));
+  }
+
+  autofill::MockWalletPassAccessManager& wallet_manager() {
+    return static_cast<autofill::MockWalletPassAccessManager&>(
+        *autofill_client()->GetWalletPassAccessManager());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      autofill::features::kAutofillAiWalletPrivatePasses};
+  testing::NiceMock<MockSyncService> mock_sync_service_;
+};
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
+                       AddPassport_SavesToWallet_WhenEligible) {
+  EntityInstance entity_instance = autofill::test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+
+  extensions::api::autofill_private::EntityInstance api_entity =
+      extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
+          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+  api_entity.stored_in_wallet = true;
+
+  base::ListValue args;
+  args.Append(api_entity.ToValue());
+  std::string json_args;
+  base::JSONWriter::Write(args, &json_args);
+
+  EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance)
+      .WillOnce(RunOnceCallback<1>(
+          autofill::test::MaskEntityInstance(entity_instance)));
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateAddOrUpdateEntityInstanceFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(function.get(), json_args,
+                                                      profile()));
+
+  // Verify EDM was updated
+  auto* entity_data_manager =
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
+  autofill::EntityDataChangedWaiter(entity_data_manager).Wait();
+
+  base::optional_ref<const EntityInstance> saved_entity =
+      entity_data_manager->GetEntityInstance(entity_instance.guid());
+  ASSERT_TRUE(saved_entity.has_value());
   EXPECT_EQ(saved_entity->record_type(),
-            autofill::EntityInstance::RecordType::kLocal);
+            EntityInstance::RecordType::kServerWallet);
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
+                       AddPassport_SavesToLocal_WhenRequestFails) {
+  EntityInstance entity_instance = autofill::test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  extensions::api::autofill_private::EntityInstance api_entity =
+      extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
+          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+  api_entity.stored_in_wallet = true;
+
+  base::ListValue args;
+  args.Append(api_entity.ToValue());
+  std::string json_args;
+  base::JSONWriter::Write(args, &json_args);
+
+  EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance)
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateAddOrUpdateEntityInstanceFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(function.get(), json_args,
+                                                      profile()));
+
+  auto* entity_data_manager =
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
+  autofill::EntityDataChangedWaiter(entity_data_manager).Wait();
+
+  base::optional_ref<const EntityInstance> saved_entity =
+      entity_data_manager->GetEntityInstance(entity_instance.guid());
+  ASSERT_TRUE(saved_entity.has_value());
+
+  // The API should have saved the entity locally.
+  EXPECT_EQ(saved_entity->record_type(), EntityInstance::RecordType::kLocal);
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
@@ -716,8 +828,7 @@ class AutofillPrivateApiGetEntityInstanceAuthEnabledTest
     return autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
   }
 
-  [[nodiscard]] bool AddEntity(
-      const autofill::EntityInstance& entity_instance) {
+  [[nodiscard]] bool AddEntity(const EntityInstance& entity_instance) {
     entity_data_manager()->AddOrUpdateEntityInstance(entity_instance);
     return base::test::RunUntil([&]() {
       return entity_data_manager()
@@ -734,7 +845,7 @@ class AutofillPrivateApiGetEntityInstanceAuthEnabledTest
 IN_PROC_BROWSER_TEST_F(
     AutofillPrivateApiGetEntityInstanceAuthEnabledTest,
     AuthenticateUserBeforeReturningEntityData_AuthenticationProcessSucceeds) {
-  autofill::EntityInstance entity_instance =
+  EntityInstance entity_instance =
       autofill::test::GetPassportEntityInstanceWithRandomGuid();
   ASSERT_TRUE(AddEntity(entity_instance));
 
@@ -764,7 +875,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     AutofillPrivateApiGetEntityInstanceAuthEnabledTest,
     AuthenticateUserBeforeReturningEntityData_AuthenticationProcessFails) {
-  autofill::EntityInstance entity_instance =
+  EntityInstance entity_instance =
       autofill::test::GetPassportEntityInstanceWithRandomGuid();
   ASSERT_TRUE(AddEntity(entity_instance));
 
@@ -794,7 +905,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiGetEntityInstanceAuthEnabledTest,
   autofill::prefs::SetAutofillAiReauthBeforeFillingEnabled(
       autofill_client()->GetPrefs(), false);
 
-  autofill::EntityInstance entity_instance =
+  EntityInstance entity_instance =
       autofill::test::GetPassportEntityInstanceWithRandomGuid();
   ASSERT_TRUE(AddEntity(entity_instance));
   const std::string guid = entity_instance.guid().value();
@@ -824,7 +935,7 @@ IN_PROC_BROWSER_TEST_F(
     NonSensitiveData_DoNotAuthenticateUserBeforeReturningEntityData) {
   // Passport number is the only sensitive field, by making it empty
   // authentications is not required.
-  autofill::EntityInstance entity_instance =
+  EntityInstance entity_instance =
       autofill::test::GetPassportEntityInstanceWithRandomGuid({.number = u""});
   CHECK(entity_data_manager());
   ASSERT_TRUE(AddEntity(entity_instance));
@@ -857,8 +968,7 @@ class AutofillPrivateApiGetEntityInstancedTest
     return autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
   }
 
-  [[nodiscard]] bool AddEntity(
-      const autofill::EntityInstance& entity_instance) {
+  [[nodiscard]] bool AddEntity(const EntityInstance& entity_instance) {
     entity_data_manager()->AddOrUpdateEntityInstance(entity_instance);
     return base::test::RunUntil([&]() {
       return entity_data_manager()
@@ -870,7 +980,7 @@ class AutofillPrivateApiGetEntityInstancedTest
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiGetEntityInstancedTest,
                        ReturnsEntityInstance) {
-  autofill::EntityInstance entity_instance =
+  EntityInstance entity_instance =
       autofill::test::GetPassportEntityInstanceWithRandomGuid();
   ASSERT_TRUE(AddEntity(entity_instance));
 

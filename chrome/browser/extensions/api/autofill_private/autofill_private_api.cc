@@ -49,6 +49,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -1120,7 +1121,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
 
   const autofill_private::EntityInstance& private_api_entity_instance =
       parameters->entity_instance;
-  std::optional<autofill::EntityTypeName> entity_type_name =
+  std::optional<EntityTypeName> entity_type_name =
       autofill::ToSafeEntityTypeName(
           private_api_entity_instance.type.type_name);
 
@@ -1131,7 +1132,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   }
 
   const bool is_eligible_for_wallet_storage = IsEligibleForWalletStorage(
-      autofill_client(), autofill::EntityType(*entity_type_name));
+      autofill_client(), EntityType(*entity_type_name));
 
   std::optional<EntityInstance> entity_instance =
       autofill_ai_util::PrivateApiEntityInstanceToEntityInstance(
@@ -1152,13 +1153,93 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
     return RespondNow(Error(base::StrCat(
         {"Add or update entity instance - ", kErrorAutofillAiUnavailable})));
   }
-  entity_data_manager->AddOrUpdateEntityInstance(entity_instance.value());
 
+  if (IsMaskedStorageSupported(entity_instance->type(),
+                               entity_instance->record_type())) {
+    // If the request is successfully started, the callback will handle the
+    // response.
+    if (TrySavePrivatePassWithWalletAPI(*entity_instance)) {
+      return RespondLater();
+    }
+
+    SavePassLocallyAndNotifyAsFallback(*entity_data_manager,
+                                       std::move(*entity_instance));
+    return RespondNow(NoArguments());
+  }
+
+  // Handles the following scenarios:
+  // 1. Save entity locally.
+  // 2. Save entity to Wallet via Chrome sync.
+  entity_data_manager->AddOrUpdateEntityInstance(entity_instance.value());
   if (private_api_entity_instance.stored_in_wallet.value_or(false) &&
       !is_eligible_for_wallet_storage && autofill_client()) {
     autofill_client()->ShowAutofillAiLocalSaveNotification();
   }
   return RespondNow(NoArguments());
+}
+
+bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
+    TrySavePrivatePassWithWalletAPI(const EntityInstance& entity_instance) {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiWalletPrivatePasses)) {
+    return false;
+  }
+
+  if (!autofill_client()) {
+    return false;
+  }
+
+  if (autofill::WalletPassAccessManager* pass_manager =
+          autofill_client()->GetWalletPassAccessManager()) {
+    pass_manager->SaveWalletEntityInstance(
+        entity_instance,
+        base::BindOnce(&AutofillPrivateAddOrUpdateEntityInstanceFunction::
+                           OnSavePrivatePassToWalletFinished,
+                       base::RetainedRef(this), entity_instance));
+    return true;
+  }
+
+  return false;
+}
+
+void AutofillPrivateAddOrUpdateEntityInstanceFunction::
+    OnSavePrivatePassToWalletFinished(
+        autofill::EntityInstance original_entity,
+        std::optional<EntityInstance> saved_entity) {
+  content::BrowserContext* context = browser_context();
+  if (!context) {
+    Respond(Error(kErrorAutofillAiUnavailable));
+    return;
+  }
+  Profile* profile = Profile::FromBrowserContext(context);
+  EntityDataManager* entity_data_manager =
+      profile ? AutofillEntityDataManagerFactory::GetForProfile(profile)
+              : nullptr;
+
+  if (!entity_data_manager) {
+    Respond(Error(kErrorAutofillAiUnavailable));
+    return;
+  }
+  if (saved_entity.has_value()) {
+    entity_data_manager->AddOrUpdateEntityInstance(std::move(*saved_entity));
+  } else {
+    SavePassLocallyAndNotifyAsFallback(*entity_data_manager,
+                                       std::move(original_entity));
+  }
+  Respond(NoArguments());
+}
+
+void AutofillPrivateAddOrUpdateEntityInstanceFunction::
+    SavePassLocallyAndNotifyAsFallback(EntityDataManager& entity_data_manager,
+                                       EntityInstance entity) {
+  EntityInstance local_entity =
+      entity.CopyWithNewRecordType(EntityInstance::RecordType::kLocal);
+  entity_data_manager.AddOrUpdateEntityInstance(std::move(local_entity));
+
+  // Notify the user.
+  if (autofill_client()) {
+    autofill_client()->ShowAutofillAiLocalSaveNotification();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -13,6 +13,7 @@
 namespace autofill {
 class AddressDataManager;
 class ContentAutofillClient;
+class EntityDataManager;
 class PaymentsDataManager;
 }  // namespace autofill
 
@@ -463,6 +464,24 @@ class AutofillPrivateAddOrUpdateEntityInstanceFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+
+ private:
+  // Helper to initiate an asynchronous save request of a private pass
+  // `entity_instance` through the Wallet API. Returns true if the async request
+  // was started, false otherwise.
+  bool TrySavePrivatePassWithWalletAPI(
+      const autofill::EntityInstance& entity_instance);
+
+  // Callback for the WalletPassAccessManager::SaveWalletEntityInstance request
+  // for private passes.
+  void OnSavePrivatePassToWalletFinished(
+      autofill::EntityInstance original_entity,
+      std::optional<autofill::EntityInstance> saved_entity);
+
+  // Helper to save the entity locally and show a notification informing the
+  // user that the pass couldn't be saved to wallet.
+  void SavePassLocallyAndNotifyAsFallback(autofill::EntityDataManager& manager,
+                                          autofill::EntityInstance entity);
 };
 
 class AutofillPrivateRemoveEntityInstanceFunction
