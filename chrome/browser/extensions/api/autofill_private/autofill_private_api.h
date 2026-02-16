@@ -479,9 +479,10 @@ class AutofillPrivateAddOrUpdateEntityInstanceFunction
       std::optional<autofill::EntityInstance> saved_entity);
 
   // Helper to save the entity locally and show a notification informing the
-  // user that the pass couldn't be saved to wallet.
-  void SavePassLocallyAndNotifyAsFallback(autofill::EntityDataManager& manager,
-                                          autofill::EntityInstance entity);
+  // user that the private pass couldn't be saved to wallet.
+  void SavePrivatePassLocallyAndNotifyAsFallback(
+      autofill::EntityDataManager& manager,
+      autofill::EntityInstance entity);
 };
 
 class AutofillPrivateRemoveEntityInstanceFunction

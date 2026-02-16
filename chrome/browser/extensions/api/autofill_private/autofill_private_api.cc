@@ -1162,8 +1162,8 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
       return RespondLater();
     }
 
-    SavePassLocallyAndNotifyAsFallback(*entity_data_manager,
-                                       std::move(*entity_instance));
+    SavePrivatePassLocallyAndNotifyAsFallback(*entity_data_manager,
+                                              std::move(*entity_instance));
     return RespondNow(NoArguments());
   }
 
@@ -1223,15 +1223,16 @@ void AutofillPrivateAddOrUpdateEntityInstanceFunction::
   if (saved_entity.has_value()) {
     entity_data_manager->AddOrUpdateEntityInstance(std::move(*saved_entity));
   } else {
-    SavePassLocallyAndNotifyAsFallback(*entity_data_manager,
-                                       std::move(original_entity));
+    SavePrivatePassLocallyAndNotifyAsFallback(*entity_data_manager,
+                                              std::move(original_entity));
   }
   Respond(NoArguments());
 }
 
 void AutofillPrivateAddOrUpdateEntityInstanceFunction::
-    SavePassLocallyAndNotifyAsFallback(EntityDataManager& entity_data_manager,
-                                       EntityInstance entity) {
+    SavePrivatePassLocallyAndNotifyAsFallback(
+        EntityDataManager& entity_data_manager,
+        EntityInstance entity) {
   EntityInstance local_entity =
       entity.CopyWithNewRecordType(EntityInstance::RecordType::kLocal);
   entity_data_manager.AddOrUpdateEntityInstance(std::move(local_entity));
