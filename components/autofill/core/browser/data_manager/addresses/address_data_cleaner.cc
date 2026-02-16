@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/to_vector.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/version_info/version_info.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -79,6 +80,7 @@ bool ShouldWaitForSync(syncer::SyncService* sync_service) {
 void DeduplicateProfiles(const AutofillProfileComparator& comparator,
                          std::vector<AutofillProfile> profiles,
                          AddressDataManager& adm) {
+  SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DeduplicateProfiles");
   std::set<std::string> guids_to_delete;
 
   for (const AutofillProfile& profile : profiles) {

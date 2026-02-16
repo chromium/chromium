@@ -584,6 +584,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     const AutofillProfileComparator& comparator,
     const AutofillProfile& profile,
     const FieldTypeSet& types) const {
+  SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.IsSubsetOfForFieldSet");
   const std::string& app_locale = comparator.app_locale();
   const AddressComponent& address = GetAddress().GetRoot();
   const AddressComponent& other_address = profile.GetAddress().GetRoot();

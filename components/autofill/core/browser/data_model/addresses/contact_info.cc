@@ -12,9 +12,10 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/i18n/char_iterator.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -98,7 +99,9 @@ std::u16string GetNameForComparison(
 //     "jean", "jean f", "jean francois", "jf" }
 //
 // Note: Expects that `name` is already normalized for comparison.
-std::set<std::u16string> GetNamePartVariants(std::u16string_view name_part) {
+// TODO(crbug.com/479905438) Remove once launched.
+std::set<std::u16string> GetNamePartVariantsDeprecated(
+    std::u16string_view name_part) {
   static constexpr size_t kMaxSupportedSubNames = 8;
 
   std::vector<std::u16string_view> sub_names = base::SplitStringPiece(
@@ -167,18 +170,15 @@ bool MatchesCjkVariant(std::u16string_view full_name,
   return false;
 }
 
-// Returns true if `full_name_2` is a variant of `full_name_1`.
+// An implementation of `IsNormalizedNameVariantOf` with exponential time
+// complexity in the number of given and middle name tokens in `full_name_1`.
 //
-// This function generates all variations of `full_name_1` and returns true if
-// one of these variants is equal to `full_name_2`. For example, this function
-// will return true if `full_name_2` is "john q public" and `full_name_1` is
-// "john quincy public" because `full_name_2` can be derived from
-// `full_name_1` by using the middle initial. Note that the reverse is not
-// true, "john quincy public" is not a name variant of "john q public".
-//
-// Note: Expects that `full_name` is already normalized for comparison.
-bool IsNormalizedNameVariantOf(std::u16string_view full_name_1,
-                               std::u16string_view full_name_2) {
+// `GetNamePartVariantsDeprecated` generates all possible subsequences where
+// tokens are either fully included, abbreviated to a one-letter initial, or
+// skipped. This results in 3^n subsequences, where n is the number of tokens.
+// TODO(crbug.com/479905438) Remove once launched.
+bool IsNormalizedNameVariantOfExponential(std::u16string_view full_name_1,
+                                          std::u16string_view full_name_2) {
   // This early return is just an optimization, the rest of the logic should
   // handle this case as well.
   if (full_name_1 == full_name_2) {
@@ -189,9 +189,9 @@ bool IsNormalizedNameVariantOf(std::u16string_view full_name_1,
 
   // Build the variants of full_name_1`s given, middle and family names.
   const std::set<std::u16string> given_name_variants =
-      GetNamePartVariants(name_1_parts.given);
+      GetNamePartVariantsDeprecated(name_1_parts.given);
   const std::set<std::u16string> middle_name_variants =
-      GetNamePartVariants(name_1_parts.middle);
+      GetNamePartVariantsDeprecated(name_1_parts.middle);
   const std::set<std::u16string> family_name_variants = {name_1_parts.family,
                                                          u""};
 
@@ -230,6 +230,204 @@ bool IsNormalizedNameVariantOf(std::u16string_view full_name_1,
 
   // There was no match found.
   return false;
+}
+
+// Returns true if `sub` is a subsequence of `super`.
+//
+// A subsequence of span of strings `super` is a span of strings that can be
+// derived from `super` by deleting zero or more span items (strings) without
+// changing the relative order of the remaining items.
+//
+// For example, for the span
+//   ["john", "quincy", "public"],
+// the following spans are valid subsequences:
+//   ["john", "quincy"          ],
+//   [        "quincy"          ],
+//   ["john",          "public" ]...
+//
+// Note: Empty tokens are considered to be equivalent to the absence of the
+// token and just bypassed by the algorithm.
+//
+// The number of iterations does not exceed `super.size() + sub.size()`.
+bool IsSubsequence(base::span<const std::u16string_view> super,
+                   base::span<const std::u16string_view> sub) {
+  size_t super_idx = 0;
+  size_t sub_idx = 0;
+  while (super_idx < super.size() && sub_idx < sub.size()) {
+    if (sub[sub_idx].empty()) {
+      ++sub_idx;
+      continue;
+    }
+    if (super[super_idx].empty()) {
+      ++super_idx;
+      continue;
+    }
+    if (super[super_idx] == sub[sub_idx]) {
+      ++super_idx;
+      ++sub_idx;
+      continue;
+    }
+    ++super_idx;
+  }
+
+  return sub_idx == sub.size();
+}
+
+// Returns true if `sub` is an abbreviated concatenated subsequence of `super`.
+//
+// This means each token in `sub` must match a corresponding subsequence of
+// tokens from `super`, processed in order. Tokens from `super` can be skipped.
+// The matching for a `sub` token can be one of the following:
+//
+// 1.  Exact Match:
+//     A token in `sub` is identical to a token in `super`.
+//
+// 2.  Concatenated Initials:
+//     A token in `sub` is formed by concatenating the first letters (initials)
+//     of an ordered subsequence of tokens from `super`.
+//     - Example: Given `super` = ["john", "quincy", "public"],
+//       `sub` = ["jqp"] matches by taking initials from all three.
+//       `sub` = ["jq"] matches by taking initials from "john", "quincy",
+//       skipping "public".
+//
+// Key Rules:
+// - Tokens from `super` are always consumed in their original order.
+// - Tokens in `super` can be skipped between matches for different `sub`
+//   tokens.
+// - Tokens in `super` can also be skipped when forming a single concatenated
+//   initials token in `sub`.
+//   (e.g., "jp" from ["john", "quincy", "public"], skipping "quincy").
+//
+// Examples with `super` = ["john", "quincy", "public"]:
+// Valid `sub` sequences:
+//   ["john", "quincy"          ]
+//   ["j"   , "q"     , "p"     ]
+//   ["jq"  ,           "public"]
+//   ["jqp"                     ]
+//   ["john",           "p"     ]
+//   ["jp"                      ]...
+//
+// Note: Empty tokens are considered to be equivalent to the absence of the
+// token and just bypassed by the algorithm.
+//
+// The number of iterations does not exceed `super.size() + sub.size()`.
+bool IsAbbreviatedConcatenatedSubsequence(
+    base::span<const std::u16string_view> super,
+    base::span<const std::u16string_view> sub) {
+  size_t super_idx = 0;
+  size_t sub_idx = 0;
+  // Index within the current `sub[sub_idx]` token. Tracks progress when
+  // matching `sub[sub_idx]` as a concatenated initials string.
+  size_t sub_inner_idx = 0;
+
+  while (super_idx < super.size() && sub_idx < sub.size()) {
+    if (sub[sub_idx].empty()) {
+      ++sub_idx;
+      continue;
+    }
+    if (super[super_idx].empty()) {
+      ++super_idx;
+      continue;
+    }
+    // Check if the initial of the current `super` token matches the
+    // `sub_inner_idx`-th character of the current `sub` token, as part of
+    // matching `sub[sub_idx]` as a concatenated initials string.
+    if (super[super_idx][0] == sub[sub_idx][sub_inner_idx]) {
+      ++sub_inner_idx;
+    }
+    // Checks if `sub[sub_idx]` is fully matched. This occurs if:
+    // 1. All its characters are matched as concatenated initials from 'super'
+    //    tokens in order (`sub_inner_idx == sub[sub_idx].size()`).
+    // 2. It exactly matches the current 'super' token (`super[super_idx] ==
+    //    sub[sub_idx]`).
+    if (sub_inner_idx == sub[sub_idx].size() ||
+        super[super_idx] == sub[sub_idx]) {
+      ++super_idx;
+      ++sub_idx;
+      sub_inner_idx = 0;
+      continue;
+    }
+    ++super_idx;
+  }
+  return sub_idx == sub.size();
+}
+
+// Tokenizes CJK names into individual characters.
+// Unlike names written in the Latin script, CJK names are not separated
+// by spaces, and the boundary between family and given names can be
+// ambiguous.
+//
+// The UTF16CharIterator is used here to correctly handle surrogate pairs
+// (e.g., rare CJK Extension B characters). These characters require two
+// 16-bit units; a simple loop would incorrectly split them into invalid
+// fragments.
+std::vector<std::u16string_view> TokenizeNormalizedCjkName(
+    std::u16string_view name) {
+  std::vector<std::u16string_view> tokens;
+
+  base::i18n::UTF16CharIterator iter(name);
+  while (!iter.end()) {
+    size_t start = iter.array_pos();
+    iter.Advance();
+
+    // Other separators (e.g., the ideographic space \u3000) are expected to be
+    // replaced by `kSpace` during normalization, so only `kSpace` is filtered
+    // out here.
+    if (auto token = name.substr(start, iter.array_pos() - start);
+        token != kSpace) {
+      tokens.push_back(token);
+    }
+  }
+  return tokens;
+}
+
+// An implementation of `IsNormalizedNameVariantOf` with linear time complexity
+// in the number of tokens in `full_name_1` and `full_name_2`.
+bool IsNormalizedNameVariantOfLinear(std::u16string_view full_name_1,
+                                     std::u16string_view full_name_2) {
+  // These early returns are just optimizations, the rest of the logic should
+  // handle these cases as well.
+  if (full_name_2.size() > full_name_1.size()) {
+    return false;
+  }
+  if (full_name_1 == full_name_2 || full_name_2.empty()) {
+    return true;
+  }
+
+  if (HasCjkNameCharacteristics(base::UTF16ToUTF8(full_name_1))) {
+    return IsSubsequence(TokenizeNormalizedCjkName(full_name_1),
+                         TokenizeNormalizedCjkName(full_name_2));
+  }
+
+  std::vector<std::u16string_view> tokens_1 = base::SplitStringPiece(
+      full_name_1, kSpace, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::u16string_view> tokens_2 = base::SplitStringPiece(
+      full_name_2, kSpace, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  return IsAbbreviatedConcatenatedSubsequence(tokens_1, tokens_2);
+}
+
+// Returns true if `full_name_2` is a variant of `full_name_1`.
+//
+// Consider these names:
+// full_name_1 = "john quincy public"
+// full_name_2 = "john q public"
+//
+// In this case, full_name_2 is a variant of full_name_1 because full_name_2
+// can be derived from full_name_1 by using the middle initial.
+//
+// At the same time, full_name_1 is not a variant of full_name_2 because
+// we cannot be sure that "q" is an abbreviation of "quincy".
+//
+// Note: Expects that `full_name` is already normalized for comparison.
+bool IsNormalizedNameVariantOf(std::u16string_view full_name_1,
+                               std::u16string_view full_name_2) {
+  SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.IsNormalizedNameVariantOf");
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillOptimizeIsNormalizedNameVariantOf)) {
+    return IsNormalizedNameVariantOfLinear(full_name_1, full_name_2);
+  }
+  return IsNormalizedNameVariantOfExponential(full_name_1, full_name_2);
 }
 
 bool AreNameComponentsMergeable(const NameInfo& name_1,

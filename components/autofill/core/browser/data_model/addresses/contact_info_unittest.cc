@@ -1025,7 +1025,11 @@ struct IsNameVariantOfTestCase {
 
 class NameInfoIsNameVariantOfTest
     : public NameInfoTest,
-      public testing::WithParamInterface<IsNameVariantOfTestCase> {};
+      public testing::WithParamInterface<IsNameVariantOfTestCase> {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillOptimizeIsNormalizedNameVariantOf};
+};
 
 TEST_P(NameInfoIsNameVariantOfTest, NameVariants) {
   const IsNameVariantOfTestCase test_case = GetParam();
@@ -1057,7 +1061,23 @@ INSTANTIATE_TEST_SUITE_P(
          .other_full_name = u"te perier"},
         {.full_name = u"Timothe Noël Etienne Perier",
          .other_full_name = u"etienne noel perier",
-         .are_variant = false}}));
+         .are_variant = false},
+        {.full_name = u"Mary Jane Watson", .other_full_name = u"MJ Watson"},
+        {.full_name = u"Mary Jane Watson", .other_full_name = u"M.J. Watson"},
+        {.full_name = u"Mary Jane Watson", .other_full_name = u"MJW"},
+        {.full_name = u"John Smith", .other_full_name = u"John S"},
+        {.full_name = u"John Quincy Public", .other_full_name = u"J Q Public"},
+        {.full_name = u"Петров Иван Николаевич",
+         .other_full_name = u"Петров И."},
+        {.full_name = u"Mary Jane Watson", .other_full_name = u""},
+        {.full_name = u"",
+         .other_full_name = u"Mary Jane Watson",
+         .are_variant = false},
+        {.full_name = u"", .other_full_name = u""},
+        {.full_name = u"   ", .other_full_name = u"  "},
+        {.full_name = u"-", .other_full_name = u" "},
+        {.full_name = u"-, -", .other_full_name = u""},
+    }));
 
 // Verifies that `IsNameVariantOf` works correctly with CJK names where one is
 // the same as the other.
@@ -1090,7 +1110,12 @@ INSTANTIATE_TEST_SUITE_P(
         {.full_name = u"이영호", .other_full_name = u"이"},
         {.full_name = u"이영호", .other_full_name = u"영호"},
         {.full_name = u"이 영호", .other_full_name = u"영호"},
-        {.full_name = u"이 영호", .other_full_name = u"이"}}));
+        {.full_name = u"이 영호", .other_full_name = u"이"},
+        {.full_name = u"王", .other_full_name = u""},
+        {.full_name = u"王", .other_full_name = u"  "},
+        {.full_name = u"王", .other_full_name = u"・  ・"},
+        {.full_name = u"・", .other_full_name = u"王", .are_variant = false},
+        {.full_name = u"・", .other_full_name = u""}}));
 
 TEST_F(NameInfoTest, HaveMergeableNames) {
   NameInfo empty = CreateNameInfo(u"", u"", u"", u"");

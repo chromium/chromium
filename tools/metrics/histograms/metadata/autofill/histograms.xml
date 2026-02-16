@@ -7950,7 +7950,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     {AutofillTimedFunction}.
   </summary>
   <token key="AutofillTimedFunction">
+    <variant name="DeduplicatedProfilesForSuggestions"/>
+    <variant name="DeduplicateProfiles"/>
     <variant name="DetermineHeuristicTypes"/>
+    <variant name="IsNormalizedNameVariantOf"/>
+    <variant name="IsSubsetOfForFieldSet"/>
     <variant name="ParseFormAsync"/>
     <variant name="ParseFormsAsync"/>
     <variant name="ParseFormsAsync.RunHeuristics"/>

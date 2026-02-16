@@ -805,6 +805,11 @@ BASE_FEATURE(kAutofillNewSuggestionGeneration,
 // that are copied.
 BASE_FEATURE(kAutofillOptimizeCacheUpdates, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, `IsNormalizedNameVariantOf()` uses a linear-time greedy
+// algorithm instead of an exponential one that generates all name variants.
+BASE_FEATURE(kAutofillOptimizeIsNormalizedNameVariantOf,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, prefilled country calling codes like "+49" do not prevent
 // autofilling.
 // TODO(crbug.com/453076638): Cleanup after M146 (after Feb 10, 2026).

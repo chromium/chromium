@@ -21,6 +21,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -331,6 +332,8 @@ std::vector<ProfileWithText> DeduplicatedProfilesForSuggestions(
     const std::vector<ProfileWithText>& matched_profiles,
     const FieldTypeSet& field_types,
     const AutofillProfileComparator& comparator) {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Autofill.Timing.DeduplicatedProfilesForSuggestions");
   std::vector<ProfileWithText> unique_matched_profiles;
   // Limit number of unique profiles as having too many makes the
   // browser hang due to drawing calculations (and is also not
