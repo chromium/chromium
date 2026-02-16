@@ -19,6 +19,8 @@ class NetworkService;
 
 namespace legion {
 
+class LegionLogger;
+
 namespace phosphor {
 class TokenManager;
 }
@@ -28,7 +30,8 @@ class TokenManager;
 class ApiKeyConnectionFactoryImpl : public ConnectionFactory {
  public:
   ApiKeyConnectionFactoryImpl(const GURL& url,
-                              network::mojom::NetworkContext* network_context);
+                              network::mojom::NetworkContext* network_context,
+                              LegionLogger* logger);
   ~ApiKeyConnectionFactoryImpl() override;
 
   ApiKeyConnectionFactoryImpl(const ApiKeyConnectionFactoryImpl&) = delete;
@@ -42,6 +45,7 @@ class ApiKeyConnectionFactoryImpl : public ConnectionFactory {
  private:
   const GURL url_;
   const raw_ptr<network::mojom::NetworkContext> network_context_;
+  const raw_ptr<LegionLogger> logger_;
 };
 
 // Factory for creating `Connection` instances that use blind token for client
@@ -52,7 +56,8 @@ class TokenConnectionFactoryImpl : public ConnectionFactory {
  public:
   TokenConnectionFactoryImpl(const GURL& url,
                              network::mojom::NetworkContext* network_context,
-                             phosphor::TokenManager* token_manager);
+                             phosphor::TokenManager* token_manager,
+                             LegionLogger* logger);
   ~TokenConnectionFactoryImpl() override;
 
   TokenConnectionFactoryImpl(const TokenConnectionFactoryImpl&) = delete;
@@ -67,6 +72,7 @@ class TokenConnectionFactoryImpl : public ConnectionFactory {
   const GURL url_;
   const raw_ptr<phosphor::TokenManager> token_manager_;
   const raw_ptr<network::mojom::NetworkContext> network_context_;
+  const raw_ptr<LegionLogger> logger_;
 };
 
 // Factory for creating `Connection` instances that use blind token for client
@@ -77,7 +83,8 @@ class ProxyWithTokenConnectionFactoryImpl : public ConnectionFactory {
       const GURL& url,
       const GURL& proxy_url,
       network::mojom::NetworkService* network_service,
-      phosphor::TokenManager* token_manager);
+      phosphor::TokenManager* token_manager,
+      LegionLogger* logger);
   ~ProxyWithTokenConnectionFactoryImpl() override;
 
   ProxyWithTokenConnectionFactoryImpl(
@@ -94,6 +101,7 @@ class ProxyWithTokenConnectionFactoryImpl : public ConnectionFactory {
   const GURL proxy_url_;
   const raw_ptr<network::mojom::NetworkService> network_service_;
   const raw_ptr<phosphor::TokenManager> token_manager_;
+  const raw_ptr<LegionLogger> logger_;
 };
 
 }  // namespace legion

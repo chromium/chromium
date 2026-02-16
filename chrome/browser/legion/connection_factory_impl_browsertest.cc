@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/legion/common/legion_logger.h"
 #include "components/legion/features.h"
 #include "components/legion/phosphor/token_manager.h"
 #include "content/public/browser/network_service_instance.h"
@@ -50,7 +51,10 @@ class ConnectionFactoryImplBrowserTest : public InProcessBrowserTest {
     return token_manager;
   }
 
+  LegionLogger* GetLogger() { return &logger_; }
+
  private:
+  LegionLogger logger_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -58,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
                        ApiKeyConnectionFactoryCreate) {
   GURL url("wss://legion.googleapis.com?key=test_api_key");
 
-  ApiKeyConnectionFactoryImpl factory(url, GetNetworkContext());
+  ApiKeyConnectionFactoryImpl factory(url, GetNetworkContext(), GetLogger());
 
   auto connection = factory.Create(base::DoNothing());
   EXPECT_TRUE(connection);
@@ -67,7 +71,8 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
                        ApiKeyConnectionFactoryCtorFailsWithoutApiKey) {
   GURL url("wss://legion.googleapis.com");
-  EXPECT_CHECK_DEATH(ApiKeyConnectionFactoryImpl(url, GetNetworkContext()));
+  EXPECT_CHECK_DEATH(
+      ApiKeyConnectionFactoryImpl(url, GetNetworkContext(), GetLogger()));
 }
 
 IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
@@ -75,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
   GURL url("wss://legion.googleapis.com");
 
   TokenConnectionFactoryImpl factory(url, GetNetworkContext(),
-                                     GetTokenManager());
+                                     GetTokenManager(), GetLogger());
 
   auto connection = factory.Create(base::DoNothing());
   EXPECT_TRUE(connection);
@@ -84,8 +89,8 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
                        TokenConnectionFactoryCtorFailsWithApiKey) {
   GURL url("wss://legion.googleapis.com?key=test_api_key");
-  EXPECT_CHECK_DEATH(
-      TokenConnectionFactoryImpl(url, GetNetworkContext(), GetTokenManager()));
+  EXPECT_CHECK_DEATH(TokenConnectionFactoryImpl(
+      url, GetNetworkContext(), GetTokenManager(), GetLogger()));
 }
 
 IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
@@ -94,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
 
   ProxyWithTokenConnectionFactoryImpl factory(url, GURL("https://proxy.com"),
                                               content::GetNetworkService(),
-                                              GetTokenManager());
+                                              GetTokenManager(), GetLogger());
 
   auto connection = factory.Create(base::DoNothing());
   EXPECT_TRUE(connection);
@@ -105,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
   GURL url("wss://legion.googleapis.com?key=test_api_key");
   EXPECT_CHECK_DEATH(ProxyWithTokenConnectionFactoryImpl(
       url, GURL("https://proxy.com"), content::GetNetworkService(),
-      GetTokenManager()));
+      GetTokenManager(), GetLogger()));
 }
 
 }  // namespace

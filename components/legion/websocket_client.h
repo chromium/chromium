@@ -31,12 +31,15 @@ class NetworkContext;
 
 namespace legion {
 
+class LegionLogger;
+
 class WebSocketClient : public Transport,
                         public network::mojom::WebSocketHandshakeClient,
                         public network::mojom::WebSocketClient {
  public:
   WebSocketClient(const GURL& service_url,
-                  network::mojom::NetworkContext* network_context);
+                  network::mojom::NetworkContext* network_context,
+                  LegionLogger* logger);
   ~WebSocketClient() override;
 
   // Transport:
@@ -87,6 +90,7 @@ class WebSocketClient : public Transport,
   State state_ = State::kInitialized;
   const GURL service_url_;
   const raw_ptr<network::mojom::NetworkContext> network_context_;
+  const raw_ptr<LegionLogger> logger_;
   ResponseCallback response_callback_;
 
   std::vector<uint8_t> pending_read_data_;

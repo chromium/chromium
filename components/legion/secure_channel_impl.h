@@ -13,12 +13,14 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/legion/attestation/handler.h"
+#include "components/legion/common/legion_logger.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/secure_channel.h"
 #include "components/legion/secure_session.h"
@@ -34,7 +36,8 @@ class SecureChannelImpl : public SecureChannel {
   class FactoryImpl : public SecureChannel::Factory {
    public:
     FactoryImpl(const GURL& url,
-                network::mojom::NetworkContext* network_context);
+                network::mojom::NetworkContext* network_context,
+                LegionLogger* logger);
     ~FactoryImpl() override;
 
     std::unique_ptr<SecureChannel> Create(ResponseCallback callback) override;
@@ -42,6 +45,7 @@ class SecureChannelImpl : public SecureChannel {
    private:
     const GURL url_;
     raw_ptr<network::mojom::NetworkContext> network_context_;
+    raw_ptr<LegionLogger> logger_;
   };
 
   SecureChannelImpl(ResponseCallback callback,

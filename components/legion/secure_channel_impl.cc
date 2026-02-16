@@ -32,14 +32,16 @@ namespace legion {
 
 SecureChannelImpl::FactoryImpl::FactoryImpl(
     const GURL& url,
-    network::mojom::NetworkContext* network_context)
-    : url_(url), network_context_(network_context) {}
+    network::mojom::NetworkContext* network_context,
+    LegionLogger* logger)
+    : url_(url), network_context_(network_context), logger_(logger) {}
 
 SecureChannelImpl::FactoryImpl::~FactoryImpl() = default;
 
 std::unique_ptr<SecureChannel> SecureChannelImpl::FactoryImpl::Create(
     ResponseCallback callback) {
-  auto transport = std::make_unique<WebSocketClient>(url_, network_context_);
+  auto transport =
+      std::make_unique<WebSocketClient>(url_, network_context_, logger_);
   auto secure_session = std::make_unique<SecureSessionAsyncImpl>();
   auto attestation_handler = std::make_unique<AttestationHandlerImpl>();
 

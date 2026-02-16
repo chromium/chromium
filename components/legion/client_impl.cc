@@ -76,8 +76,8 @@ void ReceivePaicMessage(
 
 ClientImpl::ClientImpl(std::unique_ptr<ConnectionFactory> connection_factory,
                        std::unique_ptr<LegionLogger> logger)
-    : connection_factory_(std::move(connection_factory)),
-      logger_(std::move(logger)) {
+    : logger_(std::move(logger)),
+      connection_factory_(std::move(connection_factory)) {
   CHECK(logger_);
 }
 

@@ -73,11 +73,11 @@ class ClientImpl : public Client {
 
   void OnConnectionDisconnected();
 
+  std::unique_ptr<LegionLogger> logger_;
+
   std::unique_ptr<Connection> connection_;
 
   std::unique_ptr<ConnectionFactory> connection_factory_;
-
-  std::unique_ptr<LegionLogger> logger_;
 
   base::WeakPtrFactory<ClientImpl> weak_factory_{this};
 };

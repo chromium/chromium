@@ -90,6 +90,7 @@ if (!is_android) {
       "//components/legion",
       "//components/legion:proto",
       "//components/legion:proto_extras",
+      "//components/legion/common",
       "//components/legion/crypto",
       "//components/legion/crypto:test_support",
       "//components/legion/phosphor:test_support",

@@ -12,9 +12,12 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "components/legion/common/legion_logger.h"
 #include "components/legion/proto_utils/google_rpc_code.h"
 #include "net/http/http_request_headers.h"
 #include "net/storage_access_api/status.h"
@@ -63,11 +66,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 WebSocketClient::WebSocketClient(
     const GURL& service_url,
-    network::mojom::NetworkContext* network_context)
+    network::mojom::NetworkContext* network_context,
+    LegionLogger* logger)
     : service_url_(service_url),
       network_context_(network_context),
+      logger_(logger),
       readable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {
   CHECK(network_context_);
+  CHECK(logger_);
 }
 
 WebSocketClient::~WebSocketClient() = default;
@@ -81,8 +87,9 @@ void WebSocketClient::Send(const oak::session::v1::SessionRequest& request) {
   CHECK(response_callback_);
   std::string binary_proto;
   if (!request.SerializeToString(&binary_proto)) {
-    LOG(ERROR) << "Failed to serialize proto request into a string. Check all "
-                  "required fields are set";
+    logger_->LogError(FROM_HERE,
+                      "Failed to serialize proto request into a string. Check "
+                      "all required fields are set");
     response_callback_.Run(
         base::unexpected(TransportError::kSerializationError));
     return;
@@ -177,7 +184,7 @@ void WebSocketClient::InternalWrite(base::span<const uint8_t> data) {
                           data.size());
   MojoResult result = writable_->WriteAllData(data);
   if (result != MOJO_RESULT_OK) {
-    LOG(ERROR) << "Failed to write to WebSocket.";
+    logger_->LogError(FROM_HERE, "Failed to write to WebSocket.");
     ClosePipe(TransportError::kError);
   }
 }
@@ -191,8 +198,11 @@ void WebSocketClient::OnFailure(const std::string& message,
                                 int net_error,
                                 int response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG(ERROR) << "Legion service connection failed " << message << ", "
-             << net_error << ", " << response_code;
+  logger_->LogError(
+      FROM_HERE, base::StrCat({"Legion service connection failed ", message,
+                               " (net error:", base::NumberToString(net_error),
+                               ", response code:",
+                               base::NumberToString(response_code), ")"}));
 
   ClosePipe(TransportError::kError);
 }
@@ -262,8 +272,11 @@ void WebSocketClient::OnDataFrame(bool finish,
        type != network::mojom::WebSocketMessageType::CONTINUATION) ||
       data_len > std::numeric_limits<uint32_t>::max() || new_size < old_size ||
       new_size > kMaxIncomingMessageSize) {
-    LOG(ERROR) << "Invalid WebSocket frame (type: " << static_cast<int>(type)
-               << ", len: " << data_len << ")";
+    logger_->LogError(
+        FROM_HERE,
+        base::StrCat({"Invalid WebSocket frame (type: ",
+                      base::NumberToString(static_cast<int>(type)),
+                      ", len: ", base::NumberToString(data_len), ")"}));
     ClosePipe(TransportError::kError);
     return;
   }
@@ -279,7 +292,9 @@ void WebSocketClient::OnDropChannel(bool was_clean,
                                     const std::string& reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(state_ == State::kOpen || state_ == State::kConnecting);
-  LOG(ERROR) << "OnDropChannel: " << code << " - " << reason;
+  logger_->LogError(FROM_HERE, base::StrCat({"Websocket Channel dropped (code:",
+                                             base::NumberToString(code),
+                                             ", reason:", reason, ")"}));
 
   base::UmaHistogramSparse("Legion.Client.WebSocketCloseCode", code);
 
@@ -319,8 +334,10 @@ void WebSocketClient::ReadFromDataPipe(MojoResult,
   } else if (result == MOJO_RESULT_SHOULD_WAIT) {
     readable_watcher_.ArmOrNotify();
   } else {
-    LOG(ERROR) << "Reading WebSocket frame failed: "
-               << static_cast<int>(result);
+    logger_->LogError(
+        FROM_HERE,
+        base::StrCat({"Reading WebSocket frame failed: ",
+                      base::NumberToString(static_cast<int>(result))}));
     ClosePipe(TransportError::kError);
   }
 }

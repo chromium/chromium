@@ -28,8 +28,8 @@ std::unique_ptr<Client> Client::CreateWithApiKey(
     std::unique_ptr<LegionLogger> logger) {
   CHECK(base::FeatureList::IsEnabled(kLegion));
 
-  auto connection_factory_impl =
-      std::make_unique<ApiKeyConnectionFactoryImpl>(url, network_context);
+  auto connection_factory_impl = std::make_unique<ApiKeyConnectionFactoryImpl>(
+      url, network_context, logger.get());
 
   // Raw `new` is used here because the constructor is private.
   return base::WrapUnique(
@@ -46,7 +46,7 @@ std::unique_ptr<Client> Client::CreateWithToken(
   CHECK(network_context);
 
   auto connection_factory_impl = std::make_unique<TokenConnectionFactoryImpl>(
-      url, network_context, token_manager);
+      url, network_context, token_manager, logger.get());
 
   // Raw `new` is used here because the constructor is private.
   return base::WrapUnique(
@@ -64,7 +64,7 @@ std::unique_ptr<Client> Client::CreateWithProxyAndToken(
 
   auto connection_factory_impl =
       std::make_unique<ProxyWithTokenConnectionFactoryImpl>(
-          url, proxy_url, network_service, token_manager);
+          url, proxy_url, network_service, token_manager, logger.get());
 
   // Raw `new` is used here because the constructor is private.
   return base::WrapUnique(
