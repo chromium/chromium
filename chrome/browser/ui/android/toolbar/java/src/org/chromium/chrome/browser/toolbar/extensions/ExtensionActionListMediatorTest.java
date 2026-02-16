@@ -117,7 +117,7 @@ public class ExtensionActionListMediatorTest {
     @Mock private ExtensionActionContextMenuBridge.Native mActionContextMenuBridgeJniMock;
     @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     @Mock private MenuModelBridge mMenuModelBridge;
-    @Mock private ExtensionActionListRecyclerView mContainer;
+    @Mock private ExtensionActionListCoordinator.ActionAnchorViewProvider mActionAnchorViewProvider;
 
     @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
 
@@ -176,7 +176,7 @@ public class ExtensionActionListMediatorTest {
                         mTask,
                         mProfile,
                         mCurrentTabSupplier,
-                        mContainer,
+                        mActionAnchorViewProvider,
                         mExtensionsToolbarBridge) {
                     @Override
                     Bitmap getIconForAction(String actionId, WebContents webContents) {

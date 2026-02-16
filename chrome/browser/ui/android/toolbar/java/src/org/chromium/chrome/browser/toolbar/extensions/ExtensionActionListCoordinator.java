@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,6 +37,11 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @NullMarked
 public class ExtensionActionListCoordinator implements Destroyable {
+    /** Provider for extension action button views. */
+    public interface ActionAnchorViewProvider {
+        @Nullable View getButtonViewForId(String actionId);
+    }
+
     private final Context mContext;
     private final ExtensionActionListRecyclerView mContainer;
     private final ModelList mModels;
@@ -63,7 +69,7 @@ public class ExtensionActionListCoordinator implements Destroyable {
                         task,
                         profile,
                         currentTabSupplier,
-                        container,
+                        this::getButtonViewForId,
                         extensionsToolbarBridge);
 
         ExtensionsToolbarDragTouchHandler dragTouchHandler =
@@ -124,19 +130,28 @@ public class ExtensionActionListCoordinator implements Destroyable {
 
     /** Performs a click on the button for the given action. */
     public void click(String actionId) {
+        View view = getButtonViewForId(actionId);
+        if (view != null) {
+            view.performClick();
+        }
+    }
+
+    @Nullable
+    private View getButtonViewForId(String actionId) {
         for (int i = 0; i < mModels.size(); i++) {
-            if (mModels.get(i).model.get(ExtensionActionButtonProperties.ID).equals(actionId)) {
+            PropertyModel model = mModels.get(i).model;
+            if (actionId.equals(model.get(ExtensionActionButtonProperties.ID))) {
                 RecyclerView.ViewHolder holder = mContainer.findViewHolderForAdapterPosition(i);
                 if (holder == null) {
-                    // TODO(crbug.com/478113313): Pop out action in so that the view exists for
-                    // non-pinned actions.
-                    return;
+                    // TODO(crbug.com/478113313): If the action is unpinned, pop it out to show
+                    // action popup.
+                    return null;
                 }
 
-                holder.itemView.performClick();
-                return;
+                return holder.itemView;
             }
         }
+        return null;
     }
 
     private void bindDragProperties(
