@@ -30,7 +30,7 @@ constexpr int kDialogWidth = 805;
 constexpr int kDialogHeight = 520;
 
 GURL GetUrl() {
-  return GURL{ash::kChromeUIBorealisInstallerUrl};
+  return GURL{ash::kChromeUIBorealisInstallerURL};
 }
 
 }  // namespace

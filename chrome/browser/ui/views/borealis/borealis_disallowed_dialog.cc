@@ -213,7 +213,7 @@ class DisallowedFlag : public BehaviourProvider {
     return {{l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FLAG_BUTTON),
              base::BindOnce([]() {
                ash::SystemAppLaunchParams params;
-               params.url = GURL{std::string(ash::kChromeUIOsFlagsAppURL) +
+               params.url = GURL{std::string(ash::kChromeUIOSFlagsAppURL) +
                                  "#borealis-enabled"};
                ash::LaunchSystemWebAppAsync(
                    ProfileManager::GetPrimaryUserProfile(),

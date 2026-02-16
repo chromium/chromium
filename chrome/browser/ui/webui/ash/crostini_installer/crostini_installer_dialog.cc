@@ -28,7 +28,7 @@ constexpr int kDialogWidth = 768;
 constexpr int kDialogHeight = 608;
 
 GURL GetUrl() {
-  return GURL{ash::kChromeUICrostiniInstallerUrl};
+  return GURL{ash::kChromeUICrostiniInstallerURL};
 }
 }  // namespace
 

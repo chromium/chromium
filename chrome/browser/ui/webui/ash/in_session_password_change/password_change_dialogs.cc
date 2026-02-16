@@ -92,7 +92,7 @@ void PasswordChangeDialog::Dismiss() {
 }
 
 PasswordChangeDialog::PasswordChangeDialog()
-    : BasePasswordDialog(GURL(ash::kChromeUIPasswordChangeUrl),
+    : BasePasswordDialog(GURL(ash::kChromeUIPasswordChangeURL),
                          kPasswordChangeSize) {}
 
 PasswordChangeDialog::~PasswordChangeDialog() {
@@ -127,7 +127,7 @@ ConfirmPasswordChangeDialog::ConfirmPasswordChangeDialog(
     const std::string& scraped_new_password,
     bool show_spinner_initially)
     : BasePasswordDialog(
-          GURL(ash::kChromeUIConfirmPasswordChangeUrl),
+          GURL(ash::kChromeUIConfirmPasswordChangeURL),
           GetSize(scraped_old_password.empty(), scraped_new_password.empty())),
       scraped_old_password_(scraped_old_password),
       scraped_new_password_(scraped_new_password),
@@ -187,7 +187,7 @@ void UrgentPasswordExpiryNotificationDialog::Dismiss() {
 
 UrgentPasswordExpiryNotificationDialog::UrgentPasswordExpiryNotificationDialog()
     : BasePasswordDialog(
-          GURL(ash::kChromeUIUrgentPasswordExpiryNotificationUrl),
+          GURL(ash::kChromeUIUrgentPasswordExpiryNotificationURL),
           kUrgentPasswordExpiryNotificationSize) {}
 
 UrgentPasswordExpiryNotificationDialog::

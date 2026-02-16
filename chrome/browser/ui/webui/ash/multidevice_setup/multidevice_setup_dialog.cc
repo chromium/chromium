@@ -81,7 +81,7 @@ void MultiDeviceSetupDialog::AddOnCloseCallback(base::OnceClosure callback) {
 }
 
 MultiDeviceSetupDialog::MultiDeviceSetupDialog()
-    : SystemWebDialogDelegate(GURL(ash::kChromeUIMultiDeviceSetupUrl),
+    : SystemWebDialogDelegate(GURL(ash::kChromeUIMultiDeviceSetupURL),
                               std::u16string()) {}
 
 MultiDeviceSetupDialog::~MultiDeviceSetupDialog() {
