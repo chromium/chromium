@@ -9669,3 +9669,7 @@ crbug.com/483413086 external/wpt/html/browsers/the-window-object/named-access-on
 # Gardener 2026-02-13
 crbug.com/483892110 [ Mac12 ] external/wpt/shadow-dom/focus-navigation#delegatesFocus-highlight-sibling.html [ Pass Timeout ]
 crbug.com/483962364 [ Mac12 ] external/wpt/shadow-dom/focus-navigation#focus-navigation-slot-fallback.html [ Pass Timeout ]
+
+# Gardener 2026-02-16
+crbug.com/484751088 [ Win11-arm64 ] fast/backgrounds/background-position-parsing.html [ Failure Pass ]
+crbug.com/484751088 [ Win11-arm64 ] fast/backgrounds/size/contain-and-cover-zoomed.html [ Failure Pass ]
