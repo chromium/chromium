@@ -2103,6 +2103,59 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.EncryptedCache.FactoryCreationSuccess"
+    enum="BooleanSuccess" expires_after="2026-08-01">
+  <owner>haihan@google.com</owner>
+  <owner>valadkevich@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Tracks the success or failure of creating the cache encryption file
+    operations factory.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EncryptedCache.KeyCreationSuccess"
+    enum="BooleanSuccess" expires_after="2026-08-01">
+  <owner>haihan@google.com</owner>
+  <owner>valadkevich@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Tracks the success or failure of creating the cache encryption key.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EncryptedCache.KeyHasherObtainSuccess"
+    enum="BooleanSuccess" expires_after="2026-08-01">
+  <owner>haihan@google.com</owner>
+  <owner>valadkevich@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Tracks the success or failure of obtaining the hasher for the cache entries.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EncryptedCache.KeyReencryptionSuccess"
+    enum="BooleanSuccess" expires_after="2026-08-01">
+  <owner>haihan@google.com</owner>
+  <owner>valadkevich@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Tracks the success or failure of re-encrypting the primary key for the
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EncryptedCache.KeyRetrievalFromPrefsSuccess"
+    enum="BooleanSuccess" expires_after="2026-08-01">
+  <owner>haihan@google.com</owner>
+  <owner>valadkevich@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Tracks the success or failure of retrieving the primary key for the cache
+    from profile prefs.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.EncryptedCache.{Operation}.Result"
     enum="EnterpriseDiskCacheError" expires_after="2027-01-28">
   <owner>haihan@google.com</owner>
