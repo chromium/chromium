@@ -5670,22 +5670,11 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   // TODO(https://crbug.com/1341235): The choice of color type should match the
   // format of the TexImage function. The choice of alpha type should opaque for
   // opaque images. The color space should match the unpack color space.
-  CanvasSnapshotProvider* snapshot_provider =
-      generated_image_cache_.GetCanvasSnapshotProvider(
-          {kPremul_SkAlphaType,
-           gfx::ColorSpace::CreateSRGB(),
-           GetN32FormatForCanvas(),
-           {width, height}});
-  if (!snapshot_provider) {
-    SynthesizeGLError(GL_OUT_OF_MEMORY, function_name, "out of memory");
-    return nullptr;
-  }
-
-  CHECK(snapshot_provider->IsExternalBitmapProvider());
-  CanvasNon2DSnapshotProviderBitmap* snapshot_provider_bitmap =
-      static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider);
-
-  return snapshot_provider_bitmap->DoExternalDrawAndSnapshot(
+  return CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
+      {kPremul_SkAlphaType,
+       gfx::ColorSpace::CreateSRGB(),
+       GetN32FormatForCanvas(),
+       {width, height}},
       [&](cc::PaintCanvas& canvas) {
         if (!image->IsOpaque()) {
           canvas.clear(SkColors::kTransparent);
