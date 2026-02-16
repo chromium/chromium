@@ -45,7 +45,6 @@ static_library("osauth") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/auth",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/quick_unlock",
@@ -61,6 +60,7 @@ static_library("osauth") {
     "//components/crash/core/app",
     "//components/device_event_log",
     "//components/user_manager",
+    "//services/network/public/cpp",
   ]
 
   allow_circular_includes_from = [

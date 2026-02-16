@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -35,6 +34,7 @@
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "components/user_manager/user_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 
@@ -63,13 +63,17 @@ std::string CryptohomeRecoveryScreen::GetResultString(Result result) {
 }
 
 CryptohomeRecoveryScreen::CryptohomeRecoveryScreen(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     base::WeakPtr<CryptohomeRecoveryScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(CryptohomeRecoveryScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       auth_factor_editor_(UserDataAuthClient::Get()),
       view_(std::move(view)),
-      exit_callback_(exit_callback) {}
+      exit_callback_(exit_callback) {
+  CHECK(shared_url_loader_factory_);
+}
 
 CryptohomeRecoveryScreen::~CryptohomeRecoveryScreen() = default;
 
@@ -145,8 +149,7 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
       LOG(ERROR) << "Contuining Recovery with no passwords";
     }
     recovery_performer_ = std::make_unique<CryptohomeRecoveryPerformer>(
-        UserDataAuthClient::Get(),
-        g_browser_process->shared_url_loader_factory());
+        UserDataAuthClient::Get(), shared_url_loader_factory_);
     recovery_performer_->AuthenticateWithRecovery(
         std::move(user_context),
         base::BindOnce(&CryptohomeRecoveryScreen::OnAuthenticateWithRecovery,

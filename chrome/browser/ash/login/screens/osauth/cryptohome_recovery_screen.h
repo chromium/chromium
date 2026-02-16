@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -18,6 +19,10 @@
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/recovery/cryptohome_recovery_performer.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}
 
 namespace ash {
 
@@ -37,8 +42,11 @@ class CryptohomeRecoveryScreen : public BaseScreen {
   static std::string GetResultString(Result result);
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  CryptohomeRecoveryScreen(base::WeakPtr<CryptohomeRecoveryScreenView> view,
-                           const ScreenExitCallback& exit_callback);
+  // `shared_url_loader_factory` must be non-null.
+  CryptohomeRecoveryScreen(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      base::WeakPtr<CryptohomeRecoveryScreenView> view,
+      const ScreenExitCallback& exit_callback);
   ~CryptohomeRecoveryScreen() override;
 
   CryptohomeRecoveryScreen(const CryptohomeRecoveryScreen&) = delete;
@@ -71,6 +79,9 @@ class CryptohomeRecoveryScreen : public BaseScreen {
 
   void OnRefreshFactorsConfiguration(std::unique_ptr<UserContext> user_context,
                                      std::optional<AuthenticationError> error);
+
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   std::unique_ptr<base::OneShotTimer> expiration_timer_;
   AuthFactorEditor auth_factor_editor_;

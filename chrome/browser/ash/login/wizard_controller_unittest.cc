@@ -195,6 +195,9 @@ class WizardControllerTestBase : public ::testing::Test {
   }
 
   void SetUp() override {
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
     SessionManagerClient::InitializeFake();
 
     DeviceSettingsService::Get()->StartProcessing(
@@ -282,6 +285,8 @@ class WizardControllerTestBase : public ::testing::Test {
 
     DeviceSettingsService::Get()->StopProcessing();
     SessionManagerClient::Shutdown();
+
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
   }
 
   void FakeInstallAttributesForDemoMode() {
@@ -299,6 +304,7 @@ class WizardControllerTestBase : public ::testing::Test {
       std::make_unique<content::BrowserTaskEnvironment>(
           base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
           base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
   ash::SessionTerminationManager session_termination_manager_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
@@ -355,10 +361,6 @@ class WizardControllerTest : public WizardControllerTestBase {
         fake_login_display_host_->GetWizardContext());
     wizard_controller_ = wizard_controller.get();
     fake_login_display_host_->SetWizardController(std::move(wizard_controller));
-    test_url_loader_factory_ =
-        std::make_unique<network::TestURLLoaderFactory>();
-    wizard_controller_->SetSharedURLLoaderFactoryForTesting(
-        test_url_loader_factory_->GetSafeWeakWrapper());
 
     // Make sure to test OOBE on an "official" build.
     OverrideBranding(/*is_branded=*/true);
@@ -368,7 +370,6 @@ class WizardControllerTest : public WizardControllerTestBase {
     cros_network_config_test_helper_.network_state_helper()
         .ResetDevicesAndServices();
 
-    test_url_loader_factory_.reset();
     wizard_controller_ = nullptr;
     fake_update_engine_client_ = nullptr;
     fake_login_display_host_.reset();
@@ -431,7 +432,6 @@ class WizardControllerTest : public WizardControllerTestBase {
   network_config::CrosNetworkConfigTestHelper cros_network_config_test_helper_;
   std::unique_ptr<FakeLoginDisplayHost> fake_login_display_host_;
   std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
-  std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   SigninProfileHandler signing_profile_handler_;
 };
 

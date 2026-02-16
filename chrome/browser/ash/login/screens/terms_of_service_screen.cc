@@ -32,6 +32,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -83,12 +84,15 @@ std::string TermsOfServiceScreen::GetResultString(Result result) {
 }
 
 TermsOfServiceScreen::TermsOfServiceScreen(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     base::WeakPtr<TermsOfServiceScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(TermsOfServiceScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
+  CHECK(shared_url_loader_factory_);
   DCHECK(view_);
 }
 
@@ -218,12 +222,10 @@ void TermsOfServiceScreen::StartDownload() {
   // download.
   terms_of_service_loader_->SetRetryOptions(
       3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
-  network::mojom::URLLoaderFactory* loader_factory =
-      g_browser_process->system_network_context_manager()
-          ->GetURLLoaderFactory();
   terms_of_service_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory, base::BindOnce(&TermsOfServiceScreen::OnDownloaded,
-                                     base::Unretained(this)));
+      shared_url_loader_factory_.get(),
+      base::BindOnce(&TermsOfServiceScreen::OnDownloaded,
+                     base::Unretained(this)));
 
   // Abort the download attempt if it takes longer than one minute.
   download_timer_.Start(FROM_HERE, base::Minutes(1), this,

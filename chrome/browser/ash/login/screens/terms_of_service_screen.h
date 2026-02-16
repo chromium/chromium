@@ -11,13 +11,15 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
 namespace network {
 class SimpleURLLoader;
-}
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 
@@ -38,8 +40,12 @@ class TermsOfServiceScreen : public BaseScreen {
   enum class ScreenState : int { LOADING = 0, LOADED = 1, ERROR = 2 };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  TermsOfServiceScreen(base::WeakPtr<TermsOfServiceScreenView> view,
-                       const ScreenExitCallback& exit_callback);
+
+  // `shared_url_loader_factory` must be non-null.
+  TermsOfServiceScreen(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      base::WeakPtr<TermsOfServiceScreenView> view,
+      const ScreenExitCallback& exit_callback);
 
   TermsOfServiceScreen(const TermsOfServiceScreen&) = delete;
   TermsOfServiceScreen& operator=(const TermsOfServiceScreen&) = delete;
@@ -92,6 +98,9 @@ class TermsOfServiceScreen : public BaseScreen {
   void SaveTos(const std::string& tos);
   // Runs callback for tests.
   void OnTosSavedForTesting();
+
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   base::WeakPtr<TermsOfServiceScreenView> view_;
   ScreenExitCallback exit_callback_;

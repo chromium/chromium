@@ -731,6 +731,7 @@ WizardController::CreateScreens() {
           &WizardController::OnCryptohomeRecoverySetupScreenExit,
           weak_factory_.GetWeakPtr())));
   append(std::make_unique<TermsOfServiceScreen>(
+      shared_url_loader_factory_,
       oobe_ui->GetView<TermsOfServiceScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnTermsOfServiceScreenExit,
                           weak_factory_.GetWeakPtr())));
@@ -935,6 +936,7 @@ WizardController::CreateScreens() {
           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<CryptohomeRecoveryScreen>(
+      shared_url_loader_factory_,
       oobe_ui->GetView<CryptohomeRecoveryScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnCryptohomeRecoveryScreenExit,
                           weak_factory_.GetWeakPtr())));
