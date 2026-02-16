@@ -11,7 +11,7 @@ option optimize_for = LITE_RUNTIME;
 
 import "components/optimization_guide/proto/model_execution.proto";
 
-package legion.proto;
+package private_ai.proto;
 
 message LegionRequest {
   FeatureName feature_name = 1;

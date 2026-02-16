@@ -15,11 +15,11 @@
 #include "components/legion/phosphor/token_fetcher.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 TokenManagerImpl::TokenManagerImpl(std::unique_ptr<TokenFetcher> fetcher)
-    : batch_size_(legion::kLegionAuthTokenCacheBatchSize.Get()),
-      cache_low_water_mark_(legion::kLegionAuthTokenCacheLowWaterMark.Get()),
+    : batch_size_(kLegionAuthTokenCacheBatchSize.Get()),
+      cache_low_water_mark_(kLegionAuthTokenCacheLowWaterMark.Get()),
       fetcher_(std::move(fetcher)) {
   terminal_token_manager_ = std::make_unique<internal::FeatureTokenManager>(
       fetcher_.get(), quiche::ProxyLayer::kTerminalLayer, batch_size_,
@@ -51,4 +51,4 @@ void TokenManagerImpl::PrefetchAuthTokensForProxy() {
   proxy_token_manager_->PrefetchAuthTokens();
 }
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor

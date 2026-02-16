@@ -9,7 +9,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 namespace {
 
 using ::testing::_;
@@ -45,4 +45,4 @@ TEST(LegionLoggerTest, NotifiesObserversOnLogging) {
 }
 
 }  // namespace
-}  // namespace legion
+}  // namespace private_ai

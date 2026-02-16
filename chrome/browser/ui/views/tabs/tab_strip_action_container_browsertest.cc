@@ -589,7 +589,8 @@ class TabStripActionContainerLegionBrowserTest
  public:
   TabStripActionContainerLegionBrowserTest() {
     legion_feature_list_.InitWithFeatures(
-        {legion::kLegion, contextual_cueing::kZeroStateSuggestionsUseLegion},
+        {private_ai::kLegion,
+         contextual_cueing::kZeroStateSuggestionsUseLegion},
         {});
   }
 
@@ -599,19 +600,19 @@ class TabStripActionContainerLegionBrowserTest
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerLegionBrowserTest,
                        PrewarmsLegionOnGlicButtonHover) {
-  auto* legion_service =
-      legion::PrivateAiServiceFactory::GetForProfile(browser()->GetProfile());
+  auto* legion_service = private_ai::PrivateAiServiceFactory::GetForProfile(
+      browser()->GetProfile());
   ASSERT_TRUE(legion_service);
   auto mock_client =
-      std::make_unique<testing::StrictMock<legion::MockLegionClient>>();
+      std::make_unique<testing::StrictMock<private_ai::MockLegionClient>>();
   auto* mock_client_ptr = mock_client.get();
   legion_service->SetClientForTesting(std::move(mock_client));
 
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_client_ptr, EstablishSession(::testing::_))
       .WillOnce(
-          [&run_loop](
-              legion::Client::OnEstablishSessionCompletedCallback callback) {
+          [&run_loop](private_ai::Client::OnEstablishSessionCompletedCallback
+                          callback) {
             std::move(callback).Run(base::ok());
             run_loop.Quit();
           });
@@ -626,21 +627,21 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerLegionBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerLegionBrowserTest,
                        PrewarmsLegionOnGlicButtonHoverFails) {
-  auto* legion_service =
-      legion::PrivateAiServiceFactory::GetForProfile(browser()->GetProfile());
+  auto* legion_service = private_ai::PrivateAiServiceFactory::GetForProfile(
+      browser()->GetProfile());
   ASSERT_TRUE(legion_service);
   auto mock_client =
-      std::make_unique<testing::StrictMock<legion::MockLegionClient>>();
+      std::make_unique<testing::StrictMock<private_ai::MockLegionClient>>();
   auto* mock_client_ptr = mock_client.get();
   legion_service->SetClientForTesting(std::move(mock_client));
 
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_client_ptr, EstablishSession(::testing::_))
       .WillOnce(
-          [&run_loop](
-              legion::Client::OnEstablishSessionCompletedCallback callback) {
+          [&run_loop](private_ai::Client::OnEstablishSessionCompletedCallback
+                          callback) {
             std::move(callback).Run(
-                base::unexpected(legion::ErrorCode::kError));
+                base::unexpected(private_ai::ErrorCode::kError));
             run_loop.Quit();
           });
 

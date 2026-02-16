@@ -87,17 +87,17 @@ void PrewarmLegionSession(Profile* profile) {
   if (!profile) {
     return;
   }
-  if (base::FeatureList::IsEnabled(legion::kLegion) &&
+  if (base::FeatureList::IsEnabled(private_ai::kLegion) &&
       base::FeatureList::IsEnabled(
           contextual_cueing::kZeroStateSuggestionsUseLegion)) {
-    legion::PrivateAiService* private_ai_service =
-        legion::PrivateAiServiceFactory::GetForProfile(profile);
+    private_ai::PrivateAiService* private_ai_service =
+        private_ai::PrivateAiServiceFactory::GetForProfile(profile);
     if (private_ai_service) {
-      legion::Client* client = private_ai_service->GetClient();
+      private_ai::Client* client = private_ai_service->GetClient();
       if (client) {
         // Prewarm the session.
-        client->EstablishSession(
-            base::BindOnce([](base::expected<void, legion::ErrorCode> result) {
+        client->EstablishSession(base::BindOnce(
+            [](base::expected<void, private_ai::ErrorCode> result) {
               if (!result.has_value()) {
                 LOG(ERROR) << "Failed to prewarm Legion session: "
                            << static_cast<int>(result.error());

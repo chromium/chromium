@@ -23,7 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -115,4 +115,4 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
 
 }  // namespace
 
-}  // namespace legion
+}  // namespace private_ai

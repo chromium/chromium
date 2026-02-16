@@ -13,12 +13,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace legion {
+namespace private_ai {
 class Client;
 namespace phosphor {
 class TokenManager;
 }  // namespace phosphor
-}  // namespace legion
+}  // namespace private_ai
 
 namespace network::mojom {
 class NetworkContext;
@@ -26,12 +26,12 @@ class NetworkContext;
 
 class LegionInternalsPageHandler
     : public legion_internals::mojom::LegionInternalsPageHandler,
-      public legion::LegionLogger::Observer {
+      public private_ai::LegionLogger::Observer {
  public:
   explicit LegionInternalsPageHandler(
-      legion::phosphor::TokenManager* token_manager,
+      private_ai::phosphor::TokenManager* token_manager,
       network::mojom::NetworkContext* network_context,
-      legion::Client* private_ai_client,
+      private_ai::Client* private_ai_client,
       mojo::PendingReceiver<legion_internals::mojom::LegionInternalsPageHandler>
           receiver);
   ~LegionInternalsPageHandler() override;
@@ -51,7 +51,7 @@ class LegionInternalsPageHandler
                    const std::string& request,
                    SendRequestCallback callback) override;
 
-  // legion::LegionLogger::Observer:
+  // private_ai::LegionLogger::Observer:
   void OnLogInfo(const base::Location& location,
                  std::string_view message) override;
   void OnLogError(const base::Location& location,
@@ -62,17 +62,17 @@ class LegionInternalsPageHandler
                  const base::Location& location,
                  std::string_view message);
 
-  raw_ptr<legion::phosphor::TokenManager> token_manager_;
+  raw_ptr<private_ai::phosphor::TokenManager> token_manager_;
   // The global client, only used for observation.
-  raw_ptr<legion::Client> private_ai_client_;
+  raw_ptr<private_ai::Client> private_ai_client_;
   // The client created by webui. Used for testing.
-  std::unique_ptr<legion::Client> webui_client_;
+  std::unique_ptr<private_ai::Client> webui_client_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
   mojo::Receiver<legion_internals::mojom::LegionInternalsPageHandler> receiver_;
   mojo::Remote<legion_internals::mojom::LegionInternalsPage> page_;
 
-  base::ScopedMultiSourceObservation<legion::LegionLogger,
-                                     legion::LegionLogger::Observer>
+  base::ScopedMultiSourceObservation<private_ai::LegionLogger,
+                                     private_ai::LegionLogger::Observer>
       scoped_logger_observations_{this};
 };
 

@@ -27,7 +27,7 @@
 #include "net/base/features.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 
-namespace legion::phosphor::internal {
+namespace private_ai::phosphor::internal {
 
 FeatureTokenManager::FeatureTokenManager(TokenFetcher* fetcher,
                                          quiche::ProxyLayer proxy_layer,
@@ -96,8 +96,7 @@ void FeatureTokenManager::OnGotAuthTokens(
                "Treating as a transient error.";
     // TODO(b:457425177): Record a UMA metric for this case.
     try_get_auth_tokens_after_ =
-        base::Time::Now() +
-        legion::kLegionTryGetAuthTokensTransientBackoff.Get();
+        base::Time::Now() + kLegionTryGetAuthTokensTransientBackoff.Get();
     FailPendingCallbacks();
     ScheduleMaybeRefillCache();
     return;
@@ -183,4 +182,4 @@ bool FeatureTokenManager::NeedsRefill() const {
   return !pending_callbacks_.empty() || cache_.size() < cache_low_water_mark_;
 }
 
-}  // namespace legion::phosphor::internal
+}  // namespace private_ai::phosphor::internal

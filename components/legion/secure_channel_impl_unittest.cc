@@ -23,7 +23,7 @@
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 #include "third_party/oak/chromium/proto/session/session.test.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -794,4 +794,4 @@ TEST_F(SecureChannelImplTest, WriteInClosedState) {
 
 }  // namespace
 
-}  // namespace legion
+}  // namespace private_ai

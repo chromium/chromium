@@ -16,7 +16,7 @@
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 
-namespace legion {
+namespace private_ai {
 
 TestServerSecureSession::TestServerSecureSession() {
   // Initialize server Noise state for NN handshake.
@@ -120,4 +120,4 @@ TestServerSecureSession::GenerateHandshakeResponse(
                           std::move(server_ciphertext));
 }
 
-}  // namespace legion
+}  // namespace private_ai

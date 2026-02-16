@@ -28,7 +28,7 @@
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 #include "url/gurl.h"
 
-namespace legion {
+namespace private_ai {
 
 SecureChannelImpl::FactoryImpl::FactoryImpl(
     const GURL& url,
@@ -444,4 +444,4 @@ void SecureChannelImpl::OnRequestEncrypted(
   Send(request);
 }
 
-}  // namespace legion
+}  // namespace private_ai

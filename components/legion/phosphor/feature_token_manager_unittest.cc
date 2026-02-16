@@ -27,7 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion::phosphor::internal {
+namespace private_ai::phosphor::internal {
 
 namespace {
 
@@ -108,8 +108,8 @@ class FeatureTokenManagerTest : public testing::Test {
     mock_fetcher_ = owned_mock_fetcher_.get();
     feature_token_manager_ = std::make_unique<FeatureTokenManager>(
         mock_fetcher_, quiche::ProxyLayer::kTerminalLayer,
-        legion::kLegionAuthTokenCacheBatchSize.Get(),
-        legion::kLegionAuthTokenCacheLowWaterMark.Get());
+        kLegionAuthTokenCacheBatchSize.Get(),
+        kLegionAuthTokenCacheLowWaterMark.Get());
   }
 
   // Create a batch of tokens.
@@ -128,7 +128,7 @@ class FeatureTokenManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  int expected_batch_size_ = legion::kLegionAuthTokenCacheBatchSize.Get();
+  int expected_batch_size_ = kLegionAuthTokenCacheBatchSize.Get();
 
   // Expiration times with respect to the TaskEnvironment's mock time.
   const base::Time kFutureExpiration = base::Time::Now() + base::Hours(1);
@@ -268,4 +268,4 @@ TEST_F(FeatureTokenManagerTest, FetchError_BacksOff) {
 }
 
 }  // namespace
-}  // namespace legion::phosphor::internal
+}  // namespace private_ai::phosphor::internal

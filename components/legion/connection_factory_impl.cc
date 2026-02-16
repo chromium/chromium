@@ -20,7 +20,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -148,4 +148,4 @@ std::unique_ptr<Connection> ProxyWithTokenConnectionFactoryImpl::Create(
       std::move(inner_connection_factory), std::move(on_disconnect));
 }
 
-}  // namespace legion
+}  // namespace private_ai

@@ -14,7 +14,7 @@ class SessionResponse;
 class SessionRequest;
 }  // namespace oak::session::v1
 
-namespace legion {
+namespace private_ai {
 
 // Interface for the Transport Layer.
 // Responsible for raw connection and data transfer.
@@ -45,6 +45,6 @@ class Transport {
   virtual void Send(const oak::session::v1::SessionRequest& request) = 0;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_TRANSPORT_H_

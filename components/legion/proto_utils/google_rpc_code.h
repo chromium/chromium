@@ -9,12 +9,12 @@
 
 #include "components/legion/proto/google_rpc_code.pb.h"
 
-namespace legion {
+namespace private_ai {
 
-// An helper function to parse the `legion::GoogleRpcCode` from
+// An helper function to parse the `private_ai::GoogleRpcCode` from
 // the reason string.
-legion::rpc::GoogleRpcCode ParseGoogleRpcCode(const std::string& reason);
+rpc::GoogleRpcCode ParseGoogleRpcCode(const std::string& reason);
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_PROTO_UTILS_GOOGLE_RPC_CODE_H_

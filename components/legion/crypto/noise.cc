@@ -15,6 +15,8 @@
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 
+namespace private_ai {
+
 namespace {
 
 // HKDF2 implements the functions with the same name from Noise[1],
@@ -35,8 +37,7 @@ std::tuple<std::array<uint8_t, 32>, std::array<uint8_t, 32>> HKDF2(
   return std::make_tuple(a, b);
 }
 
-std::string_view ProtocolNameForHandshakeType(
-    legion::Noise::HandshakeType type) {
+std::string_view ProtocolNameForHandshakeType(Noise::HandshakeType type) {
   static const std::string_view kKNProtocolName =
       "Noise_KNpsk0_P256_AESGCM_SHA256";
   static const std::string_view kNKProtocolName =
@@ -46,20 +47,18 @@ std::string_view ProtocolNameForHandshakeType(
   static const std::string_view kNNProtocolName = "Noise_NN_P256_AESGCM_SHA256";
 
   switch (type) {
-    case legion::Noise::HandshakeType::kNKpsk0:
+    case Noise::HandshakeType::kNKpsk0:
       return kNKProtocolName;
-    case legion::Noise::HandshakeType::kKNpsk0:
+    case Noise::HandshakeType::kKNpsk0:
       return kKNProtocolName;
-    case legion::Noise::HandshakeType::kNK:
+    case Noise::HandshakeType::kNK:
       return kNKNoPskProtocolName;
-    case legion::Noise::HandshakeType::kNN:
+    case Noise::HandshakeType::kNN:
       return kNNProtocolName;
   }
 }
 
 }  // namespace
-
-namespace legion {
 
 Noise::Noise() = default;
 Noise::~Noise() = default;
@@ -151,4 +150,4 @@ void Noise::InitializeKey(base::span<const uint8_t, 32> key) {
   symmetric_nonce_ = 0;
 }
 
-}  // namespace legion
+}  // namespace private_ai

@@ -8,9 +8,9 @@
 #include "components/legion/client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace legion {
+namespace private_ai {
 
-class MockLegionClient : public legion::Client {
+class MockLegionClient : public Client {
  public:
   MOCK_METHOD(void,
               EstablishSession,
@@ -18,28 +18,28 @@ class MockLegionClient : public legion::Client {
               (override));
   MOCK_METHOD(void,
               SendTextRequest,
-              (legion::proto::FeatureName feature_name,
+              (proto::FeatureName feature_name,
                const std::string& text,
                OnTextRequestCompletedCallback callback,
                const RequestOptions& options),
               (override));
   MOCK_METHOD(void,
               SendGenerateContentRequest,
-              (legion::proto::FeatureName feature_name,
-               const legion::proto::GenerateContentRequest& request,
+              (proto::FeatureName feature_name,
+               const proto::GenerateContentRequest& request,
                OnGenerateContentRequestCompletedCallback callback,
                const RequestOptions& options),
               (override));
   MOCK_METHOD(void,
               SendPaicRequest,
-              (legion::proto::FeatureName feature_name,
-               const legion::proto::PaicMessage& request,
+              (proto::FeatureName feature_name,
+               const proto::PaicMessage& request,
                OnPaicMessageRequestCompletedCallback callback,
                const RequestOptions& options),
               (override));
-  MOCK_METHOD(legion::LegionLogger*, GetLogger, (), (override));
+  MOCK_METHOD(LegionLogger*, GetLogger, (), (override));
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_TESTING_MOCK_LEGION_CLIENT_H_

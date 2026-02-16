@@ -8,7 +8,7 @@
 
 #include "base/logging.h"
 
-namespace legion {
+namespace private_ai {
 
 LegionLogger::LegionLogger() = default;
 
@@ -38,4 +38,4 @@ void LegionLogger::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-}  // namespace legion
+}  // namespace private_ai

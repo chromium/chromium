@@ -21,7 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -96,7 +96,7 @@ class FakeSecureChannelFactory : public SecureChannel::Factory {
 class ConnectionBasicTest : public testing::Test {
  public:
   void SetUp() override {
-    connection_ = std::make_unique<legion::ConnectionBasic>(
+    connection_ = std::make_unique<ConnectionBasic>(
         std::make_unique<FakeSecureChannelFactory>(
             base::BindRepeating(&ConnectionBasicTest::on_secure_channel_created,
                                 base::Unretained(this))),
@@ -117,7 +117,7 @@ class ConnectionBasicTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<legion::Connection> connection_;
+  std::unique_ptr<Connection> connection_;
   raw_ptr<FakeSecureChannel> secure_channel_;
 
   int on_disconnect_counter_ = 0;
@@ -371,4 +371,4 @@ TEST_F(ConnectionBasicTest, SecureChannelUnknownRequestId) {
 
 }  // namespace
 
-}  // namespace legion
+}  // namespace private_ai

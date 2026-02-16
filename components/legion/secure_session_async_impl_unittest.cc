@@ -22,7 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -228,4 +228,4 @@ TEST_F(SecureSessionAsyncImplTest, DecryptSuccess) {
 
 }  // namespace
 
-}  // namespace legion
+}  // namespace private_ai

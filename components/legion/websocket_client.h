@@ -29,7 +29,7 @@ namespace network::mojom {
 class NetworkContext;
 }  // namespace network::mojom
 
-namespace legion {
+namespace private_ai {
 
 class LegionLogger;
 
@@ -112,6 +112,6 @@ class WebSocketClient : public Transport,
   base::WeakPtrFactory<WebSocketClient> weak_ptr_factory_{this};
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_WEBSOCKET_CLIENT_H_

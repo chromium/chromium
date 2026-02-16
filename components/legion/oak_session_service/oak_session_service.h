@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace legion {
+namespace private_ai {
 
 // This class should be run in a sandboxed process.
 //
@@ -48,6 +48,6 @@ class OakSessionService : public mojom::OakSession {
   mojo::Receiver<mojom::OakSession> receiver_;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_OAK_SESSION_SERVICE_OAK_SESSION_SERVICE_H_

@@ -26,7 +26,7 @@ class LegionModelExecutionFetcherTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  legion::MockLegionClient mock_legion_client_;
+  private_ai::MockLegionClient mock_legion_client_;
   std::unique_ptr<LegionModelExecutionFetcher> fetcher_;
 };
 
@@ -38,22 +38,23 @@ TEST_F(LegionModelExecutionFetcherTest, ConvertsZeroStateSuggestionsRequest) {
   EXPECT_CALL(
       mock_legion_client_,
       SendPaicRequest(
-          testing::Eq(legion::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
+          testing::Eq(
+              private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
           testing::_, testing::_,
-          testing::Field(&legion::Client::RequestOptions::timeout,
-                         legion::Client::kDefaultTimeout)))
+          testing::Field(&private_ai::Client::RequestOptions::timeout,
+                         private_ai::Client::kDefaultTimeout)))
       .WillOnce(
-          [](legion::proto::FeatureName feature_name,
-             const legion::proto::PaicMessage& request,
-             legion::Client::OnPaicMessageRequestCompletedCallback callback,
-             const legion::Client::RequestOptions& options) {
+          [](private_ai::proto::FeatureName feature_name,
+             const private_ai::proto::PaicMessage& request,
+             private_ai::Client::OnPaicMessageRequestCompletedCallback callback,
+             const private_ai::Client::RequestOptions& options) {
             auto execute_request = request.execute_request_ext();
             auto zss_request =
                 ParsedAnyMetadata<proto::ZeroStateSuggestionsRequest>(
                     execute_request.request_metadata());
             EXPECT_EQ(zss_request->page_context().url(), "url");
             EXPECT_EQ(zss_request->page_context().title(), "Hello");
-            std::move(callback).Run(base::ok(legion::proto::PaicMessage()));
+            std::move(callback).Run(base::ok(private_ai::proto::PaicMessage()));
           });
 
   fetcher_->ExecuteModel(ModelBasedCapabilityKey::kZeroStateSuggestions,
@@ -74,15 +75,16 @@ TEST_F(LegionModelExecutionFetcherTest,
   EXPECT_CALL(
       mock_legion_client_,
       SendPaicRequest(
-          testing::Eq(legion::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
+          testing::Eq(
+              private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
           testing::_, testing::_,
-          testing::Field(&legion::Client::RequestOptions::timeout,
-                         legion::Client::kDefaultTimeout)))
+          testing::Field(&private_ai::Client::RequestOptions::timeout,
+                         private_ai::Client::kDefaultTimeout)))
       .WillOnce(
-          [](legion::proto::FeatureName feature_name,
-             const legion::proto::PaicMessage& request,
-             legion::Client::OnPaicMessageRequestCompletedCallback callback,
-             const legion::Client::RequestOptions& options) {
+          [](private_ai::proto::FeatureName feature_name,
+             const private_ai::proto::PaicMessage& request,
+             private_ai::Client::OnPaicMessageRequestCompletedCallback callback,
+             const private_ai::Client::RequestOptions& options) {
             auto execute_request = request.execute_request_ext();
             auto zss_request =
                 ParsedAnyMetadata<proto::ZeroStateSuggestionsRequest>(
@@ -96,7 +98,7 @@ TEST_F(LegionModelExecutionFetcherTest,
                       "url2");
             EXPECT_EQ(page_context_list.page_contexts(1).page_context().title(),
                       "你好");
-            std::move(callback).Run(base::ok(legion::proto::PaicMessage()));
+            std::move(callback).Run(base::ok(private_ai::proto::PaicMessage()));
           });
 
   fetcher_->ExecuteModel(ModelBasedCapabilityKey::kZeroStateSuggestions,
@@ -108,16 +110,17 @@ TEST_F(LegionModelExecutionFetcherTest, ConvertsZeroStateSuggestionsResponse) {
   EXPECT_CALL(
       mock_legion_client_,
       SendPaicRequest(
-          testing::Eq(legion::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
+          testing::Eq(
+              private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
           testing::_, testing::_,
-          testing::Field(&legion::Client::RequestOptions::timeout,
-                         legion::Client::kDefaultTimeout)))
+          testing::Field(&private_ai::Client::RequestOptions::timeout,
+                         private_ai::Client::kDefaultTimeout)))
       .WillOnce(
-          [](legion::proto::FeatureName feature_name,
-             const legion::proto::PaicMessage& request,
-             legion::Client::OnPaicMessageRequestCompletedCallback callback,
-             const legion::Client::RequestOptions& options) {
-            legion::proto::PaicMessage response;
+          [](private_ai::proto::FeatureName feature_name,
+             const private_ai::proto::PaicMessage& request,
+             private_ai::Client::OnPaicMessageRequestCompletedCallback callback,
+             const private_ai::Client::RequestOptions& options) {
+            private_ai::proto::PaicMessage response;
             proto::ZeroStateSuggestionsResponse zss_response;
             zss_response.add_suggestions()->set_label("Hello");
             zss_response.add_suggestions()->set_label("Привіт");

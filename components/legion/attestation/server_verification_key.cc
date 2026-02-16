@@ -12,7 +12,7 @@
 #include "base/strings/string_util.h"
 #include "components/legion/features.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -52,4 +52,4 @@ base::span<const ProcessedKey> GetStagingKeysForTesting() {
   return kStagingServerVerificationKeys;
 }
 
-}  // namespace legion
+}  // namespace private_ai

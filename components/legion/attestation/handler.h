@@ -10,7 +10,7 @@
 #include "components/legion/attestation/server_evidence.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 // Interface for handling attestation-related operations.
 class AttestationHandler {
@@ -29,6 +29,6 @@ class AttestationHandler {
       const AttestationEvidence& evidence) = 0;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_ATTESTATION_HANDLER_H_

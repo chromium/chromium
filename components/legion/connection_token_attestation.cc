@@ -13,7 +13,7 @@
 #include "components/legion/phosphor/token_manager.h"
 #include "components/legion/proto/legion.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 ConnectionTokenAttestation::PendingRequest::PendingRequest(
     proto::LegionRequest request,
@@ -130,4 +130,4 @@ void ConnectionTokenAttestation::FailPendingRequestsAndCallOnDisconnect(
   }
 }
 
-}  // namespace legion
+}  // namespace private_ai

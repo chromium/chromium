@@ -20,7 +20,7 @@ namespace network {
 class SimpleURLLoader;
 }  // namespace network
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 // HTTP Fetching for Legion. This implements the
 // `BlindSignMessageInterface` for use by the Blind-Sign-Auth (BSA) library.
@@ -58,6 +58,6 @@ class ConfigHttp : public quiche::BlindSignMessageInterface {
   base::WeakPtrFactory<ConfigHttp> weak_ptr_factory_{this};
 };
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor
 
 #endif  // COMPONENTS_LEGION_PHOSPHOR_CONFIG_HTTP_H_

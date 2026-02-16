@@ -227,8 +227,8 @@ auto RunSystemSignalsService(
 
 #if !BUILDFLAG(IS_ANDROID)
 auto RunOakSessionService(
-    mojo::PendingReceiver<legion::mojom::OakSession> receiver) {
-  return std::make_unique<legion::OakSessionService>(std::move(receiver));
+    mojo::PendingReceiver<private_ai::mojom::OakSession> receiver) {
+  return std::make_unique<private_ai::OakSessionService>(std::move(receiver));
 }
 
 auto RunProxyResolver(

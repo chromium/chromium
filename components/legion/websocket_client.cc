@@ -25,7 +25,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 
-namespace legion {
+namespace private_ai {
 namespace {
 
 constexpr size_t kMaxIncomingMessageSize = 1 << 20;
@@ -300,10 +300,9 @@ void WebSocketClient::OnDropChannel(bool was_clean,
 
   // If there is a reason, it indicates an error from the server.
   if (!reason.empty()) {
-    base::UmaHistogramEnumeration("Legion.Client.ServerErrorCode",
-                                  ParseGoogleRpcCode(reason),
-                                  static_cast<legion::rpc::GoogleRpcCode>(
-                                      legion::rpc::GoogleRpcCode_MAX + 1));
+    base::UmaHistogramEnumeration(
+        "Legion.Client.ServerErrorCode", ParseGoogleRpcCode(reason),
+        static_cast<rpc::GoogleRpcCode>(rpc::GoogleRpcCode_MAX + 1));
   }
   ClosePipe(TransportError::kSocketClosed);
 }
@@ -379,4 +378,4 @@ void WebSocketClient::OnMojoPipeDisconnect() {
   ClosePipe(TransportError::kSocketClosed);
 }
 
-}  // namespace legion
+}  // namespace private_ai

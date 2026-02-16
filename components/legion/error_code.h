@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_LEGION_ERROR_CODE_H_
 #define COMPONENTS_LEGION_ERROR_CODE_H_
 
-namespace legion {
+namespace private_ai {
 
 // Represents errors that can occur during a legion client operation.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -41,6 +41,6 @@ enum class ErrorCode {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:LegionErrorCode)
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_ERROR_CODE_H_

@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "components/legion/connection.h"
 
-namespace legion {
+namespace private_ai {
 
 // A decorator for `Connection` that records metrics for `Send` calls.
 // It wraps the provided `inner_connection` and records request/response
@@ -39,6 +39,6 @@ class ConnectionMetrics : public Connection {
   base::WeakPtrFactory<ConnectionMetrics> weak_factory_{this};
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CONNECTION_METRICS_H_

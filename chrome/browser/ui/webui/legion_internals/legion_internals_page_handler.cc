@@ -24,9 +24,9 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 
 LegionInternalsPageHandler::LegionInternalsPageHandler(
-    legion::phosphor::TokenManager* token_manager,
+    private_ai::phosphor::TokenManager* token_manager,
     network::mojom::NetworkContext* network_context,
-    legion::Client* private_ai_client,
+    private_ai::Client* private_ai_client,
     mojo::PendingReceiver<legion_internals::mojom::LegionInternalsPageHandler>
         receiver)
     : token_manager_(token_manager),
@@ -47,10 +47,10 @@ void LegionInternalsPageHandler::SetPage(
 void LegionInternalsPageHandler::Connect(const std::string& url,
                                          const std::string& api_key,
                                          ConnectCallback callback) {
-  webui_client_ = legion::Client::Create(
-      url, api_key, legion::kLegionProxyServerUrl.Get(), network_context_,
+  webui_client_ = private_ai::Client::Create(
+      url, api_key, private_ai::kLegionProxyServerUrl.Get(), network_context_,
       token_manager_, content::GetNetworkService(),
-      std::make_unique<legion::LegionLogger>());
+      std::make_unique<private_ai::LegionLogger>());
   scoped_logger_observations_.AddObservation(webui_client_->GetLogger());
   std::move(callback).Run();
 }
@@ -73,8 +73,9 @@ void LegionInternalsPageHandler::SendRequest(const std::string& feature_name,
     return;
   }
 
-  legion::proto::FeatureName feature_name_proto;
-  if (!legion::proto::FeatureName_Parse(feature_name, &feature_name_proto)) {
+  private_ai::proto::FeatureName feature_name_proto;
+  if (!private_ai::proto::FeatureName_Parse(feature_name,
+                                            &feature_name_proto)) {
     auto result = legion_internals::mojom::LegionResponse::New();
     result->error = std::string("Error: invalid feature_name: ") + feature_name;
     std::move(callback).Run(std::move(result));
@@ -85,7 +86,7 @@ void LegionInternalsPageHandler::SendRequest(const std::string& feature_name,
       feature_name_proto, request,
       base::BindOnce(
           [](SendRequestCallback callback,
-             base::expected<std::string, legion::ErrorCode> response) {
+             base::expected<std::string, private_ai::ErrorCode> response) {
             auto result = legion_internals::mojom::LegionResponse::New();
             if (response.has_value()) {
               result->response = *response;

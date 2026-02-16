@@ -13,7 +13,7 @@
 #include "components/legion/attestation/server_verification_key.h"
 #include "crypto/signature_verifier.h"
 
-namespace legion {
+namespace private_ai {
 
 struct VerificationKey {
   VerificationKey(std::vector<uint8_t> public_key,
@@ -39,6 +39,6 @@ std::map<uint32_t, VerificationKey> LoadVerificationKeys(
 std::optional<std::pair<uint32_t, base::span<const uint8_t>>>
 ParseTinkSignature(base::span<const uint8_t> signature);
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_ATTESTATION_VERIFICATION_KEY_UTILS_H_

@@ -21,7 +21,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -201,4 +201,4 @@ void SecureSessionAsyncImpl::Decrypt(
   service_->Decrypt(ConvertToBytes(data), std::move(callback));
 }
 
-}  // namespace legion
+}  // namespace private_ai

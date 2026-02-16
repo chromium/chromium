@@ -23,7 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -187,4 +187,4 @@ TEST_F(ConnectionProxyTest, ProxyTokenFailure) {
 
 }  // namespace
 
-}  // namespace legion
+}  // namespace private_ai

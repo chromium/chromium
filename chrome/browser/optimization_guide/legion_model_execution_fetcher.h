@@ -13,15 +13,15 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 
-namespace legion {
+namespace private_ai {
 class Client;
-}  // namespace legion
+}  // namespace private_ai
 
 namespace optimization_guide {
 
 class LegionModelExecutionFetcher : public ModelExecutionFetcher {
  public:
-  explicit LegionModelExecutionFetcher(legion::Client* legion_client);
+  explicit LegionModelExecutionFetcher(private_ai::Client* legion_client);
   ~LegionModelExecutionFetcher() override;
 
   LegionModelExecutionFetcher(const LegionModelExecutionFetcher&) = delete;
@@ -38,7 +38,7 @@ class LegionModelExecutionFetcher : public ModelExecutionFetcher {
  private:
   // Unowned pointer to the legion client. The owner of this object needs
   // to ensure that all fetchers are destroyed before the client.
-  raw_ptr<legion::Client> legion_client_;
+  raw_ptr<private_ai::Client> legion_client_;
 
   base::WeakPtrFactory<LegionModelExecutionFetcher> weak_ptr_factory_{this};
 };

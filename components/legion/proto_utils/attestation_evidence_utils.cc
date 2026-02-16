@@ -12,7 +12,7 @@
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 #include "third_party/oak/chromium/proto/variant.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 std::optional<AttestationEvidence> ConvertToAttestationEvidence(
     const oak::session::v1::AttestResponse& response) {
@@ -50,4 +50,4 @@ std::optional<AttestationEvidence> ConvertToAttestationEvidence(
   return output;
 }
 
-}  // namespace legion
+}  // namespace private_ai

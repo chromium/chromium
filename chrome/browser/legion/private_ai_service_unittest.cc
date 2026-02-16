@@ -25,7 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -36,7 +36,7 @@ constexpr char kTestEmail[] = "test@example.com";
 class PrivateAiServiceTest : public testing::Test {
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(legion::kLegion);
+    feature_list_.InitAndEnableFeature(kLegion);
     auto test_bsa_factory = std::make_unique<TestBlindSignAuthFactory>();
     auto* test_bsa_factory_ptr = test_bsa_factory.get();
     private_ai_service_ = std::make_unique<TestPrivateAiService>(
@@ -121,4 +121,4 @@ TEST_F(PrivateAiServiceTest, RequestOAuthTokenPersistentError) {
   EXPECT_EQ(future.Get<1>(), std::nullopt);
 }
 
-}  // namespace legion
+}  // namespace private_ai

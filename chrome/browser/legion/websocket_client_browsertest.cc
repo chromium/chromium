@@ -18,7 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -45,8 +45,8 @@ IN_PROC_BROWSER_TEST_F(LegionWebSocketClientBrowserTest, MANUAL_Client) {
          "feature name."
       << "--enable-features=Legion:test-feature-name/FEATURE_NAME_UNSPECIFIED";
 
-  legion::proto::FeatureName feature_name;
-  CHECK(legion::proto::FeatureName_Parse(feature_name_str, &feature_name))
+  proto::FeatureName feature_name;
+  CHECK(proto::FeatureName_Parse(feature_name_str, &feature_name))
       << "Invalid feature name: " << feature_name_str;
 
   const std::string text = kTestQueryText.Get();
@@ -74,4 +74,4 @@ IN_PROC_BROWSER_TEST_F(LegionWebSocketClientBrowserTest, MANUAL_Client) {
 
 }  // namespace
 
-}  // namespace legion
+}  // namespace private_ai

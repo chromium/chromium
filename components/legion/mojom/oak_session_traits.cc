@@ -7,10 +7,10 @@
 namespace mojo {
 
 // static
-bool StructTraits<legion::mojom::HandshakeMessageDataView,
-                  legion::HandshakeMessage>::
-    Read(legion::mojom::HandshakeMessageDataView data,
-         legion::HandshakeMessage* out) {
+bool StructTraits<private_ai::mojom::HandshakeMessageDataView,
+                  private_ai::HandshakeMessage>::
+    Read(private_ai::mojom::HandshakeMessageDataView data,
+         private_ai::HandshakeMessage* out) {
   return data.ReadEphemeralPublicKey(&out->ephemeral_public_key) &&
          data.ReadCiphertext(&out->ciphertext);
 }

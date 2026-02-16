@@ -14,7 +14,7 @@
 #include "components/legion/connection.h"
 #include "components/legion/proto/legion.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 ConnectionBasic::ConnectionBasic(
     std::unique_ptr<SecureChannel::Factory> secure_channel_factory,
@@ -96,4 +96,4 @@ void ConnectionBasic::HandleDisconnect(ErrorCode error_code) {
   }
 }
 
-}  // namespace legion
+}  // namespace private_ai

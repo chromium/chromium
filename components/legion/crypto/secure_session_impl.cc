@@ -18,7 +18,7 @@
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 
-namespace legion {
+namespace private_ai {
 
 SecureSessionImpl::SecureSessionImpl() = default;
 
@@ -118,4 +118,4 @@ void SecureSessionImpl::set_crypter_for_testing(
   crypter_ = std::move(crypter);
 }
 
-}  // namespace legion
+}  // namespace private_ai

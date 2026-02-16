@@ -27,7 +27,7 @@ namespace signin {
 class IdentityManager;
 }
 
-namespace legion {
+namespace private_ai {
 
 class TestBlindSignAuthFactory : public phosphor::BlindSignAuthFactory {
  public:
@@ -65,6 +65,6 @@ class TestPrivateAiService : public PrivateAiService {
   raw_ptr<TestBlindSignAuthFactory> test_bsa_factory_;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // CHROME_BROWSER_LEGION_TEST_PRIVATE_AI_SERVICE_H_

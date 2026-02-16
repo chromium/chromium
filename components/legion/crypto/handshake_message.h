@@ -12,7 +12,7 @@
 
 #include "components/legion/crypto/constants.h"
 
-namespace legion {
+namespace private_ai {
 
 struct HandshakeMessage {
   HandshakeMessage();
@@ -30,6 +30,6 @@ struct HandshakeMessage {
   std::vector<uint8_t> ciphertext;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CRYPTO_HANDSHAKE_MESSAGE_H_

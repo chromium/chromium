@@ -26,7 +26,7 @@ enum class BlindSignAuthServiceType;
 struct BlindSignToken;
 }  // namespace quiche
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 // Helper for invoking BSA to generate tokens. This class is typically wrapped
 // in `base::SequenceBound` in order to run off the main thread.
@@ -52,7 +52,7 @@ class TokenFetcherHelper {
 
   // Converts a batch of `quiche::BlindSignToken` into
   // `BlindSignedAuthToken`, returning nullopt on failure.
-  static std::optional<std::vector<legion::phosphor::BlindSignedAuthToken>>
+  static std::optional<std::vector<BlindSignedAuthToken>>
   QuicheTokensToPhosphorAuthTokens(std::vector<quiche::BlindSignToken>&);
 
   // Creates a blind-signed auth token by converting token fetched using the
@@ -64,6 +64,6 @@ class TokenFetcherHelper {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor
 
 #endif  // COMPONENTS_LEGION_PHOSPHOR_TOKEN_FETCHER_HELPER_H_

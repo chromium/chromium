@@ -24,7 +24,7 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 TokenFetcherHelper::TokenFetcherHelper() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -104,4 +104,4 @@ TokenFetcherHelper::CreateBlindSignedAuthToken(
        .expiration = expiration});
 }
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor

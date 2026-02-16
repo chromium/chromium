@@ -18,7 +18,7 @@
 #include "components/legion/legion_common.h"
 #include "components/legion/proto/legion.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 class Connection;
 class ConnectionFactory;
@@ -82,6 +82,6 @@ class ClientImpl : public Client {
   base::WeakPtrFactory<ClientImpl> weak_factory_{this};
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CLIENT_IMPL_H_

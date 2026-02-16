@@ -27,7 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 namespace {
 
 const char kProtobufContentType[] = "application/x-protobuf";
@@ -146,7 +146,7 @@ TEST_F(ConfigHttpTest, DoRequestInvalidFinchParametersFailsGracefully) {
   parameters["LegionTokenServerUrl"] = "<(^_^)>";
   parameters["LegionTokenServerGetInitialDataPath"] = "(>_<)";
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(legion::kLegion,
+  scoped_feature_list.InitAndEnableFeatureWithParameters(kLegion,
                                                          std::move(parameters));
 
   // Create a new ConfigHttp for this test so that the new
@@ -367,4 +367,4 @@ TEST_F(ConfigHttpTest, DoRequestMissingAuthorizationHeaderFails) {
 }
 
 }  // namespace
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor

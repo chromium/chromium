@@ -15,20 +15,20 @@
 namespace mojo {
 
 template <>
-struct StructTraits<legion::mojom::HandshakeMessageDataView,
-                    legion::HandshakeMessage> {
-  static const std::array<uint8_t, legion::kP256X962Length>&
-  ephemeral_public_key(const legion::HandshakeMessage& r) {
+struct StructTraits<private_ai::mojom::HandshakeMessageDataView,
+                    private_ai::HandshakeMessage> {
+  static const std::array<uint8_t, private_ai::kP256X962Length>&
+  ephemeral_public_key(const private_ai::HandshakeMessage& r) {
     return r.ephemeral_public_key;
   }
 
   static const std::vector<uint8_t>& ciphertext(
-      const legion::HandshakeMessage& r) {
+      const private_ai::HandshakeMessage& r) {
     return r.ciphertext;
   }
 
-  static bool Read(legion::mojom::HandshakeMessageDataView data,
-                   legion::HandshakeMessage* out);
+  static bool Read(private_ai::mojom::HandshakeMessageDataView data,
+                   private_ai::HandshakeMessage* out);
 };
 
 }  // namespace mojo

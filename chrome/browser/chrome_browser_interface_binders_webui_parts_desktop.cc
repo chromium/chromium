@@ -564,7 +564,7 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
                                          webapps::AppHomeUI>(map);
 #endif
 
-  if (base::FeatureList::IsEnabled(legion::kLegion)) {
+  if (base::FeatureList::IsEnabled(private_ai::kLegion)) {
     RegisterWebUIControllerInterfaceBinder<
         legion_internals::mojom::LegionInternalsPageHandler, LegionInternalsUI>(
         map);

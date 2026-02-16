@@ -16,7 +16,7 @@
 #include "components/legion/testing/fake_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -147,4 +147,4 @@ TEST_F(ConnectionMetricsTest, Error) {
 
 }  // namespace
 
-}  // namespace legion
+}  // namespace private_ai

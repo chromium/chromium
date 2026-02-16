@@ -17,7 +17,7 @@ class NetworkContext;
 class NetworkService;
 }
 
-namespace legion {
+namespace private_ai {
 
 class LegionLogger;
 
@@ -104,6 +104,6 @@ class ProxyWithTokenConnectionFactoryImpl : public ConnectionFactory {
   const raw_ptr<LegionLogger> logger_;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CONNECTION_FACTORY_IMPL_H_

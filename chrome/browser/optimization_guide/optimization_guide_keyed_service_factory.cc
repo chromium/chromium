@@ -57,7 +57,7 @@ OptimizationGuideKeyedServiceFactory::OptimizationGuideKeyedServiceFactory()
   DependsOn(BackgroundDownloadServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
-  DependsOn(legion::PrivateAiServiceFactory::GetInstance());
+  DependsOn(private_ai::PrivateAiServiceFactory::GetInstance());
 #endif
 }
 

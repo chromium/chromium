@@ -12,7 +12,7 @@
 #include "components/legion/attestation/server_verification_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 namespace {
 
 // Tests for ParseTinkSignature.
@@ -99,4 +99,4 @@ TEST(VerificationKeyUtilsTest, LoadVerificationKeysInvalidKeyData) {
 }
 
 }  // namespace
-}  // namespace legion
+}  // namespace private_ai

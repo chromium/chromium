@@ -16,7 +16,7 @@
 #include "components/legion/crypto/noise.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 
-namespace legion {
+namespace private_ai {
 
 class SecureSessionImpl {
  public:
@@ -41,6 +41,6 @@ class SecureSessionImpl {
   std::unique_ptr<Crypter> crypter_;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CRYPTO_SECURE_SESSION_IMPL_H_

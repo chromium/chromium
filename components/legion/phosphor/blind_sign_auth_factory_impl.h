@@ -17,7 +17,7 @@ namespace network {
 class PendingSharedURLLoaderFactory;
 }  // namespace network
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 class BlindSignAuthFactoryImpl : public BlindSignAuthFactory {
  public:
@@ -29,6 +29,6 @@ class BlindSignAuthFactoryImpl : public BlindSignAuthFactory {
           pending_url_loader_factory) override;
 };
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor
 
 #endif  // COMPONENTS_LEGION_PHOSPHOR_BLIND_SIGN_AUTH_FACTORY_IMPL_H_

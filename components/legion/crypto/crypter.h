@@ -13,7 +13,7 @@
 
 #include "base/containers/span.h"
 
-namespace legion {
+namespace private_ai {
 
 // Crypter handles the post-handshake encryption of messages.
 class Crypter {
@@ -38,6 +38,6 @@ class Crypter {
   uint32_t write_sequence_num_ = 0;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CRYPTO_CRYPTER_H_

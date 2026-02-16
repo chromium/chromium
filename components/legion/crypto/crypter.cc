@@ -18,7 +18,7 @@
 #include "base/numerics/safe_math.h"
 #include "crypto/aead.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -129,4 +129,4 @@ std::optional<std::vector<uint8_t>> Crypter::Decrypt(
   return plaintext;
 }
 
-}  // namespace legion
+}  // namespace private_ai

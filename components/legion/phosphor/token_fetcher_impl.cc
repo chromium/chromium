@@ -34,7 +34,7 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 TokenFetcherImpl::SequenceBoundFetch::SequenceBoundFetch(
     std::unique_ptr<quiche::BlindSignAuthInterface> blind_sign_auth)
@@ -209,19 +209,19 @@ std::optional<base::TimeDelta> TokenFetcherImpl::CalculateBackoff(
     case kFailedBSA403:
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.
-      backoff = legion::kLegionTryGetAuthTokensNotEligibleBackoff.Get();
+      backoff = kLegionTryGetAuthTokensNotEligibleBackoff.Get();
       break;
     case kFailedOAuthTokenTransient:
     case kFailedBSAOther:
       // Transient failure to fetch an OAuth token, or some other error from
       // BSA that is probably transient.
-      backoff = legion::kLegionTryGetAuthTokensTransientBackoff.Get();
+      backoff = kLegionTryGetAuthTokensTransientBackoff.Get();
       exponential = true;
       break;
     case kFailedBSA400:
     case kFailedBSA401:
       // Both 400 and 401 suggest a bug, so do not retry aggressively.
-      backoff = legion::kLegionTryGetAuthTokensBugBackoff.Get();
+      backoff = kLegionTryGetAuthTokensBugBackoff.Get();
       exponential = true;
       break;
     case kFailedOAuthTokenDeprecated:
@@ -244,10 +244,10 @@ std::optional<base::TimeDelta> TokenFetcherImpl::CalculateBackoff(
   last_get_authn_tokens_backoff_ = backoff;
 
   if (backoff && backoff != base::TimeDelta::Max()) {
-    return base::RandomizeByPercentage(
-        *backoff, legion::kLegionBackoffJitter.Get() * 100);
+    return base::RandomizeByPercentage(*backoff,
+                                       kLegionBackoffJitter.Get() * 100);
   }
   return backoff;
 }
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor

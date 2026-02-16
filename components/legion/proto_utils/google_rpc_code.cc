@@ -10,11 +10,11 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 
-namespace legion {
+namespace private_ai {
 
 const char kGenericErrorPrefix[] = "generic::";
 
-legion::rpc::GoogleRpcCode ParseGoogleRpcCode(const std::string& reason) {
+rpc::GoogleRpcCode ParseGoogleRpcCode(const std::string& reason) {
   // The reason string from the server may contain a canonical RPC error code.
   // This function attempts to parse it. The expected format is a string
   // containing "generic::<code>" with an optional ":<message>".
@@ -23,7 +23,7 @@ legion::rpc::GoogleRpcCode ParseGoogleRpcCode(const std::string& reason) {
   // message are ignored as they are not guaranteed to be present.
   size_t generic_start = reason.find(kGenericErrorPrefix);
   if (generic_start == std::string::npos) {
-    return legion::rpc::GoogleRpcCode::UNKNOWN;
+    return rpc::GoogleRpcCode::UNKNOWN;
   }
 
   size_t code_start = generic_start + sizeof(kGenericErrorPrefix) - 1;
@@ -36,11 +36,11 @@ legion::rpc::GoogleRpcCode ParseGoogleRpcCode(const std::string& reason) {
     code_str = base::ToUpperASCII(reason.substr(code_start, end - code_start));
   }
 
-  legion::rpc::GoogleRpcCode code;
-  if (legion::rpc::GoogleRpcCode_Parse(code_str, &code)) {
+  rpc::GoogleRpcCode code;
+  if (rpc::GoogleRpcCode_Parse(code_str, &code)) {
     return code;
   }
-  return legion::rpc::GoogleRpcCode::UNKNOWN;
+  return rpc::GoogleRpcCode::UNKNOWN;
 }
 
-}  // namespace legion
+}  // namespace private_ai

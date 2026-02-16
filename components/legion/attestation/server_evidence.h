@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace legion {
+namespace private_ai {
 
 // Contains a message and its corresponding signature, extracted from the
 // server's attestation response. This is the core piece of information needed
@@ -50,6 +50,6 @@ struct AttestationEvidence {
   std::map<std::string, EndorsedEvidence> endorsed_evidence;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_ATTESTATION_SERVER_EVIDENCE_H_

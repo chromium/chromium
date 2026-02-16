@@ -16,7 +16,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/proxy_config.mojom.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -131,4 +131,4 @@ void ConnectionProxy::FailPendingRequestsAndDisconnect() {
   }
 }
 
-}  // namespace legion
+}  // namespace private_ai

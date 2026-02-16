@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace legion {
+namespace private_ai {
 
 OakSessionService::OakSessionService(
     mojo::PendingReceiver<mojom::OakSession> receiver)
@@ -52,4 +52,4 @@ void OakSessionService::Decrypt(const std::vector<uint8_t>& input,
   std::move(callback).Run(result);
 }
 
-}  // namespace legion
+}  // namespace private_ai

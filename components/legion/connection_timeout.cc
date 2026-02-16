@@ -15,7 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/legion/connection.h"
 
-namespace legion {
+namespace private_ai {
 
 ConnectionTimeout::ConnectionTimeout(
     std::unique_ptr<Connection> inner_connection)
@@ -57,4 +57,4 @@ void ConnectionTimeout::OnResponse(
   std::move(callback).Run(std::move(result));
 }
 
-}  // namespace legion
+}  // namespace private_ai

@@ -24,7 +24,7 @@ namespace network::mojom {
 class NetworkService;
 }  // namespace network::mojom
 
-namespace legion {
+namespace private_ai {
 
 namespace phosphor {
 class TokenManager;
@@ -90,6 +90,6 @@ class ConnectionProxy : public Connection {
   base::WeakPtrFactory<ConnectionProxy> weak_factory_{this};
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CONNECTION_PROXY_H_

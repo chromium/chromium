@@ -15,7 +15,7 @@
 #include "components/legion/legion_common.h"
 #include "components/legion/secure_channel.h"
 
-namespace legion {
+namespace private_ai {
 
 // A very basic implementation of the `Connection` interface that sends
 // requests over a `SecureChannel`. It resolves Legion responses to the
@@ -62,6 +62,6 @@ class ConnectionBasic : public Connection {
   base::WeakPtrFactory<ConnectionBasic> weak_factory_{this};
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CONNECTION_BASIC_H_

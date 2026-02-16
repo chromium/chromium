@@ -5,7 +5,7 @@
 // third_party/oak/src/third_party/google/rpc/code.proto
 edition = "2023";
 
-package legion.rpc;
+package private_ai.rpc;
 
 option optimize_for = LITE_RUNTIME;
 

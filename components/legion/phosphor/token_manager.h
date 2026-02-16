@@ -12,7 +12,7 @@
 #include "components/legion/phosphor/data_types.h"
 #include "components/legion/proto/legion.pb.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 // Manages the cache of blind-signed auth tokens for Legion.
 class TokenManager {
@@ -39,6 +39,6 @@ class TokenManager {
   virtual void PrefetchAuthTokensForProxy() = 0;
 };
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor
 
 #endif  // COMPONENTS_LEGION_PHOSPHOR_TOKEN_MANAGER_H_

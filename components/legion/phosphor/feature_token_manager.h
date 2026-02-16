@@ -26,7 +26,7 @@ namespace quiche {
 enum class ProxyLayer;
 }  // namespace quiche
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 class TokenFetcher;
 
@@ -103,6 +103,6 @@ class FeatureTokenManager {
 };
 
 }  // namespace internal
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor
 
 #endif  // COMPONENTS_LEGION_PHOSPHOR_FEATURE_TOKEN_MANAGER_H_

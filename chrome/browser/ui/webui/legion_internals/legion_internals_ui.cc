@@ -34,13 +34,13 @@ LegionInternalsUIConfig::~LegionInternalsUIConfig() = default;
 
 bool LegionInternalsUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  if (!base::FeatureList::IsEnabled(legion::kLegion)) {
+  if (!base::FeatureList::IsEnabled(private_ai::kLegion)) {
     return false;
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* private_ai_service =
-      legion::PrivateAiServiceFactory::GetForProfile(profile);
+      private_ai::PrivateAiServiceFactory::GetForProfile(profile);
   return private_ai_service && private_ai_service->GetTokenManager();
 }
 
@@ -55,11 +55,11 @@ LegionInternalsUI::LegionInternalsUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(source, base::span(kLegionInternalsResources),
                               IDR_LEGION_INTERNALS_LEGION_INTERNALS_HTML);
 
-  source->AddString("default_url", legion::kLegionUrl.Get());
-  source->AddString("default_api_key", legion::kLegionApiKey.Get());
+  source->AddString("default_url", private_ai::kLegionUrl.Get());
+  source->AddString("default_api_key", private_ai::kLegionApiKey.Get());
   source->AddString("default_feature_name",
-                    legion::proto::FeatureName_Name(
-                        legion::proto::FeatureName::
+                    private_ai::proto::FeatureName_Name(
+                        private_ai::proto::FeatureName::
                             FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT));
 }
 
@@ -70,7 +70,7 @@ void LegionInternalsUI::BindInterface(
         receiver) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* private_ai_service =
-      legion::PrivateAiServiceFactory::GetForProfile(profile);
+      private_ai::PrivateAiServiceFactory::GetForProfile(profile);
 
   // IsWebUIEnabled should have prevented this from being created if the token
   // service or manager is not available.

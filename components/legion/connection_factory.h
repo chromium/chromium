@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "components/legion/connection.h"
 
-namespace legion {
+namespace private_ai {
 
 // Interface for creating `Connection` instances.
 class ConnectionFactory {
@@ -25,6 +25,6 @@ class ConnectionFactory {
       base::RepeatingClosure on_disconnect) = 0;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CONNECTION_FACTORY_H_

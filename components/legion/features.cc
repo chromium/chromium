@@ -4,7 +4,7 @@
 
 #include "components/legion/features.h"
 
-namespace legion {
+namespace private_ai {
 
 BASE_FEATURE(kLegion, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -60,4 +60,4 @@ const base::FeatureParam<base::TimeDelta> kLegionTryGetAuthTokensBugBackoff{
 const base::FeatureParam<double> kLegionBackoffJitter{
     &kLegion, /*name=*/"LegionBackoffJitter", /*default_value=*/0.25};
 
-}  // namespace legion
+}  // namespace private_ai

@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -218,4 +218,4 @@ TEST_F(ClientImplTest, SendGenerateContentRequestMalformedResponse) {
   EXPECT_EQ(result.error(), ErrorCode::kNoResponse);
 }
 
-}  // namespace legion
+}  // namespace private_ai

@@ -29,7 +29,7 @@
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 #include "url/gurl.h"
 
-namespace legion {
+namespace private_ai {
 
 class SecureChannelImpl : public SecureChannel {
  public:
@@ -122,6 +122,6 @@ class SecureChannelImpl : public SecureChannel {
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_SECURE_CHANNEL_IMPL_H_

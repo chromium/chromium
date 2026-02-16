@@ -13,7 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -259,4 +259,4 @@ TEST_F(VerifyAttestationResponseTest, ForcedNonLegacyKeyType) {
 
 }  // namespace
 
-}  // namespace legion
+}  // namespace private_ai

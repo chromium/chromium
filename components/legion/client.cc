@@ -19,7 +19,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
-namespace legion {
+namespace private_ai {
 
 // static
 std::unique_ptr<Client> Client::CreateWithApiKey(
@@ -110,4 +110,4 @@ GURL Client::FormatUrl(const std::string& url, const std::string& api_key) {
   return GURL(base::StrCat({"wss://", url, "?key=", api_key}));
 }
 
-}  // namespace legion
+}  // namespace private_ai

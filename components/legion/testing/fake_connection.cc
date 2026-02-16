@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "components/legion/proto/legion.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 FakeConnection::PendingRequest::PendingRequest() = default;
 
@@ -47,4 +47,4 @@ void FakeConnection::SimulateDisconnect() {
   std::move(on_disconnect_).Run();
 }
 
-}  // namespace legion
+}  // namespace private_ai

@@ -23,7 +23,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-namespace legion {
+namespace private_ai {
 
 // static
 bool PrivateAiService::CanLegionBeEnabled() {
@@ -53,7 +53,7 @@ PrivateAiService::PrivateAiService(
   token_manager_ =
       std::make_unique<phosphor::TokenManagerImpl>(std::move(token_fetcher));
 
-  client_ = legion::Client::Create(
+  client_ = Client::Create(
       kLegionUrl.Get(), kLegionApiKey.Get(), kLegionProxyServerUrl.Get(),
       profile_->GetDefaultStoragePartition()->GetNetworkContext(),
       token_manager_.get(), content::GetNetworkService(), std::move(logger));
@@ -148,4 +148,4 @@ void PrivateAiService::OnPrimaryAccountChanged(
   }
 }
 
-}  // namespace legion
+}  // namespace private_ai

@@ -16,7 +16,7 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 // A mock implementation of the quiche BlindSignAuth library to fetch
 // BlindSignTokens for tests.
@@ -103,6 +103,6 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
   base::OnceClosure on_get_tokens_callback_;
 };
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor
 
 #endif  // COMPONENTS_LEGION_PHOSPHOR_MOCK_BLIND_SIGN_AUTH_H_

@@ -10,7 +10,7 @@
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -122,4 +122,4 @@ TEST_F(SecureSessionImplTest, ProcessHandshakeResponseNonEmptyPlaintext) {
 
 }  // namespace
 
-}  // namespace legion
+}  // namespace private_ai

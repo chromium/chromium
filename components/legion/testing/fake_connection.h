@@ -13,7 +13,7 @@
 #include "components/legion/error_code.h"
 #include "components/legion/proto/legion.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 class FakeConnection : public Connection {
  public:
@@ -52,6 +52,6 @@ class FakeConnection : public Connection {
   std::vector<PendingRequest> pending_requests_;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_TESTING_FAKE_CONNECTION_H_

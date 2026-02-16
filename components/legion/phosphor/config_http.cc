@@ -26,7 +26,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 namespace {
 constexpr net::NetworkTrafficAnnotationTag kGetTokenTrafficAnnotation =
@@ -77,17 +77,17 @@ ConfigHttp::~ConfigHttp() = default;
 
 // static
 GURL ConfigHttp::GetServerUrl() {
-  return GURL(legion::kLegionTokenServerUrl.Get());
+  return GURL(kLegionTokenServerUrl.Get());
 }
 
 // static
 std::string ConfigHttp::GetInitialDataPath() {
-  return legion::kLegionTokenServerGetInitialDataPath.Get();
+  return kLegionTokenServerGetInitialDataPath.Get();
 }
 
 // static
 std::string ConfigHttp::GetTokensPath() {
-  return legion::kLegionTokenServerGetTokensPath.Get();
+  return kLegionTokenServerGetTokensPath.Get();
 }
 
 network::SharedURLLoaderFactory* ConfigHttp::GetOrCreateURLLoaderFactory() {
@@ -193,4 +193,4 @@ void ConfigHttp::OnDoRequestCompleted(
   std::move(callback)(std::move(bsa_response));
 }
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor

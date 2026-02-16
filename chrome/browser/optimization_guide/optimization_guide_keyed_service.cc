@@ -140,7 +140,7 @@ class FetcherDelegate : public ModelExecutionManager::Delegate {
  public:
   ~FetcherDelegate() override = default;
 
-  // Takes a BrowserContext instead of a legion::Client directly to avoid a
+  // Takes a BrowserContext instead of a private_ai::Client directly to avoid a
   // dangling pointer. The KeyedService dependency (DependsOn) ensures that
   // the PrivateAiService outlives this service during normal shutdown. However,
   // in tests, the PrivateAiService can be replaced with a test factory after
@@ -154,11 +154,11 @@ class FetcherDelegate : public ModelExecutionManager::Delegate {
 
   std::unique_ptr<optimization_guide::ModelExecutionFetcher>
   CreateLegionFetcher() override {
-    legion::PrivateAiService* private_ai_service =
-        legion::PrivateAiServiceFactory::GetForProfile(
+    private_ai::PrivateAiService* private_ai_service =
+        private_ai::PrivateAiServiceFactory::GetForProfile(
             Profile::FromBrowserContext(browser_context_));
     if (private_ai_service) {
-      if (legion::Client* client = private_ai_service->GetClient()) {
+      if (private_ai::Client* client = private_ai_service->GetClient()) {
         return std::make_unique<
             optimization_guide::LegionModelExecutionFetcher>(client);
       }
@@ -376,7 +376,7 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
   std::unique_ptr<ModelExecutionManager::Delegate> delegate;
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(legion::kLegion)) {
+  if (base::FeatureList::IsEnabled(private_ai::kLegion)) {
     delegate = std::make_unique<FetcherDelegate>(browser_context_);
   }
 #endif

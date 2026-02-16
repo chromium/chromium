@@ -25,7 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/time/time.h"
 
-namespace legion {
+namespace private_ai {
 
 class PrivateAiServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -73,7 +73,7 @@ class PrivateAiServiceBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{legion::kLegion};
+  base::test::ScopedFeatureList feature_list_{kLegion};
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   profiles::testing::ScopedProfileSelectionsForFactoryTesting
@@ -131,15 +131,14 @@ IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest, GetAuthToken) {
   tokens.push_back(std::move(bsa_token));
   test_private_ai_service->mock_bsa()->set_tokens(std::move(tokens));
 
-  base::test::TestFuture<std::optional<legion::phosphor::BlindSignedAuthToken>>
-      future;
+  base::test::TestFuture<std::optional<phosphor::BlindSignedAuthToken>> future;
 
   // First call is async and starts the fetch.
   token_manager->GetAuthToken(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   // Wait for the async fetch to complete.
-  std::optional<legion::phosphor::BlindSignedAuthToken> token = future.Get();
+  std::optional<phosphor::BlindSignedAuthToken> token = future.Get();
   ASSERT_TRUE(token.has_value());
 
   EXPECT_EQ(token->token, base::Base64Encode("test_token"));
@@ -174,18 +173,16 @@ IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest,
   test_private_ai_service->mock_bsa()->set_tokens(std::move(tokens));
 
   // First call is async and starts the fetch.
-  base::test::TestFuture<std::optional<legion::phosphor::BlindSignedAuthToken>>
-      future;
+  base::test::TestFuture<std::optional<phosphor::BlindSignedAuthToken>> future;
   token_manager->GetAuthToken(future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
 
   // Second call should be async and return a token from the cache.
-  base::test::TestFuture<std::optional<legion::phosphor::BlindSignedAuthToken>>
-      future2;
+  base::test::TestFuture<std::optional<phosphor::BlindSignedAuthToken>> future2;
   token_manager->GetAuthToken(future2.GetCallback());
   EXPECT_FALSE(future2.IsReady());
   EXPECT_TRUE(future2.Get().has_value());
 }
 
-}  // namespace legion
+}  // namespace private_ai

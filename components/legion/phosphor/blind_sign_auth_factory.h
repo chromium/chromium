@@ -10,7 +10,7 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 // Factory for creating `quiche::BlindSignAuthInterface` instances.
 class BlindSignAuthFactory {
@@ -23,6 +23,6 @@ class BlindSignAuthFactory {
           pending_url_loader_factory) = 0;
 };
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor
 
 #endif  // COMPONENTS_LEGION_PHOSPHOR_BLIND_SIGN_AUTH_FACTORY_H_

@@ -15,7 +15,7 @@
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 
-namespace legion {
+namespace private_ai {
 
 // Helper class to simulate the server-side of a secure session. This class
 // mirrors the functionality of `SecureSessionImpl` for the responder role in a
@@ -57,6 +57,6 @@ class TestServerSecureSession {
   std::unique_ptr<Crypter> crypter_;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CRYPTO_TEST_SERVER_SECURE_SESSION_H_

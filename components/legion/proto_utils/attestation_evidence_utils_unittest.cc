@@ -17,7 +17,7 @@
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 #include "third_party/oak/chromium/proto/variant.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -94,4 +94,4 @@ TEST(ConvertToAttestationEvidenceTest, EmptyResponse) {
 
 }  // namespace
 
-}  // namespace legion
+}  // namespace private_ai

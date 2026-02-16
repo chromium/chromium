@@ -14,7 +14,7 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 MockBlindSignAuth::MockBlindSignAuth() = default;
 
@@ -57,4 +57,4 @@ bool MockBlindSignAuth::GetTokensCalledInDifferentThread() {
          last_thread_id_ != base::PlatformThread::CurrentId();
 }
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor

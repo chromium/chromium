@@ -11,7 +11,7 @@ namespace oak::session::v1 {
 class AttestResponse;
 }  // namespace oak::session::v1
 
-namespace legion {
+namespace private_ai {
 
 struct AttestationEvidence;
 
@@ -19,6 +19,6 @@ struct AttestationEvidence;
 std::optional<AttestationEvidence> ConvertToAttestationEvidence(
     const oak::session::v1::AttestResponse& response);
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_PROTO_UTILS_ATTESTATION_EVIDENCE_UTILS_H_

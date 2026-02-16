@@ -23,7 +23,7 @@ namespace signin {
 class PrimaryAccountAccessTokenFetcher;
 }
 
-namespace legion {
+namespace private_ai {
 
 namespace phosphor {
 class BlindSignAuthFactory;
@@ -39,7 +39,7 @@ class Client;
 // tokens. These access tokens are then used by the underlying
 // `phosphor::TokenManager` and `phosphor::TokenFetcher` to acquire and manage
 // authentication tokens for Legion. This service also creates and provides the
-// `legion::Client`, which serves as the primary interface for interacting with
+// `Client`, which serves as the primary interface for interacting with
 // the Legion feature.
 class PrivateAiService : public KeyedService,
                          public phosphor::OAuthTokenProvider,
@@ -98,6 +98,6 @@ class PrivateAiService : public KeyedService,
   base::WeakPtrFactory<PrivateAiService> weak_ptr_factory_{this};
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // CHROME_BROWSER_LEGION_PRIVATE_AI_SERVICE_H_

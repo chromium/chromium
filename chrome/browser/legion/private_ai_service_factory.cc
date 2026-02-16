@@ -11,12 +11,11 @@
 #include "components/legion/features.h"
 #include "components/legion/phosphor/blind_sign_auth_factory_impl.h"
 
-namespace legion {
+namespace private_ai {
 
 // static
-legion::PrivateAiService* PrivateAiServiceFactory::GetForProfile(
-    Profile* profile) {
-  return static_cast<legion::PrivateAiService*>(
+PrivateAiService* PrivateAiServiceFactory::GetForProfile(Profile* profile) {
+  return static_cast<PrivateAiService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
@@ -28,14 +27,14 @@ PrivateAiServiceFactory* PrivateAiServiceFactory::GetInstance() {
 
 // static
 ProfileSelections PrivateAiServiceFactory::CreateProfileSelections() {
-  if (!legion::PrivateAiService::CanLegionBeEnabled()) {
+  if (!PrivateAiService::CanLegionBeEnabled()) {
     return ProfileSelections::BuildNoProfilesSelected();
   }
   return ProfileSelections::BuildForRegularProfile();
 }
 
 PrivateAiServiceFactory::PrivateAiServiceFactory()
-    : ProfileKeyedServiceFactory("legion::PrivateAiService",
+    : ProfileKeyedServiceFactory("private_ai::PrivateAiService",
                                  CreateProfileSelections()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
@@ -45,12 +44,12 @@ PrivateAiServiceFactory::~PrivateAiServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PrivateAiServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  CHECK(legion::PrivateAiService::CanLegionBeEnabled());
+  CHECK(PrivateAiService::CanLegionBeEnabled());
 
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<legion::PrivateAiService>(
+  return std::make_unique<PrivateAiService>(
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
       profile, std::make_unique<phosphor::BlindSignAuthFactoryImpl>());
 }
 
-}  // namespace legion
+}  // namespace private_ai

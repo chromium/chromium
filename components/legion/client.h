@@ -21,7 +21,7 @@ namespace network::mojom {
 class NetworkContext;
 }  // namespace network::mojom
 
-namespace legion {
+namespace private_ai {
 
 class LegionLogger;
 
@@ -120,6 +120,6 @@ class Client {
   virtual LegionLogger* GetLogger() = 0;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CLIENT_H_

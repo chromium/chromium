@@ -12,7 +12,7 @@
 #include "components/legion/connection.h"
 #include "components/legion/proto/legion.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 ConnectionMetrics::ConnectionMetrics(
     std::unique_ptr<Connection> inner_connection)
@@ -63,4 +63,4 @@ void ConnectionMetrics::OnResponse(
   std::move(callback).Run(std::move(result));
 }
 
-}  // namespace legion
+}  // namespace private_ai

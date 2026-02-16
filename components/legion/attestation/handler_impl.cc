@@ -20,7 +20,7 @@
 #include "crypto/signature_verifier.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
 
-namespace legion {
+namespace private_ai {
 
 AttestationHandlerImpl::AttestationHandlerImpl()
     : verification_keys_(LoadVerificationKeys(GetServerVerificationKey())) {}
@@ -112,4 +112,4 @@ bool AttestationHandlerImpl::VerifyAttestationResponse(
   return true;
 }
 
-}  // namespace legion
+}  // namespace private_ai

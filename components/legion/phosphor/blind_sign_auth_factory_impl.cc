@@ -12,7 +12,7 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 BlindSignAuthFactoryImpl::BlindSignAuthFactoryImpl() = default;
 BlindSignAuthFactoryImpl::~BlindSignAuthFactoryImpl() = default;
@@ -29,4 +29,4 @@ BlindSignAuthFactoryImpl::CreateBlindSignAuth(
       std::move(bsa_options));
 }
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor

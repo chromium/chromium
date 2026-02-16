@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 
-namespace legion {
+namespace private_ai {
 
 // Length of a P-256 public key in uncompressed X9.62 format.
 inline constexpr size_t kP256X962Length = 65;
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CRYPTO_CONSTANTS_H_

@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-namespace legion {
+namespace private_ai {
 namespace proto {
 class GenerateContentResponse;
 }  // namespace proto
@@ -17,6 +17,6 @@ class GenerateContentResponse;
 std::optional<std::string> ConvertGenerateContentResponseToText(
     const proto::GenerateContentResponse& input_proto);
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_PROTO_UTILS_GENERATE_CONTENT_RESPONSE_UTILS_H_

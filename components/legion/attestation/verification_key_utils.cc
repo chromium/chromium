@@ -25,7 +25,7 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/x509.h"
 
-namespace legion {
+namespace private_ai {
 
 VerificationKey::VerificationKey(
     std::vector<uint8_t> public_key,
@@ -136,4 +136,4 @@ ParseTinkSignature(base::span<const uint8_t> signature) {
   return std::make_pair(key_id, remaining_signature);
 }
 
-}  // namespace legion
+}  // namespace private_ai

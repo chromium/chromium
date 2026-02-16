@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "components/legion/phosphor/token_manager.h"
 
-namespace legion {
+namespace private_ai {
 
 class FakeTokenManager : public phosphor::TokenManager {
  public:
@@ -48,6 +48,6 @@ class FakeTokenManager : public phosphor::TokenManager {
   std::deque<GetAuthTokenCallback> pending_proxy_callbacks_;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_TESTING_FAKE_TOKEN_MANAGER_H_

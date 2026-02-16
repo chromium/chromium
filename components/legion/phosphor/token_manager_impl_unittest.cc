@@ -27,7 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 namespace {
 
@@ -126,7 +126,7 @@ class TokenManagerImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  int expected_batch_size_ = legion::kLegionAuthTokenCacheBatchSize.Get();
+  int expected_batch_size_ = kLegionAuthTokenCacheBatchSize.Get();
 
   // Expiration times with respect to the TaskEnvironment's mock time.
   const base::Time kFutureExpiration = base::Time::Now() + base::Hours(1);
@@ -188,4 +188,4 @@ TEST_F(TokenManagerImplTest, GetAuthTokenForProxy) {
 }
 
 }  // namespace
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor

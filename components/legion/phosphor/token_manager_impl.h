@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "components/legion/phosphor/token_manager.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 class TokenFetcher;
 
@@ -52,6 +52,6 @@ class TokenManagerImpl : public TokenManager {
   base::WeakPtrFactory<TokenManagerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor
 
 #endif  // COMPONENTS_LEGION_PHOSPHOR_TOKEN_MANAGER_IMPL_H_

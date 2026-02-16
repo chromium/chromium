@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "components/legion/phosphor/data_types.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 // Interface for providing OAuth tokens.
 class OAuthTokenProvider {
@@ -29,6 +29,6 @@ class OAuthTokenProvider {
   virtual void RequestOAuthToken(RequestOAuthTokenCallback callback) = 0;
 };
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor
 
 #endif  // COMPONENTS_LEGION_PHOSPHOR_OAUTH_TOKEN_PROVIDER_H_

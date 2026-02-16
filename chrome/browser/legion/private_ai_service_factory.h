@@ -11,13 +11,13 @@
 
 class Profile;
 
-namespace legion {
+namespace private_ai {
 
 class PrivateAiService;
 
 class PrivateAiServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static legion::PrivateAiService* GetForProfile(Profile* profile);
+  static PrivateAiService* GetForProfile(Profile* profile);
   static PrivateAiServiceFactory* GetInstance();
 
   static ProfileSelections CreateProfileSelectionsForTesting() {
@@ -40,6 +40,6 @@ class PrivateAiServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // CHROME_BROWSER_LEGION_PRIVATE_AI_SERVICE_FACTORY_H_

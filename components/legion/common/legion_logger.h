@@ -14,7 +14,7 @@ namespace base {
 class Location;
 }
 
-namespace legion {
+namespace private_ai {
 
 // Handles logging in Legion and notifies observers.
 class LegionLogger {
@@ -43,6 +43,6 @@ class LegionLogger {
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_COMMON_LEGION_LOGGER_H_

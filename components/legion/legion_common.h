@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace legion {
+namespace private_ai {
 
 // Common data type for requests, likely a serialized proto.
 using Request = std::vector<uint8_t>;
@@ -16,6 +16,6 @@ using Request = std::vector<uint8_t>;
 // Common data type for responses, likely a serialized proto.
 using Response = std::vector<uint8_t>;
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_LEGION_COMMON_H_

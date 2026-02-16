@@ -14,7 +14,7 @@
 #include "components/legion/connection.h"
 #include "components/legion/phosphor/data_types.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace phosphor {
 class TokenManager;
@@ -82,6 +82,6 @@ class ConnectionTokenAttestation : public Connection {
   base::WeakPtrFactory<ConnectionTokenAttestation> weak_factory_{this};
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CONNECTION_TOKEN_ATTESTATION_H_

@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 class SecureSessionAsyncImpl : public SecureSession {
  public:
@@ -39,6 +39,6 @@ class SecureSessionAsyncImpl : public SecureSession {
   mojo::Remote<mojom::OakSession> service_;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_SECURE_SESSION_ASYNC_IMPL_H_

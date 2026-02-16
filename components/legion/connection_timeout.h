@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/legion/connection.h"
 
-namespace legion {
+namespace private_ai {
 
 // A decorator for `Connection` that adds timeout handling to `Send` calls.
 // It wraps the provided `inner_connection` and ensures that the callback
@@ -43,6 +43,6 @@ class ConnectionTimeout : public Connection {
   base::WeakPtrFactory<ConnectionTimeout> weak_factory_{this};
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CONNECTION_TIMEOUT_H_

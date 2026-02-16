@@ -18,7 +18,7 @@ class HandshakeRequest;
 class HandshakeResponse;
 }  // namespace oak::session::v1
 
-namespace legion {
+namespace private_ai {
 
 // Interface for secure session management.
 // Handles cryptographic operations, including handshake, encryption, and
@@ -67,6 +67,6 @@ class SecureSession {
                        DecryptOnceCallback callback) = 0;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_SECURE_SESSION_H_

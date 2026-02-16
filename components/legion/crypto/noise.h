@@ -15,7 +15,7 @@
 #include "base/containers/span.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
-namespace legion {
+namespace private_ai {
 
 // Noise implements a small subset of the Noise Protocol Framework [1].
 //
@@ -64,6 +64,6 @@ class Noise {
   uint32_t symmetric_nonce_ = 0;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CRYPTO_NOISE_H_

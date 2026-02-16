@@ -12,7 +12,7 @@
 
 #include "base/time/time.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 // The result of a fetch of tokens from the auth token server.
 //
@@ -60,6 +60,6 @@ struct BlindSignedAuthToken {
   bool operator==(const BlindSignedAuthToken& token) const = default;
 };
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor
 
 #endif  // COMPONENTS_LEGION_PHOSPHOR_DATA_TYPES_H_

@@ -6,7 +6,7 @@
 
 #include "components/legion/proto/legion.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 std::optional<std::string> ConvertGenerateContentResponseToText(
     const proto::GenerateContentResponse& input_proto) {
@@ -19,4 +19,4 @@ std::optional<std::string> ConvertGenerateContentResponseToText(
   return input_proto.candidates(0).content().parts(0).text();
 }
 
-}  // namespace legion
+}  // namespace private_ai

@@ -17,7 +17,7 @@
 #include "components/legion/testing/fake_token_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -159,4 +159,4 @@ TEST_F(ConnectionTokenAttestationTest, AttestationFailed) {
 
 }  // namespace
 
-}  // namespace legion
+}  // namespace private_ai

@@ -12,7 +12,7 @@
 #include "components/legion/attestation/server_verification_key.h"
 #include "components/legion/attestation/verification_key_utils.h"
 
-namespace legion {
+namespace private_ai {
 
 class AttestationHandlerImpl : public AttestationHandler {
  public:
@@ -38,6 +38,6 @@ class AttestationHandlerImpl : public AttestationHandler {
   std::map<uint32_t, VerificationKey> verification_keys_;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_ATTESTATION_HANDLER_IMPL_H_

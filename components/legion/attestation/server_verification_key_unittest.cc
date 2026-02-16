@@ -10,7 +10,7 @@
 #include "components/legion/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 
 class ServerVerificationKeyTest : public ::testing::Test {
  protected:
@@ -53,4 +53,4 @@ TEST_F(ServerVerificationKeyTest, GetStagingKeys) {
   EXPECT_NE(keys, GetDevKeysForTesting());
 }
 
-}  // namespace legion
+}  // namespace private_ai

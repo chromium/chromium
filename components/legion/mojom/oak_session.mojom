@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module legion.mojom;
+module private_ai.mojom;
 
 import "sandbox/policy/mojom/sandbox.mojom";
 

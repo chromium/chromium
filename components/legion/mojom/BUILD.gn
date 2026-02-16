@@ -14,8 +14,8 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "legion.mojom.HandshakeMessage"
-          cpp = "::legion::HandshakeMessage"
+          mojom = "private_ai.mojom.HandshakeMessage"
+          cpp = "::private_ai::HandshakeMessage"
           move_only = true
         },
       ]

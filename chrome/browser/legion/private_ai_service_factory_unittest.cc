@@ -15,12 +15,12 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 
 class PrivateAiServiceFactoryTest : public testing::Test {
  protected:
   explicit PrivateAiServiceFactoryTest(bool feature_enabled = true) {
-    scoped_feature_list_.InitWithFeatureState(legion::kLegion, feature_enabled);
+    scoped_feature_list_.InitWithFeatureState(kLegion, feature_enabled);
     // ProfileSelections must be created after the feature is initialized.
     profile_selections_.emplace(
         PrivateAiServiceFactory::GetInstance(),
@@ -45,8 +45,7 @@ class PrivateAiServiceFactoryTest : public testing::Test {
 };
 
 TEST_F(PrivateAiServiceFactoryTest, ServiceCreationSucceedsWhenFlagEnabled) {
-  legion::PrivateAiService* service =
-      PrivateAiServiceFactory::GetForProfile(profile());
+  PrivateAiService* service = PrivateAiServiceFactory::GetForProfile(profile());
   EXPECT_TRUE(service);
 }
 
@@ -67,9 +66,8 @@ class PrivateAiServiceFactoryFeatureDisabledTest
 
 TEST_F(PrivateAiServiceFactoryFeatureDisabledTest,
        ServiceCreationFailsWhenFlagDisabled) {
-  legion::PrivateAiService* service =
-      PrivateAiServiceFactory::GetForProfile(profile());
+  PrivateAiService* service = PrivateAiServiceFactory::GetForProfile(profile());
   EXPECT_FALSE(service);
 }
 
-}  // namespace legion
+}  // namespace private_ai

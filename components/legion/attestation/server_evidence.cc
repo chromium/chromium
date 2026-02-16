@@ -4,7 +4,7 @@
 
 #include "components/legion/attestation/server_evidence.h"
 
-namespace legion {
+namespace private_ai {
 
 Endorsement::Endorsement() = default;
 Endorsement::Endorsement(Endorsement&&) = default;
@@ -22,4 +22,4 @@ AttestationEvidence& AttestationEvidence::operator=(AttestationEvidence&&) =
     default;
 AttestationEvidence::~AttestationEvidence() = default;
 
-}  // namespace legion
+}  // namespace private_ai

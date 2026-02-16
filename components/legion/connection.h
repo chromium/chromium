@@ -11,7 +11,7 @@
 #include "components/legion/error_code.h"
 #include "components/legion/proto/legion.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 // Interface for a connection between Chrome and Legion server,
 // sending requests, and receiving responses.
@@ -38,6 +38,6 @@ class Connection {
                     OnRequestCallback callback) = 0;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CONNECTION_H_

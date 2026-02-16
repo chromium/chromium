@@ -9,7 +9,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace legion {
+namespace private_ai {
 
 // Test fixture for LegionCrypter tests.
 class LegionCrypterTest : public testing::Test {
@@ -107,4 +107,4 @@ TEST_F(LegionCrypterTest, Padding) {
   }
 }
 
-}  // namespace legion
+}  // namespace private_ai

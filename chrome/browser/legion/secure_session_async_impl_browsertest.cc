@@ -21,7 +21,7 @@
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -262,4 +262,4 @@ IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
 
 }  // namespace
 
-}  // namespace legion
+}  // namespace private_ai

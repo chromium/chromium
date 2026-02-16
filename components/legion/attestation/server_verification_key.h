@@ -9,7 +9,7 @@
 
 #include "base/containers/span.h"
 
-namespace legion {
+namespace private_ai {
 
 enum class OutputPrefixType : int {
   TINK = 1,
@@ -35,6 +35,6 @@ base::span<const ProcessedKey> GetAutopushKeysForTesting();
 base::span<const ProcessedKey> GetDevKeysForTesting();
 base::span<const ProcessedKey> GetStagingKeysForTesting();
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_CRYPTO_SERVER_VERIFICATION_KEY_H_

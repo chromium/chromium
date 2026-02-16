@@ -28,7 +28,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 class ConfigHttp;
 
@@ -123,6 +123,6 @@ class TokenFetcherImpl : public TokenFetcher {
   base::WeakPtrFactory<TokenFetcherImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor
 
 #endif  // COMPONENTS_LEGION_PHOSPHOR_TOKEN_FETCHER_IMPL_H_

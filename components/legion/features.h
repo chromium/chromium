@@ -9,7 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 
-namespace legion {
+namespace private_ai {
 
 // The feature for Legion.
 BASE_DECLARE_FEATURE(kLegion);
@@ -61,6 +61,6 @@ extern const base::FeatureParam<base::TimeDelta>
 // The jitter factor to apply to backoff durations.
 extern const base::FeatureParam<double> kLegionBackoffJitter;
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_FEATURES_H_

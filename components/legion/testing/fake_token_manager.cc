@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "base/time/time.h"
 
-namespace legion {
+namespace private_ai {
 
 const char FakeTokenManager::kFakeToken[] = "test_token";
 const char FakeTokenManager::kFakeProxyToken[] = "proxy_token";
@@ -87,4 +87,4 @@ std::optional<phosphor::BlindSignedAuthToken> FakeTokenManager::GetToken() {
       .expiration = base::Time::Now() + base::Minutes(1)};
 }
 
-}  // namespace legion
+}  // namespace private_ai

@@ -17,7 +17,7 @@ namespace quiche {
 enum class ProxyLayer;
 }  // namespace quiche
 
-namespace legion::phosphor {
+namespace private_ai::phosphor {
 
 // Interface that manages requesting and fetching blind-signed authentication
 // tokens for Legion. The primary user of this interface will be a token
@@ -51,6 +51,6 @@ class TokenFetcher {
   TokenFetcher() = default;
 };
 
-}  // namespace legion::phosphor
+}  // namespace private_ai::phosphor
 
 #endif  // COMPONENTS_LEGION_PHOSPHOR_TOKEN_FETCHER_H_

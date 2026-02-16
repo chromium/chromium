@@ -7,7 +7,7 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace legion {
+namespace private_ai {
 
 TestBlindSignAuthFactory::TestBlindSignAuthFactory() = default;
 TestBlindSignAuthFactory::~TestBlindSignAuthFactory() = default;
@@ -33,4 +33,4 @@ TestPrivateAiService::TestPrivateAiService(
                        std::move(bsa_factory)),
       test_bsa_factory_(test_bsa_factory) {}
 
-}  // namespace legion
+}  // namespace private_ai

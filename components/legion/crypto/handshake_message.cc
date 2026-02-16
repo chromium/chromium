@@ -8,7 +8,7 @@
 
 #include "components/legion/crypto/constants.h"
 
-namespace legion {
+namespace private_ai {
 
 HandshakeMessage::HandshakeMessage() = default;
 
@@ -23,4 +23,4 @@ HandshakeMessage::HandshakeMessage(HandshakeMessage&&) = default;
 
 HandshakeMessage& HandshakeMessage::operator=(HandshakeMessage&&) = default;
 
-}  // namespace legion
+}  // namespace private_ai

@@ -10,7 +10,7 @@
 #include "components/legion/error_code.h"
 #include "components/legion/legion_common.h"
 
-namespace legion {
+namespace private_ai {
 
 // Interface for the Secure Channel Layer.
 // This layer is responsible for handling the secure communication
@@ -35,6 +35,6 @@ class SecureChannel {
   virtual bool Write(const Request& request) = 0;
 };
 
-}  // namespace legion
+}  // namespace private_ai
 
 #endif  // COMPONENTS_LEGION_SECURE_CHANNEL_H_

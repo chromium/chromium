@@ -21,11 +21,11 @@
 
 namespace optimization_guide {
 namespace {
-legion::proto::FeatureName ToLegionFeatureName(
+private_ai::proto::FeatureName ToLegionFeatureName(
     ModelBasedCapabilityKey feature) {
   switch (feature) {
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
-      return legion::proto::FeatureName::
+      return private_ai::proto::FeatureName::
           FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION;
     default:
       NOTREACHED() << feature;
@@ -33,7 +33,7 @@ legion::proto::FeatureName ToLegionFeatureName(
 }
 
 OptimizationGuideModelExecutionError ToModelExecutionError(
-    legion::ErrorCode error) {
+    private_ai::ErrorCode error) {
   // TODO(crbug.com/460052805): Figure out how to store legion errors.
   return OptimizationGuideModelExecutionError::FromModelExecutionError(
       OptimizationGuideModelExecutionError::ModelExecutionError::kUnknown);
@@ -42,7 +42,7 @@ OptimizationGuideModelExecutionError ToModelExecutionError(
 }  // namespace
 
 LegionModelExecutionFetcher::LegionModelExecutionFetcher(
-    legion::Client* legion_client)
+    private_ai::Client* legion_client)
     : legion_client_(legion_client) {
   CHECK(legion_client);
 }
@@ -57,12 +57,12 @@ void LegionModelExecutionFetcher::ExecuteModel(
     ModelExecuteResponseCallback callback) {
   auto legion_feature_name = ToLegionFeatureName(feature);
 
-  legion::proto::PaicMessage paic_message;
+  private_ai::proto::PaicMessage paic_message;
   paic_message.set_feature_name(legion_feature_name);
   *paic_message.mutable_execute_request_ext() =
       ToExecuteRequest(feature, request_metadata);
 
-  legion::Client::RequestOptions options;
+  private_ai::Client::RequestOptions options;
   if (timeout) {
     options.timeout = *timeout;
   }
@@ -72,8 +72,8 @@ void LegionModelExecutionFetcher::ExecuteModel(
       base::BindOnce(
           [](ModelBasedCapabilityKey feature,
              ModelExecuteResponseCallback callback,
-             base::expected<legion::proto::PaicMessage, legion::ErrorCode>
-                 result) {
+             base::expected<private_ai::proto::PaicMessage,
+                            private_ai::ErrorCode> result) {
             if (!result.has_value()) {
               std::move(callback).Run(
                   base::unexpected(ToModelExecutionError(result.error())));

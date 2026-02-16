@@ -16,7 +16,7 @@
 #include "components/legion/proto/legion.pb.h"
 #include "components/legion/proto_utils/generate_content_response_utils.h"
 
-namespace legion {
+namespace private_ai {
 
 namespace {
 
@@ -183,4 +183,4 @@ void ClientImpl::OnConnectionDisconnected() {
   connection_.reset();
 }
 
-}  // namespace legion
+}  // namespace private_ai
