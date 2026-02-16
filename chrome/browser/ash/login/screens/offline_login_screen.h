@@ -17,6 +17,10 @@
 
 class PrefService;
 
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
+
 namespace ash {
 
 class OfflineLoginView;
@@ -38,10 +42,13 @@ class OfflineLoginScreen
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  // `local_state` must be non-null and must outlive `this`.
-  OfflineLoginScreen(PrefService* local_state,
-                     base::WeakPtr<OfflineLoginView> view,
-                     const ScreenExitCallback& exit_callback);
+  // `local_state` and `browser_policy_connector_ash` must be non-null and must
+  // outlive `this`.
+  OfflineLoginScreen(
+      PrefService* local_state,
+      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      base::WeakPtr<OfflineLoginView> view,
+      const ScreenExitCallback& exit_callback);
   ~OfflineLoginScreen() override;
 
   // NetworkStateInformer::NetworkStateInformerObserver:
@@ -67,6 +74,8 @@ class OfflineLoginScreen
                                      std::optional<AuthenticationError> error);
 
   const raw_ref<PrefService> local_state_;
+  const raw_ref<const policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 
   // The editor is used to call `ListAuthFactors` to fetch password & pin factor
   // status. It does not change factor status.

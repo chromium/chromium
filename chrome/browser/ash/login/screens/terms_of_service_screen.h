@@ -11,10 +11,15 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 namespace network {
 class SimpleURLLoader;
@@ -42,8 +47,10 @@ class TermsOfServiceScreen : public BaseScreen {
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
   // `shared_url_loader_factory` must be non-null.
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
   TermsOfServiceScreen(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       base::WeakPtr<TermsOfServiceScreenView> view,
       const ScreenExitCallback& exit_callback);
 
@@ -101,6 +108,8 @@ class TermsOfServiceScreen : public BaseScreen {
 
   const scoped_refptr<network::SharedURLLoaderFactory>
       shared_url_loader_factory_;
+  const raw_ref<const policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 
   base::WeakPtr<TermsOfServiceScreenView> view_;
   ScreenExitCallback exit_callback_;

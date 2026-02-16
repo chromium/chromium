@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/screens/mock_error_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ui/webui/ash/login/fake_update_required_screen_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -62,6 +63,9 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
         std::make_unique<MockErrorScreen>(mock_error_view_.AsWeakPtr());
 
     update_required_screen_ = std::make_unique<UpdateRequiredScreen>(
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash(),
         fake_view_.get()->AsWeakPtr(), mock_error_screen_.get(),
         base::DoNothing());
 

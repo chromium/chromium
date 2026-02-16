@@ -15,8 +15,6 @@
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/signin_ui.h"
 #include "chrome/browser/ui/webui/ash/login/offline_login_screen_handler.h"
@@ -52,12 +50,6 @@ enum class OfflineLoginEvent {
   kMaxValue = kOfflineLoginBlockedByInvalidToken,
 };
 
-inline std::string GetEnterpriseDomainManager() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->GetEnterpriseDomainManager();
-}
-
 void RecordEvent(OfflineLoginEvent event) {
   base::UmaHistogramEnumeration("Login.OfflineLoginWithHiddenUserPods", event);
 }
@@ -76,11 +68,14 @@ std::string OfflineLoginScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-OfflineLoginScreen::OfflineLoginScreen(PrefService* local_state,
-                                       base::WeakPtr<OfflineLoginView> view,
-                                       const ScreenExitCallback& exit_callback)
+OfflineLoginScreen::OfflineLoginScreen(
+    PrefService* local_state,
+    const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    base::WeakPtr<OfflineLoginView> view,
+    const ScreenExitCallback& exit_callback)
     : BaseScreen(OfflineLoginView::kScreenId, OobeScreenPriority::DEFAULT),
       local_state_(CHECK_DEREF(local_state)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       auth_factor_editor_(UserDataAuthClient::Get()),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
@@ -103,7 +98,8 @@ void OfflineLoginScreen::ShowImpl() {
   StartIdleDetection();
 
   base::DictValue params;
-  const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
+  const std::string enterprise_domain_manager(
+      browser_policy_connector_ash_->GetEnterpriseDomainManager());
   if (!enterprise_domain_manager.empty()) {
     params.Set("enterpriseDomainManager", enterprise_domain_manager);
   }

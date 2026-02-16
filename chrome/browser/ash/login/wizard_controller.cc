@@ -655,6 +655,8 @@ WizardController::CreateScreens() {
       g_browser_process->GetFeatures()->application_locale_storage();
   ::metrics::MetricsService* metrics_service =
       g_browser_process->metrics_service();
+  const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
 
   OobeUI* oobe_ui = GetOobeUI();
 
@@ -731,7 +733,7 @@ WizardController::CreateScreens() {
           &WizardController::OnCryptohomeRecoverySetupScreenExit,
           weak_factory_.GetWeakPtr())));
   append(std::make_unique<TermsOfServiceScreen>(
-      shared_url_loader_factory_,
+      shared_url_loader_factory_, browser_policy_connector_ash,
       oobe_ui->GetView<TermsOfServiceScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnTermsOfServiceScreenExit,
                           weak_factory_.GetWeakPtr())));
@@ -793,6 +795,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnManagementTransitionScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<UpdateRequiredScreen>(
+      browser_policy_connector_ash,
       oobe_ui->GetView<UpdateRequiredScreenHandler>()->AsWeakPtr(),
       oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnUpdateRequiredScreenExit,
@@ -848,7 +851,8 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnSamlConfirmPasswordScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<OfflineLoginScreen>(
-      local_state, oobe_ui->GetView<OfflineLoginScreenHandler>()->AsWeakPtr(),
+      local_state, browser_policy_connector_ash,
+      oobe_ui->GetView<OfflineLoginScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnOfflineLoginScreenExit,
                           weak_factory_.GetWeakPtr())));
 

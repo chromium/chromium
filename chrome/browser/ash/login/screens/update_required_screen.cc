@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/system_tray.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/default_clock.h"
@@ -17,8 +18,6 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -51,11 +50,13 @@ constexpr const base::TimeDelta kDelayErrorMessage = base::Seconds(10);
 }  // namespace
 
 UpdateRequiredScreen::UpdateRequiredScreen(
+    const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     base::WeakPtr<UpdateRequiredView> view,
     ErrorScreen* error_screen,
     base::RepeatingClosure exit_callback)
     : BaseScreen(UpdateRequiredView::kScreenId,
                  OobeScreenPriority::SCREEN_UPDATE_REQUIRED),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(std::move(exit_callback)),
@@ -77,11 +78,10 @@ UpdateRequiredScreen::~UpdateRequiredScreen() {
 
 void UpdateRequiredScreen::ShowImpl() {
   LoginScreen::Get()->SetAllowLoginAsGuest(false);
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (view_) {
-    view_->SetEnterpriseAndDeviceName(connector->GetEnterpriseDomainManager(),
-                                      ui::GetChromeOSDeviceName());
+    view_->SetEnterpriseAndDeviceName(
+        browser_policy_connector_ash_->GetEnterpriseDomainManager(),
+        ui::GetChromeOSDeviceName());
   }
 
   is_shown_ = true;

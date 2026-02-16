@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -22,6 +23,10 @@
 namespace base {
 class Clock;
 }  // namespace base
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 namespace ash {
 
@@ -36,9 +41,12 @@ class UpdateRequiredScreen : public BaseScreen,
  public:
   using TView = UpdateRequiredView;
 
-  UpdateRequiredScreen(base::WeakPtr<UpdateRequiredView> view,
-                       ErrorScreen* error_screen,
-                       base::RepeatingClosure exit_callback);
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  UpdateRequiredScreen(
+      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      base::WeakPtr<UpdateRequiredView> view,
+      ErrorScreen* error_screen,
+      base::RepeatingClosure exit_callback);
 
   UpdateRequiredScreen(const UpdateRequiredScreen&) = delete;
   UpdateRequiredScreen& operator=(const UpdateRequiredScreen&) = delete;
@@ -104,6 +112,9 @@ class UpdateRequiredScreen : public BaseScreen,
 
   // Deletes all users data on the device.
   void DeleteUsersData();
+
+  const raw_ref<const policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 
   // True if there was no notification about captive portal state for
   // the default network.
