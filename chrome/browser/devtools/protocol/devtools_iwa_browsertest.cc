@@ -189,7 +189,14 @@ class IWAProtocolTestRemoteProxy : public IWAProtocolTestBase {
 IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, Install) {
   Install();
 }
-IN_PROC_BROWSER_TEST_F(IWAProtocolTestRemoteFile, Install) {
+
+// TODO(crbug.com/482445180): Flaky on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RemoteFileInstall DISABLED_RemoteFileInstall
+#else
+#define MAYBE_RemoteFileInstall RemoteFileInstall
+#endif  // BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(IWAProtocolTestRemoteFile, MAYBE_RemoteFileInstall) {
   Install();
 }
 IN_PROC_BROWSER_TEST_F(IWAProtocolTestRemoteProxy, Install) {
