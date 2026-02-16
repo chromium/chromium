@@ -942,8 +942,7 @@ static std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
                 .setOrigin(
                     StringFromASCII(net::ct::OriginToString(sct.sct->origin)))
                 .setLogDescription(String::FromUTF8(sct.sct->log_description))
-                .setLogId(StringFromASCII(base::HexEncode(
-                    sct.sct->log_id.c_str(), sct.sct->log_id.length())))
+                .setLogId(StringFromASCII(base::HexEncode(sct.sct->log_id)))
                 .setTimestamp(sct.sct->timestamp.InMillisecondsSinceUnixEpoch())
                 .setHashAlgorithm(
                     StringFromASCII(net::ct::HashAlgorithmToString(
@@ -951,9 +950,8 @@ static std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
                 .setSignatureAlgorithm(
                     StringFromASCII(net::ct::SignatureAlgorithmToString(
                         sct.sct->signature.signature_algorithm)))
-                .setSignatureData(StringFromASCII(base::HexEncode(
-                    sct.sct->signature.signature_data.c_str(),
-                    sct.sct->signature.signature_data.length())))
+                .setSignatureData(StringFromASCII(
+                    base::HexEncode(sct.sct->signature.signature_data)))
                 .build();
     signed_certificate_timestamp_list->emplace_back(
         std::move(signed_certificate_timestamp));
