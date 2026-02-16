@@ -49,7 +49,6 @@ class OmniboxContextMenu : public views::MenuDelegate,
   int GetMaxWidthForMenu(views::MenuItemView* menu) override;
   bool IsCommandEnabled(int command_id) const override;
   bool IsCommandVisible(int command_id) const override;
-  bool IsItemChecked(int command_id) const override;
   void OnMenuClosed(views::MenuItemView* menu) override;
 
   // ui::MenuModelDelegate:
