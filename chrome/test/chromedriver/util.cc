@@ -12,10 +12,13 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_span.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
@@ -122,20 +125,25 @@ class DataOutputStream {
   DataOutputStream() = default;
   ~DataOutputStream() = default;
 
-  void WriteUInt16(uint16_t data) { WriteBytes(&data, sizeof(data)); }
-
-  void WriteUInt32(uint32_t data) { WriteBytes(&data, sizeof(data)); }
-
-  void WriteString(const std::string& data) {
-    WriteBytes(data.c_str(), data.length());
+  void WriteUInt16(uint16_t data) {
+    WriteBytes(base::byte_span_from_ref(data));
   }
 
-  void WriteBytes(const void* bytes, int size) {
-    if (!size)
+  void WriteUInt32(uint32_t data) {
+    WriteBytes(base::byte_span_from_ref(data));
+  }
+
+  void WriteString(std::string_view data) {
+    WriteBytes(base::as_byte_span(data));
+  }
+
+  void WriteBytes(base::span<const uint8_t> bytes) {
+    if (bytes.empty()) {
       return;
-    size_t next = buffer_.length();
-    buffer_.resize(next + size);
-    UNSAFE_TODO(memcpy(&buffer_[next], bytes, size));
+    }
+    const size_t old_size = buffer_.length();
+    buffer_.resize(base::CheckAdd(old_size, bytes.size()).ValueOrDie());
+    base::as_writable_byte_span(buffer_).subspan(old_size).copy_from(bytes);
   }
 
   const std::string& buffer() const { return buffer_; }
@@ -147,40 +155,42 @@ class DataOutputStream {
 // Stream for reading binary data.
 class DataInputStream {
  public:
-  DataInputStream(const char* data, int size)
-      : data_(data), size_(size), iter_(0) {}
+  explicit DataInputStream(base::span<const uint8_t> data)
+      : remaining_data_(data) {}
   ~DataInputStream() = default;
 
-  bool ReadUInt16(uint16_t* data) { return ReadBytes(data, sizeof(*data)); }
-
-  bool ReadUInt32(uint32_t* data) { return ReadBytes(data, sizeof(*data)); }
-
-  bool ReadString(std::string* data, int length) {
-    if (length < 0)
-      return false;
-    // Check here to make sure we don't allocate wastefully.
-    if (iter_ + length > size_)
-      return false;
-    data->resize(length);
-    if (length == 0)
-      return true;
-    return ReadBytes(&(*data)[0], length);
+  bool ReadUInt16(uint16_t& data) {
+    return ReadBytes(base::byte_span_from_ref(data));
   }
 
-  bool ReadBytes(void* bytes, int size) {
-    if (iter_ + size > size_)
+  bool ReadUInt32(uint32_t& data) {
+    return ReadBytes(base::byte_span_from_ref(data));
+  }
+
+  bool ReadString(std::string& data, size_t length) {
+    // Check here to make sure we don't allocate wastefully.
+    if (length > remaining()) {
       return false;
-    UNSAFE_TODO(memcpy(bytes, &data_[iter_], size));
-    iter_ += size;
+    }
+    data.resize(length);
+    if (length == 0) {
+      return true;
+    }
+    return ReadBytes(base::as_writable_byte_span(data));
+  }
+
+  bool ReadBytes(base::span<uint8_t> bytes) {
+    if (bytes.size() > remaining()) {
+      return false;
+    }
+    bytes.copy_from(remaining_data_.take_first(bytes.size()));
     return true;
   }
 
-  int remaining() const { return size_ - iter_; }
+  size_t remaining() const { return remaining_data_.size(); }
 
  private:
-  const char* data_;
-  int size_;
-  int iter_;
+  base::raw_span<const uint8_t> remaining_data_;
 };
 
 // A file entry within a zip archive. This may be incomplete and is not
@@ -192,61 +202,61 @@ struct ZipEntry {
   // although the entry may include a data descriptor.
   static bool FromBytes(const std::string& bytes, ZipEntry* zip,
                         std::string* error_msg) {
-    DataInputStream stream(bytes.c_str(), bytes.length());
+    DataInputStream stream(base::as_byte_span(bytes));
 
     uint32_t signature;
-    if (!stream.ReadUInt32(&signature) || signature != kFileHeaderSignature) {
+    if (!stream.ReadUInt32(signature) || signature != kFileHeaderSignature) {
       *error_msg = "invalid file header signature";
       return false;
     }
-    if (!stream.ReadUInt16(&zip->version_needed)) {
+    if (!stream.ReadUInt16(zip->version_needed)) {
       *error_msg = "invalid version";
       return false;
     }
-    if (!stream.ReadUInt16(&zip->bit_flag)) {
+    if (!stream.ReadUInt16(zip->bit_flag)) {
       *error_msg = "invalid bit flag";
       return false;
     }
-    if (!stream.ReadUInt16(&zip->compression_method)) {
+    if (!stream.ReadUInt16(zip->compression_method)) {
       *error_msg = "invalid compression method";
       return false;
     }
-    if (!stream.ReadUInt16(&zip->mod_time)) {
+    if (!stream.ReadUInt16(zip->mod_time)) {
       *error_msg = "invalid file last modified time";
       return false;
     }
-    if (!stream.ReadUInt16(&zip->mod_date)) {
+    if (!stream.ReadUInt16(zip->mod_date)) {
       *error_msg = "invalid file last modified date";
       return false;
     }
-    if (!stream.ReadUInt32(&zip->crc)) {
+    if (!stream.ReadUInt32(zip->crc)) {
       *error_msg = "invalid crc";
       return false;
     }
     uint32_t compressed_size;
-    if (!stream.ReadUInt32(&compressed_size)) {
+    if (!stream.ReadUInt32(compressed_size)) {
       *error_msg = "invalid compressed size";
       return false;
     }
-    if (!stream.ReadUInt32(&zip->uncompressed_size)) {
-      *error_msg = "invalid compressed size";
+    if (!stream.ReadUInt32(zip->uncompressed_size)) {
+      *error_msg = "invalid uncompressed size";
       return false;
     }
     uint16_t name_length;
-    if (!stream.ReadUInt16(&name_length)) {
+    if (!stream.ReadUInt16(name_length)) {
       *error_msg = "invalid name length";
       return false;
     }
     uint16_t field_length;
-    if (!stream.ReadUInt16(&field_length)) {
+    if (!stream.ReadUInt16(field_length)) {
       *error_msg = "invalid field length";
       return false;
     }
-    if (!stream.ReadString(&zip->name, name_length)) {
+    if (!stream.ReadString(zip->name, name_length)) {
       *error_msg = "invalid name";
       return false;
     }
-    if (!stream.ReadString(&zip->fields, field_length)) {
+    if (!stream.ReadString(zip->fields, field_length)) {
       *error_msg = "invalid fields";
       return false;
     }
@@ -257,20 +267,20 @@ struct ZipEntry {
         return false;
       }
       compressed_size = stream.remaining() - 16;
-      if (!stream.ReadString(&zip->compressed_data, compressed_size)) {
+      if (!stream.ReadString(zip->compressed_data, compressed_size)) {
         *error_msg = "invalid compressed data before descriptor";
         return false;
       }
-      if (!stream.ReadUInt32(&signature) ||
+      if (!stream.ReadUInt32(signature) ||
           signature != kDataDescriptorSignature) {
         *error_msg = "invalid data descriptor signature";
         return false;
       }
-      if (!stream.ReadUInt32(&zip->crc)) {
+      if (!stream.ReadUInt32(zip->crc)) {
         *error_msg = "invalid crc";
         return false;
       }
-      if (!stream.ReadUInt32(&compressed_size)) {
+      if (!stream.ReadUInt32(compressed_size)) {
         *error_msg = "invalid compressed size";
         return false;
       }
@@ -278,13 +288,13 @@ struct ZipEntry {
         *error_msg = "compressed data does not match data descriptor";
         return false;
       }
-      if (!stream.ReadUInt32(&zip->uncompressed_size)) {
+      if (!stream.ReadUInt32(zip->uncompressed_size)) {
         *error_msg = "invalid compressed size";
         return false;
       }
     } else {
       // Just has compressed data.
-      if (!stream.ReadString(&zip->compressed_data, compressed_size)) {
+      if (!stream.ReadString(zip->compressed_data, compressed_size)) {
         *error_msg = "invalid compressed data";
         return false;
       }
