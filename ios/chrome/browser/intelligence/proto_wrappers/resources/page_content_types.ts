@@ -42,12 +42,6 @@ export interface Size {
   height: number;
 }
 
-// Definitions from url/mojom/url.mojom
-
-export interface Url {
-  url: string;
-}
-
 // Definitions from url/mojom/origin.mojom
 
 export interface Origin {
@@ -246,7 +240,7 @@ export enum PageContentAnchorRel {
 }
 
 export interface PageContentAnchorData {
-  url: Url;
+  url: string;
   rel: PageContentAnchorRel[];
 }
 
@@ -264,7 +258,7 @@ export interface PageContentCanvasData {
 }
 
 export interface PageContentVideoData {
-  url: Url;
+  url: string;
   sourceOrigin?: Origin;
 }
 
@@ -327,7 +321,7 @@ export interface PageContentTableRowData {
 
 export interface PageContentFormData {
   formName?: string;
-  actionUrl?: Url;
+  actionUrl?: string;
 }
 
 export interface PageContentSelectOption {

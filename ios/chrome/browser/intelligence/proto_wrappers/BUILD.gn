@@ -9,10 +9,26 @@ compile_ts("page_content_types_ts") {
   sources = [ "resources/page_content_types.ts" ]
 }
 
+compile_ts("common_ts") {
+  sources = [ "resources/common.ts" ]
+  deps = [ "//components/autofill/ios/form_util:child_frame_registration_ts" ]
+}
+
+compile_ts("annotated_page_content_extraction_ts") {
+  sources = [ "resources/annotated_page_content_extraction.ts" ]
+  deps = [
+    ":common_ts",
+    ":page_content_types_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
 optimize_ts("page_context_extractor_js") {
   visibility = [ ":page_context_extractor_feature" ]
   sources = [ "resources/page_context_extractor.ts" ]
   deps = [
+    ":annotated_page_content_extraction_ts",
+    ":common_ts",
     ":page_content_types_ts",
     "//components/autofill/ios/form_util:child_frame_registration_ts",
     "//ios/web/public/js_messaging:gcrweb",
@@ -55,6 +71,7 @@ source_set("page_context_extractor_feature") {
     ":page_context_extractor_js",
     "//base",
     "//components/autofill/ios/form_util:frame_registration_feature",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//ios/web/public/js_messaging",
   ]
@@ -62,6 +79,8 @@ source_set("page_context_extractor_feature") {
 
 source_set("proto_wrappers") {
   sources = [
+    "annotated_page_content_extraction_utils.h",
+    "annotated_page_content_extraction_utils.mm",
     "frame_grafter.h",
     "frame_grafter.mm",
     "page_context_wrapper.h",
@@ -78,6 +97,7 @@ source_set("proto_wrappers") {
     ":utils",
     "//base",
     "//components/autofill/core/common",
+    "//components/autofill/ios/browser:util",
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/core:page_content",
@@ -167,6 +187,7 @@ source_set("unit_tests") {
     ":utils",
     "//base/test:test_support",
     "//components/autofill/core/common",
+    "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/autofill/ios/form_util:frame_registration_feature",

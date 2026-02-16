@@ -16,6 +16,8 @@
 #import "base/no_destructor.h"
 #import "base/run_loop.h"
 #import "base/strings/strcat.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/string_split.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -72,9 +74,15 @@
 // TODO(crbug.com/458081684): Move away from all autofill dependencies once
 // the migration in ios/web is done for frame registration.
 
+// TODO(crbug.com/475577435): Extend test coverage for Rich Extraction.
+
 namespace {
 
 const char kMainPagePath[] = "/main.html";
+
+// Corresponds to MASKED_TEXT_LENGTH in
+// resources/annotated_page_content_extraction.ts.
+constexpr size_t MASKED_TEXT_LENGTH = 7;
 
 // A fake web state that can be controlled to simulate PDF generation failures.
 class FakeWebStateForFailureTest : public web::FakeWebState {
@@ -1734,6 +1742,963 @@ TEST_P(PageContextWrapperTest, PopulatePageContextWithRegistrationFailure) {
     }
   }
   EXPECT_TRUE(found_unregistered_frame_text);
+}
+
+// Tests extraction on a complex page with Rich Extraction.
+// This covers the nodes and nesting structures that are currently supported.
+//
+// Layout:
+//      +----------------------------------+
+//      | Main page (test_server_)         |  - Main frame (Origin M)
+//      |                                  |
+//      |   +--------------------------+   |
+//      |   | Div (Scrollable)         |   |
+//      |   |   - P ("Bold Text")      |   |
+//      |   |   - Img                  |   |
+//      |   |   - Anchor ("Link")      |   |
+//      |   +--------------------------+   |
+//      |                                  |
+//      |   +--------------------------+   |
+//      |   | Iframe (Cross-Origin)    |   |  - Grafted frame
+//      |   |   - P ("Child ...")      |   |
+//      |   +--------------------------+   |
+//      |                                  |
+//      |   +--------------------------+   |
+//      |   | Iframe (Same-Origin)     |   |  - Same-origin frame
+//      |   |   - P ("Child frame 3")  |   |
+//      |   +--------------------------+   |
+//      +----------------------------------+
+TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
+  if (!IsRefactored()) {
+    GTEST_SKIP()
+        << "Rich Extraction not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure = HtmlPage(
+      "Test Title",
+      RawHtml(
+          "<div style='width: 100px; height: 100px; overflow: scroll;' "
+          "id='scrollable'>"
+          "    <p style='font-weight: bold; font-size: 20px; margin: 0;'>Bold "
+          "Text</p>"
+          "    <img src='test.png' alt='Test Image' style='width: 50px; "
+          "height: "
+          "50px; display: block;'>"
+          "    <a href='https://example.com' style='display: block;' "
+          "       rel=\"noopener noreferrer\">Link</a>"
+          "    <div style='width: 200px; height: 200px;'></div>"
+          "</div>"),
+      Iframe(TestOrigin::kCrossA,
+             HtmlPage("Child Cross Origin",
+                      Paragraph("Child frame cross-origin text")),
+             "iframe_cross"),
+      Iframe(TestOrigin::kMain,
+             HtmlPage("Child 3", Paragraph("Child frame 3 text")),
+             "iframe_same"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Wait for all 3 frames to be available (Main frame + 2 iframes).
+  web::WebFramesManager* frames_manager = web_state()->GetWebFramesManager(
+      extractor_feature()->GetSupportedContentWorld());
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^{
+    return frames_manager->GetAllWebFrames().size() == 3;
+  }));
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  const auto& actual_apc = page_context->annotated_page_content();
+
+  EXPECT_EQ(actual_apc.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+
+  // Main frame data
+  const auto& main_frame = actual_apc.main_frame_data();
+  const auto& origin = main_frame.security_origin();
+  EXPECT_FALSE(origin.opaque());
+  EXPECT_EQ(origin.value(), test_server_.GetOrigin().Serialize());
+  EXPECT_EQ(main_frame.title(), "Test Title");
+  EXPECT_EQ(main_frame.url(), test_server_.GetURL(kMainPagePath).spec());
+
+  const auto& root = actual_apc.root_node();
+  EXPECT_EQ(root.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+
+  ASSERT_EQ(root.children_nodes_size(), 3);
+
+  // Verify root node content.
+
+  // ---------------------------------------------------------
+  // Section 1: Div (Scrollable)
+  // ---------------------------------------------------------
+  //   |   +--------------------------+
+  //   |   | Div (Scrollable)         |
+  //   |   |   - P ("Bold Text")      |
+  //   |   |   - Img                  |
+  //   |   |   - Anchor ("Link")      |
+  //   |   +--------------------------+
+  const auto& div = root.children_nodes(0);
+  EXPECT_EQ(div.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
+
+  ASSERT_EQ(div.children_nodes_size(), 3);
+
+  // 1.1 Paragraph
+  {
+    const auto& p = div.children_nodes(0);
+    EXPECT_EQ(p.content_attributes().attribute_type(),
+              optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+
+    ASSERT_EQ(p.children_nodes_size(), 1);
+    const auto& p_text = p.children_nodes(0);
+    EXPECT_EQ(p_text.content_attributes().attribute_type(),
+              optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+    EXPECT_EQ(p_text.content_attributes().text_data().text_content(),
+              "Bold Text");
+    EXPECT_TRUE(
+        p_text.content_attributes().text_data().text_style().has_emphasis());
+    EXPECT_EQ(p_text.content_attributes().text_data().text_style().text_size(),
+              optimization_guide::proto::TEXT_SIZE_L);
+  }
+
+  // 1.2 Image
+  const auto& img = div.children_nodes(1);
+  EXPECT_EQ(img.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE);
+  EXPECT_EQ(img.content_attributes().image_data().image_caption(),
+            "Test Image");
+
+  // 1.3 Anchor
+  const auto& a = div.children_nodes(2);
+  EXPECT_EQ(a.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR);
+  EXPECT_EQ(a.content_attributes().anchor_data().url(), "https://example.com/");
+  const auto& anchor_rel = a.content_attributes().anchor_data().rel();
+  ASSERT_EQ(anchor_rel.size(), 2);
+  bool has_no_opener = false;
+  bool has_no_referrer = false;
+  for (const auto& rel : anchor_rel) {
+    if (rel == optimization_guide::proto::ANCHOR_REL_NO_OPENER) {
+      has_no_opener = true;
+    }
+    if (rel == optimization_guide::proto::ANCHOR_REL_NO_REFERRER) {
+      has_no_referrer = true;
+    }
+  }
+  EXPECT_TRUE(has_no_opener);
+  EXPECT_TRUE(has_no_referrer);
+
+  ASSERT_EQ(a.children_nodes_size(), 1);
+  const auto& a_text = a.children_nodes(0);
+  EXPECT_EQ(a_text.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(a_text.content_attributes().text_data().text_content(), "Link");
+  EXPECT_FALSE(
+      a_text.content_attributes().text_data().text_style().has_emphasis());
+  EXPECT_EQ(a_text.content_attributes().text_data().text_style().text_size(),
+            optimization_guide::proto::TEXT_SIZE_M_DEFAULT);
+
+  // ---------------------------------------------------------
+  // Section 2: Cross-Origin Iframe (Grafted)
+  // ---------------------------------------------------------
+  //   |   +--------------------------+
+  //   |   | Iframe (Cross-Origin)    |
+  //   |   |   - P ("Child ...")      |
+  //   |   +--------------------------+
+  const auto& iframe = root.children_nodes(1);
+  EXPECT_EQ(iframe.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  EXPECT_EQ(iframe.content_attributes().iframe_data().frame_data().url(),
+            page_helper_->GetUrlForId("iframe_cross").spec());
+  EXPECT_EQ(iframe.content_attributes().iframe_data().frame_data().title(),
+            "Child Cross Origin");
+
+  ASSERT_EQ(iframe.children_nodes_size(), 1);
+
+  // Grafted root
+  const auto& iframe_root = iframe.children_nodes(0);
+  EXPECT_EQ(iframe_root.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+
+  ASSERT_EQ(iframe_root.children_nodes_size(), 1);
+
+  // 2.1 Paragraph
+  {
+    const auto& p = iframe_root.children_nodes(0);
+    EXPECT_EQ(p.content_attributes().attribute_type(),
+              optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+
+    ASSERT_EQ(p.children_nodes_size(), 1);
+    const auto& text = p.children_nodes(0);
+    EXPECT_EQ(text.content_attributes().attribute_type(),
+              optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+    EXPECT_EQ(text.content_attributes().text_data().text_content(),
+              "Child frame cross-origin text");
+    EXPECT_FALSE(
+        text.content_attributes().text_data().text_style().has_emphasis());
+  }
+
+  // ---------------------------------------------------------
+  // Section 3: Same-Origin Iframe
+  // ---------------------------------------------------------
+  //   |   +--------------------------+
+  //   |   | Iframe (Same-Origin)     |
+  //   |   |   - P ("Child frame 3")  |
+  //   |   +--------------------------+
+  const auto& same_origin_iframe = root.children_nodes(2);
+  EXPECT_EQ(same_origin_iframe.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  EXPECT_EQ(same_origin_iframe.content_attributes()
+                .iframe_data()
+                .frame_data()
+                .title(),
+            "Child 3");
+  EXPECT_EQ(
+      same_origin_iframe.content_attributes().iframe_data().frame_data().url(),
+      page_helper_->GetUrlForId("iframe_same").spec());
+
+  const auto& same_origin_iframe_origin =
+      same_origin_iframe.content_attributes()
+          .iframe_data()
+          .frame_data()
+          .security_origin();
+  EXPECT_FALSE(same_origin_iframe_origin.opaque());
+  EXPECT_EQ(same_origin_iframe_origin.value(),
+            test_server_.GetOrigin().Serialize());
+
+  // Verify iframe root.
+  ASSERT_EQ(same_origin_iframe.children_nodes_size(), 1);
+  const auto& same_origin_iframe_root = same_origin_iframe.children_nodes(0);
+  EXPECT_EQ(same_origin_iframe_root.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+  ASSERT_EQ(same_origin_iframe_root.children_nodes_size(), 1);
+
+  // 3.1 Paragraph
+
+  const auto& same_origin_iframe_p = same_origin_iframe_root.children_nodes(0);
+  EXPECT_EQ(same_origin_iframe_p.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+
+  ASSERT_EQ(same_origin_iframe_p.children_nodes_size(), 1);
+  const auto& same_origin_iframe_text = same_origin_iframe_p.children_nodes(0);
+  EXPECT_EQ(same_origin_iframe_text.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(
+      same_origin_iframe_text.content_attributes().text_data().text_content(),
+      "Child frame 3 text");
+}
+
+// Tests that all the nested iframes on different origins are put under their
+// parent respecting the frame tree when Rich Extraction is enabled and frame
+// grafting is enabled.
+//
+// Layout:
+//      +----------------------------------+
+//      | Main page (test_server_)         |  - Main frame (Origin M)
+//      |   - P ("Main frame text")        |
+//      |                                  |
+//      |   +--------------------------+   |
+//      |   | Iframe (Cross-Origin)    |   |  - Middle frame (Origin A)
+//      |   |   - P ("Middle ...")     |   |
+//      |   |                          |   |
+//      |   |   +------------------+   |   |
+//      |   |   | Iframe           |   |   |  - Inner frame (Origin M)
+//      |   |   | (Same-Origin)    |   |   |    (Same as Main)
+//      |   |   | - P ("Child 3")  |   |   |
+//      |   |   +------------------+   |   |
+//      |   +--------------------------+   |
+//      +----------------------------------+
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_NestedSameCrossOriginFrame) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "Main Frame", Paragraph("Main frame text"),
+      Iframe(
+          TestOrigin::kCrossA,
+          HtmlPage("Middle Frame", Paragraph("Middle frame text"),
+                   Iframe(TestOrigin::kMain,
+                          HtmlPage("Child 3", Paragraph("Child frame 3 text")),
+                          "iframe_inner")),
+          "iframe_middle"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  auto* frames_manager = web_state()->GetWebFramesManager(
+      extractor_feature()->GetSupportedContentWorld());
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^{
+    return frames_manager->GetAllWebFrames().size() == 3;
+  }));
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root = annotated_page_content.root_node();
+  ASSERT_EQ(root.children_nodes_size(), 2);
+
+  // ---------------------------------------------------------
+  // Section 1: Paragraph (Main Frame)
+  // ---------------------------------------------------------
+  //   |   - P ("Main frame text")        |
+  {
+    const auto& p = root.children_nodes(0);
+    EXPECT_EQ(p.content_attributes().attribute_type(),
+              optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+    ASSERT_EQ(p.children_nodes_size(), 1);
+    const auto& p_text = p.children_nodes(0);
+    EXPECT_EQ(p_text.content_attributes().text_data().text_content(),
+              "Main frame text");
+  }
+
+  // ---------------------------------------------------------
+  // Section 2: Middle Frame (Grafted)
+  // ---------------------------------------------------------
+  //   |   +--------------------------+   |
+  //   |   | Iframe (Cross-Origin)    |   |  - Middle frame (Origin A)
+  //   |   |   - P ("Middle ...")     |   |
+  //   |   |                          |   |
+  //   |   |   +------------------+   |   |
+  //   |   |   | Iframe           |   |   |  - Inner frame (Origin M)
+  //   |   |   | (Same-Origin)    |   |   |    (Same as Main)
+  //   |   |   | - P ("Child 3")  |   |   |
+  //   |   |   +------------------+   |   |
+  //   |   +--------------------------+   |
+  const auto& middle_frame_node = root.children_nodes(1);
+  EXPECT_EQ(middle_frame_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  EXPECT_EQ(
+      middle_frame_node.content_attributes().iframe_data().frame_data().title(),
+      "Middle Frame");
+
+  // Verify Middle Frame Layout:
+  // - Root (Grafted Root)
+  //   - Paragraph ("Middle frame text")
+  //   - Inner Frame (Grafted)
+
+  ASSERT_GE(middle_frame_node.children_nodes_size(), 1);
+  const auto& middle_frame_root = middle_frame_node.children_nodes(0);
+  EXPECT_EQ(middle_frame_root.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+
+  ASSERT_GE(middle_frame_root.children_nodes_size(), 2);
+
+  // 2.1 Paragraph (Middle Frame)
+  {
+    const auto& middle_p = middle_frame_root.children_nodes(0);
+    EXPECT_EQ(middle_p.content_attributes().attribute_type(),
+              optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+
+    ASSERT_GE(middle_p.children_nodes_size(), 1);
+    EXPECT_EQ(middle_p.children_nodes(0)
+                  .content_attributes()
+                  .text_data()
+                  .text_content(),
+              "Middle frame text");
+  }
+
+  // ---------------------------------------------------------
+  // Section 3: Inner Frame (Grafted inside Middle)
+  // ---------------------------------------------------------
+  const auto& inner_frame_node = middle_frame_root.children_nodes(1);
+  EXPECT_EQ(inner_frame_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  EXPECT_EQ(
+      inner_frame_node.content_attributes().iframe_data().frame_data().title(),
+      "Child 3");
+
+  // Verify Inner Frame.
+
+  ASSERT_GE(inner_frame_node.children_nodes_size(), 1);
+  const auto& inner_frame_root = inner_frame_node.children_nodes(0);
+  EXPECT_EQ(inner_frame_root.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+
+  ASSERT_GE(inner_frame_root.children_nodes_size(), 1);
+  const auto& inner_p = inner_frame_root.children_nodes(0);
+  EXPECT_EQ(inner_p.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  ASSERT_GE(inner_p.children_nodes_size(), 1);
+  EXPECT_EQ(
+      inner_p.children_nodes(0).content_attributes().text_data().text_content(),
+      "Child frame 3 text");
+}
+
+// Tests that the ancestor mapping is correct.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_AncestorMapping) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure =
+      HtmlPage("Pruning Test",
+               RawHtml("<ul><li>Child 1</li><li>Child 2</li></ul>"
+                       "<figure><span><p>Deep Child</p></span></figure>"));
+
+  std::string html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  auto page_context = std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& root_node = page_context->annotated_page_content().root_node();
+  ASSERT_EQ(root_node.children_nodes_size(), 2);
+
+  const auto& list_node = root_node.children_nodes(0);
+  EXPECT_EQ(list_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_UNORDERED_LIST);
+
+  // If pruning was broken (list removed from map), items would attach to root,
+  // making list empty.
+  ASSERT_EQ(list_node.children_nodes_size(), 2);
+
+  EXPECT_EQ(list_node.children_nodes(0).content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_LIST_ITEM);
+  EXPECT_EQ(list_node.children_nodes(1).content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_LIST_ITEM);
+
+  // Check that the ignored 'span' was skipped and 'p' attached to 'figure'.
+  const auto& figure_node = root_node.children_nodes(1);
+  EXPECT_EQ(figure_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
+  ASSERT_EQ(figure_node.children_nodes_size(), 1);
+
+  const auto& p_node = figure_node.children_nodes(0);
+  EXPECT_EQ(p_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  ASSERT_EQ(1, p_node.children_nodes_size());
+  ASSERT_EQ(
+      p_node.children_nodes(0).content_attributes().text_data().text_content(),
+      "Deep Child");
+}
+
+// Tests that the extraction logic correctly handles visibility:
+// - Invisible containers with visible content are KEPT.
+// - Visible containers with invisible content are KEPT.
+// - Invisible containers with no visible content are PRUNED.
+// - Invisible leaf nodes (Img, Input) are SKIPPED.
+TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Visibility) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "Visibility logic is improved in the refactored version";
+  }
+
+  auto page_structure = HtmlPage(
+      "RichExtraction_Visibility",
+      // 1. Invisible Container with Visible Content -> KEPT
+      RawHtml("<div style='visibility:hidden'><p "
+              "style='visibility:visible'>Visible Paragraph in Hidden "
+              "Div</p></div>"),
+      // 2. Invisible Container with Hidden Content -> PRUNED
+      RawHtml("<div style='visibility:hidden'><p style='display:none'>Hidden "
+              "Paragraph</p></div>"),
+      // 3. Invisible Leaf -> SKIPPED
+      RawHtml("<img src='hidden.png' style='visibility:hidden'>"),
+      // 4. Visible Leaf -> KEPT
+      RawHtml("<img src='visible.png'>"),
+      // 5. Deeply Nested Invisible Containers with Visible Content -> KEPT
+      RawHtml("<div style='visibility:hidden'><section "
+              "style='visibility:hidden'><p style='visibility:visible'>Deep "
+              "Visible Paragraph</p></section></div>"),
+      // 6. Invisible Input (Leaf) -> SKIPPED
+      RawHtml(
+          "<input type='text' value='hidden input' style='visibility:hidden'>"),
+      // 7. Visible Container with Hidden Content -> KEPT
+      RawHtml("<div style='width: 100px; height: 100px; overflow: scroll; "
+              "visibility:visible'><p style='visibility:hidden'>Hidden "
+              "Paragraph</p></div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  // Expected Children of Root:
+  // 1. P (Visible Paragraph in Hidden Div)
+  // 2. Img (visible.png)
+  // 3. P (Deep Visible Paragraph)
+  // 4. Div (Visible generic container with hidden content)
+  // Hidden items (Img, Input, Hidden P) are skipped/pruned.
+  ASSERT_EQ(root_node.children_nodes_size(), 4);
+
+  // Verify Child 1: P
+  const auto& child1 = root_node.children_nodes(0);
+  EXPECT_EQ(child1.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  ASSERT_EQ(child1.children_nodes_size(), 1);
+  EXPECT_EQ(
+      child1.children_nodes(0).content_attributes().text_data().text_content(),
+      "Visible Paragraph in Hidden Div");
+
+  // Verify Child 2: Img
+  const auto& child2 = root_node.children_nodes(1);
+  EXPECT_EQ(child2.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE);
+
+  // Verify Child 3: P
+  const auto& child3 = root_node.children_nodes(2);
+  EXPECT_EQ(child3.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  ASSERT_EQ(child3.children_nodes_size(), 1);
+  EXPECT_EQ(
+      child3.children_nodes(0).content_attributes().text_data().text_content(),
+      "Deep Visible Paragraph");
+
+  // Verify Child 4: DIV
+  const auto& child4 = root_node.children_nodes(3);
+  EXPECT_EQ(child4.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
+  ASSERT_EQ(child4.children_nodes_size(), 0);
+}
+
+// Tests that styles in a same-origin iframe are computed correctly.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_Visibility_OnSameOriginIframe) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "Refactored version only";
+  }
+
+  // Use srcdoc to define same-origin content inline.
+  // 1. Hidden Div (display: none) -> Should be strictly skipped/rejected.
+  // 2. Visible Div (visibility: visible) -> Content should be extracted.
+  std::string srcdoc_content =
+      "<div style='display: none'><p>Hidden Content</p></div>"
+      "<div style='visibility: visible'><p>Visible Content</p></div>";
+
+  auto page_structure =
+      HtmlPage("SameOriginIframe_StyleIsolation",
+               RawHtml("<iframe srcdoc=\"" + srcdoc_content + "\"></iframe>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  // Start the server if not already running (required for GetURL).
+  if (!test_server_.Started()) {
+    ASSERT_TRUE(test_server_.Start());
+  }
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& root_node =
+      response.value()->annotated_page_content().root_node();
+
+  // Validate structure: Root -> Iframe.
+  ASSERT_GT(root_node.children_nodes_size(), 0);
+  const auto& iframe_node = root_node.children_nodes(0);
+  EXPECT_EQ(iframe_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+
+  // Validate the inner structure of the iframe based on layout changes.
+  // The invisible div enclosing 'Hidden Content' gets rejected, leaving only
+  // the 'Visible Content'.
+  ASSERT_EQ(iframe_node.children_nodes_size(), 1);
+  const auto& iframe_body_node = iframe_node.children_nodes(0);
+  EXPECT_EQ(iframe_body_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+
+  ASSERT_EQ(iframe_body_node.children_nodes_size(), 1);
+  const auto& p_node = iframe_body_node.children_nodes(0);
+  EXPECT_EQ(p_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+
+  ASSERT_EQ(p_node.children_nodes_size(), 1);
+  const auto& text_node = p_node.children_nodes(0);
+  EXPECT_EQ(text_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(text_node.content_attributes().text_data().text_content(),
+            "Visible Content");
+}
+
+// Tests that the extraction logic respects the maximum recursion depth limit.
+// Nested frames beyond the limit should not be extracted.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_DepthLimit_Saturation) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "Depth tracking is improved in the refactored version";
+  }
+
+  // Create a deeply nested structure of DIVs to test the depth limit.
+  // We want to exceed the limit slightly.
+  //
+  // MAX_APC_RESPONSE_DEPTH = 200.
+  // MAX_APC_NODE_DEPTH = 10
+  // Max Apc Response Depth = MAX_APC_RESPONSE_DEPTH - MAX_APC_NODE_DEPTH =
+  // 190 Min Depth Cost per node = 2
+  //
+  // Max apc node depth = 190/2 = 95
+  std::string deep_html;
+  // Pick a number of divs that will exceed the depth limit (100 > 95) where
+  // truncation will occur.
+  const int kDivCount = 100;
+  for (int i = 1; i <= kDivCount; ++i) {
+    deep_html +=
+        base::StringPrintf("<div style=\"overflow:scroll\">Depth %d", i);
+  }
+  for (int i = 1; i <= kDivCount; ++i) {
+    deep_html += "</div>";
+  }
+
+  auto page_structure = HtmlPage("Deep Page", RawHtml(deep_html));
+  std::string html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  optimization_guide::proto::PageContext page_context =
+      std::move(*response.value());
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  // Verify that the first node starting from the root is a div node.
+  ASSERT_EQ(1, root_node.children_nodes_size());
+  ASSERT_EQ(root_node.children_nodes(0).content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
+
+  // Start walking from the first div node as the root so we start the depth
+  // counter at 1.
+  int actual_depth = 1;
+  const optimization_guide::proto::ContentNode* lastDivNode =
+      &root_node.children_nodes(0);
+  const optimization_guide::proto::ContentNode* parentOfLastDivNode =
+      lastDivNode;
+
+  // Get the last container node (div) in the apc tree and update parent.
+  while (lastDivNode->children_nodes_size() > 1) {
+    parentOfLastDivNode = lastDivNode;
+    lastDivNode = &lastDivNode->children_nodes(1);
+    actual_depth++;
+  }
+
+  // Verify that the tree was cut off at depth 95 (190 / 2).
+  EXPECT_EQ(95, actual_depth);
+  EXPECT_EQ(optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER,
+            lastDivNode->content_attributes().attribute_type());
+
+  // The parent of the last div node should be at depth 94 (one level above).
+  // We can't verify the depth id of the last div node because it was
+  // truncated.
+  EXPECT_EQ("Depth 94", parentOfLastDivNode->children_nodes(0)
+                            .content_attributes()
+                            .text_data()
+                            .text_content());
+}
+
+// Tests that no truncation takes place below the depth limit.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_DepthLimit_BelowSaturation) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "Depth tracking is improved in the refactored version";
+  }
+
+  // Create a deeply nested structure of DIVs to test the depth limit.
+  // We want to be slighly below the limit so no truncation occurs.
+  //
+  // MAX_APC_RESPONSE_DEPTH = 200.
+  // MAX_APC_NODE_DEPTH = 10
+  // Max Apc Response Depth = MAX_APC_RESPONSE_DEPTH - MAX_APC_NODE_DEPTH =
+  // 190 Min Depth Cost per APC node object = 2
+  //
+  // Max apc node depth = 190/2 = 95
+  std::string deep_html;
+  const int kDivCount = 90;
+  for (int i = 1; i <= kDivCount; ++i) {
+    deep_html +=
+        base::StringPrintf("<div style=\"overflow:scroll\">Depth %d", i);
+  }
+  deep_html += "</div>";
+  for (int i = 1; i <= kDivCount; ++i) {
+    deep_html += "</div>";
+  }
+
+  auto page_structure = HtmlPage("Deep Page Safe", RawHtml(deep_html));
+  std::string html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  optimization_guide::proto::PageContext page_context =
+      std::move(*response.value());
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  // Verify that the first node starting from the root is a div node.
+  ASSERT_EQ(1, root_node.children_nodes_size());
+  ASSERT_EQ(root_node.children_nodes(0).content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
+
+  // Start walking from the first div node as the root so we start the depth
+  // counter at 1.
+  int actual_depth = 1;
+  const optimization_guide::proto::ContentNode* lastDivNode =
+      &root_node.children_nodes(0);
+  const optimization_guide::proto::ContentNode* parentOfLastDivNode =
+      lastDivNode;
+
+  // Get the last container node (div) in the apc tree and update parent.
+  while (lastDivNode->children_nodes_size() > 1) {
+    parentOfLastDivNode = lastDivNode;
+    lastDivNode = &lastDivNode->children_nodes(1);
+    actual_depth++;
+  }
+
+  // Verify that the tree is complete reaching a depth of 90.
+  EXPECT_EQ(90, actual_depth);
+  EXPECT_EQ(optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER,
+            lastDivNode->content_attributes().attribute_type());
+
+  // Sanity Check: The parent of the last div node should be at depth 89 (one
+  // level above).
+  EXPECT_EQ("Depth 89", parentOfLastDivNode->children_nodes(0)
+                            .content_attributes()
+                            .text_data()
+                            .text_content());
+
+  // The last node should be complete and at depth 90, not truncated, hence
+  // contain a text node.
+  ASSERT_EQ(1, lastDivNode->children_nodes_size());
+  EXPECT_EQ("Depth 90", lastDivNode->children_nodes(0)
+                            .content_attributes()
+                            .text_data()
+                            .text_content());
+}
+
+// Tests that text transforms and masking are applied correctly.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_Text_PasswordMaskingAndTransforms) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "RichExtraction_Text_PasswordMaskingAndTransforms",
+      RawHtml("<div style='text-transform: uppercase'>uppercase</div>"),
+      RawHtml("<div style='-webkit-text-security: disc'>password</div>"),
+      RawHtml("<div style='text-transform: uppercase; -webkit-text-security: "
+              "square'>both</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  ASSERT_EQ(3, root_node.children_nodes_size());
+
+  // 1. Uppercase Div
+  const auto& uppercase_div = root_node.children_nodes(0);
+  EXPECT_EQ("UPPERCASE",
+            uppercase_div.content_attributes().text_data().text_content());
+
+  // 2. Password Disc Div
+  const auto& password_div = root_node.children_nodes(1);
+  std::string bullet = "\u2022";
+  std::string expected_password_mask = "";
+  for (size_t i = 0; i < MASKED_TEXT_LENGTH; ++i) {
+    expected_password_mask += bullet;
+  }
+  EXPECT_EQ(expected_password_mask,
+            password_div.content_attributes().text_data().text_content());
+
+  // 3. Both (Uppercase + Square) Div
+  const auto& both_div = root_node.children_nodes(2);
+  std::string square = "\u25A0";
+  std::string expected_both_mask = "";
+  for (size_t i = 0; i < MASKED_TEXT_LENGTH; ++i) {
+    expected_both_mask += square;
+  }
+  EXPECT_EQ(expected_both_mask,
+            both_div.content_attributes().text_data().text_content());
+}
+
+// Tests text extraction with collapsible whitespaces where whitespaces are
+// collapsed in normal whitespace but preserved in pre and pre-line.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_Text_CollapsibleWhitespaces) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure =
+      HtmlPage("RichExtraction_Text_CollapsibleWhitespaces",
+               // Should be pruned (normal whitespace collapsing)
+               RawHtml("<div style='white-space: normal'>   </div>"),
+               // Should be preserved
+               RawHtml("<div style='white-space: pre'>   </div>"),
+               // Should be preserved
+               RawHtml("<div style='white-space: pre-wrap'> </div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  // The first div is pruned, so we expect only 2 text nodes from the other
+  // divs. The Diks themselves are generic containers and are skipped,
+  // promoting text to root.
+  ASSERT_EQ(2, root_node.children_nodes_size());
+
+  // 1. Pre (3 spaces)
+  const auto& pre_node = root_node.children_nodes(0);
+  EXPECT_EQ("   ", pre_node.content_attributes().text_data().text_content());
+
+  // 2. Pre-wrap (1 space)
+  const auto& pre_wrap_node = root_node.children_nodes(1);
+  EXPECT_EQ(" ", pre_wrap_node.content_attributes().text_data().text_content());
+}
+
+// Tests text extraction with collapsible newlines where newlines are collapsed
+// with normal whitespace styles but preserved in pre and pre-line.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_Text_CollapsibleNewlines) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure =
+      HtmlPage("RichExtraction_Text_CollapsibleNewlines",
+               // Should be pruned (normal whitespace collapsing)
+               RawHtml("<div style='white-space: normal'>\n\n</div>"),
+               // Should be preserved
+               RawHtml("<div style='white-space: pre'>\n</div>"),
+               // Should be preserved (pre-line preserves newlines)
+               RawHtml("<div style='white-space: pre-line'>\n</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  // The first div is pruned.
+  ASSERT_EQ(2, root_node.children_nodes_size());
+
+  // 1. Pre (\n)
+  const auto& pre_node = root_node.children_nodes(0);
+  EXPECT_EQ("\n", pre_node.content_attributes().text_data().text_content());
+
+  // 2. Pre-line (\n)
+  const auto& pre_line_node = root_node.children_nodes(1);
+  EXPECT_EQ("\n",
+            pre_line_node.content_attributes().text_data().text_content());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

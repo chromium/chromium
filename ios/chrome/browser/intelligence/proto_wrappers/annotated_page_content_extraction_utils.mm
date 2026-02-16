@@ -1,0 +1,295 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/intelligence/proto_wrappers/annotated_page_content_extraction_utils.h"
+
+#import "base/check.h"
+#import "base/functional/callback.h"
+#import "components/autofill/core/common/unique_ids.h"
+#import "components/optimization_guide/core/page_content_proto_serializer.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/frame_grafter.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
+#import "ios/web/public/web_state.h"
+
+// TODO(crbug.com/464473686): Measure interesting error cases.
+
+namespace {
+
+// APC JSON Keys Used in Extraction.
+constexpr char kAttributeTypeKey[] = "attributeType";
+constexpr char kContentAttributesKey[] = "contentAttributes";
+constexpr char kTextInfoKey[] = "textInfo";
+constexpr char kTextContentKey[] = "textContent";
+constexpr char kTextStyleKey[] = "textStyle";
+constexpr char kHasEmphasisKey[] = "hasEmphasis";
+constexpr char kTextSizeKey[] = "textSize";
+constexpr char kAnchorDataKey[] = "anchorData";
+constexpr char kUrlKey[] = "url";
+constexpr char kRelKey[] = "rel";
+constexpr char kImageInfoKey[] = "imageInfo";
+constexpr char kImageCaptionKey[] = "imageCaption";
+constexpr char kAnnotatedRolesKey[] = "annotatedRoles";
+constexpr char kIframeDataKey[] = "iframeData";
+constexpr char kFrameTokenKey[] = "frameToken";
+constexpr char kTokenValueKey[] = "value";
+constexpr char kContentKey[] = "content";
+constexpr char kLocalFrameDataKey[] = "localFrameData";
+constexpr char kSourceURLKey[] = "sourceUrl";
+constexpr char kTitleKey[] = "title";
+constexpr char kChildrenNodesKey[] = "childrenNodes";
+
+// Reads a JS number (double) from a `dict` stored under `key`.
+std::optional<int> ReadJsNumber(const base::DictValue& dict, const char* key) {
+  if (std::optional<double> value = dict.FindDouble(key)) {
+    return static_cast<int>(*value);
+  }
+  return std::nullopt;
+}
+
+// Reads a JS number (double) from a `value`.
+std::optional<int> ReadJsNumber(const base::Value& value) {
+  if (std::optional<double> double_value = value.GetIfDouble()) {
+    return static_cast<int>(*double_value);
+  }
+  return std::nullopt;
+}
+
+// Populates the text data of a content `destination_node` from the `text_data`
+// content.
+void PopulateTextData(
+    const base::DictValue& text_data,
+    optimization_guide::proto::ContentNode* destination_node) {
+  if (const std::string* text_content = text_data.FindString(kTextContentKey)) {
+    destination_node->mutable_content_attributes()
+        ->mutable_text_data()
+        ->set_text_content(*text_content);
+  }
+
+  // Handle Emphasis and Text Size.
+  if (const base::DictValue* text_style = text_data.FindDict(kTextStyleKey)) {
+    std::optional<bool> has_emphasis = text_style->FindBool(kHasEmphasisKey);
+    if (has_emphasis) {
+      destination_node->mutable_content_attributes()
+          ->mutable_text_data()
+          ->mutable_text_style()
+          ->set_has_emphasis(*has_emphasis);
+    }
+    std::optional<int> text_size = ReadJsNumber(*text_style, kTextSizeKey);
+    if (text_size && optimization_guide::proto::TextSize_IsValid(*text_size)) {
+      destination_node->mutable_content_attributes()
+          ->mutable_text_data()
+          ->mutable_text_style()
+          ->set_text_size(
+              static_cast<optimization_guide::proto::TextSize>(*text_size));
+    }
+  }
+}
+
+// Populates the anchor data of the `destination_node` from the
+// `anchor_data` content.
+void PopulateAnchorData(
+    const base::DictValue& anchor_data,
+    optimization_guide::proto::ContentNode* destination_node) {
+  if (const std::string* url = anchor_data.FindString(kUrlKey)) {
+    destination_node->mutable_content_attributes()
+        ->mutable_anchor_data()
+        ->set_url(*url);
+  }
+  if (const base::ListValue* rels = anchor_data.FindList(kRelKey)) {
+    for (const base::Value& rel : *rels) {
+      std::optional<int> rel_value = ReadJsNumber(rel);
+      if (rel_value &&
+          optimization_guide::proto::AnchorRel_IsValid(*rel_value)) {
+        destination_node->mutable_content_attributes()
+            ->mutable_anchor_data()
+            ->add_rel(
+                static_cast<optimization_guide::proto::AnchorRel>(*rel_value));
+      }
+    }
+  }
+}
+
+// Populates the image data of the `destination_node` from the
+// `image_data` content.
+void PopulateImageData(
+    const base::DictValue& image_data,
+    optimization_guide::proto::ContentNode* destination_node) {
+  if (const std::string* image_caption =
+          image_data.FindString(kImageCaptionKey)) {
+    destination_node->mutable_content_attributes()
+        ->mutable_image_data()
+        ->set_image_caption(*image_caption);
+  }
+}
+
+// Populates `destination_frame_data` from the `local_frame_data` content.
+void PopulateFrameData(
+    const base::DictValue& local_frame_data,
+    optimization_guide::proto::FrameData* destination_frame_data,
+    const url::Origin& origin) {
+  // Always populate the security origin.
+  optimization_guide::SecurityOriginSerializer::Serialize(
+      origin, destination_frame_data->mutable_security_origin());
+
+  if (const std::string* url_ptr = local_frame_data.FindString(kSourceURLKey)) {
+    GURL url(*url_ptr);
+    if (url.is_valid() && url.SchemeIs(url::kDataScheme)) {
+      destination_frame_data->set_url("data:");
+    } else {
+      destination_frame_data->set_url(*url_ptr);
+    }
+  }
+
+  if (const std::string* title_ptr = local_frame_data.FindString(kTitleKey)) {
+    destination_frame_data->set_title(*title_ptr);
+  }
+}
+
+// Populates the iframe data of the `destination_node` from the
+// `iframe_data` content.
+void PopulateIframeData(
+    const base::DictValue& iframe_data,
+    optimization_guide::proto::ContentNode* destination_node,
+    const url::Origin& origin) {
+  if (const base::DictValue* content = iframe_data.FindDict(kContentKey)) {
+    if (const base::DictValue* local_frame_data =
+            content->FindDict(kLocalFrameDataKey)) {
+      optimization_guide::proto::FrameData* node_frame_data =
+          destination_node->mutable_content_attributes()
+              ->mutable_iframe_data()
+              ->mutable_frame_data();
+      PopulateFrameData(*local_frame_data, node_frame_data, origin);
+    }
+  }
+}
+
+}  // namespace
+
+void PopulateAPCNodeFromContentTree(
+    const base::DictValue& node_content,
+    const url::Origin& origin,
+    FrameGrafter& grafter,
+    optimization_guide::proto::ContentNode* destination_node) {
+  if (!destination_node) {
+    return;
+  }
+
+  const base::DictValue* content_attributes =
+      node_content.FindDict(kContentAttributesKey);
+
+  // A node must have content attribute to be populated.
+  if (!content_attributes) {
+    return;
+  }
+
+  // Populate the attribute type.
+  std::optional<optimization_guide::proto::ContentAttributeType> type;
+
+  std::optional<int> attribute_type =
+      ReadJsNumber(*content_attributes, kAttributeTypeKey);
+  if (attribute_type && optimization_guide::proto::ContentAttributeType_IsValid(
+                            *attribute_type)) {
+    type = static_cast<optimization_guide::proto::ContentAttributeType>(
+        *attribute_type);
+    destination_node->mutable_content_attributes()->set_attribute_type(*type);
+  } else {
+    // TODO(crbug.com/464473686): Record a histogram for this error case.
+    // A node must have a valid attribute type to be populated.
+    return;
+  }
+
+  switch (*type) {
+    case optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT: {
+      const base::DictValue* text_data =
+          content_attributes->FindDict(kTextInfoKey);
+      if (text_data) {
+        PopulateTextData(*text_data, destination_node);
+      }
+      break;
+    }
+    case optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR: {
+      const base::DictValue* anchor_data =
+          content_attributes->FindDict(kAnchorDataKey);
+      if (anchor_data) {
+        PopulateAnchorData(*anchor_data, destination_node);
+      }
+      break;
+    }
+    case optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE: {
+      const base::DictValue* image_data =
+          content_attributes->FindDict(kImageInfoKey);
+      if (image_data) {
+        PopulateImageData(*image_data, destination_node);
+      }
+      break;
+    }
+    case optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME: {
+      const base::DictValue* iframe_data =
+          content_attributes->FindDict(kIframeDataKey);
+
+      if (iframe_data) {
+        // TODO(crbug.com/464473686): Record anomaly if there is a remote token
+        // and children for an iframe node (which has content attribute of type
+        // iframe and a number of children nodes > 0); those 2 should be
+        // mutally exclusive.
+        if (const base::DictValue* frame_token =
+                iframe_data->FindDict(kFrameTokenKey)) {
+          if (const std::string* token_string =
+                  frame_token->FindString(kTokenValueKey)) {
+            // If we have a remote token, it means the content is in another
+            // frame (likely cross-origin) and we should register a placeholder.
+            // We do not populate children or other data in this case.
+            if (!token_string->empty()) {
+              if (std::optional<autofill::RemoteFrameToken> remote =
+                      DeserializeFrameIdAsRemoteFrameToken(*token_string)) {
+                grafter.RegisterPlaceholder(*remote, destination_node);
+              }
+              return;
+            }
+          }
+        }
+        PopulateIframeData(*iframe_data, destination_node, origin);
+      }
+      break;
+    }
+    default:
+      break;
+  }
+
+  // Handle Annotated Role.
+  if (const base::ListValue* annotated_roles =
+          content_attributes->FindList(kAnnotatedRolesKey)) {
+    for (const base::Value& role : *annotated_roles) {
+      std::optional<int> role_value = ReadJsNumber(role);
+      if (role_value &&
+          optimization_guide::proto::AnnotatedRole_IsValid(*role_value)) {
+        destination_node->mutable_content_attributes()->add_annotated_roles(
+            static_cast<optimization_guide::proto::AnnotatedRole>(*role_value));
+      }
+    }
+  }
+
+  // Recursively populate children.
+  if (const base::ListValue* children_nodes =
+          node_content.FindList(kChildrenNodesKey)) {
+    for (const base::Value& child_value : *children_nodes) {
+      if (child_value.is_dict()) {
+        PopulateAPCNodeFromContentTree(child_value.GetDict(), origin, grafter,
+                                       destination_node->add_children_nodes());
+      }
+    }
+  }
+
+  return;
+}
+
+void PopulateFrameDataNode(
+    const base::DictValue& frame_data_content,
+    const url::Origin& origin,
+    optimization_guide::proto::FrameData* destination_frame_data_node) {
+  CHECK(destination_frame_data_node);
+  PopulateFrameData(frame_data_content, destination_frame_data_node, origin);
+}

@@ -109,7 +109,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
       /*include_anchors=*/false, /*include_cross_origin_frame_content=*/true,
-      "nonce", base::Milliseconds(100),
+      /*use_rich_extraction=*/false, "nonce", base::Milliseconds(100),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -143,7 +143,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest, ExtractPageContext) {
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
       /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
-      "nonce", base::Milliseconds(100),
+      /*use_rich_extraction=*/false, "nonce", base::Milliseconds(100),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -157,19 +157,19 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest, ExtractPageContext) {
       base::DictValue()
           .Set("currentNodeInnerText", "Main frame text\n\n")
           .Set("title", "Main")
-          .Set("sourceURL", test_server_.GetURL(kMainPagePath).spec())
+          .Set("sourceUrl", test_server_.GetURL(kMainPagePath).spec())
           .Set(
               "children",
               base::ListValue()
                   .Append(base::DictValue()
                               .Set("currentNodeInnerText", "Child frame 1 text")
                               .Set("title", "Child 1")
-                              .Set("sourceURL",
+                              .Set("sourceUrl",
                                    test_server_.GetURL(kIframe1Path).spec()))
                   .Append(base::DictValue()
                               .Set("currentNodeInnerText", "Child frame 2 text")
                               .Set("title", "Child 2")
-                              .Set("sourceURL",
+                              .Set("sourceUrl",
                                    test_server_.GetURL(kIframe2Path).spec()))));
 
   EXPECT_THAT(result_value, base::test::IsSupersetOfValue(expected_value));
@@ -189,7 +189,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
       /*include_anchors=*/true, /*include_cross_origin_frame_content=*/false,
-      "nonce", base::Milliseconds(100),
+      /*use_rich_extraction=*/false, "nonce", base::Milliseconds(100),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -203,7 +203,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
       base::DictValue()
           .Set("currentNodeInnerText", "foo")
           .Set("title", "Main")
-          .Set("sourceURL", test_server_.GetURL(kMainPagePath).spec())
+          .Set("sourceUrl", test_server_.GetURL(kMainPagePath).spec())
           .Set("links",
                base::ListValue().Append(base::DictValue()
                                             .Set("href", "http://foo.com/")
@@ -232,7 +232,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
       /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
-      "nonce", base::Milliseconds(100),
+      /*use_rich_extraction=*/false, "nonce", base::Milliseconds(100),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -246,4 +246,68 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
       base::DictValue().Set("shouldDetachPageContext", true));
 
   EXPECT_THAT(result_value, base::test::IsSupersetOfValue(expected_value));
+}
+
+// Test the extraction of the page context with RichExtraction.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction) {
+  const std::string html =
+      "<html><head><title>TreeWalker "
+      "Test</title></head><body><h1>Heading</h1><p>Paragraph "
+      "text</p></body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  base::Value result_value;
+  base::RunLoop run_loop;
+  feature()->ExtractPageContext(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true, "nonce", base::Seconds(1),
+      base::BindOnce(
+          [](base::RunLoop* r, base::Value* result_value,
+             const base::Value* value) {
+            *result_value = value->Clone();
+            r->Quit();
+          },
+          &run_loop, &result_value));
+  run_loop.Run();
+
+  const base::DictValue& dict = result_value.GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_GE(children->size(), 2u);
+
+  // Check Heading
+  const base::DictValue& heading_node = (*children)[0].GetDict();
+  const base::ListValue* heading_children =
+      heading_node.FindList("childrenNodes");
+  ASSERT_TRUE(heading_children);
+  ASSERT_GE(heading_children->size(), 1u);
+  const base::DictValue& heading_text_node = (*heading_children)[0].GetDict();
+  const std::string* heading_text = heading_text_node.FindStringByDottedPath(
+      "contentAttributes.textInfo.textContent");
+  ASSERT_TRUE(heading_text);
+  EXPECT_EQ(*heading_text, "Heading");
+
+  // Check Paragraph
+  const base::DictValue& p_node = (*children)[1].GetDict();
+  const base::ListValue* p_children = p_node.FindList("childrenNodes");
+  ASSERT_TRUE(p_children);
+  ASSERT_GE(p_children->size(), 1u);
+  const base::DictValue& p_text_node = (*p_children)[0].GetDict();
+  const std::string* p_text = p_text_node.FindStringByDottedPath(
+      "contentAttributes.textInfo.textContent");
+  ASSERT_TRUE(p_text);
+  EXPECT_EQ(*p_text, "Paragraph text");
+
+  // Check Frame Data
+  const base::DictValue* frame_data = dict.FindDict("frameData");
+  ASSERT_TRUE(frame_data);
+  const std::string* title = frame_data->FindString("title");
+  ASSERT_TRUE(title);
+  EXPECT_EQ(*title, "TreeWalker Test");
 }

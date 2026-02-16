@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {registerChildFrame} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
+import {extractAnnotatedPageContent} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/annotated_page_content_extraction.js';
+import {getRemoteFrameRemoteToken, MAX_APC_NODE_DEPTH, MAX_APC_RESPONSE_DEPTH, NONCE_ATTR} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
+import type {PageContent} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 // Model that contains the link data for anchor tags that are extracted.
@@ -23,7 +25,7 @@ interface CrossOriginFrameData {
 interface SameOriginFrameData {
   currentNodeInnerText: string;
   children: RemoteFrameData[];
-  sourceURL: string;
+  sourceUrl: string;
   title: string;
   links?: LinkData[];
 }
@@ -39,20 +41,16 @@ interface DetachData {
 
 // The result of the extraction can be one of the following types. `null` is
 // used if extraction failed for some reason.
-type ExtractionResult = SameOriginFrameData|DetachData|null;
+type ExtractionResult = SameOriginFrameData|DetachData|PageContent|null;
 
-// A function will be defined here by the placeholder replacement.
-// It will be called to determine if the page context should be detached.
-declare const SHOULD_DETACH_PAGE_CONTEXT: () => boolean;
-
-/*! {{PLACEHOLDER_FOR_DETACH_LOGIC}} */
-
-const NONCE_ATTR = 'data-__gCrWeb-innerText-processed';
-
-// Returns the remote frame token for the remote `frame` element and triggers
-// a registration.
-function getRemoteFrameRemoteToken(frame: HTMLIFrameElement): string {
-  return registerChildFrame(frame);
+// Returns true if the page context should be detached, false otherwise. The
+// logic is defined in the placeholder replacement.
+function shouldDetachPageContext(): boolean {
+  // This statement is replaced by a function block during placeholder
+  // replacement. See
+  // ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.mm.
+  // Falls back to true by default if no value can be provided from the call.
+  return (window as any).gCrWebPlaceholderPageContextShouldDetach() ?? false;
 }
 
 // Recursively constructs the innerText tree for the passed node and its
@@ -115,7 +113,7 @@ const constructInnerTextTree =
         currentNodeInnerText: node.innerText,
         children: childNodeInnerTexts.filter((item) => item !== null) as
             RemoteFrameData[],
-        sourceURL: frameURL,
+        sourceUrl: frameURL,
         title: frameTitle,
       };
 
@@ -145,19 +143,27 @@ const constructInnerTextTree =
 // frames, but only for the current run. Early returns if the PageContext should
 // be detached, or the frame is not the top-most same-origin frame.
 function extractPageContext(
-    includeAnchors: boolean, nonce: string,
-    keepCrossOriginFrameData: boolean): ExtractionResult {
+    includeAnchors: boolean, nonce: string, keepCrossOriginFrameData: boolean,
+    useRichExtraction: boolean): ExtractionResult {
   // If the PageContext should be detached, early return.
-  if (SHOULD_DETACH_PAGE_CONTEXT()) {
+  if (shouldDetachPageContext()) {
     return {shouldDetachPageContext: true} as DetachData;
   }
 
   // The script should only run if it has no same-origin parent. (The script
-  // should only start execution on top-most nodes of a given origin to
-  // correctly reconstruct the tree structure).
+  // should only start execution on top-most nodes of a given origin).
   if (window.self !== window.top &&
       location.ancestorOrigins?.[0] === location.origin) {
+    // Not the top-most same-origin frame, early exit.
     return null;
+  }
+
+  if (useRichExtraction) {
+    // We reserve 1 depth unit to account for the wrapping `PageContent` object.
+    // The `PageContent` object itself adds one level of nesting to the
+    // structure parsed by `ValueResultFromWKResult` on the native side.
+    const maxDepth = MAX_APC_RESPONSE_DEPTH - MAX_APC_NODE_DEPTH;
+    return extractAnnotatedPageContent(document, nonce, 0, maxDepth);
   }
 
   // Recursively constructs the tree from the root node.

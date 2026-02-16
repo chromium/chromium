@@ -24,18 +24,25 @@ class PageContextWrapperConfig {
   // preserving the tree structure.
   bool graft_cross_origin_frame_content() const;
 
+  // True to use the TreeWalker for Page Context extraction (Rich Extraction).
+  bool use_rich_extraction() const;
+
  private:
   friend class PageContextWrapperConfigBuilder;
 
   // Private constructor forces usage of the Builder.
   explicit PageContextWrapperConfig(bool use_refactored_extractor,
-                                    bool graft_cross_origin_frame_content);
+                                    bool graft_cross_origin_frame_content,
+                                    bool use_rich_extraction);
 
   // Bit to use the refactored PageContextExtractor.
   bool use_refactored_extractor_;
 
   // Bit to graft cross-origin frames.
   bool graft_cross_origin_frame_content_;
+
+  // Bit to use the TreeWalker (Rich Extraction).
+  bool use_rich_extraction_;
 };
 
 // Builder for PageContextWrapperConfig.
@@ -52,12 +59,17 @@ class PageContextWrapperConfigBuilder {
   PageContextWrapperConfigBuilder& SetGraftCrossOriginFrameContent(
       bool graft_cross_origin_frame_content);
 
+  // Sets whether to use the TreeWalker (Rich Extraction).
+  PageContextWrapperConfigBuilder& SetUseRichExtraction(
+      bool use_rich_extraction);
+
   // Returns the PageContextWrapperConfig.
   PageContextWrapperConfig Build() const;
 
  private:
   bool use_refactored_extractor_;
   bool graft_cross_origin_frame_content_;
+  bool use_rich_extraction_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_PAGE_CONTEXT_WRAPPER_CONFIG_H_

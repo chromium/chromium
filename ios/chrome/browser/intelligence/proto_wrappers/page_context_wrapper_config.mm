@@ -17,9 +17,11 @@ PageContextWrapperConfig& PageContextWrapperConfig::operator=(
 
 PageContextWrapperConfig::PageContextWrapperConfig(
     bool use_refactored_extractor,
-    bool graft_cross_origin_frame_content)
+    bool graft_cross_origin_frame_content,
+    bool use_rich_extraction)
     : use_refactored_extractor_(use_refactored_extractor),
-      graft_cross_origin_frame_content_(graft_cross_origin_frame_content) {}
+      graft_cross_origin_frame_content_(graft_cross_origin_frame_content),
+      use_rich_extraction_(use_rich_extraction) {}
 
 PageContextWrapperConfig::~PageContextWrapperConfig() = default;
 
@@ -28,13 +30,18 @@ bool PageContextWrapperConfig::use_refactored_extractor() const {
 }
 
 bool PageContextWrapperConfig::graft_cross_origin_frame_content() const {
-  return graft_cross_origin_frame_content_;
+  return graft_cross_origin_frame_content_ || use_rich_extraction_;
+}
+
+bool PageContextWrapperConfig::use_rich_extraction() const {
+  return use_rich_extraction_;
 }
 
 PageContextWrapperConfigBuilder::PageContextWrapperConfigBuilder() {
   use_refactored_extractor_ =
       base::FeatureList::IsEnabled(kPageContextExtractorRefactored);
   graft_cross_origin_frame_content_ = false;
+  use_rich_extraction_ = false;
 }
 
 PageContextWrapperConfigBuilder::~PageContextWrapperConfigBuilder() = default;
@@ -53,7 +60,15 @@ PageContextWrapperConfigBuilder::SetGraftCrossOriginFrameContent(
   return *this;
 }
 
+PageContextWrapperConfigBuilder&
+PageContextWrapperConfigBuilder::SetUseRichExtraction(
+    bool use_rich_extraction) {
+  use_rich_extraction_ = use_rich_extraction;
+  return *this;
+}
+
 PageContextWrapperConfig PageContextWrapperConfigBuilder::Build() const {
   return PageContextWrapperConfig(use_refactored_extractor_,
-                                  graft_cross_origin_frame_content_);
+                                  graft_cross_origin_frame_content_,
+                                  use_rich_extraction_);
 }

@@ -22,7 +22,7 @@
 namespace {
 constexpr char kScriptName[] = "page_context_extractor";
 constexpr char kDetachLogicPlaceholder[] =
-    "/*! {{PLACEHOLDER_FOR_DETACH_LOGIC}} */";
+    "window.gCrWebPlaceholderPageContextShouldDetach";
 }  // namespace
 
 PageContextExtractorJavaScriptFeature*
@@ -52,13 +52,12 @@ PageContextExtractorJavaScriptFeature::
 
 web::JavaScriptFeature::FeatureScript::PlaceholderReplacements
 PageContextExtractorJavaScriptFeature::GetReplacements() {
-  std::u16string full_script_block =
-      base::StrCat({u"const SHOULD_DETACH_PAGE_CONTEXT = () => { ",
-                    ios::provider::GetPageContextShouldDetachScript(), u" };"});
+  std::u16string detach_script_block =
+      base::StrCat({u"(() => { ",
+                    ios::provider::GetPageContextShouldDetachScript(), u" })"});
   return @{
     base::SysUTF8ToNSString(kDetachLogicPlaceholder) :
-        base::SysUTF16ToNSString(full_script_block),
-
+        base::SysUTF16ToNSString(detach_script_block),
   };
 }
 
@@ -66,6 +65,7 @@ void PageContextExtractorJavaScriptFeature::ExtractPageContext(
     web::WebFrame* frame,
     bool include_anchors,
     bool include_cross_origin_frame_content,
+    bool use_rich_extraction,
     const std::string& nonce,
     base::TimeDelta timeout,
     base::OnceCallback<void(const base::Value*)> callback) {
@@ -75,6 +75,7 @@ void PageContextExtractorJavaScriptFeature::ExtractPageContext(
   parameters.Append(include_anchors);
   parameters.Append(nonce);
   parameters.Append(include_cross_origin_frame_content);
+  parameters.Append(use_rich_extraction);
   CallJavaScriptFunction(frame, "pageContextExtractor.extractPageContext",
                          parameters, std::move(callback), timeout);
 }

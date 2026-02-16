@@ -8,6 +8,40 @@
 #import "base/functional/callback.h"
 #import "base/not_fatal_until.h"
 
+namespace {
+
+// Merges the content from `content` into the `placeholder`.
+//
+// Uses `std::move` to transfer ownership of the content tree. This is critical
+// because `content.content` may contain nested placeholders (pointers to
+// specific nodes within the tree) that are registered in `FrameGrafter`.
+// Using `CopyFrom` would create new objects at new addresses, invalidating
+// those pointers and causing use-after-free crashes when resolving nested
+// frames.
+void MergeContent(optimization_guide::proto::ContentNode* placeholder,
+                  FrameGrafter::FrameContent&& frame_content) {
+  if (placeholder->content_attributes().attribute_type() ==
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
+    // Rich Extraction:  The placeholder is already assigned as an
+    // iframe, this means that the data in the `placeholder` is already
+    // partially set so do a partial merge in this case. The iframe content tree
+    // needs to be added as a child of the attributed iframe ContentNode.
+    // Content starts from the page root (like for the main frame).
+    placeholder->mutable_content_attributes()
+        ->mutable_iframe_data()
+        ->mutable_frame_data()
+        ->Swap(&frame_content.frame_data);
+    *placeholder->add_children_nodes() = std::move(frame_content.content);
+
+  } else {
+    // Light Extraction: The placeholder doesn't hold any partial data,
+    // it means that the whole ContentNode for the iframe is provided from the
+    // content stored in `unregistered_content_.
+    *placeholder = std::move(frame_content.content);
+  }
+}
+}  // namespace
+
 FrameGrafter::FrameGrafter() = default;
 FrameGrafter::~FrameGrafter() = default;
 
@@ -22,7 +56,7 @@ void FrameGrafter::RegisterPlaceholder(
   placeholders_[token] = placeholder;
 }
 
-optimization_guide::proto::ContentNode* FrameGrafter::DeclareContent(
+FrameGrafter::FrameContent* FrameGrafter::DeclareContent(
     autofill::LocalFrameToken token) {
   if (unregistered_content_.contains(token)) {
     // TODO(crbug.com/473793284): Add a metric for this.
@@ -30,7 +64,7 @@ optimization_guide::proto::ContentNode* FrameGrafter::DeclareContent(
     return nullptr;
   }
   // Cache the frame content to be fulfilled later when a placeholder is
-  // registered.
+  // registered. Is the responsibility of the caller to populate the content.
   return &unregistered_content_[token];
 }
 
@@ -46,8 +80,7 @@ std::vector<autofill::RemoteFrameToken> FrameGrafter::GetRemoteFrames() const {
 void FrameGrafter::ResolveUnregisteredContent(
     base::RepeatingCallback<std::optional<autofill::LocalFrameToken>(
         autofill::RemoteFrameToken)> mapping_lookup,
-    base::RepeatingCallback<
-        void(optimization_guide::proto::ContentNode unregistered)> placer) {
+    base::RepeatingCallback<void(FrameContent unregistered)> placer) {
   // Try to fulfill placeholders by resolving remote tokens to local tokens.
   for (auto it = placeholders_.begin(); it != placeholders_.end();) {
     std::optional<autofill::LocalFrameToken> local_token =
@@ -57,7 +90,7 @@ void FrameGrafter::ResolveUnregisteredContent(
       if (auto content_it = unregistered_content_.find(*local_token);
           content_it != unregistered_content_.end()) {
         // Fulfill the placeholder.
-        *it->second = std::move(content_it->second);
+        MergeContent(it->second, std::move(content_it->second));
         unregistered_content_.erase(content_it);
         it = placeholders_.erase(it);
         continue;
