@@ -428,9 +428,17 @@ suite('ContextualTasksComposeboxTest', () => {
 
     const [matchIndex, url] =
         await mockSearchboxPageHandler.whenCalled('openAutocompleteMatch');
+
     assertEquals(0, matchIndex);
     assertEquals(`https://google.com/search?q=${TEST_QUERY}`, url);
     mockTimer.tick(0);
+
+    // Cannot use `await microTasksFinished()` here because the transition to
+    // zero state triggers `clearAllInputs()`, which modifies the DOM layout.
+    // This causes `ResizeObserver` events that schedule additional microtasks,
+    // preventing `microTasksFinished()` from settling within the test timeout.
+    await composebox.updateComplete;
+    await contextualTasksApp.updateComplete;
 
     assertEquals(
         '', inputElement.value,
@@ -2708,6 +2716,105 @@ suite('ContextualTasksComposeboxTest', () => {
 
     canvasChip = composebox.$.context.shadowRoot.querySelector('#canvasChip');
     assertFalse(!!canvasChip, 'Canvas chip should be removed');
+  });
+
+  test('deep search: thread change resets input', async () => {
+    // Reset potentially dirty state.
+    composebox.$.context.setInitialMode(ComposeboxToolMode.kUnspecified);
+    composebox.input_ = 'test';
+    await composebox.$.context.updateComplete;
+    await microtasksFinished();
+
+    composebox.$.context.onToolClickForTesting(ComposeboxToolMode.kDeepSearch);
+
+    await composebox.$.context.updateComplete;
+    await microtasksFinished();
+
+    let deepSearchChip =
+        composebox.$.context.shadowRoot.querySelector('#deepSearchChip');
+
+    assertTrue(!!deepSearchChip, 'Deep search chip should be present');
+
+    testProxy.callbackRouterRemote.onZeroStateChange(/*isZeroState=*/ true);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+
+    await composebox.$.context.updateComplete;
+    await microtasksFinished();
+
+    deepSearchChip =
+        composebox.$.context.shadowRoot.querySelector('#deepSearchChip');
+    assertFalse(!!composebox.input_, 'Input value should be cleared');
+    assertTrue(
+        composebox.fileUploadsComplete, 'File uploads should be complete');
+    assertFalse(
+        !!composebox.getResultForTesting(),
+        'Autocomplete result should be cleared');
+  });
+
+  test('image gen: thread change resets input', async () => {
+    // Reset potentially dirty state.
+    composebox.$.context.setInitialMode(ComposeboxToolMode.kUnspecified);
+    composebox.input_ = 'test';
+    await composebox.$.context.updateComplete;
+    await microtasksFinished();
+
+    composebox.$.context.onToolClickForTesting(ComposeboxToolMode.kImageGen);
+
+    await composebox.$.context.updateComplete;
+    await microtasksFinished();
+
+    let imageGenChip =
+        composebox.$.context.shadowRoot.querySelector('#nanoBananaChip');
+
+    assertTrue(!!imageGenChip, 'Image gen chip should be present');
+
+    testProxy.callbackRouterRemote.onZeroStateChange(/*isZeroState=*/ true);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+
+
+    await composebox.$.context.updateComplete;
+    await microtasksFinished();
+
+    imageGenChip =
+        composebox.$.context.shadowRoot.querySelector('#nanoBananaChip');
+    assertFalse(!!composebox.input_, 'Input value should be cleared');
+    assertTrue(
+        composebox.fileUploadsComplete, 'File uploads should be complete');
+    assertFalse(
+        !!composebox.getResultForTesting(),
+        'Autocomplete result should be cleared');
+  });
+
+  test('canvas: thread change resets input', async () => {
+    // Reset potentially dirty state.
+    composebox.$.context.setInitialMode(ComposeboxToolMode.kUnspecified);
+    composebox.input_ = 'test';
+    await composebox.$.context.updateComplete;
+    await microtasksFinished();
+
+    composebox.$.context.onToolClickForTesting(ComposeboxToolMode.kCanvas);
+
+    await composebox.$.context.updateComplete;
+    await microtasksFinished();
+
+    let canvasChip =
+        composebox.$.context.shadowRoot.querySelector('#canvasChip');
+
+    assertTrue(!!canvasChip, 'Canvas chip should be present');
+
+    testProxy.callbackRouterRemote.onZeroStateChange(/*isZeroState=*/ true);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+
+    await composebox.$.context.updateComplete;
+    await microtasksFinished();
+
+    canvasChip = composebox.$.context.shadowRoot.querySelector('#canvasChip');
+    assertFalse(!!composebox.input_, 'Input value should be cleared');
+    assertTrue(
+        composebox.fileUploadsComplete, 'File uploads should be complete');
+    assertFalse(
+        !!composebox.getResultForTesting(),
+        'Autocomplete result should be cleared');
   });
 
   test(
