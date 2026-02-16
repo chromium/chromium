@@ -13,6 +13,8 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -269,8 +271,12 @@ bool LogClientHelloTrustAnchorIDs(const SSL_CLIENT_HELLO* client_hello) {
   size_t len = 0;
   SSL_early_callback_ctx_extension_get(client_hello, TLSEXT_TYPE_trust_anchors,
                                        &data, &len);
+
+  // SAFETY: SSL_early_callback_ctx_extension_get ensures that `data` has a size
+  // of `len`.
+  base::span<const uint8_t> UNSAFE_BUFFERS(data_span(data, len));
   LOG(ERROR) << "Trust anchor IDs from Client Hello: "
-             << base::HexEncode(data, len);
+             << base::HexEncode(data_span);
   return true;
 }
 

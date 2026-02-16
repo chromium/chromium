@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -33,10 +34,7 @@ std::string GetPartitionKey(const base::FilePath& relative_path) {
   const base::FilePath::StringType& path = relative_path.value();
   // Prepend "x" to prevent an unlikely collision with an old
   // partition key (which contained only [0-9]).
-  return "x" +
-         base::HexEncode(
-             path.c_str(),
-             path.size() * sizeof(base::FilePath::StringType::value_type));
+  return "x" + base::HexEncode(base::as_byte_span(path));
 }
 
 const char kZoomLevelKey[] = "zoom_level";
