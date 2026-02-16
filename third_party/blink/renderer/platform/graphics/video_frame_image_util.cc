@@ -168,14 +168,22 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
           ? media::kNoTransformation
           : frame->metadata().transformation.value_or(media::kNoTransformation);
   params.reinterpret_as_srgb = reinterpret_video_as_srgb;
-  return snapshot_provider->DoExternalDrawAndSnapshot(
-      [&](cc::PaintCanvas& canvas) {
-        video_renderer->Paint(frame.get(), &canvas, media_flags, params,
-                              raster_context_provider.get());
-      },
-      prefer_tagged_orientation
-          ? VideoTransformationToImageOrientation(transform)
-          : ImageOrientationEnum::kDefault);
+  auto draw_callback = [&](cc::PaintCanvas& canvas) {
+    video_renderer->Paint(frame.get(), &canvas, media_flags, params,
+                          raster_context_provider.get());
+  };
+  auto orientation = prefer_tagged_orientation
+                         ? VideoTransformationToImageOrientation(transform)
+                         : ImageOrientationEnum::kDefault;
+  if (snapshot_provider->IsExternalBitmapProvider()) {
+    CanvasNon2DSnapshotProviderBitmap* snapshot_provider_bitmap =
+        static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider);
+    return CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
+        snapshot_provider_bitmap->Info(), draw_callback, orientation);
+  }
+
+  return snapshot_provider->DoExternalDrawAndSnapshot(draw_callback,
+                                                      orientation);
 }
 
 void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,

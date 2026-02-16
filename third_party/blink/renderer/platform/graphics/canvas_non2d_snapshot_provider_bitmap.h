@@ -44,6 +44,7 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
   gfx::ColorSpace GetColorSpace() const override { return info_.color_space; }
   SkAlphaType GetAlphaType() const override { return info_.alpha_type; }
   gfx::Size Size() const override { return info_.size; }
+  const CanvasSnapshotProvider::Info& Info() const { return info_; }
 
  private:
   explicit CanvasNon2DSnapshotProviderBitmap(
