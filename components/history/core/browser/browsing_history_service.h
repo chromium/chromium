@@ -206,6 +206,24 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   static void MergeDuplicateResults(QueryHistoryState* state,
                                     std::vector<HistoryEntry>* results);
 
+  // Merges both remote and local results together from `state` while
+  // maintaining reverse chronological order and returns the final results. Any
+  // results with the same host and title will be merged together for each day.
+  // Often holds back some results in `state` from one of the two sources to
+  // ensure that they're always returned to the driver in correct order. This
+  // function also updates the end times in `state` for both sources that the
+  // next query should be made against.
+  static std::vector<HistoryEntry> GroupSimilarVisits(QueryHistoryState* state);
+
+  // Holds back some results in `state` from one of the two sources to ensure
+  // that they're always returned to the driver in correct order. This function
+  // also updates the end times in `state` for both sources that the next query
+  // should be made against.
+  static void HoldbackAndPartitionResults(QueryHistoryState* state,
+                                          const base::Time oldest_local,
+                                          const base::Time oldest_remote,
+                                          std::vector<HistoryEntry>* results);
+
   // Core implementation of history querying.
   void QueryHistoryInternal(scoped_refptr<QueryHistoryState> state);
 
