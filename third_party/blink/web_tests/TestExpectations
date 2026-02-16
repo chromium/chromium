@@ -9673,3 +9673,5 @@ crbug.com/483962364 [ Mac12 ] external/wpt/shadow-dom/focus-navigation/focus-nav
 # Gardener 2026-02-16
 crbug.com/484751088 [ Win11-arm64 ] fast/backgrounds/background-position-parsing.html [ Failure Pass ]
 crbug.com/484751088 [ Win11-arm64 ] fast/backgrounds/size/contain-and-cover-zoomed.html [ Failure Pass ]
+crbug.com/484566429 [ Linux ] external/wpt/html/semantics/embedded-content/the-audio-element/audio-loading-lazy-autoplay-when-visible.tentative.html [ Failure Pass ]
+crbug.com/484566429 [ Linux ] external/wpt/html/semantics/embedded-content/the-video-element/video-loading-lazy-autoplay-when-visible.tentative.html [ Failure Pass ]
