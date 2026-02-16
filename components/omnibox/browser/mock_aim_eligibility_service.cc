@@ -28,8 +28,15 @@ const omnibox::SearchboxConfig* MockAimEligibilityService::GetSearchboxConfig()
 
   auto* rule_set = config->mutable_rule_set();
   rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_CANVAS);
   rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
   rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+
+  if (IsCanvasEligible()) {
+    auto* canvas_rule = rule_set->add_tool_rules();
+    canvas_rule->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+    canvas_rule->set_allow_all_input_types(true);
+  }
 
   if (IsDeepSearchEligible()) {
     auto* deep_search_rule = rule_set->add_tool_rules();
