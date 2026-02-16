@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_dialog.h"
 
-#include "ash/constants/url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
@@ -78,7 +78,7 @@ BorealisMOTDDialog::BorealisMOTDDialog(base::OnceCallback<void()> cb,
   set_allow_default_context_menu(false);
   set_can_close(true);
   set_can_resize(false);
-  set_dialog_content_url(GURL(chrome::kChromeUIBorealisMOTDURL));
+  set_dialog_content_url(GURL(ash::kChromeUIBorealisMOTDURL));
   set_dialog_frame_kind(ui::WebDialogDelegate::FrameKind::kDialog);
   set_dialog_modal_type(ui::mojom::ModalType::kSystem);
   set_dialog_size(

@@ -6,7 +6,7 @@
 #include "ash/webui/focus_mode/focus_mode_untrusted_ui.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/grit/ash_focus_mode_player_resources.h"
 #include "ash/webui/grit/ash_focus_mode_player_resources_map.h"
 #include "content/public/browser/browser_context.h"
@@ -26,7 +26,7 @@ FocusModeUntrustedUI::FocusModeUntrustedUI(content::WebUI* web_ui)
   // terminating slash, otherwise the data source won't be found.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIFocusModePlayerURL);
+      kChromeUIFocusModePlayerURL);
 
   // Add the content. We don't need to set up a default ("") path since the
   // trusted page will refer directly to player.html.
@@ -41,7 +41,7 @@ FocusModeUntrustedUI::FocusModeUntrustedUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc, "img-src data:;");
   // Enables the page to be loaded as an iframe by the trusted page.
-  source->AddFrameAncestor(GURL(chrome::kChromeUIFocusModeMediaURL));
+  source->AddFrameAncestor(GURL(kChromeUIFocusModeMediaURL));
 }
 
 FocusModeUntrustedUI::~FocusModeUntrustedUI() = default;
@@ -50,7 +50,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(FocusModeUntrustedUI)
 
 FocusModeUntrustedUIConfig::FocusModeUntrustedUIConfig()
     : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
-                         chrome::kChromeUIFocusModePlayerHost) {}
+                         kChromeUIFocusModePlayerHost) {}
 
 bool FocusModeUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

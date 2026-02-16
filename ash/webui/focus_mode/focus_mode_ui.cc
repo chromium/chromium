@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/style/switch.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
@@ -309,7 +309,7 @@ FocusModeUI::FocusModeUI(content::WebUI* web_ui)
   // page, we need to pass the *host* as second parameter.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIFocusModeMediaHost);
+      kChromeUIFocusModeMediaHost);
 
   // This is needed so that the page can load the iframe from chrome-untrusted.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
@@ -324,7 +324,7 @@ FocusModeUI::FocusModeUI(content::WebUI* web_ui)
   // Enables the page to load the untrusted page in an iframe.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc,
-      base::StringPrintf("frame-src %s;", chrome::kChromeUIFocusModePlayerURL));
+      base::StringPrintf("frame-src %s;", kChromeUIFocusModePlayerURL));
   ash::EnableTrustedTypesCSP(source);
 
   // This sets the untrusted page to be in a web app scope. This in turn enables
@@ -333,7 +333,7 @@ FocusModeUI::FocusModeUI(content::WebUI* web_ui)
   // is hidden. See AutoPlayPolicy::GetAutoplayPolicyForDocument for more info.
   auto* web_contents = web_ui->GetWebContents();
   auto prefs = web_contents->GetOrCreateWebPreferences();
-  prefs.web_app_scope = GURL(chrome::kChromeUIFocusModePlayerURL);
+  prefs.web_app_scope = GURL(kChromeUIFocusModePlayerURL);
   web_contents->SetWebPreferences(prefs);
 }
 
@@ -348,7 +348,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(FocusModeUI)
 
 FocusModeUIConfig::FocusModeUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUIFocusModeMediaHost) {}
+                         kChromeUIFocusModeMediaHost) {}
 
 bool FocusModeUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

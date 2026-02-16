@@ -47,6 +47,11 @@ inline constexpr char kChromeUIBorealisCreditsHost[] = "borealis-credits";
 inline constexpr char kChromeUIBorealisInstallerHost[] = "borealis-installer";
 inline constexpr char kChromeUIBorealisInstallerURL[] =
     "chrome://borealis-installer";
+
+// The host and URL for the Borealis MOTD Dialog
+inline constexpr char kChromeUIBorealisMOTDHost[] = "borealis-motd";
+inline constexpr char kChromeUIBorealisMOTDURL[] = "chrome://borealis-motd";
+
 inline constexpr char kChromeUICloudUploadHost[] = "cloud-upload";
 inline constexpr char kChromeUICloudUploadURL[] = "chrome://cloud-upload/";
 inline constexpr char kChromeUIConfirmPasswordChangeHost[] =
@@ -70,6 +75,15 @@ inline constexpr char kChromeUIExtendedUpdatesDialogHost[] =
     "extended-updates-dialog";
 inline constexpr char kChromeUIExtendedUpdatesDialogURL[] =
     "chrome://extended-updates-dialog";
+
+// The host and URL for the Focus Mode media player.
+inline constexpr char kChromeUIFocusModeMediaHost[] = "focus-mode-media";
+inline constexpr char kChromeUIFocusModeMediaURL[] =
+    "chrome://focus-mode-media";
+inline constexpr char kChromeUIFocusModePlayerHost[] = "focus-mode-player";
+inline constexpr char kChromeUIFocusModePlayerURL[] =
+    "chrome-untrusted://focus-mode-player/";
+
 inline constexpr char kChromeUIHealthdInternalsHost[] = "healthd-internals";
 // TODO(crbug.com/481835800): This is the URL of the page provided by Chrome.
 // Consider to remove from here.

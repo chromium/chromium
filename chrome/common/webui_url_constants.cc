@@ -19,7 +19,6 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -40,7 +39,7 @@ bool IsSystemWebUIHost(std::string_view host) {
       ash::kChromeUIBluetoothPairingHost,
       ash::kChromeUIBorealisCreditsHost,
       ash::kChromeUIBorealisInstallerHost,
-      kChromeUIBorealisMOTDHost,
+      ash::kChromeUIBorealisMOTDHost,
       kChromeUICertificateManagerHost,
       ash::kChromeUICloudUploadHost,
       ash::kChromeUICrostiniCreditsHost,

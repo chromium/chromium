@@ -27,20 +27,6 @@ extern const char kAndroidMessagesLearnMoreURL[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char16_t kApnSettingsLearnMoreUrl[];
 
-// The host and URL for the Borealis MOTD Dialog
-inline constexpr char kChromeUIBorealisMOTDHost[] = "borealis-motd";
-inline constexpr char kChromeUIBorealisMOTDURL[] = "chrome://borealis-motd";
-
-// The host and URL for the Focus Mode media player.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kChromeUIFocusModeMediaHost[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kChromeUIFocusModeMediaURL[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kChromeUIFocusModePlayerHost[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kChromeUIFocusModePlayerURL[];
-
 // "Learn more" URL for Help Me Read and Help Me Write feature on ChromeOS.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kHelpMeReadWriteLearnMoreURL[];

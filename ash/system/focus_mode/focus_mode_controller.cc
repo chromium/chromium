@@ -9,7 +9,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -914,7 +914,7 @@ bool FocusModeController::MaybeCreateMediaWidget() {
 
   focus_mode_media_view_ = media_widget_->SetContentsView(
       AshWebViewFactory::Get()->Create(web_view_params));
-  focus_mode_media_view_->Navigate(GURL(chrome::kChromeUIFocusModeMediaURL));
+  focus_mode_media_view_->Navigate(GURL(kChromeUIFocusModeMediaURL));
   return true;
 }
 

@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_ui.h"
 
-#include "ash/constants/url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
@@ -31,14 +31,14 @@ namespace borealis {
 
 BorealisMOTDUIConfig::BorealisMOTDUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUIBorealisMOTDHost) {}
+                         ash::kChromeUIBorealisMOTDHost) {}
 
 BorealisMOTDUI::BorealisMOTDUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
   // Set up the chrome://borealis-motd source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIBorealisMOTDHost);
+      ash::kChromeUIBorealisMOTDHost);
 
   // Add required resources.
   webui::SetupWebUIDataSource(source, base::span(kBorealisMotdResources),
