@@ -262,11 +262,17 @@ public class DisplayAndroidManager {
 
     /* package */ DisplayAndroid getDisplayAndroid(Display display) {
         int sdkDisplayId = display.getDisplayId();
-        DisplayAndroid displayAndroid = mIdMap.get(sdkDisplayId);
-        if (displayAndroid == null) {
-            displayAndroid = addDisplay(display, null);
+
+        // 1. Synchronize access to the map
+        synchronized (mIdMap) {
+            DisplayAndroid displayAndroid = mIdMap.get(sdkDisplayId);
+
+            // 2. Only if it is STILL null, proceed to add
+            if (displayAndroid == null) {
+                displayAndroid = addDisplay(display, null);
+            }
+            return displayAndroid;
         }
-        return displayAndroid;
     }
 
     private DisplayAndroid addDisplay(Display display, @Nullable RectF displayAbsoluteCoordinates) {
