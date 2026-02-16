@@ -28,13 +28,14 @@
 DEFINE_USER_DATA(skills::SkillsUiTabController);
 
 namespace {
-using glic::mojom::SkillSource;
 
 constexpr base::TimeDelta kNotifyTimeoutSeconds = base::Seconds(60);
 constexpr base::TimeDelta kGlicPanelPollIntervalMilliseconds =
     base::Milliseconds(60);
 
 #if BUILDFLAG(ENABLE_GLIC)
+using glic::mojom::SkillSource;
+
 glic::mojom::SkillPreviewPtr GetPreviewFromSkill(const skills::Skill& skill) {
   auto skill_preview = glic::mojom::SkillPreview::New();
   skill_preview->id = skill.id;
