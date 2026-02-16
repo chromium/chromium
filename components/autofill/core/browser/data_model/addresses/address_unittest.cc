@@ -777,6 +777,12 @@ TEST_F(AddressTest, TestSynthesizedNodesGeneration) {
             u"Opp to Ayyappa Swamy temple");
 }
 
+// Growth invariant is a property of a structured address model. It states that
+// in the address hierarchy, compound tokens need to contain
+// all information contained in their children (with the exception of stop
+// words that are not privacy/data governance sensitive).
+// This is to ensure that users can always access and modify all their data
+// from the settings view, even if not all the nodes are exposed in the UI.
 class AddressGrowthInvariantTest
     : public AddressTest,
       public testing::WithParamInterface<AddressCountryCode> {
