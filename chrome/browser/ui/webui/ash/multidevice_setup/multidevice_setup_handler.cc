@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/user_image/user_image_source.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/user_manager/user.h"
 #include "ui/base/webui/web_ui_util.h"
 

@@ -26,7 +26,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/common/chrome_features.h",
   "+chrome/common/pref_names.h",
-  "+chrome/common/webui_url_constants.h",
   "+chrome/test/base",
   "+chrome/browser/download/download_dir_util.h",
   "+chrome/browser/notifications",

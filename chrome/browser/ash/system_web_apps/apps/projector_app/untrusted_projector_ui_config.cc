@@ -10,10 +10,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/features.h"
 
 ChromeUntrustedProjectorUIDelegate::ChromeUntrustedProjectorUIDelegate() =

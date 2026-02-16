@@ -25,7 +25,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/smb_shares",
   "+chrome/common/chrome_features.h",
   "+chrome/common/pref_names.h",
-  "+chrome/common/webui_url_constants.h",
   "+chrome/grit",
   "+chrome/test/base",
 ]

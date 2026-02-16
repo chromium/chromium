@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/base_lock_dialog.h"
 
-#include "chrome/common/webui_url_constants.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

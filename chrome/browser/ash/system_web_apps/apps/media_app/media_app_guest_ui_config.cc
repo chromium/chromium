@@ -20,7 +20,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
@@ -34,6 +33,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 
 namespace {
 

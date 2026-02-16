@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/common/chrome_features.h",
   "+chrome/common/extensions",
   "+chrome/common/pref_names.h",
-  "+chrome/common/webui_url_constants.h",
 
   # Dependencies outside of //chrome:
   "+components/app_icon_loader/app_icon_loader.h",

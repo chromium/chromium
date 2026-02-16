@@ -33,7 +33,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/print_preview_cros",
   "+chrome/common/chrome_features.h",
   "+chrome/common/pref_names.h",
-  "+chrome/common/webui_url_constants.h",
   "+chrome/grit",
 ]
 

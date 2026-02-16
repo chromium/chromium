@@ -51,7 +51,6 @@ include_rules = [
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/common/pref_names.h",
-  "+chrome/common/webui_url_constants.h",
   "+chrome/test/base",
 
   "+mojo/core",

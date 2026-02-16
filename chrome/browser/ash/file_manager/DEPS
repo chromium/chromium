@@ -75,7 +75,6 @@ include_rules = [
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",
   "+chrome/common/pref_names.h",
-  "+chrome/common/webui_url_constants.h",
   "+chrome/grit",
   "+chrome/services/file_util/public/cpp",
   "+chrome/browser/sync/sync_service_factory.h",

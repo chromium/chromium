@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 
 namespace web_app {

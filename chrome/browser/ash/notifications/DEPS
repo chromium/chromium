@@ -30,7 +30,6 @@ include_rules = [
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/common/pref_names.h",
-  "+chrome/common/webui_url_constants.h",
   "+chrome/grit",
   "+chrome/test/base",
 

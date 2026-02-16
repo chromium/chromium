@@ -29,7 +29,6 @@ include_rules = [
   "+chrome/browser/ui/browser_tabstrip.h",
   "+chrome/browser/ui/extensions",
   "+chrome/common/chrome_features.h",
-  "+chrome/common/webui_url_constants.h",
   "+chrome/grit",
   "+chrome/test/base",
 ]
