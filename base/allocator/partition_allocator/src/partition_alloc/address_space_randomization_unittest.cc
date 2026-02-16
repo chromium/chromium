@@ -25,9 +25,7 @@ namespace {
 
 uintptr_t GetMask() {
   uintptr_t mask = internal::ASLRMask();
-#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
-#elif PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
-#if PA_BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(PA_ARCH_CPU_32_BITS) && PA_BUILDFLAG(IS_WIN)
   BOOL is_wow64 = FALSE;
   if (!IsWow64Process(GetCurrentProcess(), &is_wow64)) {
     is_wow64 = FALSE;
@@ -35,8 +33,7 @@ uintptr_t GetMask() {
   if (!is_wow64) {
     mask = 0;
   }
-#endif  // PA_BUILDFLAG(IS_WIN)
-#endif  // PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_32_BITS) && PA_BUILDFLAG(IS_WIN)
   return mask;
 }
 
