@@ -200,6 +200,11 @@ class ExtensionActionListMediator implements Destroyable {
             return;
         }
 
+        updateActionPropertiesForIndex(index, actionId, webContents);
+    }
+
+    private void updateActionPropertiesForIndex(
+            int index, String actionId, @Nullable WebContents webContents) {
         ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId);
         if (action == null) {
             return;
@@ -212,8 +217,11 @@ class ExtensionActionListMediator implements Destroyable {
     }
 
     private void updateActionPropertiesForAll() {
-        for (ListItem item : mModels) {
-            updateActionProperties(item.model.get(ExtensionActionButtonProperties.ID));
+        Tab currentTab = mCurrentTabSupplier.get();
+        WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
+
+        for (int i = 0; i < mModels.size(); i++) {
+            updateActionPropertiesForIndex(i, getActionIdForIndex(i), webContents);
         }
     }
 
