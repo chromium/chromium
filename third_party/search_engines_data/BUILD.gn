@@ -23,6 +23,7 @@ json_to_struct("regional_settings") {
   visibility = [
     "//components/regional_capabilities:*",
     "//components/search_engines:test_support",
+    "//components/search_engines:unit_tests",
   ]
 
   source = "resources/definitions/regional_settings.json"

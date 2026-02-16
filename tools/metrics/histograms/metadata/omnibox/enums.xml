@@ -345,6 +345,7 @@ chromium-metrics-reviews@google.com.
     global nor regional buckets returned a match. The data provided will be set
     without mixing in any prepopulated engine's data
   </int>
+  <int value="9" label="By prepopulate_id (migration)"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/search_engines/reconciling_template_url_data_holder.h:ReconciliationType) -->

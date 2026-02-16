@@ -161,6 +161,7 @@ source_set("search_engine_utils") {
     ":search_engine_type",
     "//components/google/core/common",
     "//components/regional_capabilities",
+    "//components/regional_capabilities:switches",
     "//third_party/search_engines_data:prepopulated_engines",
   ]
 
@@ -257,6 +258,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/search_engines_data:prepopulated_engines",
+    "//third_party/search_engines_data:regional_settings",
     "//ui/base",
     "//url",
   ]

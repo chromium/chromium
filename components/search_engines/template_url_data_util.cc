@@ -338,7 +338,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
       engine.image_search_branding_label ? engine.image_search_branding_label
                                          : std::u16string();
 
-  return std::make_unique<TemplateURLData>(
+  auto data = std::make_unique<TemplateURLData>(
       ToU16StringView(engine.name), ToU16StringView(engine.keyword),
       ToStringView(engine.search_url), ToStringView(engine.suggest_url),
       ToStringView(engine.image_url), ToStringView(engine.image_translate_url),
@@ -356,6 +356,8 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
       ToStringView(engine.preconnect_to_search_url) == "ALLOWED",
       ToStringView(engine.prefetch_likely_navigations) == "ALLOWED", engine.id,
       engine.regulatory_extensions);
+  data->migrate_to_id = engine.migrate_to_id;
+  return data;
 }
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(

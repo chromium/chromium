@@ -3700,6 +3700,7 @@ if (!is_android) {
       "../browser/search/instant_service_browsertest.cc",
       "../browser/search/ntp_custom_background_enabled_policy_handler_browsertest.cc",
       "../browser/search/search_engine_base_url_tracker_browsertest.cc",
+      "../browser/search_engines/prepopulated_engines_migration_browsertest.cc",
       "../browser/search_engines/template_url_scraper_browsertest.cc",
       "../browser/search_engines/template_url_service_browsertest.cc",
       "../browser/secure_origin_allowlist_browsertest.cc",

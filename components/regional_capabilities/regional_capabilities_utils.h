@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 
 class PrefService;
@@ -73,6 +74,12 @@ GetPrepopulatedEngines(country_codes::CountryId country_id,
 const base::span<const TemplateURLPrepopulateData::PrepopulatedEngine* const>
 GetAllPrepopulatedEngines();
 
+// Maps from the `id` of a new entry to the deprecated `PrepopulatedEngine` that
+// points to it.
+using MigratingEngines =
+    base::flat_map<int, const TemplateURLPrepopulateData::PrepopulatedEngine*>;
+const MigratingEngines& GetMigratingPrepopulatedEngines();
+
 // Returns all the prepopulated engines that are used in the EEA region.
 std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
 GetAllEeaRegionPrepopulatedEngines();
@@ -99,6 +106,7 @@ struct PrepopulatedEnginesOverride {
       regional_engines;
   std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
       all_engines;
+  MigratingEngines migrating_engines;
 };
 
 using ScopedPrepopulatedEnginesOverride =

@@ -17,6 +17,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/search_engines/keyword_web_data_service.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
@@ -47,6 +48,7 @@ TemplateURL* FindURLByPrepopulateID(
 enum class TemplateURLMergeOption {
   kDefault,
   kOverwriteUserEdits,
+  kSplitPrepopulatedEntry,
 };
 
 // Modifies `url_to_update` so that it contains user-modified fields from
@@ -106,6 +108,7 @@ void MergeEnginesFromPrepopulateData(
     std::vector<std::unique_ptr<TemplateURLData>>* prepopulated_urls,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     TemplateURL* default_search_provider,
+    const TemplateURLPrepopulateData::Resolver& template_url_data_resolver,
     std::set<std::string>* removed_keyword_guids);
 
 // Given the user's current URLs and the current set of prepopulated URLs,
@@ -117,7 +120,8 @@ void MergeEnginesFromPrepopulateData(
 ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
     std::vector<std::unique_ptr<TemplateURLData>>* prepopulated_urls,
     const TemplateURLService::OwnedTemplateURLVector& existing_urls,
-    const TemplateURL* default_search_provider);
+    const TemplateURL* default_search_provider,
+    const TemplateURLPrepopulateData::Resolver& template_url_data_resolver);
 
 // MergeEnginesFromStarterPackData merges search engines from the built-in
 // `template_url_starter_pack_data` class into `template_urls`. Calls

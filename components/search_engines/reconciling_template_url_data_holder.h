@@ -50,8 +50,9 @@ class ReconcilingTemplateURLDataHolder {
     kByIdFromAllEngines = 6,
     kByIdFromRegionalEngines = 7,
     kByIdFallthrough = 8,
+    kByMigrateToId = 9,
 
-    kMaxValue = kByIdFallthrough
+    kMaxValue = kByMigrateToId
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:ReconciliationType)
 

@@ -36,6 +36,7 @@ GetReconciliationVariant(
     case ReconciliationType::kByIdFromAllEngines:
     case ReconciliationType::kByIdFromRegionalEngines:
     case ReconciliationType::kByIdFallthrough:
+    case ReconciliationType::kByMigrateToId:
       return ReconciliationVariant::kByID;
 
     case ReconciliationType::kNone:
@@ -152,6 +153,13 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
       engine_iter != prepopulated_urls.end()) {
     return {std::move(*engine_iter),
             ReconciliationType::kByIdFromRegionalEngines};
+  }
+
+  // Search for potential migrations
+  if (std::unique_ptr<TemplateURLData> engine =
+          prepopulate_data_resolver_->TryGetMigratedEngine(data_to_match);
+      engine != nullptr) {
+    return {std::move(engine), ReconciliationType::kByMigrateToId};
   }
 
   // Search the entire search engine database to find matching entry.

@@ -80,6 +80,7 @@ source_set("country_id") {
 source_set("switches") {
   visibility = [
     ":*",
+    "//components/search_engines:search_engine_utils",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:eg2_tests",
     "//ios/chrome/browser/metrics/model:unit_tests",

@@ -30,6 +30,7 @@
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engine_type.h"
+#include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/search_engines_test_util.h"
@@ -48,6 +49,12 @@ using ::base::ASCIIToUTF16;
 using ::country_codes::CountryId;
 using ::TemplateURLPrepopulateData::BuiltinKeywordsMetadata;
 using ::TemplateURLPrepopulateData::kCurrentDataVersion;
+
+using ::TemplateURLPrepopulateData::bing;
+using ::TemplateURLPrepopulateData::duckduckgo;
+using ::TemplateURLPrepopulateData::ecosia;
+using ::TemplateURLPrepopulateData::PrepopulatedEngine;
+using ::TemplateURLPrepopulateData::yahoo;
 
 namespace TemplateURLPrepopulateData {
 bool operator==(const BuiltinKeywordsMetadata& lhs,
@@ -544,12 +551,97 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeAdvanced) {
   EXPECT_EQ(TemplateURLPrepopulateData::google.type, GetEngineType(foo_url));
 }
 
+TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeForAlternateURLs) {
+  // Non-sensical type, selected as it should not match any other engine.
+  SearchEngineType arbitrary_type = SEARCH_ENGINE_STARTER_PACK_BOOKMARKS;
+
+  const char* const alternate_urls[] = {
+      "https://chrome.com/search?foo=bar&q={searchTerms}",
+  };
+
+  PrepopulatedEngine fake_engine = {
+      .name = u"Chromium Search",
+      .keyword = u"chromium",
+      .search_url = "https://search.chromium.org?foo=bar&q={searchTerms}",
+      .type = arbitrary_type,
+      .id = 2424,
+  };
+
+  PrepopulatedEngine fake_engine_with_alternate_urls = {
+      .name = fake_engine.name,
+      .keyword = fake_engine.keyword,
+      .search_url = fake_engine.search_url,
+      .alternate_urls = alternate_urls,
+      .type = fake_engine.type,
+      .id = fake_engine.id,
+  };
+  {
+    auto scoped_override =
+        regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+            /* regional_engines= */ {&TemplateURLPrepopulateData::google},
+            /* other_known_engines= */ {&fake_engine});
+
+    EXPECT_EQ(SEARCH_ENGINE_OTHER, GetEngineType("https://chrome.com/search"));
+  }
+
+  {
+    auto scoped_override =
+        regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+            /* regional_engines= */ {&TemplateURLPrepopulateData::google},
+            /* other_known_engines= */ {&fake_engine_with_alternate_urls});
+
+    EXPECT_EQ(arbitrary_type, GetEngineType("https://chrome.com/search"));
+  }
+}
+
 TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeForAllPrepopulatedEngines) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kPrepopulatedEnginesMigration);
+
   using PrepopulatedEngine = TemplateURLPrepopulateData::PrepopulatedEngine;
   const auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
   for (const PrepopulatedEngine* engine : all_engines) {
     std::unique_ptr<TemplateURLData> data =
         TemplateURLDataFromPrepopulatedEngine(*engine);
+
+    if (engine == &TemplateURLPrepopulateData::yahoo_jp &&
+        engine->migrate_to_id != 0) {
+      // This is checking the deprecated version of Yahoo, for which we would be
+      // using the post-migration SearchEngineType.
+      // TODO(crbug.com/446637115): Remove the redundant `migrate_to_id` check
+      // when the updated data rolls out.
+      EXPECT_EQ(SEARCH_ENGINE_YAHOO_JP,
+                TemplateURL(*data).GetEngineType(SearchTermsData()));
+      return;
+    }
+
+    EXPECT_EQ(engine->type,
+              TemplateURL(*data).GetEngineType(SearchTermsData()));
+  }
+}
+
+TEST_F(TemplateURLPrepopulateDataTest,
+       GetEngineTypeForAllPrepopulatedEngines_MigrationDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kPrepopulatedEnginesMigration);
+
+  using PrepopulatedEngine = TemplateURLPrepopulateData::PrepopulatedEngine;
+  const auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
+  for (const PrepopulatedEngine* engine : all_engines) {
+    std::unique_ptr<TemplateURLData> data =
+        TemplateURLDataFromPrepopulatedEngine(*engine);
+
+    if (engine->type == SEARCH_ENGINE_YAHOO_JP &&
+        engine != &TemplateURLPrepopulateData::yahoo_jp) {
+      // This is checking the post-migration version of Yahoo, but as migration
+      // is disabled, the returned SearchEngineType would be the old one.
+      // TODO(crbug.com/446637115): Update the test with the exact engine when
+      // the updated data rolls out.
+      EXPECT_EQ(SEARCH_ENGINE_YAHOO,
+                TemplateURL(*data).GetEngineType(SearchTermsData()));
+      return;
+    }
+
     EXPECT_EQ(engine->type,
               TemplateURL(*data).GetEngineType(SearchTermsData()));
   }
@@ -688,6 +780,254 @@ TEST_F(TemplateURLPrepopulateDataTest, GetLocalPrepopulatedEngines) {
               testing::IsEmpty());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+class TemplateURLPrepopulateDataMigrationTest
+    : public TemplateURLPrepopulateDataTest {
+  using PrepopulatedEngine = TemplateURLPrepopulateData::PrepopulatedEngine;
+
+ protected:
+  // Using non-sensical types for testing.
+  SearchEngineType legacy_type = SEARCH_ENGINE_STARTER_PACK_BOOKMARKS;
+  SearchEngineType new_type = SEARCH_ENGINE_STARTER_PACK_HISTORY;
+
+  const PrepopulatedEngine fake_engine = {
+      .name = u"Chromium Search",
+      .keyword = u"chromium",
+      .search_url = "https://search.chromium.org?foo=bar&q={searchTerms}",
+      .type = legacy_type,
+      .id = 2424,
+  };
+
+  const PrepopulatedEngine fake_engine_new = {
+      .name = fake_engine.name,
+      .keyword = fake_engine.keyword,
+      .search_url = fake_engine.search_url,
+      .type = new_type,
+      .id = 4242,
+  };
+
+  const PrepopulatedEngine fake_engine_deprecated = {
+      .name = fake_engine.name,
+      .keyword = fake_engine.keyword,
+      .search_url = fake_engine.search_url,
+      .type = fake_engine.type,
+      .id = fake_engine.id,
+      .migrate_to_id = fake_engine_new.id,
+  };
+
+  std::vector<const PrepopulatedEngine*> sample_regional_engines = {
+      &TemplateURLPrepopulateData::google,
+      &duckduckgo,
+      &fake_engine,
+  };
+
+  std::vector<const PrepopulatedEngine*> no_other_known_engines;
+
+  std::vector<const PrepopulatedEngine*>
+      sample_regional_engines_with_migration = {
+          &TemplateURLPrepopulateData::google,
+          &duckduckgo,
+          &fake_engine_new,
+      };
+
+  std::vector<const PrepopulatedEngine*> other_known_engines_with_migration = {
+      &fake_engine_deprecated,
+  };
+
+  std::unique_ptr<TemplateURLData> legacy_data =
+      TemplateURLDataFromPrepopulatedEngine(fake_engine);
+  std::unique_ptr<TemplateURLData> deprecated_data =
+      TemplateURLDataFromPrepopulatedEngine(fake_engine_deprecated);
+  std::unique_ptr<TemplateURLData> new_data =
+      TemplateURLDataFromPrepopulatedEngine(fake_engine_new);
+};
+
+TEST_F(TemplateURLPrepopulateDataMigrationTest, TryGetMigratedEngine_Matches) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kPrepopulatedEnginesMigration);
+
+  TemplateURLData checked_engine_data;
+  checked_engine_data.prepopulate_id = fake_engine.id;
+  checked_engine_data.SetURL(fake_engine.search_url);
+
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          sample_regional_engines_with_migration,
+          other_known_engines_with_migration);
+
+  std::unique_ptr<TemplateURLData> new_engine =
+      prepopulate_data_resolver().TryGetMigratedEngine(checked_engine_data);
+  EXPECT_EQ(new_engine->prepopulate_id, fake_engine_new.id);
+  EXPECT_EQ(new_engine->url(), fake_engine_new.search_url);
+}
+
+TEST_F(TemplateURLPrepopulateDataMigrationTest,
+       TryGetMigratedEngine_DoesNotMatchWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kPrepopulatedEnginesMigration);
+
+  TemplateURLData checked_engine_data;
+  checked_engine_data.prepopulate_id = fake_engine.id;
+  checked_engine_data.SetURL(fake_engine.search_url);
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          sample_regional_engines_with_migration,
+          other_known_engines_with_migration);
+
+  std::unique_ptr<TemplateURLData> new_engine =
+      prepopulate_data_resolver().TryGetMigratedEngine(checked_engine_data);
+  EXPECT_EQ(new_engine, nullptr);
+}
+
+TEST_F(TemplateURLPrepopulateDataMigrationTest,
+       TryGetMigratedEngine_DoesNotMatchWithOldData) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kPrepopulatedEnginesMigration);
+
+  TemplateURLData checked_engine_data;
+  checked_engine_data.prepopulate_id = fake_engine.id;
+  checked_engine_data.SetURL(fake_engine.search_url);
+
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          sample_regional_engines, no_other_known_engines);
+
+  std::unique_ptr<TemplateURLData> new_engine =
+      prepopulate_data_resolver().TryGetMigratedEngine(checked_engine_data);
+  EXPECT_EQ(new_engine, nullptr);
+}
+
+TEST_F(TemplateURLPrepopulateDataMigrationTest,
+       TryGetMigratedEngine_DoesNotMatchDifferentURL) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kPrepopulatedEnginesMigration);
+
+  TemplateURLData checked_engine_data;
+  checked_engine_data.prepopulate_id = fake_engine.id;
+  checked_engine_data.SetURL(
+      "https://issues.chromium.org?foo=baz&q={searchTerms}");
+
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          sample_regional_engines_with_migration,
+          other_known_engines_with_migration);
+
+  std::unique_ptr<TemplateURLData> new_engine =
+      prepopulate_data_resolver().TryGetMigratedEngine(checked_engine_data);
+  EXPECT_EQ(new_engine, nullptr);
+}
+
+TEST_F(TemplateURLPrepopulateDataMigrationTest,
+       GetEngineTypeForMigratingEngine_PreMigration) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kPrepopulatedEnginesMigration);
+
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          {&TemplateURLPrepopulateData::google, &fake_engine},
+          /* other_known_engines= */ {});
+
+  EXPECT_EQ(legacy_type,
+            TemplateURL(*legacy_data).GetEngineType(SearchTermsData()));
+  EXPECT_EQ(legacy_type,
+            TemplateURL(*deprecated_data).GetEngineType(SearchTermsData()));
+  EXPECT_EQ(legacy_type,
+            TemplateURL(*new_data).GetEngineType(SearchTermsData()));
+}
+
+TEST_F(TemplateURLPrepopulateDataMigrationTest,
+       GetEngineTypeForMigratingEngine_PostMigration) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kPrepopulatedEnginesMigration);
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          {&TemplateURLPrepopulateData::google, &fake_engine_deprecated},
+          {&fake_engine_new});
+
+  EXPECT_EQ(new_type,
+            TemplateURL(*legacy_data).GetEngineType(SearchTermsData()));
+  EXPECT_EQ(new_type,
+            TemplateURL(*deprecated_data).GetEngineType(SearchTermsData()));
+  EXPECT_EQ(new_type, TemplateURL(*new_data).GetEngineType(SearchTermsData()));
+}
+
+TEST_F(TemplateURLPrepopulateDataMigrationTest,
+       GetEngineTypeForMigratingEngine_PostRollout) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kPrepopulatedEnginesMigration);
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          {&TemplateURLPrepopulateData::google, &fake_engine_new},
+          {&fake_engine_deprecated});
+
+  // Even if `fake_engine_deprecated` gets picked up, we follow the
+  // `migrate_to_id` to ensure a stable type is returned.
+
+  EXPECT_EQ(new_type,
+            TemplateURL(*legacy_data).GetEngineType(SearchTermsData()));
+  EXPECT_EQ(new_type,
+            TemplateURL(*deprecated_data).GetEngineType(SearchTermsData()));
+  EXPECT_EQ(new_type, TemplateURL(*new_data).GetEngineType(SearchTermsData()));
+}
+
+TEST_F(TemplateURLPrepopulateDataMigrationTest,
+       GetEngineTypeForMigratingEngine_PreMigrationFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kPrepopulatedEnginesMigration);
+
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          {&TemplateURLPrepopulateData::google, &fake_engine},
+          /* other_known_engines= */ {});
+
+  // Only one version of the engine, so only one type gets reliably returned.
+
+  EXPECT_EQ(legacy_type,
+            TemplateURL(*legacy_data).GetEngineType(SearchTermsData()));
+  EXPECT_EQ(legacy_type,
+            TemplateURL(*deprecated_data).GetEngineType(SearchTermsData()));
+  EXPECT_EQ(legacy_type,
+            TemplateURL(*new_data).GetEngineType(SearchTermsData()));
+}
+
+TEST_F(TemplateURLPrepopulateDataMigrationTest,
+       GetEngineTypeForMigratingEngine_PostMigrationFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kPrepopulatedEnginesMigration);
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          {&TemplateURLPrepopulateData::google, &fake_engine_deprecated},
+          {&fake_engine_new});
+
+  // Whichever one happens to be listed first in `GetAllPrepopulatedEngines()`
+  // (here `fake_engine_new`) has its type applied everywhere.
+
+  EXPECT_EQ(new_type,
+            TemplateURL(*legacy_data).GetEngineType(SearchTermsData()));
+  EXPECT_EQ(new_type,
+            TemplateURL(*deprecated_data).GetEngineType(SearchTermsData()));
+  EXPECT_EQ(new_type, TemplateURL(*new_data).GetEngineType(SearchTermsData()));
+}
+
+TEST_F(TemplateURLPrepopulateDataMigrationTest,
+       GetEngineTypeForMigratingEngine_PostRolloutFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kPrepopulatedEnginesMigration);
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          {&TemplateURLPrepopulateData::google, &fake_engine_new},
+          {&fake_engine_deprecated});
+
+  // Whichever one happens to be listed first in `GetAllPrepopulatedEngines()`
+  // (here `fake_engine_deprecated`) has its type applied everywhere.
+
+  EXPECT_EQ(legacy_type,
+            TemplateURL(*legacy_data).GetEngineType(SearchTermsData()));
+  EXPECT_EQ(legacy_type,
+            TemplateURL(*deprecated_data).GetEngineType(SearchTermsData()));
+  EXPECT_EQ(legacy_type,
+            TemplateURL(*new_data).GetEngineType(SearchTermsData()));
+}
 
 struct UpdateRequirementsTestParams {
   std::string test_case_name;

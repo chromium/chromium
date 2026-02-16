@@ -22,6 +22,8 @@ class RegionalCapabilitiesService;
 
 namespace TemplateURLPrepopulateData {
 
+struct PrepopulatedEngine;
+
 // Provides context on TemplateURLPrepopulateData's data set.
 struct BuiltinKeywordsMetadata {
   // Country for which we are selecting the built-in prepopulate data.
@@ -74,6 +76,22 @@ class Resolver : public KeyedService {
   // providing country and data version info about the data to be merged in.
   std::optional<BuiltinKeywordsMetadata> ComputeDatabaseUpdateRequirements(
       const WDKeywordsResult::Metadata& keywords_database_metadata) const;
+
+  // Returns whether `deprecated_engine`'s migration instruction can be applied
+  // to `checked_data`. This needs to be checked to ensure that we are not
+  // incorrectly migrating custom or variant engine definitions.
+  bool MatchesEngineUnderMigration(
+      const TemplateURLData& checked_data,
+      const PrepopulatedEngine* deprecated_engine) const;
+
+  // Searches the prepopulated engines for the newest representation of an
+  // engine under migration that could match `pre_migration_engine`.
+  // The returned `TemplateURLData` is the prepopulated data (see
+  // `GetPrepopulatedEngine(int)`) representing the new version of the engine
+  // that the prepopulated representation of `pre_migration_engine` points to
+  // through `PrepopulatedEngine::migrate_to_id`.
+  std::unique_ptr<TemplateURLData> TryGetMigratedEngine(
+      const TemplateURLData& pre_migration_engine) const;
 
  private:
   raw_ref<PrefService> profile_prefs_;

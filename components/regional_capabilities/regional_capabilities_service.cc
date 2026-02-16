@@ -41,6 +41,7 @@
 #endif
 
 using ::country_codes::CountryId;
+using ::TemplateURLPrepopulateData::PrepopulatedEngine;
 
 namespace regional_capabilities {
 namespace {
@@ -306,6 +307,27 @@ CountryId CountryOverrideToCountryId(
                     country_override);
 }
 
+// Updates in place the `engines` vector to replace deprecated entries with the
+// post-migration ones. No-op if the migration feature is disabled.
+void ApplyPrepopulatedEnginesMigration(
+    std::vector<const PrepopulatedEngine*>& engines) {
+  if (!base::FeatureList::IsEnabled(switches::kPrepopulatedEnginesMigration)) {
+    return;
+  }
+
+  // Check whether some of the entries in this regional list are deprecated
+  // and need to be swapped out with another designated prepopulated engine.
+  auto all_engines = GetAllPrepopulatedEngines();
+  for (auto& engine : engines) {
+    if (engine->migrate_to_id != 0) {
+      auto new_engine_iter = std::ranges::find(
+          all_engines, engine->migrate_to_id, &PrepopulatedEngine::id);
+      CHECK(new_engine_iter != all_engines.end());
+      engine = *new_engine_iter;
+    }
+  }
+}
+
 }  // namespace
 
 RegionalCapabilitiesService::RegionalCapabilitiesService(
@@ -322,27 +344,35 @@ RegionalCapabilitiesService::~RegionalCapabilitiesService() {
 #endif
 }
 
-std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+std::vector<const PrepopulatedEngine*>
 RegionalCapabilitiesService::GetRegionalPrepopulatedEngines() {
+  std::vector<const PrepopulatedEngine*> engines;
+
   if (HasSearchEngineCountryListOverride()) {
     auto country_override = std::get<SearchEngineCountryListOverride>(
         GetSearchEngineCountryOverride().value());
-
     switch (country_override) {
       case SearchEngineCountryListOverride::kEeaAll:
-        return GetAllEeaRegionPrepopulatedEngines();
+        engines = GetAllEeaRegionPrepopulatedEngines();
+        break;
       case SearchEngineCountryListOverride::kEeaDefault:
-        return GetDefaultPrepopulatedEngines();
+        engines = GetDefaultPrepopulatedEngines();
+        break;
       case SearchEngineCountryListOverride::kTestOverride:
-        return GetPrepopulatedEnginesOverrideForTesting()  // IN-TEST
-            .regional_engines;
+        engines = GetPrepopulatedEnginesOverrideForTesting()  // IN-TEST
+                      .regional_engines;
+        break;
     }
-    NOTREACHED();
+    CHECK(!engines.empty());
+  } else {
+    engines = GetPrepopulatedEngines(
+        GetCountryIdInternal(), profile_prefs_.get(),
+        GetActiveProgramSettings().search_engine_list_type);
   }
 
-  return GetPrepopulatedEngines(
-      GetCountryIdInternal(), profile_prefs_.get(),
-      GetActiveProgramSettings().search_engine_list_type);
+  ApplyPrepopulatedEnginesMigration(engines);
+
+  return engines;
 }
 
 bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion() {

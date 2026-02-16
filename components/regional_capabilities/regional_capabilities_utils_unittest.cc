@@ -48,16 +48,16 @@ TEST(RegionalCapabilitiesUtilsTest, GetAllPrepopulatedEngines_Overridden) {
   EXPECT_EQ(regional_capabilities::GetAllPrepopulatedEngines().size(),
             sample_regional_engines.size() + other_known_engines.size());
 
-  for (size_t i = 0; i < sample_regional_engines.size(); i++) {
+  for (size_t i = 0; i < other_known_engines.size(); i++) {
     EXPECT_EQ(regional_capabilities::GetAllPrepopulatedEngines()[i],
-              sample_regional_engines[i]);
+              other_known_engines[i]);
   }
 
-  for (size_t i = 0; i < other_known_engines.size(); i++) {
-    int aggregated_index = sample_regional_engines.size() + i;
+  for (size_t i = 0; i < sample_regional_engines.size(); i++) {
+    int aggregated_index = other_known_engines.size() + i;
     EXPECT_EQ(
         regional_capabilities::GetAllPrepopulatedEngines()[aggregated_index],
-        other_known_engines[i]);
+        sample_regional_engines[i]);
   }
 }
 

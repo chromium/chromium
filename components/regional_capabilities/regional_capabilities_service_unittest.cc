@@ -27,11 +27,13 @@
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "regional_capabilities_country_id.h"
 #include "regional_capabilities_metrics.h"
 #include "regional_capabilities_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/device_form_factor.h"
 
 namespace regional_capabilities {
@@ -1154,6 +1156,55 @@ TEST_F(RegionalCapabilitiesServiceTest, IsInSearchEngineChoiceScreenRegion) {
       CountryId("US")));
   EXPECT_FALSE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
       CountryId()));
+}
+
+TEST_F(RegionalCapabilitiesServiceTest,
+       GetRegionalPrepopulatedEngines_AppliesMigrations) {
+  using ::TemplateURLPrepopulateData::google;
+  using ::TemplateURLPrepopulateData::PrepopulatedEngine;
+
+  const PrepopulatedEngine made_up_engine = {
+      .name = u"Chromium Search",
+      .keyword = u"chromium",
+      .search_url = "https://search.chromium.org?foo=bar&q={searchTerms}",
+      .id = 2424,
+      .migrate_to_id = 4242,
+  };
+
+  const PrepopulatedEngine made_up_engine_next = {
+      .name = made_up_engine.name,
+      .keyword = made_up_engine.keyword,
+      .search_url = made_up_engine.search_url,
+      .id = 4242,
+  };
+
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          {&google, &made_up_engine}, {&made_up_engine_next});
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(switches::kPrepopulatedEnginesMigration);
+
+    std::unique_ptr<RegionalCapabilitiesService> service = InitService();
+    auto actual_prepopulated_engines =
+        service->GetRegionalPrepopulatedEngines();
+
+    ASSERT_EQ(actual_prepopulated_engines.size(), 2u);
+    EXPECT_EQ(actual_prepopulated_engines[1], &made_up_engine);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list{
+        switches::kPrepopulatedEnginesMigration};
+
+    std::unique_ptr<RegionalCapabilitiesService> service = InitService();
+    auto actual_prepopulated_engines =
+        service->GetRegionalPrepopulatedEngines();
+
+    ASSERT_EQ(actual_prepopulated_engines.size(), 2u);
+    EXPECT_EQ(actual_prepopulated_engines[1], &made_up_engine_next);
+  }
 }
 
 }  // namespace

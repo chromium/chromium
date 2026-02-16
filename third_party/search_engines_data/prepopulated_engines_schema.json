@@ -127,6 +127,14 @@
     // See prepopulated_engines.json for the list of available IDs.
     { "field": "id", "type": "int" },
 
+    // Field indicating that this entry's `id` (`TemplateURL::prepopulate_id`)
+    // has changed, and the value of the field is the old `id` of the entry.
+    // This will be used when reconciling this prepopulated data with the data
+    // persisted by the client locally or in the account.
+    //
+    // The same restrictions apply here as for the `id` field.
+    { "field": "migrate_to_id", "type": "int", "optional": true, "default": 0 },
+
     // Regulatory specific extensions associated with this search engine.
     // Used to expand the {regulatory_extensions} keyword with parameters
     // appropriate for the regulatory program that triggered instantiation of

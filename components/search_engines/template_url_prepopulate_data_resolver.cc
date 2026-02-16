@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
@@ -114,6 +115,52 @@ Resolver::ComputeDatabaseUpdateRequirements(
   }
 
   return std::nullopt;
+}
+
+bool Resolver::MatchesEngineUnderMigration(
+    const TemplateURLData& checked_data,
+    const PrepopulatedEngine* deprecated_engine) const {
+  CHECK(deprecated_engine->migrate_to_id != 0, base::NotFatalUntil::M149);
+
+  if (checked_data.prepopulate_id != deprecated_engine->id) {
+    return false;
+  }
+
+  // Don't only check the IDs, also check the URLs. The prepopulated
+  // engines data defines multiple entries sharing the same `preopulate_id`,
+  // but only adds one version to regional engines sets. Checking the URL
+  // ensures that the engine being migrated corresponds to the expected
+  // regional version.
+  return checked_data.url() == deprecated_engine->search_url;
+}
+
+std::unique_ptr<TemplateURLData> Resolver::TryGetMigratedEngine(
+    const TemplateURLData& pre_migration_engine) const {
+  if (!base::FeatureList::IsEnabled(switches::kPrepopulatedEnginesMigration)) {
+    return {};
+  }
+
+  if (pre_migration_engine.prepopulate_id == 0) {
+    // Should only be requested for prepopulated engines.
+    NOTREACHED(base::NotFatalUntil::M149);
+    return {};
+  }
+
+  const auto& migrating_engines =
+      regional_capabilities::GetMigratingPrepopulatedEngines();
+  for (const auto& [new_engine_id, deprecated_engine] : migrating_engines) {
+    if (MatchesEngineUnderMigration(pre_migration_engine, deprecated_engine)) {
+      auto new_engine = GetPrepopulatedEngine(new_engine_id);
+
+      // By design there should be an entry for this ID, see
+      // `regional_capabilities::ComputeMigratedEnginesMapping`.
+      CHECK(new_engine);
+
+      return new_engine;
+    }
+  }
+
+  return {};
 }
 
 }  // namespace TemplateURLPrepopulateData
