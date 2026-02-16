@@ -12,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/command_observer.h"
+#include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
@@ -63,7 +65,11 @@ class PerformanceInterventionButton;
 
 namespace views {
 class FlexLayout;
-}
+}  // namespace views
+
+namespace glic {
+class ToolbarGlicButton;
+}  // namespace glic
 
 // The Browser Window's toolbar.
 class ToolbarView : public views::AccessiblePaneView,
@@ -73,7 +79,8 @@ class ToolbarView : public views::AccessiblePaneView,
                     public CommandObserver,
                     public AppMenuIconController::Delegate,
                     public ToolbarButtonProvider,
-                    public BrowserRootView::DropTarget {
+                    public BrowserRootView::DropTarget,
+                    public glic::GlicButtonControllerDelegate {
   METADATA_HEADER(ToolbarView, views::AccessiblePaneView)
 
  public:
@@ -261,6 +268,10 @@ class ToolbarView : public views::AccessiblePaneView,
       gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;
 
+  // GlicButtonControllerDelegate:
+  void SetGlicShowState(bool show) override;
+  void SetGlicPanelIsOpen(bool open) override;
+
   // Changes the visibility of the Chrome Labs entry point based on prefs.
   void OnChromeLabsPrefChanged();
 
@@ -274,6 +285,20 @@ class ToolbarView : public views::AccessiblePaneView,
   void OnTouchUiChanged();
 
   void NewTabButtonPressed(const ui::Event& event);
+
+  void OnVerticalTabStripModeChanged(
+      tabs::VerticalTabStripStateController* controller);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  std::unique_ptr<glic::ToolbarGlicButton> CreateGlicButton();
+  void OnGlicButtonClicked();
+  void OnGlicButtonDismissed();
+  void OnGlicButtonHovered();
+  void OnGlicButtonMouseDown();
+  void OnGlicButtonAnimationEnded();
+  void ExecuteHideToolbarNudge(glic::ToolbarGlicButton* button);
+  void UpdateGlicButtonVisibility();
+#endif
 
   gfx::SlideAnimation size_animation_{this};
 
@@ -301,6 +326,8 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<BrowserAppMenuButton> app_menu_button_ = nullptr;
   raw_ptr<views::View> new_tab_button_ = nullptr;
   raw_ptr<PinnedActionToolbarButton> tab_search_button_ = nullptr;
+
+  raw_ptr<glic::ToolbarGlicButton> glic_button_ = nullptr;
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<BrowserView> browser_view_;
@@ -335,6 +362,12 @@ class ToolbarView : public views::AccessiblePaneView,
   // due to small toolbar view width. Visibility controlled by
   // `toolbar_controller_`.
   raw_ptr<OverflowButton> overflow_button_ = nullptr;
+
+  // Subscription for when tab strip mode changes
+  base::CallbackListSubscription vertical_tab_subscription_;
+
+  bool should_display_vertical_tabs_ = false;
+  bool should_show_glic_button_ = false;
 };
 
 extern const ui::ClassProperty<bool>* const kActionItemUnderlineIndicatorKey;

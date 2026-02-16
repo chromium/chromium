@@ -180,7 +180,8 @@ class GlicButtonControllerTest : public testing::Test {
 
     glic_button_controller_ = std::make_unique<GlicButtonController>(
         profile_, *mock_browser_window_interface_,
-        &mock_glic_controller_delegate_, mock_glic_service_.get());
+        &mock_tab_strip_glic_controller_delegate_,
+        &mock_toolbar_glic_controller_delegate_, mock_glic_service_.get());
 
     glic_test_env_.SetupProfile(profile());
 
@@ -209,8 +210,12 @@ class GlicButtonControllerTest : public testing::Test {
 
   GlicButtonController* controller() { return glic_button_controller_.get(); }
 
-  MockGlicButtonControllerDelegate* controller_delegate() {
-    return &mock_glic_controller_delegate_;
+  MockGlicButtonControllerDelegate* tab_strip_controller_delegate() {
+    return &mock_tab_strip_glic_controller_delegate_;
+  }
+
+  MockGlicButtonControllerDelegate* toolbar_controller_delegate() {
+    return &mock_toolbar_glic_controller_delegate_;
   }
 
   Profile* profile() { return profile_; }
@@ -236,7 +241,8 @@ class GlicButtonControllerTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_environment;
 
   GlicProfileManager glic_profile_manager_;
-  MockGlicButtonControllerDelegate mock_glic_controller_delegate_;
+  MockGlicButtonControllerDelegate mock_tab_strip_glic_controller_delegate_;
+  MockGlicButtonControllerDelegate mock_toolbar_glic_controller_delegate_;
   std::unique_ptr<actor::ActorKeyedServiceFake> actor_keyed_service_;
   std::unique_ptr<MockGlicKeyedService> mock_glic_service_;
   std::unique_ptr<GlicButtonController> glic_button_controller_;
@@ -252,48 +258,60 @@ TEST_F(GlicButtonControllerTest, GlicSettings) {
       ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
-  EXPECT_TRUE(controller_delegate()->show_state());
+  EXPECT_TRUE(tab_strip_controller_delegate()->show_state());
+  EXPECT_TRUE(toolbar_controller_delegate()->show_state());
 
   prefs->SetInteger(
       ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
-  EXPECT_FALSE(controller_delegate()->show_state());
+  EXPECT_FALSE(tab_strip_controller_delegate()->show_state());
+  EXPECT_FALSE(toolbar_controller_delegate()->show_state());
 
   prefs->SetInteger(
       ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
-  EXPECT_FALSE(controller_delegate()->show_state());
+  EXPECT_FALSE(tab_strip_controller_delegate()->show_state());
+  EXPECT_FALSE(toolbar_controller_delegate()->show_state());
 
   prefs->SetInteger(
       ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
-  EXPECT_FALSE(controller_delegate()->show_state());
+  EXPECT_FALSE(tab_strip_controller_delegate()->show_state());
+  EXPECT_FALSE(toolbar_controller_delegate()->show_state());
 }
 
 TEST_F(GlicButtonControllerTest, PanelStateChangedSameBrowser) {
-  EXPECT_TRUE(controller_delegate()->show_state());
-  EXPECT_FALSE(controller_delegate()->panel_open());
+  EXPECT_TRUE(tab_strip_controller_delegate()->show_state());
+  EXPECT_TRUE(toolbar_controller_delegate()->show_state());
+  EXPECT_FALSE(tab_strip_controller_delegate()->panel_open());
+  EXPECT_FALSE(toolbar_controller_delegate()->panel_open());
 
   glic_keyed_service()->SimulatePanelShownForBrowser(
       browser_window_interface());
-  EXPECT_TRUE(controller_delegate()->panel_open());
+  EXPECT_TRUE(tab_strip_controller_delegate()->panel_open());
+  EXPECT_TRUE(toolbar_controller_delegate()->panel_open());
 
   glic_keyed_service()->SimulatePanelShownForBrowser(nullptr);
-  EXPECT_FALSE(controller_delegate()->panel_open());
+  EXPECT_FALSE(tab_strip_controller_delegate()->panel_open());
+  EXPECT_FALSE(toolbar_controller_delegate()->panel_open());
 }
 
 TEST_F(GlicButtonControllerTest, FREStateChanged) {
-  EXPECT_TRUE(controller_delegate()->show_state());
-  EXPECT_FALSE(controller_delegate()->panel_open());
+  EXPECT_TRUE(tab_strip_controller_delegate()->show_state());
+  EXPECT_TRUE(toolbar_controller_delegate()->show_state());
+  EXPECT_FALSE(tab_strip_controller_delegate()->panel_open());
+  EXPECT_FALSE(toolbar_controller_delegate()->panel_open());
 
   glic_keyed_service()->SimulateFREShown(true);
-  EXPECT_TRUE(controller_delegate()->panel_open());
+  EXPECT_TRUE(tab_strip_controller_delegate()->panel_open());
+  EXPECT_TRUE(toolbar_controller_delegate()->panel_open());
 
   glic_keyed_service()->SimulateFREShown(false);
-  EXPECT_FALSE(controller_delegate()->panel_open());
+  EXPECT_FALSE(tab_strip_controller_delegate()->panel_open());
+  EXPECT_FALSE(toolbar_controller_delegate()->panel_open());
 }
 
 }  // namespace glic
