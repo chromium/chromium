@@ -289,14 +289,14 @@ class ExtensionActionListMediator implements Destroyable {
             return;
         }
 
-        ExtensionActionContextMenuBridge bridge =
-                new ExtensionActionContextMenuBridge(
-                        mTask, mProfile, actionId, webContents, ContextMenuSource.TOOLBAR_ACTION);
-
         ListMenuButton buttonView = (ListMenuButton) getButtonViewForId(actionId);
         if (buttonView == null) {
             return;
         }
+
+        ExtensionActionContextMenuBridge bridge =
+                new ExtensionActionContextMenuBridge(
+                        mTask, mProfile, actionId, webContents, ContextMenuSource.TOOLBAR_ACTION);
 
         ExtensionActionContextMenuUtils.showContextMenu(
                 mContext, buttonView, bridge, MenuBuilderHelper.getRectProvider(buttonView), null);
