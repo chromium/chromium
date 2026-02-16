@@ -570,7 +570,13 @@ class ProfileManager : public Profile::Delegate {
 
   // Destroy after |profile_attributes_storage_| since Profile destruction may
   // trigger some observers to unregister themselves.
-  base::ObserverList<ProfileManagerObserver, /*check_empty=*/true> observers_;
+  // TODO(crbug.com/483557280, crbug.com/483559736): The observer is currently
+  // rentrant. Investigate if reentrancy can be reduced or removed.
+  base::ObserverList<
+      ProfileManagerObserver,
+      /*check_empty=*/true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   // Object to cache various information about profiles. Contains information
   // about every profile which has been created for this instance of Chrome,
