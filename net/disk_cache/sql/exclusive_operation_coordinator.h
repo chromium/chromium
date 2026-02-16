@@ -5,6 +5,7 @@
 #ifndef NET_DISK_CACHE_SQL_EXCLUSIVE_OPERATION_COORDINATOR_H_
 #define NET_DISK_CACHE_SQL_EXCLUSIVE_OPERATION_COORDINATOR_H_
 
+#include <atomic>
 #include <map>
 #include <memory>
 #include <optional>
@@ -14,6 +15,8 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "net/base/net_export.h"
@@ -74,6 +77,9 @@ class NET_EXPORT_PRIVATE ExclusiveOperationCoordinator {
   // currently running normal operations have completed. While this and any
   // other exclusive operations are pending or running, no new normal
   // operations will start.
+  //
+  // Note: An exclusive operation that is currently running is NOT considered a
+  // "pending task" by `GetHasPendingTaskFlag()`.
   void PostOrRunExclusiveOperation(OperationCallback operation);
 
   // Posts a normal operation. If no exclusive operations are pending or
@@ -81,8 +87,37 @@ class NET_EXPORT_PRIVATE ExclusiveOperationCoordinator {
   // and will be executed after all exclusive operations have finished. This
   // operation will be serialized with other normal operations that have the
   // same `key`.
+  //
+  // Note: A normal operation that is currently running IS considered a
+  // "pending task" by `GetHasPendingTaskFlag()`.
   void PostOrRunNormalOperation(const CacheEntryKey& key,
                                 OperationCallback operation);
+
+  // Returns a flag that indicates whether there are any "pending" tasks.
+  // A "pending" task is defined as:
+  // - Any normal operation (whether running or waiting).
+  // - Any *waiting* exclusive operation (i.e. not the one currently running).
+  //
+  // Crucially, a single running exclusive operation is NOT considered pending.
+  // This flag is used during the execution of an `ExclusiveOperation` (e.g.,
+  // eviction) to detect if any other tasks have been posted, allowing the
+  // operation to potentially abort or adjust its behavior.
+  //
+  // Note: This flag is shared with operations via `RefCountedData` so they can
+  // check it without holding a reference to the coordinator. Since
+  // `RefCountedData` is `RefCountedThreadSafe` and the data is `std::atomic`,
+  // the state can be safely referenced from other sequences.
+  const scoped_refptr<base::RefCountedData<std::atomic_bool>>&
+  GetHasPendingTaskFlag() {
+    return has_pending_task_;
+  }
+
+  // Forces `GetHasPendingTaskFlag()` to return false as long as the returned
+  // `ScopedClosureRunner` is alive. This is used when posting an
+  // ExclusiveOperation to wait for all pending tasks to complete, preventing
+  // `has_pending_task_` from being set to true which might trigger unwanted
+  // side effects (e.g. aborting an eviction logic).
+  base::ScopedClosureRunner KeepHasPendingTaskFlagUnsetForTesting();
 
  private:
   using NormalOperationsQueueMap =
@@ -109,6 +144,10 @@ class NET_EXPORT_PRIVATE ExclusiveOperationCoordinator {
       const std::optional<CacheEntryKey>& key,
       std::vector<base::OnceClosure>& runnable_ops);
 
+  // Updates the `has_pending_task_` flag based on the current state of the
+  // queue.
+  void UpdateHasPendingTaskFlag();
+
   // A queue of operation "phases". Each element is either a
   // `NormalOperationsQueueMap` (a batch of normal operations) or a single
   // `ExclusiveOperation`. This structure enforces the serialization between
@@ -118,6 +157,14 @@ class NET_EXPORT_PRIVATE ExclusiveOperationCoordinator {
   // operation is pending are added to a new batch that runs after the exclusive
   // operation completes.
   base::queue<NormalOperationsQueueMapOrExclusiveOperation> queue_;
+
+  // See `GetHasPendingTaskFlag()` for details.
+  scoped_refptr<base::RefCountedData<std::atomic_bool>> has_pending_task_;
+
+  // A counter used by tests to forcibly keep `has_pending_task_` false.
+  // When this count is greater than 0, `UpdateHasPendingTaskFlag` will
+  // always set `has_pending_task_` to false.
+  int keep_has_pending_task_unset_count_ = 0;
 
   base::WeakPtrFactory<ExclusiveOperationCoordinator> weak_factory_{this};
 };

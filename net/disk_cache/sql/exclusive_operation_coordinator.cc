@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
@@ -51,7 +52,11 @@ ExclusiveOperationCoordinator::OperationHandle::~OperationHandle() {
   }
 }
 
-ExclusiveOperationCoordinator::ExclusiveOperationCoordinator() = default;
+ExclusiveOperationCoordinator::ExclusiveOperationCoordinator()
+    : has_pending_task_(
+          base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+              std::in_place,
+              false)) {}
 ExclusiveOperationCoordinator::~ExclusiveOperationCoordinator() = default;
 
 void ExclusiveOperationCoordinator::PostOrRunExclusiveOperation(
@@ -134,7 +139,9 @@ void ExclusiveOperationCoordinator::OnOperationFinished(
 void ExclusiveOperationCoordinator::TryToRunNextOperation(
     const std::optional<CacheEntryKey>& key) {
   if (queue_.empty()) {
-    // Nothing to do.
+    // There is no task to run.
+    // Updates the `has_pending_task_` flag.
+    UpdateHasPendingTaskFlag();
     return;
   }
 
@@ -173,10 +180,44 @@ void ExclusiveOperationCoordinator::TryToRunNextOperation(
         runnable_ops);
   }
 
+  // Updates the `has_pending_task_` flag.
+  UpdateHasPendingTaskFlag();
+
   // Run the collected operations.
   for (auto& runnable_op : runnable_ops) {
     std::move(runnable_op).Run();
   }
+}
+
+void ExclusiveOperationCoordinator::UpdateHasPendingTaskFlag() {
+  // We consider the coordinator to have a pending task if:
+  // 1. There is more than one phase in the queue (meaning something is waiting
+  //    behind the current phase).
+  // 2. OR the current phase is a batch of Normal operations.
+  //
+  // This means if the queue contains only a single ExclusiveOperation (which
+  // must be the currently running one), `has_pending` is false.
+  bool has_pending =
+      (keep_has_pending_task_unset_count_ == 0) &&
+      (queue_.size() > 1 ||
+       (!queue_.empty() &&
+        std::holds_alternative<NormalOperationsQueueMap>(queue_.front())));
+  has_pending_task_->data.store(has_pending, std::memory_order_relaxed);
+}
+
+base::ScopedClosureRunner
+ExclusiveOperationCoordinator::KeepHasPendingTaskFlagUnsetForTesting() {
+  ++keep_has_pending_task_unset_count_;
+  UpdateHasPendingTaskFlag();
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](base::WeakPtr<ExclusiveOperationCoordinator> weak_ptr) {
+        if (weak_ptr) {
+          --weak_ptr->keep_has_pending_task_unset_count_;
+          CHECK(weak_ptr->keep_has_pending_task_unset_count_ >= 0);
+          weak_ptr->UpdateHasPendingTaskFlag();
+        }
+      },
+      weak_factory_.GetWeakPtr()));
 }
 
 void ExclusiveOperationCoordinator::MaybeTakeAndResetPendingOperation(
