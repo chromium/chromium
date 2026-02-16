@@ -4,17 +4,22 @@
 
 #include "chrome/browser/ash/login/screens/mock_consolidated_consent_screen.h"
 
+#include "base/check.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
 
 MockConsolidatedConsentScreen::MockConsolidatedConsentScreen(
     const ApplicationLocaleStorage* application_locale_storage,
+    ::metrics::MetricsService* metrics_service,
     base::WeakPtr<ConsolidatedConsentScreenView> view,
     const ScreenExitCallback& exit_callback)
     : ConsolidatedConsentScreen(application_locale_storage,
+                                metrics_service,
                                 std::move(view),
-                                exit_callback) {}
+                                exit_callback) {
+  CHECK(metrics_service);
+}
 
 MockConsolidatedConsentScreen::~MockConsolidatedConsentScreen() = default;
 

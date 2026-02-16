@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -156,13 +156,18 @@ std::string ConsolidatedConsentScreen::GetResultString(Result result) {
 
 ConsolidatedConsentScreen::ConsolidatedConsentScreen(
     const ApplicationLocaleStorage* application_locale_storage,
+    ::metrics::MetricsService* metrics_service,
     base::WeakPtr<ConsolidatedConsentScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(ConsolidatedConsentScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      metrics_service_(metrics_service),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
+  if (!metrics_service_) {
+    CHECK_IS_TEST();
+  }
   DCHECK(view_);
 }
 
@@ -384,17 +389,16 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
     }
 
     pref_handler_ = std::make_unique<arc::ArcOptInPreferenceHandler>(
-        this, profile->GetPrefs(), g_browser_process->metrics_service());
+        this, profile->GetPrefs(), metrics_service_.get());
     pref_handler_->Start();
   } else if (!is_demo) {
     // Since ARC OOBE Negotiation is not needed, we should avoid using
     // ArcOptInPreferenceHandler, so, we should update the usage opt-in here
     // since OnMetricsModeChanged() will not be called.
-    auto* metrics_service = g_browser_process->metrics_service();
     bool is_enabled = false;
-    if (metrics_service &&
-        metrics_service->GetCurrentUserMetricsConsent().has_value()) {
-      is_enabled = *metrics_service->GetCurrentUserMetricsConsent();
+    if (metrics_service_ &&
+        metrics_service_->GetCurrentUserMetricsConsent().has_value()) {
+      is_enabled = *metrics_service_->GetCurrentUserMetricsConsent();
     } else {
       is_enabled = StatsReportingController::Get()->IsEnabled();
     }
@@ -496,12 +500,10 @@ void ConsolidatedConsentScreen::ReportUsageOptIn(bool is_enabled) {
     return;
   }
 
-  auto* metrics_service = g_browser_process->metrics_service();
-  DCHECK(metrics_service);
-
   // If user is not eligible for per-user, this will no-op. See details at
   // chrome/browser/metrics/per_user_state_manager_chromeos.h.
-  metrics_service->UpdateCurrentUserMetricsConsent(is_enabled);
+  CHECK(metrics_service_);
+  metrics_service_->UpdateCurrentUserMetricsConsent(is_enabled);
 }
 
 void ConsolidatedConsentScreen::NotifyConsolidatedConsentAcceptForTesting() {

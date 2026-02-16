@@ -2106,6 +2106,7 @@ class ArcSessionOobeOptInNegotiatorTest
                 TestingBrowserProcess::GetGlobal()
                     ->GetFeatures()
                     ->application_locale_storage(),
+                TestingBrowserProcess::GetGlobal()->metrics_service(),
                 std::make_unique<ash::ConsolidatedConsentScreenHandler>()
                     ->AsWeakPtr(),
                 base::DoNothing());

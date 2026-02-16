@@ -17,7 +17,11 @@ class ApplicationLocaleStorage;
 
 namespace arc {
 class ArcOptInPreferenceHandler;
-}
+}  // namespace arc
+
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
 
 namespace ash {
 
@@ -66,8 +70,11 @@ class ConsolidatedConsentScreen
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
   // `application_locale_storage` must be non-null and must outlive `this`.
+  // `metrics_service` may be null in tests, but must outlive `this` if it's
+  // non-null.
   ConsolidatedConsentScreen(
       const ApplicationLocaleStorage* application_locale_storage,
+      ::metrics::MetricsService* metrics_service,
       base::WeakPtr<ConsolidatedConsentScreenView> view,
       const ScreenExitCallback& exit_callback);
   ~ConsolidatedConsentScreen() override;
@@ -137,6 +144,7 @@ class ConsolidatedConsentScreen
   void UpdateMetricsMode(bool enabled, bool managed);
 
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ptr<::metrics::MetricsService> metrics_service_;
 
   std::optional<bool> is_owner_;
 

@@ -653,6 +653,8 @@ WizardController::CreateScreens() {
   PrefService* local_state = g_browser_process->local_state();
   ApplicationLocaleStorage* application_locale_storage =
       g_browser_process->GetFeatures()->application_locale_storage();
+  ::metrics::MetricsService* metrics_service =
+      g_browser_process->metrics_service();
 
   OobeUI* oobe_ui = GetOobeUI();
 
@@ -887,7 +889,7 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<ConsolidatedConsentScreen>(
-      application_locale_storage,
+      application_locale_storage, metrics_service,
       oobe_ui->GetView<ConsolidatedConsentScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnConsolidatedConsentScreenExit,
                           weak_factory_.GetWeakPtr())));
