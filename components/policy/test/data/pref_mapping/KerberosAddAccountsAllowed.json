@@ -3,18 +3,14 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "KerberosAddAccountsAllowed": false
-        },
-        "prefs": {
-          "kerberos.add_accounts_allowed": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "kerberos.add_accounts_allowed",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        false,
+        true
+      ]
+    }
   }
 ]

@@ -3,41 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default value (no policies set)",
-        "policies": {},
-        "prefs": {
-          "kiosk_troubleshooting_tools_enabled": {
-            "default_value": false,
-            "location": "user_profile"
-          }
-        }
-      },
-      {
-        "note": "Check true policy value",
-        "policies": {
-          "KioskTroubleshootingToolsEnabled": true
-        },
-        "prefs": {
-          "kiosk_troubleshooting_tools_enabled": {
-            "location": "user_profile",
-            "value": true
-          }
-        }
-      },
-      {
-        "note": "Check false policy value",
-        "policies": {
-          "KioskTroubleshootingToolsEnabled": false
-        },
-        "prefs": {
-          "kiosk_troubleshooting_tools_enabled": {
-            "location": "user_profile",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "kiosk_troubleshooting_tools_enabled",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

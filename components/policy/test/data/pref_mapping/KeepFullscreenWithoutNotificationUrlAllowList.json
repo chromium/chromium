@@ -3,29 +3,14 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "keep_fullscreen_without_notification_url_allow_list": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "policies": {
-          "KeepFullscreenWithoutNotificationUrlAllowList": [
-            "*"
-          ]
-        },
-        "prefs": {
-          "keep_fullscreen_without_notification_url_allow_list": {
-            "value": [
-              "*"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "keep_fullscreen_without_notification_url_allow_list",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "[*.]google.com"
+        ]
+      ]
+    }
   }
 ]
