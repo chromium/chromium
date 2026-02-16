@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -42,6 +43,8 @@
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
@@ -687,10 +690,79 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class PasswordCombinedSelectorViewTest : public PasswordDialogViewTest {
+ public:
+  void ShowUi(const std::string& name) override {
+    if (name == "ManyCredentials") {
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>
+          local_credentials;
+      for (int i = 0; i < 5; ++i) {
+        password_manager::PasswordForm form;
+        form.url = GURL("https://example.com");
+        form.signon_realm = form.url.GetWithEmptyPath().spec();
+        form.display_name =
+            base::ASCIIToUTF16(base::StringPrintf("User %d", i));
+        form.username_value =
+            base::ASCIIToUTF16(base::StringPrintf("user%d@example.com", i));
+        form.match_type = password_manager::PasswordForm::MatchType::kExact;
+        local_credentials.push_back(
+            std::make_unique<password_manager::PasswordForm>(form));
+      }
+      SetupChooseCredentials(std::move(local_credentials),
+                             url::Origin::Create(GURL("https://example.com")));
+      return;
+    }
+    if (name == "FederatedCredentials") {
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>
+          local_credentials;
+      password_manager::PasswordForm form;
+      form.url = GURL("https://example.com");
+      form.signon_realm = form.url.GetWithEmptyPath().spec();
+      form.display_name = u"Peter Pan";
+      form.username_value = u"peter@pan.test";
+      form.federation_origin =
+          url::SchemeHostPort(GURL("https://google.com/federation"));
+      form.match_type = password_manager::PasswordForm::MatchType::kExact;
+      local_credentials.push_back(
+          std::make_unique<password_manager::PasswordForm>(form));
+
+      form.display_name = u"Wendy Darling";
+      form.username_value = u"wendy@pan.test";
+      form.federation_origin =
+          url::SchemeHostPort(GURL("https://example.com/federation"));
+      local_credentials.push_back(
+          std::make_unique<password_manager::PasswordForm>(form));
+
+      SetupChooseCredentials(std::move(local_credentials),
+                             url::Origin::Create(GURL("https://example.com")));
+      return;
+    }
+    PasswordDialogViewTest::ShowUi(name);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       password_manager::features::kCredentialManagementUnifiedUi};
 };
+
+IN_PROC_BROWSER_TEST_F(PasswordCombinedSelectorViewTest,
+                       InvokeUi_SingleCredential) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordCombinedSelectorViewTest,
+                       InvokeUi_MultipleCredentials) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordCombinedSelectorViewTest,
+                       InvokeUi_ManyCredentials) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordCombinedSelectorViewTest,
+                       InvokeUi_FederatedCredentials) {
+  ShowAndVerifyUi();
+}
 
 IN_PROC_BROWSER_TEST_F(PasswordCombinedSelectorViewTest,
                        ShowMultipleCredentials) {
