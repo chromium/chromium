@@ -277,7 +277,7 @@ void PictureLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
   ValidateQuadResources(quad);
 }
 
-void PictureLayerImpl::AppendQuadsSpecialization(
+int PictureLayerImpl::AppendQuadsSpecialization(
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data,
@@ -339,13 +339,7 @@ void PictureLayerImpl::AppendQuadsSpecialization(
     }
   }
 
-  if (missing_tile_count) {
-    append_quads_data->num_missing_tiles += missing_tile_count;
-    append_quads_data->checkerboarded_needs_raster = true;
-    TRACE_EVENT_INSTANT1("cc", "PictureLayerImpl::AppendQuads checkerboard",
-                         TRACE_EVENT_SCOPE_THREAD, "missing_tile_count",
-                         missing_tile_count);
-  }
+  return missing_tile_count;
 }
 
 bool PictureLayerImpl::AppendQuadForTile(

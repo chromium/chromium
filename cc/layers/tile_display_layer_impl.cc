@@ -178,7 +178,7 @@ void TileDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   NOTREACHED();
 }
 
-void TileDisplayLayerImpl::AppendQuadsSpecialization(
+int TileDisplayLayerImpl::AppendQuadsSpecialization(
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data,
@@ -203,6 +203,13 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
                       shared_quad_state, scaled_occlusion, quad_offset,
                       max_contents_scale);
   }
+
+  // TileDisplayLayerImpl does not currently track the number of missing tiles,
+  // as that info is used only to pass to `checkerboarded_needs_raster` on the
+  // client side.
+  // TODO(crbug.com/401566175): Track `checkerboarded_needs_raster` on the Viz
+  // side.
+  return 0;
 }
 
 void TileDisplayLayerImpl::AppendQuadForTile(

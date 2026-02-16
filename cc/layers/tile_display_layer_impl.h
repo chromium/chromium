@@ -217,13 +217,13 @@ class CC_EXPORT TileDisplayLayerImpl
 
  private:
   // TileBasedLayerImpl:
-  void AppendQuadsSpecialization(const AppendQuadsContext& context,
-                                 viz::CompositorRenderPass* render_pass,
-                                 AppendQuadsData* append_quads_data,
-                                 viz::SharedQuadState* shared_quad_state,
-                                 const Occlusion& scaled_occlusion,
-                                 const gfx::Vector2d& quad_offset,
-                                 float max_contents_scale) override;
+  int AppendQuadsSpecialization(const AppendQuadsContext& context,
+                                viz::CompositorRenderPass* render_pass,
+                                AppendQuadsData* append_quads_data,
+                                viz::SharedQuadState* shared_quad_state,
+                                const Occlusion& scaled_occlusion,
+                                const gfx::Vector2d& quad_offset,
+                                float max_contents_scale) override;
   float GetMaximumContentsScaleForUseInAppendQuads() const override;
   float GetIdealContentsScaleKey() const override;
   void AppendQuadsForResourcelessSoftwareDraw(
