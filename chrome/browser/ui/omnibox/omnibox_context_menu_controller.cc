@@ -222,6 +222,7 @@ void OmniboxContextMenuController::AddContextualInputItems() {
                                      ui::SimpleMenuModel::kDefaultIconSize);
   AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_ADD_IMAGE,
                              IDS_NTP_COMPOSE_ADD_IMAGE, add_image_icon);
+
   auto add_file_icon =
       ui::ImageModel::FromVectorIcon(kAttachFileIcon, ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize);
@@ -240,11 +241,11 @@ void OmniboxContextMenuController::AddToolItems() {
     AddSeparator();
   }
 
+  auto create_images_icon = ui::ImageModel::FromResourceId(
+      IDR_OMNIBOX_POPUP_IMAGES_CREATE_IMAGES_PNG);
   auto deep_search_icon =
       ui::ImageModel::FromVectorIcon(kTravelExploreIcon, ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize);
-  auto create_images_icon = ui::ImageModel::FromResourceId(
-      IDR_OMNIBOX_POPUP_IMAGES_CREATE_IMAGES_PNG);
 
   if (use_pec_api) {
     auto tool_section_config = GetToolSectionConfig();
@@ -253,6 +254,13 @@ void OmniboxContextMenuController::AddToolItems() {
       menu_model_->AddTitle(base::UTF8ToUTF16(tool_section_config->header()));
     }
 
+    auto* image_gen_config =
+        GetToolConfig(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+    AddItemWithIcon(IDC_OMNIBOX_CONTEXT_CREATE_IMAGES,
+                    base::UTF8ToUTF16(
+                        image_gen_config ? image_gen_config->menu_label() : ""),
+                    create_images_icon);
+
     auto* deep_search_config =
         GetToolConfig(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
     AddItemWithIcon(
@@ -260,13 +268,6 @@ void OmniboxContextMenuController::AddToolItems() {
         base::UTF8ToUTF16(deep_search_config ? deep_search_config->menu_label()
                                              : ""),
         deep_search_icon);
-
-    auto* image_gen_config =
-        GetToolConfig(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-    AddItemWithIcon(IDC_OMNIBOX_CONTEXT_CREATE_IMAGES,
-                    base::UTF8ToUTF16(
-                        image_gen_config ? image_gen_config->menu_label() : ""),
-                    create_images_icon);
 
     auto canvas_icon =
         ui::ImageModel::FromVectorIcon(kDraftSparkIcon, ui::kColorMenuIcon,
@@ -277,12 +278,12 @@ void OmniboxContextMenuController::AddToolItems() {
         base::UTF8ToUTF16(canvas_config ? canvas_config->menu_label() : ""),
         canvas_icon);
   } else {
-    AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH,
-                               IDS_NTP_COMPOSE_DEEP_SEARCH, deep_search_icon);
-
     AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_CREATE_IMAGES,
                                IDS_NTP_COMPOSE_CREATE_IMAGES,
                                create_images_icon);
+
+    AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH,
+                               IDS_NTP_COMPOSE_DEEP_SEARCH, deep_search_icon);
   }
 }
 
