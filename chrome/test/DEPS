@@ -122,6 +122,7 @@ include_rules = [
   "+components/user_manager",
   "+components/user_prefs",
   "+components/version_info",
+  "+components/viz/common/frame_sinks/copy_output_result.h",
   "+components/web_modal",
   "+components/webapps",
   "+components/webauthn/android",
