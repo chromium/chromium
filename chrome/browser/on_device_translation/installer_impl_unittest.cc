@@ -30,7 +30,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/mock_component_updater_service.h"
-#include "components/on_device_translation/features.h"
 #include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/paths.h"
@@ -54,6 +53,9 @@ using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Return;
 using ::testing::ReturnRef;
+
+// The fake path for the update check.
+constexpr std::string_view kFakeUpdateCheckPath = "/fake_update_check";
 
 class MockOnDemandUpdater : public component_updater::OnDemandUpdater {
  public:
@@ -112,6 +114,10 @@ class OnDeviceTranslationInstallerTest : public ::testing::Test {
         std::make_unique<base::ScopedPathOverride>(
             component_updater::DIR_COMPONENT_USER,
             component_user_dir_.GetPath());
+    // Set the component-updater check URL to the fake one.
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        "component-updater",
+        base::StrCat({"url-source=", GURL(kFakeUpdateCheckPath).spec()}));
     installer_ = std::make_unique<OnDeviceTranslationInstallerImpl>();
   }
 
@@ -185,6 +191,7 @@ class OnDeviceTranslationInstallerTest : public ::testing::Test {
 #endif
   std::unique_ptr<OnDeviceTranslationInstaller> installer_;
   raw_ptr<PrefService> local_state_ = nullptr;
+  base::test::ScopedCommandLine command_line_;
   testing::NiceMock<MockOnDemandUpdater> mock_ondemand_updater_;
   base::ScopedTempDir install_dir_;
   base::ScopedTempDir component_user_dir_;
@@ -250,18 +257,6 @@ TEST_F(OnDeviceTranslationInstallerTest, Init) {
               testing::StartsWith(install_dir_.GetPath().MaybeAsASCII()));
 }
 
-// Tests that the translate kit component can be registered only once.
-TEST_F(OnDeviceTranslationInstallerTest, InitWithCli) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(kTranslateKitBinaryPath);
-  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate).Times(0);
-  installer_ = std::make_unique<OnDeviceTranslationInstallerImpl>();
-
-  base::RunLoop run_loop;
-  OnDeviceTranslationInstaller::GetInstance()->Init(run_loop.QuitClosure());
-  run_loop.Run();
-  EXPECT_TRUE(OnDeviceTranslationInstaller::GetInstance()->IsInit());
-}
-
 TEST_F(OnDeviceTranslationInstallerTest, InstallationChanged) {
   CreateFakeInstallation(install_dir_.GetPath());
   EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(_, _, _))
@@ -286,49 +281,6 @@ TEST_F(OnDeviceTranslationInstallerTest, InstallationChanged) {
         install_dir_.GetPath().AppendASCII("new_installation_dir"));
     run_loop.Run();
   }
-}
-
-TEST_F(OnDeviceTranslationInstallerTest, InstalledLanguagesWithCli) {
-  base::test::ScopedCommandLine scoped_command_line;
-  // Format: language, language, path
-  // Testing En-Es and Fr-De packs however fr_de is not a supported language
-  // pack key.
-  std::string package_arg = "en,es,/path/to/en_es,fr,de,/path/to/fr_de";
-
-  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      "translate-kit-packages",
-      package_arg);  // kTranslateKitPackagePaths string value
-  installer_ = std::make_unique<OnDeviceTranslationInstallerImpl>();
-
-  EXPECT_THAT(
-      OnDeviceTranslationInstaller::GetInstance()->InstalledLanguagePacks(),
-      testing::UnorderedElementsAre(LanguagePackKey::kEn_Es));
-}
-
-TEST_F(OnDeviceTranslationInstallerTest, InstallLanguagesWithCli) {
-  base::test::ScopedCommandLine scoped_command_line;
-  // Format: language, language, path
-  // Testing En-Es and Fr-De packs however fr_de is not a supported language
-  // pack key.
-  std::string package_arg = "en,es,/path/to/en_es,fr,de,/path/to/fr_de";
-
-  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      "translate-kit-packages",
-      package_arg);  // kTranslateKitPackagePaths string value
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      kTranslateKitBinaryPath);
-
-  installer_ = std::make_unique<OnDeviceTranslationInstallerImpl>();
-
-  MockObserver observer;
-  EXPECT_CALL(observer, OnLanguagePackInstalled).Times(1);
-  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
-  OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
-      LanguagePackKey::kEn_Es);
-  EXPECT_THAT(OnDeviceTranslationInstaller::GetInstance()
-                  ->GetLanguagePackPath(LanguagePackKey::kEn_Es)
-                  .MaybeAsASCII(),
-              "/path/to/en_es");
 }
 
 TEST_F(OnDeviceTranslationInstallerTest, InstallLanguagePack) {
