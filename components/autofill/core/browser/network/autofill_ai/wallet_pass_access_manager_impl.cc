@@ -11,10 +11,14 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
@@ -119,6 +123,11 @@ void WalletPassAccessManagerImpl::UpdateWalletEntityInstance(
 void WalletPassAccessManagerImpl::GetUnmaskedWalletEntityInstance(
     const EntityInstance::EntityId& entity_id,
     GetUnmaskedEntityInstanceCallback callback) {
+  if (auto it = unmasked_entity_cache_.find(entity_id);
+      it != unmasked_entity_cache_.end()) {
+    std::move(callback).Run(it->second);
+    return;
+  }
   base::optional_ref<const EntityInstance> masked_entity =
       data_manager_->GetEntityInstance(entity_id);
   if (!masked_entity) {
@@ -126,32 +135,48 @@ void WalletPassAccessManagerImpl::GetUnmaskedWalletEntityInstance(
     return;
   }
   CHECK(masked_entity->IsMaskedServerEntity());
-  // TODO(crbug.com/478783796): Implement caching.
+  auto maybe_cache_response = base::BindOnce(
+      [](base::WeakPtr<WalletPassAccessManagerImpl> access_manager,
+         std::optional<EntityInstance> entity) {
+        if (access_manager && entity) {
+          access_manager->CacheUnmaskResult(*entity);
+        }
+        return entity;
+      },
+      weak_factory_.GetWeakPtr());
   http_client_->GetUnmaskedPass(
       entity_id.value(),
-      base::BindOnce(
-          [](EntityInstance masked_entity,
-             const base::expected<PrivatePass, WalletRequestError>& response)
-              -> std::optional<EntityInstance> {
-            if (!response.has_value()) {
-              return std::nullopt;
-            }
-            std::optional<AttributeInstance> unmasked_pass_number =
-                PassNumberFromResponse(response.value());
-            if (!unmasked_pass_number.has_value() ||
-                !AttributeCorrespondsToEntity(*unmasked_pass_number,
-                                              masked_entity)) {
-              return std::nullopt;
-            }
-            CHECK(!unmasked_pass_number->masked());
-            EntityInstance unmasked_entity =
-                masked_entity.CopyWithUpdatedAttribute(
-                    std::move(*unmasked_pass_number));
-            CHECK(unmasked_entity.IsUnmaskedServerEntity());
-            return unmasked_entity;
-          },
-          *masked_entity)
+      GetUnmaskResponseToUnmaskedEntityCallback(*masked_entity)
+          .Then(std::move(maybe_cache_response))
           .Then(std::move(callback)));
+}
+
+base::OnceCallback<std::optional<EntityInstance>(
+    const base::expected<PrivatePass, WalletRequestError>&)>
+WalletPassAccessManagerImpl::GetUnmaskResponseToUnmaskedEntityCallback(
+    const EntityInstance& masked_entity) const {
+  return base::BindOnce(
+      [](EntityInstance masked_entity,
+         const base::expected<PrivatePass, WalletRequestError>& response)
+          -> std::optional<EntityInstance> {
+        if (!response.has_value()) {
+          return std::nullopt;
+        }
+        std::optional<AttributeInstance> unmasked_pass_number =
+            PassNumberFromResponse(response.value());
+        // Make sure the response type corresponds to the entity.
+        if (!unmasked_pass_number.has_value() ||
+            !AttributeCorrespondsToEntity(*unmasked_pass_number,
+                                          masked_entity)) {
+          return std::nullopt;
+        }
+        CHECK(!unmasked_pass_number->masked());
+        EntityInstance unmasked_entity = masked_entity.CopyWithUpdatedAttribute(
+            std::move(*unmasked_pass_number));
+        CHECK(unmasked_entity.IsUnmaskedServerEntity());
+        return unmasked_entity;
+      },
+      masked_entity);
 }
 
 base::OnceCallback<std::optional<EntityInstance>(
@@ -183,6 +208,30 @@ WalletPassAccessManagerImpl::GetUpsertResponseToMaskedEntityCallback(
         return masked_entity;
       },
       unmasked_entity);
+}
+
+void WalletPassAccessManagerImpl::CacheUnmaskResult(EntityInstance entity) {
+  EntityInstance::EntityId id = entity.guid();
+  auto [it, inserted] = unmasked_entity_cache_.insert({id, std::move(entity)});
+  if (!inserted) {
+    return;
+  }
+  // Clear the cache entry after `kCacheTTL`.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<WalletPassAccessManagerImpl> access_manager,
+             const EntityInstance::EntityId& id) {
+            if (!access_manager) {
+              return;
+            }
+            auto& cache = access_manager->unmasked_entity_cache_;
+            if (auto it = cache.find(id); it != cache.end()) {
+              cache.erase(it);
+            }
+          },
+          weak_factory_.GetWeakPtr(), id),
+      kCacheTTL);
 }
 
 }  // namespace autofill
