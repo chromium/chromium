@@ -7,12 +7,15 @@
 SearchEngineObserverBridge::SearchEngineObserverBridge(
     id<SearchEngineObserving> owner,
     TemplateURLService* urlService)
-    : owner_(owner), templateURLService_(urlService) {
-  templateURLService_->AddObserver(this);
+    : owner_(owner), template_url_service_(urlService) {
+  template_url_service_->AddObserver(this);
 }
 
 SearchEngineObserverBridge::~SearchEngineObserverBridge() {
-  templateURLService_->RemoveObserver(this);
+  if (template_url_service_) {
+    template_url_service_->RemoveObserver(this);
+    template_url_service_ = nullptr;
+  }
 }
 
 void SearchEngineObserverBridge::OnTemplateURLServiceChanged() {
@@ -21,6 +24,10 @@ void SearchEngineObserverBridge::OnTemplateURLServiceChanged() {
 
 void SearchEngineObserverBridge::OnTemplateURLServiceShuttingDown() {
   if ([owner_ respondsToSelector:@selector(templateURLServiceShuttingDown:)]) {
-    [owner_ templateURLServiceShuttingDown:templateURLService_];
+    [owner_ templateURLServiceShuttingDown:template_url_service_];
+  }
+  if (template_url_service_) {
+    template_url_service_->RemoveObserver(this);
+    template_url_service_ = nullptr;
   }
 }

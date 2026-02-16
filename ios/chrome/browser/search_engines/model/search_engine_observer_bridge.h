@@ -38,7 +38,7 @@ class SearchEngineObserverBridge : public TemplateURLServiceObserver {
 
  private:
   __weak id<SearchEngineObserving> owner_;
-  raw_ptr<TemplateURLService> templateURLService_;  // weak
+  raw_ptr<TemplateURLService> template_url_service_;  // weak
 };
 
 #endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_OBSERVER_BRIDGE_H_
