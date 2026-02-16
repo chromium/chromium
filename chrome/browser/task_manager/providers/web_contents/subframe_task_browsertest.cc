@@ -2,21 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-#include <iterator>
-#include <string>
-#include <vector>
-
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
-#include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -29,11 +21,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/strings/grit/extensions_strings.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/buildflags.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -53,62 +43,22 @@ const char kCrossSitePageUrl[] = "/cross-site/a.com/iframe_cross_site.html";
 // URL of a test page on a.com that has no cross-site iframes.
 const char kSimplePageUrl[] = "/cross-site/a.com/title2.html";
 
-std::string PrefixExpectedBFCacheTitle(const std::string& title,
-                                       bool is_subframe) {
+std::u16string GetExpectedSubframeTitlePrefix() {
+  return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_SUBFRAME_PREFIX,
+                                    std::u16string());
+}
+
+std::u16string PrefixExpectedBFCacheTitle(const std::string& title,
+                                          bool is_subframe) {
   const auto msg_id = is_subframe
                           ? IDS_TASK_MANAGER_BACK_FORWARD_CACHE_SUBFRAME_PREFIX
                           : IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX;
-  return l10n_util::GetStringFUTF8(msg_id, base::UTF8ToUTF16(title));
+  return l10n_util::GetStringFUTF16(msg_id, base::UTF8ToUTF16(title));
 }
 
-std::string PrefixExpectedTabTitle(const std::string& title) {
-  return l10n_util::GetStringFUTF8(IDS_TASK_MANAGER_TAB_PREFIX,
-                                   base::UTF8ToUTF16(title));
-}
-
-std::string PrefixExpectedTabIncognitoTitle(const std::string& title) {
-  return l10n_util::GetStringFUTF8(IDS_TASK_MANAGER_TAB_INCOGNITO_PREFIX,
-                                   base::UTF8ToUTF16(title));
-}
-
-std::string PrefixExpectedSubframeIncognitoTitle(const std::string& title) {
-  return l10n_util::GetStringFUTF8(IDS_TASK_MANAGER_SUBFRAME_INCOGNITO_PREFIX,
-                                   base::UTF8ToUTF16(title));
-}
-
-std::string PrefixExpectedSubframeTitle(const std::string& title) {
-  return l10n_util::GetStringFUTF8(IDS_TASK_MANAGER_SUBFRAME_PREFIX,
-                                   base::UTF8ToUTF16(title));
-}
-
-std::string PrefixExpectedPdfSubframeTitle(const std::string& title) {
-  return l10n_util::GetStringFUTF8(IDS_TASK_MANAGER_PDF_SUBFRAME_PREFIX,
-                                   base::UTF8ToUTF16(title));
-}
-
-std::string PrefixExpectedPdfSubframeIncognitoTitle(const std::string& title) {
-  return l10n_util::GetStringFUTF8(
-      IDS_TASK_MANAGER_PDF_SUBFRAME_INCOGNITO_PREFIX, base::UTF8ToUTF16(title));
-}
-
-std::string PrefixExpectedMimeHandlerTitle(const std::string& title) {
-  return l10n_util::GetStringFUTF8(
-      IDS_EXTENSION_TASK_MANAGER_MIMEHANDLERVIEW_TAG_PREFIX,
-      base::UTF8ToUTF16(title));
-}
-
-// Filter out tool tasks.
-std::vector<raw_ptr<Task, VectorExperimental>> NonToolTasks(
-    std::vector<raw_ptr<Task, VectorExperimental>> tasks) {
-  std::u16string tool_prefix =
-      l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TOOL_PREFIX, u"");
-
-  std::vector<raw_ptr<Task, VectorExperimental>> non_tool_tasks;
-  std::ranges::copy_if(tasks, std::back_inserter(non_tool_tasks),
-                       [&](const auto& task) {
-                         return !task->title().starts_with(tool_prefix);
-                       });
-  return non_tool_tasks;
+std::u16string PrefixExpectedTabTitle(const std::string& title) {
+  return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX,
+                                    base::UTF8ToUTF16(title));
 }
 
 }  // namespace
@@ -117,12 +67,7 @@ std::vector<raw_ptr<Task, VectorExperimental>> NonToolTasks(
 // SubframeTasks.
 class SubframeTaskBrowserTest : public InProcessBrowserTest {
  public:
-  SubframeTaskBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features*/ {omnibox::kWebUIOmniboxPopup,
-                              omnibox::internal::kWebUIOmniboxAimPopup},
-        /*disabled_features*/ {});
-  }
+  SubframeTaskBrowserTest() = default;
   SubframeTaskBrowserTest(const SubframeTaskBrowserTest&) = delete;
   SubframeTaskBrowserTest& operator=(const SubframeTaskBrowserTest&) = delete;
   ~SubframeTaskBrowserTest() override = default;
@@ -148,7 +93,6 @@ class SubframeTaskBrowserTest : public InProcessBrowserTest {
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Makes sure that, if sites are isolated, the task manager will show the
@@ -160,35 +104,41 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerShowsSubframeTasks) {
   task_manager.StartObserving();
 
   // Currently only the about:blank page.
-  ASSERT_THAT(MockWebContentsTaskManager::TaskTitles(
-                  NonToolTasks(task_manager.tasks())),
-              testing::ElementsAre(PrefixExpectedTabTitle("about:blank")));
+  ASSERT_EQ(1U, task_manager.tasks().size());
+  const Task* about_blank_task = task_manager.tasks().front();
+  EXPECT_EQ(Task::RENDERER, about_blank_task->GetType());
+  EXPECT_EQ(PrefixExpectedTabTitle("about:blank"), about_blank_task->title());
+
   NavigateTo(kCrossSitePageUrl);
 
   // Whether sites are isolated or not, we expect to have at least one tab
   // contents task.
-  auto tasks = NonToolTasks(task_manager.tasks());
-  ASSERT_GE(tasks.size(), 1u);
-  const Task* cross_site_task = tasks[0];
-  EXPECT_EQ(cross_site_task->GetType(), Task::RENDERER);
+  ASSERT_GE(task_manager.tasks().size(), 1U);
+  const Task* cross_site_task = task_manager.tasks().front();
+  EXPECT_EQ(Task::RENDERER, cross_site_task->GetType());
+  EXPECT_EQ(PrefixExpectedTabTitle("cross-site iframe test"),
+            cross_site_task->title());
 
   if (!content::AreAllSitesIsolatedForTesting()) {
-    ASSERT_THAT(
-        MockWebContentsTaskManager::TaskTitles(tasks),
-        testing::ElementsAre(PrefixExpectedTabTitle("cross-site iframe test")));
+    // Sites are not isolated. No SubframeTasks are expected, just the above
+    // task.
+    ASSERT_EQ(1U, task_manager.tasks().size());
   } else {
     // Sites are isolated. We expect, in addition to the above task, two more
     // SubframeTasks, one for b.com and another for c.com.
-    ASSERT_THAT(
-        MockWebContentsTaskManager::TaskTitles(tasks),
-        testing::ElementsAre(PrefixExpectedTabTitle("cross-site iframe test"),
-                             PrefixExpectedSubframeTitle("http://b.com/"),
-                             PrefixExpectedSubframeTitle("http://c.com/")));
+    ASSERT_EQ(3U, task_manager.tasks().size());
+    const Task* subframe_task_1 = task_manager.tasks()[1];
+    const Task* subframe_task_2 = task_manager.tasks()[2];
 
-    const Task* subframe_task_1 = tasks[1];
-    const Task* subframe_task_2 = tasks[2];
-    EXPECT_EQ(subframe_task_1->GetType(), Task::RENDERER);
-    EXPECT_EQ(subframe_task_2->GetType(), Task::RENDERER);
+    EXPECT_EQ(Task::RENDERER, subframe_task_1->GetType());
+    EXPECT_EQ(Task::RENDERER, subframe_task_2->GetType());
+
+    EXPECT_TRUE(base::StartsWith(subframe_task_1->title(),
+                                 GetExpectedSubframeTitlePrefix(),
+                                 base::CompareCase::INSENSITIVE_ASCII));
+    EXPECT_TRUE(base::StartsWith(subframe_task_2->title(),
+                                 GetExpectedSubframeTitlePrefix(),
+                                 base::CompareCase::INSENSITIVE_ASCII));
 
     // All tasks must be running on different processes.
     EXPECT_NE(subframe_task_1->process_id(), subframe_task_2->process_id());
@@ -201,31 +151,31 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerShowsSubframeTasks) {
   // page is saved in the back-forward cache.
   NavigateTo(kSimplePageUrl);
 
-  tasks = NonToolTasks(task_manager.tasks());
   ASSERT_EQ(
-      tasks.size(),
-      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 4u : 1u);
+      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 4U : 1U,
+      task_manager.tasks().size());
 
+  const auto& tasks = task_manager.tasks();
   // Main page and two cross-origin iframes.
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
-    ASSERT_THAT(
-        MockWebContentsTaskManager::TaskTitles(tasks),
-        testing::ElementsAre(
-            PrefixExpectedBFCacheTitle("http://a.com/", /*is_subframe=*/false),
-            PrefixExpectedBFCacheTitle("http://b.com/",
-                                       /*is_subframe=*/true),
-            PrefixExpectedBFCacheTitle("http://c.com/",
-                                       /*is_subframe=*/true),
-            PrefixExpectedTabTitle("Title Of Awesomeness")));
+    EXPECT_EQ(
+        PrefixExpectedBFCacheTitle("http://a.com/", /*is_subframe=*/false),
+        tasks[0]->title());
+    EXPECT_EQ(PrefixExpectedBFCacheTitle("http://b.com/",
+                                         /*is_subframe=*/true),
+              tasks[1]->title());
+    EXPECT_EQ(PrefixExpectedBFCacheTitle("http://c.com/",
+                                         /*is_subframe=*/true),
+              tasks[2]->title());
   }
   // When navigation to |kSimplePageUrl| happens, tasks are first created for
   // page a.com and two cross-origin iframes b.com and c.com from
   // |RenderFrameHostStateChange|, then the task for |kSimplePageUrl| is created
   // from |DidFinishNavigation| when the navigation completes. Thus |.back()|.
   const Task* simple_page_task = tasks.back();
-  EXPECT_EQ(simple_page_task->GetType(), Task::RENDERER);
-  EXPECT_EQ(base::UTF16ToUTF8(simple_page_task->title()),
-            PrefixExpectedTabTitle("Title Of Awesomeness"));
+  EXPECT_EQ(Task::RENDERER, simple_page_task->GetType());
+  EXPECT_EQ(PrefixExpectedTabTitle("Title Of Awesomeness"),
+            simple_page_task->title());
 }
 
 // Allows listening to unresponsive task events.
@@ -254,20 +204,22 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerHungSubframe) {
   NavigateTo(kCrossSitePageUrl);
 
   // We expect SubframeTasks for b.com and c.com, in either order.
-  auto tasks = NonToolTasks(task_manager.tasks());
-  ASSERT_THAT(MockWebContentsTaskManager::TaskTitles(tasks),
-              testing::ElementsAre(
-                  PrefixExpectedTabTitle("cross-site iframe test").c_str(),
-                  PrefixExpectedSubframeTitle("http://b.com/"),
-                  PrefixExpectedSubframeTitle("http://c.com/")));
+  ASSERT_EQ(3U, task_manager.tasks().size());
+  const Task* subframe_task_1 = task_manager.tasks()[1];
+  const Task* subframe_task_2 = task_manager.tasks()[2];
 
-  const Task* subframe_task_1 = tasks[1];
-  const Task* subframe_task_2 = tasks[2];
-  EXPECT_EQ(subframe_task_1->GetType(), Task::RENDERER);
-  EXPECT_EQ(subframe_task_2->GetType(), Task::RENDERER);
+  EXPECT_EQ(Task::RENDERER, subframe_task_1->GetType());
+  EXPECT_EQ(Task::RENDERER, subframe_task_2->GetType());
+
+  EXPECT_TRUE(base::StartsWith(subframe_task_1->title(),
+                               GetExpectedSubframeTitlePrefix(),
+                               base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_TRUE(base::StartsWith(subframe_task_2->title(),
+                               GetExpectedSubframeTitlePrefix(),
+                               base::CompareCase::INSENSITIVE_ASCII));
 
   // Nothing should have hung yet.
-  EXPECT_EQ(task_manager.unresponsive_task(), nullptr);
+  EXPECT_EQ(nullptr, task_manager.unresponsive_task());
 
   // Simulate a hang in one of the subframe processes.
   content::WebContents* web_contents =
@@ -280,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerHungSubframe) {
   // Verify task_observer saw one of the two subframe tasks.  (There's a race,
   // so it could be either one.)
   Task* unresponsive_task = task_manager.unresponsive_task();
-  EXPECT_NE(unresponsive_task, nullptr);
+  EXPECT_NE(nullptr, unresponsive_task);
   EXPECT_TRUE(unresponsive_task == subframe_task_1 ||
               unresponsive_task == subframe_task_2);
 }
@@ -293,16 +245,6 @@ class SubframeTaskPDFBrowserTest : public base::test::WithFeatureOverride,
       : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
 
   bool UseOopif() const override { return GetParam(); }
-
-  // PDFExtensionTestBase:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      const override {
-    std::vector<base::test::FeatureRefAndParams> enabled =
-        PDFExtensionTestBase::GetEnabledFeatures();
-    enabled.push_back({omnibox::kWebUIOmniboxPopup, {}});
-    enabled.push_back({omnibox::internal::kWebUIOmniboxAimPopup, {}});
-    return enabled;
-  }
 };
 
 IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
@@ -314,27 +256,15 @@ IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
 
   // The PDF viewer has 3 frames: the main embedder frame, the PDF extension
   // frame, and the PDF content frame.
+  ASSERT_EQ(3U, task_manager.tasks().size());
+  const Task* subframe_task = task_manager.tasks()[2];
 
-  // The PDF content frame will exclude port except when origin isolation is
-  // enabled.
-  GURL server_url = embedded_test_server()->base_url();
-  GURL::Replacements clear_port;
-  clear_port.ClearPort();
-  GURL server_url_without_port = server_url.ReplaceComponents(clear_port);
-
-  auto tasks = NonToolTasks(task_manager.tasks());
-  ASSERT_THAT(
-      MockWebContentsTaskManager::TaskTitles(tasks),
-      testing::ElementsAre(
-          PrefixExpectedTabTitle(
-              embedded_test_server()->GetURL("/pdf/test.pdf").GetContent()),
-          GetParam() ? PrefixExpectedSubframeTitle("Chromium PDF Viewer")
-                     : PrefixExpectedMimeHandlerTitle("test.pdf"),
-          testing::AnyOf(
-              PrefixExpectedPdfSubframeTitle(server_url.spec()),
-              PrefixExpectedPdfSubframeTitle(server_url_without_port.spec()))));
-
-  EXPECT_EQ(tasks[2]->GetType(), Task::RENDERER);
+  // The PDF content frame should have the PDF subframe prefix.
+  EXPECT_EQ(Task::RENDERER, subframe_task->GetType());
+  const std::u16string expected_prefix = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_PDF_SUBFRAME_PREFIX, std::u16string());
+  EXPECT_TRUE(base::StartsWith(subframe_task->title(), expected_prefix,
+                               base::CompareCase::INSENSITIVE_ASCII));
 }
 
 IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
@@ -352,31 +282,15 @@ IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
   // There are 4 tasks. There is an about:blank frame from the first browser.
   // Then, the PDF viewer in the incognito browser has 3 frames: the main
   // embedder frame, the PDF extension frame, and the PDF content frame.
+  ASSERT_EQ(4U, task_manager.tasks().size());
+  const Task* subframe_task = task_manager.tasks()[3];
 
-  // The PDF content frame will exclude port except when origin isolation is
-  // enabled.
-  GURL server_url = embedded_test_server()->base_url();
-  GURL::Replacements clear_port;
-  clear_port.ClearPort();
-  GURL server_url_without_port = server_url.ReplaceComponents(clear_port);
-
-  auto tasks = NonToolTasks(task_manager.tasks());
-  ASSERT_THAT(
-      MockWebContentsTaskManager::TaskTitles(tasks),
-      testing::ElementsAre(
-          PrefixExpectedTabTitle("about:blank"),
-          PrefixExpectedTabIncognitoTitle(
-              embedded_test_server()->GetURL("/pdf/test.pdf").GetContent()),
-          GetParam()
-              ? PrefixExpectedSubframeIncognitoTitle("Chromium PDF Viewer")
-              : PrefixExpectedMimeHandlerTitle("test.pdf"),
-          // The PDF content frame should have the incognito PDF subframe
-          // prefix.
-          testing::AnyOf(
-              PrefixExpectedPdfSubframeIncognitoTitle(server_url.spec()),
-              PrefixExpectedPdfSubframeIncognitoTitle(
-                  server_url_without_port.spec()))));
-  EXPECT_EQ(tasks[3]->GetType(), Task::RENDERER);
+  // The PDF content frame should have the incognito PDF subframe prefix.
+  EXPECT_EQ(Task::RENDERER, subframe_task->GetType());
+  const std::u16string expected_prefix = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_PDF_SUBFRAME_INCOGNITO_PREFIX, std::u16string());
+  EXPECT_TRUE(base::StartsWith(subframe_task->title(), expected_prefix,
+                               base::CompareCase::INSENSITIVE_ASCII));
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
