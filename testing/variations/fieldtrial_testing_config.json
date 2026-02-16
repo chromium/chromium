@@ -26424,6 +26424,24 @@
             ]
         }
     ],
+    "TaiyakiAllUsers": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260216",
+                    "params": {
+                        "choice_screen_surface": "all"
+                    },
+                    "enable_features": [
+                        "Taiyaki"
+                    ]
+                }
+            ]
+        }
+    ],
     "TaskManagerDesktopRefresh": [
         {
             "platforms": [
