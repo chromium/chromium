@@ -27,19 +27,17 @@ CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::GetRasterContent(
         canvas_deferred_paint_record->GetPaintRecord());
   }
 
+  // To decode high bit depth image source to half float backed image, we need
+  // to sniff the image bit depth here to avoid double decoding.
+  auto target_color_type = (info_.format == viz::SinglePlaneFormat::kRGBA_F16 &&
+                            draw_image.paint_image().is_high_bit_depth())
+                               ? kRGBA_F16_SkColorType
+                               : kN32_SkColorType;
   cc::TargetColorParams target_color_params;
   target_color_params.color_space = info_.color_space;
 
-  // To decode high bit depth image source to half float backed image, we need
-  // to sniff the image bit depth here to avoid double decoding.
-  auto image_provider_color_type =
-      (info_.format == viz::SinglePlaneFormat::kRGBA_F16 &&
-       draw_image.paint_image().is_high_bit_depth())
-          ? kRGBA_F16_SkColorType
-          : kN32_SkColorType;
-
   return cc::PlaybackImageProvider(
-             &Image::SharedCCDecodeCache(image_provider_color_type),
+             &Image::SharedCCDecodeCache(target_color_type),
              target_color_params, cc::PlaybackImageProvider::Settings())
       .GetRasterContent(draw_image);
 }
