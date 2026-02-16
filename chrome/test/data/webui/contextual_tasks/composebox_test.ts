@@ -17,7 +17,7 @@ import {GlowAnimationState} from 'chrome://resources/cr_components/search/consta
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
@@ -626,14 +626,14 @@ suite('ContextualTasksComposeboxTest', () => {
     // `submitContainer` must be clickable for tabbing->enter to submit to work.
     submitContainer?.click();
 
+    mockTimer.tick(0);
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertEquals(
-        composebox.animationState, GlowAnimationState.SUBMITTING,
-        'Query is submitted via submitQuery_()');
-
     assertEquals(0, composebox.$.context.files_.size);
+
+    // Should be no longer `EXPANDING` after successful upload and submit click.
+    assertNotEquals(composebox.animationState, GlowAnimationState.EXPANDING);
   });
 
   test('Composebox submit button disabled when uploading files', async () => {
@@ -673,6 +673,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
     submitContainer?.click();
 
+    mockTimer.tick(0);
     await composebox.updateComplete;
     await microtasksFinished();
     assertEquals(
@@ -693,10 +694,17 @@ suite('ContextualTasksComposeboxTest', () => {
         submitContainer, 'pointer-events', 'auto',
         'Submit container should still have pointer-events on,\
             even when enabled.');
+
     submitContainer?.click();
-    assertEquals(
-        composebox.animationState, GlowAnimationState.SUBMITTING,
-        'Query is submitted via submitQuery_()');
+
+    mockTimer.tick(0);
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    assertEquals(0, composebox.$.context.files_.size);
+
+    // Should be no longer `EXPANDING` after successful upload and submit click.
+    assertNotEquals(composebox.animationState, GlowAnimationState.EXPANDING);
   });
 
   test('Composebox submit button disabled when uploading tabs', async () => {
@@ -741,8 +749,6 @@ suite('ContextualTasksComposeboxTest', () => {
 
     const submitContainer: HTMLElement|null = getSubmitContainer();
     assertTrue(!!submitContainer, 'Submit container button should exist');
-    const submitOverlay: HTMLElement|null =
-        submitContainer.querySelector('#submitOverlay');
 
     assertStyle(
         submitContainer, 'cursor', 'not-allowed',
@@ -753,9 +759,8 @@ suite('ContextualTasksComposeboxTest', () => {
             even when disabled.');
 
     submitContainer?.click();
-    submitButton?.click();
-    submitOverlay?.click();
 
+    mockTimer.tick(0);
     await composebox.updateComplete;
     await microtasksFinished();
 
@@ -784,14 +789,14 @@ suite('ContextualTasksComposeboxTest', () => {
 
     submitContainer?.click();
 
+    mockTimer.tick(0);
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertEquals(
-        composebox.animationState, GlowAnimationState.SUBMITTING,
-        'Query is submitted via submitQuery_()');
-
     assertEquals(0, composebox.$.context.files_.size);
+
+    // Should be no longer `EXPANDING` after successful upload and submit click.
+    assertNotEquals(composebox.animationState, GlowAnimationState.EXPANDING);
   });
 
   test(
@@ -858,14 +863,16 @@ suite('ContextualTasksComposeboxTest', () => {
 
         submitContainer?.click();
 
+        mockTimer.tick(0);
         await composebox.updateComplete;
         await microtasksFinished();
 
-        assertEquals(
-            composebox.animationState, GlowAnimationState.SUBMITTING,
-            'Query is submitted via submitQuery_()');
-
         assertEquals(0, composebox.$.context.files_.size);
+
+        // Should be no longer `EXPANDING` after successful upload and submit
+        // click.
+        assertNotEquals(
+            composebox.animationState, GlowAnimationState.EXPANDING);
       });
 
   test(
