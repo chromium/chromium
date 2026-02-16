@@ -82,8 +82,9 @@ struct HistoryEntry {
   // visit to `url` on a particular day as defined in the local timezone.
   double time;
 
-  // Timestamps of all local or remote visits the same URL on the same day.
-  array<double> all_timestamps;
+  // Timestamps of all local or remote visits to this and similar URLs on the
+  // same day, keyed by URL.
+  map<string, array<double>> all_timestamps;
 
   // Date to display on various services.
   string date_short;

@@ -30,6 +30,7 @@
 #include "components/history/core/browser/web_history_service_observer.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
 FORWARD_DECLARE_TEST(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions);
@@ -94,8 +95,9 @@ class BrowsingHistoryService : public HistoryServiceObserver,
     // The sync ID of the client on which the most recent visit occurred.
     std::string client_id;
 
-    // Timestamps of all local or remote visits the same URL on the same day.
-    std::set<base::Time> all_timestamps;
+    // Timestamps of all local or remote visits to this or similar URLs on the
+    // same day. Similar URLs are ones with matching title and host.
+    absl::flat_hash_map<GURL, std::set<base::Time>> all_timestamps;
 
     // If true, this entry is a search result.
     bool is_search_result;

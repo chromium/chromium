@@ -13,9 +13,13 @@ import {middleOfNode} from 'chrome://webui-test/mouse_mock_interactions.js';
  * @param timestamp Timestamp of the entry, as a number in ms or a string which
  *     can be parsed by Date.parse().
  * @param urlStr The URL to set on this entry.
+ * @param otherTimestamps The other timestamps associated with this or similar
+ *     urls. This should not include the current `timestamp` associated with
+ *     `urlStr`.
  */
 export function createHistoryEntry(
-    timestamp: number|string, urlStr: string): HistoryEntry {
+    timestamp: number|string, urlStr: string,
+    otherTimestamps?: {[key: string]: number[]}): HistoryEntry {
   if (typeof timestamp === 'string') {
     timestamp += ' UTC';
   }
@@ -23,8 +27,19 @@ export function createHistoryEntry(
   const d = new Date(timestamp);
   const url = new URL(urlStr);
   const domain = url.host;
+
+  // Add the other urls' timestamps (if any) and append the current url &
+  // timestamp to allTimestamps.
+  otherTimestamps = otherTimestamps || {};
+  const {[urlStr]: currentUrlTimestamps = [], ...otherUrlsTimestamps} =
+      otherTimestamps;
+  const allTimestamps = {
+    [urlStr]: [d.getTime(), ...currentUrlTimestamps],
+    ...otherUrlsTimestamps,
+  };
+
   return {
-    allTimestamps: [d.getTime()],
+    allTimestamps: allTimestamps,
     remoteIconUrlForUma: '',
     isUrlInRemoteUserData: false,
     blockedVisit: false,

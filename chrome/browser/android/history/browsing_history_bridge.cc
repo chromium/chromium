@@ -121,11 +121,19 @@ void BrowsingHistoryBridge::OnQueryComplete(
     if (domain.empty())
       domain = base::UTF8ToUTF16(entry.url.GetScheme() + ":");
 
-    // This relies on |all_timestamps| being a sorted data structure.
+    // This relies on the list of timestamps per url in |all_timestamps| being a
+    // sorted data structure.
+    // Since the similar visits grouping logic does not yet exist on Android,
+    // `all_timestamps` will only carry timestamps for the same url. See
+    // b/460405414 for more details.
+    // TODO(b/483287809): Enable similar visits grouping for Android.
+    auto url_and_timestamps = entry.all_timestamps.find(entry.url);
+    CHECK(url_and_timestamps != entry.all_timestamps.end());
+    const std::set<base::Time>& timestamps = url_and_timestamps->second;
     int64_t most_recent_java_timestamp =
-        entry.all_timestamps.rbegin()->InMillisecondsSinceUnixEpoch();
+        timestamps.rbegin()->InMillisecondsSinceUnixEpoch();
     std::vector<int64_t> native_timestamps;
-    for (const base::Time& val : entry.all_timestamps) {
+    for (const base::Time& val : timestamps) {
       native_timestamps.push_back(
           val.ToDeltaSinceWindowsEpoch().InMicroseconds());
     }
@@ -162,7 +170,11 @@ void BrowsingHistoryBridge::MarkItemForRemoval(
                      ? base::android::ConvertJavaStringToUTF8(env, j_app_id)
                      : history::kNoAppIdFilter;
   for (int64_t val : timestamps) {
-    entry.all_timestamps.insert(
+    // Since the similar visits grouping logic does not yet exist on Android,
+    // we'll only pass the timestamps for the same url. See b/460405414 for more
+    // details.
+    // TODO(b/483287809): Enable similar visits grouping for Android.
+    entry.all_timestamps[entry.url].insert(
         base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(val)));
   }
   items_to_remove_.push_back(entry);

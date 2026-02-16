@@ -470,7 +470,11 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
         [self.tableViewModel itemAtIndexPath:indexPath]);
     BrowsingHistoryService::HistoryEntry entry;
     entry.url = object.URL;
-    entry.all_timestamps.insert(object.timestamp);
+    // Since the similar visits grouping logic does not exist on iOS, we only
+    // need to pass the timestamp for the current URL. See b/460405414 for more
+    // details.
+    // TODO(b/483287809): Enable similar visits grouping for iOS.
+    entry.all_timestamps[object.URL].insert(object.timestamp);
     entries.push_back(entry);
   }
   self.historyService->RemoveVisits(entries);

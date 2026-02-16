@@ -306,7 +306,7 @@ class BrowsingHistoryServiceTest : public ::testing::TestWithParam<bool> {
     HistoryEntry entry;
     entry.url = GURL(url);
     for (int hour_offset : hour_offsets) {
-      entry.all_timestamps.insert(OffsetToTime(hour_offset));
+      entry.all_timestamps[entry.url].insert(OffsetToTime(hour_offset));
     }
     return entry;
   }
@@ -659,8 +659,8 @@ TEST_P(BrowsingHistoryServiceTest, MergeDuplicatesVerifyTimestamps) {
                                               {kUrl1, 3, kRemote},
                                               {kUrl2, 1, kRemote},
                                           }));
-  EXPECT_EQ(3U, results.first[0].all_timestamps.size());
-  EXPECT_EQ(1U, results.first[1].all_timestamps.size());
+  EXPECT_EQ(3U, results.first[0].all_timestamps[GURL(kUrl1)].size());
+  EXPECT_EQ(1U, results.first[1].all_timestamps[GURL(kUrl2)].size());
 }
 
 TEST_P(BrowsingHistoryServiceTest, MergeDuplicatesKeepNonEmptyIconUrl) {
