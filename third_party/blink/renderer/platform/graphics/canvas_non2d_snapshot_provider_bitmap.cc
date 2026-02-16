@@ -27,8 +27,6 @@ CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::GetRasterContent(
         canvas_deferred_paint_record->GetPaintRecord());
   }
 
-  // TODO(xidachen): Ensure this function works for paint worklet generated
-  // images.
   cc::TargetColorParams target_color_params;
   target_color_params.color_space = info_.color_space;
 
