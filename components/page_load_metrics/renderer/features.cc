@@ -9,5 +9,5 @@
 namespace page_load_metrics::features {
 // Reduce the number of observer calls. crbug.com/40442595 for more details.
 BASE_FEATURE(kMetricsRenderFrameObserverImprovement,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace page_load_metrics::features
