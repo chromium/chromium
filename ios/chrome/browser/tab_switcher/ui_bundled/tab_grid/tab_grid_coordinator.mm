@@ -135,7 +135,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout_providing.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -1146,6 +1145,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // to initialize them.
   _regularBrowser = nil;
   _incognitoBrowser = nil;
+  _inactiveBrowser = nil;
 }
 
 - (void)stop {
@@ -1360,8 +1360,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)showInactiveTabs {
-  CHECK(!IsInactiveTabsExplicitlyDisabledByUser(
-      _inactiveBrowser->GetProfile()->GetPrefs()));
   [self.inactiveTabsCoordinator show];
 }
 
