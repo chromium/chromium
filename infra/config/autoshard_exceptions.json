@@ -138,7 +138,7 @@
                 "try_builder": "linux-rel"
             },
             "browser_tests": {
-                "shards": 55,
+                "shards": 51,
                 "try_builder": "linux-rel"
             },
             "components_unittests": {
@@ -190,7 +190,7 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "sync_integration_tests": {
-                "shards": 11,
+                "shards": 10,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "unit_tests": {
@@ -224,7 +224,7 @@
                 "try_builder": "linux_chromium_tsan_rel_ng"
             },
             "unit_tests": {
-                "shards": 12,
+                "shards": 10,
                 "try_builder": "linux_chromium_tsan_rel_ng"
             }
         }
