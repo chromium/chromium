@@ -555,6 +555,8 @@ static_library("browser") {
     "ml_model/autofill_ai/autofill_ai_model_executor.h",
     "ml_model/autofill_ai/autofill_ai_model_executor_impl.cc",
     "ml_model/autofill_ai/autofill_ai_model_executor_impl.h",
+    "network/autofill_ai/private_pass_conversion_util.cc",
+    "network/autofill_ai/private_pass_conversion_util.h",
     "network/autofill_ai/wallet_pass_access_manager.h",
     "network/autofill_ai/wallet_pass_access_manager_impl.cc",
     "network/autofill_ai/wallet_pass_access_manager_impl.h",

@@ -17,8 +17,14 @@ class AutofillValuableSpecifics;
 
 namespace autofill {
 
+class ChromeValuablesMetadata;
 class EntityInstance;
 class EntityType;
+
+// Serializes metadata related to `EntityInstance` into
+// `ChromeValuablesMetadata`.
+ChromeValuablesMetadata SerializeChromeValuablesMetadata(
+    const EntityInstance& entity);
 
 // Converts the given `entity` into a `syncer::EntityData`.
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
