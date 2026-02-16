@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/crash/core/common/crash_key.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
@@ -285,6 +286,9 @@ bool GraphiteSharedContext::InsertRecordingImpl(
     // cache in case the error was due to a corrupted cached shader blob.
     GpuProcessShmCount::ScopedIncrement use_shader_cache(
         use_shader_cache_shm_count_);
+    static crash_reporter::CrashKeyString<1024> insert_error_key(
+        "graphite-insert-error");
+    insert_error_key.Set(insert_status.message());
     CHECK(simulating_insert_failure);
   } else if (insert_status ==
              skgpu::graphite::InsertStatus::kOutOfOrderRecording) {
