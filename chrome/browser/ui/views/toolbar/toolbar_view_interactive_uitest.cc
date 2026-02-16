@@ -192,7 +192,7 @@ class ToolbarViewTest : public InteractiveBrowserTest,
     // OS.
     ASSERT_TRUE(base::test::RunUntil([browser]() {
       InitialWebUIManager* manager = InitialWebUIManager::From(browser);
-      return !manager || !manager->ShouldDeferShow();
+      return !manager || !manager->RequestDeferShow(base::DoNothing());
     }));
   }
 

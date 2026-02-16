@@ -1109,6 +1109,12 @@ chromium-metrics-reviews@google.com.
     user did not have a Chrome browser window open in the previous session, this
     metric is not recorded.
 
+    If kWebUIReloadButtonDeferBrowserViewShow is enabled, the browser window
+    display is deferred until the initial WebUI is ready. The measurement
+    initiates using the first active WebContents without requiring its strict
+    visibility, and the measurement is recorded in the same way once that
+    WebContents gets to complete its first non-empty painting.
+
     Do not modify this metric in any way without contacting
     chrome-ds@google.com.
 

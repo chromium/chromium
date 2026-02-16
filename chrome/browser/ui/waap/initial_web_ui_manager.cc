@@ -22,24 +22,26 @@ InitialWebUIManager* InitialWebUIManager::From(
   return Get(browser_window_interface->GetUnownedUserDataHost());
 }
 
-bool InitialWebUIManager::ShouldDeferShow() {
+bool InitialWebUIManager::RequestDeferShow(base::OnceClosure callback) {
   if (!features::kWebUIReloadButtonDeferBrowserViewShow.Get()) {
     return false;
   }
-  return is_initial_web_ui_pending_;
+  if (is_initial_web_ui_pending_) {
+    is_show_pending_ = true;
+    web_ui_ready_callback_ = std::move(callback);
+    return true;
+  }
+  return false;
+}
+
+bool InitialWebUIManager::IsShowPending() const {
+  return is_show_pending_;
 }
 
 void InitialWebUIManager::OnWebUIToolbarLoaded() {
   is_initial_web_ui_pending_ = false;
+  is_show_pending_ = false;
   if (web_ui_ready_callback_) {
     std::move(web_ui_ready_callback_).Run();
   }
-}
-
-void InitialWebUIManager::SetWebUIReadyCallback(base::OnceClosure callback) {
-  if (!is_initial_web_ui_pending_) {
-    std::move(callback).Run();
-    return;
-  }
-  web_ui_ready_callback_ = std::move(callback);
 }
