@@ -38,9 +38,8 @@ bool IsRuleSegmentVisible(const GridTrackSizingDirection track_direction,
       return !gap_state.IsEmpty();
     case RuleVisibilityItems::kBetween:
       // Paint only when both sides of the segment are occupied (i.e. gap
-      // segment state is none as it represents a segment occupied on both
-      // sides).
-      return gap_state.status_ == GapSegmentState::kNone;
+      // segment state has no empty status).
+      return !gap_state.HasEmptyStatus();
     case RuleVisibilityItems::kAuto:
       // `auto` should have been resolved before reaching this point.
       NOTREACHED();
@@ -61,8 +60,12 @@ bool ShouldMoveIntersectionStartForward(
     const RuleVisibilityItems rule_visibility,
     const GapGeometry& gap_geometry,
     const Vector<GapIntersection>& intersections) {
+  const bool is_rule_segment_visible = IsRuleSegmentVisible(
+      track_direction, gap_index, start_index, rule_visibility, gap_geometry);
   if (rule_break == RuleBreak::kNone) {
-    return false;
+    // Even with no breaks at intersections, skip segments that are not visible
+    // based on `rule-visibility-items`.
+    return !is_rule_segment_visible;
   }
 
   const BlockedStatus blocked_status =
@@ -70,8 +73,7 @@ bool ShouldMoveIntersectionStartForward(
                                                 start_index, intersections);
   // Advance start if the segment it's blocked after or not visible.
   if (blocked_status.HasBlockedStatus(BlockedStatus::kBlockedAfter) ||
-      !IsRuleSegmentVisible(track_direction, gap_index, start_index,
-                            rule_visibility, gap_geometry)) {
+      !is_rule_segment_visible) {
     return true;
   }
 
