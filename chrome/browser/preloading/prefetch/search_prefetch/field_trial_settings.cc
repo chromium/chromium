@@ -8,9 +8,11 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
@@ -202,3 +204,54 @@ const base::FeatureParam<base::TimeDelta>
     kSuppressesSearchPrefetchOnSlowNetworkThreshold{
         &kSuppressesSearchPrefetchOnSlowNetwork,
         "slow_network_threshold_for_search_prefetch", base::Milliseconds(208)};
+
+BASE_FEATURE(kSuppressPrefetchForUnsupportedSearchMode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Allows to specify a comma-separated list of unsupported parameters, e.g.
+// "udm=50,param2=value1=value2", in which case both "udm=50" and
+// "param2=value1" and "param2=value2" will be considered as unsupported.
+const base::FeatureParam<std::string> kUnsupportedSearchPrefetchModes{
+    &kSuppressPrefetchForUnsupportedSearchMode,
+    "unsupported_search_prefetch_modes", "udm=50"};
+
+bool ShouldSuppressPrefetchForUnsupportedMode(const GURL& url) {
+  if (!base::FeatureList::IsEnabled(
+          kSuppressPrefetchForUnsupportedSearchMode)) {
+    return false;
+  }
+  std::vector<std::string> unsupported_modes =
+      base::SplitString(base::GetFieldTrialParamValueByFeature(
+                            kSuppressPrefetchForUnsupportedSearchMode,
+                            "unsupported_search_prefetch_modes"),
+                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (std::string_view unsupported_mode : unsupported_modes) {
+    std::vector<std::string_view> key_values =
+        base::SplitStringPiece(unsupported_mode, "=", base::TRIM_WHITESPACE,
+                               base::SPLIT_WANT_NONEMPTY);
+    CHECK(!key_values.empty());
+    std::string_view key = key_values[0];
+    std::string value;
+    if (!net::GetValueForKeyInQuery(url, key, &value)) {
+      continue;
+    }
+    base::span<std::string_view> unsupported_values =
+        base::span(key_values).subspan(1u);
+    if (std::ranges::contains(unsupported_values, value)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ShouldSuppressPrefetchForUnsupportedMode(const AutocompleteMatch& match) {
+  if (!base::FeatureList::IsEnabled(
+          kSuppressPrefetchForUnsupportedSearchMode)) {
+    return false;
+  }
+  // TODO(crbug.com/479054738): AIM suggestions should not be prefetched for
+  // now. Revisit this decision later.
+  if (match.IsSearchAimSuggestion()) {
+    return true;
+  }
+  return ShouldSuppressPrefetchForUnsupportedMode(match.destination_url);
+}

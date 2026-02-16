@@ -6760,6 +6760,7 @@ test("unit_tests") {
     "../browser/predictors/prefetch_manager_unittest.cc",
     "../browser/predictors/resource_prefetch_predictor_tables_unittest.cc",
     "../browser/predictors/resource_prefetch_predictor_unittest.cc",
+    "../browser/preloading/prefetch/search_prefetch/field_trial_settings_unittest.cc",
     "../browser/preloading/prefetch/search_prefetch/search_prefetch_keep_alive_request_track_unittest.cc",
     "../browser/preloading/preloading_prefs_unittest.cc",
     "../browser/profiles/chrome_incognito_mode_policy_handler_unittest.cc",

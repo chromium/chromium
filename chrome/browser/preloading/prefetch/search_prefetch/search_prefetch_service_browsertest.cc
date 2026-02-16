@@ -4407,3 +4407,87 @@ IN_PROC_BROWSER_TEST_F(SearchKeepAliveRequestTrackerBrowserTest,
       "Omnibox.SearchPrefetch.KeepAliveRequestFinalStage",
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted, 1);
 }
+
+// Test suite for `kSuppressPrefetchForUnsupportedSearchMode`.
+class SearchPrefetchUnsupportedModeBrowserTest
+    : public SearchPrefetchServiceEnabledBrowserTest {
+ public:
+  SearchPrefetchUnsupportedModeBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kSuppressPrefetchForUnsupportedSearchMode,
+          {{"unsupported_search_prefetch_modes", "udm=50,foo=bar"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchUnsupportedModeBrowserTest,
+                       UnsupportedModeFromURLNotPrefetched) {
+  SetDSEWithURL(
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "search";
+  AutocompleteMatch match =
+      CreateSearchSuggestionMatch(search_terms, search_terms,
+                                  /*prefetch_hint=*/true);
+  match.destination_url =
+      GetSearchServerQueryURL(std::string(search_terms) + "&udm=50");
+  AutocompleteResult result;
+  result.AppendMatches({match});
+
+  search_prefetch_service->OnResultChanged(GetWebContents(), result);
+
+  GURL canonical_search_url;
+  HasCanonicalPreloadingOmniboxSearchURL(match.destination_url,
+                                         browser()->profile(),
+                                         &canonical_search_url, nullptr);
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          canonical_search_url);
+  EXPECT_FALSE(prefetch_status.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchUnsupportedModeBrowserTest,
+                       AimSuggestionNotPrefetched) {
+  SetDSEWithURL(
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "search";
+
+  // Create an AIM suggestion.
+  AutocompleteMatch match(nullptr, 0, false,
+                          AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  match.destination_url = GetSearchServerQueryURL(search_terms);
+  match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
+      base::UTF8ToUTF16(search_terms));
+  omnibox::SuggestTemplateInfo suggest_template;
+  (*suggest_template.mutable_default_search_parameters())["udm"] = "50";
+  match.suggest_template = suggest_template;
+  AutocompleteResult result;
+  result.AppendMatches({match});
+
+  // This will trigger the prefetch check.
+  search_prefetch_service->OnResultChanged(GetWebContents(), result);
+
+  // Check that no prefetch was started.
+  GURL canonical_search_url;
+  HasCanonicalPreloadingOmniboxSearchURL(match.destination_url,
+                                         browser()->profile(),
+                                         &canonical_search_url, nullptr);
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          canonical_search_url);
+  EXPECT_FALSE(prefetch_status.has_value());
+}

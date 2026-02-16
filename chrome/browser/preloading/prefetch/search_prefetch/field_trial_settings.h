@@ -10,6 +10,8 @@
 #include "base/time/time.h"
 
 class GURL;
+struct AutocompleteMatch;
+
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -111,5 +113,11 @@ BASE_DECLARE_FEATURE(kSuppressesSearchPrefetchOnSlowNetwork);
 // The threshold to determine if the network is slow or not.
 extern const base::FeatureParam<base::TimeDelta>
     kSuppressesSearchPrefetchOnSlowNetworkThreshold;
+
+BASE_DECLARE_FEATURE(kSuppressPrefetchForUnsupportedSearchMode);
+extern const base::FeatureParam<std::string> kUnsupportedSearchPrefetchModes;
+
+bool ShouldSuppressPrefetchForUnsupportedMode(const AutocompleteMatch& match);
+bool ShouldSuppressPrefetchForUnsupportedMode(const GURL& url);
 
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

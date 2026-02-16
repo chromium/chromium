@@ -114,7 +114,10 @@ void RecordFinalStatus(SearchPrefetchStatus status, bool navigation_prefetch) {
   }
 }
 
-bool ShouldPrefetch(const AutocompleteMatch& match) {
+bool ShouldPrefetchSuggestion(const AutocompleteMatch& match) {
+  if (ShouldSuppressPrefetchForUnsupportedMode(match)) {
+    return false;
+  }
   // Prerender's threshold should definitely be higher than prefetch's. So a
   // prerender hints can be treated as a prefetch hint.
   return BaseSearchProvider::ShouldPrefetch(match) ||
@@ -718,7 +721,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
 
   for (const auto& match : result) {
     // Return early if neither prefetch nor prerender are enabled for the match.
-    if (!ShouldPrefetch(match)) {
+    if (!ShouldPrefetchSuggestion(match)) {
       continue;
     }
 
@@ -793,13 +796,20 @@ bool SearchPrefetchService::OnNavigationLikely(
     return false;
   }
 
-  if (!web_contents)
+  if (!web_contents) {
     return false;
-  if (!AllowTopNavigationPrefetch() && index == 0)
+  }
+  if (!AllowTopNavigationPrefetch() && index == 0) {
     return false;
+  }
   // Only prefetch search types.
-  if (!AutocompleteMatch::IsSearchType(match.type))
+  if (!AutocompleteMatch::IsSearchType(match.type)) {
     return false;
+  }
+
+  if (ShouldSuppressPrefetchForUnsupportedMode(match)) {
+    return false;
+  }
   // Check to make sure this is search related and that we can read the search
   // arguments. For Search history this may be null.
 
@@ -1137,7 +1147,6 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
     const network::ResourceRequest& tentative_resource_request,
     SearchPrefetchServingReasonRecorder& recorder) {
   const GURL& navigation_url = tentative_resource_request.url;
-
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   if (!template_url_service ||
@@ -1153,6 +1162,15 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
     recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
     return prefetches_.end();
   }
+
+  if (ShouldSuppressPrefetchForUnsupportedMode(
+          tentative_resource_request.url)) {
+    // Never intercept requests to unsupported search mode.
+    // TODO(lingqi): Add a new serving reason for this case.
+    recorder.reason_ = SearchPrefetchServingReason::kNotServedOtherReason;
+    return prefetches_.end();
+  }
+
   // TODO(https://crbug.com/417978876): figure out the reason why search_terms
   // can be empty when `HasCanonicalPreloadingOmniboxSearchURL` returns true.
   if (search_terms.empty()) {

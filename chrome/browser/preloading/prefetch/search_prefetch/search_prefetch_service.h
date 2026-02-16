@@ -104,7 +104,7 @@ enum class SearchPrefetchServingReason {
   // kRequestWasCancelled = 6,  // No longer used.
   // The request failed due to some network/service error.
   kRequestFailed = 7,
-  // The request wasn't served unexpectantly.
+  // The request wasn't served.
   kNotServedOtherReason = 8,
   // The navigation was a POST request, reload or link navigation.
   kPostReloadFormOrLink = 9,
