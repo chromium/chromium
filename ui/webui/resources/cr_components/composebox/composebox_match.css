@@ -10,7 +10,6 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --input-inline-spacing: 12px;
   --tab-select-color_: rgba(153, 200, 255, 1);
   outline: none;
   height: var(--cr-composebox-match-height, 44px);
@@ -89,8 +88,9 @@
   align-content: center;
   color: var(--color-composebox-font-light);
   font-size: var(--cr-composebox-match-text-container-font-size, 16px);
+  flex-grow: 1;
   overflow: hidden;
-  padding-inline: var(--input-inline-spacing) 64px;
+  padding-inline: var(--cr-searchbox-match-text-padding-inline-start, 12px) 4px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -100,21 +100,20 @@
       var(--color-composebox-font-light));
 }
 
+.container:hover:has(#remove:not([hidden])) #textContainer {
+  padding-inline-end: var(--cr-composebox-match-text-padding-inline-end, 4px);
+}
+
 #remove {
   --cr-icon-button-fill-color:
       var(--color-searchbox-results-icon-selected);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-hover-background-color:
       var(--color-searchbox-results-button-hover);
+  --cr-icon-button-margin-end: 4px;
+  --cr-icon-button-margin-start: 0;
   display: none;
-  position: absolute;
   top: var(--cr-composebox-match-remove-button-top, 6px);
-  right: 12px;
-}
-
-:host-context([dir='rtl']) #remove {
-  left: 12px;
-  right: unset;
 }
 
 .container:hover #remove:not([hidden]),

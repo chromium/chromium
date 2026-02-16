@@ -22,6 +22,7 @@
   --cr-composebox-match-match-padding-bottom: 0;
   --cr-composebox-match-remove-button-top: 4px;
   --cr-composebox-match-text-container-font-size: var(--omnibox-font-size);
+  --cr-composebox-match-text-padding-inline-end: 4px;
   --cr-composebox-max-height: 800px;
   --cr-composebox-text-container-padding-block-start: 0;
   --search-animated-glif-rotation-duration: 2000ms;

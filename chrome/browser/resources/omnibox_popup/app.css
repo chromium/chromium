@@ -16,7 +16,7 @@
   --cr-searchbox-match-icon-container-background-fallback: var(--color-omnibox-results-background-hovered);
   --cr-searchbox-match-padding: 6px;
   --cr-searchbox-match-padding-inline-start: 16px;
-  --cr-searchbox-match-text-padding-inline-start: 12px;
+  --cr-searchbox-match-text-padding-inline-end: 8px;
   --cr-searchbox-min-width: 75%;
   --cr-searchbox-results-action-chip-height: 26px;
   --cr-searchbox-results-margin-bottom: 0;
