@@ -59,10 +59,6 @@ constexpr char kPredServiceResponseNotificationsHistogram[] =
     "Permissions.PredictionService.Response.Notifications";
 constexpr char kPredServiceResponseGeolocationHistogram[] =
     "Permissions.PredictionService.Response.Geolocation";
-constexpr char kAIv3ResponseNotificationsHistogram[] =
-    "Permissions.AIv3.Response.Notifications";
-constexpr char kAIv3ResponseGeolocationHistogram[] =
-    "Permissions.AIv3.Response.Geolocation";
 constexpr char kAIv4ResponseNotificationsHistogram[] =
     "Permissions.AIv4.Response.Notifications";
 constexpr char kAIv4ResponseGeolocationHistogram[] =
@@ -342,16 +338,9 @@ INSTANTIATE_TEST_SUITE_P(
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
          PredictionSource::kServerSideCpssV3Model},
-        {/*test_name=*/"UsePermissionsAiv3OnDesktop",
-         /*enabled_features=*/
-         {permissions::features::kPermissionsAIv3},
-         /*disabled_features=*/{},
-         /*expected_prediction_source=*/
-         PredictionSource::kOnDeviceAiv3AndServerSideModel},
         {/*test_name=*/"UsePermissionsAiv4OverAiv4OnDesktop",
          /*enabled_features=*/
-         {permissions::features::kPermissionsAIv3,
-          permissions::features::kPermissionsAIv4},
+         {permissions::features::kPermissionsAIv4},
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
          PredictionSource::kOnDeviceAiv4AndServerSideModel},
@@ -412,8 +401,6 @@ class PredictionBasedPermissionUiExpectedHoldbackChanceTest
         kOnDevPredServiceResponseGeolocationHistogram,
         kPredServiceResponseNotificationsHistogram,
         kPredServiceResponseGeolocationHistogram,
-        kAIv3ResponseNotificationsHistogram,
-        kAIv3ResponseGeolocationHistogram,
     };
 
     for (const auto& histogram_name : kAllHistogramNames) {
@@ -498,21 +485,6 @@ INSTANTIATE_TEST_SUITE_P(
             /*request_type=*/permissions::RequestType::kGeolocation,
             /*updated_histograms=*/
             {kPredServiceResponseGeolocationHistogram},
-        },
-        // ----------------------- on-device AIv3 + server-side CPSSv3
-        {
-            /*holdback_chance=*/0,
-            /*prediction_source=*/
-            PredictionSource::kOnDeviceAiv3AndServerSideModel,
-            /*request_type=*/permissions::RequestType::kNotifications,
-            /*updated_histograms=*/{kAIv3ResponseNotificationsHistogram},
-        },
-        {
-            /*holdback_chance=*/1,
-            /*prediction_source=*/
-            PredictionSource::kOnDeviceAiv3AndServerSideModel,
-            /*request_type=*/permissions::RequestType::kGeolocation,
-            /*updated_histograms=*/{kAIv3ResponseGeolocationHistogram},
         },
         // ----------------------- on-device AIv4 + server-side CPSSv3
         {

@@ -13,7 +13,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
-#include "components/permissions/prediction_service/permissions_aiv3_handler.h"
 #include "components/permissions/prediction_service/permissions_aiv4_handler.h"
 #include "components/permissions/request_type.h"
 
@@ -70,9 +69,8 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
     return;
   }
 
-  // We set up model handlers if necessary in order of preference:
-  // Aiv4, Aiv3
-  // CPSSv1 is defined always as backup if further requirements for AivX are not
+  // We set up the AIv4 model handler if enabled.
+  // CPSSv1 is defined always as backup if further requirements for AIv4 are not
   // fulfilled (like the MSBB bit that we don't check here at the moment).
   // TODO(crbug.com/414527270) Only create models when its really necessary (see
   // PermissionsAiUiSelector::GetPredictionTypeToUse).
@@ -123,20 +121,6 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
         RequestType::kGeolocation, scheduling_params);
     return;
   }
-  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
-    VLOG(1) << "[PermissionsAI] PredictionModelHandlerProvider init AIv3";
-    notification_aiv3_handler_ = std::make_unique<PermissionsAiv3Handler>(
-        optimization_guide,
-        OptimizationTarget::
-            OPTIMIZATION_TARGET_NOTIFICATION_IMAGE_PERMISSION_RELEVANCE,
-        RequestType::kNotifications);
-    geolocation_aiv3_handler_ = std::make_unique<PermissionsAiv3Handler>(
-        optimization_guide,
-        OptimizationTarget::
-            OPTIMIZATION_TARGET_GEOLOCATION_IMAGE_PERMISSION_RELEVANCE,
-        RequestType::kGeolocation);
-    return;
-  }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
@@ -147,8 +131,6 @@ void PredictionModelHandlerProvider::Shutdown() {
   // LINT.IfChange(Shutdown)
   notification_prediction_model_handler_.reset();
   geolocation_prediction_model_handler_.reset();
-  notification_aiv3_handler_.reset();
-  geolocation_aiv3_handler_.reset();
   notification_aiv4_handler_.reset();
   geolocation_aiv4_handler_.reset();
   // LINT.ThenChange(//chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h:ModelHandlers)
@@ -180,19 +162,6 @@ PredictionModelHandlerProvider::GetPredictionModelHandler(
   }
 }
 
-PermissionsAiv3Handler*
-PredictionModelHandlerProvider::GetPermissionsAiv3Handler(
-    RequestType request_type) {
-  switch (request_type) {
-    case RequestType::kNotifications:
-      return notification_aiv3_handler_.get();
-    case RequestType::kGeolocation:
-      return geolocation_aiv3_handler_.get();
-    default:
-      NOTREACHED();
-  }
-}
-
 PermissionsAiv4Handler*
 PredictionModelHandlerProvider::GetPermissionsAiv4Handler(
     RequestType request_type) {
@@ -201,22 +170,6 @@ PredictionModelHandlerProvider::GetPermissionsAiv4Handler(
       return notification_aiv4_handler_.get();
     case RequestType::kGeolocation:
       return geolocation_aiv4_handler_.get();
-    default:
-      NOTREACHED();
-  }
-}
-
-void PredictionModelHandlerProvider::set_permissions_aiv3_handler_for_testing(
-    RequestType request_type,
-    std::unique_ptr<PermissionsAiv3Handler> aiv3_handler) {
-  CHECK_IS_TEST();
-  switch (request_type) {
-    case RequestType::kNotifications:
-      notification_aiv3_handler_ = std::move(aiv3_handler);
-      break;
-    case RequestType::kGeolocation:
-      geolocation_aiv3_handler_ = std::move(aiv3_handler);
-      break;
     default:
       NOTREACHED();
   }

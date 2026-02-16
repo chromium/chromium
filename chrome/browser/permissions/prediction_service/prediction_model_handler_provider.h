@@ -18,7 +18,6 @@ class OptimizationGuideKeyedService;
 namespace permissions {
 
 class PredictionModelHandler;
-class PermissionsAiv3Handler;
 class PermissionsAiv4Handler;
 
 class PredictionModelHandlerProvider
@@ -45,14 +44,10 @@ class PredictionModelHandlerProvider
 
   static bool IsAIv4FeatureEnabled();
   PredictionModelHandler* GetPredictionModelHandler(RequestType request_type);
-  PermissionsAiv3Handler* GetPermissionsAiv3Handler(RequestType request_type);
   PermissionsAiv4Handler* GetPermissionsAiv4Handler(RequestType request_type);
   passage_embeddings::Embedder* GetPassageEmbedder();
   bool IsPassageEmbedderReady() const;
 
-  void set_permissions_aiv3_handler_for_testing(
-      RequestType request_type,
-      std::unique_ptr<PermissionsAiv3Handler> handler);
   void set_permissions_aiv4_handler_for_testing(
       RequestType request_type,
       std::unique_ptr<PermissionsAiv4Handler> handler);
@@ -70,8 +65,6 @@ class PredictionModelHandlerProvider
   std::unique_ptr<PredictionModelHandler>
       notification_prediction_model_handler_;
   std::unique_ptr<PredictionModelHandler> geolocation_prediction_model_handler_;
-  std::unique_ptr<PermissionsAiv3Handler> notification_aiv3_handler_;
-  std::unique_ptr<PermissionsAiv3Handler> geolocation_aiv3_handler_;
   std::unique_ptr<PermissionsAiv4Handler> notification_aiv4_handler_;
   std::unique_ptr<PermissionsAiv4Handler> geolocation_aiv4_handler_;
   // LINT.ThenChange(//chrome/browser/permissions/prediction_service/prediction_model_handler_provider.cc:Shutdown)

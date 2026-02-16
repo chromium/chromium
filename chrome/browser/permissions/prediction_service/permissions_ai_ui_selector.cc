@@ -46,7 +46,6 @@
 // tflite right now.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
-#include "components/permissions/prediction_service/permissions_aiv3_handler.h"
 #include "components/permissions/prediction_service/permissions_aiv4_handler.h"
 #include "components/permissions/prediction_service/prediction_model_handler.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -58,7 +57,6 @@ using ::permissions::LanguageDetectionObserver;
 using ::permissions::PassageEmbedderDelegate;
 using ::permissions::PermissionRequest;
 using ::permissions::PermissionRequestRelevance;
-using ::permissions::PermissionsAiv3Handler;
 using ::permissions::PermissionsAiv4Handler;
 using ::permissions::PermissionUiSelector;
 using ::permissions::PermissionUmaUtil;
@@ -226,17 +224,6 @@ void PermissionsAiUiSelector::InquireCpssV1OnDeviceModelIfAvailable(
   }
   VLOG(1) << "[CPSS] On device CPSSv1 model unavailable";
   FinishRequest(Decision::UseNormalUiAndShowNoWarning());
-}
-
-void PermissionsAiUiSelector::InquireOnDeviceAiv3AndServerModelIfAvailable(
-    content::RenderWidgetHostView* host_view,
-    permissions::PredictionRequestFeatures features,
-    PredictionRequestMetadata request_metadata) {
-  last_permission_ai_relevance_model_ =
-      permissions::PermissionAiRelevanceModel::kAIv3;
-  VLOG(1) << "[PermissionsAIv3] On device AI prediction requested";
-  TakeSnapshot(host_view, {std::move(features), std::move(request_metadata),
-                           PredictionModelType::kOnDeviceAiV3Model});
 }
 
 void PermissionsAiUiSelector::InquireOnDeviceAiv4AndServerModelIfAvailable(
@@ -411,16 +398,10 @@ void PermissionsAiUiSelector::SelectUiToUse(
     case PredictionSource::kOnDeviceAiv4AndServerSideModel:
       return InquireOnDeviceAiv4AndServerModelIfAvailable(
           web_contents, std::move(features), std::move(request_metadata));
-    case PredictionSource::kOnDeviceAiv3AndServerSideModel:
-      return InquireOnDeviceAiv3AndServerModelIfAvailable(
-          web_contents->GetRenderWidgetHostView(), std::move(features),
-          std::move(request_metadata));
     case PredictionSource::kOnDeviceCpssV1Model:
       return InquireCpssV1OnDeviceModelIfAvailable(features,
                                                    std::move(request_metadata));
 #else
-    case PredictionSource::kOnDeviceAiv3AndServerSideModel:
-      [[fallthrough]];
     case PredictionSource::kOnDeviceCpssV1Model:
       VLOG(1) << "[CPSS] Client doesn't support on-device tflite: "
               << static_cast<int>(prediction_source);
@@ -561,10 +542,6 @@ PermissionsAiUiSelector::BuildPredictionRequestFeatures(
   features.permission_relevance = PermissionRequestRelevance::kUnspecified;
 
   switch (prediction_source) {
-    case PredictionSource::kOnDeviceAiv3AndServerSideModel:
-      features.experiment_id =
-          PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId;
-      break;
     case PredictionSource::kOnDeviceAiv4AndServerSideModel:
       features.experiment_id =
           PredictionRequestFeatures::ExperimentId::kAiV4ExperimentId;
@@ -681,9 +658,6 @@ bool PermissionsAiUiSelector::ShouldHoldBack(
     case PredictionSource::kOnDeviceAiv4AndServerSideModel:
       prediction_model = PredictionModelType::kOnDeviceAiV4Model;
       break;
-    case PredictionSource::kOnDeviceAiv3AndServerSideModel:
-      prediction_model = PredictionModelType::kOnDeviceAiV3Model;
-      break;
     case PredictionSource::kServerSideCpssV3Model:
       prediction_model = PredictionModelType::kServerSideCpssV3Model;
       break;
@@ -740,16 +714,12 @@ PredictionSource PermissionsAiUiSelector::GetPredictionTypeToUse(
 #endif  // BUILDFLAG(IS_ANDROID)
   }
   if (use_server_side) {
-    // AIvX models take priority over each other in the following order:
-    // AIv4, AIv3
+    // The AIv4 model takes priority over the server-side CPSSv3 model if
+    // enabled.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     if (PredictionModelHandlerProvider::IsAIv4FeatureEnabled()) {
       VLOG(1) << "[CPSS] GetPredictionTypeToUse AIv4";
       return PredictionSource::kOnDeviceAiv4AndServerSideModel;
-    }
-    if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
-      VLOG(1) << "[CPSS] GetPredictionTypeToUse AIv3";
-      return PredictionSource::kOnDeviceAiv3AndServerSideModel;
     }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     VLOG(1) << "[CPSS] GetPredictionTypeToUse CPSSv3";
@@ -849,30 +819,6 @@ void PermissionsAiUiSelector::ExecuteOnDeviceAivXModel(
         model_data.request_metadata.request_type;
 
     switch (model_data.model_type) {
-      case PredictionModelType::kOnDeviceAiV3Model: {
-        DCHECK(model_data.snapshot.has_value());
-        VLOG(1)
-            << "[PermissionsAI] ExecuteOnDeviceAivXModel kOnDeviceAiV3Model";
-        if (PermissionsAiv3Handler* aiv3_handler =
-                prediction_model_handler_provider->GetPermissionsAiv3Handler(
-                    request_type)) {
-          VLOG(1) << "[PermissionsAI] Inquire AIv3 model";
-          return aiv3_handler->ExecuteModel(
-              /*callback=*/base::BindOnce(
-                  &PermissionsAiUiSelector::
-                      OnDeviceTfliteAivXModelExecutionCallback,
-                  weak_ptr_factory_.GetWeakPtr(),
-                  /*model_inquire_start_time=*/base::TimeTicks::Now(),
-                  std::move(model_data.features),
-                  std::move(model_data.request_metadata),
-                  model_data.model_type),
-              /*model_input=*/PermissionsAiv3Handler::ModelInput(
-                  std::move(model_data.snapshot.value())));
-        } else {
-          VLOG(1) << "[PermissionsAI] No AIv3 handler";
-        }
-        break;
-      }
       case PredictionModelType::kOnDeviceAiV4Model: {
         DCHECK(model_data.snapshot.has_value());
         DCHECK(model_data.inner_text_embedding.has_value());

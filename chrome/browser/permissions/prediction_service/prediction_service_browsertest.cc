@@ -49,7 +49,6 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
-#include "components/permissions/prediction_service/permissions_aiv3_handler.h"
 #include "components/permissions/prediction_service/prediction_model_handler.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
@@ -84,14 +83,12 @@ using ::permissions::GeneratePredictionsResponse;
 using ::permissions::LanguageDetectionStatus;
 using ::permissions::PassageEmbedderDelegate;
 using ::permissions::PermissionRequestRelevance;
-using ::permissions::PermissionsAiv3Handler;
 using ::permissions::PredictionRequestFeatures;
 using ::permissions::PredictionService;
 using ::test::BuildBitmap;
 using ::test::DelayedPassageEmbedderMock;
 using ::test::EmbedderMetadataProviderFake;
 using ::test::PassageEmbedderMock;
-using ::test::PermissionsAiv3HandlerFake;
 using ::test::PermissionsAiv4HandlerFake;
 using ::testing::_;
 using ::testing::AllOf;
@@ -107,12 +104,6 @@ using ExperimentId = PredictionRequestFeatures::ExperimentId;
 
 constexpr OptimizationTarget kCpssV1OptTargetNotification =
     OptimizationTarget::OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS;
-
-constexpr OptimizationTarget kAiv3OptTargetNotification = OptimizationTarget::
-    OPTIMIZATION_TARGET_NOTIFICATION_IMAGE_PERMISSION_RELEVANCE;
-
-constexpr OptimizationTarget kAiv3OptTargetGeolocation = OptimizationTarget::
-    OPTIMIZATION_TARGET_GEOLOCATION_IMAGE_PERMISSION_RELEVANCE;
 
 constexpr OptimizationTarget kAiv4OptTargetNotification = OptimizationTarget::
     OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_DESKTOP;
@@ -134,8 +125,8 @@ constexpr auto kLikelihoodLikely =
 
 constexpr std::string kNoHoldbackChance = "0";
 
-// Just a meaningless color used to create snapshot dummies for the AIv3 and
-// Aiv4 models.
+// Just a meaningless color used to create snapshot dummies for the
+// AIv4 model.
 constexpr SkColor kDefaultColor = SkColorSetRGB(0x1E, 0x1C, 0x0F);
 
 // This is the only server side reply that will trigger quiet UI at the
@@ -154,25 +145,7 @@ constexpr char kTFLiteLibAvailableHistogram[] =
     "Permissions.PredictionService.TFLiteLibAvailable";
 constexpr char kMSBBHistogram[] = "Permissions.PredictionService.MSBB";
 
-// Aiv3 relevant histograms
-constexpr std::string_view kAiv3NotificationsModelExecutionSuccessHistogram =
-    "OptimizationGuide.ModelExecutor.ExecutionStatus."
-    "NotificationPermissionsV3";
-constexpr std::string_view kAiv3GeolocationModelExecutionSuccessHistogram =
-    "OptimizationGuide.ModelExecutor.ExecutionStatus."
-    "GeolocationPermissionsV3";
-constexpr std::string_view kAiv3SnapshotTakenHistogram =
-    "Permissions.AIv3.SnapshotTaken";
-constexpr std::string_view kAiv3SnapshotTakenDurationHistogram =
-    "Permissions.AIv3.SnapshotTakenDuration";
-constexpr char kAIv3InquiryDurationHistogram[] =
-    "Permissions.AIv3.InquiryDuration";
-constexpr char kAIv3GeolocationHoldbackResponseHistogram[] =
-    "Permissions.AIv3.Response.Geolocation";
-constexpr char kAIv3NotificationsHoldbackResponseHistogram[] =
-    "Permissions.AIv3.Response.Notifications";
-
-// Aiv4 relevant histograms
+// AIv4 relevant histograms
 constexpr std::string_view kAiv4NotificationsModelExecutionSuccessHistogram =
     "OptimizationGuide.ModelExecutor.ExecutionStatus."
     "PermissionsAiv4NotificationsDesktop";
@@ -220,15 +193,13 @@ constexpr char kAiv4GeolocationRenderedTextSizeHistogram[] =
 constexpr std::string_view kZeroDotFiveReturnSignatureModel =
     "signature_model_ret_0.5.tflite";
 
-// An AIvX model that returns a constant value of 0 which will be converted
+// An AIv4 model that returns a constant value of 0 which will be converted
 // into a 'very unlikely' for notifications and geolocation permission
 // request.
-constexpr std::string_view kZeroReturnAiv3Model = "aiv3_ret_0.tflite";
 constexpr std::string_view kZeroReturnAiv4Model = "aiv4_ret_0.tflite";
 
-// An AIvX model that returns a constant value of 1 which will be converted
+// An AIv4 model that returns a constant value of 1 which will be converted
 // into a 'very likely' for notifications and geolocation permission request.
-constexpr std::string_view kOneReturnAiv3Model = "aiv3_ret_1.tflite";
 constexpr std::string_view kOneReturnAiv4Model = "aiv4_ret_1.tflite";
 
 // Non existing model file.
@@ -356,7 +327,6 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
   explicit PredictionServiceBrowserTestBase(
       const std::vector<FeatureRefAndParams>& enabled_features = {},
       const std::vector<FeatureRef>& disabled_features = {
-          permissions::features::kPermissionsAIv3,
           permissions::features::kPermissionsAIv4}) {
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
@@ -422,10 +392,6 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
 
   PredictionModelHandler* prediction_model_handler() {
     return model_handler_provider()->GetPredictionModelHandler(request_type());
-  }
-
-  PermissionsAiv3Handler* aiv3_model_handler() {
-    return model_handler_provider()->GetPermissionsAiv3Handler(request_type());
   }
 
   PermissionsAiv4Handler* aiv4_model_handler() {
@@ -496,14 +462,10 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
         browser()->profile());
   }
 
-  raw_ptr<PermissionsAiv3HandlerFake> aiv3_model_handler_ = nullptr;
   raw_ptr<PermissionsAiv4HandlerFake> aiv4_model_handler_ = nullptr;
 
  private:
   virtual void WaitForModelExecutionIfNecessary() {
-    if (aiv3_model_handler_) {
-      aiv3_model_handler_->WaitForModelExecutionForTesting();
-    }
     if (aiv4_model_handler_) {
       aiv4_model_handler_->WaitForModelExecutionForTesting();
     }
@@ -521,7 +483,6 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTestBase,
                        PredictionServiceEnabled) {
-  EXPECT_FALSE(aiv3_model_handler());
   EXPECT_FALSE(aiv4_model_handler());
   EXPECT_TRUE(prediction_model_handler());
 }
@@ -551,8 +512,6 @@ class PredictionServiceHoldbackBrowserTest
                                          },
                                          /*disabled_features=*/
                                          {permissions::features::
-                                              kPermissionsAIv3,
-                                          permissions::features::
                                               kPermissionsAIv4,
                                           permissions::features::
                                               kPermissionsAIP92}) {}
@@ -698,8 +657,6 @@ class SignatureModelPredictionServiceBrowserTest
                                            {}}},
                                          /*disabled_features=*/
                                          {permissions::features::
-                                              kPermissionsAIv3,
-                                          permissions::features::
                                               kPermissionsAIv4,
                                           permissions::features::
                                               kPermissionsAIP92}) {}
@@ -813,9 +770,9 @@ IN_PROC_BROWSER_TEST_P(SignatureModelPredictionServiceBrowserTest,
 }
 
 // -----------------------------------------------------------------------------
-// --------------- Prediction Service On Device Permissions AIv3 ---------------
+// --------------- Prediction Service On Device Permissions AIv4 ---------------
 // -----------------------------------------------------------------------------
-// Since AivX models will call the server side mock in the end, we need to
+// Since the AIv4 model will call the server side mock in the end, we need to
 // prevent holdback from suppressing the result of model evaluation randomly.
 // For this we set holdback chance to 0 (no holdback).
 #define CONFIGURE_NO_HOLDBACK_CHANCE                                        \
@@ -828,6 +785,26 @@ IN_PROC_BROWSER_TEST_P(SignatureModelPredictionServiceBrowserTest,
       }                                                                     \
     }                                                                       \
   }
+
+struct ModelMetadata {
+  std::string test_name;
+  std::string_view model_name;
+  // This is defined by the output of the AIv4 model (and the defined
+  // thresholds). It will be used as input to the server-side model
+  PermissionRequestRelevance expected_relevance;
+  // This is the output of the server-side model (that we mock for this
+  // test).
+  // It should define the decision shared with the permission request
+  // manager.
+  PermissionUiSelector::PredictionGrantLikelihood prediction_service_likelihood;
+  bool should_expect_quiet_ui;
+  int success_count_model_execution;
+};
+
+struct PermissionRequestMetadata {
+  OptimizationTarget optimization_target;
+  RequestType request_type;
+};
 
 template <class AivXHandler>
 class AivXModelPredictionServiceBrowserTest
@@ -848,8 +825,8 @@ class AivXModelPredictionServiceBrowserTest
   void SetUpOnMainThread() override {
     PredictionServiceBrowserTestBase::SetUpOnMainThread();
 
-    // AIvX model workflows end with calling the CPSSv3 server side model,
-    // providing it with the additional AIvX permission relevance field. Because
+    // The AIv4 model workflow ends with calling the CPSSv3 server side model,
+    // providing it with the additional AIv4 permission relevance field. Because
     // of this we only provide those workflows to users that agreed to data
     // collection.
     browser()->profile()->GetPrefs()->SetBoolean(
@@ -898,220 +875,6 @@ class AivXModelPredictionServiceBrowserTest
   }
 };
 
-struct ModelMetadata {
-  std::string test_name;
-  std::string_view model_name;
-  // This is defined by the output of the AIv3 model (and the defined
-  // thresholds). It will be used as input to the server-side model
-  PermissionRequestRelevance expected_relevance;
-  // This is the output of the server-side model (that we mock for this
-  // test).
-  // It should define the decision shared with the permission request
-  // manager.
-  PermissionUiSelector::PredictionGrantLikelihood prediction_service_likelihood;
-  bool should_expect_quiet_ui;
-  int success_count_model_execution;
-};
-
-struct PermissionRequestMetadata {
-  OptimizationTarget optimization_target;
-  RequestType request_type;
-};
-
-using Aiv3ModelTestCase = std::tuple<ModelMetadata, PermissionRequestMetadata>;
-
-class Aiv3ModelPredictionServiceBrowserTest
-    : public AivXModelPredictionServiceBrowserTest<PermissionsAiv3HandlerFake>,
-      public testing::WithParamInterface<Aiv3ModelTestCase> {
- public:
-  Aiv3ModelPredictionServiceBrowserTest()
-      : AivXModelPredictionServiceBrowserTest(/*enabled_features=*/
-                                              {
-                                                  CONFIGURE_NO_HOLDBACK_CHANCE,
-                                                  {permissions::features::
-                                                       kPermissionsAIv3,
-                                                   {}},
-                                              }, /*disabled_features=*/
-                                              {permissions::features::
-                                                   kPermissionsAIv4,
-                                               permissions::features::
-                                                   kPermissionsAIP92}) {}
-
-  RequestType request_type() const override {
-    return get<1>(GetParam()).request_type;
-  }
-
-  OptimizationTarget optimization_target() override {
-    return get<1>(GetParam()).optimization_target;
-  }
-
-  void UpdateAivXHandlerInModelProvider(
-      std::unique_ptr<PermissionsAiv3HandlerFake> handler) override {
-    model_handler_provider()->set_permissions_aiv3_handler_for_testing(
-        request_type(), std::move(handler));
-  }
-
-  PermissionsAiv3HandlerFake* model_handler() override {
-    return aiv3_model_handler_;
-  }
-
-  void set_model_handler(PermissionsAiv3HandlerFake* handler) override {
-    aiv3_model_handler_ = handler;
-  }
-};
-
-std::vector<ModelMetadata> aiv3_model_data_testcase = {
-    {
-        /*test_name=*/"OnDeviceVeryLowAndServerSideUnspecifiedResponse"
-                      "ReturnsDefaultUI",
-        /*model_name=*/kZeroReturnAiv3Model,
-        /*expected_relevance=*/PermissionRequestRelevance::kVeryLow,
-        /*prediction_service_likelihood=*/kLikelihoodUnspecified,
-        /*should_expect_quiet_ui=*/false,
-        /*success_count_model_execution=*/1,
-    },
-    {
-        /*test_name=*/"OnDeviceVeryLowAndServerSideVeryUnlikelyResponse"
-                      "ReturnsQuietUI",
-        /*model_name=*/kZeroReturnAiv3Model,
-        /*expected_relevance=*/PermissionRequestRelevance::kVeryLow,
-        /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
-        /*should_expect_quiet_ui=*/true,
-        /*success_count_model_execution=*/1,
-    },
-    {
-        /*test_name=*/"OnDeviceVeryHighAndServerSideUnspecifiedResponse"
-                      "ReturnsDefaultUI",
-        /*model_name=*/kOneReturnAiv3Model,
-        /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
-        /*prediction_service_likelihood=*/kLikelihoodUnspecified,
-        /*should_expect_quiet_ui=*/false,
-        /*success_count_model_execution=*/1,
-    },
-    {
-        /*test_name=*/"OnDeviceVeryHighAndServerSideVeryUnlikelyResponse"
-                      "ReturnsQuietUI",
-        /*model_name=*/kOneReturnAiv3Model,
-        /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
-        /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
-        /*should_expect_quiet_ui=*/true,
-        /*success_count_model_execution=*/1,
-    },
-    {
-        /*test_name=*/"FailingAiv3ModelStillResultsInValid"
-                      "ServerSideExecution",
-        /*model_name=*/kNotExistingModel,
-        /*expected_relevance=*/PermissionRequestRelevance::kUnspecified,
-        /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
-        /*should_expect_quiet_ui=*/true,
-        /*success_count_model_execution=*/0,
-    },
-};
-
-std::vector<PermissionRequestMetadata> aiv3_request_data_testcase = {
-    {/*optimization_target=*/kAiv3OptTargetGeolocation,
-     /*request_type=*/RequestType::kGeolocation},
-    {/*optimization_target=*/kAiv3OptTargetNotification,
-     /*request_type=*/RequestType::kNotifications},
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    Aiv3ModelTest,
-    Aiv3ModelPredictionServiceBrowserTest,
-    Combine(ValuesIn(aiv3_model_data_testcase),
-            ValuesIn(aiv3_request_data_testcase)),
-    /*name_generator=*/
-    [](const testing::TestParamInfo<
-        Aiv3ModelPredictionServiceBrowserTest::ParamType>& info) {
-      return base::StrCat({test::ToString(std::get<1>(info.param).request_type),
-                           std::get<0>(info.param).test_name});
-    });
-
-IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
-                       Aiv3ModelHandlerDefined) {
-  EXPECT_TRUE(aiv3_model_handler());
-}
-
-IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
-                       TestAiv3Workflow) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  ASSERT_TRUE(aiv3_model_handler());
-
-  const auto& test_case = std::get<0>(GetParam());
-
-  PushModelFileToModelExecutor(ModelFilePath(test_case.model_name));
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  set_dummy_screenshot_for_testing();
-
-  GeneratePredictionsResponse prediction_service_response =
-      BuildPredictionServiceResponse(test_case.prediction_service_likelihood);
-
-  PredictionRequestFeatures expected_features =
-      BuildRequestFeatures(request_type(), ExperimentId::kAiV3ExperimentId,
-                           test_case.expected_relevance);
-  EXPECT_CALL(prediction_service(),
-              StartLookup(PredictionRequestFeatureEq(expected_features), _, _))
-      .WillRepeatedly(WithArg<2>(
-          [&](PredictionService::LookupResponseCallback response_callback) {
-            std::move(response_callback)
-                .Run(/*lookup_successful=*/true,
-                     /*response_from_cache=*/true, prediction_service_response);
-          }));
-  TriggerPromptAndVerifyUi(
-      /*test_url=*/"test.a", PermissionAction::DISMISSED,
-      test_case.should_expect_quiet_ui, test_case.expected_relevance,
-      test_case.prediction_service_likelihood);
-
-  EXPECT_EQ(permissions::PermissionAiRelevanceModel::kAIv3,
-            permissions_ai_ui_selector()->PermissionAiRelevanceModelForUKM());
-
-  auto entries =
-      ukm_recorder.GetEntriesByName(ukm::builders::Permission::kEntryName);
-  ASSERT_FALSE(entries.empty());
-  const auto* entry = entries.back().get();
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm::builders::Permission::kPermissionAiRelevanceModelName,
-      static_cast<int64_t>(permissions::PermissionAiRelevanceModel::kAIv3));
-
-  histogram_tester().ExpectBucketCount(
-      request_type() == RequestType::kNotifications
-          ? kAiv3NotificationsModelExecutionSuccessHistogram
-          : kAiv3GeolocationModelExecutionSuccessHistogram,
-      /*sample=*/true, /*expected_count=*/
-      test_case.success_count_model_execution);
-
-  histogram_tester().ExpectBucketCount(kTFLiteLibAvailableHistogram,
-                                       /*sample=*/true,
-                                       /*expected_count=*/1);
-  histogram_tester().ExpectBucketCount(kAiv3SnapshotTakenHistogram,
-                                       /*sample=*/true,
-                                       /*expected_count=*/1);
-  histogram_tester().ExpectBucketCount(kMSBBHistogram,
-                                       /*sample=*/true,
-                                       /*expected_count=*/1);
-  histogram_tester().ExpectTotalCount(kAiv3SnapshotTakenDurationHistogram,
-                                      /*expected_count=*/1);
-  // We should receive timing information for both, the on-device model
-  // and the server-side model.
-  histogram_tester().ExpectTotalCount(kCpssV3InquiryDurationHistogram,
-                                      /*expected_count=*/1);
-  histogram_tester().ExpectTotalCount(kAIv3InquiryDurationHistogram,
-                                      /*expected_count=*/1);
-
-  histogram_tester().ExpectBucketCount(
-      request_type() == RequestType::kNotifications
-          ? kAIv3NotificationsHoldbackResponseHistogram
-          : kAIv3GeolocationHoldbackResponseHistogram,
-      /*sample=*/false, /*expected_count=*/1);
-
-  histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
-                                        false, 1);
-}
-
-// -----------------------------------------------------------------------------
-// --------------- Prediction Service On Device Permissions AIv4 ---------------
-// -----------------------------------------------------------------------------
 
 class Aiv4ModelPredictionServiceBrowserTestBase
     : public AivXModelPredictionServiceBrowserTest<PermissionsAiv4HandlerFake> {
@@ -1120,9 +883,6 @@ class Aiv4ModelPredictionServiceBrowserTestBase
       : AivXModelPredictionServiceBrowserTest(/*enabled_features=*/
                                               {
                                                   CONFIGURE_NO_HOLDBACK_CHANCE,
-                                                  {permissions::features::
-                                                       kPermissionsAIv3,
-                                                   {}},
                                                   {permissions::features::
                                                        kPermissionsAIv4,
                                                    {}},
@@ -1181,8 +941,6 @@ class Aiv4ModelPredictionServiceBrowserTestBase
 
 IN_PROC_BROWSER_TEST_F(Aiv4ModelPredictionServiceBrowserTestBase,
                        Aiv4ModelHandlerDefined) {
-  // If AIv4 flag is defined, no other AIvX model should get initialized.
-  EXPECT_FALSE(aiv3_model_handler());
   EXPECT_TRUE(aiv4_model_handler());
 }
 
@@ -1685,6 +1443,11 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
       /*sample=*/true, /*expected_count=*/
       test_case.success_count_model_execution);
 
+  histogram_tester().ExpectBucketCount(kTFLiteLibAvailableHistogram,
+                                       /*sample=*/true, /*expected_count=*/1);
+  histogram_tester().ExpectBucketCount(kMSBBHistogram,
+                                       /*sample=*/true, /*expected_count=*/1);
+
   histogram_tester().ExpectBucketCount(kAiv4SnapshotTakenHistogram,
                                        /*sample=*/true,
                                        /*expected_count=*/1);
@@ -1777,10 +1540,8 @@ class PredictionServiceAIP92BrowserTest
                 : std::vector<FeatureRefAndParams>{},
             /*disabled_features=*/GetParam().feature_enabled
                 ? std::vector<
-                      FeatureRef>{permissions::features::kPermissionsAIv3,
-                                  permissions::features::kPermissionsAIv4}
+                      FeatureRef>{permissions::features::kPermissionsAIv4}
                 : std::vector<FeatureRef>{
-                      permissions::features::kPermissionsAIv3,
                       permissions::features::kPermissionsAIv4,
                       permissions::features::kPermissionsAIP92}) {}
 
