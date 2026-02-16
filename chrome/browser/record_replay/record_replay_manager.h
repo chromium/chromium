@@ -15,6 +15,8 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/record_replay/recorder.h"
 #include "chrome/browser/record_replay/replayer.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 
 namespace record_replay {
 
@@ -25,14 +27,14 @@ class RecordReplayDriver;
 // Coordinates the recording and replay.
 //
 // Owned by RecordReplayClient.
-class RecordReplayManager {
+class RecordReplayManager : public autofill::AutofillManager::Observer {
  public:
   enum class State { kIdle, kRecording, kReplaying };
 
   explicit RecordReplayManager(RecordReplayClient* client);
   RecordReplayManager(const RecordReplayManager&) = delete;
   RecordReplayManager& operator=(const RecordReplayManager&) = delete;
-  ~RecordReplayManager();
+  ~RecordReplayManager() override;
 
   RecordReplayClient& client() { return *client_; }
 
@@ -79,9 +81,18 @@ class RecordReplayManager {
   }
 
  private:
+  // Fired for fills made by Autofill, but not by Password Manager!
+  void OnFillOrPreviewForm(
+      autofill::AutofillManager& manager,
+      autofill::FormGlobalId form_id,
+      autofill::mojom::ActionPersistence action_persistence,
+      const base::flat_set<autofill::FieldGlobalId>& filled_field_ids,
+      const autofill::FillingPayload& filling_payload) override;
+
   raw_ref<RecordReplayClient> client_;
   std::optional<Recorder> recorder_;
   std::optional<Replayer> replayer_;
+  autofill::ScopedAutofillManagersObservation autofill_observation_{this};
   base::WeakPtrFactory<RecordReplayManager> weak_ptr_factory_{this};
 };
 

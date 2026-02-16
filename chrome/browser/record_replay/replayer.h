@@ -52,6 +52,9 @@ class Replayer {
   // times.
   void DoAction(int index, int num_max_retries);
 
+  void ReplayAutofillAction(const std::string& element_selector,
+                            const Recording::Action::AutofillSpecifics& payload,
+                            SuccessCallback cb);
   void ReplayClickAction(const std::string& element_selector,
                          SuccessCallback cb);
   void ReplaySelectChangeAction(const std::string& element_selector,

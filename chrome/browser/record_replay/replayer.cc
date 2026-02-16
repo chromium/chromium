@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -98,7 +99,9 @@ void Replayer::DoAction(int index, int num_max_retries) {
           [](Replayer* self, int index, SuccessCallback cb) {
             const Recording::Action& action = self->action(index);
             if (action.has_autofill_specifics()) {
-              LOG(ERROR) << "Not implemented yet";
+              self->ReplayAutofillAction(action.element_selector(),
+                                         action.autofill_specifics(),
+                                         std::move(cb));
             } else if (action.has_click_specifics()) {
               self->ReplayClickAction(action.element_selector(), std::move(cb));
             } else if (action.has_select_specifics()) {
@@ -114,6 +117,17 @@ void Replayer::DoAction(int index, int num_max_retries) {
             }
           },
           base::Unretained(this), index, std::move(cb)));
+}
+
+void Replayer::ReplayAutofillAction(
+    const std::string& element_selector,
+    const Recording::Action::AutofillSpecifics& specifics,
+    SuccessCallback cb) {
+  // TODO(b/483386299): An autofill is currently recorded twice: once as
+  // autofill operation, once as the text-change operations. If we replay
+  // autofills, we should of course not replay the text-change operations.
+  LOG(ERROR) << __func__ << " isn't supported yet";
+  std::move(cb).Run(true);
 }
 
 void Replayer::ReplayClickAction(const std::string& element_selector,
