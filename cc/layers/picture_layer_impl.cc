@@ -440,11 +440,6 @@ bool PictureLayerImpl::AppendQuadForTile(
                  offset_visible_geometry_rect, color, false);
     ValidateQuadResources(quad);
 
-    bool tile_missing = false;
-    if (geometry_rect.Intersects(scaled_viewport_for_tile_priority)) {
-      tile_missing = true;
-    }
-
     // Report data on any missing images that might be the largest
     // contentful image.
     if (*iter) {
@@ -453,7 +448,8 @@ bool PictureLayerImpl::AppendQuadForTile(
           iter->HasMissingLCPCandidateImages());
     }
 
-    return tile_missing;
+    // Report the tile as missing iff it is in the viewport.
+    return geometry_rect.Intersects(scaled_viewport_for_tile_priority);
   }
 
   if (iter.resolution() != HIGH_RESOLUTION) {
