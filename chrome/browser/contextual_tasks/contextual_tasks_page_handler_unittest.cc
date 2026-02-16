@@ -55,6 +55,7 @@ class MockPage : public mojom::Page {
                const std::string& thread_id,
                const std::string& turn_id),
               (override));
+  MOCK_METHOD(void, SetAimUrl, (const GURL& url), (override));
   MOCK_METHOD(void, OnSidePanelStateChanged, (), (override));
   MOCK_METHOD(void,
               PostMessageToWebview,

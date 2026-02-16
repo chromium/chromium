@@ -69,6 +69,14 @@ function updateTaskDetailsInUrl(
   }
 }
 
+// Preserve the aim url to the search param named aim_url used for reload and
+// session restore.
+function updateAimUrl(aimUrl: any) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('aim_url', aimUrl);
+  window.history.replaceState({}, '', url.href);
+}
+
 // Updates param for the title in the WebUI URL. This facilitates the restore
 // flow on refresh or restart.
 function updateTitleInUrl(title: string) {
@@ -252,6 +260,7 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.isInBasicMode_ = false;
       }),
       callbackRouter.setTaskDetails.addListener(updateTaskDetailsInUrl),
+      callbackRouter.setAimUrl.addListener(updateAimUrl),
       callbackRouter.onZeroStateChange.addListener((isZeroState: boolean) => {
         this.isZeroState_ = isZeroState;
       }),

@@ -94,6 +94,10 @@ class MockPage extends TestBrowserProxy implements PageInterface {
     this.methodCalled('setTaskDetails', taskId, threadId, turnId);
   }
 
+  setAimUrl(url: Url) {
+    this.methodCalled('setAimUrl', url);
+  }
+
   showErrorPage() {
     this.methodCalled('showErrorPage');
   }

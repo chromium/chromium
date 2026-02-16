@@ -137,6 +137,9 @@ interface Page {
   SetTaskDetails(
       mojo_base.mojom.Uuid uuid, string thread_id, string turn_id);
 
+  // Preserve the aim URL to the search param of contextual tasks URL.
+  SetAimUrl(url.mojom.Url url);
+
   // A notification that WebUI has moved into or out of the side panel. The UI
   // code should query the `IsShownInTab` method to get the current state.
   OnSidePanelStateChanged();

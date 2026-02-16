@@ -66,6 +66,10 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
     title_ = title;
   }
 
+  void SetAimUrl(const GURL& url) override { url_ = url; }
+
+  GURL GetAimUrl() override { return url_; }
+
   bool IsShownInTab() override { return is_shown_in_tab_; }
 
   void SetIsShownInTab(bool is_shown_in_tab) {
@@ -91,6 +95,7 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
   std::optional<std::string> thread_id_;
   std::optional<std::string> turn_id_;
   std::optional<std::string> title_;
+  GURL url_;
   bool is_shown_in_tab_ = false;
   MockBrowserWindowInterface mock_browser_window_interface_;
 };
@@ -575,6 +580,7 @@ TEST_F(ContextualTasksUiTest, TaskDetailsUpdated) {
   EXPECT_EQ(delegate.GetTaskId(), task_id);
   EXPECT_EQ(delegate.GetThreadId(), thread_id);
   EXPECT_EQ(delegate.GetThreadTurnId(), turn_id);
+  EXPECT_EQ(delegate.GetAimUrl(), url);
 
   // Fake an updated turn
   GURL url2(kAiPageUrl);
@@ -591,6 +597,7 @@ TEST_F(ContextualTasksUiTest, TaskDetailsUpdated) {
   EXPECT_EQ(delegate.GetTaskId(), task_id);
   EXPECT_EQ(delegate.GetThreadId(), thread_id);
   EXPECT_EQ(delegate.GetThreadTurnId(), turn_id2);
+  EXPECT_EQ(delegate.GetAimUrl(), url2);
   observer.reset();
 }
 
