@@ -1357,36 +1357,11 @@ TEST_F(DeviceInfoSyncBridgeTest, RefreshLocalDeviceInfo) {
   EXPECT_EQ(4, change_count());
 }
 
-// Implicit signin doesn't exist on mobile.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(DeviceInfoSyncBridgeTest,
-       DeviceNameForTransportOnlySyncModeWithImplicitSignin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
+TEST_F(DeviceInfoSyncBridgeTest, DeviceNameForTransportOnlySyncMode) {
   InitializeAndMergeInitialData(SyncMode::kTransportOnly);
   ASSERT_EQ(1, change_count());
   ASSERT_TRUE(local_device()->GetLocalDeviceInfo());
 
-  // With implicit signin, only the model name is allowed, not the
-  // personalizable name.
-  EXPECT_EQ(local_device_model_name(),
-            local_device()->GetLocalDeviceInfo()->client_name());
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-TEST_F(DeviceInfoSyncBridgeTest,
-       DeviceNameForTransportOnlySyncModeWithExplicitSignin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-
-  InitializeAndMergeInitialData(SyncMode::kTransportOnly);
-  ASSERT_EQ(1, change_count());
-  ASSERT_TRUE(local_device()->GetLocalDeviceInfo());
-
-  // With explicit signin, the personalizable name (not just the model name) is
-  // supported.
   EXPECT_EQ(local_personalizable_name(),
             local_device()->GetLocalDeviceInfo()->client_name());
 }
@@ -1400,46 +1375,11 @@ TEST_F(DeviceInfoSyncBridgeTest, DeviceNameForFullSyncMode) {
             local_device()->GetLocalDeviceInfo()->client_name());
 }
 
-// Implicit signin doesn't exist on mobile.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Tests local client name when device is initially synced with transport only
 // sync mode, but the sync mode is not available after restart since it is not
 // persisted.
 TEST_F(DeviceInfoSyncBridgeTest,
-       DeviceNameForTransportOnlySyncModeWithImplicitSignin_RestartBridge) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
-  // With implicit signin, only the model name is allowed, not the
-  // personalizable name.
-  std::string expected_device_name = local_device_model_name();
-  InitializeAndMergeInitialData(SyncMode::kTransportOnly);
-
-  ASSERT_TRUE(local_device()->GetLocalDeviceInfo());
-  ASSERT_EQ(expected_device_name,
-            local_device()->GetLocalDeviceInfo()->client_name());
-
-  EXPECT_CALL(*processor(),
-              Put(local_device()->GetLocalDeviceInfo()->guid(), _, _))
-      .Times(0);
-  RestartBridge();
-  ASSERT_TRUE(local_device()->GetLocalDeviceInfo());
-  EXPECT_EQ(expected_device_name,
-            local_device()->GetLocalDeviceInfo()->client_name());
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-// Tests local client name when device is initially synced with transport only
-// sync mode, but the sync mode is not available after restart since it is not
-// persisted.
-TEST_F(DeviceInfoSyncBridgeTest,
-       DeviceNameForTransportOnlySyncModeWithExplicitSignin_RestartBridge) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-
-  // With explicit signin, the personalizable name (not just the model name) is
-  // supported.
+       DeviceNameForTransportOnlySyncMode_RestartBridge) {
   std::string expected_device_name = local_personalizable_name();
   InitializeAndMergeInitialData(SyncMode::kTransportOnly);
 
@@ -1474,42 +1414,6 @@ TEST_F(DeviceInfoSyncBridgeTest, DeviceNameForFullSyncMode_RestartBridge) {
   EXPECT_EQ(expected_device_name,
             local_device()->GetLocalDeviceInfo()->client_name());
 }
-
-// Implicit signin doesn't exist on mobile.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(DeviceInfoSyncBridgeTest, RefreshLocalDeviceNameForSyncModeToggle) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
-  std::string expected_device_name_full_sync = local_personalizable_name();
-  std::string expected_device_name_transport_only = local_device_model_name();
-
-  // Initialize with full sync mode.
-  InitializeAndMergeInitialData(SyncMode::kFull);
-  const syncer::DeviceInfo* device = local_device()->GetLocalDeviceInfo();
-
-  ASSERT_TRUE(device);
-  ASSERT_EQ(expected_device_name_full_sync, device->client_name());
-
-  // Toggle to transport only sync mode.
-  bridge()->OnSyncPaused();  // No-op, but for the sake of a realistic sequence.
-  bridge()->OnSyncStarting(
-      TestDataTypeActivationRequest(SyncMode::kTransportOnly));
-
-  device = local_device()->GetLocalDeviceInfo();
-  ASSERT_TRUE(device);
-  ASSERT_EQ(expected_device_name_transport_only, device->client_name());
-
-  // Toggle to full sync mode.
-  bridge()->OnSyncPaused();  // No-op, but for the sake of a realistic sequence.
-  bridge()->OnSyncStarting(TestDataTypeActivationRequest(SyncMode::kFull));
-
-  device = local_device()->GetLocalDeviceInfo();
-  ASSERT_TRUE(device);
-  ASSERT_EQ(expected_device_name_full_sync, device->client_name());
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(DeviceInfoSyncBridgeTest, ShouldSendInvalidationFields) {
   EXPECT_CALL(*processor(),

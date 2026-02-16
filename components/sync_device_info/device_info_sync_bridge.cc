@@ -769,22 +769,9 @@ std::string DeviceInfoSyncBridge::GetLocalClientName() const {
     }
   }
 
-  bool can_use_personalizable_name =
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-      // On mobile, all sign-ins are considered explicit and thus can use the
-      // personalizable device name.
-      true;
-#else
-      // On desktop, sign-ins are explicit for Sync-the-feature users, or if
-      // kReplaceSyncPromosWithSignInPromos is enabled. (Or if
-      // prefs::kExplicitBrowserSignin is true, but that information is not
-      // easily available here and not worth the plumbing.)
-      (sync_mode_ == SyncMode::kFull) ||
-      base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
-#endif
-  return can_use_personalizable_name
-             ? local_device_name_info_.personalizable_name
-             : local_device_name_info_.model_name;
+  // On all platforms, sign-in is considered explicit and thus can use the
+  // personalizable device name.
+  return local_device_name_info_.personalizable_name;
 }
 
 void DeviceInfoSyncBridge::OnStoreCreated(
