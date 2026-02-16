@@ -5103,6 +5103,7 @@ enum WebFeature {
   kLinkRelModulePreloadStyle = 5787,
   kAudioContextPlaybackStats = 5788,
   kParseFromStringXML = 5789,
+  kNonParentOriginInitiatedNavigationOfSubframe = 5790,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

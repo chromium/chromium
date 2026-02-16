@@ -233,6 +233,16 @@ FrameTree::FindResult FrameTree::FindOrCreateFrameForNavigation(
     if (!frame->GetPage())
       frame = nullptr;
   }
+
+  if (frame && !current_frame->IsDescendantOf(frame) && frame->Parent() &&
+      !current_frame->GetSecurityContext()
+           ->GetSecurityOrigin()
+           ->IsSameOriginWith(
+               frame->Parent()->GetSecurityContext()->GetSecurityOrigin())) {
+    UseCounter::Count(
+        current_frame->GetDocument(),
+        WebFeature::kNonParentOriginInitiatedNavigationOfSubframe);
+  }
   return FindResult(frame, new_window);
 }
 

@@ -289,6 +289,17 @@ void Location::SetLocation(const String& url,
     }
     return;
   }
+  if (!incumbent_window->GetFrame()->IsDescendantOf(dom_window_->GetFrame()) &&
+      dom_window_->GetFrame()->Parent() &&
+      !incumbent_window->GetSecurityOrigin()->IsSameOriginWith(
+          dom_window_->GetFrame()
+              ->Parent()
+              ->GetSecurityContext()
+              ->GetSecurityOrigin())) {
+    UseCounter::Count(
+        incumbent_window,
+        WebFeature::kNonParentOriginInitiatedNavigationOfSubframe);
+  }
   if (exception_state && !completed_url.IsValid()) {
     exception_state->ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

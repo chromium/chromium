@@ -1039,4 +1039,14 @@ void Frame::AdjustOffsetByAncestorFrames(gfx::Point* origin_point) {
   }
 }
 
+bool Frame::IsDescendantOf(const Frame* other) const {
+  const Frame* current = this;
+  do {
+    if (current == other) {
+      return true;
+    }
+  } while ((current = current->Parent()));
+  return false;
+}
+
 }  // namespace blink
