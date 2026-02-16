@@ -86,6 +86,12 @@ BASE_DECLARE_FEATURE(kWaffleRestrictToAssociatedCountries);
 // match is required (in addition to a region match).
 BASE_DECLARE_FEATURE(kStrictAssociatedCountriesCheck);
 
+// Guards the incremental rollout of the feature that enables migrating
+// prepopulated engines.
+// Note: Due to the migration changing the client's data locally persisted in
+// various places, we don't support rollbacks to the feature state.
+BASE_DECLARE_FEATURE(kPrepopulatedEnginesMigration);
+
 }  // namespace switches
 
 #endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_SWITCHES_H_

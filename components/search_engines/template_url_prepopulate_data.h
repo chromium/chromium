@@ -125,9 +125,6 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
     const std::vector<const PrepopulatedEngine*>&
         regional_prepopulated_engines);
 
-// Returns all prepopulated engines for all locales.
-const base::span<const PrepopulatedEngine* const> GetAllPrepopulatedEngines();
-
 }  // namespace TemplateURLPrepopulateData
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_PREPOPULATE_DATA_H_

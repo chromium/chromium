@@ -6,6 +6,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/regional_capabilities/regional_capabilities_switches.h"
+#import "components/regional_capabilities/regional_capabilities_utils.h"
 #import "components/search_engines/template_url_data_util.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_table_view_controller.h"
@@ -13,7 +14,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
-using TemplateURLPrepopulateData::GetAllPrepopulatedEngines;
+using regional_capabilities::GetAllPrepopulatedEngines;
 using TemplateURLPrepopulateData::PrepopulatedEngine;
 
 namespace {

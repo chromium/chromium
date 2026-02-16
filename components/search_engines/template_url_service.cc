@@ -1749,7 +1749,8 @@ void TemplateURLService::OnWebDataServiceRequestDone(
               regional_capabilities::CountryAccessKey(
                   regional_capabilities::CountryAccessReason::
                       kTemplateURLServiceDatabaseMetadataCaching)));
-
+      web_data_service_->SetPrepopulatedEnginesMigrationEnabled(
+          updated_keywords_metadata.prepopulated_engines_migration_enabled);
     }
 
     if (updated_keywords_metadata.HasStarterPackData()) {

@@ -88,7 +88,14 @@ class Statement;
 // Starter Pack Keyword Version      The version of starter pack data.
 // Builtin Keyword Country           The country associated with the builtin
 //                                   keywords data, stored as a country ID.
-//
+// Is Prepopulated Engines Migration Enabled
+//                                   Whether the database has been updated
+//                                   while the engine migration logic was
+//                                   active, thus would require future updates
+//                                   to keep this logic active to avoid rolling
+//                                   back to a previous data version.
+//                                   See
+//                                   `switches::kPrepopulatedEnginesMigration`.
 class KeywordTable : public WebDatabaseTable {
  public:
   enum OperationType {
@@ -140,6 +147,11 @@ class KeywordTable : public WebDatabaseTable {
   // see `country_codes::CountryId()`.
   bool SetBuiltinKeywordCountry(country_codes::CountryId country_id);
   country_codes::CountryId GetBuiltinKeywordCountry();
+
+  // Whether the data is a post-migration version, see
+  // `switches::kPrepopulatedEnginesMigration`.
+  bool SetPrepopulatedEnginesMigrationEnabled(bool is_migration_enabled);
+  bool IsPrepopulatedEnginesMigrationEnabled();
 
   // Version of built-in starter pack keywords (@bookmarks, @settings, etc.).
   bool SetStarterPackKeywordVersion(int version);

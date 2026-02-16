@@ -9,7 +9,8 @@
 #include <variant>
 #include <vector>
 
-#include "base/containers/span.h"
+#include "base/auto_reset.h"
+#include "base/feature_list.h"
 
 class PrefService;
 
@@ -69,6 +70,9 @@ GetPrepopulatedEngines(country_codes::CountryId country_id,
                        PrefService& prefs,
                        SearchEngineListType search_engine_list_type);
 
+const base::span<const TemplateURLPrepopulateData::PrepopulatedEngine* const>
+GetAllPrepopulatedEngines();
+
 // Returns all the prepopulated engines that are used in the EEA region.
 std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
 GetAllEeaRegionPrepopulatedEngines();
@@ -77,11 +81,37 @@ GetAllEeaRegionPrepopulatedEngines();
 std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
 GetDefaultPrepopulatedEngines();
 
-std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
-GetTestOverridePrepopulatedEngines();
+// -- Test-only utils ---------------------------------------------------------
 
-void SetPrepopulatedEnginesOverrideForTesting(
-    base::span<const TemplateURLPrepopulateData::PrepopulatedEngine*> engines);
+struct PrepopulatedEnginesOverride {
+  PrepopulatedEnginesOverride();
+  ~PrepopulatedEnginesOverride();
+
+  // If you need to copy or move this struct,
+  // you should declare those out-of-line as well
+  PrepopulatedEnginesOverride(const PrepopulatedEnginesOverride&);
+  PrepopulatedEnginesOverride& operator=(const PrepopulatedEnginesOverride&);
+  // Move operations
+  PrepopulatedEnginesOverride(PrepopulatedEnginesOverride&&);
+  PrepopulatedEnginesOverride& operator=(PrepopulatedEnginesOverride&&);
+
+  std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+      regional_engines;
+  std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+      all_engines;
+};
+
+using ScopedPrepopulatedEnginesOverride =
+    base::AutoReset<std::optional<PrepopulatedEnginesOverride>>;
+
+const PrepopulatedEnginesOverride& GetPrepopulatedEnginesOverrideForTesting();
+
+ScopedPrepopulatedEnginesOverride SetPrepopulatedEnginesOverrideForTesting(
+    std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+        regional_engines,
+    std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+        other_known_engines);
+
 void ClearPrepopulatedEnginesOverrideForTesting();
 
 }  // namespace regional_capabilities

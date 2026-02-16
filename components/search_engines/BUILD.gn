@@ -160,6 +160,7 @@ source_set("search_engine_utils") {
   public_deps = [
     ":search_engine_type",
     "//components/google/core/common",
+    "//components/regional_capabilities",
     "//third_party/search_engines_data:prepopulated_engines",
   ]
 

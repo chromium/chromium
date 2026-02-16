@@ -260,9 +260,4 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
                                         /*use_first_as_fallback=*/true);
 }
 
-const base::span<const PrepopulatedEngine* const> GetAllPrepopulatedEngines() {
-  return kAllEngines;
-}
-
-
 }  // namespace TemplateURLPrepopulateData

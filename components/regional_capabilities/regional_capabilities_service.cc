@@ -334,7 +334,8 @@ RegionalCapabilitiesService::GetRegionalPrepopulatedEngines() {
       case SearchEngineCountryListOverride::kEeaDefault:
         return GetDefaultPrepopulatedEngines();
       case SearchEngineCountryListOverride::kTestOverride:
-        return GetTestOverridePrepopulatedEngines();
+        return GetPrepopulatedEnginesOverrideForTesting()  // IN-TEST
+            .regional_engines;
     }
     NOTREACHED();
   }

@@ -52,4 +52,6 @@ BASE_FEATURE(kWaffleRestrictToAssociatedCountries,
 BASE_FEATURE(kStrictAssociatedCountriesCheck,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrepopulatedEnginesMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace switches

@@ -60,6 +60,8 @@ enum class HashValidationStatus {
 // Keys used in the meta table.
 constexpr char kBuiltinKeywordDataVersion[] = "Builtin Keyword Version";
 constexpr char kBuiltinKeywordCountry[] = "Builtin Keyword Country";
+constexpr char kIsPrepopulatedEnginesMigrationEnabled[] =
+    "Is Prepopulated Engines Migration Enabled";
 constexpr char kStarterPackKeywordVersion[] = "Starter Pack Keyword Version";
 
 // Version that added the url_hash column. Used in several places in this code.
@@ -313,6 +315,20 @@ CountryId KeywordTable::GetBuiltinKeywordCountry() {
   return meta_table()->GetValue(kBuiltinKeywordCountry, &country_id)
              ? CountryId::Deserialize(country_id)
              : CountryId();
+}
+
+bool KeywordTable::SetPrepopulatedEnginesMigrationEnabled(
+    bool is_migration_enabled) {
+  return meta_table()->SetValue(kIsPrepopulatedEnginesMigrationEnabled,
+                                is_migration_enabled);
+}
+
+bool KeywordTable::IsPrepopulatedEnginesMigrationEnabled() {
+  int is_migration_enabled = false;
+  return meta_table()->GetValue(kIsPrepopulatedEnginesMigrationEnabled,
+                                &is_migration_enabled)
+             ? is_migration_enabled
+             : false;
 }
 
 bool KeywordTable::SetStarterPackKeywordVersion(int version) {

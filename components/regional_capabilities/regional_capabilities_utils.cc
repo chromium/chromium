@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <random>
+#include <set>
 #include <string>
 #include <variant>
 
@@ -33,10 +34,9 @@ using ::TemplateURLPrepopulateData::RegionalSettings;
 // Note: These entries are not also injected into
 // TemplateURLPrepopulateData::kAllEngines so simulating the full logic that
 // includes fallbacks is not supported.
-std::optional<std::vector<const PrepopulatedEngine*>>&
-GetPrepopulatedEnginesTestOverride() {
-  static base::NoDestructor<
-      std::optional<std::vector<const PrepopulatedEngine*>>>
+std::optional<PrepopulatedEnginesOverride>&
+GetPrepopulatedEnginesTestOverrideInternal() {
+  static base::NoDestructor<std::optional<PrepopulatedEnginesOverride>>
       g_preopulated_engines_test_override;
   return *g_preopulated_engines_test_override;
 }
@@ -68,7 +68,7 @@ void ShufflePrepopulatedEngines(std::vector<const PrepopulatedEngine*>& engines,
 }  // namespace
 
 std::optional<SearchEngineCountryOverride> GetSearchEngineCountryOverride() {
-  if (GetPrepopulatedEnginesTestOverride().has_value()) {
+  if (GetPrepopulatedEnginesTestOverrideInternal().has_value()) {
     CHECK_IS_TEST();
     return SearchEngineCountryListOverride::kTestOverride;
   }
@@ -169,20 +169,63 @@ std::vector<const PrepopulatedEngine*> GetDefaultPrepopulatedEngines() {
   return base::ToVector(GetRegionalSettings(CountryId()).search_engines);
 }
 
-std::vector<const PrepopulatedEngine*> GetTestOverridePrepopulatedEngines() {
-  CHECK_IS_TEST();
-  return GetPrepopulatedEnginesTestOverride().value();
+const base::span<const TemplateURLPrepopulateData::PrepopulatedEngine* const>
+GetAllPrepopulatedEngines() {
+  if (const auto& overrides = GetPrepopulatedEnginesTestOverrideInternal();
+      overrides.has_value()) {
+    CHECK_IS_TEST();
+    return base::span(overrides->all_engines);
+  }
+
+  return base::span(TemplateURLPrepopulateData::kAllEngines);
 }
 
-void SetPrepopulatedEnginesOverrideForTesting(  // IN-TEST
-    base::span<const PrepopulatedEngine*> engines) {
-  std::vector<const PrepopulatedEngine*> engines_vector(engines.begin(),
-                                                        engines.end());
-  GetPrepopulatedEnginesTestOverride() = std::move(engines_vector);
+// -- Test-only utils ---------------------------------------------------------
+
+const PrepopulatedEnginesOverride& GetPrepopulatedEnginesOverrideForTesting() {
+  CHECK_IS_TEST();
+  CHECK(GetPrepopulatedEnginesTestOverrideInternal().has_value());
+  return *GetPrepopulatedEnginesTestOverrideInternal();
+}
+
+ScopedPrepopulatedEnginesOverride
+SetPrepopulatedEnginesOverrideForTesting(  // IN-TEST
+    std::vector<const PrepopulatedEngine*> regional_engines,
+    std::vector<const PrepopulatedEngine*> other_known_engines) {
+  CHECK_IS_TEST();
+  std::vector<const PrepopulatedEngine*> all_engines;
+  all_engines.append_range(regional_engines);
+  all_engines.append_range(other_known_engines);
+
+  // Verify that there are not duplicates in `all_engines`.
+  CHECK_EQ(all_engines.size(),
+           std::set(all_engines.begin(), all_engines.end()).size());
+
+  PrepopulatedEnginesOverride overrides;
+  overrides.regional_engines = std::move(regional_engines);
+  overrides.all_engines = std::move(all_engines);
+
+  return ScopedPrepopulatedEnginesOverride(
+      &GetPrepopulatedEnginesTestOverrideInternal(), std::move(overrides));
 }
 
 void ClearPrepopulatedEnginesOverrideForTesting() {
-  GetPrepopulatedEnginesTestOverride().reset();
+  CHECK_IS_TEST();
+  GetPrepopulatedEnginesTestOverrideInternal().reset();
 }
+
+PrepopulatedEnginesOverride::PrepopulatedEnginesOverride() = default;
+
+PrepopulatedEnginesOverride::~PrepopulatedEnginesOverride() = default;
+
+PrepopulatedEnginesOverride::PrepopulatedEnginesOverride(
+    const PrepopulatedEnginesOverride&) = default;
+PrepopulatedEnginesOverride& PrepopulatedEnginesOverride::operator=(
+    const PrepopulatedEnginesOverride&) = default;
+
+PrepopulatedEnginesOverride::PrepopulatedEnginesOverride(
+    PrepopulatedEnginesOverride&&) = default;
+PrepopulatedEnginesOverride& PrepopulatedEnginesOverride::operator=(
+    PrepopulatedEnginesOverride&&) = default;
 
 }  // namespace regional_capabilities

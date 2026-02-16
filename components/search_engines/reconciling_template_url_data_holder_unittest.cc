@@ -30,31 +30,24 @@ using ::TemplateURLPrepopulateData::seznam;
 using ::TemplateURLPrepopulateData::yahoo;
 using ::TemplateURLPrepopulateData::yahoo_de;
 
-// Sample regional set of prepopulated engines. Reconciliation will be referring
-// to this one in priority
-const TemplateURLPrepopulateData::PrepopulatedEngine* sample_regional_set[] = {
-    &google,
-    &duckduckgo,
-    &yahoo_de,
-};
-
 class ReconcilingTemplateURLDataHolderTest : public testing::Test {
  public:
   ReconcilingTemplateURLDataHolderTest()
-      : holder_(search_engines_test_environment_.prepopulate_data_resolver()) {
-    regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
-        sample_regional_set);
-  }
-
-  ~ReconcilingTemplateURLDataHolderTest() override {
-    regional_capabilities::ClearPrepopulatedEnginesOverrideForTesting();
-  }
+      : holder_(search_engines_test_environment_.prepopulate_data_resolver()),
+        scoped_engines_override_(
+            regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+                // Sample regional set of prepopulated engines. Reconciliation
+                // will be referring to this one in priority
+                {&google, &duckduckgo, &yahoo_de},
+                {&brave, &seznam})) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   base::HistogramTester histogram_tester_;
   ReconcilingTemplateURLDataHolder holder_;
+  regional_capabilities::ScopedPrepopulatedEnginesOverride
+      scoped_engines_override_;
 };
 
 TEST_F(ReconcilingTemplateURLDataHolderTest,

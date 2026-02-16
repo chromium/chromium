@@ -6,9 +6,12 @@
 
 #include <optional>
 
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/template_url_data.h"
@@ -57,7 +60,24 @@ Resolver::ComputeDatabaseUpdateRequirements(
       .country_id = regional_capabilities_->GetCountryId(),
       .data_version =
           TemplateURLPrepopulateData::GetDataVersion(&profile_prefs_.get()),
-  };
+      // Always keep track of the fact that some migration may have taken place.
+      .prepopulated_engines_migration_enabled = base::FeatureList::IsEnabled(
+          switches::kPrepopulatedEnginesMigration)};
+
+  if (keywords_metadata.prepopulated_engines_migration_enabled &&
+      !current_metadata.prepopulated_engines_migration_enabled) {
+    // The keywords DB indicates that it was updated with some post-migration
+    // data, but the feature state checks indicates that the feature is not
+    // enabled.
+    // Per feature rollout planning, this should not happen, as there is no way
+    // to fully return to the previous state. The local keywords data is then
+    // going to be in an inconsistent state, where the user could be using a
+    // not-yet-listed prepopulated engine.
+    // This is a bad™ state, but not to the point where it is expected to cause
+    // crashes downstream, it it can be a non-fatal CHECK.
+    // TODO(crbug.com/446637115): Clean up once the rollout is done.
+    DUMP_WILL_BE_NOTREACHED();
+  }
 
   if (regional_capabilities::HasSearchEngineCountryListOverride()) {
     // The search engine list is being explicitly overridden, so also force
@@ -82,6 +102,14 @@ Resolver::ComputeDatabaseUpdateRequirements(
       keywords_metadata.builtin_keyword_country.value() !=
           current_metadata.country_id) {
     // The country associated with the profile has changed.
+    return current_metadata;
+  }
+
+  if (!keywords_metadata.prepopulated_engines_migration_enabled &&
+      current_metadata.prepopulated_engines_migration_enabled) {
+    // Ensure that when we enable the migration feature for this client, the
+    // database gets updated. Continue and deliberately not do a migration if
+    // the divergence is the other way.
     return current_metadata;
   }
 

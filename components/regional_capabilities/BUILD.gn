@@ -140,6 +140,7 @@ source_set("unit_tests") {
     "regional_capabilities_country_id_unittest.cc",
     "regional_capabilities_metrics_unittest.cc",
     "regional_capabilities_service_unittest.cc",
+    "regional_capabilities_utils_unittest.cc",
   ]
 
   deps = [
@@ -152,6 +153,8 @@ source_set("unit_tests") {
     "//components/metrics",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
+    "//third_party/search_engines_data:prepopulated_engines",
+    "//third_party/search_engines_data:regional_settings",
     "//ui/base",
   ]
 

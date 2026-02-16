@@ -29,6 +29,10 @@ struct BuiltinKeywordsMetadata {
 
   // Version of the built-in prepopulated keywords data.
   int data_version;
+
+  // Whether the data is a post-migration version, see
+  // `switches::kPrepopulatedEnginesMigration`.
+  bool prepopulated_engines_migration_enabled;
 };
 
 // Resolves prepopulated engines using on various information from the browser

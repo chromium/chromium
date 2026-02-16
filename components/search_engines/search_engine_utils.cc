@@ -5,6 +5,7 @@
 #include "components/search_engines/search_engine_utils.h"
 
 #include "components/google/core/common/google_util.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "url/gurl.h"
@@ -38,7 +39,9 @@ SearchEngineType GetEngineType(const GURL& url) {
     return TemplateURLPrepopulateData::google.type;
 
   // Now check the rest of the prepopulate data.
-  for (const auto* engine : TemplateURLPrepopulateData::kAllEngines) {
+  auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
+  for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine :
+       all_engines) {
     if (SameDomain(url, GURL(engine->search_url))) {
       return engine->type;
     }
