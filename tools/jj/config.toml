@@ -33,6 +33,14 @@
 "cr-bug" = ["relative-script", "tools/jj/bug.py"]
 "bug" = ["cr-bug"]
 
+# jj workspace add doesn't work because of .gclient.
+"cr-new-chromium-workspace" = ["relative-script", "tools/jj/new_workspace.py"]
+"new-chromium-workspace" = ["cr-new-chromium-workspace"]
+
+# This makes the UX much nicer.
+[workspace]
+auto-update-stale = true
+
 [revset-aliases]
 "trunk()" = "main@origin"
 "immutable_heads()" = "remote_bookmarks() | tags()"
