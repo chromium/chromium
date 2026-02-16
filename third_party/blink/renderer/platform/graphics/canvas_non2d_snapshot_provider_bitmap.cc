@@ -72,22 +72,30 @@ scoped_refptr<StaticBitmapImage>
 CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
     ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
-  const bool can_use_lcd_text = info_.alpha_type == kOpaque_SkAlphaType;
+  return DoExternalDrawAndSnapshot(info_, std::move(draw_callback),
+                                   orientation);
+}
+
+// static
+scoped_refptr<StaticBitmapImage>
+CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
+    const CanvasSnapshotProvider::Info& info,
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
+    ImageOrientation orientation) {
+  const bool can_use_lcd_text = info.alpha_type == kOpaque_SkAlphaType;
   const auto props =
       skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
   sk_sp<SkSurface> surface = SkSurfaces::Raster(
-      SkImageInfo::Make(info_.size.width(), info_.size.height(),
-                        viz::ToClosestSkColorType(info_.format),
-                        kPremul_SkAlphaType,
-                        info_.color_space.ToSkColorSpace()),
+      SkImageInfo::Make(info.size.width(), info.size.height(),
+                        viz::ToClosestSkColorType(info.format),
+                        kPremul_SkAlphaType, info.color_space.ToSkColorSpace()),
       &props);
   if (!surface) {
     return nullptr;
   }
 
   ImageProviderImpl image_provider(
-      GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16,
-      GetColorSpace());
+      info.format == viz::SinglePlaneFormat::kRGBA_F16, info.color_space);
   cc::SkiaPaintCanvas canvas(surface->getCanvas(), &image_provider);
   draw_callback(canvas);
 
