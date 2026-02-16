@@ -295,6 +295,8 @@ void FormTracker::ElementDisappeared(const blink::WebElement& element) {
   if (submission_triggering_events_.tracked_element_autofilled) {
     FireFormSubmission(mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL,
                        /*submitted_form_element=*/std::nullopt,
+                       // Resetting here would hurt Autofill submissions because
+                       // Autofill ignores DOM_MUTATION_AFTER_AUTOFILL.
                        /*reset_last_interacted_elements=*/false);
     return;
   }
@@ -437,23 +439,64 @@ void FormTracker::DidStartNavigation(
     const GURL& url,
     std::optional<blink::WebNavigationType> navigation_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  // Ony handle primary main frame.
   if (!unsafe_render_frame() ||
       !unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
+    // Ony handle primary main frame as iframe navigations rarely mean
+    // user-triggered form submissions.
     return;
   }
 
-  // We are interested only in content-initiated navigations. Explicit browser
-  // initiated navigations (e.g. via omnibox) don't have a navigation type
-  // and are discarded here.
-  if (navigation_type.has_value() &&
-      navigation_type.value() != blink::kWebNavigationTypeLinkClicked) {
-    FireFormSubmission(
-        mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED,
-        /*submitted_form_element=*/std::nullopt,
-        /*reset_last_interacted_elements=*/
-        !base::FeatureList::IsEnabled(features::kAutofillFixFormTracking));
+  if (!navigation_type) {
+    // We are interested only in content-initiated navigations. Explicit browser
+    // initiated navigations (e.g. via omnibox) do not have a navigation type
+    // and are discarded here.
+    return;
   }
+
+  switch (*navigation_type) {
+    // Standard link navigations are excluded as they do not usually signify a
+    // form submission.
+    case blink::kWebNavigationTypeLinkClicked:
+      return;
+
+    // These types represent restoring, reloading, or traversing history (not
+    // content-initiated navigations). Since the form state for these pages has
+    // already been processed or is simply being replayed by the browser, no
+    // submission is fired in order not to introduce noise signals.
+    case blink::kWebNavigationTypeBackForward:
+    case blink::kWebNavigationTypeReload:
+    case blink::kWebNavigationTypeFormResubmittedBackForward:
+    case blink::kWebNavigationTypeFormResubmittedReload:
+    case blink::kWebNavigationTypeRestore:
+      if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+        return;
+      }
+      break;
+
+    // A standard <form> submission. This should already be caught by either
+    // `FormTracker::WillSubmitForm()` or `FormTracker::WilSendSubmitEvent()`,
+    // so submission is not fired here in order to avoid duplicate signals.
+    case blink::kWebNavigationTypeFormSubmitted:
+      if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+        return;
+      }
+      break;
+
+    // Catch-all for other types. This includes JavaScript-initiated navigations
+    // (e.g., setting window.location) which can simulate a submission.
+    case blink::kWebNavigationTypeOther:
+      break;
+  }
+
+  FireFormSubmission(
+      mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED,
+      /*submitted_form_element=*/std::nullopt,
+      // Resetting here would hurt PWM submissions because PWM ignores
+      // PROBABLY_FORM_SUBMITTED.
+      // TODO(crbug.com/40281981): Figure out if this is still needed, and
+      // document the reason, otherwise set to false.
+      /*reset_last_interacted_elements=*/
+      !base::FeatureList::IsEnabled(features::kAutofillFixFormTracking));
 }
 
 void FormTracker::WillDetach(blink::DetachReason detach_reason) {
@@ -473,9 +516,11 @@ void FormTracker::WillDetach(blink::DetachReason detach_reason) {
                        // needed, and document the reason, otherwise remove.
                        /*reset_last_interacted_elements=*/true);
   }
-  // TODO(crbug.com/40281981): Figure out if this is still needed, and
-  // document the reason, otherwise remove.
-  ResetLastInteractedElements();
+  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+    // TODO(crbug.com/40281981): Figure out if this is still needed, and
+    // document the reason, otherwise remove.
+    ResetLastInteractedElements();
+  }
 }
 
 void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
@@ -496,6 +541,8 @@ void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
   // because OnFormSubmitted will normally be invoked afterwards and we don't
   // want to fire the same event twice.
   FireFormSubmission(mojom::SubmissionSource::FORM_SUBMISSION, form,
+                     // Resetting here would hurt PWM submissions because PWM
+                     // ignores FORM_SUBMISSION.
                      /*reset_last_interacted_elements=*/false);
 }
 
@@ -512,6 +559,13 @@ void FormTracker::WillSubmitForm(const WebFormElement& form) {
   }
   FireFormSubmission(
       mojom::SubmissionSource::FORM_SUBMISSION, form,
+      // Resetting here would hurt PWM submissions because PWM ignores
+      // FORM_SUBMISSION.
+      // TODO(crbug.com/40281981): Figure out if this is still needed, and
+      // document the reason, otherwise set to false.
+      // TODO(crbug.com/40281981): Remove `reset_last_interacted_elements` after
+      // launching `kAutofillFixFormTracking` as this information would become
+      // computable using the submission source.
       /*reset_last_interacted_elements=*/
       !base::FeatureList::IsEnabled(features::kAutofillFixFormTracking));
 }
@@ -542,28 +596,34 @@ void FormTracker::FireFormSubmission(
     password_autofill_agent_->FireHostSubmitEvent(
         FormRendererId(), /*submitted_form=*/std::nullopt, source);
   }
-  if (std::optional<FormData> form_data =
-          GetSubmittedForm(source, submitted_form_element)) {
+
+  std::optional<FormData> form_data =
+      GetSubmittedForm(source, submitted_form_element);
+
+  if (form_data) {
     FireHostSubmitEvents(*form_data, source);
   }
 
-  if (reset_last_interacted_elements) {
-    ResetLastInteractedElements();
-  }
-  switch (source) {
-    case mojom::SubmissionSource::FORM_SUBMISSION:
-    case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
-      break;
-    case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
-    case mojom::SubmissionSource::XHR_SUCCEEDED:
-    case mojom::SubmissionSource::FRAME_DETACHED:
-    case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
-      // TODO(crbug.com/40281981): Figure out if this is still needed, and
-      // document the reason, otherwise remove.
-      OnFormNoLongerSubmittable();
-      break;
-    case mojom::SubmissionSource::NONE:
-      NOTREACHED();
+  if (form_data ||
+      !base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+    if (reset_last_interacted_elements) {
+      ResetLastInteractedElements();
+    }
+    switch (source) {
+      case mojom::SubmissionSource::FORM_SUBMISSION:
+      case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
+        break;
+      case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
+      case mojom::SubmissionSource::XHR_SUCCEEDED:
+      case mojom::SubmissionSource::FRAME_DETACHED:
+      case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
+        // TODO(crbug.com/40281981): Figure out if this is still needed, and
+        // document the reason, otherwise remove.
+        OnFormNoLongerSubmittable();
+        break;
+      case mojom::SubmissionSource::NONE:
+        NOTREACHED();
+    }
   }
 }
 
@@ -800,6 +860,8 @@ void FormTracker::ElementWasHiddenOrRemoved(mojom::SubmissionSource source) {
         // document the reason, otherwise remove.
         return true;
       case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
+        // Resetting here would hurt Autofill submissions because Autofill
+        // ignores DOM_MUTATION_AFTER_AUTOFILL.
         return false;
       case mojom::SubmissionSource::FRAME_DETACHED:
       case mojom::SubmissionSource::NONE:
