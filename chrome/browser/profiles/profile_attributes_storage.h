@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage_observer.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -312,7 +312,8 @@ class ProfileAttributesStorage {
       const base::FilePath& profile_path) const;
 
   const raw_ptr<PrefService> prefs_;
-  mutable std::unordered_map<base::FilePath::StringType, ProfileAttributesEntry>
+  mutable absl::flat_hash_map<base::FilePath::StringType,
+                              std::unique_ptr<ProfileAttributesEntry>>
       profile_attributes_entries_;
 
   mutable base::ObserverList<Observer>::UncheckedAndDanglingUntriaged
@@ -320,18 +321,18 @@ class ProfileAttributesStorage {
 
   // A cache of gaia/high res avatar profile pictures. This cache is updated
   // lazily so it needs to be mutable.
-  mutable std::unordered_map<std::string, gfx::Image> cached_avatar_images_;
+  mutable absl::flat_hash_map<std::string, gfx::Image> cached_avatar_images_;
 
   // Marks a profile picture as loading from disk. This prevents a picture from
   // loading multiple times.
-  mutable std::unordered_map<std::string, bool> cached_avatar_images_loading_;
+  mutable absl::flat_hash_map<std::string, bool> cached_avatar_images_loading_;
 
   // Hash table of profile pictures currently being downloaded from the remote
   // location and the ProfileAvatarDownloader instances downloading them.
   // This prevents a picture from being downloaded multiple times. The
   // ProfileAvatarDownloader instances are deleted when the download completes
   // or when the ProfileAttributesStorage is destroyed.
-  std::unordered_map<std::string, std::unique_ptr<ProfileAvatarDownloader>>
+  absl::flat_hash_map<std::string, std::unique_ptr<ProfileAvatarDownloader>>
       avatar_images_downloads_in_progress_;
 
   // Determines of the ProfileAvatarDownloader should be created and executed

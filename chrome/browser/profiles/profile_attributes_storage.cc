@@ -5,7 +5,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 
 #include <algorithm>
-#include <unordered_set>
 #include <utility>
 
 #include "base/check.h"
@@ -49,6 +48,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
@@ -479,7 +479,7 @@ std::vector<ProfileAttributesEntry*>
 ProfileAttributesStorage::GetAllProfilesAttributes() const {
   std::vector<ProfileAttributesEntry*> ret;
   for (auto& path_and_entry : profile_attributes_entries_) {
-    ProfileAttributesEntry* entry = &path_and_entry.second;
+    ProfileAttributesEntry* entry = path_and_entry.second.get();
     DCHECK(entry);
     ret.push_back(entry);
   }
@@ -582,9 +582,9 @@ void ProfileAttributesStorage::UpdateProfilesOrderPref(size_t from_index,
 base::flat_map<std::string, ProfileAttributesEntry*>
 ProfileAttributesStorage::GetStorageKeyEntryMap() const {
   base::flat_map<std::string, ProfileAttributesEntry*> key_entry_map;
-  for (auto& path_and_entry : profile_attributes_entries_) {
-    auto key = StorageKeyFromProfilePath(base::FilePath(path_and_entry.first));
-    key_entry_map[key] = &path_and_entry.second;
+  for (auto& [path, entry] : profile_attributes_entries_) {
+    auto key = StorageKeyFromProfilePath(base::FilePath(path));
+    key_entry_map[key] = entry.get();
   }
   return key_entry_map;
 }
@@ -642,7 +642,7 @@ ProfileAttributesEntry* ProfileAttributesStorage::GetProfileAttributesWithPath(
     return nullptr;
   }
 
-  return &entry_iter->second;
+  return entry_iter->second.get();
 }
 
 size_t ProfileAttributesStorage::GetNumberOfProfiles() const {
@@ -716,7 +716,7 @@ bool ProfileAttributesStorage::IsDefaultProfileName(
 }
 
 size_t ProfileAttributesStorage::ChooseAvatarIconIndexForNewProfile() const {
-  std::unordered_set<size_t> used_icon_indices;
+  absl::flat_hash_set<size_t> used_icon_indices;
 
   std::vector<ProfileAttributesEntry*> entries =
       const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes();
@@ -1051,7 +1051,9 @@ ProfileAttributesEntry* ProfileAttributesStorage::InitEntryWithKey(
 
   DCHECK(!profile_attributes_entries_.contains(path.value()));
   ProfileAttributesEntry* new_entry =
-      &profile_attributes_entries_[path.value()];
+      profile_attributes_entries_
+          .emplace(path.value(), std::make_unique<ProfileAttributesEntry>())
+          .first->second.get();
   new_entry->Initialize(this, path, prefs_);
   new_entry->SetIsOmittedInternal(is_omitted);
   return new_entry;
