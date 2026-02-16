@@ -21,6 +21,7 @@ class MockWelcomeScreen : public WelcomeScreen {
  public:
   // `local_state` must be non-null and must outlive `this`.
   MockWelcomeScreen(PrefService* local_state,
+                    ApplicationLocaleStorage* application_locale_storage,
                     base::WeakPtr<WelcomeView> view,
                     const WelcomeScreen::ScreenExitCallback& exit_callback);
 

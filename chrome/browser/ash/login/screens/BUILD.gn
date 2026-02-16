@@ -207,6 +207,7 @@ static_library("screens") {
     "//chromeos/services/network_config/public/mojom:mojom_shared",
     "//chromeos/services/network_config/public/mojom:mojom_shared_cpp_sources",
     "//components/account_id",
+    "//components/application_locale_storage",
     "//components/login",
     "//components/prefs",
     "//components/services/app_service/public/cpp:app_types",

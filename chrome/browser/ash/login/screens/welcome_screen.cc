@@ -31,8 +31,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
@@ -166,15 +164,6 @@ bool IsMeetDeviceConfigurable() {
          switches::IsDeviceRequisitionConfigurable();
 }
 
-ApplicationLocaleStorage* GetApplicationLocaleStorage() {
-  // TODO(crbug.com/404133029): Avoid g_browser_process usage.
-  return g_browser_process->GetFeatures()->application_locale_storage();
-}
-
-std::string GetApplicationLocale() {
-  return GetApplicationLocaleStorage()->Get();
-}
-
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -198,11 +187,14 @@ std::string WelcomeScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-WelcomeScreen::WelcomeScreen(PrefService* local_state,
-                             base::WeakPtr<WelcomeView> view,
-                             const ScreenExitCallback& exit_callback)
+WelcomeScreen::WelcomeScreen(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
+    base::WeakPtr<WelcomeView> view,
+    const ScreenExitCallback& exit_callback)
     : BaseScreen(WelcomeView::kScreenId, OobeScreenPriority::DEFAULT),
       local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
   input_method::InputMethodManager::Get()->AddObserver(this);
@@ -238,7 +230,7 @@ void WelcomeScreen::UpdateLanguageList() {
 void WelcomeScreen::SetApplicationLocaleAndInputMethod(
     const std::string& locale,
     const std::string& input_method) {
-  const std::string& app_locale = GetApplicationLocale();
+  const std::string& app_locale = application_locale_storage_->Get();
   if (app_locale == locale || locale.empty()) {
     // If the locale doesn't change, set input method directly.
     SetInputMethod(input_method);
@@ -254,7 +246,7 @@ void WelcomeScreen::SetApplicationLocaleAndInputMethod(
       base::BindOnce(&WelcomeScreen::OnLanguageChangedCallback,
                      language_weak_ptr_factory_.GetWeakPtr(),
                      base::Owned(new InputEventsBlocker), input_method));
-  locale_util::SwitchLanguage(GetApplicationLocaleStorage(), locale,
+  locale_util::SwitchLanguage(&application_locale_storage_.get(), locale,
                               /*enable_locale_keyboard_layouts=*/true,
                               /*login_layouts_only=*/false, std::move(callback),
                               ProfileManager::GetActiveUserProfile());
@@ -266,7 +258,7 @@ std::string WelcomeScreen::GetInputMethod() const {
 
 void WelcomeScreen::SetApplicationLocale(const std::string& locale,
                                          const bool is_from_ui) {
-  const std::string& app_locale = GetApplicationLocale();
+  const std::string& app_locale = application_locale_storage_->Get();
   if (app_locale == locale || locale.empty()) {
     if (selected_language_code_.empty())
       UpdateLanguageList();
@@ -282,7 +274,7 @@ void WelcomeScreen::SetApplicationLocale(const std::string& locale,
       base::BindOnce(&WelcomeScreen::OnLanguageChangedCallback,
                      language_weak_ptr_factory_.GetWeakPtr(),
                      base::Owned(new InputEventsBlocker), std::string()));
-  locale_util::SwitchLanguage(GetApplicationLocaleStorage(), locale,
+  locale_util::SwitchLanguage(&application_locale_storage_.get(), locale,
                               /*enable_locale_keyboard_layouts=*/true,
                               /*login_layouts_only=*/false, std::move(callback),
                               ProfileManager::GetActiveUserProfile());
@@ -661,7 +653,7 @@ void WelcomeScreen::OnLanguageListResolved(
     const std::string& new_selected_language) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (new_language_list_locale != GetApplicationLocale()) {
+  if (new_language_list_locale != application_locale_storage_->Get()) {
     UpdateLanguageList();
     return;
   }

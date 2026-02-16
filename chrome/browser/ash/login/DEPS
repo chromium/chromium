@@ -98,6 +98,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # TODO(crbug.com/404133029): Avoid using g_browser_process->GetFeatures().
+  "wizard_controller\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+
   ".*test\\..*": [
     "+chrome/browser/ash/policy/test_support",
     "+chrome/browser/global_features.h",

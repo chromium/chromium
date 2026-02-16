@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
 
+class ApplicationLocaleStorage;
 class PrefService;
 
 namespace ash {
@@ -27,8 +28,10 @@ class GuestTosScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  // `local_state` must be non-null and must outlive `this`.
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
   GuestTosScreen(PrefService* local_state,
+                 const ApplicationLocaleStorage* application_locale_storage,
                  base::WeakPtr<GuestTosScreenView> view,
                  const ScreenExitCallback& exit_callback);
   GuestTosScreen(const GuestTosScreen&) = delete;
@@ -47,6 +50,7 @@ class GuestTosScreen : public BaseScreen {
   void OnOobeGuestPrefWriteDone();
 
   const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   base::WeakPtr<GuestTosScreenView> view_;
   ScreenExitCallback exit_callback_;

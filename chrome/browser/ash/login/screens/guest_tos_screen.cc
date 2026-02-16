@@ -12,10 +12,10 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
 #include "chrome/common/url_constants.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
 namespace ash {
 namespace {
@@ -24,7 +24,7 @@ constexpr const char kUserActionBackClicked[] = "back-button";
 constexpr const char kUserActionCancelClicked[] = "cancel";
 constexpr const char kUserActionGuestToSAccept[] = "guest-tos-accept";
 
-std::string GetGoogleEulaOnlineUrl() {
+std::string GetGoogleEulaOnlineUrl(const std::string& application_locale) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kOobeEulaUrlForTests)) {
     return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -32,10 +32,10 @@ std::string GetGoogleEulaOnlineUrl() {
   }
 
   return base::StringPrintf(chrome::kGoogleEulaOnlineURLPath,
-                            g_browser_process->GetApplicationLocale().c_str());
+                            application_locale.c_str());
 }
 
-std::string GetCrosEulaOnlineUrl() {
+std::string GetCrosEulaOnlineUrl(const std::string& application_locale) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kOobeEulaUrlForTests)) {
     return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -43,7 +43,7 @@ std::string GetCrosEulaOnlineUrl() {
   }
 
   return base::StringPrintf(chrome::kCrosEulaOnlineURLPath,
-                            g_browser_process->GetApplicationLocale().c_str());
+                            application_locale.c_str());
 }
 
 }  // namespace
@@ -62,11 +62,14 @@ std::string GuestTosScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-GuestTosScreen::GuestTosScreen(PrefService* local_state,
-                               base::WeakPtr<GuestTosScreenView> view,
-                               const ScreenExitCallback& exit_callback)
+GuestTosScreen::GuestTosScreen(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
+    base::WeakPtr<GuestTosScreenView> view,
+    const ScreenExitCallback& exit_callback)
     : BaseScreen(GuestTosScreenView::kScreenId, OobeScreenPriority::DEFAULT),
       local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
@@ -77,7 +80,8 @@ GuestTosScreen::~GuestTosScreen() = default;
 void GuestTosScreen::ShowImpl() {
   if (!view_)
     return;
-  view_->Show(GetGoogleEulaOnlineUrl(), GetCrosEulaOnlineUrl());
+  const std::string& locale = application_locale_storage_->Get();
+  view_->Show(GetGoogleEulaOnlineUrl(locale), GetCrosEulaOnlineUrl(locale));
 }
 
 void GuestTosScreen::HideImpl() {}

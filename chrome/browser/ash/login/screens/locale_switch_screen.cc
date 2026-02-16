@@ -19,13 +19,12 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
@@ -178,11 +177,14 @@ std::string LocaleSwitchScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-LocaleSwitchScreen::LocaleSwitchScreen(PrefService* local_state,
-                                       base::WeakPtr<LocaleSwitchView> view,
-                                       const ScreenExitCallback& exit_callback)
+LocaleSwitchScreen::LocaleSwitchScreen(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
+    base::WeakPtr<LocaleSwitchView> view,
+    const ScreenExitCallback& exit_callback)
     : BaseScreen(LocaleSwitchView::kScreenId, OobeScreenPriority::DEFAULT),
       local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -370,7 +372,7 @@ void LocaleSwitchScreen::OnRequestFailure() {
 void LocaleSwitchScreen::SwitchLocale() {
   language::ConvertToActualUILocale(&locale_);
 
-  if (locale_.empty() || locale_ == g_browser_process->GetApplicationLocale()) {
+  if (locale_.empty() || locale_ == application_locale_storage_->Get()) {
     exit_callback_.Run(Result::kNoSwitchNeeded);
     return;
   }
@@ -402,15 +404,11 @@ void LocaleSwitchScreen::SwitchLocale() {
     return;
   }
 
-  // TODO(crbug.com/404133029): Avoid g_browser_process usage.
-  ApplicationLocaleStorage* application_locale_storage =
-      g_browser_process->GetFeatures()->application_locale_storage();
-
   locale_util::SwitchLanguageCallback callback(
       base::BindOnce(&LocaleSwitchScreen::OnLanguageChangedCallback,
                      weak_factory_.GetWeakPtr()));
   locale_util::SwitchLanguage(
-      application_locale_storage, locale_,
+      &application_locale_storage_.get(), locale_,
       /*enable_locale_keyboard_layouts=*/false,  // The layouts will be synced
                                                  // instead. Also new user could
                                                  // enable required layouts from

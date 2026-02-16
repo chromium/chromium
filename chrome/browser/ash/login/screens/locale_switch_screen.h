@@ -23,6 +23,7 @@
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 
 class PrefService;
+class ApplicationLocaleStorage;
 
 namespace signin {
 class PrimaryAccountAccessTokenFetcher;
@@ -51,10 +52,12 @@ class LocaleSwitchScreen : public BaseScreen,
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  // `local_state` must be non-null and must outlive `this`.
-  explicit LocaleSwitchScreen(PrefService* local_state,
-                              base::WeakPtr<LocaleSwitchView> view,
-                              const ScreenExitCallback& exit_callback);
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  LocaleSwitchScreen(PrefService* local_state,
+                     ApplicationLocaleStorage* application_locale_storage,
+                     base::WeakPtr<LocaleSwitchView> view,
+                     const ScreenExitCallback& exit_callback);
   ~LocaleSwitchScreen() override;
 
   // signin::IdentityManager::Observer:
@@ -96,6 +99,7 @@ class LocaleSwitchScreen : public BaseScreen,
                                      signin::AccessTokenInfo access_token_info);
 
   const raw_ref<PrefService> local_state_;
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   std::string locale_;
   base::WeakPtr<LocaleSwitchView> view_ = nullptr;

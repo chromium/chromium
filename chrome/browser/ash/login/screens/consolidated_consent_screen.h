@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_CONSOLIDATED_CONSENT_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_CONSOLIDATED_CONSENT_SCREEN_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler_observer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
+
+class ApplicationLocaleStorage;
 
 namespace arc {
 class ArcOptInPreferenceHandler;
@@ -62,8 +65,11 @@ class ConsolidatedConsentScreen
   using TView = ConsolidatedConsentScreenView;
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  ConsolidatedConsentScreen(base::WeakPtr<ConsolidatedConsentScreenView> view,
-                            const ScreenExitCallback& exit_callback);
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  ConsolidatedConsentScreen(
+      const ApplicationLocaleStorage* application_locale_storage,
+      base::WeakPtr<ConsolidatedConsentScreenView> view,
+      const ScreenExitCallback& exit_callback);
   ~ConsolidatedConsentScreen() override;
   ConsolidatedConsentScreen(const ConsolidatedConsentScreen&) = delete;
   ConsolidatedConsentScreen& operator=(const ConsolidatedConsentScreen&) =
@@ -129,6 +135,8 @@ class ConsolidatedConsentScreen
 
   // Updates the state of the metrics toggle.
   void UpdateMetricsMode(bool enabled, bool managed);
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   std::optional<bool> is_owner_;
 

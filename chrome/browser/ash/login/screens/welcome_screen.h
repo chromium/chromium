@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
+class ApplicationLocaleStorage;
 class PrefService;
 
 namespace ash {
@@ -79,8 +80,10 @@ class WelcomeScreen : public BaseScreen,
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  // `local_state` must be non-null and must outlive `this`.
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
   WelcomeScreen(PrefService* local_state,
+                ApplicationLocaleStorage* application_locale_storage,
                 base::WeakPtr<WelcomeView> view,
                 const ScreenExitCallback& exit_callback);
 
@@ -190,6 +193,7 @@ class WelcomeScreen : public BaseScreen,
   void Exit(Result result) const;
 
   const raw_ref<PrefService> local_state_;
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   base::WeakPtr<WelcomeView> view_;
   ScreenExitCallback exit_callback_;

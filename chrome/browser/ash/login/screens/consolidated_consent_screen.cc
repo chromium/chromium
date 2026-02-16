@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -46,6 +47,7 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
@@ -90,7 +92,7 @@ static constexpr auto kTermsTypeToUrlAndSwitch =
           {chrome::kPrivacyPolicyOnlineURLPath,
            switches::kPrivacyPolicyHostForTests}}});
 
-std::string GetTosHost(ToS terms_type) {
+std::string GetTosHost(const std::string& application_locale, ToS terms_type) {
   const char* ash_switch = kTermsTypeToUrlAndSwitch.at(terms_type).second;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(ash_switch)) {
     return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -98,14 +100,12 @@ std::string GetTosHost(ToS terms_type) {
   }
 
   if (terms_type == ToS::GOOGLE_EULA) {
-    return base::StringPrintf(
-        chrome::kGoogleEulaOnlineURLPath,
-        g_browser_process->GetApplicationLocale().c_str());
+    return base::StringPrintf(chrome::kGoogleEulaOnlineURLPath,
+                              application_locale.c_str());
   }
   if (terms_type == ToS::CROS_EULA) {
-    return base::StringPrintf(
-        chrome::kCrosEulaOnlineURLPath,
-        g_browser_process->GetApplicationLocale().c_str());
+    return base::StringPrintf(chrome::kCrosEulaOnlineURLPath,
+                              application_locale.c_str());
   }
   return kTermsTypeToUrlAndSwitch.at(terms_type).first;
 }
@@ -155,10 +155,12 @@ std::string ConsolidatedConsentScreen::GetResultString(Result result) {
 }
 
 ConsolidatedConsentScreen::ConsolidatedConsentScreen(
+    const ApplicationLocaleStorage* application_locale_storage,
     base::WeakPtr<ConsolidatedConsentScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(ConsolidatedConsentScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
@@ -247,10 +249,11 @@ void ConsolidatedConsentScreen::ShowImpl() {
   data.Set("isTosHidden", enterprise_util::IsProfileAffiliated(profile));
 
   // ToS URLs.
-  data.Set("googleEulaUrl", GetTosHost(ToS::GOOGLE_EULA));
-  data.Set("crosEulaUrl", GetTosHost(ToS::CROS_EULA));
-  data.Set("arcTosUrl", GetTosHost(ToS::ARC));
-  data.Set("privacyPolicyUrl", GetTosHost(ToS::PRIVACY_POLICY));
+  const std::string& locale = application_locale_storage_->Get();
+  data.Set("googleEulaUrl", GetTosHost(locale, ToS::GOOGLE_EULA));
+  data.Set("crosEulaUrl", GetTosHost(locale, ToS::CROS_EULA));
+  data.Set("arcTosUrl", GetTosHost(locale, ToS::ARC));
+  data.Set("privacyPolicyUrl", GetTosHost(locale, ToS::PRIVACY_POLICY));
 
   // Option that controls if Recovery factor opt-in should be shown for the
   // user.

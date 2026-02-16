@@ -15,7 +15,9 @@ namespace ash {
 
 class MockConsolidatedConsentScreen : public ConsolidatedConsentScreen {
  public:
+  // `application_locale_storage` must be non-null and must outlive `this`.
   MockConsolidatedConsentScreen(
+      const ApplicationLocaleStorage* application_locale_storage,
       base::WeakPtr<ConsolidatedConsentScreenView> view,
       const ScreenExitCallback& exit_callback);
   ~MockConsolidatedConsentScreen() override;
