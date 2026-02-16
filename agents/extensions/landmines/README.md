@@ -4,11 +4,11 @@ Aims to disable commands that tend to crash or stall gemini. Hopefully we can
 remove most of these in the future when agents are smart enough to not try them
 in the first place.
 
-Also contains a note about using `rg` and `fdfind` as defaults. These are
-available on Debian via:
+Also contains a note about using `fdfind` as default. This is available on
+Debian via:
 
 ```
-sudo apt-get install ripgrep fd-find
+sudo apt-get install fd-find
 ```
 
 ## Disabled Commands
@@ -17,7 +17,6 @@ The following are disabled because they are too slow on chrome's large source
 tree:
 
 - `glob`
-- `search_file_content`
 - `find  .`
 - `ls -R`
 - `grep -r`

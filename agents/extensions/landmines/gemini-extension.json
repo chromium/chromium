@@ -1,10 +1,9 @@
 {
   "name": "landmines",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "contextFileName": "GEMINI.md",
   "excludeTools": [
     "glob",
-    "search_file_content",
     "run_shell_command(find .)",
     "run_shell_command(ls -R)",
     "run_shell_command(grep -r)",
