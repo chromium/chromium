@@ -891,6 +891,195 @@ test(function () {
   assert_equals(editContext.selectionEnd, 10);
   assert_array_equals(compositionEndData, [""], "Should get compositionend when setting empty composition");
 }, 'Tests composition state on calling updateText during active composition.');
+
+test(function () {
+  const editContext1 = new EditContext();
+  const editContext2 = new EditContext();
+  const editContext3 = new EditContext();
+  const test = document.getElementById('test');
+
+  let compositionEndCount = 0;
+  editContext1.addEventListener("compositionend", e => {
+    assert_equals(test.editContext, editContext1, "Old editContext should remain attached until compositionend completes");
+    compositionEndCount++;
+    // Re-entrant editContext assignment during compositionend
+    test.editContext = editContext3;
+  });
+
+  test.editContext = editContext1;
+  test.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.editContext, editContext1, "editContext1 should still be attached");
+
+  // Setting a new editContext will trigger Blur on editContext1, which fires compositionend
+  test.editContext = editContext2;
+
+  assert_equals(compositionEndCount, 1, "compositionend should have fired during editContext assignment");
+  assert_equals(test.editContext, editContext3, "editContext should have been reassigned to editContext3 during compositionend");
+  assert_array_equals(editContext1.attachedElements(), [], "editContext1 should be detached");
+  assert_array_equals(editContext2.attachedElements(), [], "editContext2 should be detached after being replaced");
+  assert_array_equals(editContext3.attachedElements(), [test], "editContext3 should be attached to test");
+}, 'Re-entrant editContext assignment during compositionend event.');
+
+test(function () {
+  const editContext1 = new EditContext();
+  const editContext2 = new EditContext();
+  const test = document.getElementById('test');
+
+  let compositionEndCount = 0;
+  editContext1.addEventListener("compositionend", e => {
+    assert_equals(test.editContext, editContext1, "Old editContext should remain attached until compositionend completes");
+    compositionEndCount++;
+    // Detach editContext during compositionend
+    test.editContext = null;
+  });
+
+  test.editContext = editContext1;
+  test.focus();
+  textInputController.setComposition("foo");
+
+  // Setting a new editContext will trigger Blur on editContext1, which fires compositionend event
+  test.editContext = editContext2;
+
+  assert_equals(compositionEndCount, 1, "compositionend should have fired during editContext assignment");
+  assert_equals(test.editContext, null, "editContext should have been detached during compositionend");
+  assert_array_equals(editContext1.attachedElements(), [], "editContext1 should have no attached elements");
+  assert_array_equals(editContext2.attachedElements(), [], "editContext2 should have no attached elements");
+}, 'Detaching editContext during compositionend event fired by editContext assignment');
+
+test(function () {
+  const editContext1 = new EditContext();
+  const editContext2 = new EditContext();
+  const test = document.getElementById('test');
+
+  let compositionEndCount = 0;
+  editContext1.addEventListener("compositionend", e => {
+    assert_equals(test.editContext, editContext1, "");
+    compositionEndCount++;
+    // Re-assigning the same editContext should be a no-op
+    test.editContext = editContext1;
+  });
+
+  test.editContext = editContext1;
+  test.focus();
+  textInputController.setComposition("foo");
+
+  // Setting editContext2 will trigger Blur on editContext1, which fires compositionend event
+  test.editContext = editContext2;
+
+  assert_equals(compositionEndCount, 1, "compositionend should have fired once");
+  assert_equals(test.editContext, editContext2, "editContext2 should be attached");
+  assert_array_equals(editContext1.attachedElements(), [], "editContext1 should be detached");
+  assert_array_equals(editContext2.attachedElements(), [test], "editContext2 should be attached");
+}, 'Reassigning old editContext during compositionend.');
+
+test(function () {
+  const editContext1 = new EditContext();
+  const editContext2 = new EditContext();
+  const test = document.getElementById('test');
+  const test2 = document.getElementById('test2');
+
+  let compositionEndCount = 0;
+  editContext1.addEventListener("compositionend", e => {
+    assert_equals(test.editContext, editContext1, "Old editContext should remain attached until compositionend completes");
+    compositionEndCount++;
+    test2.editContext = editContext2;
+  });
+
+  test.editContext = editContext1;
+  test.focus();
+  textInputController.setComposition("foo");
+
+  // Setting editContext2 will trigger Blur on editContext1, which fires compositionend event
+  assert_throws_dom("NotSupportedError", () => {
+      test.editContext = editContext2;
+  }, "Should throw NotSupportedError when assigning already-attached editContext");
+
+  assert_equals(compositionEndCount, 1, "compositionend should have fired");
+  assert_equals(test.editContext, editContext1, "test should have editContext1 after the assignment");
+  assert_equals(test2.editContext, editContext2, "test2 should have editContext2 after assignment");
+}, 'Throws when compositionend handler attaches target editContext to another element');
+
+test(function () {
+  const editContext1 = new EditContext();
+  const editContext2 = new EditContext();
+  const editContext3 = new EditContext();
+  const test = document.getElementById('test');
+
+  test.editContext = editContext1;
+  test.focus();
+  textInputController.setComposition("foo");
+
+  let textFormatUpdateCount = 0;
+  editContext1.addEventListener("textformatupdate", e => {
+    assert_equals(test.editContext, editContext1, "Old editContext should remain attached until textformatupdate completes");
+    textFormatUpdateCount++;
+    // Re-entrant editContext assignment during textformatupdate
+    test.editContext = editContext3;
+  });
+
+  // Setting editContext2 will trigger Blur on editContext1, which fires textformatupdate event
+  test.editContext = editContext2;
+
+  assert_equals(textFormatUpdateCount, 1, "textformatupdate should have fired");
+  assert_equals(test.editContext, editContext3, "editContext should have been reassigned to editContext3 during textformatupdate");
+  assert_array_equals(editContext1.attachedElements(), [], "editContext1 should be detached");
+  assert_array_equals(editContext3.attachedElements(), [test], "editContext3 should be attached to test");
+}, 'Re-entrant editContext assignment during textformatupdate event.');
+
+test(function () {
+  const editContext1 = new EditContext();
+  const editContext2 = new EditContext();
+  const test = document.getElementById('test');
+
+  test.editContext = editContext1;
+  test.focus();
+  textInputController.setComposition("foo");
+
+  let textFormatUpdateCount = 0;
+  editContext1.addEventListener("textformatupdate", e => {
+    assert_equals(test.editContext, editContext1, "Old editContext should remain attached until textformatupdate completes");
+    textFormatUpdateCount++;
+    // Detach editContext during textformatupdate
+    test.editContext = null;
+  });
+
+  // Setting editContext2 will trigger Blur on editContext1, which fires textformatupdate event
+  test.editContext = editContext2;
+
+  assert_equals(textFormatUpdateCount, 1, "textformatupdate should have fired");
+  assert_equals(test.editContext, null, "editContext should have been detached during textformatupdate");
+  assert_array_equals(editContext1.attachedElements(), [], "editContext1 should have no attached elements");
+}, 'Detaching editContext during textformatupdate event.');
+
+test(function () {
+  const editContext1 = new EditContext();
+  const editContext2 = new EditContext();
+  const test = document.getElementById('test');
+  const test2 = document.getElementById('test2');
+
+  test.editContext = editContext1;
+  test.focus();
+  textInputController.setComposition("foo");
+
+  let textFormatUpdateCount = 0;
+  editContext1.addEventListener("textformatupdate", e => {
+    assert_equals(test.editContext, editContext1, "Old editContext should remain attached until textformatupdate completes");
+    textFormatUpdateCount++;
+    test2.editContext = editContext2;
+  });
+
+  // Setting editContext2 will trigger Blur on editContext1, which fires textformatupdate event
+  assert_throws_dom("NotSupportedError", () => {
+      test.editContext = editContext2;
+  }, "Should throw NotSupportedError when assigning already-attached editContext");
+
+  assert_equals(textFormatUpdateCount, 1, "textformatupdate should have fired");
+  assert_equals(test.editContext, editContext1, "test should still have editContext1");
+  assert_equals(test2.editContext, editContext2, "test2 should have editContext2 after assignment in handler");
+  assert_array_equals(editContext1.attachedElements(), [test], "editContext1 should remain attached to test");
+  assert_array_equals(editContext2.attachedElements(), [test2], "editContext2 should be attached to test2");
+}, 'Throws when textformatupdate handler attaches target editContext to another element');
 </script>
 </body>
 </html>

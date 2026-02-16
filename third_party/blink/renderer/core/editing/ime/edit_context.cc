@@ -206,8 +206,9 @@ void EditContext::Focus() {
 void EditContext::Blur() {
   TRACE_EVENT0("ime", "EditContext::Blur");
 
-  if (GetInputMethodController().GetActiveEditContext() != this)
+  if (GetInputMethodController().GetActiveEditContext() != this) {
     return;
+  }
   // Clean up the state of the |this| EditContext.
   FinishComposingText(ConfirmCompositionBehavior::kKeepSelection);
   GetInputMethodController().SetActiveEditContext(nullptr);
@@ -728,6 +729,11 @@ bool EditContext::CommitText(const WebString& text,
 bool EditContext::FinishComposingText(
     ConfirmCompositionBehavior selection_behavior) {
   TRACE_EVENT0("ime", "EditContext::FinishComposingText");
+  if (finish_composing_in_progress_) {
+    return false;
+  }
+  finish_composing_in_progress_ =
+      RuntimeEnabledFeatures::EditContextAssignmentAsPerSpecEnabled();
   int text_length = 0;
   if (has_composition_) {
     String text =
@@ -745,6 +751,7 @@ bool EditContext::FinishComposingText(
   }
 
   ClearCompositionState();
+  finish_composing_in_progress_ = false;
   return true;
 }
 
