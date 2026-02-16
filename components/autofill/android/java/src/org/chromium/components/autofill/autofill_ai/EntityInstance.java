@@ -10,6 +10,8 @@ import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.autofill.autofill_ai.AttributeInstance.DateValue;
+import org.chromium.components.autofill.autofill_ai.AttributeInstance.StringValue;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -125,6 +127,25 @@ public class EntityInstance {
 
     public @Nullable AttributeInstance getAttribute(AttributeType attributeType) {
         return mAttributes.get(attributeType);
+    }
+
+    public void setAttributeValue(AttributeType attributeType, String value) {
+        switch (attributeType.getDataType()) {
+            case DataType.NAME:
+            case DataType.STATE:
+            case DataType.STRING:
+            case DataType.COUNTRY:
+                mAttributes.put(
+                        attributeType,
+                        new AttributeInstance(attributeType, new StringValue(value)));
+                break;
+            case DataType.DATE:
+                mAttributes.put(
+                        attributeType, new AttributeInstance(attributeType, new DateValue(value)));
+                break;
+            default:
+                assert false : "Unhandled attribute data type: " + attributeType.getDataType();
+        }
     }
 
     @CalledByNative

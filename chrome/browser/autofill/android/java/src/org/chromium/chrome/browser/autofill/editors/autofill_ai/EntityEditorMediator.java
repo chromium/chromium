@@ -50,6 +50,9 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /** Mediator for the Entity Editor. */
 @NullMarked
 class EntityEditorMediator {
@@ -59,6 +62,7 @@ class EntityEditorMediator {
     private final PersonalDataManager mPersonalDataManager;
     private final EntityInstance mEntityInstance;
     private final PropertyModel mEditorModel;
+    private final Map<AttributeType, PropertyModel> mAttributeFields = new HashMap<>();
 
     EntityEditorMediator(
             Context context,
@@ -105,19 +109,34 @@ class EntityEditorMediator {
 
     private void onDone() {
         assumeNonNull(mEditorModel).set(EntityEditorProperties.VISIBLE, false);
+        commitChanges();
+        mDelegate.onDone(mEntityInstance);
+    }
+
+    private void commitChanges() {
+        for (Map.Entry<AttributeType, PropertyModel> entry : mAttributeFields.entrySet()) {
+            mEntityInstance.setAttributeValue(entry.getKey(), entry.getValue().get(VALUE));
+        }
     }
 
     private ListModel<EditorItem> getEditorFields() {
+        mAttributeFields.clear();
         ListModel<EditorItem> editorFields = new ListModel<>();
         for (AttributeType attributeType : mEntityInstance.getEntityType().getAttributeTypes()) {
             switch (attributeType.getDataType()) {
                 case DataType.NAME:
                 case DataType.STATE:
                 case DataType.STRING:
-                    editorFields.add(getTextFieldItem(mEntityInstance, attributeType));
+                    EditorItem stringItem = getTextFieldItem(mEntityInstance, attributeType);
+                    editorFields.add(stringItem);
+                    mAttributeFields.put(attributeType, stringItem.model);
                     break;
                 case DataType.COUNTRY:
-                    editorFields.add(getCountryDropdownItem(mEntityInstance, attributeType));
+                    EditorItem countryItem = getCountryDropdownItem(mEntityInstance, attributeType);
+                    editorFields.add(countryItem);
+                    mAttributeFields.put(attributeType, countryItem.model);
+                    break;
+                default:
                     break;
                     // TODO: crbug.com/476755159 - Implement other data types.
             }

@@ -28,6 +28,13 @@ public class EntityEditorCoordinator {
     /** Delegate used to subscribe to AddressEditor user interactions. */
     public interface Delegate {
         /**
+         * The user committed changes by pressing the "Done" button.
+         *
+         * @param entityInstance the entity instance with all updates applied.
+         */
+        default void onDone(EntityInstance entityInstance) {}
+
+        /**
          * The user has confirmed deletion of this entity instance.
          *
          * @param entityInstance the initial entity instance with no user changes.
