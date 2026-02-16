@@ -8,6 +8,8 @@ desc: |-
   Leaving this policy unset or setting this policy to False will use the default behavior defined on the device.
 
   Attempting to launch a disabled Chrome App will show the user a message explaining why the app was not launched and suggesting to contact their IT department.
+
+  The value of this policy will be honored until the deprecation of Chrome Apps in Kiosk sessions, which is expected to happen in M151.
 features:
   dynamic_refresh: true
   per_profile: false
