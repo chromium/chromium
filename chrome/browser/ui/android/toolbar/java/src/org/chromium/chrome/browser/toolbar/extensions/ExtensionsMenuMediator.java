@@ -78,6 +78,8 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     private static class RelativeViewRectProvider extends RectProvider {
         private final View mAnchorView;
         private final View mParentView;
+        private final int[] mAnchorLocation = new int[2];
+        private final int[] mParentLocation = new int[2];
 
         /**
          * @param anchorView The view to be used as an anchor.
@@ -95,16 +97,14 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
          */
         @Override
         public Rect getRect() {
-            int[] anchorLocation = new int[2];
-            mAnchorView.getLocationOnScreen(anchorLocation);
+            mAnchorView.getLocationOnScreen(mAnchorLocation);
+            mParentView.getLocationOnScreen(mParentLocation);
 
-            int[] parentLocation = new int[2];
-            mParentView.getLocationOnScreen(parentLocation);
+            int x = mAnchorLocation[0] - mParentLocation[0];
+            int y = mAnchorLocation[1] - mParentLocation[1];
 
-            int x = anchorLocation[0] - parentLocation[0];
-            int y = anchorLocation[1] - parentLocation[1];
-
-            return new Rect(x, y, x + mAnchorView.getWidth(), y + mAnchorView.getHeight());
+            mRect.set(x, y, x + mAnchorView.getWidth(), y + mAnchorView.getHeight());
+            return mRect;
         }
     }
 
