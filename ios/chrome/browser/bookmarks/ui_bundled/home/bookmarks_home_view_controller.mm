@@ -1068,7 +1068,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 }
 
 - (void)handleSelectFolderForNavigation:(const BookmarkNode*)folder {
-  if (!self.mediator.currentlyShowingSearchResults) {
+  // The navigation controller can be nil if `self`’s view is being dismissed.
+  if (self.navigationController &&
+      !self.mediator.currentlyShowingSearchResults) {
     BookmarksHomeViewController* controller =
         [self createControllerWithDisplayedFolderNode:folder];
     [self.navigationController pushViewController:controller animated:YES];
