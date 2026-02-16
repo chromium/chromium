@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
@@ -195,9 +194,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     public static final String PREF_ACCOUNT_ANDROID_DEVICE_ACCOUNTS =
             "account_android_device_accounts";
 
-    @VisibleForTesting
-    public static final String PREF_URL_KEYED_ANONYMIZED_DATA = "url_keyed_anonymized_data";
-
     @VisibleForTesting public static final String PREF_SIGN_OUT = "sign_out_button";
 
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
@@ -228,8 +224,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private Preference mGoogleActivityControls;
     private Preference mSyncEncryption;
     private @Nullable SignoutButtonPreference mSignOutPreference;
-
-    private ChromeSwitchPreference mUrlKeyedAnonymizedData;
 
     private SyncService.SyncSetupInProgressHandle mSyncSetupInProgressHandle;
 
@@ -541,7 +535,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         // Prevent sync settings changes from taking effect until the user leaves this screen.
         mSyncSetupInProgressHandle = mSyncService.getSetupInProgressHandle();
 
-        setupUrlKeyedAnonymizedDataPreference(profile);
         setupReviewSyncDataPreference(PREF_SYNC_REVIEW_DATA);
     }
 
@@ -623,24 +616,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     private static boolean shouldShowSyncAppsPref() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND);
-    }
-
-    private void setupUrlKeyedAnonymizedDataPreference(Profile profile) {
-        mUrlKeyedAnonymizedData =
-                (ChromeSwitchPreference) findPreference(PREF_URL_KEYED_ANONYMIZED_DATA);
-        boolean urlKeyedAnonymizedDataShouldBeEnabled =
-                !UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(profile)
-                        || UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
-                                profile);
-        mUrlKeyedAnonymizedData.setChecked(urlKeyedAnonymizedDataShouldBeEnabled);
-        mUrlKeyedAnonymizedData.setManagedPreferenceDelegate(
-                new ChromeManagedPreferenceDelegate(profile) {
-                    @Override
-                    public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return UnifiedConsentServiceBridge
-                                .isUrlKeyedAnonymizedDataCollectionManaged(profile);
-                    }
-                });
     }
 
     /**
