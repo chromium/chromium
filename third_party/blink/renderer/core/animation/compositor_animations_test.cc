@@ -490,6 +490,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       bool IsNeutral() const final { return true; }
       bool IsRevert() const final { return false; }
       bool IsRevertLayer() const final { return false; }
+      bool IsRevertRule() const final { return false; }
       bool PopulateCompositorKeyframeValue(
           const PropertyHandle&,
           Element&,

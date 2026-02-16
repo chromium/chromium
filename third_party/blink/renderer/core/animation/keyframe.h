@@ -229,6 +229,7 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
     virtual bool IsNeutral() const = 0;
     virtual bool IsRevert() const = 0;
     virtual bool IsRevertLayer() const = 0;
+    virtual bool IsRevertRule() const = 0;
 
     // FIXME: Remove this once CompositorAnimations no longer depends on
     // CompositorKeyframeValues

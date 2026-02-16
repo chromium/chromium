@@ -366,6 +366,36 @@ TEST_F(StyleResolverTest, AnimationMaskedByImportant) {
   EXPECT_FALSE(StyleResolver::CanReuseBaseComputedStyle(state));
 }
 
+TEST_F(StyleResolverTest, AnimationWithRevertRuleVoidsBase) {
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      div {
+        height: 10px;
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* div = GetDocument().getElementById(AtomicString("div"));
+
+  auto* effect = CreateSimpleKeyframeEffectForTest(div, CSSPropertyID::kHeight,
+                                                   "revert-rule", "100px");
+  GetDocument().Timeline().Play(effect);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ("10px", ComputedValue("height", *StyleForId("div")));
+
+  div->SetNeedsAnimationStyleRecalc();
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  const ComputedStyle* style = StyleForId("div");
+  ASSERT_TRUE(style);
+  EXPECT_TRUE(style->GetBaseComputedStyle());
+
+  StyleResolverState state(GetDocument(), *div);
+  // We cannot use the base style due to a revert-rule-dependent animation.
+  EXPECT_FALSE(StyleResolver::CanReuseBaseComputedStyle(state));
+}
+
 TEST_F(StyleResolverTest,
        TransitionRetargetRelativeFontSizeOnParentlessElement) {
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
