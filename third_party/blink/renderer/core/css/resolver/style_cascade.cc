@@ -7,6 +7,7 @@
 #include <bit>
 #include <optional>
 
+#include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
@@ -1251,10 +1252,36 @@ StyleCascade::MakeFunctionContextFromMixinAndResolveSubstitutions(
     return nullptr;
   }
 
+  // TODO(sesse): Can we avoid taking a copy here if there are no CQ-dependent
+  // locals?
+  HeapHashMap<String, Member<CSSVariableData>> locals_after_cq =
+      mixin_parameter_bindings->GetBaseLocals();
+  for (const auto& [name, candidates] :
+       mixin_parameter_bindings->GetConditionalOverrideLocals()) {
+    // Mark this as uncacheable in the MPC.
+    // TODO(sesse): Loosen this restriction, by including the CQ evaluation
+    // results in the MPC key (and also update operator== and GetHash() to
+    // include CQ-dependent locals).
+    state_.StyleBuilder().SetHasContainerRelativeValue();
+
+    // Find the last-declared value with a matching container query (if any),
+    // and apply it.
+    for (const MixinParameterBindings::CQDependentValue& candidate :
+         base::Reversed(candidates)) {
+      if (EvaluateContainerQuery(state_.GetElement(), state_.GetPseudoId(),
+                                 *candidate.container_query, tree_scope,
+                                 state_.NearestSizeContainer(),
+                                 match_result_)) {
+        locals_after_cq.Set(name, candidate.data);
+        break;
+      }
+    }
+  }
+
   FunctionContext ctx = {
       .arguments = function_arguments,
       .locals = {},  // Populated by ApplyLocalVariables.
-      .unresolved_locals = mixin_parameter_bindings->GetLocals(),
+      .unresolved_locals = std::move(locals_after_cq),
       .local_types = local_types,
       .parent = function_context,
   };

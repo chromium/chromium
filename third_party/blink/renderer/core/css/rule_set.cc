@@ -1131,16 +1131,30 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
 void RuleSet::FlattenMixinLocals(
     base::span<const Member<StyleRuleBase>> rules,
     const MediaQueryEvaluator& medium,
-    HeapHashMap<String, Member<CSSVariableData>>& locals) {
+    const ContainerQuery* container_query,
+    HeapHashMap<String, Member<CSSVariableData>>& locals,
+    HeapHashMap<String, HeapVector<MixinParameterBindings::CQDependentValue>>&
+        cq_dependent_locals) {
   for (StyleRuleBase* rule : rules) {
     if (auto* media_rule = DynamicTo<StyleRuleMedia>(rule)) {
       if (MatchMediaForAddRules(medium, media_rule->MediaQueries())) {
-        FlattenMixinLocals(media_rule->ChildRules(), medium, locals);
+        FlattenMixinLocals(media_rule->ChildRules(), medium, container_query,
+                           locals, cq_dependent_locals);
       }
     } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {
       if (supports_rule->ConditionIsSupported()) {
-        FlattenMixinLocals(supports_rule->ChildRules(), medium, locals);
+        FlattenMixinLocals(supports_rule->ChildRules(), medium, container_query,
+                           locals, cq_dependent_locals);
       }
+    } else if (auto* container_rule = DynamicTo<StyleRuleContainer>(rule)) {
+      const ContainerQuery* inner_container_query =
+          &container_rule->GetContainerQuery();
+      if (container_query) {
+        inner_container_query =
+            inner_container_query->CopyWithParent(container_query);
+      }
+      FlattenMixinLocals(container_rule->ChildRules(), medium,
+                         inner_container_query, locals, cq_dependent_locals);
     } else if (StyleRuleFunctionDeclarations* function_declarations =
                    DynamicTo<StyleRuleFunctionDeclarations>(rule)) {
       for (const CSSPropertyValue& value :
@@ -1149,7 +1163,30 @@ void RuleSet::FlattenMixinLocals(
         CSSVariableData* variable_data =
             To<CSSUnparsedDeclarationValue>(value.Value()).VariableDataValue();
 
-        locals.Set(name, variable_data);
+        // Locals outside of container queries override all earlier locals.
+        // Locals inside container queries will only override locals with
+        // the same container query (since we don't attempt to find out if
+        // CQs are supersets of all CQs).
+        if (container_query) {
+          auto& inserted =
+              cq_dependent_locals
+                  .insert(
+                      name,
+                      HeapVector<MixinParameterBindings::CQDependentValue>{})
+                  .stored_value->value;
+          auto new_end = std::remove_if(
+              inserted.begin(), inserted.end(),
+              [container_query](
+                  const MixinParameterBindings::CQDependentValue& value) {
+                return value.container_query == container_query;
+              });
+          inserted.erase(new_end, inserted.end());
+          inserted.push_back(MixinParameterBindings::CQDependentValue{
+              variable_data, Member{container_query}});
+        } else {
+          locals.Set(name, variable_data);
+          cq_dependent_locals.erase(name);
+        }
       }
     }
   }
@@ -1210,13 +1247,17 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
     }
 
     // Collect any locals from the mixin.
-    // TODO(sesse): Handle @container around locals.
     HeapHashMap<String, Member<CSSVariableData>> locals;
-    FlattenMixinLocals(mixin_rule->ChildRules(), medium, locals);
+    HeapHashMap<String, HeapVector<MixinParameterBindings::CQDependentValue>>
+        cq_dependent_locals;
+    FlattenMixinLocals(mixin_rule->ChildRules(), medium,
+                       /*container_query=*/nullptr, locals,
+                       cq_dependent_locals);
 
     MixinParameterBindings* mixin_parameter_bindings =
         MakeGarbageCollected<MixinParameterBindings>(
             std::move(bindings), std::move(locals),
+            std::move(cq_dependent_locals),
             apply_mixins_stack.empty()
                 ? nullptr
                 : apply_mixins_stack.back().mixin_parameter_bindings);
