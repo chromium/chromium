@@ -627,9 +627,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                                             PropertyModel model,
                                             @DialogDismissalCause int dismissalCause) {
                                         if (mHistorySyncCoordinator != null) {
-                                            dismissHistorySync(
-                                                    /* didSignOut= */ false,
-                                                    /* isHistorySyncAccepted= */ false);
+                                            mHistorySyncCoordinator.declineAndDismiss();
                                         } else if (mIsLegacyFlow) {
                                             // TODO(crbug.com/453930445): onFlowComplete can be
                                             // called twice. Remove after seamless sign-in launch.
@@ -641,17 +639,15 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                                 })
                         .with(
                                 ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
-                                // TODO(crbug.com/453930445): remove entire handleOnBackPressed
-                                // block after seamless sign-in launch. Back pressing by default
-                                // dismisses the dialog.
-                                new OnBackPressedCallback(mIsLegacyFlow) {
+                                new OnBackPressedCallback(/* enabled= */ true) {
                                     @Override
                                     public void handleOnBackPressed() {
                                         if (mHistorySyncCoordinator != null) {
-                                            dismissHistorySync(
-                                                    /* didSignOut= */ false,
-                                                    /* isHistorySyncAccepted= */ false);
-                                        } else {
+                                            mHistorySyncCoordinator.declineAndDismiss();
+                                        } else if (mIsLegacyFlow) {
+                                            // TODO(crbug.com/453930445): onFlowComplete is
+                                            // needlessly called twice, remove after seamless
+                                            // sign-in launch.
                                             onFlowComplete(
                                                     SigninAndHistorySyncCoordinator.Result
                                                             .aborted());

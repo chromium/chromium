@@ -117,14 +117,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         return mModel;
     }
 
-    private void onAcceptClicked(View view) {
-        mDelegate.recordHistorySyncOptIn(mAccessPoint, /* isHistorySyncAccepted= */ true);
-        mHistorySyncHelper.setHistoryAndTabsSync(true);
-        mHistorySyncHelper.clearHistorySyncDeclinedPrefs();
-        mDelegate.dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ true);
-    }
-
-    private void onDeclineClicked(View view) {
+    void declineAndDismiss() {
         mDelegate.recordHistorySyncOptIn(mAccessPoint, /* isHistorySyncAccepted= */ false);
         if (mShouldSignOutOnDecline) {
             mSigninManager.signOut(
@@ -133,6 +126,17 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         mHistorySyncHelper.recordHistorySyncDeclinedPrefs();
         mDelegate.dismissHistorySync(
                 /* didSignOut= */ mShouldSignOutOnDecline, /* isHistorySyncAccepted= */ false);
+    }
+
+    private void onAcceptClicked(View view) {
+        mDelegate.recordHistorySyncOptIn(mAccessPoint, /* isHistorySyncAccepted= */ true);
+        mHistorySyncHelper.setHistoryAndTabsSync(true);
+        mHistorySyncHelper.clearHistorySyncDeclinedPrefs();
+        mDelegate.dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ true);
+    }
+
+    private void onDeclineClicked(View view) {
+        declineAndDismiss();
     }
 
     /**

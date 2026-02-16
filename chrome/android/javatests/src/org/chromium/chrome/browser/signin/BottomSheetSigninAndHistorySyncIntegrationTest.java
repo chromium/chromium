@@ -571,8 +571,8 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
-        // Back press does NOT sign out on decline.
-        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        // Should signout on decline.
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
     @Test
@@ -597,13 +597,13 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 .onFlowComplete(
                         eq(
                                 new Result(
-                                        /* hasSignedIn= */ true,
+                                        /* hasSignedIn= */ false,
                                         /* hasOptedInHistorySync= */ false)));
 
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
-        // Back press does NOT sign out on decline.
-        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        // Should signout on decline.
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
     @Test
