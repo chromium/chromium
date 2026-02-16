@@ -2850,6 +2850,19 @@
       status: "stable",
     },
     {
+      // GeometryUtils mixin.
+      // https://drafts.csswg.org/cssom-view/#the-geometryutils-interface
+      name: "GeometryUtils",
+      status: "experimental",
+    },
+    {
+      // GeometryUtils for CSSPseudoElement interface.
+      // https://www.w3.org/TR/cssom-view-1/#the-geometryutils-interface
+      name: "GeometryUtilsForCSSPseudoElement",
+      depends_on: ["CSSPseudoElementInterface"],
+      status: "experimental",
+    },
+    {
       name: "GetAllScreensMedia",
       depends_on: ["GetDisplayMedia"],
       public: true,

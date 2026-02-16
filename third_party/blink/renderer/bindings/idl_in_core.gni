@@ -179,6 +179,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/dom/frame_request_callback.idl",
   "//third_party/blink/renderer/core/dom/form_control_range.idl",
   "//third_party/blink/renderer/core/dom/function_string_callback.idl",
+  "//third_party/blink/renderer/core/dom/geometry_utils.idl",
   "//third_party/blink/renderer/core/dom/get_html_options.idl",
   "//third_party/blink/renderer/core/dom/get_root_node_options.idl",
   "//third_party/blink/renderer/core/dom/global_event_handlers.idl",

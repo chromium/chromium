@@ -164,6 +164,8 @@ blink_core_sources_dom = [
   "form_control_range.h",
   "frame_request_callback_collection.cc",
   "frame_request_callback_collection.h",
+  "geometry_utils.cc",
+  "geometry_utils.h",
   "has_invalidation_flags.h",
   "icon_url.cc",
   "icon_url.h",

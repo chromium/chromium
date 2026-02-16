@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://www.w3.org/TR/css-pseudo-4/#CSSPseudoElement-interface
+
 [
     RuntimeEnabled=CSSPseudoElementInterface,
     Exposed=Window
@@ -12,3 +14,6 @@ interface CSSPseudoElement {
     readonly attribute (Element or CSSPseudoElement) parent;
     CSSPseudoElement? pseudo(CSSOMString type);
 };
+
+[RuntimeEnabled=GeometryUtilsForCSSPseudoElement]
+CSSPseudoElement includes GeometryUtils;

@@ -1,0 +1,32 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+// https://www.w3.org/TR/cssom-view-1/#typedefdef-geometrynode
+typedef (Text or Element or CSSPseudoElement or Document) GeometryNode;
+
+// https://www.w3.org/TR/cssom-view-1/#enumdef-cssboxtype
+enum CSSBoxType { "margin", "border", "padding", "content" };
+
+// https://www.w3.org/TR/cssom-view-1/#dictdef-convertcoordinateoptions
+dictionary ConvertCoordinateOptions {
+  CSSBoxType fromBox = "border";
+  CSSBoxType toBox = "border";
+};
+
+// https://www.w3.org/TR/cssom-view-1/#dictdef-boxquadoptions
+dictionary BoxQuadOptions {
+  CSSBoxType box = "border";
+  GeometryNode relativeTo;
+};
+
+
+// https://drafts.csswg.org/cssom-view/#the-geometryutils-interface
+[RuntimeEnabled=GeometryUtils]
+interface mixin GeometryUtils {
+    sequence<DOMQuad> getBoxQuads(optional BoxQuadOptions options = {});
+    DOMQuad convertQuadFromNode(DOMQuadInit quad, GeometryNode from, optional ConvertCoordinateOptions options = {});
+    DOMQuad convertRectFromNode(DOMRectReadOnly rect, GeometryNode from, optional ConvertCoordinateOptions options = {});
+    DOMPoint convertPointFromNode(DOMPointInit point, GeometryNode from, optional ConvertCoordinateOptions options = {});
+};

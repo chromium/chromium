@@ -3,11 +3,21 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_box_quad_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_convert_coordinate_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_quad_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_csspseudoelement_document_element_text.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csspseudoelement_element.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/geometry_utils.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/geometry/dom_point.h"
+#include "third_party/blink/renderer/core/geometry/dom_quad.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -80,6 +90,118 @@ CSSPseudoElement* CSSPseudoElement::pseudo(const AtomicString& type) {
   css_pseudo_elements_data_->CacheCSSPseudoElement(pseudo_id,
                                                    *css_pseudo_element);
   return css_pseudo_element;
+}
+
+namespace {
+
+// Helper to get the PseudoElement from the originating element hierarchy.
+PseudoElement* GetPseudoElementForCSSPseudoElement(
+    const V8UnionCSSPseudoElementOrElement* parent,
+    PseudoId pseudo_id) {
+  CHECK(parent);
+
+  // Walk up the chain from the current parent to the ultimate originating
+  // Element, collecting pseudo-ids along the way (immediate parent first).
+  Vector<PseudoId> pseudo_chain;
+  const V8UnionCSSPseudoElementOrElement* current_parent = parent;
+  while (current_parent && current_parent->IsCSSPseudoElement()) {
+    CSSPseudoElement* parent_css_pseudo =
+        current_parent->GetAsCSSPseudoElement();
+    pseudo_chain.push_back(parent_css_pseudo->GetPseudoId());
+    current_parent = parent_css_pseudo->parent();
+  }
+
+  // current_parent should now be the originating Element.
+  if (!current_parent || !current_parent->IsElement()) {
+    return nullptr;
+  }
+  Element* base_element = current_parent->GetAsElement();
+
+  // CSSPseudoElement is a proxy representation of PseudoElement. To resolve a
+  // nested PseudoElement from a CSSPseudoElement received from JS, we first
+  // walk up the chain of CSSPseudoElements to the ultimate originating Element,
+  // collecting the pseudo-ids along the way. Then we walk back down from the
+  // Element, using those pseudo-ids to build the actual PseudoElement chain.
+  // This is necessary because PseudoElements can only be accessed via
+  // (Element/PseudoElement).GetPseudoElement(pseudo_id), starting from a real
+  // Element.
+  // Walk down the pseudo-elements chains, starting from the ultimate
+  // originating element, using the collected pseudo-ids (in reverse order) to
+  // resolve nested pseudo-elements.
+  // E.g. for ::before::marker, first get ::before from the element, then (after
+  // cycle) get ::marker from that ::before pseudo-element.
+  Element* current_owner = base_element;
+  for (size_t i = pseudo_chain.size(); i > 0; --i) {
+    PseudoId id = pseudo_chain[i - 1];
+    PseudoElement* next_pseudo = current_owner->GetPseudoElement(id);
+    if (!next_pseudo) {
+      return nullptr;
+    }
+    current_owner = next_pseudo;
+  }
+
+  return current_owner->GetPseudoElement(pseudo_id);
+}
+
+}  // namespace
+
+LayoutObject* CSSPseudoElement::GetLayoutObject() const {
+  CHECK(element_);
+  // Ensure layout is up to date.
+  element_->GetDocument().EnsurePaintLocationDataValidForNode(
+      element_, DocumentUpdateReason::kJavaScript);
+
+  PseudoElement* pseudo_element =
+      GetPseudoElementForCSSPseudoElement(parent_, pseudo_id_);
+  if (!pseudo_element) {
+    return nullptr;
+  }
+  return pseudo_element->GetLayoutObject();
+}
+
+HeapVector<Member<DOMQuad>> CSSPseudoElement::getBoxQuads(
+    const BoxQuadOptions* options) const {
+  CHECK(RuntimeEnabledFeatures::GeometryUtilsForCSSPseudoElementEnabled());
+  V8CSSBoxType::Enum box_type = V8CSSBoxType::Enum::kBorder;
+  if (options && options->hasBox()) {
+    box_type = options->box().AsEnum();
+  }
+  LayoutObject* relative_to = nullptr;
+  if (options && options->hasRelativeTo()) {
+    relative_to =
+        geometry_utils::GetLayoutObjectFromGeometryNode(options->relativeTo());
+  }
+  return geometry_utils::GetBoxQuads(GetLayoutObject(), box_type, relative_to);
+}
+
+DOMQuad* CSSPseudoElement::convertQuadFromNode(
+    DOMQuadInit* quad,
+    const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+    const ConvertCoordinateOptions* options) const {
+  CHECK(RuntimeEnabledFeatures::GeometryUtilsForCSSPseudoElementEnabled());
+  return geometry_utils::ConvertQuadFromNode(
+      DOMQuad::fromQuad(quad),
+      geometry_utils::GetLayoutObjectFromGeometryNode(from), GetLayoutObject());
+}
+
+DOMQuad* CSSPseudoElement::convertRectFromNode(
+    DOMRectReadOnly* rect,
+    const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+    const ConvertCoordinateOptions* options) const {
+  CHECK(RuntimeEnabledFeatures::GeometryUtilsForCSSPseudoElementEnabled());
+  return geometry_utils::ConvertRectFromNode(
+      rect, geometry_utils::GetLayoutObjectFromGeometryNode(from),
+      GetLayoutObject());
+}
+
+DOMPoint* CSSPseudoElement::convertPointFromNode(
+    DOMPointInit* point,
+    const V8UnionCSSPseudoElementOrDocumentOrElementOrText* from,
+    const ConvertCoordinateOptions* options) const {
+  CHECK(RuntimeEnabledFeatures::GeometryUtilsForCSSPseudoElementEnabled());
+  return geometry_utils::ConvertPointFromNode(
+      DOMPoint::fromPoint(point),
+      geometry_utils::GetLayoutObjectFromGeometryNode(from), GetLayoutObject());
 }
 
 void CSSPseudoElement::Trace(Visitor* v) const {
