@@ -2779,7 +2779,6 @@ if (!is_android) {
       "//chrome/services/removable_storage_writer:lib",
       "//chrome/test/data/webui:resources",
       "//chrome/test/data/webui/mojo:mojo_bindings",
-      "//chrome/test/fuzzing:geolocation_element_css_fuzzer_test",
       "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
       "//chrome/test/payments:test_support",
       "//chrome/test/supervised_user:test_support",
@@ -3997,11 +3996,7 @@ if (!is_android) {
       "interaction/webcontents_interaction_test_util_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
-
-    fuzztests = [
-      "SafeXmlParserFixture.ParseXML",
-      "GeolocationElementBrowserFuzzTest.TestGeolocationTextIsAlwaysReadable",
-    ]
+    fuzztests = [ "SafeXmlParserFixture.ParseXML" ]
     fuzztest_additional_args = [
       "--single-process-tests",
       "--single-process",
