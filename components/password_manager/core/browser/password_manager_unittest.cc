@@ -87,6 +87,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/password_manager/core/browser/first_cct_page_load_passwords_ukm_recorder.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1716,6 +1717,41 @@ TEST_P(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSaved) {
   ResetManager();
   store->ShutdownOnUIThread();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+  TEST_P(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSavedBecauseOfTrustedVaultKey) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kInFlowTrustedVaultKeyRetrievalAndroid};
+    auto store = base::MakeRefCounted<PasswordStore>(
+        std::make_unique<FailingPasswordStoreBackend>());
+    store->Init(/*affiliated_match_helper=*/nullptr);
+    ON_CALL(client_, GetProfilePasswordStore())
+        .WillByDefault(Return(store.get()));
+
+    FormData form_data(MakeSimpleFormData());
+    std::vector<FormData> observed = {form_data};
+    EXPECT_FALSE(manager()->IsPasswordFieldDetectedOnPage());
+    manager()->OnPasswordFormsParsed(&driver_, observed);
+    EXPECT_TRUE(manager()->IsPasswordFieldDetectedOnPage());
+    manager()->OnPasswordFormsRendered(&driver_, observed);
+    task_environment_.RunUntilIdle();
+
+    EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
+        .WillRepeatedly(Return(true));
+    OnPasswordFormSubmitted(form_data);
+
+    EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(1);
+
+    observed.clear();
+    manager()->OnPasswordFormsParsed(&driver_, observed);
+    manager()->OnPasswordFormsRendered(&driver_, observed);
+    task_environment_.RunUntilIdle();
+    // Objects owned by the manager may keep references to the store - therefore
+    // destroy the manager prior to store destruction.
+    ResetManager();
+    store->ShutdownOnUIThread();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_P(PasswordManagerTest,
        PasswordUpdateDoesNotCareAboutIsAbleToSavePasswords) {
