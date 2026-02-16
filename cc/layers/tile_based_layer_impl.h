@@ -131,6 +131,10 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
 
   virtual float GetIdealContentsScaleKey() const = 0;
 
+  // Called at the end of AppendQuads() to allow subclasses to do any specific
+  // validation desired.
+  virtual void SanityCheckTilingState() const {}
+
   // Appends a solid-color quad with color `color`.
   void AppendSolidQuad(viz::CompositorRenderPass* render_pass,
                        AppendQuadsData* append_quads_data,
@@ -293,6 +297,8 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   shared_quad_state->quad_to_target_transform.Translate(-quad_offset);
   shared_quad_state->quad_layer_rect.Offset(quad_offset);
   shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
+
+  SanityCheckTilingState();
 }
 
 template <typename Tiling>

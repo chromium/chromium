@@ -346,8 +346,6 @@ void PictureLayerImpl::AppendQuadsSpecialization(
                          TRACE_EVENT_SCOPE_THREAD, "missing_tile_count",
                          missing_tile_count);
   }
-
-  SanityCheckTilingState();
 }
 
 bool PictureLayerImpl::AppendQuadForTile(

@@ -252,7 +252,7 @@ class CC_EXPORT PictureLayerImpl
 
   void UpdateDirectlyCompositedImageFromRasterSource();
 
-  void SanityCheckTilingState() const;
+  void SanityCheckTilingState() const override;
 
   void GetDebugBorderProperties(SkColor4f* color, float* width) const override;
   void GetAllPrioritizedTilesForTracing(
