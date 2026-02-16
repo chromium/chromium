@@ -31,6 +31,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill::internal {
 namespace {
@@ -144,7 +145,7 @@ FormData CreateForm() {
 auto CreateFieldTypeMap(const FormData& form) {
   CHECK_EQ(form.fields().size() % 6, 0u);
   CHECK_GT(form.fields().size() / 6, 0u);
-  base::flat_map<FieldGlobalId, FieldType> map;
+  absl::flat_hash_map<FieldGlobalId, FieldType> map;
   for (size_t i = 0; i < form.fields().size() / 6; ++i) {
     map[form.fields()[6 * i + 0].global_id()] = CREDIT_CARD_NAME_FIRST;
     map[form.fields()[6 * i + 1].global_id()] = CREDIT_CARD_NAME_LAST;
@@ -1428,7 +1429,7 @@ class FormForestTestUnflatten : public FormForestTestWithMockedTree {
   std::vector<FormData> GetRendererFormsOfBrowserFields(
       std::string_view form_name,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
+      const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map) {
     return GetRendererFormsOfBrowserFields(
         form_name,
         FormForest::SecurityOptions{&GetDriverOfForm(form_name).main_origin(),

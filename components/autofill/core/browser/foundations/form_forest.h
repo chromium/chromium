@@ -10,7 +10,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -19,6 +18,7 @@
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill::internal {
 
@@ -246,7 +246,7 @@ class FormForest {
     SecurityOptions(
         const url::Origin* main_origin,
         const url::Origin* triggered_origin,
-        const base::flat_map<FieldGlobalId, FieldType>* field_type_map);
+        const absl::flat_hash_map<FieldGlobalId, FieldType>* field_type_map);
 
     bool all_origins_are_trusted() const { return !main_origin_; }
     const url::Origin& main_origin() const { return *main_origin_; }
@@ -261,7 +261,7 @@ class FormForest {
     // The origin of the field from which Autofill was queried.
     const raw_ptr<const url::Origin> triggered_origin_ = nullptr;
     // Contains the field types of the fields in the browser form.
-    const raw_ptr<const base::flat_map<FieldGlobalId, FieldType>>
+    const raw_ptr<const absl::flat_hash_map<FieldGlobalId, FieldType>>
         field_type_map_ = nullptr;
   };
 

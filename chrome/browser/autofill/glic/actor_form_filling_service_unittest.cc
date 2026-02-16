@@ -196,7 +196,7 @@ class RecordingTestContentAutofillDriver : public TestContentAutofillDriver {
       const FillId& fill_id,
       bool supports_refill,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+      const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map,
       const Section& section_for_clear_form_on_ios) override {
     base::flat_set<FieldGlobalId> filled_fields =
         TestContentAutofillDriver::ApplyFormAction(

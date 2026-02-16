@@ -48,6 +48,7 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #import "url/origin.h"
 
 namespace autofill {
@@ -253,7 +254,7 @@ base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
     const FillId& fill_id,
     bool supports_refill,
     const url::Origin& triggered_origin,
-    const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+    const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map,
     const Section& section_for_clear_form_on_ios) {
   switch (action_type) {
     case mojom::FormActionType::kUndo:

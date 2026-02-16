@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
@@ -25,6 +24,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
 
@@ -217,7 +217,7 @@ class ContentAutofillDriver : public AutofillDriver,
       const FillId& fill_id,
       bool supports_refill,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+      const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map,
       const Section& section_for_clear_form_on_ios) override;
   void ApplyFieldAction(mojom::FieldActionType action_type,
                         mojom::ActionPersistence action_persistence,

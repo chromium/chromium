@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -23,6 +22,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
 
@@ -130,7 +130,7 @@ class TestAutofillDriverTemplate : public T {
       const FillId& fill_id,
       bool supports_refill,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+      const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map,
       const Section& section_for_clear_form_on_ios) override {
     if (action_type == mojom::FormActionType::kUndo) {
       return {};

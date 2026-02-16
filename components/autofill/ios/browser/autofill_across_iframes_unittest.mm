@@ -48,6 +48,7 @@
 #import "net/test/embedded_test_server/request_handler_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #import "url/gurl.h"
 
 using autofill::test::NewFrameCatcher;
@@ -99,7 +100,7 @@ void SetFillDataForField(
     const std::u16string& value,
     FieldType field_type,
     FormFieldData* field,
-    base::flat_map<FieldGlobalId, FieldType>* field_type_map) {
+    absl::flat_hash_map<FieldGlobalId, FieldType>* field_type_map) {
   CHECK(field);
   field->set_value(value);
   field->set_is_autofilled(true);
@@ -237,7 +238,7 @@ struct TestCreditCardForm {
   // Set the fill data in `fields` that map with the fields in this test form.
   [[nodiscard]] AssertionResult SetFillData(
       std::vector<FormFieldData>* fields,
-      base::flat_map<FieldGlobalId, FieldType>* field_type_map) {
+      absl::flat_hash_map<FieldGlobalId, FieldType>* field_type_map) {
     auto fields_to_fill = {
         std::make_pair(FieldType::CREDIT_CARD_NAME_FULL, &name_field),
         std::make_pair(FieldType::CREDIT_CARD_NUMBER, &cc_number_field),
@@ -626,7 +627,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
                      const std::vector<TestFieldInfo>& expected_filled_fields) {
     std::vector<FormFieldData> fields = browser_form.fields();
 
-    base::flat_map<FieldGlobalId, FieldType> field_type_map;
+    absl::flat_hash_map<FieldGlobalId, FieldType> field_type_map;
     ASSERT_TRUE(cc_form_info.SetFillData(&fields, &field_type_map));
 
     // Extract the global ids of the fields that are expected to be filled.
@@ -1009,7 +1010,7 @@ TEST_F(AutofillAcrossIframesTest, Fill_MainFrameForm) {
 
   // Copy the extracted form and put a name and phone number in it.
   FormData form = main_frame_manager().seen_forms()[0];
-  base::flat_map<FieldGlobalId, FieldType> field_type_map;
+  absl::flat_hash_map<FieldGlobalId, FieldType> field_type_map;
 
   for (FormFieldData& field : test_api(form).fields()) {
     if (field.placeholder() == kNamePlaceholder) {
@@ -1076,7 +1077,7 @@ TEST_F(AutofillAcrossIframesTest, Fill_MultiFrameForm) {
   ASSERT_EQ(form.child_frames().size(), 2u);
   ASSERT_EQ(form.fields().size(), 2u);
 
-  base::flat_map<FieldGlobalId, FieldType> field_type_map;
+  absl::flat_hash_map<FieldGlobalId, FieldType> field_type_map;
 
   std::vector<FormFieldData> fields = form.fields();
 
@@ -1484,7 +1485,7 @@ TEST_F(AutofillAcrossIframesTest, UpdateOnFrameDeletion) {
       WaitForMainFrame(),
       u"document.forms[0].getElementsByTagName('iframe')[0].remove();"));
 
-  base::flat_map<FieldGlobalId, FieldType> field_type_map;
+  absl::flat_hash_map<FieldGlobalId, FieldType> field_type_map;
 
   std::vector<FormFieldData> fields = form.fields();
 
@@ -1795,7 +1796,7 @@ TEST_F(AutofillAcrossIframesTest, FrameDoubleRegistration_Unregister) {
     driver->Unregister();
   }
 
-  base::flat_map<FieldGlobalId, FieldType> field_type_map;
+  absl::flat_hash_map<FieldGlobalId, FieldType> field_type_map;
 
   // Set fill data for both fields.
   SetFillDataForField(kFakeName, FieldType::NAME_FULL, name_field,

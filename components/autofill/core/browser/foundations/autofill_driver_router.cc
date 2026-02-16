@@ -19,6 +19,7 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
 
@@ -475,7 +476,7 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
     bool supports_refill,
     const url::Origin& main_origin,
     const url::Origin& triggered_origin,
-    const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
+    const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map) {
   // Since Undo only affects fields that were already filled, and only sets
   // values of fields to something that already existed in it prior to the
   // filling, it is okay to bypass the filling security checks and hence passing
@@ -489,7 +490,7 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
   // Collect the fields per frame and emit a single fill operation per frame,
   // even if multiple renderer forms belong to the same iframe due to
   // flattening.
-  base::flat_map<AutofillDriver*, std::vector<FormFieldData::FillData>>
+  absl::flat_hash_map<AutofillDriver*, std::vector<FormFieldData::FillData>>
       fields_of_driver;
   for (FormData& renderer_form : renderer_forms.renderer_forms) {
     if (auto* target = DriverOfFrame(renderer_form.host_frame())) {

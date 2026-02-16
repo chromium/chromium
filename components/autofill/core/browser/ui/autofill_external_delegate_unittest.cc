@@ -90,6 +90,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -198,7 +199,7 @@ class MockAutofillDriver : public TestAutofillDriver {
                const FillId& fill_id,
                bool supports_refill,
                const url::Origin& triggered_origin,
-               (const base::flat_map<FieldGlobalId, FieldType>&),
+               (const absl::flat_hash_map<FieldGlobalId, FieldType>&),
                (const Section&)),
               (override));
   MOCK_METHOD(void,

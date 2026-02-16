@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/autofill/core/browser/country_type.h"

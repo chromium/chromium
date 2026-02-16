@@ -151,6 +151,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -934,7 +935,7 @@ class MockAutofillDriver : public TestAutofillDriver {
                const FillId& fill_id,
                bool supports_refill,
                const url::Origin& triggered_origin,
-               (const base::flat_map<FieldGlobalId, FieldType>&),
+               (const absl::flat_hash_map<FieldGlobalId, FieldType>&),
                (const Section&)),
               (override));
   MOCK_METHOD(void,
@@ -1286,7 +1287,7 @@ class BrowserAutofillManagerTest
                       base::span<const FormFieldData> data,
                       const FillId& fill_id, bool supports_refill,
                       const url::Origin& triggered_origin,
-                      const base::flat_map<FieldGlobalId, FieldType>&,
+                      const absl::flat_hash_map<FieldGlobalId, FieldType>&,
                       const Section&) {
           filled_fields = std::vector<FormFieldData>(data.begin(), data.end());
           return base::MakeFlatSet<FieldGlobalId>(data, {},
@@ -9680,7 +9681,7 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
   OtpFillData otp_fill_data = {{form.fields()[0].global_id(), otp_value}};
 
   // Prepare to intercept the request to the renderer to fill the data.
-  base::flat_map<FieldGlobalId, FieldType> expected_types = {
+  absl::flat_hash_map<FieldGlobalId, FieldType> expected_types = {
       {form.fields()[0].global_id(), ONE_TIME_CODE}};
   std::vector<FormFieldData> filled_fields;
   EXPECT_CALL(autofill_driver(),

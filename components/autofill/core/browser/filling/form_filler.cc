@@ -54,6 +54,7 @@
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
@@ -895,7 +896,7 @@ void FormFiller::FillOrPreviewForm(
   std::vector<FormFieldData> result_fields = form.fields();
   CHECK_EQ(result_fields.size(), form_structure.field_count());
 
-  std::vector<std::pair<FieldGlobalId, FieldType>> filled_field_types;
+  absl::flat_hash_map<FieldGlobalId, FieldType> filled_field_types;
 
   // `FormFiller::GetFieldFillingSkipReasons` returns for each field a generic
   // list of reason for skipping each field.
@@ -967,8 +968,8 @@ void FormFiller::FillOrPreviewForm(
     }
 
     if (filled_field_type) {
-      filled_field_types.emplace_back(result_fields[i].global_id(),
-                                      *filled_field_type);
+      filled_field_types.emplace(result_fields[i].global_id(),
+                                 *filled_field_type);
     }
 
     const bool has_value_before = !form.fields()[i].value().empty();
@@ -1000,9 +1001,7 @@ void FormFiller::FillOrPreviewForm(
           mojom::FormActionType::kFill, action_persistence, result_fields,
           fill_id,
           /*supports_refill=*/may_refill_in_future,
-          autofill_trigger_field.origin(),
-          base::flat_map<FieldGlobalId, FieldType>(
-              std::move(filled_field_types)),
+          autofill_trigger_field.origin(), filled_field_types,
           /*section_for_clear_form_on_ios=*/autofill_trigger_field.section());
 
   // This will hold the subset of fields of `result_fields` whose ids are in

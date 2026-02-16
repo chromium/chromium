@@ -12,6 +12,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill::autofill_metrics {
 namespace {
@@ -193,7 +194,7 @@ TEST_F(PerFillMetricsTest, ModifiedFieldsCount) {
                    mojom::ActionPersistence action_persistence,
                    base::span<const FormFieldData> data, const FillId& fill_id,
                    bool supports_refill, const url::Origin& triggered_origin,
-                   const base::flat_map<FieldGlobalId, FieldType>&,
+                   const absl::flat_hash_map<FieldGlobalId, FieldType>&,
                    const Section&) {
         return base::ToVector(data, &FormFieldData::global_id);
       });

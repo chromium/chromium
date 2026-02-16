@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/origin.h"
@@ -468,7 +469,7 @@ base::flat_set<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
     const FillId& fill_id,
     bool supports_refill,
     const url::Origin& triggered_origin,
-    const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+    const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map,
     const Section& section_for_clear_form_on_ios) {
   // If this driver is active, then its main frame is identical to the main
   // frame at the time the form was received from a renderer and their origins

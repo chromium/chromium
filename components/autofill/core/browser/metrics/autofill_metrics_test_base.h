@@ -33,6 +33,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill::autofill_metrics {
 
@@ -85,7 +86,7 @@ class MockAutofillDriver : public TestAutofillDriver {
                const FillId& fill_id,
                bool supports_refill,
                const url::Origin& triggered_origin,
-               (const base::flat_map<FieldGlobalId, FieldType>&),
+               (const absl::flat_hash_map<FieldGlobalId, FieldType>&),
                (const Section&)),
               (override));
 };

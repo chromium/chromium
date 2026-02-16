@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/form_forest.h"
@@ -17,6 +16,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace autofill {
@@ -260,7 +260,7 @@ class AutofillDriverRouter {
       bool supports_refill,
       const url::Origin& main_origin,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, FieldType>& field_type_map);
+      const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map);
   void DispatchEmailVerifiedEvent(
       RoutedCallback<FieldRendererId, const std::string&> callback,
       const FieldGlobalId& field_id,

@@ -29,6 +29,7 @@
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
@@ -86,7 +87,8 @@ MockAutofillDriver::MockAutofillDriver(TestAutofillClient* client)
                  mojom::ActionPersistence action_persistence,
                  base::span<const FormFieldData> data, const FillId& fill_id,
                  bool supports_refill, const url::Origin& triggered_origin,
-                 const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+                 const absl::flat_hash_map<FieldGlobalId, FieldType>&
+                     field_type_map,
                  const Section& section_for_clear_form_on_ios)
               -> base::flat_set<FieldGlobalId> {
             return TestAutofillDriver::ApplyFormAction(

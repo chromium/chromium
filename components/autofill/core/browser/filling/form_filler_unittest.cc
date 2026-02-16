@@ -56,6 +56,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
 namespace {
@@ -100,7 +101,7 @@ class MockAutofillDriver : public TestAutofillDriver {
                const FillId& fill_id,
                bool supports_refill,
                const url::Origin& triggered_origin,
-               (const base::flat_map<FieldGlobalId, FieldType>&),
+               (const absl::flat_hash_map<FieldGlobalId, FieldType>&),
                (const Section&)),
               (override));
   MOCK_METHOD(void,
@@ -2194,7 +2195,8 @@ TEST_P(RefillTest_SuppressAutomaticRefills, SuppressAutomaticRefills) {
                 mojom::ActionPersistence action_persistence,
                 base::span<const FormFieldData> data, const FillId& fill_id,
                 bool supports_refill, const url::Origin& triggered_origin,
-                const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+                const absl::flat_hash_map<FieldGlobalId, FieldType>&
+                    field_type_map,
                 const Section& section_for_clear_form_on_ios) {
               mock_form_filler().SuppressAutomaticRefills(
                   should_suppress_automatic_refills() ? fill_id

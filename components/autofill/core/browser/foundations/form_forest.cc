@@ -20,6 +20,7 @@
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/autofill/core/browser/foundations/form_forest_util_inl.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill::internal {
 
@@ -506,7 +507,7 @@ const FormData& FormForest::GetBrowserForm(FormGlobalId renderer_form) const {
 FormForest::SecurityOptions::SecurityOptions(
     const url::Origin* main_origin,
     const url::Origin* triggered_origin,
-    const base::flat_map<FieldGlobalId, FieldType>* field_type_map)
+    const absl::flat_hash_map<FieldGlobalId, FieldType>* field_type_map)
     : main_origin_(main_origin),
       triggered_origin_(triggered_origin),
       field_type_map_(field_type_map) {

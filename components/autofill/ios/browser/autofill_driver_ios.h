@@ -8,7 +8,6 @@
 #import <set>
 #import <string>
 
-#import "base/containers/flat_map.h"
 #import "base/containers/flat_set.h"
 #import "base/containers/span.h"
 #import "base/memory/raw_ptr.h"
@@ -18,6 +17,7 @@
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/ios/browser/form_fetch_batcher.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #import "url/origin.h"
 
 namespace web {
@@ -103,7 +103,7 @@ class AutofillDriverIOS final : public AutofillDriver,
       const FillId& fill_id,
       bool supports_refill,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+      const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map,
       const Section& section_for_clear_form_on_ios) override;
   void ApplyFieldAction(mojom::FieldActionType action_type,
                         mojom::ActionPersistence action_persistence,
