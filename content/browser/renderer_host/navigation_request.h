@@ -3500,10 +3500,6 @@ class CONTENT_EXPORT NavigationRequest
   mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
       resume_after_deferred_commit_listener_;
 
-  // TODO(crbug.com/477318789): Remove this field once we clarify where we
-  // could destruct `this` at unexpected timings.
-  bool is_in_non_destructible_section_ = false;
-
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };
 

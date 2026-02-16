@@ -320,10 +320,6 @@ void NavigationThrottleRegistryImpl::OnEventProcessed(
     NavigationThrottleEvent event,
     NavigationThrottle::ThrottleCheckResult result) {
   if (!weak_navigation_request_) {
-    SCOPED_CRASH_KEY_NUMBER("Bug477318789", "event", static_cast<int>(event));
-    SCOPED_CRASH_KEY_NUMBER("Bug477318789", "action",
-                            static_cast<int>(result.action()));
-    base::debug::DumpWithoutCrashing();
     return;
   }
   navigation_request_->OnNavigationEventProcessed(event, result);

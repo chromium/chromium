@@ -156,7 +156,7 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
 
   // WeakPtr version of `navigation_request_` to prevent calling in cases where
   // the NavigationRequest is already deleted.
-  // TODO(crbug.com/477318789): Remove once this is confirmed to not be needed.
+  // TODO(crbug.com/470054231): Remove once this is confirmed to not be needed.
   base::WeakPtr<NavigationRequest> weak_navigation_request_;
 
   // Owns the NavigationThrottles associated with this navigation, and is

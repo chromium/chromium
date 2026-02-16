@@ -1188,13 +1188,6 @@ net::StorageAccessApiStatus ShouldLoadWithStorageAccess(
   }
 }
 
-// TODO(crbug.com/477318789): Collecting crash dumps in a place where the report
-// could have a unique signature. Remove this function once the possible call
-// paths are determined.
-NOINLINE void NavigationRequestIsDestroyedInNonDestructibleSection() {
-  base::debug::DumpWithoutCrashing();
-}
-
 // The sampling rate for UKM.
 constexpr double kUkmSamplingRate = 0.001;
 
@@ -2256,10 +2249,6 @@ NavigationRequest::~NavigationRequest() {
   // navigation has started the delegate is not expected to call Stop().
   DCHECK(is_safe_to_delete_);
 #endif
-  if (is_in_non_destructible_section_) {
-    SCOPED_CRASH_KEY_NUMBER("Bug477318789", "state", static_cast<int>(state_));
-    NavigationRequestIsDestroyedInNonDestructibleSection();
-  }
 
   // Close "Initializing", or the last child event emitted in
   // EnterChildTraceEvent().
@@ -6161,11 +6150,6 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
           frame_tree_node_->navigator().controller().GetBrowserContext();
       DownloadManagerImpl* download_manager = static_cast<DownloadManagerImpl*>(
           browser_context->GetDownloadManager());
-      SCOPED_CRASH_KEY_BOOL("Bug477318789", "response_head_null",
-                            response_head_.is_null());
-      SCOPED_CRASH_KEY_BOOL(
-          "Bug477318789", "decoding_types_empty",
-          response_head_->client_side_content_decoding_types.empty());
       if (!response_head_->client_side_content_decoding_types.empty()) {
         CHECK(base::FeatureList::IsEnabled(
             network::features::kRendererSideContentDecoding));
@@ -6201,9 +6185,6 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
             url_loader_client_endpoints_, response_body_,
             std::move(*data_pipe_pair));
       }
-      SCOPED_CRASH_KEY_BOOL("Bug477318789", "no_delegate",
-                            !download_manager->GetDelegate());
-      is_in_non_destructible_section_ = true;
       download_manager->InterceptNavigation(
           std::move(resource_request), redirect_chain_, response_head_.Clone(),
           std::move(response_body_), std::move(url_loader_client_endpoints_),
@@ -6211,10 +6192,8 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
           frame_tree_node_->frame_tree_node_id(),
           from_download_cross_origin_redirect_);
       if (!this_ptr) {
-        base::debug::DumpWithoutCrashing();
         return;
       }
-      is_in_non_destructible_section_ = false;
 
       auto completion_status =
           network::URLLoaderCompletionStatus(net::ERR_ABORTED);
@@ -8160,10 +8139,6 @@ void NavigationRequest::OnWillProcessResponseProcessed(
   }
   if (this_ptr) {
     OnWillProcessResponseChecksComplete(result);
-  } else {
-    SCOPED_CRASH_KEY_NUMBER("Bug477318789", "action",
-                            static_cast<int>(result.action()));
-    base::debug::DumpWithoutCrashing();
   }
   // DO NOT ADD CODE AFTER THIS, as the NavigationRequest might have been
   // deleted by the previous calls.
