@@ -2107,10 +2107,7 @@
     // document.patch, <template patchfor> etc.
     {
       name: "DocumentPatching",
-      status: {
-        "default": "test",
-      },
-      depends_on: ["HTMLProcessingInstruction"],
+      status: "experimental",
     },
     {
       name: "DocumentPictureInPictureAPI",
@@ -3058,7 +3055,7 @@
     {
       // Parse processing instructions in HTML.
       name: "HTMLProcessingInstruction",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "ICUCapitalization",
@@ -4552,7 +4549,7 @@
     // https://chromestatus.com/feature/4771962874363904
     {
       name: "RouteMatching",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "RtcAudioJitterBufferMaxPackets",
