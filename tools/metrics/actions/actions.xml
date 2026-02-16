@@ -43647,7 +43647,11 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AccountMenu_ErrorButton_BookmarksLimitExceeded">
   <owner>mtatarski@google.com</owner>
-  <description>TODO(crbug.com/483961997): Write the description.</description>
+  <owner>chrome-sync-client-team@google.com</owner>
+  <description>
+    Recorded when the user taps on the error button (bookmark limit exceeded) in
+    the account menu. iOS only.
+  </description>
 </action>
 
 <action name="Signin_AccountMenu_ErrorButton_MDM">
