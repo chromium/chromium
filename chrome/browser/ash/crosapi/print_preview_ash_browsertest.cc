@@ -12,52 +12,21 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
+#include "chrome/browser/chromeos/printing/print_preview/print_preview_cros_client.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "chromeos/printing/print_settings_test_util.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/test/browser_test.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crosapi {
 namespace {
 
-class FakePrintPreviewBrowserMojoClient : public mojom::PrintPreviewCrosClient {
- public:
-  FakePrintPreviewBrowserMojoClient() = default;
-  FakePrintPreviewBrowserMojoClient(const FakePrintPreviewBrowserMojoClient&) =
-      delete;
-  FakePrintPreviewBrowserMojoClient& operator=(
-      const FakePrintPreviewBrowserMojoClient&) = delete;
-  ~FakePrintPreviewBrowserMojoClient() override = default;
-
-  // crosapi::mojom::PrintPreviewCros overrides
-  void GeneratePrintPreview(const base::UnguessableToken& token,
-                            crosapi::mojom::PrintSettingsPtr settings,
-                            GeneratePrintPreviewCallback callback) override {
-    std::move(callback).Run(/*success=*/true);
-  }
-
-  void HandleDialogClosed(const base::UnguessableToken& token,
-                          HandleDialogClosedCallback callback) override {
-    std::move(callback).Run(/*success=*/true);
-    ++handle_dialog_closed_count_;
-  }
-
-  int handle_dialog_closed_count() const { return handle_dialog_closed_count_; }
-
-  mojo::Receiver<mojom::PrintPreviewCrosClient> receiver_{this};
-  mojo::Remote<mojom::PrintPreviewCrosDelegate> remote_;
-
- private:
-  int handle_dialog_closed_count_ = 0;
-};
-
-class FakePrintPreviewBrowserAshClient : public mojom::PrintPreviewCrosClient {
+class FakePrintPreviewBrowserAshClient
+    : public chromeos::PrintPreviewCrosClient {
  public:
   FakePrintPreviewBrowserAshClient() = default;
   FakePrintPreviewBrowserAshClient(const FakePrintPreviewBrowserAshClient&) =
@@ -66,7 +35,7 @@ class FakePrintPreviewBrowserAshClient : public mojom::PrintPreviewCrosClient {
       const FakePrintPreviewBrowserAshClient&) = delete;
   ~FakePrintPreviewBrowserAshClient() override = default;
 
-  // crosapi::mojom::PrintPreviewCrosClient overrides
+  // chromeos::PrintPreviewCrosClient overrides
   void GeneratePrintPreview(const base::UnguessableToken& token,
                             crosapi::mojom::PrintSettingsPtr settings,
                             GeneratePrintPreviewCallback callback) override {
@@ -85,7 +54,7 @@ class FakePrintPreviewBrowserAshClient : public mojom::PrintPreviewCrosClient {
   int handle_dialog_closed_count_ = 0;
 };
 
-// Calls all crosapi::mojom::PrintPreviewCrosDelegate methods directly.
+// Calls all chromeos::PrintPreviewCrosDelegate methods directly.
 void CallPrintPreviewBrowserDelegateMethods(
     ash::printing::PrintPreviewWebcontentsAdapterAsh* adapter) {
   const auto token = base::UnguessableToken::Create();
@@ -122,8 +91,7 @@ class PrintPreviewAshBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests `PrintPreviewCros` api calls don't crash. Tests calls over
-// both mojo and ash clients.
+// Tests `PrintPreviewCros` api calls don't crash.
 IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, ApiCalls) {
   ASSERT_TRUE(CrosapiManager::IsInitialized());
 

@@ -4,6 +4,19 @@
 
 assert(is_chromeos)
 
+source_set("interfaces") {
+  sources = [
+    "print_preview_cros_client.h",
+    "print_preview_cros_delegate.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/crosapi/mojom",
+    "//components/printing/common:mojo_interfaces",
+  ]
+}
+
 static_library("print_preview") {
   sources = [
     "print_preview_ui_wrapper.cc",
@@ -23,6 +36,8 @@ static_library("print_preview") {
     "printing_init_cros.cc",
     "printing_init_cros.h",
   ]
+
+  public_deps = [ ":interfaces" ]
 
   deps = [
     "//base",

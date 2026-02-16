@@ -7,14 +7,13 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
+#include "chrome/browser/chromeos/printing/print_preview/print_preview_cros_delegate.h"
 #include "components/printing/common/print.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos::printing {
 
-class MockPrintPreviewCrosapi
-    : public crosapi::mojom::PrintPreviewCrosDelegate {
+class MockPrintPreviewCrosapi : public chromeos::PrintPreviewCrosDelegate {
  public:
   MockPrintPreviewCrosapi();
   ~MockPrintPreviewCrosapi() override;

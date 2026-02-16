@@ -16,7 +16,6 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/bindings/message.h"
 
 using ::printing::mojom::RequestPrintPreviewParamsPtr;
 
@@ -26,10 +25,9 @@ namespace {
 
 PrintPreviewWebcontentsManager* g_instance_for_testing = nullptr;
 
-crosapi::mojom::PrintPreviewCrosDelegate* g_delegate_instance_for_testing =
-    nullptr;
+chromeos::PrintPreviewCrosDelegate* g_delegate_instance_for_testing = nullptr;
 
-crosapi::mojom::PrintPreviewCrosDelegate& print_preview_cros_delegate() {
+chromeos::PrintPreviewCrosDelegate& print_preview_cros_delegate() {
   if (g_delegate_instance_for_testing) {
     return CHECK_DEREF(g_delegate_instance_for_testing);
   }
@@ -80,8 +78,9 @@ void PrintPreviewWebcontentsManager::GeneratePrintPreview(
     GeneratePrintPreviewCallback callback) {
   const auto found_content_iter = token_to_webcontents_.find(token);
   if (found_content_iter == token_to_webcontents_.end()) {
-    mojo::ReportBadMessage(
-        "Bad token, can only be called by a valid print preview instance.");
+    PRINTER_LOG(ERROR)
+        << "Bad token, can only be called by a valid print preview instance.";
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -173,7 +172,7 @@ content::WebContents* PrintPreviewWebcontentsManager::RemoveTokenMapping(
 }
 
 void PrintPreviewWebcontentsManager::SetPrintPreviewCrosDelegateForTesting(
-    crosapi::mojom::PrintPreviewCrosDelegate* delegate) {
+    chromeos::PrintPreviewCrosDelegate* delegate) {
   g_delegate_instance_for_testing = delegate;
 }
 

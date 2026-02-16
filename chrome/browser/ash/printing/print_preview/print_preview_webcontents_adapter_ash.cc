@@ -28,7 +28,7 @@ PrintPreviewWebcontentsAdapterAsh::~PrintPreviewWebcontentsAdapterAsh() {
 }
 
 void PrintPreviewWebcontentsAdapterAsh::RegisterAshClient(
-    crosapi::mojom::PrintPreviewCrosClient* client) {
+    chromeos::PrintPreviewCrosClient* client) {
   ash_client_ = client;
 }
 

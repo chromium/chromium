@@ -19,12 +19,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -100,8 +97,6 @@ class PrintPreviewWebContentsManagerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   testing::StrictMock<MockPrintPreviewCrosapi> browser_delegate_;
-  mojo::Receiver<crosapi::mojom::PrintPreviewCrosDelegate> receiver_{
-      &browser_delegate_};
 
   PrintPreviewWebcontentsManager webcontents_manager_;
   std::unique_ptr<ScopedPrintPreviewWebContentsManagerForTesting>

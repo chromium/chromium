@@ -60,4 +60,7 @@ specific_include_rules = {
     # For Chrome OS-specific file manager parameters.
     "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
   ],
+  "print_preview_ash_browsertest\\.cc": [
+    "+chrome/browser/chromeos/printing/print_preview/print_preview_cros_client.h",
+  ],
 }
