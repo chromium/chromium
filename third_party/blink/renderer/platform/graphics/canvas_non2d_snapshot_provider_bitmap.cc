@@ -29,26 +29,21 @@ CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::GetRasterContent(
 
   // TODO(xidachen): Ensure this function works for paint worklet generated
   // images.
-  // If we like to decode high bit depth image source to half float backed
-  // image, we need to sniff the image bit depth here to avoid double
-  // decoding.
-  ImageProvider::ScopedResult scoped_decoded_image;
   cc::TargetColorParams target_color_params;
   target_color_params.color_space = info_.color_space;
 
-  if (info_.format == viz::SinglePlaneFormat::kRGBA_F16 &&
-      draw_image.paint_image().is_high_bit_depth()) {
-    cc::PlaybackImageProvider image_provider(
-        &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType), target_color_params,
-        cc::PlaybackImageProvider::Settings());
-    scoped_decoded_image = image_provider.GetRasterContent(draw_image);
-  } else {
-    cc::PlaybackImageProvider image_provider(
-        &Image::SharedCCDecodeCache(kN32_SkColorType), target_color_params,
-        cc::PlaybackImageProvider::Settings());
-    scoped_decoded_image = image_provider.GetRasterContent(draw_image);
-  }
-  return scoped_decoded_image;
+  // To decode high bit depth image source to half float backed image, we need
+  // to sniff the image bit depth here to avoid double decoding.
+  auto image_provider_color_type =
+      (info_.format == viz::SinglePlaneFormat::kRGBA_F16 &&
+       draw_image.paint_image().is_high_bit_depth())
+          ? kRGBA_F16_SkColorType
+          : kN32_SkColorType;
+
+  return cc::PlaybackImageProvider(
+             &Image::SharedCCDecodeCache(image_provider_color_type),
+             target_color_params, cc::PlaybackImageProvider::Settings())
+      .GetRasterContent(draw_image);
 }
 
 std::unique_ptr<CanvasNon2DSnapshotProviderBitmap>
