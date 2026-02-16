@@ -836,8 +836,8 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
   int accountChanges = 0;
   for (UIOpenURLContext* context : URLContexts) {
     std::string newGaia;
-    if (net::GetValueForKeyInQuery(net::GURLWithNSURL(context.URL), "gaia_id",
-                                   &newGaia)) {
+    if (net::GetValueForKeyInQuery(net::GURLWithNSURL(context.URL),
+                                   app_group::kGaiaIDQueryItemName, &newGaia)) {
       accountChanges++;
     }
   }
@@ -871,7 +871,8 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
     std::string newGaia;
 
     // Continue if the URL does not contain a gaia.
-    if (!net::GetValueForKeyInQuery(net::GURLWithNSURL(context.URL), "gaia_id",
+    if (!net::GetValueForKeyInQuery(net::GURLWithNSURL(context.URL),
+                                    app_group::kGaiaIDQueryItemName,
                                     &newGaia)) {
       continue;
     }
