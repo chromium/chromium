@@ -10,18 +10,19 @@ class AtomicString;
 class ContainerNode;
 class ExceptionState;
 class ScriptState;
-class SetHTMLUnsafeOptions;
+class V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions;
 class WritableStream;
 
 // This creates a Writable stream that takes string and inserts them into an
 // existing element or shadow root.
 class HTMLStream {
  public:
-  static WritableStream* Create(ScriptState*,
-                                ContainerNode* target,
-                                const SetHTMLUnsafeOptions* options,
-                                const AtomicString& property_name,
-                                ExceptionState&);
+  static WritableStream* Create(
+      ScriptState*,
+      ContainerNode* target,
+      const V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+      const AtomicString& property_name,
+      ExceptionState&);
 };
 }  // namespace blink
 

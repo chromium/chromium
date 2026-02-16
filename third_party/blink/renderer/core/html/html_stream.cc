@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_parser_options.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
@@ -30,7 +31,7 @@ namespace {
 class HTMLSink : public UnderlyingSinkBase {
  public:
   explicit HTMLSink(ContainerNode& new_target,
-                    const SetHTMLUnsafeOptions* new_options)
+                    const TrustedParserOptions* new_options)
       : target(new_target), options(new_options) {
     CHECK(target->IsElementNode() || target->IsShadowRoot());
   }
@@ -52,10 +53,15 @@ class HTMLSink : public UnderlyingSinkBase {
       }
     }
 
+    SetHTMLUnsafeOptions* unsafe_options =
+        SetHTMLUnsafeOptions::Create(script_state->GetIsolate());
+    unsafe_options->setSanitizer(options->sanitizer());
+    unsafe_options->setRunScripts(options->runScripts());
+
     // TODO(nrosenthal): support safe sanitizer.
     StreamingSanitizer* sanitizer =
-        SanitizerAPI::CreateStreamingSanitizerUnsafeInternal(options, target,
-                                                             exception_state);
+        SanitizerAPI::CreateStreamingSanitizerUnsafeInternal(
+            unsafe_options, target, exception_state);
     // FIXME(nrosenthal): support more methods. This currently assumes "append".
     // FIXME(nrosenthal): custom element registry support?
     parser = MakeGarbageCollected<HTMLDocumentParser>(
@@ -106,20 +112,22 @@ class HTMLSink : public UnderlyingSinkBase {
 
   Member<ContainerNode> target;
   Member<DocumentParser> parser;
-  Member<const SetHTMLUnsafeOptions> options;
+  Member<const TrustedParserOptions> options;
 };
 }  // namespace
 
 // static
-WritableStream* HTMLStream::Create(ScriptState* script_state,
-                                   ContainerNode* target,
-                                   const SetHTMLUnsafeOptions* options,
-                                   const AtomicString& property_name,
-                                   ExceptionState& exception_state) {
+WritableStream* HTMLStream::Create(
+    ScriptState* script_state,
+    ContainerNode* target,
+    const V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*
+        options_or_trusted_options,
+    const AtomicString& property_name,
+    ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-  options = TrustedTypesCheckForParserOptions(
-      options, target->GetExecutionContext(), target->InterfaceName(),
-      property_name, exception_state);
+  const TrustedParserOptions* options = TrustedTypesCheckForParserOptions(
+      options_or_trusted_options, target->GetExecutionContext(),
+      target->InterfaceName(), property_name, exception_state);
   if (!options) {
     CHECK(exception_state.HadException());
     return nullptr;

@@ -20,6 +20,8 @@ class ExecutionContext;
 class QualifiedName;
 class ScriptValue;
 class ScriptState;
+class TrustedParserOptions;
+class V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions;
 class V8UnionStringOrTrustedScript;
 class V8UnionStringOrTrustedHTML;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedHTML;
@@ -102,12 +104,13 @@ TrustedTypesCheckForScriptURL(const String&,
                               const AtomicString& property_name,
                               ExceptionState&);
 
-[[nodiscard]] CORE_EXPORT const SetHTMLUnsafeOptions*
-TrustedTypesCheckForParserOptions(const SetHTMLUnsafeOptions*,
-                                  const ExecutionContext*,
-                                  const AtomicString& interface_name,
-                                  const AtomicString& property_name,
-                                  ExceptionState&);
+[[nodiscard]] CORE_EXPORT const TrustedParserOptions*
+TrustedTypesCheckForParserOptions(
+    const V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+    const ExecutionContext*,
+    const AtomicString& interface_name,
+    const AtomicString& property_name,
+    ExceptionState&);
 
 // Functionally equivalent to TrustedTypesCheckForScript(const String&, ...),
 // but with setup & error handling suitable for the asynchronous execution

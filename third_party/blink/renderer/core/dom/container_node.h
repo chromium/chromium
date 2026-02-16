@@ -44,7 +44,7 @@ class GetHTMLOptions;
 class HTMLCollection;
 class RadioNodeList;
 class ScriptState;
-class SetHTMLUnsafeOptions;
+class V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions;
 class StyleRecalcContext;
 class WhitespaceAttacher;
 class WritableStream;
@@ -395,12 +395,14 @@ class CORE_EXPORT ContainerNode : public Node {
   // only.
   String getHTML(const GetHTMLOptions*, ExceptionState&) const;
 
-  WritableStream* streamAppendHTMLUnsafe(ScriptState*,
-                                         SetHTMLUnsafeOptions*,
-                                         ExceptionState&);
-  WritableStream* streamHTMLUnsafe(ScriptState*,
-                                   SetHTMLUnsafeOptions*,
-                                   ExceptionState&);
+  WritableStream* streamAppendHTMLUnsafe(
+      ScriptState*,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+      ExceptionState&);
+  WritableStream* streamHTMLUnsafe(
+      ScriptState*,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+      ExceptionState&);
 
   // DocumentOrElementEventHandlers:
   // These event listeners are only actually web-exposed on interfaces that

@@ -11,6 +11,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedparseroptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedhtml.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -204,13 +206,15 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
                      const AtomicString& property_name,
                      ExceptionState& exception_state,
                      const String& value) {
-  if (!execution_context)
+  if (!execution_context) {
     return true;
+  }
 
   // Test case docs (Document::CreateForTest()) might not have a window
   // and hence no TrustedTypesPolicyFactory.
-  if (execution_context->GetTrustedTypes())
+  if (execution_context->GetTrustedTypes()) {
     execution_context->GetTrustedTypes()->CountTrustedTypeAssignmentError();
+  }
 
   String prefix = GetSamplePrefix(interface_name, property_name, value);
 
@@ -290,10 +294,12 @@ String GetStringFromScriptHelper(
     TrustedTypeViolationKind violation_kind,
     TrustedTypeViolationKind violation_kind_when_default_policy_failed,
     bool do_javascript_url_check) {
-  if (!context)
+  if (!context) {
     return script;
-  if (!RequireTrustedTypesCheck(context))
+  }
+  if (!RequireTrustedTypesCheck(context)) {
     return script;
+  }
 
   // Set up JS context & friends.
   //
@@ -564,8 +570,9 @@ String TrustedTypesCheckFor(SpecificTrustedType type,
       break;
   }
 
-  if (type == SpecificTrustedType::kNone || does_type_match)
+  if (type == SpecificTrustedType::kNone || does_type_match) {
     return value;
+  }
 
   // In all other cases: run the full check against the string value.
   return TrustedTypesCheckFor(type, std::move(value), execution_context,
@@ -617,14 +624,24 @@ String TrustedTypesCheckForHTML(const V8UnionStringOrTrustedHTML* value,
   NOTREACHED();
 }
 
-[[nodiscard]] CORE_EXPORT const SetHTMLUnsafeOptions*
-TrustedTypesCheckForParserOptions(const SetHTMLUnsafeOptions* options,
-                                  const ExecutionContext* execution_context,
-                                  const AtomicString& interface_name,
-                                  const AtomicString& property_name,
-                                  ExceptionState& exception_state) {
+[[nodiscard]] CORE_EXPORT const TrustedParserOptions*
+TrustedTypesCheckForParserOptions(
+    const V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*
+        options_or_trusted_options,
+    const ExecutionContext* execution_context,
+    const AtomicString& interface_name,
+    const AtomicString& property_name,
+    ExceptionState& exception_state) {
+  if (options_or_trusted_options->IsTrustedParserOptions()) {
+    return options_or_trusted_options->GetAsTrustedParserOptions();
+  }
+
+  const SetHTMLUnsafeOptions* options =
+      options_or_trusted_options->GetAsSetHTMLUnsafeOptions();
+
   if (!RequireTrustedTypesCheck(execution_context)) {
-    return options;
+    return MakeGarbageCollected<TrustedParserOptions>(options->sanitizer(),
+                                                      options->runScripts());
   }
 
   auto* default_policy = GetDefaultPolicy(execution_context);
@@ -644,17 +661,7 @@ TrustedTypesCheckForParserOptions(const SetHTMLUnsafeOptions* options,
 
   TryRethrowScope rethrow_scope(execution_context->GetIsolate(),
                                 exception_state);
-  TrustedParserOptions* result =
-      default_policy->createParserOptions(options, exception_state);
-  if (!result) {
-    return nullptr;
-  }
-
-  auto* new_options =
-      SetHTMLUnsafeOptions::Create(execution_context->GetIsolate());
-  new_options->setSanitizer(result->sanitizer());
-  new_options->setRunScripts(result->runScripts());
-  return new_options;
+  return default_policy->createParserOptions(options, exception_state);
 }
 
 String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,

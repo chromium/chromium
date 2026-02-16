@@ -1921,7 +1921,7 @@ String ContainerNode::getHTML(const GetHTMLOptions* options,
 
 WritableStream* ContainerNode::streamAppendHTMLUnsafe(
     ScriptState* script_state,
-    SetHTMLUnsafeOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
     ExceptionState& exception_state) {
   DEFINE_STATIC_LOCAL(AtomicString, kInterfaceName, ("streamAppendHTMLUnsafe"));
 
@@ -1931,7 +1931,7 @@ WritableStream* ContainerNode::streamAppendHTMLUnsafe(
 
 WritableStream* ContainerNode::streamHTMLUnsafe(
     ScriptState* script_state,
-    SetHTMLUnsafeOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
     ExceptionState& exception_state) {
   DEFINE_STATIC_LOCAL(AtomicString, kPropertyName, ("streamHTMLUnsafe"));
   WritableStream* stream = HTMLStream::Create(script_state, this, options,
