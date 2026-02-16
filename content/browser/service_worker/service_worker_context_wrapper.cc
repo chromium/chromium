@@ -128,6 +128,62 @@ void DidFindRegistrationForStartActiveWorker(
           std::move(callback)));
 }
 
+void DidStartWorker(
+    scoped_refptr<ServiceWorkerVersion> version,
+    ServiceWorkerContext::StartWorkerCallback info_callback,
+    ServiceWorkerContext::StatusCodeResponseCallback failure_callback,
+    blink::ServiceWorkerStatusCode start_worker_status) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (start_worker_status != blink::ServiceWorkerStatusCode::kOk) {
+    std::move(failure_callback)
+        .Run(StatusCodeResponse{.status_code = start_worker_status});
+    return;
+  }
+  EmbeddedWorkerInstance* instance = version->embedded_worker();
+  std::move(info_callback)
+      .Run(version->version_id(), instance->process_id(),
+           instance->thread_id());
+}
+
+void FoundRegistrationForStartWorker(
+    ServiceWorkerContext::StartWorkerCallback info_callback,
+    ServiceWorkerContext::StatusCodeResponseCallback failure_callback,
+    blink::ServiceWorkerStatusCode service_worker_status,
+    scoped_refptr<ServiceWorkerRegistration> registration) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
+    std::move(failure_callback)
+        .Run(StatusCodeResponse{.status_code = service_worker_status});
+    return;
+  }
+
+  ServiceWorkerVersion* version_ptr = registration->active_version()
+                                          ? registration->active_version()
+                                          : registration->installing_version();
+  // Since FindRegistrationForScope returned
+  // blink::ServiceWorkerStatusCode::kOk, there must have been either:
+  // - an active version, which optionally might have activated from a waiting
+  //   version (as DidFindRegistrationForFindImpl will activate any waiting
+  //   version).
+  // - or an installing version.
+  // However, if the installation is rejected, the installing version can go
+  // away by the time we reach here from DidFindRegistrationForFindImpl.
+  if (!version_ptr) {
+    std::move(failure_callback)
+        .Run(StatusCodeResponse{.status_code = service_worker_status});
+    return;
+  }
+
+  // Note: There might be a remote possibility that |registration|'s |version|
+  // might change between here and DidStartWorker, so bind |version| to
+  // RunAfterStartWorker.
+  scoped_refptr<ServiceWorkerVersion> version =
+      base::WrapRefCounted(version_ptr);
+  version->RunAfterStartWorker(
+      ServiceWorkerMetrics::EventType::EXTERNAL_REQUEST,
+      base::BindOnce(&DidStartWorker, version, std::move(info_callback),
+                     std::move(failure_callback)));
+}
 
 void RunOnceClosure(scoped_refptr<ServiceWorkerContextWrapper> ref_holder,
                     base::OnceClosure task) {
@@ -437,17 +493,8 @@ void ServiceWorkerContextWrapper::OnStarted(
   DCHECK(insertion_result.second);
 
   const auto& running_info = insertion_result.first->second;
-  for (auto& observer : observer_list_) {
+  for (auto& observer : observer_list_)
     observer.OnVersionStartedRunning(version_id, running_info);
-  }
-
-  auto it = waiting_start_callbacks_.find(version_id);
-  if (it != waiting_start_callbacks_.end()) {
-    for (auto& callback : it->second) {
-      std::move(callback).Run();
-    }
-    waiting_start_callbacks_.erase(it);
-  }
 }
 
 void ServiceWorkerContextWrapper::OnStopping(int64_t version_id) {
@@ -464,12 +511,9 @@ void ServiceWorkerContextWrapper::OnStopped(int64_t version_id) {
   auto it = running_service_workers_.find(version_id);
   if (it != running_service_workers_.end()) {
     running_service_workers_.erase(it);
-    for (auto& observer : observer_list_) {
+    for (auto& observer : observer_list_)
       observer.OnVersionStoppedRunning(version_id);
-    }
   }
-
-  CHECK(!waiting_start_callbacks_.contains(version_id));
 }
 
 void ServiceWorkerContextWrapper::OnDeleteAndStartOver() {
@@ -777,63 +821,6 @@ void ServiceWorkerContextWrapper::ClearAllServiceWorkersForTest(
   context_core_->ClearAllServiceWorkersForTest(std::move(callback));
 }
 
-void ServiceWorkerContextWrapper::DidStartWorker(
-    scoped_refptr<ServiceWorkerVersion> version,
-    ServiceWorkerContext::StartWorkerCallback info_callback,
-    ServiceWorkerContext::StatusCodeResponseCallback failure_callback,
-    blink::ServiceWorkerStatusCode start_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (start_worker_status != blink::ServiceWorkerStatusCode::kOk) {
-    std::move(failure_callback)
-        .Run(StatusCodeResponse{.status_code = start_worker_status});
-    return;
-  }
-  EmbeddedWorkerInstance* instance = version->embedded_worker();
-  ScheduleStartWorkerCallback(version->version_id(), instance->process_id(),
-                              instance->thread_id(), std::move(info_callback));
-}
-
-void ServiceWorkerContextWrapper::DidFindRegistrationForStartWorker(
-    ServiceWorkerContext::StartWorkerCallback info_callback,
-    ServiceWorkerContext::StatusCodeResponseCallback failure_callback,
-    blink::ServiceWorkerStatusCode service_worker_status,
-    scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
-    std::move(failure_callback)
-        .Run(StatusCodeResponse{.status_code = service_worker_status});
-    return;
-  }
-
-  ServiceWorkerVersion* version_ptr = registration->active_version()
-                                          ? registration->active_version()
-                                          : registration->installing_version();
-  // Since FindRegistrationForScope returned
-  // blink::ServiceWorkerStatusCode::kOk, there must have been either:
-  // - an active version, which optionally might have activated from a waiting
-  //   version (as DidFindRegistrationForFindImpl will activate any waiting
-  //   version).
-  // - or an installing version.
-  // However, if the installation is rejected, the installing version can go
-  // away by the time we reach here from DidFindRegistrationForFindImpl.
-  if (!version_ptr) {
-    std::move(failure_callback)
-        .Run(StatusCodeResponse{.status_code = service_worker_status});
-    return;
-  }
-
-  // Note: There might be a remote possibility that |registration|'s |version|
-  // might change between here and DidStartWorker, so bind |version| to
-  // RunAfterStartWorker.
-  scoped_refptr<ServiceWorkerVersion> version =
-      base::WrapRefCounted(version_ptr);
-  version->RunAfterStartWorker(
-      ServiceWorkerMetrics::EventType::EXTERNAL_REQUEST,
-      base::BindOnce(&ServiceWorkerContextWrapper::DidStartWorker,
-                     base::WrapRefCounted(this), version,
-                     std::move(info_callback), std::move(failure_callback)));
-}
-
 void ServiceWorkerContextWrapper::StartWorkerForScope(
     const GURL& scope,
     const blink::StorageKey& key,
@@ -843,10 +830,8 @@ void ServiceWorkerContextWrapper::StartWorkerForScope(
   FindRegistrationForScopeImpl(
       scope, key,
       /*include_installing_version=*/true,
-      base::BindOnce(
-          &ServiceWorkerContextWrapper::DidFindRegistrationForStartWorker,
-          base::WrapRefCounted(this), std::move(info_callback),
-          std::move(failure_callback)));
+      base::BindOnce(&FoundRegistrationForStartWorker, std::move(info_callback),
+                     std::move(failure_callback)));
 }
 
 void ServiceWorkerContextWrapper::StartServiceWorkerAndDispatchMessage(
@@ -2010,12 +1995,10 @@ void ServiceWorkerContextWrapper::ClearRunningServiceWorkers() {
 
   for (const auto& kv : running_service_workers_) {
     int64_t version_id = kv.first;
-    for (auto& observer : observer_list_) {
+    for (auto& observer : observer_list_)
       observer.OnVersionStoppedRunning(version_id);
-    }
   }
   running_service_workers_.clear();
-  CHECK(waiting_start_callbacks_.empty());
 }
 
 ServiceWorkerVersion* ServiceWorkerContextWrapper::GetLiveServiceWorker(
@@ -2027,22 +2010,6 @@ ServiceWorkerVersion* ServiceWorkerContextWrapper::GetLiveServiceWorker(
   }
 
   return context()->GetLiveVersion(service_worker_version_id);
-}
-
-// Schedules the `callback` to run. If the worker is already running, runs
-// the callback immediately. Otherwise, stores the callback and runs it when
-// the worker starts running.
-void ServiceWorkerContextWrapper::ScheduleStartWorkerCallback(
-    int64_t version_id,
-    int process_id,
-    int thread_id,
-    StartWorkerCallback callback) {
-  if (GetRunningServiceWorkerInfo(version_id)) {
-    std::move(callback).Run(version_id, process_id, thread_id);
-    return;
-  }
-  waiting_start_callbacks_[version_id].push_back(
-      base::BindOnce(std::move(callback), version_id, process_id, thread_id));
 }
 
 }  // namespace content
