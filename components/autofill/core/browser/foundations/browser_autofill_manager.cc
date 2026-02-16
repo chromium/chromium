@@ -444,6 +444,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case AutofillSuggestionTriggerSource::kGlic:
+    case AutofillSuggestionTriggerSource::kAtMemory:
       return false;
   }
 }
@@ -525,6 +526,8 @@ DenseSet<FillingProduct> GetFillingProductsToSuggest(
   using enum AutofillSuggestionTriggerSource;
   switch (trigger_source) {
     case kUnspecified:
+    case kAtMemory:
+      // TODO(crbug.com/481980303): Return appropriate products
       return {};
     case kTextareaFocusedWithoutClick:
     case kComposeDialogLostFocus:

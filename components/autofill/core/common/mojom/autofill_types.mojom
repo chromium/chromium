@@ -651,6 +651,8 @@ enum AutofillSuggestionTriggerSource {
   kProactivePasswordRecovery = 20,
   // Suggestions triggered by the GLIC service.
   kGlic = 21,
+  // Suggestions triggered by the @memory feature (typing "@@").
+  kAtMemory = 22,
 };
 
 // Encapsulates the data for a potential "Sign in with Google" button.

@@ -28,6 +28,7 @@ bool ShouldAutofillOnEmptyValues(
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case AutofillSuggestionTriggerSource::kGlic:
+    case AutofillSuggestionTriggerSource::kAtMemory:
       return true;
     case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
       return false;
@@ -50,6 +51,7 @@ bool ShouldAutofillOnLongValues(
     case AutofillSuggestionTriggerSource::kContentEditableClicked:
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
+    case AutofillSuggestionTriggerSource::kAtMemory:
       return true;
     case AutofillSuggestionTriggerSource::kFormControlElementClicked:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
@@ -86,6 +88,7 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case AutofillSuggestionTriggerSource::kGlic:
+    case AutofillSuggestionTriggerSource::kAtMemory:
       return false;
     // `kPasswordManager`, `kiOS`, and `kPlusAddressUpdatedInBrowserProcess` are
     // not used in the renderer code. As such, suggestion properties don't apply
@@ -118,6 +121,7 @@ bool ShouldShowFullSuggestionListForPasswordManager(
     case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
+    case AutofillSuggestionTriggerSource::kAtMemory:
       return false;
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case AutofillSuggestionTriggerSource::kGlic:

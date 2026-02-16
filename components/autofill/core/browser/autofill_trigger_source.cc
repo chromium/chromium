@@ -22,6 +22,7 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
+    case AutofillSuggestionTriggerSource::kAtMemory:
       // On Android, no popup exists. Instead, the keyboard accessory is used.
 #if BUILDFLAG(IS_ANDROID)
       return AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet;
