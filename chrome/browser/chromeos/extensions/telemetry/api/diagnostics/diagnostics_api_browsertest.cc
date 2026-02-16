@@ -11,66 +11,36 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/fake_diagnostics_service.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/fake_diagnostics_service_factory.h"
-#include "chromeos/ash/components/telemetry_extension/diagnostics/diagnostics_service_ash.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-shared.h"
-#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
 namespace {
-namespace crosapi = ::crosapi::mojom;
+
+// Set up FakeCrosHealthd's response to RunRoutine requests.
+void SetRunRoutineResponse(
+    int id,
+    ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum status) {
+  auto response = ash::cros_healthd::mojom::RunRoutineResponse::New(id, status);
+  ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
+      response);
+}
+
+void SetExpectedLastPassedParameters(base::DictValue dict) {
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetExpectedLastPassedDiagnosticsParametersForTesting(std::move(dict));
+}
+
+using TelemetryExtensionDiagnosticsApiBrowserTest =
+    chromeos::BaseTelemetryExtensionBrowserTest;
+
 }  // namespace
-
-class TelemetryExtensionDiagnosticsApiBrowserTest
-    : public BaseTelemetryExtensionBrowserTest {
- public:
-  TelemetryExtensionDiagnosticsApiBrowserTest() {
-    ash::DiagnosticsServiceAsh::Factory::SetForTesting(
-        &fake_diagnostics_service_factory_);
-  }
-
-  ~TelemetryExtensionDiagnosticsApiBrowserTest() override = default;
-
-  TelemetryExtensionDiagnosticsApiBrowserTest(
-      const TelemetryExtensionDiagnosticsApiBrowserTest&) = delete;
-  TelemetryExtensionDiagnosticsApiBrowserTest& operator=(
-      const TelemetryExtensionDiagnosticsApiBrowserTest&) = delete;
-
- protected:
-  void SetServiceForTesting(
-      std::unique_ptr<FakeDiagnosticsService> fake_diagnostics_service_impl) {
-    fake_diagnostics_service_factory_.SetCreateInstanceResponse(
-        std::move(fake_diagnostics_service_impl));
-  }
-
-  // Set up FakeCrosHealthd's response to RunRoutine requests.
-  void SetRunRoutineResponse(
-      int id,
-      ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum status) {
-    auto response =
-        ash::cros_healthd::mojom::RunRoutineResponse::New(id, status);
-    ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
-        response);
-  }
-
-  void SetExpectedLastPassedParameters(base::DictValue dict) {
-    ash::cros_healthd::FakeCrosHealthd::Get()
-        ->SetExpectedLastPassedDiagnosticsParametersForTesting(std::move(dict));
-  }
-
-  FakeDiagnosticsServiceFactory fake_diagnostics_service_factory_;
-};
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetAvailableRoutinesSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   ash::cros_healthd::FakeCrosHealthd::Get()->SetAvailableRoutinesForTesting({
       ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower,
       ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity,
@@ -153,14 +123,12 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetRoutineUpdateNonInteractiveSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   SetExpectedLastPassedParameters(
       base::DictValue()
           .Set("id", 123456)
-          .Set("command",
-               static_cast<int32_t>(
-                   crosapi::DiagnosticsRoutineCommandEnum::kGetStatus))
+          .Set("command", static_cast<int32_t>(
+                              ash::cros_healthd::mojom::
+                                  DiagnosticRoutineCommandEnum::kGetStatus))
           .Set("include_output", true));
 
   // Set up FakeCrosHealthd's response to a GetRoutineUpdate request.
@@ -211,13 +179,12 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetRoutineUpdateInteractiveSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   SetExpectedLastPassedParameters(
       base::DictValue()
           .Set("id", 654321)
-          .Set("command", static_cast<int32_t>(
-                              crosapi::DiagnosticsRoutineCommandEnum::kRemove))
+          .Set("command",
+               static_cast<int32_t>(ash::cros_healthd::mojom::
+                                        DiagnosticRoutineCommandEnum::kRemove))
           .Set("include_output", true));
 
   // Set up FakeCrosHealthd's response to a GetRoutineUpdate request.
@@ -268,8 +235,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunAcPowerRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   base::DictValue expected_parameters;
   expected_parameters.Set(
       "expected_status",
@@ -304,7 +269,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryCapacityRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -325,8 +289,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryChargeRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   base::DictValue expected_parameters;
   expected_parameters.Set("length_seconds", 1000);
   expected_parameters.Set("minimum_charge_percent_required", 1);
@@ -358,8 +320,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryDischargeRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   base::DictValue expected_parameters;
   expected_parameters.Set("length_seconds", 10);
   expected_parameters.Set("maximum_discharge_percent_allowed", 15);
@@ -391,7 +351,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryHealthRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -412,7 +371,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBluetoothDiscoveryRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -434,7 +392,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBluetoothScanningRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -459,7 +416,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBluetoothPairingRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -484,7 +440,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBluetoothPowerRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -505,8 +460,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunCpuCacheRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   base::DictValue expected_parameters;
   expected_parameters.Set("length_seconds", 120);
   SetExpectedLastPassedParameters(std::move(expected_parameters));
@@ -536,8 +489,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunCpuFloatingPointAccuracyRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   base::DictValue expected_parameters;
   expected_parameters.Set("length_seconds", 120);
   SetExpectedLastPassedParameters(std::move(expected_parameters));
@@ -568,8 +519,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunCpuPrimeSearchRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   base::DictValue expected_parameters;
   expected_parameters.Set("length_seconds", 120);
   SetExpectedLastPassedParameters(std::move(expected_parameters));
@@ -599,8 +548,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunCpuStressRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   base::DictValue expected_parameters;
   expected_parameters.Set("length_seconds", 120);
   SetExpectedLastPassedParameters(std::move(expected_parameters));
@@ -630,8 +577,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunDiskReadRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   base::DictValue expected_parameters;
   expected_parameters.Set(
       "type",
@@ -668,7 +613,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunDnsResolutionRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -689,7 +633,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunDnsResolverPresentRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -711,7 +654,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunEmmcLifetimeRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -732,7 +674,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunFingerprintAliveRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -753,7 +694,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunGatewayCanBePingedRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -775,7 +715,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunLanConnectivityRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -796,7 +735,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunMemoryRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -817,8 +755,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunNvmeSelfTestRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   base::DictValue expected_parameters;
   expected_parameters.Set(
       "nvme_self_test_type",
@@ -851,7 +787,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunSensitiveSensorRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -872,7 +807,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunSignalStrengthRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -893,7 +827,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunSmartctlCheckRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -915,8 +848,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunSmartctlCheckRoutineWithPercentageUsedSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   base::DictValue expected_parameters;
   expected_parameters.Set("percentage_used_threshold", 42);
   SetExpectedLastPassedParameters(std::move(expected_parameters));
@@ -947,7 +878,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunUfsLifetimeRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -968,8 +898,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunPowerButtonRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
-
   base::DictValue expected_parameters;
   expected_parameters.Set("timeout_seconds", 10);
   SetExpectedLastPassedParameters(std::move(expected_parameters));
@@ -999,7 +927,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunAudioDriverRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -1020,7 +947,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunFanRoutineSuccess) {
-  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
   SetRunRoutineResponse(
       0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
@@ -1073,12 +999,6 @@ class NoExtraPermissionTelemetryExtensionDiagnosticsApiBrowserTest
 IN_PROC_BROWSER_TEST_F(
     NoExtraPermissionTelemetryExtensionDiagnosticsApiBrowserTest,
     RunBluetoothScanningRoutineWithoutPermissionFail) {
-  // Configure FakeDiagnosticsService.
-  {
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
-
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function runBluetoothScanningRoutineNotWorking() {
@@ -1099,12 +1019,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     NoExtraPermissionTelemetryExtensionDiagnosticsApiBrowserTest,
     RunBluetoothPairingRoutineWithoutPermissionFail) {
-  // Configure FakeDiagnosticsService.
-  {
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
-
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function runBluetoothPairingRoutineNotWorking() {
@@ -1121,5 +1035,3 @@ IN_PROC_BROWSER_TEST_F(
     ]);
   )");
 }
-
-}  // namespace chromeos

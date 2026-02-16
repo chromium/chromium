@@ -10,7 +10,6 @@ mojom("mojom") {
     "account_manager.mojom",
     "cros_display_config.mojom",
     "crosapi.mojom",
-    "diagnostics_service.mojom",
     "document_scan.mojom",
     "launcher_search.mojom",
     "local_printer.mojom",

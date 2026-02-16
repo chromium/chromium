@@ -9,7 +9,6 @@ import "chromeos/components/payments/mojom/payment_app.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
-import "chromeos/crosapi/mojom/diagnostics_service.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/print_preview_cros.mojom";
@@ -89,13 +88,7 @@ interface Crosapi {
   // BindDeviceAttributes@17 was removed.
   // BindDeviceOAuth2TokenService@95 was removed.
   // BindDeviceSettingsService@59 was removed.
-
-  // Binds the diagnostics service to allow Lacros to initiate diagnostics
-  // routines from Ash.
-  // Added in M106.
-  [MinVersion=95] BindDiagnosticsService@99(
-    pending_receiver<crosapi.mojom.DiagnosticsService> receiver);
-
+  // BindDiagnosticsService@99 was removed.
   // BindDigitalGoodsFactory@79 was removed.
   // BindDlp@64 was removed.
 

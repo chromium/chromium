@@ -22,7 +22,6 @@
 #include "printing/buildflags/buildflags.h"
 
 namespace ash {
-class DiagnosticsServiceAsh;
 class ProbeServiceAsh;
 class TelemetryDiagnosticsRoutineServiceAsh;
 class TelemetryManagementServiceAsh;
@@ -65,8 +64,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindCrosDisplayConfigController(
       mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver)
       override;
-  void BindDiagnosticsService(
-      mojo::PendingReceiver<mojom::DiagnosticsService> receiver) override;
   void BindDocumentScan(
       mojo::PendingReceiver<mojom::DocumentScan> receiver) override;
   void BindHidManager(
@@ -112,15 +109,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ash::ProbeServiceAsh* probe_service_ash() { return probe_service_ash_.get(); }
 
-  ash::DiagnosticsServiceAsh* diagnostics_service_ash() {
-    return diagnostics_service_ash_.get();
-  }
-
  private:
   // Called when a connection is lost.
   void OnDisconnected();
 
-  std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>

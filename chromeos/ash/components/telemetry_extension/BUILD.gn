@@ -9,7 +9,6 @@ source_set("unit_tests") {
 
   deps = [
     "common:unit_tests",
-    "diagnostics:unit_tests",
     "events:unit_tests",
     "management:unit_tests",
     "routines:unit_tests",

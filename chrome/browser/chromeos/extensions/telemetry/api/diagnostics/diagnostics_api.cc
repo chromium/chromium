@@ -15,20 +15,14 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_converters.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_metrics.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/remote_diagnostics_service_strategy.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_manager.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
-#include "chromeos/ash/components/telemetry_extension/diagnostics/diagnostics_service_ash.h"
 #include "chromeos/ash/components/telemetry_extension/diagnostics/mojo_utils.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
-#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
-#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "extensions/common/extension_features.h"
@@ -87,28 +81,23 @@ std::optional<Params> DiagnosticsApiFunctionV1AndV2Base::GetParams() {
 
 // DiagnosticsApiFunctionBase --------------------------------------------------
 
-DiagnosticsApiFunctionBase::DiagnosticsApiFunctionBase()
-    : remote_diagnostics_service_strategy_(
-          RemoteDiagnosticsServiceStrategy::Create()) {}
+DiagnosticsApiFunctionBase::DiagnosticsApiFunctionBase() = default;
 
 DiagnosticsApiFunctionBase::~DiagnosticsApiFunctionBase() = default;
 
-mojo::Remote<crosapi::mojom::DiagnosticsService>&
-DiagnosticsApiFunctionBase::GetRemoteService() {
-  DCHECK(remote_diagnostics_service_strategy_);
-  return remote_diagnostics_service_strategy_->GetRemoteService();
-}
-
 const mojo::Remote<ash::cros_healthd::mojom::CrosHealthdDiagnosticsService>&
 DiagnosticsApiFunctionBase::GetService() {
-  // As long as some of the API implementations still go through
-  // DiagnosticsServiceAsh (crosapi::mojom::DiagnosticsService), we must use the
-  // same pipe to cros_healthd that DiagnosticsServiceAsh uses for requests to
-  // arrive in order.
-  return crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->diagnostics_service_ash()
-      ->GetService();
+  if (!service_ || !service_.is_connected()) {
+    ash::cros_healthd::ServiceConnection::GetInstance()->BindDiagnosticsService(
+        service_.BindNewPipeAndPassReceiver());
+    service_.set_disconnect_handler(base::BindOnce(
+        &DiagnosticsApiFunctionBase::OnMojoDisconnect, base::Unretained(this)));
+  }
+  return service_;
+}
+
+void DiagnosticsApiFunctionBase::OnMojoDisconnect() {
+  service_.reset();
 }
 
 // OsDiagnosticsGetAvailableRoutinesFunction -----------------------------------

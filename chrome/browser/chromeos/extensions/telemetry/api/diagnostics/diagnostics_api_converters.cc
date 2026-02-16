@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
-#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 
 namespace chromeos::converters::diagnostics {
@@ -274,39 +273,6 @@ bool ConvertMojoRoutine(ash::cros_healthd::mojom::DiagnosticRoutineEnum in,
       return true;
     default:
       return false;
-  }
-  NOTREACHED();
-}
-
-cx_diag::RoutineStatus ConvertRoutineStatus(
-    crosapi::DiagnosticsRoutineStatusEnum status) {
-  switch (status) {
-    case crosapi::DiagnosticsRoutineStatusEnum::kUnknown:
-      return cx_diag::RoutineStatus::kUnknown;
-    case crosapi::DiagnosticsRoutineStatusEnum::kReady:
-      return cx_diag::RoutineStatus::kReady;
-    case crosapi::DiagnosticsRoutineStatusEnum::kRunning:
-      return cx_diag::RoutineStatus::kRunning;
-    case crosapi::DiagnosticsRoutineStatusEnum::kWaiting:
-      return cx_diag::RoutineStatus::kWaitingUserAction;
-    case crosapi::DiagnosticsRoutineStatusEnum::kPassed:
-      return cx_diag::RoutineStatus::kPassed;
-    case crosapi::DiagnosticsRoutineStatusEnum::kFailed:
-      return cx_diag::RoutineStatus::kFailed;
-    case crosapi::DiagnosticsRoutineStatusEnum::kError:
-      return cx_diag::RoutineStatus::kError;
-    case crosapi::DiagnosticsRoutineStatusEnum::kCancelled:
-      return cx_diag::RoutineStatus::kCancelled;
-    case crosapi::DiagnosticsRoutineStatusEnum::kFailedToStart:
-      return cx_diag::RoutineStatus::kFailedToStart;
-    case crosapi::DiagnosticsRoutineStatusEnum::kRemoved:
-      return cx_diag::RoutineStatus::kRemoved;
-    case crosapi::DiagnosticsRoutineStatusEnum::kCancelling:
-      return cx_diag::RoutineStatus::kCancelling;
-    case crosapi::DiagnosticsRoutineStatusEnum::kUnsupported:
-      return cx_diag::RoutineStatus::kUnsupported;
-    case crosapi::DiagnosticsRoutineStatusEnum::kNotRun:
-      return cx_diag::RoutineStatus::kNotRun;
   }
   NOTREACHED();
 }

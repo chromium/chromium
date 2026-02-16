@@ -9,7 +9,6 @@
 
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
-#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 
 namespace chromeos::converters::diagnostics {
@@ -17,8 +16,6 @@ namespace chromeos::converters::diagnostics {
 bool ConvertMojoRoutine(ash::cros_healthd::mojom::DiagnosticRoutineEnum in,
                         chromeos::api::os_diagnostics::RoutineType* out);
 
-chromeos::api::os_diagnostics::RoutineStatus ConvertRoutineStatus(
-    crosapi::mojom::DiagnosticsRoutineStatusEnum status);
 chromeos::api::os_diagnostics::RoutineStatus ConvertRoutineStatus(
     ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum status);
 

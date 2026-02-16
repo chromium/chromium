@@ -183,40 +183,49 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertRoutineStatus) {
-  EXPECT_EQ(ConvertRoutineStatus(crosapi::DiagnosticsRoutineStatusEnum::kReady),
+  EXPECT_EQ(ConvertRoutineStatus(
+                ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady),
             cx_diag::RoutineStatus::kReady);
   EXPECT_EQ(
-      ConvertRoutineStatus(crosapi::DiagnosticsRoutineStatusEnum::kRunning),
+      ConvertRoutineStatus(
+          ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRunning),
       cx_diag::RoutineStatus::kRunning);
   EXPECT_EQ(
-      ConvertRoutineStatus(crosapi::DiagnosticsRoutineStatusEnum::kWaiting),
+      ConvertRoutineStatus(
+          ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kWaiting),
       cx_diag::RoutineStatus::kWaitingUserAction);
-  EXPECT_EQ(
-      ConvertRoutineStatus(crosapi::DiagnosticsRoutineStatusEnum::kPassed),
-      cx_diag::RoutineStatus::kPassed);
-  EXPECT_EQ(
-      ConvertRoutineStatus(crosapi::DiagnosticsRoutineStatusEnum::kFailed),
-      cx_diag::RoutineStatus::kFailed);
-  EXPECT_EQ(ConvertRoutineStatus(crosapi::DiagnosticsRoutineStatusEnum::kError),
+  EXPECT_EQ(ConvertRoutineStatus(
+                ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kPassed),
+            cx_diag::RoutineStatus::kPassed);
+  EXPECT_EQ(ConvertRoutineStatus(
+                ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kFailed),
+            cx_diag::RoutineStatus::kFailed);
+  EXPECT_EQ(ConvertRoutineStatus(
+                ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kError),
             cx_diag::RoutineStatus::kError);
   EXPECT_EQ(
-      ConvertRoutineStatus(crosapi::DiagnosticsRoutineStatusEnum::kCancelled),
+      ConvertRoutineStatus(
+          ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kCancelled),
       cx_diag::RoutineStatus::kCancelled);
-  EXPECT_EQ(ConvertRoutineStatus(
-                crosapi::DiagnosticsRoutineStatusEnum::kFailedToStart),
-            cx_diag::RoutineStatus::kFailedToStart);
   EXPECT_EQ(
-      ConvertRoutineStatus(crosapi::DiagnosticsRoutineStatusEnum::kRemoved),
+      ConvertRoutineStatus(ash::cros_healthd::mojom::
+                               DiagnosticRoutineStatusEnum::kFailedToStart),
+      cx_diag::RoutineStatus::kFailedToStart);
+  EXPECT_EQ(
+      ConvertRoutineStatus(
+          ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRemoved),
       cx_diag::RoutineStatus::kRemoved);
   EXPECT_EQ(
-      ConvertRoutineStatus(crosapi::DiagnosticsRoutineStatusEnum::kCancelling),
+      ConvertRoutineStatus(
+          ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kCancelling),
       cx_diag::RoutineStatus::kCancelling);
   EXPECT_EQ(
-      ConvertRoutineStatus(crosapi::DiagnosticsRoutineStatusEnum::kUnsupported),
+      ConvertRoutineStatus(
+          ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kUnsupported),
       cx_diag::RoutineStatus::kUnsupported);
-  EXPECT_EQ(
-      ConvertRoutineStatus(crosapi::DiagnosticsRoutineStatusEnum::kNotRun),
-      cx_diag::RoutineStatus::kNotRun);
+  EXPECT_EQ(ConvertRoutineStatus(
+                ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kNotRun),
+            cx_diag::RoutineStatus::kNotRun);
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,

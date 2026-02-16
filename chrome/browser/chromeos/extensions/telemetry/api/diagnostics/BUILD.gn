@@ -16,13 +16,10 @@ source_set("diagnostics") {
     "diagnostics_api_converters.h",
     "diagnostics_api_metrics.cc",
     "diagnostics_api_metrics.h",
-    "remote_diagnostics_service_strategy.cc",
-    "remote_diagnostics_service_strategy.h",
   ]
 
   deps = [
     "//base",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/chromeos/extensions/telemetry/api/routines:routine_manager",
     "//chrome/common/chromeos/extensions/api",
@@ -44,10 +41,6 @@ source_set("browser_tests") {
   sources = [
     "diagnostics_api_browsertest.cc",
     "diagnostics_api_v2_browsertest.cc",
-    "fake_diagnostics_service.cc",
-    "fake_diagnostics_service.h",
-    "fake_diagnostics_service_factory.cc",
-    "fake_diagnostics_service_factory.h",
   ]
 
   deps = [
