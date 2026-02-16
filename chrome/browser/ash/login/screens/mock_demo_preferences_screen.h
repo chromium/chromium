@@ -12,11 +12,15 @@
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class PrefService;
+
 namespace ash {
 
 class MockDemoPreferencesScreen : public DemoPreferencesScreen {
  public:
-  MockDemoPreferencesScreen(base::WeakPtr<DemoPreferencesScreenView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  MockDemoPreferencesScreen(PrefService* local_state,
+                            base::WeakPtr<DemoPreferencesScreenView> view,
                             const ScreenExitCallback& exit_callback);
 
   MockDemoPreferencesScreen(const MockDemoPreferencesScreen&) = delete;

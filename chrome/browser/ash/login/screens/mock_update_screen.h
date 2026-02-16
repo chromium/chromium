@@ -10,11 +10,15 @@
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class PrefService;
+
 namespace ash {
 
 class MockUpdateScreen : public UpdateScreen {
  public:
-  MockUpdateScreen(base::WeakPtr<UpdateView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  MockUpdateScreen(PrefService* local_state,
+                   base::WeakPtr<UpdateView> view,
                    ErrorScreen* error_screen,
                    const ScreenExitCallback& exit_callback);
   ~MockUpdateScreen() override;

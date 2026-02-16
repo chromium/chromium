@@ -11,9 +11,10 @@ using ::testing::_;
 using ::testing::AtLeast;
 
 MockEnableAdbSideloadingScreen::MockEnableAdbSideloadingScreen(
+    PrefService* local_state,
     base::WeakPtr<EnableAdbSideloadingScreenView> view,
     const base::RepeatingClosure& exit_callback)
-    : EnableAdbSideloadingScreen(std::move(view), exit_callback) {}
+    : EnableAdbSideloadingScreen(local_state, std::move(view), exit_callback) {}
 
 MockEnableAdbSideloadingScreen::~MockEnableAdbSideloadingScreen() = default;
 

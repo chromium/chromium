@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -61,9 +62,11 @@ std::string GuestTosScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-GuestTosScreen::GuestTosScreen(base::WeakPtr<GuestTosScreenView> view,
+GuestTosScreen::GuestTosScreen(PrefService* local_state,
+                               base::WeakPtr<GuestTosScreenView> view,
                                const ScreenExitCallback& exit_callback)
     : BaseScreen(GuestTosScreenView::kScreenId, OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
@@ -102,14 +105,10 @@ void GuestTosScreen::OnAccept(bool enable_usage_stats) {
     metrics::CrOSPreConsentMetricsManager::Get()->Disable();
   }
 
-  // TODO(crbug/1298249): Add browser tests to ensure that the feature is
-  // working.
-  PrefService* local_state = g_browser_process->local_state();
-
   // Store guest consent to local state so that correct metrics consent can be
   // loaded after browser restart.
-  local_state->SetBoolean(prefs::kOobeGuestMetricsEnabled, enable_usage_stats);
-  local_state->CommitPendingWrite(
+  local_state_->SetBoolean(prefs::kOobeGuestMetricsEnabled, enable_usage_stats);
+  local_state_->CommitPendingWrite(
       base::BindOnce(&GuestTosScreen::OnOobeGuestPrefWriteDone,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/scoped_guest_button_blocker.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -19,7 +20,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/common/pref_names.h"
@@ -152,9 +152,11 @@ void ResetScreen::CheckIfPowerwashAllowed(
       base::TimeDelta());
 }
 
-ResetScreen::ResetScreen(base::WeakPtr<ResetView> view,
+ResetScreen::ResetScreen(PrefService* local_state,
+                         base::WeakPtr<ResetView> view,
                          const base::RepeatingClosure& exit_callback)
     : BaseScreen(ResetView::kScreenId, OobeScreenPriority::SCREEN_RESET),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       exit_callback_(exit_callback),
       tpm_firmware_update_checker_(
@@ -206,9 +208,8 @@ void ResetScreen::ShowImpl() {
   }
 
   // Set availability of TPM firmware update.
-  PrefService* const prefs = g_browser_process->local_state();
   const bool tpm_firmware_update_requested =
-      prefs->HasPrefPath(prefs::kFactoryResetTPMFirmwareUpdateMode);
+      local_state_->HasPrefPath(prefs::kFactoryResetTPMFirmwareUpdateMode);
   if (tpm_firmware_update_requested) {
     // If an update has been requested previously, rely on the earlier update
     // availability test to initialize the dialog. This avoids a race condition
@@ -216,7 +217,7 @@ void ResetScreen::ShowImpl() {
     // init job to determine update availability has completed.
     view_->SetIsTpmFirmwareUpdateAvailable(true);
     SetTpmFirmwareUpdateMode(static_cast<tpm_firmware_update::Mode>(
-        prefs->GetInteger(prefs::kFactoryResetTPMFirmwareUpdateMode)));
+        local_state_->GetInteger(prefs::kFactoryResetTPMFirmwareUpdateMode)));
   } else {
     // If a TPM firmware update hasn't previously been requested, check the
     // system to see whether to offer the checkbox to update TPM firmware. Note
@@ -233,9 +234,9 @@ void ResetScreen::ShowImpl() {
 
   // Clear prefs so the reset screen isn't triggered again the next time the
   // device is about to show the login screen.
-  prefs->ClearPref(prefs::kFactoryResetRequested);
-  prefs->ClearPref(prefs::kFactoryResetTPMFirmwareUpdateMode);
-  prefs->CommitPendingWrite();
+  local_state_->ClearPref(prefs::kFactoryResetRequested);
+  local_state_->ClearPref(prefs::kFactoryResetTPMFirmwareUpdateMode);
+  local_state_->CommitPendingWrite();
 
   view_->Show();
 }
@@ -339,15 +340,15 @@ void ResetScreen::OnPowerwash() {
 }
 
 void ResetScreen::OnRestart() {
-  PrefService* prefs = g_browser_process->local_state();
-  prefs->SetBoolean(prefs::kFactoryResetRequested, true);
+  local_state_->SetBoolean(prefs::kFactoryResetRequested, true);
   if (is_tpm_firmware_update_checked_) {
-    prefs->SetInteger(prefs::kFactoryResetTPMFirmwareUpdateMode,
-                      static_cast<int>(tpm_firmware_update::Mode::kPowerwash));
+    local_state_->SetInteger(
+        prefs::kFactoryResetTPMFirmwareUpdateMode,
+        static_cast<int>(tpm_firmware_update::Mode::kPowerwash));
   } else {
-    prefs->ClearPref(prefs::kFactoryResetTPMFirmwareUpdateMode);
+    local_state_->ClearPref(prefs::kFactoryResetTPMFirmwareUpdateMode);
   }
-  prefs->CommitPendingWrite();
+  local_state_->CommitPendingWrite();
 
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_FOR_USER, "login reset screen restart");

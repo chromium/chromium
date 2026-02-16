@@ -10,11 +10,15 @@
 #include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class PrefService;
+
 namespace ash {
 
 class MockEnableAdbSideloadingScreen : public EnableAdbSideloadingScreen {
  public:
+  // `local_state` must be non-null and must outlive `this`.
   MockEnableAdbSideloadingScreen(
+      PrefService* local_state,
       base::WeakPtr<EnableAdbSideloadingScreenView> view,
       const base::RepeatingClosure& exit_callback);
   ~MockEnableAdbSideloadingScreen() override;

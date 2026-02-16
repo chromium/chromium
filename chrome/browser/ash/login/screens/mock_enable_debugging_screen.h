@@ -10,11 +10,15 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class PrefService;
+
 namespace ash {
 
 class MockEnableDebuggingScreen : public EnableDebuggingScreen {
  public:
-  MockEnableDebuggingScreen(base::WeakPtr<EnableDebuggingScreenView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  MockEnableDebuggingScreen(PrefService* local_state,
+                            base::WeakPtr<EnableDebuggingScreenView> view,
                             const base::RepeatingClosure& exit_callback);
   ~MockEnableDebuggingScreen() override;
 

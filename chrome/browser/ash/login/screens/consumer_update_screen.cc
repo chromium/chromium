@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
 #include "chrome/common/pref_names.h"
@@ -125,12 +125,14 @@ std::string ConsumerUpdateScreen::GetResultString(Result result) {
 }
 
 ConsumerUpdateScreen::ConsumerUpdateScreen(
+    PrefService* local_state,
     base::WeakPtr<ConsumerUpdateScreenView> view,
     ErrorScreen* error_screen,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(ConsumerUpdateScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
       OobeMojoBinder(this),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(exit_callback),
@@ -149,15 +151,13 @@ bool ConsumerUpdateScreen::MaybeSkip(WizardContext& context) {
   }
 
   // skip if consumer update applied in OOBE before restarting.
-  if (g_browser_process->local_state()->GetBoolean(
-          prefs::kOobeConsumerUpdateCompleted)) {
+  if (local_state_->GetBoolean(prefs::kOobeConsumerUpdateCompleted)) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
 
   // skip if critical update applied in OOBE.
-  if (g_browser_process->local_state()->GetBoolean(
-          prefs::kOobeCriticalUpdateCompleted)) {
+  if (local_state_->GetBoolean(prefs::kOobeCriticalUpdateCompleted)) {
     LOG(WARNING) << "Skip OOBE Consumer Update because a critical update was "
                     "applied during OOBE.";
     RecordOobeConsumerUpdateScreenSkippedReasonHistogram(
@@ -457,8 +457,7 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
                               ConsumerUpdateStep::kUpdateInProgress);
     }
     // Set consumer update complete for next reboot.
-    g_browser_process->local_state()->SetBoolean(
-        prefs::kOobeConsumerUpdateCompleted, true);
+    local_state_->SetBoolean(prefs::kOobeConsumerUpdateCompleted, true);
     wait_reboot_timer_.Start(FROM_HERE, wait_before_reboot_time_,
                              version_updater_.get(),
                              &VersionUpdater::RebootAfterUpdate);
@@ -511,8 +510,7 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
     case update_engine::Operation::NEED_PERMISSION_TO_UPDATE:
       break;
     case update_engine::Operation::UPDATED_NEED_REBOOT: {
-      g_browser_process->local_state()->SetBoolean(
-          prefs::kOobeConsumerUpdateCompleted, true);
+      local_state_->SetBoolean(prefs::kOobeConsumerUpdateCompleted, true);
 
       base::TimeDelta update_time = base::TimeTicks::Now() - screen_shown_time_;
       RecordUpdateEstimatorTime(update_time, estimate_update_time_left_);

@@ -9,12 +9,15 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -36,7 +39,9 @@ class ApplyOnlinePasswordScreen : public BaseOSAuthSetupScreen {
   static std::string GetResultString(Result result);
   using ScreenExitCallback = base::RepeatingCallback<void(Result)>;
 
-  ApplyOnlinePasswordScreen(base::WeakPtr<ApplyOnlinePasswordScreenView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  ApplyOnlinePasswordScreen(PrefService* local_state,
+                            base::WeakPtr<ApplyOnlinePasswordScreenView> view,
                             ScreenExitCallback exit_callback);
   ~ApplyOnlinePasswordScreen() override;
 
@@ -59,6 +64,8 @@ class ApplyOnlinePasswordScreen : public BaseOSAuthSetupScreen {
   void InspectContext(UserContext* user_context);
   void SetOnlinePassword();
   void OnOnlinePasswordSet(auth::mojom::ConfigureResult result);
+
+  const raw_ref<PrefService> local_state_;
 
   // Values obtained from UserContext in `InspectContext`
   std::optional<OnlinePassword> online_password_;

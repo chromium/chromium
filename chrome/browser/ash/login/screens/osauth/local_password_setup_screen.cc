@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
@@ -52,10 +52,12 @@ std::string LocalPasswordSetupScreen::GetResultString(Result result) {
 }
 
 LocalPasswordSetupScreen::LocalPasswordSetupScreen(
+    PrefService* local_state,
     base::WeakPtr<LocalPasswordSetupView> view,
     const ScreenExitCallback& exit_callback)
     : BaseOSAuthSetupScreen(LocalPasswordSetupView::kScreenId,
                             OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -105,7 +107,7 @@ void LocalPasswordSetupScreen::OnUserAction(const base::ListValue& args) {
     auth::mojom::PasswordFactorEditor& password_factor_editor =
         auth::GetPasswordFactorEditor(
             quick_unlock::QuickUnlockFactory::GetDelegate(),
-            g_browser_process->local_state());
+            &local_state_.get());
     switch (context()->knowledge_factor_setup.auth_setup_flow) {
       case WizardContext::AuthChangeFlow::kInitialSetup:
         password_factor_editor.SetLocalPassword(

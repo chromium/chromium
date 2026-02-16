@@ -7,9 +7,10 @@
 namespace ash {
 
 MockEnableDebuggingScreen::MockEnableDebuggingScreen(
+    PrefService* local_state,
     base::WeakPtr<EnableDebuggingScreenView> view,
     const base::RepeatingClosure& exit_callback)
-    : EnableDebuggingScreen(std::move(view), exit_callback) {}
+    : EnableDebuggingScreen(local_state, std::move(view), exit_callback) {}
 
 MockEnableDebuggingScreen::~MockEnableDebuggingScreen() = default;
 

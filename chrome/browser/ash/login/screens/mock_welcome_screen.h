@@ -13,11 +13,15 @@
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class PrefService;
+
 namespace ash {
 
 class MockWelcomeScreen : public WelcomeScreen {
  public:
-  MockWelcomeScreen(base::WeakPtr<WelcomeView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  MockWelcomeScreen(PrefService* local_state,
+                    base::WeakPtr<WelcomeView> view,
                     const WelcomeScreen::ScreenExitCallback& exit_callback);
 
   MockWelcomeScreen(const MockWelcomeScreen&) = delete;

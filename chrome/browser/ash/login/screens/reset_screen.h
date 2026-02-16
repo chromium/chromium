@@ -12,6 +12,7 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -19,6 +20,7 @@
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace ash {
 
@@ -37,7 +39,9 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
     kError,
   };
 
-  ResetScreen(base::WeakPtr<ResetView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  ResetScreen(PrefService* local_state,
+              base::WeakPtr<ResetView> view,
               const base::RepeatingClosure& exit_callback);
 
   ResetScreen(const ResetScreen&) = delete;
@@ -95,6 +99,8 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   void OnToggleRollback();
 
   void ShowHelpArticle(HelpAppLauncher::HelpTopic topic);
+
+  const raw_ref<PrefService> local_state_;
 
   base::WeakPtr<ResetView> view_;
   base::RepeatingClosure exit_callback_;

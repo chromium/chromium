@@ -12,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -95,10 +95,12 @@ std::string MarketingOptInScreen::GetResultString(Result result) {
 }
 
 MarketingOptInScreen::MarketingOptInScreen(
+    PrefService* local_state,
     base::WeakPtr<MarketingOptInScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(MarketingOptInScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
@@ -243,8 +245,8 @@ bool MarketingOptInScreen::IsCurrentUserManaged() {
 void MarketingOptInScreen::Initialize() {
   // Set the country to be used based on the timezone
   // and supported country list.
-  SetCountryFromTimezoneIfAvailable(g_browser_process->local_state()->GetString(
-      ::prefs::kSigninScreenTimezone));
+  SetCountryFromTimezoneIfAvailable(
+      local_state_->GetString(::prefs::kSigninScreenTimezone));
 
   // Only show the opt in option if this is a supported region, and if the user
   // never made a choice regarding emails.

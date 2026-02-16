@@ -8,9 +8,10 @@
 namespace ash {
 
 MockWelcomeScreen::MockWelcomeScreen(
+    PrefService* local_state,
     base::WeakPtr<WelcomeView> view,
     const WelcomeScreen::ScreenExitCallback& exit_callback)
-    : WelcomeScreen(std::move(view), exit_callback) {}
+    : WelcomeScreen(local_state, std::move(view), exit_callback) {}
 
 void MockWelcomeScreen::ExitScreen(Result result) {
   exit_callback()->Run(result);

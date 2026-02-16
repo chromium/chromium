@@ -8,10 +8,13 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -31,7 +34,9 @@ class LocalPasswordSetupScreen : public BaseOSAuthSetupScreen {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  LocalPasswordSetupScreen(base::WeakPtr<LocalPasswordSetupView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  LocalPasswordSetupScreen(PrefService* local_state,
+                           base::WeakPtr<LocalPasswordSetupView> view,
                            const ScreenExitCallback& exit_callback);
 
   LocalPasswordSetupScreen(const LocalPasswordSetupScreen&) = delete;
@@ -56,6 +61,8 @@ class LocalPasswordSetupScreen : public BaseOSAuthSetupScreen {
 
   void OnUpdateLocalPassword(auth::mojom::ConfigureResult result);
   void OnSetLocalPassword(auth::mojom::ConfigureResult result);
+
+  const raw_ref<PrefService> local_state_;
 
   base::WeakPtr<LocalPasswordSetupView> view_;
 

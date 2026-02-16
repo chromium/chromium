@@ -78,6 +78,7 @@ class UpdateScreenUnitTest : public testing::Test {
     network_handler_test_helper_->ConfigureWiFi(shill::kStateOnline);
 
     update_screen_ = std::make_unique<UpdateScreen>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         mock_view_.AsWeakPtr(), mock_error_screen_.get(),
         base::BindRepeating(&UpdateScreenUnitTest::HandleScreenExit,
                             base::Unretained(this)));

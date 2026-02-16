@@ -11,6 +11,7 @@
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -21,6 +22,8 @@
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
+
+class PrefService;
 
 namespace policy {
 struct AccountStatus;
@@ -54,7 +57,9 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  GaiaScreen(base::WeakPtr<TView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  GaiaScreen(PrefService* local_state,
+             base::WeakPtr<TView> view,
              const ScreenExitCallback& exit_callback);
 
   GaiaScreen(const GaiaScreen&) = delete;
@@ -107,6 +112,8 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   // `WizardContext::GaiaPath::kDefault`.
   void LoadOnlineGaiaForAccount(const AccountId& account,
                                 bool force_default_gaia_page = false);
+
+  const raw_ref<PrefService> local_state_;
 
   // Whether the QuickStart entry point visibility has already been determined.
   // This flag prevents duplicate histogram entries.

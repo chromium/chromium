@@ -8,11 +8,14 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/experiences/idle_detector/idle_detector.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -34,7 +37,10 @@ class OfflineLoginScreen
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  OfflineLoginScreen(base::WeakPtr<OfflineLoginView> view,
+
+  // `local_state` must be non-null and must outlive `this`.
+  OfflineLoginScreen(PrefService* local_state,
+                     base::WeakPtr<OfflineLoginView> view,
                      const ScreenExitCallback& exit_callback);
   ~OfflineLoginScreen() override;
 
@@ -59,6 +65,8 @@ class OfflineLoginScreen
 
   void OnGetAuthFactorsConfiguration(std::unique_ptr<UserContext> user_context,
                                      std::optional<AuthenticationError> error);
+
+  const raw_ref<PrefService> local_state_;
 
   // The editor is used to call `ListAuthFactors` to fetch password & pin factor
   // status. It does not change factor status.

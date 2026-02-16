@@ -8,8 +8,11 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -24,7 +27,10 @@ class DemoPreferencesScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  DemoPreferencesScreen(base::WeakPtr<DemoPreferencesScreenView> view,
+
+  // `local_state` must be non-null and must outlive `this`.
+  DemoPreferencesScreen(PrefService* local_stata,
+                        base::WeakPtr<DemoPreferencesScreenView> view,
                         const ScreenExitCallback& exit_callback);
 
   DemoPreferencesScreen(const DemoPreferencesScreen&) = delete;
@@ -43,6 +49,7 @@ class DemoPreferencesScreen : public BaseScreen {
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
  private:
+  const raw_ref<PrefService> local_state_;
   base::WeakPtr<DemoPreferencesScreenView> view_;
   ScreenExitCallback exit_callback_;
 };

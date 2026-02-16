@@ -393,7 +393,6 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
         metrics_service->GetCurrentUserMetricsConsent().has_value()) {
       is_enabled = *metrics_service->GetCurrentUserMetricsConsent();
     } else {
-      DCHECK(g_browser_process->local_state());
       is_enabled = StatsReportingController::Get()->IsEnabled();
     }
 

@@ -8,9 +8,12 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -18,7 +21,9 @@ namespace ash {
 // debugging screen to users.
 class EnableDebuggingScreen : public BaseScreen {
  public:
-  EnableDebuggingScreen(base::WeakPtr<EnableDebuggingScreenView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  EnableDebuggingScreen(PrefService* local_state,
+                        base::WeakPtr<EnableDebuggingScreenView> view,
                         const base::RepeatingClosure& exit_callback);
 
   EnableDebuggingScreen(const EnableDebuggingScreen&) = delete;
@@ -61,6 +66,8 @@ class EnableDebuggingScreen : public BaseScreen {
   void OnRemoveRootfsVerification(bool success);
 
   void UpdateUIState(EnableDebuggingScreenView::UIState state);
+
+  const raw_ref<PrefService> local_state_;
 
   base::WeakPtr<EnableDebuggingScreenView> view_;
   base::RepeatingClosure exit_callback_;

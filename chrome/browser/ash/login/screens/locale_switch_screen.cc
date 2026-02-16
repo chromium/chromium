@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/time/time.h"
@@ -177,9 +178,11 @@ std::string LocaleSwitchScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-LocaleSwitchScreen::LocaleSwitchScreen(base::WeakPtr<LocaleSwitchView> view,
+LocaleSwitchScreen::LocaleSwitchScreen(PrefService* local_state,
+                                       base::WeakPtr<LocaleSwitchView> view,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(LocaleSwitchView::kScreenId, OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -193,11 +196,10 @@ bool LocaleSwitchScreen::MaybeSkip(WizardContext& wizard_context) {
 
   // Skip GAIA language sync if user specifically set language through the UI
   // on the welcome screen.
-  PrefService* local_state = g_browser_process->local_state();
-  if (local_state->GetBoolean(prefs::kOobeLocaleChangedOnWelcomeScreen)) {
+  if (local_state_->GetBoolean(prefs::kOobeLocaleChangedOnWelcomeScreen)) {
     VLOG(1) << "Skipping GAIA language sync because user chose specific"
             << " locale on the Welcome Screen.";
-    local_state->ClearPref(prefs::kOobeLocaleChangedOnWelcomeScreen);
+    local_state_->ClearPref(prefs::kOobeLocaleChangedOnWelcomeScreen);
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }

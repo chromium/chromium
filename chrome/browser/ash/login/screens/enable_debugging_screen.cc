@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_web_dialog.h"
@@ -36,10 +36,12 @@ constexpr char kUserActionRemoveRootFSProtection[] = "removeRootFSProtection";
 }  // namespace
 
 EnableDebuggingScreen::EnableDebuggingScreen(
+    PrefService* local_state,
     base::WeakPtr<EnableDebuggingScreenView> view,
     const base::RepeatingClosure& exit_callback)
     : BaseScreen(EnableDebuggingScreenView::kScreenId,
                  OobeScreenPriority::SCREEN_DEVICE_DEVELOPER_MODIFICATION),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
@@ -108,9 +110,8 @@ void EnableDebuggingScreen::OnRemoveRootfsVerification(bool success) {
     return;
   }
 
-  PrefService* prefs = g_browser_process->local_state();
-  prefs->SetBoolean(prefs::kDebuggingFeaturesRequested, true);
-  prefs->CommitPendingWrite();
+  local_state_->SetBoolean(prefs::kDebuggingFeaturesRequested, true);
+  local_state_->CommitPendingWrite();
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER,
       "login debugging screen removing rootfs verification");
@@ -201,9 +202,8 @@ void EnableDebuggingScreen::UpdateUIState(
   if (state == EnableDebuggingScreenView::kUIStateSetup ||
       state == EnableDebuggingScreenView::kUIStateError ||
       state == EnableDebuggingScreenView::kUIStateDone) {
-    PrefService* prefs = g_browser_process->local_state();
-    prefs->ClearPref(prefs::kDebuggingFeaturesRequested);
-    prefs->CommitPendingWrite();
+    local_state_->ClearPref(prefs::kDebuggingFeaturesRequested);
+    local_state_->CommitPendingWrite();
   }
   if (view_)
     view_->UpdateUIState(state);

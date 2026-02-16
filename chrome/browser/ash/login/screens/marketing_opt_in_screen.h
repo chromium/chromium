@@ -11,10 +11,13 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "components/prefs/pref_change_registrar.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -53,7 +56,9 @@ class MarketingOptInScreen : public BaseScreen {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  MarketingOptInScreen(base::WeakPtr<MarketingOptInScreenView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  MarketingOptInScreen(PrefService* local_state,
+                       base::WeakPtr<MarketingOptInScreenView> view,
                        const ScreenExitCallback& exit_callback);
 
   MarketingOptInScreen(const MarketingOptInScreen&) = delete;
@@ -106,6 +111,8 @@ class MarketingOptInScreen : public BaseScreen {
   bool IsDefaultOptInCountry() {
     return default_opt_in_countries_.count(country_);
   }
+
+  const raw_ref<PrefService> local_state_;
 
   base::WeakPtr<MarketingOptInScreenView> view_;
   ScreenExitCallback exit_callback_;

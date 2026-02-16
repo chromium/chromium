@@ -8,9 +8,10 @@
 namespace ash {
 
 MockDemoPreferencesScreen::MockDemoPreferencesScreen(
+    PrefService* local_state,
     base::WeakPtr<DemoPreferencesScreenView> view,
     const ScreenExitCallback& exit_callback)
-    : DemoPreferencesScreen(std::move(view), exit_callback) {}
+    : DemoPreferencesScreen(local_state, std::move(view), exit_callback) {}
 
 MockDemoPreferencesScreen::~MockDemoPreferencesScreen() = default;
 

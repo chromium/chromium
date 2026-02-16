@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -40,7 +40,8 @@ constexpr char kUserActionReloadGaia[] = "reloadGaia";
 constexpr char kUserActionEnterIdentifier[] = "identifierEntered";
 constexpr char kUserActionQuickStartButtonClicked[] = "activateQuickStart";
 
-bool ShouldPrepareForRecovery(const AccountId& account_id) {
+bool ShouldPrepareForRecovery(PrefService& local_state,
+                              const AccountId& account_id) {
   if (!account_id.is_valid()) {
     return false;
   }
@@ -58,7 +59,7 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
       static_cast<int>(ReauthReason::kCryptohomeRecovery),
       static_cast<int>(ReauthReason::kOther),
   };
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   std::optional<int> reauth_reason = known_user.FindReauthReason(account_id);
   return reauth_reason.has_value() &&
          std::ranges::contains(kPossibleReasons, reauth_reason.value());
@@ -93,9 +94,11 @@ std::string GaiaScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-GaiaScreen::GaiaScreen(base::WeakPtr<TView> view,
+GaiaScreen::GaiaScreen(PrefService* local_state,
+                       base::WeakPtr<TView> view,
                        const ScreenExitCallback& exit_callback)
     : BaseScreen(GaiaView::kScreenId, OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       auth_factor_editor_(UserDataAuthClient::Get()),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
@@ -385,7 +388,8 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
     screen_mode = WizardContext::GaiaScreenMode::kDefault;
   }
 
-  if (ShouldPrepareForRecovery(account_id) && is_recovery_configured) {
+  if (ShouldPrepareForRecovery(local_state_.get(), account_id) &&
+      is_recovery_configured) {
     FetchGaiaReauthToken(account_id);
   } else {
     view_->LoadGaiaAsync(account_id);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/offline_login_screen.h"
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -75,9 +76,11 @@ std::string OfflineLoginScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-OfflineLoginScreen::OfflineLoginScreen(base::WeakPtr<OfflineLoginView> view,
+OfflineLoginScreen::OfflineLoginScreen(PrefService* local_state,
+                                       base::WeakPtr<OfflineLoginView> view,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(OfflineLoginView::kScreenId, OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       auth_factor_editor_(UserDataAuthClient::Get()),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
@@ -144,7 +147,7 @@ void OfflineLoginScreen::HandleTryLoadOnlineLogin() {
 void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
                                             const std::string& password) {
   const std::string sanitized_email = gaia::SanitizeEmail(email);
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   const AccountId account_id = known_user.GetAccountId(
       sanitized_email, std::string() /* id */, AccountType::UNKNOWN);
   const user_manager::User* user =
@@ -187,7 +190,7 @@ void OfflineLoginScreen::HandleEmailSubmitted(const std::string& email) {
 
   bool offline_limit_expired = false;
   const std::string sanitized_email = gaia::SanitizeEmail(email);
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   const AccountId account_id = known_user.GetAccountId(
       sanitized_email, std::string(), AccountType::UNKNOWN);
   const std::optional<base::TimeDelta> offline_signin_interval =

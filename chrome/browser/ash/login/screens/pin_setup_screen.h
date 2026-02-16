@@ -17,6 +17,8 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 
+class PrefService;
+
 namespace ash {
 
 class PinSetupScreenView;
@@ -70,7 +72,10 @@ class PinSetupScreen : public BaseScreen {
   SetForceNoSkipBecauseOfPolicyForTests(bool value);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
+
+  // `local_state` must be non-null and must outlive `this`.
+  PinSetupScreen(PrefService* local_state,
+                 base::WeakPtr<PinSetupScreenView> view,
                  const ScreenExitCallback& exit_callback);
 
   PinSetupScreen(const PinSetupScreen&) = delete;

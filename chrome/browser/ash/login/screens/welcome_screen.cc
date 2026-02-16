@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -197,9 +198,11 @@ std::string WelcomeScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-WelcomeScreen::WelcomeScreen(base::WeakPtr<WelcomeView> view,
+WelcomeScreen::WelcomeScreen(PrefService* local_state,
+                             base::WeakPtr<WelcomeView> view,
                              const ScreenExitCallback& exit_callback)
     : BaseScreen(WelcomeView::kScreenId, OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
   input_method::InputMethodManager::Get()->AddObserver(this);
@@ -286,8 +289,7 @@ void WelcomeScreen::SetApplicationLocale(const std::string& locale,
   if (is_from_ui) {
     // Write into the local state to save data about locale changes in case of
     // reboot of device after forced update.
-    PrefService* local_state = g_browser_process->local_state();
-    local_state->SetBoolean(prefs::kOobeLocaleChangedOnWelcomeScreen, true);
+    local_state_->SetBoolean(prefs::kOobeLocaleChangedOnWelcomeScreen, true);
   }
 }
 
@@ -338,7 +340,7 @@ void WelcomeScreen::SetDeviceRequisition(const std::string& requisition) {
 
   if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     // CfM devices default to static timezone.
-    g_browser_process->local_state()->SetInteger(
+    local_state_->SetInteger(
         ::prefs::kResolveDeviceTimezoneByGeolocationMethod,
         static_cast<int>(
             system::TimeZoneResolverManager::TimeZoneResolveMethod::DISABLED));
@@ -369,8 +371,8 @@ void WelcomeScreen::ShowImpl() {
   // resources. This would load fallback, but properly show "selected" locale
   // in the UI.
   if (selected_language_code_.empty()) {
-    std::string stored_locale = g_browser_process->local_state()->GetString(
-        language::prefs::kApplicationLocale);
+    std::string stored_locale =
+        local_state_->GetString(language::prefs::kApplicationLocale);
 
     if (!stored_locale.empty()) {
       SetApplicationLocale(stored_locale,
@@ -384,8 +386,7 @@ void WelcomeScreen::ShowImpl() {
   }
 
   // TODO(crbug.com/1105387): Part of initial screen logic.
-  PrefService* prefs = g_browser_process->local_state();
-  if (prefs->GetBoolean(::prefs::kDebuggingFeaturesRequested)) {
+  if (local_state_->GetBoolean(::prefs::kDebuggingFeaturesRequested)) {
     OnEnableDebugging();
     return;
   }
@@ -631,8 +632,8 @@ void WelcomeScreen::OnLanguageChangedCallback(
     // We still do not have device owner, so owner settings are not applied.
     // But Guest session can be started before owner is created, so we need to
     // save locale settings directly here.
-    g_browser_process->local_state()->SetString(
-        language::prefs::kApplicationLocale, selected_language_code_);
+    local_state_->SetString(language::prefs::kApplicationLocale,
+                            selected_language_code_);
   }
   ScheduleResolveLanguageList(
       std::make_unique<locale_util::LanguageSwitchResult>(result));
@@ -667,8 +668,8 @@ void WelcomeScreen::OnLanguageListResolved(
 
   selected_language_code_ = new_selected_language;
 
-  g_browser_process->local_state()->SetString(
-      language::prefs::kApplicationLocale, selected_language_code_);
+  local_state_->SetString(language::prefs::kApplicationLocale,
+                          selected_language_code_);
   if (view_)
     view_->SetLanguageList(std::move(new_language_list));
   for (auto& observer : observers_)
@@ -742,10 +743,9 @@ void WelcomeScreen::OnQuickStartClicked() {
 }
 
 void WelcomeScreen::Exit(Result result) const {
-  PrefService* local_state = g_browser_process->local_state();
   base::UmaHistogramBoolean(
       kWelcomeScreenLocaleChangeMetric,
-      local_state->GetBoolean(prefs::kOobeLocaleChangedOnWelcomeScreen));
+      local_state_->GetBoolean(prefs::kOobeLocaleChangedOnWelcomeScreen));
   exit_callback_.Run(result);
 }
 

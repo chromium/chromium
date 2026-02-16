@@ -8,12 +8,15 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/auth/cryptohome_pin_engine.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -31,7 +34,9 @@ class CryptohomeRecoverySetupScreen : public BaseScreen {
   static std::string GetResultString(Result result);
   using ScreenExitCallback = base::RepeatingCallback<void(Result)>;
 
+  // `local_state` must be non-null and must outlive `this`.
   CryptohomeRecoverySetupScreen(
+      PrefService* local_state,
       base::WeakPtr<CryptohomeRecoverySetupScreenView> view,
       ScreenExitCallback exit_callback);
   ~CryptohomeRecoverySetupScreen() override;
@@ -56,6 +61,9 @@ class CryptohomeRecoverySetupScreen : public BaseScreen {
   void SetupRecovery();
   void ExitScreen(WizardContext& wizard_context, Result result);
   void OnRecoveryConfigured(auth::mojom::ConfigureResult result);
+
+  const raw_ref<PrefService> local_state_;
+
   base::WeakPtr<CryptohomeRecoverySetupScreenView> view_ = nullptr;
   ScreenExitCallback exit_callback_;
   AuthPerformer auth_performer_;

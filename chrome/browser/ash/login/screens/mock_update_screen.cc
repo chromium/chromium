@@ -10,10 +10,11 @@ using ::testing::AtLeast;
 using ::testing::_;
 
 MockUpdateScreen::MockUpdateScreen(
+    PrefService* local_state,
     base::WeakPtr<UpdateView> view,
     ErrorScreen* error_screen,
     const UpdateScreen::ScreenExitCallback& exit_callback)
-    : UpdateScreen(std::move(view), error_screen, exit_callback) {}
+    : UpdateScreen(local_state, std::move(view), error_screen, exit_callback) {}
 
 MockUpdateScreen::~MockUpdateScreen() = default;
 

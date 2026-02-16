@@ -5,8 +5,11 @@
 #include "chrome/browser/ash/login/screens/update_screen.h"
 
 #include <algorithm>
+#include <string_view>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
@@ -22,7 +25,6 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -65,6 +67,12 @@ const double kInsufficientBatteryPercent = 50;
 constexpr char kQuickStartTestForcedUpdateSwitch[] =
     "quick-start-test-forced-update";
 
+// EU country list.
+constexpr auto kEUCountriesSet = base::MakeFixedFlatSet<std::string_view>(
+    {"at", "be", "bg", "hr", "cy", "cz", "dk", "ee", "fi",
+     "fr", "de", "gr", "hu", "ie", "it", "lv", "lt", "lu",
+     "mt", "nl", "pl", "pt", "ro", "sk", "si", "es", "se"});
+
 void RecordDownloadingTime(base::TimeDelta duration) {
   base::UmaHistogramLongTimes("OOBE.UpdateScreen.UpdateDownloadingTime",
                               duration);
@@ -100,6 +108,16 @@ void RecordUpdateCheckTimeout(bool timeout) {
   base::UmaHistogramBoolean("OOBE.UpdateScreen.CheckTimeout", timeout);
 }
 
+// Determines if the device is in EU zone to show info about opt out.
+bool CheckIfOptOutIsEnabled(PrefService& local_state) {
+  auto country = system::GetCountryCodeFromTimezoneIfAvailable(
+      local_state.GetString(::prefs::kSigninScreenTimezone));
+  if (!country.has_value()) {
+    return false;
+  }
+  return kEUCountriesSet.contains(country.value());
+}
+
 }  // namespace
 
 // static
@@ -120,10 +138,12 @@ std::string UpdateScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-UpdateScreen::UpdateScreen(base::WeakPtr<UpdateView> view,
+UpdateScreen::UpdateScreen(PrefService* local_state,
+                           base::WeakPtr<UpdateView> view,
                            ErrorScreen* error_screen,
                            const ScreenExitCallback& exit_callback)
     : BaseScreen(UpdateView::kScreenId, OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(exit_callback),
@@ -159,7 +179,7 @@ bool UpdateScreen::MaybeSkip(WizardContext& context) {
 }
 
 void UpdateScreen::ShowImpl() {
-  is_opt_out_enabled_ = CheckIfOptOutIsEnabled();
+  is_opt_out_enabled_ = CheckIfOptOutIsEnabled(local_state_.get());
   // AccessibilityManager::Get() can be nullptr in unittests.
   if (AccessibilityManager::Get()) {
     AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
@@ -326,8 +346,7 @@ void UpdateScreen::UpdateInfoChanged(
     did_prepare_quick_start_for_update_ = true;
     view_->SetUpdateState(UpdateView::UIState::kUpdateInProgress);
     // Set that critical update applied in OOBE.
-    g_browser_process->local_state()->SetBoolean(
-        prefs::kOobeCriticalUpdateCompleted, true);
+    local_state_->SetBoolean(prefs::kOobeCriticalUpdateCompleted, true);
     wait_reboot_timer_.Start(FROM_HERE, wait_before_reboot_time_,
                              version_updater_.get(),
                              &VersionUpdater::RebootAfterUpdate);
@@ -411,8 +430,7 @@ void UpdateScreen::UpdateInfoChanged(
       if (view_)
         view_->SetUpdateState(UpdateView::UIState::kUpdateInProgress);
       // set that critical update applied in OOBE.
-      g_browser_process->local_state()->SetBoolean(
-          prefs::kOobeCriticalUpdateCompleted, true);
+      local_state_->SetBoolean(prefs::kOobeCriticalUpdateCompleted, true);
       SetUpdateStatusMessage(update_info.better_update_progress,
                              update_info.total_time_left);
       // Make sure that VERIFYING and FINALIZING stages are recorded correctly.
@@ -581,17 +599,6 @@ void UpdateScreen::OnAccessibilityStatusChanged(
 void UpdateScreen::OnErrorScreenHidden() {
   error_screen_->SetParentScreen(OOBE_SCREEN_UNKNOWN);
   Show(context());
-}
-
-// static
-bool UpdateScreen::CheckIfOptOutIsEnabled() {
-  auto country = system::GetCountryCodeFromTimezoneIfAvailable(
-      g_browser_process->local_state()->GetString(
-          ::prefs::kSigninScreenTimezone));
-  if (!country.has_value()) {
-    return false;
-  }
-  return kEUCountriesSet.contains(country.value());
 }
 
 }  // namespace ash

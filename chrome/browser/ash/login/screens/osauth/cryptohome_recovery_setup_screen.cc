@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
@@ -50,16 +50,16 @@ std::string CryptohomeRecoverySetupScreen::GetResultString(Result result) {
 }
 
 CryptohomeRecoverySetupScreen::CryptohomeRecoverySetupScreen(
+    PrefService* local_state,
     base::WeakPtr<CryptohomeRecoverySetupScreenView> view,
     ScreenExitCallback exit_callback)
     : BaseScreen(CryptohomeRecoverySetupScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       exit_callback_(std::move(exit_callback)),
       auth_performer_(UserDataAuthClient::Get()),
-      // TODO(crbug.com/404133029): Remove g_browser_process usage.
-      cryptohome_pin_engine_(g_browser_process->local_state(),
-                             &auth_performer_) {}
+      cryptohome_pin_engine_(&local_state_.get(), &auth_performer_) {}
 
 CryptohomeRecoverySetupScreen::~CryptohomeRecoverySetupScreen() = default;
 
@@ -107,8 +107,7 @@ void CryptohomeRecoverySetupScreen::SetupRecovery() {
   CHECK(context()->extra_factors_token.has_value());
   token = context()->extra_factors_token.value();
   auto& recovery_editor = auth::GetRecoveryFactorEditor(
-      quick_unlock::QuickUnlockFactory::GetDelegate(),
-      g_browser_process->local_state());
+      quick_unlock::QuickUnlockFactory::GetDelegate(), &local_state_.get());
   recovery_editor.Configure(
       token, /*enabled=*/true,
       base::BindOnce(&CryptohomeRecoverySetupScreen::OnRecoveryConfigured,

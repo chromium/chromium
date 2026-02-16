@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
 
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
 #include "chrome/common/pref_names.h"
@@ -45,10 +45,12 @@ void LogEvent(AdbSideloadingPromptEvent action) {
 }  // namespace
 
 EnableAdbSideloadingScreen::EnableAdbSideloadingScreen(
+    PrefService* local_state,
     base::WeakPtr<EnableAdbSideloadingScreenView> view,
     const base::RepeatingClosure& exit_callback)
     : BaseScreen(EnableAdbSideloadingScreenView::kScreenId,
                  OobeScreenPriority::SCREEN_DEVICE_DEVELOPER_MODIFICATION),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -87,9 +89,8 @@ void EnableAdbSideloadingScreen::OnQueryAdbSideload(
            << ", enabled=" << enabled;
 
   // Clear prefs so that the screen won't be triggered again.
-  PrefService* prefs = g_browser_process->local_state();
-  prefs->ClearPref(prefs::kEnableAdbSideloadingRequested);
-  prefs->CommitPendingWrite();
+  local_state_->ClearPref(prefs::kEnableAdbSideloadingRequested);
+  local_state_->CommitPendingWrite();
 
   if (enabled) {
     DCHECK_EQ(response_code,

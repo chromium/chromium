@@ -7,12 +7,11 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 
-#include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -21,6 +20,8 @@
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+
+class PrefService;
 
 namespace base {
 class TickClock;
@@ -69,7 +70,9 @@ class UpdateScreen : public BaseScreen,
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  UpdateScreen(base::WeakPtr<UpdateView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  UpdateScreen(PrefService* local_state,
+               base::WeakPtr<UpdateView> view,
                ErrorScreen* error_screen,
                const ScreenExitCallback& exit_callback);
 
@@ -167,8 +170,7 @@ class UpdateScreen : public BaseScreen,
   // Set update status message.
   void SetUpdateStatusMessage(int percent, base::TimeDelta time_left);
 
-  // Determines if the device is in EU zone to show info about opt out.
-  static bool CheckIfOptOutIsEnabled();
+  const raw_ref<PrefService> local_state_;
 
   base::WeakPtr<UpdateView> view_;
   raw_ptr<ErrorScreen> error_screen_;
@@ -200,13 +202,6 @@ class UpdateScreen : public BaseScreen,
   // Whether Quick Start was notified of an update. True for users who
   // previously started Quick Start and will install an update.
   bool did_prepare_quick_start_for_update_ = false;
-
-  // EU country list.
-  inline static constexpr auto kEUCountriesSet =
-      base::MakeFixedFlatSet<std::string_view>(
-          {"at", "be", "bg", "hr", "cy", "cz", "dk", "ee", "fi",
-           "fr", "de", "gr", "hu", "ie", "it", "lv", "lt", "lu",
-           "mt", "nl", "pl", "pt", "ro", "sk", "si", "es", "se"});
 
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
