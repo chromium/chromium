@@ -11,8 +11,9 @@
 namespace blink {
 
 CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::ImageProviderImpl(
-    CanvasSnapshotProvider::Info info)
-    : info_(info) {}
+    bool is_f16,
+    const gfx::ColorSpace& color_space)
+    : is_f16_(is_f16), color_space_(color_space) {}
 
 cc::ImageProvider::ScopedResult
 CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::GetRasterContent(
@@ -29,12 +30,12 @@ CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::GetRasterContent(
 
   // To decode high bit depth image source to half float backed image, we need
   // to sniff the image bit depth here to avoid double decoding.
-  auto target_color_type = (info_.format == viz::SinglePlaneFormat::kRGBA_F16 &&
-                            draw_image.paint_image().is_high_bit_depth())
-                               ? kRGBA_F16_SkColorType
-                               : kN32_SkColorType;
+  auto target_color_type =
+      (is_f16_ && draw_image.paint_image().is_high_bit_depth())
+          ? kRGBA_F16_SkColorType
+          : kN32_SkColorType;
   cc::TargetColorParams target_color_params;
-  target_color_params.color_space = info_.color_space;
+  target_color_params.color_space = color_space_;
 
   return cc::PlaybackImageProvider(
              &Image::SharedCCDecodeCache(target_color_type),
@@ -84,7 +85,9 @@ CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
     return nullptr;
   }
 
-  ImageProviderImpl image_provider(info_);
+  ImageProviderImpl image_provider(
+      GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16,
+      GetColorSpace());
   cc::SkiaPaintCanvas canvas(surface->getCanvas(), &image_provider);
   draw_callback(canvas);
 

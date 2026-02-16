@@ -46,7 +46,7 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
 
   class ImageProviderImpl : public cc::ImageProvider {
    public:
-    explicit ImageProviderImpl(CanvasSnapshotProvider::Info info);
+    ImageProviderImpl(bool is_f16, const gfx::ColorSpace& color_space);
     ~ImageProviderImpl() override = default;
 
     // cc::ImageProvider:
@@ -54,7 +54,8 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
         const cc::DrawImage& draw_image) override;
 
    private:
-    const CanvasSnapshotProvider::Info info_;
+    bool is_f16_;
+    gfx::ColorSpace color_space_;
   };
 
   const CanvasSnapshotProvider::Info info_;
