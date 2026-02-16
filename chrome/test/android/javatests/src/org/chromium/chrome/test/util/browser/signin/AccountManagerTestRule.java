@@ -95,6 +95,7 @@ public class AccountManagerTestRule implements TestRule {
     /** Removes an account with the given {@link CoreAccountId}. */
     public void removeAccount(CoreAccountId accountId) {
         mFakeAccountManagerFacade.removeAccount(accountId);
+        mFakeIdentityManager.removeAccount(accountId);
     }
 
     public void setAccountFetchFailed() {

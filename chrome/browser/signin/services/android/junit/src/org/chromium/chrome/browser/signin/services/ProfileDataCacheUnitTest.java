@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.signin.services;
 
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,6 +23,8 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 
 /** Unit tests for {@link ProfileDataCache} */
@@ -29,7 +35,9 @@ public class ProfileDataCacheUnitTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(
+                    spy(new FakeAccountManagerFacade()), spy(new FakeIdentityManager()));
 
     @Mock private ProfileDataCache.Observer mObserverMock;
 
@@ -211,5 +219,83 @@ public class ProfileDataCacheUnitTest {
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         Assert.assertFalse(mProfileDataCache.getAccounts().getResult().isEmpty());
+    }
+
+    @Test
+    public void getAccountsShouldReturnAccountsInGivenOrder() {
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        var profileData = mProfileDataCache.getAccounts().getResult();
+        Assert.assertEquals(3, profileData.size());
+        Assert.assertEquals(TestAccounts.ACCOUNT2.getEmail(), profileData.get(0).getAccountEmail());
+        Assert.assertEquals(
+                TestAccounts.CHILD_ACCOUNT.getEmail(), profileData.get(1).getAccountEmail());
+        Assert.assertEquals(TestAccounts.ACCOUNT1.getEmail(), profileData.get(2).getAccountEmail());
+    }
+
+    @Test
+    public void cacheShouldBeUpdatedWhenAccountIsRemoved() {
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+
+        Assert.assertEquals(2, mProfileDataCache.getAccounts().getResult().size());
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT1.getEmail(),
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getAccountEmail());
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT2.getEmail(),
+                mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountEmail());
+
+        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        Assert.assertEquals(1, mProfileDataCache.getAccounts().getResult().size());
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT2.getEmail(),
+                mProfileDataCache.getAccounts().getResult().get(0).getAccountEmail());
+        Assert.assertThrows(
+                IllegalArgumentException.class,
+                () -> mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()));
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT2.getEmail(),
+                mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountEmail());
+    }
+
+    @Test
+    public void givenCachedAccountWhenGetByIdThenReturnCachedAccountWithoutFallback() {
+        var accountInfo = TestAccounts.ACCOUNT1;
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(accountInfo);
+
+        verify(mAccountManagerTestRule.getAccountManagerFacade(), times(2)).getAccounts();
+        DisplayableProfileData cachedProfileData = mProfileDataCache.getById(accountInfo.getId());
+        verify(mAccountManagerTestRule.getAccountManagerFacade(), times(2)).getAccounts();
+        Assert.assertEquals(accountInfo.getEmail(), cachedProfileData.getAccountEmail());
+        Assert.assertEquals(accountInfo.getFullName(), cachedProfileData.getFullName());
+        Assert.assertEquals(accountInfo.getGivenName(), cachedProfileData.getGivenName());
+    }
+
+    /**
+     * TODO(https://crbug.com/483627535): Remove this test after full migration to IdentityManager.
+     */
+    @Test
+    public void
+            givenEmptyCacheWhenGetByIdThenShouldFallbackToAccountManagerAndReturnDefaultProfileData() {
+        var accountInfo = TestAccounts.ACCOUNT1;
+        mAccountManagerTestRule.addAccount(accountInfo); // lack of observer cause not cache updated
+        mAccountManagerTestRule.getIdentityManager().removeAccount(accountInfo.getId());
+
+        DisplayableProfileData cachedProfileData = mProfileDataCache.getById(accountInfo.getId());
+        Assert.assertEquals(accountInfo.getEmail(), cachedProfileData.getAccountEmail());
+        Assert.assertNull(cachedProfileData.getFullName());
+        Assert.assertNull(cachedProfileData.getGivenName());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void givenUnknownAccountIdWhenGetByIdThenShouldThrowException() {
+        mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
     }
 }
