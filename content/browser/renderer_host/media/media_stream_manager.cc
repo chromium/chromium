@@ -123,6 +123,11 @@ using ::blink::mojom::MediaStreamType;
 using ::blink::mojom::StreamSelectionInfo;
 using ::blink::mojom::StreamSelectionInfoPtr;
 
+// If enabled, the device name is also used when comparing devices in
+// FindExistingRequestedDevice.
+BASE_FEATURE(kEnumerateDevicesUseNameInDeviceComparison,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 // Turns off available audio effects (removes the flag) if the options
 // explicitly turn them off.
@@ -3000,8 +3005,12 @@ bool MediaStreamManager::FindExistingRequestedDevice(
             continue;
           }
           const blink::MediaStreamDevice& device = device_ptr->value();
-          const bool is_same_device =
+          bool is_same_device =
               device.id == hashed_source_id && device.type == new_device.type;
+          if (base::FeatureList::IsEnabled(
+                  kEnumerateDevicesUseNameInDeviceComparison)) {
+            is_same_device = is_same_device && device.name == new_device.name;
+          }
           // If `audio_stream_selection_info` is `search_only_by_device_id`, the
           // search is performed only based on the `device.id`. If, however,
           // `audio_stream_selection_info` is `session_id_map`, the
