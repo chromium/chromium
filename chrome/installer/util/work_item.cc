@@ -8,7 +8,7 @@
 
 #include "base/check_op.h"
 #include "chrome/installer/util/callback_work_item.h"
-#include "chrome/installer/util/conditional_work_item_list.h"
+#include "chrome/installer/util/conditional_work_item.h"
 #include "chrome/installer/util/copy_tree_work_item.h"
 #include "chrome/installer/util/create_dir_work_item.h"
 #include "chrome/installer/util/create_reg_key_work_item.h"
@@ -128,8 +128,12 @@ WorkItemList* WorkItem::CreateWorkItemList() {
   return new WorkItemList();
 }
 
-WorkItemList* WorkItem::CreateConditionalWorkItemList(Condition* condition) {
-  return new ConditionalWorkItemList(condition);
+WorkItem* WorkItem::CreateConditionalWorkItem(
+    std::unique_ptr<Condition> condition,
+    std::unique_ptr<WorkItem> if_item,
+    std::unique_ptr<WorkItem> else_item) {
+  return new ConditionalWorkItem(std::move(condition), std::move(if_item),
+                                 std::move(else_item));
 }
 
 bool WorkItem::Do() {

@@ -53,7 +53,7 @@
 #include "chrome/installer/setup/update_active_setup_version_work_item.h"
 #include "chrome/installer/util/app_command.h"
 #include "chrome/installer/util/callback_work_item.h"
-#include "chrome/installer/util/conditional_work_item_list.h"
+#include "chrome/installer/util/conditional_work_item.h"
 #include "chrome/installer/util/create_reg_key_work_item.h"
 #include "chrome/installer/util/firewall_manager_win.h"
 #include "chrome/installer/util/google_update_constants.h"
@@ -767,10 +767,9 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
   // We update the 'opv' value with the current version that is active,
   // the 'cpv' value with the critical update version (if present), and the
   // 'cmd' value with the rename command to run.
+  std::unique_ptr<WorkItemList> in_use_update_work_items;
   {
-    std::unique_ptr<WorkItemList> in_use_update_work_items(
-        WorkItem::CreateConditionalWorkItemList(
-            new ConditionRunIfFileExists(new_chrome_exe)));
+    in_use_update_work_items.reset(WorkItem::CreateWorkItemList());
     in_use_update_work_items->set_log_message("InUseUpdateWorkItemList");
 
     // |critical_version| will be valid only if this in-use update includes a
@@ -828,15 +827,12 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
         src_path.Append(kChromeProxyExe),
         target_path.Append(kChromeProxyNewExe), temp_path,
         WorkItem::ALWAYS_MOVE);
-
-    post_install_task_list->AddWorkItem(in_use_update_work_items.release());
   }
 
   // Append work items that will be executed if this was NOT an in-use update.
+  std::unique_ptr<WorkItemList> regular_update_work_items;
   {
-    std::unique_ptr<WorkItemList> regular_update_work_items(
-        WorkItem::CreateConditionalWorkItemList(
-            new Not(new ConditionRunIfFileExists(new_chrome_exe))));
+    regular_update_work_items.reset(WorkItem::CreateWorkItemList());
     regular_update_work_items->set_log_message("RegularUpdateWorkItemList");
 
     // If a channel was specified by policy, update the "channel" registry value
@@ -869,9 +865,12 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
     regular_update_work_items->AddMoveTreeWorkItem(
         src_path.Append(kChromeProxyExe), target_path.Append(kChromeProxyExe),
         temp_path, WorkItem::ALWAYS_MOVE);
-
-    post_install_task_list->AddWorkItem(regular_update_work_items.release());
   }
+
+  post_install_task_list->AddWorkItem(WorkItem::CreateConditionalWorkItem(
+      std::make_unique<ConditionFileExists>(new_chrome_exe),
+      std::move(in_use_update_work_items),
+      std::move(regular_update_work_items)));
 
   // If we're told that we're an MSI install, make sure to set the marker
   // in the client state key so that future updates do the right thing.
