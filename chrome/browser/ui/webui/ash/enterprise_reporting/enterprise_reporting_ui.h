@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_ENTERPRISE_REPORTING_ENTERPRISE_REPORTING_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_ENTERPRISE_REPORTING_ENTERPRISE_REPORTING_UI_H_
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting.mojom.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_page_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -22,7 +22,7 @@ class EnterpriseReportingUIConfig
  public:
   EnterpriseReportingUIConfig()
       : ChromeOSWebUIConfig(content::kChromeUIScheme,
-                            chrome::kChromeUIEnterpriseReportingHost) {}
+                            ash::kChromeUIEnterpriseReportingHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };

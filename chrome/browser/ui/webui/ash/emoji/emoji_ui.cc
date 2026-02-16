@@ -8,6 +8,7 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/webui/ash/emoji/bubble_utils.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/emoji_picker_resources.h"
 #include "chrome/grit/emoji_picker_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -104,7 +104,7 @@ namespace ash {
 
 EmojiUIConfig::EmojiUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                  chrome::kChromeUIEmojiPickerHost) {}
+                                  ash::kChromeUIEmojiPickerHost) {}
 
 bool EmojiUIConfig::ShouldAutoResizeHost() {
   return true;
@@ -116,7 +116,7 @@ EmojiUI::EmojiUI(content::WebUI* web_ui)
       initial_category_(emoji_picker::mojom::Category::kEmojis) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIEmojiPickerHost);
+      ash::kChromeUIEmojiPickerHost);
 
   // Add required resources.
   webui::SetupWebUIDataSource(source, kEmojiPickerResources,
@@ -193,7 +193,7 @@ void EmojiUI::Show(ui::EmojiPickerCategory category,
   // here to reduce code duplication.
 
   auto contents_wrapper = std::make_unique<WebUIContentsWrapperT<EmojiUI>>(
-      GURL(chrome::kChromeUIEmojiPickerURL), profile, IDS_ACCNAME_EMOJI_PICKER);
+      GURL(ash::kChromeUIEmojiPickerURL), profile, IDS_ACCNAME_EMOJI_PICKER);
   // Need to reload the web contents here because the view isn't visible unless
   // ShowUI is called from the JS side.  By reloading, we trigger the JS to
   // eventually call ShowUI().

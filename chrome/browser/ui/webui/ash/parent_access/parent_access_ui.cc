@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/parent_access_resources.h"
@@ -68,7 +68,7 @@ ParentAccessUI::GetHandlerForTest() {
 
 void ParentAccessUI::SetUpResources() {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui()), chrome::kChromeUIParentAccessHost);
+      Profile::FromWebUI(web_ui()), ash::kChromeUIParentAccessHost);
   ash::EnableTrustedTypesCSP(source);
 
   source->EnableReplaceI18nInJS();

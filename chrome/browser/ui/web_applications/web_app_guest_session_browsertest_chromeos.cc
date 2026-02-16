@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
@@ -55,8 +55,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGuestSessionBrowserTest, LaunchOsSettings) {
                                                   future.GetCallback());
   auto* web_contents = future.template Get<1>().get();
   ASSERT_TRUE(web_contents);
-  EXPECT_EQ(GURL(chrome::kChromeUIOSSettingsURL),
-            web_contents->GetVisibleURL());
+  EXPECT_EQ(GURL(ash::kChromeUIOSSettingsURL), web_contents->GetVisibleURL());
 }
 
 }  // namespace web_app

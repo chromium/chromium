@@ -8,10 +8,11 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback.mojom.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_page_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace ash::office_fallback {
@@ -30,7 +31,7 @@ class OfficeFallbackUIConfig
  public:
   OfficeFallbackUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIOfficeFallbackHost) {}
+                           ash::kChromeUIOfficeFallbackHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };

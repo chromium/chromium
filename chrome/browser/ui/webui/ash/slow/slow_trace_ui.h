@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/common/webui_url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
@@ -54,7 +54,7 @@ class SlowTraceControllerConfig
  public:
   SlowTraceControllerConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUISlowTraceHost) {}
+                           ash::kChromeUISlowTraceHost) {}
 };
 
 class SlowTraceController : public content::WebUIController {

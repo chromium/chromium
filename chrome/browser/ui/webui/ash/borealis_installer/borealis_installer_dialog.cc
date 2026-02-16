@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_dialog.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/callback_helpers.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ui/views/borealis/borealis_disallowed_dialog.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/aura/client/aura_constants.h"
@@ -30,7 +30,7 @@ constexpr int kDialogWidth = 805;
 constexpr int kDialogHeight = 520;
 
 GURL GetUrl() {
-  return GURL{chrome::kChromeUIBorealisInstallerUrl};
+  return GURL{ash::kChromeUIBorealisInstallerUrl};
 }
 
 }  // namespace

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_P(ParentAccessDialogBrowserTest, ShowDialog) {
 
   // Verify that it is correctly configured.
   EXPECT_EQ(dialog->GetDialogContentURL().spec(),
-            chrome::kChromeUIParentAccessURL);
+            ash::kChromeUIParentAccessURL);
   EXPECT_FALSE(dialog->ShouldShowDialogTitle());
   EXPECT_FALSE(dialog->ShouldShowCloseButton());
   EXPECT_EQ(dialog->GetDialogModalType(), ui::mojom::ModalType::kSystem);

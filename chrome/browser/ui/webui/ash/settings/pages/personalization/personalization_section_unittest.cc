@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/personalization/personalization_section.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_identifier.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -96,7 +96,7 @@ class PersonalizationSectionTest : public testing::Test {
 TEST_F(PersonalizationSectionTest, MenuItemDescriptionString) {
   LoginUser();
   std::unique_ptr<content::TestWebUIDataSource> html_source =
-      content::TestWebUIDataSource::Create(chrome::kChromeUIOSSettingsHost);
+      content::TestWebUIDataSource::Create(ash::kChromeUIOSSettingsHost);
   section_->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_EQ(std::string("Dark theme, screen saver"),
@@ -109,7 +109,7 @@ TEST_F(PersonalizationSectionTest, MenuItemDescriptionString) {
 TEST_F(PersonalizationSectionTest, MenuItemDescriptionStringGuestMode) {
   LoginGuestUser();
   std::unique_ptr<content::TestWebUIDataSource> html_source =
-      content::TestWebUIDataSource::Create(chrome::kChromeUIOSSettingsHost);
+      content::TestWebUIDataSource::Create(ash::kChromeUIOSSettingsHost);
   section_->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_EQ(std::string("Dark theme"),
@@ -121,7 +121,7 @@ TEST_F(PersonalizationSectionTest, MenuItemDescriptionStringGuestMode) {
 TEST_F(PersonalizationSectionTest, RowDescriptionString) {
   LoginUser();
   std::unique_ptr<content::TestWebUIDataSource> html_source =
-      content::TestWebUIDataSource::Create(chrome::kChromeUIOSSettingsHost);
+      content::TestWebUIDataSource::Create(ash::kChromeUIOSSettingsHost);
   section_->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_EQ(
@@ -135,7 +135,7 @@ TEST_F(PersonalizationSectionTest, RowDescriptionString) {
 TEST_F(PersonalizationSectionTest, RowDescriptionStringGuestMode) {
   LoginGuestUser();
   std::unique_ptr<content::TestWebUIDataSource> html_source =
-      content::TestWebUIDataSource::Create(chrome::kChromeUIOSSettingsHost);
+      content::TestWebUIDataSource::Create(ash::kChromeUIOSSettingsHost);
   section_->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_EQ(std::string("Personalize wallpaper, dark theme, and more"),

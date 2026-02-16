@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_NETWORK_UI_NETWORK_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_NETWORK_UI_NETWORK_UI_H_
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/values.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -26,7 +26,7 @@ class NetworkUIConfig : public content::DefaultWebUIConfig<NetworkUI> {
  public:
   NetworkUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUINetworkHost) {}
+                           ash::kChromeUINetworkHost) {}
 };
 
 // WebUI controller for chrome://network debugging page.

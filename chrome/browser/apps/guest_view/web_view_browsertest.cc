@@ -182,6 +182,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #endif
@@ -3126,7 +3127,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuLanguageSettings) {
   content::WebContents* new_contents =
       web_contents_added_observer.GetWebContents();
 #if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(GURL(chrome::kChromeUIOSSettingsURL)
+  EXPECT_EQ(GURL(ash::kChromeUIOSSettingsURL)
                 .Resolve(chromeos::settings::mojom::kLanguagesSubpagePath),
             new_contents->GetVisibleURL());
 #else

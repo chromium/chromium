@@ -7,12 +7,12 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -39,8 +39,8 @@ const char kJsApiLoadComplete[] = "loadComplete";
 namespace ash {
 
 void CreateAndAddSlowUIHTMLSource(Profile* profile) {
-  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, chrome::kChromeUISlowHost);
+  content::WebUIDataSource* source =
+      content::WebUIDataSource::CreateAndAdd(profile, ash::kChromeUISlowHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"slowDisable", IDS_SLOW_DISABLE},

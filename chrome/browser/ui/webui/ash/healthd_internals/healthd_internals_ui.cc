@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/healthd_internals/healthd_internals_ui.h"
 
+#include "ash/constants/url_constants.h"
 #include "chrome/browser/ui/webui/ash/healthd_internals/healthd_internals_message_handler.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/healthd_internals_resources.h"
 #include "chrome/grit/healthd_internals_resources_map.h"
 #include "content/public/browser/browser_context.h"
@@ -23,7 +23,7 @@ HealthdInternalsUI::HealthdInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
-          chrome::kChromeUIHealthdInternalsHost);
+          ash::kChromeUIHealthdInternalsHost);
 
   webui::SetupWebUIDataSource(html_source, kHealthdInternalsResources,
                               IDR_HEALTHD_INTERNALS_HEALTHD_INTERNALS_HTML);

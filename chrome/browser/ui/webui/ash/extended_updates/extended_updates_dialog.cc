@@ -6,13 +6,13 @@
 
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/oobe_dialog_size_utils.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
@@ -20,7 +20,7 @@
 
 namespace {
 GURL GetUrl() {
-  return GURL(chrome::kChromeUIExtendedUpdatesDialogURL);
+  return GURL(ash::kChromeUIExtendedUpdatesDialogURL);
 }
 }  // namespace
 

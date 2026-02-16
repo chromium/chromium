@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -28,8 +29,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -132,7 +131,7 @@ void ReadFile(const base::FilePath downloads,
 // static
 std::unique_ptr<TerminalSource> TerminalSource::ForCrosh(Profile* profile) {
   return base::WrapUnique(
-      new TerminalSource(profile, chrome::kChromeUIUntrustedCroshURL, false));
+      new TerminalSource(profile, ash::kChromeUIUntrustedCroshURL, false));
 }
 
 // static
@@ -140,7 +139,7 @@ std::unique_ptr<TerminalSource> TerminalSource::ForTerminal(Profile* profile) {
   ash::file_system_provider::Service::Get(profile)->RegisterProvider(
       std::make_unique<TerminalFileSystemProvider>());
   return base::WrapUnique(new TerminalSource(
-      profile, chrome::kChromeUIUntrustedTerminalURL,
+      profile, ash::kChromeUIUntrustedTerminalURL,
       profile->GetPrefs()
           ->FindPreference(crostini::prefs::kTerminalSshAllowedByPolicy)
           ->GetValue()

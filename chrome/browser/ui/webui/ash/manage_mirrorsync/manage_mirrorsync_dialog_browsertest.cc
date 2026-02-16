@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync.mojom.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -149,7 +149,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
     dialog_contents_ = observer.GetWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(dialog_contents_));
     EXPECT_EQ(dialog_contents_->GetLastCommittedURL().GetHost(),
-              chrome::kChromeUIManageMirrorSyncHost);
+              ash::kChromeUIManageMirrorSyncHost);
   }
 
   void SetUpMyFilesAndDialog(std::vector<std::string> paths) {

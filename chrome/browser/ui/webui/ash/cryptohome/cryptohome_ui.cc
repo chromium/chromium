@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cryptohome/cryptohome_web_ui_handler.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -20,7 +20,7 @@ namespace {
 // Returns HTML data source for chrome://cryptohome.
 void CreateAndAddCryptohomeUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, chrome::kChromeUICryptohomeHost);
+      profile, ash::kChromeUICryptohomeHost);
   source->AddResourcePath("cryptohome.js", IDR_CRYPTOHOME_JS);
   source->SetDefaultResource(IDR_CRYPTOHOME_HTML);
 }

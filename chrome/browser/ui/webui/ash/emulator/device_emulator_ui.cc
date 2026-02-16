@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emulator/device_emulator_message_handler.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -25,7 +25,7 @@ namespace {
 void CreateAndAddDeviceEmulatorUIDataSource(content::WebUI* web_ui) {
   content::WebUIDataSource* html = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIDeviceEmulatorHost);
+      ash::kChromeUIDeviceEmulatorHost);
   ash::EnableTrustedTypesCSP(html);
 
   // Add resources.

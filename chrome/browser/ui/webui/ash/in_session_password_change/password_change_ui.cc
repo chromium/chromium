@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_dialogs.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_handler.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/urgent_password_expiry_notification_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/gaia_auth_host_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -95,7 +95,7 @@ PasswordChangeUI::PasswordChangeUI(content::WebUI* web_ui)
   CHECK(profile->GetPrefs()->GetBoolean(
       prefs::kSamlInSessionPasswordChangeEnabled));
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, chrome::kChromeUIPasswordChangeHost);
+      profile, ash::kChromeUIPasswordChangeHost);
   ash::EnableTrustedTypesCSP(source);
 
   const std::string password_change_url = GetPasswordChangeUrl(profile);
@@ -127,7 +127,7 @@ ConfirmPasswordChangeUI::ConfirmPasswordChangeUI(content::WebUI* web_ui)
   CHECK(profile->GetPrefs()->GetBoolean(
       prefs::kSamlInSessionPasswordChangeEnabled));
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, chrome::kChromeUIConfirmPasswordChangeHost);
+      profile, ash::kChromeUIConfirmPasswordChangeHost);
   ash::EnableTrustedTypesCSP(source);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -179,7 +179,7 @@ UrgentPasswordExpiryNotificationUI::UrgentPasswordExpiryNotificationUI(
   CHECK(prefs->GetBoolean(prefs::kSamlInSessionPasswordChangeEnabled));
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, chrome::kChromeUIUrgentPasswordExpiryNotificationHost);
+      profile, ash::kChromeUIUrgentPasswordExpiryNotificationHost);
   ash::EnableTrustedTypesCSP(source);
 
   SamlPasswordAttributes attrs = SamlPasswordAttributes::LoadFromPrefs(prefs);

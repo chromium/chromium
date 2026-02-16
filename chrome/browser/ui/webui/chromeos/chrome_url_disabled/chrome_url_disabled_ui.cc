@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -16,7 +16,7 @@ ChromeURLDisabledUI::ChromeURLDisabledUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui), weak_factory_(this) {
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(Profile::FromWebUI(web_ui),
-                                             chrome::kChromeUIAppDisabledHost);
+                                             ash::kChromeUIAppDisabledHost);
 
   html_source->UseStringsJs();
 

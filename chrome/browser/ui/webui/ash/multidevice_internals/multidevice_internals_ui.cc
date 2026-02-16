@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/containers/span.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_logs_handler.h"
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_phone_hub_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/multidevice_internals_resources.h"
 #include "chrome/grit/multidevice_internals_resources_map.h"
 #include "content/public/browser/web_ui.h"
@@ -23,8 +23,7 @@ MultideviceInternalsUI::MultideviceInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
-          Profile::FromWebUI(web_ui),
-          chrome::kChromeUIMultiDeviceInternalsHost);
+          Profile::FromWebUI(web_ui), ash::kChromeUIMultiDeviceInternalsHost);
   html_source->AddBoolean("isPhoneHubEnabled", features::IsPhoneHubEnabled());
 
   webui::SetupWebUIDataSource(html_source, kMultideviceInternalsResources,

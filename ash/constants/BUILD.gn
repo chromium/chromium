@@ -33,6 +33,7 @@ component("constants") {
     "url_constants.cc",
     "url_constants.h",
     "web_app_id_constants.h",
+    "webui_url_constants.h",
   ]
   public_deps = [
     "//base",

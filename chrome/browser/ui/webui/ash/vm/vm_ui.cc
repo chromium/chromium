@@ -6,11 +6,11 @@
 
 #include <utility>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_diagnostics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/vm/vm.mojom.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/vm_resources.h"
 #include "chrome/grit/vm_resources_map.h"
@@ -63,7 +63,7 @@ void AddStringResources(content::WebUIDataSource* source) {
 VmUI::VmUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   auto* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source =
-      content::WebUIDataSource::CreateAndAdd(profile, chrome::kChromeUIVmHost);
+      content::WebUIDataSource::CreateAndAdd(profile, ash::kChromeUIVmHost);
   webui::SetJSModuleDefaults(source);
 
   AddStringResources(source);

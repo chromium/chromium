@@ -7,13 +7,14 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration.mojom.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_page_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -28,7 +29,7 @@ class LocalFilesMigrationUIConfig
  public:
   LocalFilesMigrationUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUILocalFilesMigrationHost) {}
+                           ash::kChromeUILocalFilesMigrationHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };

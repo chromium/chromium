@@ -8,9 +8,9 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -78,7 +78,7 @@ class InternetConfigDialogUIConfig
  public:
   InternetConfigDialogUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIInternetConfigDialogHost) {}
+                           ash::kChromeUIInternetConfigDialogHost) {}
 };
 
 // A WebUI to host the network configuration UI in a dialog, used in the

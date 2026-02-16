@@ -6,11 +6,11 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/kerberos_resources.h"
 #include "chrome/grit/kerberos_resources_map.h"
@@ -23,7 +23,7 @@ namespace ash {
 
 KerberosInBrowserUIConfig::KerberosInBrowserUIConfig()
     : ChromeOSWebUIConfig(content::kChromeUIScheme,
-                          chrome::kChromeUIKerberosInBrowserHost) {}
+                          ash::kChromeUIKerberosInBrowserHost) {}
 
 bool KerberosInBrowserUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
@@ -35,7 +35,7 @@ KerberosInBrowserUI::KerberosInBrowserUI(content::WebUI* web_ui)
     : WebDialogUI(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, chrome::kChromeUIKerberosInBrowserHost);
+      profile, ash::kChromeUIKerberosInBrowserHost);
 
   webui::SetupWebUIDataSource(source, kKerberosResources,
                               IDR_KERBEROS_KERBEROS_IN_BROWSER_DIALOG_HTML);

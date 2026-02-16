@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -21,7 +22,6 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/device_state.h"
@@ -200,7 +200,7 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
 MobileSetupUIHTMLSource::MobileSetupUIHTMLSource() = default;
 
 std::string MobileSetupUIHTMLSource::GetSource() {
-  return chrome::kChromeUIMobileSetupHost;
+  return ash::kChromeUIMobileSetupHost;
 }
 
 void MobileSetupUIHTMLSource::StartDataRequest(

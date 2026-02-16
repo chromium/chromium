@@ -8,11 +8,11 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
 #include "components/feedback/content/content_tracing_manager.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
@@ -28,7 +28,7 @@ namespace ash {
 SlowTraceSource::SlowTraceSource() = default;
 
 std::string SlowTraceSource::GetSource() {
-  return chrome::kChromeUISlowTraceHost;
+  return ash::kChromeUISlowTraceHost;
 }
 
 void SlowTraceSource::StartDataRequest(

@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/confirm_password_change_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
@@ -92,7 +92,7 @@ void PasswordChangeDialog::Dismiss() {
 }
 
 PasswordChangeDialog::PasswordChangeDialog()
-    : BasePasswordDialog(GURL(chrome::kChromeUIPasswordChangeUrl),
+    : BasePasswordDialog(GURL(ash::kChromeUIPasswordChangeUrl),
                          kPasswordChangeSize) {}
 
 PasswordChangeDialog::~PasswordChangeDialog() {
@@ -127,7 +127,7 @@ ConfirmPasswordChangeDialog::ConfirmPasswordChangeDialog(
     const std::string& scraped_new_password,
     bool show_spinner_initially)
     : BasePasswordDialog(
-          GURL(chrome::kChromeUIConfirmPasswordChangeUrl),
+          GURL(ash::kChromeUIConfirmPasswordChangeUrl),
           GetSize(scraped_old_password.empty(), scraped_new_password.empty())),
       scraped_old_password_(scraped_old_password),
       scraped_new_password_(scraped_new_password),
@@ -187,7 +187,7 @@ void UrgentPasswordExpiryNotificationDialog::Dismiss() {
 
 UrgentPasswordExpiryNotificationDialog::UrgentPasswordExpiryNotificationDialog()
     : BasePasswordDialog(
-          GURL(chrome::kChromeUIUrgentPasswordExpiryNotificationUrl),
+          GURL(ash::kChromeUIUrgentPasswordExpiryNotificationUrl),
           kUrgentPasswordExpiryNotificationSize) {}
 
 UrgentPasswordExpiryNotificationDialog::

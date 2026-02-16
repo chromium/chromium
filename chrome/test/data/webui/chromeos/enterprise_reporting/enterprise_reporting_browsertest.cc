@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -18,7 +18,7 @@ class EnterpriseReportingUITest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingUITest, App) {
-  set_test_loader_host(chrome::kChromeUIEnterpriseReportingHost);
+  set_test_loader_host(ash::kChromeUIEnterpriseReportingHost);
   RunTest("chromeos/enterprise_reporting/enterprise_reporting_test.js",
           "mocha.run()");
 }

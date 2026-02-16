@@ -129,6 +129,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/print_management/url_constants.h"
@@ -140,7 +141,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/terminal_ui.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
@@ -908,7 +908,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectSettingsURL) {
 
   dest_url = settings_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectExploreURL) {
@@ -925,7 +925,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectExploreURL) {
 
   dest_url = help_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectGuestExploreURL) {
@@ -945,7 +945,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectGuestExploreURL) {
 
   dest_url = help_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectGalleryURL) {
@@ -962,7 +962,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectGalleryURL) {
 
   dest_url = gallery_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectGuestGalleryURL) {
@@ -981,7 +981,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectGuestGalleryURL) {
 
   dest_url = gallery_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectTerminalURL) {
@@ -989,7 +989,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectTerminalURL) {
       std::make_unique<TerminalUIConfig>());
   TestChromeContentBrowserClient test_content_browser_client;
 
-  const GURL terminal_url(chrome::kChromeUIUntrustedTerminalURL);
+  const GURL terminal_url(ash::kChromeUIUntrustedTerminalURL);
   GURL dest_url = terminal_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(terminal_url, dest_url);
@@ -1001,7 +1001,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectTerminalURL) {
 
   dest_url = terminal_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectPrintJobsURL) {
@@ -1019,7 +1019,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectPrintJobsURL) {
 
   dest_url = print_jobs_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectKeyShortcutsURL) {
@@ -1037,12 +1037,12 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectKeyShortcutsURL) {
 
   dest_url = key_shortcuts_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectOSSettingsURL) {
   TestChromeContentBrowserClient test_content_browser_client;
-  const GURL os_settings_url(chrome::kChromeUIOSSettingsURL);
+  const GURL os_settings_url(ash::kChromeUIOSSettingsURL);
   GURL dest_url = os_settings_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(os_settings_url, dest_url);
@@ -1054,10 +1054,10 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectOSSettingsURL) {
 
   dest_url = os_settings_url;
   EXPECT_TRUE(test_content_browser_client.HandleWebUI(&dest_url, &profile_));
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 
   GURL os_settings_pwa_url =
-      GURL(chrome::kChromeUIOSSettingsURL).Resolve("pwa.html");
+      GURL(ash::kChromeUIOSSettingsURL).Resolve("pwa.html");
   dest_url = os_settings_pwa_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(os_settings_pwa_url, dest_url);
@@ -1080,7 +1080,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectRecorderURL) {
 
   dest_url = recorder_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectScanningAppURL) {
@@ -1097,7 +1097,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectScanningAppURL) {
 
   dest_url = scanning_app_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectCameraAppURL) {
@@ -1116,7 +1116,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectCameraAppURL) {
 
   dest_url = camera_app_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectHelpURL) {
@@ -1133,7 +1133,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectHelpURL) {
 
   dest_url = help_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

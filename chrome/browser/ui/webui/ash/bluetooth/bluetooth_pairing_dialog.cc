@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/check.h"
@@ -15,8 +16,6 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_shared_load_time_data_provider.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/bluetooth_pairing_dialog_resources.h"
 #include "chrome/grit/bluetooth_pairing_dialog_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -59,7 +58,7 @@ void AddBluetoothStrings(content::WebUIDataSource* html_source) {
 SystemWebDialogDelegate* BluetoothPairingDialog::ShowDialog(
     std::optional<std::string_view> device_address) {
   NET_LOG(EVENT) << "Attempting to display bluetooth pairing dialog";
-  std::string dialog_id = chrome::kChromeUIBluetoothPairingURL;
+  std::string dialog_id = ash::kChromeUIBluetoothPairingURL;
   std::optional<std::string> canonical_device_address;
 
   if (device_address.has_value()) {
@@ -94,7 +93,7 @@ SystemWebDialogDelegate* BluetoothPairingDialog::ShowDialog(
 BluetoothPairingDialog::BluetoothPairingDialog(
     const std::string& dialog_id,
     std::optional<std::string_view> canonical_device_address)
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUIBluetoothPairingURL),
+    : SystemWebDialogDelegate(GURL(ash::kChromeUIBluetoothPairingURL),
                               /*title=*/std::u16string()),
       dialog_id_(dialog_id) {
   set_dialog_size(gfx::Size(SystemWebDialogDelegate::kDialogWidth,
@@ -136,7 +135,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BluetoothPairingDialog,
 BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIBluetoothPairingHost);
+      Profile::FromWebUI(web_ui), ash::kChromeUIBluetoothPairingHost);
 
   AddBluetoothStrings(source);
   source->AddLocalizedString("title", IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES);

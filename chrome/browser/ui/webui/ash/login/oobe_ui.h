@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/backend/webui_syslog_emitter.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "base/containers/flat_set.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_screens_handler_factory.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
@@ -45,8 +45,7 @@ class OobeUI;
 class OobeUIConfig : public ChromeOSWebUIConfig<OobeUI> {
  public:
   OobeUIConfig()
-      : ChromeOSWebUIConfig(content::kChromeUIScheme,
-                            chrome::kChromeUIOobeHost) {}
+      : ChromeOSWebUIConfig(content::kChromeUIScheme, ash::kChromeUIOobeHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };

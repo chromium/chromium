@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -567,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectCroshURL) {
   system_features.Append(kCroshFeature);
   UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
 
-  GURL crosh_url = GURL(chrome::kChromeUIUntrustedCroshURL);
+  GURL crosh_url = GURL(ash::kChromeUIUntrustedCroshURL);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER),
             GetWebUITitle(crosh_url, false));
 

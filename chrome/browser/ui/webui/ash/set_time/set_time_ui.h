@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SET_TIME_SET_TIME_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SET_TIME_SET_TIME_UI_H_
 
-#include "chrome/common/webui_url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,7 +21,7 @@ class SetTimeUIConfig : public content::DefaultWebUIConfig<SetTimeUI> {
  public:
   SetTimeUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUISetTimeHost) {}
+                           ash::kChromeUISetTimeHost) {}
 };
 
 // The WebUI for chrome://set-time.

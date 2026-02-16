@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_ui.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/containers/span.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_page_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/extended_updates_resources.h"
 #include "chrome/grit/extended_updates_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,7 +34,7 @@ namespace ash::extended_updates {
 ExtendedUpdatesUI::ExtendedUpdatesUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIExtendedUpdatesDialogHost);
+      Profile::FromWebUI(web_ui), ash::kChromeUIExtendedUpdatesDialogHost);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"dialogHeading", IDS_EXTENDED_UPDATES_DIALOG_DIALOG_HEADING},
@@ -96,7 +96,7 @@ void ExtendedUpdatesUI::CreatePageHandler(
 
 ExtendedUpdatesUIConfig::ExtendedUpdatesUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUIExtendedUpdatesDialogHost) {}
+                         ash::kChromeUIExtendedUpdatesDialogHost) {}
 
 ExtendedUpdatesUIConfig::~ExtendedUpdatesUIConfig() = default;
 

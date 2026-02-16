@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/connectivity_services.h"
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
@@ -1032,8 +1033,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   base::DictValue localized_strings = GetLocalizedStrings();
 
   content::WebUIDataSource* html = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUINetworkHost);
+      web_ui->GetWebContents()->GetBrowserContext(), ash::kChromeUINetworkHost);
 
   html->AddLocalizedStrings(localized_strings);
   html->AddBoolean("isGuestModeActive", IsGuestModeActive());

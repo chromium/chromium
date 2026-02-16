@@ -11,6 +11,7 @@
 #include <unordered_map>
 
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
@@ -86,7 +87,6 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -217,7 +217,7 @@ void ConvertExpectation(const Expectation& test,
 content::WebContents* GetWebContentsFromOfficeFallbackAndWaitForDialog() {
   ash::SystemWebDialogDelegate* dialog =
       ash::SystemWebDialogDelegate::FindInstance(
-          chrome::kChromeUIOfficeFallbackURL);
+          ash::kChromeUIOfficeFallbackURL);
   EXPECT_TRUE(dialog);
   content::WebUI* webui = dialog->GetWebUIForTest();
   EXPECT_TRUE(webui);
@@ -1328,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
             ConnectionStatus::kNoNetwork);
 
   // Watch for dialog URL chrome://office-fallback.
-  GURL expected_dialog_URL(chrome::kChromeUIOfficeFallbackURL);
+  GURL expected_dialog_URL(ash::kChromeUIOfficeFallbackURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -1394,7 +1394,7 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackClosesUnexpectedly) {
             ConnectionStatus::kNoNetwork);
 
   // Watch for dialog URL chrome://office-fallback.
-  GURL expected_dialog_URL(chrome::kChromeUIOfficeFallbackURL);
+  GURL expected_dialog_URL(ash::kChromeUIOfficeFallbackURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -1418,7 +1418,7 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackClosesUnexpectedly) {
   content::WebContentsDestroyedWatcher watcher(web_contents);
   ash::SystemWebDialogDelegate* dialog =
       ash::SystemWebDialogDelegate::FindInstance(
-          chrome::kChromeUIOfficeFallbackURL);
+          ash::kChromeUIOfficeFallbackURL);
   EXPECT_TRUE(dialog);
   dialog->Close();
 
@@ -1512,7 +1512,7 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileInDriveOpensSetUpDialog) {
   SetUpTest(/*disable_set_up=*/false, /*launch_files_app=*/true);
 
   // Watch for dialog URL chrome://cloud-upload.
-  GURL expected_dialog_URL(chrome::kChromeUICloudUploadURL);
+  GURL expected_dialog_URL(ash::kChromeUICloudUploadURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -1546,7 +1546,7 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileNotInDriveOpensSetUpDialog) {
   std::vector<storage::FileSystemURL> file_urls{file_outside_drive};
 
   // Watch for dialog URL chrome://cloud-upload.
-  GURL expected_dialog_URL(chrome::kChromeUICloudUploadURL);
+  GURL expected_dialog_URL(ash::kChromeUICloudUploadURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -1887,7 +1887,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
             /*connect_to_network=*/false);
 
   // Watch for dialog URL chrome://office-fallback.
-  GURL expected_dialog_URL(chrome::kChromeUIOfficeFallbackURL);
+  GURL expected_dialog_URL(ash::kChromeUIOfficeFallbackURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -1950,7 +1950,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
             /*connect_to_network=*/false);
 
   // Watch for dialog URL chrome://office-fallback.
-  GURL expected_dialog_URL(chrome::kChromeUIOfficeFallbackURL);
+  GURL expected_dialog_URL(ash::kChromeUIOfficeFallbackURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -2003,7 +2003,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotGetOfficeFallbackChoice) {
             /*connect_to_network=*/false);
 
   // Watch for dialog URL chrome://office-fallback.
-  GURL expected_dialog_URL(chrome::kChromeUIOfficeFallbackURL);
+  GURL expected_dialog_URL(ash::kChromeUIOfficeFallbackURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -2062,7 +2062,7 @@ IN_PROC_BROWSER_TEST_F(
       android_onedrive_path_no_equivalent);
 
   // Watch for dialog URL chrome://office-fallback.
-  GURL expected_dialog_URL(chrome::kChromeUIOfficeFallbackURL);
+  GURL expected_dialog_URL(ash::kChromeUIOfficeFallbackURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -2117,7 +2117,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDifferentSetupDialog) {
   std::vector<storage::FileSystemURL> file_urls2{odfs_pptx_test_file_url_2_};
 
   // Watch for dialog URL chrome://cloud-upload.
-  GURL expected_dialog_URL(chrome::kChromeUICloudUploadURL);
+  GURL expected_dialog_URL(ash::kChromeUICloudUploadURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -2164,7 +2164,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDifferentMoveConfirmation) {
   std::vector<storage::FileSystemURL> file_urls2{file_outside_one_drive2};
 
   // Watch for dialog URL chrome://cloud-upload.
-  GURL expected_dialog_URL(chrome::kChromeUICloudUploadURL);
+  GURL expected_dialog_URL(ash::kChromeUICloudUploadURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -2204,7 +2204,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDuplicateSetupDialogs) {
   SetUpTest(/*disable_set_up=*/false, /*launch_files_app=*/true);
 
   // Watch for dialog URL chrome://cloud-upload.
-  GURL expected_dialog_URL(chrome::kChromeUICloudUploadURL);
+  GURL expected_dialog_URL(ash::kChromeUICloudUploadURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -2267,7 +2267,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDuplicateMoveConfirmation) {
   SetWordFileHandlerToFilesSWA(profile(), kActionIdWebDriveOfficeWord);
 
   // Watch for dialog URL chrome://cloud-upload.
-  GURL expected_dialog_URL(chrome::kChromeUICloudUploadURL);
+  GURL expected_dialog_URL(ash::kChromeUICloudUploadURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -2498,7 +2498,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileNotFromODFS) {
   std::vector<storage::FileSystemURL> file_urls{file_outside_one_drive};
 
   // Watch for dialog URL chrome://cloud-upload.
-  GURL expected_dialog_URL(chrome::kChromeUICloudUploadURL);
+  GURL expected_dialog_URL(ash::kChromeUICloudUploadURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -2903,7 +2903,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileInOneDriveOpensSetUpDialog) {
   SetUpTest(/*disable_set_up=*/false, /*launch_files_app=*/true);
 
   // Watch for dialog URL chrome://cloud-upload.
-  GURL expected_dialog_URL(chrome::kChromeUICloudUploadURL);
+  GURL expected_dialog_URL(ash::kChromeUICloudUploadURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -2935,7 +2935,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileNotInOneDriveOpensSetUpDialog) {
   std::vector<storage::FileSystemURL> file_urls{file_outside_one_drive};
 
   // Watch for dialog URL chrome://cloud-upload.
-  GURL expected_dialog_URL(chrome::kChromeUICloudUploadURL);
+  GURL expected_dialog_URL(ash::kChromeUICloudUploadURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
@@ -3047,7 +3047,7 @@ IN_PROC_BROWSER_TEST_F(OfficeMS365HatsSurvey, FallbackQuickOffice) {
             /*connect_to_network=*/false);
 
   // Watch for dialog URL chrome://office-fallback.
-  GURL expected_dialog_URL(chrome::kChromeUIOfficeFallbackURL);
+  GURL expected_dialog_URL(ash::kChromeUIOfficeFallbackURL);
   content::TestNavigationObserver navigation_observer_dialog(
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();

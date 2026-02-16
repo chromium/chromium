@@ -20,6 +20,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace chrome {
@@ -32,38 +33,38 @@ bool IsSystemWebUIHost(std::string_view host) {
   // Compares host instead of full URL for performance (the strings are
   // shorter).
   constexpr auto kHosts = base::MakeFixedFlatSet<std::string_view>({
-      kChromeUIAccountManagerErrorHost,
-      kChromeUIAccountMigrationWelcomeHost,
-      kChromeUIAddSupervisionHost,
-      kChromeUIAppInstallDialogHost,
-      kChromeUIBluetoothPairingHost,
-      kChromeUIBorealisCreditsHost,
-      kChromeUIBorealisInstallerHost,
+      ash::kChromeUIAccountManagerErrorHost,
+      ash::kChromeUIAccountMigrationWelcomeHost,
+      ash::kChromeUIAddSupervisionHost,
+      ash::kChromeUIAppInstallDialogHost,
+      ash::kChromeUIBluetoothPairingHost,
+      ash::kChromeUIBorealisCreditsHost,
+      ash::kChromeUIBorealisInstallerHost,
       kChromeUIBorealisMOTDHost,
       kChromeUICertificateManagerHost,
-      kChromeUICloudUploadHost,
-      kChromeUICrostiniCreditsHost,
-      kChromeUICrostiniInstallerHost,
-      kChromeUICryptohomeHost,
-      kChromeUIDeviceEmulatorHost,
-      kChromeUIEmojiPickerHost,
-      kChromeUIExtendedUpdatesDialogHost,
-      kChromeUIInternetConfigDialogHost,
-      kChromeUIInternetDetailDialogHost,
-      kChromeUILockScreenNetworkHost,
-      kChromeUILockScreenStartReauthHost,
-      kChromeUIMobileSetupHost,
-      kChromeUIMultiDeviceSetupHost,
-      kChromeUINetworkHost,
-      kChromeUINotificationTesterHost,
-      kChromeUIOobeHost,
-      kChromeUIOSCreditsHost,
-      kChromeUIOSSettingsHost,
-      kChromeUIPasswordChangeHost,
-      kChromeUIPowerHost,
-      kChromeUISetTimeHost,
-      kChromeUISmbCredentialsHost,
-      kChromeUISmbShareHost,
+      ash::kChromeUICloudUploadHost,
+      ash::kChromeUICrostiniCreditsHost,
+      ash::kChromeUICrostiniInstallerHost,
+      ash::kChromeUICryptohomeHost,
+      ash::kChromeUIDeviceEmulatorHost,
+      ash::kChromeUIEmojiPickerHost,
+      ash::kChromeUIExtendedUpdatesDialogHost,
+      ash::kChromeUIInternetConfigDialogHost,
+      ash::kChromeUIInternetDetailDialogHost,
+      ash::kChromeUILockScreenNetworkHost,
+      ash::kChromeUILockScreenStartReauthHost,
+      ash::kChromeUIMobileSetupHost,
+      ash::kChromeUIMultiDeviceSetupHost,
+      ash::kChromeUINetworkHost,
+      ash::kChromeUINotificationTesterHost,
+      ash::kChromeUIOobeHost,
+      ash::kChromeUIOSCreditsHost,
+      ash::kChromeUIOSSettingsHost,
+      ash::kChromeUIPasswordChangeHost,
+      ash::kChromeUIPowerHost,
+      ash::kChromeUISetTimeHost,
+      ash::kChromeUISmbCredentialsHost,
+      ash::kChromeUISmbShareHost,
   });
 
   return kHosts.contains(host);
@@ -90,7 +91,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUICrashesHost,
       kChromeUICreditsHost,
 #if BUILDFLAG(IS_CHROMEOS) && !defined(OFFICIAL_BUILD)
-      kChromeUIDeviceEmulatorHost,
+      ash::kChromeUIDeviceEmulatorHost,
 #endif
       kChromeUIDeviceLogHost,
       kChromeUIDownloadInternalsHost,
@@ -190,20 +191,20 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUIWebApksHost,
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-      kChromeUIBorealisCreditsHost,
+      ash::kChromeUIBorealisCreditsHost,
       kChromeUICertificateManagerHost,
-      kChromeUICrostiniCreditsHost,
-      kChromeUICryptohomeHost,
+      ash::kChromeUICrostiniCreditsHost,
+      ash::kChromeUICryptohomeHost,
       kChromeUIDriveInternalsHost,
-      kChromeUINetworkHost,
-      kChromeUILockScreenNetworkHost,
-      kChromeUIOobeHost,
-      kChromeUIOSCreditsHost,
-      kChromeUIOSSettingsHost,
-      kChromeUIPowerHost,
-      kChromeUISysInternalsHost,
-      kChromeUIInternetConfigDialogHost,
-      kChromeUIInternetDetailDialogHost,
+      ash::kChromeUINetworkHost,
+      ash::kChromeUILockScreenNetworkHost,
+      ash::kChromeUIOobeHost,
+      ash::kChromeUIOSCreditsHost,
+      ash::kChromeUIOSSettingsHost,
+      ash::kChromeUIPowerHost,
+      ash::kChromeUISysInternalsHost,
+      ash::kChromeUIInternetConfigDialogHost,
+      ash::kChromeUIInternetDetailDialogHost,
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)
@@ -232,7 +233,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUIWebRtcLogsHost,
       kChromeUIWebNNInternalsHost,
 #if BUILDFLAG(IS_CHROMEOS)
-      kChromeUIDlpInternalsHost,
+      ash::kChromeUIDlpInternalsHost,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
       kChromeUIWebuiBrowserHost,

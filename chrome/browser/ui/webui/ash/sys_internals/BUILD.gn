@@ -13,6 +13,7 @@ static_library("sys_internals") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/browser:resources",
     "//chrome/browser/profiles:profile",

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/notreached.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest, ShowDialog) {
   EXPECT_FALSE(LocalFilesMigrationDialog::GetDialog());
 
   content::TestNavigationObserver navigation_observer_dialog(
-      (GURL(chrome::kChromeUILocalFilesMigrationURL)));
+      (GURL(ash::kChromeUILocalFilesMigrationURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   base::MockCallback<StartMigrationCallback> mock_cb;

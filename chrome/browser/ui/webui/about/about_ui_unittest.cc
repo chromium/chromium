@@ -8,30 +8,30 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/scoped_browser_locale.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-#include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
+#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/scoped_browser_locale.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace {
@@ -177,7 +177,7 @@ class ChromeOSCreditsTest : public testing::Test {
     ASSERT_TRUE(resources_dir_.CreateUniqueTempDir());
 
     tested_html_source_ = std::make_unique<AboutUIHTMLSource>(
-        chrome::kChromeUIOSCreditsHost, nullptr);
+        ash::kChromeUIOSCreditsHost, nullptr);
     tested_html_source_->SetOSCreditsPrefixForTesting(resources_dir_.GetPath());
   }
 
@@ -203,7 +203,7 @@ class ChromeOSCreditsTest : public testing::Test {
   void StartRequest(TestDataReceiver* data_receiver) {
     content::WebContents::Getter wc_getter;
     tested_html_source_->StartDataRequest(
-        GURL(base::StrCat({"chrome://", chrome::kChromeUIOSCreditsHost, "/"})),
+        GURL(base::StrCat({"chrome://", ash::kChromeUIOSCreditsHost, "/"})),
         std::move(wc_getter),
         base::BindOnce(&TestDataReceiver::OnDataReceived,
                        base::Unretained(data_receiver)));

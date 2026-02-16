@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_PASSWORD_CHANGE_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_PASSWORD_CHANGE_UI_H_
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
@@ -23,7 +23,7 @@ class PasswordChangeUIConfig
  public:
   PasswordChangeUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIPasswordChangeHost) {}
+                           ash::kChromeUIPasswordChangeHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
@@ -45,7 +45,7 @@ class ConfirmPasswordChangeUIConfig
  public:
   ConfirmPasswordChangeUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIConfirmPasswordChangeHost) {}
+                           ash::kChromeUIConfirmPasswordChangeHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
@@ -66,9 +66,9 @@ class UrgentPasswordExpiryNotificationUIConfig
     : public content::DefaultWebUIConfig<UrgentPasswordExpiryNotificationUI> {
  public:
   UrgentPasswordExpiryNotificationUIConfig()
-      : DefaultWebUIConfig(
-            content::kChromeUIScheme,
-            chrome::kChromeUIUrgentPasswordExpiryNotificationHost) {}
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           ash::kChromeUIUrgentPasswordExpiryNotificationHost) {
+  }
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };

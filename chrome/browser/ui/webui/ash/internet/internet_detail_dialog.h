@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_INTERNET_DETAIL_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_INTERNET_DETAIL_DIALOG_H_
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "content/public/browser/webui_config.h"
@@ -57,7 +57,7 @@ class InternetDetailDialogUIConfig
  public:
   InternetDetailDialogUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIInternetDetailDialogHost) {}
+                           ash::kChromeUIInternetDetailDialogHost) {}
 };
 
 // A WebUI to host a subset of the network details page to allow setting of

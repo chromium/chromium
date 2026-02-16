@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
@@ -32,7 +33,7 @@ static const char kTaskTitle[] = "some app";
 content::WebContents* GetWebContentsFromOfficeFallbackDialog() {
   ash::SystemWebDialogDelegate* dialog =
       ash::SystemWebDialogDelegate::FindInstance(
-          chrome::kChromeUIOfficeFallbackURL);
+          ash::kChromeUIOfficeFallbackURL);
   EXPECT_TRUE(dialog);
   content::WebUI* webui = dialog->GetWebUIForTest();
   EXPECT_TRUE(webui);
@@ -52,7 +53,7 @@ content::WebContents* LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
     DialogChoiceCallback callback) {
   // Watch for Office Fallback dialog URL chrome://office-fallback.
   content::TestNavigationObserver navigation_observer_dialog(
-      (GURL(chrome::kChromeUIOfficeFallbackURL)));
+      (GURL(ash::kChromeUIOfficeFallbackURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Launch Office Fallback dialog.

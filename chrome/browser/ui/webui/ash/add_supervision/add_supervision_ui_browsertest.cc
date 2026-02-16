@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -93,7 +94,7 @@ class AddSupervisionBrowserTest : public InProcessBrowserTest {
   GURL settings_webui_url() { return GURL(chrome::kChromeUISettingsURL); }
 
   GURL add_supervision_webui_url() {
-    return GURL(chrome::kChromeUIAddSupervisionURL);
+    return GURL(ash::kChromeUIAddSupervisionURL);
   }
 
   bool IsScreenActive(const std::string& element_selector) {

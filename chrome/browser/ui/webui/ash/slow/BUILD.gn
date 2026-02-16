@@ -13,6 +13,7 @@ static_library("slow") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/common",

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/app_install_resources.h"
 #include "chrome/grit/app_install_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -28,7 +28,7 @@ namespace ash::app_install {
 AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIAppInstallDialogHost);
+      Profile::FromWebUI(web_ui), ash::kChromeUIAppInstallDialogHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"cancel", IDS_CANCEL},
@@ -111,6 +111,6 @@ WEB_UI_CONTROLLER_TYPE_IMPL(AppInstallDialogUI)
 
 AppInstallDialogUIConfig::AppInstallDialogUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUIAppInstallDialogHost) {}
+                         ash::kChromeUIAppInstallDialogHost) {}
 
 }  // namespace ash::app_install

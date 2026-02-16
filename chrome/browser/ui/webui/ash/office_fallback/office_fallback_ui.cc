@@ -6,10 +6,10 @@
 
 #include <utility>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/office_fallback_resources.h"
 #include "chrome/grit/office_fallback_resources_map.h"
@@ -29,7 +29,7 @@ bool OfficeFallbackUIConfig::IsWebUIEnabled(
 OfficeFallbackUI::OfficeFallbackUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIOfficeFallbackHost);
+      Profile::FromWebUI(web_ui), ash::kChromeUIOfficeFallbackHost);
 
   // Set text for dialog buttons.
   static constexpr webui::LocalizedString kStrings[] = {

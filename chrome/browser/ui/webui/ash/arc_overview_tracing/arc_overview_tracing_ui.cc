@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -17,12 +18,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -42,7 +43,7 @@ constexpr char kJavascriptDomain[] = "cr.ArcOverviewTracing.";
 void CreateAndAddOverviewDataSource(Profile* profile) {
   content::WebUIDataSource* const source =
       content::WebUIDataSource::CreateAndAdd(
-          profile, chrome::kChromeUIArcOverviewTracingHost);
+          profile, ash::kChromeUIArcOverviewTracingHost);
   source->UseStringsJs();
   source->SetDefaultResource(IDR_ARC_OVERVIEW_TRACING_HTML);
   source->AddResourcePath(kArcOverviewTracingJsPath,
@@ -219,7 +220,7 @@ class Handler : public content::WebUIMessageHandler, public ui::EventHandler {
 
 ArcOverviewTracingUIConfig::ArcOverviewTracingUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUIArcOverviewTracingHost) {}
+                         ash::kChromeUIArcOverviewTracingHost) {}
 
 bool ArcOverviewTracingUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

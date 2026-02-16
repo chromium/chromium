@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
-#include "chrome/common/webui_url_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 
@@ -16,7 +16,7 @@ constexpr int kDialogWidth = 768;
 constexpr int kDialogHeight = 608;
 
 GURL GetURL() {
-  return GURL{chrome::kChromeUIManageMirrorSyncURL};
+  return GURL{ash::kChromeUIManageMirrorSyncURL};
 }
 
 }  // namespace

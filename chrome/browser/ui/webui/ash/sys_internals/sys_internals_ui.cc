@@ -6,11 +6,11 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_message_handler.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -26,7 +26,7 @@ SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(Profile::FromWebUI(web_ui),
-                                             chrome::kChromeUISysInternalsHost);
+                                             ash::kChromeUISysInternalsHost);
   webui::EnableTrustedTypesCSP(html_source);
 
   html_source->OverrideContentSecurityPolicy(

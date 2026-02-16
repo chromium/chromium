@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/manage_mirrorsync_resources.h"
 #include "chrome/grit/manage_mirrorsync_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -23,7 +23,7 @@ bool ManageMirrorSyncUIConfig::IsWebUIEnabled(
 ManageMirrorSyncUI::ManageMirrorSyncUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIManageMirrorSyncHost);
+      Profile::FromWebUI(web_ui), ash::kChromeUIManageMirrorSyncHost);
   webui::SetupWebUIDataSource(source, kManageMirrorsyncResources,
                               IDR_MANAGE_MIRRORSYNC_INDEX_HTML);
 }

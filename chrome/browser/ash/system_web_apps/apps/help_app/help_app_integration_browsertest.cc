@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/shell.h"
 #include "ash/webui/help_app_ui/buildflags.h"
 #include "ash/webui/help_app_ui/help_app_manager.h"
@@ -56,7 +57,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -933,8 +933,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2CanOpenMS365Setup) {
                 SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
 
   ash::SystemWebDialogDelegate* dialog =
-      ash::SystemWebDialogDelegate::FindInstance(
-          chrome::kChromeUICloudUploadURL);
+      ash::SystemWebDialogDelegate::FindInstance(ash::kChromeUICloudUploadURL);
   EXPECT_TRUE(dialog);
 }
 

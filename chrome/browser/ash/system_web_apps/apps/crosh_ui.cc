@@ -4,15 +4,15 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/crosh_ui.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/ash/system_web_apps/apps/terminal_source.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 
 CroshUIConfig::CroshUIConfig()
     : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
-                         chrome::kChromeUIUntrustedCroshHost) {}
+                         ash::kChromeUIUntrustedCroshHost) {}
 
 CroshUIConfig::~CroshUIConfig() = default;
 

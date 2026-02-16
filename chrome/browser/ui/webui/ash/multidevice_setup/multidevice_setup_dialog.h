@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -68,7 +68,7 @@ class MultiDeviceSetupDialogUIConfig
  public:
   MultiDeviceSetupDialogUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIMultiDeviceSetupHost) {}
+                           ash::kChromeUIMultiDeviceSetupHost) {}
 };
 
 class MultiDeviceSetupDialogUI : public ui::MojoWebDialogUI {

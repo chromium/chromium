@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_POWER_UI_POWER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_POWER_UI_POWER_UI_H_
 
-#include "chrome/common/webui_url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -18,8 +18,7 @@ class PowerUI;
 class PowerUIConfig : public content::DefaultWebUIConfig<PowerUI> {
  public:
   PowerUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIPowerHost) {}
+      : DefaultWebUIConfig(content::kChromeUIScheme, ash::kChromeUIPowerHost) {}
 };
 class PowerUI : public content::WebUIController {
  public:

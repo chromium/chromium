@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
@@ -20,8 +21,6 @@
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_handler.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/multidevice_setup_resources.h"
 #include "chrome/grit/multidevice_setup_resources_map.h"
@@ -82,7 +81,7 @@ void MultiDeviceSetupDialog::AddOnCloseCallback(base::OnceClosure callback) {
 }
 
 MultiDeviceSetupDialog::MultiDeviceSetupDialog()
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUIMultiDeviceSetupUrl),
+    : SystemWebDialogDelegate(GURL(ash::kChromeUIMultiDeviceSetupUrl),
                               std::u16string()) {}
 
 MultiDeviceSetupDialog::~MultiDeviceSetupDialog() {
@@ -116,7 +115,7 @@ void MultiDeviceSetupDialog::AdjustWidgetInitParams(
 MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIMultiDeviceSetupHost);
+      Profile::FromWebUI(web_ui), ash::kChromeUIMultiDeviceSetupHost);
 
   AddLocalizedStrings(source);
   source->UseStringsJs();

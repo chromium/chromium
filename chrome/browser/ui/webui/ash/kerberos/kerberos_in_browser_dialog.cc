@@ -7,13 +7,13 @@
 #include <algorithm>
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
@@ -38,7 +38,7 @@ void KerberosInBrowserDialog::AdjustWidgetInitParams(
 
 KerberosInBrowserDialog::KerberosInBrowserDialog(
     base::OnceClosure close_dialog_closure)
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUIKerberosInBrowserURL),
+    : SystemWebDialogDelegate(GURL(ash::kChromeUIKerberosInBrowserURL),
                               /*title=*/std::u16string()),
       close_dialog_closure_(std::move(close_dialog_closure)) {
   DCHECK(!g_dialog);

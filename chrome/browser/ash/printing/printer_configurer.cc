@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
 #include "chromeos/dbus/common/dbus_library_error.h"
@@ -379,7 +379,7 @@ std::unique_ptr<PrinterConfigurer> PrinterConfigurer::Create(
 
 // static
 GURL PrinterConfigurer::GeneratePrinterEulaUrl(const std::string& license) {
-  GURL eula_url(chrome::kChromeUIOSCreditsURL);
+  GURL eula_url(ash::kChromeUIOSCreditsURL);
   // Construct the URL with proper reference fragment.
   GURL::Replacements replacements;
   replacements.SetRefStr(license);

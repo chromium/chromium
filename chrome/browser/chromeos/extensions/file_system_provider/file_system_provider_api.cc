@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/check_deref.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
-#include "chrome/common/webui_url_constants.h"
 #include "storage/browser/file_system/watcher_manager.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
@@ -160,7 +160,7 @@ std::string FileSystemProviderBase::GetProviderId() const {
   // Terminal app is the only non-extension to use fsp.
   if (!extension()) {
     CHECK(url::IsSameOriginWith(source_url(),
-                                GURL(chrome::kChromeUIUntrustedTerminalURL)));
+                                GURL(ash::kChromeUIUntrustedTerminalURL)));
     return guest_os::kTerminalSystemAppId;
   }
   return extension_id();

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_ui.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting.mojom.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_page_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/enterprise_reporting_resources.h"
 #include "chrome/grit/enterprise_reporting_resources_map.h"
 #include "components/version_info/version_info.h"
@@ -57,7 +57,7 @@ EnterpriseReportingUI::EnterpriseReportingUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
-          chrome::kChromeUIEnterpriseReportingHost);
+          ash::kChromeUIEnterpriseReportingHost);
 
   // Populate device info.
   html_source->AddString("deviceInfo",

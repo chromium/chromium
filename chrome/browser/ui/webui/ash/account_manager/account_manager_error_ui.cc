@@ -4,11 +4,10 @@
 
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -21,7 +20,7 @@ AccountManagerErrorUI::AccountManagerErrorUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui), weak_factory_(this) {
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
-          Profile::FromWebUI(web_ui), chrome::kChromeUIAccountManagerErrorHost);
+          Profile::FromWebUI(web_ui), ash::kChromeUIAccountManagerErrorHost);
   webui::EnableTrustedTypesCSP(html_source);
 
   web_ui->RegisterMessageCallback(

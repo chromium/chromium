@@ -67,6 +67,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include <map>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/borealis/borealis_credits.h"
@@ -451,14 +452,13 @@ LinuxProxyConfigUI::LinuxProxyConfigUI()
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-OSCreditsUI::OSCreditsUI()
-    : AboutUIConfigBase(chrome::kChromeUIOSCreditsHost) {}
+OSCreditsUI::OSCreditsUI() : AboutUIConfigBase(ash::kChromeUIOSCreditsHost) {}
 
 BorealisCreditsUI::BorealisCreditsUI()
-    : AboutUIConfigBase(chrome::kChromeUIBorealisCreditsHost) {}
+    : AboutUIConfigBase(ash::kChromeUIBorealisCreditsHost) {}
 
 CrostiniCreditsUI::CrostiniCreditsUI()
-    : AboutUIConfigBase(chrome::kChromeUICrostiniCreditsHost) {}
+    : AboutUIConfigBase(ash::kChromeUICrostiniCreditsHost) {}
 #endif
 
 // AboutUIHTMLSource ----------------------------------------------------------
@@ -500,9 +500,9 @@ void AboutUIHTMLSource::StartDataRequest(
     response = AboutLinuxProxyConfig();
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-  } else if (source_name_ == chrome::kChromeUIOSCreditsHost ||
-             source_name_ == chrome::kChromeUICrostiniCreditsHost ||
-             source_name_ == chrome::kChromeUIBorealisCreditsHost) {
+  } else if (source_name_ == ash::kChromeUIOSCreditsHost ||
+             source_name_ == ash::kChromeUICrostiniCreditsHost ||
+             source_name_ == ash::kChromeUIBorealisCreditsHost) {
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
     if (path == kCreditsJsPath) {
       idr = IDR_ABOUT_UI_CREDITS_JS;
@@ -510,12 +510,12 @@ void AboutUIHTMLSource::StartDataRequest(
       idr = IDR_ABOUT_UI_CREDITS_CSS;
     }
     if (idr == IDR_ABOUT_UI_CREDITS_HTML) {
-      if (source_name_ == chrome::kChromeUIOSCreditsHost) {
+      if (source_name_ == ash::kChromeUIOSCreditsHost) {
         ChromeOSCreditsHandler::Start(path, std::move(callback),
                                       os_credits_prefix_);
-      } else if (source_name_ == chrome::kChromeUICrostiniCreditsHost) {
+      } else if (source_name_ == ash::kChromeUICrostiniCreditsHost) {
         CrostiniCreditsHandler::Start(profile(), path, std::move(callback));
-      } else if (source_name_ == chrome::kChromeUIBorealisCreditsHost) {
+      } else if (source_name_ == ash::kChromeUIBorealisCreditsHost) {
         HandleBorealisCredits(profile(), std::move(callback));
       } else {
         NOTREACHED();
@@ -568,7 +568,7 @@ std::string AboutUIHTMLSource::GetAccessControlAllowOriginForOrigin(
 #if BUILDFLAG(IS_CHROMEOS)
   // Allow chrome://oobe to load chrome://terms via XHR.
   if (source_name_ == chrome::kChromeUITermsHost &&
-      base::StartsWith(chrome::kChromeUIOobeURL, origin,
+      base::StartsWith(ash::kChromeUIOobeURL, origin,
                        base::CompareCase::SENSITIVE)) {
     return origin;
   }

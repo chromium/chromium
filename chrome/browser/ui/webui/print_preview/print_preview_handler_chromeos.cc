@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/to_value_list.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/printing/printer_capabilities.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/printing_constants.h"
@@ -373,8 +373,8 @@ void PrintPreviewHandlerChromeOS::HandleGetShowManagePrinters(
     return;
   }
 
-  const bool domain_is_os_settings = initiator->GetLastCommittedURL().DomainIs(
-      chrome::kChromeUIOSSettingsHost);
+  const bool domain_is_os_settings =
+      initiator->GetLastCommittedURL().DomainIs(ash::kChromeUIOSSettingsHost);
   ResolveJavascriptCallback(args[0], base::Value(!domain_is_os_settings));
 }
 

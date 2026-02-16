@@ -9,8 +9,6 @@
 #include <memory>
 #include <string_view>
 
-#include "ash/constants/ash_features.h"
-#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
@@ -71,9 +69,12 @@
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
+#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #else
@@ -432,7 +433,7 @@ void ShowBetaForum(Browser* browser) {
 
 void ShowSlow(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS)
-  ShowSingletonTab(browser, GURL(kChromeUISlowURL));
+  ShowSingletonTab(browser, GURL(ash::kChromeUISlowURL));
 #endif
 }
 
@@ -726,7 +727,7 @@ void ShowGraduationApp(Profile* profile) {
 GURL GetOSSettingsUrl(std::string_view sub_page) {
   DCHECK(sub_page.empty() || chromeos::settings::IsOSSettingsSubPage(sub_page))
       << sub_page;
-  return GURL(base::StrCat({kChromeUIOSSettingsURL, sub_page}));
+  return GURL(base::StrCat({ash::kChromeUIOSSettingsURL, sub_page}));
 }
 
 void ShowPrintManagementApp(Profile* profile) {

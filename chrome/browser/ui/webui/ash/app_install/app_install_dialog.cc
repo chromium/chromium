@@ -9,6 +9,7 @@
 #include <variant>
 #include <vector>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/style/typography.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_app_icon_loader.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/common/constants.h"
 #include "ui/aura/window.h"
@@ -187,7 +187,7 @@ void AppInstallDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 AppInstallDialog::AppInstallDialog()
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUIAppInstallDialogURL),
+    : SystemWebDialogDelegate(GURL(ash::kChromeUIAppInstallDialogURL),
                               /*title=*/u"") {}
 
 AppInstallDialog::~AppInstallDialog() = default;

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -26,10 +27,10 @@ OSSettingsSystemAppDelegate::OSSettingsSystemAppDelegate(Profile* profile)
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 OSSettingsSystemAppDelegate::GetWebAppInfo() const {
-  GURL start_url = GURL(chrome::kChromeUIOSSettingsURL);
+  GURL start_url = GURL(ash::kChromeUIOSSettingsURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
-  info->scope = GURL(chrome::kChromeUIOSSettingsURL);
+  info->scope = GURL(ash::kChromeUIOSSettingsURL);
   info->title = l10n_util::GetStringUTF16(IDS_SETTINGS_SETTINGS);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url(),

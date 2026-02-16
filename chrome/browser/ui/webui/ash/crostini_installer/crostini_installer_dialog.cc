@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_dialog.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/callback_helpers.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/aura/client/aura_constants.h"
@@ -28,7 +28,7 @@ constexpr int kDialogWidth = 768;
 constexpr int kDialogHeight = 608;
 
 GURL GetUrl() {
-  return GURL{chrome::kChromeUICrostiniInstallerUrl};
+  return GURL{ash::kChromeUICrostiniInstallerUrl};
 }
 }  // namespace
 

@@ -9,8 +9,8 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -61,7 +61,7 @@ class BluetoothPairingDialogUIConfig
  public:
   BluetoothPairingDialogUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIBluetoothPairingHost) {}
+                           ash::kChromeUIBluetoothPairingHost) {}
 };
 
 // A WebUI to host the Bluetooth device pairing web UI.

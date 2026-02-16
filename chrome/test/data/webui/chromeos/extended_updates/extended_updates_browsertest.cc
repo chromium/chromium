@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -26,7 +26,7 @@
 class ExtendedUpdatesBrowserTest : public WebUIMochaBrowserTest {
  protected:
   ExtendedUpdatesBrowserTest() {
-    set_test_loader_host(chrome::kChromeUIExtendedUpdatesDialogHost);
+    set_test_loader_host(ash::kChromeUIExtendedUpdatesDialogHost);
   }
 
   void SetUpOnMainThread() override {

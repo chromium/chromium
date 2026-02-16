@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_BOREALIS_INSTALLER_BOREALIS_INSTALLER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_BOREALIS_INSTALLER_BOREALIS_INSTALLER_UI_H_
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer.mojom.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_page_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -26,7 +26,7 @@ class BorealisInstallerUIConfig
  public:
   BorealisInstallerUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIBorealisInstallerHost) {}
+                           ash::kChromeUIBorealisInstallerHost) {}
 };
 
 // The WebUI for chrome://borealis-installer

@@ -7,9 +7,9 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace ash::app_install {
@@ -17,7 +17,7 @@ namespace ash::app_install {
 content::WebContents* GetWebContentsFromDialog() {
   ash::SystemWebDialogDelegate* dialog =
       ash::SystemWebDialogDelegate::FindInstance(
-          chrome::kChromeUIAppInstallDialogURL);
+          ash::kChromeUIAppInstallDialogURL);
   if (!dialog) {
     return nullptr;
   }

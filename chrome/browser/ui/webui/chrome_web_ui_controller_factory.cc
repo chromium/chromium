@@ -94,6 +94,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "ash/webui/files_internals/url_constants.h"
@@ -468,7 +469,7 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (page_url.host() == chrome::kChromeUIOSSettingsHost) {
+  if (page_url.host() == ash::kChromeUIOSSettingsHost) {
     return settings_utils::GetFaviconResourceBytes(scale_factor);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

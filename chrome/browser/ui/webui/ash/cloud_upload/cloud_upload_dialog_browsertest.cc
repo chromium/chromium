@@ -14,6 +14,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -52,7 +53,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -159,8 +159,7 @@ int PositionInList(base::ListValue& list, const std::string& elt) {
 // Get web contents of chrome://cloud-upload.
 content::WebContents* GetWebContentsFromCloudUploadDialog() {
   ash::SystemWebDialogDelegate* dialog =
-      ash::SystemWebDialogDelegate::FindInstance(
-          chrome::kChromeUICloudUploadURL);
+      ash::SystemWebDialogDelegate::FindInstance(ash::kChromeUICloudUploadURL);
   EXPECT_TRUE(dialog);
   content::WebUI* webui = dialog->GetWebUIForTest();
   EXPECT_TRUE(webui);
@@ -179,7 +178,7 @@ void LaunchCloudUploadDialog(
     std::unique_ptr<CloudOpenMetrics> cloud_open_metrics) {
   // Watch for dialog URL chrome://cloud-upload.
   content::TestNavigationObserver navigation_observer_dialog(
-      (GURL(chrome::kChromeUICloudUploadURL)));
+      (GURL(ash::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Launch dialog.
@@ -465,8 +464,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, DialogClosedUnexpectedly) {
   // Close the dialog with no user response and wait for the dialog to close.
   content::WebContentsDestroyedWatcher watcher(web_contents);
   ash::SystemWebDialogDelegate* dialog =
-      ash::SystemWebDialogDelegate::FindInstance(
-          chrome::kChromeUICloudUploadURL);
+      ash::SystemWebDialogDelegate::FindInstance(ash::kChromeUICloudUploadURL);
   EXPECT_TRUE(dialog);
   dialog->Close();
 
@@ -660,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, DefaultSetForDocsOnly) {
       "document.querySelector('file-handler-page').$('#drive').click()"));
 
   content::TestNavigationObserver navigation_observer_move_page(
-      (GURL(chrome::kChromeUICloudUploadURL)));
+      (GURL(ash::kChromeUICloudUploadURL)));
   navigation_observer_move_page.StartWatchingNewWebContents();
 
   // Click the open button.
@@ -1115,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(
     ShowConnectOneDriveDialogWithModalParent_OpensAndClosesDialog) {
   // Watch for the Connect OneDrive dialog URL chrome://cloud-upload.
   content::TestNavigationObserver navigation_observer_dialog(
-      (GURL(chrome::kChromeUICloudUploadURL)));
+      (GURL(ash::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Launch the Connect OneDrive dialog on top of a files app.
@@ -1143,7 +1141,7 @@ IN_PROC_BROWSER_TEST_F(
     ShowConnectOneDriveDialogWithoutModalParent_OpensAndClosesDialog) {
   // Watch for the Connect OneDrive dialog URL chrome://cloud-upload.
   content::TestNavigationObserver navigation_observer_dialog(
-      (GURL(chrome::kChromeUICloudUploadURL)));
+      (GURL(ash::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Launch the Connect OneDrive dialog without a modal parent.
@@ -1571,7 +1569,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
 
   // Watch for OneDrive Setup dialog URL chrome://cloud-upload.
   content::TestNavigationObserver navigation_observer_dialog(
-      (GURL(chrome::kChromeUICloudUploadURL)));
+      (GURL(ash::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Check that there is not a default task for doc or xlsx files.
@@ -1651,7 +1649,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
 
   // Watch for OneDrive Setup dialog URL chrome://cloud-upload.
   content::TestNavigationObserver navigation_observer_dialog(
-      (GURL(chrome::kChromeUICloudUploadURL)));
+      (GURL(ash::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Open the Welcome Page for the OneDrive set up part of the Setup flow. This

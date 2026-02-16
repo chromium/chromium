@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/build_time.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/set_time/set_time_dialog.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/set_time_dialog_resources.h"
 #include "chrome/grit/set_time_dialog_resources_map.h"
@@ -165,7 +165,7 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
 
   // Set up the chrome://set-time source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUISetTimeHost);
+      Profile::FromWebUI(web_ui), ash::kChromeUISetTimeHost);
   webui::SetJSModuleDefaults(source);
   webui::EnableTrustedTypesCSP(source);
   static constexpr webui::LocalizedString kStrings[] = {

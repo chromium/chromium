@@ -7,12 +7,12 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -29,8 +29,8 @@ constexpr char kArcTracingCssPath[] = "arc_tracing.css";
 
 void CreateAndAddPowerControlDataSource(Profile* profile) {
   content::WebUIDataSource* const source =
-      content::WebUIDataSource::CreateAndAdd(
-          profile, chrome::kChromeUIArcPowerControlHost);
+      content::WebUIDataSource::CreateAndAdd(profile,
+                                             ash::kChromeUIArcPowerControlHost);
   source->UseStringsJs();
   source->SetDefaultResource(IDR_ARC_POWER_CONTROL_HTML);
   source->AddResourcePath(kArcPowerControlJsPath, IDR_ARC_POWER_CONTROL_JS);

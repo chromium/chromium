@@ -7,10 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -19,15 +19,15 @@
 CroshSystemAppDelegate::CroshSystemAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::CROSH,
                                 "Crosh",
-                                GURL(chrome::kChromeUIUntrustedCroshURL),
+                                GURL(ash::kChromeUIUntrustedCroshURL),
                                 profile) {}
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CroshSystemAppDelegate::GetWebAppInfo() const {
-  GURL start_url(chrome::kChromeUIUntrustedCroshURL);
+  GURL start_url(ash::kChromeUIUntrustedCroshURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
-  info->scope = GURL(chrome::kChromeUIUntrustedCroshURL);
+  info->scope = GURL(ash::kChromeUIUntrustedCroshURL);
   info->title = std::u16string(u"crosh");
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url(), {{"app_icon_256.png", 256, IDR_LOGO_CROSH}}, *info);

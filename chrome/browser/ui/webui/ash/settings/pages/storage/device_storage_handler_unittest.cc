@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/byte_count.h"
 #include "base/containers/adapters.h"
@@ -130,7 +131,7 @@ class StorageHandlerTest : public testing::Test {
     // Initialize storage handler.
     content::WebUIDataSource* html_source =
         content::WebUIDataSource::CreateAndAdd(profile_,
-                                               chrome::kChromeUIOSSettingsHost);
+                                               ash::kChromeUIOSSettingsHost);
     auto handler = std::make_unique<StorageHandler>(profile_, html_source);
     handler_ = handler.get();
     web_ui_ = std::make_unique<content::TestWebUI>();

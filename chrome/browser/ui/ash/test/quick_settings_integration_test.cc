@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/shell.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/test/gtest_tags.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -38,19 +38,18 @@ IN_PROC_BROWSER_TEST_F(QuickSettingsIntegrationTest, OpenOsSettings) {
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsElementId);
 
-  RunTestSequence(
-      Log("Opening quick settings bubble"),
-      PressButton(kUnifiedSystemTrayElementId),
-      WaitForShow(kQuickSettingsViewElementId),
+  RunTestSequence(Log("Opening quick settings bubble"),
+                  PressButton(kUnifiedSystemTrayElementId),
+                  WaitForShow(kQuickSettingsViewElementId),
 
-      Log("Clicking settings button"),
-      InstrumentNextTab(kOsSettingsElementId, AnyBrowser()),
-      PressButton(kQuickSettingsSettingsButtonElementId),
-      WaitForShow(kOsSettingsElementId),
+                  Log("Clicking settings button"),
+                  InstrumentNextTab(kOsSettingsElementId, AnyBrowser()),
+                  PressButton(kQuickSettingsSettingsButtonElementId),
+                  WaitForShow(kOsSettingsElementId),
 
-      Log("Verifying that OS Settings loads"),
-      WaitForWebContentsReady(kOsSettingsElementId,
-                              GURL(chrome::kChromeUIOSSettingsURL)));
+                  Log("Verifying that OS Settings loads"),
+                  WaitForWebContentsReady(kOsSettingsElementId,
+                                          GURL(ash::kChromeUIOSSettingsURL)));
 }
 
 IN_PROC_BROWSER_TEST_F(QuickSettingsIntegrationTest, ManagedDeviceInfo) {

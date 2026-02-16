@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_ACCOUNT_MANAGER_ACCOUNT_MIGRATION_WELCOME_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_ACCOUNT_MANAGER_ACCOUNT_MIGRATION_WELCOME_UI_H_
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -22,7 +22,7 @@ class AccountMigrationWelcomeUIConfig
  public:
   AccountMigrationWelcomeUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIAccountMigrationWelcomeHost) {}
+                           ash::kChromeUIAccountMigrationWelcomeHost) {}
 };
 
 // For chrome:://account-migration-welcome

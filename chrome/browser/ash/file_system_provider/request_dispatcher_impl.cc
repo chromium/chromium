@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "extensions/browser/event_router.h"
 #include "url/gurl.h"
@@ -49,7 +49,7 @@ bool RequestDispatcherImpl::DispatchRequest(
   }
 
   if (extension_id_ == guest_os::kTerminalSystemAppId) {
-    GURL terminal(chrome::kChromeUIUntrustedTerminalURL);
+    GURL terminal(ash::kChromeUIUntrustedTerminalURL);
     if (event_router_->URLHasEventListener(terminal, event->event_name)) {
       event_router_->DispatchEventToURL(terminal, std::move(event));
       if (chromeos::features::IsUploadOfficeToCloudEnabled()) {

@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
@@ -71,7 +72,7 @@ GURL GetInlineLoginUrl(const std::string& email) {
   if (!ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
           ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed)) {
     // Addition of secondary Google Accounts is not allowed.
-    return GURL(chrome::kChromeUIAccountManagerErrorURL);
+    return GURL(ash::kChromeUIAccountManagerErrorURL);
   }
 
   // Addition of secondary Google Accounts is allowed.

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom-forward.h"
 #include "ash/webui/common/mojom/accelerator_fetcher.mojom.h"
 #include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/user_action_recorder.mojom-forward.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-forward.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
@@ -71,7 +71,7 @@ class OSSettingsUIConfig : public content::DefaultWebUIConfig<OSSettingsUI> {
  public:
   OSSettingsUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIOSSettingsHost) {}
+                           ash::kChromeUIOSSettingsHost) {}
 };
 
 // The WebUI handler for chrome://os-settings.

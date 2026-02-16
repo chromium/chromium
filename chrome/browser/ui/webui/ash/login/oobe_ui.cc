@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -287,8 +288,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
                                   const std::string& display_type) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, chrome::kChromeUIOobeHost);
+  content::WebUIDataSource* source =
+      content::WebUIDataSource::CreateAndAdd(profile, ash::kChromeUIOobeHost);
   ash::EnableTrustedTypesCSP(source);
   source->AddLocalizedStrings(localized_strings);
   source->UseStringsJs();

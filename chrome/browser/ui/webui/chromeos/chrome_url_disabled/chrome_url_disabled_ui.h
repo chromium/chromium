@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CHROME_URL_DISABLED_CHROME_URL_DISABLED_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CHROME_URL_DISABLED_CHROME_URL_DISABLED_UI_H_
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -20,7 +20,7 @@ class ChromeURLDisabledUIConfig
  public:
   ChromeURLDisabledUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIAppDisabledHost) {}
+                           ash::kChromeUIAppDisabledHost) {}
 };
 
 // For chrome:://.* error page when disabled by admin policy.

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_UI_H_
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_page_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
@@ -21,7 +21,7 @@ class CloudUploadUIConfig : public content::DefaultWebUIConfig<CloudUploadUI> {
  public:
   CloudUploadUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUICloudUploadHost) {}
+                           ash::kChromeUICloudUploadHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };

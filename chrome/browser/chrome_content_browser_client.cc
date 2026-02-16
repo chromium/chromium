@@ -571,6 +571,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/webui_url_constants.h"
 #include "ash/shell.h"
 #include "base/debug/leak_annotations.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
@@ -6157,7 +6158,7 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
 
   // chrome://os-settings/pwa.html shouldn't be replaced to let the settings app
   // installation complete successfully.
-  if (url.DomainIs(chrome::kChromeUIOSSettingsHost) &&
+  if (url.DomainIs(ash::kChromeUIOSSettingsHost) &&
       url.GetPath() != "/pwa.html") {
     return IsSystemFeatureDisabled(policy::SystemFeature::kOsSettings);
   }
@@ -6166,8 +6167,7 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
     return IsSystemFeatureDisabled(policy::SystemFeature::kBrowserSettings);
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  if (url.DomainIs(chrome::kChromeUIUntrustedCroshHost)) {
+  if (url.DomainIs(ash::kChromeUIUntrustedCroshHost)) {
     return IsSystemFeatureDisabled(policy::SystemFeature::kCrosh);
   }
 
@@ -6187,7 +6187,7 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
     return IsSystemFeatureDisabled(policy::SystemFeature::kGallery);
   }
 
-  if (url.DomainIs(chrome::kChromeUIUntrustedTerminalHost)) {
+  if (url.DomainIs(ash::kChromeUIUntrustedTerminalHost)) {
     return IsSystemFeatureDisabled(policy::SystemFeature::kTerminal);
   }
 
@@ -6202,8 +6202,6 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
   if (url.DomainIs(ash::kChromeUIRecorderAppHost)) {
     return IsSystemFeatureDisabled(policy::SystemFeature::kRecorder);
   }
-
-#endif
 
   return false;
 }
@@ -7118,7 +7116,7 @@ bool ChromeContentBrowserClient::HandleWebUI(
   }
 
   if (IsSystemFeatureURLDisabled(*url)) {
-    *url = GURL(chrome::kChromeUIAppDisabledURL);
+    *url = GURL(ash::kChromeUIAppDisabledURL);
     return true;
   }
 #endif

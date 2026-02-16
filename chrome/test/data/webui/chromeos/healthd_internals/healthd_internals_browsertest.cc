@@ -5,8 +5,8 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -16,7 +16,7 @@ namespace {
 class HealthdInternalsBrowserTest : public WebUIMochaBrowserTest {
  protected:
   HealthdInternalsBrowserTest() {
-    set_test_loader_host(::chrome::kChromeUIHealthdInternalsHost);
+    set_test_loader_host(ash::kChromeUIHealthdInternalsHost);
   }
 
   void RunTestAtPath(const std::string& testFilePath) {

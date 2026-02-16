@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -87,7 +87,7 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
           Profile::FromWebUI(web_ui),
-          chrome::kChromeUIAccountMigrationWelcomeHost);
+          ash::kChromeUIAccountMigrationWelcomeHost);
   webui::SetJSModuleDefaults(html_source);
   webui::EnableTrustedTypesCSP(html_source);
 

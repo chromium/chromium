@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
@@ -10,7 +11,6 @@
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -28,9 +28,7 @@ namespace ash::settings {
 
 class OSSettingsMochaTest : public WebUIMochaBrowserTest {
  protected:
-  OSSettingsMochaTest() {
-    set_test_loader_host(chrome::kChromeUIOSSettingsHost);
-  }
+  OSSettingsMochaTest() { set_test_loader_host(ash::kChromeUIOSSettingsHost); }
 
   // Runs the specified test.
   // - test_path: The path to the test file within the CrOS Settings test root

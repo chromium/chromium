@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom-forward.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -26,7 +26,7 @@ class ParentAccessUIConfig
  public:
   ParentAccessUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIParentAccessHost) {}
+                           ash::kChromeUIParentAccessHost) {}
 };
 
 // Controller for the ParentAccessUI, a WebUI which enables parent verification.

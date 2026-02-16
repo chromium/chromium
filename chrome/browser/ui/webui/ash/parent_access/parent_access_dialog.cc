@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/window_dimmer.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -84,7 +84,7 @@ ParentAccessDialogProvider::ShowError ParentAccessDialogProvider::Show(
 // static
 ParentAccessDialog* ParentAccessDialog::GetInstance() {
   return static_cast<ParentAccessDialog*>(
-      SystemWebDialogDelegate::FindInstance(chrome::kChromeUIParentAccessURL));
+      SystemWebDialogDelegate::FindInstance(ash::kChromeUIParentAccessURL));
 }
 
 ui::mojom::ModalType ParentAccessDialog::GetDialogModalType() const {
@@ -155,7 +155,7 @@ ParentAccessDialog::GetParentAccessParamsForTest() const {
 ParentAccessDialog::ParentAccessDialog(
     parent_access_ui::mojom::ParentAccessParamsPtr params,
     ParentAccessDialog::Callback callback)
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUIParentAccessURL),
+    : SystemWebDialogDelegate(GURL(ash::kChromeUIParentAccessURL),
                               /*title=*/std::u16string()),
       parent_access_params_(std::move(params)),
       callback_(std::move(callback)) {}

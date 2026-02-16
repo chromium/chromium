@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_dialog.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
@@ -269,7 +269,7 @@ void LockScreenStartReauthDialog::OnCaptivePortalDialogReadyForTesting() {
 }
 
 LockScreenStartReauthDialog::LockScreenStartReauthDialog()
-    : BaseLockDialog(GURL(chrome::kChromeUILockScreenStartReauthURL),
+    : BaseLockDialog(GURL(ash::kChromeUILockScreenStartReauthURL),
                      CalculateOobeDialogSizeForPrimaryDisplay()),
       network_state_informer_(base::MakeRefCounted<NetworkStateInformer>()) {
   network_state_informer_->Init();

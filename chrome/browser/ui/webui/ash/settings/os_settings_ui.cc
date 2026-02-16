@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/audio_config_service.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/connectivity_services.h"
@@ -54,7 +55,6 @@
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "chrome/grit/os_settings_resources_map.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
@@ -170,7 +170,7 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(profile,
-                                             chrome::kChromeUIOSSettingsHost);
+                                             ash::kChromeUIOSSettingsHost);
   html_source->SetRequestFilter(
       base::BindRepeating([](const std::string& path) {
         return ExtractJapaneseDictionaryExportIdParam(path).has_value();

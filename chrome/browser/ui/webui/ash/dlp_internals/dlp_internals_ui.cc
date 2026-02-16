@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/ash/dlp_internals/dlp_internals_ui.h"
 
+#include "ash/constants/url_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/dlp_internals_resources.h"
 #include "chrome/grit/dlp_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -20,7 +20,7 @@ DlpInternalsUI::DlpInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, chrome::kChromeUIDlpInternalsHost);
+      profile, ash::kChromeUIDlpInternalsHost);
 
   source->AddBoolean("isOtr", profile->IsOffTheRecord());
   DlpRulesManager* rules_manager =

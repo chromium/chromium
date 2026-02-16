@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -54,7 +54,7 @@ void SmbShareDialog::Show() {
 }
 
 SmbShareDialog::SmbShareDialog()
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUISmbShareURL),
+    : SystemWebDialogDelegate(GURL(ash::kChromeUISmbShareURL),
                               std::u16string() /* title */) {}
 
 SmbShareDialog::~SmbShareDialog() = default;
@@ -66,7 +66,7 @@ void SmbShareDialog::GetDialogSize(gfx::Size* size) const {
 SmbShareDialogUI::SmbShareDialogUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUISmbShareHost);
+      Profile::FromWebUI(web_ui), ash::kChromeUISmbShareHost);
   ash::EnableTrustedTypesCSP(source);
 
   AddSmbSharesStrings(source);

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CRYPTOHOME_CRYPTOHOME_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CRYPTOHOME_CRYPTOHOME_UI_H_
 
-#include "chrome/common/webui_url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -19,7 +19,7 @@ class CryptohomeUIConfig : public content::DefaultWebUIConfig<CryptohomeUI> {
  public:
   CryptohomeUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUICryptohomeHost) {}
+                           ash::kChromeUICryptohomeHost) {}
 };
 
 // WebUIController for chrome://cryptohome.

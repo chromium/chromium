@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_UI_H_
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync.mojom.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_page_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
@@ -22,7 +22,7 @@ class ManageMirrorSyncUIConfig
  public:
   ManageMirrorSyncUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIManageMirrorSyncHost) {}
+                           ash::kChromeUIManageMirrorSyncHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };

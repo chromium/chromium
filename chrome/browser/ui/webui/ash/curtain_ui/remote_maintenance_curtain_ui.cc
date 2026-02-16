@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/curtain_ui/remote_maintenance_curtain_ui.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/remote_maintenance_curtain_resources.h"
 #include "chrome/grit/remote_maintenance_curtain_resources_map.h"
@@ -19,7 +19,7 @@ namespace ash {
 RemoteMaintenanceCurtainUI::RemoteMaintenanceCurtainUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIRemoteManagementCurtainHost);
+      Profile::FromWebUI(web_ui), ash::kChromeUIRemoteManagementCurtainHost);
 
   webui::SetupWebUIDataSource(source, kRemoteMaintenanceCurtainResources,
                               IDR_REMOTE_MAINTENANCE_CURTAIN_MAIN_HTML);

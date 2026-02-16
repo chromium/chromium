@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_dialog.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/simple_message_box.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -25,7 +25,7 @@ constexpr int kMobileSetupDialogWidth = 850;
 constexpr int kMobileSetupDialogHeight = 650;
 
 GURL GetURL(const NetworkState& network) {
-  std::string url(chrome::kChromeUIMobileSetupURL);
+  std::string url(ash::kChromeUIMobileSetupURL);
   // TODO(stevenjb): Use GUID instead.
   url.append(network.path());
   return GURL(url);

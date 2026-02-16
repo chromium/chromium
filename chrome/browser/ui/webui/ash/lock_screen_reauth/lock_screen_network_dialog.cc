@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/oobe_dialog_size_utils.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -23,7 +23,7 @@ namespace ash {
 
 LockScreenNetworkDialog::LockScreenNetworkDialog(
     NetworkDialogCleanupCallback callback)
-    : BaseLockDialog(GURL(chrome::kChromeUILockScreenNetworkURL),
+    : BaseLockDialog(GURL(ash::kChromeUILockScreenNetworkURL),
                      CalculateOobeDialogSizeForPrimaryDisplay()) {
   callback_ = std::move(callback);
 }

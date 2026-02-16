@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/webui_url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
 class SecurityTokenPinBrowserTest : public WebUIMochaBrowserTest {
  protected:
   SecurityTokenPinBrowserTest() {
-    set_test_loader_host(chrome::kChromeUIOobeHost);
+    set_test_loader_host(ash::kChromeUIOobeHost);
   }
 };
 

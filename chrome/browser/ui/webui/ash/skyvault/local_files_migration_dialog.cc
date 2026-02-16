@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_ui.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -33,7 +33,7 @@ bool LocalFilesMigrationDialog::Show(MigrationDestination destination,
                                      base::OnceClosure migration_callback) {
   ash::SystemWebDialogDelegate* existing_dialog =
       SystemWebDialogDelegate::FindInstance(
-          chrome::kChromeUILocalFilesMigrationURL);
+          ash::kChromeUILocalFilesMigrationURL);
   // TODO(368242690): Returning bool isn't needed now that we show a new dialog.
   if (existing_dialog) {
     existing_dialog->Close();
@@ -51,7 +51,7 @@ bool LocalFilesMigrationDialog::Show(MigrationDestination destination,
 LocalFilesMigrationDialog* LocalFilesMigrationDialog::GetDialog() {
   ash::SystemWebDialogDelegate* dialog =
       ash::SystemWebDialogDelegate::FindInstance(
-          chrome::kChromeUILocalFilesMigrationURL);
+          ash::kChromeUILocalFilesMigrationURL);
   return static_cast<LocalFilesMigrationDialog*>(dialog);
 }
 
@@ -59,7 +59,7 @@ LocalFilesMigrationDialog::LocalFilesMigrationDialog(
     MigrationDestination destination,
     base::Time migration_start_time,
     base::OnceClosure migration_callback)
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUILocalFilesMigrationURL),
+    : SystemWebDialogDelegate(GURL(ash::kChromeUILocalFilesMigrationURL),
                               /*title=*/std::u16string()),
       destination_(destination),
       migration_start_time_(std::move(migration_start_time)),

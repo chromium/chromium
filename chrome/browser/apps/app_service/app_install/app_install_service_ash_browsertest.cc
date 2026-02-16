@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog_test_helpers.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/user_manager/user_names.h"
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
   base::test::TestFuture<void> completion_future;
 
   content::TestNavigationObserver navigation_observer_dialog(
-      (GURL(chrome::kChromeUIAppInstallDialogURL)));
+      (GURL(ash::kChromeUIAppInstallDialogURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   AppServiceProxyFactory::GetForProfile(browser()->profile())
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
   auto [app_id, package_id] = app_install_server()->SetUpWebsiteResponse();
 
   content::TestNavigationObserver navigation_observer(
-      (GURL(chrome::kChromeUIAppInstallDialogURL)));
+      (GURL(ash::kChromeUIAppInstallDialogURL)));
   navigation_observer.StartWatchingNewWebContents();
 
   AppServiceProxyFactory::GetForProfile(browser()->profile())
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
                                     GURL(package_id.identifier()));
 
   content::TestNavigationObserver navigation_observer(
-      (GURL(chrome::kChromeUIAppInstallDialogURL)));
+      (GURL(ash::kChromeUIAppInstallDialogURL)));
   navigation_observer.StartWatchingNewWebContents();
 
   AppServiceProxyFactory::GetForProfile(browser()->profile())

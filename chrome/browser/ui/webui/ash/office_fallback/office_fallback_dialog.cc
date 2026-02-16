@@ -8,11 +8,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -142,7 +142,7 @@ bool OfficeFallbackDialog::Show(
   // multiple dialog requests, they should either be handled simultaneously or
   // queued.
   if (SystemWebDialogDelegate::HasInstance(
-          GURL(chrome::kChromeUIOfficeFallbackURL))) {
+          GURL(ash::kChromeUIOfficeFallbackURL))) {
     LOG(WARNING) << "Another fallback dialog is already being shown";
     std::move(callback).Run(std::nullopt);
     return false;
@@ -227,7 +227,7 @@ OfficeFallbackDialog::OfficeFallbackDialog(
     const int& width,
     const int& height,
     DialogChoiceCallback callback)
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUIOfficeFallbackURL),
+    : SystemWebDialogDelegate(GURL(ash::kChromeUIOfficeFallbackURL),
                               std::u16string() /* title */),
       file_urls_(file_urls),
       title_text_(title_text),

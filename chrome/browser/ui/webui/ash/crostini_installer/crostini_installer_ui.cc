@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_page_handler.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/crostini_installer_resources.h"
 #include "chrome/grit/crostini_installer_resources_map.h"
@@ -143,7 +143,7 @@ CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
   auto* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, chrome::kChromeUICrostiniInstallerHost);
+      profile, ash::kChromeUICrostiniInstallerHost);
   AddStringResources(source);
   source->AddString("defaultContainerUsername",
                     crostini::DefaultContainerUserNameForProfile(profile));

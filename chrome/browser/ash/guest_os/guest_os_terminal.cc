@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/bind.h"
@@ -37,7 +38,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -147,7 +147,7 @@ void LaunchTerminalImpl(Profile* profile,
 
 const std::string& GetTerminalHomeUrl() {
   static const base::NoDestructor<std::string> url(
-      base::StrCat({chrome::kChromeUIUntrustedTerminalURL, kTerminalHomePath}));
+      base::StrCat({ash::kChromeUIUntrustedTerminalURL, kTerminalHomePath}));
   return *url;
 }
 
@@ -164,7 +164,7 @@ GURL GenerateTerminalURL(Profile* profile,
     settings_profile_param = base::StrCat(
         {"&", kSettingsProfileUrlParam, "=", escape(settings_profile)});
   }
-  std::string start = base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
+  std::string start = base::StrCat({ash::kChromeUIUntrustedTerminalURL,
                                     "html/terminal.html?command=vmshell",
                                     settings_profile_param});
   std::string vm_name_param =
@@ -210,7 +210,7 @@ void LaunchTerminalWithUrl(Profile* profile,
                            int64_t display_id,
                            int restore_id,
                            const GURL& url) {
-  if (url.DeprecatedGetOriginAsURL() != chrome::kChromeUIUntrustedTerminalURL) {
+  if (url.DeprecatedGetOriginAsURL() != ash::kChromeUIUntrustedTerminalURL) {
     LOG(ERROR) << "Trying to launch terminal with an invalid url: " << url;
     return;
   }
@@ -325,7 +325,7 @@ void LaunchTerminalSettings(Profile* profile, int64_t display_id) {
       FROM_HERE,
       base::BindOnce(
           LaunchTerminalImpl, profile,
-          GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL, path})),
+          GURL(base::StrCat({ash::kChromeUIUntrustedTerminalURL, path})),
           std::move(*params)));
 }
 
@@ -624,7 +624,7 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
     }
     LaunchTerminalWithUrl(
         profile, display_id, /*restore_id=*/0,
-        GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
+        GURL(base::StrCat({ash::kChromeUIUntrustedTerminalURL,
                            "html/terminal_ssh.html", settings_profile_param,
                            "#profile-id:", escape(*profileId)})));
     return true;

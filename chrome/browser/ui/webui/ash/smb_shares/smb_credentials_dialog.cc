@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -42,7 +42,7 @@ void AddSmbCredentialsDialogStrings(content::WebUIDataSource* html_source) {
 }
 
 std::string GetDialogId(const std::string& mount_id) {
-  return chrome::kChromeUISmbCredentialsURL + mount_id;
+  return ash::kChromeUISmbCredentialsURL + mount_id;
 }
 
 SmbCredentialsDialog* GetDialog(const std::string& id) {
@@ -106,7 +106,7 @@ std::string SmbCredentialsDialog::GetDialogArgs() const {
 SmbCredentialsDialogUI::SmbCredentialsDialogUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUISmbCredentialsHost);
+      Profile::FromWebUI(web_ui), ash::kChromeUISmbCredentialsHost);
   ash::EnableTrustedTypesCSP(source);
 
   AddSmbCredentialsDialogStrings(source);

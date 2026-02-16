@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/run_loop.h"
@@ -397,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplBrowserTest, TestOpenChromePage) {
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
 
-  TestAllOSSettingPages(GURL(chrome::kChromeUIOSSettingsURL));
+  TestAllOSSettingPages(GURL(ash::kChromeUIOSSettingsURL));
   TestAllBrowserSettingPages(GURL(chrome::kChromeUISettingsURL));
   TestAllAboutPages();
   // This is required to make sure that all pending launches are flushed through

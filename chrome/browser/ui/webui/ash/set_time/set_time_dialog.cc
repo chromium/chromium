@@ -6,8 +6,8 @@
 
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/metrics/user_metrics.h"
-#include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -37,7 +37,7 @@ bool SetTimeDialog::ShouldShowTimezone() {
 }
 
 SetTimeDialog::SetTimeDialog()
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUISetTimeURL),
+    : SystemWebDialogDelegate(GURL(ash::kChromeUISetTimeURL),
                               std::u16string() /* title */) {}
 
 SetTimeDialog::~SetTimeDialog() = default;

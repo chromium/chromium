@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -39,7 +39,7 @@ constexpr gfx::Size TERMINAL_SETTINGS_DEFAULT_SIZE(768, 512);
 TerminalSystemAppDelegate::TerminalSystemAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::TERMINAL,
                                 "Terminal",
-                                GURL(chrome::kChromeUIUntrustedTerminalURL),
+                                GURL(ash::kChromeUIUntrustedTerminalURL),
                                 profile) {}
 
 std::unique_ptr<web_app::WebAppInstallInfo>
@@ -48,7 +48,7 @@ TerminalSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url("chrome-untrusted://terminal/html/terminal.html");
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
-  info->scope = GURL(chrome::kChromeUIUntrustedTerminalURL);
+  info->scope = GURL(ash::kChromeUIUntrustedTerminalURL);
   info->title = l10n_util::GetStringUTF16(IDS_CROSTINI_TERMINAL_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url(),
@@ -131,7 +131,7 @@ bool TerminalSystemAppDelegate::ShouldShowTabContextMenuShortcut(
 }
 
 bool TerminalSystemAppDelegate::ShouldPinTab(GURL url) const {
-  return url == GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
+  return url == GURL(base::StrCat({ash::kChromeUIUntrustedTerminalURL,
                                    guest_os::kTerminalHomePath}));
 }
 

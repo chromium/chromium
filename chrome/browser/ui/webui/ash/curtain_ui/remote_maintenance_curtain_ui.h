@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CURTAIN_UI_REMOTE_MAINTENANCE_CURTAIN_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CURTAIN_UI_REMOTE_MAINTENANCE_CURTAIN_UI_H_
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -20,7 +20,7 @@ class RemoteMaintenanceCurtainUIConfig
  public:
   RemoteMaintenanceCurtainUIConfig()
       : ChromeOSWebUIConfig(content::kChromeUIScheme,
-                            chrome::kChromeUIRemoteManagementCurtainHost) {}
+                            ash::kChromeUIRemoteManagementCurtainHost) {}
 };
 
 class RemoteMaintenanceCurtainUI : public ui::MojoWebUIController {

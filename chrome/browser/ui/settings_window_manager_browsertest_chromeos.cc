@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettings) {
   // The opened Settings window should be the active browser.
   content::WebContents* web_contents =
       chrome::FindLastActive()->tab_strip_model()->GetWebContentsAt(0);
-  EXPECT_EQ(chrome::kChromeUIOSSettingsHost, web_contents->GetURL().GetHost());
+  EXPECT_EQ(ash::kChromeUIOSSettingsHost, web_contents->GetURL().GetHost());
 
   // Showing an OS sub-page reuses the OS settings window.
   base::RunLoop run_loop;
