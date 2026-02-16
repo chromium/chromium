@@ -4,15 +4,17 @@
 
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "content/public/browser/browser_context.h"
 
 // static
-one_time_tokens::GmailOtpBackend* GmailOtpBackendFactory::GetForBrowserContext(
-    content::BrowserContext* context) {
+one_time_tokens::GmailOtpBackend* GmailOtpBackendFactory::GetForProfile(
+    Profile* profile) {
   return static_cast<one_time_tokens::GmailOtpBackend*>(
-      GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static
@@ -22,9 +24,8 @@ GmailOtpBackendFactory* GmailOtpBackendFactory::GetInstance() {
 }
 
 GmailOtpBackendFactory::GmailOtpBackendFactory()
-    : BrowserContextKeyedServiceFactory(
-          "GmailOtpBackend",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("GmailOtpBackend",
+                                 ProfileSelections::BuildForRegularProfile()) {}
 
 GmailOtpBackendFactory::~GmailOtpBackendFactory() = default;
 
