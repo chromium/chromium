@@ -2248,11 +2248,6 @@
       base_feature: "none",
     },
     {
-      // crbug.com/447267214
-      name: "EmojiJustification",
-      status: "stable",
-    },
-    {
       // crbug.com/420857717
       name: "EmojiMonochromeRendering",
       status: "stable"

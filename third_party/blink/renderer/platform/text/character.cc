@@ -165,25 +165,6 @@ unsigned Character::ExpansionOpportunityCount(
   }
   unsigned count = 0;
 
-  if (!RuntimeEnabledFeatures::EmojiJustificationEnabled()) {
-    if (direction == TextDirection::kLtr) {
-      for (size_t i = 0; i < characters.size();) {
-        UChar32 character = CodePointAtAndNext(characters, i);
-        count += CountJustificationOpportunity16(method, character, context);
-      }
-    } else {
-      for (size_t i = characters.size(); i > 0; --i) {
-        UChar32 character = characters[i - 1];
-        if (U16_IS_TRAIL(character) && i > 1 &&
-            U16_IS_LEAD(characters[i - 2])) {
-          character = U16_GET_SUPPLEMENTARY(characters[i - 2], character);
-          i--;
-        }
-        count += CountJustificationOpportunity16(method, character, context);
-      }
-    }
-    return count;
-  }
   CharacterBreakIterator iter(characters);
   if (direction == TextDirection::kLtr) {
     for (int i = 0; static_cast<size_t>(i) < characters.size();
