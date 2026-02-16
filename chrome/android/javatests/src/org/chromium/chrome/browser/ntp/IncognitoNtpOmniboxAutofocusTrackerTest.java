@@ -409,6 +409,11 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
 
     private HistogramWatcher createAutoFocusHistogramWatcher() {
         return HistogramWatcher.newBuilder()
+                .expectIntRecord(
+                        IncognitoNtpOmniboxAutofocusTracker
+                                .HISTOGRAM_OMNIBOX_AUTOFOCUS_ON_FOCUS_TAB_HEIGHT_CHANGE,
+                        IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusTabHeightChange
+                                .DECREASED_TO_NON_ZERO)
                 .expectAnyRecord(
                         IncognitoNtpOmniboxAutofocusTracker
                                 .HISTOGRAM_OMNIBOX_AUTOFOCUS_ON_FOCUS_KEYBOARD_HEIGHT_PERCENTAGE)
@@ -435,6 +440,11 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
 
     private HistogramWatcher createManualFocusHistogramWatcher() {
         return HistogramWatcher.newBuilder()
+                .expectIntRecord(
+                        IncognitoNtpOmniboxAutofocusTracker
+                                .HISTOGRAM_OMNIBOX_AUTOFOCUS_ON_FOCUS_TAB_HEIGHT_CHANGE,
+                        IncognitoNtpOmniboxAutofocusTracker.OmniboxAutofocusTabHeightChange
+                                .DECREASED_TO_NON_ZERO)
                 .expectAnyRecord(
                         IncognitoNtpOmniboxAutofocusTracker
                                 .HISTOGRAM_OMNIBOX_AUTOFOCUS_ON_FOCUS_KEYBOARD_HEIGHT_PERCENTAGE)

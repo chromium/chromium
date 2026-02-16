@@ -669,6 +669,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/ntp/IncognitoNtpOmniboxAutofocusTracker.java:OmniboxAutofocusOutcome) -->
 
+<!-- LINT.IfChange(OmniboxAutofocusTabHeightChange) -->
+
+<enum name="OmniboxAutofocusTabHeightChange">
+  <int value="0" label="Increased from zero"/>
+  <int value="1" label="Unchanged at zero"/>
+  <int value="2" label="Decreased to zero"/>
+  <int value="3" label="Increased from non-zero"/>
+  <int value="4" label="Unchanged at non-zero"/>
+  <int value="5" label="Decreased to non-zero"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/ntp/IncognitoNtpOmniboxAutofocusTracker.java:OmniboxAutofocusTabHeightChange) -->
+
 <enum name="OutlookCalendarRequestResult">
   <int value="0" label="Success"/>
   <int value="1" label="Network error"/>

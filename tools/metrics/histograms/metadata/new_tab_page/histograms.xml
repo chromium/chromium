@@ -1117,6 +1117,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Incognito.OmniboxAutofocus.OnFocus.TabHeightChange"
+    enum="OmniboxAutofocusTabHeightChange" expires_after="2026-05-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records how the Incognito tab's height changes when the omnibox is focused.
+    This enumerated histogram captures whether the height increased, decreased,
+    or stayed the same, and distinguishes between cases where the height was
+    initially zero or non-zero. A non-zero height decrease is expected when the
+    on-screen keyboard appears on omnibox focus, so this metric helps track
+    measurement anomalies (e.g., from race conditions) in other
+    `NewTabPage.Incognito.OmniboxAutofocus.OnFocus.*` histograms. Emitted when
+    the omnibox was focused for any reason, including autofocus. This metric is
+    logged on Android only.
+
+    Note: This is only recorded when the OmniboxAutofocusOnIncognitoNtp feature
+    flag is enabled.
+  </summary>
+</histogram>
+
 <histogram
     name="NewTabPage.Incognito.OmniboxAutofocus.OnFocus.ZeroSuggestSuppressed"
     enum="Boolean" expires_after="2026-08-09">
