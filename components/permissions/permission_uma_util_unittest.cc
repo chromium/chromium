@@ -656,6 +656,68 @@ TEST_F(PermissionUmaUtilTest, GetDaysSinceUnusedSitePermissionRevocation) {
 }
 #endif
 
+TEST_F(PermissionUmaUtilTest, RecordOnPermissionStatusChangedEventSubscribed) {
+  base::HistogramTester histograms;
+  PermissionUmaUtil::RecordOnPermissionStatusChangedEventSubscribed(
+      RequestType::kNotifications, /*subscribed=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.PredictionService.Notifications.OnStatusChangeListener",
+      true, 1);
+
+  PermissionUmaUtil::RecordOnPermissionStatusChangedEventSubscribed(
+      RequestType::kGeolocation, /*subscribed=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.PredictionService.Geolocation.OnStatusChangeListener", true,
+      1);
+
+  PermissionUmaUtil::RecordOnPermissionStatusChangedEventSubscribed(
+      RequestType::kNotifications, /*subscribed=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.PredictionService.Notifications.OnStatusChangeListener",
+      false, 1);
+
+  PermissionUmaUtil::RecordOnPermissionStatusChangedEventSubscribed(
+      RequestType::kGeolocation, /*subscribed=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.PredictionService.Geolocation.OnStatusChangeListener", false,
+      1);
+}
+
+TEST_F(PermissionUmaUtilTest, RecordPageInfoPermissionChange) {
+  base::HistogramTester histograms;
+  PermissionUmaUtil::RecordPageInfoPermissionChange(
+      ContentSettingsType::NOTIFICATIONS, ContentSetting::CONTENT_SETTING_ALLOW,
+      ContentSetting::CONTENT_SETTING_BLOCK,
+      /*is_subscribed_to_permission_change_event=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.Changed.Notifications.OnStatusChangeListener", true,
+      1);
+
+  PermissionUmaUtil::RecordPageInfoPermissionChange(
+      ContentSettingsType::NOTIFICATIONS, ContentSetting::CONTENT_SETTING_ALLOW,
+      ContentSetting::CONTENT_SETTING_BLOCK,
+      /*is_subscribed_to_permission_change_event=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.Changed.Notifications.OnStatusChangeListener",
+      false, 1);
+
+  PermissionUmaUtil::RecordPageInfoPermissionChange(
+      ContentSettingsType::GEOLOCATION, ContentSetting::CONTENT_SETTING_ALLOW,
+      ContentSetting::CONTENT_SETTING_BLOCK,
+      /*is_subscribed_to_permission_change_event=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.Changed.Geolocation.OnStatusChangeListener", true,
+      1);
+
+  PermissionUmaUtil::RecordPageInfoPermissionChange(
+      ContentSettingsType::GEOLOCATION, ContentSetting::CONTENT_SETTING_ALLOW,
+      ContentSetting::CONTENT_SETTING_BLOCK,
+      /*is_subscribed_to_permission_change_event=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.Changed.Geolocation.OnStatusChangeListener", false,
+      1);
+}
+
 // Inside your PermissionRecorderTest test fixture from earlier
 TEST_F(PermissionsDelegationUmaUtilTest, SiteLevelAndOSPromptVariantsTest) {
   std::vector<ElementAnchoredBubbleVariant> variant_vector = {

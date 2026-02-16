@@ -789,10 +789,17 @@ class PermissionUmaUtil {
       PermissionAction previous_action,
       ContentSetting setting_after);
 
-  static void RecordPageInfoPermissionChange(ContentSettingsType type,
-                                             ContentSetting setting_before,
-                                             ContentSetting setting_after,
-                                             bool suppress_reload_page_bar);
+  static void RecordPageInfoCameraMicPermissionChange(
+      ContentSettingsType type,
+      ContentSetting setting_before,
+      ContentSetting setting_after,
+      bool is_subscribed_to_permission_change_event);
+
+  static void RecordPageInfoPermissionChange(
+      ContentSettingsType type,
+      ContentSetting setting_before,
+      ContentSetting setting_after,
+      bool is_subscribed_to_permission_change_event);
 
   static std::string GetPermissionActionString(
       PermissionAction permission_action);
@@ -849,6 +856,11 @@ class PermissionUmaUtil {
   // Records whether the 'Reload this page' info bar was shown after a quiet
   // permission prompt was granted.
   static void RecordPageReloadInfoBarShown(bool shown);
+
+  // Records whether the page that requested a permission is subscribed to the
+  // permission status change listener.
+  static void RecordOnPermissionStatusChangedEventSubscribed(RequestType type,
+                                                             bool subscribed);
 
   // Records UKM metrics for ContentSettingsTypes that have user facing
   // permission prompts triggered by the user clicking on the Embedded

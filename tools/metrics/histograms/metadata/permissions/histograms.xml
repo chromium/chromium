@@ -1013,6 +1013,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Permissions.PageInfo.Changed.{PermissionType}.OnStatusChangeListener"
+    enum="BooleanDetected" expires_after="2026-05-12">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    This metric measures how often users change permissions state via PageInfo
+    and if the page is subscribed to the permission status change listener.
+    Recorded when users changes permissions state or clicks the &quot;Reset
+    permission&quot; button in PageInfo.
+  </summary>
+  <token key="PermissionType">
+    <variant name="AudioCapture"/>
+    <variant name="Geolocation"/>
+    <variant name="Notifications"/>
+    <variant name="VideoCapture"/>
+  </token>
+</histogram>
+
+<histogram
     name="Permissions.PageInfo.Changed.{PermissionType}.Reallowed.Outcome"
     enum="PermissionChangeInfo" expires_after="2026-05-17">
   <owner>elklm@chromium.org</owner>
@@ -1026,7 +1045,21 @@ chromium-metrics-reviews@google.com.
   <token key="PermissionType" variants="AllPermissionTypes"/>
 </histogram>
 
-<histogram name="Permissions.PageInfo.Changed.{PermissionType}.{ReloadInfoBar}"
+<histogram name="Permissions.PageInfo.ChangedWithin1m.{PermissionType}"
+    enum="PermissionChangeAction" expires_after="2026-04-20">
+  <owner>fjacky@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    This metric measures how often and in what way users change their mind
+    within the first minute of making an active permission decision, i.e. any
+    PermissionAction that is any action that is not ignore, dismiss or an
+    automated revoke event.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+</histogram>
+
+<histogram
+    name="Permissions.PageInfo.OnChanged.{PermissionType}.{ReloadInfoBar}"
     enum="PermissionChangeAction" expires_after="2026-04-12">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -1044,19 +1077,6 @@ chromium-metrics-reviews@google.com.
     <variant name="ReloadInfobarNotShown"/>
     <variant name="ReloadInfobarShown"/>
   </token>
-</histogram>
-
-<histogram name="Permissions.PageInfo.ChangedWithin1m.{PermissionType}"
-    enum="PermissionChangeAction" expires_after="2026-04-20">
-  <owner>fjacky@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    This metric measures how often and in what way users change their mind
-    within the first minute of making an active permission decision, i.e. any
-    PermissionAction that is any action that is not ignore, dismiss or an
-    automated revoke event.
-  </summary>
-  <token key="PermissionType" variants="AllPermissionTypes"/>
 </histogram>
 
 <histogram
@@ -1168,6 +1188,18 @@ chromium-metrics-reviews@google.com.
     longer than the allowed time. This is not recorded when the request is
     cancelled.
   </summary>
+</histogram>
+
+<histogram
+    name="Permissions.PredictionService.{PermissionType}.OnStatusChangeListener"
+    enum="BooleanDetected" expires_after="2026-06-21">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a quiet permission prompt was granted. Records whether the
+    page subscribed to a permisson status change event.
+  </summary>
+  <token key="PermissionType" variants="CpssSupportedTypes"/>
 </histogram>
 
 <histogram
