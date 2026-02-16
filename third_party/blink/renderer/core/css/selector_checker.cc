@@ -1293,9 +1293,8 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
       if (selector_value.empty()) {
         return false;
       }
-      return value.Contains(selector_value, case_insensitive
-                                                ? kTextCaseASCIIInsensitive
-                                                : kTextCaseSensitive);
+      return case_insensitive ? value.ContainsIgnoringAsciiCase(selector_value)
+                              : value.contains(selector_value);
     case CSSSelector::kAttributeBegin:
       if (selector_value.empty()) {
         return false;
