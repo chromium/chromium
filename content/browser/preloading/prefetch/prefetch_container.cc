@@ -1562,10 +1562,7 @@ bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {
          request().prefetch_type().IsProxyRequiredWhenCrossOrigin();
 }
 
-void PrefetchContainer::MakeResourceRequest() {
-  // `UpdateResourceRequest()` updates this request later on. Anything here that
-  // should be changed on redirect should happen there.
-
+void PrefetchContainer::MakeInitialResourceRequest() {
   const GURL& url = GetURL();
   url::Origin origin = url::Origin::Create(url);
   net::IsolationInfo isolation_info = net::IsolationInfo::Create(

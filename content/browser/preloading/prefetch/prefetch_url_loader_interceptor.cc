@@ -121,10 +121,10 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   // `skip_service_worker` check here assumes prefetching-time
   // `skip_service_worker` is always false (see the
   // `CHECK(!skip_service_worker)` in
-  // `PrefetchContainer::MakeResourceRequest()`). We should revisit the check
-  // when we support prefetch-time `skip_service_worker`. Probably a prefetch
-  // whose request's `skip_service_worker` == `true` shouldn't serve navigation
-  // whose request's `skip_service_worker` == `false`.
+  // `PrefetchContainer::MakeInitialResourceRequest()`). We should revisit the
+  // check when we support prefetch-time `skip_service_worker`. Probably a
+  // prefetch whose request's `skip_service_worker` == `true` shouldn't serve
+  // navigation whose request's `skip_service_worker` == `false`.
   if (tentative_resource_request.skip_service_worker &&
       expected_service_worker_state_ ==
           PrefetchServiceWorkerState::kControlled) {

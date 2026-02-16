@@ -1462,7 +1462,7 @@ bool PrefetchService::StartSinglePrefetch(
         PrefetchStatus::kPrefetchNotFinishedInTime);
   }
 
-  prefetch_container.MakeResourceRequest();
+  prefetch_container.MakeInitialResourceRequest();
 
   prefetch_container.NotifyPrefetchRequestWillBeSent(
       /*redirect_head=*/nullptr);

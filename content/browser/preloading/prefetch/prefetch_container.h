@@ -253,10 +253,13 @@ class CONTENT_EXPORT PrefetchContainer {
   // based on |prefetch_type_|.
   bool IsProxyRequiredForURL(const GURL& url) const;
 
+  // Creates the initial resource request based on `PrefetchRequest`.
+  // `UpdateResourceRequest()`, which will be called on redirect, may update
+  // this resource request later on.
+  void MakeInitialResourceRequest();
   const network::ResourceRequest* GetResourceRequest() const {
     return resource_request_.get();
   }
-  void MakeResourceRequest();
 
   // Equivalent to `request().no_vary_search_hint()`.
   // Exposed for `PrefetchMatchResolver`.
