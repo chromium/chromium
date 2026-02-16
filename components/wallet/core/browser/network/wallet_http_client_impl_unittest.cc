@@ -30,6 +30,9 @@
 namespace wallet {
 namespace {
 
+using testing::Eq;
+using testing::Optional;
+
 constexpr char kAccessToken[] = "test access token";
 constexpr base::TimeDelta kLatency = base::Milliseconds(250);
 
@@ -92,6 +95,26 @@ class WalletHttpClientImplTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<WalletHttpClientImpl> client_;
 };
+
+// Tests that the http client sets the proper Content-Type header.
+TEST_F(WalletHttpClientImplTest, ContentType) {
+  Pass pass;
+  UpsertPublicPassCallback upsert_pass_callback;
+  client()->UpsertPublicPass(pass, upsert_pass_callback.GetCallback());
+
+  // Access token is fetched successfully.
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      test_url_loader_factory()->GetPendingRequest(0);
+  ASSERT_TRUE(pending_request);
+
+  std::optional<std::string> content_type =
+      pending_request->request.headers.GetHeader(
+          net::HttpRequestHeaders::kContentType);
+  EXPECT_THAT(content_type, Optional(Eq("application/protobuf")));
+}
 
 // Tests that UpsertPublicPass successfully triggers a network request and
 // invokes the callback with a success result when the server responds with
