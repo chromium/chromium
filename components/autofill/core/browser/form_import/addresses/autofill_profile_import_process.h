@@ -115,6 +115,10 @@ struct ProfileImportMetadata {
   base::flat_set<std::string> unedited_autofilled_profile_guids;
   // Tracks if the submitted form contained non-empty split zip fields.
   bool observed_split_zip = false;
+  // The source of submission that triggered the current profile import. In the
+  // case of multi-step import, this would be the source of the last submission
+  // that occurred so far.
+  mojom::SubmissionSource submission_source = mojom::SubmissionSource::NONE;
 };
 
 // This class holds the state associated with the import of an AutofillProfile

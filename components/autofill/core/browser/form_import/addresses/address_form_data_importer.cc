@@ -240,9 +240,9 @@ size_t AddressFormDataImporter::ExtractAddressProfiles(
           << CTag{};
       // Try to extract an address profile from the form fields of this section.
       // Only allow for a prompt if no other complete profile was found so far.
-      if (ExtractAddressProfileFromSection(fields, form.source_url(),
-                                           extracted_address_profiles,
-                                           &import_log_buffer)) {
+      if (ExtractAddressProfileFromSection(
+              fields, form.source_url(), form.submission_source(),
+              extracted_address_profiles, &import_log_buffer)) {
         num_complete_profiles++;
       }
       // And close the div of the section import log.
@@ -499,6 +499,7 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
 bool AddressFormDataImporter::ExtractAddressProfileFromSection(
     base::span<const AutofillField* const> section_fields,
     const GURL& source_url,
+    mojom::SubmissionSource submission_source,
     std::vector<ExtractedAddressProfile>* extracted_address_profiles,
     LogBuffer* import_log_buffer) {
   // Tracks if the form section contains multiple distinct email addresses.
@@ -510,6 +511,7 @@ bool AddressFormDataImporter::ExtractAddressProfileFromSection(
   // Metadata about the way we construct candidate_profile.
   ProfileImportMetadata import_metadata;
   import_metadata.origin = url::Origin::Create(source_url);
+  import_metadata.submission_source = submission_source;
 
   // Tracks if any of the fields belongs to FormType::kAddressForm.
   bool has_address_related_fields = false;

@@ -251,6 +251,13 @@ void LogZipCodeLengthMetric(std::u16string_view zip);
 // profile considered for import.
 void LogZipCodeSeparatorMetric(std::u16string_view zip);
 
+// Logs the `user_decision` regarding a save prompt, but splits the decision
+// based on the `submission_source`. Only logs metrics for specific values of
+// `user_decision` and `submission_source`.
+void LogNewProfileUserDecisionPerSubmissionSourceMetric(
+    AutofillClient::AddressPromptUserDecision user_decision,
+    mojom::SubmissionSource submission_source);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PROFILE_IMPORT_METRICS_H_

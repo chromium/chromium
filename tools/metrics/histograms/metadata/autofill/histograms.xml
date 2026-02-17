@@ -6004,6 +6004,22 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.ProfileImport.NewProfileUserDecisionPerSubmissionSource"
+    enum="AutofillProfileImportDecisionPerSubmissionSource"
+    expires_after="2026-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the basic decisions regarding an address save prompt
+    (Accepted/Declined/Ignored), but split over the submission source that
+    resulted in showing the prompt.
+
+    Emitted once per shown address save prompt where the user decision that
+    followed was among the three decisions mentioned previously.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileImport.PhoneNumberParsed" enum="Boolean"
     expires_after="2027-09-10">
   <owner>fleimgruber@google.com</owner>

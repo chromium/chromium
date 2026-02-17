@@ -116,6 +116,7 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
   bool ExtractAddressProfileFromSection(
       base::span<const AutofillField* const> section_fields,
       const GURL& source_url,
+      mojom::SubmissionSource submission_source,
       std::vector<ExtractedAddressProfile>* extracted_address_profiles,
       LogBuffer* import_log_buffer);
 

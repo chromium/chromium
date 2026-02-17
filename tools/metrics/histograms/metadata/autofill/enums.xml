@@ -2688,6 +2688,24 @@ Called by update_autofill_enums.py.-->
   <int value="10" label="AutoDeclined"/>
 </enum>
 
+<enum name="AutofillProfileImportDecisionPerSubmissionSource">
+  <int value="0" label="Same Document Navigation: Accepted"/>
+  <int value="1" label="Same Document Navigation: Declined"/>
+  <int value="2" label="Same Document Navigation: Ignored"/>
+  <int value="3" label="XHR Succeeded: Accepted"/>
+  <int value="4" label="XHR Succeeded: Declined"/>
+  <int value="5" label="XHR Succeeded: Ignored"/>
+  <int value="6" label="Frame Detached: Accepted"/>
+  <int value="7" label="Frame Detached: Declined"/>
+  <int value="8" label="Frame Detached: Ignored"/>
+  <int value="9" label="Probably Form Submitted: Accepted"/>
+  <int value="10" label="Probably Form Submitted: Declined"/>
+  <int value="11" label="Probably Form Submitted: Ignored"/>
+  <int value="12" label="Form Submission: Accepted"/>
+  <int value="13" label="Form Submission: Declined"/>
+  <int value="14" label="Form Submission: Ignored"/>
+</enum>
+
 <enum name="AutofillProfileImportType">
   <int value="0" label="Unspecified"/>
   <int value="1" label="NewProfile"/>

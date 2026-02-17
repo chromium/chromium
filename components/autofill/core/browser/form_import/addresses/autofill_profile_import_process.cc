@@ -623,13 +623,21 @@ void ProfileImportProcess::CollectMetrics(
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
     LogNewProfileMetrics(existing_profiles);
     LogUkmMetrics(ukm_recorder, existing_profiles, num_edited_fields);
+    autofill_metrics::LogNewProfileUserDecisionPerSubmissionSourceMetric(
+        user_decision_, import_metadata_.submission_source);
   } else if (import_type_ ==
              AutofillProfileImportType::kHomeWorkNameEmailMerge) {
     autofill_metrics::LogHomeWorkNameEmailMergeImportDecision(user_decision_);
+    autofill_metrics::LogNewProfileUserDecisionPerSubmissionSourceMetric(
+        user_decision_, import_metadata_.submission_source);
   } else if (import_type_ == AutofillProfileImportType::kHomeAndWorkSuperset) {
     LogHomeAndWorkSupersetMetrics();
+    autofill_metrics::LogNewProfileUserDecisionPerSubmissionSourceMetric(
+        user_decision_, import_metadata_.submission_source);
   } else if (import_type_ == AutofillProfileImportType::kNameEmailSuperset) {
     autofill_metrics::LogNameEmailSupersetImportDecision(user_decision_);
+    autofill_metrics::LogNewProfileUserDecisionPerSubmissionSourceMetric(
+        user_decision_, import_metadata_.submission_source);
   } else if (is_confirmable_update()) {
     LogConfirmableProfileUpdateMetrics(existing_profiles);
     LogUkmMetrics(ukm_recorder, existing_profiles, num_edited_fields);

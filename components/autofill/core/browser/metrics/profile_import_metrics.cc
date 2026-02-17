@@ -382,4 +382,89 @@ void LogZipCodeSeparatorMetric(std::u16string_view zip) {
       AddressValidZipCodeSeparatorMetric::kNoSeparator);
 }
 
+void LogNewProfileUserDecisionPerSubmissionSourceMetric(
+    AutofillClient::AddressPromptUserDecision user_decision,
+    mojom::SubmissionSource submission_source) {
+  enum class SupportedDecision { kAccepted = 0, kDeclined = 1, kIgnored = 2 };
+  auto supported_decision =
+      [&user_decision] -> std::optional<SupportedDecision> {
+    switch (user_decision) {
+      case AutofillClient::AddressPromptUserDecision::kUndefined:
+      case AutofillClient::AddressPromptUserDecision::kUserNotAsked:
+      case AutofillClient::AddressPromptUserDecision::kAutoDeclined:
+        // The metric is only logged for the typical user decisions.
+        return std::nullopt;
+      case AutofillClient::AddressPromptUserDecision::kEditAccepted:
+      case AutofillClient::AddressPromptUserDecision::kAccepted:
+        return SupportedDecision::kAccepted;
+      case AutofillClient::AddressPromptUserDecision::kNever:
+      case AutofillClient::AddressPromptUserDecision::kMessageDeclined:
+      case AutofillClient::AddressPromptUserDecision::kEditDeclined:
+      case AutofillClient::AddressPromptUserDecision::kDeclined:
+        return SupportedDecision::kDeclined;
+      case AutofillClient::AddressPromptUserDecision::kMessageTimeout:
+      case AutofillClient::AddressPromptUserDecision::kIgnored:
+        return SupportedDecision::kIgnored;
+    }
+  }();
+  if (!supported_decision) {
+    return;
+  }
+
+  enum class SupportedSource {
+    kSameDocumentNavigation = 0,
+    kXhrSucceeded = 1,
+    kFrameDetached = 2,
+    kProbablyFormSubmitted = 3,
+    kFormSubmission = 4
+  };
+  auto supported_source =
+      [&submission_source] -> std::optional<SupportedSource> {
+    switch (submission_source) {
+      case mojom::SubmissionSource::NONE:
+      case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
+        // The metric is only logged for Autofill-supported submission sources.
+        return std::nullopt;
+      case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
+        return SupportedSource::kSameDocumentNavigation;
+      case mojom::SubmissionSource::XHR_SUCCEEDED:
+        return SupportedSource::kXhrSucceeded;
+      case mojom::SubmissionSource::FRAME_DETACHED:
+        return SupportedSource::kFrameDetached;
+      case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
+        return SupportedSource::kProbablyFormSubmitted;
+      case mojom::SubmissionSource::FORM_SUBMISSION:
+        return SupportedSource::kFormSubmission;
+    }
+  }();
+  if (!supported_source) {
+    return;
+  }
+
+  enum class DecisionPerSource {
+    kSameDocumentNavigationAccepted = 0,
+    kSameDocumentNavigationDeclined = 1,
+    kSameDocumentNavigationIgnored = 2,
+    kXhrSucceededAccepted = 3,
+    kXhrSucceededDeclined = 4,
+    kXhrSucceededIgnored = 5,
+    kFrameDetachedAccepted = 6,
+    kFrameDetachedDeclined = 7,
+    kFrameDetachedIgnored = 8,
+    kProbablyFormSubmittedAccepted = 9,
+    kProbablyFormSubmittedDeclined = 10,
+    kProbablyFormSubmittedIgnored = 11,
+    kFormSubmissionAccepted = 12,
+    kFormSubmissionDeclined = 13,
+    kFormSubmissionIgnored = 14,
+    kMaxValue = kFormSubmissionIgnored,
+  };
+  DecisionPerSource decision_per_source =
+      static_cast<DecisionPerSource>(std::to_underlying(*supported_source) * 3 +
+                                     std::to_underlying(*supported_decision));
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.NewProfileUserDecisionPerSubmissionSource",
+      decision_per_source);
+}
+
 }  // namespace autofill::autofill_metrics
