@@ -38,6 +38,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -505,6 +506,9 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"systemMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_SYSTEM_LABEL},
       {"showHomeButton", IDS_SETTINGS_SHOW_HOME_BUTTON},
       {"showBookmarksBar", IDS_SETTINGS_SHOW_BOOKMARKS_BAR},
+      {"showTabSearchButton", IDS_SETTINGS_SHOW_TAB_SEARCH_BUTTON},
+      {"showProjectsPanelButton", IDS_SETTINGS_SHOW_PROJECTS_PANEL_BUTTON},
+      {"showEverythingMenuButton", IDS_SETTINGS_SHOW_EVERYTHING_MENU_BUTTON},
       {"tabStripPosition", IDS_SETTINGS_TAB_STRIP_POSITION},
       {"allowSplitViewDragAndDrop",
        IDS_SETTINGS_ALLOW_SPLIT_VIEW_DRAG_AND_DROP},
@@ -567,6 +571,15 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(features::kTabHoverCardImages));
   html_source->AddBoolean("showVerticalTabsEnabled",
                           tabs::IsVerticalTabsFeatureEnabled());
+  html_source->AddBoolean(
+      "showTabStripComboButtonEnabled",
+      tabs::IsVerticalTabsFeatureEnabled() ||
+          base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton));
+  html_source->AddBoolean("showProjectsPanelEnabled",
+                          tab_groups::IsProjectsPanelFeatureEnabled());
+  html_source->AddBoolean(
+      "showEverythingMenuEnabled",
+      tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile));
 
   html_source->AddBoolean(
       "tabSearchIsRightAlignedAtStartup",

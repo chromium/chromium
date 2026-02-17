@@ -67,6 +67,22 @@ function createAppearancePage() {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
+      pinned_to_tabstrip: {
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+    },
+    projects_panel: {
+      pinned_to_tabstrip: {
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+    },
+    everything_menu: {
+      pinned_to_tabstrip: {
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
     },
     vertical_tabs: {
       enabled: {
@@ -427,5 +443,94 @@ suite('TabStripPositionSettings', () => {
 
     assertFalse(appearancePage.get('prefs.vertical_tabs.enabled.value'));
     assertEquals('false', selectElement.value);
+  });
+});
+
+suite('TabStripComboButtonSettings', () => {
+  setup(async () => {
+    loadTimeData.overrideValues({
+      showTabStripComboButtonEnabled: true,
+      showProjectsPanelEnabled: true,
+    });
+
+    appearanceBrowserProxy = new TestAppearanceBrowserProxy();
+    AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
+
+    createAppearancePage();
+
+    await microtasksFinished();
+  });
+
+  teardown(function() {
+    appearancePage.remove();
+  });
+
+  test('Toggles update correct prefs', async function() {
+    assertTrue(appearancePage.get('prefs.tab_search.pinned_to_tabstrip.value'));
+    assertTrue(
+        appearancePage.get('prefs.projects_panel.pinned_to_tabstrip.value'));
+
+    const tabSearchToggle =
+        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#showTabSearchButton');
+    assertTrue(!!tabSearchToggle);
+    assertTrue(tabSearchToggle.checked);
+
+    const projectsToggle =
+        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#showProjectsPanelButton');
+    assertTrue(!!projectsToggle);
+    assertTrue(projectsToggle.checked);
+
+    tabSearchToggle.click();
+    await microtasksFinished();
+    assertFalse(
+        appearancePage.get('prefs.tab_search.pinned_to_tabstrip.value'));
+
+    projectsToggle.click();
+    await microtasksFinished();
+    assertFalse(
+        appearancePage.get('prefs.projects_panel.pinned_to_tabstrip.value'));
+  });
+
+  test('Everything menu toggle updates correct pref', async function() {
+    loadTimeData.overrideValues({
+      showTabStripComboButtonEnabled: true,
+      showProjectsPanelEnabled: false,
+      showEverythingMenuEnabled: true,
+    });
+    createAppearancePage();
+    await microtasksFinished();
+
+    assertTrue(
+        appearancePage.get('prefs.everything_menu.pinned_to_tabstrip.value'));
+
+    const everythingToggle =
+        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#showEverythingMenuButton');
+    assertTrue(!!everythingToggle);
+    assertTrue(everythingToggle.checked);
+
+    everythingToggle.click();
+    await microtasksFinished();
+    assertFalse(
+        appearancePage.get('prefs.everything_menu.pinned_to_tabstrip.value'));
+  });
+
+  test('Toggles hidden when disabled', async function() {
+    loadTimeData.overrideValues({
+      showTabStripComboButtonEnabled: false,
+      showProjectsPanelEnabled: false,
+      showEverythingMenuEnabled: false,
+    });
+    createAppearancePage();
+    await microtasksFinished();
+
+    assertFalse(
+        !!appearancePage.shadowRoot!.querySelector('#showTabSearchButton'));
+    assertFalse(
+        !!appearancePage.shadowRoot!.querySelector('#showProjectsPanelButton'));
+    assertFalse(!!appearancePage.shadowRoot!.querySelector(
+        '#showEverythingMenuButton'));
   });
 });

@@ -260,6 +260,15 @@
   <message name="IDS_SETTINGS_SHOW_BOOKMARKS_BAR" desc="Label for the checkbox which enables or disables showing the bookmarks bar in the toolbar.">
     Show bookmarks bar
   </message>
+  <message name="IDS_SETTINGS_SHOW_TAB_SEARCH_BUTTON" desc="Label for the checkbox which enables or disables showing the tab search button in the tab strip.">
+    Show tab search button
+  </message>
+  <message name="IDS_SETTINGS_SHOW_PROJECTS_PANEL_BUTTON" desc="Label for the checkbox which enables or disables showing the projects panel button in the tab strip.">
+    Show projects panel button
+  </message>
+  <message name="IDS_SETTINGS_SHOW_EVERYTHING_MENU_BUTTON" desc="Label for the checkbox which enables or disables showing the saved tab groups button in the tab strip.">
+    Show saved tab groups button
+  </message>
   <message name="IDS_SETTINGS_TAB_STRIP_POSITION" desc="Title for the side panel section. Allows the user to toggle which side the tab strip is displayed on.">
     Tab strip position
   </message>

@@ -233,6 +233,27 @@ export class SettingsAppearancePageElement extends
         },
       },
 
+      showTabStripComboButtonEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showTabStripComboButtonEnabled');
+        },
+      },
+
+      showProjectsPanelEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showProjectsPanelEnabled');
+        },
+      },
+
+      showEverythingMenuEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showEverythingMenuEnabled');
+        },
+      },
+
       showTabSearchPositionRestartButton_: {
         type: Boolean,
         value: false,
@@ -298,6 +319,9 @@ export class SettingsAppearancePageElement extends
   // </if>
 
   declare private showVerticalTabsEnabled_: boolean;
+  declare private showTabStripComboButtonEnabled_: boolean;
+  declare private showProjectsPanelEnabled_: boolean;
+  declare private showEverythingMenuEnabled_: boolean;
   declare private showTabSearchPositionRestartButton_: boolean;
   declare private showManagedThemeDialog_: boolean;
   declare private sidePanelOptions_: DropdownMenuOptionList;
@@ -533,6 +557,10 @@ export class SettingsAppearancePageElement extends
 
   private showHr_(previousIsVisible: boolean, nextIsVisible: boolean): boolean {
     return previousIsVisible && nextIsVisible;
+  }
+
+  private showEverythingMenuToggle_(): boolean {
+    return !this.showProjectsPanelEnabled_ && this.showEverythingMenuEnabled_;
   }
 
   private onHoverCardImagesToggleChange_(event: Event) {

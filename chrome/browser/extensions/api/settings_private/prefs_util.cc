@@ -240,6 +240,12 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kTabSearchRightAligned] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::prefs::kTabSearchPinnedToTabstrip] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::prefs::kProjectsPanelPinnedToTabstrip] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::prefs::kEverythingMenuPinnedToTabstrip] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[tab_groups::prefs::kAutoPinNewTabGroups] =
       settings_api::PrefType::kBoolean;
 
