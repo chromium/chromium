@@ -205,6 +205,27 @@ const char kHistogramNoServiceWorkerDomContentLoadedSearch[] =
 const char kHistogramNoServiceWorkerLoadSearch[] =
     "PageLoad.Clients.NoServiceWorker2.DocumentTiming."
     "NavigationToLoadEventFired.search";
+
+// AIO related histograms.
+const char kHistogramAIOAsyncStart[] =
+    HISTOGRAM_PREFIX "PaintTiming.AIOAsyncStart";
+const char kHistogramAIOInitialContentTime[] =
+    HISTOGRAM_PREFIX "PaintTiming.AIOInitialContentTime";
+const char kHistogramAIOViewportEndTime[] =
+    HISTOGRAM_PREFIX "PaintTiming.AIOViewportEndTime";
+
+const char kHistogramAIOAsyncStartToInitialContentTime[] =
+    HISTOGRAM_PREFIX "AIO.AsyncStartToInitialContentTime";
+const char kHistogramAIOAsyncStartToViewportEndTime[] =
+    HISTOGRAM_PREFIX "AIO.AsyncStartToViewportEndTime";
+const char kHistogramAIOHasInitialContentTime[] =
+    HISTOGRAM_PREFIX "AIO.HasInitialContentTime";
+const char kHistogramAIOHasViewportEndTime[] =
+    HISTOGRAM_PREFIX "AIO.HasViewportEndTime";
+
+const char kHistogramAIOCompleteSuffix[] = ".Complete";
+const char kHistogramAIOInCompleteSuffix[] = ".Incomplete";
+
 }  // namespace internal
 
 namespace {
@@ -710,6 +731,15 @@ GWSPageLoadMetricsObserver::GetMarkNameToTimingInfo(
           {internal::kGwsSGLMarkName,
            {internal::kHistogramGWSSGL,
             &GWSPageLoadMetricsObserver::sgl_time_}},
+          {internal::kGwsAIOAsyncStartMarkName,
+           {internal::kHistogramAIOAsyncStart,
+            &GWSPageLoadMetricsObserver::aio_async_start_time_}},
+          {internal::kGwsAIOInitialContentTimeMarkName,
+           {internal::kHistogramAIOInitialContentTime,
+            &GWSPageLoadMetricsObserver::aio_initial_content_time_}},
+          {internal::kGwsAIOViewportEndTimeMarkName,
+           {internal::kHistogramAIOViewportEndTime,
+            &GWSPageLoadMetricsObserver::aio_viewport_end_time_}},
       });
   auto it = mark_timing_info->find(mark_name);
   if (it != mark_timing_info->end()) {
@@ -744,6 +774,7 @@ GWSPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 
 void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
   RecordGWSSessionStateHistograms();
+  RecordAIOHistograms();
 
   const page_load_metrics::ContentfulPaintTimingInfo&
       all_frames_largest_contentful_paint =
@@ -1188,4 +1219,39 @@ void GWSPageLoadMetricsObserver::RecordGWSSessionStateHistograms() {
   if (!gws_session_state->IsSignedIn() && aft_end_time_.has_value()) {
     gws_session_state->SetPrewarmed();
   }
+}
+
+void GWSPageLoadMetricsObserver::RecordAIOHistograms() {
+  if (!aio_async_start_time_.has_value()) {
+    return;
+  }
+
+  auto navigation_start_to_now =
+      base::TimeTicks::Now() - GetDelegate().GetNavigationStart();
+
+  auto record_latency_histogram =
+      [&navigation_start_to_now,
+       async_start_time = aio_async_start_time_.value()](
+          const char* histogram_name, std::optional<base::TimeDelta> timing) {
+        base::TimeDelta end_time =
+            timing.has_value() ? *timing : navigation_start_to_now;
+
+        PAGE_LOAD_HISTOGRAM(
+            base::StrCat({histogram_name,
+                          timing.has_value()
+                              ? internal::kHistogramAIOCompleteSuffix
+                              : internal::kHistogramAIOInCompleteSuffix}),
+            end_time - async_start_time);
+      };
+
+  base::UmaHistogramBoolean(internal::kHistogramAIOHasInitialContentTime,
+                            aio_initial_content_time_.has_value());
+  record_latency_histogram(
+      internal::kHistogramAIOAsyncStartToInitialContentTime,
+      aio_initial_content_time_);
+
+  base::UmaHistogramBoolean(internal::kHistogramAIOHasViewportEndTime,
+                            aio_viewport_end_time_.has_value());
+  record_latency_histogram(internal::kHistogramAIOAsyncStartToViewportEndTime,
+                           aio_viewport_end_time_);
 }

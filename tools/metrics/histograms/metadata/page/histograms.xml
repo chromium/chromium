@@ -1374,6 +1374,47 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.AIO.AsyncStartTo{PerformanceMark}{CompletionStatus}"
+    units="ms" expires_after="2027-04-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the time from AIO async start to {PerformanceMark}, for Google
+    Search page loads. Records the time between the AIO async start and the
+    timing of {CompletionStatus}. This is only recorded in the outermost main
+    frame, right before the page is being navigated away.
+  </summary>
+  <token key="PerformanceMark">
+    <variant name="InitialContentTime"/>
+    <variant name="ViewportEndTime"/>
+  </token>
+  <token key="CompletionStatus">
+    <variant name="Complete"
+        summary="when the performance mark was set, since the mark was set
+                 successfully."/>
+    <variant name="Incomplete"
+        summary="when the page is being navigated away, since the performance
+                 mark was not set."/>
+  </token>
+</histogram>
+
+<histogram name="PageLoad.Clients.GoogleSearch.AIO.Has{PerformanceMark}"
+    enum="Boolean" expires_after="2027-04-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether the {PerformanceMark} was set for Google Search page loads.
+    This is only recorded in the outermost main frame, right before the page is
+    being navigated away.
+  </summary>
+  <token key="PerformanceMark">
+    <variant name="InitialContentTime"/>
+    <variant name="ViewportEndTime"/>
+  </token>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.ConnectionReuseStatus{ConnectionProtocolType}{Profile}"
     enum="ConnectionReuseStatus" expires_after="2026-06-14">
   <owner>suzukikeita@chromium.org</owner>
@@ -2011,6 +2052,9 @@ chromium-metrics-reviews@google.com.
     <variant name="AFTEndWithPreNavigationLatency"
         summary="AFT end event is sent with pre-navigation latency"/>
     <variant name="AFTStart2" summary="AFT start event is sent"/>
+    <variant name="AIOAsyncStart" summary="AIO async start"/>
+    <variant name="AIOInitialContentTime" summary="AIO initial content time"/>
+    <variant name="AIOViewportEndTime" summary="AIO viewport end time"/>
     <variant name="BodyChunkEnd2"
         summary="end of the header chunk start event is sent"/>
     <variant name="BodyChunkStart2" summary="beginning of the body chunk"/>

@@ -28,6 +28,9 @@ const char kGwsHeadChunkEndMarkName[] = "SearchHeadEnd";
 const char kGwsBodyChunkStartMarkName[] = "SearchBodyStart";
 const char kGwsBodyChunkEndMarkName[] = "SearchBodyEnd";
 const char kGwsSGLMarkName[] = "SearchSGL";
+const char kGwsAIOAsyncStartMarkName[] = "SearchAIOAsyncStart";
+const char kGwsAIOInitialContentTimeMarkName[] = "SearchAIOInitialContentTime";
+const char kGwsAIOViewportEndTimeMarkName[] = "SearchAIOViewportEndTime";
 
 }  // namespace internal
 

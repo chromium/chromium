@@ -194,6 +194,8 @@ class GWSPageLoadMetricsObserver
 
   void RecordGWSSessionStateHistograms();
 
+  void RecordAIOHistograms();
+
   std::optional<PerformanceMarkTimingHistogramInfo> GetMarkNameToTimingInfo(
       std::string_view mark_name) const;
   base::TimeDelta AdjustPerformanceMarkTiming(
@@ -235,6 +237,10 @@ class GWSPageLoadMetricsObserver
   std::optional<base::TimeDelta> head_chunk_start_time_;
   std::optional<base::TimeDelta> head_chunk_end_time_;
   std::optional<base::TimeDelta> sgl_time_;
+
+  std::optional<base::TimeDelta> aio_async_start_time_;
+  std::optional<base::TimeDelta> aio_initial_content_time_;
+  std::optional<base::TimeDelta> aio_viewport_end_time_;
 
   int64_t navigation_id_;
 };

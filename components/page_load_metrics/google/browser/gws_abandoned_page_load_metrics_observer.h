@@ -21,6 +21,9 @@ extern const char kGwsHeadChunkEndMarkName[];
 extern const char kGwsBodyChunkStartMarkName[];
 extern const char kGwsBodyChunkEndMarkName[];
 extern const char kGwsSGLMarkName[];
+extern const char kGwsAIOAsyncStartMarkName[];
+extern const char kGwsAIOInitialContentTimeMarkName[];
+extern const char kGwsAIOViewportEndTimeMarkName[];
 }  // namespace internal
 
 // Observes and records UMA for navigations to GWS which might or might get
