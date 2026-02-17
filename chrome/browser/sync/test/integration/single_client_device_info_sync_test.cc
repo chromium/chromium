@@ -826,11 +826,10 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // TODO(crbug.com/465716865): Figure out why this test sometimes times out on
-// ASan, and consistently times out on ChromeOS Debug and Win Arm64 Debug.
+// ASan, and consistently times out on Win Arm64 Debug.
 // TODO(crbug.com/479828012): PRE_ tests that set up Sync are currently flaky on
 // Android.
 #if defined(ADDRESS_SANITIZER) ||                                         \
-    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) ||                       \
     (BUILDFLAG(IS_WIN) && !defined(NDEBUG) && defined(ARCH_CPU_ARM64)) || \
     BUILDFLAG(IS_ANDROID)
 #define MAYBE_ShouldRecordDeviceStatisticsMetricsWithPrimaryAccount \
