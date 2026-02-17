@@ -514,6 +514,50 @@ sync_pb::AutofillValuableSpecifics GetNationalIdCardSpecifics(
   return specifics;
 }
 
+// Reads the redress number specifics message and extracts
+// attribute-information.
+base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+GetRedressNumberAttributesFromSpecifics(
+    const sync_pb::AutofillValuableSpecifics& specifics,
+    AttributeInstance::MarkAsMaskedPasskey passkey) {
+  CHECK_EQ(specifics.valuable_data_case(),
+           sync_pb::AutofillValuableSpecifics::kRedressNumber);
+  const sync_pb::RedressNumber& redress = specifics.redress_number();
+  base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+      attributes;
+
+  AddAttribute(kRedressNumberName, redress.owner_name(), attributes);
+  AddAttribute(kRedressNumberNumber, redress.masked_number(), passkey,
+               attributes);
+
+  FinalizeEntityAttributes(EntityType(EntityTypeName::kRedressNumber),
+                           specifics.serialized_chrome_valuables_metadata(),
+                           attributes);
+  return attributes;
+}
+
+// Takes an `entity` and returns a proto message with the information.
+// Note: Redress numbers are read-only and not synced to the server. This
+// serialization is primarily for debugging (e.g., sync-internals).
+sync_pb::AutofillValuableSpecifics GetRedressNumberSpecifics(
+    const EntityInstance& entity,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+  CHECK_EQ(entity.type().name(), EntityTypeName::kRedressNumber);
+
+  sync_pb::AutofillValuableSpecifics specifics = base_specifics;
+  specifics.set_id(*entity.guid());
+  specifics.set_is_editable(!entity.are_attributes_read_only());
+
+  sync_pb::RedressNumber& redress = *specifics.mutable_redress_number();
+  SET_OR_CLEAR_STRING_FIELD(entity, kRedressNumberNumber, masked_number,
+                            redress);
+  SET_OR_CLEAR_STRING_FIELD(entity, kRedressNumberName, owner_name, redress);
+
+  *specifics.mutable_serialized_chrome_valuables_metadata() =
+      AnyWrapProto(SerializeChromeValuablesMetadata(entity));
+  return specifics;
+}
+
 #undef SET_OR_CLEAR_STRING_FIELD
 
 }  // namespace
@@ -582,8 +626,9 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
       return GetDriversLicenseSpecifics(entity, base_specifics);
     case EntityTypeName::kNationalIdCard:
       return GetNationalIdCardSpecifics(entity, base_specifics);
-    case EntityTypeName::kKnownTravelerNumber:
     case EntityTypeName::kRedressNumber:
+      return GetRedressNumberSpecifics(entity, base_specifics);
+    case EntityTypeName::kKnownTravelerNumber:
       // Those entity types are not synced.
       NOTREACHED();
   }
@@ -653,7 +698,17 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
-    case sync_pb::AutofillValuableSpecifics::kRedressNumber:
+    case sync_pb::AutofillValuableSpecifics::kRedressNumber: {
+      return EntityInstance(
+          EntityType(EntityTypeName::kRedressNumber),
+          GetRedressNumberAttributesFromSpecifics(
+              specifics, AttributeInstance::MarkAsMaskedPasskey()),
+          guid,
+          /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
+          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
+          /*frecency_override=*/"");
+    }
     case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
       // TODO(crbug.com/481650251): Implement
       return std::nullopt;

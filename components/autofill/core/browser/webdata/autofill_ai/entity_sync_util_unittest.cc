@@ -154,6 +154,19 @@ sync_pb::AutofillValuableSpecifics TestNationalIdCardSpecifics(
   return specifics;
 }
 
+// Returns a `sync_pb::AutofillValuableSpecifics` message with the redress
+// number entity type.
+sync_pb::AutofillValuableSpecifics TestRedressNumberSpecifics(
+    test::RedressNumberOptions options = {}) {
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id(std::string(options.guid));
+  sync_pb::RedressNumber* redress = specifics.mutable_redress_number();
+  redress->set_masked_number(base::UTF16ToUTF8(options.number));
+  redress->set_owner_name(base::UTF16ToUTF8(options.name));
+
+  return specifics;
+}
+
 void ExpectTimestampEquals(int64_t actual_micros,
                            const std::string& expected_date_str) {
   base::Time expected_date;
@@ -887,6 +900,46 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_NationalIdCard) {
   ExpectTimestampEquals(
       specifics.national_id_card().expiry_date_unix_epoch_micros(),
       base::UTF16ToUTF8(options.expiry_date));
+}
+
+// Tests that `CreateEntityInstanceFromSpecifics` correctly deserializes
+// the redress number entity from its proto representation.
+TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_RedressNumber) {
+  test::RedressNumberOptions options;
+  sync_pb::AutofillValuableSpecifics specifics =
+      TestRedressNumberSpecifics(options);
+  std::optional<EntityInstance> redress =
+      CreateEntityInstanceFromSpecifics(specifics);
+
+  ASSERT_TRUE(redress.has_value());
+  EXPECT_EQ(redress->guid().value(), options.guid);
+  EXPECT_EQ(GetStringValue(*redress, AttributeTypeName::kRedressNumberNumber),
+            base::UTF16ToUTF8(options.number));
+  EXPECT_TRUE(
+      redress->attribute(AttributeType(AttributeTypeName::kRedressNumberNumber))
+          ->masked());
+  EXPECT_EQ(GetStringValue(*redress, AttributeTypeName::kRedressNumberName),
+            base::UTF16ToUTF8(options.name));
+  EXPECT_EQ(redress->record_type(), EntityInstance::RecordType::kServerWallet);
+}
+
+// Tests that `CreateSpecificsFromEntityInstance` correctly serializes
+// fields.
+TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_RedressNumber) {
+  test::RedressNumberOptions options;
+  std::optional<EntityInstance> maybe_redress =
+      CreateEntityInstanceFromSpecifics(TestRedressNumberSpecifics(options));
+  ASSERT_TRUE(maybe_redress.has_value());
+  EntityInstance redress = *maybe_redress;
+
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(redress, /*base_specifics=*/{});
+
+  EXPECT_EQ(redress.guid().value(), specifics.id());
+  EXPECT_EQ(GetStringValue(redress, AttributeTypeName::kRedressNumberNumber),
+            specifics.redress_number().masked_number());
+  EXPECT_EQ(GetStringValue(redress, AttributeTypeName::kRedressNumberName),
+            specifics.redress_number().owner_name());
 }
 
 }  // namespace
