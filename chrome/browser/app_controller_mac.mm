@@ -1752,6 +1752,14 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
       // We've performed the unminimize, so AppKit shouldn't do anything.
       return NO;
     }
+
+    if (ProfilePicker::IsOpen()) {
+      ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+          // The entry point should be irrelevant here because the picker is
+          // already open.
+          ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
+      return NO;
+    }
   }
 
   base::FilePath lastProfilePath = GetStartupProfilePathMac();

@@ -50,6 +50,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
   METADATA_HEADER(ProfilePickerView, views::WidgetDelegateView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewId);
+
   ProfilePickerView(const ProfilePickerView&) = delete;
   ProfilePickerView& operator=(const ProfilePickerView&) = delete;
 

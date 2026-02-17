@@ -535,6 +535,7 @@ ProfilePickerView::ProfilePickerView(ProfilePicker::Params&& params)
   // Setup the WidgetDelegate.
   SetHasWindowSizeControls(true);
   SetTitle(kWindowTitleId);
+  SetProperty(views::kElementIdentifierKey, kViewId);
 
   ConfigureAccelerators();
 
@@ -937,3 +938,5 @@ void ProfilePickerView::ShowSigninErrorDialog(
 
 BEGIN_METADATA(ProfilePickerView)
 END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ProfilePickerView, kViewId);
