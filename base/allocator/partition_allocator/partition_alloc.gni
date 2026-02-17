@@ -363,10 +363,6 @@ declare_args() {
   use_full_mte = false
 }
 
-stack_scan_supported = current_cpu == "x64" || current_cpu == "x86" ||
-                       current_cpu == "arm" || current_cpu == "arm64" ||
-                       current_cpu == "riscv64" || current_cpu == "loong64"
-
 # We want to provide assertions that guard against inconsistent build
 # args, but there is no point in having them fire if we're not building
 # PartitionAlloc at all. If `use_partition_alloc` is false, we jam all

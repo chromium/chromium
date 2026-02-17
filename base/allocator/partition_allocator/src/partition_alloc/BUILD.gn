@@ -116,6 +116,10 @@ source_set("buildflag_macro") {
   public_configs = [ ":public_includes" ]
 }
 
+stack_scan_supported = current_cpu == "x64" || current_cpu == "x86" ||
+                       current_cpu == "arm" || current_cpu == "arm64" ||
+                       current_cpu == "riscv64" || current_cpu == "loong64"
+
 # When developers are repeatedly growing a buffer with `realloc`, they are
 # expected to request a new size that is larger than the current size by
 # some growth factor. This growth factor allows to amortize the cost of
@@ -507,27 +511,14 @@ if (is_clang_or_gcc) {
       # The Android NDK supports PR_MTE_* macros as of NDK r23.
       defines += [ "HAS_PR_MTE_MACROS" ]
     }
-    if (current_cpu == "x64") {
-      assert(stack_scan_supported)
-      sources += [ "stack/asm/x64/push_registers_asm.cc" ]
-    } else if (current_cpu == "x86") {
-      assert(stack_scan_supported)
-      sources += [ "stack/asm/x86/push_registers_asm.cc" ]
-    } else if (current_cpu == "arm") {
-      assert(stack_scan_supported)
-      sources += [ "stack/asm/arm/push_registers_asm.cc" ]
-    } else if (current_cpu == "arm64") {
-      assert(stack_scan_supported)
-      sources += [ "stack/asm/arm64/push_registers_asm.cc" ]
-    } else if (current_cpu == "riscv64") {
-      assert(stack_scan_supported)
-      sources += [ "stack/asm/riscv64/push_registers_asm.cc" ]
-    } else if (current_cpu == "loong64") {
-      assert(stack_scan_supported)
-      sources += [ "stack/asm/loong64/push_registers_asm.cc" ]
-    } else {
-      # To support a trampoline for another arch, please refer to v8/src/heap/base.
-      assert(!stack_scan_supported)
+
+    # Stack scanning support. First implemented for StarScan and later
+    # enlisted for use with MiracleObject.
+    #
+    # To support a trampoline for a new arch, please refer to
+    # `v8/src/heap/base`.
+    if (stack_scan_supported) {
+      sources += [ "stack/asm/$current_cpu/push_registers_asm.cc" ]
     }
 
     # Pool-offset encoding has better security characteristics, but requires
