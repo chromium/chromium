@@ -618,7 +618,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                 ?: base::apple::ObjCCast<OmniboxTextViewIOS>(element);
 
         NSArray* textComponents =
-            [omnibox.accessibilityValue componentsSeparatedByString:@"||||"];
+            [omnibox.textValueForTesting componentsSeparatedByString:@"||||"];
 
         return textComponents.count >= 2 &&
                [textComponents[1] isEqualToString:text];

@@ -9,6 +9,7 @@
 #import "base/files/file_util.h"
 #import "base/path_service.h"
 #import "base/strings/string_split.h"
+#import "base/test/allow_check_is_test_for_testing.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
@@ -28,6 +29,7 @@ namespace {
 class OmniboxTextFieldIOSTest : public PlatformTest {
  protected:
   void SetUp() override {
+    base::test::AllowCheckIsTestForTesting();
     PlatformTest::SetUp();
     // This rect is fairly arbitrary. The text field just needs a non-zero width
     // so that the pre-edit label's text alignment can be tested.
@@ -180,6 +182,34 @@ TEST_F(OmniboxTextFieldIOSTest, CutInPreedit) {
   [textfield_ cut:nil];
   EXPECT_NSEQ(textfield_.text, @"");
   EXPECT_OCMOCK_VERIFY(delegateMock);
+}
+
+// Tests that the accessibility value is the placeholder text when the text
+// field is empty.
+TEST_F(OmniboxTextFieldIOSTest, AccessibilityValueWhenEmpty) {
+  textfield_.text = @"";
+  textfield_.placeholder = @"Placeholder Text";
+  EXPECT_NSEQ(@"Placeholder Text", textfield_.accessibilityValue);
+}
+
+// Tests that the accessibility value is the text content when the text field is
+// not empty.
+TEST_F(OmniboxTextFieldIOSTest, AccessibilityValueWhenNotEmpty) {
+  textfield_.text = @"User Text";
+  textfield_.placeholder = @"Placeholder Text";
+  EXPECT_NSEQ(@"User Text", textfield_.accessibilityValue);
+}
+
+// Tests that the testing value is correct when the text field is empty.
+TEST_F(OmniboxTextFieldIOSTest, TextValueForTestingWhenEmpty) {
+  textfield_.text = @"";
+  EXPECT_NSEQ(@"||||||||", textfield_.textValueForTesting);
+}
+
+// Tests that the testing value is correct when the text field is not empty.
+TEST_F(OmniboxTextFieldIOSTest, TextValueForTestingWhenNotEmpty) {
+  textfield_.text = @"User Text";
+  EXPECT_NSEQ(@"User Text||||||||", textfield_.textValueForTesting);
 }
 
 }  // namespace

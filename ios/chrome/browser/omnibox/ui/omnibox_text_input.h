@@ -46,6 +46,10 @@
 /// A string that represents the current value of the accessibility element.
 @property(nonatomic, readonly) NSString* accessibilityValue;
 
+/// Returns a string for testing purposes. It's a composite string that contains
+/// the user text, the autocomplete text and the additional text.
+@property(nonatomic, readonly) NSString* textValueForTesting;
+
 /// Returns the underlying view of the text input.
 - (UIView*)view;
 
