@@ -2688,9 +2688,34 @@ def _is_cflag_allowed(cflag):
       #   clang++-real: error: unknown argument: '-fno-lifetime-dse'
       # See https://crbug.com/484919839
       '-fno-lifetime-dse',
+      # C++ version is picked via a Soong attribute.
+      '-std=',
+      # Added automatically by specifying `afdo: true`
+      '-fdebug-info-for-profiling',
+      # Any cflag that starts with '-g' is solely for debugging information.
+      # This is best left handled by Soong according to the build configuration.
+      # See https://clang.llvm.org/docs/ClangCommandLineReference.html#debug-information-options
+      '-g',
+      # MLGO optimizations are handled automatically by Soong when AFDO is
+      # applied.
+      '-mllvm -enable-ml-inliner=',
+      '-mllvm -ml-inliner-model-selector=',
   ])
 
+def _merge_key_value_cflags(cflags: List[str]) -> List[str]:
+  cflags_merged = []
+  iterator = iter(cflags)
+  for flag in iterator:
+
+    if flag == '-mllvm':
+      # Merge the two consecutive flags together and skip the next iteration.
+      cflags_merged.append(f'{flag} {next(iterator)}')
+    else:
+      cflags_merged.append(flag)
+  return cflags_merged
+
 def _get_cflags(cflags, defines):
+  cflags = _merge_key_value_cflags(cflags)
   cflags = [flag for flag in cflags if _is_cflag_allowed(flag)]
 
   # Android _may_ set a platform default for _LIBCPP_HARDENING_MODE. If that
@@ -2786,6 +2811,15 @@ def _is_allowed_ldflag(flag):
       # rosegment flag. Disable this flag until XOM has landed, and we have
       # an attribute which we can use to enable --no-rosegment.
       "-Wl,--no-rosegment",
+      # This is already the default in AOSP.
+      "-fuse-ld",
+      # Specified by a Soong attribute instead.
+      "-fwhole-program-vtables",
+      # All MLGO is left best-handled by Soong as we're now employing AFDO
+      # profiles.
+      "-Wl,-mllvm,-enable-ml-inliner",
+      "-Wl,-mllvm,-ml-inliner-model-selector",
+      "-Wl,-mllvm,-ml-inliner-skip-policy",
   ])
 
 
