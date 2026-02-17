@@ -20,6 +20,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/win/scoped_hglobal.h"
 #include "testing/platform_test.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/file_info.h"
@@ -96,6 +97,12 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
 
   std::vector<std::u16string> types;
   clipboard->ReadAvailableTypes(ClipboardBuffer::kCopyPaste, nullptr, &types);
+  ASSERT_EQ(data_changed_count(), 0);
+
+  base::test::TestFuture<std::vector<std::u16string>> types_future;
+  clipboard->ReadAvailableTypes(ClipboardBuffer::kCopyPaste, std::nullopt,
+                                types_future.GetCallback());
+  ASSERT_TRUE(types_future.Wait());
   ASSERT_EQ(data_changed_count(), 0);
 
   std::u16string text_result;
@@ -365,6 +372,33 @@ TEST_F(ClipboardWinTest, ReadAsciiTextAsyncEmptyClipboard) {
                            text_future.GetCallback());
   ASSERT_TRUE(text_future.Wait());
   EXPECT_TRUE(text_future.Get().empty());
+}
+
+TEST_F(ClipboardWinTest, ReadAvailableTypesAsyncReturnsWrittenData) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"text_test");
+  }
+
+  base::test::TestFuture<std::vector<std::u16string>> types_future;
+  clipboard->ReadAvailableTypes(ClipboardBuffer::kCopyPaste, std::nullopt,
+                                types_future.GetCallback());
+  ASSERT_TRUE(types_future.Wait());
+  const auto& types = types_future.Get();
+  EXPECT_NE(std::find(types.begin(), types.end(), kMimeTypePlainText16),
+            types.end());
+}
+
+TEST_F(ClipboardWinTest, ReadAvailableTypesAsyncEmptyClipboard) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  clipboard->Clear(ClipboardBuffer::kCopyPaste);
+
+  base::test::TestFuture<std::vector<std::u16string>> types_future;
+  clipboard->ReadAvailableTypes(ClipboardBuffer::kCopyPaste, std::nullopt,
+                                types_future.GetCallback());
+  ASSERT_TRUE(types_future.Wait());
+  EXPECT_TRUE(types_future.Get().empty());
 }
 
 }  // namespace ui

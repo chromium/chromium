@@ -42,6 +42,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/optional_util.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
@@ -332,6 +333,16 @@ bool ClipboardWin::IsFormatAvailable(
     const ClipboardFormatType& format,
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
+  return IsFormatAvailableInternal(format, buffer,
+                                   base::OptionalFromPtr(data_dst));
+}
+
+// static
+// |data_dst| is not used, but is kept as it may be used in the future.
+bool ClipboardWin::IsFormatAvailableInternal(
+    const ClipboardFormatType& format,
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst) {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   if (format == ClipboardFormatType::FilenameType())
     return ReadFilenamesAvailable();
@@ -373,6 +384,14 @@ void ClipboardWin::Clear(ClipboardBuffer buffer) {
 std::vector<std::u16string> ClipboardWin::GetStandardFormats(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
+  return GetStandardFormatsInternal(buffer, base::OptionalFromPtr(data_dst));
+}
+
+// static
+// |data_dst| is not used, but is kept as it may be used in the future.
+std::vector<std::u16string> ClipboardWin::GetStandardFormatsInternal(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst) {
   std::vector<std::u16string> types;
   if (::IsClipboardFormatAvailable(
           ClipboardFormatType::PlainTextAType().ToFormatEtc().cfFormat)) {
@@ -418,6 +437,15 @@ void ClipboardWin::ReadAsciiText(
             std::move(callback));
 }
 
+void ClipboardWin::ReadAvailableTypes(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadAvailableTypesCallback callback) const {
+  ReadAsync(base::BindOnce(&ClipboardWin::ReadAvailableTypesInternal, buffer,
+                           data_dst),
+            std::move(callback));
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
@@ -457,29 +485,42 @@ void ClipboardWin::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst,
     std::vector<std::u16string>* types) const {
-  DCHECK(types);
+  CHECK(types);
+  *types = ReadAvailableTypesInternal(buffer, base::OptionalFromPtr(data_dst),
+                                      GetClipboardWindow());
+}
 
-  types->clear();
-  *types = GetStandardFormats(buffer, data_dst);
+// static
+// |data_dst| is not used, but is kept as it may be used in the future.
+std::vector<std::u16string> ClipboardWin::ReadAvailableTypesInternal(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    HWND owner_window) {
+  std::vector<std::u16string> types =
+      GetStandardFormatsInternal(buffer, data_dst);
 
   // Read the custom type only if it's present on the clipboard.
   // See crbug.com/1477344 for details.
-  if (!IsFormatAvailable(ClipboardFormatType::DataTransferCustomType(), buffer,
-                         data_dst)) {
-    return;
+  if (!IsFormatAvailableInternal(ClipboardFormatType::DataTransferCustomType(),
+                                 buffer, data_dst)) {
+    return types;
   }
   // Acquire the clipboard to read DataTransferCustomType types.
   ScopedClipboard clipboard;
-  if (!clipboard.Acquire(GetClipboardWindow()))
-    return;
+  if (!clipboard.Acquire(owner_window)) {
+    return types;
+  }
 
   HANDLE hdata = GetClipboardDataWithLimit(
       ClipboardFormatType::DataTransferCustomType().ToFormatEtc().cfFormat);
-  if (!hdata)
-    return;
+  if (!hdata) {
+    return types;
+  }
 
   base::win::ScopedHGlobal<const uint8_t*> locked_data(hdata);
-  ReadCustomDataTypes(locked_data, types);
+  ReadCustomDataTypes(locked_data, &types);
+
+  return types;
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
