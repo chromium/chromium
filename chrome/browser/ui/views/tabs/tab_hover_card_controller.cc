@@ -328,11 +328,6 @@ void TabHoverCardController::UpdateOrShowCard(
     OnViewIsDeleting(hover_card_);
   }
 
-  if (hover_card_ && anchor_target &&
-      hover_card_->arrow() != anchor_target->GetAnchorPosition()) {
-    hover_card_->SetArrow(anchor_target->GetAnchorPosition());
-  }
-
   // If a hover card is being updated because of a data change, the hover card
   // had better already be showing for the affected tab.
   if (update_type == TabSlotController::HoverCardUpdateType::kTabDataChanged) {
@@ -363,6 +358,11 @@ void TabHoverCardController::UpdateOrShowCard(
     // or snap occurs.
     UpdateCardContent(anchor_target);
     MaybeStartThumbnailObservation(anchor_target, /* is_initial_show */ false);
+
+    auto arrow_position = anchor_target->GetAnchorPosition();
+    if (hover_card_->arrow() != arrow_position) {
+      hover_card_->SetArrowWithoutResizing(arrow_position);
+    }
 
     // If widget is already visible and anchored to the correct tab we should
     // not try to reset the anchor view or reshow.
