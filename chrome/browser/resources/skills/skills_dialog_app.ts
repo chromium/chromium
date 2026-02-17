@@ -261,18 +261,8 @@ export class SkillsDialogAppElement extends CrLitElement {
     this.isRefineLoading_ = true;
     this.hasRefineError_ = false;
 
-    const refineRequest =
-        SkillsDialogBrowserProxy.getInstance().handler.refineSkill(
-            skillToRefine);
-
-    const timeout = new Promise<never>((_, reject) => {
-      WindowProxyImpl.getInstance().setTimeout(
-          () => reject(new Error('Refine skill timed out')),
-          REFINE_SKILL_TIMEOUT_MS);
-    });
-
     // Race the request against the timeout
-    return Promise.race([refineRequest, timeout])
+    return this.requestRefinedSkillWithTimeout_(skillToRefine)
         .then(({refinedSkill}) => {
           // If the server returned null, do not overwrite the current state.
           if (refinedSkill && !this.hasRefineError_) {
@@ -321,13 +311,12 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   protected autoPopulateNameAndIcon_() {
-    if (!this.skill_.prompt) {
+    if (!this.skill_.prompt || this.skill_.name) {
       return;
     }
 
     this.isAutoGenerationLoading_ = true;
-    SkillsDialogBrowserProxy.getInstance()
-        .handler.refineSkill(this.skill_)
+    return this.requestRefinedSkillWithTimeout_(this.skill_)
         .then(({refinedSkill}) => {
           if (refinedSkill) {
             const newName =
@@ -355,6 +344,20 @@ export class SkillsDialogAppElement extends CrLitElement {
         .finally(() => {
           this.isAutoGenerationLoading_ = false;
         });
+  }
+
+  private requestRefinedSkillWithTimeout_(skillToRefine: Skill) {
+    const refineRequest =
+        SkillsDialogBrowserProxy.getInstance().handler.refineSkill(
+            skillToRefine);
+
+    const timeout = new Promise<never>((_, reject) => {
+      WindowProxyImpl.getInstance().setTimeout(
+          () => reject(new Error('Refine skill timed out')),
+          REFINE_SKILL_TIMEOUT_MS);
+    });
+
+    return Promise.race([refineRequest, timeout]);
   }
 }
 
