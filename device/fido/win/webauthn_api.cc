@@ -96,6 +96,8 @@ WEBAUTHN_HMAC_SECRET_SALT_VALUES* FillHMACSaltValues(
     values_storage->cCredWithHmacSecretSaltList =
         base::checked_cast<DWORD>(cred_salts_storage->size());
     values_storage->pCredWithHmacSecretSaltList = cred_salts_storage->data();
+  } else {
+    values_storage->cCredWithHmacSecretSaltList = 0;
   }
 
   return values_storage;
@@ -505,6 +507,18 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
     credential_hints = ToWinCredentialHints(request_options.hints);
   }
 
+  DWORD flags = 0;
+  std::vector<WEBAUTHN_HMAC_SECRET_SALT> prf_input_storage;
+  WEBAUTHN_HMAC_SECRET_SALT* win_prf_input = nullptr;
+  if (base::FeatureList::IsEnabled(device::kWebAuthnWinPrfOnCreate) &&
+      api_version >= 8 && request.prf_input) {
+    win_prf_input = FillHMACSalts(&prf_input_storage, *request.prf_input);
+
+    // The HMAC salts are hashed in the renderer. This flag indicates that they
+    // should not be hashed again.
+    flags |= WEBAUTHN_AUTHENTICATOR_HMAC_SECRET_VALUES_FLAG;
+  }
+
   WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS options{
       WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_8,
       kWinWebAuthnTimeoutMilliseconds,
@@ -517,7 +531,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
       ToWinUserVerificationRequirement(request.user_verification),
       ToWinAttestationConveyancePreference(request.attestation_preference,
                                            api_version),
-      /*dwFlags=*/0,
+      flags,
       &cancellation_id,
       &exclude_credential_list,
       enterprise_attestation,
@@ -529,7 +543,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
       /*pLinkedDevice=*/nullptr,
       /*cbJsonExt=*/0,
       /*pbJsonExt=*/nullptr,
-      /*pPRFGlobalEval=*/nullptr,
+      win_prf_input,
       base::checked_cast<DWORD>(credential_hints.size()),
       credential_hints.data(),
       /*bThirdPartyPayment=*/false,

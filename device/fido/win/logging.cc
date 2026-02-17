@@ -217,6 +217,18 @@ std::ostream& operator<<(
     return out << "}";
   }
   out << kSep << in.dwLargeBlobSupport;
+  if (in.dwVersion < WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_6) {
+    return out << "}";
+  }
+  out << kSep << in.bEnablePrf;
+  if (in.dwVersion < WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_8) {
+    return out << "}";
+  }
+  if (in.pPRFGlobalEval) {
+    out << ", &" << *in.pPRFGlobalEval;
+  } else {
+    out << ", (no prf)";
+  }
   return out << "}";
 }
 
@@ -240,6 +252,18 @@ std::ostream& operator<<(std::ostream& out,
     return out << "}";
   }
   out << kSep << in.bLargeBlobSupported;
+  if (in.dwVersion < WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_5) {
+    return out << "}";
+  }
+  out << kSep << in.bPrfEnabled;
+  if (in.dwVersion < WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_7) {
+    return out << "}";
+  }
+  if (in.pHmacSecret) {
+    out << kSep << "&" << *in.pHmacSecret;
+  } else {
+    out << ", (no hmac secret)";
+  }
   return out << "}";
 }
 
@@ -264,7 +288,7 @@ std::ostream& operator<<(std::ostream& out, const WEBAUTHN_ASSERTION& in) {
   if (in.pHmacSecret) {
     out << kSep << "&" << *in.pHmacSecret;
   } else {
-    out << ", (null)";
+    out << ", (no hmac secret)";
   }
   return out << "}";
 }

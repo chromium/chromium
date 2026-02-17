@@ -25,12 +25,14 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "crypto/hash.h"
+#include "crypto/random.h"
 #include "crypto/sha2.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/prf_input.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/public_key_credential_rp_entity.h"
 #include "device/fido/public/public_key_credential_user_entity.h"
@@ -41,6 +43,43 @@
 namespace device {
 
 namespace {
+
+// Convenience function to evaluate an HMAC given a Windows
+// WEBAUTHN_HMAC_SECRET_SALT struct.
+// `prf_output_storage` should not be moved as the returned value will point to
+// its contents.
+// `flags` should contain the assertion or make credential dwFlags member.
+WEBAUTHN_HMAC_SECRET_SALT EvaluateHmac(
+    std::vector<uint8_t>* prf_output_storage,
+    const WEBAUTHN_HMAC_SECRET_SALT& inputs,
+    DWORD flags,
+    const std::array<uint8_t, 32>& hmac_key) {
+  CHECK(flags & WEBAUTHN_AUTHENTICATOR_HMAC_SECRET_VALUES_FLAG)
+      << "Only raw hashes are supported";
+  PRFInput prf_input;
+  base::span(prf_input.salt1)
+      .copy_from(base::span(inputs.pbFirst, inputs.cbFirst));
+  if (inputs.cbSecond > 0) {
+    prf_input.salt2.emplace();
+    base::span(prf_input.salt1)
+        .copy_from(base::span(inputs.pbSecond, inputs.cbSecond));
+  }
+  WEBAUTHN_HMAC_SECRET_SALT hmac_secret_salt;
+  *prf_output_storage = prf_input.EvaluateHMAC(hmac_key);
+  CHECK(prf_output_storage->size() == crypto::hash::kSha256Size * 2 ||
+        prf_output_storage->size() == crypto::hash::kSha256Size);
+  // `prf_output_storage` must not be moved after this point.
+  if (prf_output_storage->size() > crypto::hash::kSha256Size) {
+    hmac_secret_salt.pbSecond =
+        prf_output_storage->data() + crypto::hash::kSha256Size;
+    hmac_secret_salt.cbSecond = crypto::hash::kSha256Size;
+  } else {
+    hmac_secret_salt.cbSecond = 0;
+  }
+  hmac_secret_salt.pbFirst = prf_output_storage->data();
+  hmac_secret_salt.cbFirst = crypto::hash::kSha256Size;
+  return hmac_secret_salt;
+}
 
 std::unique_ptr<VirtualFidoDevice::PrivateKey> MakePrivateKey(
     PCWEBAUTHN_COSE_CREDENTIAL_PARAMETERS cose_credential_parameters,
@@ -116,6 +155,8 @@ struct FakeWinWebAuthnApi::WebAuthnAttestation {
   std::vector<uint8_t> attestation;
   std::vector<uint8_t> attestation_object;
   std::vector<uint8_t> credential_id;
+  std::vector<uint8_t> prf_results;
+  WEBAUTHN_HMAC_SECRET_SALT hmac_secret_salt;
 
   WEBAUTHN_CREDENTIAL_ATTESTATION win_attestation;
 };
@@ -134,6 +175,9 @@ struct FakeWinWebAuthnApi::WebAuthnAssertionEx {
   std::vector<uint8_t> authenticator_data;
   std::vector<uint8_t> signature;
   std::optional<std::vector<uint8_t>> large_blob;
+  std::vector<uint8_t> prf_results;
+  WEBAUTHN_HMAC_SECRET_SALT hmac_secret_salt;
+
   WEBAUTHN_ASSERTION assertion;
 };
 
@@ -270,16 +314,23 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
                                       base::WideToUTF8(user->pwszDisplayName));
   }
 
+  if ((version_ >= WEBAUTHN_API_VERSION_6 && options->bEnablePrf) ||
+      (version_ >= WEBAUTHN_API_VERSION_8 && options->pPRFGlobalEval)) {
+    registration.hmac_key.emplace();
+    registration.hmac_key->first = crypto::RandBytesAsArray<32>();
+    registration.hmac_key->second = crypto::RandBytesAsArray<32>();
+  }
+
   std::array<uint8_t, 2> credential_id_length = {0, crypto::kSHA256Length};
   AttestedCredentialData credential_data(
       kTestWindowsAaguid, credential_id_length, credential_id,
       registration.private_key->GetPublicKey());
   auto attestation = std::make_unique<WebAuthnAttestation>();
+  bool performed_uv = options->dwUserVerificationRequirement !=
+                      WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED;
   attestation->authenticator_data =
       AuthenticatorData(registration.application_parameter,
-                        /*user_present=*/true,
-                        options->dwUserVerificationRequirement !=
-                            WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
+                        /*user_present=*/true, performed_uv,
                         /*backup_eligible=*/false, /*backup_state=*/false,
                         registration.counter, std::move(credential_data),
                         /*extensions=*/std::nullopt)
@@ -290,7 +341,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
       *cbor::Writer::Write(NoneAttestationStatement().AsCBOR());
 
   attestation->win_attestation.dwVersion =
-      WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_4;
+      WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_7;
   attestation->win_attestation.pwszFormatType = WEBAUTHN_ATTESTATION_TYPE_NONE;
   attestation->win_attestation.cbAuthenticatorData =
       attestation->authenticator_data.size();
@@ -307,6 +358,15 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
         attachment == WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM
             ? WEBAUTHN_CTAP_TRANSPORT_INTERNAL
             : transport_;
+  }
+
+  attestation->win_attestation.bPrfEnabled = registration.hmac_key.has_value();
+  if (version_ >= WEBAUTHN_API_VERSION_8 && options->pPRFGlobalEval) {
+    attestation->hmac_secret_salt = EvaluateHmac(
+        &attestation->prf_results, *options->pPRFGlobalEval, options->dwFlags,
+        performed_uv ? registration.hmac_key->second
+                     : registration.hmac_key->first);
+    attestation->win_attestation.pHmacSecret = &attestation->hmac_secret_salt;
   }
 
   *credential_attestation_ptr = &attestation->win_attestation;
@@ -378,16 +438,17 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
 
   auto result = std::make_unique<WebAuthnAssertionEx>();
   result->credential_id = fido_parsing_utils::Materialize(credential_id);
+  bool performed_uv =
+      /*user_verified=*/options->dwUserVerificationRequirement !=
+      WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED;
   result->authenticator_data =
-      AuthenticatorData(
-          registration->application_parameter,
-          /*user_present=*/true,
-          /*user_verified=*/options->dwUserVerificationRequirement !=
-              WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
-          /*backup_eligible=*/false, /*backup_state=*/false,
-          registration->counter++,
-          /*attested_credential_data=*/std::nullopt,
-          /*extensions=*/std::nullopt)
+      AuthenticatorData(registration->application_parameter,
+                        /*user_present=*/true,
+                        /*user_verified=*/performed_uv,
+                        /*backup_eligible=*/false, /*backup_state=*/false,
+                        registration->counter++,
+                        /*attested_credential_data=*/std::nullopt,
+                        /*extensions=*/std::nullopt)
           .SerializeToByteArray();
 
   // Create the assertion signature.
@@ -486,6 +547,18 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
         NOTREACHED() << "Unknown operation "
                      << options->dwCredLargeBlobOperation;
     }
+  }
+
+  if (version_ >= WEBAUTHN_API_VERSION_6 && options->pHmacSecretSaltValues) {
+    CHECK(options->pHmacSecretSaltValues->pGlobalHmacSalt &&
+          options->pHmacSecretSaltValues->cCredWithHmacSecretSaltList == 0)
+        << "Only global PRF is supported";
+    result->hmac_secret_salt = EvaluateHmac(
+        &result->prf_results, *options->pHmacSecretSaltValues->pGlobalHmacSalt,
+        options->dwFlags,
+        performed_uv ? registration->hmac_key->second
+                     : registration->hmac_key->first);
+    result->assertion.pHmacSecret = &result->hmac_secret_salt;
   }
 
   // The real API hands out results in naked pointers and asks callers

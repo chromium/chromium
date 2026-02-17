@@ -183,6 +183,12 @@ BASE_DECLARE_FEATURE(kFedCmInAuthenticator);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnCreatePinWhenSystemUvDisabled);
 
+#if BUILDFLAG(IS_WIN)
+// Enables support for PRF on create on Windows.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnWinPrfOnCreate);
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_PUBLIC_FEATURES_H_

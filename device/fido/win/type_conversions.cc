@@ -162,6 +162,12 @@ ToAuthenticatorMakeCredentialResponse(
     ret.prf_enabled = credential_attestation.bPrfEnabled;
   }
 
+  if (credential_attestation.dwVersion >=
+          WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_7 &&
+      credential_attestation.pHmacSecret) {
+    ret.prf_results = HMACSecretOutputs(*credential_attestation.pHmacSecret);
+  }
+
   return ret;
 }
 
