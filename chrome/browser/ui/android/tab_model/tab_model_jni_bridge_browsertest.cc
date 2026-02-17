@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"

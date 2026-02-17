@@ -30,7 +30,7 @@
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"

@@ -9,9 +9,9 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"

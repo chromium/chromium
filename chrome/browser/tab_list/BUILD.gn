@@ -1,0 +1,41 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_list") {
+  sources = [
+    "tab_list_interface.cc",
+    "tab_list_interface.h",
+    "tab_list_interface_observer.h",
+    "tab_removed_reason.h",
+  ]
+
+  deps = [
+    "//build:android_buildflags",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//components/tab_groups",
+    "//components/tabs:public",
+    "//ui/base/unowned_user_data",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_tab_list_interface.cc",
+    "mock_tab_list_interface.h",
+  ]
+
+  deps = [
+    ":tab_list",
+    "//chrome/browser/ui/browser_window",
+    "//components/sessions:session_id",
+    "//components/tab_groups",
+    "//components/tabs:public",
+    "//testing/gmock",
+    "//ui/base/unowned_user_data",
+    "//ui/gfx/range",
+  ]
+}

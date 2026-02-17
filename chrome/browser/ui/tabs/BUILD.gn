@@ -14,7 +14,6 @@ source_set("tabs_public") {
     "public/tab_dialog_manager.h",
     "public/tab_features.h",
     "tab_network_state.h",
-    "tab_removed_reason.h",
   ]
   sources = [ "tab_network_state.cc" ]
   public_deps = [
@@ -45,45 +44,6 @@ source_set("utils") {
   ]
   public_deps = [ ":tab_enums" ]
   deps = [ "//content/public/browser" ]
-}
-
-# A common interface for operating on tabs for use by both desktop and android.
-# This is temporary until the tabstrip api is implemented on both platforms.
-source_set("tab_list_interface") {
-  sources = [
-    "tab_list_interface.cc",
-    "tab_list_interface.h",
-    "tab_list_interface_observer.h",
-  ]
-
-  deps = [
-    ":tabs_public",
-    "//build:android_buildflags",
-    "//chrome/browser/ui/browser_window",
-    "//components/tab_groups",
-    "//components/tabs:public",
-    "//ui/base/unowned_user_data",
-    "//url",
-  ]
-}
-
-source_set("tab_list_interface_test_support") {
-  testonly = true
-  sources = [
-    "mock_tab_list_interface.cc",
-    "mock_tab_list_interface.h",
-  ]
-
-  deps = [
-    ":tab_list_interface",
-    "//chrome/browser/ui/browser_window",
-    "//components/sessions:session_id",
-    "//components/tab_groups",
-    "//components/tabs:public",
-    "//testing/gmock",
-    "//ui/base/unowned_user_data",
-    "//ui/gfx/range",
-  ]
 }
 
 if (!is_android) {
@@ -125,10 +85,10 @@ if (!is_android) {
     deps = [ "//chrome/browser/tab_group_sync:factories" ]
 
     public_deps = [
-      ":tab_list_interface",
       ":tab_strip",
       "//base",
       "//chrome/browser/resource_coordinator",
+      "//chrome/browser/tab_list",
       "//chrome/browser/ui/browser_window",
       "//ui/base/unowned_user_data",
     ]
@@ -324,6 +284,7 @@ if (!is_android) {
       ":tab_strip_model_observer",
       ":tabs",
       "//base",
+      "//chrome/browser/tab_list",
       "//components/sessions:session_id",
       "//components/tab_groups",
       "//ui/base",
@@ -657,6 +618,7 @@ if (!is_android) {
     ]
     public_deps = [
       "//base",
+      "//chrome/browser/tab_list",
       "//chrome/browser/ui/tabs:tabs_public",
       "//components/sessions:session_id",
       "//components/tab_groups",

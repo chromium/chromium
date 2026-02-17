@@ -41,9 +41,9 @@
 static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));

@@ -16,7 +16,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"

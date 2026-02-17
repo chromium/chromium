@@ -7,10 +7,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
-#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "content/public/browser/web_contents_observer.h"

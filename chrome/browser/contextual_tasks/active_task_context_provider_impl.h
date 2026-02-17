@@ -13,7 +13,7 @@
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
-#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"

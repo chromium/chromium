@@ -30,9 +30,9 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/tab_strip_context_decorator.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
-#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #endif

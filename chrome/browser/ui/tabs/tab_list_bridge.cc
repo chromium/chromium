@@ -604,7 +604,7 @@ void TabListBridge::WillCloseAllTabs(TabStripModel* model) {
 }
 
 // static
-// From //chrome/browser/ui/tabs/tab_list_interface.h
+// From //chrome/browser/tab_list/tab_list_interface.h
 bool TabListInterface::CanEditTabList(Profile& profile) {
   std::vector<BrowserWindowInterface*> all_browsers =
       GetAllBrowserWindowInterfaces();
