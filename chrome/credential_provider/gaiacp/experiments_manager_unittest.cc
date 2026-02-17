@@ -45,11 +45,15 @@ TEST_F(ExperimentsManagerTest, DefaultValues) {
                          "test_sid", Experiment::TEST_CLIENT_FLAG));
   EXPECT_EQ("false", ExperimentsManager::Get()->GetExperimentForUser(
                          "test_sid", Experiment::TEST_CLIENT_FLAG2));
+  EXPECT_EQ("false", ExperimentsManager::Get()->GetExperimentForUser(
+                         "test_sid", Experiment::ENABLE_SECURITY_KEY_LOGIN));
 
   EXPECT_FALSE(ExperimentsManager::Get()->GetExperimentForUserAsBool(
       "test_sid", Experiment::TEST_CLIENT_FLAG));
   EXPECT_FALSE(ExperimentsManager::Get()->GetExperimentForUserAsBool(
       "test_sid", Experiment::TEST_CLIENT_FLAG2));
+  EXPECT_FALSE(ExperimentsManager::Get()->GetExperimentForUserAsBool(
+      "test_sid", Experiment::ENABLE_SECURITY_KEY_LOGIN));
 }
 
 // Tests different outcomes of fetching experiments through GCPW:
@@ -83,7 +87,8 @@ TEST_P(ExperimentsManagerGcpwE2ETest, FetchingExperiments) {
     fake_http_url_fetcher_factory()->SetFakeResponse(
         url, FakeWinHttpUrlFetcher::Headers(),
         "{\"experiments\": [{\"feature\": \"test_client_flag\", \"value\": "
-        "\"abc\"}, {\"feature\": \"test_client_flag2\", \"value\": \"def\"} ] "
+        "\"abc\"}, {\"feature\": \"test_client_flag2\", \"value\": \"def\"}, "
+        "{\"feature\": \"enable_security_key_login\", \"value\": \"gjk\"} ] "
         "}");
   } else if (experiment_fetch_status == 1) {
     fake_http_url_fetcher_factory()->SetFakeFailedResponse(url, E_FAIL);
@@ -107,10 +112,12 @@ TEST_P(ExperimentsManagerGcpwE2ETest, FetchingExperiments) {
 
   std::string experiment1_value = "false";
   std::string experiment2_value = "false";
+  std::string experiment3_value = "false";
 
   if (experiment_fetch_status == 0) {
     experiment1_value = "abc";
     experiment2_value = "def";
+    experiment3_value = "gjk";
   }
 
   EXPECT_EQ(experiment1_value,
@@ -119,6 +126,9 @@ TEST_P(ExperimentsManagerGcpwE2ETest, FetchingExperiments) {
   EXPECT_EQ(experiment2_value,
             ExperimentsManager::Get()->GetExperimentForUser(
                 base::WideToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG2));
+  EXPECT_EQ(experiment3_value, ExperimentsManager::Get()->GetExperimentForUser(
+                                   base::WideToUTF8(OLE2W(sid)),
+                                   Experiment::ENABLE_SECURITY_KEY_LOGIN));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -158,7 +168,8 @@ TEST_P(ExperimentsManagerESAE2ETest, FetchingExperiments) {
     fake_http_url_fetcher_factory()->SetFakeResponse(
         url, FakeWinHttpUrlFetcher::Headers(),
         "{\"experiments\": [{\"feature\": \"test_client_flag\", \"value\": "
-        "\"abc\"}, {\"feature\": \"test_client_flag2\", \"value\": \"def\"} ] "
+        "\"abc\"}, {\"feature\": \"test_client_flag2\", \"value\": \"def\"}, "
+        "{\"feature\": \"enable_security_key_login\", \"value\": \"gjk\"} ] "
         "}");
   } else if (experiment_fetch_status == 1) {
     fake_http_url_fetcher_factory()->SetFakeFailedResponse(url, E_FAIL);
@@ -177,10 +188,12 @@ TEST_P(ExperimentsManagerESAE2ETest, FetchingExperiments) {
 
   std::string experiment1_value = "false";
   std::string experiment2_value = "false";
+  std::string experiment3_value = "false";
 
   if (experiment_fetch_status == 0) {
     experiment1_value = "abc";
     experiment2_value = "def";
+    experiment3_value = "gjk";
   }
 
   EXPECT_EQ(experiment1_value,
@@ -189,6 +202,9 @@ TEST_P(ExperimentsManagerESAE2ETest, FetchingExperiments) {
   EXPECT_EQ(experiment2_value,
             ExperimentsManager::Get()->GetExperimentForUser(
                 base::WideToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG2));
+  EXPECT_EQ(experiment3_value, ExperimentsManager::Get()->GetExperimentForUser(
+                                   base::WideToUTF8(OLE2W(sid)),
+                                   Experiment::ENABLE_SECURITY_KEY_LOGIN));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
