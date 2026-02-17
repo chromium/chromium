@@ -19,6 +19,7 @@
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/channel_info.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -130,7 +132,7 @@ bool IsLocaleAllowedForSurvey() {
           "pt",
       });
   return kAllowedSurveyLocales.contains(
-      g_browser_process->GetApplicationLocale());
+      g_browser_process->GetFeatures()->application_locale_storage()->Get());
 }
 
 // Returns true if the survey corresponding to `trigger` should be enabled.
