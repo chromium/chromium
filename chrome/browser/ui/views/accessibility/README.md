@@ -127,10 +127,48 @@ class MyViewDumpAccessibilityEventsBrowserTest
 
 ```cpp
 IN_PROC_BROWSER_TEST_P(MyViewDumpAccessibilityEventsBrowserTest, MyThing) {
-  // Perform the thing that triggers accessibility events.
+  // BEGIN_RECORDING_EVENTS_OR_SKIP checks for an expectation file on the
+  // current platform. If none exists, the test is skipped. Otherwise, it
+  // creates an EventRecordingSession that starts recording platform
+  // accessibility events. Filters must be configured before this call.
+  BEGIN_RECORDING_EVENTS_OR_SKIP("my-thing");
+
+  // Perform the action that triggers accessibility events.
   my_view_->DoSomething();
 
-  EXPECT_TRUE(EndTestAndCompareEvents("my-thing"));
+  // Validation runs automatically when the EventRecordingSession goes out
+  // of scope (end of the test body). Events are compared against the
+  // expectation file and any mismatches are reported as test failures.
+}
+```
+
+To capture only a specific portion of the test, call `StopAndCompare()`
+on the session object:
+
+```cpp
+IN_PROC_BROWSER_TEST_P(MyViewDumpAccessibilityEventsBrowserTest, Partial) {
+  DoSomeSetup();  // Not captured.
+
+  BEGIN_RECORDING_EVENTS_OR_SKIP("my-partial-test");
+  my_view_->DoSomething();  // Captured.
+  event_recording_session_.StopAndCompare();
+
+  DoSomeCleanup();  // Not captured, comparison already done.
+}
+```
+
+Alternatively, use a scope block to control the session lifetime:
+
+```cpp
+IN_PROC_BROWSER_TEST_P(MyViewDumpAccessibilityEventsBrowserTest, Scoped) {
+  DoSomeSetup();  // Not captured.
+
+  {
+    BEGIN_RECORDING_EVENTS_OR_SKIP("my-scoped-test");
+    my_view_->DoSomething();  // Captured.
+  }  // Session destroyed here, comparison runs automatically.
+
+  DoSomeCleanup();  // Not captured.
 }
 ```
 
@@ -150,5 +188,8 @@ INSTANTIATE_TEST_SUITE_P(
    * `my-thing-expected-uia-win.txt` (Windows UIA)
    * `my-thing-expected-mac.txt` (macOS)
    * `my-thing-expected-auralinux.txt` (Linux)
+
+   You only need to create files for the platforms you want the test to run on.
+   On platforms without an expectation file, the test is automatically skipped.
 
 6. Add your test file to `chrome/test/BUILD.gn` in the appropriate section.

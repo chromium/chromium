@@ -59,6 +59,54 @@ void CleanupViewsAXEventRecorderMac();
 
 namespace views {
 
+// --- EventRecordingSession implementation ---
+
+EventRecordingSession::EventRecordingSession() = default;
+
+EventRecordingSession::EventRecordingSession(
+    DumpAccessibilityEventsViewsTestBase* test,
+    std::string test_name)
+    : test_(test), test_name_(std::move(test_name)) {}
+
+EventRecordingSession::~EventRecordingSession() {
+  if (test_ && !compared_) {
+    test_->StopRecordingAndCompare(test_name_);
+  }
+}
+
+EventRecordingSession::EventRecordingSession(EventRecordingSession&& other)
+    : test_(other.test_),
+      test_name_(std::move(other.test_name_)),
+      compared_(other.compared_) {
+  other.test_ = nullptr;
+  other.compared_ = true;
+}
+
+EventRecordingSession& EventRecordingSession::operator=(
+    EventRecordingSession&& other) {
+  if (this != &other) {
+    // If this session hasn't compared yet, do it now before overwriting.
+    if (test_ && !compared_) {
+      test_->StopRecordingAndCompare(test_name_);
+    }
+    test_ = other.test_;
+    test_name_ = std::move(other.test_name_);
+    compared_ = other.compared_;
+    other.test_ = nullptr;
+    other.compared_ = true;
+  }
+  return *this;
+}
+
+void EventRecordingSession::StopAndCompare() {
+  CHECK(test_) << "Cannot StopAndCompare on an invalid session.";
+  CHECK(!compared_) << "StopAndCompare already called on this session.";
+  test_->StopRecordingAndCompare(test_name_);
+  compared_ = true;
+}
+
+// --- DumpAccessibilityEventsViewsTestBase implementation ---
+
 DumpAccessibilityEventsViewsTestBase::DumpAccessibilityEventsViewsTestBase()
     : test_helper_(GetParam().api_type) {}
 
@@ -115,8 +163,6 @@ void DumpAccessibilityEventsViewsTestBase::SetUpOnMainThread() {
         ->OnActivationChanged(true);
   }
 #endif
-
-  BeginRecordingEvents();
 }
 
 void DumpAccessibilityEventsViewsTestBase::TearDown() {
@@ -126,8 +172,16 @@ void DumpAccessibilityEventsViewsTestBase::TearDown() {
 }
 
 void DumpAccessibilityEventsViewsTestBase::TearDownOnMainThread() {
+  // EventRecordingSession objects handle comparison automatically via their
+  // destructor (which fires at the end of the test body, before this method).
+  // This method only needs to clean up platform state.
   if (event_recorder_) {
-    event_recorder_->StopListeningToEvents();
+    if (recording_events_) {
+      // Safety net: if recording is still active (e.g., test exited early
+      // without the session being destroyed), stop it.
+      event_recorder_->StopListeningToEvents();
+      recording_events_ = false;
+    }
     event_recorder_.reset();
   }
 
@@ -184,50 +238,52 @@ void DumpAccessibilityEventsViewsTestBase::ChooseFeatures(
     std::vector<base::test::FeatureRef>* enabled_features,
     std::vector<base::test::FeatureRef>* disabled_features) {}
 
-void DumpAccessibilityEventsViewsTestBase::BeginRecordingEvents() {
-  CHECK(!recording_events_) << "Already recording events. Did you forget to "
-                               "call EndTestAndCompareEvents()?";
+EventRecordingSession
+DumpAccessibilityEventsViewsTestBase::BeginRecordingEvents(
+    const std::string& test_name) {
+  CHECK(!recording_events_) << "Already recording events.";
 
-  event_recorder_ = CreateEventRecorder();
-  if (!event_recorder_) {
-    GTEST_SKIP() << "Event recorder not available for "
-                 << GetTestParams().ToString();
+  // Check whether an expectation file exists for this platform.
+  base::FilePath expected_file = GetExpectationFilePath(test_name);
+  if (expected_file.empty()) {
+    return EventRecordingSession();
   }
 
+  // Create the event recorder if needed.
+  if (!event_recorder_) {
+    event_recorder_ = CreateEventRecorder();
+    if (!event_recorder_) {
+      return EventRecordingSession();
+    }
+  }
+
+  // Configure filters and start listening.
   std::vector<ui::AXPropertyFilter> filters = DefaultFilters();
   filters.insert(filters.end(), additional_filters_.begin(),
                  additional_filters_.end());
   event_recorder_->SetPropertyFilters(filters);
   event_recorder_->ListenToEvents(base::DoNothing());
-
   recording_events_ = true;
+
+  return EventRecordingSession(this, test_name);
 }
 
-void DumpAccessibilityEventsViewsTestBase::EndTestAndCompareEvents(
+void DumpAccessibilityEventsViewsTestBase::StopRecordingAndCompare(
     const std::string& test_name) {
-  CHECK(recording_events_) << "Not recording events. Did you forget to call "
-                              "BeginRecordingEvents()?";
+  if (recording_events_) {
+    // Fire the end-of-test event on the root view. This is needed for UIA
+    // tests which wait for this event before collecting results.
+    views::View* root_view = GetTargetRootView();
+    CHECK(root_view);
+    root_view->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kEndOfTest,
+                                                  true);
 
-  // Fire the end-of-test event on the root view. This is needed for UIA tests
-  // which wait for this event before collecting results.
-  views::View* root_view = GetTargetRootView();
-  CHECK(root_view);
-  root_view->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kEndOfTest,
-                                                true);
-
-  event_recorder_->StopListeningToEvents();
-  event_recorder_->WaitForDoneRecording();
-  recording_events_ = false;
+    event_recorder_->StopListeningToEvents();
+    event_recorder_->WaitForDoneRecording();
+    recording_events_ = false;
+  }
 
   EXPECT_TRUE(ValidateAgainstExpectation(test_name, CollectEventLogs()));
-}
-
-void DumpAccessibilityEventsViewsTestBase::RunEventTest(
-    const std::string& test_name,
-    base::OnceClosure action) {
-  BeginRecordingEvents();
-  std::move(action).Run();
-  EndTestAndCompareEvents(test_name);
 }
 
 std::unique_ptr<ui::AXEventRecorder>
