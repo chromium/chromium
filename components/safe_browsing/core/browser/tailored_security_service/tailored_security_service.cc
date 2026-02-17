@@ -417,20 +417,28 @@ void TailoredSecurityService::MaybeNotifySyncUser(bool is_enabled,
     return;
   }
 
-  if (is_enabled && IsEnhancedProtectionEnabled(*prefs())) {
+  // TODO(crbug.com/483786422): Update the preference wiring in relevant each
+  // generated.*pref class that acts whenever the settings bundle setting
+  // changes.
+  bool is_enhanced_protection_enabled =
+      base::FeatureList::IsEnabled(safe_browsing::kBundledSecuritySettings)
+          ? (GetSecurityBundleSetting(*prefs()) ==
+             SecuritySettingsBundleSetting::ENHANCED)
+          : IsEnhancedProtectionEnabled(*prefs());
+  if (is_enabled && is_enhanced_protection_enabled) {
     RecordEnabledNotificationResult(
         TailoredSecurityNotificationResult::kEnhancedProtectionAlreadyEnabled);
     SaveRetryState(TailoredSecurityRetryState::NO_RETRY_NEEDED);
     return;
   }
 
-  if (is_enabled && !IsEnhancedProtectionEnabled(*prefs())) {
+  if (is_enabled && !is_enhanced_protection_enabled) {
     for (auto& observer : observer_list_) {
       observer.OnSyncNotificationMessageRequest(true);
     }
   }
 
-  if (!is_enabled && IsEnhancedProtectionEnabled(*prefs()) &&
+  if (!is_enabled && is_enhanced_protection_enabled &&
       prefs()->GetBoolean(
           prefs::kEnhancedProtectionEnabledViaTailoredSecurity)) {
     for (auto& observer : observer_list_) {
