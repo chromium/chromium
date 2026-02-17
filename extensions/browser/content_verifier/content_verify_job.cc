@@ -16,6 +16,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
@@ -188,7 +190,9 @@ void ContentVerifyJob::Start(ContentVerifier* verifier,
 
   base::AutoLock auto_lock(lock_);
   manifest_version_ = manifest_version;
-  failure_callback_ = std::move(failure_callback);
+  failure_callback_ =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         base::BindOnce(std::move(failure_callback)));
 
   // We search for the cached ContentHash also using the extension root to avoid
   // mismatching with a different directory for the same extension version (e.g.

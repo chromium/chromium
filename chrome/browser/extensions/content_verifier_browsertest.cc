@@ -515,8 +515,13 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTestWithForcedHashes,
   job_observer.ExpectJobResult(extension->id(), background_script_relative_path,
                                TestContentVerifyJobObserver::Result::FAILURE);
 
+  // Set up an observer to wait for the extension to be disabled.
+  TestExtensionRegistryObserver disable_observer(
+      ExtensionRegistry::Get(profile()), extension->id());
+
   EnableExtension(extension->id());
   EXPECT_TRUE(job_observer.WaitForExpectedJobs());
+  EXPECT_TRUE(disable_observer.WaitForExtensionUnloaded());
 
   // The extension should be disabled...
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
@@ -676,8 +681,13 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, TestServiceWorker_AcrossSession) {
   job_observer.ExpectJobResult(extension->id(), background_script_relative_path,
                                TestContentVerifyJobObserver::Result::FAILURE);
 
+  // Set up an observer to wait for the extension to be disabled.
+  TestExtensionRegistryObserver disable_observer(
+      ExtensionRegistry::Get(profile()), extension->id());
+
   EnableExtension(extension->id());
   EXPECT_TRUE(job_observer.WaitForExpectedJobs());
+  EXPECT_TRUE(disable_observer.WaitForExtensionUnloaded());
 
   // The extension should be disabled...
   EXPECT_FALSE(registry->enabled_extensions().Contains(extension->id()));
