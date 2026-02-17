@@ -35,10 +35,10 @@ id<GREYMatcher> KeyboardAccessoryExpandButton() {
 }
 
 // Returns a matcher for a button in the ProfileTableView. Currently it returns
-// the company one.
+// the City one.
 id<GREYMatcher> ProfileTableViewButtonMatcher() {
-  // The company name for autofill::test::GetFullProfile() is "Underworld".
-  return grey_buttonTitle(@"Underworld");
+  // The city name for autofill::test::GetFullProfile() is "Elysium".
+  return grey_buttonTitle(@"Elysium");
 }
 
 // Opens the address manual fill view and verifies that the address view
