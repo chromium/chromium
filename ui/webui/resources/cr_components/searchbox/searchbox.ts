@@ -896,14 +896,10 @@ export class SearchboxElement extends SearchboxElementBase implements
     }
 
     if (e.key === 'Escape') {
-      this.dispatchEvent(new CustomEvent('escape-searchbox', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          event: e,
-          emptyInput: !this.$.input.value,
-        },
-      }));
+      this.fire('escape-searchbox', {
+        event: e,
+        emptyInput: !this.$.input.value,
+      });
     }
 
     // Do not handle the following keys if there are no matches available.
@@ -1158,17 +1154,13 @@ export class SearchboxElement extends SearchboxElementBase implements
     if (this.ntpRealboxNextEnabled) {
       this.$.context.closeMenu();
     }
-    this.dispatchEvent(new CustomEvent('open-composebox', {
-      detail: {
-        searchboxText: this.$.input.value,
-        contextFiles: uploads,
-        mode: mode,
-        model: model,
-        inputState: this.inputState_,
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('open-composebox', {
+      searchboxText: this.$.input.value,
+      contextFiles: uploads,
+      mode: mode,
+      model: model,
+      inputState: this.inputState_,
+    });
     this.setInputText('');
   }
 
@@ -1260,11 +1252,7 @@ export class SearchboxElement extends SearchboxElementBase implements
         this.isDeletingInput_ || this.pastedInInput_ || caretNotAtEnd;
     this.pageHandler_.queryAutocomplete(input, preventInlineAutocomplete);
 
-    this.dispatchEvent(new CustomEvent('query-autocomplete', {
-      bubbles: true,
-      composed: true,
-      detail: {inputValue: input},
-    }));
+    this.fire('query-autocomplete', {inputValue: input});
   }
 
   /**

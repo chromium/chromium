@@ -108,11 +108,7 @@ export class DownloadsToolbarElement extends CrLitElement {
     const searchService = SearchService.getInstance();
     if (searchService.search(event.detail)) {
       this.spinnerActive = searchService.isSearching();
-      this.dispatchEvent(new CustomEvent('spinner-active-changed', {
-        detail: {value: this.spinnerActive},
-        bubbles: true,
-        composed: true,
-      }));
+      this.fire('spinner-active-changed', {value: this.spinnerActive});
     }
     this.updateClearAll_();
   }

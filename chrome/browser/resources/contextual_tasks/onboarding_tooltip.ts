@@ -103,10 +103,7 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
     e.stopPropagation();
     BrowserProxyImpl.getInstance().handler.onboardingTooltipDismissed();
     this.hide();
-    this.dispatchEvent(new CustomEvent('onboarding-tooltip-dismissed', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('onboarding-tooltip-dismissed');
   }
 
   protected onHelpLinkClick_(e: Event) {

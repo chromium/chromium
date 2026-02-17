@@ -253,24 +253,16 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
   protected onRejectGroupClick_(event: CustomEvent) {
     event.stopPropagation();
     event.preventDefault();
-    this.dispatchEvent(new CustomEvent('reject-click', {
-      bubbles: true,
-      composed: true,
-      detail: {organizationId: this.organizationId},
-    }));
+    this.fire('reject-click', {organizationId: this.organizationId});
   }
 
   protected onCreateGroupClick_(event: CustomEvent) {
     event.stopPropagation();
     event.preventDefault();
-    this.dispatchEvent(new CustomEvent('create-group-click', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        organizationId: this.organizationId,
-        tabs: this.tabs,
-      },
-    }));
+    this.fire('create-group-click', {
+      organizationId: this.organizationId,
+      tabs: this.tabs,
+    });
   }
 
   protected onNameChanged_(e: CustomEvent<{value: string}>) {

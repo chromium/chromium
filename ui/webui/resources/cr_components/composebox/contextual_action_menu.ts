@@ -344,25 +344,17 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   }
 
   protected deleteTabContext_(uuid: UnguessableToken) {
-    this.dispatchEvent(new CustomEvent('delete-tab-context', {
-      bubbles: true,
-      composed: true,
-      detail: {uuid: uuid},
-    }));
+    this.fire('delete-tab-context', {uuid: uuid});
   }
 
   protected addTabContext_(tabInfo: TabInfo) {
-    this.dispatchEvent(new CustomEvent('add-tab-context', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        id: tabInfo.tabId,
-        title: tabInfo.title,
-        url: tabInfo.url,
-        delayUpload: false,
-        origin: TabUploadOrigin.CONTEXT_MENU,
-      },
-    }));
+    this.fire('add-tab-context', {
+      id: tabInfo.tabId,
+      title: tabInfo.title,
+      url: tabInfo.url,
+      delayUpload: false,
+      origin: TabUploadOrigin.CONTEXT_MENU,
+    });
     if (!this.enableMultiTabSelection_) {
       this.$.menu.close();
     }
@@ -380,16 +372,12 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
     // Clear the preview URL before fetching the new one to make sure an old
     // or incorrect preview doesn't show while the new one is loading.
     this.tabPreviewUrl_ = '';
-    this.dispatchEvent(new CustomEvent('get-tab-preview', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        tabId: tabInfo.tabId,
-        onPreviewFetched: (previewDataUrl: string) => {
-          this.tabPreviewUrl_ = previewDataUrl;
-        },
+    this.fire('get-tab-preview', {
+      tabId: tabInfo.tabId,
+      onPreviewFetched: (previewDataUrl: string) => {
+        this.tabPreviewUrl_ = previewDataUrl;
       },
-    }));
+    });
   }
 
   protected shouldShowTabPreview_(): boolean {
@@ -397,48 +385,31 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   }
 
   protected openImageUpload_() {
-    this.dispatchEvent(new CustomEvent('open-image-upload', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('open-image-upload');
     this.$.menu.close();
   }
 
   protected openFileUpload_() {
-    this.dispatchEvent(new CustomEvent('open-file-upload', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('open-file-upload');
     this.$.menu.close();
   }
 
   protected onToolClick_(e: Event) {
     const toolMode = Number((e.currentTarget as HTMLElement).dataset['mode']);
-    this.dispatchEvent(new CustomEvent('tool-click', {
-      bubbles: true,
-      composed: true,
-      detail: {toolMode},
-    }));
+    this.fire('tool-click', {toolMode});
     this.$.menu.close();
   }
 
   protected onModelClick_(e: Event) {
     const button = e.currentTarget as HTMLElement;
     const model = Number(button.dataset['model']) as ModelMode;
-    this.dispatchEvent(new CustomEvent('model-click', {
-      bubbles: true,
-      composed: true,
-      detail: {model},
-    }));
+    this.fire('model-click', {model});
     this.$.menu.close();
   }
 
   protected onMenuClose_() {
     window.removeEventListener('blur', this.onWindowBlur_);
-    this.dispatchEvent(new CustomEvent('close', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('close');
   }
 
   protected getIconForToolMode_(mode: ToolMode): string|undefined {

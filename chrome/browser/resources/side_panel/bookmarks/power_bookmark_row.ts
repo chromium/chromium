@@ -231,15 +231,11 @@ export class PowerBookmarkRowElement extends CrLitElement {
       this.keyArrowNavigationService_.removeElementsWithin(this);
     }
 
-    this.dispatchEvent(new CustomEvent('power-bookmark-toggle', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        bookmark: this.bookmark,
-        expanded: this.toggleExpand,
-        event: event,
-      },
-    }));
+    this.fire('power-bookmark-toggle', {
+      bookmark: this.bookmark,
+      expanded: this.toggleExpand,
+      event: event,
+    });
   }
 
   private onKeydown_(e: KeyboardEvent) {
@@ -312,10 +308,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
 
   protected async handleListItemSizeChanged_() {
     await this.currentListItem_.updateComplete;
-    this.dispatchEvent(new CustomEvent('list-item-size-changed', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('list-item-size-changed');
   }
 
   protected onExpandedChanged_(event: CustomEvent<{value: boolean}>) {

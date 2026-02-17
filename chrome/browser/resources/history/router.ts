@@ -145,8 +145,7 @@ export class HistoryRouterElement extends CrLitElement {
       }
     }
     changes.after = after;
-    this.dispatchEvent(new CustomEvent(
-        'change-query', {bubbles: true, composed: true, detail: changes}));
+    this.fire('change-query', changes);
   }
 }
 

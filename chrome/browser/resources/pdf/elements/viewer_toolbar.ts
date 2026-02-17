@@ -496,9 +496,7 @@ export class ViewerToolbarElement extends CrLitElement {
     this.currentStroke--;
 
     this.updateCanUndoRedo_();
-    this.dispatchEvent(new CustomEvent(
-        'strokes-updated',
-        {detail: this.currentStroke, bubbles: true, composed: true}));
+    this.fire('strokes-updated', this.currentStroke);
     record(UserAction.UNDO_INK2);
   }
 
@@ -516,9 +514,7 @@ export class ViewerToolbarElement extends CrLitElement {
     this.pluginController_.redo();
     this.currentStroke++;
     this.updateCanUndoRedo_();
-    this.dispatchEvent(new CustomEvent(
-        'strokes-updated',
-        {detail: this.currentStroke, bubbles: true, composed: true}));
+    this.fire('strokes-updated', this.currentStroke);
     record(UserAction.REDO_INK2);
   }
 
@@ -544,8 +540,7 @@ export class ViewerToolbarElement extends CrLitElement {
     this.currentStroke = 0;
     this.mostRecentStroke = 0;
     this.updateCanUndoRedo_();
-    this.dispatchEvent(new CustomEvent(
-        'strokes-updated', {detail: 0, bubbles: true, composed: true}));
+    this.fire('strokes-updated', 0);
   }
   // </if>
 

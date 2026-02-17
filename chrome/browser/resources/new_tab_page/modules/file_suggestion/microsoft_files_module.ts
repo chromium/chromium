@@ -105,16 +105,12 @@ export class MicrosoftFilesModuleElement extends
 
   protected onDismissButtonClick_() {
     this.handler_.dismissModule();
-    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        message: loadTimeData.getStringF(
-            'dismissModuleToastMessage',
-            loadTimeData.getString('modulesFilesSentence')),
-        restoreCallback: () => this.handler_.restoreModule(),
-      },
-    }));
+    this.fire('dismiss-module-instance', {
+      message: loadTimeData.getStringF(
+          'dismissModuleToastMessage',
+          loadTimeData.getString('modulesFilesSentence')),
+      restoreCallback: () => this.handler_.restoreModule(),
+    });
   }
 
   protected onInfoButtonClick_() {

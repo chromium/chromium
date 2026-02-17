@@ -148,15 +148,13 @@ export class ComposeResultTextElement extends CrLitElement {
   }
 
   protected onFocusIn_() {
-    this.dispatchEvent(new CustomEvent(
-        'set-result-focus', {bubbles: true, composed: true, detail: true}));
+    this.fire('set-result-focus', true);
 
     this.initialText_ = this.textInput.text;
   }
 
   protected onFocusOut_() {
-    this.dispatchEvent(new CustomEvent(
-        'set-result-focus', {bubbles: true, composed: true, detail: false}));
+    this.fire('set-result-focus', false);
 
     const currentText = this.$.resultText.innerText;
     if (currentText === '') {
@@ -167,9 +165,7 @@ export class ComposeResultTextElement extends CrLitElement {
     }
     // Only dispatch event if the text has changed from its initial state.
     if (currentText !== this.initialText_) {
-      this.dispatchEvent(new CustomEvent(
-          'result-edit',
-          {bubbles: true, composed: true, detail: this.$.root.innerText}));
+      this.fire('result-edit', this.$.root.innerText);
     }
   }
 

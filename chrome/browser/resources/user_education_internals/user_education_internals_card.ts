@@ -63,9 +63,7 @@ export class UserEducationInternalsCardElement extends CrLitElement {
 
   protected launchPromo_() {
     assert(this.promo);
-    this.dispatchEvent(new CustomEvent(
-        PROMO_LAUNCH_EVENT,
-        {bubbles: true, composed: true, detail: this.promo.internalName}));
+    this.fire(PROMO_LAUNCH_EVENT, this.promo.internalName);
   }
 
   protected clearData_() {
@@ -74,9 +72,7 @@ export class UserEducationInternalsCardElement extends CrLitElement {
             'Clear all data associated with this User Education journey?\n' +
             'Note: because of session tracking and event constraints, ' +
             'Feature Engagement may still disallow some IPH.')) {
-      this.dispatchEvent(new CustomEvent(
-          CLEAR_PROMO_DATA_EVENT,
-          {bubbles: true, composed: true, detail: this.promo.internalName}));
+      this.fire(CLEAR_PROMO_DATA_EVENT, this.promo.internalName);
     }
   }
 

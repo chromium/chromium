@@ -385,8 +385,7 @@ export class BookmarksCommandManagerElement extends
         assert(parentId);
         this.dispatch(selectFolder(parentId, state.nodes));
         DialogFocusManager.getInstance().clearFocus();
-        this.dispatchEvent(new CustomEvent(
-            'highlight-items', {bubbles: true, composed: true, detail: [id]}));
+        this.fire('highlight-items', [id]);
         break;
       }
       case Command.DELETE: {

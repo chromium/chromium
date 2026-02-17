@@ -56,8 +56,7 @@ export class UserEducationWhatsNewInternalsCardElement extends CrLitElement {
     if (confirm(
             'Clear all What\'s New data?\n' +
             'This affects module order and edition use data.')) {
-      this.dispatchEvent(new CustomEvent(
-          CLEAR_WHATS_NEW_DATA_EVENT, {bubbles: true, composed: true}));
+      this.fire(CLEAR_WHATS_NEW_DATA_EVENT);
     }
   }
 

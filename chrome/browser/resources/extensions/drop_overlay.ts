@@ -51,8 +51,7 @@ export class ExtensionsDropOverlayElement extends CrLitElement {
       this.hidden = true;
     });
     dragTarget.addEventListener('drag-and-drop-load-error', (e) => {
-      this.dispatchEvent(new CustomEvent(
-          'load-error', {bubbles: true, composed: true, detail: e.detail}));
+      this.fire('load-error', e.detail);
     });
     new DragWrapper(dragTarget, this.dragWrapperHandler_);
   }

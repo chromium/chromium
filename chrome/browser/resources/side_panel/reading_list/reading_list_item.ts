@@ -148,8 +148,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
     e.stopPropagation();
     this.apiProxy_.updateReadStatus(this.data.url, !this.data.read);
     if (!this.data.read) {
-      this.dispatchEvent(new CustomEvent(
-          MARKED_AS_READ_UI_EVENT, {bubbles: true, composed: true}));
+      this.fire(MARKED_AS_READ_UI_EVENT);
     }
   }
 

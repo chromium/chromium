@@ -206,11 +206,7 @@ export class TraceReportElement extends CrLitElement {
   }
 
   private dispatchToast_(message: string): void {
-    this.dispatchEvent(new CustomEvent('show-toast', {
-      bubbles: true,
-      composed: true,
-      detail: new Notification(NotificationType.ERROR, message),
-    }));
+    this.fire('show-toast', new Notification(NotificationType.ERROR, message));
   }
 
   protected isDownloadDisabled_(trace: ClientTraceReport): boolean {

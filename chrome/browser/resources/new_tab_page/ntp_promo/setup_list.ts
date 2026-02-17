@@ -133,15 +133,11 @@ export class SetupListElement extends I18nMixinLit
 
   protected onDismissButtonClick_() {
     this.handler_.snoozeSetupList();
-    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        message: this.i18nRecursive(
-            '', 'modulesSetupListDismissToastMessage', 'modulesSetupListTitle'),
-        restoreCallback: () => this.handler_.unsnoozeSetupList(),
-      },
-    }));
+    this.fire('dismiss-module-instance', {
+      message: this.i18nRecursive(
+          '', 'modulesSetupListDismissToastMessage', 'modulesSetupListTitle'),
+      restoreCallback: () => this.handler_.unsnoozeSetupList(),
+    });
   }
 
   protected onInfoButtonClick_() {

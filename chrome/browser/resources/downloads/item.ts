@@ -1260,11 +1260,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private notifySaveDangerousClick_() {
-    this.dispatchEvent(new CustomEvent('save-dangerous-click', {
-      bubbles: true,
-      composed: true,
-      detail: {id: this.dataId_()},
-    }));
+    this.fire('save-dangerous-click', {id: this.dataId_()});
   }
 
   protected onSaveDangerousClick_() {

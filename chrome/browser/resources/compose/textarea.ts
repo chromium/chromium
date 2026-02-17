@@ -96,8 +96,7 @@ export class ComposeTextareaElement extends CrLitElement {
   }
 
   protected onEditClick_() {
-    this.dispatchEvent(
-        new CustomEvent('edit-click', {bubbles: true, composed: true}));
+    this.fire('edit-click');
   }
 
   scrollInputToTop() {

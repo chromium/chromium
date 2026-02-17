@@ -158,16 +158,12 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
       this.selectThisItem_();
     }
 
-    this.dispatchEvent(new CustomEvent('open-command-menu', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        x: e.clientX,
-        y: e.clientY,
-        source: MenuSource.ITEM,
-        targetId: this.itemId,
-      },
-    }));
+    this.fire('open-command-menu', {
+      x: e.clientX,
+      y: e.clientY,
+      source: MenuSource.ITEM,
+      targetId: this.itemId,
+    });
   }
 
   protected onMenuButtonClick_(e: Event) {
@@ -179,15 +175,11 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
       this.selectThisItem_();
     }
 
-    this.dispatchEvent(new CustomEvent('open-command-menu', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        targetElement: e.target,
-        source: MenuSource.ITEM,
-        targetId: this.itemId,
-      },
-    }));
+    this.fire('open-command-menu', {
+      targetElement: e.target,
+      source: MenuSource.ITEM,
+      targetId: this.itemId,
+    });
   }
 
   protected onUploadButtonClick_() {

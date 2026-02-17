@@ -367,15 +367,11 @@ export class BookmarksListElement extends BookmarksListElementBase {
     e.preventDefault();
     this.deselectItems_();
 
-    this.dispatchEvent(new CustomEvent('open-command-menu', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        x: e.clientX,
-        y: e.clientY,
-        source: MenuSource.LIST,
-      },
-    }));
+    this.fire('open-command-menu', {
+      x: e.clientX,
+      y: e.clientY,
+      source: MenuSource.LIST,
+    });
   }
 
   protected onItemFocus_(e: Event) {

@@ -430,8 +430,7 @@ export class HistorySyncedDeviceManagerElement extends
       return;
     }
 
-    this.dispatchEvent(new CustomEvent(
-        'history-view-changed', {bubbles: true, composed: true}));
+    this.fire('history-view-changed');
 
     if (this.replaceSyncPromosWithSignInPromos_) {
       // User signed out, syncing without tabs, or disabled sync in general =>

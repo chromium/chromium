@@ -67,11 +67,7 @@ export class HistoryFilterChipsElement extends CrLitElement {
   }
 
   private fireChange_(userVisits: boolean, actorVisits: boolean) {
-    this.dispatchEvent(new CustomEvent('filter-changed', {
-      bubbles: true,
-      composed: true,
-      detail: {userVisits, actorVisits},
-    }));
+    this.fire('filter-changed', {userVisits, actorVisits});
   }
 }
 

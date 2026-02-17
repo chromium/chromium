@@ -226,37 +226,21 @@ export class SuggestRequestElement extends CrLitElement {
   protected onCopyRequestClick_() {
     navigator.clipboard.writeText(this.requestDataJson_);
 
-    this.dispatchEvent(new CustomEvent('show-toast', {
-      bubbles: true,
-      composed: true,
-      detail: 'Request Copied to Clipboard',
-    }));
+    this.fire('show-toast', 'Request Copied to Clipboard');
   }
 
   protected onCopyResponseClick_() {
     navigator.clipboard.writeText(this.responseJson_);
 
-    this.dispatchEvent(new CustomEvent('show-toast', {
-      bubbles: true,
-      composed: true,
-      detail: 'Response Copied to Clipboard',
-    }));
+    this.fire('show-toast', 'Response Copied to Clipboard');
   }
 
   protected onHardcodeResponseClick_() {
-    this.dispatchEvent(new CustomEvent('open-hardcode-response-dialog', {
-      bubbles: true,
-      composed: true,
-      detail: this.responseJson_,
-    }));
+    this.fire('open-hardcode-response-dialog', this.responseJson_);
   }
 
   protected onChipClick_(e: CustomEvent<string>) {
-    this.dispatchEvent(new CustomEvent('chip-click', {
-      bubbles: true,
-      composed: true,
-      detail: this.pgcl_,
-    }));
+    this.fire('chip-click', this.pgcl_);
     // Allow chip to be found with aria label (originally hidden).
     const button =
         this.shadowRoot.querySelector<HTMLElement>('cr-expand-button')!;

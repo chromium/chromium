@@ -68,7 +68,7 @@ export class AppItemElement extends CrLitElement {
       return;
     }
     this.$.menu.close();
-    this.fire_('on-menu-closed', {appItem: this});
+    this.fire('on-menu-closed', {appItem: this});
   }
 
   private handleContextMenu_(e: Event) {
@@ -76,9 +76,7 @@ export class AppItemElement extends CrLitElement {
     if (this.isValidPosition(position)) {
       // Show custom context menu only if it is inside the area of the item that
       // triggered it.
-      this.fire_('on-menu-open-triggered', {
-        appItem: this,
-      });
+      this.fire('on-menu-open-triggered', {appItem: this});
       this.$.menu.showAtPosition(position);
       recordUserAction(AppHomeUserAction.CONTEXT_MENU_TRIGGERED);
     }
@@ -144,11 +142,6 @@ export class AppItemElement extends CrLitElement {
 
     e.preventDefault();
     e.stopPropagation();
-  }
-
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
   // The CrActionMenuElement is a modal that does not listen to any other

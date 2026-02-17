@@ -69,9 +69,7 @@ export class ViewerAttachmentElement extends CrLitElement {
     if (!this.attachment || this.attachment.size === -1) {
       return;
     }
-    this.dispatchEvent(new CustomEvent(
-        'save-attachment',
-        {detail: this.index, bubbles: true, composed: true}));
+    this.fire('save-attachment', this.index);
   }
 }
 

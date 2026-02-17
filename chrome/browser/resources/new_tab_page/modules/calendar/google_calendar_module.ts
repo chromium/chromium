@@ -94,14 +94,10 @@ export class GoogleCalendarModuleElement extends
 
   protected onDismissButtonClick_() {
     this.handler_.dismissModule();
-    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        message: this.i18n('modulesGoogleCalendarDismissToastMessage'),
-        restoreCallback: () => this.handler_.restoreModule(),
-      },
-    }));
+    this.fire('dismiss-module-instance', {
+      message: this.i18n('modulesGoogleCalendarDismissToastMessage'),
+      restoreCallback: () => this.handler_.restoreModule(),
+    });
   }
 
   protected onInfoButtonClick_() {

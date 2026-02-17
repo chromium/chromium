@@ -424,11 +424,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
     }
   }
 
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
-  }
-
   protected historyClustersSelected_(): boolean {
     return this.selectedPage_ === Page.HISTORY_CLUSTERS &&
         this.showHistoryClusters_;
@@ -804,7 +799,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       afterString = convertDateToQueryValue(e.detail.value.timeRangeStart);
     }
 
-    this.fire_('change-query', {
+    this.fire('change-query', {
       search: this.queryState_.searchTerm,
       after: afterString,
     });
@@ -817,7 +812,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected onHistoryEmbeddingsItemMoreFromSiteClick_(
       e: HistoryEmbeddingsMoreActionsClickEvent) {
     const historyEmbeddingsItem = e.detail;
-    this.fire_(
+    this.fire(
         'change-query',
         {search: 'host:' + new URL(historyEmbeddingsItem.url).hostname});
   }
@@ -904,7 +899,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.includeUserVisits_ = e.detail.userVisits;
     this.includeActorVisits_ = e.detail.actorVisits;
 
-    this.fire_('change-query', {
+    this.fire('change-query', {
       search: this.queryState_.searchTerm,
       includeActorVisits: this.includeActorVisits_,
       includeUserVisits: this.includeUserVisits_,
