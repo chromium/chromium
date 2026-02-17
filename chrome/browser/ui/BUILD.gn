@@ -1106,8 +1106,6 @@ static_library("ui") {
       "views/eye_dropper/eye_dropper.h",
       "views/file_system_access/file_system_access_scroll_panel.cc",
       "views/file_system_access/file_system_access_scroll_panel.h",
-      "views/frame/contents_rounded_corner.cc",
-      "views/frame/contents_rounded_corner.h",
       "views/search_engine_choice/search_engine_choice_dialog_view.cc",
       "views/search_engine_choice/search_engine_choice_dialog_view.h",
       "views/search_engines/dse_reset_dialog.cc",
