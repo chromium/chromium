@@ -16,6 +16,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
+#include "components/sync/protocol/gemini_thread_specifics.pb.h"
 
 namespace contextual_tasks {
 
@@ -64,7 +65,12 @@ class GeminiThreadSyncBridge : public syncer::DataTypeSyncBridge {
   void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
+  void OnDataTypeStoreCommit(const std::optional<syncer::ModelError>& error);
+
   std::unique_ptr<syncer::DataTypeStore> data_type_store_;
+
+  std::unordered_map<std::string, sync_pb::GeminiThreadSpecifics>
+      gemini_thread_specifics_;
 
   base::WeakPtrFactory<GeminiThreadSyncBridge> weak_ptr_factory_{this};
 };

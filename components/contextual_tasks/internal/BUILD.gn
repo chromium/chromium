@@ -63,6 +63,7 @@ source_set("unit_tests") {
     "conversions_unittest.cc",
     "fallback_title_context_decorator_unittest.cc",
     "favicon_context_decorator_unittest.cc",
+    "gemini_thread_sync_bridge_unittest.cc",
     "history_context_decorator_unittest.cc",
     "pending_context_decorator_unittest.cc",
   ]
