@@ -1818,7 +1818,9 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
                                         ? bounds.right.value.GetCSSValue()
                                         : *CSSInitialValue::Create();
 
-  if (query_specified.IsRevertValue() || query_specified.IsRevertLayerValue()) {
+  // https://drafts.csswg.org/css-conditional-5/#style-container
+  // https://drafts.csswg.org/css-cascade-5/#cascade-dependent-keyword
+  if (query_specified.IsCascadeDependentKeyword()) {
     return KleeneValue::kFalse;
   }
 
