@@ -10476,6 +10476,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAB_GROUPS_NO_TAB_GROUPS" desc="Text indicating the user has no Tab groups.">
         Organize your tabs by grouping them together and label them with a custom name and color
       </message>
+      <message name="IDS_TAB_SEARCH_BUTTON_CXMENU_UNPIN" desc="Name of the tab search button context menu item for unpinning tab search.">
+        Unpin
+      </message>
+      <message name="IDS_PROJECTS_PANEL_BUTTON_CXMENU_UNPIN" desc="Name of the projects panel button context menu item for unpinning the projects panel.">
+        Unpin
+      </message>
+      <message name="IDS_EVERYTHING_MENU_BUTTON_CXMENU_UNPIN" desc="Name of the everything menu button context menu item for unpinning the everything menu.">
+        Unpin
+      </message>
       <!-- /Projects Panel Strings -->
 
       <!-- Strings for intent picker -->
