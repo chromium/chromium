@@ -1339,8 +1339,6 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   const gfx::ColorSpace color_space = GetColorSpace();
   const bool use_gpu = canvas()->ShouldTryToUseGpuRaster() &&
                        canvas()->ShouldAccelerate2dContext();
-  constexpr auto kShouldInitialize =
-      CanvasResourceProvider::ShouldInitialize::kCallClear;
   if (use_gpu && canvas()->LowLatencyEnabled()) {
     // Try a SharedImage provider with usage optimized for low-latency.
     gpu::SharedImageUsageSet shared_image_usage_flags =
@@ -1361,7 +1359,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
     }
     provider = Canvas2DResourceProviderSharedImage::Create(
-        canvas()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        canvas()->Size(), format, alpha_type, color_space,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         shared_image_usage_flags, canvas());
   } else if (use_gpu) {
@@ -1375,7 +1373,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
     provider = Canvas2DResourceProviderSharedImage::Create(
-        canvas()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        canvas()->Size(), format, alpha_type, color_space,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         shared_image_usage_flags, canvas());
   } else if (SharedGpuContext::MaySupportImageChromium() &&
@@ -1389,7 +1387,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     const gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     provider = Canvas2DResourceProviderSharedImage::Create(
-        canvas()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        canvas()->Size(), format, alpha_type, color_space,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kCPU,
         shared_image_usage_flags, canvas());
   }

@@ -225,7 +225,6 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
   if (use_shared_image) {
     provider = Canvas2DResourceProviderSharedImage::Create(
         host->Size(), format, alpha_type, color_space,
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::ContextProviderWrapper(),
         can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,
         shared_image_usage_flags, host);

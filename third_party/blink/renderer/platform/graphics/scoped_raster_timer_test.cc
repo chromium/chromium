@@ -86,7 +86,6 @@ TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
       Canvas2DResourceProviderSharedImage::Create(
           gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
           gfx::ColorSpace::CreateSRGB(),
-          CanvasResourceProvider::ShouldInitialize::kCallClear,
           context_provider_wrapper_, RasterMode::kCPU,
           shared_image_usage_flags);
 
@@ -120,7 +119,6 @@ TEST_F(ScopedRasterTimerTest, AcceleratedRasterDuration) {
   auto provider = Canvas2DResourceProviderSharedImage::Create(
       gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
       gfx::ColorSpace::CreateSRGB(),
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, gpu::SharedImageUsageSet());
 
   ASSERT_TRUE(!!provider);

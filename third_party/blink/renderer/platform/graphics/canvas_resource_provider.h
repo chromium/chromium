@@ -539,12 +539,12 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
     : public CanvasResourceProviderSharedImage {
  public:
+  // The returned instance will have been cleared at creation.
   static std::unique_ptr<Canvas2DResourceProviderSharedImage> Create(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
-      ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       RasterMode raster_mode,
       gpu::SharedImageUsageSet shared_image_usage_flags,
@@ -552,7 +552,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   static std::unique_ptr<Canvas2DResourceProviderSharedImage> Create(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
-      ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       RasterMode raster_mode,
       gpu::SharedImageUsageSet shared_image_usage_flags,
