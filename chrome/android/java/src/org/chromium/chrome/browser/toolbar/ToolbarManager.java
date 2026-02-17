@@ -3046,17 +3046,16 @@ public class ToolbarManager
     public void setUrlBarFocusAndText(
             boolean focused, @OmniboxFocusReason int reason, @Nullable String text) {
         if (!mInitializedWithNative) return;
-        OmniboxStub omniboxStub = mLocationBar.getOmniboxStub();
-        if (omniboxStub == null) return;
-        if (focused) {
-            omniboxStub.beginInput(
-                    new AutocompleteInput()
-                            .setUserText(text)
-                            .setSelection(0, Integer.MAX_VALUE)
-                            .setFocusReason(reason));
-        } else {
-            omniboxStub.endInput();
-        }
+        if (mLocationBar.getOmniboxStub() == null) return;
+        mLocationBar
+                .getOmniboxStub()
+                .setUrlBarFocus(
+                        focused
+                                ? new AutocompleteInput()
+                                        .setUserText(text)
+                                        .setSelection(0, Integer.MAX_VALUE)
+                                        .setFocusReason(reason)
+                                : null);
     }
 
     /**

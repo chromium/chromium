@@ -167,7 +167,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
                         new GestureDetector.SimpleOnGestureListener() {
                             @Override
                             public boolean onSingleTapConfirmed(MotionEvent e) {
-                                mOmniboxStub.endInput();
+                                mOmniboxStub.setUrlBarFocus(null);
                                 return false;
                             }
                         });
@@ -464,7 +464,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
     /** Performs the actual focus action and updates the state. */
     private void autofocus(Tab tab) {
         mIsAutofocusing = true;
-        mOmniboxStub.beginInput(new AutocompleteInput());
+        mOmniboxStub.setUrlBarFocus(new AutocompleteInput());
 
         // Mark the tab as processed to prevent future autofocus attempts.
         markTabAsProcessed(tab);

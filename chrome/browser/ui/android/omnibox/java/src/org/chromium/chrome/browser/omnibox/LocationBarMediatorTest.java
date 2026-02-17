@@ -727,6 +727,36 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testSetSearchQuery() {
+        String query = "example search";
+        mProfileSupplier.set(mProfile);
+        mMediator.onFinishNativeInitialization();
+        mMediator.setSearchQuery(query);
+
+        verify(mUrlCoordinator).requestFocus();
+
+        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        verify(mAutocompleteCoordinator).beginInput(captor.capture());
+        assertEquals(query, captor.getValue().getUserText());
+        verify(mUrlCoordinator).setKeyboardVisibility(true, false);
+    }
+
+    @Test
+    public void testSetSearchQuery_empty() {
+        mMediator.setSearchQuery("");
+        verify(mUrlCoordinator, never()).requestFocus();
+        verify(mLocationBarLayout, never()).post(any());
+
+        mProfileSupplier.set(mProfile);
+        mMediator.onFinishNativeInitialization();
+        verify(mUrlCoordinator, never()).requestFocus();
+
+        mMediator.setSearchQuery("");
+        verify(mUrlCoordinator, never()).requestFocus();
+        verify(mLocationBarLayout, never()).post(any());
+    }
+
+    @Test
     public void testOnConfigurationChanged_qwertyKeyboard() {
         mMediator.onUrlFocusChange(true);
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
@@ -936,26 +966,25 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testBeginInput_focusedFromFakebox() {
-        mMediator.onFinishNativeInitialization();
-        mMediator.beginInput(
+    public void testSetUrlBarFocus_focusedFromFakebox() {
+        mMediator.setUrlBarFocus(
                 new AutocompleteInput().setFocusReason(OmniboxFocusReason.FAKE_BOX_TAP));
         assertTrue(mMediator.didFocusUrlFromFakebox());
         verify(mUrlCoordinator).requestFocus();
     }
 
     @Test
-    public void testEndInput_notFocused() {
-        mMediator.endInput();
+    public void testSetUrlBarFocus_notFocused() {
+        mMediator.setUrlBarFocus(null);
         verify(mUrlCoordinator).clearFocus();
     }
 
     @Test
-    public void testBeginInput_NtpAIMode() {
+    public void testSetUrlBarFocus_NtpAIMode() {
         mMediator.onFinishNativeInitialization();
         mMediator.setProfile(mProfile);
 
-        mMediator.beginInput(
+        mMediator.setUrlBarFocus(
                 new AutocompleteInput()
                         .setFocusReason(OmniboxFocusReason.NTP_AI_MODE)
                         .setRequestType(AutocompleteRequestType.AI_MODE));
@@ -969,12 +998,11 @@ public class LocationBarMediatorTest {
 
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
-    public void testBeginInput_pastedText() {
+    public void testSetUrlBarFocus_pastedText() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
 
-        mMediator.beginInput(new AutocompleteInput().setUserText("pastedText"));
-
+        mMediator.setUrlBarFocus(new AutocompleteInput().setUserText("pastedText"));
         verify(mUrlCoordinator).requestFocus();
 
         ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
@@ -1181,7 +1209,7 @@ public class LocationBarMediatorTest {
         mProfileSupplier.set(mProfile);
 
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
-        mMediator.beginInput(
+        mMediator.setUrlBarFocus(
                 new AutocompleteInput()
                         .setUserText("text")
                         .setFocusReason(OmniboxFocusReason.FAKE_BOX_TAP));
@@ -1527,7 +1555,6 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testOnTouchAfterFocus_triggerUrlFocusChange() {
-        mMediator.onFinishNativeInitialization();
         doReturn("").when(mUrlCoordinator).getTextWithoutAutocomplete();
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
         mMediator.onUrlFocusChange(true);
@@ -1597,11 +1624,9 @@ public class LocationBarMediatorTest {
         mProfileSupplier.set(mProfile);
 
         ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
-        AutocompleteInput input = new AutocompleteInput().setUserText("test query");
-        mMediator.beginInput(input);
-        mMediator.onUrlFocusChange(true);
+        mMediator.setSearchQuery("test query");
 
-        verify(mAutocompleteCoordinator, times(2)).beginInput(captor.capture());
+        verify(mAutocompleteCoordinator).beginInput(captor.capture());
         assertEquals("test query", captor.getValue().getUserText());
         clearInvocations(mAutocompleteCoordinator);
 

@@ -13,9 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
@@ -237,7 +235,6 @@ public final class VoiceToolbarButtonControllerTest {
                                 withContentDescription(mButtonString)))
                 .perform(click());
 
-        verify(mVoiceRecognitionHandler)
-                .startVoiceRecognition(eq(VoiceInteractionSource.TOOLBAR), any());
+        verify(mVoiceRecognitionHandler).startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
     }
 }

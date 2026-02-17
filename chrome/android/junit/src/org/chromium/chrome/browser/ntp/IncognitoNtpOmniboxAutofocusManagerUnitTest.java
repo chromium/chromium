@@ -188,9 +188,9 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
 
     private void verifyAutofocus(boolean shouldBeCalled) {
         if (shouldBeCalled) {
-            verify(mOmniboxStub).beginInput(isNotNull());
+            verify(mOmniboxStub).setUrlBarFocus(isNotNull());
         } else {
-            verify(mOmniboxStub, never()).beginInput(any());
+            verify(mOmniboxStub, never()).setUrlBarFocus(any());
         }
     }
 

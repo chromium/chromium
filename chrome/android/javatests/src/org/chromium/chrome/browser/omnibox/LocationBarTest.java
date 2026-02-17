@@ -68,7 +68,6 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -265,11 +264,9 @@ public class LocationBarTest {
     public void testSetSearchQueryFocusesUrlBar() {
         startActivityNormally();
         final String query = "testing query";
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AutocompleteInput input = new AutocompleteInput().setUserText(query);
-                    mLocationBarMediator.beginInput(input);
-                });
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mLocationBarMediator.setSearchQuery(query));
+
         // Query cannot be applied right away because the UrlBar needs to acquire focus first.
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -284,11 +281,8 @@ public class LocationBarTest {
     public void testSetSearchQueryFocusesUrlBar_preNative() {
         startActivityWithDeferredNativeInitialization();
         final String query = "testing query";
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AutocompleteInput input = new AutocompleteInput().setUserText(query);
-                    mLocationBarMediator.beginInput(input);
-                });
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mLocationBarMediator.setSearchQuery(query));
         triggerAndWaitForDeferredNativeInitialization();
         CriteriaHelper.pollUiThread(
                 () -> {
