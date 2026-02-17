@@ -47,6 +47,7 @@ import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -91,7 +92,8 @@ final class SigninBridge {
     @VisibleForTesting static final int ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT = 3;
 
     /**
-     * Starts a flow to add a Google account to the device.
+     * Starts a flow to add a Google account to the device. A bottomsheet will be opened after there
+     * is no primary account.
      *
      * @param tab The target tab for the continueUrl navigation.
      * @param prefilledEmail The email address to prefill in the add account flow, or null if no
@@ -103,6 +105,17 @@ final class SigninBridge {
             Tab tab,
             @Nullable @JniType("std::string") String prefilledEmail,
             @JniType("GURL") GURL continueUrl) {
+        startAddAccountFlow(
+                tab, prefilledEmail, continueUrl, new AccountPickerBottomSheetCoordinatorFactory());
+    }
+
+    /** See {@link SigninBridge#startAddAccountFlow()} above. */
+    @VisibleForTesting
+    static void startAddAccountFlow(
+            Tab tab,
+            @Nullable String prefilledEmail,
+            GURL continueUrl,
+            AccountPickerBottomSheetCoordinatorFactory factory) {
         ThreadUtils.assertOnUiThread();
         WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null || !tab.isUserInteractable()) {
@@ -126,21 +139,48 @@ final class SigninBridge {
                     }
                     windowAndroid.showIntent(
                             intent,
-                            (int resultCode, @Nullable Intent data) -> {
-                                @Nullable String addedAccountEmail =
-                                        data == null
-                                                ? prefilledEmail
-                                                : data.getStringExtra(
-                                                        AccountManager.KEY_ACCOUNT_NAME);
-                                if (SigninFeatureMap.isEnabled(
-                                                SigninFeatures.ENABLE_ADD_SESSION_REDIRECT)
-                                        && resultCode == Activity.RESULT_OK) {
-                                    waitForCookiesAndRedirect(
-                                            tab, addedAccountEmail, continueUrl, initialTabURL);
-                                }
-                            },
+                            getIntentCallback(
+                                    tab, prefilledEmail, continueUrl, factory, initialTabURL),
                             null);
                 });
+    }
+
+    private static WindowAndroid.IntentCallback getIntentCallback(
+            Tab tab,
+            @Nullable String prefilledEmail,
+            GURL continueUrl,
+            AccountPickerBottomSheetCoordinatorFactory factory,
+            GURL initialTabURL) {
+        return (int resultCode, @Nullable Intent data) -> {
+            @Nullable String addedAccountEmail =
+                    data == null
+                            ? prefilledEmail
+                            : data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+            if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_ADD_SESSION_REDIRECT)
+                    && resultCode == Activity.RESULT_OK) {
+                IdentityManager identityManager =
+                        assumeNonNull(
+                                IdentityServicesProvider.get()
+                                        .getIdentityManager(tab.getProfile().getOriginalProfile()));
+
+                // If the account is added to the device but there is no primary
+                // account then surface the bottom sheet otherwise wait for
+                // cookies to be minted.
+                if (identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) {
+                    openAccountPickerBottomSheet(
+                            tab,
+                            continueUrl,
+                            factory,
+                            assumeNonNull(
+                                            identityManager.findExtendedAccountInfoByEmailAddress(
+                                                    assumeNonNull(addedAccountEmail)))
+                                    .getId());
+                    return;
+                }
+
+                waitForCookiesAndRedirect(tab, addedAccountEmail, continueUrl, initialTabURL);
+            }
+        };
     }
 
     /**

@@ -13,7 +13,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -23,6 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -33,6 +36,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -45,8 +49,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -75,6 +83,7 @@ public class SigninBridgeTest {
     }
 
     private static final GURL CONTINUE_URL = new GURL("https://test-continue-url.com");
+    private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
@@ -87,8 +96,6 @@ public class SigninBridgeTest {
     @Mock private Profile mProfileMock;
 
     @Mock private WindowAndroid mWindowAndroidMock;
-
-    @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
 
     @Mock private SigninManager mSigninManagerMock;
 
@@ -109,12 +116,10 @@ public class SigninBridgeTest {
         lenient().when(mTabMock.getProfile()).thenReturn(mProfileMock);
         lenient().when(mTabMock.getWindowAndroid()).thenReturn(mWindowAndroidMock);
         lenient().when(mTabMock.isUserInteractable()).thenReturn(true);
-
         lenient().when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        lenient()
-                .when(mIdentityServicesProviderMock.getSigninManager(mProfileMock))
-                .thenReturn(mSigninManagerMock);
+
+        IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
         SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsJniMock);
     }
 
@@ -325,5 +330,42 @@ public class SigninBridgeTest {
                         any(),
                         anyInt(),
                         isNull());
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(SigninFeatures.ENABLE_ADD_SESSION_REDIRECT)
+    public void testBottomSheetInvokedAfterAddAccountFlow() {
+        ArgumentCaptor<WindowAndroid.IntentCallback> intentCaptor =
+                ArgumentCaptor.forClass(WindowAndroid.IntentCallback.class);
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
+        when(mWindowAndroidMock.showIntent(any(Intent.class), intentCaptor.capture(), any()))
+                .thenReturn(true);
+        FakeAccountManagerFacade fakeAccountManagerFacade =
+                (FakeAccountManagerFacade) AccountManagerFacadeProvider.getInstance();
+        AccountManagerFacadeProvider.setInstanceForTests(fakeAccountManagerFacade);
+        fakeAccountManagerFacade.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
+
+        SigninBridge.startAddAccountFlow(
+                mTabMock,
+                TestAccounts.ACCOUNT2.getEmail(),
+                CONTINUE_URL,
+                mAccountPickerBottomSheetCoordinatorFactoryMock);
+
+        mIdentityManager.addOrUpdateExtendedAccountInfo(TestAccounts.ACCOUNT2);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        intentCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, null);
+
+        verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
+                .create(
+                        eq(mWindowAndroidMock),
+                        any(),
+                        any(),
+                        eq(mBottomSheetControllerMock),
+                        any(),
+                        any(),
+                        any(),
+                        anyInt(),
+                        eq(TestAccounts.ACCOUNT2.getId()));
     }
 }
