@@ -1040,4 +1040,62 @@ test(() => {
   }
 }, `random() shared by shorthand property in var(), test random() value index`);
 
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    var allHaveSameScale = true;
+    for (i = 0; i < iterations; ++i) {
+      const el1 = document.createElement('div');
+      el1.setAttribute("data-foo", 'random(element-shared, 10, 30)');
+      el1.style.setProperty('scale', 'attr(data-foo)');
+      holder.appendChild(el1);
+      const el2 = document.createElement('div');
+      el2.setAttribute("data-foo", 'random(element-shared, 10, 30)');
+      el2.style.setProperty('scale', 'attr(data-foo)');
+      holder.appendChild(el2);
+
+      const el1ComputedScale = getComputedStyle(el1)['scale'];
+      const el2ComputedScale = getComputedStyle(el2)['scale'];
+      if (el1ComputedScale != el2ComputedScale) {
+        allHaveSameScale = false;
+      }
+    }
+
+    assert_true(allHaveSameScale);
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `random() shared by property in attr()`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    var allHaveSameScale = true;
+    for (i = 0; i < iterations; ++i) {
+      const el1 = document.createElement('div');
+      el1.setAttribute("data-foo", 'random(element-shared, 10, 30)');
+      el1.style.setProperty('scale', 'attr(data-foo type(<number>))');
+      holder.appendChild(el1);
+      const el2 = document.createElement('div');
+      el2.setAttribute("data-foo", 'random(element-shared, 10, 30)');
+      el2.style.setProperty('scale', 'attr(data-foo type(<number>))');
+      holder.appendChild(el2);
+
+      const el1ComputedScale = getComputedStyle(el1)['scale'];
+      const el2ComputedScale = getComputedStyle(el2)['scale'];
+      if (el1ComputedScale != el2ComputedScale) {
+        allHaveSameScale = false;
+      }
+    }
+    assert_true(allHaveSameScale);
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `random() shared by property in typed attr()`);
+
 </script>

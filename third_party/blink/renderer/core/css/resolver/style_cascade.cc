@@ -2385,6 +2385,12 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     substituted_attribute_value = g_null_atom;
   }
 
+  // We only use this `local_context` to parse attribute value against attr()
+  // type, we don't actually compute attribute_value here. The computation is
+  // done later on the property where attr() is used and we already have the
+  // right property context there. Hence we don't need to use the property in
+  // the CSSParserLocalContext here, since it's only needed for computing
+  // random() values, not during parsing.
   CSSParserLocalContext local_context =
       CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
   // Parse value according to the attribute type.
