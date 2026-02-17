@@ -57,8 +57,10 @@ dependencies {
     compileLatest 'com.google.android.gms:play-services-auth:21.4.0'
     compileLatest 'com.google.android.gms:play-services-base:+'
     compileLatest 'com.google.android.gms:play-services-basement:+'
-    compileLatest 'com.google.android.gms:play-services-cast-framework:+'
-    compileLatest 'com.google.android.gms:play-services-cast:+'
+    // TODO(https://crbug.com/477567669): Compile the latest version once these
+    // packages are fixed.
+    compileLatest 'com.google.android.gms:play-services-cast-framework:22.2.0'
+    compileLatest 'com.google.android.gms:play-services-cast:22.2.0'
     compileLatest 'com.google.android.gms:play-services-fido:+'
     compileLatest 'com.google.android.gms:play-services-gcm:+'
     // TODO(https://crbug.com/477567669): Compile the latest version once this
