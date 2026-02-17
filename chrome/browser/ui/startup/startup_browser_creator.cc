@@ -510,8 +510,7 @@ std::optional<ash::KioskAppId> GetAppId(const base::CommandLine& command_line,
 bool ShouldForceLaunchIntoNewProfileWithEmail(
     const base::CommandLine& command_line,
     const Profile* profile) {
-  if (base::FeatureList::IsEnabled(features::kCreateProfileIfNoneExists) &&
-      command_line.HasSwitch(switches::kCreateProfileEmailIfNotExists)) {
+  if (command_line.HasSwitch(switches::kCreateProfileEmailIfNotExists)) {
     std::string switch_email =
         command_line.GetSwitchValueASCII(switches::kProfileEmail);
     // Only prompt a new profile if there's an email specified. Otherwise,
@@ -1645,14 +1644,11 @@ StartupProfilePathInfo GetStartupProfilePath(
           ProfilePicker::SetOpenCommandLineUrlsInNextProfileOpened(true);
         }
 #endif
-        if (base::FeatureList::IsEnabled(
-                features::kCreateProfileIfNoneExists)) {
-          // Return the profile picker instead of choosing a default profile.
-          // TODO (crbug.com/395127068): Investigate why the email sometimes
-          // does not get prefilled.
-          return {.path = base::FilePath(),
-                  .mode = StartupProfileMode::kProfilePicker};
-        }
+        // Return the profile picker instead of choosing a default profile.
+        // TODO (crbug.com/395127068): Investigate why the email sometimes
+        // does not get prefilled.
+        return {.path = base::FilePath(),
+                .mode = StartupProfileMode::kProfilePicker};
       }
     }
   }

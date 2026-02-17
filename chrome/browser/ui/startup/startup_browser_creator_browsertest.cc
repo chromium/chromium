@@ -4082,12 +4082,6 @@ class StartupBrowserCreatorPickerUnknownEmailCreateProfileIfNotExists
   // browser will be relaunched by the main test.
   upgrade_util::ScopedRelaunchChromeBrowserOverride relaunch_chrome_override_{
       base::BindRepeating([](const base::CommandLine&) { return true; })};
-
-  // The `kCreateProfileEmailIfNotExists` switch requires the
-  // `kCreateProfileIfNoneExists` feature to be enabled.
-  // TODO: Remove once enabled by default
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kCreateProfileIfNoneExists};
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -4388,10 +4382,6 @@ class StartupBrowserCreatorOpenUrlsInNextProfileCreatedTest
     command_line->AppendSwitch(switches::kCreateProfileEmailIfNotExists);
     command_line->AppendArg("https://www.google.com");
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kCreateProfileIfNoneExists};
 };
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorOpenUrlsInNextProfileCreatedTest,

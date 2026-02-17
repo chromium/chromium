@@ -91,9 +91,6 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_SingleProfile_DisabledStartup) {
 TEST_F(ProfilePickerTest,
        ShouldShowAtLaunch_ProfileEmailSwitchCreateProfileNoMatchingProfile) {
   {
-    base::test::ScopedFeatureList feature_list{
-        features::kCreateProfileIfNoneExists};
-
     TestingProfile* profile1 =
         testing_profile_manager()->CreateTestingProfile("profile1");
     GetProfileAttributes(profile1)->SetAuthInfo(GaiaId("foo"),
@@ -112,18 +109,11 @@ TEST_F(ProfilePickerTest,
     EXPECT_EQ(ProfilePicker::GetStartupMode(),
               StartupProfileMode::kProfilePicker);
   }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kCreateProfileIfNoneExists);
-  EXPECT_EQ(ProfilePicker::GetStartupMode(),
-            StartupProfileMode::kBrowserWindow);
 }
 
 TEST_F(ProfilePickerTest,
        ShouldNotShowAtLaunch_ProfileEmailSwitchCreateProfileExistingProfile) {
   {
-    base::test::ScopedFeatureList feature_list{
-        features::kCreateProfileIfNoneExists};
-
     TestingProfile* profile1 =
         testing_profile_manager()->CreateTestingProfile("profile1");
     GetProfileAttributes(profile1)->SetAuthInfo(GaiaId("foo"), u"test@corp.com",
@@ -142,9 +132,6 @@ TEST_F(
     ProfilePickerTest,
     ShouldNotShowAtLaunch_ProfileEmailSwitchCreateProfileMultipleProfiles) {
   {
-    base::test::ScopedFeatureList feature_list{
-        features::kCreateProfileIfNoneExists};
-
     TestingProfile* profile1 =
         testing_profile_manager()->CreateTestingProfile("profile1");
     GetProfileAttributes(profile1)->SetAuthInfo(GaiaId("foo"), u"test@corp.com",

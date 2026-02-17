@@ -167,9 +167,7 @@ StartupProfileMode ProfilePicker::GetStartupMode() {
       if (!profile_manager->GetProfileDirForEmail(switch_email).empty()) {
         return StartupProfileMode::kBrowserWindow;
       } else if (command_line->HasSwitch(
-                     switches::kCreateProfileEmailIfNotExists) &&
-                 base::FeatureList::IsEnabled(
-                     features::kCreateProfileIfNoneExists)) {
+                     switches::kCreateProfileEmailIfNotExists)) {
         return StartupProfileMode::kProfilePicker;
       }
     }
