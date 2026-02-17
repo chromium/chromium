@@ -36,7 +36,6 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
@@ -95,8 +94,6 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenBackPressHandler;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
-import org.chromium.chrome.browser.glic.GlicKeyedService;
-import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.host_zoom.HostZoomListenerFactory;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -289,7 +286,7 @@ public class RootUiCoordinator
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     protected final ActivityWindowAndroid mWindowAndroid;
     protected final ActivityResultTracker mActivityResultTracker;
-    private final OneshotSupplier<ChromeAndroidTask> mChromeAndroidTaskSupplier;
+    protected final OneshotSupplier<ChromeAndroidTask> mChromeAndroidTaskSupplier;
 
     protected final ActivityTabProvider mActivityTabProvider;
     protected MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
@@ -1623,27 +1620,6 @@ public class RootUiCoordinator
                     return result != null && result;
                 }
             }
-        } else if (id == R.id.glic_menu_id) {
-            Profile profile = mTabModelSelectorSupplier.get().getCurrentModel().getProfile();
-            assert profile != null;
-
-            GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
-            if (service == null) {
-                return false;
-            }
-
-            var task = mChromeAndroidTaskSupplier.get();
-            if (task == null) {
-                Log.w(TAG, "Failed to trigger GLIC: ChromeAndroidTask is null.");
-                return false;
-            }
-            long browserWindowPtr = task.getOrCreateNativeBrowserWindowPtr(profile);
-            // TODO(crbug.com/479863299): Create and pass in enum for invocationSource.
-            service.toggleUI(
-                    browserWindowPtr,
-                    assumeNonNull(mProfileSupplier.get()),
-                    /* invocationSource= */ 7);
-            return true;
         }
         return false;
     }

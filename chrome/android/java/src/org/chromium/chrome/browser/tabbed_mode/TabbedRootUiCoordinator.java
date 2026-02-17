@@ -106,6 +106,8 @@ import org.chromium.chrome.browser.gesturenav.BackActionDelegate;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
@@ -2112,6 +2114,27 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             }
         } else if (id == R.id.close_window) {
             mActivity.finishAndRemoveTask();
+            return true;
+        } else if (id == R.id.glic_menu_id) {
+            Profile profile = mTabModelSelectorSupplier.get().getCurrentModel().getProfile();
+            assert profile != null;
+
+            GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
+            if (service == null) {
+                return false;
+            }
+
+            var task = mChromeAndroidTaskSupplier.get();
+            if (task == null) {
+                Log.w(TAG, "Failed to trigger GLIC: ChromeAndroidTask is null.");
+                return false;
+            }
+            long browserWindowPtr = task.getOrCreateNativeBrowserWindowPtr(profile);
+            // TODO(crbug.com/479863299): Create and pass in enum for invocationSource.
+            service.toggleUI(
+                    browserWindowPtr,
+                    assumeNonNull(mProfileSupplier.get()),
+                    /* invocationSource= */ 7);
             return true;
         }
 
