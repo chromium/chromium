@@ -322,17 +322,17 @@ WindowController* ExtensionTabUtil::GetControllerInProfileWithId(
     int window_id,
     bool also_match_incognito_profile,
     std::string* error_message) {
-  const Profile* incognito_profile =
+  Profile* incognito_profile =
       also_match_incognito_profile
           ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)
           : nullptr;
-  for (WindowController* window_controller :
-       *WindowControllerList::GetInstance()) {
-    const Profile* controller_profile = window_controller->profile();
-    if ((controller_profile == profile ||
-         controller_profile == incognito_profile) &&
-        window_controller->GetWindowId() == window_id) {
-      return window_controller;
+  for (auto* browser : GetAllBrowserWindowInterfaces()) {
+    if ((browser->GetProfile() == profile ||
+         browser->GetProfile() == incognito_profile)) {
+      WindowController* controller = WindowControllerFromBrowser(browser);
+      if (controller->GetWindowId() == window_id) {
+        return controller;
+      }
     }
   }
 
