@@ -56,7 +56,6 @@ const size_t kCredentialIdSize = 16;
 
 // JSON keys for request fields used for both GetAssertion and MakeCredential.
 const char kRequestDataKey[] = "request";
-const char kRequestClientDataJSONKey[] = "client_data_json";
 const char kRequestClientDataJSONHashKey[] = "client_data_json_hash";
 const char kRequestClaimedPINKey[] = "claimed_pin";
 
@@ -551,14 +550,8 @@ cbor::Value BuildGetAssertionCommand(
   entry_map.emplace(cbor::Value(kGetAssertionRequestProtobufKey),
                     cbor::Value(serialized_passkey));
 
-  if (base::FeatureList::IsEnabled(
-          kWebAuthenticationHashClientDataJsonForEnclave)) {
-    entry_map.emplace(cbor::Value(kRequestClientDataJSONHashKey),
-                      cbor::Value(crypto::hash::Sha256(client_data_json)));
-  } else {
-    entry_map.emplace(cbor::Value(kRequestClientDataJSONKey),
-                      cbor::Value(client_data_json));
-  }
+  entry_map.emplace(cbor::Value(kRequestClientDataJSONHashKey),
+                    cbor::Value(crypto::hash::Sha256(client_data_json)));
 
   if (claimed_pin) {
     entry_map.emplace(kRequestClaimedPINKey, std::move(claimed_pin->pin_claim));

@@ -277,8 +277,6 @@ class EnclaveProtocolUtilsTest : public testing::Test {
   std::vector<uint8_t> user_id_;
   std::vector<uint8_t> encrypted_passkey_;
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kWebAuthenticationHashClientDataJsonForEnclave};
 };
 
 }  // namespace

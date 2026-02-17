@@ -149,11 +149,6 @@ BASE_DECLARE_FEATURE(kAuthenticatorPasswordsOnlyImmediateRequests);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnNewRefreshFlow);
 
-// When running an assertion operation, sends the enclave a hash of the client
-// data JSON instead of the full contents.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthenticationHashClientDataJsonForEnclave);
-
 // Enables to save keys from out of context ("opportunistic") retrieval.
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnOpportunisticRetrieval);
