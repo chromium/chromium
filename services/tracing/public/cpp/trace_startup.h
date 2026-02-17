@@ -9,17 +9,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/process/launch.h"
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
-
-#if BUILDFLAG(IS_POSIX)
-#include "base/posix/global_descriptors.h"
-#endif
-
-namespace base {
-class CommandLine;
-}  // namespace base
 
 namespace tracing {
 
@@ -67,28 +58,6 @@ base::ReadOnlySharedMemoryRegion COMPONENT_EXPORT(TRACING_CPP)
 // created beforehand.
 base::UnsafeSharedMemoryRegion COMPONENT_EXPORT(TRACING_CPP)
     CreateTracingOutputSharedMemory();
-
-// Tells the child process to begin tracing right away via command line
-// flags and launch options, given a SMB config obtained with
-// CreateTracingConfigSharedMemory().
-void COMPONENT_EXPORT(TRACING_CPP) AddTraceConfigToLaunchParameters(
-    const base::ReadOnlySharedMemoryRegion& read_only_memory_region,
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-    base::GlobalDescriptors::Key descriptor_key,
-    base::ScopedFD& out_descriptor_to_share,
-#endif
-    base::CommandLine* command_line,
-    base::LaunchOptions* launch_options);
-
-// Tells the child process to write tracing data to this SMB.
-void COMPONENT_EXPORT(TRACING_CPP) AddTraceOutputToLaunchParameters(
-    const base::UnsafeSharedMemoryRegion& unsafe_memory_region,
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-    base::GlobalDescriptors::Key descriptor_key,
-    base::ScopedFD& out_descriptor_to_share,
-#endif
-    base::CommandLine* command_line,
-    base::LaunchOptions* launch_options);
 
 }  // namespace tracing
 

@@ -11,16 +11,10 @@
 #include "base/base_export.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/memory/shared_memory_switch.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "base/process/launch.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-#include "base/files/platform_file.h"
-#include "base/posix/global_descriptors.h"
-#endif
 
 #if !BUILDFLAG(USE_BLINK)
 #error "This is only intended for platforms that use blink."
@@ -80,31 +74,9 @@ struct BASE_EXPORT HistogramSharedMemory {
   static std::optional<SharedMemory> Create(int process_id,
                                             const Config& config);
 
-#if BUILDFLAG(IS_APPLE)
-  // Exposed for testing.
-  static const shared_memory::SharedMemoryMachPortRendezvousKey kRendezvousKey;
-#endif
-
   // Returns true if passing the shared memory handle via command-line arguments
   // is enabled. |process_type| values should come from content:::ProcessType.
   static bool PassOnCommandLineIsEnabled(int process_type);
-
-  // Updates the launch parameters to share |unsafe_memory_region| to a
-  // child process that is about to be launched. This should be called in the
-  // parent process as a part of setting up the launch conditions of the child.
-  // This call will update the |command_line| and |launch_options|. On posix,
-  // where we prefer to use a zygote instead of using the launch_options to
-  // launch a new process, the platform |descriptor_to_share| is returned. The
-  // caller is expected to transmit the descriptor to the launch flow for the
-  // zygote.
-  static void AddToLaunchParameters(
-      const UnsafeSharedMemoryRegion& unsafe_memory_region,
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-      GlobalDescriptors::Key descriptor_key,
-      ScopedFD& descriptor_to_share,
-#endif
-      CommandLine* command_line,
-      LaunchOptions* launch_options);
 
   // Initialize the (global) histogram shared memory from the launch parameters.
   // This should be called in the child process before any histogram samples are

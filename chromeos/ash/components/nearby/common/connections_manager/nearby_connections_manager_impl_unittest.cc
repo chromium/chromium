@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection_impl.h"

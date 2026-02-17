@@ -29,18 +29,8 @@
 #include "components/tracing/common/etw_export_win.h"
 #endif
 
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
-#include "base/apple/mach_port_rendezvous.h"
-#endif
-
 namespace tracing {
 namespace {
-
-#if BUILDFLAG(IS_APPLE)
-using base::shared_memory::SharedMemoryMachPortRendezvousKey;
-constexpr SharedMemoryMachPortRendezvousKey kTraceConfigRendezvousKey = 'trcc';
-constexpr SharedMemoryMachPortRendezvousKey kTraceBufferRendezvousKey = 'trbc';
-#endif
 
 using base::trace_event::TraceConfig;
 using base::trace_event::TraceLog;
@@ -213,44 +203,6 @@ base::UnsafeSharedMemoryRegion CreateTracingOutputSharedMemory() {
     return base::UnsafeSharedMemoryRegion();
   }
   return shm;
-}
-
-void COMPONENT_EXPORT(TRACING_CPP) AddTraceConfigToLaunchParameters(
-    const base::ReadOnlySharedMemoryRegion& read_only_memory_region,
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-    base::GlobalDescriptors::Key descriptor_key,
-    base::ScopedFD& out_descriptor_to_share,
-#endif
-    base::CommandLine* command_line,
-    base::LaunchOptions* launch_options) {
-  base::shared_memory::AddToLaunchParameters(switches::kTraceConfigHandle,
-                                             read_only_memory_region,
-#if BUILDFLAG(IS_APPLE)
-                                             kTraceConfigRendezvousKey,
-#elif BUILDFLAG(IS_POSIX)
-                                             descriptor_key,
-                                             out_descriptor_to_share,
-#endif
-                                             command_line, launch_options);
-}
-
-void COMPONENT_EXPORT(TRACING_CPP) AddTraceOutputToLaunchParameters(
-    const base::UnsafeSharedMemoryRegion& unsafe_memory_region,
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-    base::GlobalDescriptors::Key descriptor_key,
-    base::ScopedFD& out_descriptor_to_share,
-#endif
-    base::CommandLine* command_line,
-    base::LaunchOptions* launch_options) {
-  base::shared_memory::AddToLaunchParameters(switches::kTraceBufferHandle,
-                                             unsafe_memory_region,
-#if BUILDFLAG(IS_APPLE)
-                                             kTraceBufferRendezvousKey,
-#elif BUILDFLAG(IS_POSIX)
-                                             descriptor_key,
-                                             out_descriptor_to_share,
-#endif
-                                             command_line, launch_options);
 }
 
 }  // namespace tracing

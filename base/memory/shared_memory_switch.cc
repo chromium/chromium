@@ -48,9 +48,9 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #endif
 
-// This file supports passing a read/write histogram shared memory region
-// between a parent process and child process. The information about the
-// shared memory region is encoded into a command-line switch value.
+// This file supports passing a shared memory region between a parent process
+// and child process. The information about the shared memory region is encoded
+// into a command-line switch value.
 //
 // Format: "handle,[irp],guid-high,guid-low,size".
 //
@@ -63,8 +63,6 @@
 // 3. The high 64 bits of the shared memory block GUID.
 // 4. The low 64 bits of the shared memory block GUID.
 // 5. The size of the shared memory segment as a string.
-//
-// TODO(crbug.com/389713696): Refactor the platform specific parts of this file.
 
 namespace base::shared_memory {
 namespace {
@@ -104,12 +102,7 @@ std::string Serialize(HandleType shmem_handle,
                       const UnguessableToken& shmem_token,
                       size_t shmem_size,
                       [[maybe_unused]] bool is_read_only,
-#if BUILDFLAG(IS_APPLE)
-                      SharedMemoryMachPortRendezvousKey rendezvous_key,
-#elif BUILDFLAG(IS_POSIX)
-                      GlobalDescriptors::Key descriptor_key,
-                      ScopedFD& descriptor_to_share,
-#endif
+                      SharedMemorySwitch* shared_memory_switch,
                       [[maybe_unused]] LaunchOptions* launch_options) {
 #if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_APPLE)
   CHECK(launch_options != nullptr);
@@ -142,6 +135,7 @@ std::string Serialize(HandleType shmem_handle,
                           (launch_options->elevated ? ",p," : ",i,")});
 #elif BUILDFLAG(IS_APPLE)
 #if !BUILDFLAG(IS_IOS_TVOS)
+  auto& rendezvous_key = shared_memory_switch->rendezvous_key;
   // In the receiving child, the handle is looked up using the rendezvous key.
   launch_options->mach_ports_for_rendezvous.emplace(
       rendezvous_key, MachRendezvousPort(std::move(shmem_handle)));
@@ -169,13 +163,16 @@ std::string Serialize(HandleType shmem_handle,
   // populate |launch_options|. The caller should be responsible for translating
   // between |launch_options| and zygote parameters as necessary.
 #if BUILDFLAG(IS_ANDROID)
-  descriptor_to_share = std::move(shmem_handle);
+  shared_memory_switch->out_descriptor_to_share = std::move(shmem_handle);
 #else
-  descriptor_to_share = std::move(shmem_handle.fd);
+  shared_memory_switch->out_descriptor_to_share = std::move(shmem_handle.fd);
 #endif
-  DVLOG(1) << "Sharing fd=" << descriptor_to_share.get()
-           << " with child process as fd_key=" << descriptor_key;
-  StrAppend(&serialized, {NumberToString(descriptor_key), ",i,"});
+  DVLOG(1) << "Sharing fd="
+           << shared_memory_switch->out_descriptor_to_share.get()
+           << " with child process as fd_key="
+           << shared_memory_switch->descriptor_key;
+  StrAppend(&serialized,
+            {NumberToString(shared_memory_switch->descriptor_key), ",i,"});
 #else
 #error "Unsupported OS"
 #endif
@@ -200,9 +197,7 @@ std::optional<UnguessableToken> DeserializeGUID(std::string_view hi_part,
   return UnguessableToken::Deserialize(hi, lo);
 }
 
-// Deserialize |switch_value| and return a corresponding writable shared memory
-// region. On POSIX the handle is passed by |histogram_memory_descriptor_key|
-// but |switch_value| is still required to describe the memory region.
+// Deserializes `switch_value` into a PlatformSharedMemoryRegion.
 expected<PlatformSharedMemoryRegion, SharedMemoryError> Deserialize(
     std::string_view switch_value,
     PlatformSharedMemoryRegion::Mode mode) {
@@ -317,14 +312,8 @@ expected<PlatformSharedMemoryRegion, SharedMemoryError> Deserialize(
 }
 
 template <typename RegionType>
-void AddToLaunchParametersImpl(std::string_view switch_name,
-                               const RegionType& memory_region,
-#if BUILDFLAG(IS_APPLE)
-                               SharedMemoryMachPortRendezvousKey rendezvous_key,
-#elif BUILDFLAG(IS_POSIX)
-                               GlobalDescriptors::Key descriptor_key,
-                               ScopedFD& out_descriptor_to_share,
-#endif
+void AddToLaunchParametersImpl(const RegionType& memory_region,
+                               SharedMemorySwitch* shared_memory_switch,
                                CommandLine* command_line,
                                LaunchOptions* launch_options) {
 #if BUILDFLAG(IS_WIN)
@@ -342,54 +331,48 @@ void AddToLaunchParametersImpl(std::string_view switch_name,
       std::is_same<RegionType, ReadOnlySharedMemoryRegion>::value;
   std::string switch_value =
       Serialize(std::move(handle), token, size, is_read_only,
-#if BUILDFLAG(IS_APPLE)
-                rendezvous_key,
-#elif BUILDFLAG(IS_POSIX)
-                descriptor_key, out_descriptor_to_share,
-#endif
-                launch_options);
-  command_line->AppendSwitchASCII(switch_name, switch_value);
+                shared_memory_switch, launch_options);
+  command_line->AppendSwitchASCII(shared_memory_switch->switch_name,
+                                  switch_value);
 }
 
 }  // namespace
 
-void AddToLaunchParameters(
-    std::string_view switch_name,
-    const ReadOnlySharedMemoryRegion& read_only_memory_region,
+SharedMemorySwitch::SharedMemorySwitch(
+    std::string_view switch_name_in,
+    [[maybe_unused]] RendezvousKey rendezvous_key_in,
+    [[maybe_unused]] DescriptorKey descriptor_key_in)
+    : switch_name(switch_name_in) {
 #if BUILDFLAG(IS_APPLE)
-    SharedMemoryMachPortRendezvousKey rendezvous_key,
-#elif BUILDFLAG(IS_POSIX)
-    GlobalDescriptors::Key descriptor_key,
-    ScopedFD& out_descriptor_to_share,
+  rendezvous_key = rendezvous_key_in;
 #endif
-    CommandLine* command_line,
-    LaunchOptions* launch_options) {
-  AddToLaunchParametersImpl(switch_name, read_only_memory_region,
-#if BUILDFLAG(IS_APPLE)
-                            rendezvous_key,
-#elif BUILDFLAG(IS_POSIX)
-                            descriptor_key, out_descriptor_to_share,
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+  descriptor_key = descriptor_key_in;
 #endif
-                            command_line, launch_options);
 }
 
-void AddToLaunchParameters(std::string_view switch_name,
-                           const UnsafeSharedMemoryRegion& unsafe_memory_region,
-#if BUILDFLAG(IS_APPLE)
-                           SharedMemoryMachPortRendezvousKey rendezvous_key,
-#elif BUILDFLAG(IS_POSIX)
-                           GlobalDescriptors::Key descriptor_key,
-                           ScopedFD& out_descriptor_to_share,
-#endif
-                           CommandLine* command_line,
-                           LaunchOptions* launch_options) {
-  AddToLaunchParametersImpl(switch_name, unsafe_memory_region,
-#if BUILDFLAG(IS_APPLE)
-                            rendezvous_key,
-#elif BUILDFLAG(IS_POSIX)
-                            descriptor_key, out_descriptor_to_share,
-#endif
-                            command_line, launch_options);
+SharedMemorySwitch::~SharedMemorySwitch() = default;
+
+SharedMemorySwitch::SharedMemorySwitch(SharedMemorySwitch&&) = default;
+SharedMemorySwitch& SharedMemorySwitch::operator=(SharedMemorySwitch&&) =
+    default;
+
+void SharedMemorySwitch::AddToLaunchParameters(
+    const ReadOnlySharedMemoryRegion& read_only_memory_region,
+    CommandLine* command_line,
+    LaunchOptions* launch_options) {
+  CHECK(command_line);
+  AddToLaunchParametersImpl(read_only_memory_region, this, command_line,
+                            launch_options);
+}
+
+void SharedMemorySwitch::AddToLaunchParameters(
+    const UnsafeSharedMemoryRegion& unsafe_memory_region,
+    CommandLine* command_line,
+    LaunchOptions* launch_options) {
+  CHECK(command_line);
+  AddToLaunchParametersImpl(unsafe_memory_region, this, command_line,
+                            launch_options);
 }
 
 expected<UnsafeSharedMemoryRegion, SharedMemoryError>

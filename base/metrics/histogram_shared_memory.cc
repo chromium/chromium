@@ -10,6 +10,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/memory/shared_memory_switch.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -21,18 +22,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/unguessable_token.h"
-
-// On Apple platforms, the shared memory handle is shared using a Mach port
-// rendezvous key.
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
-#include "base/apple/mach_port_rendezvous.h"
-#endif
-
-// On POSIX, the shared memory handle is a file_descriptor mapped in the
-// GlobalDescriptors table.
-#if BUILDFLAG(IS_POSIX)
-#include "base/posix/global_descriptors.h"
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -74,11 +63,6 @@ BASE_FEATURE(kPassHistogramSharedMemoryOnLaunch,
              FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
-
-#if BUILDFLAG(IS_APPLE)
-const shared_memory::SharedMemoryMachPortRendezvousKey
-    HistogramSharedMemory::kRendezvousKey = 'hsmr';
-#endif
 
 HistogramSharedMemory::SharedMemory::SharedMemory(
     UnsafeSharedMemoryRegion r,
@@ -137,27 +121,6 @@ bool HistogramSharedMemory::PassOnCommandLineIsEnabled(int process_type) {
           && process_type != PROCESS_TYPE_UTILITY
 #endif
   );
-}
-
-// static
-void HistogramSharedMemory::AddToLaunchParameters(
-    const UnsafeSharedMemoryRegion& histogram_shmem_region,
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-    GlobalDescriptors::Key descriptor_key,
-    ScopedFD& descriptor_to_share,
-#endif
-    CommandLine* command_line,
-    LaunchOptions* launch_options) {
-  CHECK(histogram_shmem_region.IsValid());
-  CHECK(command_line);
-  shared_memory::AddToLaunchParameters(::switches::kMetricsSharedMemoryHandle,
-                                       histogram_shmem_region,
-#if BUILDFLAG(IS_APPLE)
-                                       kRendezvousKey,
-#elif BUILDFLAG(IS_POSIX)
-                                       descriptor_key, descriptor_to_share,
-#endif
-                                       command_line, launch_options);
 }
 
 // static

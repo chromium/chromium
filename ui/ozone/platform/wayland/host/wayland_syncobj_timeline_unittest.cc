@@ -6,6 +6,7 @@
 
 #include <xf86drm.h>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"

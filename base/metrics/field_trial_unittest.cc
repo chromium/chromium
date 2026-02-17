@@ -36,16 +36,8 @@
 #include "testing/multiprocess_func_list.h"
 
 #if BUILDFLAG(USE_BLINK)
+#include "base/memory/shared_memory_switch.h"
 #include "base/process/launch.h"
-#endif
-
-#if BUILDFLAG(IS_POSIX)
-#include "base/files/platform_file.h"
-#include "base/posix/global_descriptors.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include "base/apple/mach_port_rendezvous.h"
 #endif
 
 namespace base {
@@ -1150,9 +1142,7 @@ TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
 
 #if BUILDFLAG(USE_BLINK)
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-constexpr GlobalDescriptors::Key kFDKey = 42;
-#endif
+constexpr shared_memory::SharedMemorySwitch::DescriptorKey kFDKey = 42;
 
 BASE_FEATURE(kTestFeatureA, "TestFeatureA", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTestFeatureB, "TestFeatureB", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1200,16 +1190,15 @@ TEST_F(FieldTrialListTest, PassFieldTrialSharedMemoryOnCommandLine) {
   // Prepare to launch a child process.
   CommandLine command_line = GetMultiProcessTestChildBaseCommandLine();
   LaunchOptions launch_options;
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-  ScopedFD fd_to_share;
-#endif
+
+  base::shared_memory::SharedMemorySwitch shared_memory_switch(
+      switches::kFieldTrialHandle, 'fldt', kFDKey);
+
   FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
+      &shared_memory_switch, &command_line, &launch_options);
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-      kFDKey, fd_to_share,
-#endif
-      &command_line, &launch_options);
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-  launch_options.fds_to_remap.emplace_back(fd_to_share.get(), kFDKey);
+  launch_options.fds_to_remap.emplace_back(
+      shared_memory_switch.out_descriptor_to_share.get(), kFDKey);
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 
   // The shared memory handle should be specified.

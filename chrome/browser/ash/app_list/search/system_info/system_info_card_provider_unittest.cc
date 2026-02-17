@@ -19,6 +19,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_running_on_chromeos.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/file_manager/path_util.h"

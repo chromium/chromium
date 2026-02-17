@@ -22,6 +22,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_running_on_chromeos.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"

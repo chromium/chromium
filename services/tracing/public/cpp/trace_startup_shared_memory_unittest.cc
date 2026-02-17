@@ -24,16 +24,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include "base/posix/global_descriptors.h"
-#endif
-
 namespace tracing {
 namespace {
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-constexpr base::GlobalDescriptors::Key kArbitraryDescriptorKey = 42;
-#endif
+constexpr base::shared_memory::SharedMemorySwitch::RendezvousKey
+    kArbitraryRendezvousKey = 'trbc';
+constexpr base::shared_memory::SharedMemorySwitch::DescriptorKey
+    kArbitraryDescriptorKey = 42;
 
 }  // namespace
 
@@ -125,16 +122,14 @@ TEST_P(TraceStartupSharedMemoryTest, PassSharedMemoryRegion) {
 #if BUILDFLAG(IS_WIN)
   launch_options.start_hidden = true;
   launch_options.elevated = GetParam();
-#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-  base::ScopedFD descriptor_to_share;
 #endif
 
   // Update the launch parameters.
-  AddTraceOutputToLaunchParameters(shm,
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-                                   kArbitraryDescriptorKey, descriptor_to_share,
-#endif
-                                   &command_line, &launch_options);
+  base::shared_memory::SharedMemorySwitch shared_memory_switch(
+      switches::kTraceBufferHandle, kArbitraryRendezvousKey,
+      kArbitraryDescriptorKey);
+  shared_memory_switch.AddToLaunchParameters(shm, &command_line,
+                                             &launch_options);
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
   // On posix, AddToLaunchParameters() ignores the launch options and instead
@@ -143,8 +138,9 @@ TEST_P(TraceStartupSharedMemoryTest, PassSharedMemoryRegion) {
   // if available. If, like in this test scenario, there's ultimately no zygote
   // to use, launch helper updates the launch options to share the descriptor
   // mapping relative to a base descriptor.
-  launch_options.fds_to_remap.emplace_back(descriptor_to_share.get(),
-                                           kArbitraryDescriptorKey);
+  launch_options.fds_to_remap.emplace_back(
+      shared_memory_switch.out_descriptor_to_share.get(),
+      kArbitraryDescriptorKey);
 #if !BUILDFLAG(IS_ANDROID)
   for (auto& pair : launch_options.fds_to_remap) {
     pair.second += base::GlobalDescriptors::kBaseDescriptor;

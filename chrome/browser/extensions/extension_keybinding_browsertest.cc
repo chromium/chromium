@@ -6,6 +6,7 @@
 // For UI interactive tests, see extension_keybinding_apitest.cc.
 
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"

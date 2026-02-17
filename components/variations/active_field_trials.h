@@ -9,16 +9,16 @@
 
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
 #include "base/process/launch.h"
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-#include "base/files/platform_file.h"
-#include "base/posix/global_descriptors.h"
-#endif
+namespace base::shared_memory {
+struct SharedMemorySwitch;
+}  // namespace base::shared_memory
 
 namespace variations {
 
@@ -153,10 +153,7 @@ const std::string& GetSeedVersion();
 // info.
 COMPONENT_EXPORT(VARIATIONS)
 void PopulateLaunchOptionsWithVariationsInfo(
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-    base::GlobalDescriptors::Key descriptor_key,
-    base::ScopedFD& descriptor_to_share,
-#endif
+    base::shared_memory::SharedMemorySwitch* shared_memory_switch,
     base::CommandLine* command_line,
     base::LaunchOptions* launch_options);
 #endif  // !BUILDFLAG(USE_BLINK)

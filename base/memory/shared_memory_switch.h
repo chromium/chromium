@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/stack_allocated.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/types/expected.h"
 #include "build/blink_buildflags.h"
@@ -49,57 +50,84 @@ enum class SharedMemoryError {
   kUnexpectedSize,
 };
 
-#if BUILDFLAG(IS_APPLE)
-#if !BUILDFLAG(IS_IOS_TVOS)
-using SharedMemoryMachPortRendezvousKey = MachPortsForRendezvous::key_type;
+// Platform-specific options to share a shared memory region with a child
+// process. On Apple platforms, this uses a mach port rendezvous key. On other
+// POSIX platforms, this uses a file descriptor key.
+struct BASE_EXPORT SharedMemorySwitch {
+  // This class is intended to just live on the stack for passing parameters,
+  // as it merely stores a std::string_view reference to the switch name.
+  STACK_ALLOCATED();
+
+ public:
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
+  // The rendezvous key used to share the mach port.
+  using RendezvousKey = MachPortsForRendezvous::key_type;
 #else
-// Mach port rendezvous is unused on tvOS as it cannot launch new processes.
-// This type is provided so the function interface remains compatible with
-// other Apple platforms. Functions with this type in their interface are
-// not called on tvOS.
-using SharedMemoryMachPortRendezvousKey = uint32_t;
-#endif
+  // On tvOS and non-Apple platforms, the rendezvous type is unused but defined
+  // to allow for a consistent function interface.
+  using RendezvousKey = uint32_t;
 #endif
 
-// Updates `command_line` and `launch_options` to use `switch_name` to pass
-// `read_only_memory_region` to child process that is about to be launched.
-// This should be called in the parent process as a part of setting up the
-// launch conditions of the child. This call will update the `command_line`
-// and `launch_options`. On posix, where we prefer to use a zygote instead of
-// using the launch_options to launch a new process, the platform
-// `descriptor_to_share` is returned. The caller is expected to transmit the
-// descriptor to the launch flow for the zygote.
-BASE_EXPORT void AddToLaunchParameters(
-    std::string_view switch_name,
-    const ReadOnlySharedMemoryRegion& read_only_memory_region,
-#if BUILDFLAG(IS_APPLE)
-    SharedMemoryMachPortRendezvousKey rendezvous_key,
-#elif BUILDFLAG(IS_POSIX)
-    GlobalDescriptors::Key descriptor_key,
-    ScopedFD& out_descriptor_to_share,
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+  // The key used to identify the file descriptor in the child process.
+  using DescriptorKey = GlobalDescriptors::Key;
+#else
+  // On other platforms, the descriptor key is unused but defined to allow for a
+  // consistent function interface.
+  using DescriptorKey = uint32_t;
 #endif
-    CommandLine* command_line,
-    LaunchOptions* launch_options);
 
-// Updates `command_line` and `launch_options` to use `switch_name` to pass
-// `unsafe_memory_region` to a child process that is about to be launched.
-// This should be called in the parent process as a part of setting up the
-// launch conditions of the child. This call will update the `command_line`
-// and `launch_options`. On posix, where we prefer to use a zygote instead of
-// using the launch_options to launch a new process, the platform
-// `descriptor_to_share` is returned. The caller is expected to transmit the
-// descriptor to the launch flow for the zygote.
-BASE_EXPORT void AddToLaunchParameters(
-    std::string_view switch_name,
-    const UnsafeSharedMemoryRegion& unsafe_memory_region,
+  // Initializes the shared memory switch with the given switch name, rendezvous
+  // key, and descriptor key. The rendezvous key and descriptor key are unused
+  // on platforms that do not use them but are required arguments to allow for a
+  // consistent function interface.
+  SharedMemorySwitch(std::string_view switch_name_in,
+                     [[maybe_unused]] RendezvousKey rendezvous_key_in,
+                     [[maybe_unused]] DescriptorKey descriptor_key_in);
+  ~SharedMemorySwitch();
+
+  SharedMemorySwitch(SharedMemorySwitch&&);
+  SharedMemorySwitch& operator=(SharedMemorySwitch&&);
+
+  // Updates `command_line` and `launch_options` to use `switch_name` to pass
+  // `read_only_memory_region` to child process that is about to be launched.
+  // This should be called in the parent process as a part of setting up the
+  // launch conditions of the child. This call will update the `command_line`
+  // and `launch_options`. On posix, where we prefer to use a zygote instead of
+  // using the launch_options to launch a new process, the platform
+  // `out_descriptor_to_share` is populated. The caller is expected to transmit
+  // the descriptor to the launch flow for the zygote.
+  void AddToLaunchParameters(
+      const ReadOnlySharedMemoryRegion& read_only_memory_region,
+      CommandLine* command_line,
+      LaunchOptions* launch_options);
+
+  // Updates `command_line` and `launch_options` to use `switch_name` to pass
+  // `unsafe_memory_region` to a child process that is about to be launched.
+  // This should be called in the parent process as a part of setting up the
+  // launch conditions of the child. This call will update the `command_line`
+  // and `launch_options`.
+  void AddToLaunchParameters(
+      const UnsafeSharedMemoryRegion& unsafe_memory_region,
+      CommandLine* command_line,
+      LaunchOptions* launch_options);
+
+  // The name of the switch to use to pass the shared memory region to the
+  // child process.
+  std::string_view switch_name;
+
 #if BUILDFLAG(IS_APPLE)
-    SharedMemoryMachPortRendezvousKey rendezvous_key,
-#elif BUILDFLAG(IS_POSIX)
-    GlobalDescriptors::Key descriptor_key,
-    ScopedFD& out_descriptor_to_share,
+  RendezvousKey rendezvous_key;
 #endif
-    CommandLine* command_line,
-    LaunchOptions* launch_options);
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+  // The key used to identify the file descriptor in the child process.
+  DescriptorKey descriptor_key;
+  // The descriptor to share, as an out-parameter. This is populated by
+  // AddToLaunchParameters() and expected to be transferred to the launch flow
+  // for the zygote.
+  ScopedFD out_descriptor_to_share;
+#endif
+};
 
 // Returns an UnsafeSharedMemoryRegion deserialized from `switch_value`.
 BASE_EXPORT expected<UnsafeSharedMemoryRegion, SharedMemoryError>

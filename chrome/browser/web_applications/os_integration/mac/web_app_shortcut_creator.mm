@@ -22,6 +22,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -39,6 +40,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/version_info/version_info.h"
+#include "build/buildflag.h"
 #include "chrome/browser/shortcuts/platform_util_mac.h"
 #include "chrome/browser/web_applications/mojom/web_app_shortcut_copier.mojom.h"
 #include "chrome/browser/web_applications/os_integration/mac/bundle_info_plist.h"
@@ -46,10 +48,13 @@
 #include "chrome/browser/web_applications/os_integration/mac/icon_utils.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
+#include "base/memory/shared_memory_switch.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #import "chrome/common/mac/app_mode_common.h"
 #include "components/variations/active_field_trials.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
@@ -295,7 +300,10 @@ bool CopyStagingBundleToDestination(bool use_ad_hoc_signing_for_web_app_shims,
   channel.PrepareToPassRemoteEndpoint(&options, &command_line);
 
   // Ensure that the helper tool sees the same feature state as the browser.
-  variations::PopulateLaunchOptionsWithVariationsInfo(&command_line, &options);
+  base::shared_memory::SharedMemorySwitch shared_memory_switch(
+      switches::kFieldTrialHandle, 'fldt', kFieldTrialDescriptor);
+  variations::PopulateLaunchOptionsWithVariationsInfo(
+      &shared_memory_switch, &command_line, &options);
 
   base::Process copier_process = base::LaunchProcess(command_line, options);
   if (!copier_process.IsValid()) {

@@ -8,6 +8,7 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol.h>
 
+#include "base/auto_reset.h"
 #include "base/posix/eintr_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

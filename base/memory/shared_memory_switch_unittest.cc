@@ -6,24 +6,15 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/process/launch.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
-#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
-
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include "base/files/platform_file.h"
-#include "base/posix/global_descriptors.h"
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
@@ -37,11 +28,8 @@ constexpr char kSharedMemoryGUID[] = "shared_memory_guid";
 constexpr char kIsReadOnly[] = "is_read_only";
 constexpr size_t kArbitrarySize = 64 << 10;
 
-#if BUILDFLAG(IS_APPLE)
-constexpr MachPortsForRendezvous::key_type kArbitraryRendezvousKey = 'smsh';
-#elif BUILDFLAG(IS_POSIX)
-constexpr GlobalDescriptors::Key kArbitraryDescriptorKey = 42;
-#endif
+constexpr SharedMemorySwitch::RendezvousKey kArbitraryRendezvousKey = 'smsh';
+constexpr SharedMemorySwitch::DescriptorKey kArbitraryDescriptorKey = 42;
 
 }  // namespace
 
@@ -124,27 +112,18 @@ TEST_P(SharedMemorySwitchTest, PassViaSwitch) {
 #if BUILDFLAG(IS_WIN)
   launch_options.start_hidden = true;
   launch_options.elevated = elevated;
-#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-  ScopedFD descriptor_to_share;
 #endif
 
   // Update the launch parameters.
+  SharedMemorySwitch shared_memory_switch(
+      kSharedMemoryData, kArbitraryRendezvousKey, kArbitraryDescriptorKey);
+
   if (read_only) {
-    AddToLaunchParameters(kSharedMemoryData, read_only_region.region,
-#if BUILDFLAG(IS_APPLE)
-                          kArbitraryRendezvousKey,
-#elif BUILDFLAG(IS_POSIX)
-                          kArbitraryDescriptorKey, descriptor_to_share,
-#endif
-                          &command_line, &launch_options);
+    shared_memory_switch.AddToLaunchParameters(
+        read_only_region.region, &command_line, &launch_options);
   } else {
-    AddToLaunchParameters(kSharedMemoryData, unsafe_region,
-#if BUILDFLAG(IS_APPLE)
-                          kArbitraryRendezvousKey,
-#elif BUILDFLAG(IS_POSIX)
-                          kArbitraryDescriptorKey, descriptor_to_share,
-#endif
-                          &command_line, &launch_options);
+    shared_memory_switch.AddToLaunchParameters(unsafe_region, &command_line,
+                                               &launch_options);
   }
 
   // The metrics shared memory handle should be added to the command line.
@@ -158,8 +137,9 @@ TEST_P(SharedMemorySwitchTest, PassViaSwitch) {
   // if available. If, like in this test scenario, there's ultimately no zygote
   // to use, launch helper updates the launch options to share the descriptor
   // mapping relative to a base descriptor.
-  launch_options.fds_to_remap.emplace_back(descriptor_to_share.get(),
-                                           kArbitraryDescriptorKey);
+  launch_options.fds_to_remap.emplace_back(
+      shared_memory_switch.out_descriptor_to_share.get(),
+      kArbitraryDescriptorKey);
 #if !BUILDFLAG(IS_ANDROID)
   for (auto& pair : launch_options.fds_to_remap) {
     pair.second += base::GlobalDescriptors::kBaseDescriptor;

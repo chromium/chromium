@@ -37,6 +37,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_restrictions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/constants.h"
 #include "ui/events/test/event_generator.h"

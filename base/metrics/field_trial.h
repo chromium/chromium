@@ -92,11 +92,6 @@
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-#include "base/files/platform_file.h"
-#include "base/posix/global_descriptors.h"
-#endif
-
 namespace base {
 
 class FeatureList;
@@ -113,6 +108,7 @@ struct LaunchOptions;
 #if BUILDFLAG(USE_BLINK)
 namespace shared_memory {
 enum class SharedMemoryError;
+struct SharedMemorySwitch;
 }  // namespace shared_memory
 #endif
 
@@ -552,10 +548,7 @@ class BASE_EXPORT FieldTrialList {
   // line arguments necessary for a child process to inherit the shared-memory
   // object containing the FieldTrial configuration.
   static void PopulateLaunchOptionsWithFieldTrialState(
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-      GlobalDescriptors::Key descriptor_key,
-      ScopedFD& descriptor_to_share,
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+      shared_memory::SharedMemorySwitch* shared_memory_switch,
       CommandLine* command_line,
       LaunchOptions* launch_options);
 #endif  // !BUILDFLAG(USE_BLINK)
