@@ -683,7 +683,6 @@ class LiveSignInGaiaIntegrationTest : public LiveSignInTest {};
 // TODO(crbug.com/467170772): Remove the logging once flakiness reason is identified.
 IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
                        MANUAL_WebSignInFromExistingChromeSignInTab) {
-  LOG(WARNING) << "Test starting.";
   base::HistogramTester histogram_tester;
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
@@ -695,7 +694,6 @@ IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
   auto* signin_tab = browser()->tab_strip_model()->GetActiveWebContents();
   DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(signin_tab);
   ASSERT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
-  LOG(WARNING) << "Browser signin page open.";
 
   // Use the same tab for a web sign-in.
   content::OpenURLParams params(
@@ -705,17 +703,14 @@ IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
       signin_tab->OpenURL(params, /*navigation_handle_callback=*/{});
   ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->count());
   ASSERT_EQ(signin_tab, contents);
-  LOG(WARNING) << "Moved to web sign in tab.";
 
   GURL interception_bubble_url(
       chrome::kChromeUIDiceWebSigninInterceptChromeSigninURL);
   content::TestNavigationObserver interception_bubble_observer(
       interception_bubble_url);
   interception_bubble_observer.StartWatchingNewWebContents();
-  LOG(WARNING) << "Bubble observation started.";
 
   sign_in_functions.SignInFromCurrentPage(signin_tab, *test_account, 0);
-  LOG(WARNING) << "Signin in done.";
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar_1 =
       identity_manager()->GetAccountsInCookieJar();
@@ -734,14 +729,12 @@ IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
 
   ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->count());
   interception_bubble_observer.Wait();
-  LOG(WARNING) << "Interception bubble awaited";
   histogram_tester.ExpectBucketCount(
       "Signin.Intercept.HeuristicOutcome",
       SigninInterceptionHeuristicOutcome::kInterceptChromeSignin, 1);
 
   // The user should not be signed-in in the browser.
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  LOG(WARNING) << "Signin complete with no primary user.";
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
