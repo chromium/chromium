@@ -36,9 +36,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'StaticAssignmentInConstructor',
     # CheckReturnValue: See note below about enabling via -Xep.
 
-    # TODO(crbug.com/481747262): Enable after migrating existing usages.
-    'NoAndroidLog',
-
     # Still to look into:
     'AnnotationPosition',
     'AvoidObjectArrays',
