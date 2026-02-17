@@ -6796,6 +6796,8 @@ static_library("browser") {
       "performance_manager/user_tuning/memory_saver_policy_handler.cc",
       "policy/battery_saver_policy_handler.cc",
       "policy/battery_saver_policy_handler.h",
+      "policy/developer_tools_availability_list_policy_handler.cc",
+      "policy/developer_tools_availability_list_policy_handler.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust:features",
