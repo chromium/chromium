@@ -23,8 +23,10 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -217,6 +219,15 @@ class ModalDialogWrapperTest : public testing::Test {
     window_ = ui::WindowAndroid::CreateForTesting();
     fake_dialog_manager_ = FakeModalDialogManagerBridge::CreateForTab(
         window_->get(), /*use_empty_java_presenter=*/false);
+  }
+
+  float GetScaleFactor() {
+    display::Screen* screen = display::Screen::Get();
+    if (!screen || !window_ || !window_->get()) {
+      return 1.0f;
+    }
+    return screen->GetPreferredScaleFactorForWindow(window_->get())
+        .value_or(1.0f);
   }
 
   bool dialog_destroyed_ = false;
@@ -557,7 +568,9 @@ TEST_F(ModalDialogWrapperTest, TitleIcon_ShowsVectorIcon) {
   // Convert icon to bitmap for comparison.
   ui::ColorProvider color_provider;
   color_provider.GenerateColorMapForTesting();
-  const SkBitmap expected_bitmap = *icon.Rasterize(&color_provider).bitmap();
+  float scale = GetScaleFactor();
+  const SkBitmap expected_bitmap =
+      icon.Rasterize(&color_provider).GetRepresentation(scale).GetBitmap();
 
   auto dialog_model =
       DialogModelBuilder(&dialog_destroyed_).WithIcon(std::move(icon)).Build();
@@ -574,7 +587,9 @@ TEST_F(ModalDialogWrapperTest, TitleIcon_ShowsGfxImage) {
   auto icon = CreateBitmapImage(SK_ColorGREEN);
   ui::ColorProvider color_provider;
   color_provider.GenerateColorMapForTesting();
-  const SkBitmap expected_bitmap = *icon.Rasterize(&color_provider).bitmap();
+  float scale = GetScaleFactor();
+  const SkBitmap expected_bitmap =
+      icon.Rasterize(&color_provider).GetRepresentation(scale).GetBitmap();
 
   auto dialog_model =
       DialogModelBuilder(&dialog_destroyed_).WithIcon(std::move(icon)).Build();
@@ -592,13 +607,16 @@ TEST_F(ModalDialogWrapperTest, ShowsMenuItems) {
   auto icon1 = CreateBitmapImage(SK_ColorRED);
   ui::ColorProvider color_provider;
   color_provider.GenerateColorMapForTesting();
-  const SkBitmap expected_bitmap1 = *icon1.Rasterize(&color_provider).bitmap();
+  float scale = GetScaleFactor();
+  const SkBitmap expected_bitmap1 =
+      icon1.Rasterize(&color_provider).GetRepresentation(scale).GetBitmap();
   const std::u16string label1 = u"Red Bitmap Item";
 
   // --- Item 2: VectorIcon-based ---
   auto icon2 =
       ui::ImageModel::FromVectorIcon(kTestIcon, SK_ColorBLUE, kIconDim);
-  const SkBitmap expected_bitmap2 = *icon2.Rasterize(&color_provider).bitmap();
+  const SkBitmap expected_bitmap2 =
+      icon2.Rasterize(&color_provider).GetRepresentation(scale).GetBitmap();
   const std::u16string label2 = u"Blue Vector Item";
 
   // --- Build and Show ---

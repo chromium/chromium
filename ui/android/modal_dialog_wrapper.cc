@@ -21,10 +21,12 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/strings/grit/ui_strings.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -153,15 +155,22 @@ ParagraphData getParagraphData(DialogModelField* field) {
   return data;
 }
 
-const SkBitmap* getIconBitmap(const ui::ImageModel& icon_model) {
+SkBitmap getIconBitmap(const ui::ImageModel& icon_model, float scale) {
+  if (icon_model.IsEmpty()) {
+    return SkBitmap();
+  }
+
   auto key = ui::ColorProviderKey();
   ui::ColorProvider* color_provider =
       ui::ColorProviderManager::Get().GetColorProviderFor(key);
   CHECK(color_provider);
 
   gfx::ImageSkia image_skia = icon_model.Rasterize(color_provider);
-  // Returns the 1x Skia if it exists. See ImageSkia.bitmap() for details.
-  return image_skia.bitmap();
+  if (image_skia.isNull()) {
+    return SkBitmap();
+  }
+
+  return image_skia.GetRepresentation(scale).GetBitmap();
 }
 
 }  // anonymous namespace
@@ -212,6 +221,14 @@ ModalDialogWrapper::GetButtonStyles() const {
   return ModalDialogButtonStyles::kPrimaryOutlineNegativeOutline;
 }
 
+float GetScaleFactor(WindowAndroid* window) {
+  display::Screen* screen = display::Screen::Get();
+  if (!screen || !window) {
+    return 1.0f;
+  }
+  return screen->GetPreferredScaleFactorForWindow(window).value_or(1.0f);
+}
+
 void ModalDialogWrapper::BuildPropertyModel() {
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -230,18 +247,19 @@ void ModalDialogWrapper::BuildPropertyModel() {
       env, java_obj_, title, ok_button_label, cancel_button_label,
       static_cast<int>(buttonStyles));
 
-  const SkBitmap* bitmap =
-      getIconBitmap(dialog_model_->icon(DialogModelHost::GetPassKey()));
-  if (!bitmap->isNull()) {
+  float scale = GetScaleFactor(window_android_);
+  SkBitmap bitmap =
+      getIconBitmap(dialog_model_->icon(DialogModelHost::GetPassKey()), scale);
+  if (!bitmap.isNull()) {
     Java_ModalDialogWrapper_withTitleIcon(env, java_obj_,
-                                          gfx::ConvertToJavaBitmap(*bitmap));
+                                          gfx::ConvertToJavaBitmap(bitmap));
   }
 
   std::u16string checkbox_text;
   bool checked = false;
   std::vector<std::vector<std::u16string>> all_paragraph_spans;
   std::vector<std::vector<base::RepeatingClosure>> all_paragraph_closures;
-  std::vector<const SkBitmap*> menu_item_icons;
+  std::vector<SkBitmap> menu_item_icons;
   std::vector<std::u16string> menu_item_labels;
   menu_items_.clear();
 
@@ -274,10 +292,10 @@ void ModalDialogWrapper::BuildPropertyModel() {
       }
       case DialogModelField::kMenuItem: {
         DialogModelMenuItem* menu_item = field->AsMenuItem();
-        const SkBitmap* icon_bitmap = getIconBitmap(menu_item->icon());
+        SkBitmap icon_bitmap = getIconBitmap(menu_item->icon(), scale);
         // Menu items without icons are not yet handled on Android.
-        if (icon_bitmap && !icon_bitmap->isNull()) {
-          menu_item_icons.push_back(icon_bitmap);
+        if (!icon_bitmap.isNull()) {
+          menu_item_icons.push_back(std::move(icon_bitmap));
           menu_item_labels.push_back(menu_item->label());
           menu_items_.push_back(menu_item);
         }
@@ -359,7 +377,7 @@ void ModalDialogWrapper::BuildPropertyModel() {
     for (size_t i = 0; i < menu_item_icons.size(); ++i) {
       env->SetObjectArrayElement(
           java_icons_array.obj(), i,
-          gfx::ConvertToJavaBitmap(*menu_item_icons[i]).obj());
+          gfx::ConvertToJavaBitmap(menu_item_icons[i]).obj());
     }
 
     ScopedJavaLocalRef<jobjectArray> java_labels_array =
