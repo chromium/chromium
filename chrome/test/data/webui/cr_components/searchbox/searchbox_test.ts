@@ -5,7 +5,7 @@
 import 'chrome://new-tab-page/new_tab_page.js';
 
 import type {SearchboxElement, SearchboxIconElement, SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {$$, BrowserProxyImpl, MetricsReporterImpl, PlaceholderTextCycler, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
@@ -21,7 +21,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, waitForAttributeChange} from './searchbox_test_utils.js';
+import {assertStyle} from './searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 enum Attributes {
@@ -3081,31 +3081,6 @@ suite('NewTabPageRealboxTest', () => {
     testProxy.callbackRouterRemote.onInputStateChanged(inputState);
     await microtasksFinished();
     assertDeepEquals((realbox as any).inputState_, inputState);
-  });
-});
-
-suite('PlaceholderTextCyclerTest', () => {
-  let testInputElement: HTMLInputElement;
-
-  setup(() => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testInputElement = document.createElement('input');
-    testInputElement.type = 'text';
-    document.body.appendChild(testInputElement);
-  });
-
-  test('start and stop cycling input placeholder', async () => {
-    const sampleTransitionPlaceholder = 'Make a plan';
-    const placeholderTextCycler: PlaceholderTextCycler =
-        new PlaceholderTextCycler(
-            testInputElement, ['Ask Google', sampleTransitionPlaceholder], 50,
-            25);
-    placeholderTextCycler.start();
-    const text =
-        await waitForAttributeChange(testInputElement, 'placeholder', '');
-    assertEquals(sampleTransitionPlaceholder, text);
-
-    placeholderTextCycler.stop();
   });
 });
 
