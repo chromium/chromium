@@ -83,22 +83,28 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     private final Supplier<BottomSheetController> mBottomSheetController;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final @Nullable SnackbarManager mSnackbarManager;
-    private BottomSheetSigninAndHistorySyncConfig mConfig;
     private final @SigninAccessPoint int mSigninAccessPoint;
-    private @Nullable Profile mProfile;
     private final boolean mIsLegacyFlow;
 
-    private @Nullable SigninBottomSheetCoordinator mSigninBottomSheetCoordinator;
-    private @Nullable HistorySyncCoordinator mHistorySyncCoordinator;
-    private @Nullable PropertyModel mDialogModel;
-    private boolean mDidShowSigninStep;
+    // Properties being set once for the coordinator's lifetime.
     private boolean mFlowInitialized;
+    private @Nullable Profile mProfile;
 
     // TODO(https://crbug.com/469772349): Remove @Nullable once the legacy flow will be removed.
     // Each access point use a different key as a same activity can host different instances of this
     // coordinator.
     private @Nullable String mRegisteredActivityKey;
+
+    // Properties related to a started sign-in flow, that should be cleared after finishing the flow
+    // finishes.
+    private @Nullable SigninBottomSheetCoordinator mSigninBottomSheetCoordinator;
+    private @Nullable HistorySyncCoordinator mHistorySyncCoordinator;
+    private @Nullable PropertyModel mDialogModel;
+    private BottomSheetSigninAndHistorySyncConfig mConfig;
+    private boolean mDidShowSigninStep;
     private @Nullable String mPendingAddedAccountEmail;
+    // This is used for the sign-in Activity only, doesn't need clean-up in the activityless sign-in
+    // flow.
     private @ColorInt int mScrimStatusBarColor = Color.TRANSPARENT;
 
     /**
@@ -287,8 +293,12 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     public void startSigninFlow(BottomSheetSigninAndHistorySyncConfig config) {
         assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
 
+        // Assert that the previous flow finished properly.
+        assert !mDidShowSigninStep;
+        assert mDialogModel == null;
+        assert mPendingAddedAccountEmail == null;
+
         mConfig = config;
-        mDidShowSigninStep = false;
         assumeNonNull(mProfileSupplier)
                 .runSyncOrOnAvailable(
                         profile -> {
@@ -467,6 +477,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             assumeNonNull(mModalDialogManagerSupplier.get())
                     .dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
         }
+        mDialogModel = null;
 
         SigninAndHistorySyncCoordinator.Result flowResult =
                 new SigninAndHistorySyncCoordinator.Result(
@@ -714,6 +725,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                     this,
                     result);
         }
+        if (!mIsLegacyFlow) {
+            resetSigninFlow();
+        }
         mDelegate.onFlowComplete(result);
     }
 
@@ -738,5 +752,19 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         if (mSigninBottomSheetCoordinator != null) {
             mSigninBottomSheetCoordinator.onAccountAdded(accountEmail);
         }
+    }
+
+    // Suppressing nullaway as it's similar to destroy method
+    // See
+    // https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/java/nullaway.md#object-construction-and-destruction
+    @SuppressWarnings("NullAway")
+    private void resetSigninFlow() {
+        mConfig = null;
+        mPendingAddedAccountEmail = null;
+        mDidShowSigninStep = false;
+
+        assert mDialogModel == null;
+        assert mSigninBottomSheetCoordinator == null;
+        assert mHistorySyncCoordinator == null;
     }
 }

@@ -69,6 +69,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -1330,6 +1331,55 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         verify(mDelegate, never()).onFlowComplete(any());
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testStartSigninFlow_afterAnotherSigninFlow_didShowSigninStepIsReset() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mBaseActivityTestRule.startOnBlankPage();
+        createSigninCoordinator();
+
+        // Start flow 1 with CHOOSE_ACCOUNT_BOTTOM_SHEET.
+        // This sets mDidShowSigninStep = true.
+        final BottomSheetSigninAndHistorySyncConfig config =
+                createConfig(
+                        NoAccountSigninMode.BOTTOM_SHEET,
+                        WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                        HistorySyncConfig.OptInMode.REQUIRED,
+                        null);
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.startSigninFlow(config));
+
+        // Verify that the expanded sign-in bottom-sheet is shown.
+        ViewUtils.waitForVisibleView(
+                allOf(withId(R.id.account_picker_state_expanded), isCompletelyDisplayed()));
+
+        // Cancel flow 1. This should call resetSigninFlow().
+        Espresso.pressBack();
+        verify(mDelegate, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onFlowComplete(eq(Result.aborted()));
+
+        // Sign in manually so that the next flow skips sign-in.
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        // Start flow 2 with SEAMLESS_SIGNIN for the already signed-in account.
+        // This flow should skip sign-in and go to history sync.
+        final BottomSheetSigninAndHistorySyncConfig newConfig =
+                createConfig(
+                        NoAccountSigninMode.BOTTOM_SHEET,
+                        WithAccountSigninMode.SEAMLESS_SIGNIN,
+                        HistorySyncConfig.OptInMode.REQUIRED,
+                        TestAccounts.ACCOUNT1.getId());
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.startSigninFlow(newConfig));
+
+        // Verify that in flow 2, mDidShowSigninStep is false, meaning the email IS shown in footer,
+        // and the completion result doesn't state that a sign-in has been done.
+        String expectedEmail = TestAccounts.ACCOUNT1.getEmail();
+        onViewWaiting(withId(R.id.history_sync_footer), /* checkRootDialog= */ true)
+                .check(matches(allOf(isDisplayed(), withText(containsString(expectedEmail)))));
+        acceptHistorySyncAndVerifyFlowCompletion(
+                /* checkRootDialog= */ true, /* hasSignedIn= */ false);
+    }
+
     private void launchSeamlessSigninAndVerifySignedIn(
             @HistorySyncConfig.OptInMode int historyOptInMode, CoreAccountInfo accountInfo) {
         HistogramWatcher signinHistogramWatcher =
@@ -1351,20 +1401,12 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
             @WithAccountSigninMode int withAccountSigninMode,
             @HistorySyncConfig.OptInMode int historyOptInMode,
             CoreAccountId accountId) {
-        AccountPickerBottomSheetStrings bottomSheetStrings =
-                new AccountPickerBottomSheetStrings.Builder("Title").build();
-        BottomSheetSigninAndHistorySyncConfig.Builder builder =
-                new BottomSheetSigninAndHistorySyncConfig.Builder(
-                        bottomSheetStrings,
+        BottomSheetSigninAndHistorySyncConfig config =
+                createConfig(
                         NoAccountSigninMode.BOTTOM_SHEET,
                         withAccountSigninMode,
                         historyOptInMode,
-                        "Title",
-                        "Subtitle");
-        if (withAccountSigninMode == WithAccountSigninMode.SEAMLESS_SIGNIN) {
-            builder = builder.useSeamlessWithAccountSignin(accountId);
-        }
-        BottomSheetSigninAndHistorySyncConfig config = builder.build();
+                        accountId);
 
         mBaseActivityTestRule.startOnBlankPage();
         createSigninCoordinator();
@@ -1408,23 +1450,37 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                 "Signin.Timestamps.Android.Fullscreen.TriggerLayoutInflation")
                         .expectNoRecords("Signin.Timestamps.Android.Fullscreen.ActivityInflated")
                         .build();
-        AccountPickerBottomSheetStrings bottomSheetStrings =
-                new AccountPickerBottomSheetStrings.Builder("Title").build();
         BottomSheetSigninAndHistorySyncConfig config =
-                new BottomSheetSigninAndHistorySyncConfig.Builder(
-                                bottomSheetStrings,
-                                noAccountSigninMode,
-                                withAccountSigninMode,
-                                historyOptInMode,
-                                "Title",
-                                "Subtitle")
-                        .build();
+                createConfig(noAccountSigninMode, withAccountSigninMode, historyOptInMode, null);
+
         Intent intent =
                 SigninAndHistorySyncActivity.createIntent(
                         ApplicationProvider.getApplicationContext(), config, mSigninAccessPoint);
         mActivityTestRule.launchActivity(intent);
         mActivity = mActivityTestRule.getActivity();
         fullscreenActivityHistograms.assertExpected();
+    }
+
+    private BottomSheetSigninAndHistorySyncConfig createConfig(
+            @NoAccountSigninMode int noAccountSigninMode,
+            @WithAccountSigninMode int withAccountSigninMode,
+            @HistorySyncConfig.OptInMode int historyOptInMode,
+            @Nullable CoreAccountId accountId) {
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder("Title").build();
+        BottomSheetSigninAndHistorySyncConfig.Builder builder =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                        bottomSheetStrings,
+                        noAccountSigninMode,
+                        withAccountSigninMode,
+                        historyOptInMode,
+                        "Title",
+                        "Subtitle");
+        if (withAccountSigninMode == WithAccountSigninMode.SEAMLESS_SIGNIN) {
+            assert accountId != null;
+            builder = builder.useSeamlessWithAccountSignin(accountId);
+        }
+        return builder.build();
     }
 
     private void verifyCollapsedBottomSheetAndSignin(CoreAccountInfo accountInfo) {
