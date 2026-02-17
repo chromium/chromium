@@ -119,4 +119,7 @@ public interface ControlContainer extends TabStripTransitionDelegate {
      * pending tasks.
      */
     void destroy();
+
+    /** Force the control container to measure itself, update the layout, and capture a bitmap. */
+    void doSynchronousLayoutAndCapture();
 }

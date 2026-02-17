@@ -12,6 +12,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -81,6 +83,7 @@ import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -911,5 +914,21 @@ public class ToolbarControlContainerTest {
                 "Transition not finished, so minHeight stays the same.",
                 0,
                 mControlContainer.getMinimumHeight());
+    }
+
+    @Test
+    public void testDoSynchronousLayoutAndCapture() {
+        initControlContainer(R.layout.toolbar_phone);
+        ViewResourceAdapter mockAdapter = mock(ViewResourceAdapter.class);
+
+        ToolbarControlContainer spyContainer = spy(mControlContainer);
+        doReturn(mockAdapter).when(spyContainer).getToolbarResourceAdapter();
+
+        spyContainer.doSynchronousLayoutAndCapture();
+
+        verify(spyContainer).measure(anyInt(), anyInt());
+        verify(spyContainer).layout(anyInt(), anyInt(), anyInt(), anyInt());
+        verify(mockAdapter).invalidate(null);
+        verify(mockAdapter).triggerBitmapCapture();
     }
 }

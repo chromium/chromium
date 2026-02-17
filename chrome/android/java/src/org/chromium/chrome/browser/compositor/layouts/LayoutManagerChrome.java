@@ -192,7 +192,12 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
                             this,
                             topUiColorProvider,
                             bottomControlsOffsetSupplier,
-                            getContentContainer());
+                            getContentContainer(),
+                            () -> {
+                                if (controlContainer != null) {
+                                    controlContainer.doSynchronousLayoutAndCapture();
+                                }
+                            });
         }
 
         super.init(
