@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -22,6 +23,7 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,23 +60,31 @@ class MockWalletHttpClient : public wallet::WalletHttpClient {
               (override));
 };
 
-EntityInstance GetServerEntityInstance(EntityTypeName entity_type) {
+EntityInstance GetUnmaskedServerEntityInstance(
+    EntityTypeName entity_type,
+    std::string_view unmasked_number) {
+  std::u16string u16number = base::UTF8ToUTF16(unmasked_number);
   switch (entity_type) {
     case EntityTypeName::kPassport:
       return test::GetPassportEntityInstance(
-          {.record_type = EntityInstance::RecordType::kServerWallet});
+          {.number = u16number.c_str(),
+           .record_type = EntityInstance::RecordType::kServerWallet});
     case EntityTypeName::kDriversLicense:
       return test::GetDriversLicenseEntityInstance(
-          {.record_type = EntityInstance::RecordType::kServerWallet});
+          {.number = u16number.c_str(),
+           .record_type = EntityInstance::RecordType::kServerWallet});
     case EntityTypeName::kNationalIdCard:
       return test::GetNationalIdCardEntityInstance(
-          {.record_type = EntityInstance::RecordType::kServerWallet});
+          {.number = u16number.c_str(),
+           .record_type = EntityInstance::RecordType::kServerWallet});
     case EntityTypeName::kKnownTravelerNumber:
       return test::GetKnownTravelerNumberInstance(
-          {.record_type = EntityInstance::RecordType::kServerWallet});
+          {.number = u16number.c_str(),
+           .record_type = EntityInstance::RecordType::kServerWallet});
     case EntityTypeName::kRedressNumber:
       return test::GetRedressNumberEntityInstance(
-          {.record_type = EntityInstance::RecordType::kServerWallet});
+          {.number = u16number.c_str(),
+           .record_type = EntityInstance::RecordType::kServerWallet});
     default:
       NOTREACHED();
   }
@@ -122,15 +132,6 @@ AttributeType GetPassNumberAttribute(EntityTypeName entity_type) {
   }
 }
 
-EntityInstance GetUnmaskedEntity(const EntityInstance& masked_entity) {
-  AttributeInstance unmasked_attribute(
-      GetPassNumberAttribute(masked_entity.type().name()));
-  unmasked_attribute.SetRawInfo(unmasked_attribute.type().field_type(),
-                                base::UTF8ToUTF16(kUnmaskedValue),
-                                VerificationStatus::kNoStatus);
-  return masked_entity.CopyWithUpdatedAttribute(unmasked_attribute);
-}
-
 class WalletPassAccessManagerImplTest
     : public testing::TestWithParam<EntityTypeName> {
  public:
@@ -162,6 +163,8 @@ class WalletPassAccessManagerImplTest
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_{
+      features::kAutofillAiWalletPrivatePasses};
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   TestAutofillClient client_;
@@ -172,8 +175,9 @@ class WalletPassAccessManagerImplTest
 
 // Tests the happy path where unmasking succeeds.
 TEST_P(WalletPassAccessManagerImplTest, GetUnmaskedWalletEntityInstance) {
-  EntityInstance masked_entity =
-      test::MaskEntityInstance(GetServerEntityInstance(GetParam()));
+  EntityInstance unmasked_entity =
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
+  EntityInstance masked_entity = test::MaskEntityInstance(unmasked_entity);
   data_manager().AddOrUpdateEntityInstance(masked_entity);
   webdata_helper().WaitUntilIdle();
 
@@ -184,13 +188,14 @@ TEST_P(WalletPassAccessManagerImplTest, GetUnmaskedWalletEntityInstance) {
   base::test::TestFuture<std::optional<EntityInstance>> unmask_result;
   access_manager().GetUnmaskedWalletEntityInstance(masked_entity.guid(),
                                                    unmask_result.GetCallback());
-  EXPECT_EQ(unmask_result.Get(), GetUnmaskedEntity(masked_entity));
+  EXPECT_EQ(unmask_result.Get(), unmasked_entity);
 }
 
 // Tests that unmasking results are cached.
 TEST_P(WalletPassAccessManagerImplTest, GetUnmaskedWalletEntityInstance_Cache) {
-  EntityInstance masked_entity =
-      test::MaskEntityInstance(GetServerEntityInstance(GetParam()));
+  EntityInstance unmasked_entity =
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
+  EntityInstance masked_entity = test::MaskEntityInstance(unmasked_entity);
   data_manager().AddOrUpdateEntityInstance(masked_entity);
   webdata_helper().WaitUntilIdle();
 
@@ -202,20 +207,21 @@ TEST_P(WalletPassAccessManagerImplTest, GetUnmaskedWalletEntityInstance_Cache) {
   base::test::TestFuture<std::optional<EntityInstance>> unmask_result1;
   access_manager().GetUnmaskedWalletEntityInstance(
       masked_entity.guid(), unmask_result1.GetCallback());
-  EXPECT_EQ(unmask_result1.Get(), GetUnmaskedEntity(masked_entity));
+  EXPECT_EQ(unmask_result1.Get(), unmasked_entity);
 
   // Second unmasking call. Expect no more network calls.
   base::test::TestFuture<std::optional<EntityInstance>> unmask_result2;
   access_manager().GetUnmaskedWalletEntityInstance(
       masked_entity.guid(), unmask_result2.GetCallback());
-  EXPECT_EQ(unmask_result2.Get(), GetUnmaskedEntity(masked_entity));
+  EXPECT_EQ(unmask_result2.Get(), unmasked_entity);
 }
 
 // Tests that the `WalletPassAccessManagerImpl::kCacheTTL` is respected.
 TEST_P(WalletPassAccessManagerImplTest,
        GetUnmaskedWalletEntityInstance_CacheTTL) {
-  EntityInstance masked_entity =
-      test::MaskEntityInstance(GetServerEntityInstance(GetParam()));
+  EntityInstance unmasked_entity =
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
+  EntityInstance masked_entity = test::MaskEntityInstance(unmasked_entity);
   data_manager().AddOrUpdateEntityInstance(masked_entity);
   webdata_helper().WaitUntilIdle();
 
@@ -229,21 +235,117 @@ TEST_P(WalletPassAccessManagerImplTest,
   base::test::TestFuture<std::optional<EntityInstance>> unmask_result1;
   access_manager().GetUnmaskedWalletEntityInstance(
       masked_entity.guid(), unmask_result1.GetCallback());
-  EXPECT_EQ(unmask_result1.Get(), GetUnmaskedEntity(masked_entity));
+  EXPECT_EQ(unmask_result1.Get(), unmasked_entity);
 
   // Wait for kCacheTTL and unmask again.
   FastForwardBy(WalletPassAccessManagerImpl::kCacheTTL);
   base::test::TestFuture<std::optional<EntityInstance>> unmask_result2;
   access_manager().GetUnmaskedWalletEntityInstance(
       masked_entity.guid(), unmask_result2.GetCallback());
-  EXPECT_EQ(unmask_result2.Get(), GetUnmaskedEntity(masked_entity));
+  EXPECT_EQ(unmask_result2.Get(), unmasked_entity);
+}
+
+// Tests that when an entity is removed from the data manager, its cache entry
+// is removed.
+TEST_P(WalletPassAccessManagerImplTest,
+       GetUnmaskedWalletEntityInstance_CacheInvalidateOnRemove) {
+  EntityInstance unmasked_entity =
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
+  EntityInstance masked_entity = test::MaskEntityInstance(unmasked_entity);
+  data_manager().AddOrUpdateEntityInstance(masked_entity);
+  webdata_helper().WaitUntilIdle();
+
+  // Expect one call to the http client, since the second unmasking call is
+  // expected to fail after the entity was removed.
+  PrivatePass unmasked_pass = CreatePassWithNumber(GetParam(), kUnmaskedValue);
+  EXPECT_CALL(mock_http_client(),
+              GetUnmaskedPass(masked_entity.guid().value(), _))
+      .WillOnce(RunOnceCallback<1>(std::move(unmasked_pass)));
+  base::test::TestFuture<std::optional<EntityInstance>> unmask_result1;
+  access_manager().GetUnmaskedWalletEntityInstance(
+      masked_entity.guid(), unmask_result1.GetCallback());
+  EXPECT_EQ(unmask_result1.Get(), unmasked_entity);
+
+  // Remove the `masked_entity` in the data manager and unmask again.
+  data_manager().RemoveEntityInstance(masked_entity.guid());
+  webdata_helper().WaitUntilIdle();
+  base::test::TestFuture<std::optional<EntityInstance>> unmask_result2;
+  access_manager().GetUnmaskedWalletEntityInstance(
+      masked_entity.guid(), unmask_result2.GetCallback());
+  EXPECT_FALSE(unmask_result2.Get().has_value());
+}
+
+// Tests that when an entity is updated in the data manager, its cache entry
+// is removed.
+TEST_P(WalletPassAccessManagerImplTest,
+       GetUnmaskedWalletEntityInstance_CacheInvalidateOnUpdate) {
+  EntityInstance unmasked_entity =
+      GetUnmaskedServerEntityInstance(GetParam(), "12345678");
+  EntityInstance masked_entity = test::MaskEntityInstance(unmasked_entity);
+  data_manager().AddOrUpdateEntityInstance(masked_entity);
+  webdata_helper().WaitUntilIdle();
+  EntityInstance updated_unmasked_entity =
+      GetUnmaskedServerEntityInstance(GetParam(), "23456789")
+          .CopyWithNewEntityId(masked_entity.guid());
+  EntityInstance updated_masked_entity =
+      test::MaskEntityInstance(updated_unmasked_entity);
+
+  // Expect two call to the http client, since updating the entity invalidates
+  // the cache entry.
+  PrivatePass unmasked_pass1 = CreatePassWithNumber(GetParam(), "12345678");
+  PrivatePass unmasked_pass2 = CreatePassWithNumber(GetParam(), "23456789");
+  EXPECT_CALL(mock_http_client(),
+              GetUnmaskedPass(masked_entity.guid().value(), _))
+      .WillOnce(RunOnceCallbackRepeatedly<1>(std::move(unmasked_pass1)))
+      .WillOnce(RunOnceCallbackRepeatedly<1>(std::move(unmasked_pass2)));
+  base::test::TestFuture<std::optional<EntityInstance>> unmask_result1;
+  access_manager().GetUnmaskedWalletEntityInstance(
+      masked_entity.guid(), unmask_result1.GetCallback());
+  EXPECT_EQ(unmask_result1.Get(), unmasked_entity);
+
+  // Update the `masked_entity` in the data manager and unmask again.
+  data_manager().AddOrUpdateEntityInstance(updated_masked_entity);
+  webdata_helper().WaitUntilIdle();
+  base::test::TestFuture<std::optional<EntityInstance>> unmask_result2;
+  access_manager().GetUnmaskedWalletEntityInstance(
+      masked_entity.guid(), unmask_result2.GetCallback());
+  EXPECT_EQ(unmask_result2.Get(), updated_unmasked_entity);
+}
+
+// Tests that when the access manager is notified of an unrelated data manager
+// change, cache entries are kept.
+TEST_P(WalletPassAccessManagerImplTest,
+       GetUnmaskedWalletEntityInstance_CacheDoesntInvalidateOnUnrelatedUpdate) {
+  EntityInstance unmasked_entity =
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
+  EntityInstance masked_entity = test::MaskEntityInstance(unmasked_entity);
+  data_manager().AddOrUpdateEntityInstance(masked_entity);
+  webdata_helper().WaitUntilIdle();
+
+  // Expect one call to the http client, since the cache is not supposed to get
+  // invalidated.
+  PrivatePass unmasked_pass = CreatePassWithNumber(GetParam(), kUnmaskedValue);
+  EXPECT_CALL(mock_http_client(),
+              GetUnmaskedPass(masked_entity.guid().value(), _))
+      .WillOnce(RunOnceCallback<1>(std::move(unmasked_pass)));
+  base::test::TestFuture<std::optional<EntityInstance>> unmask_result1;
+  access_manager().GetUnmaskedWalletEntityInstance(
+      masked_entity.guid(), unmask_result1.GetCallback());
+  EXPECT_EQ(unmask_result1.Get(), unmasked_entity);
+
+  // Trigger an unrelated data manager change and unmask again.
+  access_manager().OnEntityInstancesChanged();
+  base::test::TestFuture<std::optional<EntityInstance>> unmask_result2;
+  access_manager().GetUnmaskedWalletEntityInstance(
+      masked_entity.guid(), unmask_result2.GetCallback());
+  EXPECT_EQ(unmask_result2.Get(), unmasked_entity);
 }
 
 // Tests that unmasking fails if no entity if found in the data manager.
 TEST_P(WalletPassAccessManagerImplTest,
        GetUnmaskedWalletEntityInstance_NoEntity) {
-  EntityInstance masked_entity =
-      test::MaskEntityInstance(GetServerEntityInstance(GetParam()));
+  EntityInstance masked_entity = test::MaskEntityInstance(
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue));
   EXPECT_CALL(mock_http_client(), GetUnmaskedPass).Times(0);
   base::test::TestFuture<std::optional<EntityInstance>> unmask_result;
   access_manager().GetUnmaskedWalletEntityInstance(masked_entity.guid(),
@@ -254,8 +356,8 @@ TEST_P(WalletPassAccessManagerImplTest,
 // Tests that unmasking fails when Wallet returns an error.
 TEST_P(WalletPassAccessManagerImplTest,
        GetUnmaskedWalletEntityInstance_ErrorResponse) {
-  EntityInstance masked_entity =
-      test::MaskEntityInstance(GetServerEntityInstance(GetParam()));
+  EntityInstance masked_entity = test::MaskEntityInstance(
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue));
   data_manager().AddOrUpdateEntityInstance(masked_entity);
   webdata_helper().WaitUntilIdle();
 
@@ -273,8 +375,8 @@ TEST_P(WalletPassAccessManagerImplTest,
 // pass number.
 TEST_P(WalletPassAccessManagerImplTest,
        GetUnmaskedWalletEntityInstance_MalformedResponseNoNumber) {
-  EntityInstance masked_entity =
-      test::MaskEntityInstance(GetServerEntityInstance(GetParam()));
+  EntityInstance masked_entity = test::MaskEntityInstance(
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue));
   data_manager().AddOrUpdateEntityInstance(masked_entity);
   webdata_helper().WaitUntilIdle();
 
@@ -291,8 +393,8 @@ TEST_P(WalletPassAccessManagerImplTest,
 // different pass number than the entity that was requested.
 TEST_P(WalletPassAccessManagerImplTest,
        GetUnmaskedWalletEntityInstance_MalformedResponseDifferentNumber) {
-  EntityInstance masked_entity =
-      test::MaskEntityInstance(GetServerEntityInstance(GetParam()));
+  EntityInstance masked_entity = test::MaskEntityInstance(
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue));
   data_manager().AddOrUpdateEntityInstance(masked_entity);
   webdata_helper().WaitUntilIdle();
 
@@ -316,7 +418,8 @@ TEST_P(WalletPassAccessManagerImplTest,
 // - No ID is provided to the Upsert call.
 // - A masked pass with the server-provided ID is returned to the caller.
 TEST_P(WalletPassAccessManagerImplTest, SaveWalletEntityInstance) {
-  EntityInstance unmasked_entity = GetServerEntityInstance(GetParam());
+  EntityInstance unmasked_entity =
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
 
   PrivatePass masked_pass = CreatePassWithNumber(GetParam(), kMaskedValue);
   masked_pass.set_pass_id("updated-id");
@@ -346,7 +449,8 @@ TEST_P(WalletPassAccessManagerImplTest, SaveWalletEntityInstance) {
 // - The pass ID is provided to the Upsert call.
 // - A masked pass with the server-provided ID is returned to the caller.
 TEST_P(WalletPassAccessManagerImplTest, UpdateWalletEntityInstance) {
-  EntityInstance unmasked_entity = GetServerEntityInstance(GetParam());
+  EntityInstance unmasked_entity =
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
 
   PrivatePass masked_pass = CreatePassWithNumber(GetParam(), kMaskedValue);
   masked_pass.set_pass_id("updated-id");
@@ -376,7 +480,8 @@ TEST_P(WalletPassAccessManagerImplTest, UpdateWalletEntityInstance) {
 // Tests that saving and updating fails when Wallet returns an error upserting.
 TEST_P(WalletPassAccessManagerImplTest,
        UpsertWalletEntityInstance_ErrorResponse) {
-  EntityInstance unmasked_entity = GetServerEntityInstance(GetParam());
+  EntityInstance unmasked_entity =
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
   EXPECT_CALL(mock_http_client(), UpsertPrivatePass)
       .WillRepeatedly(RunOnceCallbackRepeatedly<1>(
           base::unexpected(WalletRequestError::kGenericError)));
@@ -396,7 +501,8 @@ TEST_P(WalletPassAccessManagerImplTest,
 // without a pass number.
 TEST_P(WalletPassAccessManagerImplTest,
        UpsertWalletEntityInstance_MalformedResponseNoNumber) {
-  EntityInstance unmasked_entity = GetServerEntityInstance(GetParam());
+  EntityInstance unmasked_entity =
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
   EXPECT_CALL(mock_http_client(), UpsertPrivatePass)
       .WillRepeatedly(RunOnceCallbackRepeatedly<1>(PrivatePass()));
 
@@ -415,7 +521,8 @@ TEST_P(WalletPassAccessManagerImplTest,
 // with a different pass number than the entity that was upserted.
 TEST_P(WalletPassAccessManagerImplTest,
        UpsertWalletEntityInstance_MalformedResponseDifferentNumber) {
-  EntityInstance unmasked_entity = GetServerEntityInstance(GetParam());
+  EntityInstance unmasked_entity =
+      GetUnmaskedServerEntityInstance(GetParam(), kUnmaskedValue);
 
   PrivatePass malformed_pass;
   // Return a response for a different entity type.

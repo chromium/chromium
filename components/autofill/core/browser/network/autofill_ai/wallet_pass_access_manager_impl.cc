@@ -87,9 +87,11 @@ bool AttributeCorrespondsToEntity(const AttributeInstance& attribute,
 
 WalletPassAccessManagerImpl::WalletPassAccessManagerImpl(
     std::unique_ptr<wallet::WalletHttpClient> http_client,
-    const EntityDataManager* data_manager)
+    EntityDataManager* data_manager)
     : http_client_(std::move(http_client)),
-      data_manager_(CHECK_DEREF(data_manager)) {}
+      data_manager_(CHECK_DEREF(data_manager)) {
+  data_manager_observer_.Observe(&data_manager_.get());
+}
 
 WalletPassAccessManagerImpl::~WalletPassAccessManagerImpl() = default;
 
@@ -232,6 +234,30 @@ void WalletPassAccessManagerImpl::CacheUnmaskResult(EntityInstance entity) {
           },
           weak_factory_.GetWeakPtr(), id),
       kCacheTTL);
+}
+
+void WalletPassAccessManagerImpl::OnEntityInstancesChanged() {
+  // `OnEntityInstancesChanged()` doesn't indicate what has changed exactly,
+  // since multiple entities can change at once.
+  // Conservatively remove all cache entries that either:
+  // - Don't have a corresponding entity in the data manager.
+  // - Differ from their data manager representation.
+  absl::erase_if(
+      unmasked_entity_cache_,
+      [&](const std::pair<EntityInstance::EntityId, EntityInstance>& entry) {
+        const auto& [id, cached_entity] = entry;
+        base::optional_ref<const EntityInstance> entity =
+            data_manager_->GetEntityInstance(id);
+        if (!entity) {
+          return true;
+        }
+        // Erase `cache_entry` unless it matches `*entity`. Note that this
+        // doesn't use `EntityInstance::operator==()`, since operator== doesn't
+        // take masked attributes into consideration, while for `IsSubsetOf()`,
+        // comparison is done using the unmasked attribute's suffix.
+        return !entity->IsSubsetOf(cached_entity) ||
+               !cached_entity.IsSubsetOf(*entity);
+      });
 }
 
 }  // namespace autofill
