@@ -196,7 +196,7 @@ message PageContext {
 
 // The page content represented as a tree of semantic chunks and (in the
 // future) annotated with additional information about the page.
-// Next ID: 10
+// Next ID: 11
 message AnnotatedPageContent {
   // The version of the proto. Each time a backwards incompatible change is made
   // to the proto, the version should be incremented.
@@ -239,6 +239,12 @@ message AnnotatedPageContent {
   // TODO(crbug.com/454610456): This should be moved out of AnnotatedPageContent because
   // it does not semantically belong here.
   ProfileInformation profile_information = 9 [features = { field_presence: EXPLICIT }];
+
+  // Metadata about the page when Gemini in Chrome captures Annotated Page
+  // Content.
+  // TODO(crbug.com/484011242): This should be moved out of AnnotatedPageContent because
+  // it does not semantically belong here.
+  GeminiInChromePageMetadata gemini_in_chrome_page_metadata = 10 [features = { field_presence: EXPLICIT }];
 }
 
 // The ContentNode tree is a sparse representation of the DOM tree for a web
@@ -765,10 +771,17 @@ message FrameData {
 
 // The interaction information for the frame. This is for interactions that
 // are specific to the frame, such as the current selection.
-// Next ID: 2
+// Next ID: 4
 message FrameInteractionInfo {
   // The current selection.
   Selection selection = 1 [features = { field_presence: EXPLICIT }];
+
+  // The content node ID of the content node that is currently focused.
+  int32 focused_node_id = 2 [features = { field_presence: EXPLICIT }];
+
+  // The content node ID of the content node that is currently focused by a
+  // screen reader. If this is set, it means that a screen reader is being used.
+  int32 accessibility_focused_node_id = 3 [features = { field_presence: EXPLICIT }];
 }
 
 // Represents a selection in the page. This is a frame-level concept.
@@ -906,17 +919,24 @@ message TableRowData {
 // there can only be one unique value.
 // Currently this is only tracked for the main frame. The IDs correspond to the
 // DOM node IDs of the content nodes in the main frame.
-// Next ID: 4
+// Next ID: 5
 message PageInteractionInfo {
   // The content node ID of the content node that is currently focused.
+  // TODO(linnan): Deprecate this field in favor of
+  // FrameInteractionInfo.focused_node_id.
   int32 focused_node_id = 1 [features = { field_presence: EXPLICIT }];
 
   // The content node ID of the content node that is currently focused by a
   // screen reader. If this is set, it means that a screen reader is being used.
+  // TODO(linnan): Deprecate this field in favor of
+  // FrameInteractionInfo.accessibility_focused_node_id.
   int32 accessibility_focused_node_id = 2 [features = { field_presence: EXPLICIT }];
 
   // The last known mouse position, in the page coordinate system.
   Point mouse_position = 3 [features = { field_presence: EXPLICIT }];
+
+  // The identifier of the frame that currently has focus.
+  DocumentIdentifier focused_frame = 4 [features = { field_presence: EXPLICIT }];
 }
 
 message Point {
@@ -973,6 +993,22 @@ message AutofillInformation {
     // If reported, the user has at least one credit card on file.
     CREDIT_CARD = 6;
   }
+}
+
+// Metadata about the page from Gemini in Chrome.
+// Next ID: 2
+message GeminiInChromePageMetadata {
+  // Information about the associated screenshot.
+  ScreenshotInfo screenshot_info = 1 [features = { field_presence: EXPLICIT }];
+}
+
+// The screenshot information for the page. While the screenshot is not
+// conveyed in the parent message, this metadata should be used to inform the
+// model about the screenshot.
+// Next ID: 2
+message ScreenshotInfo {
+  // Whether the screenshot contains a selection region.
+  bool has_selection_region_in_screenshot = 1 [features = { field_presence: EXPLICIT }];
 }
 
 // Uniquely identifies a DOM elements across all frames.
