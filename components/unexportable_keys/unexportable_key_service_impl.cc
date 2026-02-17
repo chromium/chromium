@@ -57,10 +57,19 @@ class MaybePendingUnexportableKeyId {
 
   // Constructs an instance holding a list of callbacks.
   MaybePendingUnexportableKeyId() = default;
+  MaybePendingUnexportableKeyId(MaybePendingUnexportableKeyId&&) = default;
+  MaybePendingUnexportableKeyId& operator=(MaybePendingUnexportableKeyId&&) =
+      default;
 
   // Constructs an instance holding `key_id`.
   explicit MaybePendingUnexportableKeyId(UnexportableKeyId key_id)
       : pending_callbacks_or_key_id_(key_id) {}
+
+  ~MaybePendingUnexportableKeyId() {
+    if (!HasKeyId()) {
+      RunCallbacksWithFailure(ServiceError::kOperationCancelled);
+    }
+  }
 
   // Returns true if a key has been assigned to this instance. Otherwise,
   // returns false which means that this instance holds a list of callbacks.
@@ -141,8 +150,12 @@ void UnexportableKeyServiceImpl::GenerateSigningKeySlowlyAsync(
     base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) {
   task_manager_->GenerateSigningKeySlowlyAsync(
       task_origin_, config_, acceptable_algorithms, priority,
-      base::BindOnce(&UnexportableKeyServiceImpl::OnKeyGenerated,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      WrapCallbackWithErrorIfCancelled(
+          std::move(callback),
+          // SAFETY: `this` is guaranteed to be alive if the projection callback
+          // is invoked.
+          base::BindOnce(&UnexportableKeyServiceImpl::OnKeyGeneratedImpl,
+                         base::Unretained(this))));
 }
 
 void UnexportableKeyServiceImpl::FromWrappedSigningKeySlowlyAsync(
@@ -168,6 +181,9 @@ void UnexportableKeyServiceImpl::FromWrappedSigningKeySlowlyAsync(
     return;
   }
 
+  // NOTE: We don't wrap the callback in `WrapCallbackWithErrorIfCancelled`
+  // here, but rather run the callbacks explicitly during the destruction of
+  // `MaybePendingUnexportableKeyId`.
   size_t n_callbacks = maybe_pending_key_id.AddCallback(std::move(callback));
   if (n_callbacks == 1) {
     // `callback` is the first one waiting for the wrapped key. Schedule the
@@ -187,9 +203,13 @@ void UnexportableKeyServiceImpl::
             callback) {
   task_manager_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
       task_origin_, config_, priority,
-      base::BindOnce(&UnexportableKeyServiceImpl::
-                         OnGetAllSigningKeysForGarbageCollectionSlowly,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      WrapCallbackWithErrorIfCancelled(
+          std::move(callback),
+          // SAFETY: `this` is guaranteed to be alive if the projection callback
+          // is invoked.
+          base::BindOnce(&UnexportableKeyServiceImpl::
+                             OnGetAllSigningKeysForGarbageCollectionSlowlyImpl,
+                         base::Unretained(this))));
 }
 
 void UnexportableKeyServiceImpl::SignSlowlyAsync(
@@ -203,12 +223,9 @@ void UnexportableKeyServiceImpl::SignSlowlyAsync(
     return;
   }
 
-  // The type expected by the callback
-  using ArgType = ServiceErrorOr<std::vector<uint8_t>>;
   task_manager_->SignSlowlyAsync(
       task_origin_, it->second, data, priority,
-      base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      WrapCallbackWithErrorIfCancelled(std::move(callback)));
 }
 
 void UnexportableKeyServiceImpl::DeleteKeysSlowlyAsync(
@@ -232,38 +249,22 @@ void UnexportableKeyServiceImpl::DeleteKeysSlowlyAsync(
     return;
   }
 
-  // The type expected by the callback
-  using ArgType = ServiceErrorOr<size_t>;
   task_manager_->DeleteSigningKeysSlowlyAsync(
       task_origin_, config_, std::move(signing_keys), priority,
-      base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      WrapCallbackWithErrorIfCancelled(std::move(callback)));
 }
 
 void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
     base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
   key_by_key_id_.clear();
-
-  // Clear the in-memory cache of pending key IDs by moving it to a local
-  // variable and run pending callbacks with a failure.
-  for (auto& [_, maybe_pending_key_id] :
-       std::exchange(key_id_by_wrapped_key_and_tag_, {})) {
-    if (!maybe_pending_key_id.HasKeyId()) {
-      maybe_pending_key_id.RunCallbacksWithFailure(ServiceError::kKeyNotFound);
-    }
-  }
+  key_id_by_wrapped_key_and_tag_.clear();
 
   // Invalidate weak pointers to cancel pending key lookup requests.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  // The type expected by the callback
-  using ArgType = ServiceErrorOr<size_t>;
-  // Force high priority for the delete task to ensure it runs before any
-  // tasks that might be re-scheduled.
   task_manager_->DeleteAllSigningKeysSlowlyAsync(
       task_origin_, config_, BackgroundTaskPriority::kUserBlocking,
-      base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      WrapCallbackWithErrorIfCancelled(std::move(callback)));
 }
 
 ServiceErrorOr<std::vector<uint8_t>>
@@ -366,16 +367,6 @@ UnexportableKeyServiceImpl::ExtractKeyFromMaps(UnexportableKeyId key_id) {
   return key;
 }
 
-void UnexportableKeyServiceImpl::OnGetAllSigningKeysForGarbageCollectionSlowly(
-    base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
-        client_callback,
-    ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
-        keys_or_error) {
-  std::move(client_callback)
-      .Run(OnGetAllSigningKeysForGarbageCollectionSlowlyImpl(
-          std::move(keys_or_error)));
-}
-
 ServiceErrorOr<std::vector<UnexportableKeyId>>
 UnexportableKeyServiceImpl::OnGetAllSigningKeysForGarbageCollectionSlowlyImpl(
     ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
@@ -418,14 +409,6 @@ UnexportableKeyServiceImpl::OnGetAllSigningKeysForGarbageCollectionSlowlyImpl(
   }
 
   return key_ids;
-}
-
-void UnexportableKeyServiceImpl::OnKeyGenerated(
-    base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> client_callback,
-    ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
-        key_or_error) {
-  return std::move(client_callback)
-      .Run(OnKeyGeneratedImpl(std::move(key_or_error)));
 }
 
 ServiceErrorOr<UnexportableKeyId>

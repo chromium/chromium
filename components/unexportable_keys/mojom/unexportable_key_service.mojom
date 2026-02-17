@@ -37,6 +37,7 @@ enum ServiceError {
   kKeyNotReady = 6,
   kVerifySignatureFailed = 7,
   kOperationNotSupported = 8,
+  kOperationCancelled = 9,
 };
 
 // LINT.ThenChange(

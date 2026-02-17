@@ -3325,6 +3325,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="Key not ready"/>
   <int value="7" label="Verify signature failed"/>
   <int value="8" label="Operation not supported"/>
+  <int value="9" label="Operation cancelled"/>
 </enum>
 
 <!-- LINT.ThenChange(

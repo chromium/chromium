@@ -544,5 +544,73 @@ TEST_F(UnexportableKeyServiceProxiedTest,
   EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kCryptoApiFailed));
 }
 
+TEST_F(UnexportableKeyServiceProxiedTest, GenerateSigningKeyCancelled) {
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
+  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
+      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+
+  proxied_service_.GenerateSigningKeySlowlyAsync(
+      algos, BackgroundTaskPriority::kUserVisible, future.GetCallback());
+
+  receiver_.reset();
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kOperationCancelled));
+}
+
+TEST_F(UnexportableKeyServiceProxiedTest, FromWrappedSigningKeyCancelled) {
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
+  std::vector<uint8_t> wrapped_key = {0x11, 0x22, 0x33};
+
+  proxied_service_.FromWrappedSigningKeySlowlyAsync(
+      wrapped_key, BackgroundTaskPriority::kUserVisible, future.GetCallback());
+
+  receiver_.reset();
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kOperationCancelled));
+}
+
+TEST_F(UnexportableKeyServiceProxiedTest, DeleteKeysCancelled) {
+  UnexportableKeyId key_id = GenerateKeyOrDie();
+  base::test::TestFuture<ServiceErrorOr<size_t>> future;
+
+  proxied_service_.DeleteKeysSlowlyAsync(
+      {key_id}, BackgroundTaskPriority::kUserVisible, future.GetCallback());
+
+  receiver_.reset();
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kOperationCancelled));
+}
+
+TEST_F(UnexportableKeyServiceProxiedTest, DeleteAllKeysCancelled) {
+  base::test::TestFuture<ServiceErrorOr<size_t>> future;
+
+  proxied_service_.DeleteAllKeysSlowlyAsync(future.GetCallback());
+
+  receiver_.reset();
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kOperationCancelled));
+}
+
+TEST_F(UnexportableKeyServiceProxiedTest,
+       GetAllSigningKeysForGarbageCollectionCancelled) {
+  base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>> future;
+
+  proxied_service_.GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      BackgroundTaskPriority::kUserVisible, future.GetCallback());
+
+  receiver_.reset();
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kOperationCancelled));
+}
+
+TEST_F(UnexportableKeyServiceProxiedTest, SignCancelled) {
+  UnexportableKeyId key_id = GenerateKeyOrDie();
+
+  base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> future;
+  std::vector<uint8_t> data_to_sign = {1, 2, 3};
+
+  proxied_service_.SignSlowlyAsync(key_id, data_to_sign,
+                                   BackgroundTaskPriority::kUserVisible,
+                                   future.GetCallback());
+
+  receiver_.reset();
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kOperationCancelled));
+}
+
 }  // namespace
 }  // namespace unexportable_keys

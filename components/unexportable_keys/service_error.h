@@ -35,8 +35,10 @@ enum class ServiceError : uint8_t {
   kVerifySignatureFailed = 7,
   // The operation is not supported by the key provider.
   kOperationNotSupported = 8,
+  // The operation was cancelled.
+  kOperationCancelled = 9,
 
-  kMaxValue = kOperationNotSupported
+  kMaxValue = kOperationCancelled
 };
 // LINT.ThenChange(
 //     /components/unexportable_keys/mojom/unexportable_key_service.mojom:ServiceError,

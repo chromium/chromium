@@ -394,6 +394,28 @@ TEST_F(UnexportableKeyServiceImplTest,
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+TEST_F(
+    UnexportableKeyServiceImplTest,
+    FromWrappedSigningKeySlowlyAsyncCallbackIsCancelledOnServiceDestruction) {
+  const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
+  auto key_for_from_wrapped = std::make_unique<NiceMock<MockUnexportableKey>>();
+  ON_CALL(*key_for_from_wrapped, GetWrappedKey)
+      .WillByDefault(Return(kWrappedKey));
+
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(),
+              FromWrappedSigningKeySlowly(Eq(kWrappedKey)))
+      .WillOnce(Return(std::move(key_for_from_wrapped)));
+
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> from_wrapped_future;
+  service().FromWrappedSigningKeySlowlyAsync(kWrappedKey, kTaskPriority,
+                                             from_wrapped_future.GetCallback());
+
+  DestroyService();
+  RunBackgroundTasks();
+  EXPECT_THAT(from_wrapped_future.Get(),
+              ErrorIs(ServiceError::kOperationCancelled));
+}
+
 TEST_F(UnexportableKeyServiceImplTest,
        GetAllSigningKeysForGarbageCollectionSlowlyAsyncStatelessProvider) {
   ASSERT_EQ(UnexportableKeyTaskManager::GetUnexportableKeyProvider({})
@@ -657,6 +679,30 @@ TEST_F(UnexportableKeyServiceImplTest,
               ErrorIs(ServiceError::kCryptoApiFailed));
 }
 
+TEST_F(
+    UnexportableKeyServiceImplTest,
+    GetAllSigningKeysForGarbageCollectionSlowlyAsyncCallbackIsCancelledOnServiceDestruction) {
+  auto provider_key = std::make_unique<NiceMock<MockUnexportableKey>>();
+  ON_CALL(*provider_key, GetWrappedKey)
+      .WillByDefault(Return(std::vector<uint8_t>{1, 2, 3}));
+
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllSigningKeysSlowly())
+      .WillOnce(Return(
+          base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
+              std::move(provider_key),
+          })));
+
+  base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
+      get_all_keys_future;
+  service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      kTaskPriority, get_all_keys_future.GetCallback());
+
+  DestroyService();
+  RunBackgroundTasks();
+  EXPECT_THAT(get_all_keys_future.Get(),
+              ErrorIs(ServiceError::kOperationCancelled));
+}
+
 TEST_F(UnexportableKeyServiceImplTest, Sign) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
@@ -675,7 +721,7 @@ TEST_F(UnexportableKeyServiceImplTest, Sign) {
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
-       SignSlowlyAsyncCallbacksIsDroppedOnServiceDestruction) {
+       SignSlowlyAsyncCallbackIsCancelledOnServiceDestruction) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           generate_future.GetCallback());
@@ -689,7 +735,7 @@ TEST_F(UnexportableKeyServiceImplTest,
   DestroyService();
   EXPECT_FALSE(sign_future.IsReady());
   RunBackgroundTasks();
-  EXPECT_FALSE(sign_future.IsReady());
+  EXPECT_THAT(sign_future.Get(), ErrorIs(ServiceError::kOperationCancelled));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, NonExistingKeyId) {
@@ -901,7 +947,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeysProviderFails) {
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
-       DeleteKeysSlowlyAsyncCallbackIsDroppedOnServiceDestruction) {
+       DeleteKeysSlowlyAsyncCallbackIsCancelledOnServiceDestruction) {
   ScopedMockUnexportableKeyProvider& scoped_provider =
       SwitchToMockKeyProvider();
 
@@ -925,7 +971,7 @@ TEST_F(UnexportableKeyServiceImplTest,
 
   DestroyService();
   RunBackgroundTasks();
-  EXPECT_FALSE(delete_future.IsReady());
+  EXPECT_THAT(delete_future.Get(), ErrorIs(ServiceError::kOperationCancelled));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, DeleteKeysStatelessProvider) {
@@ -988,7 +1034,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeys) {
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
-       DeleteAllKeysSlowlyAsyncCallbackIsDroppedOnServiceDestruction) {
+       DeleteAllKeysSlowlyAsyncCallbackIsCancelledOnServiceDestruction) {
   // Generate some keys.
   constexpr size_t kKeysToGenerate = 3;
   std::vector<UnexportableKeyId> key_ids;
@@ -1015,7 +1061,8 @@ TEST_F(UnexportableKeyServiceImplTest,
 
   DestroyService();
   RunBackgroundTasks();
-  EXPECT_FALSE(delete_all_future.IsReady());
+  EXPECT_THAT(delete_all_future.Get(),
+              ErrorIs(ServiceError::kOperationCancelled));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingFromWrappedKey) {
@@ -1030,7 +1077,8 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingFromWrappedKey) {
   service().DeleteAllKeysSlowlyAsync(delete_all_future.GetCallback());
 
   RunBackgroundTasks();
-  EXPECT_THAT(from_wrapped_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
+  EXPECT_THAT(from_wrapped_future.Get(),
+              ErrorIs(ServiceError::kOperationCancelled));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingGenerateKey) {
@@ -1044,7 +1092,8 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingGenerateKey) {
   RunBackgroundTasks();
 
   // The `GenerateSigningKey` task is cancelled by `DeleteAllKeys`.
-  EXPECT_FALSE(generate_future.IsReady());
+  EXPECT_THAT(generate_future.Get(),
+              ErrorIs(ServiceError::kOperationCancelled));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysStatelessProvider) {
@@ -1113,7 +1162,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingSign) {
   // DeleteAllKeys clears the service's key maps synchronously, and cancels
   // pending tasks.
   RunBackgroundTasks();
-  EXPECT_FALSE(sign_future.IsReady());
+  EXPECT_THAT(sign_future.Get(), ErrorIs(ServiceError::kOperationCancelled));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, GetCreationTimeWithStatefulKey) {
