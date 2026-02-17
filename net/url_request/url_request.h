@@ -910,6 +910,16 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   }
   bool send_client_certs() const { return send_client_certs_; }
 
+  // When true, all redirects are considered safe to follow regardless of the
+  // target URL scheme. The caller is responsible for filtering unsafe
+  // redirects.
+  void set_treat_all_redirects_as_safe(bool treat_as_safe) {
+    treat_all_redirects_as_safe_ = treat_as_safe;
+  }
+  bool treat_all_redirects_as_safe() const {
+    return treat_all_redirects_as_safe_;
+  }
+
   bool is_for_websockets() const { return is_for_websockets_; }
 
   void SetIdempotency(Idempotency idempotency) { idempotency_ = idempotency; }
@@ -1262,6 +1272,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   bool client_side_content_decoding_enabled_ = false;
 
   bool send_client_certs_ = true;
+
+  bool treat_all_redirects_as_safe_ = false;
 
   // Idempotency of the request.
   Idempotency idempotency_ = DEFAULT_IDEMPOTENCY;

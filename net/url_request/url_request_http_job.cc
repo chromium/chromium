@@ -1581,6 +1581,14 @@ bool URLRequestHttpJob::CopyFragmentOnRedirect(const GURL& location) const {
 }
 
 bool URLRequestHttpJob::IsSafeRedirect(const GURL& location) {
+  // When the caller has indicated all redirects should be treated as safe,
+  // skip the scheme check. The caller is responsible for filtering unsafe
+  // redirects (e.g., returning an opaque-redirect response instead of
+  // following the redirect).
+  if (request_->treat_all_redirects_as_safe()) {
+    return true;
+  }
+
   // HTTP is always safe.
   // TODO(pauljensen): Remove once crbug.com/146591 is fixed.
   if (location.is_valid() &&

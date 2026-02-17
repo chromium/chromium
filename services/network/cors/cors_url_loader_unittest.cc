@@ -2392,6 +2392,129 @@ TEST_F(CorsURLLoaderTest, NonBrowserNavigationRedirect) {
                           "should not call FollowRedirect"));
 }
 
+// Test that in manual redirect mode with empty destination (i.e., fetch()),
+// non-HTTP(S) redirect URLs are censored to "data:," for security.
+TEST_F(CorsURLLoaderTest, ManualRedirectCensorsUnsafeSchemes) {
+  struct TestCase {
+    std::string_view redirect_url;
+    std::string_view expected_url;
+  };
+  static constexpr TestCase kTestCases[] = {
+      // HTTP(S) URLs pass through unchanged.
+      {"https://other.example.com/bar.png",
+       "https://other.example.com/bar.png"},
+      {"http://other.example.com/bar.png", "http://other.example.com/bar.png"},
+      // All non-HTTP(S) URLs are censored to "data:," for security.
+      {"data:text/html,hello", "data:,"},
+      {"file:///etc/passwd", "data:,"},
+      {"javascript:alert(1)", "data:,"},
+  };
+
+  const GURL origin_url("https://example.com");
+  const url::Origin origin = url::Origin::Create(origin_url);
+  const GURL url("https://example.com/foo.png");
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.redirect_url);
+    ResetFactory(origin, kRendererProcessId);
+
+    ResourceRequest request;
+    request.url = url;
+    request.request_initiator = origin;
+    request.mode = mojom::RequestMode::kCors;
+    request.redirect_mode = mojom::RedirectMode::kManual;
+    // destination defaults to kEmpty, which identifies this as a fetch() call.
+    // This triggers URL censoring for non-HTTP(S) redirects.
+    CreateLoaderAndStart(request);
+    RunUntilCreateLoaderAndStartCalled();
+
+    NotifyLoaderClientOnReceiveRedirect(
+        CreateRedirectInfo(302, "GET", GURL(test_case.redirect_url)));
+    RunUntilRedirectReceived();
+
+    EXPECT_TRUE(client().has_received_redirect());
+    EXPECT_EQ(client().redirect_info().new_url, GURL(test_case.expected_url));
+    ClearHasReceivedRedirect();
+  }
+}
+
+// Test that manual redirect mode with non-empty destination (i.e., navigations)
+// does NOT censor URLs.
+// Note: In practice, URLRequest would reject a redirect to file:// before
+// reaching CorsURLLoader. This test exercises the CorsURLLoader code path
+// in isolation to verify it doesn't incorrectly apply censoring.
+TEST_F(CorsURLLoaderTest, ManualRedirectWithoutFlagDoesNotCensor) {
+  const GURL url("https://example.com/foo.png");
+  const GURL file_redirect("file:///etc/passwd");
+
+  ResetFactory(std::nullopt, OriginatingProcess::browser());
+
+  ResourceRequest request;
+  request.url = url;
+  request.request_initiator = std::nullopt;
+  request.mode = mojom::RequestMode::kNavigate;
+  request.redirect_mode = mojom::RedirectMode::kManual;
+  request.destination = mojom::RequestDestination::kDocument;
+  request.navigation_redirect_chain.push_back(request.url);
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(302, "GET", file_redirect));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(client().has_received_redirect());
+  // With non-empty destination (navigation), URL should NOT be censored.
+  EXPECT_EQ(client().redirect_info().new_url, file_redirect);
+}
+
+// Test that service worker pass-through navigations (renderer process with
+// kNavigate mode and kManual redirect) DO censor non-HTTP(S) redirect URLs.
+// This prevents a compromised renderer from observing unsafe redirect targets
+// via the IPC redirect info.
+TEST_F(CorsURLLoaderTest,
+       ManualRedirectCensorsUnsafeSchemesForServiceWorkerNavigation) {
+  const GURL url("https://example.com/page");
+  const url::Origin origin = url::Origin::Create(url);
+
+  struct TestCase {
+    std::string_view redirect_url;
+    std::string_view expected_url;
+  };
+  static constexpr TestCase kTestCases[] = {
+      // HTTP(S) URLs pass through unchanged.
+      {"https://other.example.com/page2", "https://other.example.com/page2"},
+      {"http://other.example.com/page2", "http://other.example.com/page2"},
+      // Non-HTTP(S) URLs are censored to "data:," for security.
+      {"data:text/html,hello", "data:,"},
+      {"file:///etc/passwd", "data:,"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.redirect_url);
+    // Use renderer process ID to simulate a service worker pass-through.
+    ResetFactory(origin, kRendererProcessId);
+
+    ResourceRequest request;
+    request.url = url;
+    request.request_initiator = origin;
+    request.mode = mojom::RequestMode::kNavigate;
+    request.redirect_mode = mojom::RedirectMode::kManual;
+    request.destination = mojom::RequestDestination::kDocument;
+    request.navigation_redirect_chain.push_back(request.url);
+    CreateLoaderAndStart(request);
+    RunUntilCreateLoaderAndStartCalled();
+
+    NotifyLoaderClientOnReceiveRedirect(
+        CreateRedirectInfo(302, "GET", GURL(test_case.redirect_url)));
+    RunUntilRedirectReceived();
+
+    EXPECT_TRUE(client().has_received_redirect());
+    EXPECT_EQ(client().redirect_info().new_url, GURL(test_case.expected_url));
+    ClearHasReceivedRedirect();
+  }
+}
+
 class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
  public:
   StorageAccessHeadersCorsURLLoaderTest() : CorsURLLoaderTest() {

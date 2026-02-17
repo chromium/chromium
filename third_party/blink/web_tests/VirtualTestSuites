@@ -54,6 +54,19 @@
     "expires": "never"
   },
   {
+    "prefix": "allow-unsafe-redirect-schemes",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/fetch/api/redirect/redirect-location.any.js"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=AllowUnsafeRedirectSchemesForManualMode"
+    ],
+    "owners": ["helmut@januschka.com"],
+    "expires": "Jan 24, 2027"
+  },
+  {
     "prefix": "attribution-reporting-aggregatable-debug",
     "platforms": [
       "Linux",

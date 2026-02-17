@@ -175,6 +175,7 @@ enum class FieldsForUma {
   kRequiredIpAddressSpace = 20,
   kCredentialsMode = 21,
   kRedirectMode = 22,
+  // DEPRECATED: kAllowUnsafeRedirectSchemes = 67,
   kFetchIntegrity = 23,
   kDestination = 24,
   kOriginalDestination = 25,
@@ -219,6 +220,7 @@ enum class FieldsForUma {
   kExpectedPublicKeys = 64,
   kPermissionsPolicy = 65,
   kClientSideContentDecodingEnabled = 66,
+  // DEPRECATED: kAllowUnsafeRedirectSchemes = 67,
   kMaxValue = kClientSideContentDecodingEnabled,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:PrefetchMatchesResourceRequestField)

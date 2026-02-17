@@ -646,4 +646,6 @@ BASE_FEATURE_PARAM(bool,
                    /*name=*/"report_inconsistent_header",
                    /*default_value=*/false);
 
+BASE_FEATURE(kAllowUnsafeRedirectSchemesForManualMode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace network::features

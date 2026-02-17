@@ -6647,6 +6647,28 @@ TEST_F(URLRequestTestHTTP, DataRedirect) {
   EXPECT_EQ(1, d.received_redirect_count());
 }
 
+// Test that redirects to data: URLs are allowed when
+// treat_all_redirects_as_safe is set. This is used by fetch() with
+// redirect: "manual" to return opaque-redirect responses per the Fetch spec.
+TEST_F(URLRequestTestHTTP, DataRedirectAllowedWhenTreatAllRedirectsAsSafe) {
+  ASSERT_TRUE(http_test_server()->Start());
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+      http_test_server()->GetURL("/redirect-to-data.html"), DEFAULT_PRIORITY,
+      &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_treat_all_redirects_as_safe(true);
+  req->Start();
+  d.RunUntilComplete();
+
+  // With treat_all_redirects_as_safe, the redirect is reported to the caller
+  // instead of being rejected with ERR_UNKNOWN_URL_SCHEME.
+  EXPECT_EQ(1, d.received_redirect_count());
+  // The request will still fail because data: URLs are not supported by
+  // URLRequest, but the redirect itself was allowed.
+  EXPECT_EQ(ERR_UNKNOWN_URL_SCHEME, d.request_status());
+}
+
 TEST_F(URLRequestTestHTTP, RestrictUnsafeRedirect) {
   ASSERT_TRUE(http_test_server()->Start());
 

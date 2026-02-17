@@ -587,6 +587,16 @@ void ConfigureUrlRequest(const ResourceRequest& request,
           request.credentials_mode == mojom::CredentialsMode::kOmit);
     url_request.set_ignore_unsafe_method_for_same_site_lax(true);
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAllowUnsafeRedirectSchemesForManualMode)) {
+    // Allow unsafe redirect schemes for fetch() with redirect: "manual".
+    // We identify fetch() by checking for empty destination (per fetch spec).
+    // Navigations also use kManual but have non-empty destinations.
+    url_request.set_treat_all_redirects_as_safe(
+        request.redirect_mode == mojom::RedirectMode::kManual &&
+        request.destination == mojom::RequestDestination::kEmpty);
+  }
 }
 
 void SetRequestCredentials(

@@ -396,7 +396,12 @@ void MojoURLLoaderClient::OnReceiveRedirect(
     return;
   }
 
-  if (!bypass_redirect_checks_ &&
+  // In manual redirect mode (opaque redirects), the redirect is not actually
+  // followed - an opaque response is returned instead. Skip the safety check
+  // since the redirect target is never loaded or executed.
+  bool is_manual_redirect = response_head->response_type ==
+                            network::mojom::FetchResponseType::kOpaqueRedirect;
+  if (!bypass_redirect_checks_ && !is_manual_redirect &&
       !Platform::Current()->IsRedirectSafe(GURL(last_loaded_url_),
                                            redirect_info.new_url,
                                            redirect_info.original_initiator)) {
