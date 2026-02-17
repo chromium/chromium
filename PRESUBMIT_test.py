@@ -1636,23 +1636,8 @@ class LogUsageTest(unittest.TestCase):
 
         mock_input_api.files = [
             MockAffectedFile('RandomStuff.java', ['random stuff']),
-            MockAffectedFile('HasAndroidLog.java', [
-                'import android.util.Log;',
-                'some random stuff',
-                'Log.d("TAG", "foo");',
-            ]),
-            MockAffectedFile('HasExplicitUtilLog.java', [
-                'some random stuff',
-                'android.util.Log.d("TAG", "foo");',
-            ]),
             MockAffectedFile('IsInBasePackage.java', [
                 'package org.chromium.base;',
-                'private static final String TAG = "cr_Foo";',
-                'Log.d(TAG, "foo");',
-            ]),
-            MockAffectedFile('IsInBasePackageButImportsLog.java', [
-                'package org.chromium.base;',
-                'import android.util.Log;',
                 'private static final String TAG = "cr_Foo";',
                 'Log.d(TAG, "foo");',
             ]),
@@ -1733,8 +1718,8 @@ class LogUsageTest(unittest.TestCase):
                                                  mock_output_api)
 
         self.assertEqual(
-            5, len(msgs),
-            'Expected %d items, found %d: %s' % (5, len(msgs), msgs))
+            4, len(msgs),
+            'Expected %d items, found %d: %s' % (4, len(msgs), msgs))
 
         # Declaration format
         nb = len(msgs[0].items)
@@ -1758,23 +1743,13 @@ class LogUsageTest(unittest.TestCase):
         self.assertIn('HasInlineTag.java:4', msgs[2].items)
         self.assertIn('HasInlineTagWithSpace.java:4', msgs[2].items)
 
-        # Util Log usage
+        # Tag must not contain
         nb = len(msgs[3].items)
         self.assertEqual(
-            5, nb, 'Expected %d items, found %d: %s' % (3, nb, msgs[3].items))
-        self.assertIn('HasAndroidLog.java:1', msgs[3].items)
-        self.assertIn('HasAndroidLog.java:3', msgs[3].items)
-        self.assertIn('HasExplicitUtilLog.java:2', msgs[3].items)
-        self.assertIn('IsInBasePackageButImportsLog.java:2', msgs[3].items)
-        self.assertIn('IsInBasePackageButImportsLog.java:4', msgs[3].items)
-
-        # Tag must not contain
-        nb = len(msgs[4].items)
-        self.assertEqual(
-            3, nb, 'Expected %d items, found %d: %s' % (2, nb, msgs[4].items))
-        self.assertIn('HasDottedTag.java', msgs[4].items)
-        self.assertIn('HasDottedTagPublic.java', msgs[4].items)
-        self.assertIn('HasOldTag.java', msgs[4].items)
+            3, nb, 'Expected %d items, found %d: %s' % (2, nb, msgs[3].items))
+        self.assertIn('HasDottedTag.java', msgs[3].items)
+        self.assertIn('HasDottedTagPublic.java', msgs[3].items)
+        self.assertIn('HasOldTag.java', msgs[3].items)
 
 
 class GoogleAnswerUrlFormatTest(unittest.TestCase):

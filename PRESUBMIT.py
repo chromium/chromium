@@ -4981,7 +4981,6 @@ def _CheckAndroidCrLogUsage(input_api, output_api):
     tag_length_errors = []
     tag_errors = []
     tag_with_dot_errors = []
-    util_log_errors = []
 
     for f in input_api.AffectedSourceFiles(sources):
         file_content = input_api.ReadFile(f)
@@ -5003,12 +5002,6 @@ def _CheckAndroidCrLogUsage(input_api, output_api):
                     # Make sure it uses "TAG"
                     if not match.group('tag') == 'TAG':
                         tag_errors.append('%s:%d' % (f.LocalPath(), line_num))
-        else:
-            # Report non cr Log function calls in changed lines
-            for line_num, line in f.ChangedContents():
-                if (log_call_pattern.search(line)
-                        or has_some_log_import_pattern.search(line)):
-                    util_log_errors.append('%s:%d' % (f.LocalPath(), line_num))
 
         # Per file checks
         if has_modified_logs:
@@ -5042,12 +5035,6 @@ def _CheckAndroidCrLogUsage(input_api, output_api):
             output_api.PresubmitPromptWarning(
                 'Please use a variable named "TAG" for your log tags.\n' +
                 REF_MSG, tag_errors))
-
-    if util_log_errors:
-        results.append(
-            output_api.PresubmitPromptWarning(
-                'Please use org.chromium.base.Log for new logs.\n' + REF_MSG,
-                util_log_errors))
 
     if tag_with_dot_errors:
         results.append(
