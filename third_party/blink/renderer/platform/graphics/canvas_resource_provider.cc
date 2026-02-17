@@ -1906,11 +1906,10 @@ void CanvasResourceProviderSharedImage::DisableLineDrawingAsPathsIfNecessary() {
 std::unique_ptr<CanvasResourceProvider>
 Canvas2DResourceProviderBitmap::CreateForTesting(
     gfx::Size size,
-    const Canvas2DColorParams& color_params,
-    Delegate* delegate) {
+    const Canvas2DColorParams& color_params) {
   return Canvas2DResourceProviderBitmap::Create(
       size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
-      color_params.GetGfxColorSpace(), delegate);
+      color_params.GetGfxColorSpace());
 }
 
 }  // namespace blink

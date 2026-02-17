@@ -328,8 +328,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
 
   static std::unique_ptr<CanvasResourceProvider> CreateForTesting(
       gfx::Size size,
-      const Canvas2DColorParams& color_params,
-      Delegate* delegate = nullptr);
+      const Canvas2DColorParams& color_params);
 
  protected:
   Canvas2DResourceProviderBitmap(ResourceProviderType type,
