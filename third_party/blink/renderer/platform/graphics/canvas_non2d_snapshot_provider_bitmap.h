@@ -47,6 +47,9 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
   explicit CanvasNon2DSnapshotProviderBitmap(
       const CanvasSnapshotProvider::Info& info);
 
+  // Used for any images that clients pass to cc::PaintCanvas::DrawImage() in
+  // the invocation of the `draw_callback` that clients provide to
+  // `DoExternalDrawAndSnapshot()`.
   class ImageProviderImpl : public cc::ImageProvider {
    public:
     ImageProviderImpl(bool is_f16, const gfx::ColorSpace& color_space);
