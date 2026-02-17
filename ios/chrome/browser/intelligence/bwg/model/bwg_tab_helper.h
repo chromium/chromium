@@ -25,6 +25,10 @@
 @protocol LocationBarBadgeCommands;
 @class GeminiPageContext;
 
+namespace gemini {
+enum class FloatyUpdateSource;
+}
+
 // Tab helper controlling the BWG feature and its current state for a given tab.
 class BwgTabHelper : public web::WebStateObserver,
                      public web::WebStateUserData<BwgTabHelper> {
@@ -128,6 +132,15 @@ class BwgTabHelper : public web::WebStateObserver,
   // Returns the partial PageContext for the current WebState, including URL,
   // Title, and Favicon.
   GeminiPageContext* GetPartialPageContext();
+
+  // Returns true if a show floaty trigger should be blocked resulting in an
+  // early return and the floaty remaining hidden. Used when the floaty is
+  // forced to be hidden such as an overlay, alert, or banner being presented
+  bool ShouldBlockFloatyFromShowing();
+
+  // Updates the state of a `source` that `is_presented`.
+  void UpdatePresentedSource(gemini::FloatyUpdateSource source,
+                             bool is_presented);
 
   // WebStateObserver:
   void WasShown(web::WebState* web_state) override;
@@ -283,6 +296,24 @@ class BwgTabHelper : public web::WebStateObserver,
   // The callback to be run when the page context is ready.
   base::RepeatingCallback<void(PageContextWrapperCallbackResponse)>
       page_context_wrapper_response_ready_callback_;
+
+  // Whether an external overlay is currently presented e.g. Lens Overlay. Used
+  // to avoid showing the floaty when view controllers are presented/dismissed
+  // while an overlay is presented.
+  bool is_external_overlay_presented_ = false;
+
+  // Whether an alert is currently presented. Used to avoid showing the floaty
+  // when view controllers are presented/dismissed while an alert is presented.
+  bool is_alert_presented_ = false;
+
+  // Whether a banner is currently presented. Used to avoid showing the floaty
+  // when view controllers are presented/dismissed while a banner is presented.
+  bool is_banner_presented_ = false;
+
+  // Whether a snackbar is currently presented. Used to avoid showing the floaty
+  // when view controllers are presented/dismissed while a snackbar is
+  // presented.
+  bool is_snackbar_presented_ = false;
 
   // Weak pointer factory.
   base::WeakPtrFactory<BwgTabHelper> weak_ptr_factory_{this};

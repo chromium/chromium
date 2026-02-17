@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/intelligence/bwg/utils",
+  "+ios/chrome/browser/intelligence/features",
+  # keep-sorted end
+]
