@@ -14,6 +14,7 @@
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_notification_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
+#include "ash/accessibility/accessibility_sync_prefs_utils.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/disable_touchpad_event_rewriter.h"
 #include "ash/accessibility/drag_event_rewriter.h"
@@ -609,6 +610,45 @@ std::string UmaNameForSwitchAccessCommand(SwitchAccessCommand command) {
       return "Accessibility.CrosSwitchAccess.PreviousKeyCode";
     case SwitchAccessCommand::kNone:
       NOTREACHED();
+  }
+}
+
+// This function registers the accessibility preferences that are conditionally
+// syncable - as per the respective feature flag - and require a resolution
+// policy when values set at OOBE differ from values stored at Chrome Sync.
+void RegisterAccessibilityPrefsWithConditionalSync(
+    PrefRegistrySimple* registry,
+    base::span<const AccessibilityPrefBatchEntry> prefs) {
+  for (const auto& pref : prefs) {
+    // The preference is registered elsewhere.
+    if (pref.has_custom_registration) {
+      continue;
+    }
+
+    switch (pref.default_value.type()) {
+      case base::Value::Type::BOOLEAN:
+        registry->RegisterBooleanPref(pref.pref_name,
+                                      pref.default_value.GetBool(),
+                                      pref.registration_flags);
+        break;
+      case base::Value::Type::INTEGER:
+        registry->RegisterIntegerPref(pref.pref_name,
+                                      pref.default_value.GetInt(),
+                                      pref.registration_flags);
+        break;
+      case base::Value::Type::DOUBLE:
+        registry->RegisterDoublePref(pref.pref_name,
+                                     pref.default_value.GetDouble(),
+                                     pref.registration_flags);
+        break;
+      case base::Value::Type::STRING:
+        registry->RegisterStringPref(pref.pref_name,
+                                     pref.default_value.GetString(),
+                                     pref.registration_flags);
+        break;
+      default:
+        NOTREACHED();
+    }
   }
 }
 
@@ -1502,69 +1542,14 @@ void AccessibilityController::RegisterProfilePrefs(
       prefs::kAccessibilityMagnifierFollowsSts, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
-  // Gate the first batch of visual accessibility prefs so the OS sync rollout
+  // Gate the batches of feature accessibility prefs so the OS sync rollout
   // can be staged (and rolled back) via Finch if issues arise.
-  const uint32_t syncable_registration_flag_batch1 =
-      base::FeatureList::IsEnabled(features::kOsSyncAccessibilitySettingsBatch1)
-          ? user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF
-          : 0;
-  registry->RegisterBooleanPref(prefs::kAccessibilityColorCorrectionEnabled,
-                                false, syncable_registration_flag_batch1);
-  registry->RegisterBooleanPref(
-      prefs::kAccessibilityColorCorrectionHasBeenSetup, false,
-      syncable_registration_flag_batch1);
-  registry->RegisterBooleanPref(prefs::kAccessibilityCursorHighlightEnabled,
-                                false, syncable_registration_flag_batch1);
-  registry->RegisterBooleanPref(prefs::kAccessibilityCursorColorEnabled, false,
-                                syncable_registration_flag_batch1);
-  registry->RegisterIntegerPref(prefs::kAccessibilityCursorColor,
-                                ui::kDefaultCursorColor,
-                                syncable_registration_flag_batch1);
-  registry->RegisterBooleanPref(prefs::kAccessibilityLargeCursorEnabled, false,
-                                syncable_registration_flag_batch1);
-  registry->RegisterIntegerPref(prefs::kAccessibilityLargeCursorDipSize,
-                                kDefaultLargeCursorSize,
-                                syncable_registration_flag_batch1);
-  registry->RegisterBooleanPref(prefs::kAccessibilityHighContrastEnabled, false,
-                                syncable_registration_flag_batch1);
-  registry->RegisterBooleanPref(
-      prefs::kHighContrastAcceleratorDialogHasBeenAccepted, false,
-      syncable_registration_flag_batch1);
-  registry->RegisterBooleanPref(prefs::kAccessibilityCaretHighlightEnabled,
-                                false, syncable_registration_flag_batch1);
-  registry->RegisterIntegerPref(prefs::kAccessibilityCaretBlinkInterval,
-                                kDefaultCaretBlinkIntervalMs,
-                                syncable_registration_flag_batch1);
-  registry->RegisterBooleanPref(prefs::kAccessibilityFocusHighlightEnabled,
-                                false, syncable_registration_flag_batch1);
-
-  const uint32_t registration_flags_batch2 =
-      base::FeatureList::IsEnabled(features::kOsSyncAccessibilitySettingsBatch2)
-          ? user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF
-          : 0;
-  registry->RegisterBooleanPref(prefs::kAccessibilityReducedAnimationsEnabled,
-                                false, registration_flags_batch2);
-
-  const uint32_t registration_flags_batch3 =
-      base::FeatureList::IsEnabled(features::kOsSyncAccessibilitySettingsBatch3)
-          ? user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF
-          : 0;
-  registry->RegisterBooleanPref(prefs::kAccessibilityScreenMagnifierEnabled,
-                                false, registration_flags_batch3);
-  registry->RegisterBooleanPref(prefs::kAccessibilitySelectToSpeakEnabled,
-                                false, registration_flags_batch3);
-  registry->RegisterDoublePref(prefs::kAccessibilityScreenMagnifierScale,
-                               std::numeric_limits<double>::min(),
-                               registration_flags_batch3);
-  registry->RegisterBooleanPref(
-      prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted, false,
-      registration_flags_batch3);
-  registry->RegisterBooleanPref(
-      prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted, false,
-      registration_flags_batch3);
-  registry->RegisterBooleanPref(
-      prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted, false,
-      registration_flags_batch3);
+  RegisterAccessibilityPrefsWithConditionalSync(
+      registry, GetSyncableAccessibilityPrefsBatch1());
+  RegisterAccessibilityPrefsWithConditionalSync(
+      registry, GetSyncableAccessibilityPrefsBatch2());
+  RegisterAccessibilityPrefsWithConditionalSync(
+      registry, GetSyncableAccessibilityPrefsBatch3());
 
   if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
     registry->RegisterIntegerPref(prefs::kAccessibilityFlashNotificationsColor,
