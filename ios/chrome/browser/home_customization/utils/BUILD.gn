@@ -10,12 +10,25 @@ source_set("utils") {
     "home_customization_helper.mm",
     "home_customization_metrics_recorder.h",
     "home_customization_metrics_recorder.mm",
+    "theme_ios_specifics_utils.cc",
+    "theme_ios_specifics_utils.h",
   ]
   deps = [
     "//components/commerce/core:feature_list",
+    "//components/sync/protocol",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "theme_ios_specifics_utils_unittest.cc" ]
+  deps = [
+    ":utils",
+    "//components/sync/protocol",
+    "//testing/gtest",
+  ]
 }

@@ -25,42 +25,29 @@
 #import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
 #import "ios/chrome/browser/home_customization/model/theme_syncable_service_ios.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
+#import "ios/chrome/browser/home_customization/utils/theme_ios_specifics_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "third_party/skia/include/core/SkColor.h"
 #import "url/gurl.h"
 
 namespace sync_pb {
+
 bool operator==(const sync_pb::NtpCustomBackground& lhs,
                 const sync_pb::NtpCustomBackground& rhs) {
-  return lhs.url() == rhs.url();
+  return home_customization::AreNtpCustomBackgroundsEquivalent(lhs, rhs);
 }
 
 bool operator==(const sync_pb::UserColorTheme& lhs,
                 const sync_pb::UserColorTheme& rhs) {
-  return lhs.color() == rhs.color() &&
-         lhs.browser_color_variant() == rhs.browser_color_variant();
+  return home_customization::AreUserColorThemesEquivalent(lhs, rhs);
 }
 
 bool operator==(const sync_pb::ThemeIosSpecifics& lhs,
                 const sync_pb::ThemeIosSpecifics& rhs) {
-  // Ntp Background field takes precedence. Only compare colors if neither
-  // theme has an ntp background.
-  if (lhs.has_ntp_background() != rhs.has_ntp_background()) {
-    return false;
-  }
-
-  // Only compare url.
-  if (lhs.has_ntp_background()) {
-    return lhs.ntp_background() == rhs.ntp_background();
-  }
-
-  if (lhs.has_user_color_theme() != rhs.has_user_color_theme()) {
-    return false;
-  }
-
-  return lhs.user_color_theme() == rhs.user_color_theme();
+  return home_customization::AreThemeIosSpecificsEquivalent(lhs, rhs);
 }
+
 }  // namespace sync_pb
 
 namespace {
