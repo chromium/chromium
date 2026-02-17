@@ -136,6 +136,24 @@ sync_pb::AutofillValuableSpecifics TestDriversLicenseSpecifics(
   return specifics;
 }
 
+// Returns a `sync_pb::AutofillValuableSpecifics` message with the national ID
+// card entity type.
+sync_pb::AutofillValuableSpecifics TestNationalIdCardSpecifics(
+    test::NationalIdCardOptions options = {}) {
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id(std::string(options.guid));
+  sync_pb::NationalIdCard* card = specifics.mutable_national_id_card();
+  card->set_masked_number(base::UTF16ToUTF8(options.number));
+  card->set_owner_name(base::UTF16ToUTF8(options.name));
+  card->set_country_code(base::UTF16ToUTF8(options.country));
+  card->set_issue_date_unix_epoch_micros(
+      ParseDateStrToMicros(options.issue_date));
+  card->set_expiry_date_unix_epoch_micros(
+      ParseDateStrToMicros(options.expiry_date));
+
+  return specifics;
+}
+
 void ExpectTimestampEquals(int64_t actual_micros,
                            const std::string& expected_date_str) {
   base::Time expected_date;
@@ -810,6 +828,65 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_DriverLicense) {
   ExpectTimestampEquals(
       specifics.driver_license().expiration_date_unix_epoch_micros(),
       base::UTF16ToUTF8(options.expiration_date));
+}
+
+// Tests that `CreateEntityInstanceFromSpecifics` correctly deserializes
+// the national ID card entity from its proto representation.
+TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_NationalIdCard) {
+  // The specifics require country code.
+  test::NationalIdCardOptions options{.country = u"DE"};
+  sync_pb::AutofillValuableSpecifics specifics =
+      TestNationalIdCardSpecifics(options);
+  std::optional<EntityInstance> card =
+      CreateEntityInstanceFromSpecifics(specifics);
+
+  ASSERT_TRUE(card.has_value());
+  EXPECT_EQ(card->guid().value(), options.guid);
+  EXPECT_EQ(GetStringValue(*card, AttributeTypeName::kNationalIdCardNumber),
+            base::UTF16ToUTF8(options.number));
+  EXPECT_TRUE(
+      card->attribute(AttributeType(AttributeTypeName::kNationalIdCardNumber))
+          ->masked());
+  EXPECT_EQ(GetStringValue(*card, AttributeTypeName::kNationalIdCardName),
+            base::UTF16ToUTF8(options.name));
+  EXPECT_EQ(GetStringValue(*card, AttributeTypeName::kNationalIdCardCountry),
+            base::UTF16ToUTF8(options.country));
+  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
+                *card, AttributeTypeName::kNationalIdCardIssueDate))),
+            ParseDateStrToMicros(options.issue_date));
+  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
+                *card, AttributeTypeName::kNationalIdCardExpirationDate))),
+            ParseDateStrToMicros(options.expiry_date));
+  EXPECT_EQ(card->record_type(), EntityInstance::RecordType::kServerWallet);
+}
+
+// Tests that `CreateSpecificsFromEntityInstance` correctly serializes
+// fields.
+TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_NationalIdCard) {
+  // The specifics require country code.
+  test::NationalIdCardOptions options{.country = u"DE"};
+  std::optional<EntityInstance> maybe_card =
+      CreateEntityInstanceFromSpecifics(TestNationalIdCardSpecifics(options));
+  ASSERT_TRUE(maybe_card.has_value());
+  EntityInstance card = *maybe_card;
+
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(card, /*base_specifics=*/{});
+
+  EXPECT_EQ(card.guid().value(), specifics.id());
+  EXPECT_EQ(GetStringValue(card, AttributeTypeName::kNationalIdCardNumber),
+            specifics.national_id_card().masked_number());
+  EXPECT_EQ(GetStringValue(card, AttributeTypeName::kNationalIdCardName),
+            specifics.national_id_card().owner_name());
+  EXPECT_EQ(GetStringValue(card, AttributeTypeName::kNationalIdCardCountry),
+            specifics.national_id_card().country_code());
+
+  ExpectTimestampEquals(
+      specifics.national_id_card().issue_date_unix_epoch_micros(),
+      base::UTF16ToUTF8(options.issue_date));
+  ExpectTimestampEquals(
+      specifics.national_id_card().expiry_date_unix_epoch_micros(),
+      base::UTF16ToUTF8(options.expiry_date));
 }
 
 }  // namespace

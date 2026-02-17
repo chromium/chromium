@@ -28,6 +28,7 @@ namespace autofill {
 
 namespace {
 
+using enum AttributeTypeName;
 using sync_pb::AutofillValuableMetadataSpecifics;
 using sync_pb::AutofillValuableSpecifics;
 
@@ -214,7 +215,6 @@ void FinalizeEntityAttributes(
 base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
 GetFlightReservationAttributesFromSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics) {
-  using enum AttributeTypeName;
   CHECK_EQ(specifics.valuable_data_case(),
            sync_pb::AutofillValuableSpecifics::kFlightReservation);
   const sync_pb::FlightReservation& flight_reservation =
@@ -265,7 +265,6 @@ GetFlightReservationAttributesFromSpecifics(
 sync_pb::AutofillValuableSpecifics GetFlightReservationSpecifics(
     const EntityInstance& entity,
     const sync_pb::AutofillValuableSpecifics& base_specifics) {
-  using enum AttributeTypeName;
   CHECK_EQ(entity.type().name(), EntityTypeName::kFlightReservation);
 
   sync_pb::AutofillValuableSpecifics specifics = base_specifics;
@@ -299,7 +298,6 @@ sync_pb::AutofillValuableSpecifics GetFlightReservationSpecifics(
 base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
 GetVehicleAttributesFromSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics) {
-  using enum AttributeTypeName;
   CHECK_EQ(specifics.valuable_data_case(),
            sync_pb::AutofillValuableSpecifics::kVehicleRegistration);
   const sync_pb::VehicleRegistration& vehicle =
@@ -328,7 +326,6 @@ GetVehicleAttributesFromSpecifics(
 sync_pb::AutofillValuableSpecifics GetVehicleInformationSpecifics(
     const EntityInstance& entity,
     const sync_pb::AutofillValuableSpecifics& base_specifics) {
-  using enum AttributeTypeName;
   CHECK_EQ(entity.type().name(), EntityTypeName::kVehicle);
   sync_pb::AutofillValuableSpecifics specifics = base_specifics;
   specifics.set_id(*entity.guid());
@@ -360,7 +357,6 @@ base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
 GetPassportAttributesFromSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics,
     AttributeInstance::MarkAsMaskedPasskey passkey) {
-  using enum AttributeTypeName;
   CHECK_EQ(specifics.valuable_data_case(),
            sync_pb::AutofillValuableSpecifics::kPassport);
   const sync_pb::Passport& passport = specifics.passport();
@@ -387,7 +383,6 @@ GetPassportAttributesFromSpecifics(
 sync_pb::AutofillValuableSpecifics GetPassportSpecifics(
     const EntityInstance& entity,
     const sync_pb::AutofillValuableSpecifics& base_specifics) {
-  using enum AttributeTypeName;
   CHECK_EQ(entity.type().name(), EntityTypeName::kPassport);
 
   sync_pb::AutofillValuableSpecifics specifics = base_specifics;
@@ -414,7 +409,6 @@ base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
 GetDriversLicenseAttributesFromSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics,
     AttributeInstance::MarkAsMaskedPasskey passkey) {
-  using enum AttributeTypeName;
   CHECK_EQ(specifics.valuable_data_case(),
            sync_pb::AutofillValuableSpecifics::kDriverLicense);
   const sync_pb::DriverLicense& license = specifics.driver_license();
@@ -443,7 +437,6 @@ GetDriversLicenseAttributesFromSpecifics(
 sync_pb::AutofillValuableSpecifics GetDriversLicenseSpecifics(
     const EntityInstance& entity,
     const sync_pb::AutofillValuableSpecifics& base_specifics) {
-  using enum AttributeTypeName;
   CHECK_EQ(entity.type().name(), EntityTypeName::kDriversLicense);
 
   sync_pb::AutofillValuableSpecifics specifics = base_specifics;
@@ -460,6 +453,61 @@ sync_pb::AutofillValuableSpecifics GetDriversLicenseSpecifics(
   SetDateInSpecifics(
       entity, kDriversLicenseExpirationDate, license,
       &sync_pb::DriverLicense::set_expiration_date_unix_epoch_micros);
+
+  *specifics.mutable_serialized_chrome_valuables_metadata() =
+      AnyWrapProto(SerializeChromeValuablesMetadata(entity));
+  return specifics;
+}
+
+// Reads the national ID card specifics message and extracts
+// attribute-information.
+base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+GetNationalIdCardAttributesFromSpecifics(
+    const sync_pb::AutofillValuableSpecifics& specifics,
+    AttributeInstance::MarkAsMaskedPasskey passkey) {
+  CHECK_EQ(specifics.valuable_data_case(),
+           sync_pb::AutofillValuableSpecifics::kNationalIdCard);
+  const sync_pb::NationalIdCard& card = specifics.national_id_card();
+  base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+      attributes;
+
+  AddAttribute(kNationalIdCardName, card.owner_name(), attributes);
+  AddAttribute(kNationalIdCardNumber, card.masked_number(), passkey,
+               attributes);
+  AddAttribute(kNationalIdCardCountry, card.country_code(), attributes);
+  AddDateAttribute(kNationalIdCardIssueDate,
+                   card.issue_date_unix_epoch_micros(), attributes);
+  AddDateAttribute(kNationalIdCardExpirationDate,
+                   card.expiry_date_unix_epoch_micros(), attributes);
+
+  FinalizeEntityAttributes(EntityType(EntityTypeName::kNationalIdCard),
+                           specifics.serialized_chrome_valuables_metadata(),
+                           attributes);
+  return attributes;
+}
+
+// Takes an `entity` and returns a proto message with the information.
+// Note: National ID cards are read-only and not synced to the server. This
+// serialization is primarily for debugging (e.g., sync-internals).
+sync_pb::AutofillValuableSpecifics GetNationalIdCardSpecifics(
+    const EntityInstance& entity,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+  CHECK_EQ(entity.type().name(), EntityTypeName::kNationalIdCard);
+
+  sync_pb::AutofillValuableSpecifics specifics = base_specifics;
+  specifics.set_id(*entity.guid());
+  specifics.set_is_editable(!entity.are_attributes_read_only());
+
+  sync_pb::NationalIdCard& card = *specifics.mutable_national_id_card();
+  SET_OR_CLEAR_STRING_FIELD(entity, kNationalIdCardNumber, masked_number, card);
+  SET_OR_CLEAR_STRING_FIELD(entity, kNationalIdCardName, owner_name, card);
+  SET_OR_CLEAR_STRING_FIELD(entity, kNationalIdCardCountry, country_code, card);
+  SetDateInSpecifics(
+      entity, kNationalIdCardIssueDate, card,
+      &sync_pb::NationalIdCard::set_issue_date_unix_epoch_micros);
+  SetDateInSpecifics(
+      entity, kNationalIdCardExpirationDate, card,
+      &sync_pb::NationalIdCard::set_expiry_date_unix_epoch_micros);
 
   *specifics.mutable_serialized_chrome_valuables_metadata() =
       AnyWrapProto(SerializeChromeValuablesMetadata(entity));
@@ -533,6 +581,7 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
     case EntityTypeName::kDriversLicense:
       return GetDriversLicenseSpecifics(entity, base_specifics);
     case EntityTypeName::kNationalIdCard:
+      return GetNationalIdCardSpecifics(entity, base_specifics);
     case EntityTypeName::kKnownTravelerNumber:
     case EntityTypeName::kRedressNumber:
       // Those entity types are not synced.
@@ -593,7 +642,17 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
-    case sync_pb::AutofillValuableSpecifics::kNationalIdCard:
+    case sync_pb::AutofillValuableSpecifics::kNationalIdCard: {
+      return EntityInstance(
+          EntityType(EntityTypeName::kNationalIdCard),
+          GetNationalIdCardAttributesFromSpecifics(
+              specifics, AttributeInstance::MarkAsMaskedPasskey()),
+          guid,
+          /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
+          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
+          /*frecency_override=*/"");
+    }
     case sync_pb::AutofillValuableSpecifics::kRedressNumber:
     case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
       // TODO(crbug.com/481650251): Implement
