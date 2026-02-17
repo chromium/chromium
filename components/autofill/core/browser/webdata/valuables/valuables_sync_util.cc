@@ -5,12 +5,87 @@
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
+#include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace autofill {
 
+namespace {
+
 using sync_pb::AutofillValuableMetadataSpecifics;
 using sync_pb::AutofillValuableSpecifics;
+
+void TrimLoyaltyCard(sync_pb::LoyaltyCard& card) {
+  card.clear_merchant_name();
+  card.clear_program_name();
+  card.clear_program_logo();
+  card.clear_loyalty_card_number();
+  card.clear_merchant_domains();
+}
+
+void TrimVehicleRegistration(sync_pb::VehicleRegistration& pass) {
+  pass.clear_vehicle_make();
+  pass.clear_vehicle_model();
+  pass.clear_vehicle_year();
+  pass.clear_vehicle_identification_number();
+  pass.clear_vehicle_license_plate();
+  pass.clear_license_plate_region();
+  pass.clear_license_plate_country();
+  pass.clear_owner_name();
+  pass.clear_issuer_name();
+}
+
+void TrimFlightReservation(sync_pb::FlightReservation& pass) {
+  pass.clear_flight_number();
+  pass.clear_flight_ticket_number();
+  pass.clear_flight_confirmation_code();
+  pass.clear_passenger_name();
+  pass.clear_departure_airport();
+  pass.clear_arrival_airport();
+  pass.clear_departure_date_unix_epoch_micros();
+  pass.clear_arrival_date_unix_epoch_micros();
+  pass.clear_airline_logo();
+  pass.clear_carrier_code();
+  pass.clear_departure_airport_utc_offset_seconds();
+  pass.clear_arrival_airport_utc_offset_seconds();
+}
+
+void TrimPassport(sync_pb::Passport& pass) {
+  pass.clear_owner_name();
+  pass.clear_masked_number();
+  pass.clear_country_code();
+  pass.clear_issue_date_unix_epoch_micros();
+  pass.clear_expiration_date_unix_epoch_micros();
+}
+
+void TrimDriverLicense(sync_pb::DriverLicense& pass) {
+  pass.clear_owner_name();
+  pass.clear_masked_number();
+  pass.clear_region();
+  pass.clear_issue_date_unix_epoch_micros();
+  pass.clear_expiration_date_unix_epoch_micros();
+}
+
+void TrimNationalIdCard(sync_pb::NationalIdCard& pass) {
+  pass.clear_owner_name();
+  pass.clear_masked_number();
+  pass.clear_country_code();
+  pass.clear_issue_date_unix_epoch_micros();
+  pass.clear_expiry_date_unix_epoch_micros();
+}
+
+void TrimRedressNumber(sync_pb::RedressNumber& pass) {
+  pass.clear_owner_name();
+  pass.clear_masked_number();
+}
+
+void TrimKnownTravelerNumber(sync_pb::KnownTravelerNumber& pass) {
+  pass.clear_owner_name();
+  pass.clear_masked_number();
+  pass.clear_expiry_date_unix_epoch_micros();
+}
+
+}  // namespace
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
     const LoyaltyCard& loyalty_card,
@@ -95,67 +170,63 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
 
   switch (trimmed_specifics.valuable_data_case()) {
     case AutofillValuableSpecifics::kLoyaltyCard: {
-      trimmed_specifics.mutable_loyalty_card()->clear_merchant_name();
-      trimmed_specifics.mutable_loyalty_card()->clear_program_name();
-      trimmed_specifics.mutable_loyalty_card()->clear_program_logo();
-      trimmed_specifics.mutable_loyalty_card()->clear_loyalty_card_number();
-      trimmed_specifics.mutable_loyalty_card()->clear_merchant_domains();
-      if (trimmed_specifics.mutable_loyalty_card()->ByteSizeLong() == 0) {
+      TrimLoyaltyCard(*trimmed_specifics.mutable_loyalty_card());
+      if (trimmed_specifics.loyalty_card().ByteSizeLong() == 0) {
         trimmed_specifics.clear_loyalty_card();
       }
       break;
     }
     case AutofillValuableSpecifics::kVehicleRegistration: {
-      trimmed_specifics.mutable_vehicle_registration()->clear_vehicle_make();
-      trimmed_specifics.mutable_vehicle_registration()->clear_vehicle_model();
-      trimmed_specifics.mutable_vehicle_registration()->clear_vehicle_year();
-      trimmed_specifics.mutable_vehicle_registration()
-          ->clear_vehicle_identification_number();
-      trimmed_specifics.mutable_vehicle_registration()
-          ->clear_vehicle_license_plate();
-      trimmed_specifics.mutable_vehicle_registration()
-          ->clear_license_plate_region();
-      trimmed_specifics.mutable_vehicle_registration()
-          ->clear_license_plate_country();
-      trimmed_specifics.mutable_vehicle_registration()->clear_owner_name();
-      trimmed_specifics.mutable_vehicle_registration()->clear_issuer_name();
-      if (trimmed_specifics.mutable_vehicle_registration()->ByteSizeLong() ==
-          0) {
+      TrimVehicleRegistration(
+          *trimmed_specifics.mutable_vehicle_registration());
+      if (trimmed_specifics.vehicle_registration().ByteSizeLong() == 0) {
         trimmed_specifics.clear_vehicle_registration();
       }
       break;
     }
     case AutofillValuableSpecifics::kFlightReservation: {
-      trimmed_specifics.mutable_flight_reservation()->clear_flight_number();
-      trimmed_specifics.mutable_flight_reservation()
-          ->clear_flight_ticket_number();
-      trimmed_specifics.mutable_flight_reservation()
-          ->clear_flight_confirmation_code();
-      trimmed_specifics.mutable_flight_reservation()->clear_passenger_name();
-      trimmed_specifics.mutable_flight_reservation()->clear_departure_airport();
-      trimmed_specifics.mutable_flight_reservation()->clear_arrival_airport();
-      trimmed_specifics.mutable_flight_reservation()
-          ->clear_departure_date_unix_epoch_micros();
-      trimmed_specifics.mutable_flight_reservation()
-          ->clear_arrival_date_unix_epoch_micros();
-      trimmed_specifics.mutable_flight_reservation()->clear_airline_logo();
-      trimmed_specifics.mutable_flight_reservation()->clear_carrier_code();
-      trimmed_specifics.mutable_flight_reservation()
-          ->clear_departure_airport_utc_offset_seconds();
-      trimmed_specifics.mutable_flight_reservation()
-          ->clear_arrival_airport_utc_offset_seconds();
-      if (trimmed_specifics.mutable_flight_reservation()->ByteSizeLong() == 0) {
+      TrimFlightReservation(*trimmed_specifics.mutable_flight_reservation());
+      if (trimmed_specifics.flight_reservation().ByteSizeLong() == 0) {
         trimmed_specifics.clear_flight_reservation();
       }
       break;
     }
-    case AutofillValuableSpecifics::kPassport:
-    case AutofillValuableSpecifics::kDriverLicense:
-    case AutofillValuableSpecifics::kNationalIdCard:
-    case AutofillValuableSpecifics::kRedressNumber:
-    case AutofillValuableSpecifics::kKnownTravelerNumber:
-      // TODO(crbug.com/481650251): Implement
+    case AutofillValuableSpecifics::kPassport: {
+      TrimPassport(*trimmed_specifics.mutable_passport());
+      if (trimmed_specifics.passport().ByteSizeLong() == 0) {
+        trimmed_specifics.clear_passport();
+      }
       break;
+    }
+    case AutofillValuableSpecifics::kDriverLicense: {
+      TrimDriverLicense(*trimmed_specifics.mutable_driver_license());
+      if (trimmed_specifics.driver_license().ByteSizeLong() == 0) {
+        trimmed_specifics.clear_driver_license();
+      }
+      break;
+    }
+    case AutofillValuableSpecifics::kNationalIdCard: {
+      TrimNationalIdCard(*trimmed_specifics.mutable_national_id_card());
+      if (trimmed_specifics.national_id_card().ByteSizeLong() == 0) {
+        trimmed_specifics.clear_national_id_card();
+      }
+      break;
+    }
+    case AutofillValuableSpecifics::kRedressNumber: {
+      TrimRedressNumber(*trimmed_specifics.mutable_redress_number());
+      if (trimmed_specifics.redress_number().ByteSizeLong() == 0) {
+        trimmed_specifics.clear_redress_number();
+      }
+      break;
+    }
+    case AutofillValuableSpecifics::kKnownTravelerNumber: {
+      TrimKnownTravelerNumber(
+          *trimmed_specifics.mutable_known_traveler_number());
+      if (trimmed_specifics.known_traveler_number().ByteSizeLong() == 0) {
+        trimmed_specifics.clear_known_traveler_number();
+      }
+      break;
+    }
     case AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       break;
   }
