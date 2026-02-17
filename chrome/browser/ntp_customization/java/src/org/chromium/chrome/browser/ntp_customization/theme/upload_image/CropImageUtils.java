@@ -59,19 +59,43 @@ public final class CropImageUtils {
         float bitmapFocalY = screenCenterPoint[1];
 
         // Step 3: Calculate and apply the translation (deltaX, deltaY) required to align the
-        // bitmap's
-        // focal point (bitmapFocalX, bitmapFocalY) with the center of the new target view.
-        // This ensures the user's point of interest remains centered after the rotation.
+        // bitmap's focal point (bitmapFocalX, bitmapFocalY) with the center of the new target view.
         float bitmapWidth = bitmap.getWidth();
         float bitmapHeight = bitmap.getHeight();
         float scaleX = (float) targetViewWidth / bitmapWidth;
         float scaleY = (float) targetViewHeight / bitmapHeight;
-        float scale = Math.max(scaleX, scaleY);
+        float standardScale = Math.max(scaleX, scaleY);
 
+        // Step 4: Calculate the Scale needed to strictly center the Focal Point.
+        // To keep the focal point centered without revealing the background behind the bitmap, the
+        // distance from the focal point to the nearest bitmap edge must be scaled to cover at least
+        // half of the target view dimension.
+
+        // X-Axis logic
+        float distanceToEdgeX = Math.min(bitmapFocalX, bitmapWidth - bitmapFocalX);
+        float focalScaleX = 0;
+        if (distanceToEdgeX > 0) {
+            focalScaleX = (targetViewWidth / 2f) / distanceToEdgeX;
+        }
+
+        // Y-Axis logic
+        float distanceToEdgeY = Math.min(bitmapFocalY, bitmapHeight - bitmapFocalY);
+        float focalScaleY = 0;
+        if (distanceToEdgeY > 0) {
+            focalScaleY = (targetViewHeight / 2f) / distanceToEdgeY;
+        }
+
+        // Step 5: Determine final scale.
+        // We take the maximum of all scales to satisfy three conditions:
+        // - Image covers the view width.
+        // - Image covers the view height.
+        // - Image is zoomed in enough to keep the focal point centered without showing edges.
+        float scale = Math.max(standardScale, Math.max(focalScaleX, focalScaleY));
+
+        // Step 6: Apply the transformation to center the focal point.
         float deltaX = (targetViewWidth / 2f) - (bitmapFocalX * scale);
         float deltaY = (targetViewHeight / 2f) - (bitmapFocalY * scale);
 
-        // Step 4: Apply the final transformation.
         resultMatrix.setScale(scale, scale);
         resultMatrix.postTranslate(deltaX, deltaY);
         return resultMatrix;
