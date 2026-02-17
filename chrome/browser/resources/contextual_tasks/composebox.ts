@@ -22,6 +22,7 @@ import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import {VoiceSearchState} from './constants.js';
 import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
+import type {Rect} from './post_message_handler.js';
 
 function recordVoiceSearchAction(voiceSearchState: VoiceSearchState) {
   // Safety return statement in rare case chrome metrics is not available.
@@ -102,6 +103,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      forcedComposeboxBounds: {type: Object},
     };
   }
 
@@ -109,6 +111,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   accessor isZeroState: boolean = false;
   accessor isSidePanel: boolean = false;
   accessor inputEnabled: boolean = true;
+  accessor forcedComposeboxBounds: Rect|null = null;
 
   protected accessor zeroStateSuggestions_: AutocompleteResult = {
     input: '',
@@ -266,6 +269,24 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   get showLensButton_() {
     //Lens should be hidden in the side panel if deep search is enabled.
     return this.isSidePanel && this.activeToolMode_ !== ToolMode.kDeepSearch;
+  }
+
+  protected getComposeboxBoundsStyles_() {
+    if (this.isZeroState || !this.forcedComposeboxBounds) {
+      return '';
+    }
+    // Do not set height, since the expanding of the composebox is dynamic.
+    const rect = this.forcedComposeboxBounds;
+    const style: string[] = [
+      `position: fixed;`,
+      `top: ${rect.top}px;`,
+      `left: ${rect.left}px;`,
+      `width: ${rect.width}px;`,
+      `margin: 0;`,
+      `max-width: none;`,
+      `min-width: 0;`,
+    ];
+    return style.join(' ');
   }
 
   private updateTooltipVisibility_() {

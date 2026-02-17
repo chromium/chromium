@@ -36,6 +36,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       ` : ''}
       <cr-composebox
           id="composebox"
+          style="${this.getComposeboxBoundsStyles_()}"
           ?autofocus="${false}"
           carousel-on-top_
           entrypoint-name="ContextualTasks"

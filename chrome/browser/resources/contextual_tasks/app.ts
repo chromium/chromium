@@ -22,6 +22,7 @@ import type {ComposeboxPosition} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
+import type {Rect} from './post_message_handler.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -166,6 +167,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       isInputLocked_: {
         type: Boolean,
       },
+      forcedComposeboxBounds_: {type: Object},
     };
   }
 
@@ -187,6 +189,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableNativeZeroStateSuggestions');
   protected accessor isGhostLoaderVisible_: boolean = false;
   protected accessor isInputLocked_: boolean = false;
+  protected accessor forcedComposeboxBounds_: Rect|null = null;
 
   protected friendlyZeroStateSubtitle: string =
       loadTimeData.getString('friendlyZeroStateSubtitle');
@@ -414,6 +417,9 @@ export class ContextualTasksAppElement extends CrLitElement {
   override firstUpdated() {
     this.postMessageHandler_ =
         new PostMessageHandler(this.$.threadFrame, this.browserProxy_);
+    this.postMessageHandler_.setInputPlateBoundsUpdateCallback((rect: Rect) => {
+      this.forcedComposeboxBounds_ = rect;
+    });
 
     this.eventTracker_.add(
         this.$.composebox, 'composebox-height-update', (e: CustomEvent) => {
@@ -442,6 +448,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   private setStyleVariable(variable: string, value: string) {
     this.$.composebox.style.setProperty(variable, `${value}px`);
   }
+
   /* Adjust composebox based on server notifications. Negatives are used if
    * server wants to change marginTop, marginRight.
    */
