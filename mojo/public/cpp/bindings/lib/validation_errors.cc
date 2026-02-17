@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -32,10 +33,9 @@ std::string MessageHeaderAsHexString(Message* message) {
   }
   if (message->data_num_bytes() < sizeof(*message->header())) {
     return base::StrCat(
-        {"<incomplete>",
-         base::HexEncode(message->data(), message->data_num_bytes())});
+        {"<incomplete>", base::HexEncode(message->data_as_span())});
   }
-  return base::HexEncode(message->header(), sizeof(*message->header()));
+  return base::HexEncode(base::byte_span_from_ref(*message->header()));
 }
 
 }  // namespace

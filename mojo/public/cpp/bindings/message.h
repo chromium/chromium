@@ -156,6 +156,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
     return payload_buffer_.cursor();
   }
 
+  base::span<const uint8_t> data_as_span() const {
+    DCHECK(payload_buffer_.is_valid());
+    // SAFETY: internal::Buffer ensures that the value returned by
+    // `data_num_bytes()` never exceeds its maximum size.
+    return UNSAFE_BUFFERS(base::span(data(), data_num_bytes()));
+  }
+
   // Access the header.
   const internal::MessageHeader* header() const {
     return reinterpret_cast<const internal::MessageHeader*>(data());
