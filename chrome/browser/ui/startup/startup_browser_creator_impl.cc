@@ -219,6 +219,16 @@ void StartupBrowserCreatorImpl::Launch(
   DCHECK(profile);
   profile_ = profile;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Check for DSE integrity if flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kDseIntegrity)) {
+    if (auto* search_integrity_service =
+            search_integrity::SearchIntegrityFactory::GetForProfile(profile_)) {
+      search_integrity_service->CheckSearchEngines();
+    }
+  }
+#endif
+
   DetermineURLsAndLaunch(process_startup, restore_tabbed_browser);
 
   // It's possible for there to be no browser window, e.g. if someone
@@ -517,16 +527,6 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
             : CHROME_VERSION_STRING;
     MaybeShowNonMilestoneUpdateToast(browser, current_version_string);
   }
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // Check for DSE integrity if flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kDseIntegrity)) {
-    search_integrity::SearchIntegrity* search_integrity_service =
-        search_integrity::SearchIntegrityFactory::GetForProfile(profile_);
-    if (search_integrity_service) {
-      search_integrity_service->CheckSearchEngines();
-    }
-  }
-#endif
 }
 
 StartupBrowserCreatorImpl::DetermineStartupTabsResult::
