@@ -45,8 +45,8 @@ class DumpAccessibilityEventsViewsTest
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsViewsTest,
                        MetaTest_FocusEventRecorded) {
   SKIP_IF_VIEWS_AX_ENABLED();
+  BEGIN_RECORDING_EVENTS_OR_SKIP("meta-test-focus-event-recorded");
   button_->RequestFocus();
-  EndTestAndCompareEvents("meta-test-focus-event-recorded");
 }
 
 // Tests that the allow filter correctly includes matching events.
@@ -62,8 +62,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsViewsTest,
 @UIA-WIN-ALLOW:AutomationFocusChanged*
 @WIN-ALLOW:EVENT_OBJECT_FOCUS*
 )");
+  BEGIN_RECORDING_EVENTS_OR_SKIP("meta-test-filter-allow-works");
   button_->RequestFocus();
-  EndTestAndCompareEvents("meta-test-filter-allow-works");
 }
 
 // Tests that the deny filter correctly excludes matching events.
@@ -78,8 +78,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsViewsTest,
 @UIA-WIN-DENY:AutomationFocusChanged*
 @WIN-DENY:EVENT_OBJECT_FOCUS*
 )");
+  BEGIN_RECORDING_EVENTS_OR_SKIP("meta-test-filter-deny-works");
   button_->RequestFocus();
-  EndTestAndCompareEvents("meta-test-filter-deny-works");
+}
+
+// Tests that a non-existent expectation file causes the test to be skipped
+// on all platforms via BEGIN_RECORDING_EVENTS_OR_SKIP.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsViewsTest,
+                       MetaTest_SkipsWhenNoExpectationFile) {
+  auto session =
+      BeginRecordingEvents("nonexistent-expectation-file-that-does-not-exist");
+  EXPECT_FALSE(session)
+      << "Session should be invalid when no expectation file exists";
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -45,11 +45,10 @@ class ButtonDumpAccessibilityEventsTest
 
 IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonClick) {
   SKIP_IF_VIEWS_AX_ENABLED();
+  BEGIN_RECORDING_EVENTS_OR_SKIP("button-click");
   ui::test::EventGenerator generator(GetRootWindow(widget()));
   generator.MoveMouseTo(button_->GetBoundsInScreen().CenterPoint());
   generator.ClickLeftButton();
-
-  EndTestAndCompareEvents("button-click");
 }
 
 IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonFocus) {
@@ -64,8 +63,8 @@ IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonFocus) {
   AddAllowFilter("FOCUS-EVENT:TRUE*");
   AddAllowFilter("STATE-CHANGE:FOCUSED:TRUE*");
 
+  BEGIN_RECORDING_EVENTS_OR_SKIP("button-focus");
   button_->RequestFocus();
-  EndTestAndCompareEvents("button-focus");
 }
 
 INSTANTIATE_TEST_SUITE_P(
