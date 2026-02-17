@@ -90,21 +90,6 @@ BASE_FEATURE_PARAM(bool,
                    "explicit_signin_for_extensions",
                    false);
 
-BASE_FEATURE(kEnableAwaitSyncServiceStartup, base::FEATURE_DISABLED_BY_DEFAULT);
-
-const int kAwaitSyncServiceStartupInProfilePickerTimeoutDefaultValue = 10;
-const base::FeatureParam<int>
-    kAwaitSyncServiceStartupInProfilePickerTimeoutSeconds{
-        &kEnableAwaitSyncServiceStartup,
-        /*name=*/"AwaitSyncServiceStartupInProfilePickerTimeoutSeconds",
-        kAwaitSyncServiceStartupInProfilePickerTimeoutDefaultValue};
-
-const int kAwaitSyncServiceStartupInBrowserTimeoutDefaultValue = 3;
-const base::FeatureParam<int> kAwaitSyncServiceStartupInBrowserTimeoutSeconds{
-    &kEnableAwaitSyncServiceStartup,
-    /*name=*/"AwaitSyncServiceStartupInBrowserTimeoutSeconds",
-    kAwaitSyncServiceStartupInBrowserTimeoutDefaultValue};
-
 BASE_FEATURE(kSyncSupportAlwaysSyncingPriorityPreferences,
 #if BUILDFLAG(IS_CHROMEOS)
              // TODO(crbug.com/418991364): Enable by default once prefs account
