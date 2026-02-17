@@ -79,7 +79,7 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
   RpcDemuxerStreamHandlerTest()
       : test_audio_config_(media::AudioCodec::kAAC,
                            media::SampleFormat::kSampleFormatF32,
-                           media::CHANNEL_LAYOUT_MONO,
+                           media::ChannelLayoutConfig::Mono(),
                            10000,
                            media::EmptyExtraData(),
                            media::EncryptionScheme::kUnencrypted),

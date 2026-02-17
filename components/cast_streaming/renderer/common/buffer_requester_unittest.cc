@@ -58,13 +58,13 @@ class BufferRequesterTest : public testing::Test {
   BufferRequesterTest()
       : first_config_(media::AudioCodec::kMP3,
                       media::SampleFormat::kSampleFormatS16,
-                      media::ChannelLayout::CHANNEL_LAYOUT_MONO,
+                      media::ChannelLayoutConfig::Mono(),
                       24000 /* this constant is irrelevant for these tests */,
                       media::EmptyExtraData(),
                       media::EncryptionScheme::kUnencrypted),
         second_config_(media::AudioCodec::kOpus,
                        media::SampleFormat::kSampleFormatF32,
-                       media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+                       media::ChannelLayoutConfig::Stereo(),
                        48000 /* this constant is irrelevant for these tests */,
                        media::EmptyExtraData(),
                        media::EncryptionScheme::kUnencrypted) {

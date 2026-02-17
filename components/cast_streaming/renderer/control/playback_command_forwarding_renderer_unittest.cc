@@ -222,7 +222,7 @@ TEST_F(PlaybackCommandForwardingRendererTest, RendererClientCallbacksCalled) {
 
   const media::AudioDecoderConfig audio_config(
       media::AudioCodec::kAAC, media::SampleFormat::kSampleFormatU8,
-      media::CHANNEL_LAYOUT_STEREO, kSampleRate, {},
+      media::ChannelLayoutConfig::Stereo(), kSampleRate, {},
       media::EncryptionScheme::kUnencrypted);
   EXPECT_CALL(*mojo_renderer_client_, OnAudioConfigChange(testing::_));
   EXPECT_CALL(mock_renderer_client_, OnAudioConfigChange(testing::_));

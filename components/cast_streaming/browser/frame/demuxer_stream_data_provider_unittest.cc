@@ -29,13 +29,13 @@ class DemuxerStreamDataProviderTest : public testing::Test {
   DemuxerStreamDataProviderTest()
       : first_config_(media::AudioCodec::kMP3,
                       media::SampleFormat::kSampleFormatS16,
-                      media::ChannelLayout::CHANNEL_LAYOUT_MONO,
+                      media::ChannelLayoutConfig::Mono(),
                       24000 /* samples_per_second */,
                       media::EmptyExtraData(),
                       media::EncryptionScheme::kUnencrypted),
         second_config_(media::AudioCodec::kOpus,
                        media::SampleFormat::kSampleFormatF32,
-                       media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+                       media::ChannelLayoutConfig::Stereo(),
                        48000 /* samples_per_second */,
                        media::EmptyExtraData(),
                        media::EncryptionScheme::kUnencrypted) {
