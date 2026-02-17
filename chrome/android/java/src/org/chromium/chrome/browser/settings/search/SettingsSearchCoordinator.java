@@ -155,6 +155,10 @@ public class SettingsSearchCoordinator
     // True if empty fragment is showing.
     private boolean mShowingEmptyFragment;
 
+    // True while local search (language, site settings) UI is enabled, so that settings search
+    // should remain hidden across configuration changes.
+    private boolean mSuppressUi;
+
     // Flags for metrics:
     // Whether the search UI is entered for the first time for the current settings activity
     // session. Used to record the event a user ever entered search since the settings is opened.
@@ -860,8 +864,10 @@ public class SettingsSearchCoordinator
 
     /** Show/hide search bar UI. */
     public void showSearchBar(boolean show) {
+        mSuppressUi = !show;
+
         // This is called to restore search box UI when it was hidden for local search.
-        // Should not do thi when we're displaying search results fragment (or query edit
+        // Should not do this when we're displaying search results fragment (or query edit
         // is visible), since search box should remain hidden.
         if (!mUseMultiColumn
                 || mFragmentState == FS_RESULTS
@@ -934,17 +940,22 @@ public class SettingsSearchCoordinator
             setSearchBoxVerticalMargin(searchBox, true);
             assumeNonNull(actionBar).addView(searchBox);
             if (mFragmentState == FS_SETTINGS) {
-                searchBox.setVisibility(View.VISIBLE);
-                var lp = (Toolbar.LayoutParams) searchBox.getLayoutParams();
-                lp.gravity = Gravity.END;
-                searchBox.setLayoutParams(lp);
+                if (!mSuppressUi) {
+                    searchBox.setVisibility(View.VISIBLE);
+                    var lp = (Toolbar.LayoutParams) searchBox.getLayoutParams();
+                    lp.gravity = Gravity.END;
+                    searchBox.setLayoutParams(lp);
+                }
             }
             if (mFragmentState == FS_RESULTS || mFragmentState == FS_SEARCH) {
                 // Make the query edit UI visible which was hidden in single-column mode.
-                query.setVisibility(View.VISIBLE);
-                var lp = (Toolbar.LayoutParams) query.getLayoutParams();
-                lp.gravity = Gravity.END;
-                query.setLayoutParams(lp);
+                // But not when local search is visible.
+                if (!mSuppressUi) {
+                    query.setVisibility(View.VISIBLE);
+                    var lp = (Toolbar.LayoutParams) query.getLayoutParams();
+                    lp.gravity = Gravity.END;
+                    query.setLayoutParams(lp);
+                }
             }
         } else {
             // Search bar goes beneath the toolbar (app_bar_layout) in single-column layout.
