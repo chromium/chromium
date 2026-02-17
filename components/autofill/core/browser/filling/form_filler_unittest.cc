@@ -403,8 +403,9 @@ TEST_F(FormFillerTest, SkipPreFilledFields) {
                                     ADDRESS_HOME_COUNTRY, kAppLocale)));
 }
 
-TEST_F(FormFillerTest, UndoSavesFormFillingData) {
-  FormData form = test::CreateTestAddressFormData();
+TEST_F(FormFillerTest, UndoResetsFormFillingData) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}}});
   FormsSeen({form});
 
   base::flat_set<FieldGlobalId> safe_fields{form.fields().front().global_id()};
@@ -412,16 +413,36 @@ TEST_F(FormFillerTest, UndoSavesFormFillingData) {
       .Times(2)
       .WillRepeatedly(Return(safe_fields));
 
+  const FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+  ASSERT_FALSE(form_structure->field(0)->is_autofilled());
+  ASSERT_FALSE(form_structure->field(0)->autofilled_type());
+  ASSERT_FALSE(form_structure->field(0)->autofill_source_profile_guid());
+  ASSERT_EQ(form_structure->field(0)->filling_product(), FillingProduct::kNone);
+
   AutofillProfile profile = test::GetFullProfile();
   form_filler().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form, &profile, *GetFormStructure(form),
       *GetAutofillField(form.global_id(), form.fields().front().global_id()),
       AutofillTriggerSource::kPopup);
+
+  ASSERT_TRUE(form_structure->field(0)->is_autofilled());
+  ASSERT_EQ(form_structure->field(0)->autofilled_type(), NAME_FULL);
+  ASSERT_EQ(form_structure->field(0)->autofill_source_profile_guid(),
+            profile.guid());
+  ASSERT_EQ(form_structure->field(0)->filling_product(),
+            FillingProduct::kAddress);
+
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data
   // was successfully stored.
   autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
                                   form.fields().front());
+
+  EXPECT_FALSE(form_structure->field(0)->is_autofilled());
+  EXPECT_FALSE(form_structure->field(0)->autofilled_type());
+  EXPECT_FALSE(form_structure->field(0)->autofill_source_profile_guid());
+  EXPECT_EQ(form_structure->field(0)->filling_product(), FillingProduct::kNone);
 }
 
 TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
@@ -490,28 +511,6 @@ TEST_F(FormFillerTest, UndoSavesFieldByFieldFillingData) {
   EXPECT_CALL(autofill_driver(), ApplyFormAction);
   autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
                                   form.fields().front());
-}
-
-TEST_F(FormFillerTest, UndoResetsCachedAutofillState) {
-  FormData form = test::CreateTestAddressFormData();
-
-  AutofillField filled_autofill_field(form.fields().front());
-  test_api(form).field(0).set_is_autofilled(false);
-  test_api(form_filler())
-      .AddFormFillingEntry(
-          std::to_array<const FormFieldData*>({&form.fields().front()}),
-          std::to_array<const AutofillField*>({&filled_autofill_field}),
-          FillingProduct::kAddress, /*is_refill=*/false);
-
-  test_api(form).field(0).set_is_autofilled(true);
-  FormsSeen({form});
-
-  const AutofillField* autofill_field =
-      GetAutofillField(form.global_id(), form.fields().front().global_id());
-  ASSERT_TRUE(autofill_field->is_autofilled());
-  autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
-                                  form.fields().front());
-  EXPECT_FALSE(autofill_field->is_autofilled());
 }
 
 // Tests that for autocomplete=unrecognized fields are not filled by default,

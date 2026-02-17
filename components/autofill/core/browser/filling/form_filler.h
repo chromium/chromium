@@ -248,7 +248,7 @@ class FormFiller {
   // the FieldType if the `autofill_field` is emptied.
   // TODO(crbug.com/40227071): Cleanup API and logic.
   std::optional<FieldType> FillField(
-      AutofillField& autofill_field,
+      const AutofillField& autofill_field,
       const AugmentedFillingPayload& filling_payload,
       const std::map<FieldGlobalId, ValueAndType>& forced_fill_values,
       FormFieldData& field_data,
