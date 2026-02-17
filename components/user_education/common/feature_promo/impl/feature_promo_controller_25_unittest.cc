@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_25.h"
+
 #include <memory>
 
 #include "base/feature_list.h"
@@ -16,8 +18,6 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
-#include "components/user_education/common/feature_promo/impl/feature_promo_controller_20.h"
-#include "components/user_education/common/feature_promo/impl/feature_promo_controller_25.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/test/feature_promo_controller_test_base.h"
 #include "components/user_education/test/mock_user_education_context.h"
@@ -64,14 +64,11 @@ class TestFeaturePromoController25 : public FeaturePromoController25 {
 
 }  // namespace
 
-enum class PromoControllerVersion { kV20, kV25 };
-
 // Tests that ensure that queueing promos as implemented by
 // `MaybeShowStartupPromo()` behave as expected in FeaturePromoController for
 // V2.0 and V2.5, noting where there are specific differences in behavior.
 class FeaturePromoControllerQueueTest
-    : public test::FeaturePromoControllerTestBase,
-      public testing::WithParamInterface<PromoControllerVersion> {
+    : public test::FeaturePromoControllerTestBase {
  public:
   FeaturePromoControllerQueueTest() = default;
   ~FeaturePromoControllerQueueTest() override = default;
@@ -111,27 +108,14 @@ class FeaturePromoControllerQueueTest
  protected:
   // FeaturePromoControllerTestBase:
   std::unique_ptr<FeaturePromoControllerCommon> CreateController() override {
-    switch (GetParam()) {
-      case PromoControllerVersion::kV20: {
-        auto result =
-            std::make_unique<TestPromoController<FeaturePromoController20>>(
-                &tracker(), &promo_registry(), &help_bubble_factory_registry(),
-                &storage_service(), &session_policy(), &tutorial_service(),
-                &messaging_controller());
-        test_promo_controller_ = result.get();
-        return result;
-      }
-      case PromoControllerVersion::kV25: {
-        auto result =
-            std::make_unique<TestPromoController<TestFeaturePromoController25>>(
-                &tracker(), &promo_registry(), &help_bubble_factory_registry(),
-                &storage_service(), &session_policy(), &tutorial_service(),
-                &messaging_controller());
-        result->Init();
-        test_promo_controller_ = result.get();
-        return result;
-      }
-    }
+    auto result =
+        std::make_unique<TestPromoController<TestFeaturePromoController25>>(
+            &tracker(), &promo_registry(), &help_bubble_factory_registry(),
+            &storage_service(), &session_policy(), &tutorial_service(),
+            &messaging_controller());
+    result->Init();
+    test_promo_controller_ = result.get();
+    return result;
   }
 
   base::MockCallback<FeaturePromoSpecification::CustomActionCallback>
@@ -141,20 +125,7 @@ class FeaturePromoControllerQueueTest
   raw_ptr<TestPromoControllerBase> test_promo_controller_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    FeaturePromoControllerQueueTest,
-    testing::Values(PromoControllerVersion::kV20, PromoControllerVersion::kV25),
-    [](const testing::TestParamInfo<PromoControllerVersion>& param) {
-      switch (param.param) {
-        case PromoControllerVersion::kV20:
-          return "V2_point_0";
-        case PromoControllerVersion::kV25:
-          return "V2_point_5";
-      }
-    });
-
-TEST_P(FeaturePromoControllerQueueTest, QueuePromo) {
+TEST_F(FeaturePromoControllerQueueTest, QueuePromo) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   FeaturePromoParams params(kIPHTestLowPriorityToast);
@@ -166,7 +137,7 @@ TEST_P(FeaturePromoControllerQueueTest, QueuePromo) {
 }
 
 // Regression test for https://crbug.com/417487540.
-TEST_P(FeaturePromoControllerQueueTest, QueuePromoTwice) {
+TEST_F(FeaturePromoControllerQueueTest, QueuePromoTwice) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -189,7 +160,7 @@ TEST_P(FeaturePromoControllerQueueTest, QueuePromoTwice) {
 }
 
 // Regression test for https://crbug.com/443760622
-TEST_P(FeaturePromoControllerQueueTest, QueuePromoAgainAfterFirstClosed) {
+TEST_F(FeaturePromoControllerQueueTest, QueuePromoAgainAfterFirstClosed) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -207,16 +178,13 @@ TEST_P(FeaturePromoControllerQueueTest, QueuePromoAgainAfterFirstClosed) {
   FeaturePromoParams params2(kIPHTestLowPrioritySnooze);
   params2.show_promo_result_callback = result2.Get();
   EXPECT_ASYNC_CALL_IN_SCOPE(
-      result2,
-      Run(FeaturePromoResult(GetParam() == PromoControllerVersion::kV20
-                                 ? FeaturePromoResult::kRecentlyAborted
-                                 : FeaturePromoResult::kAlreadyQueued)),
+      result2, Run(FeaturePromoResult(FeaturePromoResult::kAlreadyQueued)),
       promo_controller().MaybeShowStartupPromo(std::move(params2),
                                                promo_context()));
   EXPECT_FALSE(promo_controller().IsPromoActive(kIPHTestLowPrioritySnooze));
 }
 
-TEST_P(FeaturePromoControllerQueueTest, QueueTwoPromosTogetherBothAreEligible) {
+TEST_F(FeaturePromoControllerQueueTest, QueueTwoPromosTogetherBothAreEligible) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -236,7 +204,7 @@ TEST_P(FeaturePromoControllerQueueTest, QueueTwoPromosTogetherBothAreEligible) {
                              GetHelpBubble()->Close());
 }
 
-TEST_P(FeaturePromoControllerQueueTest,
+TEST_F(FeaturePromoControllerQueueTest,
        QueueTwoPromosTogetherAnchorHiddenBeforeFirst) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
@@ -249,40 +217,19 @@ TEST_P(FeaturePromoControllerQueueTest,
 
   anchor_element().Hide();
 
-  switch (GetParam()) {
-    case PromoControllerVersion::kV25: {
-      // In 2.5, promos will be held until the anchor is visible.
-      promo_controller().MaybeShowStartupPromo(std::move(params),
-                                               promo_context());
-      promo_controller().MaybeShowStartupPromo(std::move(params2),
-                                               promo_context());
+  // Promos will be held until the anchor is visible.
+  promo_controller().MaybeShowStartupPromo(std::move(params), promo_context());
+  promo_controller().MaybeShowStartupPromo(std::move(params2), promo_context());
 
-      // The first promo will not show until the anchor element is present.
-      EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult::Success()),
-                                 { anchor_element().Show(); });
+  // The first promo will not show until the anchor element is present.
+  EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult::Success()),
+                             { anchor_element().Show(); });
 
-      // The second promo can show right away.
-      EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run, GetHelpBubble()->Close());
-      break;
-    }
-    case PromoControllerVersion::kV20: {
-      // In 2.0, promos will fail immediately.
-      EXPECT_ASYNC_CALLS_IN_SCOPE_2(
-          result,
-          Run(FeaturePromoResult(FeaturePromoResult::kAnchorNotVisible)),
-          result2,
-          Run(FeaturePromoResult(FeaturePromoResult::kAnchorNotVisible)), {
-            promo_controller().MaybeShowStartupPromo(std::move(params),
-                                                     promo_context());
-            promo_controller().MaybeShowStartupPromo(std::move(params2),
-                                                     promo_context());
-          });
-      break;
-    }
-  }
+  // The second promo can show right away.
+  EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run, GetHelpBubble()->Close());
 }
 
-TEST_P(FeaturePromoControllerQueueTest,
+TEST_F(FeaturePromoControllerQueueTest,
        QueueTwoPromosTogetherAnchorHiddenBeforeSecond) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
@@ -302,26 +249,14 @@ TEST_P(FeaturePromoControllerQueueTest,
   });
 
   // Hiding the anchor kills the first promo, and the second cannot start.
-  switch (GetParam()) {
-    case PromoControllerVersion::kV25: {
-      EXPECT_ASYNC_CALL_IN_SCOPE(closed, Run, anchor_element().Hide());
+  EXPECT_ASYNC_CALL_IN_SCOPE(closed, Run, anchor_element().Hide());
 
-      // Showing the anchor again allows the second promo to show, since it is a
-      // "wait-for" condition and not a "required" condition.
-      EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run, anchor_element().Show());
-      break;
-    }
-    case PromoControllerVersion::kV20: {
-      // In 2.0, second fails immediately.
-      EXPECT_ASYNC_CALLS_IN_SCOPE_2(
-          closed, Run, result2,
-          Run(FeaturePromoResult(FeaturePromoResult::kAnchorNotVisible)),
-          anchor_element().Hide());
-    }
-  }
+  // Showing the anchor again allows the second promo to show, since it is a
+  // "wait-for" condition and not a "required" condition.
+  EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run, anchor_element().Show());
 }
 
-TEST_P(FeaturePromoControllerQueueTest,
+TEST_F(FeaturePromoControllerQueueTest,
        QueueTwoPromosTogetherFirstBlockedByPolicy) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
@@ -348,7 +283,7 @@ TEST_P(FeaturePromoControllerQueueTest,
                                 });
 }
 
-TEST_P(FeaturePromoControllerQueueTest, QueueMidThenLowPriority) {
+TEST_F(FeaturePromoControllerQueueTest, QueueMidThenLowPriority) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -369,7 +304,7 @@ TEST_P(FeaturePromoControllerQueueTest, QueueMidThenLowPriority) {
                              GetHelpBubble()->Close());
 }
 
-TEST_P(FeaturePromoControllerQueueTest, QueueLowThenMidPriority) {
+TEST_F(FeaturePromoControllerQueueTest, QueueLowThenMidPriority) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -392,7 +327,7 @@ TEST_P(FeaturePromoControllerQueueTest, QueueLowThenMidPriority) {
                              GetHelpBubble()->Close());
 }
 
-TEST_P(FeaturePromoControllerQueueTest, QueueHighThenLowPriority) {
+TEST_F(FeaturePromoControllerQueueTest, QueueHighThenLowPriority) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -413,7 +348,7 @@ TEST_P(FeaturePromoControllerQueueTest, QueueHighThenLowPriority) {
                              GetHelpBubble()->Close());
 }
 
-TEST_P(FeaturePromoControllerQueueTest, QueueLowThenHighPriority) {
+TEST_F(FeaturePromoControllerQueueTest, QueueLowThenHighPriority) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -436,7 +371,7 @@ TEST_P(FeaturePromoControllerQueueTest, QueueLowThenHighPriority) {
                              GetHelpBubble()->Close());
 }
 
-TEST_P(FeaturePromoControllerQueueTest, DemoOverridesOtherPromos) {
+TEST_F(FeaturePromoControllerQueueTest, DemoOverridesOtherPromos) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -465,7 +400,7 @@ TEST_P(FeaturePromoControllerQueueTest, DemoOverridesOtherPromos) {
       });
 }
 
-TEST_P(FeaturePromoControllerQueueTest, ShowHighThenQueueLowPriority) {
+TEST_F(FeaturePromoControllerQueueTest, ShowHighThenQueueLowPriority) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -486,7 +421,7 @@ TEST_P(FeaturePromoControllerQueueTest, ShowHighThenQueueLowPriority) {
                              GetHelpBubble()->Close());
 }
 
-TEST_P(FeaturePromoControllerQueueTest, ShowLowThenQueueHighPriority) {
+TEST_F(FeaturePromoControllerQueueTest, ShowLowThenQueueHighPriority) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -512,7 +447,7 @@ TEST_P(FeaturePromoControllerQueueTest, ShowLowThenQueueHighPriority) {
                                 });
 }
 
-TEST_P(FeaturePromoControllerQueueTest, DemoCancelsExistingPromo) {
+TEST_F(FeaturePromoControllerQueueTest, DemoCancelsExistingPromo) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -538,7 +473,7 @@ TEST_P(FeaturePromoControllerQueueTest, DemoCancelsExistingPromo) {
                                 });
 }
 
-TEST_P(FeaturePromoControllerQueueTest, DisabledFeature) {
+TEST_F(FeaturePromoControllerQueueTest, DisabledFeature) {
   base::test::ScopedFeatureList list;
   list.InitAndDisableFeature(kIPHTestLowPriorityToast);
 
@@ -562,7 +497,7 @@ TEST_P(FeaturePromoControllerQueueTest, DisabledFeature) {
       });
 }
 
-TEST_P(FeaturePromoControllerQueueTest, DisabledFeatureInDemoMode) {
+TEST_F(FeaturePromoControllerQueueTest, DisabledFeatureInDemoMode) {
   base::test::ScopedFeatureList list;
   list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
@@ -592,7 +527,7 @@ TEST_P(FeaturePromoControllerQueueTest, DisabledFeatureInDemoMode) {
       });
 }
 
-TEST_P(FeaturePromoControllerQueueTest, DisabledFeatureShownFromDemoPage) {
+TEST_F(FeaturePromoControllerQueueTest, DisabledFeatureShownFromDemoPage) {
   base::test::ScopedFeatureList list;
   list.InitAndDisableFeature(kIPHTestLowPriorityToast);
 
@@ -607,7 +542,7 @@ TEST_P(FeaturePromoControllerQueueTest, DisabledFeatureShownFromDemoPage) {
                                  std::move(params), promo_context()));
 }
 
-TEST_P(FeaturePromoControllerQueueTest, HelpBubbleArrow) {
+TEST_F(FeaturePromoControllerQueueTest, HelpBubbleArrow) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   FeaturePromoParams params(kIPHTestLowPriorityToast);
@@ -618,7 +553,7 @@ TEST_P(FeaturePromoControllerQueueTest, HelpBubbleArrow) {
   EXPECT_EQ(HelpBubbleArrow::kBottomLeft, GetHelpBubble()->params().arrow);
 }
 
-TEST_P(FeaturePromoControllerQueueTest, HelpBubbleArrowCallback) {
+TEST_F(FeaturePromoControllerQueueTest, HelpBubbleArrowCallback) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   FeaturePromoParams params(kIPHTestWithArrowCallback);
@@ -636,7 +571,7 @@ TEST_P(FeaturePromoControllerQueueTest, HelpBubbleArrowCallback) {
 
 #if !BUILDFLAG(IS_ANDROID)
 
-TEST_P(FeaturePromoControllerQueueTest, FeatureEngagementConfig) {
+TEST_F(FeaturePromoControllerQueueTest, FeatureEngagementConfig) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   FeaturePromoParams params(kIPHTestLowPriorityToast);
@@ -662,7 +597,7 @@ TEST_P(FeaturePromoControllerQueueTest, FeatureEngagementConfig) {
 
 #endif
 
-TEST_P(FeaturePromoControllerQueueTest, ShowWithInvalidContextFails) {
+TEST_F(FeaturePromoControllerQueueTest, ShowWithInvalidContextFails) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   FeaturePromoParams params(kIPHTestLowPriorityToast);
@@ -673,7 +608,7 @@ TEST_P(FeaturePromoControllerQueueTest, ShowWithInvalidContextFails) {
       promo_controller().MaybeShowPromo(std::move(params), promo_context()));
 }
 
-TEST_P(FeaturePromoControllerQueueTest, QueueWithInvalidContextFails) {
+TEST_F(FeaturePromoControllerQueueTest, QueueWithInvalidContextFails) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   FeaturePromoParams params(kIPHTestLowPriorityToast);
@@ -685,7 +620,7 @@ TEST_P(FeaturePromoControllerQueueTest, QueueWithInvalidContextFails) {
                                                promo_context()));
 }
 
-TEST_P(FeaturePromoControllerQueueTest, CustomActionCallbackPassesOnContext) {
+TEST_F(FeaturePromoControllerQueueTest, CustomActionCallbackPassesOnContext) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   FeaturePromoParams params(kIPHTestActionable);
@@ -700,7 +635,7 @@ TEST_P(FeaturePromoControllerQueueTest, CustomActionCallbackPassesOnContext) {
                              help_bubble->SimulateButtonPress(0));
 }
 
-TEST_P(FeaturePromoControllerQueueTest,
+TEST_F(FeaturePromoControllerQueueTest,
        CustomActionCallbackNotCalledOnInvalidContext) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
@@ -719,7 +654,7 @@ TEST_P(FeaturePromoControllerQueueTest,
                              help_bubble->SimulateButtonPress(0));
 }
 
-TEST_P(FeaturePromoControllerQueueTest,
+TEST_F(FeaturePromoControllerQueueTest,
        CustomActionCallbackCalledWithAlternativeContext) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
@@ -743,7 +678,7 @@ TEST_P(FeaturePromoControllerQueueTest,
                              help_bubble->SimulateButtonPress(0));
 }
 
-TEST_P(FeaturePromoControllerQueueTest,
+TEST_F(FeaturePromoControllerQueueTest,
        CustomActionCallbackCalledWithInvalidAlternativeContext) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
@@ -769,7 +704,7 @@ TEST_P(FeaturePromoControllerQueueTest,
                              help_bubble->SimulateButtonPress(0));
 }
 
-TEST_P(
+TEST_F(
     FeaturePromoControllerQueueTest,
     CustomActionCallbackCalledWithInvalidOriginalContextAndValidAlternativeContext) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -795,7 +730,7 @@ TEST_P(
                              help_bubble->SimulateButtonPress(0));
 }
 
-TEST_P(
+TEST_F(
     FeaturePromoControllerQueueTest,
     CustomActionCallbackNotCalledOnInvalidContextAndInvalidAlternativeContext) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -825,7 +760,7 @@ TEST_P(
                              help_bubble->SimulateButtonPress(0));
 }
 
-TEST_P(FeaturePromoControllerQueueTest, CallsTestCallbackOnSuccess) {
+TEST_F(FeaturePromoControllerQueueTest, CallsTestCallbackOnSuccess) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::TestResultCallback, result);
   auto subscription =
       FeaturePromoController::AddResultCallbackForTesting(result.Get());
@@ -836,7 +771,7 @@ TEST_P(FeaturePromoControllerQueueTest, CallsTestCallbackOnSuccess) {
                                  kIPHTestLowPriorityToast, promo_context()));
 }
 
-TEST_P(FeaturePromoControllerQueueTest, CallsTestCallbackOnFailure) {
+TEST_F(FeaturePromoControllerQueueTest, CallsTestCallbackOnFailure) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::TestResultCallback, result);
   auto subscription =
       FeaturePromoController::AddResultCallbackForTesting(result.Get());
@@ -858,7 +793,7 @@ class FeaturePromoControllerQueueNoInitializationTest
   std::optional<bool> GetTrackerResult() const override { return std::nullopt; }
 };
 
-TEST_P(FeaturePromoControllerQueueNoInitializationTest,
+TEST_F(FeaturePromoControllerQueueNoInitializationTest,
        QueueWithInvalidContextFails) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
@@ -871,25 +806,7 @@ TEST_P(FeaturePromoControllerQueueNoInitializationTest,
       result, Run(FeaturePromoResult(FeaturePromoResult::kAnchorNotVisible)), {
         EXPECT_CALL(*promo_context(), IsValid)
             .WillRepeatedly(testing::Return(false));
-        // In 2.0, the queue doesn't get "unstuck" until the feature engagement
-        // tracker completes initialization.
-        if (GetParam() == PromoControllerVersion::kV20) {
-          SendTrackerResult(true);
-        }
       });
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    FeaturePromoControllerQueueNoInitializationTest,
-    testing::Values(PromoControllerVersion::kV20, PromoControllerVersion::kV25),
-    [](const testing::TestParamInfo<PromoControllerVersion>& param) {
-      switch (param.param) {
-        case PromoControllerVersion::kV20:
-          return "V2_point_0";
-        case PromoControllerVersion::kV25:
-          return "V2_point_5";
-      }
-    });
 
 }  // namespace user_education

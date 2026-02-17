@@ -83,10 +83,6 @@ BrowserView& BrowserUserEducationContext::GetBrowserView() const {
 
 void BrowserUserEducationContext::CreateSharedPreconditions(
     const user_education::UserEducationTimeProvider& time_provider) {
-  // Shared preconditions only apply in User Education 2.5.
-  if (!user_education::features::IsUserEducationV25()) {
-    return;
-  }
   CHECK(shared_preconditions_.empty());
 
   // Hold off showing most promos while the omnibox is open.

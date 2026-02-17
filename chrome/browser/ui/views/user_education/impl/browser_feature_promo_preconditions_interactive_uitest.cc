@@ -409,10 +409,14 @@ class UserNotActivePreconditionUiTest
   ~UserNotActivePreconditionUiTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        user_education::features::kUserEducationExperienceVersion2Point5,
-        {{"idle_before_heavyweight",
-          base::StringPrintf("%dms", GetParam().InMilliseconds())}});
+    user_education::features::testing::TimeoutOverrides overrides;
+    overrides.high_priority_timeout = base::Seconds(1);
+    overrides.medium_priority_timeout = base::Seconds(2);
+    overrides.low_priority_timeout = base::Seconds(3);
+    overrides.idle_before_heavyweight = GetParam();
+    timeout_override_handle_ =
+        user_education::features::testing::SetTimeoutOverridesForTest(
+            overrides);
     less_than_activity_time_ = GetParam() / 2;
     more_than_activity_time_ = GetParam() + base::Seconds(1);
 
@@ -455,7 +459,8 @@ class UserNotActivePreconditionUiTest
   base::TimeDelta less_than_activity_time_;
   base::TimeDelta more_than_activity_time_;
 
-  base::test::ScopedFeatureList feature_list_;
+  user_education::features::testing::TimeoutOverrideHandle
+      timeout_override_handle_;
   base::SimpleTestClock test_clock_;
   user_education::UserEducationTimeProvider time_provider_;
   std::unique_ptr<UserNotActivePrecondition> precondition_;

@@ -55,9 +55,6 @@ class InteractiveFeaturePromoTestApi
           InitialSessionState::kOutsideGracePeriod);
   ~InteractiveFeaturePromoTestApi() override;
 
-  // Changes the controller mode. Call before calling base class `SetUp()`.
-  void SetControllerMode(ControllerMode controller_mode);
-
   // Gets the mock tracker, if the tracker mode is `UseMockTracker`.
   MockTracker* GetMockTrackerFor(Browser* browser);
 
@@ -209,13 +206,13 @@ class InteractiveFeaturePromoTestMixin : public T,
 
  protected:
   void SetUp() override {
-    feature_promo_test_impl().CommitControllerMode();
+    feature_promo_test_impl().ConfigureController();
     T::SetUp();
   }
 
   void TearDown() override {
     T::TearDown();
-    feature_promo_test_impl().ResetControllerMode();
+    feature_promo_test_impl().ResetController();
   }
 
   void SetUpOnMainThread() override {

@@ -40,7 +40,7 @@ class TrackedElement;
 }  // namespace ui
 
 // Declaring these in the global namespace for testing purposes.
-class BrowserFeaturePromoController2xTestBase;
+class BrowserFeaturePromoController25TestBase;
 class BrowserFeaturePromoControllerTestHelper;
 class FeaturePromoLifecycleUiTest;
 
@@ -291,7 +291,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
 
  protected:
-  friend BrowserFeaturePromoController2xTestBase;
+  friend BrowserFeaturePromoController25TestBase;
   friend FeaturePromoLifecycleUiTest;
 
   enum class ShowSource { kNormal, kQueue, kDemo };

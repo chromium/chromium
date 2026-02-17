@@ -4528,8 +4528,6 @@ static_library("ui") {
       "views/user_education/custom_webui_help_bubble_controller.h",
       "views/user_education/impl/browser_feature_promo_controller.cc",
       "views/user_education/impl/browser_feature_promo_controller.h",
-      "views/user_education/impl/browser_feature_promo_controller_20.cc",
-      "views/user_education/impl/browser_feature_promo_controller_20.h",
       "views/user_education/impl/browser_feature_promo_controller_25.cc",
       "views/user_education/impl/browser_feature_promo_controller_25.h",
       "views/user_education/impl/browser_feature_promo_preconditions.cc",

@@ -59,7 +59,6 @@
 #include "chrome/browser/ui/views/user_education/browser_ntp_promos.h"
 #include "chrome/browser/ui/views/user_education/custom_webui_help_bubble.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller.h"
-#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_20.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_25.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
@@ -2145,27 +2144,16 @@ CreateUserEducationResources(UserEducationService& user_education_service) {
     MaybeRegisterNtpPromos(*user_education_service.ntp_promo_registry());
   }
 
-  if (user_education::features::IsUserEducationV25()) {
-    auto result = std::make_unique<BrowserFeaturePromoController25>(
-        feature_engagement::TrackerFactory::GetForBrowserContext(profile),
-        &user_education_service.feature_promo_registry(),
-        &user_education_service.help_bubble_factory_registry(),
-        &user_education_service.user_education_storage_service(),
-        &user_education_service.feature_promo_session_policy(),
-        &user_education_service.tutorial_service(),
-        &user_education_service.product_messaging_controller());
-    result->Init();
-    return result;
-  } else {
-    return std::make_unique<BrowserFeaturePromoController20>(
-        feature_engagement::TrackerFactory::GetForBrowserContext(profile),
-        &user_education_service.feature_promo_registry(),
-        &user_education_service.help_bubble_factory_registry(),
-        &user_education_service.user_education_storage_service(),
-        &user_education_service.feature_promo_session_policy(),
-        &user_education_service.tutorial_service(),
-        &user_education_service.product_messaging_controller());
-  }
+  auto result = std::make_unique<BrowserFeaturePromoController25>(
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile),
+      &user_education_service.feature_promo_registry(),
+      &user_education_service.help_bubble_factory_registry(),
+      &user_education_service.user_education_storage_service(),
+      &user_education_service.feature_promo_session_policy(),
+      &user_education_service.tutorial_service(),
+      &user_education_service.product_messaging_controller());
+  result->Init();
+  return result;
 }
 
 void QueueLegalAndPrivacyNotices(Profile* profile) {

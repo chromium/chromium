@@ -51,11 +51,6 @@ InteractiveFeaturePromoTestApi::InteractiveFeaturePromoTestApi(
 
 InteractiveFeaturePromoTestApi::~InteractiveFeaturePromoTestApi() = default;
 
-void InteractiveFeaturePromoTestApi::SetControllerMode(
-    ControllerMode controller_mode) {
-  test_impl_->SetControllerMode(controller_mode);
-}
-
 InteractiveFeaturePromoTestApi::MockTracker*
 InteractiveFeaturePromoTestApi::GetMockTrackerFor(Browser* browser) {
   return test_impl_->GetMockTrackerFor(browser);
@@ -182,7 +177,7 @@ InteractiveFeaturePromoTestApi::MaybeShowPromo(
                   if (tracker) {
                     EXPECT_CALL(*tracker, Dismissed(testing::Ref(iph_feature)));
                   }
-                } else if (user_education::features::IsUserEducationV25()) {
+                } else {
                   switch (test_impl_->clock_mode()) {
                     case ClockMode::kUseTestClock:
                       test_impl_->AdvanceTime(

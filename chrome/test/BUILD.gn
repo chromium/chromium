@@ -10839,7 +10839,7 @@ test("unit_tests") {
       "../browser/ui/views/web_apps/view_visible_in_active_widget_notifier_unittest.cc",
     ]
     if (!is_chrome_for_testing) {
-      sources += [ "../browser/ui/views/user_education/impl/browser_feature_promo_controller_2x_unittest.cc" ]
+      sources += [ "../browser/ui/views/user_education/impl/browser_feature_promo_controller_25_unittest.cc" ]
     }
     if (enable_glic) {
       sources +=
@@ -12097,7 +12097,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/user_education/help_bubble_factory_webui_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_handler_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_view_interactive_uitest.cc",
-        "../browser/ui/views/user_education/impl/browser_feature_promo_controller_2x_interactive_uitest.cc",
+        "../browser/ui/views/user_education/impl/browser_feature_promo_controller_25_interactive_uitest.cc",
         "../browser/ui/views/user_education/impl/browser_feature_promo_preconditions_interactive_uitest.cc",
         "../browser/ui/views/user_education/product_messaging_controller_interactive_uitest.cc",
         "../browser/ui/views/user_education/tutorial_interactive_uitest.cc",
