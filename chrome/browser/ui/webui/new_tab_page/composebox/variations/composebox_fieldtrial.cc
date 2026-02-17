@@ -254,7 +254,7 @@ const base::FeatureParam<bool>
 const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     &kNtpComposebox,
     "NtpComposeboxContextMenuMaxTabSuggestions",
-    5);
+    3);
 
 const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
     &kNtpComposebox,
