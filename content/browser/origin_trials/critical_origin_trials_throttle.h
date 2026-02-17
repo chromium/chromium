@@ -58,8 +58,7 @@ class CONTENT_EXPORT CriticalOriginTrialsThrottle
  private:
   // The delegate is owned by the BrowserContext, and is expected to outlive
   // this throttle.
-  raw_ref<OriginTrialsControllerDelegate, DanglingUntriaged>
-      origin_trials_delegate_;
+  raw_ref<OriginTrialsControllerDelegate> origin_trials_delegate_;
 
   std::optional<url::Origin> top_frame_origin_;
 
