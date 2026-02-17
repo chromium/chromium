@@ -162,7 +162,7 @@ void ModelContext::ForEachScriptTool(
   for (const auto& tool : tool_map_) {
     auto tool_data = tool.value;
     // Always update the input schema, since the DOM might have changed.
-    if (auto* declarative_tool = tool_data->declarative_tool) {
+    if (auto declarative_tool = tool_data->declarative_tool) {
       tool_data->script_tool->input_schema =
           declarative_tool->ComputeInputSchema();
     }
@@ -513,6 +513,7 @@ void ModelContext::Trace(Visitor* visitor) const {
 
 void ModelContext::ToolData::Trace(Visitor* visitor) const {
   visitor->Trace(v8_tool_function);
+  visitor->Trace(declarative_tool);
 }
 
 }  // namespace blink

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -1039,6 +1040,60 @@ TEST_F(ModelContextTest, CancelToolReentrancy) {
   model_context->CancelTool(*execution_id);
 
   run_loop.Run();
+}
+
+class MockDeclarativeTool : public GarbageCollected<MockDeclarativeTool>,
+                            public DeclarativeWebMCPTool {
+ public:
+  void ExecuteTool(String input_arguments,
+                   base::OnceCallback<void(
+                       base::expected<String, WebDocument::ScriptToolError>)>
+                       done_callback) override {}
+
+  String ComputeInputSchema() override { return "{}"; }
+  void Trace(Visitor* visitor) const override {}
+};
+
+TEST_F(ModelContextTest, ForEachScriptToolGC) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete("<body></body>");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  {
+    auto* mock_tool = MakeGarbageCollected<MockDeclarativeTool>();
+    model_context->RegisterDeclarativeTool("test_tool", "description",
+                                           mock_tool);
+  }
+
+  // Trigger GC, which should not reclaim mock_tool.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  // This should not crash and should find the tool.
+  bool found = false;
+  model_context->ForEachScriptTool([&](const mojom::blink::ScriptTool& tool) {
+    if (tool.name == "test_tool") {
+      found = true;
+    }
+  });
+  EXPECT_TRUE(found);
+
+  // Now unregister it.
+  model_context->unregisterTool("test_tool", ASSERT_NO_EXCEPTION);
+
+  // Trigger GC again. Now it should be reclaimed.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  found = false;
+  model_context->ForEachScriptTool([&](const mojom::blink::ScriptTool& tool) {
+    if (tool.name == "test_tool") {
+      found = true;
+    }
+  });
+  EXPECT_FALSE(found);
 }
 
 }  // namespace blink
