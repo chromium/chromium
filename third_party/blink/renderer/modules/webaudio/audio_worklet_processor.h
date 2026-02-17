@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_PROCESSOR_H_
 
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_error_state.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_error_details.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -57,12 +57,12 @@ class MODULES_EXPORT AudioWorkletProcessor : public ScriptWrappable {
       Vector<scoped_refptr<AudioBus>>& outputs,
       const HashMap<String, std::unique_ptr<AudioFloatArray>>& param_value_map);
 
-  AudioWorkletProcessorErrorState GetErrorState() const;
   bool hasErrorOccurred() const;
   const String& Name() const { return name_; }
+  const AudioWorkletProcessorErrorDetails& GetErrorDetails() const;
 
  private:
-  void SetErrorState(AudioWorkletProcessorErrorState);
+  void SetErrorDetails(const AudioWorkletProcessorErrorDetails& error_details);
 
   Member<AudioWorkletGlobalScope> global_scope_;
   Member<MessagePort> processor_port_;
@@ -79,8 +79,7 @@ class MODULES_EXPORT AudioWorkletProcessor : public ScriptWrappable {
   HeapVector<HeapVector<TraceWrapperV8Reference<v8::ArrayBuffer>>>
       output_array_buffers_;
 
-  AudioWorkletProcessorErrorState error_state_ =
-      AudioWorkletProcessorErrorState::kNoError;
+  AudioWorkletProcessorErrorDetails error_details_;
 };
 
 }  // namespace blink

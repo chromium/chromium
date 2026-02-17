@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param_map.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_handler.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_error_state.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_error_details.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
@@ -55,7 +55,8 @@ class AudioWorkletNode final : public AudioNode,
   MessagePort* port() const;
   DEFINE_ATTRIBUTE_EVENT_LISTENER(processorerror, kError)
 
-  void FireProcessorError(AudioWorkletProcessorErrorState);
+  void FireProcessorError(
+      const AudioWorkletProcessorErrorDetails& error_details);
 
   void Trace(Visitor*) const override;
 

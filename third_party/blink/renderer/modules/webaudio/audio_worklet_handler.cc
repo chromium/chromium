@@ -171,14 +171,16 @@ void AudioWorkletHandler::ProcessInternal(uint32_t frames_to_process) {
       processor_->hasErrorOccurred()) {
     // If the user-supplied code is not runnable (i.e. threw an exception)
     // anymore after the process() call above. Invoke error on the main thread.
-    AudioWorkletProcessorErrorState error_state = processor_->GetErrorState();
+    AudioWorkletProcessorErrorDetails error_details =
+        processor_->GetErrorDetails();
+    AudioWorkletProcessorErrorState error_state = error_details.error_state;
     if (error_state == AudioWorkletProcessorErrorState::kProcessError ||
         error_state ==
             AudioWorkletProcessorErrorState::kProcessMethodUndefinedError) {
       PostCrossThreadTask(
           *main_thread_task_runner_, FROM_HERE,
           CrossThreadBindOnce(&AudioWorkletHandler::NotifyProcessorError,
-                              weak_ptr_factory_.GetWeakPtr(), error_state));
+                              weak_ptr_factory_.GetWeakPtr(), error_details));
     }
 
     // After this point, the handler has no more pending activity and is ready
@@ -266,23 +268,28 @@ void AudioWorkletHandler::SetProcessorOnRenderThread(
   if (processor) {
     processor_ = processor;
   } else {
+    AudioWorkletProcessorErrorDetails error_details(
+        AudioWorkletProcessorErrorState::kConstructionError,
+        name_ + " invoking user-supplied constructor failed",
+        /*source_url=*/"",
+        /*line_number=*/0,
+        /*column_number=*/0,
+        /*char_position=*/0);
     PostCrossThreadTask(
         *main_thread_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &AudioWorkletHandler::NotifyProcessorError,
-            weak_ptr_factory_.GetWeakPtr(),
-            AudioWorkletProcessorErrorState::kConstructionError));
+        CrossThreadBindOnce(&AudioWorkletHandler::NotifyProcessorError,
+                            weak_ptr_factory_.GetWeakPtr(), error_details));
   }
 }
 
 void AudioWorkletHandler::NotifyProcessorError(
-    AudioWorkletProcessorErrorState error_state) {
+    const AudioWorkletProcessorErrorDetails& error_details) {
   DCHECK(IsMainThread());
   if (!Context() || !Context()->GetExecutionContext() || !GetNode()) {
     return;
   }
 
-  static_cast<AudioWorkletNode*>(GetNode())->FireProcessorError(error_state);
+  static_cast<AudioWorkletNode*>(GetNode())->FireProcessorError(error_details);
 }
 
 void AudioWorkletHandler::MarkProcessorInactiveOnMainThread() {

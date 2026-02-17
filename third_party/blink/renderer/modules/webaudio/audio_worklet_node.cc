@@ -216,33 +216,22 @@ MessagePort* AudioWorkletNode::port() const {
 }
 
 void AudioWorkletNode::FireProcessorError(
-    AudioWorkletProcessorErrorState error_state) {
+    const AudioWorkletProcessorErrorDetails& error_details) {
   DCHECK(IsMainThread());
-  DCHECK(error_state == AudioWorkletProcessorErrorState::kConstructionError ||
-         error_state == AudioWorkletProcessorErrorState::kProcessError ||
-         error_state ==
+  DCHECK(error_details.error_state ==
+             AudioWorkletProcessorErrorState::kConstructionError ||
+         error_details.error_state ==
+             AudioWorkletProcessorErrorState::kProcessError ||
+         error_details.error_state ==
              AudioWorkletProcessorErrorState::kProcessMethodUndefinedError);
+  DCHECK(!error_details.error_message.empty());
 
-  String error_message = "an error thrown from ";
-  switch (error_state) {
-    case AudioWorkletProcessorErrorState::kNoError:
-      NOTREACHED();
-    case AudioWorkletProcessorErrorState::kConstructionError:
-      error_message =
-          StrCat({error_message, "AudioWorkletProcessor constructor"});
-      break;
-    case AudioWorkletProcessorErrorState::kProcessError:
-      error_message =
-          StrCat({error_message, "AudioWorkletProcessor::process() method"});
-      break;
-    case AudioWorkletProcessorErrorState::kProcessMethodUndefinedError:
-      error_message = StrCat({error_message,
-                              "AudioWorkletProcessor::process() method is "
-                              "undefined from the processor"});
-      break;
-  }
   ErrorEvent* event = ErrorEvent::Create(
-      error_message, CaptureSourceLocation(GetExecutionContext()), nullptr);
+      error_details.error_message,
+      MakeGarbageCollected<SourceLocation>(
+          error_details.source_url, error_details.char_position,
+          error_details.line_number, error_details.column_number),
+      nullptr);
   DispatchEvent(*event);
 }
 

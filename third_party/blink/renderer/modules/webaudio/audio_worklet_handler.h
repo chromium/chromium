@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_worklet_node_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param_map.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_error_state.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_error_details.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
@@ -65,7 +65,8 @@ class AudioWorkletHandler final : public AudioHandler {
   // `Process`.
   void ProcessInternal(uint32_t frames_to_process);
 
-  void NotifyProcessorError(AudioWorkletProcessorErrorState);
+  void NotifyProcessorError(
+      const AudioWorkletProcessorErrorDetails& error_details);
 
   void MarkProcessorInactiveOnMainThread();
 
