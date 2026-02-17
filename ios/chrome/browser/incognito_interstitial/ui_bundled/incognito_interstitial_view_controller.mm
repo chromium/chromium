@@ -202,15 +202,14 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
     [self.navigationBar.topAnchor constraintEqualToAnchor:self.view.topAnchor],
   ]];
 
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
   __weak __typeof(self) weakSelf = self;
   UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                    UITraitCollection* previousCollection) {
     weakSelf.shouldHideBanner = IsCompactHeight(traitEnvironment);
     [weakSelf updateNavigationBarAppearance];
   };
-  [self registerForTraitChanges:traits withHandler:handler];
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                    withHandler:handler];
 }
 
 - (void)viewDidLayoutSubviews {
