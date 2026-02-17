@@ -24,7 +24,8 @@ TEST(AiModeContextLibraryConverterTest,
 
   std::vector<contextual_search::FileInfo> local_contexts;
   contextual_search::FileInfo file_info;
-  file_info.request_id.set_context_id(123);
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(123);
   file_info.tab_url = GURL("https://example.com/page1");
   file_info.tab_title = "Local Title 1";
   file_info.tab_session_id = SessionID::FromSerializedValue(10);
@@ -53,7 +54,8 @@ TEST(AiModeContextLibraryConverterTest,
   std::vector<contextual_search::FileInfo> local_contexts;
   // Empty local contexts or mismatching IDs
   contextual_search::FileInfo file_info;
-  file_info.request_id.set_context_id(999);
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(999);
   local_contexts.push_back(file_info);
 
   std::vector<UrlResource> url_resources =
@@ -147,7 +149,8 @@ TEST(AiModeContextLibraryConverterTest, ConvertMixedContexts) {
   // Local contexts for Webpage
   std::vector<contextual_search::FileInfo> local_contexts;
   contextual_search::FileInfo fi;
-  fi.request_id.set_context_id(1);
+  fi.request_id.emplace();
+  fi.request_id->set_context_id(1);
   fi.tab_url = GURL("http://web.com");
   fi.tab_title = "Web Title";
   fi.tab_session_id = SessionID::FromSerializedValue(50);

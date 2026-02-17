@@ -158,8 +158,8 @@ class ComposeboxQueryController
     FileInfo();
     ~FileInfo() override;
 
-    // Gets a pointer to the request ID for this request for testing.
-    lens::LensOverlayRequestId GetRequestIdForTesting() const {
+    // Gets the request ID for this request for testing.
+    std::optional<lens::LensOverlayRequestId> GetRequestIdForTesting() const {
       return request_id;
     }
 

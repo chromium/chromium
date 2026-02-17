@@ -5,14 +5,15 @@
 #ifndef COMPONENTS_CONTEXTUAL_SEARCH_CONTEXTUAL_SEARCH_TYPES_H_
 #define COMPONENTS_CONTEXTUAL_SEARCH_CONTEXTUAL_SEARCH_TYPES_H_
 
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "components/lens/contextual_input.h"
 #include "components/sessions/core/session_id.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "url/gurl.h"
-#include "components/lens/contextual_input.h"
 
 namespace lens {
 enum class MimeType;
@@ -70,7 +71,7 @@ struct FileInfo {
   virtual ~FileInfo();
 
   // Gets the context id for this request.
-  int64_t GetContextId() const { return request_id.context_id(); }
+  std::optional<int64_t> GetContextId() const;
 
   // Client-side unique identifier.
   base::UnguessableToken file_token;
@@ -108,7 +109,7 @@ struct FileInfo {
 
   // The request ID for this request. Updated by the context
   // controller when the file upload is started.
-  lens::LensOverlayRequestId request_id;
+  std::optional<lens::LensOverlayRequestId> request_id;
 
   // The raw response bodies from the upload requests.
   std::vector<std::string> response_bodies;

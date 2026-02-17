@@ -18,7 +18,8 @@ const contextual_search::FileInfo* GetFileInfoFromContext(
     const std::vector<contextual_search::FileInfo>& contexts) {
   for (auto& file_info : contexts) {
     // TODO(nyquist): Remove this cast when we roll in the new request ID proto.
-    if (static_cast<int64_t>(file_info.GetContextId()) == context_id) {
+    if (file_info.GetContextId().has_value() &&
+        static_cast<int64_t>(file_info.GetContextId().value()) == context_id) {
       return &file_info;
     }
   }

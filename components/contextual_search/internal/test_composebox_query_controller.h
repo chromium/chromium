@@ -55,8 +55,7 @@ class FakeVariationsClient : public variations::VariationsClient {
 };
 
 // Callback for when an endpoint fetcher is created.
-using EndpointFetcherCreatedCallback =
-    base::RepeatingCallback<void()>;
+using EndpointFetcherCreatedCallback = base::RepeatingCallback<void()>;
 
 namespace contextual_search {
 
@@ -183,6 +182,16 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
   void AddEndpointFetcherCreatedCallback(
       EndpointFetcherCreatedCallback callback) {
     on_endpoint_fetcher_created_callbacks_.push_back(std::move(callback));
+  }
+
+  // Gets the mutable FileInfo for testing.
+  ComposeboxQueryController::FileInfo* GetMutableFileInfoForTesting(
+      const base::UnguessableToken& file_token) {
+    auto it = active_files_.find(file_token);
+    if (it == active_files_.end()) {
+      return nullptr;
+    }
+    return it->second.get();
   }
 
  protected:
