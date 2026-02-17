@@ -6412,9 +6412,9 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   // conformance/textures/misc/texture-corner-case-videos.html
   //
   // TODO(crbug.com/1181562): TexSubImage2D via the GPU path performs poorly on
-  // Linux when used with ShMem GpuMemoryBuffer backed frames. We don't have a
-  // way to differentiate between true texture backed frames and ShMem GMBs, so
-  // for now limit GPU texturing to TexImage2D.
+  // Linux when used with frames backed by SharedImages holding shared memory.
+  // We don't have a way to differentiate this case from that of true texture
+  // backed frames, so for now limit GPU texturing to TexImage2D.
   const bool function_supports_gpu_teximage = params.function_id == kTexImage2D;
 #else
   const bool function_supports_gpu_teximage =
