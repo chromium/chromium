@@ -17,21 +17,32 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/search_engines_test_environment.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/coordinator/quick_delete_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/model/fake_browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/ui/quick_delete_consumer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -43,6 +54,8 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using quick_delete_util::DefaultSearchEngineState;
+
 // Unittests for the Quick Delete Mediator, namely for testing the construction
 // of the summaries that rely on counters for the several browsing data types
 // that could be deleted in Quick Delete.
@@ -52,7 +65,22 @@ class QuickDeleteMediatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
+
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
+
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    fake_identity_ = [FakeSystemIdentity fakeIdentity1];
+    system_identity_manager->AddIdentity(fake_identity_);
 
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     history_service_ = ios::HistoryServiceFactory::GetForProfile(
@@ -65,7 +93,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
     // every time.
     ResetQuickDeletePrefs();
 
-    consumer_ = OCMStrictProtocolMock(@protocol(QuickDeleteConsumer));
+    consumer_ = OCMProtocolMock(@protocol(QuickDeleteConsumer));
     OCMStub([consumer_ setTimeRange:browsing_data::TimePeriod::LAST_HOUR]);
     OCMStub([consumer_
         setBrowsingDataSummary:l10n_util::GetNSString(
@@ -80,10 +108,14 @@ class QuickDeleteMediatorTest : public PlatformTest {
     }
     OCMStub([consumer_ setAutofillSelection:NO]);
 
-    CreateMediator();
+    template_url_service_ =
+        search_engines_test_environment_.template_url_service();
+    CreateMediator(template_url_service_);
   }
 
-  void CreateMediator() {
+  // Creates a QuickDeleteMediator with a given `template_url_service`.
+  // `template_url_service` can be a nullptr.
+  void CreateMediator(raw_ptr<TemplateURLService> template_url_service) {
     fake_browsing_data_counter_wrapper_producer_ =
         [[FakeBrowsingDataCounterWrapperProducer alloc]
             initWithProfile:profile_.get()];
@@ -94,6 +126,9 @@ class QuickDeleteMediatorTest : public PlatformTest {
         BrowsingDataRemoverFactory::GetForProfile(profile_.get());
     DiscoverFeedService* discover_feed_service =
         DiscoverFeedServiceFactory::GetForProfile(profile_.get());
+    if (template_url_service) {
+      template_url_service->Load();
+    }
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForProfile(profile_.get());
 
@@ -104,11 +139,14 @@ class QuickDeleteMediatorTest : public PlatformTest {
                                    identityManager:identity_manager
                                browsingDataRemover:browsing_data_remover
                                discoverFeedService:discover_feed_service
-                                templateURLService:nullptr
+                                templateURLService:template_url_service
                      canPerformRadialWipeAnimation:NO
                                    uiBlockerTarget:scene_state_
                           featureEngagementTracker:tracker];
   }
+
+  // Creates a QuickDeleteMediator with a valid template URL Service.
+  void CreateMediator() { CreateMediator(template_url_service_); }
 
   ~QuickDeleteMediatorTest() override {
     EXPECT_OCMOCK_VERIFY(consumer_);
@@ -118,7 +156,10 @@ class QuickDeleteMediatorTest : public PlatformTest {
     [mediator_ disconnect];
     mediator_ = nil;
 
+    scene_state_ = nil;
+    auth_service_ = nullptr;
     history_service_ = nullptr;
+    template_url_service_ = nullptr;
 
     password_store_->ShutdownOnUIThread();
     password_store_ = nullptr;
@@ -217,17 +258,35 @@ class QuickDeleteMediatorTest : public PlatformTest {
         triggerUpdateUICallbackForResult:autofillResult];
   }
 
+  // Sets the default search engine to not be Google.
+  void SetDseToNonGoogle() {
+    TemplateURLData non_google_provider_data;
+    non_google_provider_data.SetURL(
+        "https://www.nongoogle.com/?q={searchTerms}");
+    non_google_provider_data.suggestions_url =
+        "https://www.nongoogle.com/suggest/?q={searchTerms}";
+
+    auto* non_google_provider = template_url_service_->Add(
+        std::make_unique<TemplateURL>(non_google_provider_data));
+    template_url_service_->SetUserSelectedDefaultSearchProvider(
+        non_google_provider);
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   QuickDeleteMediator* mediator_;
   id consumer_;
-  raw_ptr<history::HistoryService> history_service_;
-  scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_;
+  id<SystemIdentity> fake_identity_;
+  SceneState* scene_state_;
   FakeBrowsingDataCounterWrapperProducer*
       fake_browsing_data_counter_wrapper_producer_;
-  SceneState* scene_state_;
+  raw_ptr<AuthenticationService> auth_service_;
+  raw_ptr<history::HistoryService> history_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
+  scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_;
 };
 
 // Tests the construction of the browsing history summary with different inputs.
@@ -722,3 +781,171 @@ TEST_F(QuickDeleteMediatorTest,
 
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
+
+// Verifies that the consumer receives the correct title and subtitle for the
+// "Manage other data" cell when the DSE changes.
+TEST_F(QuickDeleteMediatorTest, TestStringsWhenDseChanges) {
+  base::test::ScopedFeatureList feature_list(
+      kPasswordRemovalFromDeleteBrowsingData);
+
+  CreateMediator();
+
+  // Verify that Google is the default search provider initially.
+  ASSERT_EQ(SEARCH_ENGINE_GOOGLE,
+            template_url_service_->GetDefaultSearchProvider()->GetEngineType(
+                template_url_service_->search_terms_data()));
+
+  // Keep a reference to the Google default search provider.
+  const TemplateURL* google_provider =
+      template_url_service_->GetDefaultSearchProvider();
+
+  mediator_.consumer = consumer_;
+
+  // Set expectations on `consumer_` for when the DSE is not Google.
+  OCMExpect([consumer_
+      setManageOtherDataTitle:l10n_util::GetNSString(
+                                  IDS_SETTINGS_MANAGE_OTHER_DATA_LABEL)]);
+  OCMExpect([consumer_
+      setManageOtherDataSubtitle:
+          l10n_util::GetNSString(IDS_SETTINGS_MANAGE_OTHER_DATA_SUB_LABEL)]);
+
+  // Change the default search provider to a non-Google one.
+  SetDseToNonGoogle();
+
+  // Set expectations on `consumer_` for when the DSE is Google and the user is
+  // signed out.
+  OCMExpect([consumer_
+      setManageOtherDataTitle:
+          l10n_util::GetNSString(IDS_SETTINGS_MANAGE_OTHER_GOOGLE_DATA_LABEL)]);
+  OCMExpect([consumer_
+      setManageOtherDataSubtitle:l10n_util::GetNSString(
+                                     IDS_SETTINGS_MANAGE_PASSWORDS_SUB_LABEL)]);
+
+  // Change the default search provider back to Google.
+  template_url_service_->SetUserSelectedDefaultSearchProvider(
+      const_cast<TemplateURL*>(google_provider));
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Verifies that the consumer receives the correct title and subtitle for the
+// "Manage other data" cell when the user's sign-in status changes.
+TEST_F(QuickDeleteMediatorTest,
+       TestStringsWhenSignInStatusChangesAndDseIsGoogle) {
+  base::test::ScopedFeatureList feature_list(
+      kPasswordRemovalFromDeleteBrowsingData);
+
+  CreateMediator();
+
+  // Verify that Google is the default search provider initially.
+  ASSERT_EQ(SEARCH_ENGINE_GOOGLE,
+            template_url_service_->GetDefaultSearchProvider()->GetEngineType(
+                template_url_service_->search_terms_data()));
+
+  mediator_.consumer = consumer_;
+
+  // A change in the sign-in status doesn't impact the title.
+  OCMReject([consumer_ setManageOtherDataTitle:[OCMArg any]]);
+  OCMExpect([consumer_
+      setManageOtherDataSubtitle:
+          l10n_util::GetNSString(IDS_SETTINGS_MANAGE_OTHER_DATA_SUB_LABEL)]);
+
+  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kSettings);
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests parameters for the QuickDeleteMediatorManageOtherDataTest.
+struct ManageOtherDataTestParams {
+  std::string test_name;
+  DefaultSearchEngineState dse_state;
+  bool signed_in;
+  int expected_title_id;
+  int expected_subtitle_id;
+};
+
+// Parameterized test fixture to verify that the "Manage other data" cell
+// displays the correct strings.
+class QuickDeleteMediatorManageOtherDataTest
+    : public QuickDeleteMediatorTest,
+      public ::testing::WithParamInterface<ManageOtherDataTestParams> {};
+
+// Verifies that the consumer receives the correct title and subtitle for the
+// "Manage other data" cell based on the user's sign-in status and default
+// search engine state.
+TEST_P(QuickDeleteMediatorManageOtherDataTest, TestStrings) {
+  base::test::ScopedFeatureList feature_list(
+      kPasswordRemovalFromDeleteBrowsingData);
+  const ManageOtherDataTestParams& params = GetParam();
+
+  // Set up DSE.
+  switch (params.dse_state) {
+    case DefaultSearchEngineState::kError:
+      CreateMediator(/*template_url_service=*/nullptr);
+      break;
+    case DefaultSearchEngineState::kGoogle:
+      CreateMediator();  // Google is default in test environment.
+      break;
+    case DefaultSearchEngineState::kNotGoogle:
+      SetDseToNonGoogle();
+      CreateMediator();
+      break;
+  }
+
+  // Set up sign-in status.
+  if (params.signed_in) {
+    auth_service_->SignIn(fake_identity_,
+                          signin_metrics::AccessPoint::kSettings);
+  }
+
+  OCMExpect([consumer_ setManageOtherDataTitle:l10n_util::GetNSString(
+                                                   params.expected_title_id)]);
+  OCMExpect(
+      [consumer_ setManageOtherDataSubtitle:l10n_util::GetNSString(
+                                                params.expected_subtitle_id)]);
+
+  mediator_.consumer = consumer_;
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Instantiates the test suite with various combinations of search engine states
+// and sign-in statuses to ensure the UI strings are correct.
+INSTANTIATE_TEST_SUITE_P(
+    AllVariants,
+    QuickDeleteMediatorManageOtherDataTest,
+    ::testing::ValuesIn<ManageOtherDataTestParams>({
+        {.test_name = "Google_SignedOut",
+         .dse_state = DefaultSearchEngineState::kGoogle,
+         .signed_in = false,
+         .expected_title_id = IDS_SETTINGS_MANAGE_OTHER_GOOGLE_DATA_LABEL,
+         .expected_subtitle_id = IDS_SETTINGS_MANAGE_PASSWORDS_SUB_LABEL},
+
+        {.test_name = "Google_SignedIn",
+         .dse_state = DefaultSearchEngineState::kGoogle,
+         .signed_in = true,
+         .expected_title_id = IDS_SETTINGS_MANAGE_OTHER_GOOGLE_DATA_LABEL,
+         .expected_subtitle_id = IDS_SETTINGS_MANAGE_OTHER_DATA_SUB_LABEL},
+
+        {.test_name = "NonGoogle",
+         .dse_state = DefaultSearchEngineState::kNotGoogle,
+         .signed_in = false,
+         .expected_title_id = IDS_SETTINGS_MANAGE_OTHER_DATA_LABEL,
+         .expected_subtitle_id = IDS_SETTINGS_MANAGE_OTHER_DATA_SUB_LABEL},
+
+        {.test_name = "NullDSE_SignedOut",
+         .dse_state = DefaultSearchEngineState::kError,
+         .signed_in = false,
+         .expected_title_id = IDS_SETTINGS_MANAGE_OTHER_DATA_LABEL,
+         .expected_subtitle_id = IDS_SETTINGS_MANAGE_PASSWORDS_SUB_LABEL},
+
+        {.test_name = "NullDSE_SignedIn",
+         .dse_state = DefaultSearchEngineState::kError,
+         .signed_in = true,
+         .expected_title_id = IDS_SETTINGS_MANAGE_OTHER_DATA_LABEL,
+         .expected_subtitle_id =
+             IDS_IOS_CLEAR_BROWSING_DATA_MANAGE_OTHER_DATA_SUBTITLE_UNKNOWN_DSE},
+    }),
+    [](const ::testing::TestParamInfo<ManageOtherDataTestParams>& info) {
+      return info.param.test_name;
+    });

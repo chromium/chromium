@@ -19,6 +19,12 @@ enum class TimePeriod;
 // Sets the ViewController with the summary for the browsing data.
 - (void)setBrowsingDataSummary:(NSString*)summary;
 
+// Sets the ViewController with the title for the "Manage other data" cell.
+- (void)setManageOtherDataTitle:(NSString*)manageOtherDataTitle;
+
+// Sets the ViewController with the subtitle for the "Manage other data" cell.
+- (void)setManageOtherDataSubtitle:(NSString*)manageOtherDataSubtitle;
+
 // Sets the boolean on whether the ViewController should show the disclaimer
 // footer string or not.
 - (void)setShouldShowFooter:(BOOL)shouldShowFooter;

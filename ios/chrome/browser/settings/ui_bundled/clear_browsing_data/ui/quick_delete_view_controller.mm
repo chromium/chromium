@@ -313,6 +313,14 @@ CGFloat TrashIconSize() {
                   }];
 }
 
+- (void)setManageOtherDataTitle:(NSString*)manageOtherDataTitle {
+  // No-op: This ViewController doesn't show the "Manage other data" cell.
+}
+
+- (void)setManageOtherDataSubtitle:(NSString*)manageOtherDataSubtitle {
+  // No-op: This ViewController doesn't show the "Manage other data" cell.
+}
+
 - (void)setShouldShowFooter:(BOOL)shouldShowFooter {
   if (_shouldShowFooter == shouldShowFooter) {
     return;

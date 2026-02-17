@@ -81,6 +81,10 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
     TableViewLinkHeaderFooterItemDelegate> {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
 
+  // The title for the "Manage other data" cell.
+  NSString* _manageOtherDataTitle;
+  // The subtitle for the "Manage other data" cell.
+  NSString* _manageOtherDataSubtitle;
   NSString* _historySummary;
   NSString* _tabsSummary;
   NSString* _cacheSummary;
@@ -242,6 +246,16 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
 
 - (void)setBrowsingDataSummary:(NSString*)summary {
   // No-op: This ViewController doesn't show the overall browsing data summary.
+}
+
+- (void)setManageOtherDataTitle:(NSString*)manageOtherDataTitle {
+  CHECK(IsPasswordRemovalFromDeleteBrowsingDataEnabled());
+  _manageOtherDataTitle = manageOtherDataTitle;
+}
+
+- (void)setManageOtherDataSubtitle:(NSString*)manageOtherDataSubtitle {
+  CHECK(IsPasswordRemovalFromDeleteBrowsingDataEnabled());
+  _manageOtherDataSubtitle = manageOtherDataSubtitle;
 }
 
 - (void)setShouldShowFooter:(BOOL)shouldShowFooter {
