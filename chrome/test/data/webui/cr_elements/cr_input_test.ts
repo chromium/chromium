@@ -6,8 +6,13 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+// <if expr="not is_android">
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+// </if>
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+// <if expr="not is_android">
+import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
+// </if>
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 // clang-format on
@@ -361,6 +366,7 @@ suite('cr-input', function() {
     assertTrue(isChildVisible(crInput, '#inline-suffix', true));
   });
 
+  // <if expr="not is_android">
   // Test that 2-way bindings with Polymer parent elements are updated
   // when validate() is called and before the change event fires
   test('TwoWayBindingWithPolymerParent', async () => {
@@ -462,4 +468,5 @@ suite('cr-input', function() {
     assertFalse(element.parentInvalid);
     element.validateEvents(['value-changed', 'change', 'invalid-changed']);
   });
+  // </if>
 });

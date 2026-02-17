@@ -11,6 +11,20 @@ IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrTabs) {
   RunTest("cr_elements/cr_tabs_test.js", "mocha.run()");
 }
 
+// https://crbug.com/41478295: Flaky on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CrInput DISABLED_CrInput
+#else
+#define MAYBE_CrInput CrInput
+#endif
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, MAYBE_CrInput) {
+  RunTest("cr_elements/cr_input_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrTextarea) {
+  RunTest("cr_elements/cr_textarea_focus_test.js", "mocha.run()");
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrActionMenu) {
   RunTest("cr_elements/cr_action_menu_test.js", "mocha.run()");
@@ -23,16 +37,6 @@ IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrCheckbox) {
 IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, InfiniteList) {
   RunTest("cr_elements/cr_infinite_list_test.js",
           "runMochaSuite('InfiniteListFocusTest')");
-}
-
-// https://crbug.com/41478295: Flaky on Mac
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CrInput DISABLED_CrInput
-#else
-#define MAYBE_CrInput CrInput
-#endif
-IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, MAYBE_CrInput) {
-  RunTest("cr_elements/cr_input_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrProfileAvatarSelector) {
@@ -61,10 +65,6 @@ IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrMenuSelector) {
 
 IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrToolbar) {
   RunTest("cr_elements/cr_toolbar_focus_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrTextarea) {
-  RunTest("cr_elements/cr_textarea_focus_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrFocusRowMixin) {

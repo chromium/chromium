@@ -475,6 +475,7 @@ webui_ts_library("build_ts") {
     "test_plural_string_proxy.ts",
     "test_util.ts",
     "test_open_window_proxy.ts",
+    "trusted_html.ts",
   ]
 
   if (!is_android) {
@@ -486,7 +487,6 @@ webui_ts_library("build_ts") {
       "polymer_test_util.ts",
       "test_api.ts",
       "test_store.ts",
-      "trusted_html.ts",
     ]
   }
 

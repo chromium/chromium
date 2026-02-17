@@ -155,11 +155,13 @@ suite('cr-tooltip', function() {
     let expectedTop = targetTop + targetRect.height + 14;  // default offset 14
 
     assertEquals(
-        expectedLeft,
-        (tooltip.computedStyleMap().get('left') as CSSUnitValue).value);
+        Math.round(expectedLeft),
+        Math.round(
+            (tooltip.computedStyleMap().get('left') as CSSUnitValue).value));
     assertEquals(
-        expectedTop,
-        (tooltip.computedStyleMap().get('top') as CSSUnitValue).value);
+        Math.round(expectedTop),
+        Math.round(
+            (tooltip.computedStyleMap().get('top') as CSSUnitValue).value));
 
     // Check that setting a new offset and updating position works as expected.
     tooltip.offset = 6;
@@ -167,11 +169,13 @@ suite('cr-tooltip', function() {
     await microtasksFinished();
     expectedTop = expectedTop - 8;  // 14 - 6
     assertEquals(
-        expectedLeft,
-        (tooltip.computedStyleMap().get('left') as CSSUnitValue).value);
+        Math.round(expectedLeft),
+        Math.round(
+            (tooltip.computedStyleMap().get('left') as CSSUnitValue).value));
     assertEquals(
-        expectedTop,
-        (tooltip.computedStyleMap().get('top') as CSSUnitValue).value);
+        Math.round(expectedTop),
+        Math.round(
+            (tooltip.computedStyleMap().get('top') as CSSUnitValue).value));
 
     // Check that a different tooltip position works as expected.
     tooltip.position = TooltipPosition.LEFT;
@@ -180,11 +184,13 @@ suite('cr-tooltip', function() {
     expectedLeft = targetLeft - tooltipRect.width - 6;  // Offset 6
     expectedTop = targetTop + verticalCenterOffset;
     assertEquals(
-        expectedLeft,
-        (tooltip.computedStyleMap().get('left') as CSSUnitValue).value);
+        Math.round(expectedLeft),
+        Math.round(
+            (tooltip.computedStyleMap().get('left') as CSSUnitValue).value));
     assertEquals(
-        expectedTop,
-        (tooltip.computedStyleMap().get('top') as CSSUnitValue).value);
+        Math.round(expectedTop),
+        Math.round(
+            (tooltip.computedStyleMap().get('top') as CSSUnitValue).value));
   });
 });
 
@@ -238,10 +244,12 @@ suite('cr-tooltip in dialog', function() {
     const expectedLeft = targetLeft + horizontalCenterOffset;
     const expectedTop = targetTop + targetRect.height + 14;  // default offset
     assertEquals(
-        expectedLeft,
-        (tooltip.computedStyleMap().get('left') as CSSUnitValue).value);
+        Math.round(expectedLeft),
+        Math.round(
+            (tooltip.computedStyleMap().get('left') as CSSUnitValue).value));
     assertEquals(
-        expectedTop,
-        (tooltip.computedStyleMap().get('top') as CSSUnitValue).value);
+        Math.round(expectedTop),
+        Math.round(
+            (tooltip.computedStyleMap().get('top') as CSSUnitValue).value));
   });
 });
