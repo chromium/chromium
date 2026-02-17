@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser.test.util;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
@@ -76,7 +78,8 @@ public class WebContentsUtils {
      * @param webContents The WebContents in use.
      */
     public static ImeAdapter getImeAdapter(WebContents webContents) {
-        return ThreadUtils.runOnUiThreadBlocking(() -> ImeAdapter.fromWebContents(webContents));
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> assertNonNull(ImeAdapter.fromWebContents(webContents)));
     }
 
     /**

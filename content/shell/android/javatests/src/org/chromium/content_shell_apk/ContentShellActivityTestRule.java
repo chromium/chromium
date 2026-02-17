@@ -4,6 +4,8 @@
 
 package org.chromium.content_shell_apk;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -149,7 +151,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     /** Returns the {@link ImeAdapterImpl} of the WebContents. */
     public ImeAdapterImpl getImeAdapter() {
         return ThreadUtils.runOnUiThreadBlocking(
-                () -> ImeAdapterImpl.fromWebContents(getWebContents()));
+                () -> assertNonNull(ImeAdapterImpl.fromWebContents(getWebContents())));
     }
 
     /** Returns the {@link SelectPopup} of the WebContents. */

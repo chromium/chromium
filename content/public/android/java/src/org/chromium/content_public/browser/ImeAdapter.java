@@ -25,10 +25,10 @@ public interface ImeAdapter {
 
     /**
      * @param webContents {@link WebContents} object.
-     * @return {@link ImeAdapter} object used for the give WebContents. {@code null} if not
+     * @return {@link ImeAdapter} object used for the given WebContents. {@code null} if not
      *     available.
      */
-    static ImeAdapter fromWebContents(WebContents webContents) {
+    static @Nullable ImeAdapter fromWebContents(WebContents webContents) {
         return ImeAdapterImpl.fromWebContents(webContents);
     }
 

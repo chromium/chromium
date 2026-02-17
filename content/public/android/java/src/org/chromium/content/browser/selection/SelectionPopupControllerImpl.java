@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser.selection;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -843,8 +844,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (gainFocus) {
             restoreSelectionPopupsIfNecessary();
         } else {
-            ImeAdapterImpl.fromWebContents(mWebContents)
-                    .cancelRequestToScrollFocusedEditableNodeIntoView();
+            ImeAdapterImpl adapter = assertNonNull(ImeAdapterImpl.fromWebContents(mWebContents));
+
+            // Gracefully handle a null adapter in non-debug builds.
+            if (adapter != null) {
+                adapter.cancelRequestToScrollFocusedEditableNodeIntoView();
+            }
+
             if (getPreserveSelectionOnNextLossOfFocus()) {
                 setPreserveSelectionOnNextLossOfFocus(false);
                 hidePopupsAndPreserveSelection();

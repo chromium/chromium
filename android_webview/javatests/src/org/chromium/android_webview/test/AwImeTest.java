@@ -9,6 +9,8 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.KeyEvent;
@@ -96,8 +98,8 @@ public class AwImeTest extends AwParameterizedTest {
                             .getAwContents()
                             .addJavascriptInterface(mTestJavascriptInterface, "test");
                     // Let's not test against real input method.
-                    ImeAdapter imeAdapter =
-                            ImeAdapter.fromWebContents(mTestContainerView.getWebContents());
+                    WebContents webContents = mTestContainerView.getWebContents();
+                    ImeAdapter imeAdapter = assertNonNull(ImeAdapter.fromWebContents(webContents));
                     imeAdapter.setInputMethodManagerWrapper(
                             TestInputMethodManagerWrapper.create(imeAdapter));
                 });
@@ -178,8 +180,9 @@ public class AwImeTest extends AwParameterizedTest {
     }
 
     private InputConnection getInputConnection() {
-        return ImeAdapter.fromWebContents(mTestContainerView.getWebContents())
-                .getInputConnectionForTest();
+        WebContents webContents = mTestContainerView.getWebContents();
+        ImeAdapter adapter = assertNonNull(ImeAdapter.fromWebContents(webContents));
+        return adapter.getInputConnectionForTest();
     }
 
     private void waitForNonNullInputConnection() {
@@ -323,7 +326,9 @@ public class AwImeTest extends AwParameterizedTest {
                 () -> {
                     // Expect that we may have a size change.
                     ImeAdapter imeAdapter =
-                            ImeAdapter.fromWebContents(mTestContainerView.getWebContents());
+                            assertNonNull(
+                                    ImeAdapter.fromWebContents(
+                                            mTestContainerView.getWebContents()));
                     imeAdapter.onShowKeyboardReceiveResult(InputMethodManager.RESULT_SHOWN);
 
                     // When a virtual keyboard shows up, the window and view size shrink. Note that

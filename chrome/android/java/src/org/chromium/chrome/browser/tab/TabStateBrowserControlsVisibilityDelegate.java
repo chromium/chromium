@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
@@ -248,8 +250,13 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     private void onWebContentsUpdated(@Nullable WebContents contents) {
         if (mWebContents == contents) return;
         mWebContents = contents;
+
         if (mWebContents == null) return;
-        ImeAdapter.fromWebContents(mWebContents).addEventObserver(this);
+
+        ImeAdapter adapter = assertNonNull(ImeAdapter.fromWebContents(mWebContents));
+
+        // Gracefully handle a null adapter in non-debug builds.
+        if (adapter != null) adapter.addEventObserver(this);
     }
 
     private void updateWaitingForLoad(boolean waiting) {

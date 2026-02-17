@@ -4,6 +4,8 @@
 
 package org.chromium.components.embedder_support.view;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -377,13 +379,18 @@ public class ContentView extends FrameLayout
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         // Calls may come while/after WebContents is destroyed. See https://crbug.com/821750#c8.
         if (!hasValidWebContents()) return null;
-        return ImeAdapter.fromWebContents(mWebContents).onCreateInputConnection(outAttrs);
+
+        ImeAdapter adapter = assertNonNull(ImeAdapter.fromWebContents(mWebContents));
+
+        // Gracefully handle a null adapter in non-debug builds.
+        return adapter == null ? null : adapter.onCreateInputConnection(outAttrs);
     }
 
     @Override
     public boolean onCheckIsTextEditor() {
         if (!hasValidWebContents()) return false;
-        return ImeAdapter.fromWebContents(mWebContents).onCheckIsTextEditor();
+        ImeAdapter adapter = ImeAdapter.fromWebContents(mWebContents);
+        return adapter != null && adapter.onCheckIsTextEditor();
     }
 
     @Override
@@ -411,7 +418,10 @@ public class ContentView extends FrameLayout
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
         if (hasValidWebContents()) {
-            ImeAdapter.fromWebContents(mWebContents).onKeyPreIme(keyCode, event);
+            ImeAdapter adapter = ImeAdapter.fromWebContents(mWebContents);
+            if (adapter != null) {
+                adapter.onKeyPreIme(keyCode, event);
+            }
         }
         return super.onKeyPreIme(keyCode, event);
     }

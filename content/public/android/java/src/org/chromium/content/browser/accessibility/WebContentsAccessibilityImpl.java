@@ -1488,11 +1488,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                             virtualViewId,
                             arguments.getFloat(ACTION_ARGUMENT_PROGRESS_VALUE));
         } else if (action == ACTION_IME_ENTER.getId()) {
-            if (mDelegate.getWebContents() != null) {
-                if (ImeAdapterImpl.fromWebContents(mDelegate.getWebContents()) != null) {
+            WebContents webContents = mDelegate.getWebContents();
+            if (webContents != null) {
+                ImeAdapterImpl adapter = ImeAdapterImpl.fromWebContents(webContents);
+                if (adapter != null) {
                     // We send an unspecified action to ensure Enter key is hit
-                    return ImeAdapterImpl.fromWebContents(mDelegate.getWebContents())
-                            .performEditorAction(EditorInfo.IME_ACTION_UNSPECIFIED);
+                    return adapter.performEditorAction(EditorInfo.IME_ACTION_UNSPECIFIED);
                 }
             }
             return false;

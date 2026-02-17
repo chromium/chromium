@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -1132,18 +1134,20 @@ public class AwContents implements SmartClipProvider {
         controller.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
         AwSelectionDropdownMenuDelegate.maybeSetWebViewDropdownSelectionMenuDelegate(controller);
 
+        assert webContents != null;
+        ImeAdapter adapter = assertNonNull(ImeAdapter.fromWebContents(webContents));
+
         // Listen for dpad events from IMEs (e.g. Samsung Cursor Control) so we know to enable
         // spatial navigation mode to allow these events to move focus out of the WebView.
-        ImeAdapter.fromWebContents(webContents)
-                .addEventObserver(
-                        new ImeEventObserver() {
-                            @Override
-                            public void onBeforeSendKeyEvent(KeyEvent event) {
-                                if (AwContents.isDpadEvent(event)) {
-                                    mSettings.setSpatialNavigationEnabled(true);
-                                }
-                            }
-                        });
+        adapter.addEventObserver(
+                new ImeEventObserver() {
+                    @Override
+                    public void onBeforeSendKeyEvent(KeyEvent event) {
+                        if (AwContents.isDpadEvent(event)) {
+                            mSettings.setSpatialNavigationEnabled(true);
+                        }
+                    }
+                });
     }
 
     private void initializeAutofillProvider(
@@ -4919,8 +4923,10 @@ public class AwContents implements SmartClipProvider {
         @Override
         public boolean onCheckIsTextEditor() {
             if (isDestroyed(NO_WARN)) return false;
-            ImeAdapter imeAdapter = ImeAdapter.fromWebContents(mWebContents);
-            return imeAdapter != null ? imeAdapter.onCheckIsTextEditor() : false;
+            assert mWebContents != null;
+            ImeAdapter adapter = assertNonNull(ImeAdapter.fromWebContents(mWebContents));
+            // Gracefully handle a null adapter in non-debug builds.
+            return adapter != null && adapter.onCheckIsTextEditor();
         }
 
         @Override

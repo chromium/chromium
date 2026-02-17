@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
@@ -96,7 +98,10 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
 
     @Override
     public void initWebContents(WebContents webContents) {
-        ImeAdapter.fromWebContents(webContents).addEventObserver(this);
+        ImeAdapter adapter = assertNonNull(ImeAdapter.fromWebContents(webContents));
+
+        // Gracefully handle a null adapter in non-debug builds.
+        if (adapter != null) adapter.addEventObserver(this);
     }
 
     @Override

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -44,9 +46,13 @@ public class FormFieldFocusedSupplier implements ImeEventObserver {
         }
 
         mWebContents = newWebContents;
-        mImeAdapter = ImeAdapter.fromWebContents(mWebContents);
-        mImeAdapter.addEventObserver(this);
-        mSupplier.set(mImeAdapter.focusedNodeEditable());
+        mImeAdapter = assertNonNull(ImeAdapter.fromWebContents(mWebContents));
+
+        // Gracefully handle a null adapter in non-debug builds.
+        if (mImeAdapter != null) {
+            mImeAdapter.addEventObserver(this);
+            mSupplier.set(mImeAdapter.focusedNodeEditable());
+        }
     }
 
     @Override

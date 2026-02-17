@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.SystemClock;
@@ -142,7 +143,10 @@ public class ContentUiEventHandler implements UserData {
             return mEventDelegate.super_dispatchKeyEvent(event);
         }
 
-        if (ImeAdapterImpl.fromWebContents(mWebContents).dispatchKeyEvent(event)) return true;
+        ImeAdapterImpl adapter = assertNonNull(ImeAdapterImpl.fromWebContents(mWebContents));
+
+        // Gracefully handle a null adapter in non-debug builds.
+        if (adapter != null && adapter.dispatchKeyEvent(event)) return true;
 
         return mEventDelegate.super_dispatchKeyEvent(event);
     }

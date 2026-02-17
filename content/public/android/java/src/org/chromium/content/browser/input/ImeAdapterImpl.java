@@ -258,17 +258,15 @@ public class ImeAdapterImpl
 
     /**
      * Get {@link ImeAdapter} object used for the give WebContents. {@link #create()} should precede
-     * any calls to this.
+     * any calls to this. Returns null if the web contents are not initialized or if UserDataHost
+     * can't be found.
      *
      * @param webContents {@link WebContents} object.
      * @return {@link ImeAdapter} object.
      */
-    public static ImeAdapterImpl fromWebContents(WebContents webContents) {
-        ImeAdapterImpl ret =
-                webContents.getOrSetUserData(
-                        ImeAdapterImpl.class, UserDataFactoryLazyHolder.INSTANCE);
-        assert ret != null;
-        return ret;
+    public static @Nullable ImeAdapterImpl fromWebContents(WebContents webContents) {
+        return webContents.getOrSetUserData(
+                ImeAdapterImpl.class, UserDataFactoryLazyHolder.INSTANCE);
     }
 
     /** Returns an instance of the default {@link InputMethodManagerWrapper} */

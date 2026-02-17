@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.view.InputDevice;
 import android.view.MotionEvent;
 
@@ -37,11 +39,16 @@ public class JoystickHandler implements ImeEventObserver, UserData {
 
     /**
      * Creates JoystickHandler instance.
+     *
      * @param webContents WebContents instance with which this JoystickHandler is associated.
      */
     private JoystickHandler(WebContents webContents) {
         mEventForwarder = webContents.getEventForwarder();
-        ImeAdapterImpl.fromWebContents(webContents).addEventObserver(this);
+
+        ImeAdapterImpl adapter = assertNonNull(ImeAdapterImpl.fromWebContents(webContents));
+
+        // Gracefully handle a null adapter in non-debug builds.
+        if (adapter != null) adapter.addEventObserver(this);
     }
 
     public void setScrollEnabled(boolean enabled) {

@@ -14,6 +14,7 @@ import static org.chromium.autofill.mojom.FocusedFieldType.FILLABLE_NON_SEARCH_F
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.base.test.util.CriteriaHelper.pollInstrumentationThread;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedHiding;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedShowing;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyHidden;
@@ -151,7 +152,9 @@ public class ManualFillingTestHelper {
                     mWebContentsRef.set(activity.getActivityTab().getWebContents());
                     // The TestInputMethodManagerWrapper intercepts showSoftInput so that a keyboard
                     // is never brought up.
-                    final ImeAdapter imeAdapter = ImeAdapter.fromWebContents(mWebContentsRef.get());
+                    WebContents webContents = mWebContentsRef.get();
+                    final ImeAdapter imeAdapter =
+                            assertNonNull(ImeAdapter.fromWebContents(webContents));
                     mInputMethodManagerWrapper = TestInputMethodManagerWrapper.create(imeAdapter);
                     imeAdapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
                 });
@@ -308,7 +311,8 @@ public class ManualFillingTestHelper {
                 });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ImeAdapter.fromWebContents(webContents).setComposingTextForTest(filterInput, 4);
+                    assertNonNull(ImeAdapter.fromWebContents(webContents))
+                            .setComposingTextForTest(filterInput, 4);
                 });
         pollUiThread(
                 () -> {

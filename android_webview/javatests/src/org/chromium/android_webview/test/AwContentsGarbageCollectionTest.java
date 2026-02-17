@@ -5,6 +5,7 @@
 package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.AwActivityTestRule.CHECK_INTERVAL;
+import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.app.Activity;
 import android.content.Context;
@@ -156,8 +157,9 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
                     ResultReceiver resultReceiver =
                             ThreadUtils.runOnUiThreadBlocking(
                                     () ->
-                                            ImeAdapter.fromWebContents(
-                                                            containerView.getWebContents())
+                                            assertNonNull(
+                                                            ImeAdapter.fromWebContents(
+                                                                    containerView.getWebContents()))
                                                     .getNewShowKeyboardReceiver());
 
                     return resultReceiver;
