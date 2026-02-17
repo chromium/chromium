@@ -119,18 +119,17 @@ IN_PROC_BROWSER_TEST_P(ParameterizedFrameNodeImplBrowserTest,
       embedded_test_server()->GetURL("/iframe_out_of_view.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  auto frame_nodes = GetFrameNodesForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  EXPECT_THAT(
-      frame_nodes,
-      UnorderedElementsAre(
-          // One main frame, intersects with the viewport.
-          AllOf(IsMainFrame(),
-                HasViewportIntersection(ViewportIntersection::kIntersecting)),
-          // One child frame, intersects with the viewport depending on the
-          // value of the kRenderedOutOfViewIsNotVisible feature.
-          AllOf(Not(IsMainFrame()), viewport_intersection_matcher)));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return testing::Matches(UnorderedElementsAre(
+        // One main frame, intersects with the viewport.
+        AllOf(IsMainFrame(),
+              HasViewportIntersection(ViewportIntersection::kIntersecting)),
+        // One child frame, intersects with the viewport depending on the
+        // value of the kRenderedOutOfViewIsNotVisible feature.
+        AllOf(Not(IsMainFrame()), viewport_intersection_matcher)))(
+        GetFrameNodesForWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents()));
+  }));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -145,19 +144,18 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Hidden) {
       embedded_test_server()->GetURL("/iframe_hidden.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  auto frame_nodes = GetFrameNodesForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  EXPECT_THAT(
-      frame_nodes,
-      UnorderedElementsAre(
-          // One main frame, intersects with the viewport.
-          AllOf(IsMainFrame(),
-                HasViewportIntersection(ViewportIntersection::kIntersecting)),
-          // One child frame, does not intersect with the viewport.
-          AllOf(Not(IsMainFrame()),
-                HasViewportIntersection(
-                    ViewportIntersection::kNotIntersecting))));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return testing::Matches(UnorderedElementsAre(
+        // One main frame, intersects with the viewport.
+        AllOf(IsMainFrame(),
+              HasViewportIntersection(ViewportIntersection::kIntersecting)),
+        // One child frame, does not intersect with the viewport.
+        AllOf(
+            Not(IsMainFrame()),
+            HasViewportIntersection(ViewportIntersection::kNotIntersecting))))(
+        GetFrameNodesForWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents()));
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
@@ -169,18 +167,17 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
       embedded_test_server()->GetURL("/iframe_partially_visible.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  auto frame_nodes = GetFrameNodesForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  EXPECT_THAT(
-      frame_nodes,
-      UnorderedElementsAre(
-          // One main frame, intersects with the viewport.
-          AllOf(IsMainFrame(),
-                HasViewportIntersection(ViewportIntersection::kIntersecting)),
-          // One child frame, also intersects with the viewport.
-          AllOf(Not(IsMainFrame()),
-                HasViewportIntersection(ViewportIntersection::kIntersecting))));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return testing::Matches(UnorderedElementsAre(
+        // One main frame, intersects with the viewport.
+        AllOf(IsMainFrame(),
+              HasViewportIntersection(ViewportIntersection::kIntersecting)),
+        // One child frame, also intersects with the viewport.
+        AllOf(Not(IsMainFrame()),
+              HasViewportIntersection(ViewportIntersection::kIntersecting))))(
+        GetFrameNodesForWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents()));
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Scaled) {
@@ -191,18 +188,17 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Scaled) {
       embedded_test_server()->GetURL("/iframe_scaled.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  auto frame_nodes = GetFrameNodesForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  EXPECT_THAT(
-      frame_nodes,
-      UnorderedElementsAre(
-          // One main frame, intersects with the viewport.
-          AllOf(IsMainFrame(),
-                HasViewportIntersection(ViewportIntersection::kIntersecting)),
-          // One child frame, also intersects with the viewport.
-          AllOf(Not(IsMainFrame()),
-                HasViewportIntersection(ViewportIntersection::kIntersecting))));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return testing::Matches(UnorderedElementsAre(
+        // One main frame, intersects with the viewport.
+        AllOf(IsMainFrame(),
+              HasViewportIntersection(ViewportIntersection::kIntersecting)),
+        // One child frame, also intersects with the viewport.
+        AllOf(Not(IsMainFrame()),
+              HasViewportIntersection(ViewportIntersection::kIntersecting))))(
+        GetFrameNodesForWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents()));
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Rotated) {
@@ -213,18 +209,17 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Rotated) {
       embedded_test_server()->GetURL("/iframe_rotated.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  auto frame_nodes = GetFrameNodesForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  EXPECT_THAT(
-      frame_nodes,
-      UnorderedElementsAre(
-          // One main frame, intersects with the viewport.
-          AllOf(IsMainFrame(),
-                HasViewportIntersection(ViewportIntersection::kIntersecting)),
-          // One child frame, also intersects with the viewport.
-          AllOf(Not(IsMainFrame()),
-                HasViewportIntersection(ViewportIntersection::kIntersecting))));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return testing::Matches(UnorderedElementsAre(
+        // One main frame, intersects with the viewport.
+        AllOf(IsMainFrame(),
+              HasViewportIntersection(ViewportIntersection::kIntersecting)),
+        // One child frame, also intersects with the viewport.
+        AllOf(Not(IsMainFrame()),
+              HasViewportIntersection(ViewportIntersection::kIntersecting))))(
+        GetFrameNodesForWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents()));
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, Bind_SimpleNavigation) {
