@@ -25,6 +25,7 @@ def setup_extra_modules(chromium_src_path: str):
       continue
     sys.path.append(os.path.join(chromium_src_path, import_path))
 
+
 def setup_chromium_src_module(chromium_src_path: str):
   """Sets up a chromium_src module linking to root src/
 
