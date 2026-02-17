@@ -24,6 +24,7 @@
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
 
@@ -206,7 +207,8 @@ std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list) {
 bool IsFormPerfectlyFilled(const FormData& form) {
   return std::none_of(form.fields().begin(), form.fields().end(),
                       [](const FormFieldData& field) {
-                        return field.is_user_edited() && !field.is_autofilled();
+                        return (field.properties_mask() & kUserTyped) &&
+                               !field.is_autofilled();
                       });
 }
 

@@ -215,7 +215,7 @@ void LogFillingMetrics(
 
   FieldTypeSet autofilled_field_types;
   for (const std::unique_ptr<AutofillField>& field : form) {
-    if (field->is_autofilled() || field->previously_autofilled()) {
+    if (field->is_autofilled() || field->previously_autofilled_deprecated()) {
       AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
           form_interactions_ukm_logger, source_id, form, *field);
     }

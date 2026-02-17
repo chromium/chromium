@@ -92,7 +92,7 @@ base::DictValue ParsedField(std::string renderer_id,
                               .Set("aria_description", "")
                               .Set("should_autocomplete", true)
                               .Set("is_focusable", true)
-                              .Set("is_user_edited", true)
+                              .Set("is_user_edited_deprecated", true)
                               .Set("max_length", kTextInputFieldMaxLength)
                               .Set("is_checkable", false)
                               .Set("value", value)

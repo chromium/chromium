@@ -57,7 +57,7 @@ bool IsFieldFocusableAndEmpty(const AutofillField& field) {
 // edited by user afterwards.
 bool IsFillingCorrect(const FormStructure& form) {
   return !std::ranges::any_of(form.fields(), [](const auto& field) {
-    return field->previously_autofilled();
+    return field->previously_autofilled_deprecated();
   });
 }
 

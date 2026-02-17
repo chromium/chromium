@@ -165,7 +165,7 @@ TEST_F(AutofillMetricsTest, PerfectFilling_Addresses_CreditCards) {
                                     {.role = ADDRESS_HOME_CITY,
                                      .value = u"Munich",
                                      .is_autofilled = true}}});
-  test_api(payments_form).field(-1).set_is_user_edited(true);
+  test_api(payments_form).field(-1).set_properties_mask(kUserTyped);
   autofill_manager().AddSeenForm(address_form, {NAME_FULL, ADDRESS_HOME_LINE1});
   autofill_manager().AddSeenForm(payments_form,
                                  {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER});

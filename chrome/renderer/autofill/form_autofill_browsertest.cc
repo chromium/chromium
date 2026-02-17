@@ -338,7 +338,8 @@ FormData FindForm(const blink::WebFormControlElement& element) {
     EXPECT_EQ(expected.max_length(), actual.max_length());                   \
     EXPECT_EQ(expected.css_classes(), actual.css_classes());                 \
     EXPECT_EQ(expected.is_autofilled(), actual.is_autofilled());             \
-    EXPECT_EQ(expected.is_user_edited(), actual.is_user_edited());           \
+    EXPECT_EQ(expected.is_user_edited_deprecated(),                          \
+              actual.is_user_edited_deprecated());                           \
     EXPECT_EQ(expected.check_status(), actual.check_status());               \
     EXPECT_EQ(expected.properties_mask(), actual.properties_mask());         \
     EXPECT_EQ(expected.id_attribute(), actual.id_attribute());               \
@@ -1335,7 +1336,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_placeholder({});
     }
     expected.set_is_autofilled(true);
-    expected.set_is_user_edited(false);
+    expected.set_is_user_edited_deprecated(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[0]);
 
     // The last name field is not filled, because there is a value in it.
@@ -1350,7 +1351,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_placeholder({});
     }
     expected.set_is_autofilled(false);
-    expected.set_is_user_edited(true);
+    expected.set_is_user_edited_deprecated(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[1]);
 
     expected.set_id_attribute(u"phone");
@@ -1364,7 +1365,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_placeholder({});
     }
     expected.set_is_autofilled(true);
-    expected.set_is_user_edited(false);
+    expected.set_is_user_edited_deprecated(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     expected.set_id_attribute(u"cc");
@@ -1378,7 +1379,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_placeholder({});
     }
     expected.set_is_autofilled(true);
-    expected.set_is_user_edited(false);
+    expected.set_is_user_edited_deprecated(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[3]);
 
     expected.set_id_attribute(u"city");
@@ -1392,7 +1393,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_placeholder({});
     }
     expected.set_is_autofilled(true);
-    expected.set_is_user_edited(false);
+    expected.set_is_user_edited_deprecated(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[4]);
 
     expected.set_form_control_type(FormControlType::kSelectOne);
@@ -1408,7 +1409,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_placeholder({});
     }
     expected.set_is_autofilled(true);
-    expected.set_is_user_edited(false);
+    expected.set_is_user_edited_deprecated(false);
     expected.set_max_length(0);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[5]);
   }
@@ -1516,7 +1517,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_placeholder({});
     }
     expected.set_is_autofilled(false);
-    expected.set_is_user_edited(true);
+    expected.set_is_user_edited_deprecated(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     // Verify that the cursor position has been updated.
@@ -1631,7 +1632,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_placeholder({});
     }
     expected.set_is_autofilled(false);
-    expected.set_is_user_edited(true);
+    expected.set_is_user_edited_deprecated(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     // Verify that the cursor position has been updated.

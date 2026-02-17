@@ -538,12 +538,20 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     if (reason == RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing ||
         reason == RetrieveFromCacheReason::kFormCacheUpdateAfterParsing) {
       field->set_is_autofilled(cached_field->is_autofilled());
+      if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
+        field->set_is_autofilled_according_to_renderer(
+            cached_field->is_autofilled_according_to_renderer());
+      }
     }
     field->set_autofill_source_profile_guid(
         cached_field->autofill_source_profile_guid());
     field->set_autofilled_type(cached_field->autofilled_type());
     field->set_filling_product(cached_field->filling_product());
-    field->set_previously_autofilled(cached_field->previously_autofilled());
+    field->set_previously_autofilled_deprecated(
+        cached_field->previously_autofilled_deprecated());
+    field->set_field_modifiers(
+        cached_field->field_modifiers(base::PassKey<FormStructure>()),
+        base::PassKey<FormStructure>());
     field->set_did_trigger_suggestions(cached_field->did_trigger_suggestions());
     field->set_was_focused(cached_field->was_focused());
     if (base::optional_ref<const AutofillFormatString> format_string =

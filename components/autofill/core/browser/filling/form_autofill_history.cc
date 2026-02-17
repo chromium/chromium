@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/types/pass_key.h"
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -18,13 +19,16 @@ namespace autofill {
 
 FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
     std::u16string field_value,
-    bool field_is_autofilled,
+    bool field_is_autofilled_according_to_renderer,
+    std::vector<FieldModifier> field_modifiers,
     std::optional<std::string> field_autofill_source_profile_guid,
     std::optional<FieldType> field_autofilled_type,
     FillingProduct field_filling_product,
     bool ignore_is_autofilled)
     : value(field_value),
-      is_autofilled(field_is_autofilled),
+      is_autofilled_according_to_renderer(
+          field_is_autofilled_according_to_renderer),
+      field_modifiers(std::move(field_modifiers)),
       autofill_source_profile_guid(
           std::move(field_autofill_source_profile_guid)),
       autofilled_type(std::move(field_autofilled_type)),
@@ -69,6 +73,8 @@ void FormAutofillHistory::AddFormFillingEntry(
             .emplace(field->global_id(),
                      FieldFillingEntry(
                          field->value(), field->is_autofilled(),
+                         autofill_field->field_modifiers(
+                             base::PassKey<FormAutofillHistory>()),
                          autofill_field->autofill_source_profile_guid(),
                          autofill_field->autofilled_type(),
                          autofill_field->filling_product(),

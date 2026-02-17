@@ -375,6 +375,7 @@ void FormTracker::OnJavaScriptChangedValue(
         it != fields.end()) {
       it->set_value(element.Value().Utf16().substr(0, kMaxStringLength));
       it->set_is_autofilled(element.IsAutofilled());
+      it->set_is_autofilled_according_to_renderer(element.IsAutofilled());
       form_util::MaybeUpdateUserInput(*it,
                                       form_util::GetFieldRendererId(element),
                                       autofill_agent_->field_data_manager());

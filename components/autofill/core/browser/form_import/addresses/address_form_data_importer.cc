@@ -291,7 +291,7 @@ AddressFormDataImporter::ExtractGUIDsOfProfilesWithoutManualEdits(
     const FormStructure& submitted_form) const {
   base::flat_set<std::string> unedited_source_profile_guids;
   for (const std::unique_ptr<AutofillField>& field : submitted_form) {
-    if (field->is_user_edited()) {
+    if (field->is_user_edited_deprecated()) {
       return {};
     }
     if (const std::optional<std::string>& guid =

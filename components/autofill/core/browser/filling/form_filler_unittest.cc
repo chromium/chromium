@@ -1850,7 +1850,7 @@ TEST_F(FormFillerTest, TrackFillingOriginOnEditedField) {
 
   FormStructure* form_structure = GetFormStructure(form);
   ASSERT_TRUE(form_structure);
-  ASSERT_TRUE(form_structure->field(0)->previously_autofilled());
+  ASSERT_TRUE(form_structure->field(0)->previously_autofilled_deprecated());
   EXPECT_FALSE(form_structure->field(0)->is_autofilled());
   EXPECT_THAT(form_structure->field(0)->autofill_source_profile_guid(),
               Optional(profile.guid()));

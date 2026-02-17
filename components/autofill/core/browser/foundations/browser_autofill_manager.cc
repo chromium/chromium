@@ -505,7 +505,7 @@ void MaybeAddAddressSuggestionStrikes(AutofillClient& client,
   for (const auto& field : form) {
     if (field->autocomplete_attribute() == "off" &&
         field->did_trigger_suggestions() && !field->is_autofilled() &&
-        !field->previously_autofilled()) {
+        !field->previously_autofilled_deprecated()) {
       // This means that the user triggered suggestions and ignored them. In
       // that case we record a strike for this specific field. Multiple strikes
       // will lead to automatic address suggestions to be suppressed.
@@ -1133,7 +1133,7 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
   auto* logger = GetEventFormLogger(*autofill_field);
   if (autofill_field->is_autofilled()) {
     autofill_field->set_is_autofilled(false);
-    autofill_field->set_previously_autofilled(true);
+    autofill_field->set_previously_autofilled_deprecated(true);
     if (logger) {
       logger->OnEditedAutofilledField(field_id);
     }
@@ -2221,7 +2221,7 @@ void BrowserAutofillManager::OnSelectControlSelectionChangedImpl(
   auto* logger = GetEventFormLogger(*autofill_field);
   if (autofill_field->is_autofilled()) {
     autofill_field->set_is_autofilled(false);
-    autofill_field->set_previously_autofilled(true);
+    autofill_field->set_previously_autofilled_deprecated(true);
     if (logger) {
       logger->OnEditedAutofilledField(field_id);
     }

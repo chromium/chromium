@@ -373,7 +373,7 @@ bool FormFieldData::IdenticalAndEquivalentDomElements(
         !e.contains(kNotRefillRelated) ? f.form_control_ax_id_ : kNullId,
         f.max_length_,
         !e.contains_any({kValue, kNotRefillRelated}) ? f.is_autofilled_ : kFalse,
-        !e.contains_any({kValue, kNotRefillRelated}) ? f.is_user_edited_ : kFalse,
+        !e.contains_any({kValue, kNotRefillRelated}) ? f.is_user_edited_deprecated_ : kFalse,
         !e.contains_any({kValue, kNotRefillRelated}) ? f.check_status_ : kNotCheckable,
         f.is_focusable_,
         !e.contains(kNotRefillRelated) ? f.is_visible_ : kFalse,
@@ -687,7 +687,7 @@ std::ostream& PrintWithIndentation(std::ostream& os,
   PRINT_PROPERTY(max_length);
   PRINT_PROPERTY(css_classes);
   PRINT_PROPERTY(is_autofilled);
-  PRINT_PROPERTY(is_user_edited);
+  PRINT_PROPERTY(is_user_edited_deprecated);
   PRINT_PROPERTY(check_status);
   PRINT_PROPERTY(should_autocomplete);
   PRINT_PROPERTY(role);

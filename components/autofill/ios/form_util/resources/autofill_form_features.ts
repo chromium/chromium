@@ -42,8 +42,8 @@ let autofillIgnoreCheckableElements: boolean = true;
 
 // LINT.IfChange(autofill_correct_user_edited_bit_in_parsed_field)
 /**
-Enables correctly setting the is_user_edited bit in the parsed form fields
-instead of using true by default.
+Enables correctly setting the is_user_edited_deprecated bit in the parsed form
+fields instead of using true by default.
  */
 let autofillCorrectUserEditedBitInParsedField: boolean = false;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_correct_user_edited_bit_in_parsed_field)

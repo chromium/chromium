@@ -1015,7 +1015,7 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
   test_api(manager()).logger().OnEditedAutofilledField(*form, *form->field(1),
                                                        /*ukm_source_id=*/{});
   form->field(1)->set_is_autofilled(false);
-  form->field(1)->set_is_user_edited(true);
+  form->field(1)->set_properties_mask(kUserTyped);
 
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
                                                  /*submission_state=*/true,
@@ -1062,7 +1062,7 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_PerfectFilling) {
   EXPECT_TRUE(GetKeyMetricsLogs().perfect_filling());
 
   // Simulate a user edit for some field.
-  form->field(2)->set_is_user_edited(true);
+  form->field(2)->set_properties_mask(kUserTyped);
 
   // Now the MQLS logs should not record a perfect filling.
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},

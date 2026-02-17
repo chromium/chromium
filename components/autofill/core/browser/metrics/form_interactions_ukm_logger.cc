@@ -195,7 +195,7 @@ void FormInteractionsUkmLogger::LogFieldFillStatus(
       .SetValidationEvent(static_cast<int64_t>(metric_type))
       .SetIsAutofilled(static_cast<int64_t>(field.is_autofilled()))
       .SetWasPreviouslyAutofilled(
-          static_cast<int64_t>(field.previously_autofilled()))
+          static_cast<int64_t>(field.previously_autofilled_deprecated()))
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp(), now))
       .Record(autofill_client_->GetUkmRecorder());

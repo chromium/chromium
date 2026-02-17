@@ -46,8 +46,8 @@ class AutofillFormFeaturesJavaScriptFeature : public web::JavaScriptFeature {
   // Autofill features to work in an isolated content world.
   void SetAutofillIsolatedContentWorld(web::WebFrame* frame, bool enabled);
 
-  // Enables/disables correctly setting the is_user_edited bit in the parsed
-  // form fields instead of using true by default.
+  // Enables/disables correctly setting the is_user_edited_deprecated bit in the
+  // parsed form fields instead of using true by default.
   void SetAutofillCorrectUserEditedBitInParsedField(web::WebFrame* frame,
                                                     bool enabled);
 

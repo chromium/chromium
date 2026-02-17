@@ -129,7 +129,7 @@ FormData WithoutValues(FormData form) {
     field.set_user_input({});
     field.set_value({});
     field.set_is_autofilled(false);
-    field.set_is_user_edited(false);
+    field.set_is_user_edited_deprecated(false);
     field.set_check_status(FormFieldData::CheckStatus::kNotCheckable);
   }
   return form;

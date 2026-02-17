@@ -18,6 +18,8 @@ namespace autofill {
 
 class AutofillField;
 
+enum class FieldModifier;
+
 // Holds history of Autofill filling operations so that they can be undone
 // later. The class is used to add, remove and access filling operations, which
 // are maps from fields to their corresponding value and state before filling.
@@ -29,7 +31,8 @@ class FormAutofillHistory {
   struct FieldFillingEntry {
     FieldFillingEntry(
         std::u16string field_value,
-        bool field_is_autofilled,
+        bool field_is_autofilled_according_to_renderer,
+        std::vector<FieldModifier> field_modifiers,
         std::optional<std::string> field_autofill_source_profile_guid,
         std::optional<FieldType> field_autofilled_type,
         FillingProduct filling_product,
@@ -50,7 +53,10 @@ class FormAutofillHistory {
     // because fields that are autofilled might be reset to still autofilled
     // field, considering cases where autofill is allowed to override autofilled
     // fields.
-    bool is_autofilled;
+    bool is_autofilled_according_to_renderer;
+
+    // The sequence of modifiers that have affected the field.
+    std::vector<FieldModifier> field_modifiers;
 
     // ID of the last profile used to fill the field, if any. This is stored so
     // the field doesn't track undone autofill operations, which can cause

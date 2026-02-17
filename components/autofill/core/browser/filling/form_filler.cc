@@ -761,12 +761,15 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
 
     // Update the FormFieldData to be sent for the renderer.
     field.set_value(previous_state.value);
-    field.set_is_autofilled(previous_state.is_autofilled);
+    field.set_is_autofilled(previous_state.is_autofilled_according_to_renderer);
 
     // Update the cached AutofillField in the browser if the operation isn't a
     // preview.
     if (action_persistence == mojom::ActionPersistence::kFill) {
-      autofill_field.set_is_autofilled(previous_state.is_autofilled);
+      autofill_field.set_is_autofilled(
+          previous_state.is_autofilled_according_to_renderer);
+      autofill_field.set_field_modifiers(previous_state.field_modifiers,
+                                         base::PassKey<FormFiller>());
       autofill_field.set_autofill_source_profile_guid(
           previous_state.autofill_source_profile_guid);
       autofill_field.set_autofilled_type(previous_state.autofilled_type);

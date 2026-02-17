@@ -556,7 +556,7 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
     const FormStructure& form,
     const AutofillField& field) {
   AutofilledFieldUserEditingStatusMetric editing_metric =
-      field.previously_autofilled()
+      field.previously_autofilled_deprecated()
           ? AutofilledFieldUserEditingStatusMetric::AUTOFILLED_FIELD_WAS_EDITED
           : AutofilledFieldUserEditingStatusMetric::
                 AUTOFILLED_FIELD_WAS_NOT_EDITED;

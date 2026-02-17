@@ -643,8 +643,8 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [AutofillAppInterface clearMockReauthenticationModule];
 }
 
-// Tests that the fix on the is_user_edited bit in the parsed form fields is
-// effective in the case the user has edited the input field for real.
+// Tests that the fix on the is_user_edited_deprecated bit in the parsed form
+// fields is effective in the case the user has edited the input field for real.
 - (void)testFillCreditCardFieldsOnForm_WithUserEditedFix_UserEdited {
   // Fill using another test. The CVC number won't be filled because a local
   // card is used.
@@ -678,8 +678,9 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
       @"Autofill.PerfectFilling.CreditCards verification failed");
 }
 
-// Tests that the fix on the is_user_edited bit in the parsed form fields is
-// effective in the case the user didn't edit the fields that weren't filled.
+// Tests that the fix on the is_user_edited_deprecated bit in the parsed form
+// fields is effective in the case the user didn't edit the fields that weren't
+// filled.
 - (void)testFillCreditCardFieldsOnForm_WithUserEditedFix_NotUserEdited {
   // Fill using another test. The CVC number won't be filled because a local
   // card is used.

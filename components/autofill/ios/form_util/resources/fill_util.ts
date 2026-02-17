@@ -31,7 +31,9 @@ export class AutofillFormFieldData extends JsonSafeObject {
   autocomplete_attribute!: string;
   max_length!: number;
   is_autofilled!: boolean;
-  is_user_edited!: boolean;
+  // TODO(crbug.com/393114125): Remove after fully launching
+  // `AutofillField::field_modifiers_`.
+  is_user_edited_deprecated!: boolean;
   is_checkable!: boolean;
   is_focusable!: boolean;
   should_autocomplete!: boolean;

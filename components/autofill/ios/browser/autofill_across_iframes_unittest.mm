@@ -104,7 +104,7 @@ void SetFillDataForField(
   CHECK(field);
   field->set_value(value);
   field->set_is_autofilled(true);
-  field->set_is_user_edited(false);
+  field->set_is_user_edited_deprecated(false);
   (*field_type_map)[field->global_id()] = field_type;
 }
 
@@ -1024,7 +1024,7 @@ TEST_F(AutofillAcrossIframesTest, Fill_MainFrameForm) {
                     << field.placeholder();
     }
     field.set_is_autofilled(true);
-    field.set_is_user_edited(false);
+    field.set_is_user_edited_deprecated(false);
   }
 
   main_frame_driver()->ApplyFormAction(

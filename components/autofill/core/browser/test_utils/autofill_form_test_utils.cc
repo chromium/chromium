@@ -190,6 +190,7 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
     ff.set_origin(*fd.origin);
   }
   ff.set_is_autofilled(fd.is_autofilled.value_or(false));
+  ff.set_is_autofilled_according_to_renderer(fd.is_autofilled.value_or(false));
   ff.set_should_autocomplete(fd.should_autocomplete);
   ff.set_properties_mask(fd.properties_mask);
   if (ff.form_control_type() == FormControlType::kInputCheckbox ||

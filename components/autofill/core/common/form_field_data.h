@@ -373,8 +373,17 @@ class FormFieldData {
   void set_max_length(uint64_t max_length) { max_length_ = max_length; }
 
   bool is_autofilled() const { return is_autofilled_; }
+  bool is_autofilled_according_to_renderer() const {
+    return is_autofilled_according_to_renderer_;
+  }
   void set_is_autofilled(bool is_autofilled) { is_autofilled_ = is_autofilled; }
+  void set_is_autofilled_according_to_renderer(bool is_autofilled) {
+    is_autofilled_according_to_renderer_ = is_autofilled;
+  }
 
+  // These setter and getter are deprecated. Please use
+  // `AutofillField::all_modifiers()` instead.
+  //
   // Whether the user has edited this field since page load or resetting the
   // field.
   //
@@ -394,9 +403,9 @@ class FormFieldData {
   // when the form is reset (JavaScript's HTMLFormElement.reset()).
   // TODO(crbug.com/40941928): On iOS, also non-trusted events reset the
   // property.
-  bool is_user_edited() const { return is_user_edited_; }
-  void set_is_user_edited(bool is_user_edited) {
-    is_user_edited_ = is_user_edited;
+  bool is_user_edited_deprecated() const { return is_user_edited_deprecated_; }
+  void set_is_user_edited_deprecated(bool is_user_edited_deprecated) {
+    is_user_edited_deprecated_ = is_user_edited_deprecated;
   }
 
   CheckStatus check_status() const { return check_status_; }
@@ -423,7 +432,7 @@ class FormFieldData {
   }
 
   // Data members from the next block are used for parsing only, they are not
-  // serialised for storage.
+  // serialized for storage.
   bool is_enabled() const { return is_enabled_; }
   void set_is_enabled(bool is_enabled) { is_enabled_ = is_enabled; }
   bool is_readonly() const { return is_readonly_; }
@@ -510,7 +519,10 @@ class FormFieldData {
   int32_t form_control_ax_id_ = 0;
   uint64_t max_length_ = std::numeric_limits<uint32_t>::max();
   bool is_autofilled_ = false;
-  bool is_user_edited_ = false;
+  bool is_autofilled_according_to_renderer_ = false;
+  // TODO(crbug.com/393114125): Remove after fully launching
+  // `AutofillField::field_modifiers_`.
+  bool is_user_edited_deprecated_ = false;
   CheckStatus check_status_ = CheckStatus::kNotCheckable;
   bool is_focusable_ = true;
   bool is_visible_ = true;

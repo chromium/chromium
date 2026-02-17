@@ -173,7 +173,7 @@ FieldFillingStatus GetFieldFillingStatus(const AutofillField& field) {
   if (field.is_autofilled()) {
     return FieldFillingStatus::kAccepted;
   }
-  if (field.previously_autofilled()) {
+  if (field.previously_autofilled_deprecated()) {
     if (is_empty) {
       return FieldFillingStatus::kCorrectedToEmpty;
     }

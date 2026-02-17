@@ -1082,7 +1082,7 @@ class FindDatesAndSetFormatStringsTest : public testing::Test {
       FormControlType form_control_type = FormControlType::kInputText) {
     auto field = std::make_unique<AutofillField>(CreateTestFormField(
         /*label=*/"", /*name=*/"", /*value=*/value, form_control_type));
-    field->set_is_user_edited(true);
+    field->set_is_user_edited_deprecated(true);
     return field;
   }
 
@@ -1092,7 +1092,7 @@ class FindDatesAndSetFormatStringsTest : public testing::Test {
     auto field = std::make_unique<AutofillField>(CreateTestSelectField(
         /*label=*/"", /*name=*/"", /*value=*/value, /*values=*/values,
         /*contents=*/values));
-    field->set_is_user_edited(true);
+    field->set_is_user_edited_deprecated(true);
     return field;
   }
 

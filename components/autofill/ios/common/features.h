@@ -14,8 +14,8 @@
 // content.
 BASE_DECLARE_FEATURE(kAutofillAllowDefaultPreventedSubmission);
 
-// Enables correctly setting the is_user_edited bit in the parsed form fields
-// instead of using true by default.
+// Enables correctly setting the is_user_edited_deprecated bit in the parsed
+// form fields instead of using true by default.
 BASE_DECLARE_FEATURE(kAutofillCorrectUserEditedBitInParsedField);
 
 // Record form submissions events that are detected in the renderer before they
