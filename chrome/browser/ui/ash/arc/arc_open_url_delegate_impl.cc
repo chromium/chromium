@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
@@ -41,7 +42,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
@@ -126,17 +126,18 @@ constexpr auto kOSSettingsMap =
 
 constexpr auto kBrowserSettingsMap =
     base::MakeFixedFlatMap<ChromePage, const char*>({
-        {ChromePage::APPEARANCE, chrome::kAppearanceSubPage},
-        {ChromePage::AUTOFILL, chrome::kAutofillSubPage},
-        {ChromePage::CLEARBROWSERDATA, chrome::kClearBrowserDataSubPage},
-        {ChromePage::DOWNLOADS, chrome::kDownloadsSubPage},
-        {ChromePage::LANGUAGES, chrome::kLanguagesSubPage},
-        {ChromePage::ONSTARTUP, chrome::kOnStartupSubPage},
-        {ChromePage::PASSWORDS, chrome::kPasswordManagerSubPage},
-        {ChromePage::PRIVACY, chrome::kPrivacySubPage},
-        {ChromePage::RESET, chrome::kResetSubPage},
-        {ChromePage::SEARCH, chrome::kSearchSubPage},
-        {ChromePage::SYNCSETUP, chrome::kSyncSetupSubPage},
+        {ChromePage::APPEARANCE, ash::chrome_urls::kAppearanceSubPage},
+        {ChromePage::AUTOFILL, ash::chrome_urls::kAutofillSubPage},
+        {ChromePage::CLEARBROWSERDATA,
+         ash::chrome_urls::kClearBrowserDataSubPage},
+        {ChromePage::DOWNLOADS, ash::chrome_urls::kDownloadsSubPage},
+        {ChromePage::LANGUAGES, ash::chrome_urls::kLanguagesSubPage},
+        {ChromePage::ONSTARTUP, ash::chrome_urls::kOnStartupSubPage},
+        {ChromePage::PASSWORDS, ash::chrome_urls::kPasswordManagerSubPage},
+        {ChromePage::PRIVACY, ash::chrome_urls::kPrivacySubPage},
+        {ChromePage::RESET, ash::chrome_urls::kResetSubPage},
+        {ChromePage::SEARCH, ash::chrome_urls::kSearchSubPage},
+        {ChromePage::SYNCSETUP, ash::chrome_urls::kSyncSetupSubPage},
     });
 
 constexpr auto kAboutPagesMap =
@@ -327,7 +328,8 @@ void ArcOpenUrlDelegateImpl::OpenChromePageFromArc(ChromePage page) {
 
   if (auto it = kBrowserSettingsMap.find(page);
       it != kBrowserSettingsMap.end()) {
-    OpenUrlFromArc(GURL(chrome::kChromeUISettingsURL).Resolve(it->second));
+    OpenUrlFromArc(
+        GURL(ash::chrome_urls::kChromeUISettingsURL).Resolve(it->second));
     return;
   }
 

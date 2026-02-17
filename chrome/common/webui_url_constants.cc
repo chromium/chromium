@@ -19,6 +19,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -28,6 +29,49 @@ namespace chrome {
 // by chrome://chrome-urls (about:about) and the built-in AutocompleteProvider.
 
 #if BUILDFLAG(IS_CHROMEOS)
+
+// static assertions to keep the consistency with URLs that ash as OS system
+// refers.
+static_assert(std::string_view(kChromeUICertificateManagerDialogURL) ==
+              ash::chrome_urls::kChromeUICertificateManagerDialogURL);
+static_assert(std::string_view(kChromeUIFlagsURL) ==
+              ash::chrome_urls::kChromeUIFlagsURL);
+static_assert(std::string_view(kChromeUIFeedbackURL) ==
+              ash::chrome_urls::kChromeUIFeedbackURL);
+static_assert(std::u16string_view(kChromeUIManagementURL16) ==
+              ash::chrome_urls::kChromeUIManagementURL16);
+static_assert(std::string_view(kChromeUINewTabURL) ==
+              ash::chrome_urls::kChromeUINewTabURL);
+static_assert(std::string_view(kChromeUISettingsHost) ==
+              ash::chrome_urls::kChromeUISettingsHost);
+static_assert(std::string_view(kChromeUISettingsURL) ==
+              ash::chrome_urls::kChromeUISettingsURL);
+static_assert(std::string_view(kChromeUITermsURL) ==
+              ash::chrome_urls::kChromeUITermsURL);
+
+static_assert(std::string_view(kAppearanceSubPage) ==
+              ash::chrome_urls::kAppearanceSubPage);
+static_assert(std::string_view(kAutofillSubPage) ==
+              ash::chrome_urls::kAutofillSubPage);
+static_assert(std::string_view(kClearBrowserDataSubPage) ==
+              ash::chrome_urls::kClearBrowserDataSubPage);
+static_assert(std::string_view(kDownloadsSubPage) ==
+              ash::chrome_urls::kDownloadsSubPage);
+static_assert(std::string_view(kLanguagesSubPage) ==
+              ash::chrome_urls::kLanguagesSubPage);
+static_assert(std::string_view(kOnStartupSubPage) ==
+              ash::chrome_urls::kOnStartupSubPage);
+static_assert(std::string_view(kPasswordManagerSubPage) ==
+              ash::chrome_urls::kPasswordManagerSubPage);
+static_assert(std::string_view(kPrivacySubPage) ==
+              ash::chrome_urls::kPrivacySubPage);
+static_assert(std::string_view(kResetSubPage) ==
+              ash::chrome_urls::kResetSubPage);
+static_assert(std::string_view(kSearchSubPage) ==
+              ash::chrome_urls::kSearchSubPage);
+static_assert(std::string_view(kSyncSetupSubPage) ==
+              ash::chrome_urls::kSyncSetupSubPage);
+
 bool IsSystemWebUIHost(std::string_view host) {
   // Compares host instead of full URL for performance (the strings are
   // shorter).
@@ -194,7 +238,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUICertificateManagerHost,
       ash::kChromeUICrostiniCreditsHost,
       ash::kChromeUICryptohomeHost,
-      kChromeUIDriveInternalsHost,
+      ash::kChromeUIDriveInternalsHost,
       ash::kChromeUINetworkHost,
       ash::kChromeUILockScreenNetworkHost,
       ash::kChromeUIOobeHost,

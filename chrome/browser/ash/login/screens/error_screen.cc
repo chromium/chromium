@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/chrome_url_constants.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/offline_login_screen_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
@@ -366,7 +366,7 @@ void ErrorScreen::OnConfigureCerts() {
   LoginWebDialog* dialog = new LoginWebDialog(
       GetAppProfile(), native_window,
       l10n_util::GetStringUTF16(IDS_CERTIFICATE_MANAGER_TITLE),
-      GURL(chrome::kChromeUICertificateManagerDialogURL));
+      GURL(ash::chrome_urls::kChromeUICertificateManagerDialogURL));
   // The width matches the Settings UI width.
   dialog->set_dialog_size(gfx::Size{640, 480});
   dialog->Show();

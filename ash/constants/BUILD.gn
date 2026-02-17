@@ -21,6 +21,7 @@ component("constants") {
     "ash_switches.cc",
     "ash_switches.h",
     "chrome_custom_icon_catalog.h",
+    "chrome_url_constants.h",
     "devicetype.cc",
     "devicetype.h",
     "generative_ai_country_restrictions.cc",

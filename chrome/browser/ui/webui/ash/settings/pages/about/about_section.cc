@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -459,7 +460,7 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("shouldShowSafetyInfo", !safetyInfoLink.empty());
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  html_source->AddString("aboutTermsURL", chrome::kChromeUITermsURL);
+  html_source->AddString("aboutTermsURL", ash::chrome_urls::kChromeUITermsURL);
   html_source->AddLocalizedString("aboutProductTos",
                                   IDS_ABOUT_TERMS_OF_SERVICE);
   html_source->AddString(

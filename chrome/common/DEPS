@@ -93,6 +93,7 @@ specific_include_rules = {
     "+pdf/content_restriction.h",
   ],
   "webui_url_constants\\.cc": [
+    "+ash/constants/chrome_url_constants.h",
     "+ash/constants/url_constants.h",
     "+ash/constants/webui_url_constants.h",
   ],

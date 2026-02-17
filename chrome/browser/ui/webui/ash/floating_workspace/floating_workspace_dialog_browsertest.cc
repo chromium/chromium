@@ -6,10 +6,10 @@
 
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -54,7 +54,7 @@ class FloatingWorkspaceDialogTest : public InProcessBrowserTest {
 
   void EnsureWebUIAvailable() {
     auto* dialog = SystemWebDialogDelegate::FindInstance(
-        GURL{chrome::kChromeUIFloatingWorkspaceDialogURL}.spec());
+        GURL{ash::kChromeUIFloatingWorkspaceDialogURL}.spec());
     ASSERT_TRUE(dialog);
     webui_ = dialog->GetWebUIForTest();
     ASSERT_TRUE(webui_);

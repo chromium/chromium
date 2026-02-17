@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
 
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/desk_template.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -355,7 +355,7 @@ ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
     const ui::ColorProvider* color_provider) const {
   TRACE_EVENT0(
       "ui", "ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier");
-  if (identifier == chrome::kChromeUINewTabURL) {
+  if (identifier == ash::chrome_urls::kChromeUINewTabURL) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     return apps::CreateStandardIconImage(
         rb.GetImageNamed(IDR_PRODUCT_LOGO_32).AsImageSkia());

@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/sensor_info_resources.h"
 #include "chrome/grit/sensor_info_resources_map.h"
 #include "content/public/browser/browser_context.h"
@@ -25,7 +25,7 @@ SensorInfoUI::SensorInfoUI(content::WebUI* web_ui)
   // Sets up the chrome://sensor-info source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUISensorInfoHost);
+      ash::kChromeUISensorInfoHost);
   // Adds required resources.
   webui::SetupWebUIDataSource(source, kSensorInfoResources,
                               IDR_SENSOR_INFO_SENSOR_INFO_HTML);

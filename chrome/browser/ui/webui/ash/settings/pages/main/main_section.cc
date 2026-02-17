@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/constants/personalization_entry_point.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -95,7 +95,7 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
       int days_remaining = days.value() ? days.value() : 1;
       std::u16string domain_name =
           base::UTF8ToUTF16(connector->GetEnterpriseDomainManager());
-      std::u16string link_url = chrome::kChromeUIManagementURL16;
+      std::u16string link_url = ash::chrome_urls::kChromeUIManagementURL16;
       if (days_remaining == 7) {
         eol_return_banner_text = l10n_util::GetStringFUTF16(
             IDS_SETTINGS_UPDATE_REQUIRED_EOL_BANNER_ONE_WEEK, domain_name,
@@ -108,7 +108,7 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
                 days_remaining,
                 base::UTF8ToUTF16(connector->GetEnterpriseDomainManager()),
                 ui::GetChromeOSDeviceName(),
-                std::u16string(chrome::kChromeUIManagementURL16));
+                std::u16string(ash::chrome_urls::kChromeUIManagementURL16));
       }
     }
   }

@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -1127,7 +1128,7 @@ DriveInternalsUI::DriveInternalsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<DriveInternalsWebUIHandler>());
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIDriveInternalsHost);
+      Profile::FromWebUI(web_ui), ash::kChromeUIDriveInternalsHost);
   source->AddResourcePath("drive_internals.css", IDR_DRIVE_INTERNALS_CSS);
   source->AddResourcePath("drive_internals.js", IDR_DRIVE_INTERNALS_JS);
   source->SetDefaultResource(IDR_DRIVE_INTERNALS_HTML);

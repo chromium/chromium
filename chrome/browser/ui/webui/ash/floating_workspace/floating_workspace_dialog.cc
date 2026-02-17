@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_handler.h"
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_ui.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -29,7 +29,7 @@ FloatingWorkspaceDialog* g_dialog = nullptr;
 }  // namespace
 
 FloatingWorkspaceDialog::FloatingWorkspaceDialog()
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUIFloatingWorkspaceDialogURL),
+    : SystemWebDialogDelegate(GURL(ash::kChromeUIFloatingWorkspaceDialogURL),
                               /*title=*/std::u16string()) {
   CHECK(!g_dialog);
   g_dialog = this;

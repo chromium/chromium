@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/floating_workspace_resources.h"
 #include "chrome/grit/floating_workspace_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,7 +26,7 @@ namespace ash {
 
 FloatingWorkspaceUIConfig::FloatingWorkspaceUIConfig()
     : ChromeOSWebUIConfig(content::kChromeUIScheme,
-                          chrome::kChromeUIFloatingWorkspaceDialogHost) {}
+                          ash::kChromeUIFloatingWorkspaceDialogHost) {}
 
 FloatingWorkspaceUI::FloatingWorkspaceUI(content::WebUI* web_ui)
     : MojoWebDialogUI(web_ui) {
@@ -37,7 +37,7 @@ FloatingWorkspaceUI::FloatingWorkspaceUI(content::WebUI* web_ui)
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      browser_context, chrome::kChromeUIFloatingWorkspaceDialogHost);
+      browser_context, ash::kChromeUIFloatingWorkspaceDialogHost);
 
   webui::SetupWebUIDataSource(source, kFloatingWorkspaceResources,
                               IDR_FLOATING_WORKSPACE_FLOATING_WORKSPACE_HTML);

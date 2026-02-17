@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/webui_url_constants.h"
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -213,8 +213,9 @@ class DisallowedFlag : public BehaviourProvider {
     return {{l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FLAG_BUTTON),
              base::BindOnce([]() {
                ash::SystemAppLaunchParams params;
-               params.url = GURL{std::string(ash::kChromeUIOSFlagsAppURL) +
-                                 "#borealis-enabled"};
+               params.url =
+                   GURL{std::string(ash::chrome_urls::kChromeUIFlagsURL) +
+                        "#borealis-enabled"};
                ash::LaunchSystemWebAppAsync(
                    ProfileManager::GetPrimaryUserProfile(),
                    ash::SystemWebAppType::OS_FLAGS, params);

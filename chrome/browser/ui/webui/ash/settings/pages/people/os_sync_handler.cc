@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/people/os_sync_handler.h"
 
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -98,7 +98,8 @@ void OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage(
 
 void OSSyncHandler::HandleOpenBrowserSyncSettings(const base::ListValue& args) {
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
-      GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSyncSetupSubPage),
+      GURL(ash::chrome_urls::kChromeUISettingsURL)
+          .Resolve(ash::chrome_urls::kSyncSetupSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }

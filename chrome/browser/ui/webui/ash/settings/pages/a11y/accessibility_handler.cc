@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/language/core/browser/pref_names.h"
@@ -103,7 +103,8 @@ void AccessibilityHandler::RegisterMessages() {
 void AccessibilityHandler::HandleShowBrowserAppearanceSettings(
     const base::ListValue& args) {
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
-      GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kAppearanceSubPage),
+      GURL(ash::chrome_urls::kChromeUISettingsURL)
+          .Resolve(ash::chrome_urls::kAppearanceSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }

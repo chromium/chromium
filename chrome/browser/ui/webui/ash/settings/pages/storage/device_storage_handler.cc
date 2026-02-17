@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/byte_count.h"
 #include "base/check_op.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
@@ -210,8 +210,8 @@ void StorageHandler::HandleOpenMyFiles(const base::ListValue& unused_args) {
 void StorageHandler::HandleOpenBrowsingDataSettings(
     const base::ListValue& unused_args) {
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
-      GURL(chrome::kChromeUISettingsURL)
-          .Resolve(chrome::kClearBrowserDataSubPage),
+      GURL(ash::chrome_urls::kChromeUISettingsURL)
+          .Resolve(ash::chrome_urls::kClearBrowserDataSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }

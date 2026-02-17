@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SENSOR_INFO_SENSOR_INFO_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SENSOR_INFO_SENSOR_INFO_UI_H_
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/sensor_info/sensor_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ash/sensor_info/sensor.mojom.h"
 #include "chrome/browser/ui/webui/ash/sensor_info/sensor_page_handler.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -28,7 +28,7 @@ class SensorInfoUIConfig : public content::DefaultWebUIConfig<SensorInfoUI> {
  public:
   SensorInfoUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUISensorInfoHost) {}
+                           ash::kChromeUISensorInfoHost) {}
 };
 
 // The WebUI controller for chrome://sensor-info.

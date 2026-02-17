@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/os_flags_system_web_app_info.h"
 
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -16,17 +16,17 @@
 OsFlagsSystemWebAppDelegate::OsFlagsSystemWebAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::OS_FLAGS,
                                 "OsFlags",
-                                GURL(chrome::kChromeUIFlagsURL),
+                                GURL(ash::chrome_urls::kChromeUIFlagsURL),
                                 profile) {}
 
 OsFlagsSystemWebAppDelegate::~OsFlagsSystemWebAppDelegate() = default;
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 OsFlagsSystemWebAppDelegate::GetWebAppInfo() const {
-  GURL start_url(chrome::kChromeUIFlagsURL);
+  GURL start_url(ash::chrome_urls::kChromeUIFlagsURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
-  info->scope = GURL(chrome::kChromeUIFlagsURL);
+  info->scope = GURL(ash::chrome_urls::kChromeUIFlagsURL);
 
   info->title = l10n_util::GetStringUTF16(IDS_OS_FLAGS_APP_NAME);
 

@@ -7,13 +7,13 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/chrome_url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -22,7 +22,9 @@
 OSSettingsSystemAppDelegate::OSSettingsSystemAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::SETTINGS,
                                 "OSSettings",
-                                GURL(chrome::kChromeUISettingsURL),
+                                // TODO(crbug.com/481835800): Revisit here if
+                                // this should be chrome://os-settings
+                                GURL(ash::chrome_urls::kChromeUISettingsURL),
                                 profile) {}
 
 std::unique_ptr<web_app::WebAppInstallInfo>

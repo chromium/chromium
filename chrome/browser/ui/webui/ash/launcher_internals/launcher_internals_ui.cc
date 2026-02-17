@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/containers/span.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/launcher_internals_resources.h"
 #include "chrome/grit/launcher_internals_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -19,7 +19,7 @@ LauncherInternalsUI::LauncherInternalsUI(content::WebUI* web_ui)
     : MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUILauncherInternalsHost);
+      ash::kChromeUILauncherInternalsHost);
   webui::SetupWebUIDataSource(source, kLauncherInternalsResources,
                               IDR_LAUNCHER_INTERNALS_INDEX_HTML);
 }
