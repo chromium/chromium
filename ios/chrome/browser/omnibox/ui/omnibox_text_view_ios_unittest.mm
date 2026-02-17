@@ -71,6 +71,32 @@ TEST_F(OmniboxTextViewIOSTest, TextValueForTestingWhenNotEmpty) {
   EXPECT_NSEQ(@"User Text||||||||", text_view_.textValueForTesting);
 }
 
+// Tests that the testing value is correct with autocomplete text.
+TEST_F(OmniboxTextViewIOSTest, TextValueForTestingWithAutocomplete) {
+  NSAttributedString* text =
+      [[NSAttributedString alloc] initWithString:@"User TextAutocomplete"];
+  [text_view_ setText:text userTextLength:9];
+  EXPECT_NSEQ(@"User Text||||Autocomplete||||", text_view_.textValueForTesting);
+}
+
+// Tests that the testing value is correct with additional text.
+TEST_F(OmniboxTextViewIOSTest, TextValueForTestingWithAdditionalText) {
+  text_view_.text = @"User Text";
+  [text_view_ setAdditionalText:@"Additional"];
+  EXPECT_NSEQ(@"User Text||||||||Additional", text_view_.textValueForTesting);
+}
+
+// Tests that the testing value is correct with autocomplete and additional
+// text.
+TEST_F(OmniboxTextViewIOSTest, TextValueForTestingWithBoth) {
+  NSAttributedString* text =
+      [[NSAttributedString alloc] initWithString:@"User TextAutocomplete"];
+  [text_view_ setText:text userTextLength:9];
+  [text_view_ setAdditionalText:@"Additional"];
+  EXPECT_NSEQ(@"User Text||||Autocomplete||||Additional",
+              text_view_.textValueForTesting);
+}
+
 // Tests that the placeholder label itself is hidden from accessibility.
 TEST_F(OmniboxTextViewIOSTest, PlaceholderHiddenFromAccessibility) {
   EXPECT_FALSE(text_view_.placeholderLabel.isAccessibilityElement);

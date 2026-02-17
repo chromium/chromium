@@ -1257,9 +1257,10 @@ const CGFloat kVerticalOffset = 1;
 
 - (NSString*)textValueForTesting {
   CHECK_IS_TEST();
-  return [NSString stringWithFormat:@"%@||||%@||||%@", self.userText ?: @"",
-                                    self.autocompleteText ?: @"",
-                                    self.attributedAdditionalText ?: @""];
+  return
+      [NSString stringWithFormat:@"%@||||%@||||%@", self.userText ?: @"",
+                                 self.autocompleteText ?: @"",
+                                 self.attributedAdditionalText.string ?: @""];
 }
 
 #pragma mark - UITextViewDelegate

@@ -212,4 +212,30 @@ TEST_F(OmniboxTextFieldIOSTest, TextValueForTestingWhenNotEmpty) {
   EXPECT_NSEQ(@"User Text||||||||", textfield_.textValueForTesting);
 }
 
+// Tests that the testing value is correct with autocomplete text.
+TEST_F(OmniboxTextFieldIOSTest, TextValueForTestingWithAutocomplete) {
+  NSAttributedString* text =
+      [[NSAttributedString alloc] initWithString:@"User TextAutocomplete"];
+  [textfield_ setText:text userTextLength:9];
+  EXPECT_NSEQ(@"User Text||||Autocomplete||||", textfield_.textValueForTesting);
+}
+
+// Tests that the testing value is correct with additional text.
+TEST_F(OmniboxTextFieldIOSTest, TextValueForTestingWithAdditionalText) {
+  textfield_.text = @"User Text";
+  [textfield_ setAdditionalText:@"Additional"];
+  EXPECT_NSEQ(@"User Text||||||||Additional", textfield_.textValueForTesting);
+}
+
+// Tests that the testing value is correct with autocomplete and additional
+// text.
+TEST_F(OmniboxTextFieldIOSTest, TextValueForTestingWithBoth) {
+  NSAttributedString* text =
+      [[NSAttributedString alloc] initWithString:@"User TextAutocomplete"];
+  [textfield_ setText:text userTextLength:9];
+  [textfield_ setAdditionalText:@"Additional"];
+  EXPECT_NSEQ(@"User Text||||Autocomplete||||Additional",
+              textfield_.textValueForTesting);
+}
+
 }  // namespace

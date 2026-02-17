@@ -1147,9 +1147,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (NSString*)textValueForTesting {
   CHECK_IS_TEST();
-  return [NSString stringWithFormat:@"%@||||%@||||%@", self.userText ?: @"",
-                                    self.autocompleteText ?: @"",
-                                    self.attributedAdditionalText ?: @""];
+  return
+      [NSString stringWithFormat:@"%@||||%@||||%@", self.userText ?: @"",
+                                 self.autocompleteText ?: @"",
+                                 self.attributedAdditionalText.string ?: @""];
 }
 
 #pragma mark - UITextFieldDelegate
