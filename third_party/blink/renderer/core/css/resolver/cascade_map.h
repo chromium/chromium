@@ -71,9 +71,7 @@ class CORE_EXPORT CascadeMap {
                                         CascadePriority revert_from) const;
   // Similar to Find(), if you already have the right CascadePriorityList.
   CascadePriority& Top(CascadePriorityList&);
-  // Adds an entry to the map if the incoming priority is greater than or equal
-  // to the current priority for the same name. Entries must be added in non-
-  // decreasing lexicographical order of (origin, tree scope, layer).
+  // Adds an entry to the map, keeping each bucket sorted.
   void Add(const AtomicString& custom_property_name, CascadePriority);
   void Add(CSSPropertyID, CascadePriority);
   // Added properties with CSSPropertyPriority::kHighPropertyPriority cause the
