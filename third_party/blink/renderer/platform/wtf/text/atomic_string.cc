@@ -62,6 +62,14 @@ String AtomicString::AddSlowCase(StringImpl* string) {
   return AtomicStringTable::Instance().Add(string);
 }
 
+bool AtomicString::contains(const StringView& value) const {
+  return string_.find(value) != kNotFound;
+}
+
+bool AtomicString::ContainsIgnoringAsciiCase(const StringView& value) const {
+  return string_.FindIgnoringAsciiCase(value) != kNotFound;
+}
+
 AtomicString AtomicString::FromUTF8(base::span<const uint8_t> bytes) {
   if (!bytes.data()) {
     return g_null_atom;

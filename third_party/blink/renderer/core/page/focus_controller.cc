@@ -983,10 +983,10 @@ bool IsLikelyCaptchaIframe(const Element& element) {
   }
   DEFINE_STATIC_LOCAL(String, kCaptcha, ("captcha"));
   return iframe_element->FastGetAttribute(html_names::kSrcAttr)
-             .Contains(kCaptcha) ||
-         iframe_element->title().Contains(kCaptcha) ||
-         iframe_element->GetIdAttribute().Contains(kCaptcha) ||
-         iframe_element->GetNameAttribute().Contains(kCaptcha);
+             .contains(kCaptcha) ||
+         iframe_element->title().contains(kCaptcha) ||
+         iframe_element->GetIdAttribute().contains(kCaptcha) ||
+         iframe_element->GetNameAttribute().contains(kCaptcha);
 }
 
 // Checks whether |element| is a captcha <iframe> or enclosed with such an

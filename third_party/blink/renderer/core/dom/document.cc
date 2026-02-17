@@ -492,17 +492,16 @@ bool CanBeSyntheticSelect(Element& element) {
 }
 
 bool HasSelectInTagName(Element& element) {
-  return element.localName().Contains(kSelectName, kTextCaseASCIIInsensitive);
+  return element.localName().ContainsIgnoringAsciiCase(kSelectName);
 }
 
 bool HasSelectInClassAttribute(Element& element) {
-  return element.GetClassAttribute().Contains(kSelectName,
-                                              kTextCaseASCIIInsensitive);
+  return element.GetClassAttribute().ContainsIgnoringAsciiCase(kSelectName);
 }
 
 bool HasSelectInNameAttribute(Element& element) {
   return element.getAttribute(html_names::kNameAttr)
-      .Contains(kSelectName, kTextCaseASCIIInsensitive);
+      .ContainsIgnoringAsciiCase(kSelectName);
 }
 
 bool IsRoleCombobox(Element& element) {
