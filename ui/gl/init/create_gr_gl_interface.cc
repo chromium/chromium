@@ -461,7 +461,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   // BIND(MultiDrawArraysIndirect);
   // BIND(MultiDrawElementsIndirect);
 
-  BIND(PatchParameteri);
+  BIND_EXTENSION(PatchParameteri, PatchParameteriOES);
   BIND(PixelStorei);
   BIND(PolygonMode);
 
@@ -487,8 +487,8 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(StencilMaskSeparate);
   BIND(StencilOp);
   BIND(StencilOpSeparate);
-  BIND(TexBuffer);
-  BIND(TexBufferRange);
+  BIND_EXTENSION(TexBuffer, TexBufferOES);
+  BIND_EXTENSION(TexBufferRange, TexBufferRangeOES);
   BIND(TexImage2D, Slow, NeedFlushOnMac);
   BIND(TexParameterf);
   BIND(TexParameterfv);
@@ -708,16 +708,17 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   // Some drivers report GL_KHR_debug but do not provide functions. Validate and
   // remove reported extension from the list if necessary
   // See https://crbug.com/1008125
-  if (gl->glDebugMessageControlFn && gl->glDebugMessageInsertFn &&
-      gl->glDebugMessageCallbackFn && gl->glGetDebugMessageLogFn &&
-      gl->glPushDebugGroupFn && gl->glPopDebugGroupFn && gl->glObjectLabelFn) {
-    BIND(DebugMessageControl);
-    BIND(DebugMessageInsert);
-    BIND(DebugMessageCallback);
-    BIND(GetDebugMessageLog);
-    BIND(PushDebugGroup);
-    BIND(PopDebugGroup);
-    BIND(ObjectLabel);
+  if (gl->glDebugMessageControlKHRFn && gl->glDebugMessageInsertKHRFn &&
+      gl->glDebugMessageCallbackKHRFn && gl->glGetDebugMessageLogKHRFn &&
+      gl->glPushDebugGroupKHRFn && gl->glPopDebugGroupKHRFn &&
+      gl->glObjectLabelKHRFn) {
+    BIND_EXTENSION(DebugMessageControl, DebugMessageControlKHR);
+    BIND_EXTENSION(DebugMessageInsert, DebugMessageInsertKHR);
+    BIND_EXTENSION(DebugMessageCallback, DebugMessageCallbackKHR);
+    BIND_EXTENSION(GetDebugMessageLog, GetDebugMessageLogKHR);
+    BIND_EXTENSION(PushDebugGroup, PushDebugGroupKHR);
+    BIND_EXTENSION(PopDebugGroup, PopDebugGroupKHR);
+    BIND_EXTENSION(ObjectLabel, ObjectLabelKHR);
   } else {
     extensions.remove("GL_KHR_debug");
   }

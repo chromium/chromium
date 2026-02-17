@@ -689,7 +689,8 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
     if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
       const std::string label =
           "SharedImage_AngleVulkan" + CreateLabelForSharedImageUsage(usage());
-      api->glObjectLabelFn(GL_TEXTURE, texture_id, label.size(), label.c_str());
+      api->glObjectLabelKHRFn(GL_TEXTURE, texture_id, label.size(),
+                              label.c_str());
     }
 
     auto& gl_texture = gl_textures_.emplace_back();

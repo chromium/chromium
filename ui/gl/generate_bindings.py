@@ -134,7 +134,6 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'known_as': 'glBlendEquationiOES',
   'versions': [
-    { 'name': 'glBlendEquationi' },
     { 'name': 'glBlendEquationiOES', 'extensions':
       ['GL_OES_draw_buffers_indexed'] }
   ],
@@ -145,7 +144,6 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'known_as': 'glBlendEquationSeparateiOES',
   'versions': [
-    { 'name': 'glBlendEquationSeparatei' },
     { 'name': 'glBlendEquationSeparateiOES', 'extensions':
       ['GL_OES_draw_buffers_indexed'] }
   ],
@@ -156,7 +154,6 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'known_as': 'glBlendFunciOES',
   'versions': [
-    { 'name': 'glBlendFunci' },
     { 'name': 'glBlendFunciOES', 'extensions': ['GL_OES_draw_buffers_indexed'] }
   ],
   'arguments': 'GLuint buf, GLenum sfactor, GLenum dfactor', },
@@ -167,7 +164,6 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'known_as': 'glBlendFuncSeparateiOES',
   'versions': [
-    { 'name': 'glBlendFuncSeparatei' },
     { 'name': 'glBlendFuncSeparateiOES', 'extensions':
       ['GL_OES_draw_buffers_indexed'] }
   ],
@@ -261,7 +257,6 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'known_as': 'glColorMaskiOES',
   'versions': [
-    { 'name': 'glColorMaski' },
     { 'name': 'glColorMaskiOES', 'extensions': ['GL_OES_draw_buffers_indexed'] }
   ],
   'arguments':
@@ -371,20 +366,17 @@ GL_FUNCTIONS = [
   'names': ['glCullFace'],
   'arguments': 'GLenum mode', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glDebugMessageCallback' },
-               { 'name': 'glDebugMessageCallbackKHR',
+  'versions': [{ 'name': 'glDebugMessageCallbackKHR',
                  'extensions': ['GL_KHR_debug'] }],
   'arguments': 'GLDEBUGPROC callback, const void* userParam', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glDebugMessageControl' },
-               { 'name': 'glDebugMessageControlKHR',
+  'versions': [{ 'name': 'glDebugMessageControlKHR',
                  'extensions': ['GL_KHR_debug'] }],
   'arguments':
     'GLenum source, GLenum type, GLenum severity, GLsizei count, '
     'const GLuint* ids, GLboolean enabled', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glDebugMessageInsert' },
-               { 'name': 'glDebugMessageInsertKHR',
+  'versions': [{ 'name': 'glDebugMessageInsertKHR',
                  'extensions': ['GL_KHR_debug'] }],
   'arguments':
     'GLenum source, GLenum type, GLuint id, GLenum severity, '
@@ -466,7 +458,6 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'known_as': 'glDisableiOES',
   'versions': [
-    { 'name': 'glDisablei' },
     { 'name': 'glDisableiOES', 'extensions': ['GL_OES_draw_buffers_indexed'] }
   ],
   'arguments': 'GLenum target, GLuint index', },
@@ -535,7 +526,6 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'known_as': 'glEnableiOES',
   'versions': [
-    { 'name': 'glEnablei' },
     { 'name': 'glEnableiOES', 'extensions': ['GL_OES_draw_buffers_indexed'] }
   ],
   'arguments': 'GLenum target, GLuint index', },
@@ -742,8 +732,7 @@ GL_FUNCTIONS = [
       'GLenum target, GLenum pname, GLsizei bufSize, GLsizei* length, '
       'void** params', },
 { 'return_type': 'GLuint',
-  'versions': [{ 'name': 'glGetDebugMessageLog' },
-               { 'name': 'glGetDebugMessageLogKHR',
+  'versions': [{ 'name': 'glGetDebugMessageLogKHR',
                  'extensions': ['GL_KHR_debug'] }],
   'arguments':
     'GLuint count, GLsizei bufSize, GLenum* sources, GLenum* types, '
@@ -811,8 +800,7 @@ GL_FUNCTIONS = [
 { 'return_type': 'GLenum',
   'known_as': 'glGetGraphicsResetStatusARB',
   'names': ['glGetGraphicsResetStatusKHR',
-            'glGetGraphicsResetStatusEXT',
-            'glGetGraphicsResetStatus'],
+            'glGetGraphicsResetStatusEXT'],
   'arguments': 'void', },
 { 'return_type': 'void',
   'versions': [{ 'name': 'glGetInteger64i_v' }],
@@ -870,20 +858,17 @@ GL_FUNCTIONS = [
       'GLenum pname, GLuint index, GLsizei bufSize, GLsizei* length, '
       'GLfloat* val', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glGetObjectLabel' },
-               { 'name': 'glGetObjectLabelKHR',
+  'versions': [{ 'name': 'glGetObjectLabelKHR',
                  'extensions': ['GL_KHR_debug'] }],
   'arguments':
     'GLenum identifier, GLuint name, GLsizei bufSize, GLsizei* length, '
     'char* label', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glGetObjectPtrLabel' },
-               { 'name': 'glGetObjectPtrLabelKHR',
+  'versions': [{ 'name': 'glGetObjectPtrLabelKHR',
                  'extensions': ['GL_KHR_debug'] }],
   'arguments': 'void* ptr, GLsizei bufSize, GLsizei* length, char* label', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glGetPointerv' },
-               { 'name': 'glGetPointervKHR',
+  'versions': [{ 'name': 'glGetPointervKHR',
                  'extensions': ['GL_KHR_debug'] }],
   'arguments': 'GLenum pname, void** params', },
 { 'return_type': 'void',
@@ -1190,7 +1175,6 @@ GL_FUNCTIONS = [
 { 'return_type': 'GLboolean',
   'known_as': 'glIsEnablediOES',
   'versions': [
-    { 'name': 'glIsEnabledi' },
     { 'name': 'glIsEnablediOES', 'extensions': ['GL_OES_draw_buffers_indexed'] }
   ],
   'arguments': 'GLenum target, GLuint index', },
@@ -1259,9 +1243,6 @@ GL_FUNCTIONS = [
   'names': ['glMemoryObjectParameterivEXT'],
   'arguments': 'GLuint memoryObject, GLenum pname, const GLint* param'},
 { 'return_type': 'void',
-  'names': ['glMinSampleShading'],
-  'arguments': 'GLfloat value', },
-{ 'return_type': 'void',
   'versions' : [{'name': 'glMultiDrawArraysANGLE',
                  'extensions': ['GL_ANGLE_multi_draw'] }],
   'arguments': 'GLenum mode, const GLint* firsts, '
@@ -1299,19 +1280,16 @@ GL_FUNCTIONS = [
                'const GLint* baseVertices, const GLuint* baseInstances, '
                'GLsizei drawcount', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glObjectLabel' },
-               { 'name': 'glObjectLabelKHR',
+  'versions': [{ 'name': 'glObjectLabelKHR',
                  'extensions': ['GL_KHR_debug'] }],
   'arguments':
     'GLenum identifier, GLuint name, GLsizei length, const char* label', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glObjectPtrLabel' },
-               { 'name': 'glObjectPtrLabelKHR',
+  'versions': [{ 'name': 'glObjectPtrLabelKHR',
                  'extensions': ['GL_KHR_debug'] }],
   'arguments': 'void* ptr, GLsizei length, const char* label', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glPatchParameteri' },
-               { 'name': 'glPatchParameteriOES',
+  'versions': [{ 'name': 'glPatchParameteriOES',
                  'extensions': ['GL_OES_tessellation_shader'] }],
   'arguments': 'GLenum pname, GLint value', },
 { 'return_type': 'void',
@@ -1342,8 +1320,7 @@ GL_FUNCTIONS = [
                 'extensions': ['GL_EXT_polygon_offset_clamp']}],
   'arguments': 'GLfloat factor, GLfloat units, GLfloat clamp', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glPopDebugGroup' },
-               { 'name': 'glPopDebugGroupKHR',
+  'versions': [{ 'name': 'glPopDebugGroupKHR',
                  'extensions': ['GL_KHR_debug'] }],
   'arguments': '', },
 { 'return_type': 'void',
@@ -1364,8 +1341,7 @@ GL_FUNCTIONS = [
                 'extensions': ['GL_ANGLE_provoking_vertex']}],
   'arguments': 'GLenum provokeMode', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glPushDebugGroup' },
-               { 'name': 'glPushDebugGroupKHR',
+  'versions': [{ 'name': 'glPushDebugGroupKHR',
                  'extensions': ['GL_KHR_debug'] }],
   'arguments':
     'GLenum source, GLuint id, GLsizei length, const char* message', },
@@ -1504,10 +1480,10 @@ GL_FUNCTIONS = [
   'names': ['glTestFenceNV'],
   'arguments': 'GLuint fence', },
 { 'return_type': 'void',
-  'names': ['glTexBuffer', 'glTexBufferOES', 'glTexBufferEXT'],
+  'names': ['glTexBufferOES', 'glTexBufferEXT'],
   'arguments': 'GLenum target, GLenum internalformat, GLuint buffer', } ,
 { 'return_type': 'void',
-  'names': ['glTexBufferRange', 'glTexBufferRangeOES', 'glTexBufferRangeEXT'],
+  'names': ['glTexBufferRangeOES', 'glTexBufferRangeEXT'],
   'arguments':
       'GLenum target, GLenum internalformat, GLuint buffer, '
       'GLintptr offset, GLsizeiptr size', },

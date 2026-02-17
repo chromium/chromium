@@ -510,7 +510,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindTexture(GLenum target,
   if (service_id != 0) {
     // Label the texture with additional context info
     const char* label = ContextTypeToLabel(feature_info_->context_type());
-    api()->glObjectLabelFn(GL_TEXTURE, service_id, strlen(label), label);
+    api()->glObjectLabelKHRFn(GL_TEXTURE, service_id, strlen(label), label);
 
     // Create a new texture object to track this texture
     if (!resources_->texture_object_map.GetServiceID(texture,

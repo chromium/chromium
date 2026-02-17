@@ -282,20 +282,20 @@ void glCreateMemoryObjectsEXTFn(GLsizei n, GLuint* memoryObjects) override {}
 GLuint glCreateProgramFn() override;
 GLuint glCreateShaderFn(GLenum type) override;
 void glCullFaceFn(GLenum mode) override {}
-void glDebugMessageCallbackFn(GLDEBUGPROC callback,
-                              const void* userParam) override {}
-void glDebugMessageControlFn(GLenum source,
-                             GLenum type,
-                             GLenum severity,
-                             GLsizei count,
-                             const GLuint* ids,
-                             GLboolean enabled) override {}
-void glDebugMessageInsertFn(GLenum source,
-                            GLenum type,
-                            GLuint id,
-                            GLenum severity,
-                            GLsizei length,
-                            const char* buf) override {}
+void glDebugMessageCallbackKHRFn(GLDEBUGPROC callback,
+                                 const void* userParam) override {}
+void glDebugMessageControlKHRFn(GLenum source,
+                                GLenum type,
+                                GLenum severity,
+                                GLsizei count,
+                                const GLuint* ids,
+                                GLboolean enabled) override {}
+void glDebugMessageInsertKHRFn(GLenum source,
+                               GLenum type,
+                               GLuint id,
+                               GLenum severity,
+                               GLsizei length,
+                               const char* buf) override {}
 void glDeleteBuffersARBFn(GLsizei n, const GLuint* buffers) override {}
 void glDeleteFencesNVFn(GLsizei n, const GLuint* fences) override {}
 void glDeleteFramebuffersEXTFn(GLsizei n, const GLuint* framebuffers) override {
@@ -499,14 +499,14 @@ void glGetBufferPointervRobustANGLEFn(GLenum target,
                                       GLsizei bufSize,
                                       GLsizei* length,
                                       void** params) override {}
-GLuint glGetDebugMessageLogFn(GLuint count,
-                              GLsizei bufSize,
-                              GLenum* sources,
-                              GLenum* types,
-                              GLuint* ids,
-                              GLenum* severities,
-                              GLsizei* lengths,
-                              char* messageLog) override;
+GLuint glGetDebugMessageLogKHRFn(GLuint count,
+                                 GLsizei bufSize,
+                                 GLenum* sources,
+                                 GLenum* types,
+                                 GLuint* ids,
+                                 GLenum* severities,
+                                 GLsizei* lengths,
+                                 char* messageLog) override;
 GLenum glGetErrorFn() override;
 void glGetFenceivNVFn(GLuint fence, GLenum pname, GLint* params) override {}
 void glGetFloatvFn(GLenum pname, GLfloat* params) override {}
@@ -592,16 +592,16 @@ void glGetMultisamplefvRobustANGLEFn(GLenum pname,
                                      GLsizei bufSize,
                                      GLsizei* length,
                                      GLfloat* val) override {}
-void glGetObjectLabelFn(GLenum identifier,
-                        GLuint name,
-                        GLsizei bufSize,
-                        GLsizei* length,
-                        char* label) override {}
-void glGetObjectPtrLabelFn(void* ptr,
+void glGetObjectLabelKHRFn(GLenum identifier,
+                           GLuint name,
                            GLsizei bufSize,
                            GLsizei* length,
                            char* label) override {}
-void glGetPointervFn(GLenum pname, void** params) override {}
+void glGetObjectPtrLabelKHRFn(void* ptr,
+                              GLsizei bufSize,
+                              GLsizei* length,
+                              char* label) override {}
+void glGetPointervKHRFn(GLenum pname, void** params) override {}
 void glGetProgramBinaryFn(GLuint program,
                           GLsizei bufSize,
                           GLsizei* length,
@@ -867,7 +867,6 @@ void glMaxShaderCompilerThreadsKHRFn(GLuint count) override {}
 void glMemoryObjectParameterivEXTFn(GLuint memoryObject,
                                     GLenum pname,
                                     const GLint* param) override {}
-void glMinSampleShadingFn(GLfloat value) override {}
 void glMultiDrawArraysANGLEFn(GLenum mode,
                               const GLint* firsts,
                               const GLsizei* counts,
@@ -904,13 +903,14 @@ void glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLEFn(
     const GLint* baseVertices,
     const GLuint* baseInstances,
     GLsizei drawcount) override {}
-void glObjectLabelFn(GLenum identifier,
-                     GLuint name,
-                     GLsizei length,
-                     const char* label) override {}
-void glObjectPtrLabelFn(void* ptr, GLsizei length, const char* label) override {
-}
-void glPatchParameteriFn(GLenum pname, GLint value) override {}
+void glObjectLabelKHRFn(GLenum identifier,
+                        GLuint name,
+                        GLsizei length,
+                        const char* label) override {}
+void glObjectPtrLabelKHRFn(void* ptr,
+                           GLsizei length,
+                           const char* label) override {}
+void glPatchParameteriOESFn(GLenum pname, GLint value) override {}
 void glPauseTransformFeedbackFn() override {}
 void glPixelLocalStorageBarrierANGLEFn() override {}
 void glPixelStoreiFn(GLenum pname, GLint param) override {}
@@ -921,7 +921,7 @@ void glPolygonOffsetFn(GLfloat factor, GLfloat units) override {}
 void glPolygonOffsetClampEXTFn(GLfloat factor,
                                GLfloat units,
                                GLfloat clamp) override {}
-void glPopDebugGroupFn() override {}
+void glPopDebugGroupKHRFn() override {}
 void glPopGroupMarkerEXTFn() override {}
 void glPrimitiveRestartIndexFn(GLuint index) override {}
 void glProgramBinaryFn(GLuint program,
@@ -931,10 +931,10 @@ void glProgramBinaryFn(GLuint program,
 void glProgramParameteriFn(GLuint program, GLenum pname, GLint value) override {
 }
 void glProvokingVertexANGLEFn(GLenum provokeMode) override {}
-void glPushDebugGroupFn(GLenum source,
-                        GLuint id,
-                        GLsizei length,
-                        const char* message) override {}
+void glPushDebugGroupKHRFn(GLenum source,
+                           GLuint id,
+                           GLsizei length,
+                           const char* message) override {}
 void glPushGroupMarkerEXTFn(GLsizei length, const char* marker) override {}
 void glQueryCounterFn(GLuint id, GLenum target) override {}
 void glReadBufferFn(GLenum src) override {}
@@ -1037,14 +1037,14 @@ void glStencilOpSeparateFn(GLenum face,
                            GLenum zfail,
                            GLenum zpass) override {}
 GLboolean glTestFenceNVFn(GLuint fence) override;
-void glTexBufferFn(GLenum target,
-                   GLenum internalformat,
-                   GLuint buffer) override {}
-void glTexBufferRangeFn(GLenum target,
-                        GLenum internalformat,
-                        GLuint buffer,
-                        GLintptr offset,
-                        GLsizeiptr size) override {}
+void glTexBufferOESFn(GLenum target,
+                      GLenum internalformat,
+                      GLuint buffer) override {}
+void glTexBufferRangeOESFn(GLenum target,
+                           GLenum internalformat,
+                           GLuint buffer,
+                           GLintptr offset,
+                           GLsizeiptr size) override {}
 void glTexImage2DFn(GLenum target,
                     GLint level,
                     GLint internalformat,

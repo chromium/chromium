@@ -243,16 +243,16 @@ MOCK_METHOD2(CreateMemoryObjectsEXT, void(GLsizei n, GLuint* memoryObjects));
 MOCK_METHOD0(CreateProgram, GLuint());
 MOCK_METHOD1(CreateShader, GLuint(GLenum type));
 MOCK_METHOD1(CullFace, void(GLenum mode));
-MOCK_METHOD2(DebugMessageCallback,
+MOCK_METHOD2(DebugMessageCallbackKHR,
              void(GLDEBUGPROC callback, const void* userParam));
-MOCK_METHOD6(DebugMessageControl,
+MOCK_METHOD6(DebugMessageControlKHR,
              void(GLenum source,
                   GLenum type,
                   GLenum severity,
                   GLsizei count,
                   const GLuint* ids,
                   GLboolean enabled));
-MOCK_METHOD6(DebugMessageInsert,
+MOCK_METHOD6(DebugMessageInsertKHR,
              void(GLenum source,
                   GLenum type,
                   GLuint id,
@@ -468,7 +468,7 @@ MOCK_METHOD5(GetBufferPointervRobustANGLE,
                   GLsizei bufSize,
                   GLsizei* length,
                   void** params));
-MOCK_METHOD8(GetDebugMessageLog,
+MOCK_METHOD8(GetDebugMessageLogKHR,
              GLuint(GLuint count,
                     GLsizei bufSize,
                     GLenum* sources,
@@ -559,15 +559,15 @@ MOCK_METHOD5(GetMultisamplefvRobustANGLE,
                   GLsizei bufSize,
                   GLsizei* length,
                   GLfloat* val));
-MOCK_METHOD5(GetObjectLabel,
+MOCK_METHOD5(GetObjectLabelKHR,
              void(GLenum identifier,
                   GLuint name,
                   GLsizei bufSize,
                   GLsizei* length,
                   char* label));
-MOCK_METHOD4(GetObjectPtrLabel,
+MOCK_METHOD4(GetObjectPtrLabelKHR,
              void(void* ptr, GLsizei bufSize, GLsizei* length, char* label));
-MOCK_METHOD2(GetPointerv, void(GLenum pname, void** params));
+MOCK_METHOD2(GetPointervKHR, void(GLenum pname, void** params));
 MOCK_METHOD5(GetProgramBinary,
              void(GLuint program,
                   GLsizei bufSize,
@@ -837,7 +837,6 @@ MOCK_METHOD4(MapBufferRange,
 MOCK_METHOD1(MaxShaderCompilerThreadsKHR, void(GLuint count));
 MOCK_METHOD3(MemoryObjectParameterivEXT,
              void(GLuint memoryObject, GLenum pname, const GLint* param));
-MOCK_METHOD1(MinSampleShading, void(GLfloat value));
 MOCK_METHOD4(MultiDrawArraysANGLE,
              void(GLenum mode,
                   const GLint* firsts,
@@ -879,11 +878,11 @@ MOCK_METHOD8(MultiDrawElementsInstancedBaseVertexBaseInstanceANGLE,
                   const GLuint* baseInstances,
                   GLsizei drawcount));
 MOCK_METHOD4(
-    ObjectLabel,
+    ObjectLabelKHR,
     void(GLenum identifier, GLuint name, GLsizei length, const char* label));
-MOCK_METHOD3(ObjectPtrLabel,
+MOCK_METHOD3(ObjectPtrLabelKHR,
              void(void* ptr, GLsizei length, const char* label));
-MOCK_METHOD2(PatchParameteri, void(GLenum pname, GLint value));
+MOCK_METHOD2(PatchParameteriOES, void(GLenum pname, GLint value));
 MOCK_METHOD0(PauseTransformFeedback, void());
 MOCK_METHOD0(PixelLocalStorageBarrierANGLE, void());
 MOCK_METHOD2(PixelStorei, void(GLenum pname, GLint param));
@@ -893,7 +892,7 @@ MOCK_METHOD2(PolygonModeANGLE, void(GLenum face, GLenum mode));
 MOCK_METHOD2(PolygonOffset, void(GLfloat factor, GLfloat units));
 MOCK_METHOD3(PolygonOffsetClampEXT,
              void(GLfloat factor, GLfloat units, GLfloat clamp));
-MOCK_METHOD0(PopDebugGroup, void());
+MOCK_METHOD0(PopDebugGroupKHR, void());
 MOCK_METHOD0(PopGroupMarkerEXT, void());
 MOCK_METHOD1(PrimitiveRestartIndex, void(GLuint index));
 MOCK_METHOD4(ProgramBinary,
@@ -905,7 +904,7 @@ MOCK_METHOD3(ProgramParameteri,
              void(GLuint program, GLenum pname, GLint value));
 MOCK_METHOD1(ProvokingVertexANGLE, void(GLenum provokeMode));
 MOCK_METHOD4(
-    PushDebugGroup,
+    PushDebugGroupKHR,
     void(GLenum source, GLuint id, GLsizei length, const char* message));
 MOCK_METHOD2(PushGroupMarkerEXT, void(GLsizei length, const char* marker));
 MOCK_METHOD2(QueryCounter, void(GLuint id, GLenum target));
@@ -997,9 +996,9 @@ MOCK_METHOD3(StencilOp, void(GLenum fail, GLenum zfail, GLenum zpass));
 MOCK_METHOD4(StencilOpSeparate,
              void(GLenum face, GLenum fail, GLenum zfail, GLenum zpass));
 MOCK_METHOD1(TestFenceNV, GLboolean(GLuint fence));
-MOCK_METHOD3(TexBuffer,
+MOCK_METHOD3(TexBufferOES,
              void(GLenum target, GLenum internalformat, GLuint buffer));
-MOCK_METHOD5(TexBufferRange,
+MOCK_METHOD5(TexBufferRangeOES,
              void(GLenum target,
                   GLenum internalformat,
                   GLuint buffer,

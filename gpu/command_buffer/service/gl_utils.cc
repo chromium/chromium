@@ -397,22 +397,23 @@ void InitializeGLDebugLogging(bool log_non_errors,
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-  glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_ERROR, GL_DONT_CARE,
-                        0, nullptr, GL_TRUE);
+  glDebugMessageControlKHR(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_ERROR,
+                           GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
   if (log_non_errors) {
     // Enable logging of medium and high severity messages
-    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_HIGH, 0,
-                          nullptr, GL_TRUE);
-    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_MEDIUM,
-                          0, nullptr, GL_TRUE);
-    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_LOW, 0,
-                          nullptr, GL_FALSE);
-    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
-                          GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
+    glDebugMessageControlKHR(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_HIGH,
+                             0, nullptr, GL_TRUE);
+    glDebugMessageControlKHR(GL_DONT_CARE, GL_DONT_CARE,
+                             GL_DEBUG_SEVERITY_MEDIUM, 0, nullptr, GL_TRUE);
+    glDebugMessageControlKHR(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_LOW,
+                             0, nullptr, GL_FALSE);
+    glDebugMessageControlKHR(GL_DONT_CARE, GL_DONT_CARE,
+                             GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr,
+                             GL_FALSE);
   }
 
-  glDebugMessageCallback(callback, user_param);
+  glDebugMessageCallbackKHR(callback, user_param);
 }
 
 bool ValidContextLostReason(GLenum reason) {

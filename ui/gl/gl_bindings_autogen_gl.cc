@@ -560,37 +560,23 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
         get_proc_address("glBlendBarrierKHR"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glBlendEquationiOESFn = reinterpret_cast<glBlendEquationiOESProc>(
-        get_proc_address("glBlendEquationi"));
-  } else if (ext.b_GL_OES_draw_buffers_indexed) {
+  if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glBlendEquationiOESFn = reinterpret_cast<glBlendEquationiOESProc>(
         get_proc_address("glBlendEquationiOES"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glBlendEquationSeparateiOESFn =
-        reinterpret_cast<glBlendEquationSeparateiOESProc>(
-            get_proc_address("glBlendEquationSeparatei"));
-  } else if (ext.b_GL_OES_draw_buffers_indexed) {
+  if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glBlendEquationSeparateiOESFn =
         reinterpret_cast<glBlendEquationSeparateiOESProc>(
             get_proc_address("glBlendEquationSeparateiOES"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glBlendFunciOESFn =
-        reinterpret_cast<glBlendFunciOESProc>(get_proc_address("glBlendFunci"));
-  } else if (ext.b_GL_OES_draw_buffers_indexed) {
+  if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glBlendFunciOESFn = reinterpret_cast<glBlendFunciOESProc>(
         get_proc_address("glBlendFunciOES"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glBlendFuncSeparateiOESFn =
-        reinterpret_cast<glBlendFuncSeparateiOESProc>(
-            get_proc_address("glBlendFuncSeparatei"));
-  } else if (ext.b_GL_OES_draw_buffers_indexed) {
+  if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glBlendFuncSeparateiOESFn =
         reinterpret_cast<glBlendFuncSeparateiOESProc>(
             get_proc_address("glBlendFuncSeparateiOES"));
@@ -656,10 +642,7 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
         get_proc_address("glClipControlEXT"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glColorMaskiOESFn =
-        reinterpret_cast<glColorMaskiOESProc>(get_proc_address("glColorMaski"));
-  } else if (ext.b_GL_OES_draw_buffers_indexed) {
+  if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glColorMaskiOESFn = reinterpret_cast<glColorMaskiOESProc>(
         get_proc_address("glColorMaskiOES"));
   }
@@ -726,28 +709,22 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
             get_proc_address("glCreateMemoryObjectsEXT"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glDebugMessageCallbackFn = reinterpret_cast<glDebugMessageCallbackProc>(
-        get_proc_address("glDebugMessageCallback"));
-  } else if (ext.b_GL_KHR_debug) {
-    fn.glDebugMessageCallbackFn = reinterpret_cast<glDebugMessageCallbackProc>(
-        get_proc_address("glDebugMessageCallbackKHR"));
+  if (ext.b_GL_KHR_debug) {
+    fn.glDebugMessageCallbackKHRFn =
+        reinterpret_cast<glDebugMessageCallbackKHRProc>(
+            get_proc_address("glDebugMessageCallbackKHR"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glDebugMessageControlFn = reinterpret_cast<glDebugMessageControlProc>(
-        get_proc_address("glDebugMessageControl"));
-  } else if (ext.b_GL_KHR_debug) {
-    fn.glDebugMessageControlFn = reinterpret_cast<glDebugMessageControlProc>(
-        get_proc_address("glDebugMessageControlKHR"));
+  if (ext.b_GL_KHR_debug) {
+    fn.glDebugMessageControlKHRFn =
+        reinterpret_cast<glDebugMessageControlKHRProc>(
+            get_proc_address("glDebugMessageControlKHR"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glDebugMessageInsertFn = reinterpret_cast<glDebugMessageInsertProc>(
-        get_proc_address("glDebugMessageInsert"));
-  } else if (ext.b_GL_KHR_debug) {
-    fn.glDebugMessageInsertFn = reinterpret_cast<glDebugMessageInsertProc>(
-        get_proc_address("glDebugMessageInsertKHR"));
+  if (ext.b_GL_KHR_debug) {
+    fn.glDebugMessageInsertKHRFn =
+        reinterpret_cast<glDebugMessageInsertKHRProc>(
+            get_proc_address("glDebugMessageInsertKHR"));
   }
 
   if (ext.b_GL_NV_fence) {
@@ -807,10 +784,7 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
             get_proc_address("glDisableExtensionANGLE"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glDisableiOESFn =
-        reinterpret_cast<glDisableiOESProc>(get_proc_address("glDisablei"));
-  } else if (ext.b_GL_OES_draw_buffers_indexed) {
+  if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glDisableiOESFn =
         reinterpret_cast<glDisableiOESProc>(get_proc_address("glDisableiOES"));
   }
@@ -886,10 +860,7 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
             get_proc_address("glEGLImageTargetTexture2DOES"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glEnableiOESFn =
-        reinterpret_cast<glEnableiOESProc>(get_proc_address("glEnablei"));
-  } else if (ext.b_GL_OES_draw_buffers_indexed) {
+  if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glEnableiOESFn =
         reinterpret_cast<glEnableiOESProc>(get_proc_address("glEnableiOES"));
   }
@@ -1094,12 +1065,10 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
             get_proc_address("glGetBufferPointervRobustANGLE"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glGetDebugMessageLogFn = reinterpret_cast<glGetDebugMessageLogProc>(
-        get_proc_address("glGetDebugMessageLog"));
-  } else if (ext.b_GL_KHR_debug) {
-    fn.glGetDebugMessageLogFn = reinterpret_cast<glGetDebugMessageLogProc>(
-        get_proc_address("glGetDebugMessageLogKHR"));
+  if (ext.b_GL_KHR_debug) {
+    fn.glGetDebugMessageLogKHRFn =
+        reinterpret_cast<glGetDebugMessageLogKHRProc>(
+            get_proc_address("glGetDebugMessageLogKHR"));
   }
 
   if (ext.b_GL_NV_fence) {
@@ -1161,11 +1130,7 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
                 "glGetFramebufferPixelLocalStorageParameterivRobustANGLE"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glGetGraphicsResetStatusARBFn =
-        reinterpret_cast<glGetGraphicsResetStatusARBProc>(
-            get_proc_address("glGetGraphicsResetStatus"));
-  } else if (ext.b_GL_KHR_robustness) {
+  if (ext.b_GL_KHR_robustness) {
     fn.glGetGraphicsResetStatusARBFn =
         reinterpret_cast<glGetGraphicsResetStatusARBProc>(
             get_proc_address("glGetGraphicsResetStatusKHR"));
@@ -1237,27 +1202,18 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
             get_proc_address("glGetMultisamplefvRobustANGLE"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glGetObjectLabelFn = reinterpret_cast<glGetObjectLabelProc>(
-        get_proc_address("glGetObjectLabel"));
-  } else if (ext.b_GL_KHR_debug) {
-    fn.glGetObjectLabelFn = reinterpret_cast<glGetObjectLabelProc>(
+  if (ext.b_GL_KHR_debug) {
+    fn.glGetObjectLabelKHRFn = reinterpret_cast<glGetObjectLabelKHRProc>(
         get_proc_address("glGetObjectLabelKHR"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glGetObjectPtrLabelFn = reinterpret_cast<glGetObjectPtrLabelProc>(
-        get_proc_address("glGetObjectPtrLabel"));
-  } else if (ext.b_GL_KHR_debug) {
-    fn.glGetObjectPtrLabelFn = reinterpret_cast<glGetObjectPtrLabelProc>(
+  if (ext.b_GL_KHR_debug) {
+    fn.glGetObjectPtrLabelKHRFn = reinterpret_cast<glGetObjectPtrLabelKHRProc>(
         get_proc_address("glGetObjectPtrLabelKHR"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glGetPointervFn =
-        reinterpret_cast<glGetPointervProc>(get_proc_address("glGetPointerv"));
-  } else if (ext.b_GL_KHR_debug) {
-    fn.glGetPointervFn = reinterpret_cast<glGetPointervProc>(
+  if (ext.b_GL_KHR_debug) {
+    fn.glGetPointervKHRFn = reinterpret_cast<glGetPointervKHRProc>(
         get_proc_address("glGetPointervKHR"));
   }
 
@@ -1547,10 +1503,7 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
             get_proc_address("glInvalidateTextureANGLE"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glIsEnablediOESFn =
-        reinterpret_cast<glIsEnablediOESProc>(get_proc_address("glIsEnabledi"));
-  } else if (ext.b_GL_OES_draw_buffers_indexed) {
+  if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glIsEnablediOESFn = reinterpret_cast<glIsEnablediOESProc>(
         get_proc_address("glIsEnablediOES"));
   }
@@ -1617,11 +1570,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
             get_proc_address("glMemoryObjectParameterivEXT"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glMinSampleShadingFn = reinterpret_cast<glMinSampleShadingProc>(
-        get_proc_address("glMinSampleShading"));
-  }
-
   if (ext.b_GL_ANGLE_multi_draw) {
     fn.glMultiDrawArraysANGLEFn = reinterpret_cast<glMultiDrawArraysANGLEProc>(
         get_proc_address("glMultiDrawArraysANGLE"));
@@ -1659,27 +1607,18 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
                 "glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glObjectLabelFn =
-        reinterpret_cast<glObjectLabelProc>(get_proc_address("glObjectLabel"));
-  } else if (ext.b_GL_KHR_debug) {
-    fn.glObjectLabelFn = reinterpret_cast<glObjectLabelProc>(
+  if (ext.b_GL_KHR_debug) {
+    fn.glObjectLabelKHRFn = reinterpret_cast<glObjectLabelKHRProc>(
         get_proc_address("glObjectLabelKHR"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glObjectPtrLabelFn = reinterpret_cast<glObjectPtrLabelProc>(
-        get_proc_address("glObjectPtrLabel"));
-  } else if (ext.b_GL_KHR_debug) {
-    fn.glObjectPtrLabelFn = reinterpret_cast<glObjectPtrLabelProc>(
+  if (ext.b_GL_KHR_debug) {
+    fn.glObjectPtrLabelKHRFn = reinterpret_cast<glObjectPtrLabelKHRProc>(
         get_proc_address("glObjectPtrLabelKHR"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glPatchParameteriFn = reinterpret_cast<glPatchParameteriProc>(
-        get_proc_address("glPatchParameteri"));
-  } else if (ext.b_GL_OES_tessellation_shader) {
-    fn.glPatchParameteriFn = reinterpret_cast<glPatchParameteriProc>(
+  if (ext.b_GL_OES_tessellation_shader) {
+    fn.glPatchParameteriOESFn = reinterpret_cast<glPatchParameteriOESProc>(
         get_proc_address("glPatchParameteriOES"));
   }
 
@@ -1706,11 +1645,8 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
             get_proc_address("glPolygonOffsetClampEXT"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glPopDebugGroupFn = reinterpret_cast<glPopDebugGroupProc>(
-        get_proc_address("glPopDebugGroup"));
-  } else if (ext.b_GL_KHR_debug) {
-    fn.glPopDebugGroupFn = reinterpret_cast<glPopDebugGroupProc>(
+  if (ext.b_GL_KHR_debug) {
+    fn.glPopDebugGroupKHRFn = reinterpret_cast<glPopDebugGroupKHRProc>(
         get_proc_address("glPopDebugGroupKHR"));
   }
 
@@ -1737,11 +1673,8 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
         get_proc_address("glProvokingVertexANGLE"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glPushDebugGroupFn = reinterpret_cast<glPushDebugGroupProc>(
-        get_proc_address("glPushDebugGroup"));
-  } else if (ext.b_GL_KHR_debug) {
-    fn.glPushDebugGroupFn = reinterpret_cast<glPushDebugGroupProc>(
+  if (ext.b_GL_KHR_debug) {
+    fn.glPushDebugGroupKHRFn = reinterpret_cast<glPushDebugGroupKHRProc>(
         get_proc_address("glPushDebugGroupKHR"));
   }
 
@@ -1865,25 +1798,19 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
         reinterpret_cast<glTestFenceNVProc>(get_proc_address("glTestFenceNV"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glTexBufferFn =
-        reinterpret_cast<glTexBufferProc>(get_proc_address("glTexBuffer"));
-  } else if (ext.b_GL_OES_texture_buffer) {
-    fn.glTexBufferFn =
-        reinterpret_cast<glTexBufferProc>(get_proc_address("glTexBufferOES"));
+  if (ext.b_GL_OES_texture_buffer) {
+    fn.glTexBufferOESFn = reinterpret_cast<glTexBufferOESProc>(
+        get_proc_address("glTexBufferOES"));
   } else if (ext.b_GL_EXT_texture_buffer) {
-    fn.glTexBufferFn =
-        reinterpret_cast<glTexBufferProc>(get_proc_address("glTexBufferEXT"));
+    fn.glTexBufferOESFn = reinterpret_cast<glTexBufferOESProc>(
+        get_proc_address("glTexBufferEXT"));
   }
 
-  if (ver->IsAtLeastGLES(3u, 2u)) {
-    fn.glTexBufferRangeFn = reinterpret_cast<glTexBufferRangeProc>(
-        get_proc_address("glTexBufferRange"));
-  } else if (ext.b_GL_OES_texture_buffer) {
-    fn.glTexBufferRangeFn = reinterpret_cast<glTexBufferRangeProc>(
+  if (ext.b_GL_OES_texture_buffer) {
+    fn.glTexBufferRangeOESFn = reinterpret_cast<glTexBufferRangeOESProc>(
         get_proc_address("glTexBufferRangeOES"));
   } else if (ext.b_GL_EXT_texture_buffer) {
-    fn.glTexBufferRangeFn = reinterpret_cast<glTexBufferRangeProc>(
+    fn.glTexBufferRangeOESFn = reinterpret_cast<glTexBufferRangeOESProc>(
         get_proc_address("glTexBufferRangeEXT"));
   }
 
@@ -2607,28 +2534,29 @@ void GLApiBase::glCullFaceFn(GLenum mode) {
   driver_->fn.glCullFaceFn(mode);
 }
 
-void GLApiBase::glDebugMessageCallbackFn(GLDEBUGPROC callback,
-                                         const void* userParam) {
-  driver_->fn.glDebugMessageCallbackFn(callback, userParam);
+void GLApiBase::glDebugMessageCallbackKHRFn(GLDEBUGPROC callback,
+                                            const void* userParam) {
+  driver_->fn.glDebugMessageCallbackKHRFn(callback, userParam);
 }
 
-void GLApiBase::glDebugMessageControlFn(GLenum source,
-                                        GLenum type,
-                                        GLenum severity,
-                                        GLsizei count,
-                                        const GLuint* ids,
-                                        GLboolean enabled) {
-  driver_->fn.glDebugMessageControlFn(source, type, severity, count, ids,
-                                      enabled);
+void GLApiBase::glDebugMessageControlKHRFn(GLenum source,
+                                           GLenum type,
+                                           GLenum severity,
+                                           GLsizei count,
+                                           const GLuint* ids,
+                                           GLboolean enabled) {
+  driver_->fn.glDebugMessageControlKHRFn(source, type, severity, count, ids,
+                                         enabled);
 }
 
-void GLApiBase::glDebugMessageInsertFn(GLenum source,
-                                       GLenum type,
-                                       GLuint id,
-                                       GLenum severity,
-                                       GLsizei length,
-                                       const char* buf) {
-  driver_->fn.glDebugMessageInsertFn(source, type, id, severity, length, buf);
+void GLApiBase::glDebugMessageInsertKHRFn(GLenum source,
+                                          GLenum type,
+                                          GLuint id,
+                                          GLenum severity,
+                                          GLsizei length,
+                                          const char* buf) {
+  driver_->fn.glDebugMessageInsertKHRFn(source, type, id, severity, length,
+                                        buf);
 }
 
 void GLApiBase::glDeleteBuffersARBFn(GLsizei n, const GLuint* buffers) {
@@ -3112,16 +3040,16 @@ void GLApiBase::glGetBufferPointervRobustANGLEFn(GLenum target,
                                                params);
 }
 
-GLuint GLApiBase::glGetDebugMessageLogFn(GLuint count,
-                                         GLsizei bufSize,
-                                         GLenum* sources,
-                                         GLenum* types,
-                                         GLuint* ids,
-                                         GLenum* severities,
-                                         GLsizei* lengths,
-                                         char* messageLog) {
-  return driver_->fn.glGetDebugMessageLogFn(count, bufSize, sources, types, ids,
-                                            severities, lengths, messageLog);
+GLuint GLApiBase::glGetDebugMessageLogKHRFn(GLuint count,
+                                            GLsizei bufSize,
+                                            GLenum* sources,
+                                            GLenum* types,
+                                            GLuint* ids,
+                                            GLenum* severities,
+                                            GLsizei* lengths,
+                                            char* messageLog) {
+  return driver_->fn.glGetDebugMessageLogKHRFn(
+      count, bufSize, sources, types, ids, severities, lengths, messageLog);
 }
 
 GLenum GLApiBase::glGetErrorFn(void) {
@@ -3298,23 +3226,23 @@ void GLApiBase::glGetMultisamplefvRobustANGLEFn(GLenum pname,
                                               val);
 }
 
-void GLApiBase::glGetObjectLabelFn(GLenum identifier,
-                                   GLuint name,
-                                   GLsizei bufSize,
-                                   GLsizei* length,
-                                   char* label) {
-  driver_->fn.glGetObjectLabelFn(identifier, name, bufSize, length, label);
-}
-
-void GLApiBase::glGetObjectPtrLabelFn(void* ptr,
+void GLApiBase::glGetObjectLabelKHRFn(GLenum identifier,
+                                      GLuint name,
                                       GLsizei bufSize,
                                       GLsizei* length,
                                       char* label) {
-  driver_->fn.glGetObjectPtrLabelFn(ptr, bufSize, length, label);
+  driver_->fn.glGetObjectLabelKHRFn(identifier, name, bufSize, length, label);
 }
 
-void GLApiBase::glGetPointervFn(GLenum pname, void** params) {
-  driver_->fn.glGetPointervFn(pname, params);
+void GLApiBase::glGetObjectPtrLabelKHRFn(void* ptr,
+                                         GLsizei bufSize,
+                                         GLsizei* length,
+                                         char* label) {
+  driver_->fn.glGetObjectPtrLabelKHRFn(ptr, bufSize, length, label);
+}
+
+void GLApiBase::glGetPointervKHRFn(GLenum pname, void** params) {
+  driver_->fn.glGetPointervKHRFn(pname, params);
 }
 
 void GLApiBase::glGetProgramBinaryFn(GLuint program,
@@ -3873,10 +3801,6 @@ void GLApiBase::glMemoryObjectParameterivEXTFn(GLuint memoryObject,
   driver_->fn.glMemoryObjectParameterivEXTFn(memoryObject, pname, param);
 }
 
-void GLApiBase::glMinSampleShadingFn(GLfloat value) {
-  driver_->fn.glMinSampleShadingFn(value);
-}
-
 void GLApiBase::glMultiDrawArraysANGLEFn(GLenum mode,
                                          const GLint* firsts,
                                          const GLsizei* counts,
@@ -3938,21 +3862,21 @@ void GLApiBase::glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLEFn(
       drawcount);
 }
 
-void GLApiBase::glObjectLabelFn(GLenum identifier,
-                                GLuint name,
-                                GLsizei length,
-                                const char* label) {
-  driver_->fn.glObjectLabelFn(identifier, name, length, label);
-}
-
-void GLApiBase::glObjectPtrLabelFn(void* ptr,
+void GLApiBase::glObjectLabelKHRFn(GLenum identifier,
+                                   GLuint name,
                                    GLsizei length,
                                    const char* label) {
-  driver_->fn.glObjectPtrLabelFn(ptr, length, label);
+  driver_->fn.glObjectLabelKHRFn(identifier, name, length, label);
 }
 
-void GLApiBase::glPatchParameteriFn(GLenum pname, GLint value) {
-  driver_->fn.glPatchParameteriFn(pname, value);
+void GLApiBase::glObjectPtrLabelKHRFn(void* ptr,
+                                      GLsizei length,
+                                      const char* label) {
+  driver_->fn.glObjectPtrLabelKHRFn(ptr, length, label);
+}
+
+void GLApiBase::glPatchParameteriOESFn(GLenum pname, GLint value) {
+  driver_->fn.glPatchParameteriOESFn(pname, value);
 }
 
 void GLApiBase::glPauseTransformFeedbackFn(void) {
@@ -3989,8 +3913,8 @@ void GLApiBase::glPolygonOffsetClampEXTFn(GLfloat factor,
   driver_->fn.glPolygonOffsetClampEXTFn(factor, units, clamp);
 }
 
-void GLApiBase::glPopDebugGroupFn() {
-  driver_->fn.glPopDebugGroupFn();
+void GLApiBase::glPopDebugGroupKHRFn() {
+  driver_->fn.glPopDebugGroupKHRFn();
 }
 
 void GLApiBase::glPopGroupMarkerEXTFn(void) {
@@ -4018,11 +3942,11 @@ void GLApiBase::glProvokingVertexANGLEFn(GLenum provokeMode) {
   driver_->fn.glProvokingVertexANGLEFn(provokeMode);
 }
 
-void GLApiBase::glPushDebugGroupFn(GLenum source,
-                                   GLuint id,
-                                   GLsizei length,
-                                   const char* message) {
-  driver_->fn.glPushDebugGroupFn(source, id, length, message);
+void GLApiBase::glPushDebugGroupKHRFn(GLenum source,
+                                      GLuint id,
+                                      GLsizei length,
+                                      const char* message) {
+  driver_->fn.glPushDebugGroupKHRFn(source, id, length, message);
 }
 
 void GLApiBase::glPushGroupMarkerEXTFn(GLsizei length, const char* marker) {
@@ -4233,18 +4157,19 @@ GLboolean GLApiBase::glTestFenceNVFn(GLuint fence) {
   return driver_->fn.glTestFenceNVFn(fence);
 }
 
-void GLApiBase::glTexBufferFn(GLenum target,
-                              GLenum internalformat,
-                              GLuint buffer) {
-  driver_->fn.glTexBufferFn(target, internalformat, buffer);
+void GLApiBase::glTexBufferOESFn(GLenum target,
+                                 GLenum internalformat,
+                                 GLuint buffer) {
+  driver_->fn.glTexBufferOESFn(target, internalformat, buffer);
 }
 
-void GLApiBase::glTexBufferRangeFn(GLenum target,
-                                   GLenum internalformat,
-                                   GLuint buffer,
-                                   GLintptr offset,
-                                   GLsizeiptr size) {
-  driver_->fn.glTexBufferRangeFn(target, internalformat, buffer, offset, size);
+void GLApiBase::glTexBufferRangeOESFn(GLenum target,
+                                      GLenum internalformat,
+                                      GLuint buffer,
+                                      GLintptr offset,
+                                      GLsizeiptr size) {
+  driver_->fn.glTexBufferRangeOESFn(target, internalformat, buffer, offset,
+                                    size);
 }
 
 void GLApiBase::glTexImage2DFn(GLenum target,
@@ -5356,30 +5281,31 @@ void TraceGLApi::glCullFaceFn(GLenum mode) {
   gl_api_->glCullFaceFn(mode);
 }
 
-void TraceGLApi::glDebugMessageCallbackFn(GLDEBUGPROC callback,
-                                          const void* userParam) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glDebugMessageCallback");
-  gl_api_->glDebugMessageCallbackFn(callback, userParam);
+void TraceGLApi::glDebugMessageCallbackKHRFn(GLDEBUGPROC callback,
+                                             const void* userParam) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glDebugMessageCallbackKHR");
+  gl_api_->glDebugMessageCallbackKHRFn(callback, userParam);
 }
 
-void TraceGLApi::glDebugMessageControlFn(GLenum source,
-                                         GLenum type,
-                                         GLenum severity,
-                                         GLsizei count,
-                                         const GLuint* ids,
-                                         GLboolean enabled) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glDebugMessageControl");
-  gl_api_->glDebugMessageControlFn(source, type, severity, count, ids, enabled);
+void TraceGLApi::glDebugMessageControlKHRFn(GLenum source,
+                                            GLenum type,
+                                            GLenum severity,
+                                            GLsizei count,
+                                            const GLuint* ids,
+                                            GLboolean enabled) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glDebugMessageControlKHR");
+  gl_api_->glDebugMessageControlKHRFn(source, type, severity, count, ids,
+                                      enabled);
 }
 
-void TraceGLApi::glDebugMessageInsertFn(GLenum source,
-                                        GLenum type,
-                                        GLuint id,
-                                        GLenum severity,
-                                        GLsizei length,
-                                        const char* buf) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glDebugMessageInsert");
-  gl_api_->glDebugMessageInsertFn(source, type, id, severity, length, buf);
+void TraceGLApi::glDebugMessageInsertKHRFn(GLenum source,
+                                           GLenum type,
+                                           GLuint id,
+                                           GLenum severity,
+                                           GLsizei length,
+                                           const char* buf) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glDebugMessageInsertKHR");
+  gl_api_->glDebugMessageInsertKHRFn(source, type, id, severity, length, buf);
 }
 
 void TraceGLApi::glDeleteBuffersARBFn(GLsizei n, const GLuint* buffers) {
@@ -5976,17 +5902,17 @@ void TraceGLApi::glGetBufferPointervRobustANGLEFn(GLenum target,
                                             params);
 }
 
-GLuint TraceGLApi::glGetDebugMessageLogFn(GLuint count,
-                                          GLsizei bufSize,
-                                          GLenum* sources,
-                                          GLenum* types,
-                                          GLuint* ids,
-                                          GLenum* severities,
-                                          GLsizei* lengths,
-                                          char* messageLog) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGetDebugMessageLog");
-  return gl_api_->glGetDebugMessageLogFn(count, bufSize, sources, types, ids,
-                                         severities, lengths, messageLog);
+GLuint TraceGLApi::glGetDebugMessageLogKHRFn(GLuint count,
+                                             GLsizei bufSize,
+                                             GLenum* sources,
+                                             GLenum* types,
+                                             GLuint* ids,
+                                             GLenum* severities,
+                                             GLsizei* lengths,
+                                             char* messageLog) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGetDebugMessageLogKHR");
+  return gl_api_->glGetDebugMessageLogKHRFn(count, bufSize, sources, types, ids,
+                                            severities, lengths, messageLog);
 }
 
 GLenum TraceGLApi::glGetErrorFn(void) {
@@ -6200,26 +6126,26 @@ void TraceGLApi::glGetMultisamplefvRobustANGLEFn(GLenum pname,
   gl_api_->glGetMultisamplefvRobustANGLEFn(pname, index, bufSize, length, val);
 }
 
-void TraceGLApi::glGetObjectLabelFn(GLenum identifier,
-                                    GLuint name,
-                                    GLsizei bufSize,
-                                    GLsizei* length,
-                                    char* label) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGetObjectLabel");
-  gl_api_->glGetObjectLabelFn(identifier, name, bufSize, length, label);
-}
-
-void TraceGLApi::glGetObjectPtrLabelFn(void* ptr,
+void TraceGLApi::glGetObjectLabelKHRFn(GLenum identifier,
+                                       GLuint name,
                                        GLsizei bufSize,
                                        GLsizei* length,
                                        char* label) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGetObjectPtrLabel");
-  gl_api_->glGetObjectPtrLabelFn(ptr, bufSize, length, label);
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGetObjectLabelKHR");
+  gl_api_->glGetObjectLabelKHRFn(identifier, name, bufSize, length, label);
 }
 
-void TraceGLApi::glGetPointervFn(GLenum pname, void** params) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGetPointerv");
-  gl_api_->glGetPointervFn(pname, params);
+void TraceGLApi::glGetObjectPtrLabelKHRFn(void* ptr,
+                                          GLsizei bufSize,
+                                          GLsizei* length,
+                                          char* label) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGetObjectPtrLabelKHR");
+  gl_api_->glGetObjectPtrLabelKHRFn(ptr, bufSize, length, label);
+}
+
+void TraceGLApi::glGetPointervKHRFn(GLenum pname, void** params) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGetPointervKHR");
+  gl_api_->glGetPointervKHRFn(pname, params);
 }
 
 void TraceGLApi::glGetProgramBinaryFn(GLuint program,
@@ -6888,11 +6814,6 @@ void TraceGLApi::glMemoryObjectParameterivEXTFn(GLuint memoryObject,
   gl_api_->glMemoryObjectParameterivEXTFn(memoryObject, pname, param);
 }
 
-void TraceGLApi::glMinSampleShadingFn(GLfloat value) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glMinSampleShading");
-  gl_api_->glMinSampleShadingFn(value);
-}
-
 void TraceGLApi::glMultiDrawArraysANGLEFn(GLenum mode,
                                           const GLint* firsts,
                                           const GLsizei* counts,
@@ -6965,24 +6886,24 @@ void TraceGLApi::glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLEFn(
       drawcount);
 }
 
-void TraceGLApi::glObjectLabelFn(GLenum identifier,
-                                 GLuint name,
-                                 GLsizei length,
-                                 const char* label) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glObjectLabel");
-  gl_api_->glObjectLabelFn(identifier, name, length, label);
-}
-
-void TraceGLApi::glObjectPtrLabelFn(void* ptr,
+void TraceGLApi::glObjectLabelKHRFn(GLenum identifier,
+                                    GLuint name,
                                     GLsizei length,
                                     const char* label) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glObjectPtrLabel");
-  gl_api_->glObjectPtrLabelFn(ptr, length, label);
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glObjectLabelKHR");
+  gl_api_->glObjectLabelKHRFn(identifier, name, length, label);
 }
 
-void TraceGLApi::glPatchParameteriFn(GLenum pname, GLint value) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glPatchParameteri");
-  gl_api_->glPatchParameteriFn(pname, value);
+void TraceGLApi::glObjectPtrLabelKHRFn(void* ptr,
+                                       GLsizei length,
+                                       const char* label) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glObjectPtrLabelKHR");
+  gl_api_->glObjectPtrLabelKHRFn(ptr, length, label);
+}
+
+void TraceGLApi::glPatchParameteriOESFn(GLenum pname, GLint value) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glPatchParameteriOES");
+  gl_api_->glPatchParameteriOESFn(pname, value);
 }
 
 void TraceGLApi::glPauseTransformFeedbackFn(void) {
@@ -7028,9 +6949,9 @@ void TraceGLApi::glPolygonOffsetClampEXTFn(GLfloat factor,
   gl_api_->glPolygonOffsetClampEXTFn(factor, units, clamp);
 }
 
-void TraceGLApi::glPopDebugGroupFn() {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glPopDebugGroup");
-  gl_api_->glPopDebugGroupFn();
+void TraceGLApi::glPopDebugGroupKHRFn() {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glPopDebugGroupKHR");
+  gl_api_->glPopDebugGroupKHRFn();
 }
 
 void TraceGLApi::glPopGroupMarkerEXTFn(void) {
@@ -7063,12 +6984,12 @@ void TraceGLApi::glProvokingVertexANGLEFn(GLenum provokeMode) {
   gl_api_->glProvokingVertexANGLEFn(provokeMode);
 }
 
-void TraceGLApi::glPushDebugGroupFn(GLenum source,
-                                    GLuint id,
-                                    GLsizei length,
-                                    const char* message) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glPushDebugGroup");
-  gl_api_->glPushDebugGroupFn(source, id, length, message);
+void TraceGLApi::glPushDebugGroupKHRFn(GLenum source,
+                                       GLuint id,
+                                       GLsizei length,
+                                       const char* message) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glPushDebugGroupKHR");
+  gl_api_->glPushDebugGroupKHRFn(source, id, length, message);
 }
 
 void TraceGLApi::glPushGroupMarkerEXTFn(GLsizei length, const char* marker) {
@@ -7317,20 +7238,20 @@ GLboolean TraceGLApi::glTestFenceNVFn(GLuint fence) {
   return gl_api_->glTestFenceNVFn(fence);
 }
 
-void TraceGLApi::glTexBufferFn(GLenum target,
-                               GLenum internalformat,
-                               GLuint buffer) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glTexBuffer");
-  gl_api_->glTexBufferFn(target, internalformat, buffer);
+void TraceGLApi::glTexBufferOESFn(GLenum target,
+                                  GLenum internalformat,
+                                  GLuint buffer) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glTexBufferOES");
+  gl_api_->glTexBufferOESFn(target, internalformat, buffer);
 }
 
-void TraceGLApi::glTexBufferRangeFn(GLenum target,
-                                    GLenum internalformat,
-                                    GLuint buffer,
-                                    GLintptr offset,
-                                    GLsizeiptr size) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glTexBufferRange");
-  gl_api_->glTexBufferRangeFn(target, internalformat, buffer, offset, size);
+void TraceGLApi::glTexBufferRangeOESFn(GLenum target,
+                                       GLenum internalformat,
+                                       GLuint buffer,
+                                       GLintptr offset,
+                                       GLsizeiptr size) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glTexBufferRangeOES");
+  gl_api_->glTexBufferRangeOESFn(target, internalformat, buffer, offset, size);
 }
 
 void TraceGLApi::glTexImage2DFn(GLenum target,
@@ -8674,41 +8595,42 @@ void LogGLApi::glCullFaceFn(GLenum mode) {
   gl_api_->glCullFaceFn(mode);
 }
 
-void LogGLApi::glDebugMessageCallbackFn(GLDEBUGPROC callback,
-                                        const void* userParam) {
-  GL_SERVICE_LOG("glDebugMessageCallback"
+void LogGLApi::glDebugMessageCallbackKHRFn(GLDEBUGPROC callback,
+                                           const void* userParam) {
+  GL_SERVICE_LOG("glDebugMessageCallbackKHR"
                  << "(" << reinterpret_cast<void*>(callback) << ", "
                  << static_cast<const void*>(userParam) << ")");
-  gl_api_->glDebugMessageCallbackFn(callback, userParam);
+  gl_api_->glDebugMessageCallbackKHRFn(callback, userParam);
 }
 
-void LogGLApi::glDebugMessageControlFn(GLenum source,
-                                       GLenum type,
-                                       GLenum severity,
-                                       GLsizei count,
-                                       const GLuint* ids,
-                                       GLboolean enabled) {
-  GL_SERVICE_LOG("glDebugMessageControl"
+void LogGLApi::glDebugMessageControlKHRFn(GLenum source,
+                                          GLenum type,
+                                          GLenum severity,
+                                          GLsizei count,
+                                          const GLuint* ids,
+                                          GLboolean enabled) {
+  GL_SERVICE_LOG("glDebugMessageControlKHR"
                  << "(" << GLEnums::GetStringEnum(source) << ", "
                  << GLEnums::GetStringEnum(type) << ", "
                  << GLEnums::GetStringEnum(severity) << ", " << count << ", "
                  << static_cast<const void*>(ids) << ", "
                  << GLEnums::GetStringBool(enabled) << ")");
-  gl_api_->glDebugMessageControlFn(source, type, severity, count, ids, enabled);
+  gl_api_->glDebugMessageControlKHRFn(source, type, severity, count, ids,
+                                      enabled);
 }
 
-void LogGLApi::glDebugMessageInsertFn(GLenum source,
-                                      GLenum type,
-                                      GLuint id,
-                                      GLenum severity,
-                                      GLsizei length,
-                                      const char* buf) {
-  GL_SERVICE_LOG("glDebugMessageInsert"
+void LogGLApi::glDebugMessageInsertKHRFn(GLenum source,
+                                         GLenum type,
+                                         GLuint id,
+                                         GLenum severity,
+                                         GLsizei length,
+                                         const char* buf) {
+  GL_SERVICE_LOG("glDebugMessageInsertKHR"
                  << "(" << GLEnums::GetStringEnum(source) << ", "
                  << GLEnums::GetStringEnum(type) << ", " << id << ", "
                  << GLEnums::GetStringEnum(severity) << ", " << length << ", "
                  << buf << ")");
-  gl_api_->glDebugMessageInsertFn(source, type, id, severity, length, buf);
+  gl_api_->glDebugMessageInsertKHRFn(source, type, id, severity, length, buf);
 }
 
 void LogGLApi::glDeleteBuffersARBFn(GLsizei n, const GLuint* buffers) {
@@ -9427,15 +9349,15 @@ void LogGLApi::glGetBufferPointervRobustANGLEFn(GLenum target,
                                             params);
 }
 
-GLuint LogGLApi::glGetDebugMessageLogFn(GLuint count,
-                                        GLsizei bufSize,
-                                        GLenum* sources,
-                                        GLenum* types,
-                                        GLuint* ids,
-                                        GLenum* severities,
-                                        GLsizei* lengths,
-                                        char* messageLog) {
-  GL_SERVICE_LOG("glGetDebugMessageLog"
+GLuint LogGLApi::glGetDebugMessageLogKHRFn(GLuint count,
+                                           GLsizei bufSize,
+                                           GLenum* sources,
+                                           GLenum* types,
+                                           GLuint* ids,
+                                           GLenum* severities,
+                                           GLsizei* lengths,
+                                           char* messageLog) {
+  GL_SERVICE_LOG("glGetDebugMessageLogKHR"
                  << "(" << count << ", " << bufSize << ", "
                  << static_cast<const void*>(sources) << ", "
                  << static_cast<const void*>(types) << ", "
@@ -9443,7 +9365,7 @@ GLuint LogGLApi::glGetDebugMessageLogFn(GLuint count,
                  << static_cast<const void*>(severities) << ", "
                  << static_cast<const void*>(lengths) << ", "
                  << static_cast<const void*>(messageLog) << ")");
-  GLuint result = gl_api_->glGetDebugMessageLogFn(
+  GLuint result = gl_api_->glGetDebugMessageLogKHRFn(
       count, bufSize, sources, types, ids, severities, lengths, messageLog);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
@@ -9714,33 +9636,33 @@ void LogGLApi::glGetMultisamplefvRobustANGLEFn(GLenum pname,
   gl_api_->glGetMultisamplefvRobustANGLEFn(pname, index, bufSize, length, val);
 }
 
-void LogGLApi::glGetObjectLabelFn(GLenum identifier,
-                                  GLuint name,
-                                  GLsizei bufSize,
-                                  GLsizei* length,
-                                  char* label) {
-  GL_SERVICE_LOG("glGetObjectLabel" << "(" << GLEnums::GetStringEnum(identifier)
-                                    << ", " << name << ", " << bufSize << ", "
-                                    << static_cast<const void*>(length) << ", "
-                                    << static_cast<const void*>(label) << ")");
-  gl_api_->glGetObjectLabelFn(identifier, name, bufSize, length, label);
-}
-
-void LogGLApi::glGetObjectPtrLabelFn(void* ptr,
+void LogGLApi::glGetObjectLabelKHRFn(GLenum identifier,
+                                     GLuint name,
                                      GLsizei bufSize,
                                      GLsizei* length,
                                      char* label) {
-  GL_SERVICE_LOG("glGetObjectPtrLabel"
+  GL_SERVICE_LOG("glGetObjectLabelKHR"
+                 << "(" << GLEnums::GetStringEnum(identifier) << ", " << name
+                 << ", " << bufSize << ", " << static_cast<const void*>(length)
+                 << ", " << static_cast<const void*>(label) << ")");
+  gl_api_->glGetObjectLabelKHRFn(identifier, name, bufSize, length, label);
+}
+
+void LogGLApi::glGetObjectPtrLabelKHRFn(void* ptr,
+                                        GLsizei bufSize,
+                                        GLsizei* length,
+                                        char* label) {
+  GL_SERVICE_LOG("glGetObjectPtrLabelKHR"
                  << "(" << static_cast<const void*>(ptr) << ", " << bufSize
                  << ", " << static_cast<const void*>(length) << ", "
                  << static_cast<const void*>(label) << ")");
-  gl_api_->glGetObjectPtrLabelFn(ptr, bufSize, length, label);
+  gl_api_->glGetObjectPtrLabelKHRFn(ptr, bufSize, length, label);
 }
 
-void LogGLApi::glGetPointervFn(GLenum pname, void** params) {
-  GL_SERVICE_LOG("glGetPointerv" << "(" << GLEnums::GetStringEnum(pname) << ", "
-                                 << params << ")");
-  gl_api_->glGetPointervFn(pname, params);
+void LogGLApi::glGetPointervKHRFn(GLenum pname, void** params) {
+  GL_SERVICE_LOG("glGetPointervKHR" << "(" << GLEnums::GetStringEnum(pname)
+                                    << ", " << params << ")");
+  gl_api_->glGetPointervKHRFn(pname, params);
 }
 
 void LogGLApi::glGetProgramBinaryFn(GLuint program,
@@ -10595,11 +10517,6 @@ void LogGLApi::glMemoryObjectParameterivEXTFn(GLuint memoryObject,
   gl_api_->glMemoryObjectParameterivEXTFn(memoryObject, pname, param);
 }
 
-void LogGLApi::glMinSampleShadingFn(GLfloat value) {
-  GL_SERVICE_LOG("glMinSampleShading" << "(" << value << ")");
-  gl_api_->glMinSampleShadingFn(value);
-}
-
 void LogGLApi::glMultiDrawArraysANGLEFn(GLenum mode,
                                         const GLint* firsts,
                                         const GLsizei* counts,
@@ -10697,28 +10614,29 @@ void LogGLApi::glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLEFn(
       drawcount);
 }
 
-void LogGLApi::glObjectLabelFn(GLenum identifier,
-                               GLuint name,
-                               GLsizei length,
-                               const char* label) {
-  GL_SERVICE_LOG("glObjectLabel" << "(" << GLEnums::GetStringEnum(identifier)
-                                 << ", " << name << ", " << length << ", "
-                                 << label << ")");
-  gl_api_->glObjectLabelFn(identifier, name, length, label);
-}
-
-void LogGLApi::glObjectPtrLabelFn(void* ptr,
+void LogGLApi::glObjectLabelKHRFn(GLenum identifier,
+                                  GLuint name,
                                   GLsizei length,
                                   const char* label) {
-  GL_SERVICE_LOG("glObjectPtrLabel" << "(" << static_cast<const void*>(ptr)
-                                    << ", " << length << ", " << label << ")");
-  gl_api_->glObjectPtrLabelFn(ptr, length, label);
+  GL_SERVICE_LOG("glObjectLabelKHR" << "(" << GLEnums::GetStringEnum(identifier)
+                                    << ", " << name << ", " << length << ", "
+                                    << label << ")");
+  gl_api_->glObjectLabelKHRFn(identifier, name, length, label);
 }
 
-void LogGLApi::glPatchParameteriFn(GLenum pname, GLint value) {
-  GL_SERVICE_LOG("glPatchParameteri" << "(" << GLEnums::GetStringEnum(pname)
-                                     << ", " << value << ")");
-  gl_api_->glPatchParameteriFn(pname, value);
+void LogGLApi::glObjectPtrLabelKHRFn(void* ptr,
+                                     GLsizei length,
+                                     const char* label) {
+  GL_SERVICE_LOG("glObjectPtrLabelKHR" << "(" << static_cast<const void*>(ptr)
+                                       << ", " << length << ", " << label
+                                       << ")");
+  gl_api_->glObjectPtrLabelKHRFn(ptr, length, label);
+}
+
+void LogGLApi::glPatchParameteriOESFn(GLenum pname, GLint value) {
+  GL_SERVICE_LOG("glPatchParameteriOES" << "(" << GLEnums::GetStringEnum(pname)
+                                        << ", " << value << ")");
+  gl_api_->glPatchParameteriOESFn(pname, value);
 }
 
 void LogGLApi::glPauseTransformFeedbackFn(void) {
@@ -10769,9 +10687,9 @@ void LogGLApi::glPolygonOffsetClampEXTFn(GLfloat factor,
   gl_api_->glPolygonOffsetClampEXTFn(factor, units, clamp);
 }
 
-void LogGLApi::glPopDebugGroupFn() {
-  GL_SERVICE_LOG("glPopDebugGroup" << "(" << ")");
-  gl_api_->glPopDebugGroupFn();
+void LogGLApi::glPopDebugGroupKHRFn() {
+  GL_SERVICE_LOG("glPopDebugGroupKHR" << "(" << ")");
+  gl_api_->glPopDebugGroupKHRFn();
 }
 
 void LogGLApi::glPopGroupMarkerEXTFn(void) {
@@ -10810,14 +10728,14 @@ void LogGLApi::glProvokingVertexANGLEFn(GLenum provokeMode) {
   gl_api_->glProvokingVertexANGLEFn(provokeMode);
 }
 
-void LogGLApi::glPushDebugGroupFn(GLenum source,
-                                  GLuint id,
-                                  GLsizei length,
-                                  const char* message) {
-  GL_SERVICE_LOG("glPushDebugGroup" << "(" << GLEnums::GetStringEnum(source)
-                                    << ", " << id << ", " << length << ", "
-                                    << message << ")");
-  gl_api_->glPushDebugGroupFn(source, id, length, message);
+void LogGLApi::glPushDebugGroupKHRFn(GLenum source,
+                                     GLuint id,
+                                     GLsizei length,
+                                     const char* message) {
+  GL_SERVICE_LOG("glPushDebugGroupKHR" << "(" << GLEnums::GetStringEnum(source)
+                                       << ", " << id << ", " << length << ", "
+                                       << message << ")");
+  gl_api_->glPushDebugGroupKHRFn(source, id, length, message);
 }
 
 void LogGLApi::glPushGroupMarkerEXTFn(GLsizei length, const char* marker) {
@@ -11131,25 +11049,26 @@ GLboolean LogGLApi::glTestFenceNVFn(GLuint fence) {
   return result;
 }
 
-void LogGLApi::glTexBufferFn(GLenum target,
-                             GLenum internalformat,
-                             GLuint buffer) {
-  GL_SERVICE_LOG("glTexBuffer" << "(" << GLEnums::GetStringEnum(target) << ", "
-                               << GLEnums::GetStringEnum(internalformat) << ", "
-                               << buffer << ")");
-  gl_api_->glTexBufferFn(target, internalformat, buffer);
+void LogGLApi::glTexBufferOESFn(GLenum target,
+                                GLenum internalformat,
+                                GLuint buffer) {
+  GL_SERVICE_LOG("glTexBufferOES"
+                 << "(" << GLEnums::GetStringEnum(target) << ", "
+                 << GLEnums::GetStringEnum(internalformat) << ", " << buffer
+                 << ")");
+  gl_api_->glTexBufferOESFn(target, internalformat, buffer);
 }
 
-void LogGLApi::glTexBufferRangeFn(GLenum target,
-                                  GLenum internalformat,
-                                  GLuint buffer,
-                                  GLintptr offset,
-                                  GLsizeiptr size) {
-  GL_SERVICE_LOG("glTexBufferRange"
+void LogGLApi::glTexBufferRangeOESFn(GLenum target,
+                                     GLenum internalformat,
+                                     GLuint buffer,
+                                     GLintptr offset,
+                                     GLsizeiptr size) {
+  GL_SERVICE_LOG("glTexBufferRangeOES"
                  << "(" << GLEnums::GetStringEnum(target) << ", "
                  << GLEnums::GetStringEnum(internalformat) << ", " << buffer
                  << ", " << offset << ", " << size << ")");
-  gl_api_->glTexBufferRangeFn(target, internalformat, buffer, offset, size);
+  gl_api_->glTexBufferRangeOESFn(target, internalformat, buffer, offset, size);
 }
 
 void LogGLApi::glTexImage2DFn(GLenum target,
@@ -12400,27 +12319,27 @@ void NoContextGLApi::glCullFaceFn(GLenum mode) {
   NoContextHelper("glCullFace");
 }
 
-void NoContextGLApi::glDebugMessageCallbackFn(GLDEBUGPROC callback,
-                                              const void* userParam) {
-  NoContextHelper("glDebugMessageCallback");
+void NoContextGLApi::glDebugMessageCallbackKHRFn(GLDEBUGPROC callback,
+                                                 const void* userParam) {
+  NoContextHelper("glDebugMessageCallbackKHR");
 }
 
-void NoContextGLApi::glDebugMessageControlFn(GLenum source,
-                                             GLenum type,
-                                             GLenum severity,
-                                             GLsizei count,
-                                             const GLuint* ids,
-                                             GLboolean enabled) {
-  NoContextHelper("glDebugMessageControl");
+void NoContextGLApi::glDebugMessageControlKHRFn(GLenum source,
+                                                GLenum type,
+                                                GLenum severity,
+                                                GLsizei count,
+                                                const GLuint* ids,
+                                                GLboolean enabled) {
+  NoContextHelper("glDebugMessageControlKHR");
 }
 
-void NoContextGLApi::glDebugMessageInsertFn(GLenum source,
-                                            GLenum type,
-                                            GLuint id,
-                                            GLenum severity,
-                                            GLsizei length,
-                                            const char* buf) {
-  NoContextHelper("glDebugMessageInsert");
+void NoContextGLApi::glDebugMessageInsertKHRFn(GLenum source,
+                                               GLenum type,
+                                               GLuint id,
+                                               GLenum severity,
+                                               GLsizei length,
+                                               const char* buf) {
+  NoContextHelper("glDebugMessageInsertKHR");
 }
 
 void NoContextGLApi::glDeleteBuffersARBFn(GLsizei n, const GLuint* buffers) {
@@ -12894,15 +12813,15 @@ void NoContextGLApi::glGetBufferPointervRobustANGLEFn(GLenum target,
   NoContextHelper("glGetBufferPointervRobustANGLE");
 }
 
-GLuint NoContextGLApi::glGetDebugMessageLogFn(GLuint count,
-                                              GLsizei bufSize,
-                                              GLenum* sources,
-                                              GLenum* types,
-                                              GLuint* ids,
-                                              GLenum* severities,
-                                              GLsizei* lengths,
-                                              char* messageLog) {
-  NoContextHelper("glGetDebugMessageLog");
+GLuint NoContextGLApi::glGetDebugMessageLogKHRFn(GLuint count,
+                                                 GLsizei bufSize,
+                                                 GLenum* sources,
+                                                 GLenum* types,
+                                                 GLuint* ids,
+                                                 GLenum* severities,
+                                                 GLsizei* lengths,
+                                                 char* messageLog) {
+  NoContextHelper("glGetDebugMessageLogKHR");
   return 0U;
 }
 
@@ -13078,23 +12997,23 @@ void NoContextGLApi::glGetMultisamplefvRobustANGLEFn(GLenum pname,
   NoContextHelper("glGetMultisamplefvRobustANGLE");
 }
 
-void NoContextGLApi::glGetObjectLabelFn(GLenum identifier,
-                                        GLuint name,
-                                        GLsizei bufSize,
-                                        GLsizei* length,
-                                        char* label) {
-  NoContextHelper("glGetObjectLabel");
-}
-
-void NoContextGLApi::glGetObjectPtrLabelFn(void* ptr,
+void NoContextGLApi::glGetObjectLabelKHRFn(GLenum identifier,
+                                           GLuint name,
                                            GLsizei bufSize,
                                            GLsizei* length,
                                            char* label) {
-  NoContextHelper("glGetObjectPtrLabel");
+  NoContextHelper("glGetObjectLabelKHR");
 }
 
-void NoContextGLApi::glGetPointervFn(GLenum pname, void** params) {
-  NoContextHelper("glGetPointerv");
+void NoContextGLApi::glGetObjectPtrLabelKHRFn(void* ptr,
+                                              GLsizei bufSize,
+                                              GLsizei* length,
+                                              char* label) {
+  NoContextHelper("glGetObjectPtrLabelKHR");
+}
+
+void NoContextGLApi::glGetPointervKHRFn(GLenum pname, void** params) {
+  NoContextHelper("glGetPointervKHR");
 }
 
 void NoContextGLApi::glGetProgramBinaryFn(GLuint program,
@@ -13655,10 +13574,6 @@ void NoContextGLApi::glMemoryObjectParameterivEXTFn(GLuint memoryObject,
   NoContextHelper("glMemoryObjectParameterivEXT");
 }
 
-void NoContextGLApi::glMinSampleShadingFn(GLfloat value) {
-  NoContextHelper("glMinSampleShading");
-}
-
 void NoContextGLApi::glMultiDrawArraysANGLEFn(GLenum mode,
                                               const GLint* firsts,
                                               const GLsizei* counts,
@@ -13715,21 +13630,21 @@ void NoContextGLApi::glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLEFn(
   NoContextHelper("glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE");
 }
 
-void NoContextGLApi::glObjectLabelFn(GLenum identifier,
-                                     GLuint name,
-                                     GLsizei length,
-                                     const char* label) {
-  NoContextHelper("glObjectLabel");
-}
-
-void NoContextGLApi::glObjectPtrLabelFn(void* ptr,
+void NoContextGLApi::glObjectLabelKHRFn(GLenum identifier,
+                                        GLuint name,
                                         GLsizei length,
                                         const char* label) {
-  NoContextHelper("glObjectPtrLabel");
+  NoContextHelper("glObjectLabelKHR");
 }
 
-void NoContextGLApi::glPatchParameteriFn(GLenum pname, GLint value) {
-  NoContextHelper("glPatchParameteri");
+void NoContextGLApi::glObjectPtrLabelKHRFn(void* ptr,
+                                           GLsizei length,
+                                           const char* label) {
+  NoContextHelper("glObjectPtrLabelKHR");
+}
+
+void NoContextGLApi::glPatchParameteriOESFn(GLenum pname, GLint value) {
+  NoContextHelper("glPatchParameteriOES");
 }
 
 void NoContextGLApi::glPauseTransformFeedbackFn(void) {
@@ -13766,8 +13681,8 @@ void NoContextGLApi::glPolygonOffsetClampEXTFn(GLfloat factor,
   NoContextHelper("glPolygonOffsetClampEXT");
 }
 
-void NoContextGLApi::glPopDebugGroupFn() {
-  NoContextHelper("glPopDebugGroup");
+void NoContextGLApi::glPopDebugGroupKHRFn() {
+  NoContextHelper("glPopDebugGroupKHR");
 }
 
 void NoContextGLApi::glPopGroupMarkerEXTFn(void) {
@@ -13795,11 +13710,11 @@ void NoContextGLApi::glProvokingVertexANGLEFn(GLenum provokeMode) {
   NoContextHelper("glProvokingVertexANGLE");
 }
 
-void NoContextGLApi::glPushDebugGroupFn(GLenum source,
-                                        GLuint id,
-                                        GLsizei length,
-                                        const char* message) {
-  NoContextHelper("glPushDebugGroup");
+void NoContextGLApi::glPushDebugGroupKHRFn(GLenum source,
+                                           GLuint id,
+                                           GLsizei length,
+                                           const char* message) {
+  NoContextHelper("glPushDebugGroupKHR");
 }
 
 void NoContextGLApi::glPushGroupMarkerEXTFn(GLsizei length,
@@ -14011,18 +13926,18 @@ GLboolean NoContextGLApi::glTestFenceNVFn(GLuint fence) {
   return GL_FALSE;
 }
 
-void NoContextGLApi::glTexBufferFn(GLenum target,
-                                   GLenum internalformat,
-                                   GLuint buffer) {
-  NoContextHelper("glTexBuffer");
+void NoContextGLApi::glTexBufferOESFn(GLenum target,
+                                      GLenum internalformat,
+                                      GLuint buffer) {
+  NoContextHelper("glTexBufferOES");
 }
 
-void NoContextGLApi::glTexBufferRangeFn(GLenum target,
-                                        GLenum internalformat,
-                                        GLuint buffer,
-                                        GLintptr offset,
-                                        GLsizeiptr size) {
-  NoContextHelper("glTexBufferRange");
+void NoContextGLApi::glTexBufferRangeOESFn(GLenum target,
+                                           GLenum internalformat,
+                                           GLuint buffer,
+                                           GLintptr offset,
+                                           GLsizeiptr size) {
+  NoContextHelper("glTexBufferRangeOES");
 }
 
 void NoContextGLApi::glTexImage2DFn(GLenum target,

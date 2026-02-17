@@ -1196,7 +1196,7 @@ void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
   }
 
   if (have_context) {
-    api()->glDebugMessageCallbackFn(nullptr, nullptr);
+    api()->glDebugMessageCallbackKHRFn(nullptr, nullptr);
   }
 
   if (context_.get()) {

@@ -43,14 +43,14 @@ GLint GLStubApiBase::glGetAttribLocationFn(GLuint program, const char* name) {
   return 0;
 }
 
-GLuint GLStubApiBase::glGetDebugMessageLogFn(GLuint count,
-                                             GLsizei bufSize,
-                                             GLenum* sources,
-                                             GLenum* types,
-                                             GLuint* ids,
-                                             GLenum* severities,
-                                             GLsizei* lengths,
-                                             char* messageLog) {
+GLuint GLStubApiBase::glGetDebugMessageLogKHRFn(GLuint count,
+                                                GLsizei bufSize,
+                                                GLenum* sources,
+                                                GLenum* types,
+                                                GLuint* ids,
+                                                GLenum* severities,
+                                                GLsizei* lengths,
+                                                char* messageLog) {
   return 0;
 }
 

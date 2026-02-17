@@ -110,24 +110,26 @@ void InitializeGLDebugLogging(const gl::DriverGL& gl,
   gl.fn.glEnableFn(GL_DEBUG_OUTPUT);
   gl.fn.glEnableFn(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-  gl.fn.glDebugMessageControlFn(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_ERROR,
-                                GL_DONT_CARE, 0, nullptr, GL_TRUE);
+  gl.fn.glDebugMessageControlKHRFn(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_ERROR,
+                                   GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
   if (log_non_errors) {
     // Enable logging of medium and high severity messages
-    gl.fn.glDebugMessageControlFn(GL_DONT_CARE, GL_DONT_CARE,
-                                  GL_DEBUG_SEVERITY_HIGH, 0, nullptr, GL_TRUE);
-    gl.fn.glDebugMessageControlFn(GL_DONT_CARE, GL_DONT_CARE,
-                                  GL_DEBUG_SEVERITY_MEDIUM, 0, nullptr,
-                                  GL_TRUE);
-    gl.fn.glDebugMessageControlFn(GL_DONT_CARE, GL_DONT_CARE,
-                                  GL_DEBUG_SEVERITY_LOW, 0, nullptr, GL_FALSE);
-    gl.fn.glDebugMessageControlFn(GL_DONT_CARE, GL_DONT_CARE,
-                                  GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr,
-                                  GL_FALSE);
+    gl.fn.glDebugMessageControlKHRFn(GL_DONT_CARE, GL_DONT_CARE,
+                                     GL_DEBUG_SEVERITY_HIGH, 0, nullptr,
+                                     GL_TRUE);
+    gl.fn.glDebugMessageControlKHRFn(GL_DONT_CARE, GL_DONT_CARE,
+                                     GL_DEBUG_SEVERITY_MEDIUM, 0, nullptr,
+                                     GL_TRUE);
+    gl.fn.glDebugMessageControlKHRFn(GL_DONT_CARE, GL_DONT_CARE,
+                                     GL_DEBUG_SEVERITY_LOW, 0, nullptr,
+                                     GL_FALSE);
+    gl.fn.glDebugMessageControlKHRFn(GL_DONT_CARE, GL_DONT_CARE,
+                                     GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr,
+                                     GL_FALSE);
   }
 
-  gl.fn.glDebugMessageCallbackFn(callback, user_param);
+  gl.fn.glDebugMessageCallbackKHRFn(callback, user_param);
 }
 
 void InitializeEGLDebugLogging(const gl::DriverEGL& egl,
