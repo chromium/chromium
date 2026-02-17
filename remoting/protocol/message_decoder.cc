@@ -60,7 +60,7 @@ bool MessageDecoder::GetPayloadSize(int* size) {
   uint8_t header[kHeaderSize];
   header_buffer.CopyFrom(buffer_, 0, kHeaderSize);
   header_buffer.CopyTo(header);
-  *size = webrtc::GetBE32(header);
+  *size = webrtc::GetBE32(webrtc::ArrayView<const uint8_t>(header));
   buffer_.CropFront(kHeaderSize);
   return true;
 }

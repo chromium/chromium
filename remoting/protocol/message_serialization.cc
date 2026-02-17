@@ -20,7 +20,9 @@ scoped_refptr<net::IOBufferWithSize> SerializeAndFrameMessage(
   size_t size = msg.ByteSizeLong() + kExtraBytes;
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(size);
-  webrtc::SetBE32(buffer->data(), msg.GetCachedSize());
+  webrtc::SetBE32(
+      webrtc::ArrayView<uint8_t>(buffer->bytes(), buffer->span().size()),
+      msg.GetCachedSize());
   msg.SerializeWithCachedSizesToArray(
       UNSAFE_TODO(buffer->bytes() + kExtraBytes));
   return buffer;
