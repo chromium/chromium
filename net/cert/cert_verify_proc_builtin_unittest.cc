@@ -252,7 +252,7 @@ class MockSystemTrustStore : public SystemTrustStore {
   }
 
   base::span<const ChromeRootCertConstraints> GetChromeRootConstraints(
-      const bssl::ParsedCertificate* cert) const override {
+      const bssl::CertPathBuilderResultPath* path) const override {
     return mock_chrome_root_constraints_;
   }
 
@@ -816,6 +816,132 @@ TEST_F(CertVerifyProcBuiltinTest, SignaturelessMtcRevocation) {
 
     int error = callback.WaitForResult();
     EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+  }
+}
+
+TEST_F(CertVerifyProcBuiltinTest, SignaturelessMtcChromeRootStoreConstraints) {
+  constexpr uint8_t kMtcLogId[] = {0x09, 0x08, 0x07};
+  net::MtcLogBuilder mtc_log(kMtcLogId);
+  // TODO(crbug.com/469624806): improve interface for creating MTC cert
+  // builders.
+  std::unique_ptr<net::CertBuilder> mtc_leaf1 =
+      std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+  uint64_t leaf_index = mtc_log.AddEntry(*mtc_leaf1);
+  mtc_log.AdvanceLandmark();
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+
+  bssl::TrustStoreInMemory trust_store;
+  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+      kMtcLogId, mtc_log.GetLandmarkSubtreeHashes());
+  ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+  AddTrustStore(&trust_store);
+
+  auto leaf_der = mtc_log.CreateSignaturelessCertificate(leaf_index);
+  ASSERT_TRUE(leaf_der);
+  scoped_refptr<X509Certificate> chain =
+      X509Certificate::CreateFromBytes(*leaf_der);
+  ASSERT_TRUE(chain);
+
+  // With no constraints, verification succeeds
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           /*sct_list=*/std::string(), /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+  }
+
+  // With constraint that doesn't match, verification fails.
+  SetMockChromeRootConstraints({{.permitted_dns_names = {"example.test"}}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           /*sct_list=*/std::string(), /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  // With constraint that does match, verification succeeds.
+  SetMockChromeRootConstraints(
+      {{.permitted_dns_names = {"example.test", "example.com"}}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           /*sct_list=*/std::string(), /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+  }
+}
+
+TEST_F(CertVerifyProcBuiltinTest,
+       SignaturelessMtcChromeRootStoreConstraintsSctConstraints) {
+  constexpr uint8_t kMtcLogId[] = {0x09, 0x08, 0x07};
+  net::MtcLogBuilder mtc_log(kMtcLogId);
+  // TODO(crbug.com/469624806): improve interface for creating MTC cert
+  // builders.
+  std::unique_ptr<net::CertBuilder> mtc_leaf1 =
+      std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+  uint64_t leaf_index = mtc_log.AddEntry(*mtc_leaf1);
+  mtc_log.AdvanceLandmark();
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+
+  bssl::TrustStoreInMemory trust_store;
+  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+      kMtcLogId, mtc_log.GetLandmarkSubtreeHashes());
+  ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+  AddTrustStore(&trust_store);
+
+  auto leaf_der = mtc_log.CreateSignaturelessCertificate(leaf_index);
+  ASSERT_TRUE(leaf_der);
+  scoped_refptr<X509Certificate> chain =
+      X509Certificate::CreateFromBytes(*leaf_der);
+  ASSERT_TRUE(chain);
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
+
+  // With no constraints, verification succeeds
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           /*sct_list=*/std::string(), /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+  }
+
+  // MTCs don't have SCTs, so sct_not_after will fail even for a cert issued
+  // before the time specified time.
+  // TODO(crbug.com/452986180): decide what to do with SCT constraints for MTCs
+  SetMockChromeRootConstraints(
+      {{.sct_not_after = base::Time::Now() + base::Days(365)}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           /*sct_list=*/std::string(), /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
   }
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)

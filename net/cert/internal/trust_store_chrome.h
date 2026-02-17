@@ -15,6 +15,7 @@
 #include "crypto/sha2.h"
 #include "net/base/net_export.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/boringssl/src/pki/path_builder.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
@@ -322,10 +323,10 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   bool Contains(const bssl::ParsedCertificate* cert) const;
   bool ContainsMTCAnchor(const bssl::MTCAnchor* anchor) const;
 
-  // Returns the root store constraints for `cert`, or an empty span if the
+  // Returns the root store constraints for `path`, or an empty span if the
   // certificate is not constrained.
   base::span<const ChromeRootCertConstraints> GetConstraintsForCert(
-      const bssl::ParsedCertificate* cert) const;
+      const bssl::CertPathBuilderResultPath* path) const;
 
   // Returns additional data about the MTC anchor with log id `log_id`, or null
   // if the anchor isn't known or has no additional data.
@@ -350,6 +351,10 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
                    ConstraintOverrideMap override_constraints);
 
   static ConstraintOverrideMap InitializeConstraintsOverrides();
+  base::span<const ChromeRootCertConstraints> GetConstraintsForMTC(
+      const bssl::MTCAnchor* mtc_anchor) const;
+  base::span<const ChromeRootCertConstraints> GetConstraintsForClassicalCert(
+      const bssl::ParsedCertificate* cert) const;
 
   bssl::TrustStoreInMemory trust_store_;
 

@@ -168,8 +168,8 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
   }
 
   base::span<const ChromeRootCertConstraints> GetChromeRootConstraints(
-      const bssl::ParsedCertificate* cert) const override {
-    return trust_store_chrome_->GetConstraintsForCert(cert);
+      const bssl::CertPathBuilderResultPath* path) const override {
+    return trust_store_chrome_->GetConstraintsForCert(path);
   }
 
   const TrustStoreChrome::MtcAnchorExtraData* GetMTCAnchorData(

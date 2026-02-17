@@ -2185,6 +2185,132 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
+                       MtcChromeRootStoreConstraints) {
+  static constexpr char kHostname1[] = "www.example.com";
+  static constexpr char kHostname2[] = "www.example.org";
+  static constexpr uint8_t kMtcLogId[] = {0x09, 0x08, 0x07};
+  static constexpr uint8_t kMtcLogBaseId[] = {0x06, 0x05, 0x04};
+
+  int64_t crs_version = net::CompiledChromeRootStoreVersion();
+
+  net::MtcLogBuilder mtc_log(kMtcLogId, kMtcLogBaseId);
+
+  // TODO(crbug.com/469624806): improve interface for creating MTC cert
+  // builders.
+  std::unique_ptr<net::CertBuilder> mtc_leaf1 =
+      std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+  mtc_leaf1->SetSubjectAltName(kHostname1);
+  uint64_t mtc_log_index1 = mtc_log.AddEntry(*mtc_leaf1);
+
+  std::unique_ptr<net::CertBuilder> mtc_leaf2 =
+      std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+  mtc_leaf2->SetSubjectAltName(kHostname2);
+  uint64_t mtc_log_index2 = mtc_log.AddEntry(*mtc_leaf2);
+
+  mtc_log.AdvanceLandmark();
+
+  // Server using leaf 1.
+  net::EmbeddedTestServer::ServerCertificateConfig mtc_cert_config1;
+  auto mtc_cert1 = mtc_log.CreateSignaturelessCertificateBuffer(mtc_log_index1);
+  ASSERT_TRUE(mtc_cert1);
+  mtc_cert_config1.cert_and_key = net::EmbeddedTestServer::CertAndKey(
+      bssl::UpRef(mtc_cert1), bssl::UpRef(mtc_leaf1->GetKey()));
+
+  net::EmbeddedTestServer https_server_ok1(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server_ok1.SetSSLConfig(mtc_cert_config1);
+  https_server_ok1.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server_ok1.Start());
+
+  // Server using leaf 2.
+  net::EmbeddedTestServer::ServerCertificateConfig mtc_cert_config2;
+  auto mtc_cert2 = mtc_log.CreateSignaturelessCertificateBuffer(mtc_log_index2);
+  ASSERT_TRUE(mtc_cert2);
+  mtc_cert_config2.cert_and_key = net::EmbeddedTestServer::CertAndKey(
+      bssl::UpRef(mtc_cert2), bssl::UpRef(mtc_leaf2->GetKey()));
+
+  net::EmbeddedTestServer https_server_ok2(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server_ok2.SetSSLConfig(mtc_cert_config2);
+  https_server_ok2.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server_ok2.Start());
+
+  // Install CRS proto with the MTC anchor and an (unused) legacy anchor.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+
+    chrome_root_store::MtcAnchor* mtc_anchor =
+        root_store_proto.add_mtc_anchors();
+    mtc_anchor->set_log_id(base::as_string_view(kMtcLogId));
+    mtc_anchor->set_tls_trust_anchor(true);
+    // Set permitted_dns_names constraint which only allows cert 2.
+    mtc_anchor->add_constraints()->add_permitted_dns_names("example.org");
+
+    // Need to add a classical anchor for the CRS proto to parse successfully,
+    // it's not otherwise used by the test.
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    auto [unused_leaf, legacy_root] = net::CertBuilder::CreateSimpleChain2();
+    anchor->set_der(legacy_root->GetDER());
+
+    InstallCRSUpdate(std::move(root_store_proto));
+  }
+
+  // Install fastpush proto with the MTC anchor metadata.
+  {
+    chrome_root_store::MtcMetadata mtc_metadata_proto;
+    mtc_metadata_proto.set_update_time_seconds(
+        SecondsSinceEpoch(base::Time::Now()));
+    chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
+        mtc_metadata_proto.add_mtc_anchor_data();
+    mtc_log.FillMtcMetadataAnchorProto(mtc_anchor_metadata);
+
+    InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
+
+    // Ensure that SSLConfigClients have been notified of the new trust anchor
+    // IDs.
+    SystemNetworkContextManager::GetInstance()
+        ->FlushSSLConfigManagerForTesting();
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok1.GetURL(kHostname1, "/simple.html")));
+  if (!GetParam()) {
+    // If MTCs are disabled, the load should fail.
+    EXPECT_NE(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
+    ssl_test_util::CheckAuthenticationBrokenState(
+        chrome_test_utils::GetActiveWebContents(this),
+        net::CERT_STATUS_AUTHORITY_INVALID,
+        ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
+  } else {
+    // Load from server 1 should fail since the cert SAN is not allowed by the
+    // permitted_dns_names constraint.
+    EXPECT_NE(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
+    ssl_test_util::CheckAuthenticationBrokenState(
+        chrome_test_utils::GetActiveWebContents(this),
+        net::CERT_STATUS_AUTHORITY_INVALID,
+        ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok2.GetURL(kHostname2, "/simple.html")));
+  if (!GetParam()) {
+    // If MTCs are disabled, the load should fail.
+    EXPECT_NE(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
+    ssl_test_util::CheckAuthenticationBrokenState(
+        chrome_test_utils::GetActiveWebContents(this),
+        net::CERT_STATUS_AUTHORITY_INVALID,
+        ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
+  } else {
+    // Load from server 2 should succeed since the cert SAN is allowed by the
+    // permitted_dns_names constraint.
+    EXPECT_EQ(chrome_test_utils::GetActiveWebContents(this)->GetTitle(), u"OK");
+    ssl_test_util::CheckAuthenticatedState(
+        chrome_test_utils::GetActiveWebContents(this),
+        ssl_test_util::AuthState::NONE);
+  }
+}
+
 class PKIMetadataComponentChromeRootStoreUpdateQwacTest
     : public PKIMetadataComponentChromeRootStoreUpdateTest,
       public testing::WithParamInterface<bool> {

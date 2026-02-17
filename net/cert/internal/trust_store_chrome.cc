@@ -23,6 +23,7 @@
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/pki/path_builder.h"
 
 namespace net {
 
@@ -425,15 +426,6 @@ TrustStoreChrome::TrustStoreChrome(
         const ChromeRootStoreMtcMetadata::MtcAnchorData& mtc_anchor_data =
             it->second;
 
-        if (!mtc_anchor.constraints.empty()) {
-          // TODO(crbug.com/452986180): MTC anchor constraints aren't handled
-          // yet. Ignore any MTC anchors that have constraints until they are
-          // implemented, which ensures that if any old versions of chrome
-          // still happen to be running and receive a component update with an
-          // MTC anchor that has constraints, it will fail-safe.
-          continue;
-        }
-
         auto bssl_mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
             mtc_anchor.log_id, mtc_anchor_data.trusted_subtrees);
         CHECK(trust_store_.AddMTCTrustAnchor(std::move(bssl_mtc_anchor)));
@@ -576,7 +568,21 @@ bool TrustStoreChrome::ContainsMTCAnchor(const bssl::MTCAnchor* anchor) const {
 }
 
 base::span<const ChromeRootCertConstraints>
-TrustStoreChrome::GetConstraintsForCert(
+TrustStoreChrome::GetConstraintsForMTC(
+    const bssl::MTCAnchor* mtc_anchor) const {
+  const MtcAnchorExtraData* anchor_data =
+      GetMTCAnchorData(mtc_anchor->log_id());
+  if (!anchor_data) {
+    return {};
+  }
+
+  // TODO(crbug.com/452986180): support constraint overrides for MTC anchors.
+
+  return anchor_data->constraints;
+}
+
+base::span<const ChromeRootCertConstraints>
+TrustStoreChrome::GetConstraintsForClassicalCert(
     const bssl::ParsedCertificate* cert) const {
   if (!override_constraints_.empty()) {
     const std::array<uint8_t, crypto::kSHA256Length> cert_hash =
@@ -592,6 +598,18 @@ TrustStoreChrome::GetConstraintsForCert(
     return it->second;
   }
   return {};
+}
+
+base::span<const ChromeRootCertConstraints>
+TrustStoreChrome::GetConstraintsForCert(
+    const bssl::CertPathBuilderResultPath* path) const {
+  if (std::shared_ptr<const bssl::MTCAnchor> mtc_anchor =
+          path->trust_anchor.MTCAnchor();
+      mtc_anchor) {
+    return GetConstraintsForMTC(mtc_anchor.get());
+  } else {
+    return GetConstraintsForClassicalCert(path->certs.back().get());
+  }
 }
 
 const TrustStoreChrome::MtcAnchorExtraData* TrustStoreChrome::GetMTCAnchorData(

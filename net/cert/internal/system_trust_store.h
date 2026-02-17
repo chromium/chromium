@@ -14,6 +14,7 @@
 #include "net/cert/internal/platform_trust_store.h"
 #include "net/net_buildflags.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/pki/path_builder.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -71,10 +72,13 @@ class SystemTrustStore {
   // component, or nullopt if MTC Metadata is not available.
   virtual std::optional<base::Time> mtc_metadata_update_time() const = 0;
 
-  // Returns the Chrome Root Store constraints for `cert`, or nullptr if the
-  // certificate is not constrained.
+  // Returns the Chrome Root Store constraints for `path`, or returns an empty
+  // span if the certificate is not constrained.
+  // (If the bssl::TrustAnchor is changed to also contain the root certificate,
+  // this could be updated to take a TrustAnchor object instead. See this TODO:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/boringssl/src/pki/trust_store.h;l=207;drc=f359b2876732d31100187ef4ad0d462864b168c2)
   virtual base::span<const ChromeRootCertConstraints> GetChromeRootConstraints(
-      const bssl::ParsedCertificate* cert) const = 0;
+      const bssl::CertPathBuilderResultPath* path) const = 0;
 
   virtual const TrustStoreChrome::MtcAnchorExtraData* GetMTCAnchorData(
       base::span<const uint8_t> log_id) const = 0;

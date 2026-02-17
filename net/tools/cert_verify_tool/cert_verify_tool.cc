@@ -223,7 +223,7 @@ class DummySystemTrustStore : public net::SystemTrustStore {
   }
 
   base::span<const net::ChromeRootCertConstraints> GetChromeRootConstraints(
-      const bssl::ParsedCertificate* cert) const override {
+      const bssl::CertPathBuilderResultPath* path) const override {
     return {};
   }
 

@@ -81,6 +81,12 @@ mtc_anchors {
   log_id: "\x08\x04\x05\x06"
   tls_trust_anchor: true
   constraints: {
+    sct_not_after_sec: 0x5AF
+    max_version_exclusive: "125.0.6368.2"
+    permitted_dns_names: "foo.example.com"
+    permitted_dns_names: "bar.example.com"
+  }
+  constraints: {
     permitted_dns_names: "mtc.example.com"
   }
 }
