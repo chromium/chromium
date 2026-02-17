@@ -36,6 +36,9 @@ enum FormatString_Type : int;
 using FieldPrediction =
     AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction;
 
+// LINT.IfChange(AutofillPredictionSource)
+
+// Values are persisted in UMA logs, values should not be reused/renumbered.
 // Enum representing prediction sources that are recognized.
 enum class AutofillPredictionSource {
   kServerCrowdsourcing = 0,
@@ -45,6 +48,8 @@ enum class AutofillPredictionSource {
   kRationalization = 4,
   kMaxValue = kRationalization
 };
+
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillPredictionSource2)
 
 std::string_view AutofillPredictionSourceToStringView(
     AutofillPredictionSource source);

@@ -13,6 +13,8 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -452,6 +454,118 @@ TEST_F(PredictionQualityMetricsTest,
       "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent."
       "NoPredictionExists.NAME_FIRST",
       1);
+}
+
+TEST_F(PredictionQualityMetricsTest,
+       PhoneNumberExperimentMetrics_AugmentedPhoneCountryCode) {
+  FormData form_without_options = test::GetFormData(
+      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
+                  // No role so that regexes don't match.
+                  {.autocomplete_attribute = "tel-country-code",
+                   .form_control_type = FormControlType::kSelectOne},
+                  {.role = PHONE_HOME_CITY_AND_NUMBER,
+                   .autocomplete_attribute = "tel-national"}}});
+  SeeForm(form_without_options);
+
+  FormData form_with_options = test::GetFormData(
+      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
+                  // No role so that regexes don't match.
+                  {.autocomplete_attribute = "tel-country-code",
+                   .form_control_type = FormControlType::kSelectOne,
+                   .select_options =
+                       {
+                           {.value = u"US", .text = u"United States (+1)"},
+                           {.value = u"CA", .text = u"Canada (+1)"},
+                           {.value = u"FR", .text = u"France (+33)"},
+                           {.value = u"DE", .text = u"Germany (+49)"},
+                           {.value = u"LB", .text = u"Lebanon (+961)"},
+                       }},
+                  {.role = PHONE_HOME_CITY_AND_NUMBER,
+                   .autocomplete_attribute = "tel-national"}}});
+  SeeForm(form_with_options);
+
+  {
+    base::HistogramTester histogram_tester;
+    SubmitForm(form_without_options);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.FieldPrediction.AugmentedPhoneCountryCode.Heuristics", 0);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.FieldPrediction.AugmentedPhoneCountryCode.Overall", 0, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    SubmitForm(form_with_options);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.FieldPrediction.AugmentedPhoneCountryCode.Heuristics", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.FieldPrediction.AugmentedPhoneCountryCode.Overall", 1, 1);
+  }
+}
+
+TEST_F(PredictionQualityMetricsTest,
+       PhoneNumberExperimentMetrics_PhoneCountryRationalizedToUnknownType) {
+  // Form where the country code field is relevant.
+  FormData relevant_form = test::GetFormData(
+      {.fields = {{.role = PHONE_HOME_COUNTRY_CODE,
+                   .autocomplete_attribute = "tel-country-code",
+                   .form_control_type = FormControlType::kSelectOne},
+                  {.role = PHONE_HOME_CITY_AND_NUMBER,
+                   .autocomplete_attribute = "tel-national"}}});
+  SeeForm(relevant_form);
+
+  // Form where the country code field is irrelevant.
+  FormData irrelevant_form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
+                  {.role = PHONE_HOME_COUNTRY_CODE,
+                   .autocomplete_attribute = "tel-country-code",
+                   .form_control_type = FormControlType::kSelectOne}}});
+  SeeForm(irrelevant_form);
+
+  {
+    base::HistogramTester histogram_tester;
+    SubmitForm(relevant_form);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.FieldPrediction.PhoneCountryCodeRationalizedToUnknown", 0, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    SubmitForm(irrelevant_form);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.FieldPrediction.PhoneCountryCodeRationalizedToUnknown", 1, 1);
+  }
+}
+
+TEST_F(PredictionQualityMetricsTest,
+       PhoneNumberExperimentMetrics_CorrectPredictionSource) {
+  // Country code field classified by heuristics.
+  AutofillField heuristics_field(test::GetFormFieldData({.value = u"+1"}));
+  heuristics_field.set_heuristic_type(HeuristicSource::kRegexes,
+                                      PHONE_HOME_COUNTRY_CODE);
+  heuristics_field.set_possible_types({PHONE_HOME_COUNTRY_CODE});
+
+  // Country code field classified by the autocomplete attribute.
+  AutofillField html_field(test::GetFormFieldData({.value = u"+1"}));
+  html_field.SetHtmlType(HtmlFieldType::kTelCountryCode,
+                         HtmlFieldMode::kShipping);
+  html_field.set_possible_types({PHONE_HOME_COUNTRY_CODE});
+
+  {
+    base::HistogramTester histogram_tester;
+    LogPhoneNumberDetectionExperimentMetrics(heuristics_field);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.FieldPrediction.PhoneCountryCode.CorrectPredictionSource",
+        AutofillPredictionSource::kHeuristics, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    LogPhoneNumberDetectionExperimentMetrics(html_field);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.FieldPrediction.PhoneCountryCode.CorrectPredictionSource",
+        AutofillPredictionSource::kAutocomplete, 1);
+  }
 }
 
 }  // namespace

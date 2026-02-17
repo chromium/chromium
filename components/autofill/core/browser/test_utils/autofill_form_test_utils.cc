@@ -8,6 +8,7 @@
 
 #include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_qualifiers.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -107,6 +108,10 @@ FormFieldData CreateFieldByRole(FieldType role) {
     case FieldType::EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
       field.set_label(u"Email or Frequent Flyer Number");
       field.set_name(u"email_or_frequentflyer");
+      break;
+    case FieldType::PHONE_HOME_COUNTRY_CODE:
+      field.set_label(u"Phone Country");
+      field.set_name(u"phone_country");
       break;
     case FieldType::PHONE_HOME_WHOLE_NUMBER:
     case FieldType::PHONE_HOME_CITY_AND_NUMBER:

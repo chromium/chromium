@@ -3596,6 +3596,56 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.FieldPrediction.AugmentedPhoneCountryCode.{PredictionSource}"
+    enum="Boolean" expires_after="2026-06-06">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs whether a select field satisfies LikelyAugmentedPhoneCountryCode().
+
+    Emitted at form submission once for each select field in the submitted form.
+    {PredictionSource}
+  </summary>
+  <token key="PredictionSource">
+    <variant name="Heuristics"
+        summary="Emitted only when the select field's heuristic type is
+                 PHONE_HOME_COUNTRY_CODE."/>
+    <variant name="Overall"
+        summary="Emitted only when the select field's overall type is
+                 PHONE_HOME_COUNTRY_CODE."/>
+  </token>
+</histogram>
+
+<histogram
+    name="Autofill.FieldPrediction.PhoneCountryCode.CorrectPredictionSource"
+    enum="AutofillPredictionSource2" expires_after="2026-06-06">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the prediction source of a field.
+
+    Emitted at form submission, once for each field whose overall type is
+    PHONE_HOME_COUNTRY_CODE and whose possible_types include
+    PHONE_HOME_COUNTRY_CODE.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.FieldPrediction.PhoneCountryCodeRationalizedToUnknown"
+    enum="Boolean" expires_after="2026-06-06">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs whether a field was classified as PHONE_COUNTRY_CODE but later reset to
+    UNKNOWN_TYPE by rationalization because no relevant fields were found
+    alongside it.
+
+    Emitted at form submission, once for each field whose computed type is
+    PHONE_HOME_COUNTRY_CODE.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FieldPrediction.PhoneNumberGrammarUsage2"
     enum="PhoneNumberGrammarUsage2" expires_after="2026-12-12">
   <owner>battre@google.com</owner>

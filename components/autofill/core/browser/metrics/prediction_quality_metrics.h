@@ -220,6 +220,12 @@ void LogLocalHeuristicMatchedAttribute(
 
 void LogFieldPredictionOverlapMetrics(const AutofillField& field);
 
+// Logs metrics added to evaluate the `AutofillImprovePhoneNumberDetection`
+// experiment.
+// TODO(crbug.com/479503511): Remove along with the corresponding histograms
+// after launching `AutofillImprovePhoneNumberDetection`.
+void LogPhoneNumberDetectionExperimentMetrics(const AutofillField& field);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PREDICTION_QUALITY_METRICS_H_

@@ -189,6 +189,7 @@ void LogPredictionMetrics(
                                        form, *field, metric_type, now);
     LogEmailFieldPredictionMetrics(*field);
     LogFieldPredictionOverlapMetrics(*field);
+    LogPhoneNumberDetectionExperimentMetrics(*field);
   }
 }
 
