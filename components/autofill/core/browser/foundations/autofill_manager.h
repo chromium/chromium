@@ -100,6 +100,14 @@ class AutofillManager
     virtual void OnBeforeLanguageDetermined(AutofillManager& manager) {}
     virtual void OnAfterLanguageDetermined(AutofillManager& manager) {}
 
+    // Unlike other events, OnFormsSeen() determines both heuristic and server
+    // types. OnAfterFormsSeen() is fired after the heuristic type detection is
+    // complete (if it started at all). Whether the server types have been
+    // determined by then or not is unspecified.
+    //
+    // TODO(crbug.com/470949499): Consider calling OnAfterFormsSeen() after the
+    // heuristics *and* the server predictions have been determined. The main
+    // challenge is likely the server's possibly slow response time.
     virtual void OnBeforeFormsSeen(
         AutofillManager& manager,
         base::span<const FormGlobalId> updated_forms,

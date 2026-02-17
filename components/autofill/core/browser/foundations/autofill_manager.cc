@@ -284,12 +284,6 @@ void AutofillManager::OnFormsSeen(
         if (!parsed_forms.empty()) {
           self.OnFormsParsed(parsed_forms, forms_seen_timestamp);
         }
-        // TODO(crbug.com/470949499): Since `OnFieldTypesDetermined()` is called
-        // once after parsing and again after the server response arrives, there
-        // is low value in calling `OnAfterFormsSeen()` after the async tasks
-        // have finished. `OnAfterFormsSeen()` should instead likely be called
-        // either synchronously after `OnFormsSeen()` has posted all tasks or be
-        // removed altogether.
         if (!base::FeatureList::IsEnabled(
                 features::kAutofillManagerFiresOnAfterFooIfCacheIsFull)) {
           updated_form_ids = base::ToVector(parsed_forms, &FormData::global_id);
