@@ -405,6 +405,48 @@ suite('SkillsDialogAppPage', function() {
     assertTrue(skillsDialogApp.$.iconRedo.disabled);
   });
 
+  test('RefineUsesOriginalPromptForSubsequentRefines', async function() {
+    // 1. Set the initial text
+    const originalText = 'Original Prompt';
+    await updateInstructions(originalText);
+
+    // 2. Perform the first refinement
+    const firstRefinedText = 'AI Refined Prompt 1';
+    dialogHandler.setResultFor(
+        'refineSkill',
+        Promise.resolve({refinedSkill: {prompt: firstRefinedText}}));
+
+    skillsDialogApp.$.iconRefine.click();
+
+    let calledSkill = await dialogHandler.whenCalled('refineSkill');
+    assertEquals(originalText, calledSkill.prompt);
+
+    await microtasksFinished();
+    assertEquals(
+        firstRefinedText,
+        skillsDialogApp.shadowRoot
+            .querySelector<HTMLTextAreaElement>('#instructionsText')!.value);
+
+    dialogHandler.resetResolver('refineSkill');
+
+    // 3. Perform a second refinement immediately after (without manual edits)
+    const secondRefinedText = 'AI Refined Prompt 2';
+    dialogHandler.setResultFor(
+        'refineSkill',
+        Promise.resolve({refinedSkill: {prompt: secondRefinedText}}));
+
+    skillsDialogApp.$.iconRefine.click();
+
+    calledSkill = await dialogHandler.whenCalled('refineSkill');
+    assertEquals(originalText, calledSkill.prompt);
+
+    await microtasksFinished();
+    assertEquals(
+        secondRefinedText,
+        skillsDialogApp.shadowRoot
+            .querySelector<HTMLTextAreaElement>('#instructionsText')!.value);
+  });
+
   test('DisplaysSignedInEmail', async function() {
     const testEmail = 'user@example.com';
     dialogHandler.setResultFor(

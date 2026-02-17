@@ -224,6 +224,8 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   protected onUndoClick_() {
+    // Undo is only enabled after a successful refinement, at which point
+    // originalPrompt_ is guaranteed to be populated.
     this.skill_ = {...this.skill_, prompt: this.originalPrompt_};
 
     this.canUndoRefine_ = false;
@@ -248,12 +250,20 @@ export class SkillsDialogAppElement extends CrLitElement {
     if (this.isRefineLoading_) {
       return;
     }
+    if (!this.originalPrompt_) {
+      this.originalPrompt_ = this.skill_.prompt;
+    }
+    const skillToRefine = {
+      ...this.skill_,
+      prompt: this.originalPrompt_,
+    };
 
     this.isRefineLoading_ = true;
     this.hasRefineError_ = false;
 
     const refineRequest =
-        SkillsDialogBrowserProxy.getInstance().handler.refineSkill(this.skill_);
+        SkillsDialogBrowserProxy.getInstance().handler.refineSkill(
+            skillToRefine);
 
     const timeout = new Promise<never>((_, reject) => {
       WindowProxyImpl.getInstance().setTimeout(
@@ -267,7 +277,6 @@ export class SkillsDialogAppElement extends CrLitElement {
           // If the server returned null, do not overwrite the current state.
           if (refinedSkill && !this.hasRefineError_) {
             // Only update if we have a valid result.
-            this.originalPrompt_ = this.skill_.prompt;
             this.skill_ = {
               ...this.skill_,
               // If the refined prompt is missing or empty, keep the original
