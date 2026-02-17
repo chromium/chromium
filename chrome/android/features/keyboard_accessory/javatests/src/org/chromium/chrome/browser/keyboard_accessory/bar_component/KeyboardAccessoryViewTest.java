@@ -12,7 +12,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -57,8 +56,6 @@ import android.widget.LinearLayout;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Px;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
@@ -73,6 +70,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.RootSpec;
+import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewFinder;
+import org.chromium.base.test.transit.ViewPresence;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -114,7 +115,6 @@ import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
@@ -748,10 +748,10 @@ public class KeyboardAccessoryViewTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(SHOW_SWIPING_IPH, true));
 
         // Wait until the bubble appears, then dismiss is by tapping it.
-        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_swipe_for_more));
+        ViewPresence<View> bubble =
+                waitForHelpBubble(withText(R.string.iph_keyboard_accessory_swipe_for_more));
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
-        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_swipe_for_more))
-                .perform(click());
+        bubble.click();
         assertThat(tracker.wasDismissed(), is(true));
     }
 
@@ -1165,11 +1165,8 @@ public class KeyboardAccessoryViewTest {
         return mActivityTestRule.getActivity().getResources().getDimensionPixelSize(res);
     }
 
-    private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
-        View mainDecorView = mActivityTestRule.getActivity().getWindow().getDecorView();
-        return onView(isRoot())
-                .inRoot(RootMatchers.withDecorView(not(is(mainDecorView))))
-                .check(ViewUtils.isEventuallyVisible(matcher));
+    private ViewPresence<View> waitForHelpBubble(Matcher<View> matcher) {
+        return ViewFinder.waitForView(matcher, ViewElement.rootSpecOption(RootSpec.anyRoot()));
     }
 
     private void rotateActivityToLandscape() {
