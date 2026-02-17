@@ -322,6 +322,22 @@ void FragmentBuilder::PropagateScrollInitialTarget(
   }
 }
 
+PhysicalAxes FragmentBuilder::GetOverflowScrollAxes() const {
+  // Don't allow anonymous fragments (line-boxes, columns, etc) to resolve their
+  // scrollable-axes.
+  if (!node_ || node_.IsInline() || IsFragmentainerBoxType()) {
+    return kPhysicalAxesNone;
+  }
+
+  if (const auto* box = DynamicTo<LayoutBox>(GetLayoutObject());
+      box && box->IsScrollContainer()) {
+    if (const auto* scrollable_area = box->GetScrollableArea()) {
+      return scrollable_area->ScrollableAxes();
+    }
+  }
+  return kPhysicalAxesNone;
+}
+
 // Propagate data in |child| to this fragment. The |child| will then be added as
 // a child fragment or a child fragment item.
 void FragmentBuilder::PropagateFromFragment(

@@ -547,6 +547,8 @@ class CORE_EXPORT FragmentBuilder {
   void PropagateFromLayoutResult(const LayoutResult&);
   void PropagateScrollInitialTarget(const PhysicalFragment& child);
 
+  PhysicalAxes GetOverflowScrollAxes() const;
+
   void PropagateFromFragment(
       const PhysicalFragment& child,
       LogicalOffset child_offset,

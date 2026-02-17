@@ -2528,6 +2528,27 @@ void PaintLayerScrollableArea::Resize(
   // keep the point under the cursor in view.
 }
 
+PhysicalAxes PaintLayerScrollableArea::ScrollableAxes() const {
+  const auto* box = GetLayoutBox();
+
+  // The LayoutView (viewport) always scrolls both axes.
+  if (box->IsLayoutView()) {
+    return kPhysicalAxesBoth;
+  }
+
+  PhysicalAxes axes = kPhysicalAxesNone;
+  const auto& style = box->StyleRef();
+
+  if (style.IsOverflowValueScrollableX()) {
+    axes |= kPhysicalAxesHorizontal;
+  }
+  if (style.IsOverflowValueScrollableY()) {
+    axes |= kPhysicalAxesVertical;
+  }
+
+  return axes;
+}
+
 PhysicalOffset PaintLayerScrollableArea::LocalToScrollOriginOffset() const {
   PhysicalOffset border_origin_to_scroll_origin(-GetLayoutBox()->BorderLeft(),
                                                 -GetLayoutBox()->BorderTop());
