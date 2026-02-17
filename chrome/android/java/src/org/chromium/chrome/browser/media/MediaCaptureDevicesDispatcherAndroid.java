@@ -43,6 +43,11 @@ public class MediaCaptureDevicesDispatcherAndroid {
         MediaCaptureDevicesDispatcherAndroidJni.get().notifyStopped(webContents);
     }
 
+    public static void notifyDisplayMediaStopped(@Nullable WebContents webContents) {
+        if (webContents == null) return;
+        MediaCaptureDevicesDispatcherAndroidJni.get().notifyDisplayMediaStopped(webContents);
+    }
+
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
@@ -57,5 +62,7 @@ public class MediaCaptureDevicesDispatcherAndroid {
         boolean isCapturingScreen(WebContents webContents);
 
         void notifyStopped(WebContents webContents);
+
+        void notifyDisplayMediaStopped(WebContents webContents);
     }
 }
