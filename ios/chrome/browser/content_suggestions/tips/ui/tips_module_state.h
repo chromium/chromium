@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_configuration.h"
 
 @protocol TipsModuleAudience;
-@protocol TipsModuleConsumerSource;
 
 namespace segmentation_platform {
 enum class TipIdentifier;
@@ -30,9 +29,6 @@ enum class TipIdentifier;
 
 // The object that should handle user events.
 @property(nonatomic, weak) id<TipsModuleAudience> audience;
-
-// Tips model.
-@property(nonatomic, strong) id<TipsModuleConsumerSource> consumerSource;
 
 // Initializes a `TipsModuleState` with `identifier`.
 - (instancetype)initWithTipIdentifier:

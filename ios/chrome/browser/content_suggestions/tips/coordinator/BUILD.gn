@@ -6,6 +6,7 @@ source_set("coordinator") {
   sources = [
     "tips_magic_stack_mediator.h",
     "tips_magic_stack_mediator.mm",
+    "tips_magic_stack_mediator_delegate.h",
     "tips_passwords_coordinator.h",
     "tips_passwords_coordinator.mm",
   ]

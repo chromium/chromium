@@ -6,9 +6,7 @@ source_set("ui") {
   sources = [
     "save_passwords_instructional_view_controller.h",
     "save_passwords_instructional_view_controller.mm",
-    "tips_magic_stack_consumer.h",
     "tips_module_audience.h",
-    "tips_module_consumer_source.h",
     "tips_module_state.h",
     "tips_module_state.mm",
     "tips_module_view.h",

@@ -166,7 +166,6 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
       [[super copyWithZone:zone] initWithTipIdentifier:self.identifier];
   state.productImageData = self.productImageData;
   state.audience = self.audience;
-  state.consumerSource = self.consumerSource;
   return state;
 }
 

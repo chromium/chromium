@@ -41,20 +41,6 @@ NSString* const kTipsModuleViewID = @"kTipsModuleViewID";
   return self;
 }
 
-#pragma mark - TipsMagicStackConsumer
-
-- (void)tipsStateDidChange:(TipsModuleState*)state {
-  _state = state;
-
-  // Determine whether the separator should be hidden.
-  BOOL hideSeparator = _state.productImageData.length > 0;
-  [_contentViewDelegate updateSeparatorVisibility:hideSeparator];
-
-  [_contentView removeFromSuperview];
-
-  [self createSubviews];
-}
-
 #pragma mark - UIView
 
 - (void)willMoveToSuperview:(UIView*)newSuperview {
@@ -66,21 +52,20 @@ NSString* const kTipsModuleViewID = @"kTipsModuleViewID";
 #pragma mark - Private methods
 
 - (void)createSubviews {
-  // Return if the subviews have already been created and added.
-  if (!(self.subviews.count == 0)) {
-    return;
+  if (_contentView) {
+    [_contentView removeFromSuperview];
   }
 
-  self.translatesAutoresizingMaskIntoConstraints = NO;
+  // Determine whether the separator should be hidden.
+  BOOL hideSeparator = _state.productImageData.length > 0;
+  [_contentViewDelegate updateSeparatorVisibility:hideSeparator];
 
+  self.translatesAutoresizingMaskIntoConstraints = NO;
   self.accessibilityIdentifier = kTipsModuleViewID;
 
   _contentView = [self createIconDetailView:_state.identifier];
-
   [self addSubview:_contentView];
-
   AddSameConstraints(_contentView, self);
-
   return;
 }
 

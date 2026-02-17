@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_view.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
-#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_state.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_view.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_tile_layout_util.h"
@@ -233,8 +232,6 @@
              (id<MagicStackModuleContentViewDelegate>)contentViewDelegate {
   TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
   view.contentViewDelegate = contentViewDelegate;
-  [state.consumerSource addConsumer:view];
-
   return view;
 }
 

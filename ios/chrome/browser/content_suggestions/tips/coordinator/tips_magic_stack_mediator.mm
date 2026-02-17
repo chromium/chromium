@@ -21,9 +21,8 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
-#import "ios/chrome/browser/content_suggestions/tips/ui/tips_magic_stack_consumer.h"
+#import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
-#import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_state.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -33,9 +32,7 @@
 
 using segmentation_platform::TipIdentifier;
 
-@interface TipsMagicStackMediator () <PrefObserverDelegate,
-                                      TipsModuleAudience,
-                                      TipsModuleConsumerSource>
+@interface TipsMagicStackMediator () <PrefObserverDelegate, TipsModuleAudience>
 @end
 
 @implementation TipsMagicStackMediator {
@@ -53,9 +50,6 @@ using segmentation_platform::TipIdentifier;
 
   // The image fetcher used to download product images.
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
-
-  // The tips module consumer.
-  id<TipsMagicStackConsumer> _consumer;
 
   // The bookmark model used to check if a shoping page is bookmarked.
   raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
@@ -79,7 +73,6 @@ using segmentation_platform::TipIdentifier;
     _profilePrefService = profilePrefService;
     _state = [[TipsModuleState alloc] initWithTipIdentifier:identifier];
     _state.audience = self;
-    _state.consumerSource = self;
     _shoppingService = shoppingService;
     _bookmarkModel = bookmarkModel;
     _imageFetcher = std::move(imageFetcher);
@@ -102,7 +95,6 @@ using segmentation_platform::TipIdentifier;
   _shoppingService = nil;
   _imageFetcher = nullptr;
   _bookmarkModel = nullptr;
-  _consumer = nil;
 
   _profilePrefChangeRegistrar.RemoveAll();
   _prefObserverBridge.reset();
@@ -112,7 +104,6 @@ using segmentation_platform::TipIdentifier;
 - (void)reconfigureWithTipIdentifier:(TipIdentifier)identifier {
   _state = [[TipsModuleState alloc] initWithTipIdentifier:identifier];
   _state.audience = self;
-  _state.consumerSource = self;
 
   if (_state.identifier == TipIdentifier::kLensShop) {
     [self fetchImage];
@@ -132,12 +123,6 @@ using segmentation_platform::TipIdentifier;
           ntp_tiles::prefs::kTipsHomeModuleEnabled)) {
     [self.delegate removeTipsModuleWithCompletion:nil];
   }
-}
-
-#pragma mark - TipsModuleConsumerSource
-
-- (void)addConsumer:(id<TipsMagicStackConsumer>)consumer {
-  _consumer = consumer;
 }
 
 #pragma mark - TipsModuleAudience
@@ -200,7 +185,7 @@ using segmentation_platform::TipIdentifier;
 
 // Called when the image data has been fetched. Updates the
 // `_state.productImageData` with the fetched `imageData` and notifies the
-// `_consumer` of the state change.
+// delegate of the state change.
 - (void)onImageFetchedResult:(const std::string&)imageData {
   NSData* data = [NSData dataWithBytes:imageData.data()
                                 length:imageData.size()];
@@ -210,8 +195,7 @@ using segmentation_platform::TipIdentifier;
   }
 
   _state.productImageData = data;
-
-  [_consumer tipsStateDidChange:_state];
+  [self.delegate tipsMagicStackMediatorDidReconfigureItem];
 }
 
 @end

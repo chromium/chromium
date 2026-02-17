@@ -13,6 +13,7 @@
 
 @protocol ContentSuggestionsViewControllerAudience;
 class PrefService;
+@protocol TipsMagicStackMediatorDelegate;
 @class TipsModuleState;
 namespace bookmarks {
 class BookmarkModel;
@@ -26,15 +27,6 @@ class ImageDataFetcher;
 namespace segmentation_platform {
 enum class TipIdentifier;
 }  // namespace segmentation_platform
-
-// Handles Tips module events.
-@protocol TipsMagicStackMediatorDelegate
-
-// Indicates to receiver that the Tips module should be removed.
-// The `completion` is called after the removal is finished.
-- (void)removeTipsModuleWithCompletion:(ProceduralBlock)completion;
-
-@end
 
 // Mediator for managing the state of the Tips (Magic Stack) module.
 @interface TipsMagicStackMediator : NSObject

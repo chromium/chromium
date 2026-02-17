@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/content_suggestions/tab_resumption/coordinator/tab_resumption_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator.h"
+#import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_state.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -378,6 +379,15 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 }
 
 #pragma mark - TipsMagicStackMediatorDelegate
+
+- (void)tipsMagicStackMediatorDidReconfigureItem {
+  if (!_prefService->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled)) {
+    return;
+  }
+
+  TipsModuleState* state = _tipsMediator.state;
+  [self.delegate magicStackRankingModel:self didReconfigureItem:state];
+}
 
 - (void)removeTipsModuleWithCompletion:(ProceduralBlock)completion {
   if (![self isMagicStackOrderReady]) {
