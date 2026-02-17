@@ -547,4 +547,29 @@ TEST(CSSParserFastPathsTest, InternalColorsOnlyAllowedInUaMode) {
                 "-internal-current-search-text-color", kUASheetMode, color));
 }
 
+TEST(CSSParserFastPathsTest, TextDecorationSkipInk_All) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+      CSSPropertyID::kTextDecorationSkipInk, "all", context);
+  ASSERT_NE(nullptr, value);
+  CSSIdentifierValue* identifier_value = To<CSSIdentifierValue>(value);
+  EXPECT_EQ(CSSValueID::kAll, identifier_value->GetValueID());
+
+  value = CSSParserFastPaths::MaybeParseValue(
+      CSSPropertyID::kTextDecorationSkipInk, "auto", context);
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(CSSValueID::kAuto, To<CSSIdentifierValue>(value)->GetValueID());
+
+  value = CSSParserFastPaths::MaybeParseValue(
+      CSSPropertyID::kTextDecorationSkipInk, "none", context);
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(CSSValueID::kNone, To<CSSIdentifierValue>(value)->GetValueID());
+
+  value = CSSParserFastPaths::MaybeParseValue(
+      CSSPropertyID::kTextDecorationSkipInk, "invalid", context);
+  EXPECT_EQ(nullptr, value);
+}
+
 }  // namespace blink

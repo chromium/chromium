@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>text-decoration-skip-ink: all - CJK characters should have ink skipping</title>
+<style>
+body {
+  margin: 20px;
+}
+p {
+  font-size: 40px;
+  line-height: 1.5;
+  margin: 10px 0;
+  /* Position underline to intersect with glyphs for visibility */
+  text-decoration: underline;
+  text-underline-offset: -5px;
+  text-decoration-thickness: 3px;
+}
+.auto {
+  text-decoration-skip-ink: auto;
+}
+.all {
+  text-decoration-skip-ink: all;
+}
+.label {
+  font-size: 14px;
+  text-decoration: none;
+  color: gray;
+}
+</style>
+
+<p class="label">skip-ink: auto (underline goes through CJK):</p>
+<p class="auto">中文 English 日本語</p>
+
+<p class="label">skip-ink: all (underline skips ALL glyphs including CJK):</p>
+<p class="all">中文 English 日本語</p>

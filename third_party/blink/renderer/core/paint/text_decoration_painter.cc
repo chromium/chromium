@@ -151,6 +151,8 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
   const AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       decoration_info.TargetStyle(), DarkModeFilter::ElementRole::kForeground));
   const TextDecorationOffset decoration_offset(style_);
+  const ETextDecorationSkipInk skip_ink =
+      decoration_info.TargetStyle().TextDecorationSkipInk();
   PaintWithTextShadow(
       [&](TextShadowPaintPhase phase) {
         for (wtf_size_t i = 0; i < decoration_info.AppliedDecorationCount();
@@ -176,12 +178,10 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
               EnumHasFlags(lines_to_paint, TextDecorationLine::kUnderline)) {
             DecorationGeometry geometry =
                 decoration_info.ComputeUnderlineLineData(decoration_offset);
-            if (decoration_info.TargetStyle().TextDecorationSkipInk() ==
-                ETextDecorationSkipInk::kAuto) {
-              text_painter_.ClipDecorationLine(
-                  geometry, decoration_info.BaselineForInkSkip(),
-                  fragment_paint_info);
-            }
+            text_painter_.ClipDecorationLine(
+                geometry, decoration_info.BaselineForInkSkip(),
+                fragment_paint_info, skip_ink);
+
             text_painter_.PaintDecorationLine(
                 geometry, decoration_info.HasDecorationOverride(),
                 LineColorForPhase(decoration_info, phase), auto_dark_mode);
@@ -191,12 +191,10 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
               EnumHasFlags(lines_to_paint, TextDecorationLine::kOverline)) {
             DecorationGeometry geometry =
                 decoration_info.ComputeOverlineLineData(decoration_offset);
-            if (decoration_info.TargetStyle().TextDecorationSkipInk() ==
-                ETextDecorationSkipInk::kAuto) {
-              text_painter_.ClipDecorationLine(
-                  geometry, decoration_info.BaselineForInkSkip(),
-                  fragment_paint_info);
-            }
+            text_painter_.ClipDecorationLine(
+                geometry, decoration_info.BaselineForInkSkip(),
+                fragment_paint_info, skip_ink);
+
             text_painter_.PaintDecorationLine(
                 geometry, decoration_info.HasDecorationOverride(),
                 LineColorForPhase(decoration_info, phase), auto_dark_mode);

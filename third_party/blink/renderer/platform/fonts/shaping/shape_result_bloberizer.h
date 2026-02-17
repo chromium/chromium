@@ -31,7 +31,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   STACK_ALLOCATED();
 
  public:
-  enum class Type { kNormal, kTextIntercepts, kEmitText };
+  enum class Type { kNormal, kTextIntercepts, kTextInterceptsAll, kEmitText };
 
   struct FillGlyphsNG;
   struct FillTextEmphasisGlyphsNG;

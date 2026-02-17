@@ -2372,10 +2372,18 @@ CSSValue* ComputedStyleUtils::ValueForTextDecorationStyle(
 
 CSSValue* ComputedStyleUtils::ValueForTextDecorationSkipInk(
     ETextDecorationSkipInk text_decoration_skip_ink) {
-  if (text_decoration_skip_ink == ETextDecorationSkipInk::kNone) {
-    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  switch (text_decoration_skip_ink) {
+    case ETextDecorationSkipInk::kNone:
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    case ETextDecorationSkipInk::kAuto:
+      return CSSIdentifierValue::Create(CSSValueID::kAuto);
+    case ETextDecorationSkipInk::kAll:
+      if (RuntimeEnabledFeatures::CSSTextDecorationSkipInkAllEnabled()) {
+        return CSSIdentifierValue::Create(CSSValueID::kAll);
+      }
+      // Fall back to auto if the feature is not enabled.
+      return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
-  return CSSIdentifierValue::Create(CSSValueID::kAuto);
 }
 
 CSSValue* ComputedStyleUtils::ValueForTextOverflow(

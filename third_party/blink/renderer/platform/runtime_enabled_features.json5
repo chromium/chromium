@@ -1763,6 +1763,11 @@
       status: "experimental",
     },
     {
+      // https://issues.chromium.org/40675832: CSS `text-decoration-skip-ink: all` value
+      name: "CSSTextDecorationSkipInkAll",
+      status: "experimental",
+    },
+    {
       // crbug.com/434361099
       name: "CssTextIndent",
       status: "stable",

@@ -6058,7 +6058,7 @@
       inherited: true,
       field_group: "*",
       field_template: "keyword",
-      keywords: ["none", "auto"],
+      keywords: ["none", "auto", "all"],
       typedom_types: ["Keyword"],
       default_value: "auto",
       valid_for_first_letter: true,

@@ -227,8 +227,7 @@ const ShapeResultBloberizer::BlobBuffer& ShapeResultBloberizer::Blobs() {
 inline bool ShapeResultBloberizer::IsSkipInkException(
     const StringView& text,
     unsigned character_index) {
-  // We want to skip descenders in general, but it is undesirable renderings for
-  // CJK characters.
+  // For skip-ink: auto, skip CJK characters. For skip-ink: all, include all.
   return type_ == ShapeResultBloberizer::Type::kTextIntercepts &&
          !Character::CanTextDecorationSkipInk(
              text.CodepointAt(character_index));

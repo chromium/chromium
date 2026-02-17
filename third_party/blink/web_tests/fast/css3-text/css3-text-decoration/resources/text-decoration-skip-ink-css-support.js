@@ -1,5 +1,6 @@
 var validWriteExpectations = ['auto',
-                               'none'];
+                               'none',
+                               'all'];
 
 var writeInvalidExpectations = ['none auto',
                                 'non',

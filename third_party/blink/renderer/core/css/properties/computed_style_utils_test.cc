@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_name.h"
 #include "third_party/blink/renderer/core/style/style_name_or_keyword.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
@@ -164,6 +166,23 @@ TEST(ComputedStyleUtilsTest, ValueForStyleNameOrKeyword) {
   EXPECT_EQ(*ComputedStyleUtils::ValueForStyleNameOrKeyword(
                 StyleNameOrKeyword(CSSValueID::kNone)),
             *MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kNone));
+}
+
+TEST(ComputedStyleUtilsTest, ValueForTextDecorationSkipInk) {
+  const CSSValue* value = ComputedStyleUtils::ValueForTextDecorationSkipInk(
+      ETextDecorationSkipInk::kAuto);
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ("auto", value->CssText());
+
+  value = ComputedStyleUtils::ValueForTextDecorationSkipInk(
+      ETextDecorationSkipInk::kNone);
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ("none", value->CssText());
+
+  value = ComputedStyleUtils::ValueForTextDecorationSkipInk(
+      ETextDecorationSkipInk::kAll);
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ("all", value->CssText());
 }
 
 }  // namespace blink

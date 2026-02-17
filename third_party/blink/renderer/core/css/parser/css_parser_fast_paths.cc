@@ -1409,7 +1409,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kDotted ||
              value_id == CSSValueID::kDashed || value_id == CSSValueID::kWavy;
     case CSSPropertyID::kTextDecorationSkipInk:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
+             (RuntimeEnabledFeatures::CSSTextDecorationSkipInkAllEnabled() &&
+              value_id == CSSValueID::kAll);
     case CSSPropertyID::kTextOrientation:
       return value_id == CSSValueID::kMixed ||
              value_id == CSSValueID::kUpright ||

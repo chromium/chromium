@@ -105,7 +105,8 @@ class CORE_EXPORT TextPainter {
 
   virtual void ClipDecorationLine(const DecorationGeometry&,
                                   float text_baseline,
-                                  const TextFragmentPaintInfo&);
+                                  const TextFragmentPaintInfo&,
+                                  ETextDecorationSkipInk skip_ink);
   void PaintDecorationLine(const DecorationGeometry& geometry,
                            bool has_decoration_override,
                            const Color& line_color,
