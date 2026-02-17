@@ -8,6 +8,8 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- LINT.IfChange(toolbar_tablet_components) -->
+
     <!-- Omnibox chip container. -->
     <LinearLayout
         android:id="@+id/omnibox_chip_container"
@@ -93,6 +95,8 @@ found in the LICENSE file.
         android:tooltipText="@string/accessibility_toolbar_btn_delete_url"
         app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
         app:layout_constraintEnd_toStartOf="@id/margin_spacer"/>
+
+    <!-- LINT.ThenChange(/chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarUtils.java:toolbar_tablet_components) -->
 
     <Space
         android:id="@+id/margin_spacer"

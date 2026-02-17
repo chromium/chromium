@@ -26,6 +26,7 @@ found in the LICENSE file.
       android:visibility="gone"
   />
 
+  <!-- LINT.IfChange(toolbar_tablet_components) -->
   <LinearLayout
         android:id="@+id/toolbar_tablet_layout"
         android:layout_width="match_parent"
@@ -112,4 +113,5 @@ found in the LICENSE file.
 
         <include layout="@layout/menu_button"/>
     </LinearLayout>
+    <!-- LINT.ThenChange(/chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarUtils.java:toolbar_tablet_components) -->
 </org.chromium.chrome.browser.toolbar.top.ToolbarTablet>

@@ -58,6 +58,8 @@ public class ToolbarUtils {
                 ToolbarComponentId.OMNIBOX_BOOKMARK
             };
 
+    // LINT.IfChange(toolbar_tablet_components)
+
     @IntDef({
         ToolbarComponentId.HOME,
         ToolbarComponentId.BACK,
@@ -100,6 +102,8 @@ public class ToolbarUtils {
 
         int COUNT = 17;
     }
+
+    // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/res/layout/toolbar_tablet.xml:toolbar_tablet_components|//chrome/browser/ui/android/omnibox/java/res/layout/url_action_container.xml:toolbar_tablet_components)
 
     /**
      * Sets values in the animator (interpolator, duration, etc) for fading in animations. Returns
