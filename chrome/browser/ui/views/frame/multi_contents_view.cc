@@ -126,13 +126,13 @@ MultiContentsView::MultiContentsView(
     auto* contents_view = contents_container_view->contents_view();
     view_map[contents_view->GetClassName()] = contents_view;
 
-    web_contents_focused_subscriptions_.push_back(
+    contents_focused_subscriptions_.push_back(
         contents_view->AddWebContentsFocusedCallback(base::BindRepeating(
             &MultiContentsView::OnWebContentsFocused, base::Unretained(this))));
 
     if (auto* footer = contents_container_view->new_tab_footer_view()) {
       view_map[footer->GetClassName()] = footer;
-      ntp_footer_focused_subscriptions_.push_back(
+      contents_focused_subscriptions_.push_back(
           footer->AddWebContentsFocusedCallback(base::BindRepeating(
               &MultiContentsView::OnNtpFooterFocused, base::Unretained(this))));
     }
@@ -140,7 +140,7 @@ MultiContentsView::MultiContentsView(
     if (auto* actor_overlay =
             contents_container_view->actor_overlay_web_view()) {
       view_map[actor_overlay->GetClassName()] = actor_overlay;
-      actor_overlay_focused_subscriptions_.push_back(
+      contents_focused_subscriptions_.push_back(
           actor_overlay->AddWebContentsFocusedCallback(
               base::BindRepeating(&MultiContentsView::OnActorOverlayFocused,
                                   base::Unretained(this))));
@@ -149,7 +149,7 @@ MultiContentsView::MultiContentsView(
     if (auto* read_anything_overlay =
             contents_container_view->read_anything_immersive_overlay_view()) {
       view_map[read_anything_overlay->GetClassName()] = read_anything_overlay;
-      read_anything_overlay_focused_subscriptions_.push_back(
+      contents_focused_subscriptions_.push_back(
           read_anything_overlay->AddWebViewFocusedCallback(base::BindRepeating(
               &MultiContentsView::OnReadAnythingOverlayFocused,
               base::Unretained(this), contents_container_view)));

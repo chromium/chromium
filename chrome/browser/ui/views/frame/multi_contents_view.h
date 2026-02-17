@@ -23,6 +23,7 @@
 class BrowserView;
 class ContentsWebView;
 class CustomFloatingCorner;
+class MultiContentsBackgroundView;
 class MultiContentsDropTargetView;
 class MultiContentsResizeArea;
 class MultiContentsViewDelegate;
@@ -40,8 +41,6 @@ class RoundedCornersF;
 namespace views {
 class WebView;
 }  // namespace views
-
-class MultiContentsBackgroundView;
 
 // MultiContentsView shows up to two contents web views side by side, and
 // manages their layout relative to each other.
@@ -219,10 +218,6 @@ class MultiContentsView : public views::View,
   void OnWebContentsFocused(views::WebView*);
   void OnNtpFooterFocused(views::WebView*);
   void OnActorOverlayFocused(views::WebView*);
-
-  // Callback for when Read Anything Immersive Mode Overlay is focused. If the
-  // focus comes from an inactive pane in a split view, this method activates
-  // the corresponding tab.
   void OnReadAnythingOverlayFocused(ContentsContainerView* container,
                                     views::WebView* web_view);
 
@@ -253,24 +248,9 @@ class MultiContentsView : public views::View,
   // ContentsContainerView is not visible.
   std::vector<ContentsContainerView*> contents_container_views_;
 
-  // Holds subscriptions for when the attached web contents to ContentsView
-  // is focused.
-  std::vector<base::CallbackListSubscription>
-      web_contents_focused_subscriptions_;
-
-  // Holds subscriptions for when the attached web contents to NtpFooterView
-  // is focused.
-  std::vector<base::CallbackListSubscription> ntp_footer_focused_subscriptions_;
-
-  // Holds subscriptions for when the attached web contents to
-  // ActorOverlayWebView is focused.
-  std::vector<base::CallbackListSubscription>
-      actor_overlay_focused_subscriptions_;
-
-  // Holds subscriptions for when the attached web contents to
-  // ReadAnythingImmersiveOverlayView is focused.
-  std::vector<base::CallbackListSubscription>
-      read_anything_overlay_focused_subscriptions_;
+  // Holds subscriptions for when the attached contents to ContentsContainerView
+  // are focused.
+  std::vector<base::CallbackListSubscription> contents_focused_subscriptions_;
 
   // The handle responsible for resizing the two contents views as relative to
   // each other.
