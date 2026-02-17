@@ -22,7 +22,7 @@
     Main menu
   </message>
   <message name="IDS_SKILLS_SIDEBAR_FOOTER_TEXT" desc="The text in the sidebar footer explaining the purpose of the chrome://skills page" translateable="false">
-    Manage the custom workflows powered by
+    Manage your custom workflows powered by
   </message>
   <message name="IDS_SKILLS_SIDEBAR_FOOTER_BRANDING" desc="The branding text 'Gemini in Chrome' displayed in the sidebar footer" translateable="false">
     Gemini in Chrome
