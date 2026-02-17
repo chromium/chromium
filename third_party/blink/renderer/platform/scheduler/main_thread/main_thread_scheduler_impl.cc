@@ -271,20 +271,6 @@ perfetto::StaticString RenderingPrioritizationStateToString(
   }
 }
 
-BASE_FEATURE(kBusyLoopOnRendererMain,
-             "BusyLoopOnMainThread",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else   // BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_ANDROID)
-);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kBusyLoopTime,
-                   &kBusyLoopOnRendererMain,
-                   "busy_loop_for",
-                   base::Milliseconds(2));
-
 // Treat "input handling" specially in V8.
 BASE_FEATURE(kInputHandlingModeFromUseCase, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInputHandlingModeFromPerformanceScenario,
@@ -292,19 +278,6 @@ BASE_FEATURE(kInputHandlingModeFromPerformanceScenario,
 BASE_FEATURE(kLoadingModeFromRAILMode, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLoadingModeFromPerformanceScenario,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-void MaybeSetBusyLoop(raw_ptr<base::MessagePump> message_pump,
-                      double scale_factor) {
-  // Offset the additional power consumption of busy-looping by only enabling
-  // this on devices with 120Hz displays.
-  if (!message_pump ||
-      !(::features::IsEligibleForThrottleMainFrameTo60Hz() &&
-        base::FeatureList::IsEnabled(kBusyLoopOnRendererMain))) {
-    return;
-  }
-
-  message_pump->SetBusyLoop(kBusyLoopTime.Get() * scale_factor);
-}
 
 }  // namespace
 
@@ -379,8 +352,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager)
     : MainThreadSchedulerImpl(sequence_manager.get()) {
   owned_sequence_manager_ = std::move(sequence_manager);
-  MaybeSetBusyLoop(main_thread_only().message_pump,
-                   main_thread_only().renderer_backgrounded ? 0. : 1.);
+  MaybeSetBusyLoop();
 }
 
 MainThreadSchedulerImpl::MainThreadSchedulerImpl(
@@ -1268,7 +1240,6 @@ void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
   base::TimeTicks now = NowTicks();
   main_thread_only().background_status_changed_at = now;
   main_thread_only().metrics_helper.SetRendererBackgrounded(backgrounded, now);
-  MaybeSetBusyLoop(main_thread_only().message_pump, backgrounded ? 0. : 1.);
 
   UpdatePolicy();
 
@@ -1719,16 +1690,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
     main_thread_only().current_policy_expiration_time = base::TimeTicks();
   }
 
-  double busy_loop_scale_factor;
-  if (main_thread_only().renderer_backgrounded) {
-    busy_loop_scale_factor = 0.;
-  } else if (main_thread_only().current_use_case != UseCase::kNone ||
-             main_thread_only().blocking_input_expected_soon) {
-    busy_loop_scale_factor = 1.;
-  } else {
-    busy_loop_scale_factor = 0.5;
-  }
-  MaybeSetBusyLoop(main_thread_only().message_pump, busy_loop_scale_factor);
+  MaybeSetBusyLoop();
 
   // Avoid prioritizing main thread compositing (e.g., rAF) if it is extremely
   // slow, because that can cause starvation in other task sources.
@@ -3185,6 +3147,31 @@ void MainThreadSchedulerImpl::OnWidgetSchedulerWillShutdown(
   if (no_widgets_expecting_frame) {
     idle_helper_.EnableLongIdlePeriod();
   }
+}
+
+void MainThreadSchedulerImpl::MaybeSetBusyLoop() {
+  // Offset the additional power consumption of busy-looping by only enabling
+  // this on devices with 120Hz displays.
+  if (!::features::IsEligibleForThrottleMainFrameTo60Hz() ||
+      !base::FeatureList::IsEnabled(kBusyLoopOnRendererMain)) {
+    return;
+  }
+
+  float& busy_loop_scale_factor = main_thread_only().busy_loop_scale_factor;
+  if (main_thread_only().renderer_backgrounded) {
+    busy_loop_scale_factor = 0.f;
+  } else if (main_thread_only().blocking_input_expected_soon ||
+             main_thread_only().current_use_case != UseCase::kNone) {
+    busy_loop_scale_factor = 1.f;
+  } else {
+    busy_loop_scale_factor = 0.5f;
+  }
+
+  base::MessagePump* message_pump = main_thread_only().message_pump;
+  if (!message_pump) {
+    return;
+  }
+  message_pump->SetBusyLoop(kBusyLoopTime.Get() * busy_loop_scale_factor);
 }
 
 }  // namespace scheduler

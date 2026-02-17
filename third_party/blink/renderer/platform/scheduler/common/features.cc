@@ -84,5 +84,23 @@ base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod(bool loading) {
   return base::Seconds(seconds);
 }
 
+// When enabled, renderer main will busy loop in user space when no further work
+// is scheduled before waiting in the kernel.
+BASE_FEATURE(kBusyLoopOnRendererMain,
+             "BusyLoopOnMainThread",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else   // BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_ANDROID)
+);
+
+// The maximum amount of time to busy loop when BusyLoopOnMainThread is enabled.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kBusyLoopTime,
+                   &kBusyLoopOnRendererMain,
+                   "busy_loop_for",
+                   base::Milliseconds(2));
+
 }  // namespace scheduler
 }  // namespace blink

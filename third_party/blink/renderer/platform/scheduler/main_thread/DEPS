@@ -21,6 +21,9 @@ specific_include_rules = {
     "+base/android/self_compaction_manager.h",
     "+cc/base/features.h"
   ],
+  "main_thread_scheduler_impl_unittest.cc": [
+    "+cc/base/features.h"
+  ],
   "memory_purge_manager.cc": [
     "+base/android/self_compaction_manager.h"
   ],

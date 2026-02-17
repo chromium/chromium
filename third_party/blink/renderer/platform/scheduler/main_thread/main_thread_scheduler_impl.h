@@ -688,6 +688,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   bool AllPagesFrozen() const;
 
+  void MaybeSetBusyLoop();
+
   // Indicates that scheduler has been shutdown.
   // It should be accessed only on the main thread, but couldn't be a member
   // of MainThreadOnly struct because last might be destructed before we
@@ -856,6 +858,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // enabled.
     std::unique_ptr<ThreadAffinityBoost> affinity_boost = nullptr;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+    // Multiplier to apply to the message busy loop maximum duration
+    float busy_loop_scale_factor = 0.f;
   };
 
   struct AnyThread {

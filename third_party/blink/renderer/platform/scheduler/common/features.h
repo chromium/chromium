@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -60,6 +61,9 @@ PLATFORM_EXPORT base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod(
 BASE_FEATURE(kMbiOverrideTaskRunnerHandle,
              "MbiOverrideTaskRunnerHandle",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kBusyLoopOnRendererMain);
+PLATFORM_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kBusyLoopTime);
 
 }  // namespace scheduler
 }  // namespace blink

@@ -7,6 +7,7 @@
 #include <atomic>
 #include <cstdint>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -31,6 +32,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenario_test_support.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
@@ -1004,6 +1006,15 @@ class MainThreadSchedulerImplTest : public testing::Test {
           NOTREACHED();
       }
     }
+  }
+
+  void SetUseCaseAndUpdatePolicy(UseCase use_case) {
+    scheduler_->use_case_override_ = use_case;
+    scheduler_->UpdatePolicyForTesting();
+  }
+
+  float BusyLoopScaleFactor() const {
+    return scheduler_->main_thread_only().busy_loop_scale_factor;
   }
 
  protected:
@@ -4533,11 +4544,6 @@ class MainThreadSchedulerImplAffinityBoostTest
     MainThreadSchedulerImplTest::TearDown();
   }
 
-  void SetUseCaseAndUpdatePolicy(UseCase use_case) {
-    scheduler_->use_case_override_ = use_case;
-    scheduler_->UpdatePolicyForTesting();
-  }
-
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_ =
       base::WrapRefCounted(new base::TestMockTimeTaskRunner(
           base::TestMockTimeTaskRunner::Type::kStandalone));
@@ -4688,6 +4694,129 @@ TEST_F(MainThreadSchedulerImplAffinityBoostTest,
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+struct BusyLoopOnRendererMainTestConfig {
+  bool is_feature_enabled;
+  bool is_120hz_display;
+
+  // Used to generate test names
+  struct PrintToStringParamName {
+    std::string operator()(
+        const testing::TestParamInfo<BusyLoopOnRendererMainTestConfig>& info)
+        const {
+      std::stringstream ss;
+      ss << "Feature"
+         << (info.param.is_feature_enabled ? "Enabled" : "Disabled") << "On"
+         << (info.param.is_120hz_display ? "120" : "60") << "HzDisplay";
+      return ss.str();
+    }
+  };
+};
+
+class BusyLoopOnRendererMainTest
+    : public MainThreadSchedulerImplTest,
+      public ::testing::WithParamInterface<BusyLoopOnRendererMainTestConfig> {
+ protected:
+  BusyLoopOnRendererMainTest() = default;
+
+  void SetUp() override {
+    feature_list_.Reset();
+    if (IsFeatureEnabled()) {
+      feature_list_.InitAndEnableFeature(kBusyLoopOnRendererMain);
+    } else {
+      feature_list_.InitAndDisableFeature(kBusyLoopOnRendererMain);
+    }
+    ::features::SetIsEligibleForThrottleMainFrameTo60Hz(Is120HzDisplay());
+
+    MainThreadSchedulerImplTest::SetUp();
+  }
+
+  void CheckScaleFactor(
+      base::FunctionRef<::testing::AssertionResult(UseCase, float)>
+          check_scale_factor) {
+    for (UseCase use_case : kAllUseCases) {
+      SetUseCaseAndUpdatePolicy(use_case);
+      EXPECT_TRUE(check_scale_factor(use_case, BusyLoopScaleFactor()));
+    }
+    SetUseCaseAndUpdatePolicy(UseCase::kNone);
+  }
+
+  void CheckScaleFactorIsAlwaysZero() {
+    CheckScaleFactor([](UseCase use_case, float scale_factor) {
+      if (scale_factor == 0.f) {
+        return ::testing::AssertionSuccess();
+      }
+      return ::testing::AssertionFailure()
+             << "scale factor is " << scale_factor << "for use case "
+             << UseCaseToString(use_case).value;
+    });
+  }
+
+  void SetRendererBackgrounded(bool is_background) {
+    scheduler_->SetRendererBackgrounded(is_background);
+    SetUseCaseAndUpdatePolicy(UseCase::kNone);
+  }
+
+  bool IsFeatureEnabled() const { return GetParam().is_feature_enabled; }
+  bool Is120HzDisplay() const { return GetParam().is_120hz_display; }
+
+ private:
+  static constexpr auto kAllUseCases =
+      base::EnumSet<UseCase, UseCase::kNone, UseCase::kMaxValue>::All();
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,  // Empty to simplify gtest output
+    BusyLoopOnRendererMainTest,
+    ::testing::ValuesIn(std::vector<BusyLoopOnRendererMainTestConfig>(
+        {{.is_feature_enabled = true, .is_120hz_display = true},
+         {.is_feature_enabled = true, .is_120hz_display = false},
+         {.is_feature_enabled = false, .is_120hz_display = true},
+         {.is_feature_enabled = false, .is_120hz_display = false}})),
+    BusyLoopOnRendererMainTestConfig::PrintToStringParamName());
+
+TEST_P(BusyLoopOnRendererMainTest, BackgroundRendererDoesNotBusyLoop) {
+  SetRendererBackgrounded(true);
+  CheckScaleFactorIsAlwaysZero();
+
+  SetRendererBackgrounded(false);
+  if (!IsFeatureEnabled() || !Is120HzDisplay()) {
+    CheckScaleFactorIsAlwaysZero();
+  } else {
+    CheckScaleFactor([](UseCase use_case, float scale_factor) {
+      if (scale_factor > 0.f) {
+        return ::testing::AssertionSuccess();
+      }
+      return ::testing::AssertionFailure()
+             << "scale factor is " << scale_factor << ", "
+             << "expected non-zero value for use case "
+             << UseCaseToString(use_case).value;
+    });
+  }
+
+  SetRendererBackgrounded(true);
+  CheckScaleFactorIsAlwaysZero();
+}
+
+TEST_P(BusyLoopOnRendererMainTest,
+       ForegroundRendererBusyLoopingScalesBasedOnUseCase) {
+  SetRendererBackgrounded(false);
+  if (!IsFeatureEnabled() || !Is120HzDisplay()) {
+    CheckScaleFactorIsAlwaysZero();
+  } else {
+    CheckScaleFactor([](UseCase use_case, float scale_factor) {
+      const float expected_scale_factor =
+          (use_case == UseCase::kNone ? .5f : 1.f);
+      if (scale_factor == expected_scale_factor) {
+        return ::testing::AssertionSuccess();
+      }
+      return ::testing::AssertionFailure()
+             << "scale factor is " << scale_factor << ", "
+             << "expected " << expected_scale_factor << " "
+             << "for use case " << UseCaseToString(use_case).value;
+    });
+  }
+}
 
 }  // namespace main_thread_scheduler_impl_unittest
 }  // namespace scheduler
