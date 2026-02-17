@@ -187,7 +187,6 @@ size_t GetNumAttachments(GLenum attachment) {
 FeatureInfo::FeatureFlags::FeatureFlags() {
   mappable_formats = base::MakeFlatSet<viz::SharedImageFormat>(std::vector({
       viz::SinglePlaneFormat::kBGR_565,
-      viz::SinglePlaneFormat::kRGBA_4444,
       viz::SinglePlaneFormat::kRGBA_8888,
       viz::SinglePlaneFormat::kRGBX_8888,
       viz::MultiPlaneFormat::kYV12,
@@ -986,8 +985,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
   // emulation.
   if (gl_version_info_->is_angle_swiftshader) {
     feature_flags_.disable_mac_swangle_rgbx = true;
-    feature_flags_.mappable_formats.erase(viz::SinglePlaneFormat::kBGRX_8888);
-    feature_flags_.mappable_formats.erase(viz::SinglePlaneFormat::kRGBX_8888);
   }
 #endif
 
@@ -1210,7 +1207,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
 
   if (feature_flags_.chromium_image_ycbcr_420v) {
     AddExtensionString("GL_CHROMIUM_ycbcr_420v_image");
-    feature_flags_.mappable_formats.insert(viz::MultiPlaneFormat::kNV12);
   }
 
 #if BUILDFLAG(IS_APPLE)
@@ -1245,11 +1241,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
     AddExtensionString("GL_CHROMIUM_ycbcr_p010_image");
     feature_flags_.mappable_formats.insert(viz::MultiPlaneFormat::kP010);
   }
-
-#if BUILDFLAG(IS_MAC)
-  feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kRGBA_F16);
-  feature_flags_.mappable_formats.insert(viz::MultiPlaneFormat::kNV12A);
-#endif  // BUILDFLAG(IS_MAC)
 
   // TODO(gman): Add support for these extensions.
   //     GL_OES_depth32
@@ -1489,11 +1480,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
         GL_RG16_EXT);
     validators_.texture_sized_color_renderable_internal_format.AddValue(
         GL_RGBA16_EXT);
-
-    // TODO(shrekshao): mappable_formats is not used by WebGL
-    // So didn't expose all buffer formats here.
-    feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kR_16);
-    feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kRG_1616);
   }
 
   if (enable_es3 && gfx::HasExtension(extensions, "GL_EXT_window_rectangles")) {
