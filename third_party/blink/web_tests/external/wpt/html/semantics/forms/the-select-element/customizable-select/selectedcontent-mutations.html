@@ -460,6 +460,19 @@ for (const testId of Object.keys(testIdToExpectations)) {
     const expectedHtml = testIdToExpectations[testId].html.trim();
     const expectedMutations = testIdToExpectations[testId].mutations;
 
+    // To rebaseline this test, uncomment the following code:
+    /*
+    const log = console;
+    if (expectedHtml != actualHtml) {
+      log.error(`${testId} actual html:\n${actualHtml}`);
+    }
+    let expectedMutationsString = JSON.stringify(expectedMutations, null, 2);
+    let actualMutationsString = JSON.stringify(actualMutations, null, 2);
+    if (expectedMutationsString != actualMutationsString) {
+      log.error(`${testId} actual mutations:\n${actualMutationsString}`);
+    }
+    */
+
     assert_equals(actualHtml, expectedHtml, testId);
     assert_array_equals(actualMutations, expectedMutations, testId);
   }, `MutationObserver records during parsing of <select> with <selectedcontent>: ${testId}`);
