@@ -6,18 +6,18 @@ package org.chromium.chrome.browser.educational_tip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.MARK_COMPLETED;
 import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.MODULE_BUTTON_ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.MODULE_CONTENT_COMPLETED_IMAGE;
 import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.MODULE_CONTENT_DESCRIPTION_STRING;
 import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.MODULE_CONTENT_IMAGE;
 import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.MODULE_CONTENT_TITLE_STRING;
 
 import android.app.Activity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
@@ -46,6 +46,7 @@ public final class EducationalTipModuleViewBinderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private EducationalTipModuleView mEducationalTipModuleView;
+    @Mock private EducationalTipModuleView mMockView;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     @Mock private View.OnClickListener mModuleButtonOnClickListener;
@@ -60,14 +61,13 @@ public final class EducationalTipModuleViewBinderUnitTest {
                                 .inflate(R.layout.educational_tip_module_layout, null);
         mActivity.setContentView(mEducationalTipModuleView);
         mModel = new PropertyModel(EducationalTipModuleProperties.ALL_KEYS);
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mEducationalTipModuleView, EducationalTipModuleViewBinder::bind);
     }
 
     @After
     public void tearDown() throws Exception {
-        mPropertyModelChangeProcessor.destroy();
+        if (mPropertyModelChangeProcessor != null) {
+            mPropertyModelChangeProcessor.destroy();
+        }
         mModel = null;
         mEducationalTipModuleView = null;
         mActivity = null;
@@ -76,6 +76,9 @@ public final class EducationalTipModuleViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetModuleContentTitle() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mEducationalTipModuleView, EducationalTipModuleViewBinder::bind);
         TextView contentTitleView =
                 mEducationalTipModuleView.findViewById(R.id.educational_tip_module_content_title);
         assertEquals("", contentTitleView.getText());
@@ -91,6 +94,9 @@ public final class EducationalTipModuleViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetModuleContentDescription() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mEducationalTipModuleView, EducationalTipModuleViewBinder::bind);
         TextView contentDescriptionView =
                 mEducationalTipModuleView.findViewById(
                         R.id.educational_tip_module_content_description);
@@ -107,19 +113,42 @@ public final class EducationalTipModuleViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetModuleContentImage() {
-        ImageView contentImageView =
-                mEducationalTipModuleView.findViewById(R.id.educational_tip_module_content_image);
-        assertNull(contentImageView.getDrawable());
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mMockView, EducationalTipModuleViewBinder::bind);
+        int expectedRes =
+                org.chromium.chrome.browser.educational_tip.R.drawable.default_browser_promo_logo;
+        mModel.set(MODULE_CONTENT_IMAGE, expectedRes);
+        verify(mMockView).setContentImageResource(expectedRes);
+    }
 
-        mModel.set(
-                MODULE_CONTENT_IMAGE,
-                org.chromium.chrome.browser.educational_tip.R.drawable.default_browser_promo_logo);
-        assertNotNull(contentImageView.getDrawable());
+    @Test
+    @SmallTest
+    public void testSetModuleContentCompletedImage() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mMockView, EducationalTipModuleViewBinder::bind);
+        int expectedRes = R.drawable.setup_list_completed_background_wavy_circle;
+        mModel.set(MODULE_CONTENT_COMPLETED_IMAGE, expectedRes);
+        verify(mMockView).setContentImageResourceWithAnimation(expectedRes);
+    }
+
+    @Test
+    @SmallTest
+    public void testMarkCompleted() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mMockView, EducationalTipModuleViewBinder::bind);
+        mModel.set(MARK_COMPLETED, true);
+        verify(mMockView).setCompleted(true);
     }
 
     @Test
     @SmallTest
     public void testSetModuleButtonOnClickListener() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mEducationalTipModuleView, EducationalTipModuleViewBinder::bind);
         mModel.set(MODULE_BUTTON_ON_CLICK_LISTENER, mModuleButtonOnClickListener);
         ButtonCompat moduleButtonView =
                 mEducationalTipModuleView.findViewById(R.id.educational_tip_module_button);

@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.educational_tip.two_cell;
 
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_CLICK_HANDLER;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_COMPLETED_ICON;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_DESCRIPTION;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_ICON;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_MARK_COMPLETED;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_TITLE;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_CLICK_HANDLER;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_COMPLETED_ICON;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_DESCRIPTION;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_ICON;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_MARK_COMPLETED;
@@ -43,6 +45,8 @@ public class EducationalTipModuleTwoCellViewBinder {
             moduleView.setItem1Description(model.get(ITEM_1_DESCRIPTION));
         } else if (ITEM_1_ICON == propertyKey) {
             moduleView.setItem1Icon(model.get(ITEM_1_ICON));
+        } else if (ITEM_1_COMPLETED_ICON == propertyKey) {
+            moduleView.setItem1IconWithAnimation(model.get(ITEM_1_COMPLETED_ICON));
         } else if (ITEM_1_CLICK_HANDLER == propertyKey) {
             moduleView.setItem1OnClickListener(v -> model.get(ITEM_1_CLICK_HANDLER).run());
         } else if (ITEM_1_MARK_COMPLETED == propertyKey) {
@@ -53,6 +57,8 @@ public class EducationalTipModuleTwoCellViewBinder {
             moduleView.setItem2Description(model.get(ITEM_2_DESCRIPTION));
         } else if (ITEM_2_ICON == propertyKey) {
             moduleView.setItem2Icon(model.get(ITEM_2_ICON));
+        } else if (ITEM_2_COMPLETED_ICON == propertyKey) {
+            moduleView.setItem2IconWithAnimation(model.get(ITEM_2_COMPLETED_ICON));
         } else if (ITEM_2_CLICK_HANDLER == propertyKey) {
             moduleView.setItem2OnClickListener(v -> model.get(ITEM_2_CLICK_HANDLER).run());
         } else if (ITEM_2_MARK_COMPLETED == propertyKey) {

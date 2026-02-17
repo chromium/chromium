@@ -56,9 +56,9 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
     private boolean mIsPriming;
 
     /** Delay constants for the completion animation. */
-    public static final int STRIKETHROUGH_DURATION_MS = 70;
+    public static final int STRIKETHROUGH_DURATION_MS = 500;
 
-    public static final int HIDE_DURATION_MS = 1000;
+    public static final int HIDE_DURATION_MS = 600;
 
     /** Maximum number of items to show in the setup list. */
     public static final int MAX_SETUP_LIST_ITEMS = 5;

@@ -28,6 +28,9 @@ public class EducationalTipModuleViewBinder {
         } else if (EducationalTipModuleProperties.MODULE_CONTENT_IMAGE == propertyKey) {
             moduleView.setContentImageResource(
                     model.get(EducationalTipModuleProperties.MODULE_CONTENT_IMAGE));
+        } else if (EducationalTipModuleProperties.MODULE_CONTENT_COMPLETED_IMAGE == propertyKey) {
+            moduleView.setContentImageResourceWithAnimation(
+                    model.get(EducationalTipModuleProperties.MODULE_CONTENT_COMPLETED_IMAGE));
         } else if (EducationalTipModuleProperties.MODULE_BUTTON_STRING == propertyKey) {
             moduleView.setButtonText(
                     model.get(EducationalTipModuleProperties.MODULE_BUTTON_STRING));

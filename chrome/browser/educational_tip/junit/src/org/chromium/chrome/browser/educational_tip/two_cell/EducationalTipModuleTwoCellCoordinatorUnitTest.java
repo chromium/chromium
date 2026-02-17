@@ -27,7 +27,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,6 +39,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -53,6 +56,7 @@ import java.util.List;
         shadows = {ShadowAppCompatResources.class})
 public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
     private static final @ModuleDelegate.ModuleType int MODULE_TYPE =
             SetupListModuleUtils.getTwoCellContainerModuleTypes().get(0);
@@ -61,6 +65,7 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
     @Mock private Profile mProfile;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private SetupListManager mSetupListManager;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
@@ -76,6 +81,7 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
         mProfileSupplier = ObservableSuppliers.createNonNull(mProfile);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
         when(mActionDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
+        SetupListManager.setInstanceForTesting(mSetupListManager);
     }
 
     @Test
@@ -201,5 +207,49 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
                 new EducationalTipModuleTwoCellCoordinator(
                         MODULE_TYPE, mModuleDelegate, mActionDelegate);
         assertEquals(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER, mCoordinator.getModuleType());
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateModule_TriggersAnimation() {
+        List<Integer> rankedModules =
+                Arrays.asList(
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
+        SetupListModuleUtils.setRankedModuleTypesForTesting(rankedModules);
+
+        mCoordinator =
+                new EducationalTipModuleTwoCellCoordinator(
+                        MODULE_TYPE, mModuleDelegate, mActionDelegate);
+
+        when(mSetupListManager.isModuleAwaitingCompletionAnimation(
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO))
+                .thenReturn(true);
+
+        mCoordinator.showModule();
+        verify(mModuleDelegate).onDataReady(eq(MODULE_TYPE), mPropertyModelCaptor.capture());
+        PropertyModel model = mPropertyModelCaptor.getValue();
+
+        mCoordinator.updateModule();
+
+        // Completion icon should be set immediately.
+        assertEquals(
+                R.drawable.setup_list_completed_background_wavy_circle,
+                model.get(EducationalTipModuleTwoCellProperties.ITEM_1_COMPLETED_ICON).intValue());
+
+        // Strikethrough should NOT be applied yet.
+        assertEquals(false, model.get(EducationalTipModuleTwoCellProperties.ITEM_1_MARK_COMPLETED));
+
+        // Advance to apply strikethrough.
+        mFakeTime.advanceMillis(SetupListManager.STRIKETHROUGH_DURATION_MS);
+        ShadowLooper.runMainLooperOneTask();
+        assertEquals(true, model.get(EducationalTipModuleTwoCellProperties.ITEM_1_MARK_COMPLETED));
+
+        // Advance to re-query ranking.
+        mFakeTime.advanceMillis(SetupListManager.HIDE_DURATION_MS);
+        ShadowLooper.runMainLooperOneTask();
+
+        verify(mSetupListManager)
+                .onCompletionAnimationFinished(ModuleType.ENHANCED_SAFE_BROWSING_PROMO);
     }
 }

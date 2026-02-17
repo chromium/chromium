@@ -14,6 +14,7 @@ import android.widget.TextView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.R;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 
 /**
  * View for a generic two-cell educational tip module. Contains UI elements to display two tip items
@@ -68,7 +69,12 @@ public class EducationalTipModuleTwoCellView extends LinearLayout {
     }
 
     public void setItem1Icon(int iconResId) {
+        mItem1IconView.setAlpha(1f);
         mItem1IconView.setImageResource(iconResId);
+    }
+
+    public void setItem1IconWithAnimation(int iconResId) {
+        SetupListModuleUtils.updateIconWithAnimation(mItem1IconView, iconResId);
     }
 
     public void setItem1OnClickListener(OnClickListener listener) {
@@ -84,7 +90,12 @@ public class EducationalTipModuleTwoCellView extends LinearLayout {
     }
 
     public void setItem2Icon(int iconResId) {
+        mItem2IconView.setAlpha(1f);
         mItem2IconView.setImageResource(iconResId);
+    }
+
+    public void setItem2IconWithAnimation(int iconResId) {
+        SetupListModuleUtils.updateIconWithAnimation(mItem2IconView, iconResId);
     }
 
     public void setItem2OnClickListener(OnClickListener listener) {

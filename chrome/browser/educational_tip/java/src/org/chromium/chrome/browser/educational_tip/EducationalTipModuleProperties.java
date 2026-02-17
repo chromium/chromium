@@ -22,6 +22,7 @@ interface EducationalTipModuleProperties {
     WritableObjectPropertyKey<OnClickListener> MODULE_BUTTON_ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
     WritableIntPropertyKey MODULE_CONTENT_IMAGE = new WritableIntPropertyKey();
+    WritableIntPropertyKey MODULE_CONTENT_COMPLETED_IMAGE = new WritableIntPropertyKey();
     WritableObjectPropertyKey<Boolean> MARK_COMPLETED = new WritableObjectPropertyKey<>();
 
     PropertyKey[] ALL_KEYS =
@@ -31,6 +32,7 @@ interface EducationalTipModuleProperties {
                 MODULE_BUTTON_STRING,
                 MODULE_BUTTON_ON_CLICK_LISTENER,
                 MODULE_CONTENT_IMAGE,
+                MODULE_CONTENT_COMPLETED_IMAGE,
                 MARK_COMPLETED
             };
 }

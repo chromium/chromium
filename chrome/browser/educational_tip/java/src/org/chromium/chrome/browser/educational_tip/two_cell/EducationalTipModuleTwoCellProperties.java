@@ -27,6 +27,8 @@ public class EducationalTipModuleTwoCellProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Integer> ITEM_1_ICON =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Integer> ITEM_1_COMPLETED_ICON =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> ITEM_1_CLICK_HANDLER =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> ITEM_1_DESCRIPTION =
@@ -37,6 +39,8 @@ public class EducationalTipModuleTwoCellProperties {
     public static final WritableObjectPropertyKey<String> ITEM_2_TITLE =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Integer> ITEM_2_ICON =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Integer> ITEM_2_COMPLETED_ICON =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> ITEM_2_CLICK_HANDLER =
             new WritableObjectPropertyKey<>();
@@ -51,11 +55,13 @@ public class EducationalTipModuleTwoCellProperties {
         ITEM_1_TITLE,
         ITEM_1_DESCRIPTION,
         ITEM_1_ICON,
+        ITEM_1_COMPLETED_ICON,
         ITEM_1_CLICK_HANDLER,
         ITEM_1_MARK_COMPLETED,
         ITEM_2_TITLE,
         ITEM_2_DESCRIPTION,
         ITEM_2_ICON,
+        ITEM_2_COMPLETED_ICON,
         ITEM_2_CLICK_HANDLER,
         ITEM_2_MARK_COMPLETED
     };

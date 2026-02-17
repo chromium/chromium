@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.educational_tip.two_cell;
 
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_CLICK_HANDLER;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_COMPLETED_ICON;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_DESCRIPTION;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_ICON;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_MARK_COMPLETED;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_TITLE;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_CLICK_HANDLER;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_COMPLETED_ICON;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_DESCRIPTION;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_ICON;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_MARK_COMPLETED;
@@ -209,15 +211,19 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
 
         // 1. Immediately trigger the visual "completed" state for affected slots.
         if (item1NeedsAnimation) {
-            mModel.set(ITEM_1_MARK_COMPLETED, true);
+            mHandler.postDelayed(
+                    () -> mModel.set(ITEM_1_MARK_COMPLETED, true),
+                    SetupListManager.STRIKETHROUGH_DURATION_MS);
             if (mItem1Provider instanceof SetupListCompletable completable) {
-                mModel.set(ITEM_1_ICON, completable.getCardImageCompletedResId());
+                mModel.set(ITEM_1_COMPLETED_ICON, completable.getCardImageCompletedResId());
             }
         }
         if (item2NeedsAnimation) {
-            mModel.set(ITEM_2_MARK_COMPLETED, true);
+            mHandler.postDelayed(
+                    () -> mModel.set(ITEM_2_MARK_COMPLETED, true),
+                    SetupListManager.STRIKETHROUGH_DURATION_MS);
             if (mItem2Provider instanceof SetupListCompletable completable) {
-                mModel.set(ITEM_2_ICON, completable.getCardImageCompletedResId());
+                mModel.set(ITEM_2_COMPLETED_ICON, completable.getCardImageCompletedResId());
             }
         }
 

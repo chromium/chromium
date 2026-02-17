@@ -7,6 +7,13 @@ package org.chromium.chrome.browser.educational_tip.two_cell;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_COMPLETED_ICON;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_ICON;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_MARK_COMPLETED;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_COMPLETED_ICON;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_ICON;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_MARK_COMPLETED;
+
 import android.app.Activity;
 import android.view.View;
 import android.widget.ImageView;
@@ -40,6 +47,7 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
 
     private Activity mActivity;
     private EducationalTipModuleTwoCellView mModuleView;
+    @Mock private EducationalTipModuleTwoCellView mMockView;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
@@ -57,19 +65,21 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
                                 .inflate(R.layout.educational_tip_module_two_cell_layout, null);
         mActivity.setContentView(mModuleView);
         mModel = new PropertyModel(EducationalTipModuleTwoCellProperties.ALL_KEYS);
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mModuleView, EducationalTipModuleTwoCellViewBinder::bind);
     }
 
     @After
     public void tearDown() throws Exception {
-        mPropertyModelChangeProcessor.destroy();
+        if (mPropertyModelChangeProcessor != null) {
+            mPropertyModelChangeProcessor.destroy();
+        }
     }
 
     @Test
     @SmallTest
     public void testSetModuleTitle() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mModuleView, EducationalTipModuleTwoCellViewBinder::bind);
         TextView moduleTitleView = mModuleView.findViewById(R.id.educational_tip_module_title);
         assertEquals(
                 mActivity.getString(R.string.educational_tip_module_title),
@@ -83,6 +93,9 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetItem1() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mModuleView, EducationalTipModuleTwoCellViewBinder::bind);
         TextView item1TitleView = mModuleView.findViewById(R.id.two_cell_item_1_title);
         TextView item1DescriptionView = mModuleView.findViewById(R.id.two_cell_item_1_description);
         ImageView item1IconView = mModuleView.findViewById(R.id.two_cell_item_1_icon);
@@ -112,6 +125,9 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetItem2() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mModuleView, EducationalTipModuleTwoCellViewBinder::bind);
         TextView item2TitleView = mModuleView.findViewById(R.id.two_cell_item_2_title);
         TextView item2DescriptionView = mModuleView.findViewById(R.id.two_cell_item_2_description);
         ImageView item2IconView = mModuleView.findViewById(R.id.two_cell_item_2_icon);
@@ -136,5 +152,69 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
 
         item2Layout.performClick();
         verify(mItem2ClickHandler).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testSetItem1Icon() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mMockView, EducationalTipModuleTwoCellViewBinder::bind);
+        int expectedRes = R.drawable.default_browser_promo_logo;
+        mModel.set(ITEM_1_ICON, expectedRes);
+        verify(mMockView).setItem1Icon(expectedRes);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetItem1CompletedIcon() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mMockView, EducationalTipModuleTwoCellViewBinder::bind);
+        int expectedRes = R.drawable.setup_list_completed_background_wavy_circle;
+        mModel.set(ITEM_1_COMPLETED_ICON, expectedRes);
+        verify(mMockView).setItem1IconWithAnimation(expectedRes);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetItem1MarkCompleted() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mMockView, EducationalTipModuleTwoCellViewBinder::bind);
+        mModel.set(ITEM_1_MARK_COMPLETED, true);
+        verify(mMockView).setItem1Completed(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetItem2Icon() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mMockView, EducationalTipModuleTwoCellViewBinder::bind);
+        int expectedRes = R.drawable.history_sync_promo_logo;
+        mModel.set(ITEM_2_ICON, expectedRes);
+        verify(mMockView).setItem2Icon(expectedRes);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetItem2CompletedIcon() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mMockView, EducationalTipModuleTwoCellViewBinder::bind);
+        int expectedRes = R.drawable.setup_list_completed_background_wavy_circle;
+        mModel.set(ITEM_2_COMPLETED_ICON, expectedRes);
+        verify(mMockView).setItem2IconWithAnimation(expectedRes);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetItem2MarkCompleted() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mMockView, EducationalTipModuleTwoCellViewBinder::bind);
+        mModel.set(ITEM_2_MARK_COMPLETED, true);
+        verify(mMockView).setItem2Completed(true);
     }
 }

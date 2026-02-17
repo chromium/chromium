@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.setup_list;
 
+import android.widget.ImageView;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -147,5 +149,27 @@ public class SetupListModuleUtils {
 
     public static void setRankedModuleTypesForTesting(List<Integer> rankedModuleTypes) {
         sRankedModuleTypesForTesting = rankedModuleTypes;
+    }
+
+    /**
+     * Updates an {@link ImageView}'s resource with a fade-out then fade-in animation.
+     *
+     * @param imageView The ImageView to animate.
+     * @param iconResId The new image resource ID.
+     */
+    public static void updateIconWithAnimation(ImageView imageView, int iconResId) {
+        int duration = SetupListManager.STRIKETHROUGH_DURATION_MS / 2;
+        imageView.animate().cancel();
+        imageView.setAlpha(1f);
+        imageView
+                .animate()
+                .alpha(0.5f)
+                .setDuration(duration)
+                .withEndAction(
+                        () -> {
+                            imageView.setImageResource(iconResId);
+                            imageView.animate().alpha(1f).setDuration(duration).start();
+                        })
+                .start();
     }
 }
