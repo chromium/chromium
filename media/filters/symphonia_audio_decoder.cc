@@ -25,6 +25,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_discard_helper.h"
+#include "media/base/channel_layout.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decoder_status.h"
 #include "media/base/limits.h"
@@ -324,9 +325,16 @@ scoped_refptr<AudioBuffer> SymphoniaAudioDecoder::ToMediaAudioBuffer(
   // TODO(crbug.com/40074653): long term we want a WrapOrCopy implementation,
   // since we own the Symphonia audio buffer.
   const uint8_t* data = symphonia_buffer.data.data();
+
+  const bool count_changed = symphonia_buffer.channel_count !=
+                             static_cast<uint32_t>(config_.channels());
+  const auto layout = count_changed
+                          ? ChannelMaskToLayout(symphonia_buffer.channel_mask)
+                          : config_.channel_layout();
+
   return AudioBuffer::CopyFrom(
-      ToSampleFormat(symphonia_buffer.sample_format), config_.channel_layout(),
-      config_.channels(), config_.samples_per_second(),
+      ToSampleFormat(symphonia_buffer.sample_format), layout,
+      symphonia_buffer.channel_count, symphonia_buffer.sample_rate,
       symphonia_buffer.num_frames, &data, timestamp, pool_);
 }
 
