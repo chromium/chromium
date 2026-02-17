@@ -80,12 +80,37 @@ bool CanEnableDiceForBuild() {
 }
 #endif
 
+// Computes the account consistency method for the current profile. The account
+// consistency method cannot change during the lifetime of a profile.
+signin::AccountConsistencyMethod ComputeAccountConsistencyMethod(
+    Profile* profile) {
+  DCHECK(AccountConsistencyModeManager::ShouldBuildServiceForProfile(profile));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!ash::IsAccountManagerAvailable(profile)) {
+    return AccountConsistencyMethod::kDisabled;
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_MIRROR)
+  return AccountConsistencyMethod::kMirror;
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
+    VLOG(1) << "Desktop Identity Consistency disabled as sign-in to Chrome "
+               "is not allowed";
+    return AccountConsistencyMethod::kDisabled;
+  }
+
+  return AccountConsistencyMethod::kDice;
+#else
+  NOTREACHED();
+#endif
+}
+
 }  // namespace
 
 AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
-    : profile_(profile),
-      account_consistency_(signin::AccountConsistencyMethod::kDisabled),
-      account_consistency_initialized_(false) {
+    : profile_(profile) {
   DCHECK(profile_);
   DCHECK(ShouldBuildServiceForProfile(profile));
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -127,8 +152,9 @@ void AccountConsistencyModeManager::RegisterProfilePrefs(
 // static
 AccountConsistencyMethod AccountConsistencyModeManager::GetMethodForProfile(
     Profile* profile) {
-  if (!ShouldBuildServiceForProfile(profile))
+  if (!ShouldBuildServiceForProfile(profile)) {
     return AccountConsistencyMethod::kDisabled;
+  }
 
   return AccountConsistencyModeManagerFactory::GetForProfile(profile)
       ->GetAccountConsistencyMethod();
@@ -152,7 +178,6 @@ bool AccountConsistencyModeManager::IsDiceSignInAllowed(
   return CanEnableDiceForBuild() && IsBrowserSigninAllowedByCommandLine() &&
          !is_oidc_sign_in_disallowed &&
          (!entry || entry->GetProfileManagementEnrollmentToken().empty());
-  ;
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -186,31 +211,5 @@ AccountConsistencyModeManager::GetAccountConsistencyMethod() {
   CHECK(account_consistency_initialized_);
   CHECK_EQ(ComputeAccountConsistencyMethod(profile_), account_consistency_);
   return account_consistency_;
-#endif
-}
-
-// static
-signin::AccountConsistencyMethod
-AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
-    Profile* profile) {
-  DCHECK(ShouldBuildServiceForProfile(profile));
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!ash::IsAccountManagerAvailable(profile))
-    return AccountConsistencyMethod::kDisabled;
-#endif
-
-#if BUILDFLAG(ENABLE_MIRROR)
-  return AccountConsistencyMethod::kMirror;
-#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
-    VLOG(1) << "Desktop Identity Consistency disabled as sign-in to Chrome "
-               "is not allowed";
-    return AccountConsistencyMethod::kDisabled;
-  }
-
-  return AccountConsistencyMethod::kDice;
-#else
-  NOTREACHED();
 #endif
 }
