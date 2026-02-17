@@ -64,6 +64,7 @@ class DeviceStatisticsScheduler {
   void Run();
   void RunDone();
 
+  const base::Time creation_time_;
   const raw_ptr<Delegate> delegate_;
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;

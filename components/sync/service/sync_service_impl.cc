@@ -418,15 +418,9 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
       std::make_unique<LocalDataMigrationItemQueue>(this,
                                                     data_type_manager_.get());
 
-  // TODO(crbug.com/465716865): Move the feature check and the startup delay
-  // into DeviceStatisticsScheduler itself.
-  if (base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics)) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&SyncServiceImpl::StartDeviceStatisticsScheduler,
-                       weak_factory_.GetWeakPtr()),
-        kSyncRecordDeviceStatisticsMetricsDelay.Get());
-  }
+  device_statistics_scheduler_ = std::make_unique<DeviceStatisticsScheduler>(
+      /*delegate=*/this, sync_client_->GetPrefService(),
+      sync_client_->GetIdentityManager(), sync_service_url_);
 }
 
 void SyncServiceImpl::StartSyncingWithServer() {
@@ -2499,14 +2493,6 @@ void SyncServiceImpl::AcknowledgeBookmarksLimitExceededError(
   base::UmaHistogramEnumeration("Sync.BookmarksLimitExceededHelpClickedSource",
                                 source);
   bookmark_sync_error_state_.AcknowledgeError();
-}
-
-void SyncServiceImpl::StartDeviceStatisticsScheduler() {
-  CHECK(base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics));
-
-  device_statistics_scheduler_ = std::make_unique<DeviceStatisticsScheduler>(
-      /*delegate=*/this, sync_client_->GetPrefService(),
-      sync_client_->GetIdentityManager(), sync_service_url_);
 }
 
 }  // namespace syncer
