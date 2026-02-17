@@ -82,6 +82,10 @@
   color: var(--toolbar-text-color);
 }
 
+.dropdown-item[disabled] {
+  color: var(--cr-fallback-color-disabled-foreground);
+}
+
 cr-action-menu {
   --cr-menu-border-radius: 16px;
   --cr-menu-background-color: var(--toolbar-menu-background-color);
