@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.signin.services;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -297,5 +299,46 @@ public class ProfileDataCacheUnitTest {
     @Test(expected = IllegalArgumentException.class)
     public void givenUnknownAccountIdWhenGetByIdThenShouldThrowException() {
         mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
+    }
+
+    @Test
+    public void testOnProfileDataUpdatedIsEmittedIfAccountsAreNotReadyDuringInitialization() {
+        var updateBlocker = mAccountManagerTestRule.blockGetAccountsUpdate(false);
+        mAccountManagerTestRule.blockExtendedAccountInfoUpdate();
+        var profileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        mAccountManagerTestRule.getIdentityManager());
+        profileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        updateBlocker.close();
+        verify(mObserverMock).onAccountsUpdated(any());
+        verify(mObserverMock).onProfileDataUpdated(any());
+    }
+
+    @Test
+    public void testObserverIsExecutedOnAccountsManagerAccountsUpdate() {
+        mAccountManagerTestRule.blockExtendedAccountInfoUpdate();
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        var accounts = mProfileDataCache.getAccounts().getResult();
+        Assert.assertEquals(2, accounts.size());
+        Assert.assertEquals(TestAccounts.ACCOUNT1.getEmail(), accounts.get(0).getAccountEmail());
+        Assert.assertEquals(TestAccounts.ACCOUNT2.getEmail(), accounts.get(1).getAccountEmail());
+        verify(mObserverMock).onAccountsUpdated(accounts);
+        // TODO(crbug.com/485130949): onProfileDataUpdated should be never called after
+        // onAccountsUpdated is called. (Blocked by crbug.com/480239119)
+        verify(mObserverMock).onProfileDataUpdated(accounts.get(0));
+        verify(mObserverMock).onProfileDataUpdated(accounts.get(1));
+    }
+
+    @Test
+    public void testObserverIsExecutedOnIdentityManagerAccountsUpdate() {
+        mAccountManagerTestRule.blockGetAccountsUpdate(false);
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        verify(mObserverMock, never()).onAccountsUpdated(any());
+        verify(mObserverMock).onProfileDataUpdated(any());
     }
 }
