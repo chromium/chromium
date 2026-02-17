@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/skills/skills_ui.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/skills/public/skill.h"
+#include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
@@ -89,6 +90,7 @@ void SkillsUiTabController::ShowDialog(Skill skill) {
     // Dialog is already open.
     return;
   }
+  RecordSkillsAction(skills::SkillsActions::kOpenedCreationDialog);
 
   current_skill_ = skill;
 
@@ -219,31 +221,41 @@ void SkillsUiTabController::NotifySkillToInvokeChangedWhenReady() {
   }
 }
 
+const skills::Skill* SkillsUiTabController::GetSkill(
+    std::string_view skill_id) {
+  content::WebContents* contents = tab_->GetContents();
+  if (!contents) {
+    return nullptr;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  auto* service = skills::SkillsServiceFactory::GetForProfile(profile);
+  return service ? service->GetSkillById(skill_id) : nullptr;
+}
+
 void SkillsUiTabController::NotifySkillToInvokeChanged() {
   std::string skill_id_to_invoke = pending_skill_id_;
 
   Reset();
   CHECK(!glic_panel_ready_timer_.IsRunning());
 
-  content::WebContents* contents = tab_->GetContents();
-  if (!contents) {
-    return;
-  }
-
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  skills::SkillsService* skills_service =
-      skills::SkillsServiceFactory::GetForProfile(profile);
-
-  if (!skills_service) {
-    return;
-  }
-
-  const skills::Skill* skill = skills_service->GetSkillById(skill_id_to_invoke);
+  const skills::Skill* skill = GetSkill(skill_id_to_invoke);
 
   if (!skill) {
     // TODO(https://crbug.com/475549806): Add metrics for skill invocation
     // failure and provide user feedback.
     return;
+  }
+
+  switch (skill->source) {
+    case sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY:
+      RecordSkillsAction(skills::SkillsActions::kUsed1stPartySkill);
+      break;
+    case sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED:
+      RecordSkillsAction(skills::SkillsActions::kUsedUserCreatedSkill);
+      break;
+    default:
+      break;
   }
 
 #if BUILDFLAG(ENABLE_GLIC)

@@ -8,12 +8,16 @@
 #include <string>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/skills/public/skill.h"
+#include "components/skills/public/skills_metrics.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
@@ -32,11 +36,23 @@ class TestSkillsUiTabController : public SkillsUiTabController {
   explicit TestSkillsUiTabController(tabs::TabInterface& tab)
       : SkillsUiTabController(tab) {}
 
+  Skill test_skill_;
+
   MOCK_METHOD(void, ShowGlicPanel, (), (override));
   MOCK_METHOD(bool, IsClientReady, (), (override));
   MOCK_METHOD(void, NotifySkillToInvokeChanged, (), (override));
-};
 
+  void CallRealNotifySkillToInvokeChanged() {
+    SkillsUiTabController::NotifySkillToInvokeChanged();
+  }
+
+  const Skill* GetSkill(std::string_view skill_id) override {
+    if (skill_id == kTestSkillId) {
+      return &test_skill_;
+    }
+    return nullptr;
+  }
+};
 }  // namespace
 
 class SkillsUiTabControllerTest : public ChromeViewsTestBase {
@@ -119,4 +135,64 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_Timeout_GivesUp) {
   task_environment()->FastForwardBy(base::Seconds(61));
 }
 
+TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsUserCreatedInvokeMetrics) {
+  base::HistogramTester histogram_tester;
+  TestingProfile* profile =
+      profile_manager_->CreateTestingProfile("test_profile");
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile, nullptr);
+
+  EXPECT_CALL(mock_tab_, GetContents())
+      .WillRepeatedly(Return(web_contents.get()));
+
+  // Setup dummy skill data.
+  controller_->test_skill_.id = kTestSkillId;
+  controller_->test_skill_.source =
+      sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
+  controller_->test_skill_.prompt = "Test Prompt";
+
+  // Force "Ready" state
+  EXPECT_CALL(*controller_, IsClientReady()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*controller_, ShowGlicPanel()).Times(1);
+
+  // Run it
+  EXPECT_CALL(*controller_, NotifySkillToInvokeChanged()).WillOnce([this]() {
+    controller_->CallRealNotifySkillToInvokeChanged();
+  });
+  controller_->InvokeSkill(kTestSkillId);
+
+  // Verify Metrics
+  histogram_tester.ExpectBucketCount(
+      "Skills.Actions", skills::SkillsActions::kUsedUserCreatedSkill, 1);
+}
+
+TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsFirstPartyInvokeMetrics) {
+  base::HistogramTester histogram_tester;
+  TestingProfile* profile =
+      profile_manager_->CreateTestingProfile("test_profile");
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile, nullptr);
+
+  EXPECT_CALL(mock_tab_, GetContents())
+      .WillRepeatedly(Return(web_contents.get()));
+
+  controller_->test_skill_.id = kTestSkillId;
+  controller_->test_skill_.source =
+      sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
+  controller_->test_skill_.prompt = "Test Prompt";
+
+  EXPECT_CALL(*controller_, IsClientReady()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*controller_, ShowGlicPanel()).Times(1);
+
+  EXPECT_CALL(*controller_, NotifySkillToInvokeChanged()).WillOnce([this]() {
+    controller_->CallRealNotifySkillToInvokeChanged();
+  });
+  controller_->InvokeSkill(kTestSkillId);
+
+  // Verify Metrics
+  histogram_tester.ExpectBucketCount(
+      "Skills.Actions", skills::SkillsActions::kUsed1stPartySkill, 1);
+  histogram_tester.ExpectBucketCount(
+      "Skills.Actions", skills::SkillsActions::kUsedUserCreatedSkill, 0);
+}
 }  // namespace skills

@@ -26,6 +26,8 @@ source_set("public") {
   sources = [
     "skill.cc",
     "skill.h",
+    "skills_metrics.cc",
+    "skills_metrics.h",
     "skills_service.cc",
     "skills_service.h",
   ]

@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom.h"
+#include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_service.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -51,27 +52,40 @@ SkillsDialogHandler::SkillsDialogHandler(
 
 SkillsDialogHandler::~SkillsDialogHandler() = default;
 
-void SkillsDialogHandler::SubmitSkill(const skills::Skill& skill) {
-  if (auto* skills_service =
-          SkillsServiceFactory::GetForProfile(base::to_address(profile_))) {
-    const Skill* response =
-        skill.id.empty()
-            ? skills_service->AddSkill(skill.source_skill_id, skill.name,
-                                       skill.icon, skill.prompt)
-            : skills_service->UpdateSkill(skill.id, skill.name, skill.icon,
-                                          skill.prompt);
-    if (response && delegate_) {
-      // Triggers toast
-      delegate_->OnSkillSaved(response->id);
-      delegate_->CloseDialog();
-    }
+const skills::Skill* SkillsDialogHandler::SaveOrUpdateSkill(
+    const skills::Skill& skill) {
+  auto* skills_service =
+      SkillsServiceFactory::GetForProfile(base::to_address(profile_));
+  if (!skills_service) {
+    return nullptr;
+  }
+  if (skill.id.empty()) {
+    return skills_service->AddSkill(skill.source_skill_id, skill.name,
+                                    skill.icon, skill.prompt);
   } else {
-    // TODO(marissashen): Add error handling.
-    LOG(WARNING) << "SkillsPageHandler: SkillsService is null.";
+    return skills_service->UpdateSkill(skill.id, skill.name, skill.icon,
+                                       skill.prompt);
   }
 }
 
+void SkillsDialogHandler::SubmitSkill(const skills::Skill& skill) {
+  const Skill* response = SaveOrUpdateSkill(skill);
+  if (!response) {
+    LOG(WARNING) << "SkillsPageHandler: SkillsService is null.";
+    return;
+  }
+  RecordSkillsAction(skills::SkillsActions::kSavedSkill);
+  if (!delegate_) {
+    LOG(WARNING) << "SkillsPageHandler: delegate is null.";
+    return;
+  }
+  // Triggers toast
+  delegate_->OnSkillSaved(response->id);
+  delegate_->CloseDialog();
+}
+
 void SkillsDialogHandler::CloseDialog() {
+  RecordSkillsAction(skills::SkillsActions::kClickedCancelInCreationDialog);
   if (delegate_) {
     delegate_->CloseDialog();
   }
@@ -120,6 +134,7 @@ void SkillsDialogHandler::OnRefineSkillResponse(
 void SkillsDialogHandler::RefineSkill(
     const skills::Skill& skill,
     DialogHandler::RefineSkillCallback callback) {
+  RecordSkillsAction(skills::SkillsActions::kClickedRefineInCreationDialog);
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::nullopt);
 

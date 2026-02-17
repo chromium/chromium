@@ -48,6 +48,9 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
       skills::mojom::DialogHandler::RefineSkillCallback callback) override;
   void GetSignedInEmail(GetSignedInEmailCallback callback) override;
 
+ protected:
+  virtual const skills::Skill* SaveOrUpdateSkill(const skills::Skill& skill);
+
  private:
   // Callback for the model execution result for `RefineSkill`.
   void OnRefineSkillResponse(
