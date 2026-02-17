@@ -167,15 +167,38 @@ TEST_P(AutofillAiMayPerformActionTest, ReturnsFalseWhenMainFeatureIsOff) {
 
 // Tests that when `kAutofillAiAvailableByDefault` and the user is opted out,
 // everything but IPH and model related actions is permitted.
-TEST_P(
-    AutofillAiMayPerformActionTest,
-    ReturnsTrueWhenAvailableByDefault_ExceptForNonModelRelatedActionsAndIph) {
+TEST_P(AutofillAiMayPerformActionTest,
+       ReturnsTrueWhenAvailableByDefault_ExceptForModelRelatedActionsAndIph) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillAiAvailableByDefault};
   SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
 
   constexpr auto kForbiddenActions =
       DenseSet({AutofillAiAction::kIphForOptIn, AutofillAiAction::kLogToMqls,
+                AutofillAiAction::kServerClassificationModel});
+
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
+      !kForbiddenActions.contains(GetParam()));
+}
+
+// Tests that when `kAutofillAiAvailableByDefault`, the user is opted out,
+// and the enterprise policy is off, everything but IPH, opt-in and model
+// related actions is permitted.
+TEST_P(
+    AutofillAiMayPerformActionTest,
+    AvailableByDefaultAndEnterprisePolicyIsOff_TrueExceptForModelRelatedActionsIphAndOptIn) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiAvailableByDefault};
+  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
+  client().GetPrefs()->SetInteger(
+      optimization_guide::prefs::
+          kAutofillPredictionImprovementsEnterprisePolicyAllowed,
+      kAutofillPredictionSettingsDisable);
+
+  constexpr auto kForbiddenActions =
+      DenseSet({AutofillAiAction::kOptIn, AutofillAiAction::kIphForOptIn,
+                AutofillAiAction::kLogToMqls,
                 AutofillAiAction::kServerClassificationModel});
 
   EXPECT_EQ(
