@@ -78,6 +78,11 @@ void LogSaveEvent(PassCategory pass_category,
 // Logs the OAuth errors that occur when WalletHttpClient requests a token.
 void RecordNetworkRequestOauthError(const GoogleServiceAuthError& error);
 
+// Logs the net error code that occur when WalletHttpClient makes a network
+// request.
+void RecordHttpResponseOrErrorCode(WalletRequest::WalletNetworkRequestType type,
+                                   int http_response_or_net_error);
+
 // Logs latency of a `type` of network request.
 void RecordNetworkRequestLatency(WalletRequest::WalletNetworkRequestType type,
                                  base::TimeDelta request_latency);

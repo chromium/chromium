@@ -24,12 +24,23 @@
 #include "components/wallet/core/common/wallet_features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace wallet {
+namespace {
+
+// Determines whether a HTTP request was successful based on its response code.
+bool IsHttpSuccess(int response_code) {
+  return response_code >= 200 && response_code < 300;
+}
+
+}  // namespace
 
 WalletHttpClientImpl::WalletHttpClientImpl(
     signin::IdentityManager* identity_manager,
@@ -185,12 +196,27 @@ void WalletHttpClientImpl::OnSimpleLoaderComplete(
     base::TimeTicks request_start,
     std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   active_loaders_.erase(it);
-  metrics::RecordNetworkRequestLatency(request->GetRequestType(),
-                                       base::TimeTicks::Now() - request_start);
+  int http_response_code = -1;  // Invalid response code.
+  if (loader) {
+    if (loader->ResponseInfo() && loader->ResponseInfo()->headers) {
+      http_response_code = loader->ResponseInfo()->headers->response_code();
+    }
+    int net_error = loader->NetError();
+    // Log the HTTP response or error code and request duration.
+    metrics::RecordHttpResponseOrErrorCode(
+        request->GetRequestType(),
+        net_error != net::OK && net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE
+            ? net_error
+            : http_response_code);
 
-  if (!response_body) {
-    // TODO(crbug.com/468915960): Handle detailed errors.
+    metrics::RecordNetworkRequestLatency(
+        request->GetRequestType(), base::TimeTicks::Now() - request_start);
+  }
+
+  const bool success = response_body && IsHttpSuccess(http_response_code);
+  if (!success) {
     std::move(*request).OnResponse(
         base::unexpected(WalletHttpClient::WalletRequestError::kGenericError));
     return;

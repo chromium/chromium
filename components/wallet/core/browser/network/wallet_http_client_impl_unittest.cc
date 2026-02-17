@@ -196,6 +196,55 @@ TEST_F(WalletHttpClientImplTest, UpsertPublicPass_Failure) {
             WalletHttpClient::WalletRequestError::kGenericError);
 }
 
+TEST_F(WalletHttpClientImplTest, UpsertPublicPass_NetErrorCode) {
+  base::HistogramTester histogram_tester;
+  Pass pass;
+  UpsertPublicPassCallback upsert_pass_callback;
+  client()->UpsertPublicPass(pass, upsert_pass_callback.GetCallback());
+
+  // Access token is fetched successfully.
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  GURL expected_url = GetUpsertPassUrl();
+  EXPECT_TRUE(test_url_loader_factory()->IsPending(expected_url.spec()));
+  test_url_loader_factory()->AddResponse(
+      expected_url, network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_TIMED_OUT));
+
+  ASSERT_TRUE(upsert_pass_callback.Wait());
+  ASSERT_FALSE(upsert_pass_callback.Get().has_value());
+  EXPECT_EQ(upsert_pass_callback.Get().error(),
+            WalletHttpClient::WalletRequestError::kGenericError);
+  histogram_tester.ExpectUniqueSample(
+      "Wallet.NetworkRequest.UpsertPass.HttpResponseOrErrorCode",
+      net::ERR_TIMED_OUT, 1);
+}
+
+TEST_F(WalletHttpClientImplTest, UpsertPublicPass_HttpError) {
+  base::HistogramTester histogram_tester;
+  Pass pass;
+  UpsertPublicPassCallback upsert_pass_callback;
+  client()->UpsertPublicPass(pass, upsert_pass_callback.GetCallback());
+
+  // Access token is fetched successfully.
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  GURL expected_url = GetUpsertPassUrl();
+  EXPECT_TRUE(test_url_loader_factory()->IsPending(expected_url.spec()));
+  test_url_loader_factory()->AddResponse(expected_url.spec(), "",
+                                         net::HTTP_INTERNAL_SERVER_ERROR);
+
+  ASSERT_TRUE(upsert_pass_callback.Wait());
+  ASSERT_FALSE(upsert_pass_callback.Get().has_value());
+  EXPECT_EQ(upsert_pass_callback.Get().error(),
+            WalletHttpClient::WalletRequestError::kGenericError);
+  histogram_tester.ExpectUniqueSample(
+      "Wallet.NetworkRequest.UpsertPass.HttpResponseOrErrorCode",
+      net::HTTP_INTERNAL_SERVER_ERROR, 1);
+}
+
 // Tests that multiple UpsertPublicPass requests can be in-flight simultaneously
 // and all callbacks are invoked correctly upon completion.
 TEST_F(WalletHttpClientImplTest, UpsertPublicPass_ConcurrentRequests) {

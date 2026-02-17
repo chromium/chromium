@@ -51,6 +51,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Wallet.NetworkRequest.{RequestType}.HttpResponseOrErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-12-31">
+  <owner>vizcay@google.com</owner>
+  <owner>1p-integrations-autofill@google.com</owner>
+  <summary>
+    Records the http response code or net error code that occur when making a
+    network request to the wallet server for {RequestType}.
+  </summary>
+  <token key="RequestType" variants="Wallet.NetworkRequest.RequestType"/>
+</histogram>
+
 <histogram name="Wallet.NetworkRequest.{RequestType}.Latency" units="ms"
     expires_after="2026-12-31">
   <owner>vizcay@google.com</owner>

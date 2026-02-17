@@ -43,6 +43,16 @@ void RecordNetworkRequestOauthError(const GoogleServiceAuthError& error) {
                                 GoogleServiceAuthError::NUM_STATES);
 }
 
+void RecordHttpResponseOrErrorCode(WalletRequest::WalletNetworkRequestType type,
+                                   int http_response_or_net_error) {
+  base::UmaHistogramSparse(
+      base::ReplaceStringPlaceholders(
+          "Wallet.NetworkRequest.$1.HttpResponseOrErrorCode",
+          {WalletNetworkRequestTypeToString(type)},
+          /*offsets=*/nullptr),
+      http_response_or_net_error);
+}
+
 void RecordNetworkRequestLatency(WalletRequest::WalletNetworkRequestType type,
                                  base::TimeDelta request_latency) {
   base::UmaHistogramTimes(
