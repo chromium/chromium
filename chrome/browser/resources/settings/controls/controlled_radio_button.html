@@ -43,7 +43,7 @@
 <slot name="additional-content"></slot>
 
 <template is="dom-if" if="[[showIndicator_(disabled, name, pref.*)]]">
-  <cr-policy-pref-indicator pref="[[pref]]" on-click="onIndicatorClick_"
-      icon-aria-label="[[label]]">
+  <cr-policy-pref-indicator part="policy-indicator" pref="[[pref]]"
+      on-click="onIndicatorClick_" icon-aria-label="[[label]]">
   </cr-policy-pref-indicator>
 </template>
