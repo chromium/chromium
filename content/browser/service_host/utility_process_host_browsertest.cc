@@ -182,6 +182,13 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
   }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
+  void RunPseudonymizationSaltInitializedTest() {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    service_->IsPseudonymizationSaltInitialized(base::BindOnce(
+        &UtilityProcessHostBrowserTest::OnPseudonymizationSaltChecked,
+        base::Unretained(this)));
+  }
+
  protected:
   void DoneRunning(base::OnceClosure quit_closure) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -212,6 +219,14 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     EXPECT_EQ(kTestMessage,
               std::string_view(static_cast<const char*>(mapping.memory()),
                                kTestMessage.size()));
+    ResetService();
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_closure_));
+  }
+
+  void OnPseudonymizationSaltChecked(bool is_initialized) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    EXPECT_TRUE(is_initialized)
+        << "Pseudonymization salt should be initialized in the child process";
     ResetService();
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_closure_));
   }
@@ -356,6 +371,27 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
       base::BindOnce(&UtilityProcessHostBrowserTest::RunFileDescriptorStoreTest,
                      base::Unretained(this), std::move(read_fd)));
 }
+
+// Tests that the pseudonymization salt is properly initialized in a utility
+// process launched with the generic zygote.
+IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
+                       PseudonymizationSaltInitializedWithGenericZygote) {
+  RunUtilityProcess(
+      DefaultOptions().WithZygoteForTesting(GetGenericZygote()).Pass(),
+      base::BindOnce(&UtilityProcessHostBrowserTest::
+                         RunPseudonymizationSaltInitializedTest,
+                     base::Unretained(this)));
+}
+
+// Tests that the pseudonymization salt is properly initialized in a utility
+// process launched without zygote.
+IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
+                       PseudonymizationSaltInitializedWithoutZygote) {
+  RunUtilityProcess(DefaultOptions().WithZygoteForTesting(nullptr).Pass(),
+                    base::BindOnce(&UtilityProcessHostBrowserTest::
+                                       RunPseudonymizationSaltInitializedTest,
+                                   base::Unretained(this)));
+}
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) &&
         // BUILDFLAG(USE_ZYGOTE)
 
@@ -480,6 +516,16 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceProcessIdentityTest, LaunchService) {
           .Pass(),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunBasicPingPongTest,
                      base::Unretained(this)));
+}
+#endif
+
+#if !BUILDFLAG(USE_ZYGOTE)
+IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
+                       PseudonymizationSaltInitialized) {
+  RunUtilityProcess(DefaultOptions().Pass(),
+                    base::BindOnce(&UtilityProcessHostBrowserTest::
+                                       RunPseudonymizationSaltInitializedTest,
+                                   base::Unretained(this)));
 }
 #endif
 
