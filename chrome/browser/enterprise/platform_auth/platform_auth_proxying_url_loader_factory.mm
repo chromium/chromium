@@ -100,8 +100,6 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
     for (const base::Value& host : configured_hosts_pref) {
       configured_hosts.insert(host.GetString());
     }
-    // TODO: b/433226247 - Refactor ProxyingURLLoaderFactory to use
-    // mojo::MakeSelfOwnedReceiver.
     new ProxyingURLLoaderFactory(
         std::move(loader_receiver), std::move(target_factory),
         std::move(configured_hosts), request_initiator);
