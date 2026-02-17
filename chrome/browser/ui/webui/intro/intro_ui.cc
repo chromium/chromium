@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/intro/intro_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -34,7 +33,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 
   webui::SetupWebUIDataSource(
       source, kIntroResources,
-      base::FeatureList::IsEnabled(features::kFirstRunDesktopRefresh)
+      base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)
           ? IDR_INTRO_INTRO_REFRESH_HTML
           : IDR_INTRO_INTRO_HTML);
 
@@ -109,7 +108,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   // Setup chrome://intro/default-browser UI.
   source->AddResourcePath(
       chrome::kChromeUIIntroDefaultBrowserSubPage,
-      base::FeatureList::IsEnabled(features::kFirstRunDesktopRefresh)
+      base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)
           ? IDR_INTRO_DEFAULT_BROWSER_DEFAULT_BROWSER_REFRESH_HTML
           : IDR_INTRO_DEFAULT_BROWSER_DEFAULT_BROWSER_HTML);
 

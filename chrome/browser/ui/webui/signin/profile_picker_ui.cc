@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -174,7 +173,7 @@ int GetProfileTypeChoiceNotNowButtonLabelId() {
     return IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_STAY_SIGNED_OUT_BUTTON_LABEL;
   }
 
-  return base::FeatureList::IsEnabled(features::kFirstRunDesktopRefresh)
+  return base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)
              ? IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DONT_SIGN_IN_BUTTON_LABEL
              : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL;
 }
@@ -327,7 +326,7 @@ void AddFlags(content::WebUIDataSource* html_source, bool is_glic_version) {
       switches::kMaxProfilesCountToShowOpenAllButtonInProfilePicker.Get());
   html_source->AddBoolean(
       "useRefreshedUI",
-      base::FeatureList::IsEnabled(features::kFirstRunDesktopRefresh));
+      base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh));
 }
 
 void AddResourcePaths(content::WebUIDataSource* html_source,

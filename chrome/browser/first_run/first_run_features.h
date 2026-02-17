@@ -13,9 +13,6 @@ namespace features {
 // browser first run.
 BASE_DECLARE_FEATURE(kBookmarksImportOnFirstRun);
 
-// This feature controls running visually refreshed first run flow.
-BASE_DECLARE_FEATURE(kFirstRunDesktopRefresh);
-
 }  // namespace features
 
 #endif  // CHROME_BROWSER_FIRST_RUN_FIRST_RUN_FEATURES_H_

@@ -9,7 +9,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -83,7 +82,7 @@ class ProfileTypeChoiceUIPixelTest
           GetParam().decline_signin_cta_experiment_enabled},
          {switches::kUsePrimaryAndTonalButtonsForPromos,
           GetParam().use_primary_and_tonal_buttons_for_promos},
-         {features::kFirstRunDesktopRefresh, GetParam().use_refreshed_ui}});
+         {switches::kFirstRunDesktopRefresh, GetParam().use_refreshed_ui}});
   }
 
   void ShowUi(const std::string& name) override {

@@ -15,7 +15,6 @@
 #include "base/thread_annotations.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -308,7 +307,7 @@ class ProfilePickerUIPixelTest
           {switches::kOpenAllProfilesFromProfilePickerExperiment, {}});
     }
     if (GetParam().use_refreshed_ui) {
-      enabled_features.push_back({features::kFirstRunDesktopRefresh, {}});
+      enabled_features.push_back({switches::kFirstRunDesktopRefresh, {}});
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
