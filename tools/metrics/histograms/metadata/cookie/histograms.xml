@@ -725,6 +725,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.Parse.EmptyNameParseType{SourceType}"
+    enum="NamelessCookieLineParseType" expires_after="2026-08-28">
+  <owner>chlily@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    When a cookie with empty name is successfully created via {SourceType}, this
+    histogram logs how that cookie line came to be parsed as having an empty
+    name. Recorded after successfully creating a cookie whose name is empty. Not
+    recorded for a cookie line that is rejected at creation due to parsing,
+    invalid attributes, or other errors.
+  </summary>
+  <token key="SourceType">
+    <variant name="" summary="any source"/>
+    <variant name=".Http" summary="HTTP response headers"/>
+    <variant name=".Script" summary="document.cookie in JavaScript"/>
+  </token>
+</histogram>
+
 <histogram name="Cookie.PartitionCount" units="partitions"
     expires_after="2026-07-26">
   <owner>dylancutler@google.com</owner>

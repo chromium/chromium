@@ -272,6 +272,15 @@ chromium-metrics-reviews@google.com.
   <int value="90" label="Port 9095"/>
 </enum>
 
+<enum name="NamelessCookieLineParseType">
+  <int value="0"
+      label="Bare token (not matching a known attribute name): ex. Foo"/>
+  <int value="1"
+      label="Bare token matching some cookie attribute name: ex. Httponly"/>
+  <int value="2" label="Leading equals sign preceding token: ex. =Foo"/>
+  <int value="3" label="Ambiguous value containing equals sign: ex. =Foo=Bar"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

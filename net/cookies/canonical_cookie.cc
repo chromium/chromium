@@ -394,6 +394,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
             !base::IsStringASCII(parsed_cookie.Domain().value()));
   }
 
+  // Record some histograms about nameless cookies. (See also
+  // Cookie.Parse.EmptyNameParseType* below.)
   UMA_HISTOGRAM_BOOLEAN("Cookie.Parse.EmptyName", parsed_cookie.Name().empty());
   if (parsed_cookie.Name().empty()) {
     UMA_HISTOGRAM_BOOLEAN("Cookie.Parse.EmptyNameAmbiguousValue",
@@ -534,6 +536,22 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   }
 
   RecordCookieSameSiteAttributeValueHistogram(samesite_string);
+
+  // Record histograms about nameless cookies if the cookie was created
+  // successfully.
+  std::optional<NamelessCookieLineParseType> nameless_parse_type =
+      parsed_cookie.NamelessCookieLineParseTypeForMetrics();
+  if (nameless_parse_type.has_value()) {
+    base::UmaHistogramEnumeration("Cookie.Parse.EmptyNameParseType",
+                                  *nameless_parse_type);
+    if (source_type == CookieSourceType::kHTTP) {
+      base::UmaHistogramEnumeration("Cookie.Parse.EmptyNameParseType.Http",
+                                    *nameless_parse_type);
+    } else if (source_type == CookieSourceType::kScript) {
+      base::UmaHistogramEnumeration("Cookie.Parse.EmptyNameParseType.Script",
+                                    *nameless_parse_type);
+    }
+  }
 
   if (collect_metrics) {
     // These metrics capture whether or not a cookie has a Non-ASCII character

@@ -44,10 +44,12 @@
 
 #include "net/cookies/parsed_cookie.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
@@ -128,6 +130,47 @@ std::string_view ValidStringPieceForValue(std::string_view value) {
   net::ParsedCookie::ParseValue(&it, end, &value_start, &value_end);
 
   return std::string_view(value_start, value_end);
+}
+
+// Returns the appropriate enum value (or nullopt) for a given cookie's initial
+// pair (i.e. its name and value). `had_token_value_separator` is whether there
+// was an "=" character between the name and value.
+std::optional<net::NamelessCookieLineParseType>
+GetNamelessParseTypeForInitialPair(std::string_view cookie_name,
+                                   std::string_view cookie_value,
+                                   bool had_token_value_separator) {
+  static constexpr auto kCookieAttributeNames =
+      base::MakeFixedFlatSet<std::string_view>({
+          kPathTokenName,
+          kDomainTokenName,
+          kExpiresTokenName,
+          kMaxAgeTokenName,
+          kSecureTokenName,
+          kHttpOnlyTokenName,
+          kSameSiteTokenName,
+          kPriorityTokenName,
+          kPartitionedTokenName,
+      });
+  static_assert(std::ranges::all_of(kCookieAttributeNames,
+                                    [](std::string_view str) constexpr {
+                                      return std::none_of(
+                                          str.begin(), str.end(),
+                                          base::IsAsciiUpper<char>);
+                                    }),
+                "Letters in cookie attribute names should be lowercase.");
+
+  if (!cookie_name.empty()) {
+    return std::nullopt;
+  }
+  if (had_token_value_separator) {
+    return cookie_value.contains('=')
+               ? net::NamelessCookieLineParseType::kNamelessWithAmbiguousValue
+               : net::NamelessCookieLineParseType::kEqualsPrecedingToken;
+  }
+  if (kCookieAttributeNames.contains(base::ToLowerASCII(cookie_value))) {
+    return net::NamelessCookieLineParseType::kBareTokenMatchingAttributeName;
+  }
+  return net::NamelessCookieLineParseType::kBareToken;
 }
 
 }  // namespace
@@ -520,12 +563,12 @@ void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
 
   // Ok, here we go.  We should be expecting to be starting somewhere
   // before the cookie line, not including any header name...
-  std::string_view::iterator start = cookie_line.begin();
+  const std::string_view::iterator start = cookie_line.begin();
   std::string_view::iterator it = start;
 
   // TODO(erikwright): Make sure we're stripping \r\n in the network code.
   // Then we can log any unexpected terminators.
-  std::string_view::iterator end = FindFirstTerminator(cookie_line);
+  const std::string_view::iterator end = FindFirstTerminator(cookie_line);
 
   // Block cookies that were truncated by control characters.
   if (end < cookie_line.end()) {
@@ -554,6 +597,7 @@ void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
       token_start = start;
     }
 
+    bool had_token_value_separator = false;
     if (it == end || *it != '=') {
       // We have a token-value, we didn't have any token name.
       if (pair_num == 0) {
@@ -575,6 +619,7 @@ void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
       // We have a TOKEN=VALUE.
       pair.first = std::string(token_start, token_end);
       ++it;  // Skip past the '='.
+      had_token_value_separator = true;
     }
 
     // OK, now try to parse a value.
@@ -632,6 +677,13 @@ void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
 
     if (!ignore_pair) {
       pairs_.emplace_back(std::move(pair));
+
+      // Record enum for metrics on nameless cookies.
+      if (pair_num == 0) {
+        nameless_parse_type_ = GetNamelessParseTypeForInitialPair(
+            pairs_.back().first, pairs_.back().second,
+            had_token_value_separator);
+      }
     }
 
     // We've processed a token/value pair, we're either at the end of
