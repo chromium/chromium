@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "extensions/common/extension_id.h"
 
@@ -62,7 +62,7 @@ class ExtensionSettingsOverriddenDialog
     ShowParams content;
   };
 
-  ExtensionSettingsOverriddenDialog(Params params, Profile* profile);
+  ExtensionSettingsOverriddenDialog(Params params, Profile& profile);
   ExtensionSettingsOverriddenDialog(const ExtensionSettingsOverriddenDialog&) =
       delete;
   ExtensionSettingsOverriddenDialog& operator=(
@@ -73,12 +73,12 @@ class ExtensionSettingsOverriddenDialog
 
   // Returns true if the extension with the given `id` has already had settings
   // overridden dialog shown for.
-  static bool HasShownFor(Profile* profile, const extensions::ExtensionId& id);
+  static bool HasShownFor(Profile& profile, const extensions::ExtensionId& id);
 
   // Returns true if the extension with the given `id` has already been
   // acknowledged.
   static bool HasAcknowledgedExtension(
-      Profile* profile,
+      Profile& profile,
       const extensions::ExtensionId& id,
       const std::string& extension_acknowledged_preference_name);
 
@@ -108,7 +108,7 @@ class ExtensionSettingsOverriddenDialog
   const Params params_;
 
   // The profile associated with the controller.
-  const raw_ptr<Profile> profile_;
+  const raw_ref<Profile> profile_;
 
   DialogResultCallback dialog_result_callback_;
 };

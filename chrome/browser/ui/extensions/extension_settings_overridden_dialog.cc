@@ -39,19 +39,19 @@ struct ShownExtensionSet : public base::SupportsUserData::Data {
   std::set<ExtensionId> shown_ids;
 };
 
-ShownExtensionSet* GetShownExtensionSet(Profile* profile,
+ShownExtensionSet* GetShownExtensionSet(Profile& profile,
                                         bool create_if_missing) {
   auto* shown_set = static_cast<ShownExtensionSet*>(
-      profile->GetUserData(kShownExtensionDataKey));
+      profile.GetUserData(kShownExtensionDataKey));
   if (!shown_set && create_if_missing) {
     auto new_shown_set = std::make_unique<ShownExtensionSet>();
     shown_set = new_shown_set.get();
-    profile->SetUserData(kShownExtensionDataKey, std::move(new_shown_set));
+    profile.SetUserData(kShownExtensionDataKey, std::move(new_shown_set));
   }
   return shown_set;
 }
 
-void MarkShownFor(Profile* profile, const ExtensionId& id) {
+void MarkShownFor(Profile& profile, const ExtensionId& id) {
   ShownExtensionSet* shown_set = GetShownExtensionSet(profile, true);
   DCHECK(shown_set);
   bool inserted = shown_set->shown_ids.insert(id).second;
@@ -76,7 +76,7 @@ ExtensionSettingsOverriddenDialog::Params::Params(Params&& params) = default;
 
 ExtensionSettingsOverriddenDialog::ExtensionSettingsOverriddenDialog(
     Params params,
-    Profile* profile)
+    Profile& profile)
     : params_(std::move(params)), profile_(profile) {
   DCHECK(!params_.controlling_extension_id.empty());
 }
@@ -92,7 +92,7 @@ void ExtensionSettingsOverriddenDialog::RegisterProfilePrefs(
 }
 
 // static
-bool ExtensionSettingsOverriddenDialog::HasShownFor(Profile* profile,
+bool ExtensionSettingsOverriddenDialog::HasShownFor(Profile& profile,
                                                     const ExtensionId& id) {
   const ShownExtensionSet* shown_set = GetShownExtensionSet(profile, false);
   return shown_set && shown_set->shown_ids.count(id) > 0;
@@ -134,11 +134,11 @@ bool ExtensionSettingsOverriddenDialog::ShouldShowForSimpleOverrideExtension(
 
 // static
 bool ExtensionSettingsOverriddenDialog::HasAcknowledgedExtension(
-    Profile* profile,
+    Profile& profile,
     const ExtensionId& id,
     const std::string& extension_acknowledged_preference_name) {
   bool pref_state = false;
-  return extensions::ExtensionPrefs::Get(profile)->ReadPrefAsBoolean(
+  return extensions::ExtensionPrefs::Get(&profile)->ReadPrefAsBoolean(
              id, extension_acknowledged_preference_name, &pref_state) &&
          pref_state;
 }
@@ -148,25 +148,25 @@ bool ExtensionSettingsOverriddenDialog::ShouldShow() {
     return false;
   }
 
-  if (HasShownFor(profile_, params_.controlling_extension_id)) {
+  if (HasShownFor(*profile_, params_.controlling_extension_id)) {
     return false;
   }
 
   if (HasAcknowledgedExtension(
-          profile_, params_.controlling_extension_id,
+          *profile_, params_.controlling_extension_id,
           params_.extension_acknowledged_preference_name)) {
     return false;
   }
 
   const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile_)
+      extensions::ExtensionRegistry::Get(base::to_address(profile_))
           ->enabled_extensions()
           .GetByID(params_.controlling_extension_id);
   DCHECK(extension);
 
   // Don't display the dialog for force-installed extensions that can't be
   // disabled.
-  if (extensions::ExtensionSystem::Get(profile_)
+  if (extensions::ExtensionSystem::Get(base::to_address(profile_))
           ->management_policy()
           ->MustRemainEnabled(extension, nullptr)) {
     return false;
@@ -188,7 +188,7 @@ ExtensionSettingsOverriddenDialog::GetShowParams() {
   DCHECK(ShouldShow());
 
   const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile_)
+      extensions::ExtensionRegistry::Get(base::to_address(profile_))
           ->enabled_extensions()
           .GetByID(params_.controlling_extension_id);
 
@@ -200,20 +200,20 @@ ExtensionSettingsOverriddenDialog::GetShowParams() {
 void ExtensionSettingsOverriddenDialog::OnDialogShown() {
   DCHECK(ShouldShow());
 
-  MarkShownFor(profile_, params_.controlling_extension_id);
+  MarkShownFor(*profile_, params_.controlling_extension_id);
 }
 
 void ExtensionSettingsOverriddenDialog::HandleDialogResult(
     DialogResult result) {
   DCHECK(!params_.controlling_extension_id.empty());
   DCHECK(!HasAcknowledgedExtension(
-      profile_, params_.controlling_extension_id,
+      *profile_, params_.controlling_extension_id,
       params_.extension_acknowledged_preference_name));
-  DCHECK(HasShownFor(profile_, params_.controlling_extension_id));
+  DCHECK(HasShownFor(*profile_, params_.controlling_extension_id));
 
   // It's possible the extension was removed or disabled while the dialog was
   // being displayed. If this is the case, bail early.
-  if (!extensions::ExtensionRegistry::Get(profile_)
+  if (!extensions::ExtensionRegistry::Get(base::to_address(profile_))
            ->enabled_extensions()
            .Contains(params_.controlling_extension_id)) {
     return;
@@ -243,7 +243,7 @@ void ExtensionSettingsOverriddenDialog::HandleDialogResult(
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopSEHijacking)) {
     HatsService* hats_service = HatsServiceFactory::GetForProfile(
-        profile_, /*create_if_necessary=*/true);
+        base::to_address(profile_), /*create_if_necessary=*/true);
     if (hats_service) {
       hats_service->LaunchDelayedSurvey(kHatsSurveyTriggerSEHijacking, 5000);
     }
@@ -258,13 +258,14 @@ void ExtensionSettingsOverriddenDialog::SetDialogResultCallback(
 }
 
 void ExtensionSettingsOverriddenDialog::DisableControllingExtension() {
-  extensions::ExtensionRegistrar::Get(profile_)->DisableExtension(
-      params_.controlling_extension_id,
-      {extensions::disable_reason::DISABLE_USER_ACTION});
+  extensions::ExtensionRegistrar::Get(base::to_address(profile_))
+      ->DisableExtension(params_.controlling_extension_id,
+                         {extensions::disable_reason::DISABLE_USER_ACTION});
 }
 
 void ExtensionSettingsOverriddenDialog::AcknowledgeControllingExtension() {
-  extensions::ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
-      params_.controlling_extension_id,
-      params_.extension_acknowledged_preference_name, base::Value(true));
+  extensions::ExtensionPrefs::Get(base::to_address(profile_))
+      ->UpdateExtensionPref(params_.controlling_extension_id,
+                            params_.extension_acknowledged_preference_name,
+                            base::Value(true));
 }

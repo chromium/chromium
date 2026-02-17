@@ -343,7 +343,7 @@ TEST_F(DefaultSearchExtensionControlledControllerTest,
       "Test.Histogram",
       ExtensionSettingsOverriddenDialog::ShowParams(u"Title", u"Body",
                                                     nullptr));
-  ExtensionSettingsOverriddenDialog dialog(std::move(params), &profile_);
+  ExtensionSettingsOverriddenDialog dialog(std::move(params), profile_);
   dialog.OnDialogShown();
 
   DefaultSearchExtensionControlledController owned_controller(browser_window_,

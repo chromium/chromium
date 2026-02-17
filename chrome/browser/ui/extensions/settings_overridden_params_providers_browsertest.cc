@@ -488,7 +488,8 @@ IN_PROC_BROWSER_TEST_P(SearchOverriddenParamsProvidersBrowserTest,
     std::optional<ExtensionSettingsOverriddenDialog::Params> params =
         GetSearchOverriddenParamsSync(web_contents());
     ASSERT_TRUE(params);
-    ExtensionSettingsOverriddenDialog controller(std::move(*params), profile());
+    ExtensionSettingsOverriddenDialog controller(std::move(*params),
+                                                 *profile());
     EXPECT_FALSE(controller.ShouldShow());
   }
 
@@ -501,7 +502,8 @@ IN_PROC_BROWSER_TEST_P(SearchOverriddenParamsProvidersBrowserTest,
     std::optional<ExtensionSettingsOverriddenDialog::Params> params =
         GetSearchOverriddenParamsSync(web_contents());
     ASSERT_TRUE(params);
-    ExtensionSettingsOverriddenDialog controller(std::move(*params), profile());
+    ExtensionSettingsOverriddenDialog controller(std::move(*params),
+                                                 *profile());
     EXPECT_TRUE(controller.ShouldShow());
   }
 }
@@ -545,7 +547,8 @@ IN_PROC_BROWSER_TEST_P(
     std::optional<ExtensionSettingsOverriddenDialog::Params> params =
         GetSearchOverriddenParamsSync(web_contents());
     ASSERT_TRUE(params);
-    ExtensionSettingsOverriddenDialog controller(std::move(*params), profile());
+    ExtensionSettingsOverriddenDialog controller(std::move(*params),
+                                                 *profile());
     EXPECT_FALSE(controller.ShouldShow());
   }
 
