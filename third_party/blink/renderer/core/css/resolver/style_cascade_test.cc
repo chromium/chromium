@@ -159,12 +159,12 @@ class TestCascade {
 
   void ApplySingle(const CSSProperty& property) {
     EnsureAtLeast(CascadeOrigin::kAnimation);
-    cascade_.AnalyzeIfNeeded();
+    cascade_.CollectDeclarationsIfNeeded();
     TestCascadeResolver resolver(++cascade_.generation_);
     cascade_.LookupAndApply(property, resolver.InnerResolver());
   }
 
-  void AnalyzeIfNeeded() { cascade_.AnalyzeIfNeeded(); }
+  void CollectDeclarationsIfNeeded() { cascade_.CollectDeclarationsIfNeeded(); }
 
   const CSSValue* Resolve(const CSSProperty& property,
                           const CSSValue& value,
@@ -244,11 +244,11 @@ class TestCascade {
     current_origin_ = CascadeOrigin::kUserAgent;
   }
 
-  bool NeedsMatchResultAnalyze() const {
-    return cascade_.needs_match_result_analyze_;
+  bool NeedsCollectFromMatchResult() const {
+    return cascade_.needs_collect_from_match_result_;
   }
-  bool NeedsInterpolationsAnalyze() const {
-    return cascade_.needs_interpolations_analyze_;
+  bool NeedsCollectFromInterpolations() const {
+    return cascade_.needs_collect_from_interpolations_;
   }
   bool DependsOnCascadeAffectingProperty() const {
     return cascade_.depends_on_cascade_affecting_property_;
@@ -3553,7 +3553,7 @@ TEST_F(StyleCascadeTest, AuthorBorderRevertLogical) {
   EXPECT_FALSE(style->HasAuthorBorder());
 }
 
-TEST_F(StyleCascadeTest, AnalyzeMatchResult) {
+TEST_F(StyleCascadeTest, CollectFromMatchResult) {
   auto ua = CascadeOrigin::kUserAgent;
   auto author = CascadeOrigin::kAuthor;
 
@@ -3570,7 +3570,7 @@ TEST_F(StyleCascadeTest, AnalyzeMatchResult) {
   EXPECT_EQ(cascade.GetPriority("font-size").GetOrigin(), ua);
 }
 
-TEST_F(StyleCascadeTest, AnalyzeMatchResultAll) {
+TEST_F(StyleCascadeTest, CollectFromMatchResultAll) {
   auto ua = CascadeOrigin::kUserAgent;
   auto author = CascadeOrigin::kAuthor;
 
@@ -3588,7 +3588,7 @@ TEST_F(StyleCascadeTest, AnalyzeMatchResultAll) {
   EXPECT_EQ(cascade.GetPriority("color"), cascade.GetPriority("display"));
 }
 
-TEST_F(StyleCascadeTest, AnalyzeFlagsClean) {
+TEST_F(StyleCascadeTest, CollectionFlagsClean) {
   AppendSheet(R"HTML(
      @keyframes test {
         from { top: 0px; }
@@ -3601,13 +3601,13 @@ TEST_F(StyleCascadeTest, AnalyzeFlagsClean) {
   cascade.Add("bottom:10px");
   cascade.Add("animation:test linear 1000s -500s");
   cascade.Apply();
-  EXPECT_FALSE(cascade.NeedsMatchResultAnalyze());
-  EXPECT_FALSE(cascade.NeedsInterpolationsAnalyze());
+  EXPECT_FALSE(cascade.NeedsCollectFromMatchResult());
+  EXPECT_FALSE(cascade.NeedsCollectFromInterpolations());
 
   cascade.AddInterpolations();
   cascade.Apply();
-  EXPECT_FALSE(cascade.NeedsMatchResultAnalyze());
-  EXPECT_FALSE(cascade.NeedsInterpolationsAnalyze());
+  EXPECT_FALSE(cascade.NeedsCollectFromMatchResult());
+  EXPECT_FALSE(cascade.NeedsCollectFromInterpolations());
 }
 
 TEST_F(StyleCascadeTest, ApplyMatchResultFilter) {
@@ -4030,7 +4030,7 @@ TEST_F(StyleCascadeTest, RevertOrigin) {
   cascade.Add("display", "revert", CascadeOrigin::kAuthor);
   cascade.Add("margin-left", "revert", CascadeOrigin::kAuthor);
 
-  cascade.AnalyzeIfNeeded();
+  cascade.CollectDeclarationsIfNeeded();
 
   CSSValue* revert_value = cssvalue::CSSRevertValue::Create();
 

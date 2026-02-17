@@ -55,7 +55,7 @@ class CSSFlipRevertValue;
 
 }  // namespace cssvalue
 
-// StyleCascade analyzes declarations provided by CSS rules and animations,
+// StyleCascade collects declarations provided by CSS rules and animations,
 // and figures out which declarations should be skipped, and which should be
 // applied (and in which order).
 //
@@ -109,8 +109,9 @@ class CORE_EXPORT StyleCascade {
   // provide a different filter.
   void Apply(CascadeFilter = CascadeFilter());
 
-  // Returns a CSSBitset containing the !important declarations (analyzing
-  // if needed). If there are no !important declarations, returns nullptr.
+  // Returns a CSSBitset containing the !important declarations (collecting
+  // declarations if needed). If there are no !important declarations,
+  // returns nullptr.
   //
   // Note that this function does not return any set bits for -internal-visited-
   // properties. Instead, !important -internal-visited-* declarations cause
@@ -201,26 +202,32 @@ class CORE_EXPORT StyleCascade {
  private:
   friend class TestCascade;
 
-  // Before we can Apply the cascade, the MatchResult and CascadeInterpolations
-  // must be Analyzed. This means going through all the declarations, and
-  // adding them to the CascadeMap, which gives us a complete picture of which
-  // declarations won the cascade.
+  // Before we can Apply the cascade, we must find the strongest declaration
+  // (see CascadePriority) for each property, and resolve dependencies
+  // between them. This requires collecting all declarations from regular rules
+  // (`match_result_`) as well as effect values [1] from animations/transitions
+  // (`interpolations_`) into a CascadeMap.
   //
-  // We analyze only if needed (i.e. if MatchResult or CascadeInterpolations)
-  // has been mutated since the last call to AnalyzeIfNeeded.
-  void AnalyzeIfNeeded();
-  void AnalyzeMatchResult();
-  void AnalyzeInterpolations();
+  // We only perform this collection if needed, i.e. if `match_result_`
+  // or `interpolations_` has been mutated since the last call to
+  // CollectDeclarationsIfNeeded().
+  //
+  // [1] https://drafts.csswg.org/web-animations-1/#effect-value
+  void CollectDeclarationsIfNeeded();
+  void CollectFromMatchResult();
+  void CollectFromInterpolations();
   void AddExplicitDefaults();
 
-  // Clears the CascadeMap and other state, and analyzes the MatchResult/
-  // interpolations again.
-  void Reanalyze();
+  // Clears the CascadeMap and other state, and collects declarations
+  // from MatchResult/interpolations again. See ApplyCascadeAffecting()
+  // for why we would need to do this.
+  void ResetAndCollectAgain();
 
   // Some properties are "cascade affecting", in the sense that their computed
-  // value actually affects cascade behavior. For example, css-logical
-  // properties change their cascade behavior depending on the computed value
-  // of direction/writing-mode.
+  // value (determined during the "apply" step) affects cascade behavior
+  // (the entry into the CascadeMap; the "collect" step).
+  // For example, css-logical properties change their cascade behavior depending
+  // on the computed value of direction/writing-mode.
   void ApplyCascadeAffecting(CascadeResolver&);
 
   // Some properties affect scrollbars which in turn affect viewport units.
@@ -840,8 +847,8 @@ class CORE_EXPORT StyleCascade {
   //       enough for our needs.
   uint8_t generation_ = 0;
 
-  bool needs_match_result_analyze_ = false;
-  bool needs_interpolations_analyze_ = false;
+  bool needs_collect_from_match_result_ = false;
+  bool needs_collect_from_interpolations_ = false;
   // A cascade-affecting property is for example 'direction', since the
   // computed value of the property affects how e.g. margin-inline-start
   // (and other css-logical properties) cascade.

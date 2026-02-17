@@ -284,19 +284,19 @@ bool IsVariableNameOnly(StringView str) {
 
 MatchResult& StyleCascade::MutableMatchResult() {
   DCHECK(!generation_) << "Apply has already been called";
-  needs_match_result_analyze_ = true;
+  needs_collect_from_match_result_ = true;
   return match_result_;
 }
 
 void StyleCascade::AddInterpolations(const ActiveInterpolationsMap* map,
                                      CascadeOrigin origin) {
   DCHECK(map);
-  needs_interpolations_analyze_ = true;
+  needs_collect_from_interpolations_ = true;
   interpolations_.Add(map, origin);
 }
 
 void StyleCascade::Apply(CascadeFilter filter) {
-  AnalyzeIfNeeded();
+  CollectDeclarationsIfNeeded();
   state_.InvalidateLengthConversionData();
 
   // For performance avoid stack initialization on this large object.
@@ -330,7 +330,7 @@ void StyleCascade::Apply(CascadeFilter filter) {
 }
 
 std::unique_ptr<CSSBitset> StyleCascade::GetImportantSet() {
-  AnalyzeIfNeeded();
+  CollectDeclarationsIfNeeded();
   if (!map_.HasImportant()) {
     return nullptr;
   }
@@ -385,8 +385,8 @@ const CSSValue* StyleCascade::Resolve(
 
 HeapHashMap<CSSPropertyName, Member<const CSSValue>>
 StyleCascade::GetCascadedValues() const {
-  DCHECK(!needs_match_result_analyze_);
-  DCHECK(!needs_interpolations_analyze_);
+  DCHECK(!needs_collect_from_match_result_);
+  DCHECK(!needs_collect_from_interpolations_);
   DCHECK_GE(generation_, 0);
 
   HeapHashMap<CSSPropertyName, Member<const CSSValue>> result;
@@ -463,18 +463,18 @@ const CSSUnparsedDeclarationValue* StyleCascade::ResolveSubstitutions(
       sequence.BuildVariableData(), context);
 }
 
-void StyleCascade::AnalyzeIfNeeded() {
-  if (needs_match_result_analyze_) {
-    AnalyzeMatchResult();
-    needs_match_result_analyze_ = false;
+void StyleCascade::CollectDeclarationsIfNeeded() {
+  if (needs_collect_from_match_result_) {
+    CollectFromMatchResult();
+    needs_collect_from_match_result_ = false;
   }
-  if (needs_interpolations_analyze_) {
-    AnalyzeInterpolations();
-    needs_interpolations_analyze_ = false;
+  if (needs_collect_from_interpolations_) {
+    CollectFromInterpolations();
+    needs_collect_from_interpolations_ = false;
   }
 }
 
-void StyleCascade::AnalyzeMatchResult() {
+void StyleCascade::CollectFromMatchResult() {
   AddExplicitDefaults();
 
   int index = 0;
@@ -498,7 +498,7 @@ void StyleCascade::AnalyzeMatchResult() {
   }
 }
 
-void StyleCascade::AnalyzeInterpolations() {
+void StyleCascade::CollectFromInterpolations() {
   const auto& entries = interpolations_.GetEntries();
   for (wtf_size_t i = 0; i < entries.size(); ++i) {
     for (const auto& active_interpolation : *entries[i].map) {
@@ -587,22 +587,22 @@ void StyleCascade::AddExplicitDefaults() {
   }
 }
 
-void StyleCascade::Reanalyze() {
+void StyleCascade::ResetAndCollectAgain() {
   map_.Reset();
   generation_ = 0;
   depends_on_cascade_affecting_property_ = false;
 
-  needs_match_result_analyze_ = true;
-  needs_interpolations_analyze_ = true;
-  AnalyzeIfNeeded();
+  needs_collect_from_match_result_ = true;
+  needs_collect_from_interpolations_ = true;
+  CollectDeclarationsIfNeeded();
 }
 
 void StyleCascade::ApplyCascadeAffecting(CascadeResolver& resolver) {
-  // During the initial call to Analyze, we speculatively assume that the
-  // direction/writing-mode inherited from the parent will be the final
-  // direction/writing-mode. If either property ends up with another value,
-  // our assumption was incorrect, and we have to Reanalyze with the correct
-  // values on ComputedStyle.
+  // During the initial call to CollectDeclarationsIfNeeded, we speculatively
+  // assume that the direction/writing-mode inherited from the parent will be
+  // the final direction/writing-mode. If either property ends up with another
+  // value, our assumption was incorrect, and we have to ResetAndCollectAgain()
+  // with the correct values on ComputedStyle.
   auto direction = state_.StyleBuilder().Direction();
   auto writing_mode = state_.StyleBuilder().GetWritingMode();
   // Similarly, we assume that the effective zoom of this element
@@ -622,21 +622,21 @@ void StyleCascade::ApplyCascadeAffecting(CascadeResolver& resolver) {
     LookupAndApply(GetCSSPropertyZoom(), resolver);
   }
 
-  bool reanalyze = false;
+  bool reset_and_collect_again = false;
 
   if (depends_on_cascade_affecting_property_) {
     if (direction != state_.StyleBuilder().Direction() ||
         writing_mode != state_.StyleBuilder().GetWritingMode()) {
-      reanalyze = true;
+      reset_and_collect_again = true;
     }
   }
   if (effective_zoom != state_.StyleBuilder().EffectiveZoom()) {
     effective_zoom_changed_ = true;
-    reanalyze = true;
+    reset_and_collect_again = true;
   }
 
-  if (reanalyze) {
-    Reanalyze();
+  if (reset_and_collect_again) {
+    ResetAndCollectAgain();
   }
 }
 
@@ -776,8 +776,8 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
   }
 }
 
-// Go through all properties that were found during the analyze phase
-// (e.g. in AnalyzeMatchResult()) and actually apply them. We need to do this
+// Go through all properties that were found during the "collect" phase
+// (CollectFromMatchResult()) and actually apply them. We need to do this
 // in a second phase so that we know which ones actually won the cascade
 // before we start applying, as some properties can affect others.
 void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
