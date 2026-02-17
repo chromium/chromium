@@ -152,9 +152,6 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sMultiattachmentFusebox =
             newBooleanParam(sOmniboxMultimodalInput, "multi_context", false);
 
-    public static final BooleanCachedFeatureParam sRedirectComposeplateButton =
-            newBooleanParam(sOmniboxMultimodalInput, "redirect_composeplate_button", true);
-
     /** A necessary but not sufficient condition to show the current tab button. */
     public static final BooleanCachedFeatureParam sAllowCurrentTab =
             newBooleanParam(sOmniboxMultimodalInput, "allow_current_tab", true);

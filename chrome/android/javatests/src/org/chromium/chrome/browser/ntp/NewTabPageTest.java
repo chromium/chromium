@@ -102,7 +102,6 @@ import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -906,7 +905,6 @@ public class NewTabPageTest {
                         .findViewById(
                                 org.chromium.chrome.browser.composeplate.R.id.composeplate_view)
                         .findViewById(R.id.composeplate_button));
-        mOmnibox.checkFocus(false);
     }
 
     @Test
@@ -925,25 +923,6 @@ public class NewTabPageTest {
                                 org.chromium.chrome.browser.composeplate.R.id.composeplate_view)
                         .findViewById(R.id.composeplate_button));
         mOmnibox.checkFocus(true);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"NewTabPage"})
-    @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
-    public void testAiModeButton_fuseboxWithoutRedirect() {
-        if (mActivityTestRule.getActivity().isTablet()) return;
-
-        OmniboxFeatures.sRedirectComposeplateButton.setForTesting(false);
-        mActivityTestRule.skipWindowAndTabStateCleanup();
-
-        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
-        TouchCommon.singleClickView(
-                ntpLayout
-                        .findViewById(
-                                org.chromium.chrome.browser.composeplate.R.id.composeplate_view)
-                        .findViewById(R.id.composeplate_button));
-        mOmnibox.checkFocus(false);
     }
 
     private void verifyMostVisitedTileMargin() {
