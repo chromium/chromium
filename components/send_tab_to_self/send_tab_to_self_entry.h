@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "url/gurl.h"
 
 namespace sync_pb {
@@ -35,9 +36,11 @@ class SendTabToSelfEntry {
                      const std::string& title,
                      base::Time shared_time,
                      const std::string& device_name,
-                     const std::string& target_device_sync_cache_guid);
+                     const std::string& target_device_sync_cache_guid,
+                     const PageContext& page_context);
 
   SendTabToSelfEntry(const SendTabToSelfEntry&);
+
   SendTabToSelfEntry& operator=(const SendTabToSelfEntry&) = delete;
 
   ~SendTabToSelfEntry();
@@ -62,6 +65,9 @@ class SendTabToSelfEntry {
   // The state of this entry's notification: if it has been |dismissed|.
   void SetNotificationDismissed(bool notification_dismissed);
   bool GetNotificationDismissed() const;
+
+  // Returns the page context.
+  const PageContext& GetPageContext() const;
 
   // Returns a protobuf encoding the content of this SendTabToSelfEntry for
   // local storage.
@@ -99,6 +105,7 @@ class SendTabToSelfEntry {
   base::Time shared_time_;
   bool notification_dismissed_;
   bool opened_;
+  PageContext page_context_;
 };
 
 }  // namespace send_tab_to_self

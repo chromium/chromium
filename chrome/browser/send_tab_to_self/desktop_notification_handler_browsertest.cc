@@ -17,6 +17,7 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/test_send_tab_to_self_model.h"
@@ -164,10 +165,10 @@ IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerBrowserTest,
       ui::ImageModel(), base::UTF8ToUTF16(url.GetHost()), url,
       message_center::NotifierId(url), optional_fields, /*delegate=*/nullptr);
 
-  SendTabToSelfEntry entry(kDesktopNotificationGuid, url,
-                           kDesktopNotificationTitle, base::Time::Now(),
-                           kDesktopNotificationDeviceInfo,
-                           kDesktopNotificationTargetDeviceSyncCacheGuid);
+  SendTabToSelfEntry entry(
+      kDesktopNotificationGuid, url, kDesktopNotificationTitle,
+      base::Time::Now(), kDesktopNotificationDeviceInfo,
+      kDesktopNotificationTargetDeviceSyncCacheGuid, PageContext());
   std::vector<const SendTabToSelfEntry*> entries;
   entries.push_back(&entry);
 

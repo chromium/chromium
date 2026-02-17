@@ -22,6 +22,7 @@
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "components/sharing_message/features.h"
@@ -393,7 +394,8 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally) {
 
   send_tab_to_self::SendTabToSelfEntry entry =
       send_tab_to_self::SendTabToSelfEntry(guid, GURL(destination_url), title,
-                                           base::Time(), device_name, guid);
+                                           base::Time(), device_name, guid,
+                                           send_tab_to_self::PageContext());
   GetSharingService()->EntryAddedLocally(&entry);
 }
 
@@ -418,7 +420,7 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally_FeatureDisabled) {
   send_tab_to_self::SendTabToSelfEntry entry =
       send_tab_to_self::SendTabToSelfEntry(
           "guid", GURL("https://www.example.com"), "title", base::Time(),
-          "device name", guid);
+          "device name", guid, send_tab_to_self::PageContext());
   GetSharingService()->EntryAddedLocally(&entry);
 }
 
@@ -444,7 +446,7 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally_NonIOSDevice) {
   send_tab_to_self::SendTabToSelfEntry entry =
       send_tab_to_self::SendTabToSelfEntry(
           "guid", GURL("https://www.example.com"), "title", base::Time(),
-          "device name", guid);
+          "device name", guid, send_tab_to_self::PageContext());
   GetSharingService()->EntryAddedLocally(&entry);
 }
 

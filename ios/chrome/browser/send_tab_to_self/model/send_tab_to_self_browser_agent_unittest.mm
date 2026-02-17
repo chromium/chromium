@@ -9,6 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/send_tab_to_self/page_context.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -41,7 +42,8 @@ class FakeSendTabToSelfModel : public send_tab_to_self::TestSendTabToSelfModel {
   const SendTabToSelfEntry* AddEntry(
       const GURL& url,
       const std::string& title,
-      const std::string& target_device_cache_guid) override {
+      const std::string& target_device_cache_guid,
+      const send_tab_to_self::PageContext& context) override {
     last_entry_ = SendTabToSelfEntry::FromRequiredFields(
         "test-guid", url, target_device_cache_guid);
     return last_entry_.get();

@@ -17,6 +17,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/prefs/pref_service.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/sync/base/data_type.h"
@@ -89,7 +90,8 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   const SendTabToSelfEntry* AddEntry(
       const GURL& url,
       const std::string& title,
-      const std::string& target_device_cache_guid) override;
+      const std::string& target_device_cache_guid,
+      const PageContext& context) override;
   void DeleteEntry(const std::string& guid) override;
   void DismissEntry(const std::string& guid) override;
   void MarkEntryOpened(const std::string& guid) override;

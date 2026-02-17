@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,20 +43,24 @@ bool IsEqualForTesting(const SendTabToSelfEntry& entry,
 
 TEST(SendTabToSelfEntry, CompareEntries) {
   const SendTabToSelfEntry e1("1", GURL("http://example.com"), "bar",
-                              base::Time::FromTimeT(10), "device1", "device2");
+                              base::Time::FromTimeT(10), "device1", "device2",
+                              PageContext());
   const SendTabToSelfEntry e2("1", GURL("http://example.com"), "bar",
-                              base::Time::FromTimeT(10), "device1", "device2");
+                              base::Time::FromTimeT(10), "device1", "device2",
+                              PageContext());
 
   EXPECT_TRUE(IsEqualForTesting(e1, e2));
   const SendTabToSelfEntry e3("2", GURL("http://example.org"), "bar",
-                              base::Time::FromTimeT(10), "device1", "device2");
+                              base::Time::FromTimeT(10), "device1", "device2",
+                              PageContext());
 
   EXPECT_FALSE(IsEqualForTesting(e1, e3));
 }
 
 TEST(SendTabToSelfEntry, SharedTime) {
   SendTabToSelfEntry e("1", GURL("http://example.com"), "bar",
-                       base::Time::FromTimeT(10), "device", "device2");
+                       base::Time::FromTimeT(10), "device", "device2",
+                       PageContext());
   EXPECT_EQ("bar", e.GetTitle());
   // Getters return Base::Time values.
   EXPECT_EQ(e.GetSharedTime(), base::Time::FromTimeT(10));
@@ -65,7 +70,8 @@ TEST(SendTabToSelfEntry, SharedTime) {
 // sync_pb::SendTabToSelfSpecifics.
 TEST(SendTabToSelfEntry, AsProto) {
   SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
-                           base::Time::FromTimeT(10), "device", "device2");
+                           base::Time::FromTimeT(10), "device", "device2",
+                           PageContext());
   SendTabToSelfLocal pb_entry(entry.AsLocalProto());
   EXPECT_TRUE(IsEqualForTesting(entry, pb_entry.specifics()));
 }
@@ -74,7 +80,7 @@ TEST(SendTabToSelfEntry, AsProto) {
 // fields
 TEST(SendTabToSelfEntry, FromRequiredFields) {
   SendTabToSelfEntry expected("1", GURL("http://example.com"), "", base::Time(),
-                              "", "target_device");
+                              "", "target_device", PageContext());
   std::unique_ptr<SendTabToSelfEntry> actual =
       SendTabToSelfEntry::FromRequiredFields("1", GURL("http://example.com"),
                                              "target_device");
@@ -102,7 +108,8 @@ TEST(SendTabToSelfEntry, FromProto) {
 // Tests that the send tab to self entry expiry works as expected
 TEST(SendTabToSelfEntry, IsExpired) {
   SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
-                           base::Time::FromTimeT(10), "device1", "device1");
+                           base::Time::FromTimeT(10), "device1", "device1",
+                           PageContext());
 
   EXPECT_TRUE(entry.IsExpired(base::Time::FromTimeT(11) + base::Days(10)));
   EXPECT_FALSE(entry.IsExpired(base::Time::FromTimeT(11)));
@@ -115,24 +122,26 @@ TEST(SendTabToSelfEntry, InvalidStrings) {
   base::UTF16ToUTF8(&term[0], 1, &invalid_utf8);
 
   SendTabToSelfEntry invalid1("1", GURL("http://example.com"), invalid_utf8,
-                              base::Time::FromTimeT(10), "device", "device");
+                              base::Time::FromTimeT(10), "device", "device",
+                              PageContext());
 
   EXPECT_EQ("1", invalid1.GetGUID());
 
   SendTabToSelfEntry invalid2(invalid_utf8, GURL("http://example.com"), "title",
-                              base::Time::FromTimeT(10), "device", "device");
+                              base::Time::FromTimeT(10), "device", "device",
+                              PageContext());
 
   EXPECT_EQ(invalid_utf8, invalid2.GetGUID());
 
   SendTabToSelfEntry invalid3("1", GURL("http://example.com"), "title",
-                              base::Time::FromTimeT(10), invalid_utf8,
-                              "device");
+                              base::Time::FromTimeT(10), invalid_utf8, "device",
+                              PageContext());
 
   EXPECT_EQ("1", invalid3.GetGUID());
 
   SendTabToSelfEntry invalid4("1", GURL("http://example.com"), "title",
-                              base::Time::FromTimeT(10), "device",
-                              invalid_utf8);
+                              base::Time::FromTimeT(10), "device", invalid_utf8,
+                              PageContext());
 
   EXPECT_EQ("1", invalid4.GetGUID());
 
@@ -155,7 +164,8 @@ TEST(SendTabToSelfEntry, InvalidStrings) {
 // sync_pb::SendTabToSelfSpecifics.
 TEST(SendTabToSelfEntry, MarkAsOpened) {
   SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
-                           base::Time::FromTimeT(10), "device", "device2");
+                           base::Time::FromTimeT(10), "device", "device2",
+                           PageContext());
   EXPECT_FALSE(entry.IsOpened());
   entry.MarkOpened();
   EXPECT_TRUE(entry.IsOpened());

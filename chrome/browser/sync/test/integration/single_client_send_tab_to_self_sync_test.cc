@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -183,7 +184,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(model->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid));
+  ASSERT_TRUE(model->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid,
+                              send_tab_to_self::PageContext()));
 
   secondary_account_helper::SignOut(GetProfile(0), &test_url_loader_factory_);
 
@@ -214,7 +216,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_FALSE(model->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid));
+  ASSERT_FALSE(model->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid,
+                               send_tab_to_self::PageContext()));
 
   EXPECT_FALSE(send_tab_to_self::ShouldDisplayEntryPoint(
       GetBrowser(0)->tab_strip_model()->GetActiveWebContents()));

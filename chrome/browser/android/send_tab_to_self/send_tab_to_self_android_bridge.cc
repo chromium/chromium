@@ -14,6 +14,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -74,7 +75,8 @@ static bool JNI_SendTabToSelfAndroidBridge_AddEntry(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
   return model->IsReady() &&
-         model->AddEntry(GURL(url), title, target_device_sync_cache_guid);
+         model->AddEntry(GURL(url), title, target_device_sync_cache_guid,
+                         PageContext());
 }
 
 // Deletes the entry associated with the passed in GUID.

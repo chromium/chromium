@@ -16,6 +16,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/metrics_util.h"
+#import "components/send_tab_to_self/page_context.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/send_tab_to_self/target_device_info.h"
@@ -297,7 +298,8 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   SendTabToSelfSyncServiceFactory::GetForProfile(self.profile)
       ->GetSendTabToSelfModel()
       ->AddEntry(self.url, base::SysNSStringToUTF8(self.title),
-                 base::SysNSStringToUTF8(cacheGUID));
+                 base::SysNSStringToUTF8(cacheGUID),
+                 send_tab_to_self::PageContext());
 
   // ShowSendingMessage() opens UI, so wait for the dialog to be dismissed.
   __weak __typeof(self) weakSelf = self;

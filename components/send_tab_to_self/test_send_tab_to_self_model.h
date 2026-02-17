@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/target_device_info.h"
 
@@ -26,7 +27,8 @@ class TestSendTabToSelfModel : public SendTabToSelfModel {
       const std::string& guid) const override;
   const SendTabToSelfEntry* AddEntry(const GURL& url,
                                      const std::string& title,
-                                     const std::string& device_id) override;
+                                     const std::string& device_id,
+                                     const PageContext& context) override;
   void DeleteEntry(const std::string& guid) override;
   void DismissEntry(const std::string& guid) override;
   void MarkEntryOpened(const std::string& guid) override;

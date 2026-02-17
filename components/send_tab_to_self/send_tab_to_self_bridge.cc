@@ -24,6 +24,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/pref_names.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -330,7 +331,8 @@ const SendTabToSelfEntry* SendTabToSelfBridge::GetEntryByGUID(
 const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
     const GURL& url,
     const std::string& title,
-    const std::string& target_device_cache_guid) {
+    const std::string& target_device_cache_guid,
+    const PageContext& context) {
   if (!change_processor()->IsTrackingMetadata()) {
     // TODO(crbug.com/40617641) handle failure case.
     return nullptr;
@@ -366,7 +368,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
 
   auto entry = std::make_unique<SendTabToSelfEntry>(
       guid, url, trimmed_title, shared_time, local_device_name_,
-      target_device_cache_guid);
+      target_device_cache_guid, context);
 
   std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
   // This entry is new. Add it to the store and model.

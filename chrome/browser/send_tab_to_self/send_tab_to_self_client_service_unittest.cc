@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -48,9 +49,11 @@ TEST(SendTabToSelfClientServiceTest, MultipleEntriesAdded) {
 
   // Create 2 entries and simulated that they were both added remotely.
   SendTabToSelfEntry entry1("a", GURL("http://www.example-a.com"), "a site",
-                            base::Time(), "device a", "device b");
+                            base::Time(), "device a", "device b",
+                            PageContext());
   SendTabToSelfEntry entry2("b", GURL("http://www.example-b.com"), "b site",
-                            base::Time(), "device b", "device a");
+                            base::Time(), "device b", "device a",
+                            PageContext());
   client_service.EntriesAddedRemotely({&entry1, &entry2});
 
   EXPECT_EQ(2u, test_handler->number_displayed_entries());

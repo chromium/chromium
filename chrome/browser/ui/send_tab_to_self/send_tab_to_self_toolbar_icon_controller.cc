@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/send_tab_to_self/metrics_util.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -75,8 +76,8 @@ void SendTabToSelfToolbarIconController::StorePendingEntry(
       new_entry_pending_notification->GetTitle(),
       new_entry_pending_notification->GetSharedTime(),
       new_entry_pending_notification->GetDeviceName(),
-      new_entry_pending_notification->GetTargetDeviceSyncCacheGuid());
-
+      new_entry_pending_notification->GetTargetDeviceSyncCacheGuid(),
+      PageContext());
   // Prevent adding the observer several times. This might happen when the
   // window is inactive and this method is called more than once (i.e. the
   // server sends multiple entry batches).

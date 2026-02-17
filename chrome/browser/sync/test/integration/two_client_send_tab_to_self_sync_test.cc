@@ -14,6 +14,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_bridge.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -79,7 +80,8 @@ IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(model0->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid));
+  ASSERT_TRUE(model0->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid,
+                               send_tab_to_self::PageContext()));
 
   send_tab_to_self::SendTabToSelfSyncService* service1 =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1));
@@ -108,13 +110,16 @@ IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(model0->AddEntry(kGurl0, kTitle0, kTargetDeviceSyncCacheGuid0));
+  ASSERT_TRUE(model0->AddEntry(kGurl0, kTitle0, kTargetDeviceSyncCacheGuid0,
+                               send_tab_to_self::PageContext()));
 
-  ASSERT_TRUE(model0->AddEntry(kGurl1, kTitle1, kTargetDeviceSyncCacheGuid1));
+  ASSERT_TRUE(model0->AddEntry(kGurl1, kTitle1, kTargetDeviceSyncCacheGuid1,
+                               send_tab_to_self::PageContext()));
 
   ASSERT_TRUE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
                   ->GetSendTabToSelfModel()
-                  ->AddEntry(kGurl2, kTitle2, kTargetDeviceSyncCacheGuid2));
+                  ->AddEntry(kGurl2, kTitle2, kTargetDeviceSyncCacheGuid2,
+                             send_tab_to_self::PageContext()));
 
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfModelEqualityChecker(
                   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1)),
@@ -240,7 +245,8 @@ IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
   send_tab_to_self::SendTabToSelfModel* model0 =
       service0->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(model0->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid));
+  ASSERT_TRUE(model0->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid,
+                               send_tab_to_self::PageContext()));
 
   send_tab_to_self::SendTabToSelfSyncService* service1 =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1));

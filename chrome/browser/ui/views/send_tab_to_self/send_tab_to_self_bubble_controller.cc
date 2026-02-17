@@ -26,6 +26,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/send_tab_to_self/metrics_util.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/pref_names.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -146,7 +147,8 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
   }
 
   model->AddEntry(shared_url, base::UTF16ToUTF8(GetWebContents().GetTitle()),
-                  target_device_guid);
+                  target_device_guid, PageContext());
+
   // Show confirmation message.
   show_message_ = true;
 }

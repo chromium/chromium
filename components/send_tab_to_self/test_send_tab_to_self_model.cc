@@ -4,6 +4,8 @@
 
 #include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 
+#include "components/send_tab_to_self/page_context.h"
+
 namespace send_tab_to_self {
 
 std::vector<std::string> TestSendTabToSelfModel::GetAllGuids() const {
@@ -18,7 +20,8 @@ const SendTabToSelfEntry* TestSendTabToSelfModel::GetEntryByGUID(
 const SendTabToSelfEntry* TestSendTabToSelfModel::AddEntry(
     const GURL& url,
     const std::string& title,
-    const std::string& device_id) {
+    const std::string& device_id,
+    const PageContext& context) {
   return nullptr;
 }
 

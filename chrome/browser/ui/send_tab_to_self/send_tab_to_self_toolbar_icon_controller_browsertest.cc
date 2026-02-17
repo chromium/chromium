@@ -18,6 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -62,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
   ASSERT_TRUE(browser()->IsActive());
 
   SendTabToSelfEntry entry("a", GURL("http://www.example-a.com"), "a site",
-                           base::Time(), "device a", "device b");
+                           base::Time(), "device a", "device b", PageContext());
 
   controller()->DisplayNewEntries({&entry});
   EXPECT_TRUE(bubble_controller()->IsBubbleShowing());
@@ -84,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
   WaitUntilBrowserBecomeActiveOrLastActive(incognito_browser);
 
   SendTabToSelfEntry entry("a", GURL("http://www.example-a.com"), "a site",
-                           base::Time(), "device a", "device b");
+                           base::Time(), "device a", "device b", PageContext());
 
   EXPECT_FALSE(browser()->IsActive());
   controller()->DisplayNewEntries({&entry});
@@ -108,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
   WaitUntilBrowserBecomeActiveOrLastActive(app_browser);
 
   SendTabToSelfEntry entry("a", GURL("http://www.example-a.com"), "a site",
-                           base::Time(), "device a", "device b");
+                           base::Time(), "device a", "device b", PageContext());
 
   EXPECT_FALSE(browser()->IsActive());
   controller()->DisplayNewEntries({&entry});
@@ -124,9 +125,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
                        ReplaceExistingEntry) {
   SendTabToSelfEntry existing_entry("a", GURL("http://www.example-a.com"),
                                     "a site", base::Time(), "device a",
-                                    "device b");
+                                    "device b", PageContext());
   SendTabToSelfEntry new_entry("b", GURL("http://www.example-b.com"), "b site",
-                               base::Time(), "device a", "device b");
+                               base::Time(), "device a", "device b",
+                               PageContext());
 
   controller()->DisplayNewEntries({&existing_entry});
   EXPECT_EQ(existing_entry.GetGUID(),
