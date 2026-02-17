@@ -196,6 +196,11 @@ void VerticalUnpinnedTabContainerView::UpdateLayoutForDrag() {
   layout_manager_->ResetToTargetLayout();
 }
 
+const views::ProposedLayout&
+VerticalUnpinnedTabContainerView::GetLayoutForDrag() const {
+  return layout_manager_->target_layout();
+}
+
 void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
     const gfx::Rect& dragged_tab_bounds) {
   const views::ProposedLayout& target_layout = layout_manager_->target_layout();

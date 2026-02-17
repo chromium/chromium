@@ -74,6 +74,7 @@ class VerticalTabGroupView
   // VerticalDraggedTabsContainer:
   views::ScrollView* GetScrollViewForContainer() const override;
   void UpdateLayoutForDrag() override;
+  const views::ProposedLayout& GetLayoutForDrag() const override;
   void HandleTabDragInContainer(const gfx::Rect& dragged_tab_bounds) override;
   void OnTabDragExited(const gfx::Point& point_in_screen) override;
 

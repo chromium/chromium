@@ -329,6 +329,10 @@ void VerticalTabGroupView::UpdateLayoutForDrag() {
   layout_manager_->ResetToTargetLayout();
 }
 
+const views::ProposedLayout& VerticalTabGroupView::GetLayoutForDrag() const {
+  return layout_manager_->target_layout();
+}
+
 void VerticalTabGroupView::HandleTabDragInContainer(
     const gfx::Rect& dragged_tab_bounds) {
   CHECK(!IsCollapsed());

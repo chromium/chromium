@@ -53,6 +53,7 @@ class VerticalUnpinnedTabContainerView
   // VerticalDraggedTabsContainer:
   views::ScrollView* GetScrollViewForContainer() const override;
   void UpdateLayoutForDrag() override;
+  const views::ProposedLayout& GetLayoutForDrag() const override;
   void HandleTabDragInContainer(const gfx::Rect& dragged_tab_bounds) override;
 
   // Returns whether a drag that is currently being handled by the given

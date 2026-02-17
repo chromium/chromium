@@ -113,6 +113,9 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // Invalidates the layout of the host view, skipping animations.
   virtual void UpdateLayoutForDrag() = 0;
 
+  // Get the layout of the host view, skipping animations.
+  virtual const views::ProposedLayout& GetLayoutForDrag() const = 0;
+
   // Handles a dragged tab that is parented within this target.
   // `point_in_container` is a point relative to this target's view.
   virtual void HandleTabDragInContainer(
@@ -130,8 +133,10 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // drag data.
   void BuildDragLayout(const DragSessionData& drag_data);
   void AddViewToVerticalDragLayout(views::View* dragging_view,
+                                   const gfx::Rect& view_bounds,
                                    bool is_source_dragged_view);
   void AddViewToSquashedDragLayout(views::View* dragging_view,
+                                   const gfx::Rect& view_bounds,
                                    bool is_source_dragged_view);
 
   // Whether the tab strip is collapsed.

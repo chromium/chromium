@@ -199,6 +199,7 @@ void VerticalDraggedTabsContainer::BuildDragLayout(
   dragging_views_bounds_.Offset(
       GetSourceViewOffsetFromMouse(*source_dragged_view, session_data));
 
+  const auto& target_layout = GetLayoutForDrag();
   for (auto* attached_view : session_data.attached_views()) {
     auto* dragging_view = GetDragHandler().ViewFromTabSlot(attached_view);
     CHECK(dragging_view);
@@ -213,14 +214,19 @@ void VerticalDraggedTabsContainer::BuildDragLayout(
     }
 
     const bool is_source_view = dragging_view == source_dragged_view;
+    const auto* dragging_view_layout =
+        target_layout.GetLayoutFor(dragging_view);
+    CHECK(dragging_view_layout);
 
     switch (drag_layout_) {
       case DragLayout::kVertical:
         CHECK(!IsHorizontalDragSupported());
-        AddViewToVerticalDragLayout(dragging_view, is_source_view);
+        AddViewToVerticalDragLayout(dragging_view, dragging_view_layout->bounds,
+                                    is_source_view);
         break;
       case DragLayout::kSquash:
-        AddViewToSquashedDragLayout(dragging_view, is_source_view);
+        AddViewToSquashedDragLayout(dragging_view, dragging_view_layout->bounds,
+                                    is_source_view);
         break;
       default:
         NOTREACHED();
@@ -230,8 +236,9 @@ void VerticalDraggedTabsContainer::BuildDragLayout(
 
 void VerticalDraggedTabsContainer::AddViewToVerticalDragLayout(
     views::View* dragging_view,
+    const gfx::Rect& view_bounds,
     bool is_source_dragged_view) {
-  gfx::Rect bounds = gfx::Rect(dragging_view->GetPreferredSize({}));
+  gfx::Rect bounds = view_bounds;
   bounds.set_y(dragging_views_bounds_.height());
   dragging_views_.insert(
       {dragging_view, {.offset = bounds.OffsetFromOrigin()}});
@@ -248,9 +255,10 @@ void VerticalDraggedTabsContainer::AddViewToVerticalDragLayout(
 
 void VerticalDraggedTabsContainer::AddViewToSquashedDragLayout(
     views::View* dragging_view,
+    const gfx::Rect& view_bounds,
     bool is_source_dragged_view) {
   if (is_source_dragged_view) {
-    dragging_views_bounds_.set_size(dragging_view->bounds().size());
+    dragging_views_bounds_.set_size(view_bounds.size());
   }
   dragging_views_.insert(
       {dragging_view,
