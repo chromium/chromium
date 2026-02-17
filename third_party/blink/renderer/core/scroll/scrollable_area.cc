@@ -243,7 +243,9 @@ ScrollResult ScrollableArea::UserScroll(ui::ScrollGranularity granularity,
       GetScrollAnimator().ComputeDeltaToConsume(scrollable_axis_delta);
 
   if (delta_to_consume.IsZero()) {
-    std::move(on_finish).Run(ScrollCompletionMode::kZeroDelta);
+    if (on_finish) {
+      std::move(on_finish).Run(ScrollCompletionMode::kZeroDelta);
+    }
     return ScrollResult(false, false, pixel_delta.x(), pixel_delta.y());
   }
 
