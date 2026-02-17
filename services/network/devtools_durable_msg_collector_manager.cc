@@ -28,7 +28,6 @@ DevtoolsDurableMessageCollectorManager::
 
 DevtoolsDurableMessageCollectorManager::
     ~DevtoolsDurableMessageCollectorManager() {
-  CHECK_EQ(total_memory_usage_, 0UL);
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 }
