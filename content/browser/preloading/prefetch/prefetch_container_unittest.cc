@@ -1479,21 +1479,21 @@ TEST_P(PrefetchContainerTest, CancelAndClearStreamingLoader) {
 
   prefetch_container->CancelStreamingURLLoaderIfNotServing();
 
-  // `streaming_loader` is still alive and working.
+  // `streaming_loader` and its prefetch loader is cancelled and
+  // `PrefetchContainer` is notified of a failure (prefetch cancellation).
   EXPECT_FALSE(prefetch_container->GetStreamingURLLoader());
   EXPECT_TRUE(streaming_loader);
   EXPECT_EQ(
       prefetch_container->GetServableStateForTesting(base::TimeDelta::Max()),
-      PrefetchServableState::kServable);
+      PrefetchServableState::kNotServable);
 
   task_environment()->RunUntilIdle();
 
-  // `streaming_loader` is deleted asynchronously and its prefetching URL loader
-  // is canceled. This itself doesn't make PrefetchContainer non-servable.
+  // `streaming_loader` itself is destroyed asynchronously.
   EXPECT_FALSE(streaming_loader);
   EXPECT_EQ(
       prefetch_container->GetServableStateForTesting(base::TimeDelta::Max()),
-      PrefetchServableState::kServable);
+      PrefetchServableState::kNotServable);
 }
 
 // To test lifetime and ownership issues, all possible event orderings for

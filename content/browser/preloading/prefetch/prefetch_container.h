@@ -372,15 +372,9 @@ class CONTENT_EXPORT PrefetchContainer {
   const network::mojom::URLResponseHead* GetNonRedirectHead() const;
 
   // Clears |streaming_loader_| and cancels its loading, if any of its
-  // corresponding `PrefetchResponseReader` does NOT start serving. Currently
-  // this itself doesn't mark `this` as failed and thus can leave `this`
-  // stalled. Therefore, call this method only if `this` can be no longer used
-  // for serving, e.g. on the destructor or when
-  // `HaveDefaultContextCookiesChanged()` is true.
-  // TODO(crbug.com/40064891): For callsites outside the destructor, remove the
-  // call or mark `this` as failed, because the current behavior (== existing
-  // behavior, previously as `ResetAllStreamingURLLoaders()`) might potentially
-  // cause issues when there are multiple navigations using `this` concurrently.
+  // corresponding `PrefetchResponseReader` does NOT start serving.
+  // This sets/notifies of a failure when called outside `PrefetchContainer`
+  // dtor, so always call this asynchronously outside the dtor.
   void CancelStreamingURLLoaderIfNotServing();
 
   // Returns whether or not this prefetch has been considered to serve for a

@@ -158,7 +158,12 @@ void PrefetchStreamingURLLoader::CancelIfNotServing() {
   if (used_for_serving_) {
     return;
   }
-  DisconnectPrefetchURLLoaderMojo();
+
+  // Cancels the prefetch by pretending an aborted completion.
+  // This is no-op after the prefetch is already completed, as in such cases
+  // `DisconnectPrefetchURLLoaderMojo()` should be already called and
+  // `response_reader_` is cleared.
+  OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
 }
 
 void PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo() {
@@ -180,6 +185,8 @@ void PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo() {
 
   // Avoid notifications to `response_reader_` after scheduled for deletion.
   // This can happen e.g.
+  // - `CancelIfNotServing()` is called from `PrefetchContainer` dtor (covered
+  //   by unit tests).
   // - An async task that is not tied to `prefetch_url_loader_client_receiver_`
   //   and causes state changes (e.g. timeout), after this point before the
   //   async self deletion is completed (actual cases not confirmed though).

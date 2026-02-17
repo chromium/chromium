@@ -752,11 +752,14 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       uint32_t expected_total_body_size) {
     network::TestURLLoaderFactory::PendingRequest* request =
         test_url_loader_factory_.GetPendingRequest(0);
-    ASSERT_FALSE(producer_handle_for_gurl_.count(request->request.url));
+    // Takes a copy of `url` because `request` can be cancelled during
+    // `SendHeadOfResponseAndWait`.
+    GURL url = request->request.url;
+    ASSERT_FALSE(producer_handle_for_gurl_.count(url));
     ASSERT_TRUE(request);
     SendHeadOfResponseAndWait(http_status, mime_type, use_prefetch_proxy,
                               headers, expected_total_body_size, request);
-    ASSERT_TRUE(producer_handle_for_gurl_.count(request->request.url));
+    ASSERT_TRUE(producer_handle_for_gurl_.count(url));
   }
 
   void SendHeadOfResponseForUrlAndWait(
@@ -4224,8 +4227,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
-  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.NetError",
-                                    0);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.NetError", -net::ERR_ABORTED, 1);
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
   histogram_tester.ExpectUniqueSample(
@@ -4239,7 +4242,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
   EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
 
-  ExpectServingMetrics(PrefetchStatus::kPrefetchNotUsedCookiesChanged);
+  ExpectServingMetrics(PrefetchStatus::kPrefetchNotUsedCookiesChanged,
+                       /*prefetch_header_latency=*/true);
 
   ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
                         .failure = ToPreloadingFailureReason(
@@ -4784,7 +4788,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   // We cancel the streaming of this prefetch because we know we cannot use it.
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 0);
+      "PrefetchProxy.Prefetch.Mainframe.NetError", -net::ERR_ABORTED, 1);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 0);
   histogram_tester.ExpectUniqueSample(
@@ -4800,9 +4804,11 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
 
   // Serving page metrics prefetch_header_latency is logged at response
-  // complete. Since we cancel streaming the response, this should not be set.
+  // complete. While we cancel streaming the response, `prefetch_header_latency`
+  // is recorded because the cancellation is implemented as an aborted
+  // completion.
   ExpectServingMetrics(PrefetchStatus::kPrefetchNotUsedCookiesChanged,
-                       /*prefetch_header_latency=*/false,
+                       /*prefetch_header_latency=*/true,
                        /*required_private_prefetch_proxy=*/false);
 }
 

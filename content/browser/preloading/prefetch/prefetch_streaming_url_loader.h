@@ -98,11 +98,8 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   void OnStartServing();
 
   // Cancels the prefetching and schedule deletion, if any of its corresponding
-  // `PrefetchResponseReader` does NOT start serving. This can cancel the
-  // prefetching prematurely and leave `this` and `PrefetchResponseReader`
-  // stalled.
-  // TODO(crbug.com/40064891): Consider cleaning up this behavior (== existing
-  // behavior, previously as `ResetAllStreamingURLLoaders()`).
+  // `PrefetchResponseReader` does NOT start serving. This notifies
+  // `PrefetchResponseReader` of a failure.
   void CancelIfNotServing();
 
   // Only for CHECK()ing.
