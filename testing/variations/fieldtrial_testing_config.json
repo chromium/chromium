@@ -19579,23 +19579,6 @@
             ]
         }
     ],
-    "PdfSaveToDrive": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PdfSaveToDrive"
-                    ]
-                }
-            ]
-        }
-    ],
     "PdfSaveToDriveSurvey": [
         {
             "platforms": [
