@@ -54,7 +54,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -81,6 +80,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
             new TreeMap<>(Comparator.reverseOrder());
 
     private boolean mStartedForegroundService;
+    private int mForgroundServiceType;
 
     @Initializer
     @Override
@@ -175,8 +175,9 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                 && !doesNotificationNeedUpdate(notificationId, mediaTypes)) {
             return;
         }
-        destroyNotification(notificationId, mediaTypes);
-        if (!mediaTypes.isEmpty()) {
+        boolean hasNewMediaTypesToUpate = !mediaTypes.isEmpty();
+        destroyNotification(notificationId, hasNewMediaTypesToUpate);
+        if (hasNewMediaTypesToUpate) {
             createNotification(notificationId, mediaTypes, url, isIncognito);
         }
         if (mNotificationsType.size() == 0) {
@@ -201,7 +202,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
      *
      * @param notificationId Unique id of the notification.
      */
-    private void destroyNotification(int notificationId, Set<@MediaType Integer> mediaTypes) {
+    private void destroyNotification(int notificationId, boolean hasNewMediaTypesToUpate) {
         if (doesNotificationExist(notificationId)) {
             final var oldMediaTypes = mNotificationsType.get(notificationId);
             if (hasCapturingMediaType(oldMediaTypes)) {
@@ -217,24 +218,29 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                     }
                 }
             }
+            mNotificationsType.remove(notificationId);
             if (DeviceInfo.isDesktop()) {
-                if (mNotifications.size() > 1 && mNotifications.firstKey() == notificationId) {
-                    // For large screen device, we use the previous notification to update
-                    // foreground
-                    // service when the latest notification is going to be removed.
-                    Map.Entry<Integer, NotificationWrapper> previousNotification =
-                            mNotifications.higherEntry(notificationId);
-                    startOrUpdateForegroundService(
-                            previousNotification.getKey(),
-                            previousNotification.getValue(),
-                            mediaTypes);
+                boolean isRemovingLatestNotification =
+                        !mNotifications.isEmpty() && notificationId == mNotifications.firstKey();
+                mNotifications.remove(notificationId);
+                if (!hasNewMediaTypesToUpate) {
+                    if (mNotifications.isEmpty()) {
+                        stopForegroundService();
+                    } else if (isRemovingLatestNotification
+                            || mForgroundServiceType != getRequiredForegroundServiceType()) {
+                        // 1. For large screen device, we use the previous notification to
+                        //    update foreground service when the latest notification is
+                        //    going to be removed.
+                        // 2. Update service if the current foreground type no longer matches the
+                        //    required type.
+                        int latestNotificationId = mNotifications.firstKey();
+                        NotificationWrapper latestNotification =
+                                assumeNonNull(mNotifications.get(latestNotificationId));
+                        startOrUpdateForegroundService(latestNotificationId, latestNotification);
+                    }
                 }
             }
             mNotificationManager.cancel(NOTIFICATION_NAMESPACE, notificationId);
-            mNotificationsType.remove(notificationId);
-            if (DeviceInfo.isDesktop()) {
-                mNotifications.remove(notificationId);
-            }
             updateSharedPreferencesEntry(notificationId, true);
         }
     }
@@ -306,16 +312,14 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                         appContext.getString(R.string.app_name),
                         contentIntent,
                         stopIntent);
+        mNotificationsType.put(notificationId, mediaTypes);
         if (DeviceInfo.isDesktop()) {
             // For large screen device, we use the latest notification to start or update
             // the foreground service.
-            startOrUpdateForegroundService(notificationId, notification, mediaTypes);
+            startOrUpdateForegroundService(notificationId, notification);
+            mNotifications.put(notificationId, notification);
         } else {
             mNotificationManager.notify(notification);
-        }
-        mNotificationsType.put(notificationId, mediaTypes);
-        if (DeviceInfo.isDesktop()) {
-            mNotifications.put(notificationId, notification);
         }
         updateSharedPreferencesEntry(notificationId, false);
         NotificationUmaTracker.getInstance()
@@ -338,11 +342,10 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
         }
     }
 
-    private void startOrUpdateForegroundService(
-            int notificationId,
-            NotificationWrapper notification,
-            Set<@MediaType Integer> newMediaTypes) {
-        Set<@MediaType Integer> allMediaTypes = new HashSet<>(newMediaTypes);
+    private int getRequiredForegroundServiceType() {
+        // Since we can only have one media notification on the large screen device at a time,
+        // we use it to include all of the necessary foreground service types.
+        Set<@MediaType Integer> allMediaTypes = new HashSet<>();
         for (Set<@MediaType Integer> types : mNotificationsType.values()) {
             allMediaTypes.addAll(types);
         }
@@ -363,17 +366,33 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                 || allMediaTypes.contains(MediaType.WINDOW_CAPTURE)) {
             foregroundServiceType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION;
         }
+        return foregroundServiceType;
+    }
+
+    private void startOrUpdateForegroundService(
+            int notificationId, NotificationWrapper notification) {
+        mForgroundServiceType = getRequiredForegroundServiceType();
         ForegroundServiceUtils.getInstance()
                 .startForeground(
                         getService(),
                         notificationId,
                         notification.getNotification(),
-                        foregroundServiceType);
+                        mForgroundServiceType);
 
         mStartedForegroundService = true;
         boolean isRunningMediaProjection =
-                (foregroundServiceType & ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION) != 0;
+                (mForgroundServiceType & ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION) != 0;
         ScreenCapture.onForegroundServiceRunning(isRunningMediaProjection);
+    }
+
+    private void stopForegroundService() {
+        if (mStartedForegroundService) {
+            ForegroundServiceUtils.getInstance()
+                    .stopForeground(getService(), Service.STOP_FOREGROUND_REMOVE);
+            mStartedForegroundService = false;
+            mForgroundServiceType = 0;
+            ScreenCapture.onForegroundServiceRunning(false);
+        }
     }
 
     /**
@@ -402,12 +421,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
     @Override
     public void onDestroy() {
         cancelPreviousWebRtcNotifications();
-        if (mStartedForegroundService) {
-            ForegroundServiceUtils.getInstance()
-                    .stopForeground(getService(), Service.STOP_FOREGROUND_REMOVE);
-            mStartedForegroundService = false;
-            ScreenCapture.onForegroundServiceRunning(false);
-        }
+        stopForegroundService();
         super.onDestroy();
     }
 
