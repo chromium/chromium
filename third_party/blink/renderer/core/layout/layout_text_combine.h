@@ -135,9 +135,6 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutBlockFlow {
 };
 
 inline bool LayoutTextCombine::IsSupportedMode(WritingMode mode) {
-  if (!RuntimeEnabledFeatures::TextCombineNoSidewaysEnabled()) {
-    return !blink::IsHorizontalWritingMode(mode);
-  }
   return !blink::IsHorizontalTypographicMode(mode);
 }
 

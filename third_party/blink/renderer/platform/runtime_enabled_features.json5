@@ -5405,11 +5405,6 @@
       status: "stable",
     },
     {
-      // crbug.com/461332428
-      name: "TextCombineNoSideways",
-      status: "stable",
-    },
-    {
       name: "TextDetector",
       status: "experimental",
     },
