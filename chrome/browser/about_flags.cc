@@ -7765,9 +7765,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"allow-dsp-based-ns", flag_descriptions::kCrOSDspBasedNsAllowedName,
-     flag_descriptions::kCrOSDspBasedNsAllowedDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kCrOSDspBasedNsAllowed)},
     {"enforce-mono-audio-capture",
      flag_descriptions::kCrOSEnforceMonoAudioCaptureName,
      flag_descriptions::kCrOSEnforceMonoAudioCaptureDescription, kOsCrOS,

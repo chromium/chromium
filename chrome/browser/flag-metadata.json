@@ -150,11 +150,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "allow-dsp-based-ns",
-    "owners": [ "peah@chromium.org" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "allow-insecure-localhost",
     "owners": [ "cthomp@chromium.org", "security-dev@chromium.org" ],
     "expiry_milestone": 130
