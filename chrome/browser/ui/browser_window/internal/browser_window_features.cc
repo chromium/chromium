@@ -116,6 +116,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
@@ -763,6 +764,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
           BrowserElementsViews::From(browser_view->browser())
               ->GetViewAs<TabStripActionContainer>(
                   kTabStripActionContainerElementId),
+          BrowserElementsViews::From(browser_view->browser())
+              ->GetViewAs<ToolbarView>(ToolbarView::kToolbarElementId),
           glic_service);
 
       if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&

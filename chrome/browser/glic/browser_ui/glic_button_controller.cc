@@ -21,13 +21,16 @@ namespace glic {
 GlicButtonController::GlicButtonController(
     Profile* profile,
     BrowserWindowInterface& browser,
-    GlicButtonControllerDelegate* delegate,
+    GlicButtonControllerDelegate* tab_strip_delegate,
+    GlicButtonControllerDelegate* toolbar_delegate,
     GlicKeyedService* service)
     : profile_(profile),
       browser_(browser),
-      glic_controller_delegate_(delegate),
+      tab_strip_glic_controller_delegate_(tab_strip_delegate),
+      toolbar_glic_controller_delegate_(toolbar_delegate),
       glic_keyed_service_(service) {
-  CHECK(glic_controller_delegate_);
+  CHECK(tab_strip_glic_controller_delegate_);
+  CHECK(toolbar_glic_controller_delegate_);
   CHECK(glic_keyed_service_);
 
   // Set initial button state.
@@ -60,17 +63,22 @@ void GlicButtonController::UpdateButton() {
       profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
   if (!is_enabled_for_profile || !is_pinned_to_tabstrip) {
     // If the button shouldn't be shown, just hide it.
-    return glic_controller_delegate_->SetGlicShowState(false);
+    tab_strip_glic_controller_delegate_->SetGlicShowState(false);
+    toolbar_glic_controller_delegate_->SetGlicShowState(false);
+    return;
   }
 
-  glic_controller_delegate_->SetGlicShowState(true);
+  tab_strip_glic_controller_delegate_->SetGlicShowState(true);
+  toolbar_glic_controller_delegate_->SetGlicShowState(true);
 
   // Try preloading since we know the button is visible.
   glic_keyed_service_->TryPreload();
 
-  glic_controller_delegate_->SetGlicPanelIsOpen(
+  bool is_glic_panel_open =
       glic_keyed_service_->IsFreShowing() ||
-      glic_keyed_service_->IsPanelShowingForBrowser(*browser_));
+      glic_keyed_service_->IsPanelShowingForBrowser(*browser_);
+  tab_strip_glic_controller_delegate_->SetGlicPanelIsOpen(is_glic_panel_open);
+  toolbar_glic_controller_delegate_->SetGlicPanelIsOpen(is_glic_panel_open);
 }
 
 void GlicButtonController::OnFreStateChanged(mojom::FreWebUiState) {
