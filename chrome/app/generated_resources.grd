@@ -19541,11 +19541,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_CONFIRM_TITLE" desc="Title of the confirmation popup that appears immediately before Isolated Web App installation">
       Do you want to continue and allow this software to make changes to your device?
     </message>
-    <message name="IDS_IWA_INSTALLER_CONFIRM_SUBTITLE" desc="Subtitle of the confirmation popup that appears immediately before Isolated Web App installation. $1 = IDS_IWA_INSTALLER_CONFIRM_LEARN_MORE">
-      To keep your device secure, you should only run and install software from trusted sources and developers. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
-    </message>
-    <message name="IDS_IWA_INSTALLER_CONFIRM_LEARN_MORE" desc="Link to a learn more page shown in the confirmation popup that appears immediately before Isolated Web App installation">
-      Learn more
+    <message name="IDS_IWA_INSTALLER_CONFIRM_SUBTITLE" desc="Subtitle of the confirmation popup that appears immediately before Isolated Web App installation.">
+      To keep your device secure, you should only run and install software from trusted sources and developers.
     </message>
     <message name="IDS_IWA_INSTALLER_CONFIRM_CONTINUE" desc="Text of the continue button in the confirmation popup that appears immediately before Isolated Web App installation">
       Continue

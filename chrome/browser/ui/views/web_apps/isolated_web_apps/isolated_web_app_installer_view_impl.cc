@@ -634,11 +634,10 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
           },
           [this](const IsolatedWebAppInstallerModel::ConfirmInstallationDialog&
                      confirm_installation_dialog) {
-            auto subtitle = ui::DialogModelLabel::CreateWithReplacement(
-                IDS_IWA_INSTALLER_CONFIRM_SUBTITLE,
-                ui::DialogModelLabel::CreateLink(
-                    IDS_IWA_INSTALLER_CONFIRM_LEARN_MORE,
-                    confirm_installation_dialog.learn_more_callback));
+            // TODO(crbug.com/315374696): Re-introduce Learn More link once
+            // user-facing articles are released.
+            auto subtitle =
+                ui::DialogModelLabel(IDS_IWA_INSTALLER_CONFIRM_SUBTITLE);
             return ShowChildDialog(
                 IDS_IWA_INSTALLER_CONFIRM_TITLE, subtitle,
                 CreateImageModelFromVector(kPrivacyTipIcon, ui::kColorAccent),
