@@ -701,6 +701,7 @@ source_set("ruy_prepare_packed_matrices") {
   configs += [ ":ruy_shared_config" ]
   deps = [
     ":ruy_allocator",
+    ":ruy_check_macros",
     ":ruy_ctx",
     ":ruy_matrix",
     ":ruy_prepacked_cache",
