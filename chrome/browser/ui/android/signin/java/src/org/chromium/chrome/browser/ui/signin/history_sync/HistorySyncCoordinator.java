@@ -109,6 +109,14 @@ public class HistorySyncCoordinator {
         mMediator.destroy();
     }
 
+    /**
+     * Declines the history sync flow and dismisses the UI. Signs out the user if the flow was
+     * configured to do so on decline.
+     */
+    public void declineAndDismiss() {
+        mMediator.declineAndDismiss();
+    }
+
     public @Nullable HistorySyncView getView() {
         return mView;
     }
