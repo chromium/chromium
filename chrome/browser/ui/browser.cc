@@ -1331,6 +1331,10 @@ void Browser::OnWindowClosing() {
     // this Browser.
     is_delete_scheduled_ = true;
 
+    // At this point the browser has successfully closed and is scheduled for
+    // deletion.
+    browser_did_close_callback_list_.Notify(this);
+
     // Application should shutdown on last window close if the user is
     // explicitly trying to quit, or if there is nothing keeping the browser
     // alive (such as AppController on the Mac, or BackgroundContentsService for
@@ -1348,10 +1352,6 @@ void Browser::OnWindowClosing() {
       browser_shutdown::OnShutdownStarting(
           browser_shutdown::ShutdownType::kWindowClose);
     }
-
-    // At this point the browser has successfully closed and is scheduled for
-    // deletion.
-    browser_did_close_callback_list_.Notify(this);
 
     // Once a Browser has successfully closed, client code expects control to
     // return to the run loop before the instance is finally deleted. To
