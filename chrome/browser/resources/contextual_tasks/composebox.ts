@@ -240,16 +240,20 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     }
   }
 
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-    // Get zero state autocomplete matches. If `composeboxShowZps` is true
-    // then an autocomplete request will already be being made by
-    // cr-composebox and therefore this isn't needed here. We currently
-    // aren't showing ZPS in all cases (i.e. for context) which is why
-    // this is currently needed.
-    if (changedProperties.has('isZeroState') && this.isZeroState &&
-        !this.composeboxShowZps) {
-      this.$.composebox.queryAutocomplete(/*clearMatches=*/ false);
+  // Must have `$` access in updated to avoid violating Lit contract since
+  // since `willUpdate` runs before `render`, which will cause `$`
+  // to not be populated yet.
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('isZeroState')) {
+      if (this.isZeroState && !this.composeboxShowZps) {
+        // Get zero state autocomplete matches. If `composeboxShowZps` is true
+        // then an autocomplete request will already be being made by
+        // cr-composebox and therefore this isn't needed here. We currently
+        // aren't showing ZPS in all cases (i.e. for context) which is why
+        // this is currently needed.
+        this.$.composebox.queryAutocomplete(/*clearMatches=*/ false);
+      }
     }
   }
 
