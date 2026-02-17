@@ -62,6 +62,10 @@
     'actor_ui': {
       'filepath': 'chrome/browser/actor/ui/'
     },
+    'ad_tracker': {
+      'filepath': 'third_party/blink/renderer/core/frame/ad_tracker.*|' \
+                  'chrome/browser/page_load_metrics/observers/ad_metrics/',
+    },
     'add_to_homescreen': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/webapps/|'\
                   'chrome/android/javatests/src/org/chromium/chrome/browser/webapps/|'\
@@ -2571,6 +2575,7 @@
     'actor_ui': ['chrstne+watch@google.com', 'kenok+watch@google.com', 'aashnas+watch@google.com', 'boujane+watch@google.com',
       'kmg+watch@google.com'
     ],
+    'ad_tracker': ['jkarlin@chromium.org', 'yaoxia@chromium.org'],
     'add_to_homescreen': ['pkotwicz+watch@chromium.org',
                           'webapks-watchlist@chromium.org'],
     'agent_scheduling_group': ['blink-isolation-reviews@chromium.org',
