@@ -27,7 +27,7 @@ using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
 static int64_t JNI_LocaleTemplateUrlLoader_Init(JNIEnv* env,
-                                                std::string& locale,
+                                                const std::string& locale,
                                                 Profile* profile) {
   return reinterpret_cast<intptr_t>(new LocaleTemplateUrlLoader(
       locale, TemplateURLServiceFactory::GetForProfile(profile), profile));

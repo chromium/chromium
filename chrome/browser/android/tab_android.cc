@@ -538,7 +538,7 @@ void TabAndroid::OnPhysicalBackingSizeChanged(
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(size);
 }
 
-void TabAndroid::SetActiveNavigationEntryTitleForUrl(std::string& url,
+void TabAndroid::SetActiveNavigationEntryTitleForUrl(const std::string& url,
                                                      std::u16string& title) {
   DCHECK(web_contents());
 

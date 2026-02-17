@@ -31,7 +31,7 @@ bool CachedFlags::IsCachedFeatureOverridden(const base::Feature& feature) {
 
 static std::optional<bool> JNI_WebViewCachedFlags_GetStateIfOverridden(
     JNIEnv* env,
-    std::string& feature_name) {
+    const std::string& feature_name) {
   base::android::FeatureMap* feature_map = GetFeatureMap();
   const base::Feature* feature =
       feature_map->FindFeatureExposedToJava(feature_name);

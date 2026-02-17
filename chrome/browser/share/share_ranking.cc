@@ -566,7 +566,7 @@ ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
 
 static void JNI_ShareRankingBridge_Rank(JNIEnv* env,
                                         Profile* profile,
-                                        std::string& type,
+                                        const std::string& type,
                                         std::vector<std::string>& available,
                                         int32_t jfold,
                                         int32_t jlength,

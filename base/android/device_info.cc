@@ -65,7 +65,7 @@ void Set(const IDeviceInfo& info) {
 }
 
 static void JNI_DeviceInfo_FillFields(JNIEnv* env,
-                                      std::string& gmsVersionCode,
+                                      const std::string& gmsVersionCode,
                                       bool isTV,
                                       bool isAutomotive,
                                       bool isFoldable,

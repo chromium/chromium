@@ -160,8 +160,8 @@ void ComposeboxQueryControllerBridge::NotifySessionAbandoned(JNIEnv* env) {
 base::android::ScopedJavaLocalRef<jobject>
 ComposeboxQueryControllerBridge::AddFile(
     JNIEnv* env,
-    std::string& file_name,
-    std::string& file_type,
+    const std::string& file_name,
+    const std::string& file_type,
     const jni_zero::JavaRef<jobject>& file_data) {
   base::UnguessableToken file_token = session_handle_->CreateContextToken();
 

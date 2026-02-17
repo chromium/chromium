@@ -57,7 +57,7 @@ bool IsSeedValid(AwVariationsSeed* seed) {
 
 static bool JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
     JNIEnv* env,
-    std::string& seed_path) {
+    const std::string& seed_path) {
   // Parse the proto.
   std::unique_ptr<AwVariationsSeed> seed =
       std::make_unique<AwVariationsSeed>(AwVariationsSeed::default_instance());

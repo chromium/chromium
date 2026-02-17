@@ -407,8 +407,8 @@ static void JNI_UmaSessionStats_RegisterExternalExperiment(
 
 static void JNI_UmaSessionStats_RegisterSyntheticFieldTrial(
     JNIEnv* env,
-    std::string& trial_name,
-    std::string& group_name,
+    const std::string& trial_name,
+    const std::string& group_name,
     int annotation_mode) {
   UmaSessionStats::RegisterSyntheticFieldTrial(
       trial_name, group_name,

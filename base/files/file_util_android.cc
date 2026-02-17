@@ -15,8 +15,9 @@
 namespace base {
 namespace android {
 
-static std::string JNI_FileUtils_GetAbsoluteFilePath(JNIEnv* env,
-                                                     std::string& file_path) {
+static std::string JNI_FileUtils_GetAbsoluteFilePath(
+    JNIEnv* env,
+    const std::string& file_path) {
   return MakeAbsoluteFilePath(base::FilePath(file_path)).value();
 }
 

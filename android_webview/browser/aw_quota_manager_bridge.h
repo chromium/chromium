@@ -54,7 +54,7 @@ class AwQuotaManagerBridge
   // for deletion is returned.
   std::string DeleteBrowsingDataForSite(
       JNIEnv* env,
-      std::string& domain,
+      const std::string& domain,
       const base::android::JavaRef<jobject>& callback);
 
   // http://crbug.com/373826557 does not actually delete all data, preserved for

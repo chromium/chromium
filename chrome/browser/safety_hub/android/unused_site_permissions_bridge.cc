@@ -88,7 +88,7 @@ std::vector<PermissionsData> GetRevokedPermissions(Profile* profile) {
                                       service_result.end());
 }
 
-void RegrantPermissions(Profile* profile, std::string& origin_str) {
+void RegrantPermissions(Profile* profile, const std::string& origin_str) {
   RevokedPermissionsService* service =
       RevokedPermissionsServiceFactory::GetForProfile(profile);
   CHECK(service);
@@ -140,7 +140,7 @@ JNI_UnusedSitePermissionsBridge_GetRevokedPermissions(Profile* profile) {
 
 static void JNI_UnusedSitePermissionsBridge_RegrantPermissions(
     Profile* profile,
-    std::string& origin_str) {
+    const std::string& origin_str) {
   RegrantPermissions(profile, origin_str);
 }
 

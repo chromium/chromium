@@ -67,7 +67,7 @@ class UsbChooserDialogAndroid : public permissions::ChooserController::View {
   void OnRefreshStateChanged(bool refreshing) override;
 
   // Report the dialog's result.
-  void OnItemSelected(JNIEnv* env, std::string& item_id);
+  void OnItemSelected(JNIEnv* env, const std::string& item_id);
   void OnDialogCancelled(JNIEnv* env);
   void LoadUsbHelpPage(JNIEnv* env);
 

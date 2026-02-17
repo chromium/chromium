@@ -27,7 +27,7 @@ namespace extensions {
 static void JNI_ExtensionTestUtils_LoadUnpackedExtensionAsync(
     JNIEnv* env,
     Profile* profile,
-    std::string& root_dir,
+    const std::string& root_dir,
     const base::android::JavaRef<jobject>& callback) {
   ChromeTestExtensionLoader loader(profile);
   loader.LoadUnpackedExtensionAsync(
@@ -40,9 +40,10 @@ static void JNI_ExtensionTestUtils_LoadUnpackedExtensionAsync(
           base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }
 
-static void JNI_ExtensionTestUtils_DisableExtension(JNIEnv* env,
-                                                    Profile* profile,
-                                                    std::string& extension_id) {
+static void JNI_ExtensionTestUtils_DisableExtension(
+    JNIEnv* env,
+    Profile* profile,
+    const std::string& extension_id) {
   extensions::ExtensionRegistrar::Get(profile)->DisableExtension(
       extension_id, {extensions::disable_reason::DISABLE_USER_ACTION});
 }
@@ -50,7 +51,7 @@ static void JNI_ExtensionTestUtils_DisableExtension(JNIEnv* env,
 static void JNI_ExtensionTestUtils_UninstallExtension(
     JNIEnv* env,
     Profile* profile,
-    std::string& extension_id) {
+    const std::string& extension_id) {
   extensions::ExtensionRegistrar::Get(profile)->UninstallExtension(
       extension_id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 }
@@ -58,7 +59,7 @@ static void JNI_ExtensionTestUtils_UninstallExtension(
 static void JNI_ExtensionTestUtils_SetExtensionActionVisible(
     JNIEnv* env,
     Profile* profile,
-    std::string& extension_id,
+    const std::string& extension_id,
     bool visible) {
   ToolbarActionsModel::Get(profile)->SetActionVisibility(extension_id, visible);
 }
@@ -66,7 +67,7 @@ static void JNI_ExtensionTestUtils_SetExtensionActionVisible(
 static jint JNI_ExtensionTestUtils_GetRenderFrameHostCount(
     JNIEnv* env,
     Profile* profile,
-    std::string& extension_id) {
+    const std::string& extension_id) {
   return extensions::ProcessManager::Get(profile)
       ->GetRenderFrameHostsForExtension(extension_id)
       .size();

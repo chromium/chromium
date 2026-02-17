@@ -414,7 +414,7 @@ static int64_t JNI_PartnerBookmarksReader_Init(JNIEnv* env, Profile* profile) {
 
 static std::string JNI_PartnerBookmarksReader_GetNativeUrlString(
     JNIEnv* env,
-    std::string& url) {
+    const std::string& url) {
   return GURL(url).spec();
 }
 

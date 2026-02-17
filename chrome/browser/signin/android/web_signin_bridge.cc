@@ -63,7 +63,7 @@ static int64_t JNI_WebSigninBridge_CreateWithCoreAccountId(
 static int64_t JNI_WebSigninBridge_CreateWithEmail(
     JNIEnv* env,
     Profile* profile,
-    std::string& account_email,
+    const std::string& account_email,
     const JavaRef<jobject>& j_listener) {
   CHECK(j_listener) << "Listener should be non-null";
 

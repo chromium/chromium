@@ -15,7 +15,7 @@ namespace android {
 
 static void JNI_PathService_Override(JNIEnv* env,
                                      int32_t what,
-                                     std::string& path) {
+                                     const std::string& path) {
   PathService::Override(what, FilePath(path));
 }
 

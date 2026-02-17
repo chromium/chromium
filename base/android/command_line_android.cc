@@ -26,12 +26,14 @@ void AppendToCommandLine(std::vector<std::string>& vec, bool includes_program) {
 
 }  // namespace
 
-static bool JNI_CommandLine_HasSwitch(JNIEnv* env, std::string& switch_string) {
+static bool JNI_CommandLine_HasSwitch(JNIEnv* env,
+                                      const std::string& switch_string) {
   return CommandLine::ForCurrentProcess()->HasSwitch(switch_string);
 }
 
-static std::string JNI_CommandLine_GetSwitchValue(JNIEnv* env,
-                                                  std::string& switch_string) {
+static std::string JNI_CommandLine_GetSwitchValue(
+    JNIEnv* env,
+    const std::string& switch_string) {
   return CommandLine::ForCurrentProcess()->GetSwitchValueNative(switch_string);
 }
 
@@ -39,9 +41,10 @@ static CommandLine::SwitchMap JNI_CommandLine_GetSwitches(JNIEnv* env) {
   return CommandLine::ForCurrentProcess()->GetSwitches();
 }
 
-static void JNI_CommandLine_AppendSwitchWithValue(JNIEnv* env,
-                                                  std::string& switch_string,
-                                                  std::string& value_string) {
+static void JNI_CommandLine_AppendSwitchWithValue(
+    JNIEnv* env,
+    const std::string& switch_string,
+    const std::string& value_string) {
   CommandLine::ForCurrentProcess()->AppendSwitchASCII(switch_string,
                                                       value_string);
 }
@@ -53,7 +56,7 @@ static void JNI_CommandLine_AppendSwitchesAndArguments(
 }
 
 static void JNI_CommandLine_RemoveSwitch(JNIEnv* env,
-                                         std::string& switch_string) {
+                                         const std::string& switch_string) {
   CommandLine::ForCurrentProcess()->RemoveSwitch(switch_string);
 }
 

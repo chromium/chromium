@@ -45,7 +45,7 @@ const Feature* FeatureMap::FindFeatureExposedToJava(
 }
 
 static bool JNI_FeatureMap_IsEnabled(int64_t jfeature_map,
-                                     std::string& feature_name) {
+                                     const std::string& feature_name) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   const base::Feature* feature =
       feature_map->FindFeatureExposedToJava(feature_name);
@@ -54,8 +54,8 @@ static bool JNI_FeatureMap_IsEnabled(int64_t jfeature_map,
 
 static std::string JNI_FeatureMap_GetFieldTrialParamByFeature(
     int64_t jfeature_map,
-    std::string& feature_name,
-    std::string& param_name) {
+    const std::string& feature_name,
+    const std::string& param_name) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   const base::Feature* feature =
       feature_map->FindFeatureExposedToJava(feature_name);
@@ -64,8 +64,8 @@ static std::string JNI_FeatureMap_GetFieldTrialParamByFeature(
 
 static int32_t JNI_FeatureMap_GetFieldTrialParamByFeatureAsInt(
     int64_t jfeature_map,
-    std::string& feature_name,
-    std::string& param_name,
+    const std::string& feature_name,
+    const std::string& param_name,
     const int32_t jdefault_value) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   const base::Feature* feature =
@@ -76,8 +76,8 @@ static int32_t JNI_FeatureMap_GetFieldTrialParamByFeatureAsInt(
 
 static double JNI_FeatureMap_GetFieldTrialParamByFeatureAsDouble(
     int64_t jfeature_map,
-    std::string& feature_name,
-    std::string& param_name,
+    const std::string& feature_name,
+    const std::string& param_name,
     const double jdefault_value) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   const base::Feature* feature =
@@ -88,8 +88,8 @@ static double JNI_FeatureMap_GetFieldTrialParamByFeatureAsDouble(
 
 static bool JNI_FeatureMap_GetFieldTrialParamByFeatureAsBoolean(
     int64_t jfeature_map,
-    std::string& feature_name,
-    std::string& param_name,
+    const std::string& feature_name,
+    const std::string& param_name,
     const bool jdefault_value) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   const base::Feature* feature =
@@ -99,8 +99,9 @@ static bool JNI_FeatureMap_GetFieldTrialParamByFeatureAsBoolean(
 }
 
 static std::vector<std::string>
-JNI_FeatureMap_GetFlattedFieldTrialParamsForFeature(int64_t jfeature_map,
-                                                    std::string& feature_name) {
+JNI_FeatureMap_GetFlattedFieldTrialParamsForFeature(
+    int64_t jfeature_map,
+    const std::string& feature_name) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   base::FieldTrialParams params;
   std::vector<std::string> keys_and_values;

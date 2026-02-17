@@ -35,8 +35,9 @@ JNI_AccountInfoSerializer_AccountInfoToJsonString(
 }
 
 static base::android::ScopedJavaLocalRef<jobject>
-JNI_AccountInfoSerializer_JsonStringToAccountInfo(JNIEnv* env,
-                                                  std::string& json_string) {
+JNI_AccountInfoSerializer_JsonStringToAccountInfo(
+    JNIEnv* env,
+    const std::string& json_string) {
   // Parse the JSON string into a base::DictValue.
   std::optional<base::Value> value =
       base::JSONReader::Read(json_string, base::JSON_PARSE_RFC);

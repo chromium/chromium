@@ -83,18 +83,18 @@ static int32_t JNI_WebApkUpdateManager_GetWebApkTargetShellVersion(
 // static JNI method.
 static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     JNIEnv* env,
-    std::string& update_request_path,
-    std::string& java_start_url,
-    std::string& java_scope,
+    const std::string& update_request_path,
+    const std::string& java_start_url,
+    const std::string& java_scope,
     std::u16string& java_name,
     std::u16string& java_short_name,
     bool java_has_custom_name,
-    std::string& java_manifest_id,
-    std::string& java_app_key,
-    std::string& java_primary_icon_url,
+    const std::string& java_manifest_id,
+    const std::string& java_app_key,
+    const std::string& java_primary_icon_url,
     const JavaRef<jbyteArray>& java_primary_icon_data,
     bool java_is_primary_icon_maskable,
-    std::string& java_splash_icon_url,
+    const std::string& java_splash_icon_url,
     const JavaRef<jbyteArray>& java_splash_icon_data,
     bool java_is_splash_icon_maskable,
     std::vector<std::string>& java_icon_urls,
@@ -105,7 +105,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     int64_t java_background_color,
     int64_t java_dark_theme_color,
     int64_t java_dark_background_color,
-    std::string& java_share_target_action,
+    const std::string& java_share_target_action,
     std::u16string& java_share_target_param_title,
     std::u16string& java_share_target_param_text,
     const bool java_share_target_param_is_method_post,
@@ -114,8 +114,8 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     const JavaRef<jobjectArray>& java_share_target_param_accepts,
     const JavaRef<jobjectArray>& java_shortcuts,
     const JavaRef<jobjectArray>& java_shortcut_icon_data,
-    std::string& java_web_manifest_url,
-    std::string& webapk_package,
+    const std::string& java_web_manifest_url,
+    const std::string& webapk_package,
     int32_t java_webapk_version,
     bool java_is_manifest_stale,
     bool java_is_app_identity_update_supported,
@@ -256,7 +256,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
 // static JNI method.
 static void JNI_WebApkUpdateManager_UpdateWebApkFromFile(
     JNIEnv* env,
-    std::string& update_request_path,
+    const std::string& update_request_path,
     const JavaRef<jobject>& java_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

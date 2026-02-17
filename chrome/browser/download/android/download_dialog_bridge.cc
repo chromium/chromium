@@ -81,10 +81,9 @@ void DownloadDialogBridge::ShowDialog(
       profile->GetJavaObject());
 }
 
-void DownloadDialogBridge::OnComplete(
-    JNIEnv* env,
-    std::string& returned_path,
-    bool did_user_confirm) {
+void DownloadDialogBridge::OnComplete(JNIEnv* env,
+                                      const std::string& returned_path,
+                                      bool did_user_confirm) {
   DownloadDialogResult dialog_result;
   dialog_result.location_result =
       did_user_confirm
@@ -119,7 +118,7 @@ void DownloadDialogBridge::CompleteSelection(DownloadDialogResult result) {
 static void JNI_DownloadDialogBridge_SetDownloadAndSaveFileDefaultDirectory(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jpref_service,
-    std::string& directory) {
+    const std::string& directory) {
   PrefService* pref_service =
       PrefServiceAndroid::FromPrefServiceAndroid(jpref_service);
 

@@ -21,7 +21,7 @@ bool g_on_app_enter_foreground_called = false;
 
 static void JNI_VariationsSession_StartVariationsSession(
     JNIEnv* env,
-    std::string& restrict_mode) {
+    const std::string& restrict_mode) {
   DCHECK(g_browser_process);
 
   variations::VariationsService* variations_service =

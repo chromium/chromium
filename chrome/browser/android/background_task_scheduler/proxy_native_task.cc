@@ -19,7 +19,7 @@
 static int64_t JNI_ProxyNativeTask_Init(JNIEnv* env,
                                         const JavaRef<jobject>& jobj,
                                         int32_t task_id,
-                                        std::string& extras,
+                                        const std::string& extras,
                                         const JavaRef<jobject>& jcallback) {
   std::unique_ptr<background_task::BackgroundTask> background_task =
       ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId(task_id);

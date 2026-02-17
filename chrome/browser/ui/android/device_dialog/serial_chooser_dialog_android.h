@@ -95,7 +95,7 @@ class SerialChooserDialogAndroid : public permissions::ChooserController::View {
   void OnAdapterAuthorizationChanged(bool authorized) override;
 
   // Report the dialog's result.
-  void OnItemSelected(JNIEnv* env, std::string& item_id);
+  void OnItemSelected(JNIEnv* env, const std::string& item_id);
   void OnDialogCancelled(JNIEnv* env);
   void OpenSerialHelpPage(JNIEnv* env);
   void OpenAdapterOffHelpPage(JNIEnv* env);

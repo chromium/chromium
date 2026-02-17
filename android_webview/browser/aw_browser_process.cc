@@ -364,7 +364,7 @@ static void JNI_AwBrowserProcess_OnStartupComplete(JNIEnv* env) {
 
 static void JNI_AwBrowserProcess_SetProcessNameCrashKey(
     JNIEnv* env,
-    std::string& processName) {
+    const std::string& processName) {
   static ::crash_reporter::CrashKeyString<64> crash_key(
       crash_keys::kAppProcessName);
   crash_key.Set(processName);

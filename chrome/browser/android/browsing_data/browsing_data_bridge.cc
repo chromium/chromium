@@ -208,7 +208,7 @@ static int32_t JNI_BrowsingDataBridge_GetMaxImportantSites(JNIEnv* env) {
 static void JNI_BrowsingDataBridge_MarkOriginAsImportantForTesting(
     JNIEnv* env,
     Profile* profile,
-    std::string& jorigin) {
+    const std::string& jorigin) {
   GURL origin(jorigin);
   CHECK(origin.is_valid());
   site_engagement::ImportantSitesUtil::MarkOriginAsImportantForTesting(profile,

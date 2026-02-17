@@ -29,7 +29,7 @@ class AwPacProcessor {
   ~AwPacProcessor();
   void DestroyNative(JNIEnv* env);
 
-  bool SetProxyScript(JNIEnv* env, std::string& jscript);
+  bool SetProxyScript(JNIEnv* env, const std::string& jscript);
   bool SetProxyScript(std::string script);
   base::android::ScopedJavaLocalRef<jstring> MakeProxyRequest(
       JNIEnv* env,

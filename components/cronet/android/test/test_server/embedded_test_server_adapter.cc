@@ -344,8 +344,8 @@ std::unique_ptr<net::test_server::HttpResponse> CronetTestRequestHandler(
 namespace cronet {
 
 static long JNI_NativeTestServer_Create(JNIEnv* env,
-                                        std::string& test_files_root,
-                                        std::string& test_data_dir,
+                                        const std::string& test_files_root,
+                                        const std::string& test_data_dir,
                                         net::EmbeddedTestServer::Type type) {
   base::InitAndroidTestPaths(base::FilePath(test_data_dir));
   return reinterpret_cast<long>(

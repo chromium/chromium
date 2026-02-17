@@ -116,7 +116,7 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     float search_bar_border_height,
     bool quick_action_icon_visible,
     bool thumbnail_visible,
-    std::string& thumbnail_url,
+    const std::string& thumbnail_url,
     float custom_image_visibility_percentage,
     int32_t bar_image_size,
     int32_t icon_color,

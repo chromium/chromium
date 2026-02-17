@@ -34,10 +34,10 @@ class PolicyWarningDownloadDialogBridge
             ui::WindowAndroid* window_android);
 
   // Called from Java via JNI.
-  void Accepted(JNIEnv* env, std::string& download_guid);
+  void Accepted(JNIEnv* env, const std::string& download_guid);
 
   // Called from Java via JNI.
-  void Cancelled(JNIEnv* env, std::string& download_guid);
+  void Cancelled(JNIEnv* env, const std::string& download_guid);
 
   // download::DownloadItem::Observer:
   void OnDownloadDestroyed(download::DownloadItem* download_item) override;

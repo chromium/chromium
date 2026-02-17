@@ -80,7 +80,9 @@ static void JNI_GURL_GetOrigin(JNIEnv* env,
   InitFromGURL(env, gurl.DeprecatedGetOriginAsURL(), target);
 }
 
-static bool JNI_GURL_DomainIs(JNIEnv* env, GURL& gurl, std::string& domain) {
+static bool JNI_GURL_DomainIs(JNIEnv* env,
+                              GURL& gurl,
+                              const std::string& domain) {
   return gurl.DomainIs(domain);
 }
 
@@ -89,14 +91,14 @@ static bool JNI_GURL_EqualsIgnoringRef(JNIEnv* env, GURL& gurl, GURL& other) {
 }
 
 static void JNI_GURL_Init(JNIEnv* env,
-                          std::string& spec,
+                          const std::string& spec,
                           const base::android::JavaRef<jobject>& target) {
   auto gurl = GURL(spec);
   InitFromGURL(env, gurl, target);
 }
 
 static void JNI_GURL_InitNative(JNIEnv* env,
-                                std::string& spec,
+                                const std::string& spec,
                                 bool is_valid,
                                 int64_t native_gurl,
                                 int64_t native_parsed) {

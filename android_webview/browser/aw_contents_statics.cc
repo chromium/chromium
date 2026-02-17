@@ -202,7 +202,7 @@ static int32_t JNI_AwContentsStatics_GetRendererLibraryPrefetchMode(
 static void JNI_AwContentsStatics_ForceVariationIdsForTesting(  // IN-TEST
     JNIEnv* env,
     std::vector<std::string>& variationIds,
-    std::string& commandLineVariationIds) {
+    const std::string& commandLineVariationIds) {
   variations::VariationsIdsProvider::GetInstance()
       ->ForceVariationIdsForTesting(  // IN-TEST
           variationIds, commandLineVariationIds);

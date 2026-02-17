@@ -45,7 +45,7 @@ FeedApi* GetFeedStream() {
 
 static int32_t JNI_FeedImageFetchClient_SendRequest(
     JNIEnv* env,
-    std::string& url,
+    const std::string& url,
     const JavaRef<jobject>& j_response_callback) {
   // Keep the callback as a ScopedJavaGlobalRef to enable binding it for use
   // with OnFetchFinished.

@@ -39,7 +39,7 @@ static jni_zero::ScopedJavaLocalRef<jobjectArray>
 JNI_ChromeSiteSettingsDelegate_GetFileSystemAccessGrants(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& j_profile,
-    std::string& origin) {
+    const std::string& origin) {
   Profile* profile = Profile::FromJavaObject(j_profile);
   std::vector<std::string> paths;
   std::vector<std::string> display_names;
@@ -78,8 +78,8 @@ JNI_ChromeSiteSettingsDelegate_GetFileSystemAccessGrants(
 static void JNI_ChromeSiteSettingsDelegate_RevokeFileSystemAccessGrant(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& j_profile,
-    std::string& origin,
-    std::string& file) {
+    const std::string& origin,
+    const std::string& file) {
   Profile* profile = Profile::FromJavaObject(j_profile);
   auto* context =
       FileSystemAccessPermissionContextFactory::GetForProfileIfExists(profile);

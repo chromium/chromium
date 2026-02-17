@@ -36,7 +36,7 @@ class NativeContextualSearchContext final : public ContextualSearchContext {
 
   // Sets the properties needed to resolve a context.
   void SetResolveProperties(JNIEnv* env,
-                            std::string& home_country,
+                            const std::string& home_country,
                             bool j_may_send_base_page_url);
 
   // Adjust the current selection offsets by the given signed amounts.
@@ -53,7 +53,7 @@ class NativeContextualSearchContext final : public ContextualSearchContext {
   // are not being requested.
   void PrepareToResolve(JNIEnv* env,
                         bool j_is_exact_resolve,
-                        std::string& related_searches_stamp);
+                        const std::string& related_searches_stamp);
 
   // Detects the language of the context using CLD from the translate utility.
   std::string DetectLanguage(JNIEnv* env) const;
@@ -61,9 +61,9 @@ class NativeContextualSearchContext final : public ContextualSearchContext {
   // Sets the languages to remember for use in translation.
   // See |GetTranslationLanguages|.
   void SetTranslationLanguages(JNIEnv* env,
-                               std::string& detected_language,
-                               std::string& target_language,
-                               std::string& fluent_languages);
+                               const std::string& detected_language,
+                               const std::string& target_language,
+                               const std::string& fluent_languages);
 
  private:
   // The linked Java object.

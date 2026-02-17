@@ -76,7 +76,7 @@ TrustedVaultClientAndroid::~TrustedVaultClientAndroid() {
 void TrustedVaultClientAndroid::FetchKeysCompleted(
     JNIEnv* env,
     int32_t request_id,
-    std::string& gaia_id,
+    const std::string& gaia_id,
     const base::android::JavaRef<jobjectArray>& keys) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

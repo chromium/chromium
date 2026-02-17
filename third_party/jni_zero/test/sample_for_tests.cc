@@ -241,7 +241,7 @@ static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
     const JavaRef<jobjectArray>& throwables,
     const JavaRef<jstring>& string,
     const JavaRef<jobjectArray>& strings,
-    std::string& convertedString,
+    const std::string& convertedString,
     std::vector<std::string>& convertedStrings,
     std::optional<std::string>& optionalString,
     std::optional<FuncType> optionalFunc,

@@ -397,15 +397,17 @@ static void JNI_Benchmark_Send10Integers(JNIEnv* env,
   DoNotOptimize(JNI_Integer::Java_Integer_intValue(env, j));
 }
 
-static void JNI_Benchmark_SendAsciiStringConvertedToU8(JNIEnv* env,
-                                                       std::string& param) {}
+static void JNI_Benchmark_SendAsciiStringConvertedToU8(
+    JNIEnv* env,
+    const std::string& param) {}
 
 static void JNI_Benchmark_SendAsciiStringConvertedToU16(JNIEnv* env,
                                                         std::u16string& param) {
 }
 
-static void JNI_Benchmark_SendNonAsciiStringConvertedToU8(JNIEnv* env,
-                                                          std::string& param) {}
+static void JNI_Benchmark_SendNonAsciiStringConvertedToU8(
+    JNIEnv* env,
+    const std::string& param) {}
 
 static void JNI_Benchmark_SendNonAsciiStringConvertedToU16(
     JNIEnv* env,

@@ -66,7 +66,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // be returned.
   base::android::ScopedJavaLocalRef<jobject> GetProfileByGUID(
       JNIEnv* env,
-      std::string& guid);
+      const std::string& guid);
 
   // Determines whether the logged in user (if any) is eligible to store
   // Autofill address profiles to their account.
@@ -80,12 +80,12 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // the GUID for this profile; the GUID it may have just been created.
   std::string SetProfile(JNIEnv* env,
                          const base::android::JavaRef<jobject>& jprofile,
-                         std::string& guid);
+                         const std::string& guid);
   // Adds or modifies a profile like SetProfile interface if `jprofile` is
   // local. Otherwise it creates a local copy of it.
   std::string SetProfileToLocal(JNIEnv* env,
                                 const base::android::JavaRef<jobject>& jprofile,
-                                std::string& guid);
+                                const std::string& guid);
 
   // Gets the labels for all known profiles. These labels are useful for
   // distinguishing the profiles from one another.
@@ -96,7 +96,8 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Gets the summary of the profile which will be displayed in the editor.
   // This is currently used only for Home & Work profiles.
-  std::u16string GetProfileDescriptionForEditor(JNIEnv* env, std::string& guid);
+  std::u16string GetProfileDescriptionForEditor(JNIEnv* env,
+                                                const std::string& guid);
 
   // Gets the labels for the profiles to suggest to the user. These labels are
   // useful for distinguishing the profiles from one another.
@@ -112,7 +113,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   std::u16string GetShippingAddressLabelForPaymentRequest(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jprofile,
-      std::string& guid,
+      const std::string& guid,
       bool include_country_in_label);
 
   // These functions act on local credit cards.
@@ -132,7 +133,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // no credit card with the specified `guid`.
   base::android::ScopedJavaLocalRef<jobject> GetCreditCardByGUID(
       JNIEnv* env,
-      std::string& guid);
+      const std::string& guid);
 
   // Returns a credit card with the specified `jcard_number`. This is used for
   // determining the card's obfuscated number, issuer icon, and type in one go.
@@ -171,12 +172,12 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // Records the use and log usage metrics for the profile associated with the
   // `guid`. Increments the use count of the profile and sets its use date to
   // the current time.
-  void RecordAndLogProfileUse(JNIEnv* env, std::string& guid);
+  void RecordAndLogProfileUse(JNIEnv* env, const std::string& guid);
 
   // Records the use and log usage metrics for the credit card associated with
   // the `guid`. Increments the use count of the credit card and sets its use
   // date to the current time.
-  void RecordAndLogCreditCardUse(JNIEnv* env, std::string& guid);
+  void RecordAndLogCreditCardUse(JNIEnv* env, const std::string& guid);
 
   static base::android::ScopedJavaLocalRef<jobject> CreateJavaIbanFromNative(
       JNIEnv* env,
@@ -193,8 +194,9 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Return IBAN with the specified `guid`, or Null if there is no IBAN with
   // the specified `guid`.
-  base::android::ScopedJavaLocalRef<jobject> GetIbanByGuid(JNIEnv* env,
-                                                           std::string& guid);
+  base::android::ScopedJavaLocalRef<jobject> GetIbanByGuid(
+      JNIEnv* env,
+      const std::string& guid);
 
   // Returns an array of all stored IBANs.
   base::android::ScopedJavaLocalRef<jobjectArray> GetIbansForSettings(

@@ -50,20 +50,21 @@ TrialLogger* GetTrialLogger() {
 
 }  // namespace
 
-static std::string JNI_FieldTrialList_FindFullName(JNIEnv* env,
-                                                   std::string& trial_name) {
+static std::string JNI_FieldTrialList_FindFullName(
+    JNIEnv* env,
+    const std::string& trial_name) {
   return base::FieldTrialList::FindFullName(trial_name);
 }
 
 static bool JNI_FieldTrialList_TrialExists(JNIEnv* env,
-                                           std::string& trial_name) {
+                                           const std::string& trial_name) {
   return base::FieldTrialList::TrialExists(trial_name);
 }
 
 static std::string JNI_FieldTrialList_GetVariationParameter(
     JNIEnv* env,
-    std::string& trial_name,
-    std::string& parameter_key) {
+    const std::string& trial_name,
+    const std::string& parameter_key) {
   std::map<std::string, std::string> parameters;
   base::GetFieldTrialParams(trial_name, &parameters);
   return parameters[parameter_key];
@@ -111,8 +112,8 @@ static void JNI_FieldTrialList_LogActiveTrials(JNIEnv* env) {
 }
 
 static bool JNI_FieldTrialList_CreateFieldTrial(JNIEnv* env,
-                                                std::string& trial_name,
-                                                std::string& group_name) {
+                                                const std::string& trial_name,
+                                                const std::string& group_name) {
   return base::FieldTrialList::CreateFieldTrial(trial_name, group_name) !=
          nullptr;
 }

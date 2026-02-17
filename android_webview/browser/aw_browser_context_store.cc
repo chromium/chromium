@@ -264,14 +264,14 @@ AwBrowserContext* AwBrowserContextStore::GetDefault() {
 
 static bool JNI_AwBrowserContextStore_CheckNamedContextExists(
     JNIEnv* const env,
-    std::string& jname) {
+    const std::string& jname) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return AwBrowserContextStore::GetInstance()->Exists(jname);
 }
 
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_AwBrowserContextStore_GetNamedContextJava(JNIEnv* const env,
-                                              std::string& jname,
+                                              const std::string& jname,
                                               bool create_if_needed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   AwBrowserContext* context =
@@ -279,8 +279,9 @@ JNI_AwBrowserContextStore_GetNamedContextJava(JNIEnv* const env,
   return context ? context->GetJavaBrowserContext() : nullptr;
 }
 
-static bool JNI_AwBrowserContextStore_DeleteNamedContext(JNIEnv* const env,
-                                                         std::string& name) {
+static bool JNI_AwBrowserContextStore_DeleteNamedContext(
+    JNIEnv* const env,
+    const std::string& name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   AwBrowserContextStore::DeletionResult result =
       AwBrowserContextStore::GetInstance()->Delete(name);
@@ -300,7 +301,7 @@ static bool JNI_AwBrowserContextStore_DeleteNamedContext(JNIEnv* const env,
 
 static std::string JNI_AwBrowserContextStore_GetNamedContextPathForTesting(
     JNIEnv* const env,
-    std::string& name) {
+    const std::string& name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   AwBrowserContextStore* store = AwBrowserContextStore::GetInstance();
   if (!store->Exists(name)) {

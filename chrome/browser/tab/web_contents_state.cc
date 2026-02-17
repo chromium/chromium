@@ -544,7 +544,7 @@ JNI_WebContentsState_CreateSingleNavigationStateAsByteBuffer(
     JNIEnv* env,
     Profile* profile,
     std::optional<std::u16string>& title,
-    std::string& url,
+    const std::string& url,
     std::optional<std::string>& referrer_url,
     int referrer_policy,
     std::optional<url::Origin>& initiator_origin) {
@@ -560,7 +560,7 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsState_AppendPendingNavigation(
     int saved_state_version,
     bool clobber_current_entry,
     std::optional<std::u16string>& title,
-    std::string& url,
+    const std::string& url,
     std::optional<std::string>& referrer_url,
     int referrer_policy,
     std::optional<url::Origin>& initiator_origin) {

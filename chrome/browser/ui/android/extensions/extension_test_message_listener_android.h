@@ -25,7 +25,7 @@ class ExtensionTestMessageListenerAndroid {
 
   void Destroy(JNIEnv* env);
   bool WasSatisfied(JNIEnv* env);
-  void Reply(JNIEnv* env, std::string& message);
+  void Reply(JNIEnv* env, const std::string& message);
   std::string GetMessage(JNIEnv* env);
 
  private:

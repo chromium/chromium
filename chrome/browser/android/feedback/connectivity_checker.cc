@@ -172,7 +172,7 @@ void ConnectivityChecker::OnTimeout() {
 static void JNI_ConnectivityChecker_CheckConnectivity(
     JNIEnv* env,
     Profile* profile,
-    std::string& j_url,
+    const std::string& j_url,
     int64_t j_timeout_ms,
     const JavaRef<jobject>& j_callback,
     int32_t j_network_annotation_hash_code) {
@@ -197,7 +197,7 @@ static void JNI_ConnectivityChecker_CheckConnectivity(
 }
 
 static bool JNI_ConnectivityChecker_IsUrlValid(JNIEnv* env,
-                                               std::string& j_url) {
+                                               const std::string& j_url) {
   GURL url(j_url);
   return url.is_valid();
 }

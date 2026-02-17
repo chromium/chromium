@@ -79,7 +79,7 @@ static void JNI_WebApkSyncService_OnWebApkUsed(
 
 static void JNI_WebApkSyncService_OnWebApkUninstalled(
     JNIEnv* env,
-    std::string& java_manifest_id) {
+    const std::string& java_manifest_id) {
   if (!base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
     return;
   }

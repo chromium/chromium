@@ -254,7 +254,7 @@ void AwQuotaManagerBridge::DeleteBrowsingData(
 
 std::string AwQuotaManagerBridge::DeleteBrowsingDataForSite(
     JNIEnv* env,
-    std::string& domain,
+    const std::string& domain,
     const base::android::JavaRef<jobject>& jcallback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

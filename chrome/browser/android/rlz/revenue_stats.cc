@@ -15,7 +15,8 @@ using base::android::JavaRef;
 namespace chrome {
 namespace android {
 
-static void JNI_RevenueStats_SetSearchClient(JNIEnv* env, std::string& client) {
+static void JNI_RevenueStats_SetSearchClient(JNIEnv* env,
+                                             const std::string& client) {
   SearchTermsDataAndroid::GetSearchClient() = client;
 }
 

@@ -49,7 +49,7 @@ static void JNI_WebApkPostShareTargetNavigator_NativeLoadViewForShareTargetPost(
     const JavaRef<jbooleanArray>& java_is_value_file_uris,
     std::vector<std::string>& filenames,
     std::vector<std::string>& types,
-    std::string& url,
+    const std::string& url,
     const JavaRef<jobject>& java_web_contents) {
   std::vector<bool> is_value_file_uris;
 

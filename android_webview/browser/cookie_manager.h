@@ -118,11 +118,11 @@ class CookieManager {
   bool GetShouldAcceptCookies(JNIEnv* env);
   void SetCookie(JNIEnv* env,
                  const base::android::JavaRef<jstring>& url,
-                 std::string& value,
+                 const std::string& value,
                  base::OnceCallback<void(bool)> callback);
   void SetCookieSync(JNIEnv* env,
                      const base::android::JavaRef<jstring>& url,
-                     std::string& value);
+                     const std::string& value);
 
   std::string GetCookie(JNIEnv* env,
                         const base::android::JavaRef<jstring>& url);

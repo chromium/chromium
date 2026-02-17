@@ -59,7 +59,7 @@ CustomTabSessionStateTracker::~CustomTabSessionStateTracker() = default;
 static void JNI_CustomTabsOpenTimeRecorder_RecordCustomTabSession(
     JNIEnv* env,
     int64_t j_time,
-    std::string& package_name,
+    const std::string& package_name,
     int64_t j_session_duration,
     bool j_was_user_closed,
     bool j_is_partial_cct) {

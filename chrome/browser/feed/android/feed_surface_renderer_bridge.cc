@@ -238,7 +238,7 @@ static void JNI_FeedSurfaceRendererBridge_ReportOpenAction(
     Profile* profile,
     int32_t surface_id,
     const JavaRef<jobject>& j_url,
-    std::string& slice_id,
+    const std::string& slice_id,
     int action_type) {
   FeedApi* feed_api = GetFeedApi(profile);
   if (!feed_api) {
@@ -282,7 +282,7 @@ static void JNI_FeedSurfaceRendererBridge_ReportSliceViewed(
     JNIEnv* env,
     Profile* profile,
     int32_t surface_id,
-    std::string& slice_id) {
+    const std::string& slice_id) {
   FeedApi* feed_api = GetFeedApi(profile);
   if (!feed_api) {
     return;

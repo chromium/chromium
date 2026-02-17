@@ -81,7 +81,7 @@ static bool IsDecoderSupportedByDevice(std::string_view android_mime_type) {
 
 static bool JNI_MediaCodecUtil_IsDecoderSupportedForDevice(
     JNIEnv* env,
-    std::string& mime_type) {
+    const std::string& mime_type) {
   return IsDecoderSupportedByDevice(mime_type);
 }
 

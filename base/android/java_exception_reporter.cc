@@ -100,7 +100,7 @@ static void JNI_JavaExceptionReporter_ReportJavaException(
 
 static void JNI_JavaExceptionReporter_ReportJavaStackTrace(
     JNIEnv* env,
-    std::string& stack_trace) {
+    const std::string& stack_trace) {
   SetJavaException(stack_trace.c_str());
   base::debug::DumpWithoutCrashing();
   SetJavaException(nullptr);

@@ -38,9 +38,9 @@ notifications::UserActionHandler* GetUserActionHandler() {
 static void JNI_DisplayAgent_OnUserAction(JNIEnv* env,
                                           int32_t j_client_type,
                                           int32_t j_action_type,
-                                          std::string& guid,
+                                          const std::string& guid,
                                           int32_t j_button_type,
-                                          std::string& button_id) {
+                                          const std::string& button_id) {
   auto user_action_type =
       static_cast<notifications::UserActionType>(j_action_type);
   notifications::UserActionData action_data(

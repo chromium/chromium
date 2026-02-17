@@ -663,21 +663,21 @@ void AwBrowserContext::SetExtraHeadersForUrl(const GURL& url,
 // static
 static bool JNI_AwBrowserContext_IsValidHttpHeaderName(
     JNIEnv* env,
-    std::string& header_name) {
+    const std::string& header_name) {
   return net::HttpUtil::IsValidHeaderName(header_name);
 }
 
 // static
 static bool JNI_AwBrowserContext_IsValidHttpHeaderValue(
     JNIEnv* env,
-    std::string& header_value) {
+    const std::string& header_value) {
   return net::HttpUtil::IsValidHeaderValue(header_value);
 }
 
 std::vector<std::string> AwBrowserContext::SetOriginMatchedHeader(
     JNIEnv* env,
-    std::string& header_name,
-    std::string& header_value,
+    const std::string& header_name,
+    const std::string& header_value,
     const std::vector<std::string>& rules) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -712,8 +712,8 @@ std::vector<std::string> AwBrowserContext::SetOriginMatchedHeader(
 
 std::vector<std::string> AwBrowserContext::AddOriginMatchedHeader(
     JNIEnv* env,
-    std::string& header_name,
-    std::string& header_value,
+    const std::string& header_name,
+    const std::string& header_value,
     const std::vector<std::string>& rules) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

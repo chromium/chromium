@@ -32,7 +32,7 @@ class OpenDownloadDialogBridge : public download::DownloadItem::Observer {
   void Show(Profile* profile, const std::string& download_guid);
 
   // Called from Java via JNI.
-  void OnConfirmed(JNIEnv* env, std::string& j_guid, bool accepted);
+  void OnConfirmed(JNIEnv* env, const std::string& j_guid, bool accepted);
 
  private:
   // The corresponding java object.

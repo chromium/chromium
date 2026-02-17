@@ -46,13 +46,13 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
 
   // Called by the Java implementation when the notification has been clicked.
   void OnNotificationClicked(JNIEnv* env,
-                             std::string& notification_id,
+                             const std::string& notification_id,
                              int32_t java_notification_type,
-                             std::string& origin,
-                             std::string& scope_url,
-                             std::string& profile_id,
+                             const std::string& origin,
+                             const std::string& scope_url,
+                             const std::string& profile_id,
                              bool incognito,
-                             std::string& webapk_package,
+                             const std::string& webapk_package,
                              int32_t action_index,
                              const jni_zero::JavaRef<jstring>& java_reply);
 
@@ -60,25 +60,25 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
   // is done.
   void StoreCachedWebApkPackageForNotificationId(
       JNIEnv* env,
-      std::string& notification_id,
-      std::string& webapk_package);
+      const std::string& notification_id,
+      const std::string& webapk_package);
 
   // Called by the Java implementation when the notification has been closed.
   void OnNotificationClosed(JNIEnv* env,
-                            std::string& notification_id,
+                            const std::string& notification_id,
                             int32_t java_notification_type,
-                            std::string& origin,
-                            std::string& profile_id,
+                            const std::string& origin,
+                            const std::string& profile_id,
                             bool incognito,
                             bool by_user);
 
   // Called by the Java implementation when the user commits to unsubscribing
   // from notification from this origin.
   void OnNotificationDisablePermission(JNIEnv* env,
-                                       std::string& otification_id,
+                                       const std::string& otification_id,
                                        int32_t java_notification_type,
-                                       std::string& origin,
-                                       std::string& profile_id,
+                                       const std::string& origin,
+                                       const std::string& profile_id,
                                        bool incognito,
                                        bool is_suspicious);
 
@@ -92,32 +92,32 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
   // Called by the Java implementation when the user decides they want to report
   // their notification contents as safe to the server.
   void OnReportNotificationAsSafe(JNIEnv* env,
-                                  std::string& notification_id,
-                                  std::string& origin,
-                                  std::string& profile_id,
+                                  const std::string& notification_id,
+                                  const std::string& origin,
+                                  const std::string& profile_id,
                                   bool incognito);
 
   // Called by the Java implementation when the user decides they want to report
   // their warned notification contents as spam to the server.
   void OnReportWarnedNotificationAsSpam(JNIEnv* env,
-                                        std::string& notification_id,
-                                        std::string& origin,
-                                        std::string& profile_id,
+                                        const std::string& notification_id,
+                                        const std::string& origin,
+                                        const std::string& profile_id,
                                         bool incognito);
 
   // Called by the Java implementation when the user decides they want to report
   // their unwarned notification contents as spam to the server.
   void OnReportUnwarnedNotificationAsSpam(JNIEnv* env,
-                                          std::string& notification_id,
-                                          std::string& origin,
-                                          std::string& profile_id,
+                                          const std::string& notification_id,
+                                          const std::string& origin,
+                                          const std::string& profile_id,
                                           bool incognito);
 
   void OnNotificationShowOriginalNotification(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& java_object,
-      std::string& origin,
-      std::string& profile_id,
+      const std::string& origin,
+      const std::string& profile_id,
       bool incognito);
 
   void OnShowOriginalNotification(const GURL& url);
@@ -125,9 +125,9 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
   // Called by the Java implementation when the user decides they no longer want
   // to receive warnings for suspicious notifications that come from `origin`.
   void OnNotificationAlwaysAllowFromOrigin(JNIEnv* env,
-                                           std::string& notification_id,
-                                           std::string& origin,
-                                           std::string& profile_id,
+                                           const std::string& notification_id,
+                                           const std::string& origin,
+                                           const std::string& profile_id,
                                            bool incognito);
 
   // NotificationPlatformBridge implementation.

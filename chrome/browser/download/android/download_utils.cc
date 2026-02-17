@@ -37,7 +37,7 @@ constexpr int kDefaultAutoResumptionSizeLimit = 10 * 1024 * 1024;  // 10 MB
 
 static int32_t JNI_DownloadUtils_GetResumeMode(
     JNIEnv* env,
-    std::string& url,
+    const std::string& url,
     offline_items_collection::FailState failState) {
   auto reason =
       OfflineItemUtils::ConvertFailStateToDownloadInterruptReason(failState);

@@ -42,8 +42,8 @@ class ComposeboxQueryControllerBridge
   void NotifySessionAbandoned(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> AddFile(
       JNIEnv* env,
-      std::string& file_name,
-      std::string& file_type,
+      const std::string& file_name,
+      const std::string& file_type,
       const jni_zero::JavaRef<jobject>& file_data);
   base::android::ScopedJavaLocalRef<jobject> AddTabContext(
       JNIEnv* env,

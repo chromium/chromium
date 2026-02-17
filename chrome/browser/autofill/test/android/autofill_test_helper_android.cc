@@ -75,7 +75,7 @@ static void JNI_AutofillTestHelper_AddServerCreditCardWithAdditionalFields(
 // static
 static void JNI_AutofillTestHelper_SetProfileUseStats(
     JNIEnv* env,
-    std::string& guid,
+    const std::string& guid,
     int32_t count,
     int32_t days_since_last_used) {
   DCHECK(count >= 0 && days_since_last_used >= 0);
@@ -91,8 +91,9 @@ static void JNI_AutofillTestHelper_SetProfileUseStats(
 }
 
 // static
-static int32_t JNI_AutofillTestHelper_GetProfileUseCount(JNIEnv* env,
-                                                         std::string& guid) {
+static int32_t JNI_AutofillTestHelper_GetProfileUseCount(
+    JNIEnv* env,
+    const std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   const AutofillProfile* profile =
@@ -101,8 +102,9 @@ static int32_t JNI_AutofillTestHelper_GetProfileUseCount(JNIEnv* env,
 }
 
 // static
-static int64_t JNI_AutofillTestHelper_GetProfileUseDate(JNIEnv* env,
-                                                        std::string& guid) {
+static int64_t JNI_AutofillTestHelper_GetProfileUseDate(
+    JNIEnv* env,
+    const std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   const AutofillProfile* profile =
@@ -134,8 +136,9 @@ static std::string JNI_AutofillTestHelper_AddCreditCardWithUseStats(
 }
 
 // static
-static int32_t JNI_AutofillTestHelper_GetCreditCardUseCount(JNIEnv* env,
-                                                            std::string& guid) {
+static int32_t JNI_AutofillTestHelper_GetCreditCardUseCount(
+    JNIEnv* env,
+    const std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   const CreditCard* card =
@@ -144,8 +147,9 @@ static int32_t JNI_AutofillTestHelper_GetCreditCardUseCount(JNIEnv* env,
 }
 
 // static
-static int64_t JNI_AutofillTestHelper_GetCreditCardUseDate(JNIEnv* env,
-                                                           std::string& guid) {
+static int64_t JNI_AutofillTestHelper_GetCreditCardUseDate(
+    JNIEnv* env,
+    const std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   const CreditCard* card =

@@ -83,7 +83,7 @@ void DangerousDownloadDialogBridge::OnDownloadDestroyed(
 }
 
 void DangerousDownloadDialogBridge::Accepted(JNIEnv* env,
-                                             std::string& download_guid) {
+                                             const std::string& download_guid) {
   download::DownloadItem* download = DownloadDialogUtils::FindAndRemoveDownload(
       &download_items_, download_guid);
   if (download) {
@@ -92,8 +92,9 @@ void DangerousDownloadDialogBridge::Accepted(JNIEnv* env,
   }
 }
 
-void DangerousDownloadDialogBridge::Cancelled(JNIEnv* env,
-                                              std::string& download_guid) {
+void DangerousDownloadDialogBridge::Cancelled(
+    JNIEnv* env,
+    const std::string& download_guid) {
   download::DownloadItem* download = DownloadDialogUtils::FindAndRemoveDownload(
       &download_items_, download_guid);
   if (download) {

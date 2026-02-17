@@ -30,7 +30,7 @@ enum class HomeScreenLaunchType { STANDALONE = 0, SHORTCUT = 1, COUNT = 2 };
 static void JNI_LaunchMetrics_RecordLaunch(
     JNIEnv* env,
     bool is_shortcut,
-    std::string& jurl,
+    const std::string& jurl,
     int source,
     int display_mode,
     const JavaRef<jobject>& jweb_contents) {

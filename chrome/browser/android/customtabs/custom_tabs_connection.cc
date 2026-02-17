@@ -79,9 +79,9 @@ static void JNI_CustomTabsConnection_CreateAndStartDetachedResourceRequest(
     JNIEnv* env,
     Profile* native_profile,
     const base::android::JavaRef<jobject>& session,
-    std::string& package_name,
-    std::string& url,
-    std::string& origin,
+    const std::string& package_name,
+    const std::string& url,
+    const std::string& origin,
     int32_t referrer_policy,
     int32_t motivation) {
   DCHECK(native_profile);
@@ -113,7 +113,7 @@ static void JNI_CustomTabsConnection_CreateAndStartDetachedResourceRequest(
 static void JNI_CustomTabsConnection_SetClientDataHeader(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
-    std::string& jheader) {
+    const std::string& jheader) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   ClientDataHeaderWebContentsObserver::CreateForWebContents(web_contents);
   ClientDataHeaderWebContentsObserver::FromWebContents(web_contents)
@@ -124,7 +124,7 @@ static void JNI_CustomTabsConnection_TextFragmentLookup(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& session,
     const base::android::JavaRef<jobject>& jweb_contents,
-    std::string& state_key,
+    const std::string& state_key,
     const base::android::JavaRef<jobjectArray>& jtext_fragments) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
 
@@ -146,7 +146,7 @@ static void JNI_CustomTabsConnection_TextFragmentFindScrollAndHighlight(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& session,
     const base::android::JavaRef<jobject>& jweb_contents,
-    std::string& text_fragment) {
+    const std::string& text_fragment) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
 
   TextFragmentLookupStateTracker::CreateForWebContents(web_contents);

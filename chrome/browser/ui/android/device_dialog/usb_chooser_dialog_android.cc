@@ -166,7 +166,7 @@ void UsbChooserDialogAndroid::OnRefreshStateChanged(bool refreshing) {
 }
 
 void UsbChooserDialogAndroid::OnItemSelected(JNIEnv* env,
-                                             std::string& item_id) {
+                                             const std::string& item_id) {
   auto it = std::ranges::find(item_id_map_, item_id);
   CHECK(it != item_id_map_.end());
   controller_->Select(

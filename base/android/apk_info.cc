@@ -71,14 +71,14 @@ void Set(const IApkInfo& info) {
 }
 
 static void JNI_ApkInfo_FillFields(JNIEnv* env,
-                                   std::string& hostPackageName,
-                                   std::string& hostVersionCode,
-                                   std::string& hostPackageLabel,
-                                   std::string& packageVersionCode,
-                                   std::string& packageVersionName,
-                                   std::string& packageName,
-                                   std::string& resourcesVersion,
-                                   std::string& installerPackageName,
+                                   const std::string& hostPackageName,
+                                   const std::string& hostVersionCode,
+                                   const std::string& hostPackageLabel,
+                                   const std::string& packageVersionCode,
+                                   const std::string& packageVersionName,
+                                   const std::string& packageName,
+                                   const std::string& resourcesVersion,
+                                   const std::string& installerPackageName,
                                    bool isDebugApp,
                                    int32_t targetSdkVersion) {
   Set(IApkInfo{.hostPackageLabel = hostPackageLabel,

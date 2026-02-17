@@ -66,8 +66,9 @@ void PolicyWarningDownloadDialogBridge::OnDownloadDestroyed(
   }
 }
 
-void PolicyWarningDownloadDialogBridge::Accepted(JNIEnv* env,
-                                                 std::string& download_guid) {
+void PolicyWarningDownloadDialogBridge::Accepted(
+    JNIEnv* env,
+    const std::string& download_guid) {
   download::DownloadItem* download = DownloadDialogUtils::FindAndRemoveDownload(
       &download_items_, download_guid);
   if (download) {
@@ -76,8 +77,9 @@ void PolicyWarningDownloadDialogBridge::Accepted(JNIEnv* env,
   }
 }
 
-void PolicyWarningDownloadDialogBridge::Cancelled(JNIEnv* env,
-                                                  std::string& download_guid) {
+void PolicyWarningDownloadDialogBridge::Cancelled(
+    JNIEnv* env,
+    const std::string& download_guid) {
   download::DownloadItem* download = DownloadDialogUtils::FindAndRemoveDownload(
       &download_items_, download_guid);
   if (download) {

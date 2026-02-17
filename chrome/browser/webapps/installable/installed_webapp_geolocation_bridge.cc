@@ -175,7 +175,7 @@ void InstalledWebappGeolocationBridge::OnNewLocationAvailable(JNIEnv* env,
 
 void InstalledWebappGeolocationBridge::OnNewErrorAvailable(
     JNIEnv* env,
-    std::string& message) {
+    const std::string& message) {
   OnLocationUpdate(device::mojom::GeopositionResult::NewError(
       device::mojom::GeopositionError::New(
           device::mojom::GeopositionErrorCode::kPositionUnavailable, message,

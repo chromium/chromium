@@ -167,7 +167,7 @@ bool DevToolsServer::IsStarted() const {
 
 static int64_t JNI_DevToolsServer_InitRemoteDebugging(
     JNIEnv* env,
-    std::string& socket_name_prefix) {
+    const std::string& socket_name_prefix) {
   DevToolsServer* server = new DevToolsServer(socket_name_prefix);
   return reinterpret_cast<intptr_t>(server);
 }

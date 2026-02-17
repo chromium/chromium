@@ -35,7 +35,7 @@ bool ExtensionTestMessageListenerAndroid::WasSatisfied(JNIEnv* env) {
 }
 
 void ExtensionTestMessageListenerAndroid::Reply(JNIEnv* env,
-                                                std::string& message) {
+                                                const std::string& message) {
   listener_->Reply(message);
 }
 
@@ -43,9 +43,10 @@ std::string ExtensionTestMessageListenerAndroid::GetMessage(JNIEnv* env) {
   return listener_->message();
 }
 
-int64_t JNI_ExtensionTestMessageListener_Create(JNIEnv* env,
-                                                std::string& expected_message,
-                                                bool will_reply) {
+int64_t JNI_ExtensionTestMessageListener_Create(
+    JNIEnv* env,
+    const std::string& expected_message,
+    bool will_reply) {
   return reinterpret_cast<int64_t>(
       new ExtensionTestMessageListenerAndroid(expected_message, will_reply));
 }

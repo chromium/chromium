@@ -27,7 +27,7 @@ void UrlFilterBridge::Destroy(JNIEnv* env) {
 }
 
 bool UrlFilterBridge::MatchesUrl(JNIEnv* env,
-                                 std::string& url_spec) const {
+                                 const std::string& url_spec) const {
   GURL url(url_spec);
   return url_filter_.Run(url);
 }

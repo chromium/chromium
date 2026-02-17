@@ -16,8 +16,8 @@ namespace android {
 
 static bool JNI_IntentHandler_IsCorsSafelistedHeader(
     JNIEnv* env,
-    std::string& header_name,
-    std::string& header_value) {
+    const std::string& header_name,
+    const std::string& header_value) {
   return network::cors::IsCorsSafelistedHeader(header_name, header_value);
 }
 

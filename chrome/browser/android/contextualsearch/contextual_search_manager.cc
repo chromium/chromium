@@ -103,7 +103,7 @@ void ContextualSearchManager::GatherSurroundingText(
 
 void ContextualSearchManager::RemoveLastHistoryEntry(
     JNIEnv* env,
-    std::string& search_url,
+    const std::string& search_url,
     int64_t search_start_time_ms) {
   // The deletion window is from the time a search URL was put in history, up
   // to a short amount of time later.

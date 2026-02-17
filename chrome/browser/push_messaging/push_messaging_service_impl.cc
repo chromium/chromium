@@ -938,8 +938,8 @@ void PushMessagingServiceImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 static void
 JNI_PushMessagingServiceBridge_VerifyAndRevokeNotificationsPermission(
     JNIEnv* env,
-    std::string& origin,
-    std::string& profile_id,
+    const std::string& origin,
+    const std::string& profile_id,
     bool app_level_notifications_enabled) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   DCHECK(profile_manager);

@@ -107,7 +107,7 @@ static void
 JNI_NotificationPermissionReviewBridge_IgnoreOriginForNotificationPermissionReview(
     JNIEnv* env,
     Profile* profile,
-    std::string& origin) {
+    const std::string& origin) {
   IgnoreOriginForNotificationPermissionReview(profile, origin);
 }
 
@@ -115,7 +115,7 @@ static void
 JNI_NotificationPermissionReviewBridge_UndoIgnoreOriginForNotificationPermissionReview(
     JNIEnv* env,
     Profile* profile,
-    std::string& origin) {
+    const std::string& origin) {
   UndoIgnoreOriginForNotificationPermissionReview(profile, origin);
 }
 
@@ -123,7 +123,7 @@ static void
 JNI_NotificationPermissionReviewBridge_AllowNotificationPermissionForOrigin(
     JNIEnv* env,
     Profile* profile,
-    std::string& origin) {
+    const std::string& origin) {
   AllowNotificationPermissionForOrigin(profile, origin);
 }
 
@@ -131,7 +131,7 @@ static void
 JNI_NotificationPermissionReviewBridge_ResetNotificationPermissionForOrigin(
     JNIEnv* env,
     Profile* profile,
-    std::string& origin) {
+    const std::string& origin) {
   ResetNotificationPermissionForOrigin(profile, origin);
 }
 

@@ -20,7 +20,7 @@ class ScopedAllowBlockingForImportantFileWriter
 
 static bool JNI_ImportantFileWriterAndroid_WriteFileAtomically(
     JNIEnv* env,
-    std::string& native_file_name,
+    const std::string& native_file_name,
     jni_zero::ByteArrayView&& data) {
   // This is called on the UI thread during shutdown to save tab data, so
   // needs to enable IO.

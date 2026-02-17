@@ -53,7 +53,7 @@ class DownloadDialogBridge {
       DialogCallback dialog_callback);
 
   void OnComplete(JNIEnv* env,
-                  std::string& returned_path,
+                  const std::string& returned_path,
                   bool did_user_confirm);
 
   void OnCanceled(JNIEnv* env);

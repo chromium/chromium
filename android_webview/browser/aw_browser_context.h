@@ -199,8 +199,8 @@ class AwBrowserContext : public content::BrowserContext,
   // in Java by the WebView code.
   std::vector<std::string> SetOriginMatchedHeader(
       JNIEnv* env,
-      std::string& header_name,
-      std::string& header_value,
+      const std::string& header_name,
+      const std::string& header_value,
       const std::vector<std::string>& origin_rules);
 
   // Set a static header name-value pair to be sent to origins that match the
@@ -215,8 +215,8 @@ class AwBrowserContext : public content::BrowserContext,
   // in Java by the WebView code.
   std::vector<std::string> AddOriginMatchedHeader(
       JNIEnv* env,
-      std::string& header_name,
-      std::string& header_value,
+      const std::string& header_name,
+      const std::string& header_value,
       const std::vector<std::string>& origin_rules);
 
   bool HasOriginMatchedHeader(JNIEnv* env, const std::string& header_name);

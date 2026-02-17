@@ -26,9 +26,9 @@ class RecentTabsPagePrefs {
   bool GetSyncPromoCollapsed(JNIEnv* env);
   void SetSyncPromoCollapsed(JNIEnv* env, bool is_collapsed);
 
-  bool GetForeignSessionCollapsed(JNIEnv* env, std::string& session_tag);
+  bool GetForeignSessionCollapsed(JNIEnv* env, const std::string& session_tag);
   void SetForeignSessionCollapsed(JNIEnv* env,
-                                  std::string& session_tag,
+                                  const std::string& session_tag,
                                   bool is_collapsed);
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

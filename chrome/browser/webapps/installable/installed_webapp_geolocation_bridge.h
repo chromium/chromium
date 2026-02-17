@@ -54,7 +54,7 @@ class InstalledWebappGeolocationBridge : public device::mojom::Geolocation {
                               double heading,
                               bool has_speed,
                               double speed);
-  void OnNewErrorAvailable(JNIEnv* env, std::string& message);
+  void OnNewErrorAvailable(JNIEnv* env, const std::string& message);
 
   const GURL& url() { return url_; }
 

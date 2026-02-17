@@ -317,9 +317,9 @@ bool OfflinePageEvaluationBridge::PushRequestProcessing(
 }
 
 void OfflinePageEvaluationBridge::SavePageLater(JNIEnv* env,
-                                                std::string& url,
-                                                std::string& name_space,
-                                                std::string& client_id,
+                                                const std::string& url,
+                                                const std::string& name_space,
+                                                const std::string& client_id,
                                                 bool user_requested) {
   offline_pages::ClientId client_id;
   client_id.name_space = name_space;

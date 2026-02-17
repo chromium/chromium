@@ -78,7 +78,7 @@ AwTracingController::AwTracingController(JNIEnv* env,
 AwTracingController::~AwTracingController() {}
 
 bool AwTracingController::Start(JNIEnv* env,
-                                std::string& categories,
+                                const std::string& categories,
                                 int32_t jmode) {
   base::trace_event::TraceConfig trace_config(
       categories, static_cast<base::trace_event::TraceRecordMode>(jmode));

@@ -455,7 +455,7 @@ bool CookieManager::GetShouldAcceptCookies(JNIEnv* env) {
 
 void CookieManager::SetCookie(JNIEnv* env,
                               const JavaRef<jstring>& url,
-                              std::string& cookie_value,
+                              const std::string& cookie_value,
                               base::OnceCallback<void(bool)> callback) {
   GURL host(ConvertJavaStringToUTF16(env, url));
 
@@ -466,7 +466,7 @@ void CookieManager::SetCookie(JNIEnv* env,
 
 void CookieManager::SetCookieSync(JNIEnv* env,
                                   const JavaRef<jstring>& url,
-                                  std::string& value) {
+                                  const std::string& value) {
   GURL host(ConvertJavaStringToUTF16(env, url));
   std::string cookie_value(value);
 

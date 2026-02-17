@@ -55,9 +55,9 @@ bool IsInScope(const GURL& url, const GURL& scope) {
 static int64_t JNI_WebApkUpdateDataFetcher_Initialize(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
-    std::string& java_start_url,
-    std::string& java_scope_url,
-    std::string& java_web_manifest_url,
+    const std::string& java_start_url,
+    const std::string& java_scope_url,
+    const std::string& java_web_manifest_url,
     const JavaRef<jstring>& java_web_manifest_id) {
   GURL start_url(java_start_url);
   GURL scope(java_scope_url);

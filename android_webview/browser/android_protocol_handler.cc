@@ -81,7 +81,7 @@ static std::string JNI_AndroidProtocolHandler_GetAndroidResourcePath(
 // Returns the mime type, or returns empty string if a mime type was not found.
 static std::string JNI_AndroidProtocolHandler_GetWellKnownMimeType(
     JNIEnv* env,
-    std::string& path) {
+    const std::string& path) {
   std::string mime_type;
 
   if (net::GetWellKnownMimeTypeFromFile(base::FilePath(path), &mime_type)) {

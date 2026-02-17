@@ -19,7 +19,7 @@ namespace base {
 namespace android {
 
 static void JNI_EarlyTraceEvent_RecordEarlyBeginEvent(JNIEnv* env,
-                                                      std::string& name,
+                                                      const std::string& name,
                                                       int64_t time_ns,
                                                       int32_t thread_id,
                                                       int64_t thread_time_ms) {
@@ -29,7 +29,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyBeginEvent(JNIEnv* env,
 }
 
 static void JNI_EarlyTraceEvent_RecordEarlyEndEvent(JNIEnv* env,
-                                                    std::string& name,
+                                                    const std::string& name,
                                                     int64_t time_ns,
                                                     int32_t thread_id,
                                                     int64_t thread_time_ms) {
@@ -40,7 +40,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyEndEvent(JNIEnv* env,
 
 static void JNI_EarlyTraceEvent_RecordEarlyToplevelBeginEvent(
     JNIEnv* env,
-    std::string& name,
+    const std::string& name,
     int64_t time_ns,
     int32_t thread_id) {
   auto t = perfetto::ThreadTrack::ForThread(thread_id);
@@ -49,19 +49,21 @@ static void JNI_EarlyTraceEvent_RecordEarlyToplevelBeginEvent(
                     TimeTicks::FromJavaNanoTime(time_ns));
 }
 
-static void JNI_EarlyTraceEvent_RecordEarlyToplevelEndEvent(JNIEnv* env,
-                                                            std::string& name,
-                                                            int64_t time_ns,
-                                                            int32_t thread_id) {
+static void JNI_EarlyTraceEvent_RecordEarlyToplevelEndEvent(
+    JNIEnv* env,
+    const std::string& name,
+    int64_t time_ns,
+    int32_t thread_id) {
   auto t = perfetto::ThreadTrack::ForThread(thread_id);
   TRACE_EVENT_END(internal::kToplevelTraceCategory, t,
                   TimeTicks::FromJavaNanoTime(time_ns));
 }
 
-static void JNI_EarlyTraceEvent_RecordEarlyAsyncBeginEvent(JNIEnv* env,
-                                                           std::string& name,
-                                                           int64_t id,
-                                                           int64_t time_ns) {
+static void JNI_EarlyTraceEvent_RecordEarlyAsyncBeginEvent(
+    JNIEnv* env,
+    const std::string& name,
+    int64_t id,
+    int64_t time_ns) {
   TRACE_EVENT_BEGIN(
       internal::kJavaTraceCategory, nullptr,
       perfetto::Track(static_cast<uint64_t>(id)),

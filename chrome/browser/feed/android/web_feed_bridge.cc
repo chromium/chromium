@@ -385,7 +385,7 @@ static void JNI_WebFeedBridge_IncrementFollowedFromWebPageMenuCount(
 
 static void JNI_WebFeedBridge_QueryWebFeed(
     JNIEnv* env,
-    std::string& url,
+    const std::string& url,
     const base::android::JavaRef<jobject>& j_callback) {
   base::OnceCallback<void(WebFeedSubscriptions::QueryWebFeedResult)> callback =
       AdaptQueryWebFeedResultCallback(j_callback);
@@ -399,7 +399,7 @@ static void JNI_WebFeedBridge_QueryWebFeed(
 
 static void JNI_WebFeedBridge_QueryWebFeedId(
     JNIEnv* env,
-    std::string& id,
+    const std::string& id,
     const base::android::JavaRef<jobject>& j_callback) {
   base::OnceCallback<void(WebFeedSubscriptions::QueryWebFeedResult)> callback =
       AdaptQueryWebFeedResultCallback(j_callback);

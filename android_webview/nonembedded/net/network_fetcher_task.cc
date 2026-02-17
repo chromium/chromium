@@ -127,8 +127,8 @@ static void JNI_NetworkFetcherTask_CallPostRequestCompleteCallback(
     int64_t task_runner,
     const base::android::JavaRef<jbyteArray>& response_body,
     int32_t network_error,
-    std::string& header_e_tag,
-    std::string& header_x_cup_server_proof,
+    const std::string& header_e_tag,
+    const std::string& header_x_cup_server_proof,
     int64_t x_header_retry_after_sec) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);

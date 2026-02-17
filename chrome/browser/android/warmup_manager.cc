@@ -30,7 +30,7 @@ static void JNI_WarmupManager_StartPreconnectPredictorInitialization(
 static void JNI_WarmupManager_PreconnectUrlAndSubresources(
     JNIEnv* env,
     Profile* profile,
-    std::string& url_str) {
+    const std::string& url_str) {
   GURL url = GURL(url_str);
 
   auto* loading_predictor =

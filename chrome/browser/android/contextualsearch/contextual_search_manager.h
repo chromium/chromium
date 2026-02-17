@@ -54,7 +54,7 @@ class ContextualSearchManager {
   // Removes a search URL from history. |search_start_time_ms| represents the
   // time at which |search_url| was committed.
   void RemoveLastHistoryEntry(JNIEnv* env,
-                              std::string& search_url,
+                              const std::string& search_url,
                               int64_t search_start_time_ms);
 
  private:

@@ -228,7 +228,7 @@ static int32_t JNI_AwPrefetchManager_GetNoPrefetchKey(JNIEnv* env) {
 
 static bool JNI_AwPrefetchManager_IsSecPurposeForPrefetch(
     JNIEnv* env,
-    std::string& sec_purpose_header_value) {
+    const std::string& sec_purpose_header_value) {
   return AwPrefetchManager::IsSecPurposeForPrefetch(sec_purpose_header_value);
 }
 

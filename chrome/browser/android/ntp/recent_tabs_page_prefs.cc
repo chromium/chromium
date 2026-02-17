@@ -65,16 +65,18 @@ void RecentTabsPagePrefs::SetSyncPromoCollapsed(JNIEnv* env,
   prefs->SetBoolean(prefs::kNtpCollapsedSyncPromo, is_collapsed);
 }
 
-bool RecentTabsPagePrefs::GetForeignSessionCollapsed(JNIEnv* env,
-                                                     std::string& session_tag) {
+bool RecentTabsPagePrefs::GetForeignSessionCollapsed(
+    JNIEnv* env,
+    const std::string& session_tag) {
   const base::DictValue& dict =
       profile_->GetPrefs()->GetDict(prefs::kNtpCollapsedForeignSessions);
   return dict.contains(session_tag);
 }
 
-void RecentTabsPagePrefs::SetForeignSessionCollapsed(JNIEnv* env,
-                                                     std::string& session_tag,
-                                                     bool is_collapsed) {
+void RecentTabsPagePrefs::SetForeignSessionCollapsed(
+    JNIEnv* env,
+    const std::string& session_tag,
+    bool is_collapsed) {
   // Store session tags for collapsed sessions in a preference so that the
   // collapsed state persists.
   PrefService* prefs = profile_->GetPrefs();
