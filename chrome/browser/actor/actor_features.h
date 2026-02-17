@@ -23,6 +23,7 @@ BASE_DECLARE_FEATURE(kGlicActionUseOptimizationGuide);
 BASE_DECLARE_FEATURE(kActorBypassTOUValidationForGuestView);
 
 BASE_DECLARE_FEATURE(kGlicExternalProtocolActionResultCode);
+BASE_DECLARE_FEATURE(kGlicGranularBlockingActionResultCodes);
 
 BASE_DECLARE_FEATURE(kGlicBlockNavigationToDangerousContentTypes);
 

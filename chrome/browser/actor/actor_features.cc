@@ -36,6 +36,10 @@ BASE_FEATURE(kGlicActionUseOptimizationGuide, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicExternalProtocolActionResultCode,
              base::FEATURE_ENABLED_BY_DEFAULT);
+// TODO(crbug.com/482599595): Wait for server side to handle new codes before
+// sending them.
+BASE_FEATURE(kGlicGranularBlockingActionResultCodes,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicBlockNavigationToDangerousContentTypes,
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -395,6 +395,13 @@ mojom::ActionResultCode BlockReasonToResultCode(MayActOnUrlBlockReason reason,
       for_navigation ? ActionResultCode::kTriggeredNavigationBlocked
                      : ActionResultCode::kUrlBlocked;
 
+  auto maybe_granular = [generic_block_code](
+                            mojom::ActionResultCode specific_code) {
+    return base::FeatureList::IsEnabled(kGlicGranularBlockingActionResultCodes)
+               ? specific_code
+               : generic_block_code;
+  };
+
   switch (reason) {
     case MayActOnUrlBlockReason::kAllowed:
       return ActionResultCode::kOk;
@@ -404,15 +411,22 @@ mojom::ActionResultCode BlockReasonToResultCode(MayActOnUrlBlockReason reason,
       }
       return generic_block_code;
     }
-    case MayActOnUrlBlockReason::kIpAddress:
     case MayActOnUrlBlockReason::kLookalikeDomain:
-    case MayActOnUrlBlockReason::kOptimizationGuideBlock:
-    case MayActOnUrlBlockReason::kSafeBrowsing:
-    case MayActOnUrlBlockReason::kTabIsErrorDocument:
-    case MayActOnUrlBlockReason::kUrlNotInAllowlist:
-    case MayActOnUrlBlockReason::kWrongScheme:
-    case MayActOnUrlBlockReason::kEnterprisePolicy:
     case MayActOnUrlBlockReason::kBlockedByStaticList:
+      return maybe_granular(ActionResultCode::kActionsBlockedForSiteRisk);
+    case MayActOnUrlBlockReason::kSafeBrowsing:
+      return maybe_granular(
+          ActionResultCode::kActionsBlockedSafeBrowsingDisabled);
+    case MayActOnUrlBlockReason::kEnterprisePolicy:
+      return maybe_granular(
+          ActionResultCode::kActionsBlockedByEnterprisePolicy);
+    case MayActOnUrlBlockReason::kWrongScheme:
+      return maybe_granular(ActionResultCode::kActionsBlockedForScheme);
+    case MayActOnUrlBlockReason::kTabIsErrorDocument:
+      return maybe_granular(ActionResultCode::kActionsBlockedOnErrorPage);
+    case MayActOnUrlBlockReason::kIpAddress:
+    case MayActOnUrlBlockReason::kOptimizationGuideBlock:
+    case MayActOnUrlBlockReason::kUrlNotInAllowlist:
       return generic_block_code;
   }
 }

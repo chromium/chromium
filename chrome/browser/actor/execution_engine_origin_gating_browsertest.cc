@@ -1077,7 +1077,11 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(click_link), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
+  const auto expected_result =
+      base::FeatureList::IsEnabled(kGlicGranularBlockingActionResultCodes)
+          ? mojom::ActionResultCode::kActionsBlockedForSiteRisk
+          : mojom::ActionResultCode::kUrlBlocked;
+  ExpectErrorResult(result, expected_result);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -224,7 +224,7 @@ enum ActionResultCode {
 
   // The target element from hit test observed page content cannot be found in
   // the live DOM.
-  kObservedTargetElementDestroyed  = 30,
+  kObservedTargetElementDestroyed = 30,
 
   // The target element from hit test observed page content is different from
   // hit test on the live DOM.
@@ -268,6 +268,24 @@ enum ActionResultCode {
 
   // The remaining actions were cancelled.
   kActionsCancelled = 43,
+
+  // Navigating to the URL and actions targeting elements for this URL are
+  // blocked due to the potential risk of interacting with the specific site.
+  kActionsBlockedForSiteRisk = 44,
+
+  // Actions may not be performed as Safe Browsing is currently disabled in the
+  // user's settings. Having Safe Browsing enabled is required.
+  kActionsBlockedSafeBrowsingDisabled = 45,
+
+  // The user's administrator has configured the browser to not allow acting on
+  // the page.
+  kActionsBlockedByEnterprisePolicy = 46,
+
+  // Only web pages served over HTTP(S) may be acted on.
+  kActionsBlockedForScheme = 47,
+
+  // Actions may not be taken when the browser is showing an error page.
+  kActionsBlockedOnErrorPage = 48,
 
   // Please see the comment above about adding new values.
 

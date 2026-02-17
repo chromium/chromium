@@ -603,7 +603,12 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
 
   ActResultFuture result;
   task->Act(ToRequestList(click), result.GetCallback());
-  ExpectErrorResult(result, actor::mojom::ActionResultCode::kUrlBlocked);
+  const auto expected_result =
+      base::FeatureList::IsEnabled(
+          actor::kGlicGranularBlockingActionResultCodes)
+          ? actor::mojom::ActionResultCode::kActionsBlockedByEnterprisePolicy
+          : actor::mojom::ActionResultCode::kUrlBlocked;
+  ExpectErrorResult(result, expected_result);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
@@ -664,8 +669,12 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
 
   ActResultFuture result;
   task->Act(ToRequestList(click), result.GetCallback());
-  ExpectErrorResult(
-      result, actor::mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  const auto expected_result =
+      base::FeatureList::IsEnabled(
+          actor::kGlicGranularBlockingActionResultCodes)
+          ? actor::mojom::ActionResultCode::kActionsBlockedByEnterprisePolicy
+          : actor::mojom::ActionResultCode::kTriggeredNavigationBlocked;
+  ExpectErrorResult(result, expected_result);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
