@@ -19,12 +19,12 @@ chromium::import! {
     "//mojo/public/rust/mojom_value_parser:validation_parser";
 }
 
-use std::iter;
-
 use mojom_value_parser_core::*;
 use ordered_float::OrderedFloat;
 use parser_unittests_rust::parser_unittests::*;
 use rust_gtest_interop::prelude::*;
+
+use crate::helpers::*;
 
 // Verify that `value` serializes to the binary data represented by `data`,
 // which is a string in the mojom validation text format, as defined in
@@ -63,14 +63,65 @@ where
     validate_parsing_internal().map_err(|err| anyhow::anyhow!("{err}{err_str}"))
 }
 
+// Similar to `validate_parsing`, but for types with handles. It takes the
+// number of handles the type should contain, and creates that many dummy
+// handles for the deparsing process. It also does a slightly more relaxed check
+// after parsing (comparing the parsed `MojomValue` instead of the parsed `T`).
+fn validate_parsing_with_handles<T>(value: T, data: &str, num_handles: usize) -> anyhow::Result<()>
+where
+    T: MojomParse + PartialEq + std::fmt::Debug,
+{
+    // We have to compute this eagerly since `value ` will get consumed by the test
+    let err_str = format!("\nRust value: {value:?}\nWire Data: {data}");
+
+    // Helper function so we can use the question mark operator, but also
+    // append context to it regardless of where we return.
+    let validate_parsing_internal = || -> anyhow::Result<()> {
+        let wire_data = validation_parser::parse(data)
+            .map_err(anyhow::Error::msg)?
+            // We currently don't do anything with handles, so only look at the data field
+            .data;
+
+        let mojom_value: MojomValue = value.into();
+        let mut handles = (0..num_handles).map(|_| Some(dummy_handle())).collect::<Vec<_>>();
+
+        // FOR_RELEASE: It would be nice to use the `verify_` macros from googletest
+        // that return a result, if we get access to them.
+        expect_true!(equivalent_value(
+            &mojom_value,
+            &parse_single_value_for_testing(wire_data.as_ref(), &mut handles, T::wire_type())?
+        ));
+        // All the handles in `handles` should have been consumed during parsing
+        expect_true!(handles.into_iter().all(|opt| opt.is_none()));
+        expect_eq!(
+            wire_data.as_ref(),
+            *deparse_single_value_for_testing(mojom_value, T::wire_type())?
+        );
+        Ok(())
+    };
+
+    // We could also use anyhow's Context trait, but that overwrites the old context
+    // since we can't control the printing format gtest uses.
+    validate_parsing_internal().map_err(|err| anyhow::anyhow!("{err}{err_str}"))
+}
+
 /// Check that we correctly fail to parse mismatching data.
 fn validate_parsing_failure<T>(data: &str) -> anyhow::Result<()>
 where
     T: MojomParse + PartialEq + std::fmt::Debug,
 {
+    validate_parsing_failure_with_handles::<T>(data, 0)
+}
+
+/// Check that we correctly fail to parse mismatching data...with handles!
+fn validate_parsing_failure_with_handles<T>(data: &str, num_handles: usize) -> anyhow::Result<()>
+where
+    T: MojomParse + PartialEq + std::fmt::Debug,
+{
     let wire_data = validation_parser::parse(data).map_err(anyhow::Error::msg)?.data;
+    let mut handles = (0..num_handles).map(|_| Some(dummy_handle())).collect::<Vec<_>>();
     expect_true!(
-        parse_single_value_for_testing(wire_data.as_ref(), &mut [], T::wire_type()).is_err()
+        parse_single_value_for_testing(wire_data.as_ref(), &mut handles, T::wire_type()).is_err()
     );
     Ok(())
 }
@@ -837,7 +888,7 @@ fn str_wire_format(str: &str) -> String {
     let padding = (8 - (str.len() % 8)) % 8;
     let body: String =
         str.as_bytes().iter().fold("".to_string(), |acc, b| format!("{acc} [u1]{b}"));
-    let padding: String = iter::repeat_n("[u1]0 ", padding).collect();
+    let padding: String = std::iter::repeat_n("[u1]0 ", padding).collect();
     format!("[u4]{size} [u4]{num_chars} {body} {padding}")
 }
 
@@ -1133,6 +1184,83 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
             "[anchr]str_ptr ",
             &str_wire_format("hello")
         ),
+    )?;
+
+    Ok(())
+}
+
+#[gtest(RustTestMojomParsing, TestHandleParsing)]
+fn test_handle_parsing() -> anyhow::Result<()> {
+    // Note: [s4]-1 is 0xffffffff, the indicator for a `None` handle
+    validate_parsing_with_handles(
+        Handles { h1: dummy_handle(), h2: None, h3: dummy_handle().into(), h4: None },
+        "[u4]24 [u4]0 [u4]0 [s4]-1 [u4]1 [s4]-1",
+        2,
+    )?;
+    // Can't parse if we don't give enough handles
+    validate_parsing_failure_with_handles::<Handles>("[u4]24 [u4]0 [u4]0 [s4]-1 [u4]1 [s4]-1", 1)?;
+
+    validate_parsing_with_handles(
+        Handles {
+            h1: dummy_handle(),
+            h2: Some(dummy_handle()),
+            h3: dummy_handle().into(),
+            h4: None,
+        },
+        "[u4]24 [u4]0 [u4]0 [u4]1 [u4]2 [s4]-1",
+        3,
+    )?;
+
+    validate_parsing_with_handles(
+        Handles {
+            h1: dummy_handle(),
+            h2: None,
+            h3: dummy_handle().into(),
+            h4: Some(dummy_handle().into()),
+        },
+        "[u4]24 [u4]0 [u4]0 [s4]-1 [u4]1 [u4]2",
+        3,
+    )?;
+
+    validate_parsing_with_handles(
+        Handles {
+            h1: dummy_handle(),
+            h2: Some(dummy_handle()),
+            h3: dummy_handle().into(),
+            h4: Some(dummy_handle().into()),
+        },
+        "[u4]24 [u4]0 [u4]0 [u4]1 [u4]2 [u4]3",
+        4,
+    )?;
+
+    validate_parsing_with_handles(WithHandles::h1(None), "[u4]16 [u4]0 [s4]-1 [u4]0", 0)?;
+    validate_parsing_with_handles(
+        WithHandles::h1(Some(dummy_handle())),
+        "[u4]16 [u4]0 [u4]0 [u4]0",
+        1,
+    )?;
+    validate_parsing_with_handles(
+        WithHandles::h2(dummy_handle().into()),
+        "[u4]16 [u4]1 [u4]0 [u4]0",
+        1,
+    )?;
+    validate_parsing(WithHandles::n(42), "[u4]16 [u4]2 [u4]42 [u4]0")?;
+
+    validate_parsing_with_handles(
+        NestedHandles {
+            h1: dummy_handle(),
+            arr: vec![Some(dummy_handle()), None, Some(dummy_handle()), None],
+            h2: dummy_handle(),
+            wh: WithHandles::h2(dummy_handle().into()),
+            h3: dummy_handle(),
+        },
+        concat!(
+            "[u4]48 [u4]0 [u4]0 [u4]1 [dist8]arr_ptr ",
+            "[u4]16 [u4]1 [u4]2 [u4]0 ", // wh
+            "[u4]3 [u4]0 ",
+            "[anchr]arr_ptr [u4]24 [u4]4 [u4]4 [s4]-1 [u4]5 [s4]-1" // arr
+        ),
+        6,
     )?;
 
     Ok(())

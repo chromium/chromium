@@ -17,6 +17,7 @@ pub use mojo_ffi::{MojoError, MojoResult, UntypedHandle};
 /// which are inter-convertible with it.
 macro_rules! declare_typed_handle {
     ($name:ident) => {
+        #[derive(Debug, PartialEq, Eq)]
         pub struct $name {
             handle: UntypedHandle,
         }

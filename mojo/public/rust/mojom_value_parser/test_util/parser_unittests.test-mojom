@@ -232,3 +232,31 @@ struct NullableOthers {
   map<uint8, uint8>? m;
   string? str;
 };
+
+////// TESTS FOR HANDLES //////
+
+// Handle tests are separated out from the other types because we can't compare
+// handles for equality (at least, not usefully), so we use a different testing
+// function for these that runs more relaxed checks.
+
+struct Handles {
+  handle h1;
+  handle? h2;
+  handle<message_pipe> h3;
+  handle<message_pipe>? h4;
+};
+
+union WithHandles {
+  handle? h1;
+  handle<message_pipe> h2;
+  uint8 n;
+};
+
+// Packing: h1 h2 arr wh h3
+struct NestedHandles {
+  handle h1;
+  array<handle?> arr;
+  handle h2;
+  WithHandles wh;
+  handle h3;
+};

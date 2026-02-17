@@ -28,6 +28,8 @@ use parser_unittests_rust::parser_unittests::*;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
+use crate::helpers::*;
+
 /// Represents a type defined in a Mojom file.
 ///
 /// Conceptually, it has three parts, corresponding to the three AST types:
@@ -157,6 +159,39 @@ impl TestType {
         // Test conversion to/from MojomValues
         expect_eq!(&mojom_val, &rust_val.clone().into());
         expect_eq!(rust_val, mojom_val.try_into().unwrap());
+    }
+
+    /// Similar to `validate_mojomparse`, but for types which contain handles.
+    /// Since no two different handle values will ever be equal, it uses a
+    /// special comparison operator that ignores handles.
+    fn validate_mojomparse_handles<T: MojomParse + std::fmt::Debug + PartialEq>(
+        &self,
+        rust_val: T,
+        get_mojom_val: impl Fn() -> MojomValue,
+    ) {
+        expect_eq!(
+            T::mojom_type(),
+            self.base_type,
+            "Type {} had the wrong associated MojomType!",
+            self.type_name
+        );
+
+        expect_eq!(
+            *T::wire_type(),
+            self.packed_type,
+            "Type {} failed to pack correctly!",
+            self.type_name
+        );
+
+        expect_true!(equivalent_value(&get_mojom_val(), &rust_val.into()));
+        // Unfortunately, we don't have `equivalent_value` for rust types.
+        // We could write a bunch of them if we _really_ wanted to, but for now
+        // we satisfy ourselves by checking round-trip conversions.
+        expect_true!(equivalent_value(
+            &get_mojom_val(),
+            // The function we really want to test here is T::try_from
+            &T::try_from(get_mojom_val()).unwrap().into()
+        ));
     }
 }
 
@@ -1880,12 +1915,14 @@ fn test_complex_union() {
     );
 }
 
+/// Wrap the type in `MojomType::Nullable` and a new box
 macro_rules! nullable_ty {
     ($inner_ty:expr) => {
         MojomType::Nullable { inner_type: Box::new($inner_ty) }
     };
 }
 
+/// Wrap the (optional) value in `MojomValue::Nullable` and a new box
 macro_rules! nullable_val {
     ($inner_val:expr) => {
         MojomValue::Nullable($inner_val.map(Box::new))
@@ -2307,5 +2344,197 @@ fn test_nullables() {
             Some([(1, 2), (3, 4)].into()),
             Some("hello"),
         ),
+    );
+}
+
+// Mojom Definition:
+// struct Handles {
+//   handle h1;
+//   handle? h2;
+//   handle<message_pipe> h3;
+//   handle<message_pipe>? h4;
+// }
+static HANDLES_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "Handles",
+    base_type: wrap_struct_fields_type(vec![
+        ("h1".to_string(), MojomType::Handle),
+        ("h2".to_string(), nullable_ty!(MojomType::Handle)),
+        ("h3".to_string(), MojomType::Handle),
+        ("h4".to_string(), nullable_ty!(MojomType::Handle)),
+    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("h1".to_string(), struct_leaf!(0, PackedLeafType::Handle, false)),
+            ("h2".to_string(), struct_leaf!(1, PackedLeafType::Handle, true)),
+            ("h3".to_string(), struct_leaf!(2, PackedLeafType::Handle, false)),
+            ("h4".to_string(), struct_leaf!(3, PackedLeafType::Handle, true)),
+        ],
+        4,
+    ),
+});
+
+fn handles_mojom(
+    h1: UntypedHandle,
+    h2: Option<UntypedHandle>,
+    h3: UntypedHandle,
+    h4: Option<UntypedHandle>,
+) -> MojomValue {
+    wrap_struct_fields_value(vec![
+        ("h1".to_string(), MojomValue::Handle(h1)),
+        ("h2".to_string(), nullable_val!(h2.map(MojomValue::Handle))),
+        ("h3".to_string(), MojomValue::Handle(h3)),
+        ("h4".to_string(), nullable_val!(h4.map(MojomValue::Handle))),
+    ])
+}
+
+// Mojom Definition:
+// union WithHandles {
+//   handle? h1;
+//   handle<message_pipe> h2;
+//   uint8 n;
+// }
+static WITH_HANDLES_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "WithHandles",
+    base_type: MojomType::Union {
+        variants: [
+            (0, nullable_ty!(MojomType::Handle)),
+            (1, MojomType::Handle),
+            (2, MojomType::UInt8),
+        ]
+        .into(),
+    },
+    packed_type: MojomWireType::Union {
+        variants: [
+            (0, bare_leaf!(PackedLeafType::Handle, true)),
+            (1, bare_leaf!(PackedLeafType::Handle)),
+            (2, bare_leaf!(PackedLeafType::UInt8)),
+        ]
+        .into(),
+        is_nullable: false,
+    },
+});
+
+fn base_union_mojom_h1(h1: Option<UntypedHandle>) -> MojomValue {
+    MojomValue::Union(0, Box::new(nullable_val!(h1.map(MojomValue::Handle))))
+}
+
+fn base_union_mojom_h2(h2: UntypedHandle) -> MojomValue {
+    MojomValue::Union(1, Box::new(MojomValue::Handle(h2)))
+}
+
+fn base_union_mojom_n(e1: u8) -> MojomValue {
+    MojomValue::Union(2, Box::new(MojomValue::UInt8(e1)))
+}
+
+// Mojom Definition:
+// array<handle?>
+static ARRAY_NULL_HANDLE_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<handle?>",
+    base_type: array!(nullable_ty!(MojomType::Handle), None),
+    packed_type: packed_array!(bare_leaf!(PackedLeafType::Handle, true), None),
+});
+
+fn array_null_handle_mojom(elts: Vec<Option<UntypedHandle>>) -> MojomValue {
+    MojomValue::Array(
+        elts.into_iter().map(|elt| nullable_val!(elt.map(MojomValue::Handle))).collect(),
+    )
+}
+
+// Mojom Definition:
+// struct NestedHandles {
+//     handle h1;
+//     array<handle?> arr;
+//     handle h2;
+//     WithHandles wh;
+//     handle h3;
+// };
+static NESTED_HANDLES_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "NestedHandles",
+    base_type: wrap_struct_fields_type(vec![
+        ("h1".to_string(), MojomType::Handle),
+        ("arr".to_string(), ARRAY_NULL_HANDLE_TY.base_type.clone()),
+        ("h2".to_string(), MojomType::Handle),
+        ("wh".to_string(), WITH_HANDLES_TY.base_type.clone()),
+        ("h3".to_string(), MojomType::Handle),
+    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("h1".to_string(), struct_leaf!(0, PackedLeafType::Handle)),
+            ("h2".to_string(), struct_leaf!(2, PackedLeafType::Handle)),
+            ("arr".to_string(), ARRAY_NULL_HANDLE_TY.as_struct_field(1)),
+            ("wh".to_string(), WITH_HANDLES_TY.as_struct_field(3)),
+            ("h3".to_string(), struct_leaf!(4, PackedLeafType::Handle)),
+        ],
+        5,
+    ),
+});
+
+fn nested_handles_mojom(
+    h1: UntypedHandle,
+    arr: Vec<Option<UntypedHandle>>,
+    h2: UntypedHandle,
+    wh: MojomValue,
+    h3: UntypedHandle,
+) -> MojomValue {
+    wrap_struct_fields_value(vec![
+        ("h1".to_string(), MojomValue::Handle(h1)),
+        ("arr".to_string(), array_null_handle_mojom(arr)),
+        ("h2".to_string(), MojomValue::Handle(h2)),
+        ("wh".to_string(), wh),
+        ("h3".to_string(), MojomValue::Handle(h3)),
+    ])
+}
+
+#[gtest(RustTestMojomParsingAttr, TestHandles)]
+fn test_handles() {
+    HANDLES_TY.validate_mojomparse_handles(
+        Handles { h1: dummy_handle(), h2: None, h3: dummy_handle().into(), h4: None },
+        || handles_mojom(dummy_handle(), None, dummy_handle(), None),
+    );
+
+    HANDLES_TY.validate_mojomparse_handles(
+        Handles {
+            h1: dummy_handle(),
+            h2: Some(dummy_handle()),
+            h3: dummy_handle().into(),
+            h4: Some(dummy_handle().into()),
+        },
+        || {
+            handles_mojom(
+                dummy_handle(),
+                Some(dummy_handle()),
+                dummy_handle(),
+                Some(dummy_handle()),
+            )
+        },
+    );
+
+    WITH_HANDLES_TY
+        .validate_mojomparse_handles(WithHandles::h1(None), || base_union_mojom_h1(None));
+    WITH_HANDLES_TY.validate_mojomparse_handles(WithHandles::h1(Some(dummy_handle())), || {
+        base_union_mojom_h1(Some(dummy_handle()))
+    });
+    WITH_HANDLES_TY.validate_mojomparse_handles(WithHandles::h2(dummy_handle().into()), || {
+        base_union_mojom_h2(dummy_handle())
+    });
+    WITH_HANDLES_TY.validate_mojomparse_handles(WithHandles::n(42), || base_union_mojom_n(42));
+
+    NESTED_HANDLES_TY.validate_mojomparse_handles(
+        NestedHandles {
+            h1: dummy_handle(),
+            arr: vec![Some(dummy_handle()), None, Some(dummy_handle())],
+            h2: dummy_handle(),
+            wh: WithHandles::h2(dummy_handle().into()),
+            h3: dummy_handle(),
+        },
+        || {
+            nested_handles_mojom(
+                dummy_handle(),
+                vec![Some(dummy_handle()), None, Some(dummy_handle())],
+                dummy_handle(),
+                base_union_mojom_h2(dummy_handle()),
+                dummy_handle(),
+            )
+        },
     );
 }

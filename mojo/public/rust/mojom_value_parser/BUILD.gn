@@ -61,6 +61,7 @@ rust_static_library("mojom_value_parser_unittests") {
   is_gtest_unittests = true
   crate_root = "test/lib.rs"
   sources = [
+    "test/helpers.rs",
     "test/lib.rs",
     "test/test_mojomparse.rs",
     "test/test_parser.rs",
@@ -71,6 +72,7 @@ rust_static_library("mojom_value_parser_unittests") {
     ":mojom_value_parser_core",
     ":parser_unittests_rust",
     ":validation_parser",
+    "../system",
     "//testing/rust_gtest_interop",
     "//third_party/rust/anyhow/v1:lib",
     "//third_party/rust/ordered_float/v5:lib",
