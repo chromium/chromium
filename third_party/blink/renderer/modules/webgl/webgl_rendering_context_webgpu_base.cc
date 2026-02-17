@@ -74,6 +74,19 @@ const DawnProcTable* GetDawnProcs() {
 #endif  // BUILDFLAG(USE_DAWN)
 }
 
+// The maximum supported size of an ArrayBuffer is the maximum size that can be
+// allocated in JavaScript. This maximum is defined by the maximum size
+// PartitionAlloc can allocate. We limit the maximum size of ArrayBuffers we
+// support to avoid integer overflows in the WebGL implementation. WebGL stores
+// the data size as uint32_t, so if sizes just below uint32_t::max() were passed
+// in, integer overflows could happen. The limit defined here is (2GB-2MB),
+// which should be enough buffer to avoid integer overflow. This limit should
+// restrict the usability of WebGL2 only insignificantly, as JavaScript cannot
+// allocate bigger ArrayBuffers anyways. Only with WebAssembly it is possible to
+// allocate bigger ArrayBuffers.
+static constexpr size_t kMaximumSupportedArrayBufferSize =
+    ::partition_alloc::internal::MaxDirectMapped();
+
 void GL_APIENTRY
 WebGLRenderingContextWebGPUBaseDebugMessageCallback(GLenum source,
                                                     GLenum type,
@@ -1490,7 +1503,11 @@ void WebGLRenderingContextWebGPUBase::readPixels(
     GLenum format,
     GLenum type,
     MaybeShared<DOMArrayBufferView> pixels) {
-  NOTIMPLEMENTED();
+  // Forward to the WebGL2 readPixels function that takes an offset. The WebGL2
+  // readPixels doesn't validate that we are a WebGL2 context as that's done at
+  // the type level in the WebGL IDL: the readPixels with offset can only be
+  // called if a successful `getContext("webgl2")` happened.
+  readPixels(x, y, width, height, format, type, pixels, 0);
 }
 
 void WebGLRenderingContextWebGPUBase::renderbufferStorage(GLenum target,
@@ -3626,7 +3643,22 @@ void WebGLRenderingContextWebGPUBase::readPixels(GLint x,
                                                  GLenum format,
                                                  GLenum type,
                                                  int64_t offset) {
-  NOTIMPLEMENTED();
+  if (!ValidateFitsNonNegInt32("readPixels", "offset", offset)) {
+    return;
+  }
+
+  // WebGL separates the entrypoints for readPixels back to CPU or to a
+  // PIXEL_PACK buffer, so there is validation that the correct entrypoint is
+  // used depending on whether the PIXEL_PACK buffer is present.
+  if (!pixel_pack_buffer_binding_) {
+    InsertGLError(GL_INVALID_OPERATION, "readPixels",
+                  "no PIXEL_PACK buffer bound");
+    return;
+  }
+
+  EnsureDefaultFramebuffer();
+  driver_gl_.fn.glReadPixelsFn(x, y, width, height, format, type,
+                               reinterpret_cast<void*>(offset));
 }
 
 void WebGLRenderingContextWebGPUBase::readPixels(
@@ -3638,7 +3670,131 @@ void WebGLRenderingContextWebGPUBase::readPixels(
     GLenum type,
     MaybeShared<DOMArrayBufferView> pixels,
     int64_t offset) {
-  NOTIMPLEMENTED();
+  // Due to WebGL's same-origin restrictions, it is not possible to taint the
+  // origin using the WebGL API.
+  DCHECK(Host()->OriginClean());
+
+  // WebGL separates the entrypoints for readPixels back to CPU or to a
+  // PIXEL_PACK buffer, so there is validation that the correct entrypoint is
+  // used depending on whether the PIXEL_PACK buffer is present.
+  if (pixel_pack_buffer_binding_) {
+    InsertGLError(GL_INVALID_OPERATION, "readPixels",
+                  "PIXEL_PACK buffer should not be bound");
+    return;
+  }
+
+  // Validation specific to WebGL because it uses a DOMArrayBufferView instead
+  // of a void* like in OpenGL ES.
+  if (pixels.IsNull()) {
+    InsertGLError(GL_INVALID_VALUE, "readPixels",
+                  "no destination ArrayBufferView");
+    return;
+  }
+  if (offset > int64_t(pixels->byteLength() / pixels->TypeSize())) {
+    InsertGLError(GL_INVALID_VALUE, "readPixels",
+                  "destination offset out of range");
+    return;
+  }
+  size_t byte_offset = size_t(offset * pixels->TypeSize());
+  base::span<uint8_t> data_at_offset = pixels->ByteSpan().subspan(byte_offset);
+
+  // Validation specific to WebGL that the type of the DOMArrayBufferView
+  // matches the type used to read back data.
+  DOMArrayBufferView::ViewType pixels_type = pixels->GetType();
+  switch (type) {
+    case GL_UNSIGNED_BYTE:
+      if (pixels_type != DOMArrayBufferView::kTypeUint8 &&
+          pixels_type != DOMArrayBufferView::kTypeUint8Clamped) {
+        InsertGLError(
+            GL_INVALID_OPERATION, "readPixels",
+            "type UNSIGNED_BYTE but ArrayBufferView not Uint8Array or "
+            "Uint8ClampedArray");
+        return;
+      }
+      break;
+    case GL_BYTE:
+      if (pixels_type != DOMArrayBufferView::kTypeInt8) {
+        InsertGLError(GL_INVALID_OPERATION, "readPixels",
+                      "type BYTE but ArrayBufferView not Int8Array");
+        return;
+      }
+      break;
+    case GL_HALF_FLOAT:
+      if (pixels_type != DOMArrayBufferView::kTypeUint16) {
+        InsertGLError(GL_INVALID_OPERATION, "readPixels",
+                      "type HALF_FLOAT but ArrayBufferView not Uint16Array");
+        return;
+      }
+      break;
+    case GL_FLOAT:
+      if (pixels_type != DOMArrayBufferView::kTypeFloat32) {
+        InsertGLError(GL_INVALID_OPERATION, "readPixels",
+                      "type FLOAT but ArrayBufferView not Float32Array");
+        return;
+      }
+      break;
+    case GL_UNSIGNED_SHORT_5_6_5:
+    case GL_UNSIGNED_SHORT_4_4_4_4:
+    case GL_UNSIGNED_SHORT_5_5_5_1:
+      if (pixels_type != DOMArrayBufferView::kTypeUint16) {
+        InsertGLError(
+            GL_INVALID_OPERATION, "readPixels",
+            "type UNSIGNED_SHORT but ArrayBufferView not Uint16Array");
+        return;
+      }
+      break;
+    case GL_UNSIGNED_SHORT:
+      if (pixels_type != DOMArrayBufferView::kTypeUint16) {
+        InsertGLError(
+            GL_INVALID_OPERATION, "readPixels",
+            "type GL_UNSIGNED_SHORT but ArrayBufferView not Uint16Array");
+        return;
+      }
+      break;
+    case GL_SHORT:
+      if (pixels_type != DOMArrayBufferView::kTypeInt16) {
+        InsertGLError(GL_INVALID_OPERATION, "readPixels",
+                      "type SHORT but ArrayBufferView not Int16Array");
+        return;
+      }
+      break;
+    case GL_UNSIGNED_INT:
+    case GL_UNSIGNED_INT_2_10_10_10_REV:
+    case GL_UNSIGNED_INT_10F_11F_11F_REV:
+    case GL_UNSIGNED_INT_5_9_9_9_REV:
+      if (pixels_type != DOMArrayBufferView::kTypeUint32) {
+        InsertGLError(GL_INVALID_OPERATION, "readPixels",
+                      "type UNSIGNED_INT but ArrayBufferView not Uint32Array");
+        return;
+      }
+      break;
+    case GL_INT:
+      if (pixels_type != DOMArrayBufferView::kTypeInt32) {
+        InsertGLError(GL_INVALID_OPERATION, "readPixels",
+                      "type INT but ArrayBufferView not Int32Array");
+        return;
+      }
+      break;
+    default:
+      InsertGLError(GL_INVALID_ENUM, "readPixels", "invalid type");
+      return;
+  }
+
+  EnsureDefaultFramebuffer();
+
+  // Use ReadPixelsRobustANGLE that will check that the bytes written don't go
+  // past the end of the DOMArrayBufferView. We also need to ensure the size
+  // fits in a GLsizei (the type used for the bufSize parameter) and doesn't go
+  // past kMaximumSupportedArrayBufferSize (see comment for that constant).
+  constexpr size_t kMaxBufSize =
+      std::min(size_t(std::numeric_limits<GLsizei>::max()),
+               kMaximumSupportedArrayBufferSize);
+  size_t bufSizeSizeT = std::min(data_at_offset.size(), kMaxBufSize);
+  GLsizei bufSize = bufSizeSizeT;  // Safe with the min() above.
+
+  driver_gl_.fn.glReadPixelsRobustANGLEFn(x, y, width, height, format, type,
+                                          bufSize, nullptr, nullptr, nullptr,
+                                          data_at_offset.data());
 }
 
 // **************************************************************************
