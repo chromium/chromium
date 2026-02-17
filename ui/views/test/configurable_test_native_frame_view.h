@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -51,11 +52,16 @@ class ConfigurableTestNativeFrameView : public NativeFrameView {
   int NonClientHitTest(const gfx::Point& point) override;
   void Layout(PassKey) override;
 
+  base::WeakPtr<ConfigurableTestNativeFrameView> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::optional<gfx::Size> minimum_size_;
   std::optional<int> hit_test_result_;
   bool fullscreen_layout_caled_ = false;
   std::optional<gfx::Size> client_view_margin_;
+  base::WeakPtrFactory<ConfigurableTestNativeFrameView> weak_ptr_factory_{this};
 };
 
 }  // namespace test

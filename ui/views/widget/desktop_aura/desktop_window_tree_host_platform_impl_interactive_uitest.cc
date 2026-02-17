@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -173,20 +174,21 @@ class HitTestWidgetDelegate : public WidgetDelegate {
 
   ~HitTestWidgetDelegate() override = default;
 
-  test::ConfigurableTestNativeFrameView* frame_view() { return frame_view_; }
+  test::ConfigurableTestNativeFrameView* frame_view() {
+    return frame_view_.get();
+  }
 
   // WidgetDelegate:
   std::unique_ptr<FrameView> CreateFrameView(Widget* widget) override {
     DCHECK(!frame_view_);
     auto frame_view =
         std::make_unique<test::ConfigurableTestNativeFrameView>(widget);
-    frame_view_ = frame_view.get();
+    frame_view_ = frame_view->GetWeakPtr();
     return frame_view;
   }
 
  private:
-  raw_ptr<test::ConfigurableTestNativeFrameView, DanglingUntriaged>
-      frame_view_ = nullptr;
+  base::WeakPtr<test::ConfigurableTestNativeFrameView> frame_view_;
 };
 
 // Test host that can intercept calls to the real host.
@@ -346,6 +348,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, HitTest) {
 
   aura::Window* window = widget->GetNativeWindow();
   auto* frame_view = delegate_->frame_view();
+  ASSERT_TRUE(frame_view);
   for (int hittest : hittest_values) {
     handler->Reset();
 
@@ -442,6 +445,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch,
   host_->ResetCalledMaximize();
 
   auto* frame_view = delegate_->frame_view();
+  ASSERT_TRUE(frame_view);
   // Set the desired hit test result value, which will be returned, when
   // WindowEventFilter starts to perform hit testing.
   frame_view->set_hit_test_result(HTCAPTION);
@@ -484,6 +488,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch,
   host_->ResetCalledMaximize();
 
   auto* frame_view = delegate_->frame_view();
+  ASSERT_TRUE(frame_view);
 
   if (use_touch_event()) {
     frame_view->set_hit_test_result(HTCLIENT);
@@ -526,6 +531,7 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest,
   host_->ResetCalledMaximize();
 
   auto* frame_view = delegate_->frame_view();
+  ASSERT_TRUE(frame_view);
 
   frame_view->set_hit_test_result(HTCLIENT);
   int flags_left_button = ui::EF_LEFT_MOUSE_BUTTON;
