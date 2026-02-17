@@ -584,6 +584,10 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     return true;
   }
 
+  if (ui::IsLink(GetRole())) {
+    return true;
+  }
+
   // If we are the direct descendant of a link and have no siblings/children,
   // then we are not interesting, return false
   parent = PlatformGetParent();
