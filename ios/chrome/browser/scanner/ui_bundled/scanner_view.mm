@@ -67,9 +67,8 @@ const CGFloat kFlashDuration = 0.5;
   }
   DCHECK(delegate);
   _delegate = delegate;
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-  [self registerForTraitChanges:traits withAction:@selector(maybeHideCaptions)];
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                     withAction:@selector(maybeHideCaptions)];
 
   return self;
 }
