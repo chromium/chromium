@@ -387,6 +387,13 @@ class CONTENT_EXPORT VideoCaptureManager
 
   SetDesktopCaptureWindowIdCallback
       set_desktop_capture_window_id_callback_for_testing_;
+
+  // Stores the session IDs of display capture streams in the order they were
+  // started. Used for testing purposes.
+  // TODO(crbug.com/485200165): Remove this once testing is completed and the
+  // bug is fixed.
+  std::vector<base::UnguessableToken> display_capture_session_ids_;
+  base::WeakPtrFactory<VideoCaptureManager> weak_factory_{this};
 };
 
 }  // namespace content

@@ -41,6 +41,13 @@
 
 namespace {
 
+// Test feature that simulates a hardware limitation where starting a second
+// display capture stream automatically stops the first one.
+// TODO(crbug.com/485200165): Remove this once testing is completed and the bug
+// is fixed.
+BASE_FEATURE(kVideoCaptureManagerStopFirstDisplayCaptureAfterSecondStarts,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 void LogVideoCaptureError(media::VideoCaptureError error) {
   base::UmaHistogramEnumeration("Media.VideoCapture.Error", error);
 }
@@ -202,6 +209,11 @@ void VideoCaptureManager::Close(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          kVideoCaptureManagerStopFirstDisplayCaptureAfterSecondStarts)) {
+    std::erase(display_capture_session_ids_, capture_session_id);
+  }
+
   VideoCaptureController* const existing_device =
       LookupControllerByMediaTypeAndDeviceId(session_it->second.type,
                                              session_it->second.id);
@@ -360,6 +372,28 @@ void VideoCaptureManager::OnDeviceLaunched(VideoCaptureController* controller) {
   DCHECK(!device_start_request_queue_.empty());
   DCHECK_EQ(controller, device_start_request_queue_.begin()->controller());
   DCHECK(controller);
+
+  // Test feature that simulates a hardware limitation where starting a second
+  // display capture stream automatically stops the first one.
+  // TODO(crbug.com/485200165): Remove this once testing is completed and the
+  // bug is fixed.
+  if (base::FeatureList::IsEnabled(
+          kVideoCaptureManagerStopFirstDisplayCaptureAfterSecondStarts) &&
+      controller->stream_type() ==
+          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
+    const media::VideoCaptureSessionId session_id =
+        device_start_request_queue_.front().session_id();
+    if (!display_capture_session_ids_.empty()) {
+      const base::UnguessableToken first_session_id =
+          display_capture_session_ids_.front();
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&VideoCaptureManager::Close,
+                         weak_factory_.GetWeakPtr(), first_session_id),
+          base::Milliseconds(30));
+    }
+    display_capture_session_ids_.push_back(session_id);
+  }
 
   if (blink::IsVideoDesktopCaptureMediaType(controller->stream_type())) {
     const media::VideoCaptureSessionId session_id =
