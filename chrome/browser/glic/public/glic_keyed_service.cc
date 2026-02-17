@@ -961,12 +961,14 @@ void GlicKeyedService::RequestToConfirmNavigation(
 void GlicKeyedService::RequestToShowAutofillSuggestionsDialog(
     actor::TaskId task_id,
     std::vector<autofill::ActorFormFillingRequest> requests,
+    base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
     AutofillSuggestionSelectedCallback callback) {
   CHECK(UseDefaultWindowController());
   auto* window_controller_impl =
       static_cast<GlicWindowControllerImpl*>(window_controller_.get());
   window_controller_impl->host().RequestToShowAutofillSuggestionsDialog(
-      task_id, std::move(requests), std::move(callback));
+      task_id, std::move(requests), std::move(event_handler),
+      std::move(callback));
 }
 #endif
 

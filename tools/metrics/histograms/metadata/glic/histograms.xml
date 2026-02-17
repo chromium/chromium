@@ -148,6 +148,9 @@ chromium-metrics-reviews@google.com.
   <token key="ApiRequestType">
     <variant name="ActivateTab"/>
     <variant name="AttachPanel"/>
+    <variant name="AutofillSuggestionDialogOnFormConfirmed"/>
+    <variant name="AutofillSuggestionDialogOnFormPresented"/>
+    <variant name="AutofillSuggestionDialogOnFormPreviewChanged"/>
     <variant name="CancelActions"/>
     <variant name="CaptureScreenshot"/>
     <variant name="ClosePanel"/>

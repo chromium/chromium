@@ -22,20 +22,68 @@ function handleRequest(request: SelectAutofillSuggestionsDialogRequest) {
   $.autofillSuggestionsDialogStatus.textContent =
       'Task requests suggestion selection.';
 
-  for (const formFillingRequest of request.formFillingRequests) {
+  request.formFillingRequests.forEach((formFillingRequest, formIndex) => {
     const li_form = document.createElement('li');
     li_form.textContent =
         `Form for requestedData: ${formFillingRequest.requestedData}`;
+
+    const notifyPresentedBtn = document.createElement('button');
+    notifyPresentedBtn.textContent = 'Notify Form Presented';
+    notifyPresentedBtn.addEventListener('click', () => {
+      request.onFormPresented?.({formFillingRequestIndex: formIndex});
+      logMessage(
+          `Notified form presented for formFillingRequestIndex ${formIndex}`);
+    });
+    li_form.appendChild(notifyPresentedBtn);
+
     const ul_suggestions = document.createElement('ul');
     for (const suggestion of formFillingRequest.suggestions) {
       const li_suggestion = document.createElement('li');
       li_suggestion.textContent = `ID: ${suggestion.id}, Title: ${
           suggestion.title}, Details: ${suggestion.details}`;
+
+      const previewStartBtn = document.createElement('button');
+      previewStartBtn.textContent = 'Preview Start';
+      previewStartBtn.addEventListener('click', () => {
+        request.onFormPreviewChanged?.({
+          formFillingRequestIndex: formIndex,
+          response: {selectedSuggestionId: suggestion.id},
+        });
+        logMessage(`Preview started for formFillingRequestIndex ${
+            formIndex}, id ${suggestion.id}`);
+      });
+      li_suggestion.appendChild(previewStartBtn);
+
+      const previewEndBtn = document.createElement('button');
+      previewEndBtn.textContent = 'Preview End';
+      previewEndBtn.addEventListener('click', () => {
+        request.onFormPreviewChanged?.({formFillingRequestIndex: formIndex});
+        logMessage(`Preview ended for formFillingRequestIndex ${formIndex}`);
+      });
+      li_suggestion.appendChild(previewEndBtn);
+
       ul_suggestions.appendChild(li_suggestion);
     }
     li_form.appendChild(ul_suggestions);
+
+    const confirmBtn = document.createElement('button');
+    confirmBtn.textContent = 'Confirm Form';
+    confirmBtn.addEventListener('click', () => {
+      // Use the first suggestion as the default "confirmation" for this form.
+      if (formFillingRequest.suggestions.length > 0) {
+        const id = formFillingRequest.suggestions[0]!.id;
+        request.onFormConfirmed?.({
+          formFillingRequestIndex: formIndex,
+          response: {selectedSuggestionId: id},
+        });
+        logMessage(`Form confirmed for formFillingRequestIndex ${
+            formIndex}, id ${id}`);
+      }
+    });
+    li_form.appendChild(confirmBtn);
+
     $.autofillSuggestionsList.appendChild(li_form);
-  }
+  });
 
   if (request.formFillingRequests.length > 0) {
     // Pre-fill the selection with the first suggestion from each form filling

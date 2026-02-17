@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, AutofillSuggestion, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateSkillRequest, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFillingRequest, GetPinCandidatesOptions, HostCapability, InvokeOptions, Journal, MetricUserInputReactionType, NavigationConfirmationRequest, NavigationConfirmationResponse, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectAutofillSuggestionsDialogResponse, SelectCredentialDialogRequest, SelectCredentialDialogResponse, Skill, SkillPreview, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, AutofillSuggestion, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateSkillRequest, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFillingRequest, FormFillingResponse, GetPinCandidatesOptions, HostCapability, InvokeOptions, Journal, MetricUserInputReactionType, NavigationConfirmationRequest, NavigationConfirmationResponse, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectAutofillSuggestionsDialogResponse, SelectCredentialDialogRequest, SelectCredentialDialogResponse, Skill, SkillPreview, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -600,6 +600,33 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserAutofillSuggestionDialogOnFormPresented: {
+    request: {
+      taskId: number,
+      params: {formFillingRequestIndex: number},
+    },
+    backgroundAllowed: true,
+  },
+  glicBrowserAutofillSuggestionDialogOnFormPreviewChanged: {
+    request: {
+      taskId: number,
+      params: {
+        formFillingRequestIndex: number,
+        response?: FormFillingResponse,
+      },
+    },
+    backgroundAllowed: true,
+  },
+  glicBrowserAutofillSuggestionDialogOnFormConfirmed: {
+    request: {
+      taskId: number,
+      params: {
+        formFillingRequestIndex: number,
+        response: FormFillingResponse,
+      },
+    },
+    backgroundAllowed: true,
+  },
 }>;
 
 // Types of requests to the GlicWebClient.
@@ -952,6 +979,9 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         GetSkill: 84,
         CancelActions: 85,
         ShowManageSkillsUi: 86,
+        AutofillSuggestionDialogOnFormPresented: 87,
+        AutofillSuggestionDialogOnFormPreviewChanged: 88,
+        AutofillSuggestionDialogOnFormConfirmed: 89,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();
@@ -1170,7 +1200,8 @@ export declare interface FormFillingRequestPrivate extends
 export declare interface SelectAutofillSuggestionsDialogRequestPrivate extends
     Omit<
         SelectAutofillSuggestionsDialogRequest,
-        'onDialogClosed'|'formFillingRequests'> {
+        'onDialogClosed'|'onFormPresented'|'onFormPreviewChanged'|
+        'onFormConfirmed'|'formFillingRequests'> {
   taskId: number;
   formFillingRequests: FormFillingRequestPrivate[];
 }

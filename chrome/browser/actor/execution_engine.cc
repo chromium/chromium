@@ -1089,6 +1089,7 @@ ExecutionEngine::GetUserSelectedCredential(
 
 void ExecutionEngine::RequestToShowAutofillSuggestions(
     std::vector<autofill::ActorFormFillingRequest> requests,
+    base::WeakPtr<AutofillSelectionDialogEventHandler> event_handler,
     ExecutionEngine::AutofillSuggestionSelectedCallback callback) {
   TRACE_EVENT0("actor", "ExecutionEngine::RequestToShowAutofillSuggestions");
   CHECK(!requests.empty());
@@ -1103,7 +1104,8 @@ void ExecutionEngine::RequestToShowAutofillSuggestions(
     return;
   }
   task_->delegate()->RequestToShowAutofillSuggestionsDialog(
-      task_->id(), std::move(requests), std::move(callback));
+      task_->id(), std::move(requests), std::move(event_handler),
+      std::move(callback));
 }
 
 void ExecutionEngine::InterruptFromTool() {

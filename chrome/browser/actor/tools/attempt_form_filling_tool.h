@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/autofill_selection_dialog_event_handler.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -21,7 +22,8 @@
 
 namespace actor {
 
-class AttemptFormFillingTool : public Tool {
+class AttemptFormFillingTool : public Tool,
+                               public AutofillSelectionDialogEventHandler {
  public:
   AttemptFormFillingTool(
       TaskId task_id,
@@ -43,6 +45,17 @@ class AttemptFormFillingTool : public Tool {
   tabs::TabHandle GetTargetTab() const override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
+
+  // AutofillSelectionDialogEventHandler implementation.
+  void OnFormPresented(
+      webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr params)
+      override;
+  void OnFormPreviewChanged(
+      webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParamsPtr
+          params) override;
+  void OnFormConfirmed(
+      webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr params)
+      override;
 
  private:
   void OnSuggestionsRetrieved(

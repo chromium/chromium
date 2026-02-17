@@ -800,6 +800,24 @@ interface WebClientHandler {
   // Opens the glic settings page.
   OpenGlicSettingsPage(OpenSettingsOptions options);
 
+  // Called when a form is presented in the autofill selection dialog.
+  AutofillSuggestionDialogOnFormPresented(
+      int32 task_id,
+      actor.webui.mojom.AutofillSuggestionDialogOnFormPresentedParams params);
+
+  // Called when a suggestion preview is changed for a form in the autofill
+  // selection dialog.
+  AutofillSuggestionDialogOnFormPreviewChanged(
+      int32 task_id,
+      actor.webui.mojom.AutofillSuggestionDialogOnFormPreviewChangedParams
+          params);
+
+  // Called when a form is confirmed with a selected suggestion in the autofill
+  // selection dialog.
+  AutofillSuggestionDialogOnFormConfirmed(
+      int32 task_id,
+      actor.webui.mojom.AutofillSuggestionDialogOnFormConfirmedParams params);
+
   // Opens the password manager settings page.
   OpenPasswordManagerSettingsPage();
 

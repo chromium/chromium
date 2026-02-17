@@ -758,6 +758,7 @@ void Host::RequestToConfirmNavigation(
 void Host::RequestToShowAutofillSuggestionsDialog(
     actor::TaskId task_id,
     std::vector<autofill::ActorFormFillingRequest> requests,
+    base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
     actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback callback) {
   if (!IsReady()) {
     std::move(callback).Run(
@@ -770,7 +771,8 @@ void Host::RequestToShowAutofillSuggestionsDialog(
     return;
   }
   handler_info_->web_client->RequestToShowAutofillSuggestionsDialog(
-      task_id, std::move(requests), std::move(callback));
+      task_id, std::move(requests), std::move(event_handler),
+      std::move(callback));
 }
 
 void Host::FloatingPanelCanAttachChanged(bool can_attach) {

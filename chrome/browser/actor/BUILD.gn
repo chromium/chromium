@@ -253,6 +253,7 @@ source_set("variants") {
 source_set("types") {
   sources = [
     "actor_task_delegate.h",
+    "autofill_selection_dialog_event_handler.h",
     "shared_types.cc",
     "shared_types.h",
   ]

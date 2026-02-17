@@ -28,6 +28,7 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/aggregated_journal_file_serializer.h"
 #include "chrome/browser/actor/aggregated_journal_in_memory_serializer.h"
+#include "chrome/browser/actor/autofill_selection_dialog_event_handler.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
@@ -2269,8 +2270,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void RequestToShowAutofillSuggestionsDialog(
       actor::TaskId task_id,
       std::vector<autofill::ActorFormFillingRequest> requests,
+      base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
       actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback
           on_autofill_suggestions_selected) override {
+    autofill_selection_event_handler_ = std::move(event_handler);
+
     std::vector<actor::webui::mojom::FormFillingRequestPtr> mojo_requests;
     for (const auto& request : requests) {
       auto mojo_request = actor::webui::mojom::FormFillingRequest::New();
@@ -2295,6 +2299,34 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     web_client_->RequestToShowAutofillSuggestionsDialog(
         std::move(dialog_request), std::move(on_autofill_suggestions_selected));
+  }
+
+  void AutofillSuggestionDialogOnFormPresented(
+      int32_t task_id,
+      actor::webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr
+          params) override {
+    if (autofill_selection_event_handler_) {
+      autofill_selection_event_handler_->OnFormPresented(std::move(params));
+    }
+  }
+
+  void AutofillSuggestionDialogOnFormPreviewChanged(
+      int32_t task_id,
+      actor::webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParamsPtr
+          params) override {
+    if (autofill_selection_event_handler_) {
+      autofill_selection_event_handler_->OnFormPreviewChanged(
+          std::move(params));
+    }
+  }
+
+  void AutofillSuggestionDialogOnFormConfirmed(
+      int32_t task_id,
+      actor::webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr
+          params) override {
+    if (autofill_selection_event_handler_) {
+      autofill_selection_event_handler_->OnFormConfirmed(std::move(params));
+    }
   }
 
   mojom::SkillPtr GetSkillById(std::string_view skill_id) {
@@ -2376,6 +2408,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   raw_ptr<skills::SkillsService> skills_service_;
 #endif
+  base::WeakPtr<actor::AutofillSelectionDialogEventHandler>
+      autofill_selection_event_handler_;
   bool floating_panel_can_attach_ = false;
 };
 

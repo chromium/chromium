@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/actor/actor_switches.h"
@@ -252,7 +253,7 @@ void AttemptFormFillingTool::OnSuggestionsRetrieved(
   }
 
   tool_delegate().RequestToShowAutofillSuggestions(
-      std::move(*suggestions_result),
+      std::move(*suggestions_result), weak_factory_.GetWeakPtr(),
       base::BindOnce(&AttemptFormFillingTool::OnSuggestionsSelected,
                      weak_factory_.GetWeakPtr(), std::move(invoke_callback)));
 }
@@ -328,6 +329,25 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
         return result.has_value() ? MakeOkResult()
                                   : FromServiceError(result.error());
       }).Then(std::move(invoke_callback)));
+}
+
+void AttemptFormFillingTool::OnFormPresented(
+    webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr params) {
+  // TODO(crbug.com/483405648): Implement.
+  NOTIMPLEMENTED();
+}
+
+void AttemptFormFillingTool::OnFormPreviewChanged(
+    webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParamsPtr
+        params) {
+  // TODO(crbug.com/483405648): Implement.
+  NOTIMPLEMENTED();
+}
+
+void AttemptFormFillingTool::OnFormConfirmed(
+    webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr params) {
+  // TODO(crbug.com/483405648): Implement.
+  NOTIMPLEMENTED();
 }
 
 }  // namespace actor

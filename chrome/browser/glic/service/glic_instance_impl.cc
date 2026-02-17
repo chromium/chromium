@@ -1388,8 +1388,10 @@ void GlicInstanceImpl::RequestToConfirmNavigation(
 void GlicInstanceImpl::RequestToShowAutofillSuggestionsDialog(
     actor::TaskId task_id,
     std::vector<autofill::ActorFormFillingRequest> requests,
+    base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
     AutofillSuggestionSelectedCallback callback) {
   host_.RequestToShowAutofillSuggestionsDialog(task_id, std::move(requests),
+                                               std::move(event_handler),
                                                std::move(callback));
 }
 

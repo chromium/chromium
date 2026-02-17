@@ -285,6 +285,7 @@ class GlicInstanceImpl : public GlicInstance,
   void RequestToShowAutofillSuggestionsDialog(
       actor::TaskId task_id,
       std::vector<autofill::ActorFormFillingRequest> requests,
+      base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
       AutofillSuggestionSelectedCallback callback) override;
 
  private:

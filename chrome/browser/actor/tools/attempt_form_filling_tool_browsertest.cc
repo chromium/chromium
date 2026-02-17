@@ -104,6 +104,7 @@ class MockExecutionEngine : public ExecutionEngine {
   MOCK_METHOD(void,
               RequestToShowAutofillSuggestions,
               (std::vector<autofill::ActorFormFillingRequest>,
+               base::WeakPtr<AutofillSelectionDialogEventHandler>,
                ToolDelegate::AutofillSuggestionSelectedCallback),
               (override));
   MOCK_METHOD(autofill::ActorFormFillingService&,
@@ -126,6 +127,7 @@ class AttemptFormFillingToolTest : public ActorToolsTest {
 
     void operator()(
         std::vector<autofill::ActorFormFillingRequest> requests,
+        base::WeakPtr<AutofillSelectionDialogEventHandler> event_handler,
         ExecutionEngine::AutofillSuggestionSelectedCallback callback) {
       auto response =
           webui::mojom::SelectAutofillSuggestionsDialogResponse::New();
@@ -314,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogNotShown) {
               webui::mojom::SelectAutofillSuggestionsDialogErrorReason::
                   kDialogPromiseNoSubscriber));
   EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions)
-      .WillOnce(RunOnceCallback<1>(std::move(dialog_error_response)));
+      .WillOnce(RunOnceCallback<2>(std::move(dialog_error_response)));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
       *active_tab(), {PageTarget(*address_home_line1)});
@@ -351,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
           webui::mojom::SelectAutofillSuggestionsDialogResult::
               NewSelectedSuggestions({}));
   EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions)
-      .WillOnce(RunOnceCallback<1>(
+      .WillOnce(RunOnceCallback<2>(
           std::move(dialog_with_empty_selected_suggestions)));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
@@ -549,8 +551,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
                   ElementsAre(EqActorFormFillingRequest(
                       request.requested_data,
                       ElementsAre(EqActorSuggestion(request.suggestions[0])))),
-                  _))
-      .WillOnce(RunOnceCallback<1>(MakeAutofillSuggestionsErrorResponse()));
+                  _, _))
+      .WillOnce(RunOnceCallback<2>(MakeAutofillSuggestionsErrorResponse()));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
       *active_tab(), {PageTarget(*address_home_line1)});

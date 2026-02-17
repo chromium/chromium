@@ -133,6 +133,31 @@ struct FormFillingResponse {
   string selected_suggestion_id;
 };
 
+// Represents a form having been shown in the Chat UI.
+struct AutofillSuggestionDialogOnFormPresentedParams {
+  // The index corresponding to the form in array
+  // SelectAutofillSuggestionsDialogRequest.form_filling_requests
+  int32 form_filling_request_index;
+};
+
+// Represents a form preview event from Chat UI.
+struct AutofillSuggestionDialogOnFormPreviewChangedParams {
+  // The index corresponding to the form in array
+  // SelectAutofillSuggestionsDialogRequest.form_filling_requests
+  int32 form_filling_request_index;
+  // The form filling response for the suggestion to be previewed. Null when
+  // the preview should be hidden.
+  FormFillingResponse? response;
+};
+
+// Represents the event when a form is confirmed by the user.
+struct AutofillSuggestionDialogOnFormConfirmedParams {
+  // The index corresponding to the form in array
+  // SelectAutofillSuggestionsDialogRequest.form_filling_requests
+  int32 form_filling_request_index;
+  FormFillingResponse response;
+};
+
 // Contains either an error or the users' response to the offered autofill
 // suggestions.
 union SelectAutofillSuggestionsDialogResult {

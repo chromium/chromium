@@ -56,6 +56,7 @@ namespace actor {
 
 struct ActionResultWithLatencyInfo;
 class ActorTask;
+class AutofillSelectionDialogEventHandler;
 class ToolRequest;
 namespace ui {
 class UiEventDispatcher;
@@ -177,6 +178,7 @@ class ExecutionEngine : public ToolDelegate {
       const url::Origin& request_origin) const override;
   void RequestToShowAutofillSuggestions(
       std::vector<autofill::ActorFormFillingRequest> requests,
+      base::WeakPtr<AutofillSelectionDialogEventHandler> event_handler,
       AutofillSuggestionSelectedCallback callback) override;
   void InterruptFromTool() override;
   void UninterruptFromTool() override;

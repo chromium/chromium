@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
@@ -23,6 +24,7 @@
 
 namespace actor {
 class ActorTaskDelegate;
+class AutofillSelectionDialogEventHandler;
 }  // namespace actor
 
 class Profile;
@@ -391,6 +393,7 @@ class Host : public GlicSharingManagerProvider {
   void RequestToShowAutofillSuggestionsDialog(
       actor::TaskId task_id,
       std::vector<autofill::ActorFormFillingRequest> requests,
+      base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
       actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback callback);
 
   void FloatingPanelCanAttachChanged(bool can_attach);

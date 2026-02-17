@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, Journal, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, DraggableArea, FocusedTabData, FormFillingResponse, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, Journal, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 
@@ -484,6 +484,18 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
             response: response,
           });
         },
+        onFormPresented: (params) => {
+          this.host.autofillSuggestionDialogOnFormPresented(
+              request.taskId, params);
+        },
+        onFormPreviewChanged: (params) => {
+          this.host.autofillSuggestionDialogOnFormPreviewChanged(
+              request.taskId, params);
+        },
+        onFormConfirmed: (params) => {
+          this.host.autofillSuggestionDialogOnFormConfirmed(
+              request.taskId, params);
+        },
       };
       this.host.selectAutofillSuggestionsDialogRequestSubject.next(
           requestWithCallback);
@@ -824,6 +836,30 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   openGlicSettingsPage(options?: OpenSettingsOptions): void {
     this.sender.requestNoResponse('glicBrowserOpenGlicSettingsPage', {options});
+  }
+
+  autofillSuggestionDialogOnFormPresented(taskId: number, params: {
+    formFillingRequestIndex: number,
+  }): void {
+    this.sender.requestNoResponse(
+        'glicBrowserAutofillSuggestionDialogOnFormPresented', {taskId, params});
+  }
+
+  autofillSuggestionDialogOnFormPreviewChanged(taskId: number, params: {
+    formFillingRequestIndex: number,
+    response?: FormFillingResponse,
+  }): void {
+    this.sender.requestNoResponse(
+        'glicBrowserAutofillSuggestionDialogOnFormPreviewChanged',
+        {taskId, params});
+  }
+
+  autofillSuggestionDialogOnFormConfirmed(taskId: number, params: {
+    formFillingRequestIndex: number,
+    response: FormFillingResponse,
+  }): void {
+    this.sender.requestNoResponse(
+        'glicBrowserAutofillSuggestionDialogOnFormConfirmed', {taskId, params});
   }
 
   openPasswordManagerSettingsPage?(): void {

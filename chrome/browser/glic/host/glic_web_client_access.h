@@ -7,10 +7,15 @@
 
 // Interface to the glic web client, provided by the glic WebUI.
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "url/origin.h"
+
+namespace actor {
+class AutofillSelectionDialogEventHandler;
+}
 
 namespace glic {
 
@@ -63,6 +68,7 @@ class GlicWebClientAccess {
   virtual void RequestToShowAutofillSuggestionsDialog(
       actor::TaskId task_id,
       std::vector<autofill::ActorFormFillingRequest> requests,
+      base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
       actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback
           callback) = 0;
 
