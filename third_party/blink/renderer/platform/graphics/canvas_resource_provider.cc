@@ -1144,12 +1144,11 @@ Canvas2DResourceProviderSharedImage::CreateForSoftwareCompositor(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    ShouldInitialize initialize_provider,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     Delegate* delegate) {
   return CreateSharedImageProviderForSoftwareCompositorBase<
       Canvas2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, initialize_provider,
+      size, format, alpha_type, color_space, ShouldInitialize::kCallClear,
       shared_image_interface_provider, delegate);
 }
 

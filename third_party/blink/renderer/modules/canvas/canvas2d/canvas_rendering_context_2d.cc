@@ -1402,7 +1402,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     // CanvasResourceProvider that uses a SharedImage backed by a shared-memory
     // buffer that can be written by canvas raster and read by the compositor.
     provider = Canvas2DResourceProviderSharedImage::CreateForSoftwareCompositor(
-        canvas()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        canvas()->Size(), format, alpha_type, color_space,
         SharedGpuContext::SharedImageInterfaceProvider(), canvas());
   }
   if (!provider) {

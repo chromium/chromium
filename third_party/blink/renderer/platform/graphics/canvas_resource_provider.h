@@ -558,13 +558,13 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate* delegate = nullptr);
 
+  // The returned instance will have been cleared at creation.
   static std::unique_ptr<Canvas2DResourceProviderSharedImage>
   CreateForSoftwareCompositor(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
-      ShouldInitialize initialize_provider,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       Delegate* delegate = nullptr);
 

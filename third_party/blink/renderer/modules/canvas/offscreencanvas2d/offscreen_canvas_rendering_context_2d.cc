@@ -235,7 +235,6 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
         host->GetOrCreateResourceDispatcher()->GetWeakPtr();
     provider = Canvas2DResourceProviderSharedImage::CreateForSoftwareCompositor(
         host->Size(), format, alpha_type, color_space,
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::SharedImageInterfaceProvider(), host);
   }
 
