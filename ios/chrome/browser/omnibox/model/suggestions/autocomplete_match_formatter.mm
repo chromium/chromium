@@ -27,9 +27,11 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/web/public/web_client.h"
 
 namespace {
 
@@ -52,6 +54,13 @@ UIColor* DimColor() {
 }
 UIColor* DimColorIncognito() {
   return UIColor.whiteColor;
+}
+
+/// Returns whether the given URL is shareable.
+BOOL IsShareableURL(GURL URL) {
+  return URL.is_valid() &&
+         (UrlIsDownloadedFile(URL) || UrlIsExternalFileReference(URL) ||
+          !web::GetWebClient()->IsAppSpecificURL(URL));
 }
 
 }  // namespace
@@ -399,7 +408,8 @@ UIColor* DimColorIncognito() {
 
   return _match.IsVerbatimUrlSuggestion() &&
          (_match.suggestion_group_id ==
-          omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX);
+          omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX) &&
+         IsShareableURL(_match.destination_url);
 }
 
 - (id<OmniboxPedal>)pedal {
