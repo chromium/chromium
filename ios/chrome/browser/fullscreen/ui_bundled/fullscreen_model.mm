@@ -21,7 +21,7 @@
 
 namespace {
 
-// Default value of the mount the scroll must exceed to begin entering and
+// Default value of the amount the scroll must exceed to begin entering and
 // exiting fullscreen when the `kFullscreenScrollThreshold` feature is enabled.
 constexpr CGFloat kScrollThresholdDefault = 10;
 
