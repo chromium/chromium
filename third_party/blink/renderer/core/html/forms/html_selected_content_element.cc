@@ -16,7 +16,11 @@ void HTMLSelectedContentElement::CloneContentsFromOptionElement(
     const HTMLOptionElement* option) {
   // TODO(crbug.com/458113204): This disabled check does not exist in the spec.
   // It should be added to the spec or removed.
-  if (disabled_) {
+  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
+    if (disabled_ && option) {
+      return;
+    }
+  } else if (disabled_) {
     return;
   }
 
@@ -35,6 +39,23 @@ void HTMLSelectedContentElement::CloneContentsFromOptionElement(
 Node::InsertionNotificationRequest HTMLSelectedContentElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
+
+  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
+    // We need to call SelectedContentElementInserted in InsertedInto instead of
+    // DidNotifySubtreeInsertionsToDocument because
+    // DidNotifySubtreeInsertionsToDocument calls other methods which iterate
+    // through all descendant selectedcontent elements within the nearest
+    // ancestor select element, which we optimize with a TreeOrderedList which
+    // gets updated in SelectedContentElementInserted.
+    HTMLSelectElement* new_nearest_ancestor_select =
+        Traversal<HTMLSelectElement>::FirstAncestor(*this);
+    if (nearest_ancestor_select_ != new_nearest_ancestor_select) {
+      CHECK(!nearest_ancestor_select_);
+      nearest_ancestor_select_ = new_nearest_ancestor_select;
+      nearest_ancestor_select_->SelectedContentElementInserted(this);
+    }
+  }
+
   return Node::InsertionNotificationRequest::
       kInsertionShouldCallDidNotifySubtreeInsertions;
 }
@@ -46,7 +67,7 @@ void HTMLSelectedContentElement::DidNotifySubtreeInsertionsToDocument() {
   // TODO(crbug.com/40236878): Use a flat tree traversal here.
   if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
     disabled_ = false;
-    nearest_ancestor_select_ = nullptr;
+    HTMLSelectElement* first_ancestor_select = nullptr;
     for (auto* ancestor = parentNode(); ancestor;
          ancestor = ancestor->parentNode()) {
       if (IsA<HTMLOptionElement>(ancestor) ||
@@ -54,25 +75,17 @@ void HTMLSelectedContentElement::DidNotifySubtreeInsertionsToDocument() {
         // Putting a <selectedcontent> inside an <option> or another
         // <selectedcontent> can lead to infinite loops.
         disabled_ = true;
-        // The HTML spec has a "break" here, but we continue instead because we
-        // need to call select->SelectedContentElementInserted to keep track of
-        // all descendant selectedcontent elements for each select, which the
-        // spec also doesn't do. This is not web observable because we account
-        // for it by gating later code in this method on disabled_.
+        break;
       }
       if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
-        if (nearest_ancestor_select_) {
+        if (first_ancestor_select) {
           // If there are multiple ancestor selects, then cloning can lead to
           // infinite loops, so disable this element.
           disabled_ = true;
           break;
         }
-        nearest_ancestor_select_ = select;
-        // TODO(crbug.com/458113204): This method may be called multiple times
-        // for the same select element, and we shouldn't call
-        // SelectedContentElementInserted on the same select multiple times.
-        // This should be moved to InsertedInto.
-        select->SelectedContentElementInserted(this);
+        first_ancestor_select = select;
+        CHECK_EQ(first_ancestor_select, nearest_ancestor_select_);
       }
     }
 

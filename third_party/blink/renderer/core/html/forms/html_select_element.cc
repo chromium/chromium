@@ -1846,6 +1846,7 @@ void HTMLSelectElement::SetIsAppearanceBasePickerForDisplayNone(bool value) {
 void HTMLSelectElement::SelectedContentElementInserted(
     HTMLSelectedContentElement* inserted_selectedcontent) {
   CHECK(RuntimeEnabledFeatures::SelectedcontentSpecEnabled());
+  DCHECK(!descendant_selectedcontents_.Contains(inserted_selectedcontent));
   descendant_selectedcontents_.Add(inserted_selectedcontent);
 }
 
@@ -1854,16 +1855,14 @@ void HTMLSelectElement::UpdateDescendantSelectedcontentsForInsertion(
   CHECK(RuntimeEnabledFeatures::SelectedcontentSpecEnabled());
   DCHECK(descendant_selectedcontents_.Contains(inserted_selectedcontent));
 
-  bool first = true;
-  for (HTMLSelectedContentElement* descendant_selectedcontent :
-       descendant_selectedcontents_) {
-    if (first) {
-      first = false;
-      descendant_selectedcontent->CloneContentsFromOptionElement(
-          SelectedOption());
-    } else {
-      descendant_selectedcontent->CloneContentsFromOptionElement(nullptr);
-    }
+  // The collection may be modified while iterating, so make a copy if it.
+  VectorOf<HTMLSelectedContentElement> descendant_selectedcontents_copy(
+      descendant_selectedcontents_);
+  descendant_selectedcontents_copy[0]->CloneContentsFromOptionElement(
+      SelectedOption());
+  for (wtf_size_t i = 1; i < descendant_selectedcontents_copy.size(); i++) {
+    descendant_selectedcontents_copy[i]->CloneContentsFromOptionElement(
+        nullptr);
   }
 }
 
