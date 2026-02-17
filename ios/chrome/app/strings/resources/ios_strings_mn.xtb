@@ -1786,6 +1786,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Нууцлалтай табуудаа түгжихийн тулд Touch ID, Face ID эсвэл нууц код тохируулна уу.</translation>
 <translation id="750886945254958667">Дараа таб нэмэхийн тулд энэ бүлгийг үлдээх эсвэл та цаашид уг бүлэгт хандахыг хүсэхгүй байвал гарна уу</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{1 хүртэлх таб нэмэх}other{{COUNT} хүртэлх таб нэмэх}}</translation>
 <translation id="7512909159512473473">Нэвтрэх үгийг оруулах…</translation>
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="7514530647142300459"><ph name="EMAIL" /> Google Бүртгэлдээ нууц үгийг ашигласаар байгаарай</translation>

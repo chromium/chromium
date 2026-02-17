@@ -1786,6 +1786,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Norėdami užrakinti inkognito skirtukus, nustatykite „Touch ID“, „Face ID“ arba slaptažodį.</translation>
 <translation id="750886945254958667">Išsaugokite šią grupę, kad galėtumėte vėliau pridėti skirtukų, arba išeikite, jei nebenorite jos pasiekti</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Pridėkite ne daugiau kaip vieną skirtuką}one{Pridėkite daugiausia {COUNT} skirtuką}few{Pridėkite daugiausia {COUNT} skirtukus}many{Pridėkite daugiausia {COUNT} skirtuko}other{Pridėkite daugiausia {COUNT} skirtukų}}</translation>
 <translation id="7512909159512473473">Įvesti slaptafrazę…</translation>
 <translation id="7514365320538308">Atsisiųsti</translation>
 <translation id="7514530647142300459">Toliau naudokite slaptažodžius „Google“ paskyroje <ph name="EMAIL" /></translation>

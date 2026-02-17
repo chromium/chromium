@@ -1786,6 +1786,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)。</translation>
 <translation id="7508728395076009983">如要鎖定無痕式分頁，請設定 Touch ID、Face ID 或密碼。</translation>
 <translation id="750886945254958667">如果保留群組，你之後可新增分頁；如果不再使用，亦可離開群組</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{最多可加入 1 個分頁}other{最多可加入 {COUNT} 個分頁}}</translation>
 <translation id="7512909159512473473">輸入密碼短語…</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7514530647142300459">請繼續使用 Google 帳戶 (<ph name="EMAIL" />) 中的密碼</translation>

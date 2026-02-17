@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">‏רוצה לעזור לנו לשפר את Chrome? אפשר לשתף אותנו בסיבה לשימוש בקובצי cookie של צד שלישי. <ph name="BEGIN_LINK" />שליחת משוב<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">אפשר לבקש לראות את הגרסה למחשב של אתרים</translation>
 <translation id="1085696779717592361">‏שימוש ב-Chrome כברירת מחדל</translation>
+<translation id="1126523729897810826">‏כדי להפיק את המרב מ- Chrome כדאי להשלים את הפעולות המוצעות</translation>
 <translation id="113098737392899175">ניווט בדפים באמצעות סמן הטקסט כשהמקלדת מחוברת</translation>
 <translation id="1149644372535087155">‏שמירת סיסמאות ב-Chrome</translation>
 <translation id="1178015372320901893">הגיליון התחתון של "קיצורי הדרך שלי"</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">‏אפשר להאיץ ביצועים של אתרים באמצעות מנוע V8 של Chrome, אבל Chrome יהיה קצת פחות עמיד בפני מתקפות</translation>
 <translation id="1593426485665524382">פעולות חדשות זמינות באזור החלק העליון של המסך</translation>
 <translation id="1594521731409209842">כדי לשנות את גודל התמונה, פותחים או סוגרים את האצבעות על המסך</translation>
+<translation id="1599268789440304082">גיליון ההגדרות נפתח</translation>
 <translation id="1601560923496285236">החלה</translation>
 <translation id="1615755956145364867">אתרים יכולים לבקש הרשאה להפעיל תוכן מוגן</translation>
 <translation id="1620510694547887537">מצלמה</translation>
@@ -353,7 +355,9 @@
 <translation id="4505788138578415521">‏כתובת ה-URL הורחבה</translation>
 <translation id="4522570452068850558">פרטים</translation>
 <translation id="4523472416386354622">כניסה לחשבון</translation>
+<translation id="4529207923544043455">גיליון תחתון שמציג משימות שהושלמו ומשימות שלא הושלמו ברשימת ההגדרות</translation>
 <translation id="4534723447064627427">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המיקרופון, צריך להפעיל את המיקרופון גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">גיליון ההגדרות נסגר</translation>
 <translation id="4566417217121906555">השתקת המיקרופון</translation>
 <translation id="4570913071927164677">פרטים</translation>
 <translation id="4578289292431526768">קדימה, נתחיל</translation>

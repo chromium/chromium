@@ -12322,11 +12322,6 @@ Diese Richtlinie wird nur angewendet, wenn die Richtlinie „<ph name="FULL_REST
 <translation id="9135095804754272364">Benachrichtigen, wenn ein USB-Gerät erkannt wird</translation>
 <translation id="9136212796239682721">Benutzeroberfläche für Download-Infofeld deaktivieren</translation>
 <translation id="9136399279941091445">Intervalle für Abwesenheitszeiten, wenn die angegebenen Geräterichtlinien veröffentlicht werden</translation>
-<translation id="9138686056337842869">Wenn diese Richtlinie auf „True“ gesetzt ist, können Chrome-Apps unabhängig von der Standardeinstellung für Chrome-Apps weiterhin in einer Kiosksitzung ausgeführt werden.
-
-Ist diese Richtlinie nicht konfiguriert oder auf „False“ gesetzt, wird das auf dem Gerät festgelegte Standardverhalten verwendet.
-
-Wenn versucht wird, eine deaktivierte Chrome-App zu starten, wird eine Meldung angezeigt, in der dem Nutzer erklärt wird, warum die App nicht gestartet wurde, und er aufgefordert wird, sich an die IT-Abteilung zu wenden.</translation>
 <translation id="9139775903828905867">Tastenkombination zum Auslösen von F11 verwalten</translation>
 <translation id="9140064482233876338">Eingestellt in M69. Verwende stattdessen „OverrideSecurityRestrictionsOnInsecureOrigin“.
 

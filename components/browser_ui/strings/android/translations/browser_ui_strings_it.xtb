@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Aiutaci a migliorare Chrome spiegandoci perché hai consentito i cookie di terze parti. <ph name="BEGIN_LINK" />Invia feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Puoi chiedere di visualizzare la versione desktop dei siti</translation>
 <translation id="1085696779717592361">Usa Chrome per impostazione predefinita</translation>
+<translation id="1126523729897810826">Completa le azioni suggerite di seguito per usare al meglio Chrome</translation>
 <translation id="113098737392899175">Spostati da una pagina all'altra con un cursore di testo quando è collegata una tastiera</translation>
 <translation id="1149644372535087155">Salva le password in Chrome</translation>
 <translation id="1178015372320901893">Riquadro inferiore Le mie scorciatoie</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Accelera i siti con il motore V8 di Chrome, ma rendi Chrome leggermente meno resistente agli attacchi</translation>
 <translation id="1593426485665524382">Nuove azioni disponibili vicino alla parte superiore dello schermo</translation>
 <translation id="1594521731409209842">Pizzica lo schermo per ridimensionare la foto</translation>
+<translation id="1599268789440304082">Riquadro di configurazione aperto</translation>
 <translation id="1601560923496285236">Applica</translation>
 <translation id="1615755956145364867">I siti possono chiedere di riprodurre contenuti protetti</translation>
 <translation id="1620510694547887537">Videocamera</translation>
@@ -352,7 +354,9 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="4505788138578415521">URL espanso</translation>
 <translation id="4522570452068850558">Dettagli</translation>
 <translation id="4523472416386354622">Accedi per iniziare</translation>
+<translation id="4529207923544043455">Riquadro inferiore che mostra le attività completate e non completate dell'elenco di configurazione</translation>
 <translation id="4534723447064627427">Per consentire all'app <ph name="APP_NAME" /> di accedere al tuo microfono, devi attivare il microfono anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Riquadro di configurazione chiuso</translation>
 <translation id="4566417217121906555">Disattiva microfono</translation>
 <translation id="4570913071927164677">Dettagli</translation>
 <translation id="4578289292431526768">Inizia</translation>

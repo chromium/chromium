@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Lagun iezaguzu Chrome hobetzen: esan iezaguzu zergatik eman duzun hirugarrenen cookieak erabiltzeko baimena. <ph name="BEGIN_LINK" />Bidali oharrak<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Webguneen ordenagailuetarako bertsioa ikusteko eska dezakezu</translation>
 <translation id="1085696779717592361">Erabili Chrome modu lehenetsian</translation>
+<translation id="1126523729897810826">Gauzatu behean iradokitako ekintzak Chrome-ri etekinik handiena ateratzeko</translation>
 <translation id="113098737392899175">Nabigatu orrietatik testu-kurtsorea erabilita teklatu bat erantsita dagoenean</translation>
 <translation id="1149644372535087155">Gorde pasahitzak Chrome-n</translation>
 <translation id="1178015372320901893">Pantailaren behealdean ainguratutako nire lasterbideen orria</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Webguneak Chrome-ren V8 motorrarekin bizkortzen dira, baina erasoen aurrean zertxobait kalteberagoa da Chrome</translation>
 <translation id="1593426485665524382">Ekintza berriak erabilgarri daude pantailaren goialdean</translation>
 <translation id="1594521731409209842">Atximurkatu pantaila argazkiaren tamaina aldatzeko</translation>
+<translation id="1599268789440304082">Ireki da konfigurazio-orria</translation>
 <translation id="1601560923496285236">Aplikatu</translation>
 <translation id="1615755956145364867">Webguneek eduki babestua erreproduzitzea eska dezakete</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="4505788138578415521">URLa zabalduta dago</translation>
 <translation id="4522570452068850558">Xehetasunak</translation>
 <translation id="4523472416386354622">Hasteko, hasi saioa</translation>
+<translation id="4529207923544043455">Pantailaren behealdean ainguratutako orria, zeinak konfigurazio-zerrendako osatutako eta osatu gabeko zereginak erakusten baititu</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> aplikazioari mikrofonoa erabiltzeko baimena emateko, mikrofonoa erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Itxi da konfigurazio-orria</translation>
 <translation id="4566417217121906555">Desaktibatu mikrofonoa</translation>
 <translation id="4570913071927164677">Xehetasunak</translation>
 <translation id="4578289292431526768">Has gaitezen</translation>

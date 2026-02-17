@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">검토 완료</translation>
 <translation id="1094555143448724771">다른 기기의 탭을 보려면 탭과 방문 기록을 동기화하세요.</translation>
 <translation id="1095761715416917775">언제든지 동기화 데이터에 액세스할 수 있도록 하세요</translation>
+<translation id="1096091316906284742">Chrome Finds 선택 하단 시트</translation>
 <translation id="1100066534610197918">새 탭을 그룹에서 열기</translation>
 <translation id="1103142993930332957">Chrome을 개선하는 데 도움을 주시겠어요?</translation>
 <translation id="1105960400813249514">화면 캡처</translation>
@@ -608,6 +609,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3635073343384702370">비밀번호를 저장하면 Chrome에서 확인할 수 있습니다.</translation>
 <translation id="3636940436873918441">기본 언어</translation>
 <translation id="3637744895182738742">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
+<translation id="3641581193271938629">Chrome Finds 선택 닫힘</translation>
 <translation id="3647019414263135904">컨텍스트 팝업 열기 또는 닫기</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google 앱 홈으로 이동</translation>
@@ -781,6 +783,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4384468725000734951">검색할 때 Sogou 사용</translation>
 <translation id="4387647248986092471">자동차 프로필 잠금 만들기</translation>
 <translation id="4387817230000841154">다운로드 열기</translation>
+<translation id="4395046795145457714">Chrome Finds 선택이 전체 높이로 열림</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, 선택되고 고정되고 녹화 중인 시크릿 탭</translation>
 <translation id="4402611456429872546"><ph name="LANG" />: 다운로드 중입니다…</translation>
 <translation id="4404568932422911380">북마크 없음</translation>
@@ -1049,6 +1052,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5469852975082458401">텍스트 커서로 페이지를 탐색할 수 있습니다. 사용 중지하려면 F7을 누르세요.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> 탭을 이동할 수 없습니다.</translation>
 <translation id="548278423535722844">지도 앱에서 열기</translation>
+<translation id="5489222148748465285">Chrome이 계속 검색하도록 허용</translation>
 <translation id="5494920125229734069">모두 선택</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" />(으)로 참여</translation>
 <translation id="5517326820028369152">최근 활동 하단 시트</translation>
@@ -1344,6 +1348,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6647441008198474441">다음에 방문할 사이트를 예측하기 위해 내가 방문한 URL이 Google에 전송됩니다.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}other{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}}</translation>
 <translation id="6649642165559792194">이미지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">Chrome Finds 선택이 절반 높이로 열림</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />에서 열기</translation>
 <translation id="6669390930482049506">알림 받기</translation>
 <translation id="6671495933530132209">이미지 복사</translation>
@@ -1395,6 +1400,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6828070228333235514">가격 추적 중지</translation>
 <translation id="6830728435402077660">안전하지 않음</translation>
 <translation id="6831043979455480757">번역</translation>
+<translation id="6835182496791325827">사용자가 자리를 비운 동안에 Chrome이 검색어에 가장 적합한 결과를 찾으면 알림을 받습니다.</translation>
 <translation id="6846298663435243399">로드 중…</translation>
 <translation id="6850409657436465440">아직 다운로드 중</translation>
 <translation id="6850830437481525139">탭 <ph name="TAB_COUNT" />개를 닫았습니다.</translation>

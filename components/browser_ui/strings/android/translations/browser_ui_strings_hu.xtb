@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Segítsen a Chrome fejlesztésében. Mondja el, miért engedélyezte a harmadik féltől származó cookie-kat. <ph name="BEGIN_LINK" />Visszajelzés küldése<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Kérheti a webhelyek asztali verziójának megjelenítését.</translation>
 <translation id="1085696779717592361">A Chrome használata alapértelmezettként</translation>
+<translation id="1126523729897810826">Hajtsa végre az alábbi javasolt műveleteket, hogy a lehető legtöbbet ki tudja hozni a Chrome-ból.</translation>
 <translation id="113098737392899175">Navigálás az oldalakon szövegkurzorral, ha csatlakoztatva van billentyűzet</translation>
 <translation id="1149644372535087155">Jelszavak mentése a Chrome-ban</translation>
 <translation id="1178015372320901893">Saját parancsikonok alsó lapja</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">A Chrome V8 motorjával felgyorsítja a webhelyeket, de kissé kevésbé ellenállóvá teszi a Chrome-ot a támadásokkal szemben</translation>
 <translation id="1593426485665524382">Új műveletek állnak rendelkezésre a képernyő tetejéhez közel</translation>
 <translation id="1594521731409209842">Ujjai összehúzásával átméretezheti a fotót</translation>
+<translation id="1599268789440304082">Beállítási lap megnyitva</translation>
 <translation id="1601560923496285236">Alkalmaz</translation>
 <translation id="1615755956145364867">A webhelyek rákérdezhetnek arra, hogy lejátszhatnak-e védett tartalmakat</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="4505788138578415521">URL kibontva</translation>
 <translation id="4522570452068850558">Részletek</translation>
 <translation id="4523472416386354622">Jelentkezzen be a kezdéshez</translation>
+<translation id="4529207923544043455">A beállítási lista befejezett és befejezetlen feladatait megjelenítő alsó lap</translation>
 <translation id="4534723447064627427">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a mikrofonhoz, a mikrofont az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
+<translation id="4545694195887112015">Beállítási lap bezárva</translation>
 <translation id="4566417217121906555">Mikrofon némítása</translation>
 <translation id="4570913071927164677">Részletek</translation>
 <translation id="4578289292431526768">Indítás</translation>

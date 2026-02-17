@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Pomóż nam ulepszyć Chrome, informując nas, dlaczego zezwalasz na pliki cookie innych firm. <ph name="BEGIN_LINK" />Prześlij opinię<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Możesz poprosić o wyświetlenie witryn w wersji na komputer</translation>
 <translation id="1085696779717592361">Domyślne korzystanie z Chrome</translation>
+<translation id="1126523729897810826">Wykonaj te sugerowane działania, aby w pełni wykorzystać możliwości Chrome</translation>
 <translation id="113098737392899175">Gdy klawiatura jest podłączona, poruszaj się po stronach przy użyciu kursora tekstowego</translation>
 <translation id="1149644372535087155">Zapisuj hasła w Chrome</translation>
 <translation id="1178015372320901893">Plansza dolna Moje skróty</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Witryny będą działać szybciej dzięki mechanizmowi V8 w przeglądarce Chrome, ale będzie ona trochę mniej odporna na ataki</translation>
 <translation id="1593426485665524382">Nowe działania są dostępne u góry ekranu</translation>
 <translation id="1594521731409209842">Aby zmienić rozmiar zdjęcia, ściągnij ekran palcami</translation>
+<translation id="1599268789440304082">Otwarto planszę konfiguracji</translation>
 <translation id="1601560923496285236">Zastosuj</translation>
 <translation id="1615755956145364867">Strony mogą prosić o zgodę na odtwarzanie treści chronionych</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="4505788138578415521">URL pokazany w całości</translation>
 <translation id="4522570452068850558">Szczegóły</translation>
 <translation id="4523472416386354622">Zaloguj się, aby rozpocząć</translation>
+<translation id="4529207923544043455">Plansza dolna wyświetlająca ukończone i nieukończone zadania z listy konfiguracji</translation>
 <translation id="4534723447064627427">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do mikrofonu, musisz go też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Plansza konfiguracji została zamknięta</translation>
 <translation id="4566417217121906555">Wycisz mikrofon</translation>
 <translation id="4570913071927164677">Szczegóły</translation>
 <translation id="4578289292431526768">Rozpocznij</translation>

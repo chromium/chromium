@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Na ndihmo të përmirësojmë Chrome duke na treguar se pse ke lejuar kukit e palëve të treta. <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Mund të kërkosh për të parë versionin e desktopit të sajteve</translation>
 <translation id="1085696779717592361">Përdor Chrome si parazgjedhje</translation>
+<translation id="1126523729897810826">Përfundo këto veprime të sugjeruara më poshtë për të përfituar sa më shumë nga Chrome</translation>
 <translation id="113098737392899175">Navigo te faqet me një kursor teksti kur lidhet një tastierë</translation>
 <translation id="1149644372535087155">Ruaj fjalëkalimet në Chrome</translation>
 <translation id="1178015372320901893">Fleta e poshtme e shkurtoreve të mia</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Shpejto sajtet me motorin V8 të Chrome, por bëje Chrome më pak rezistent ndaj sulmeve</translation>
 <translation id="1593426485665524382">Veprime të reja të disponueshme pranë kreut të ekranit</translation>
 <translation id="1594521731409209842">Kap ekranin me dy gishta për të ndryshuar përmasat e fotografisë</translation>
+<translation id="1599268789440304082">Fleta e konfigurimit u hap</translation>
 <translation id="1601560923496285236">Zbato</translation>
 <translation id="1615755956145364867">Sajtet mund të kërkojnë të luajnë përmbajtje të mbrojtura</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">URL e zgjeruar</translation>
 <translation id="4522570452068850558">Detajet</translation>
 <translation id="4523472416386354622">Identifikohu për të filluar</translation>
+<translation id="4529207923544043455">Fleta e poshtme që shfaq detyrat e përfunduara dhe të papërfunduara të listës së konfigurimit</translation>
 <translation id="4534723447064627427">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te mikrofoni yt, aktivizo gjithashtu mikrofonin në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Fleta e konfigurimit u mbyll</translation>
 <translation id="4566417217121906555">Çaktivizo mikrofonin</translation>
 <translation id="4570913071927164677">Detajet</translation>
 <translation id="4578289292431526768">Fillojmë</translation>

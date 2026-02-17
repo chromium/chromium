@@ -1786,6 +1786,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)।</translation>
 <translation id="7508728395076009983">আপোনাৰ ইনক’গ্নিট’ টেব লক কৰিবলৈ স্পৰ্শ আইডি, মুখাৱয়ব আইডি অথবা এটা পাছক’ড ছেট আপ কৰক।</translation>
 <translation id="750886945254958667">পাছত টেবসমূহ যোগ দিবলৈ এই গোটটো ৰাখক বা যদি আপুনি এইটো আৰু এক্সেছ কৰিব নিবিচাৰে তেন্তে ইয়াৰ পৰা বাহিৰ হওক</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{১ টা পৰ্যন্ত টেব যোগ দিয়ক}one{{COUNT} টা পৰ্যন্ত টেব যোগ দিয়ক}other{{COUNT} টা পৰ্যন্ত টেব যোগ দিয়ক}}</translation>
 <translation id="7512909159512473473">পাছফ্ৰে’জ দিয়ক…</translation>
 <translation id="7514365320538308">ডাউনল'ড কৰক</translation>
 <translation id="7514530647142300459">আপোনাৰ Google একাউণ্ট <ph name="EMAIL" />ত পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰি থাকক</translation>

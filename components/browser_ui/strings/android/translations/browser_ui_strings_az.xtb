@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Üçüncü tərəf kukilərinə icazə vermə səbəbinizi bildirərək Chrome-u təkmilləşdirməyə kömək edin. <ph name="BEGIN_LINK" />Rəy göndərin<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Saytların masaüstü versiyasına baxmağı istəyə bilərsiniz</translation>
 <translation id="1085696779717592361">Defolt olaraq Chrome istifadə edin</translation>
+<translation id="1126523729897810826">Chrome-dan maksimum yararlanmaq üçün aşağıda təklif edilən əməliyyatları tamamlayın</translation>
 <translation id="113098737392899175">Klaviatura qoşulduqda mətn kursoru ilə səhifələrə keçin</translation>
 <translation id="1149644372535087155">Parolları Chrome-da yadda saxlayın</translation>
 <translation id="1178015372320901893">Qısayollarım üzrə aşağıdakı vərəq</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Saytların sürətini Chrome-un V8 mühərriki ilə artırın, lakin Chrome-un hücumlara qarşı müqavimətini bir qədər azaldın</translation>
 <translation id="1593426485665524382">Ekranın yuxarısına yaxın hissədə yeni əməliyyatlar əlçatandır</translation>
 <translation id="1594521731409209842">Fotonu yenidən ölçüləndirmək üçün ekranı iki barmaqla yaxınlaşdırın və ya uzaqlaşdırın</translation>
+<translation id="1599268789440304082">Ayarlama vərəqi açıldı</translation>
 <translation id="1601560923496285236">Tətbiq edin</translation>
 <translation id="1615755956145364867">Saytlar qorunan məzmunu göstərmək üçün icazə istəyə bilər</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="4505788138578415521">URL genişləndirilib</translation>
 <translation id="4522570452068850558">Detallar</translation>
 <translation id="4523472416386354622">Başlamaq üçün hesaba daxil olun</translation>
+<translation id="4529207923544043455">Tamamlanmış və tamamlanmamış ayarlama siyahısı tapşırıqlarını göstərən aşağıdakı vərəq</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> tətbiqinə mikrofonunuza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> mikrofonu da aktiv edin.</translation>
+<translation id="4545694195887112015">Ayarlama vərəqi bağlandı</translation>
 <translation id="4566417217121906555">Mikrofonu susdurun</translation>
 <translation id="4570913071927164677">Ətraflı</translation>
 <translation id="4578289292431526768">Başlayaq</translation>

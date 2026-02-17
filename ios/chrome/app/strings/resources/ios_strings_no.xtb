@@ -1786,6 +1786,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">For å låse inkognitofanene dine, konfigurer Touch ID, Face ID eller en sikkerhetskode.</translation>
 <translation id="750886945254958667">Behold denne gruppen for å legge til faner senere, eller forlat den hvis du ikke vil ha tilgang til den lenger</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Legg til opptil 1 fane}other{Legg til opptil {COUNT} faner}}</translation>
 <translation id="7512909159512473473">Angi en passordfrase…</translation>
 <translation id="7514365320538308">Last ned</translation>
 <translation id="7514530647142300459">Fortsett å bruke passordene i Google-kontoen din, <ph name="EMAIL" /></translation>

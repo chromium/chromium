@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Cuéntanos por qué habilitaste las cookies de terceros para ayudarnos a mejorar Chrome. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Puedes solicitar ver la versión para computadoras de los sitios</translation>
 <translation id="1085696779717592361">Usa Chrome de forma predeterminada</translation>
+<translation id="1126523729897810826">Completa estas acciones sugeridas para aprovechar Chrome al máximo</translation>
 <translation id="113098737392899175">Navega por las páginas con un cursor de texto cuando se conecta un teclado</translation>
 <translation id="1149644372535087155">Guardar contraseñas en Chrome</translation>
 <translation id="1178015372320901893">Hoja inferior de Mis accesos directos</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Acelerar los sitios con el motor V8 de Chrome, pero reducir ligeramente la resistencia de Chrome a los ataques</translation>
 <translation id="1593426485665524382">Nuevas acciones disponibles cerca de la parte superior de la pantalla</translation>
 <translation id="1594521731409209842">Pellizca la pantalla para cambiar el tamaño de la foto</translation>
+<translation id="1599268789440304082">Se abrió la hoja de configuración</translation>
 <translation id="1601560923496285236">Aplicar</translation>
 <translation id="1615755956145364867">Permitir que los sitios soliciten permiso para reproducir contenido protegido</translation>
 <translation id="1620510694547887537">Cámara</translation>
@@ -352,7 +354,9 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="4505788138578415521">URL expandida</translation>
 <translation id="4522570452068850558">Detalles</translation>
 <translation id="4523472416386354622">Acceder para comenzar</translation>
+<translation id="4529207923544043455">Hoja inferior que muestra las tareas completadas y no completadas de la lista de configuración</translation>
 <translation id="4534723447064627427">Para permitir que <ph name="APP_NAME" /> acceda a tu micrófono, actívalo también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Se cerró la hoja de configuración</translation>
 <translation id="4566417217121906555">Silenciar micrófono</translation>
 <translation id="4570913071927164677">Detalles</translation>
 <translation id="4578289292431526768">Continuar</translation>

@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Ajută-ne să îmbunătățim Chrome spunându-ne de ce ai permis cookie-urile terță parte. <ph name="BEGIN_LINK" />Trimite feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Poți solicita să vezi versiunea pentru computer a site-urilor</translation>
 <translation id="1085696779717592361">Folosește Chrome în mod prestabilit</translation>
+<translation id="1126523729897810826">Finalizează mai jos aceste acțiuni sugerate, pentru a profita din plin de Chrome</translation>
 <translation id="113098737392899175">Navighează în pagini folosind cursorul pentru text când este conectată o tastatură</translation>
 <translation id="1149644372535087155">Salvează parolele în Chrome</translation>
 <translation id="1178015372320901893">Foaia din partea de jos cu comenzile mele rapide</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Accelerează site-urile cu motorul V8 din Chrome, dar redu ușor rezistența Chrome la atacuri</translation>
 <translation id="1593426485665524382">Acțiuni noi disponibile în partea de sus a ecranului</translation>
 <translation id="1594521731409209842">Ciupește ecranul pentru a redimensiona fotografia</translation>
+<translation id="1599268789440304082">Foaia de configurare a fost deschisă</translation>
 <translation id="1601560923496285236">Aplică</translation>
 <translation id="1615755956145364867">Site-urile pot solicita permisiunea de a reda conținut protejat</translation>
 <translation id="1620510694547887537">Cameră</translation>
@@ -352,7 +354,9 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="4505788138578415521">Adresă URL extinsă</translation>
 <translation id="4522570452068850558">Detalii</translation>
 <translation id="4523472416386354622">Conectează-te pentru a începe</translation>
+<translation id="4529207923544043455">Foaie din partea de jos care afișează activitățile finalizate și nefinalizate din lista de configurare</translation>
 <translation id="4534723447064627427">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze microfonul, activează microfonul și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Foaia de configurare a fost închisă</translation>
 <translation id="4566417217121906555">Dezactivează sunetul microfonului</translation>
 <translation id="4570913071927164677">Detalii</translation>
 <translation id="4578289292431526768">Să începem!</translation>

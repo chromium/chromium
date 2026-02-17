@@ -1786,6 +1786,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Да бисте закључали картице без архивирања, подесите Touch ID, Face ID или шифру.</translation>
 <translation id="750886945254958667">Задржите ову групу да бисте додали картице касније или је напустите ако више не желите да јој приступате</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Додајте највише 1 картицу}one{Додајте до {COUNT} картицу}few{Додајте до {COUNT} картице}other{Додајте до {COUNT} картица}}</translation>
 <translation id="7512909159512473473">Унеси приступну фразу…</translation>
 <translation id="7514365320538308">Преузми</translation>
 <translation id="7514530647142300459">Наставите да користите лозинке на Google налогу <ph name="EMAIL" /></translation>

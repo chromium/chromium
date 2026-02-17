@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Üçüncü taraf çerezlerine neden izin verdiğinizi bize bildirerek Chrome'u iyileştirmemize yardımcı olun. <ph name="BEGIN_LINK" />Geri bildirim gönderin<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Sitelerin masaüstü sürümünü görüntülemeyi talep edebilirsiniz</translation>
 <translation id="1085696779717592361">Chrome'u Varsayılan Olarak Kullanın</translation>
+<translation id="1126523729897810826">Chrome'dan en iyi şekilde yararlanmak için aşağıdaki önerilen işlemleri tamamlayın</translation>
 <translation id="113098737392899175">Klavye bağlıyken sayfalarda metin imleciyle gezin</translation>
 <translation id="1149644372535087155">Chrome'da şifreleri kaydedin</translation>
 <translation id="1178015372320901893">Kısayollarım alt sayfası</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Chrome'un V8 motoruyla siteleri hızlandırın. Ancak bu durumda Chrome, saldırılara karşı biraz daha dirençsiz hale gelir</translation>
 <translation id="1593426485665524382">Ekranın üst kısmına yakın bir yerde yeni işlemler mevcut</translation>
 <translation id="1594521731409209842">Fotoğrafı yeniden boyutlandırmak için ekranda iki parmağınızı yakınlaştırın veya uzaklaştırın</translation>
+<translation id="1599268789440304082">Kurulum sayfası açıldı</translation>
 <translation id="1601560923496285236">Uygula</translation>
 <translation id="1615755956145364867">Siteler korunan içerikleri oynatmak isteyebilir</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="4505788138578415521">URL genişletildi</translation>
 <translation id="4522570452068850558">Ayrıntılar</translation>
 <translation id="4523472416386354622">Başlamak için oturum aç</translation>
+<translation id="4529207923544043455">Tamamlanan ve tamamlanmayan kurulum listesi görevlerini gösteren alt sayfa</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> uygulamasının mikrofonunuza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da mikrofonu açın.</translation>
+<translation id="4545694195887112015">Kurulum sayfası kapatıldı</translation>
 <translation id="4566417217121906555">Mikrofonun sesini kapat</translation>
 <translation id="4570913071927164677">Ayrıntılar</translation>
 <translation id="4578289292431526768">Başlayalım</translation>

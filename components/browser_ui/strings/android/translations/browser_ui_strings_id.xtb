@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Bantu kami meningkatkan Chrome dengan memberi tahu kami alasan Anda mengizinkan cookie pihak ketiga. <ph name="BEGIN_LINK" />Kirim masukan<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Anda dapat meminta untuk melihat situs versi desktop</translation>
 <translation id="1085696779717592361">Gunakan Chrome secara Default</translation>
+<translation id="1126523729897810826">Selesaikan tindakan yang disarankan berikut untuk mengoptimalkan Chrome.</translation>
 <translation id="113098737392899175">Buka halaman dengan kursor teks saat keyboard terhubung</translation>
 <translation id="1149644372535087155">Simpan sandi di Chrome</translation>
 <translation id="1178015372320901893">Panel bawah pintasan saya</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Percepat situs dengan mesin V8 Chrome, tetapi buat Chrome sedikit lebih rentan terhadap serangan</translation>
 <translation id="1593426485665524382">Tindakan baru tersedia di dekat bagian atas layar</translation>
 <translation id="1594521731409209842">Cubit layar untuk mengubah ukuran foto</translation>
+<translation id="1599268789440304082">Panel penyiapan dibuka</translation>
 <translation id="1601560923496285236">Terapkan</translation>
 <translation id="1615755956145364867">Situs dapat meminta untuk memutar konten yang dilindungi</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="4505788138578415521">URL ditampilkan penuh</translation>
 <translation id="4522570452068850558">Detail</translation>
 <translation id="4523472416386354622">Login untuk memulai</translation>
+<translation id="4529207923544043455">Panel bawah menampilkan tugas daftar penyiapan yang telah selesai dan belum selesai</translation>
 <translation id="4534723447064627427">Untuk mengizinkan <ph name="APP_NAME" /> mengakses mikrofon, aktifkan juga mikrofon di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Panel penyiapan ditutup</translation>
 <translation id="4566417217121906555">Nonaktifkan mikrofon</translation>
 <translation id="4570913071927164677">Detail</translation>
 <translation id="4578289292431526768">Mulai</translation>

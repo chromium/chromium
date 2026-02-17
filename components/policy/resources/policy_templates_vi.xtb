@@ -12546,11 +12546,6 @@ Chính sách này chỉ có hiệu lực khi bạn đặt chính sách <ph name=
 <translation id="9135095804754272364">Hiện thông báo khi phát hiện thiết bị USB</translation>
 <translation id="9136212796239682721">Tắt giao diện người dùng bong bóng tải xuống</translation>
 <translation id="9136399279941091445">Khoảng thời gian tắt khi chính sách thiết bị đã chỉ định được phát hành</translation>
-<translation id="9138686056337842869">Khi bạn đặt chính sách này thành True, thì Ứng dụng Chrome có thể tiếp tục chạy trong phiên Kiosk, bất kể trạng thái bật Ứng dụng Chrome theo mặc định.
-
-Nếu bạn không đặt chính sách này hoặc đặt chính sách này thành False, thì chế độ mặc định được xác định trên thiết bị sẽ được sử dụng.
-
-Khi cố gắng khởi chạy một ứng dụng Chrome đang tắt, người dùng sẽ thấy thông báo giải thích lý do ứng dụng không khởi chạy và đề xuất liên hệ với bộ phận CNTT.</translation>
 <translation id="9139775903828905867">Kiểm soát phím tắt dùng để kích hoạt phím F11</translation>
 <translation id="9140064482233876338">Không còn dùng trong M69. Thay vào đó, hãy sử dụng OverrideSecurityRestrictionsOnInsecureOrigin.
 

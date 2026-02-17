@@ -24,6 +24,7 @@
 <translation id="1089606299949659462">Проверка выполнена</translation>
 <translation id="1094555143448724771">Синхронизируйте вкладки и историю, и вы сможете видеть здесь вкладки, открытые на других ваших устройствах.</translation>
 <translation id="1095761715416917775">Не теряйте доступ к синхронизированным данным</translation>
+<translation id="1096091316906284742">Нижний экран с предложением разрешить Chrome продолжить поиск</translation>
 <translation id="1100066534610197918">Открыть в новой вкладке группы</translation>
 <translation id="1103142993930332957">Помогите улучшить Chrome</translation>
 <translation id="1105960400813249514">Демонстрация экрана</translation>
@@ -608,6 +609,7 @@
 <translation id="3635073343384702370">Чтобы браузер Chrome мог проверять пароли, сохраните их</translation>
 <translation id="3636940436873918441">Предпочитаемые языки</translation>
 <translation id="3637744895182738742">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
+<translation id="3641581193271938629">Нижний экран с предложением разрешить Chrome продолжить поиск закрыт</translation>
 <translation id="3647019414263135904">Открыть или закрыть контекстное всплывающее окно</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> (<ph name="WEBSITE_URL" />)</translation>
 <translation id="3674208116086565128">Открыть главную страницу приложения Google</translation>
@@ -781,6 +783,7 @@
 <translation id="4384468725000734951">Sogou используется как поисковая система по умолчанию</translation>
 <translation id="4387647248986092471">Настроить блокировку профиля для автомобиля</translation>
 <translation id="4387817230000841154">Открыть папку со скачанными файлами</translation>
+<translation id="4395046795145457714">Нижний экран с предложением разрешить Chrome продолжить поиск открыт полностью</translation>
 <translation id="4398561997852463382">Выбранная и закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />", на которой ведется запись</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – скачивание…</translation>
 <translation id="4404568932422911380">Нет закладок</translation>
@@ -1049,6 +1052,7 @@
 <translation id="5469852975082458401">Вы сможете использовать курсор для навигации по страницам. Нажмите F7, чтобы отключить эту функцию.</translation>
 <translation id="5471273988133666918">Нельзя переместить вкладку "<ph name="TAB_TITLE" />".</translation>
 <translation id="548278423535722844">Показать на карте</translation>
+<translation id="5489222148748465285">Разрешить Chrome продолжить поиск?</translation>
 <translation id="5494920125229734069">Выбрать все</translation>
 <translation id="549660026907543296">Присоединиться как <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Нижний экран недавних действий</translation>
@@ -1344,6 +1348,7 @@
 <translation id="6647441008198474441">Для прогнозирования ваших дальнейших запросов URL посещенных вами страниц отправляются в Google.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактное лицо}one{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактное лицо}few{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактных лица}many{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактных лиц}other{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактного лица}}</translation>
 <translation id="6649642165559792194">Просмотреть изображение <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
+<translation id="6661521899577697780">Нижний экран с предложением разрешить Chrome продолжить поиск открыт наполовину</translation>
 <translation id="666731172850799929">Открыть в <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Включить</translation>
 <translation id="6671495933530132209">Скопировать изображение</translation>
@@ -1395,6 +1400,7 @@
 <translation id="6828070228333235514">Прекратить отслеживание цен</translation>
 <translation id="6830728435402077660">Не защищено</translation>
 <translation id="6831043979455480757">Перевести</translation>
+<translation id="6835182496791325827">Получайте уведомления, когда Chrome находит лучшие результаты по вашим поисковым запросам.</translation>
 <translation id="6846298663435243399">Загрузка…</translation>
 <translation id="6850409657436465440">Выполняется скачивание</translation>
 <translation id="6850830437481525139">Закрыто вкладок: <ph name="TAB_COUNT" />.</translation>

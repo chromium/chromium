@@ -12894,11 +12894,6 @@ Esta política solo tendrá efecto si estableces la política <ph name="FULL_RES
 <translation id="9135095804754272364">Mostrar una notificación cuando se detecte un dispositivo USB</translation>
 <translation id="9136212796239682721">Inhabilitar la IU del cuadro de descarga</translation>
 <translation id="9136399279941091445">Intervalos de horas inactivas cuando se ejecutan las políticas de dispositivo especificadas</translation>
-<translation id="9138686056337842869">Si estableces esta política como verdadera, las Apps de Chrome podrán seguir ejecutándose en una sesión de Kiosco, independientemente de la habilitación predeterminada de las apps de Chrome.
-
-Si no estableces esta política o la estableces como falsa, se usará el comportamiento predeterminado definido en el dispositivo.
-
-Si intentas iniciar una App de Chrome inhabilitada, se mostrará un mensaje al usuario en el que se explica por qué no se pudo iniciar la app y se le sugiere que se comunique con su departamento de TI.</translation>
 <translation id="9139775903828905867">Controlar la combinación de teclas utilizada para activar F11</translation>
 <translation id="9140064482233876338">Dejó de estar disponible en M69. En su lugar, usa OverrideSecurityRestrictionsOnInsecureOrigin.
 

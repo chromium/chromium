@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Help ons om Chrome te verbeter deur ons te vertel hoekom jy derdepartywebkoekies toegelaat het. <ph name="BEGIN_LINK" />Stuur terugvoer<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Jy kan vra om die rekenaarweergawe van werwe te sien</translation>
 <translation id="1085696779717592361">Gebruik Chrome by verstek</translation>
+<translation id="1126523729897810826">Voltooi die voorgestelde handelinge hier onder om Chrome ten beste te benut.</translation>
 <translation id="113098737392899175">Navigeer bladsy met ’n teksskermpyltjie as daar ’n sleutelbord aangeheg is</translation>
 <translation id="1149644372535087155">Stoor wagwoorde in Chrome</translation>
 <translation id="1178015372320901893">My kortpaaie se onderste blad</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Maak werwe vinniger met Chrome se V8-enjin, maar maak Chrome effens minder bestand teen aanvalle</translation>
 <translation id="1593426485665524382">Nuwe handelinge is naby die bokant van die skerm beskikbaar</translation>
 <translation id="1594521731409209842">Knyp skerm om foto se grootte te verander</translation>
+<translation id="1599268789440304082">Opstellingblad is oopgemaak</translation>
 <translation id="1601560923496285236">Pas toe</translation>
 <translation id="1615755956145364867">Werwe kan vra om beskermde inhoud te speel</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="4505788138578415521">URL is uitgevou</translation>
 <translation id="4522570452068850558">Besonderhede</translation>
 <translation id="4523472416386354622">Meld aan om te begin</translation>
+<translation id="4529207923544043455">Onderblad wat voltooide en onvoltooide opstellinglystake vertoon</translation>
 <translation id="4534723447064627427">Om <ph name="APP_NAME" /> toegang tot jou mikrofoon te gee, moet jy mikrofoon ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
+<translation id="4545694195887112015">Opstellingblad is toegemaak</translation>
 <translation id="4566417217121906555">Demp mikrofoon</translation>
 <translation id="4570913071927164677">Besonderhede</translation>
 <translation id="4578289292431526768">Kom ons begin</translation>

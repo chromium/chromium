@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Recite nam zašto ste dopustili kolačiće trećih strana i pomognite nam da poboljšamo Chrome. <ph name="BEGIN_LINK" />Pošaljite svoje dojmove<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Možete zatražiti prikaz verzije web-lokacija za računala</translation>
 <translation id="1085696779717592361">Koristite Chrome prema zadanim postavkama</translation>
+<translation id="1126523729897810826">Dovršite predložene radnje u nastavku da biste iskoristili sve prednosti Chromea</translation>
 <translation id="113098737392899175">Krećite se stranicama pomoću pokazivača za tekst kad je tipkovnica povezana</translation>
 <translation id="1149644372535087155">Spremite zaporke u Chromeu</translation>
 <translation id="1178015372320901893">Donja tablica Moji prečaci</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Ubrzava web-lokacije zahvaljujući Chromeovom programu V8, ali Chrome čini malo manje otpornim na napade</translation>
 <translation id="1593426485665524382">Nove radnje dostupne su pri vrhu zaslona</translation>
 <translation id="1594521731409209842">Spojite prste na zaslonu da biste promijenili veličinu fotografije</translation>
+<translation id="1599268789440304082">Tablica s preporukama za postavljanje je otvorena</translation>
 <translation id="1601560923496285236">Primijeni</translation>
 <translation id="1615755956145364867">Web-lokacije mogu tražiti dopuštenje za reprodukciju zaštićenog sadržaja</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
@@ -352,7 +354,9 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="4505788138578415521">URL je proširen</translation>
 <translation id="4522570452068850558">Pojedinosti</translation>
 <translation id="4523472416386354622">Prijavite se za početak</translation>
+<translation id="4529207923544043455">Donja tablica koja prikazuje dovršene i nedovršene zadatke s popisa za postavljanje</translation>
 <translation id="4534723447064627427">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašem mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Tablica s preporukama za postavljanje je zatvorena</translation>
 <translation id="4566417217121906555">Isključi mikrofon</translation>
 <translation id="4570913071927164677">Pojedinosti</translation>
 <translation id="4578289292431526768">Započnimo</translation>

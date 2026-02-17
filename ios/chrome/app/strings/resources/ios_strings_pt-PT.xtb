@@ -1786,6 +1786,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para bloquear os separadores de navegação anónima, configure o Touch ID, o Face ID ou um código secreto.</translation>
 <translation id="750886945254958667">Mantenha este grupo para adicionar separadores mais tarde ou saia do grupo se já não quiser aceder a este</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Adicione até 1 separador}other{Adicione até {COUNT} separadores}}</translation>
 <translation id="7512909159512473473">Introduzir frase de acesso…</translation>
 <translation id="7514365320538308">Transferir</translation>
 <translation id="7514530647142300459">Continue a usar as palavras-passe na sua Conta Google <ph name="EMAIL" /></translation>

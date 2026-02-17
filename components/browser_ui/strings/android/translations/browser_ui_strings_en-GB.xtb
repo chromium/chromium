@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">You can ask to see the desktop version of sites</translation>
 <translation id="1085696779717592361">Use Chrome by default</translation>
+<translation id="1126523729897810826">Complete these suggested actions below to get the most out of Chrome</translation>
 <translation id="113098737392899175">Navigate pages with a text cursor when a keyboard is attached</translation>
 <translation id="1149644372535087155">Save passwords in Chrome</translation>
 <translation id="1178015372320901893">My shortcuts bottom sheet</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Speed up sites with Chrome's V8 engine but make Chrome slightly less resistant to attacks</translation>
 <translation id="1593426485665524382">New actions available near top of the screen</translation>
 <translation id="1594521731409209842">Pinch screen to resize photo</translation>
+<translation id="1599268789440304082">Setup sheet opened</translation>
 <translation id="1601560923496285236">Apply</translation>
 <translation id="1615755956145364867">Sites can ask to play protected content</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -352,7 +354,9 @@ Advanced Protection controls these Chrome settings:
 <translation id="4505788138578415521">URL expanded</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4523472416386354622">Sign in to start</translation>
+<translation id="4529207923544043455">Bottom sheet displaying completed and uncompleted setup list tasks</translation>
 <translation id="4534723447064627427">To let <ph name="APP_NAME" /> access your microphone, also turn on microphone in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Setup sheet closed</translation>
 <translation id="4566417217121906555">Mute microphone</translation>
 <translation id="4570913071927164677">Details</translation>
 <translation id="4578289292431526768">Let’s go</translation>

@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Дапамажыце нам палепшыць Chrome – раскажыце, чаму вы дазволілі староннія файлы cookie. <ph name="BEGIN_LINK" />Адправіць водгук<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Вы можаце запытаць паказ версій сайтаў для камп’ютараў</translation>
 <translation id="1085696779717592361">Выкарыстоўвайце Chrome стандартна</translation>
+<translation id="1126523729897810826">Каб карыстацца ўсімі магчымасцямі Chrome, выканайце гэтыя дзеянні</translation>
 <translation id="113098737392899175">Ажыццяўляць навігацыю па старонках з дапамогай тэкставага курсора, калі клавіятура падключана</translation>
 <translation id="1149644372535087155">Захоўвайце паролі ў Chrome</translation>
 <translation id="1178015372320901893">Ніжні аркуш "Мае хуткія каманды"</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Паскорыць працу сайтаў на рухавіку Chrome V8, а Chrome зрабіць крыху менш устойлівым да атак</translation>
 <translation id="1593426485665524382">Новыя дзеянні даступныя ўверсе экрана</translation>
 <translation id="1594521731409209842">Змяніце памер фота, звёўшы або развёўшы пальцы на экране</translation>
+<translation id="1599268789440304082">Аркуш для пачатку наладжвання адкрыты</translation>
 <translation id="1601560923496285236">Ужыць</translation>
 <translation id="1615755956145364867">Сайты могуць запытваць дазвол на прайграванне абароненага змесціва</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">URL-адрас разгорнуты</translation>
 <translation id="4522570452068850558">Падрабязнасці</translation>
 <translation id="4523472416386354622">Увайсці</translation>
+<translation id="4529207923544043455">Ніжні аркуш са спісам выкананых і нявыкананых задач па наладжванні</translation>
 <translation id="4534723447064627427">Каб даць праграме "<ph name="APP_NAME" />" доступ да мікрафона, уключыце апошні ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Аркуш для пачатку наладжвання закрыты</translation>
 <translation id="4566417217121906555">Выключыць мікрафон</translation>
 <translation id="4570913071927164677">Падрабязныя звесткі</translation>
 <translation id="4578289292431526768">Пачаць</translation>

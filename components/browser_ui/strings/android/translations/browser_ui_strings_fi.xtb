@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Auta meitä parantamaan Chromea kertomalla, miksi sallit kolmannen osapuolen evästeet. <ph name="BEGIN_LINK" />Lähetä palautetta<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Voit pyytää sivustojen tietokoneversiota</translation>
 <translation id="1085696779717592361">Chromen käyttö oletuksena</translation>
+<translation id="1126523729897810826">Näillä ehdotuksilla saat Chromesta mahdollisimman paljon irti</translation>
 <translation id="113098737392899175">Siirry sivuilla tekstikohdistimen avulla, kun näppäimistö on yhdistetty</translation>
 <translation id="1149644372535087155">Tallenna salasanat Chromeen</translation>
 <translation id="1178015372320901893">Omat pikakuvakkeet ‑alapaneeli</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Nopeuta sivustoja Chromen V8-moottorilla, mutta heikennä Chromen suojaa hyökkäyksiä vastaan</translation>
 <translation id="1593426485665524382">Uusia toimintoja saatavilla näytön yläosassa</translation>
 <translation id="1594521731409209842">Muuta kuvan kokoa nipistämällä näyttöä</translation>
+<translation id="1599268789440304082">Asennustaulukko avattu</translation>
 <translation id="1601560923496285236">Käytä</translation>
 <translation id="1615755956145364867">Sivustot saavat pyytää lupaa toistaa suojattua sisältöä</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4505788138578415521">URL näkyy laajennettuna</translation>
 <translation id="4522570452068850558">Tiedot</translation>
 <translation id="4523472416386354622">Aloita kirjautumalla sisään</translation>
+<translation id="4529207923544043455">Alareunassa näkyvässä taulukossa on valmiit ja keskeneräiset käyttöönottotehtävät</translation>
 <translation id="4534723447064627427">Laita mikrofoni päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn mikrofoniisi.</translation>
+<translation id="4545694195887112015">Asennussivu suljettu</translation>
 <translation id="4566417217121906555">Mykistä mikrofoni</translation>
 <translation id="4570913071927164677">Tiedot</translation>
 <translation id="4578289292431526768">Aloitetaan</translation>

@@ -12289,11 +12289,6 @@ Dit beleid heeft alleen effect als het beleid <ph name="FULL_RESTORE_ENABLED_NAM
 <translation id="9135095804754272364">Een melding tonen als een USB-apparaat wordt gevonden</translation>
 <translation id="9136212796239682721">Ballon-UI voor downloaden uitzetten</translation>
 <translation id="9136399279941091445">Intervallen buiten gebruikstijd wanneer het gespecificeerde apparaatbeleid wordt vrijgegeven</translation>
-<translation id="9138686056337842869">Als je dit beleid instelt op Waar, kunnen Chrome-apps blijven werken in een kiosksessie, ongeacht of Chrome-apps standaard zijn aangezet.
-
-Als je dit beleid niet instelt of instelt op Onwaar, wordt het standaardgedrag gebruikt dat is gedefinieerd op het apparaat.
-
-Als een gebruiker probeert een uitgezette Chrome-app te starten, krijgt deze een bericht waarin wordt uitgelegd waarom de app niet is gestart en wordt voorgesteld contact op te nemen met de IT-afdeling.</translation>
 <translation id="9139775903828905867">De sneltoets beheren die wordt gebruikt om F11 te activeren</translation>
 <translation id="9140064482233876338">Beëindigd in M69. Gebruik in plaats hiervan OverrideSecurityRestrictionsOnInsecureOrigin.
 

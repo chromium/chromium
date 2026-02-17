@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Palīdziet mums uzlabot pārlūku Chrome, pastāstot, kāpēc atļāvāt trešo pušu sīkfailus. <ph name="BEGIN_LINK" />Sūtīt atsauksmes<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Varat pieprasīt skatīt vietņu datora versiju.</translation>
 <translation id="1085696779717592361">Chrome izmantošana pēc noklusējuma</translation>
+<translation id="1126523729897810826">Lai pilnvērtīgi izmantotu pārlūku Chrome, veiciet tālāk ieteiktās darbības.</translation>
 <translation id="113098737392899175">Pārvietošanās lapās, izmantojot teksta kursoru, kad ir pievienota tastatūra</translation>
 <translation id="1149644372535087155">Paroļu saglabāšana pārlūkā Chrome</translation>
 <translation id="1178015372320901893">Ekrāna apakšdaļas lapa “Manas saīsnes”</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Paātrināt vietņu darbību, izmantojot Chrome programmu V8, bet nedaudz samazināt Chrome izturību pret uzbrukumiem</translation>
 <translation id="1593426485665524382">Ekrāna augšdaļā ir pieejamas jaunas darbības</translation>
 <translation id="1594521731409209842">Savelciet ekrānu, lai mainītu fotoattēla lielumu</translation>
+<translation id="1599268789440304082">Iestatīšanas lapa ir atvērta</translation>
 <translation id="1601560923496285236">Lietot</translation>
 <translation id="1615755956145364867">Atļaut vietnēm pieprasīt atļauju atskaņot aizsargātu saturu</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="4505788138578415521">URL ir izvērsts</translation>
 <translation id="4522570452068850558">Dati</translation>
 <translation id="4523472416386354622">Pierakstīties, lai sāktu</translation>
+<translation id="4529207923544043455">Ekrāna apakšdaļas lapa, kurā ir redzams pabeigto un nepabeigto iestatīšanas saraksta uzdevumu skaits</translation>
 <translation id="4534723447064627427">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu mikrofonam, ieslēdziet mikrofonu arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Iestatīšanas lapa ir aizvērta</translation>
 <translation id="4566417217121906555">Izslēgt mikrofonu</translation>
 <translation id="4570913071927164677">Detalizēta informācija</translation>
 <translation id="4578289292431526768">Sākt</translation>

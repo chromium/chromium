@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Sag uns, warum du Drittanbieter-Cookies zugelassen hast, und hilf uns so, Chrome zu verbessern. <ph name="BEGIN_LINK" />Feedback geben<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kannst die Desktopversion von Websites anfordern</translation>
 <translation id="1085696779717592361">Standardmäßig Chrome verwenden</translation>
+<translation id="1126523729897810826">Mit den unten vorgeschlagenen Aktionen lässt sich das Beste aus Chrome herausholen</translation>
 <translation id="113098737392899175">Auf den Seiten mithilfe eines Textcursors bewegen, wenn eine Tastatur angeschlossen ist</translation>
 <translation id="1149644372535087155">Passwörter in Chrome speichern</translation>
 <translation id="1178015372320901893">Ansicht „Meine Verknüpfungen“ am unteren Rand</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Websites mit der V8-Engine von Chrome beschleunigen (dadurch wird Chrome etwas anfälliger für Angriffe)</translation>
 <translation id="1593426485665524382">Neue Aktionen auf dem oberen Teil des Bildschirms verfügbar</translation>
 <translation id="1594521731409209842">Bildschirm zusammen- und auseinanderziehen, um die Größe des Fotos zu ändern</translation>
+<translation id="1599268789440304082">Einrichtungsansicht geöffnet</translation>
 <translation id="1601560923496285236">Übernehmen</translation>
 <translation id="1615755956145364867">Websites dürfen nachfragen, ob geschützte Inhalte wiedergegeben werden sollen</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="4505788138578415521">URL maximiert</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4523472416386354622">Anmelden und loslegen</translation>
+<translation id="4529207923544043455">Ansicht am unteren Rand mit erledigten und nicht erledigten Aufgaben der Einrichtungsliste</translation>
 <translation id="4534723447064627427">Um <ph name="APP_NAME" /> Zugriff auf dein Mikrofon zu gewähren, muss die Mikrofonberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
+<translation id="4545694195887112015">Einrichtungsansicht geschlossen</translation>
 <translation id="4566417217121906555">Mikrofon stummschalten</translation>
 <translation id="4570913071927164677">Details</translation>
 <translation id="4578289292431526768">Los gehts</translation>

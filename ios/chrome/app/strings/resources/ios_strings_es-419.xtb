@@ -1786,6 +1786,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para bloquear tus pestañas de incógnito, configura Touch ID, Face ID o una contraseña.</translation>
 <translation id="750886945254958667">Conserva este grupo para agregar pestañas más tarde o abandónalo si ya no quieres acceder a él</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Agrega hasta 1 pestaña}other{Agrega hasta {COUNT} pestañas}}</translation>
 <translation id="7512909159512473473">Ingresar la frase de contraseña…</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7514530647142300459">Sigue usando las contraseñas en tu Cuenta de Google <ph name="EMAIL" /></translation>

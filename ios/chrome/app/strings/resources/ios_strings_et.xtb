@@ -1786,6 +1786,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Inkognito vahelehtede lukustamiseks seadistage Touch ID, Face ID või pääsukood.</translation>
 <translation id="750886945254958667">Saate säilitada selle grupi, et lisada vahelehed hiljem, või lahkuda sellest, kui te ei soovi sellele enam juurde pääseda</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Lisage kuni 1 vaheleht}other{Lisage kuni {COUNT} vahelehte}}</translation>
 <translation id="7512909159512473473">Sisestage parool …</translation>
 <translation id="7514365320538308">Laadi alla</translation>
 <translation id="7514530647142300459">Jätkake paroolide kasutamist oma Google'i kontol <ph name="EMAIL" /></translation>

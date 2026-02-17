@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">‏با گفتن دلیل مجاز کردن کوکی‌های طرف سوم، به ما در بهبود Chrome کمک کنید. <ph name="BEGIN_LINK" />ارسال بازخورد<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">می‌توانید درخواست کنید نسخه رایانه سایت‌ها را ببینید</translation>
 <translation id="1085696779717592361">‏استفاده از Chrome به‌طور پیش‌فرض</translation>
+<translation id="1126523729897810826">‏کنش‌های پیشنهادی زیر را تکمیل کنید تا بیشترین بهره را از Chrome ببرید</translation>
 <translation id="113098737392899175">پیمایش کردن صفحه‌ها با مکان‌نمای نوشتار هنگام اتصال صفحه‌کلید</translation>
 <translation id="1149644372535087155">‏ذخیره کردن گذرواژه‌ها در Chrome</translation>
 <translation id="1178015372320901893">برگ زیرین میان‌برهای من</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">‏افزایش سرعت سایت‌ها بااستفاده از موتور V8‏ Chrome همراه با اندکی کاهش مقاومت Chrome در برابر حملات</translation>
 <translation id="1593426485665524382">کنش‌های جدیدی در نزدیکی بالای صفحه دردسترس است</translation>
 <translation id="1594521731409209842">برای تغییر اندازه عکس، انگشتان را ازهم دور یا به‌هم نزدیک کنید</translation>
+<translation id="1599268789440304082">برگ راه‌اندازی باز شد</translation>
 <translation id="1601560923496285236">اعمال</translation>
 <translation id="1615755956145364867">سایت‌ها می‌توانند پخش محتوای محافظت‌شده را درخواست کنند</translation>
 <translation id="1620510694547887537">دوربین</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">نشانی وب گسترده شد</translation>
 <translation id="4522570452068850558">جزئیات</translation>
 <translation id="4523472416386354622">برای شروع به سیستم وارد شوید</translation>
+<translation id="4529207923544043455">برگ زیرین که تکالیف فهرست راه‌اندازی تکمیل‌شده و تکمیل‌نشده را نشان می‌دهد</translation>
 <translation id="4534723447064627427">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید به میکروفون دسترسی پیدا کند، میکروفون را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
+<translation id="4545694195887112015">برگ راه‌اندازی بسته شد</translation>
 <translation id="4566417217121906555">صامت کردن میکروفون</translation>
 <translation id="4570913071927164677">جزئیات</translation>
 <translation id="4578289292431526768">بیایید شروع کنیم</translation>

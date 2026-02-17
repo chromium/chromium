@@ -1786,6 +1786,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)។</translation>
 <translation id="7508728395076009983">ដើម្បីចាក់សោផ្ទាំងឯកជនរបស់អ្នក សូមរៀបចំ Touch ID, Face ID ឬលេខ​កូដ​សម្ងាត់។</translation>
 <translation id="750886945254958667">រក្សា​ក្រុមនេះ ដើម្បី​បញ្ចូលផ្ទាំង​នៅពេលក្រោយ ឬ​ចាកចេញ​ពីក្រុមនេះ ប្រសិនបើ​អ្នកលែងចង់​ចូលប្រើវា​ទៀតហើយ</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{បញ្ចូលបានរហូតដល់ 1 ផ្ទាំង}other{បញ្ចូលបានរហូតដល់ {COUNT} ផ្ទាំង}}</translation>
 <translation id="7512909159512473473">បញ្ចូលឃ្លាសម្ងាត់…</translation>
 <translation id="7514365320538308">ទាញយក</translation>
 <translation id="7514530647142300459">បន្តប្រើ​ពាក្យសម្ងាត់​នៅក្នុង​គណនី Google របស់​អ្នក <ph name="EMAIL" /></translation>

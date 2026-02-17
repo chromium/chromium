@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Помозите нам да побољшамо Chrome тако што ћете нам рећи зашто сте дозволили колачиће треће стране. <ph name="BEGIN_LINK" />Пошаљите повратне информације<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Можете да затражите да видите верзију сајтова за рачунаре</translation>
 <translation id="1085696779717592361">Подразумевано користите Chrome</translation>
+<translation id="1126523729897810826">Обавите ове предложене радње у наставку да бисте искористили Chrome на најбољи начин</translation>
 <translation id="113098737392899175">Крећите се страницама помоћу курсора за текст када је прикључена тастатура</translation>
 <translation id="1149644372535087155">Чувајте лозинке у Chrome-у</translation>
 <translation id="1178015372320901893">Доња табела Моје пречице</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Убрзава сајтове уз Chrome механизам V8, али чини Chrome мало мање отпорним на нападе</translation>
 <translation id="1593426485665524382">Нове радње су доступне у врху екрана</translation>
 <translation id="1594521731409209842">Уштините екран да бисте променили величину слике</translation>
+<translation id="1599268789440304082">Табела за подешавање је отворена</translation>
 <translation id="1601560923496285236">Примени</translation>
 <translation id="1615755956145364867">Сајтови могу да траже да пуштају заштићен садржај</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">URL је проширен</translation>
 <translation id="4522570452068850558">Детаљи</translation>
 <translation id="4523472416386354622">Пријавите се да бисте започели</translation>
+<translation id="4529207923544043455">Доња табела која приказује завршене и незавршене задатке са листе за подешавање</translation>
 <translation id="4534723447064627427">Да бисте дозволили да <ph name="APP_NAME" /> приступа микрофону, укључите микрофон и у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Табела за подешавање је затворена</translation>
 <translation id="4566417217121906555">Искључи звук микрофона</translation>
 <translation id="4570913071927164677">Детаљи</translation>
 <translation id="4578289292431526768">Идемо</translation>

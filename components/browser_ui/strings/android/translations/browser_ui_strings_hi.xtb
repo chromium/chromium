@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">हमें बताएं कि आपने तीसरे पक्ष की कुकी को अनुमति क्यों दी है. इससे हमें Chrome को बेहतर बनाने में मदद मिलेगी. <ph name="BEGIN_LINK" />सुझाव/राय दें या शिकायत करें<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">साइटों का डेस्कटॉप वर्शन देखने के लिए अनुरोध किया जा सकता है</translation>
 <translation id="1085696779717592361">Chrome को अपना डिफ़ॉल्ट ब्राउज़र बनाएं</translation>
+<translation id="1126523729897810826">Chrome का ज़्यादा से ज़्यादा फ़ायदा पाने के लिए, यहां सुझाई गई कार्रवाइयों को पूरा करें.</translation>
 <translation id="113098737392899175">कीबोर्ड कनेक्ट होने पर, टेक्स्ट कर्सर की मदद से पेजों पर नेविगेट करें</translation>
 <translation id="1149644372535087155">Chrome में पासवर्ड सेव करें</translation>
 <translation id="1178015372320901893">'मेरे शॉर्टकट' पेज पर दिखने वाली बॉटम शीट</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Chrome के v8 इंजन की मदद से, साइटों के काम करने की स्पीड तेज़ करें. इससे सुरक्षा से जुड़े खतरों की संभावना बढ़ जाती है</translation>
 <translation id="1593426485665524382">स्क्रीन के सबसे ऊपरी हिस्से में, नई कार्रवाइयां उपलब्ध हैं</translation>
 <translation id="1594521731409209842">फ़ोटो का साइज़ बदलने के लिए, स्क्रीन पर पिंच करें</translation>
+<translation id="1599268789440304082">सेटअप शीट खोली गई</translation>
 <translation id="1601560923496285236">लागू करें</translation>
 <translation id="1615755956145364867">साइटें कॉपीराइट वाले कॉन्टेंट को चलाने के लिए पूछ सकती हैं</translation>
 <translation id="1620510694547887537">कैमरा</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">यूआरएल बड़ा हो गया</translation>
 <translation id="4522570452068850558">ब्यौरा</translation>
 <translation id="4523472416386354622">शुरू करने के लिए साइन इन करें</translation>
+<translation id="4529207923544043455">सेट अप की सूची में पूरे किए गए और अधूरे टास्क दिखाने वाली बॉटम शीट</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> को माइक्रोफ़ोन का ऐक्सेस देने के लिए, <ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर भी माइक्रोफ़ोन चालू करें.</translation>
+<translation id="4545694195887112015">सेटअप शीट बंद की गई</translation>
 <translation id="4566417217121906555">माइक्रोफ़ोन को म्यूट करें</translation>
 <translation id="4570913071927164677">ब्यौरा</translation>
 <translation id="4578289292431526768">आइए, शुरू करें</translation>

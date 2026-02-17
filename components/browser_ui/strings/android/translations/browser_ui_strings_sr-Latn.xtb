@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Pomozite nam da poboljšamo Chrome tako što ćete nam reći zašto ste dozvolili kolačiće treće strane. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Možete da zatražite da vidite verziju sajtova za računare</translation>
 <translation id="1085696779717592361">Podrazumevano koristite Chrome</translation>
+<translation id="1126523729897810826">Obavite ove predložene radnje u nastavku da biste iskoristili Chrome na najbolji način</translation>
 <translation id="113098737392899175">Krećite se stranicama pomoću kursora za tekst kada je priključena tastatura</translation>
 <translation id="1149644372535087155">Čuvajte lozinke u Chrome-u</translation>
 <translation id="1178015372320901893">Donja tabela Moje prečice</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Ubrzava sajtove uz Chrome mehanizam V8, ali čini Chrome malo manje otpornim na napade</translation>
 <translation id="1593426485665524382">Nove radnje su dostupne u vrhu ekrana</translation>
 <translation id="1594521731409209842">Uštinite ekran da biste promenili veličinu slike</translation>
+<translation id="1599268789440304082">Tabela za podešavanje je otvorena</translation>
 <translation id="1601560923496285236">Primeni</translation>
 <translation id="1615755956145364867">Sajtovi mogu da traže da puštaju zaštićen sadržaj</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="4505788138578415521">URL je proširen</translation>
 <translation id="4522570452068850558">Detalji</translation>
 <translation id="4523472416386354622">Prijavite se da biste započeli</translation>
+<translation id="4529207923544043455">Donja tabela koja prikazuje završene i nezavršene zadatke sa liste za podešavanje</translation>
 <translation id="4534723447064627427">Da biste dozvolili da <ph name="APP_NAME" /> pristupa mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Tabela za podešavanje je zatvorena</translation>
 <translation id="4566417217121906555">Isključi zvuk mikrofona</translation>
 <translation id="4570913071927164677">Detalji</translation>
 <translation id="4578289292431526768">Idemo</translation>

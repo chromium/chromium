@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">ਸਾਨੂੰ ਇਹ ਦੱਸ ਕੇ Chrome ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਕਰੋ ਕਿ ਤੁਸੀਂ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਕਿਉਂ ਦਿੱਤੀ ਹੈ। <ph name="BEGIN_LINK" />ਵਿਚਾਰ ਭੇਜੋ<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">ਤੁਸੀਂ ਸਾਈਟਾਂ ਦੇ ਡੈਸਕਟਾਪ ਵਰਜਨ ਨੂੰ ਦੇਖਣ ਲਈ ਪੁੱਛ ਸਕਦੇ ਹੋ</translation>
 <translation id="1085696779717592361">Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਵਰਤੋ</translation>
+<translation id="1126523729897810826">ਹੇਠਾਂ ਸੁਝਾਈਆਂ ਗਈਆਂ ਇਨ੍ਹਾਂ ਕਾਰਵਾਈਆਂ ਨੂੰ Chrome ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਲਈ ਪੂਰਾ ਕਰੋ</translation>
 <translation id="113098737392899175">ਕੀ-ਬੋਰਡ ਕਨੈਕਟ ਹੋਣ 'ਤੇ ਲਿਖਤ ਕਰਸਰ ਨਾਲ ਪੰਨਿਆਂ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
 <translation id="1149644372535087155">Chrome ਵਿੱਚ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1178015372320901893">ਮੇਰੇ ਸ਼ਾਰਟਕੱਟਾਂ ਦੀ ਹੇਠਲੀ ਸ਼ੀਟ</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Chrome ਦੇ V8 ਇੰਜਣ ਨਾਲ ਸਾਈਟਾਂ ਦੀ ਗਤੀ ਵਧਾਓ, ਪਰ ਇਸ ਨਾਲ Chrome 'ਤੇ ਹਮਲਿਆਂ ਤੋਂ ਸੁਰੱਖਿਆ ਘਟ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="1593426485665524382">ਸਕ੍ਰੀਨ ਦੇ ਸਿਖਰ ਨਜ਼ਦੀਕ ਨਵੀਆਂ ਕਾਰਵਾਈਆਂ ਉਪਲਬਧ ਹਨ</translation>
 <translation id="1594521731409209842">ਫ਼ੋਟੋ ਦਾ ਆਕਾਰ ਬਦਲਣ ਲਈ ਸਕ੍ਰੀਨ 'ਤੇ ਚੂੰਢੀ ਭਰੋ</translation>
+<translation id="1599268789440304082">ਸੈੱਟਅੱਪ ਸ਼ੀਟ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="1601560923496285236">ਲਾਗੂ ਕਰੋ</translation>
 <translation id="1615755956145364867">ਸਾਈਟਾਂ ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="1620510694547887537">ਕੈਮਰਾ</translation>
@@ -352,7 +354,9 @@
 <translation id="4505788138578415521">URL ਦਾ ਵਿਸਤਾਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4522570452068850558">ਵੇਰਵੇ</translation>
 <translation id="4523472416386354622">ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="4529207923544043455">ਸੈੱਟਅੱਪ ਸੂਚੀ ਵਿੱਚ ਮੁਕੰਮਲ ਅਤੇ ਨਾਮੁਕੰਮਲ ਕਾਰਜਾਂ ਨੂੰ ਦਿਖਾਉਣ ਵਾਲੀ ਹੇਠਲੀ ਸ਼ੀਟ</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> ਨੂੰ ਆਪਣੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੇਣ ਲਈ, <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵੀ ਚਾਲੂ ਕਰੋ।</translation>
+<translation id="4545694195887112015">ਸੈੱਟਅੱਪ ਸ਼ੀਟ ਬੰਦ ਕੀਤੀ ਗਈ</translation>
 <translation id="4566417217121906555">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਮਿਊਟ ਕਰੋ</translation>
 <translation id="4570913071927164677">ਵੇਰਵੇ</translation>
 <translation id="4578289292431526768">ਚਲੋ ਸ਼ੁਰੂ ਕਰੀਏ</translation>

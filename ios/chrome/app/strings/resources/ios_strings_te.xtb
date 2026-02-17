@@ -1786,6 +1786,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">మీ అజ్ఞాత ట్యాబ్‌లను లాక్ చేయడానికి, టచ్ ID, ఫేస్ ID లేదా పాస్‌కోడ్‌ను సెటప్ చేయండి.</translation>
 <translation id="750886945254958667">తర్వాత ట్యాబ్‌లను జోడించడానికి ఈ గ్రూప్‌ను అలాగే ఉంచుకోండి లేదా మీరు ఇకపై దీనికి యాక్సెస్ చేయకూడదనుకుంటే వదిలివేయండి</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{గరిష్ఠంగా 1 ట్యాబ్‌ను జోడించండి}other{గరిష్ఠంగా {COUNT} ట్యాబ్‌లను జోడించండి}}</translation>
 <translation id="7512909159512473473">రహస్య పదబంధాన్ని ఎంటర్ చేయండి…</translation>
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7514530647142300459">మీ Google ఖాతా <ph name="EMAIL" />‌లో పాస్‌వర్డ్‌లను ఉపయోగించడం కొనసాగించండి</translation>

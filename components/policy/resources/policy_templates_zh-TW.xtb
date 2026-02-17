@@ -12048,11 +12048,6 @@ Topics API 已淘汰，因此這項政策也已在 <ph name="PRODUCT_NAME" /> 14
 <translation id="9135095804754272364">偵測到 USB 裝置時顯示通知</translation>
 <translation id="9136212796239682721">停用下載對話框 UI</translation>
 <translation id="9136399279941091445">發布指定裝置政策時的停機時間間隔</translation>
-<translation id="9138686056337842869">無論是否預設啟用 Chrome 應用程式，只要將這項政策設為 True，Chrome 應用程式就能繼續在資訊站工作階段中執行。
-
-如果不設定這項政策或設為 False，系統會依裝置上定義的預設行為運作。
-
-嘗試啟動已停用的 Chrome 應用程式時，系統會向使用者顯示訊息，說明為何無法啟動應用程式，並建議聯絡 IT 部門。</translation>
 <translation id="9139775903828905867">控制用於觸發 F11 的快速鍵</translation>
 <translation id="9140064482233876338">這項政策自 M69 起已淘汰，請改用 OverrideSecurityRestrictionsOnInsecureOrigin。
 

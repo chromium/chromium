@@ -1786,6 +1786,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">I gloi eich tabiau anhysbys, gosodwch Touch ID, Face ID, neu God Pas.</translation>
 <translation id="750886945254958667">Cadwch y grŵp hwn i ychwanegu tabiau yn ddiweddarach, neu gadewch ef os nad ydych am gael mynediad ato mwyach</translation>
+<translation id="7511727374778217603">{COUNT,plural, =1{Ychwanegu hyd at 1 tab}zero{Ychwanegu hyd at {COUNT} tab}two{Ychwanegu hyd at {COUNT} dab}few{Ychwanegu hyd at {COUNT} tab}many{Ychwanegu hyd at {COUNT} tab}other{Ychwanegu hyd at {COUNT} tab}}</translation>
 <translation id="7512909159512473473">Rhowch gyfrinymadrodd…</translation>
 <translation id="7514365320538308">Lawrlwytho</translation>
 <translation id="7514530647142300459">Parhewch i ddefnyddio'r cyfrineiriau yn eich Cyfrif Google <ph name="EMAIL" /></translation>

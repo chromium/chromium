@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Aidez-nous à améliorer Chrome en nous indiquant pourquoi vous avez autorisé les témoins tiers. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Vous pouvez demander à voir la version pour ordinateur de bureau des sites</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
+<translation id="1126523729897810826">Effectuez les actions suggérées ci-dessous pour tirer le meilleur parti de Chrome</translation>
 <translation id="113098737392899175">Parcourir les pages à l'aide d'un curseur de texte lorsqu'un clavier est connecté</translation>
 <translation id="1149644372535087155">Enregistrez les mots de passe dans Chrome</translation>
 <translation id="1178015372320901893">Zone de contenu dans le bas de l'écran concernant Mes raccourcis</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Accélérer les sites avec le moteur V8 de Chrome, mais rendre Chrome légèrement moins résistant aux attaques</translation>
 <translation id="1593426485665524382">Nouvelles actions accessibles près du haut de l'écran</translation>
 <translation id="1594521731409209842">Pincer l'écran pour redimensionner la photo</translation>
+<translation id="1599268789440304082">Feuille de configuration ouverte</translation>
 <translation id="1601560923496285236">Appliquer</translation>
 <translation id="1615755956145364867">Les sites peuvent demander à lire du contenu protégé</translation>
 <translation id="1620510694547887537">Caméra</translation>
@@ -352,7 +354,9 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="4505788138578415521">URL développée</translation>
 <translation id="4522570452068850558">Détails</translation>
 <translation id="4523472416386354622">Connectez-vous pour commencer</translation>
+<translation id="4529207923544043455">Zone de contenu dans le bas de l'écran affichant les tâches terminées et non terminées de la liste de configuration</translation>
 <translation id="4534723447064627427">Pour autoriser <ph name="APP_NAME" /> à accéder à votre microphone, vous devez aussi activer le microphone dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Feuille de configuration fermée</translation>
 <translation id="4566417217121906555">Désactiver le microphone</translation>
 <translation id="4570913071927164677">Détails</translation>
 <translation id="4578289292431526768">Allons-y</translation>

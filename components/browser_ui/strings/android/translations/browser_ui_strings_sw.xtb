@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Tusaidie kuboresha Chrome kwa kutuambia kwa nini umeruhusu vidakuzi vya mshirika mwingine. <ph name="BEGIN_LINK" />Tuma maoni<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Unaweza kuomba kuona toleo la eneokazi la tovuti</translation>
 <translation id="1085696779717592361">Tumia Chrome Kwa Chaguomsingi</translation>
+<translation id="1126523729897810826">Kamilisha vitendo hivi vilivyopendekezwa hapa chini ili unufaike zaidi na Chrome</translation>
 <translation id="113098737392899175">Sogeza kwenye kurasa ukitumia kiteuzi cha maandishi wakati umeunganisha kibodi</translation>
 <translation id="1149644372535087155">Kuhifadhi manenosiri kwenye Chrome</translation>
 <translation id="1178015372320901893">Safu ya chini ya njia zangu za mkato</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Ongeza kasi ya tovuti kupakia ukitumia mtambo wa V8 wa Chrome lakini uifanye Chrome isistahimili sana mashambulio</translation>
 <translation id="1593426485665524382">Vitendo vipya vinapatikana karibu na sehemu ya juu ya skrini</translation>
 <translation id="1594521731409209842">Bana skrini ili ubadilishe ukubwa wa picha</translation>
+<translation id="1599268789440304082">Laha ya kuweka mipangilio imefunguliwa</translation>
 <translation id="1601560923496285236">Tekeleza</translation>
 <translation id="1615755956145364867">Tovuti zinaweza kuomba ruhusa ya kucheza maudhui yanayolindwa</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="4505788138578415521">URL imepanuliwa</translation>
 <translation id="4522570452068850558">Maelezo</translation>
 <translation id="4523472416386354622">Ingia katika akaunti ili uanze</translation>
+<translation id="4529207923544043455">Laha ya chini inayoonyesha majukumu yaliyokamilika na ambayo hayajakamilika katika orodha ya kuweka mipangilio</translation>
 <translation id="4534723447064627427">Ili uruhusu <ph name="APP_NAME" /> ifikie maikrofoni yako, washa pia maikrofoni katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Laha ya kuweka mipangilio imefungwa</translation>
 <translation id="4566417217121906555">Zima maikrofoni</translation>
 <translation id="4570913071927164677">Maelezo</translation>
 <translation id="4578289292431526768">Twende kazi</translation>

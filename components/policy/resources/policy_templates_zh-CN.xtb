@@ -12242,11 +12242,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="9135095804754272364">在检测到 USB 设备时显示通知</translation>
 <translation id="9136212796239682721">停用下载气泡界面</translation>
 <translation id="9136399279941091445">放宽所指定设备政策的非办公时段</translation>
-<translation id="9138686056337842869">如果此政策设为 True，Chrome 应用将能继续在自助服务终端会话中运行，无论 Chrome 应用是否默认已启用。
-
-如果此政策未设置或设为 False，系统将使用设备上定义的默认行为。
-
-当用户尝试启动已停用的 Chrome 应用时，系统会向用户显示一条消息，说明该应用未启动的原因，并建议用户联系其 IT 部门。</translation>
 <translation id="9139775903828905867">控制用于触发 F11 的快捷键</translation>
 <translation id="9140064482233876338">已在 M69 中弃用。请改用 OverrideSecurityRestrictionsOnInsecureOrigin。
 

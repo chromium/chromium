@@ -8,6 +8,7 @@
 <translation id="1073417869336441572">Hjälp oss att förbättra Chrome genom att berätta varför du har tillåtit cookies från tredje part. <ph name="BEGIN_LINK" />Skicka feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kan begära att se webbplatsernas datorversion</translation>
 <translation id="1085696779717592361">Använd Chrome som standard</translation>
+<translation id="1126523729897810826">Slutför de rekommenderade åtgärderna nedan så att du får ut mesta möjliga av Chrome</translation>
 <translation id="113098737392899175">Navigera på sidor med en textmarkör när ett tangentbord är anslutet</translation>
 <translation id="1149644372535087155">Spara lösenord i Chrome</translation>
 <translation id="1178015372320901893">Ark på nedre delen av skärmen för Mina genvägar</translation>
@@ -53,6 +54,7 @@
 <translation id="1569054338208717605">Gör webbplatser snabbare med Chromes V8-motor men gör Chrome något mindre motståndskraftigt mot attacker</translation>
 <translation id="1593426485665524382">Nya åtgärder visas högt upp på skärmen</translation>
 <translation id="1594521731409209842">Nyp på skärmen för att ändra storlek på fotot</translation>
+<translation id="1599268789440304082">Inställningsarket har öppnats</translation>
 <translation id="1601560923496285236">Verkställ</translation>
 <translation id="1615755956145364867">Webbplatser får begära tillstånd att spela upp skyddat innehåll</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -352,7 +354,9 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="4505788138578415521">Webbadressen har utökats</translation>
 <translation id="4522570452068850558">Detaljer</translation>
 <translation id="4523472416386354622">Logga in när du vill komma igång</translation>
+<translation id="4529207923544043455">Ark på nedre delen av skärmen som visar slutförda och ej slutförda uppgifter i inställningslistan</translation>
 <translation id="4534723447064627427">Om du vill ge <ph name="APP_NAME" /> åtkomst till mikrofonen måste du även aktivera mikrofonen i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
+<translation id="4545694195887112015">Inställningsarket har stängts</translation>
 <translation id="4566417217121906555">Stäng av mikrofonen</translation>
 <translation id="4570913071927164677">Information</translation>
 <translation id="4578289292431526768">Kom igång</translation>
