@@ -2199,4 +2199,83 @@ TEST_F(VisitDatabaseTest, GetLastRowForVisitByVisitTime) {
   EXPECT_THAT(result3, MatchesVisitInfo(visit3c));
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(VisitDatabaseTest, ShouldFilterUserAndActorVisits) {
+  auto add_visit_with_source = [&](const GURL& url, VisitSource source) {
+    URLRow url_row(url);
+    URLID id = AddURL(url_row);
+    VisitRow visit;
+    visit.url_id = id;
+    visit.visit_time = base::Time::Now();
+    visit.source = source;
+    visit.transition = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+        ui::PAGE_TRANSITION_CHAIN_END);
+    AddVisit(&visit);
+    return id;
+  };
+
+  URLID user_id =
+      add_visit_with_source(GURL("https://user.com"), SOURCE_BROWSED);
+  URLID agent_id =
+      add_visit_with_source(GURL("https://agent.com"), SOURCE_ACTOR);
+
+  struct TestCase {
+    std::string name;
+    bool m3_enabled;
+    bool include_user;
+    bool include_actor;
+    size_t expected_count;
+  } cases[] = {
+      {"All History", true, true, true, 2},
+      {"User Only", true, true, false, 1},
+      {"Agent Only", true, false, true, 1},
+      {"M3 Disabled", false, false, true, 2},
+  };
+
+  for (const auto& c : cases) {
+    SCOPED_TRACE(c.name);
+    base::test::ScopedFeatureList feature_list;
+
+    std::vector<base::test::FeatureRef> enabled = {
+        history::kBrowsingHistoryActorIntegrationM2};
+    std::vector<base::test::FeatureRef> disabled;
+
+    if (c.m3_enabled) {
+      enabled.push_back(history::kBrowsingHistoryActorIntegrationM3);
+    } else {
+      disabled.push_back(history::kBrowsingHistoryActorIntegrationM3);
+    }
+    feature_list.InitWithFeatures(enabled, disabled);
+
+    QueryOptions options;
+    options.include_user_visits = c.include_user;
+    options.include_actor_visits = c.include_actor;
+
+    VisitVector results;
+    GetVisibleVisitsInRange(options, &results);
+
+    EXPECT_EQ(c.expected_count, results.size());
+
+    if (c.expected_count == 1) {
+      URLID expected_id = c.include_user ? user_id : agent_id;
+      EXPECT_EQ(expected_id, results[0].url_id);
+    } else if (c.expected_count == 2) {
+      bool found_user = false;
+      bool found_agent = false;
+      for (const auto& visit : results) {
+        if (visit.url_id == user_id) {
+          found_user = true;
+        }
+        if (visit.url_id == agent_id) {
+          found_agent = true;
+        }
+      }
+      EXPECT_TRUE(found_user);
+      EXPECT_TRUE(found_agent);
+    }
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 }  // namespace history
