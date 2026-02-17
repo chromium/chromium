@@ -639,7 +639,7 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
       guard let item = itemIdentifier.tabGroupItem else { return }
       let itemData = self.itemData[itemIdentifier] as? TabStripItemData
       cell.title = item.title
-      cell.contentContainerBackgroundColor = item.groupColor
+      cell.contentContainerBackgroundColor = item.tabStripColor
       cell.titleTextColor = item.foregroundColor
       cell.collapsed = item.collapsed
       cell.facePileProvider = self.tabGroupCellDataSource?.facePileProvider(forItem: itemIdentifier)

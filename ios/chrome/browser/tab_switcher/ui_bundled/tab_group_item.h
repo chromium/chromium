@@ -33,6 +33,7 @@ class TabGroup;
 @property(nonatomic, readonly, nullable) UIColor* groupColor;
 @property(nonatomic, readonly, nullable)
     TabGroupColorPalette* tabGroupColorPalette;
+@property(nonatomic, readonly, nullable) UIColor* tabStripColor;
 @property(nonatomic, readonly, nullable) UIColor* foregroundColor;
 @property(nonatomic, readonly) NSInteger numberOfTabsInGroup;
 @property(nonatomic, readonly) BOOL collapsed;

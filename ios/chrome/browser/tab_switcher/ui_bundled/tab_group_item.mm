@@ -87,6 +87,13 @@
   return _tabGroup->visual_data().is_collapsed();
 }
 
+- (UIColor*)tabStripColor {
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    return self.tabGroupColorPalette.commonColor;
+  }
+  return self.groupColor;
+}
+
 #pragma mark - Debugging
 
 - (NSString*)description {
