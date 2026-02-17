@@ -7994,7 +7994,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.Timing.SuggestionGeneration" units="ms"
+<histogram name="Autofill.Timing.SuggestionGeneration2" units="ms"
     expires_after="2026-06-21">
   <owner>jihadghanna@google.com</owner>
   <owner>kuchyn@google.com</owner>
@@ -8004,6 +8004,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     (OnAskForValuesToFillImpl) and the point where suggestions are ready to be
     shown (OnGenerateSuggestionsComplete). This measures the total latency of
     the suggestion generation logic.
+
+    Emitted only when a suggestion ends up being shown.
   </summary>
 </histogram>
 

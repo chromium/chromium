@@ -4349,7 +4349,7 @@ TEST_F(BrowserAutofillManagerTest, SuggestionGenerationTimingMetric) {
       std::nullopt);
 
   // Verify the metric was recorded exactly once.
-  histogram_tester.ExpectTotalCount("Autofill.Timing.SuggestionGeneration", 1);
+  histogram_tester.ExpectTotalCount("Autofill.Timing.SuggestionGeneration2", 1);
 }
 
 // Test the field log events at the form submission.

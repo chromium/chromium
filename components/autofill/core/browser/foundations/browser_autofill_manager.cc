@@ -1746,9 +1746,11 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
     std::vector<Suggestion> suggestions) {
   ReorderWebauthnFallbackToFooter(suggestions);
 
-  base::UmaHistogramTimes(
-      "Autofill.Timing.SuggestionGeneration",
-      base::TimeTicks::Now() - suggestion_generation_start_time);
+  if (!suggestions.empty()) {
+    base::UmaHistogramTimes(
+        "Autofill.Timing.SuggestionGeneration2",
+        base::TimeTicks::Now() - suggestion_generation_start_time);
+  }
 
   LogSuggestionsCount(context, suggestions);
   // When focusing on a field, log whether there is a suggestion for the user
