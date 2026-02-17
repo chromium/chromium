@@ -16288,6 +16288,11 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="InfobarModalCancelButtonTap">
+  <owner>thegreenfrog@chromium.org</owner>
+  <description>Reported when the inforbar modal is cancelled.</description>
+</action>
+
 <action name="InProductHelp.Dismissed">
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
