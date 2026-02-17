@@ -98,7 +98,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 
   // List of countries in which private passes are not supported.
   constexpr static auto kPrivatePassExclusions =
-      base::MakeFixedFlatSet<std::string_view>({"DE", "FR", "IT"});
+      base::MakeFixedFlatSet<std::string_view>({"FR"});
   return !IsMaskedStorageSupported(*entity_type,
                                    EntityInstance::RecordType::kServerWallet) ||
          !kPrivatePassExclusions.contains(country_code.value()) ||
