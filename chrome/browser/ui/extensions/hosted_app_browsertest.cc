@@ -1007,6 +1007,11 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
         embedded_test_server()->GetURL("cross.domain.com", "/title1.html");
   }
 
+  void TearDownOnMainThread() override {
+    process_map_ = nullptr;
+    HostedOrWebAppTest::TearDownOnMainThread();
+  }
+
   // Opens a popup from |rfh| to |url|, verifies whether it should stay in the
   // same process as |rfh| and whether it should be in an app process, and then
   // closes the popup.
@@ -1103,7 +1108,7 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
  protected:
   bool should_swap_for_cross_site_;
 
-  raw_ptr<extensions::ProcessMap, DanglingUntriaged> process_map_;
+  raw_ptr<extensions::ProcessMap> process_map_ = nullptr;
 
   GURL same_dir_url_;
   GURL diff_dir_url_;
