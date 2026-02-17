@@ -75,6 +75,10 @@ chrome_settings_proto_path = "$target_gen_dir/proto/chrome_settings.proto"
 
 constants_header_path = "$target_gen_dir/policy_constants.h"
 constants_source_path = "$target_gen_dir/policy_constants.cc"
+if (is_chromeos || is_linux) {
+  constants_mutable_header_path = "$target_gen_dir/policy_constants_mutable.h"
+  constants_mutable_source_path = "$target_gen_dir/policy_constants_mutable.cc"
+}
 risk_tag_header_path = "$target_gen_dir/risk_tag.h"
 
 policy_templates_deps_file = "$policy_templates_base_dir/policy_templates.d"
@@ -267,6 +271,28 @@ static_library("generated") {
     "//third_party/protobuf:protobuf_lite",
   ]
   deps = [ "//build:branding_buildflags" ]
+}
+
+if (is_chromeos || is_linux) {
+  static_library("generated_testonly") {
+    testonly = true
+    sources = [
+      constants_mutable_header_path,
+      constants_mutable_source_path,
+      risk_tag_header_path,
+    ]
+
+    defines = [ "POLICY_COMPONENT_IMPLEMENTATION" ]
+    public_deps = [
+      ":cloud_policy_proto_generated_compile",
+      ":policy_code_generate",
+      "//base",
+      "//components/policy/core/common:common_constants",
+      "//components/policy/proto:policy_common_definitions_compile_proto",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+    deps = [ "//build:branding_buildflags" ]
+  }
 }
 
 if (gen_policy_templates_android && is_android) {

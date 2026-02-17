@@ -28,6 +28,7 @@ proto_library("policy_common_definitions_compile_proto") {
     "//components/policy:cloud_policy_proto_generated_compile_proto",
     "//components/policy:cloud_policy_proto_generated_compile_proto_gen",
     "//components/policy:generated",
+    "//components/policy:generated_testonly",
   ]
 
   sources = [ "policy_common_definitions.proto" ]

@@ -76,11 +76,17 @@ template("generate_policy_source") {
       # Generate C++ headers/sources.
       constants_header_path = "$target_gen_dir/policy_constants.h"
       constants_source_path = "$target_gen_dir/policy_constants.cc"
+      constants_mutable_header_path =
+          "$target_gen_dir/policy_constants_mutable.h"
+      constants_mutable_source_path =
+          "$target_gen_dir/policy_constants_mutable.cc"
       risk_tag_header_path = "$target_gen_dir/risk_tag.h"
 
       outputs += [
         constants_header_path,
         constants_source_path,
+        constants_mutable_header_path,
+        constants_mutable_source_path,
         risk_tag_header_path,
       ]
       args += [
