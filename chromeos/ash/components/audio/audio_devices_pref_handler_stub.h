@@ -104,7 +104,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   AudioDevicePreferenceSetMap device_preference_set_map_;
   MostRecentActivatedDeviceIdList most_recent_activated_device_id_list;
 
-  base::ObserverList<AudioPrefObserver>::Unchecked observers_;
+  base::ObserverList<AudioPrefObserver> observers_;
 
   bool is_audio_output_allowed_ = true;
   bool voice_isolation_state_ = false;

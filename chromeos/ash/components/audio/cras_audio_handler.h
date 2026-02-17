@@ -178,62 +178,63 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       "Cras.VoiceIsolationPreferredEffectChange";
   static constexpr char kSpatialAudioHistogramName[] = "Cras.SpatialAudio";
 
-  class AudioObserver {
+  class AudioObserver : public base::CheckedObserver {
    public:
     AudioObserver(const AudioObserver&) = delete;
     AudioObserver& operator=(const AudioObserver&) = delete;
 
     // Called when an active output volume changed.
-    virtual void OnOutputNodeVolumeChanged(uint64_t node_id, int volume);
+    virtual void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) {}
 
     // Called when output mute state changed.
-    virtual void OnOutputMuteChanged(bool mute_on);
+    virtual void OnOutputMuteChanged(bool mute_on) {}
 
     // Called when active input node's gain changed.
-    virtual void OnInputNodeGainChanged(uint64_t node_id, int gain);
+    virtual void OnInputNodeGainChanged(uint64_t node_id, int gain) {}
 
     // Called when input mute state changed.
-    virtual void OnInputMuteChanged(bool mute_on, InputMuteChangeMethod method);
+    virtual void OnInputMuteChanged(bool mute_on,
+                                    InputMuteChangeMethod method) {}
 
     // Called when the state of input mute hw switch state changes.
-    virtual void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted);
+    virtual void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) {}
 
     // Called when the state of input mute by security curtain changes.
-    virtual void OnInputMutedBySecurityCurtainChanged(bool muted);
+    virtual void OnInputMutedBySecurityCurtainChanged(bool muted) {}
 
     // Called when audio nodes changed.
-    virtual void OnAudioNodesChanged();
+    virtual void OnAudioNodesChanged() {}
 
     // Called when active audio node changed.
-    virtual void OnActiveOutputNodeChanged();
+    virtual void OnActiveOutputNodeChanged() {}
 
     // Called when active audio input node changed.
-    virtual void OnActiveInputNodeChanged();
+    virtual void OnActiveInputNodeChanged() {}
 
     // Called when output channel remixing changed.
-    virtual void OnOutputChannelRemixingChanged(bool mono_on);
+    virtual void OnOutputChannelRemixingChanged(bool mono_on) {}
 
     // Called when voice isolation UI appearance changed.
     virtual void OnVoiceIsolationUIAppearanceChanged(
-        VoiceIsolationUIAppearance appearance);
+        VoiceIsolationUIAppearance appearance) {}
 
     // Called when noise cancellation state changed.
-    virtual void OnNoiseCancellationStateChanged();
+    virtual void OnNoiseCancellationStateChanged() {}
 
     // Called when style transfer state changed.
-    virtual void OnStyleTransferStateChanged();
+    virtual void OnStyleTransferStateChanged() {}
 
     // Called when force respect ui gains state changed.
-    virtual void OnForceRespectUiGainsStateChanged();
+    virtual void OnForceRespectUiGainsStateChanged() {}
 
     // Called when hfp_mic_sr state changed.
-    virtual void OnHfpMicSrStateChanged();
+    virtual void OnHfpMicSrStateChanged() {}
 
     // Called when hotword is detected.
-    virtual void OnHotwordTriggered(uint64_t tv_sec, uint64_t tv_nsec);
+    virtual void OnHotwordTriggered(uint64_t tv_sec, uint64_t tv_nsec) {}
 
     // Called when spatial audio state changed.
-    virtual void OnSpatialAudioStateChanged();
+    virtual void OnSpatialAudioStateChanged() {}
 
     // Called when the battery level change is reported over the Hands-Free
     // Profile for a Bluetooth headset.
@@ -242,23 +243,23 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     // The level ranges from 0 to 100. Erroneous value reported by the headset
     // will be ignored and won't trigger this callback.
     virtual void OnBluetoothBatteryChanged(const std::string& address,
-                                           uint32_t level);
+                                           uint32_t level) {}
 
     // Called when the number of input streams with permission per client type
     // changed.
-    virtual void OnNumberOfInputStreamsWithPermissionChanged();
+    virtual void OnNumberOfInputStreamsWithPermissionChanged() {}
 
     // Called when an initial output stream is opened.
-    virtual void OnOutputStarted();
+    virtual void OnOutputStarted() {}
 
     // Called when the last output stream is closed.
-    virtual void OnOutputStopped();
+    virtual void OnOutputStopped() {}
 
     // Called when an initial output stream, not in chrome, is opened.
-    virtual void OnNonChromeOutputStarted();
+    virtual void OnNonChromeOutputStarted() {}
 
     // Called when the last output stream is closed, not in chrome.
-    virtual void OnNonChromeOutputStopped();
+    virtual void OnNonChromeOutputStopped() {}
 
     // Called when the audio survey like to trigger an audio survey.
     // CRAS owns the trigger to send out an audio survey as opposed to trigger
@@ -270,20 +271,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     // Currently this supports general audio and Bluetooth audio surveys.
     // The survey to trigger is determined by the type of the `AudioSurvey`
     // passed in.
-    virtual void OnSurveyTriggered(const AudioSurvey& survey);
+    virtual void OnSurveyTriggered(const AudioSurvey& survey) {}
 
     // Called when a speak-on-mute is detected.
-    virtual void OnSpeakOnMuteDetected();
+    virtual void OnSpeakOnMuteDetected() {}
 
     // Called when num-stream-ignore-ui-gains state is changed.
-    virtual void OnNumStreamIgnoreUiGainsChanged(int32_t num);
+    virtual void OnNumStreamIgnoreUiGainsChanged(int32_t num) {}
 
     // Called when number of ARC streams is changed.
-    virtual void OnNumberOfArcStreamsChanged(int32_t num);
+    virtual void OnNumberOfArcStreamsChanged(int32_t num) {}
 
    protected:
-    AudioObserver();
-    virtual ~AudioObserver();
+    AudioObserver() = default;
+    ~AudioObserver() override = default;
   };
 
   enum class ClientType {
@@ -1171,7 +1172,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       media_controller_observer_receiver_{this};
 
   scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler_;
-  base::ObserverList<AudioObserver>::Unchecked observers_;
+  base::ObserverList<AudioObserver> observers_;
 
   // Handles firing of audio selection related metrics.
   AudioDeviceMetricsHandler audio_device_metrics_handler_;

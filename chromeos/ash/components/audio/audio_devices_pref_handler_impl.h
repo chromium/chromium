@@ -194,7 +194,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   raw_ptr<PrefService> local_state_;  // not owned
 
   PrefChangeRegistrar pref_change_registrar_;
-  base::ObserverList<AudioPrefObserver>::Unchecked observers_;
+  base::ObserverList<AudioPrefObserver> observers_;
 };
 
 }  // namespace ash
