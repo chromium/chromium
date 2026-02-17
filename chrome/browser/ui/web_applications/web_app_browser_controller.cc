@@ -294,6 +294,15 @@ bool WebAppBrowserController::HasPendingUpdateNotIgnoredByUser() const {
   return !app->pending_update_info()->was_ignored();
 }
 
+void WebAppBrowserController::TriggerAppUpdateOrMigrationDialog(
+    base::TimeTicks start_time) const {
+  if (registrar().GetAppById(app_id())->pending_migration_info()) {
+    CreateMetadataAndTriggerAppMigrationDialog(start_time);
+  } else {
+    CreateMetadataAndTriggerAppUpdateDialog(start_time);
+  }
+}
+
 void WebAppBrowserController::CreateMetadataAndTriggerAppUpdateDialog(
     base::TimeTicks start_time) const {
   provider_->scheduler().ReadAppUpdateDataFromDisk(

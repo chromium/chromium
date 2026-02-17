@@ -117,7 +117,7 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
                 features::kWebAppPredictableAppUpdating) ||
             base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi));
       LogMenuAction(MENU_ACTION_TRIGGER_APP_UPDATE_DIALOG);
-      browser()->app_controller()->CreateMetadataAndTriggerAppUpdateDialog(
+      browser()->app_controller()->TriggerAppUpdateOrMigrationDialog(
           base::TimeTicks::Now());
       break;
     default:
