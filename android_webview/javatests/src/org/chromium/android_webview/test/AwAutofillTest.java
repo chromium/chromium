@@ -2118,6 +2118,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
+    @DisabledTest(message = "crbug.com/485170693")
     public void testUMAFormSubmissionProbablyFormSubmitted() throws Throwable {
         var histograms =
                 ThreadUtils.runOnUiThreadBlocking(
