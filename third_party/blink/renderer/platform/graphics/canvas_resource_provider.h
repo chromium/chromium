@@ -329,7 +329,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   static std::unique_ptr<CanvasResourceProvider> CreateForTesting(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
-      ShouldInitialize initialize_provider,
       Delegate* delegate = nullptr);
 
  protected:
@@ -343,12 +342,12 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   friend class CanvasRenderingContext2D;
   friend class OffscreenCanvasRenderingContext2D;
 
+  // The returned instance will have been cleared at creation.
   static std::unique_ptr<Canvas2DResourceProviderBitmap> Create(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
-      ShouldInitialize initialize_provider,
       Delegate* delegate = nullptr);
 
   Canvas2DResourceProviderBitmap(gfx::Size size,

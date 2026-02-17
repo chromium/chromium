@@ -1059,15 +1059,12 @@ Canvas2DResourceProviderBitmap::Create(gfx::Size size,
                                        viz::SharedImageFormat format,
                                        SkAlphaType alpha_type,
                                        const gfx::ColorSpace& color_space,
-                                       ShouldInitialize should_initialize,
                                        Delegate* delegate) {
   auto provider = base::WrapUnique<Canvas2DResourceProviderBitmap>(
       new Canvas2DResourceProviderBitmap(size, format, alpha_type, color_space,
                                          delegate));
   if (provider->IsValid()) {
-    if (should_initialize ==
-        CanvasResourceProvider::ShouldInitialize::kCallClear)
-      provider->ClearAtCreation();
+    provider->ClearAtCreation();
     // The ClearAtCreation() call cannot turn a CRPBitmap invalid.
     CHECK(provider->IsValid());
     return provider;
@@ -1910,11 +1907,10 @@ std::unique_ptr<CanvasResourceProvider>
 Canvas2DResourceProviderBitmap::CreateForTesting(
     gfx::Size size,
     const Canvas2DColorParams& color_params,
-    ShouldInitialize initialize_provider,
     Delegate* delegate) {
   return Canvas2DResourceProviderBitmap::Create(
       size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
-      color_params.GetGfxColorSpace(), initialize_provider, delegate);
+      color_params.GetGfxColorSpace(), delegate);
 }
 
 }  // namespace blink

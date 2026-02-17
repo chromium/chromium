@@ -1410,8 +1410,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     // uploaded into GPU memory (for GPU compositing) or copied into the Viz
     // process (for software compositing).
     provider = Canvas2DResourceProviderBitmap::Create(
-        canvas()->Size(), format, alpha_type, color_space, kShouldInitialize,
-        canvas());
+        canvas()->Size(), format, alpha_type, color_space, canvas());
   }
 
   return provider;

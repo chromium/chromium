@@ -559,9 +559,8 @@ TEST_F(CanvasResourceProviderTest, Canvas2DResourceProviderBitmap) {
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = Canvas2DResourceProviderBitmap::CreateForTesting(
-      kSize, color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear);
+  auto provider =
+      Canvas2DResourceProviderBitmap::CreateForTesting(kSize, color_params);
 
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
@@ -652,16 +651,13 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
   auto provider = Canvas2DResourceProviderBitmap::CreateForTesting(
-      gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear);
+      gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), color_params);
   EXPECT_TRUE(provider && provider->IsValid());
   provider = Canvas2DResourceProviderBitmap::CreateForTesting(
-      gfx::Size(kMaxTextureSize, kMaxTextureSize), color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear);
+      gfx::Size(kMaxTextureSize, kMaxTextureSize), color_params);
   EXPECT_TRUE(provider && provider->IsValid());
   provider = Canvas2DResourceProviderBitmap::CreateForTesting(
-      gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), color_params,
-      CanvasResourceProvider::ShouldInitialize::kCallClear);
+      gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), color_params);
   EXPECT_TRUE(provider && provider->IsValid());
 }
 
