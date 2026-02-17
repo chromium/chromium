@@ -28,6 +28,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
@@ -41,6 +42,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -58,6 +60,7 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@DisableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
 public class SignOutDialogRenderTest {
     private static final String TEST_DOMAIN = "test.domain.example.com";
 
@@ -77,8 +80,6 @@ public class SignOutDialogRenderTest {
 
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
 
-    @Mock private IdentityServicesProvider mIdentityServicesProvider;
-
     @Mock private SigninManager mSigninManagerMock;
 
     @Mock private IdentityManager mIdentityManagerMock;
@@ -93,20 +94,17 @@ public class SignOutDialogRenderTest {
 
     @Mock private SnackbarManager mSnackbarManagerMock;
 
+    @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+
     private SignOutDialogCoordinator mSignOutDialogCoordinator;
 
     @Before
     public void setUp() {
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
         UserPrefsJni.setInstanceForTesting(mUserPrefsMock);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
+        IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
-        lenient()
-                .when(mIdentityServicesProvider.getSigninManager(any()))
-                .thenReturn(mSigninManagerMock);
-        lenient()
-                .when(mIdentityServicesProvider.getIdentityManager(any()))
-                .thenReturn(mIdentityManagerMock);
         lenient().when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(true);
         mActivityTestRule.launchActivity(null);
     }
@@ -135,6 +133,7 @@ public class SignOutDialogRenderTest {
                                 null,
                                 mActivityTestRule.getActivity().getModalDialogManager(),
                                 mSnackbarManagerMock,
+                                mSigninAndHistorySyncActivityLauncher,
                                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                                 /* showConfirmDialog= */ false,
                                 /* onSignOut= */ () -> {},

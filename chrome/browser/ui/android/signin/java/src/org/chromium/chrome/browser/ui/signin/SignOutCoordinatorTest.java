@@ -35,9 +35,10 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
@@ -50,14 +51,17 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.HashSet;
@@ -66,6 +70,7 @@ import java.util.Set;
 /** Instrumentation tests for {@link SignOutDialogCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@DisableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
 public class SignOutCoordinatorTest {
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -76,7 +81,6 @@ public class SignOutCoordinatorTest {
 
     @Mock private Profile mProfile;
     @Mock private FragmentManager mFragmentManager;
-    @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private SigninManager mSigninManagerMock;
     @Mock private SyncService mSyncService;
@@ -84,13 +88,14 @@ public class SignOutCoordinatorTest {
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PrefService mPrefService;
     @Mock private Runnable mOnSignOut;
+    @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
 
     private final Set<Integer> mUnsyncedDataTypes = new HashSet<>();
     private SnackbarManager mSnackbarManager;
 
     @Before
     public void setUp() {
-        LibraryLoader.getInstance().ensureInitialized();
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mActivityTestRule.launchActivity(null);
     }
 
@@ -167,6 +172,39 @@ public class SignOutCoordinatorTest {
                                     .getString(R.string.sign_out_snackbar_message));
                 });
         verify(mOnSignOut).run();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+    public void testFullscreenDialogShownAfterSignoutWhenRequiredByPolicy() {
+        setUpMocks();
+        @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
+        doReturn(true).when(mSigninManagerMock).isSignOutAllowed();
+        doReturn(true).when(mSigninManagerMock).isSigninAllowed();
+        doReturn(true).when(mSigninManagerMock).isForceSigninEnabled();
+        doAnswer(
+                        args -> {
+                            args.getArgument(0, Runnable.class).run();
+                            return null;
+                        })
+                .when(mSigninManagerMock)
+                .runAfterOperationInProgress(any(Runnable.class));
+        doAnswer(
+                        args -> {
+                            SigninManager.SignOutCallback signOutCallback = args.getArgument(1);
+                            signOutCallback.signOutComplete();
+                            return null;
+                        })
+                .when(mSigninManagerMock)
+                .signOut(eq(signOutReason), any(SigninManager.SignOutCallback.class), eq(false));
+
+        startSignOutFlow(signOutReason, mOnSignOut, false);
+
+        verify(mOnSignOut).run();
+        verify(mSigninAndHistorySyncActivityLauncher)
+                .createFullscreenSigninIntent(
+                        any(), any(), any(), eq(SigninAccessPoint.FORCED_SIGNIN));
     }
 
     /**
@@ -409,10 +447,7 @@ public class SignOutCoordinatorTest {
     @Test
     @SmallTest
     public void testUndoSigninWithSnackbarThrowsNotSignedIn() {
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        doReturn(mIdentityManagerMock)
-                .when(mIdentityServicesProviderMock)
-                .getIdentityManager(mProfile);
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
         doReturn(false).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SIGNIN);
 
         assertUndoSignInWithSnackbarThrows(
@@ -438,12 +473,9 @@ public class SignOutCoordinatorTest {
     }
 
     private void setUpMocks() {
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        doReturn(mIdentityManagerMock)
-                .when(mIdentityServicesProviderMock)
-                .getIdentityManager(mProfile);
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
+        IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
         doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        doReturn(mSigninManagerMock).when(mIdentityServicesProviderMock).getSigninManager(mProfile);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         doAnswer(
                         args -> {
@@ -480,6 +512,7 @@ public class SignOutCoordinatorTest {
                                 mFragmentManager,
                                 mActivityTestRule.getActivity().getModalDialogManager(),
                                 mSnackbarManager,
+                                mSigninAndHistorySyncActivityLauncher,
                                 signoutReason,
                                 showConfirmDialog,
                                 onSignOut,
