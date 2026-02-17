@@ -23,15 +23,17 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import type {CrChipElement} from '//resources/cr_elements/cr_chip/cr_chip.js';
 import type {CrFeedbackButtonsElement} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {isMac} from '//resources/js/platform.js';
-import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ComposeAppAnimator} from './animations/app_animator.js';
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import type {ComposeResponse, ComposeState, ComposeUntrustedDialogCallbackRouter, ConfigurableParams, PartialComposeResponse} from './compose.mojom-webui.js';
 import {CloseReason, InputMode, StyleModifier, UserFeedback} from './compose.mojom-webui.js';
 import type {ComposeApiProxy} from './compose_api_proxy.js';
@@ -52,7 +54,7 @@ export interface ComposeAppState {
 interface ModifierOption {
   value: StyleModifier;
   label: string;
-  isDefault: boolean;
+  isDefault?: boolean;
 }
 
 export interface ComposeAppElement {
@@ -98,7 +100,7 @@ export interface ComposeAppElement {
  */
 export const TIMEOUT_MS: number = 700;
 
-const ComposeAppElementBase = I18nMixin(PolymerElement);
+const ComposeAppElementBase = I18nMixinLit(CrLitElement);
 
 // Enumerates trigger points of compose or regenerate calls.
 // Used to mark where a compose call was made so focus
@@ -115,242 +117,146 @@ export class ComposeAppElement extends ComposeAppElementBase {
     return 'compose-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      editedInput_: {
-        type: String,
-        observer: 'onEditedInputChanged_',
-      },
+      editedInput_: {type: String},
       enableAnimations: {
         type: Boolean,
-        value: loadTimeData.getBoolean('enableAnimations'),
-        reflectToAttribute: true,
+        reflect: true,
       },
-      enableUpfrontInputModes: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('enableUpfrontInputModes'),
-      },
-      feedbackState_: {
-        type: String,
-        value: CrFeedbackOption.UNSPECIFIED,
-      },
-      hasPartialOutput_: {
-        type: Boolean,
-      },
-      input_: {
-        type: String,
-        observer: 'onInputChanged_',
-      },
-      inputParams_: {
-        type: Object,
-      },
+      enableUpfrontInputModes: {type: Boolean},
+      feedbackState_: {type: String},
+      hasPartialOutput_: {type: Boolean},
+      input_: {type: String},
+      inputParams_: {type: Object},
       isEditingSubmittedInput_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
-        observer: 'onIsEditingSubmittedInputChanged_',
+        reflect: true,
       },
       isEditingResultText_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        reflect: true,
       },
-      isEditSubmitEnabled_: {
-        type: Boolean,
-        value: true,
-      },
-      isSubmitEnabled_: {
-        type: Boolean,
-        value: true,
-      },
+      isEditSubmitEnabled_: {type: Boolean},
+      isSubmitEnabled_: {type: Boolean},
       loading_: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
       loadingIndicatorShown_: {
         type: Boolean,
-        reflectToAttribute: true,
-        computed: 'isLoadingIndicatorShown_(loading_, hasOutput_)',
+        reflect: true,
       },
-      response_: {
-        type: Object,
-        value: null,
-      },
-      partialResponse_: {
-        type: Object,
-        value: null,
-      },
+      response_: {type: Object},
+      partialResponse_: {type: Object},
       showInputModes_: {
         type: Boolean,
-        reflectToAttribute: true,
-        computed: 'shouldShowInputModes_(submitted_, enableUpfrontInputModes)',
+        reflect: true,
       },
-      selectedInputMode_: {
-        type: Number,
-        value: InputMode.kUnset,
-      },
-      selectedModifier_: {
-        type: String,
-      },
-      polishChipIcon_: {
-        type: String,
-        value: 'cr:check',
-        reflectToAttribute: true,
-      },
-      elaborateChipIcon_: {
-        type: String,
-        value: 'compose:elaborate',
-        reflectToAttribute: true,
-      },
-      formalizeChipIcon_: {
-        type: String,
-        value: 'compose:formalize',
-        reflectToAttribute: true,
-      },
-      textSelected_: {
-        type: Boolean,
-      },
-      enterprise_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('useEnterpriseWithoutLoggingPolicy'),
-      },
-      showMainAppDialog_: {
-        type: Boolean,
-        value: false,
-      },
+      selectedInputMode_: {type: Number},
+      selectedModifier_: {type: String},
+      textSelected_: {type: Boolean},
+      enterprise_: {type: Boolean},
+      showMainAppDialog_: {type: Boolean},
       submitted_: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
-      undoEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-      redoEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-      feedbackEnabled_: {
-        type: Boolean,
-        value: true,
-      },
-      responseText_: {
-        type: String,
-        computed: 'getResponseText_(response_, partialResponse_)',
-      },
-      showFirstRunDialog_: {
-        type: Boolean,
-      },
-      showMSBBDialog_: {
-        type: Boolean,
-      },
-      outputComplete_: {
-        type: Boolean,
-        value: true,
-      },
-      hasOutput_: {
-        type: Boolean,
-        value: false,
-      },
-      displayedText_: {
-        type: String,
-      },
-      modifierOptions_: {
-        type: Array,
-        value: () => {
-          return [
-            {
-              value: StyleModifier.kUnset,
-              label: loadTimeData.getString('modifierMenuTitle'),
-              isDefault: true,
-            },
-            {
-              value: StyleModifier.kLonger,
-              label: loadTimeData.getString('longerOption'),
-            },
-            {
-              value: StyleModifier.kShorter,
-              label: loadTimeData.getString('shorterOption'),
-            },
-            {
-              value: StyleModifier.kFormal,
-              label: loadTimeData.getString('formalToneOption'),
-            },
-            {
-              value: StyleModifier.kCasual,
-              label: loadTimeData.getString('casualToneOption'),
-            },
-            {
-              value: StyleModifier.kRetry,
-              label: loadTimeData.getString('retryOption'),
-            },
-          ];
-        },
-      },
+      undoEnabled_: {type: Boolean},
+      redoEnabled_: {type: Boolean},
+      feedbackEnabled_: {type: Boolean},
+      responseText_: {type: Object},
+      showFirstRunDialog_: {type: Boolean},
+      showMSBBDialog_: {type: Boolean},
+      outputComplete_: {type: Boolean},
+      hasOutput_: {type: Boolean},
+      displayedText_: {type: String},
+      modifierOptions_: {type: Array},
     };
   }
 
-  static get observers() {
-    return [
-      'debounceSaveComposeAppState_(input_, isEditingSubmittedInput_, ' +
-          'editedInput_)',
-      'debounceUpdateResultComplete_(outputComplete_, response_)',
-    ];
-  }
-
-  declare enableAnimations: boolean;
-  declare enableUpfrontInputModes: boolean;
+  protected accessor editedInput_: string = '';
+  accessor enableAnimations: boolean =
+      loadTimeData.getBoolean('enableAnimations');
+  accessor enableUpfrontInputModes: boolean =
+      loadTimeData.getBoolean('enableUpfrontInputModes');
+  protected accessor feedbackState_: CrFeedbackOption =
+      CrFeedbackOption.UNSPECIFIED;
+  protected accessor hasPartialOutput_: boolean = false;
+  protected accessor input_: string = '';
+  protected accessor inputParams_: ConfigurableParams|undefined;
+  protected accessor isEditingSubmittedInput_: boolean = false;
+  protected accessor isEditingResultText_: boolean = false;
+  protected accessor isEditSubmitEnabled_: boolean = true;
+  protected accessor isSubmitEnabled_: boolean = true;
+  protected accessor loading_: boolean = false;
+  protected accessor loadingIndicatorShown_: boolean = false;
+  protected accessor response_: ComposeResponse|null = null;
+  protected accessor partialResponse_: PartialComposeResponse|undefined =
+      undefined;
+  protected accessor showInputModes_: boolean = false;
+  protected accessor selectedInputMode_: InputMode = InputMode.kUnset;
+  protected accessor selectedModifier_: string = '';
+  protected accessor textSelected_: boolean = false;
+  protected accessor enterprise_: boolean =
+      loadTimeData.getBoolean('useEnterpriseWithoutLoggingPolicy');
+  protected accessor showMainAppDialog_: boolean = false;
+  protected accessor submitted_: boolean = false;
+  protected accessor undoEnabled_: boolean = false;
+  protected accessor redoEnabled_: boolean = false;
+  protected accessor feedbackEnabled_: boolean = true;
+  protected accessor showFirstRunDialog_: boolean = false;
+  protected accessor showMSBBDialog_: boolean = false;
+  protected accessor outputComplete_: boolean = true;
+  protected accessor hasOutput_: boolean = false;
+  protected accessor displayedText_: string = '';
+  protected accessor modifierOptions_: ModifierOption[] = [
+    {
+      value: StyleModifier.kUnset,
+      label: loadTimeData.getString('modifierMenuTitle'),
+      isDefault: true,
+    },
+    {
+      value: StyleModifier.kLonger,
+      label: loadTimeData.getString('longerOption'),
+    },
+    {
+      value: StyleModifier.kShorter,
+      label: loadTimeData.getString('shorterOption'),
+    },
+    {
+      value: StyleModifier.kFormal,
+      label: loadTimeData.getString('formalToneOption'),
+    },
+    {
+      value: StyleModifier.kCasual,
+      label: loadTimeData.getString('casualToneOption'),
+    },
+    {
+      value: StyleModifier.kRetry,
+      label: loadTimeData.getString('retryOption'),
+    },
+  ];
+  protected accessor responseText_:
+      TextInput = {text: '', isPartial: false, streamingEnabled: false};
 
   private animator_: ComposeAppAnimator;
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
   private eventTracker_: EventTracker = new EventTracker();
+  private pendingSave_: boolean = false;
   private router_: ComposeUntrustedDialogCallbackRouter =
       this.apiProxy_.getRouter();
-  declare private hasPartialOutput_: boolean;
-  declare private showFirstRunDialog_: boolean;
-  declare private showMainAppDialog_: boolean;
-  declare private showMSBBDialog_: boolean;
-  private shouldShowMSBBDialog_: boolean;
-  declare private editedInput_: string;
-  declare private feedbackState_: CrFeedbackOption;
-  declare private input_: string;
-  declare private inputParams_: ConfigurableParams;
-  declare private isEditingSubmittedInput_: boolean;
-  declare private isEditingResultText_: boolean;
-  declare private isEditSubmitEnabled_: boolean;
-  declare private isSubmitEnabled_: boolean;
-  declare private loading_: boolean;
-  declare private loadingIndicatorShown_: boolean;
-  declare private response_: ComposeResponse|null;
-  declare private partialResponse_: PartialComposeResponse|undefined;
-  declare private showInputModes_: boolean;
-  private saveAppStateDebouncer_: Debouncer;
-  private scrollCheckDebouncer_: Debouncer;
-  private updateResultCompleteDebouncer_: Debouncer;
-  declare private selectedInputMode_: InputMode;
-  declare private selectedModifier_: string;
-  declare private polishChipIcon_: string;
-  declare private elaborateChipIcon_: string;
-  declare private formalizeChipIcon_: string;
-  declare private textSelected_: boolean;
-  declare private enterprise_: boolean;
-  declare private submitted_: boolean;
-  declare private undoEnabled_: boolean;
-  declare private redoEnabled_: boolean;
-  declare private feedbackEnabled_: boolean;
+  private shouldShowMSBBDialog_: boolean = false;
   private userHasModifiedState_: boolean = false;
   private lastTriggerElement_: TriggerElement|null = null;
-  declare private outputComplete_: boolean;
-  declare private hasOutput_: boolean;
-  declare private displayedText_: string;
-  declare private modifierOptions_: ModifierOption[];
-  declare private responseText_: string;
   private userResponseText_: string|undefined;
 
   constructor() {
@@ -370,6 +276,90 @@ export class ComposeAppElement extends ComposeAppElementBase {
         (partialResponse: PartialComposeResponse) => {
           this.partialComposeResponseReceived_(partialResponse);
         });
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.eventTracker_.add(document, 'visibilitychange', () => {
+      if (document.visibilityState !== 'visible') {
+        // Ensure app state is saved when hiding the dialog.
+        this.saveComposeAppState_();
+      }
+    });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties = changedProperties as Map<PropertyKey, any>;
+
+    if (changedPrivateProperties.has('editedInput_') &&
+        (this.editedInput_ !== '' ||
+         changedPrivateProperties.get('editedInput_') !== undefined)) {
+      this.userHasModifiedState_ = true;
+    }
+
+    if (changedPrivateProperties.has('input_') &&
+        (this.input_ !== '' ||
+         changedPrivateProperties.get('input_') !== undefined)) {
+      this.userHasModifiedState_ = true;
+    }
+
+    if (changedPrivateProperties.has('loading_') ||
+        changedPrivateProperties.has('hasOutput_')) {
+      this.loadingIndicatorShown_ = this.loading_ && !this.hasOutput_;
+    }
+
+    if (changedPrivateProperties.has('submitted_') ||
+        changedProperties.has('enableUpfrontInputModes')) {
+      this.showInputModes_ = !this.submitted_ && this.enableUpfrontInputModes;
+    }
+
+    if (changedPrivateProperties.has('response_') ||
+        changedPrivateProperties.has('partialResponse_')) {
+      this.responseText_ = this.getResponseText_();
+    }
+
+    if (changedPrivateProperties.has('input_') ||
+        changedPrivateProperties.has('isEditingSubmittedInput_') ||
+        changedPrivateProperties.has('editedInput_')) {
+      this.pendingSave_ = true;
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties = changedProperties as Map<PropertyKey, any>;
+
+    if (changedPrivateProperties.has('editedInput_')) {
+      this.onEditedInputChanged_();
+    }
+
+    if (changedPrivateProperties.has('input_')) {
+      this.onInputChanged_();
+    }
+
+    if (changedPrivateProperties.has('isEditingSubmittedInput_')) {
+      this.onIsEditingSubmittedInputChanged_();
+    }
+
+    if (changedPrivateProperties.has('input_') ||
+        changedPrivateProperties.has('isEditingSubmittedInput_') ||
+        changedPrivateProperties.has('editedInput_')) {
+      this.pendingSave_ = false;
+      this.saveComposeAppState_();
+    }
+
+    if (changedPrivateProperties.has('outputComplete_') ||
+        changedPrivateProperties.has('response_')) {
+      this.updateResultComplete_();
+    }
   }
 
   private getResponseText_(): TextInput {
@@ -398,26 +388,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.eventTracker_.add(document, 'visibilitychange', () => {
-      if (document.visibilityState !== 'visible') {
-        // Ensure app state is saved when hiding the dialog.
-        this.saveComposeAppState_();
-      }
-    });
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.eventTracker_.removeAll();
-  }
-
-  private debounceSaveComposeAppState_() {
-    this.saveAppStateDebouncer_ = Debouncer.debounce(
-        this.saveAppStateDebouncer_, microTask,
-        () => this.saveComposeAppState_());
-  }
 
   private getInitialState_() {
     this.apiProxy_.requestInitialState().then(initialState => {
@@ -468,23 +438,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.animator_.transitionInDialog();
       }
 
-      // Wait for one timeout to flush Polymer tasks, then wait for the next
-      // render.
+      // Wait for one timeout to flush tasks, then wait for the next render.
       setTimeout(() => {
         requestAnimationFrame(() => this.apiProxy_.showUi());
       });
     });
   }
 
-  private getTrimmedResult_(): string|undefined {
-    return this.response_?.result.trim();
-  }
-
-  private getTrimmedPartialResult_(): string|undefined {
-    return this.partialResponse_?.result.trim();
-  }
-
-  private onFirstRunOkButtonClick_() {
+  protected onFirstRunOkButtonClick_() {
     this.apiProxy_.completeFirstRun();
 
     if (this.shouldShowMSBBDialog_) {
@@ -497,7 +458,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.showFirstRunDialog_ = false;
   }
 
-  private onFirstRunBottomTextClick_(e: Event) {
+  protected onFirstRunBottomTextClick_(e: Event) {
     e.preventDefault();
     // Embedded links do not work in WebUI so handle in the parent event
     // listener.
@@ -510,7 +471,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private onCancelEditClick_() {
+  protected onCancelEditClick_() {
     const fullBodyHeight = this.$.body.offsetHeight;
     const resultContainerHeight = this.$.resultContainer.offsetHeight;
     this.isEditingSubmittedInput_ = false;
@@ -522,7 +483,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.apiProxy_.logCancelEdit();
   }
 
-  private onClose_(e: Event) {
+  protected onClose_(e: Event) {
     switch ((e.target as HTMLElement).id) {
       case 'firstRunCloseButton':
         this.apiProxy_.closeUi(CloseReason.kFirstRunCloseButton);
@@ -538,18 +499,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private onEditedInputChanged_(current: string, previous: string|undefined) {
-    if (current === '' && previous === undefined) {
-      // Ignore initialization.
-      return;
-    }
-    this.userHasModifiedState_ = true;
+  private onEditedInputChanged_() {
     if (!this.isEditSubmitEnabled_) {
       this.isEditSubmitEnabled_ = this.$.editTextarea.validate();
     }
   }
 
-  private onEditClick_() {
+  protected onEditClick_() {
     const fullBodyHeight = this.$.body.offsetHeight;
     const resultContainerHeight = this.$.resultContainer.offsetHeight;
     this.editedInput_ = this.input_;
@@ -569,7 +525,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private onSubmit_() {
+  protected onSubmit_() {
     this.isSubmitEnabled_ = this.$.textarea.validate();
     if (!this.isSubmitEnabled_) {
       this.$.textarea.focusInput();
@@ -586,7 +542,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.lastTriggerElement_ = TriggerElement.SUBMIT_INPUT;
   }
 
-  private onSubmitEdit_() {
+  protected onSubmitEdit_() {
     this.isEditSubmitEnabled_ = this.$.editTextarea.validate();
     if (!this.isEditSubmitEnabled_) {
       this.$.editTextarea.focusInput();
@@ -604,7 +560,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.lastTriggerElement_ = TriggerElement.SUBMIT_INPUT;
   }
 
-  private onAccept_() {
+  protected onAccept_() {
     this.apiProxy_.acceptComposeResult().then((success: boolean) => {
       if (success) {
         this.apiProxy_.closeUi(CloseReason.kInsertButton);
@@ -612,18 +568,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
     });
   }
 
-  private onInputChanged_(current: string, previous: string|undefined) {
-    if (current === '' && previous === undefined) {
-      // Ignore initialization.
-      return;
-    }
-    this.userHasModifiedState_ = true;
+  private onInputChanged_() {
     if (!this.isSubmitEnabled_) {
       this.isSubmitEnabled_ = this.$.textarea.validate();
     }
   }
 
-  private onModifierChanged_() {
+  protected onModifierChanged_() {
     const selectedModifier =
       Number(this.$.modifierMenu.value) as StyleModifier;
     this.rewrite_(selectedModifier);
@@ -634,42 +585,27 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.$.modifierMenu.selectedIndex = 0;
   }
 
-  private shouldShowInputModes_() {
-    return !this.submitted_ && this.enableUpfrontInputModes;
-  }
-
-  private onPolishChipClick_() {
+  protected onPolishChipClick_() {
     this.selectedInputMode_ = InputMode.kPolish;
     this.updateInputMode_();
   }
 
-  private onElaborateChipClick_() {
+  protected onElaborateChipClick_() {
     this.selectedInputMode_ = InputMode.kElaborate;
     this.updateInputMode_();
   }
 
-  private onFormalizeChipClick_() {
+  protected onFormalizeChipClick_() {
     this.selectedInputMode_ = InputMode.kFormalize;
     this.updateInputMode_();
   }
 
   private updateInputMode_() {
     this.userHasModifiedState_ = true;
-    this.$.polishChip.selected = this.selectedInputMode_ === InputMode.kPolish;
-    this.polishChipIcon_ =
-        this.$.polishChip.selected ? 'cr:check' : 'compose:polish';
-    this.$.elaborateChip.selected =
-        this.selectedInputMode_ === InputMode.kElaborate;
-    this.elaborateChipIcon_ =
-        this.$.elaborateChip.selected ? 'cr:check' : 'compose:elaborate';
-    this.$.formalizeChip.selected =
-        this.selectedInputMode_ === InputMode.kFormalize;
-    this.formalizeChipIcon_ =
-        this.$.formalizeChip.selected ? 'cr:check' : 'compose:formalize';
     this.saveComposeAppState_();
   }
 
-  private openModifierMenuOnKeyDown_(e: KeyboardEvent) {
+  protected openModifierMenuOnKeyDown_(e: KeyboardEvent) {
     // On Windows and Linux, ArrowDown and ArrowUp key events directly change
     // the menu selection, which fires the `select` on-change event without
     // showing what selection was made.
@@ -686,7 +622,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private onFooterClick_(e: Event) {
+  protected onFooterClick_(e: Event) {
     if ((e.target as HTMLElement).tagName !== 'A') {
       // Do nothing if a link is not clicked.
       return;
@@ -713,7 +649,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private onMsbbSettingsClick_(e: Event) {
+  protected onMsbbSettingsClick_(e: Event) {
     e.preventDefault();
     // Instruct the browser to open the corresponding settings page.
     this.apiProxy_.openComposeSettings();
@@ -760,14 +696,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.animator_.transitionFromResultToLoading(bodyHeight, resultHeight);
   }
 
-  private debounceUpdateResultComplete_() {
-    this.updateResultCompleteDebouncer_ = Debouncer.debounce(
-        this.updateResultCompleteDebouncer_, microTask, () => {
-          return this.updateResultComplete_();
-        });
-  }
-
-  private updateResultComplete_() {
+  private async updateResultComplete_() {
     if (!this.response_) {
       return;
     }
@@ -782,6 +711,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
     const loadingHeight = this.$.loading.offsetHeight;
     this.loading_ = false;
     this.undoEnabled_ = this.response_.undoAvailable;
+    await this.updateComplete;
+
     this.$.textarea.transitionToEditable();
     if (!this.partialResponse_) {
       if (this.response_.status === ComposeStatus.kOk) {
@@ -830,30 +761,23 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.partialResponse_ = partialResponse;
   }
 
-  private isLoadingIndicatorShown_(): boolean {
-    return this.loading_ && !this.hasOutput_;
-  }
-
-  // Elements related to results should be hidden when the output is empty, but
-  // not if the results are in an edited state. The latter corresponds with
-  // feedback being disabled.
-  private hideResults_(): boolean {
+  protected hideResults_(): boolean {
     return !this.hasOutput_ && this.feedbackEnabled_;
   }
 
-  private hasSuccessfulResponse_(): boolean {
+  protected hasSuccessfulResponse_(): boolean {
     return this.response_?.status === ComposeStatus.kOk;
   }
 
-  private hasPartialResponse_(): boolean {
+  protected hasPartialResponse_(): boolean {
     return Boolean(this.partialResponse_);
   }
 
-  private hasPartialOrCompleteResponse_(): boolean {
+  protected hasPartialOrCompleteResponse_(): boolean {
     return Boolean(this.partialResponse_) || this.hasSuccessfulResponse_();
   }
 
-  private hasFailedResponse_(): boolean {
+  protected hasFailedResponse_(): boolean {
     if (!this.response_) {
       return false;
     }
@@ -861,12 +785,12 @@ export class ComposeAppElement extends ComposeAppElementBase {
     return this.response_.status !== ComposeStatus.kOk;
   }
 
-  private hasErrorWithLink_(): boolean {
+  protected hasErrorWithLink_(): boolean {
     return this.hasUnsupportedLanguageResponse_() ||
         this.hasPermissionDeniedResponse_();
   }
 
-  private hasUnsupportedLanguageResponse_(): boolean {
+  protected hasUnsupportedLanguageResponse_(): boolean {
     if (!this.response_) {
       return false;
     }
@@ -874,7 +798,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     return this.response_.status === ComposeStatus.kUnsupportedLanguage;
   }
 
-  private hasPermissionDeniedResponse_(): boolean {
+  protected hasPermissionDeniedResponse_(): boolean {
     if (!this.response_) {
       return false;
     }
@@ -882,21 +806,21 @@ export class ComposeAppElement extends ComposeAppElementBase {
     return this.response_.status === ComposeStatus.kPermissionDenied;
   }
 
-  private onDeviceEvaluationUsed_(): boolean {
+  protected onDeviceEvaluationUsed_(): boolean {
     return Boolean(this.response_?.onDeviceEvaluationUsed);
   }
 
-  private showOnDeviceDogfoodFooter_(): boolean {
+  protected showOnDeviceDogfoodFooter_(): boolean {
     return Boolean(this.response_?.onDeviceEvaluationUsed) &&
         loadTimeData.getBoolean('enableOnDeviceDogfoodFooter');
   }
 
-  private acceptButtonText_(): string {
+  protected acceptButtonText_(): string {
     return this.textSelected_ ? this.i18n('replaceButton') :
                                 this.i18n('insertButton');
   }
 
-  private failedResponseErrorText_(): string {
+  protected failedResponseErrorText_(): string {
     switch (this.response_?.status) {
       case ComposeStatus.kFiltered:
         return this.i18n('errorFiltered');
@@ -920,7 +844,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private isBackFromErrorAvailable_(): boolean {
+  protected isBackFromErrorAvailable_(): boolean {
     // True when the current response is a filtering error and resulted from
     // applying a modifier.
     return Boolean(
@@ -928,7 +852,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.response_?.triggeredFromModifier);
   }
 
-  private onResultEdit_(e: CustomEvent<string>) {
+  protected onResultEdit_(e: CustomEvent<string>) {
     this.userResponseText_ = e.detail;
     this.apiProxy_.editResult(this.userResponseText_).then(isEdited => {
       if (isEdited) {
@@ -940,13 +864,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
     });
   }
 
-  private onSetResultFocus_(e: CustomEvent<boolean>) {
+  protected onSetResultFocus_(e: CustomEvent<boolean>) {
     this.isEditingResultText_ = e.detail;
   }
 
   private saveComposeAppState_() {
-    if (this.saveAppStateDebouncer_?.isActive()) {
-      this.saveAppStateDebouncer_.flush();
+    if (this.pendingSave_) {
+      // Partway through an update cycle where this method will be called in
+      // updated().
       return;
     }
 
@@ -965,7 +890,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.apiProxy_.saveWebuiState(JSON.stringify(state));
   }
 
-  private async onUndoClick_() {
+  protected async onUndoClick_() {
     // <if expr="is_macosx">
     this.screenReaderAnnounce_(this.i18n('undoResultA11yMessage'));
     // </if>
@@ -994,7 +919,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private async onErrorGoBackButton_() {
+  protected async onErrorGoBackButton_() {
     try {
       const state = await this.apiProxy_.recoverFromErrorState();
       // This button should only be enabled following application of a modifier,
@@ -1010,7 +935,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private async onRedoClick_() {
+  protected async onRedoClick_() {
     // <if expr="is_macosx">
     this.screenReaderAnnounce_(this.i18n('redoResultA11yMessage'));
     // </if>
@@ -1061,7 +986,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     });
   }
 
-  private onFeedbackSelectedOptionChanged_(
+  protected onFeedbackSelectedOptionChanged_(
       e: CustomEvent<{value: CrFeedbackOption}>) {
     this.feedbackState_ = e.detail.value;
     switch (e.detail.value) {
@@ -1078,7 +1003,48 @@ export class ComposeAppElement extends ComposeAppElementBase {
         assertNotReachedCase(e.detail.value);
     }
   }
+
+  protected onInputValueChanged_(e: CustomEvent<{value: string}>) {
+    this.input_ = e.detail.value;
+  }
+
+  protected onEditedInputValueChanged_(e: CustomEvent<{value: string}>) {
+    this.editedInput_ = e.detail.value;
+  }
+
+  protected onOutputCompleteChanged_(e: CustomEvent<{value: boolean}>) {
+    this.outputComplete_ = e.detail.value;
+  }
+
+  protected onHasOutputChanged_(e: CustomEvent<{value: boolean}>) {
+    this.hasOutput_ = e.detail.value;
+  }
+
+  protected onHasPartialOutputChanged_(e: CustomEvent<{value: boolean}>) {
+    this.hasPartialOutput_ = e.detail.value;
+  }
+
+  protected isInputModeSelected_(mode: InputMode): boolean {
+    return this.selectedInputMode_ === mode;
+  }
+
+  protected getChipIcon_(mode: InputMode): string {
+    if (this.isInputModeSelected_(mode)) {
+      return 'cr:check';
+    }
+    switch (mode) {
+      case InputMode.kPolish:
+        return 'compose:polish';
+      case InputMode.kElaborate:
+        return 'compose:elaborate';
+      case InputMode.kFormalize:
+        return 'compose:formalize';
+      default:
+        return '';
+    }
+  }
 }
+
 
 function userFeedbackToFeedbackOption(userFeedback: UserFeedback):
     CrFeedbackOption {

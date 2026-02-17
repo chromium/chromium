@@ -84,15 +84,11 @@ export class ComposeTextareaElement extends CrLitElement {
   }
 
   focusInput() {
-    // Wait for update to complete, since clients may call this immediately
-    // after updating state.
-    this.updateComplete.then(() => this.$.input.focus());
+    this.$.input.focus();
   }
 
   focusEditButton() {
-    // Wait for update to complete, since clients may call this immediately
-    // after updating state.
-    this.updateComplete.then(() => this.$.editButton.focus());
+    this.$.editButton.focus();
   }
 
   protected onEditClick_() {

@@ -1,0 +1,456 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/md_select_lit.css.js
+ * #import=//resources/cr_elements/cr_scrollable_lit.css.js
+ * #include=md-select-lit cr-scrollable-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --compose-loading-body-and-footer-height: 136px;
+  --gap-between-sections_: 16px;
+  --padding_: 20px;
+  display: grid;
+  grid-template-areas: 'dialog';
+  grid-auto-columns: 100%;
+  align-items: start;
+  user-select: none;
+}
+
+a {
+  color: var(--color-compose-dialog-link);
+}
+
+.dialog {
+  width: 448px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-between-sections_);
+  grid-area: dialog;
+  padding: var(--padding_) 0;
+}
+
+.close-button {
+  position: fixed;
+  --close-button-distance-from-edge: calc(20px -
+      ((var(--cr-icon-button-size) - var(--cr-icon-button-icon-size)) / 2));
+  inset-block-start: var(--close-button-distance-from-edge);
+  inset-inline-end: var(--close-button-distance-from-edge);
+}
+
+#firstRunHeading {
+  display: flex;
+  height: 48px;
+  align-items: start;
+  padding: 0 var(--padding_);
+}
+
+#freMsbbHeading {
+  display: flex;
+  height: 48px;
+  align-items: start;
+  padding: 0 var(--padding_);
+}
+
+#firstRunIconContainer {
+  margin-inline-end: var(--gap-between-sections_);
+  min-width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(136deg,
+      var(--color-sys-gradient-primary) 1.59%,
+      var(--color-sys-gradient-tertiary) 100%);
+  color: var(--color-compose-dialog-logo);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-origin: top left;
+}
+
+#firstRunHeading cr-icon {
+  --iron-icon-width: 20px;
+  --iron-icon-height: 20px;
+}
+
+#firstRunContainer {
+  color: var(--cr-secondary-text-color);
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 0 20px;
+}
+
+#freMsbbContainer {
+  color: var(--cr-secondary-text-color);
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px;
+}
+
+#heading {
+  display: flex;
+  height: 24px;
+  align-items: center;
+  padding: 0 var(--padding_);
+}
+
+h1 {
+  color: var(--color-compose-dialog-title);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  margin: 0;
+  margin-inline-end: auto;
+  padding-inline-end: 32px; /* From --cr-icon-button-size. */
+}
+
+cr-icon-button {
+  --cr-icon-button-fill-color: var(--color-compose-dialog-foreground-subtle);
+  margin: 0;
+}
+
+#bodyAndFooter {
+  display: grid;
+  grid-template-areas: 'body' 'footer';
+  grid-auto-columns: 100%;
+  gap: var(--gap-between-sections_);
+  position: relative;
+}
+
+#body {
+  --results-background_: var(--color-compose-dialog-result-background);
+  box-sizing: border-box;
+  grid-area: body;
+  display: grid;
+  grid-template-areas: 'textarea' 'inputModes' 'bodyContent';
+  grid-auto-columns: 100%;
+  max-height: 220px;
+  padding: 0 20px;
+}
+
+:host(:not([submitted_])) #body {
+  /* Non-submitted dialog has no bodyContent. */
+  grid-template-areas: 'textarea' 'inputModes';
+}
+
+/* Set scroll-related styles for the result text container. */
+#resultTextContainer {
+  --scrollbar-width_: 4px;
+  --scrollbar-margin-inline-end_: 4px;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 1px 0;
+  margin-inline-end: var(--scrollbar-margin-inline-end_);
+  max-height: 112px;
+  overflow: auto;
+  /* Incorporates width of righthand scrollbar. */
+  padding-inline-end: calc(12px - var(--scrollbar-width_));
+  padding-inline-start: 16px;
+  scrollbar-gutter: stable;
+}
+
+#resultTextContainer::-webkit-scrollbar {
+  background: transparent;
+  width: var(--scrollbar-width_);
+}
+
+#body::-webkit-scrollbar-thumb {
+  background: var(--color-compose-dialog-scrollbar-thumb);
+}
+
+#resultTextContainer::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: var(--color-compose-dialog-result-container-scrollbar-thumb);
+}
+
+:host([loading-indicator-shown_]) #bodyAndFooter {
+  /* There is no footer in the loading screen. */
+  grid-template-areas: 'body';
+  height: var(--compose-loading-body-and-footer-height);
+}
+
+#inputModesContainer {
+  grid-area: inputModes;
+  display: flex;
+  margin-top: 14px;
+  gap: 8px;
+}
+
+#textarea {
+  grid-area: textarea;
+}
+
+#loading,
+.result-container {
+  grid-area: bodyContent;
+  margin-top: 8px;
+}
+
+#loading {
+  display: flex;
+  border: solid 1px var(--results-background_);
+  border-radius: 8px;
+  padding: 15px;
+  box-sizing: border-box;
+  height: 80px;
+}
+
+.result-container {
+  --compose-result-text-color-while-loading: var(
+      --color-compose-dialog-result-foreground-while-loading);
+  --compose-result-text-color: var(--color-compose-dialog-result-foreground);
+  border-radius: 8px;
+  display: flex;
+  box-sizing: border-box;
+  background: var(--results-background_);
+  color: var(--cr-primary-text-color);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+:host([is-editing-result-text_]) .result-container {
+  outline: solid 2px var(--cr-focus-outline-color);
+}
+
+#resultContainerInner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  padding-top: 16px;
+}
+
+#resultTextContainer .cr-scrollable-top {
+  --cr-scrollable-border-color: var(--color-compose-dialog-divider);
+  /* Since there is a margin-inline-end on #resultsTextContainer, anchor the
+   * border to the end of it so that the border stretches past the scrollbar
+   * and the margin. */
+  inset-inline-end: calc(anchor(end) - var(--scrollbar-margin-inline-end_));
+  inset-inline-start: anchor(start);
+  width: unset;
+}
+
+/* Border separating result container text and actions bar. */
+#resultOptionsContainer {
+  border-top: 1px solid var(--color-compose-dialog-divider);
+}
+
+#resultOptions {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+#resultFooter[inert],
+#resultOptions[inert] {
+  opacity: 0;
+}
+
+#resultOptions .md-select {
+  --md-select-bg-color: transparent;
+
+  /* Custom drop-down arrow. */
+  background: url(//resources/images/chevron_down.svg)
+    calc(100% - var(--md-select-side-padding) + var(--md-arrow-width))
+    center no-repeat;
+  border: 0;
+  border-radius: 100px;
+  color: var(--cr-secondary-text-color);
+  font-family: Roboto, 'Noto Sans', Arial, sans-serif;
+  font-weight: 500;
+  height: auto;
+  line-height: 16px;
+  min-height: 24px;
+  min-width: 60px;
+  width: auto;
+}
+
+select option {
+  --md-select-option-bg-color: var(--results-background_);
+  color: var(--compose-result-text-color);
+}
+
+select option:disabled {
+  color: var(--color-compose-dialog-select-option-disabled);
+}
+
+@media (prefers-color-scheme: dark) {
+  #resultOptions .md-select {
+    /* Separate svg required for dark mode as color is hard-coded into
+    * file. */
+    background-image: url(//resources/images/dark/chevron_down.svg);
+  }
+}
+
+/* Re-define hover style for md-select, as replacing the background overwrites
+the default style. */
+#resultOptions .md-select:hover {
+  background-color: var(--color-comboxbox-ink-drop-hovered,
+    var(--cr-hover-on-subtle-background-color));
+}
+
+.icon-buttons-row {
+  display: grid;
+  grid-auto-columns: auto;
+  grid-auto-rows: auto;
+  grid-auto-flow: column;
+  gap: 10px;
+  align-items: center;
+  justify-items: center;
+  margin-inline-start: auto;
+}
+
+.icon-buttons-row cr-icon-button {
+  --cr-icon-button-fill-color: var(--color-compose-dialog-result-icon);
+  --cr-icon-button-icon-size: var(--cr-icon-size);
+  margin: 0;
+}
+
+/* cr-button is only used when UI refinements is enabled. */
+.icon-buttons-row cr-button {
+  --cr-button-text-color: var(--color-compose-dialog-result-icon);
+  --cr-icon-size: 16px;
+  margin: 0;
+  padding-inline-start: 8px;
+  padding-inline-end: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  min-height: 24px;
+  height: auto;
+  border: 0;
+  gap: 4px;
+}
+
+.icon-buttons-row cr-button div {
+  margin-top: 2px;
+  line-height: 14px;
+  font-size: 11px;
+}
+
+.icon-buttons-row cr-button cr-icon {
+  width: var(--cr-icon-size);
+  height: var(--cr-icon-size);
+}
+
+.icon-buttons-row
+    .button-container:last-child {
+  padding-left: 10px;
+  position: relative;
+}
+
+/* Vertical divider between undo and redo buttons. */
+.icon-buttons-row > div:last-child:before {
+  content: '';
+  background: var(--color-compose-dialog-divider);
+  position: absolute;
+  top: 25%;
+  left: 0;
+  height: 50%;
+  width: 1px;
+}
+
+.footer {
+  grid-area: footer;
+  align-items: center;
+  display: flex;
+  padding: 0 var(--padding_);
+  justify-content: flex-end;
+}
+
+#submitFooter {
+  gap: 35px;
+}
+
+#resultFooter {
+  gap: 45px;
+}
+
+.footer-text {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+  margin-inline-end: auto;
+  color: var(--color-compose-dialog-foreground-subtle);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.footer-text .icon-buttons-row {
+  --cr-icon-size: 16px;
+  margin-inline-end: 8px;
+}
+
+.footer cr-button {
+  margin-inline-start: 8px;
+}
+
+#errorFooter {
+  flex-direction: column;
+  user-select: text;
+}
+
+#errorGoBackButton {
+  margin-top: 20px;
+  align-self: end;
+}
+
+:host-context([is-editing-submitted-input_]) #body,
+:host-context([is-editing-submitted-input_]) .footer {
+  visibility: hidden;
+}
+
+:host-context([is-editing-submitted-input_]) #bodyAndFooter {
+  /* Ensure there's always enough height to show the edit flow. The edit flow
+  * overlays over the existing content, and sometimes, the existing content
+  * is not tall enough to show the textarea and buttons (eg. the error
+  * state). */
+  min-height: 153px;
+}
+
+#editContainer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  gap: var(--gap-between-sections_);
+  inset: 0;
+  padding: 0 var(--padding_);
+}
+
+#editContainer compose-textarea {
+  --compose-textarea-input-height: 100%;
+  flex: 1;
+}
+
+#editContainer .footer {
+  padding: 0;
+  visibility: visible;
+}
+
+/**
+ * cr-hidden-style stamps an !important on [hidden] elements, which prevents
+ * any animations/transitions from applying. Instead of using cr-hidden-style,
+ * list all the [hidden] elements below. Not all elements need this, just
+ * the ones that override the default 'display' property.
+ */
+.dialog[hidden],
+.footer[hidden],
+.result-container[hidden],
+.md-select[hidden],
+.icon-buttons-row cr-icon-button[hidden],
+#loading[hidden],
+#editContainer[hidden],
+#inputModesContainer[hidden] {
+  display: none;
+}

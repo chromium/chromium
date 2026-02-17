@@ -12,7 +12,6 @@ import {CloseReason, InputMode, StyleModifier, UserFeedback} from 'chrome-untrus
 import {ComposeApiProxyImpl} from 'chrome-untrusted://compose/compose_api_proxy.js';
 import {ComposeStatus} from 'chrome-untrusted://compose/compose_enums.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestComposeApiProxy} from './test_compose_api_proxy.js';
@@ -30,13 +29,12 @@ suite('ComposeApp', () => {
     document.body.appendChild(app);
 
     await testProxy.whenCalled('requestInitialState');
-    await flushTasks();
+    await microtasksFinished();
   });
 
   async function mockInput(input: string) {
     app.$.textarea.value = input;
     await microtasksFinished();
-    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
   }
 
   function mockResponse(
@@ -67,7 +65,7 @@ suite('ComposeApp', () => {
     testProxy.setOpenMetadata({freComplete: fre, msbbState: msbb});
     const newApp = document.createElement('compose-app');
     document.body.appendChild(newApp);
-    await flushTasks();
+    await microtasksFinished();
     return newApp;
   }
 
@@ -103,6 +101,7 @@ suite('ComposeApp', () => {
 
     // Clicking on submit gets results.
     app.$.submitButton.click();
+    await microtasksFinished();
     assertTrue(isVisible(app.$.loading));
 
     const args = await testProxy.whenCalled('compose');
@@ -137,7 +136,7 @@ suite('ComposeApp', () => {
       testProxy.setOpenMetadata({textSelected});
       const newApp = document.createElement('compose-app');
       document.body.appendChild(newApp);
-      await flushTasks();
+      await microtasksFinished();
       return newApp;
     }
     const appWithTextSelected =
@@ -200,6 +199,7 @@ suite('ComposeApp', () => {
         await initializeNewAppWithFirstRunAndMsbbState(false, true);
 
     appWithFirstRunDialog.$.firstRunOkButton.click();
+    await microtasksFinished();
     // View state should change from FRE UI to main app UI.
     assertFalse(isVisible(appWithFirstRunDialog.$.firstRunDialog));
     assertFalse(isVisible(appWithFirstRunDialog.$.freMsbbDialog));
@@ -211,6 +211,7 @@ suite('ComposeApp', () => {
         await initializeNewAppWithFirstRunAndMsbbState(false, false);
 
     appWithFirstRunDialog.$.firstRunOkButton.click();
+    await microtasksFinished();
     // View state should change from FRE UI to MSBB UI.
     assertFalse(isVisible(appWithFirstRunDialog.$.firstRunDialog));
     assertTrue(isVisible(appWithFirstRunDialog.$.freMsbbDialog));
@@ -225,7 +226,7 @@ suite('ComposeApp', () => {
       testProxy.setOpenMetadata({initialInput: input}, state);
       const newApp = document.createElement('compose-app');
       document.body.appendChild(newApp);
-      await flushTasks();
+      await microtasksFinished();
       return newApp;
     }
 
@@ -342,7 +343,7 @@ suite('ComposeApp', () => {
       feedback: UserFeedback.kUserFeedbackPositive,
     });
     const feedbackButtons =
-        appWithFeedback.shadowRoot!.querySelector('cr-feedback-buttons')!;
+        appWithFeedback.shadowRoot.querySelector('cr-feedback-buttons')!;
     assertEquals('true', feedbackButtons.$.thumbsUp.ariaPressed);
   });
 
@@ -360,7 +361,7 @@ suite('ComposeApp', () => {
       testProxy.setOpenMetadata({}, state);
       const newApp = document.createElement('compose-app');
       document.body.appendChild(newApp);
-      await flushTasks();
+      await microtasksFinished();
       return newApp;
     }
 
@@ -375,6 +376,7 @@ suite('ComposeApp', () => {
 
     // Change the selected input mode
     appWithInputMode.$.formalizeChip.click();
+    await microtasksFinished();
     assertTrue(
         appWithInputMode.$.formalizeChip.selected,
         'Formalize mode chip should be selected.');
@@ -400,12 +402,15 @@ suite('ComposeApp', () => {
     await assertSavedState({input: 'Here is my input', inputMode: initialMode});
     // Changing the mode saves state.
     app.$.elaborateChip.click();
+    await microtasksFinished();
     await assertSavedState(
         {input: 'Here is my input', inputMode: InputMode.kElaborate});
     app.$.formalizeChip.click();
+    await microtasksFinished();
     await assertSavedState(
         {input: 'Here is my input', inputMode: InputMode.kFormalize});
     app.$.polishChip.click();
+    await microtasksFinished();
     await assertSavedState(
         {input: 'Here is my input', inputMode: InputMode.kPolish});
   });
@@ -450,7 +455,7 @@ suite('ComposeApp', () => {
 
     app.$.errorGoBackButton.click();
     await testProxy.whenCalled('recoverFromErrorState');
-    await flushTasks();
+    await microtasksFinished();
 
     // UI is updated to the mocked last ok response.
     assertEquals('initial input', app.$.textarea.value);
@@ -523,12 +528,13 @@ suite('ComposeApp', () => {
   test('AllowsEditingPrompt', async () => {
     app.$.textarea.dispatchEvent(
         new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    await microtasksFinished();
     assertTrue(isVisible(app.$.editTextarea));
 
     await mockInput('Initial input.');
     app.$.submitButton.click();
     await testProxy.whenCalled('compose');
-    await flushTasks();
+    await microtasksFinished();
     testProxy.resetResolver('compose');
 
     // Mock clicking edit in the textarea and verify new textarea shows.
@@ -541,7 +547,6 @@ suite('ComposeApp', () => {
     assertEquals('Initial input.', app.$.editTextarea.value);
     app.$.editTextarea.value = 'Here is a better input.';
     await microtasksFinished();
-    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     app.$.cancelEditButton.click();
     await testProxy.whenCalled('logCancelEdit');
     assertFalse(isVisible(app.$.editTextarea));
@@ -550,10 +555,11 @@ suite('ComposeApp', () => {
     // Mock updating input and submitting.
     app.$.textarea.dispatchEvent(
         new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    await microtasksFinished();
     app.$.editTextarea.value = 'Here is an even better input.';
     await microtasksFinished();
-    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     app.$.submitEditButton.click();
+    await microtasksFinished();
     assertFalse(isVisible(app.$.editTextarea));
     assertEquals('Here is an even better input.', app.$.textarea.value);
 
@@ -602,7 +608,7 @@ suite('ComposeApp', () => {
     // Click undo.
     appWithUndo.$.undoButton.click();
     await testProxy.whenCalled('undo');
-    await flushTasks();
+    await microtasksFinished();
 
     // UI is updated.
     assertEquals('my old input', appWithUndo.$.textarea.value);
@@ -653,7 +659,7 @@ suite('ComposeApp', () => {
     // Click redo.
     appWithRedo.$.redoButton.click();
     await testProxy.whenCalled('redo');
-    await flushTasks();
+    await microtasksFinished();
 
     // UI is updated.
     assertEquals('some future input', appWithRedo.$.textarea.value);
@@ -667,7 +673,7 @@ suite('ComposeApp', () => {
 
   test('Feedback', async () => {
     const feedbackButtons =
-        app.shadowRoot!.querySelector('cr-feedback-buttons')!;
+        app.shadowRoot.querySelector('cr-feedback-buttons')!;
     feedbackButtons.dispatchEvent(new CustomEvent('selected-option-changed', {
       bubbles: true,
       composed: true,
@@ -689,7 +695,7 @@ suite('ComposeApp', () => {
     // Wait for those events to complete.
     const wait = async () => {
       for (let i = 0; i < 5; i++) {
-        await flushTasks();
+        await microtasksFinished();
       }
     };
 
@@ -709,7 +715,7 @@ suite('ComposeApp', () => {
     await mockResponse(
         'some response', ComposeStatus.kOk, /*onDeviceEvaluationUsed=*/
         true);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(
         (app as any).showOnDeviceDogfoodFooter_(),
         'show footer should be true');
@@ -799,13 +805,12 @@ suite('ComposeAppLegacyUi', () => {
     document.body.appendChild(app);
 
     await testProxy.whenCalled('requestInitialState');
-    return flushTasks();
+    return microtasksFinished();
   });
 
   async function mockInput(input: string) {
     app.$.textarea.value = input;
     await microtasksFinished();
-    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
   }
 
   test('SavesState', async () => {
@@ -847,7 +852,6 @@ suite('ComposeAppLegacyUi', () => {
     // Updating edit textarea saves state.
     app.$.editTextarea.value = 'Here is my new input';
     await microtasksFinished();
-    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     await assertSavedState({
       editedInput: 'Here is my new input',
       input: 'Here is my input',
@@ -863,9 +867,9 @@ suite('ComposeAppLegacyUi', () => {
     // Submitting edited textarea saves state.
     app.$.textarea.dispatchEvent(
         new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    await microtasksFinished();
     app.$.editTextarea.value = 'Here is my new input!!!!';
     await microtasksFinished();
-    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     testProxy.resetResolver('saveWebuiState');
     app.$.submitEditButton.click();
     await assertSavedState(
@@ -874,14 +878,11 @@ suite('ComposeAppLegacyUi', () => {
 
   test('DebouncesSavingState', async () => {
     app.$.textarea.value = 'Here is my input';
-    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
     // Intentionally not calling microtasksFinished() here to allow value to
     // propagate through the UI, since this test is trying to validate that if
     // 2 inputs are received within a microtask, only the second is registered.
     app.$.textarea.value = 'Here is my input 2';
-    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
     await microtasksFinished();
-    await flushTasks();
     const savedState = await testProxy.whenCalled('saveWebuiState');
     assertEquals(1, testProxy.getCallCount('saveWebuiState'));
     assertEquals(
@@ -910,13 +911,12 @@ suite('ComposeAppLegacyInputModesUi', () => {
     document.body.appendChild(app);
 
     await testProxy.whenCalled('requestInitialState');
-    return flushTasks();
+    return microtasksFinished();
   });
 
   async function mockInput(input: string) {
     app.$.textarea.value = input;
     await microtasksFinished();
-    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
   }
 
   test('SavesState', async () => {
@@ -958,7 +958,6 @@ suite('ComposeAppLegacyInputModesUi', () => {
     // Updating edit textarea saves state.
     app.$.editTextarea.value = 'Here is my new input';
     await microtasksFinished();
-    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     await assertSavedState({
       editedInput: 'Here is my new input',
       input: 'Here is my input',
@@ -974,9 +973,9 @@ suite('ComposeAppLegacyInputModesUi', () => {
     // Submitting edited textarea saves state.
     app.$.textarea.dispatchEvent(
         new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    await microtasksFinished();
     app.$.editTextarea.value = 'Here is my new input!!!!';
     await microtasksFinished();
-    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     testProxy.resetResolver('saveWebuiState');
     app.$.submitEditButton.click();
     await assertSavedState(
@@ -985,14 +984,11 @@ suite('ComposeAppLegacyInputModesUi', () => {
 
   test('DebouncesSavingState', async () => {
     app.$.textarea.value = 'Here is my input';
-    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
     // Intentionally not calling microtasksFinished() here to allow value to
     // propagate through the UI, since this test is trying to validate that if
     // 2 inputs are received within a microtask, only the second is registered.
     app.$.textarea.value = 'Here is my input 2';
-    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
     await microtasksFinished();
-    await flushTasks();
     const savedState = await testProxy.whenCalled('saveWebuiState');
     assertEquals(1, testProxy.getCallCount('saveWebuiState'));
     assertEquals(

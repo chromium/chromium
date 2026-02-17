@@ -7,8 +7,9 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "compose"
   static_files = [ "compose.html" ]
-  web_component_files = [ "app.ts" ]
   ts_files = [
+    "app.ts",
+    "app.html.ts",
     "animations/animator.ts",
     "animations/app_animator.ts",
     "animations/textarea_animator.ts",
@@ -20,6 +21,7 @@ build_webui("build") {
     "word_streamer.ts",
   ]
   css_files = [
+    "app.css",
     "result_text.css",
     "textarea.css",
   ]
