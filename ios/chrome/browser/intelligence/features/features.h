@@ -344,4 +344,19 @@ int GetModelBasedPageClassificationExecutionRate();
 
 extern const char kModelBasedPageClassificationExecutionRateParam[];
 
+// Enables the PageActionMenuIcon feature.
+BASE_DECLARE_FEATURE(kPageActionMenuIcon);
+
+// Param for the page action menu icon variations.
+extern const char kPageActionMenuIconParams[];
+
+// Icon to use for the page action menu entry point.
+enum class PageActionMenuIconVariations {
+  kDefault = 0,
+  kSparkles1 = 1,
+  kSparkles2 = 2,
+};
+
+PageActionMenuIconVariations GetPageActionMenuIcon();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

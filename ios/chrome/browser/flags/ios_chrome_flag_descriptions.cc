@@ -1268,6 +1268,10 @@ const char kOptimizationGuideDebugLogsDescription[] =
     "Enables the optimization guide to log and save debug messages that can be "
     "shown in the internals page.";
 
+const char kPageActionMenuIconName[] = "PageActionMenuIcon";
+const char kPageActionMenuIconDescription[] =
+    "When enabled, changes the icon for the page action menu entry point.";
+
 const char kPageActionMenuName[] = "Page Action Menu";
 const char kPageActionMenuDescription[] =
     "When enabled, the entry point for the Page Action Menu becomes available "

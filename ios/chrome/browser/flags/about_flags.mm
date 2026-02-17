@@ -1347,6 +1347,15 @@ const FeatureEntry::FeatureVariation kModelBasedPageClassificationVariations[] =
         {"(100%)", kModelBasedPageClassificationParam100, nullptr},
 };
 
+const FeatureEntry::FeatureParam kPageActionMenuIconSparkles1[] = {
+    {kPageActionMenuIconParams, "1"}};
+const FeatureEntry::FeatureParam kPageActionMenuIconSparkles2[] = {
+    {kPageActionMenuIconParams, "2"}};
+
+const FeatureEntry::FeatureVariation kPageActionMenuIconVariations[] = {
+    {"Sparkles 1", kPageActionMenuIconSparkles1, nullptr},
+    {"Sparkles 2", kPageActionMenuIconSparkles2, nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2706,6 +2715,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kModelBasedPageClassification,
                                     kModelBasedPageClassificationVariations,
                                     "ModelBasedPageClassification")},
+    {"page-action-menu-icon", flag_descriptions::kPageActionMenuIconName,
+     flag_descriptions::kPageActionMenuIconDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kPageActionMenuIcon,
+                                    kPageActionMenuIconVariations,
+                                    "PageActionMenuIcon")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

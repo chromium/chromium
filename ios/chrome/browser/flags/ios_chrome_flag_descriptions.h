@@ -771,6 +771,9 @@ extern const char kOmniboxZeroSuggestPrefetchingOnWebDescription[];
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 
+extern const char kPageActionMenuIconName[];
+extern const char kPageActionMenuIconDescription[];
+
 extern const char kPageActionMenuName[];
 extern const char kPageActionMenuDescription[];
 

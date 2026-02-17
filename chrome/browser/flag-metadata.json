@@ -7386,6 +7386,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "page-action-menu-icon",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "page-actions-migration",
     "owners": [ "alsan@google.com", "chrome-desktop-ui-waterloo@google.com" ],
     "expiry_milestone": 150
