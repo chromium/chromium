@@ -27,16 +27,13 @@ struct StructTraits<js_injection::mojom::JsWebMessageArrayBufferValueDataView,
     return big_buffer;
   }
 
-  static bool is_resizable_by_user_javascript(
+  static std::optional<size_t> javascript_resize_limit(
       const std::unique_ptr<blink::WebMessageArrayBufferPayload>&
           array_buffer) {
-    return array_buffer->GetIsResizableByUserJavaScript();
-  }
-
-  static size_t max_byte_length(
-      const std::unique_ptr<blink::WebMessageArrayBufferPayload>&
-          array_buffer) {
-    return array_buffer->GetMaxByteLength();
+    if (array_buffer->GetIsResizableByUserJavaScript()) {
+      return array_buffer->GetMaxByteLength();
+    }
+    return std::nullopt;
   }
 
   static bool Read(js_injection::mojom::JsWebMessageArrayBufferValueDataView r,

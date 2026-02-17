@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <variant>
 #include <vector>
@@ -219,8 +220,9 @@ TransferableMessage EncodeWebMessagePayload(const WebMessagePayload& payload) {
             message.array_buffer_contents_array.push_back(
                 mojom::SerializedArrayBufferContents::New(
                     std::move(big_buffer),
-                    array_buffer->GetIsResizableByUserJavaScript(),
-                    array_buffer->GetMaxByteLength()));
+                    array_buffer->GetIsResizableByUserJavaScript()
+                        ? std::optional(array_buffer->GetMaxByteLength())
+                        : std::nullopt));
           }},
       payload);
 
@@ -301,18 +303,19 @@ std::optional<WebMessagePayload> DecodeToWebMessagePayload(
     }
     case kArrayBufferTransferTag: {
       uint32_t array_buffer_index;
-      if (!ReadUint32(iter, &array_buffer_index))
+      if (!ReadUint32(iter, &array_buffer_index)) {
         return std::nullopt;
-      // We only support transfer ArrayBuffer at the first index.
-      if (array_buffer_index != 0)
-        return std::nullopt;
-      if (message.array_buffer_contents_array.size() != 1)
-        return std::nullopt;
-      auto& array_buffer_contents = message.array_buffer_contents_array[0];
-      std::optional<size_t> max_byte_length;
-      if (array_buffer_contents->is_resizable_by_user_javascript) {
-        max_byte_length.emplace(array_buffer_contents->max_byte_length);
       }
+      // We only support transfer ArrayBuffer at the first index.
+      if (array_buffer_index != 0) {
+        return std::nullopt;
+      }
+      if (message.array_buffer_contents_array.size() != 1) {
+        return std::nullopt;
+      }
+      auto& array_buffer_contents = message.array_buffer_contents_array[0];
+      std::optional<size_t> max_byte_length =
+          array_buffer_contents->javascript_resize_limit;
       return std::make_optional(
           WebMessagePayload(std::make_unique<BigBufferArrayBuffer>(
               std::move(array_buffer_contents->contents), max_byte_length)));

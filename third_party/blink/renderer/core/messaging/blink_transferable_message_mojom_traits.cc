@@ -164,10 +164,7 @@ bool StructTraits<blink::mojom::blink::SerializedArrayBufferContents::DataView,
     return false;
   auto contents_data = contents_view.data();
 
-  std::optional<size_t> max_data_size;
-  if (data.is_resizable_by_user_javascript()) {
-    max_data_size = base::checked_cast<size_t>(data.max_byte_length());
-  }
+  std::optional<size_t> max_data_size = data.javascript_resize_limit();
   blink::ArrayBufferContents array_buffer_contents(
       contents_data.size(), max_data_size, 1,
       blink::ArrayBufferContents::kNotShared,

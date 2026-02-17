@@ -48,12 +48,10 @@ struct JavaScriptExecutable {
 // ArrayBuffer payload sent between JavaScript and browser.
 struct JsWebMessageArrayBufferValue {
   mojo_base.mojom.BigBuffer array_buffer_value;
-  // If is_resizable_by_user_javascript is false, then max_byte_length is
-  // unused.
-  //
-  // TODO(crbug.com/40489779): Use a wrapped uint64 or uint64? once supported.
-  bool is_resizable_by_user_javascript = false;
-  uint64 max_byte_length = 0;
+
+  // If the buffer is resizable via JavaScript, the limit to which it can be
+  // resized. If it is not resizable via JavaScript, this is not set.
+  uint64? javascript_resize_limit;
 };
 
 // JsWebMessage struct contains the message payload sent between

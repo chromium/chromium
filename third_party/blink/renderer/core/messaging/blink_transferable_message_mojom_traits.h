@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_MESSAGING_BLINK_TRANSFERABLE_MESSAGE_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_MESSAGING_BLINK_TRANSFERABLE_MESSAGE_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
 #include "third_party/blink/public/common/messaging/accelerated_static_bitmap_image_mojom_traits.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
@@ -87,13 +89,12 @@ class CORE_EXPORT
       const blink::ArrayBufferContents& array_buffer_contents) {
     return mojo_base::BigBuffer(array_buffer_contents.ByteSpan());
   }
-  static bool is_resizable_by_user_javascript(
+  static std::optional<size_t> javascript_resize_limit(
       const blink::ArrayBufferContents& array_buffer_contents) {
-    return array_buffer_contents.IsResizableByUserJavaScript();
-  }
-  static size_t max_byte_length(
-      const blink::ArrayBufferContents& array_buffer_contents) {
-    return array_buffer_contents.MaxDataLength();
+    if (array_buffer_contents.IsResizableByUserJavaScript()) {
+      return array_buffer_contents.MaxDataLength();
+    }
+    return std::nullopt;
   }
 
   static bool Read(blink::mojom::SerializedArrayBufferContentsDataView,
