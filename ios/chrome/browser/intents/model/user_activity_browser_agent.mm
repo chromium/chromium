@@ -869,11 +869,6 @@ void UserActivityBrowserAgent::HandleRouteToCorrectTab(
 
   params.from_external = true;
 
-  if (target_mode != ApplicationModeForTabOpening::INCOGNITO &&
-      [tab_opener_ URLIsOpenedInRegularMode:params.web_params.url]) {
-    // Record metric.
-  }
-
   base::OnceClosure closure =
       base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
                      weak_ptr_factory_.GetWeakPtr());
@@ -898,11 +893,6 @@ void UserActivityBrowserAgent::HandleUrlOpening(
 
     GURL result = GenerateResultGURLFromSearchQuery(query);
     params.web_params.url = result;
-  }
-
-  if (target_mode != ApplicationModeForTabOpening::INCOGNITO &&
-      [tab_opener_ URLIsOpenedInRegularMode:webpage_url]) {
-    // Record metric.
   }
 
   base::OnceClosure closure =

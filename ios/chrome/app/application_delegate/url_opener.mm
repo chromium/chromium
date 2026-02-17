@@ -178,10 +178,6 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
     targetMode = ApplicationModeForTabOpening::CURRENT;
   }
 
-  if (targetMode != ApplicationModeForTabOpening::INCOGNITO &&
-      [tabOpener URLIsOpenedInRegularMode:urlLoadParams.web_params.url]) {
-    // Record metric.
-  }
   [tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
                                       withUrlLoadParams:urlLoadParams
                                          dismissOmnibox:dismissOmnibox

@@ -59,8 +59,4 @@
   return nil;
 }
 
-- (BOOL)URLIsOpenedInRegularMode:(const GURL&)URL {
-  return NO;
-}
-
 @end

@@ -74,10 +74,6 @@
                                         completion:(ProceduralBlock)completion {
   _applicationMode = targetMode;
 }
-
-- (BOOL)URLIsOpenedInRegularMode:(const GURL&)URL {
-  return NO;
-}
 @end
 
 namespace {

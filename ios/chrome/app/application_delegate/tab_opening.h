@@ -61,9 +61,6 @@ struct UrlLoadParams;
 - (ProceduralBlock)completionBlockForTriggeringAction:
     (TabOpeningPostOpeningAction)action;
 
-// Whether the `URL` is already opened, in regular mode.
-- (BOOL)URLIsOpenedInRegularMode:(const GURL&)URL;
-
 @end
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_TAB_OPENING_H_

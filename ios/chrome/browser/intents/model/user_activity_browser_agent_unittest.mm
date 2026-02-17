@@ -84,10 +84,6 @@
 
 @implementation FakeSceneController
 
-- (BOOL)URLIsOpenedInRegularMode:(const GURL&)URL {
-  return NO;
-}
-
 - (void)dismissModalsAndMaybeOpenSelectedTabInMode:
             (ApplicationModeForTabOpening)targetMode
                                  withUrlLoadParams:
