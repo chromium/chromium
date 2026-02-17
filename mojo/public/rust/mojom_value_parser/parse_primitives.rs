@@ -26,12 +26,17 @@
 // told me it might all be host-endian. Figure that out before it causes
 // problems.
 
+use crate::ast::UntypedHandle;
 use crate::errors::*;
 use std::any::type_name;
 
-/// The input to a parser
+/// The input to a parser. Represents the two parts of a mojom message:
+/// the raw bytes of the payload, and the attached list of handles.
 pub struct ParserData<'a> {
+    /// The raw bytes of the message which have yet to be parsed.
     remaining_bytes: &'a [u8],
+    /// The handles attached to the message separately from the raw bytes.
+    message_handles: &'a mut [Option<UntypedHandle>],
     bytes_parsed: usize,
 }
 
@@ -39,8 +44,11 @@ pub struct ParserData<'a> {
 // internal representation so we don't accidentally mutate it elsewhere.
 impl<'a> ParserData<'a> {
     /// Create a new ParserData from a byte array.
-    pub fn new(data: &'a [u8]) -> ParserData<'a> {
-        ParserData { remaining_bytes: data, bytes_parsed: 0 }
+    pub fn new(
+        data: &'a [u8],
+        handles: &'a mut [Option<crate::ast::UntypedHandle>],
+    ) -> ParserData<'a> {
+        ParserData { remaining_bytes: data, message_handles: handles, bytes_parsed: 0 }
     }
 
     /// How many bytes have been parsed since the ParserData was created.
@@ -51,6 +59,15 @@ impl<'a> ParserData<'a> {
     /// How many bytes remain to be parsed.
     pub fn remaining_bytes(&self) -> usize {
         self.remaining_bytes.len()
+    }
+
+    /// Take ownership of the handle at index i of `message_handles`.
+    ///
+    /// If there is no handle at that index (it's out of bounds, or ownership
+    /// was already taken), returns None.
+    pub fn take_handle(&mut self, idx: usize) -> Option<UntypedHandle> {
+        let handle_ref = self.message_handles.get_mut(idx)?;
+        std::mem::take(handle_ref)
     }
 
     pub fn into_bytes(self) -> &'a [u8] {

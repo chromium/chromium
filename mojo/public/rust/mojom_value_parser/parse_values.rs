@@ -23,7 +23,11 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 
 /// Parse a type without nested data, i.e. anything but a struct or array
-fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> ParsingResult<MojomValue> {
+fn parse_leaf_element(
+    data: &mut ParserData,
+    ty: &PackedLeafType,
+    is_nullable: bool,
+) -> ParsingResult<MojomValue> {
     match ty {
         PackedLeafType::Bool => Ok(MojomValue::Bool(parse_u8(data)? == 1)),
         PackedLeafType::UInt8 => Ok(MojomValue::UInt8(parse_u8(data)?)),
@@ -43,6 +47,32 @@ fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> ParsingResu
             } else {
                 // Report the error starting before the 32 bits we just parsed
                 Err(ParsingError::invalid_discriminant(data.bytes_parsed() - 4, value))
+            }
+        }
+        PackedLeafType::Handle => {
+            // On the wire, handles are represented as a 32-bit index into the
+            // message's attached handle array, which is part of `data`.
+            let idx_u32 = parse_u32(data)?;
+            let idx: usize = idx_u32.try_into().unwrap();
+
+            // This value indicates the handle is `None`.
+            if idx_u32 == 0xffffffff {
+                if is_nullable {
+                    return Ok(MojomValue::Nullable(None));
+                } else {
+                    return Err(ParsingError::invalid_handle_index(data.bytes_parsed() - 4, idx));
+                }
+            };
+
+            let handle = data
+                .take_handle(idx)
+                .ok_or_else(|| ParsingError::invalid_handle_index(data.bytes_parsed() - 4, idx))?;
+            let handle_val = MojomValue::Handle(handle);
+
+            if is_nullable {
+                return Ok(MojomValue::Nullable(Some(Box::new(handle_val))));
+            } else {
+                return Ok(handle_val);
             }
         }
     }
@@ -516,10 +546,15 @@ where
                         nested_data_list.push(nested_info);
                     }
                     // Nested leaf data, just parse it
-                    MojomWireType::Leaf { leaf_type, .. } => {
-                        let parsed_value = parse_leaf_element(data, leaf_type)?;
-                        let parsed_value =
-                            wrap_nullable_primitive(&ret_values, ordinal, parsed_value);
+                    MojomWireType::Leaf { leaf_type, is_nullable } => {
+                        let mut parsed_value = parse_leaf_element(data, leaf_type, *is_nullable)?;
+
+                        // Handles have their own special nullability markers,
+                        // which are checked in `parse_leaf_element`.
+                        if leaf_type != &PackedLeafType::Handle {
+                            parsed_value =
+                                wrap_nullable_primitive(&ret_values, ordinal, parsed_value);
+                        }
                         ret_names[ordinal] = name.clone();
                         ret_values[ordinal] = parsed_value;
                     }
@@ -632,12 +667,16 @@ where
 /// some mojom types, since e.g. booleans can't be parsed individually.
 pub fn parse_single_value_for_testing(
     data: &[u8],
+    handles: &mut [Option<UntypedHandle>],
     wire_type: &MojomWireType,
 ) -> ParsingResult<MojomValue> {
-    let mut data = ParserData::new(data);
+    let mut data = ParserData::new(data, handles);
     match wire_type {
         MojomWireType::Leaf { leaf_type, is_nullable: false } => {
-            parse_leaf_element(&mut data, leaf_type)
+            parse_leaf_element(&mut data, leaf_type, false)
+        }
+        MojomWireType::Leaf { leaf_type: PackedLeafType::Handle, is_nullable } => {
+            parse_leaf_element(&mut data, &PackedLeafType::Handle, *is_nullable)
         }
         MojomWireType::Pointer { nested_data_type, is_nullable: false } => match nested_data_type {
             PackedStructuredType::Struct {
@@ -673,9 +712,10 @@ pub fn parse_single_value_for_testing(
 /// unparsed bytes.
 pub fn parse_top_level_value<'a>(
     data_slice: &'a [u8],
+    handles: &'a mut [Option<UntypedHandle>],
     ty: &MojomWireType,
 ) -> ParsingResult<(&'a [u8], MojomValue)> {
-    let mut data = ParserData::new(data_slice);
+    let mut data = ParserData::new(data_slice, handles);
     match ty {
         MojomWireType::Pointer {
             nested_data_type:

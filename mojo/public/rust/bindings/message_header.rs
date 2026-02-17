@@ -91,7 +91,7 @@ impl MessageHeaderV3 {
     /// Serialize the header as a mojom value, but replace the version number
     /// in the encoding with 3, because the serializer doesn't handle versioning
     pub fn serialize_with_version(self) -> Vec<u8> {
-        let mut serialized = mojom_value_parser::serialize(self);
+        let (mut serialized, _) = mojom_value_parser::serialize(self);
         Self::set_version_number(&mut serialized, 3);
         return serialized;
     }
@@ -106,7 +106,7 @@ impl MessageHeaderV3 {
         data: &mut [u8],
     ) -> mojom_value_parser::ParsingResult<(&[u8], Self)> {
         Self::set_version_number(data, 0);
-        return mojom_value_parser::deserialize(data);
+        return mojom_value_parser::deserialize(data, &mut []);
     }
 
     /// Replace the version number of a serialized header with `new_num`.

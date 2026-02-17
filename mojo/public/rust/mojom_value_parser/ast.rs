@@ -7,9 +7,15 @@
 //! This module provides the ability to represent Mojom types and values as
 //! rust enums.
 
+chromium::import! {
+    "//mojo/public/rust/system";
+}
+
 use ordered_float::OrderedFloat;
 use std::collections::BTreeMap;
 use std::sync::Arc;
+
+pub use system::mojo_types::UntypedHandle;
 
 // FOR_RELEASE: The current AST is dead simple: standard recursive data
 // structures. We'll probably need an intermediate one as well to represent data
@@ -22,8 +28,6 @@ use std::sync::Arc;
 /// These include the primitive types from
 /// public/tools/bindings/README.md#Primitive-Types, as well as non-primitive
 /// types like structs and enums.
-// FOR_RELEASE: Not all types are currently supported, and we won't support all of them
-// for the initial release, but we'll need at least these plus enums and nullables.
 #[derive(Debug, Clone, PartialEq)]
 pub enum MojomType {
     Bool,
@@ -38,6 +42,7 @@ pub enum MojomType {
     Float32,
     Float64,
     String,
+    Handle,
     Enum { is_valid: Predicate<u32> },
     Union { variants: BTreeMap<u32, MojomType> },
     // `field_names` is only for debugging; it should have the same
@@ -77,6 +82,7 @@ pub enum MojomValue {
     Float64(OrderedFloat<f64>),
     String(String),
     Enum(u32),
+    Handle(UntypedHandle),
     Union(u32, Box<MojomValue>),
     Struct(Vec<String>, Vec<MojomValue>),
     // Invariant: all MojomValues in the array are the same type.
@@ -175,7 +181,7 @@ pub type StructuredBodyElementMixed<'a> =
 pub type StructuredBodyElementRef<'a, T> = StructuredBodyElement<&'a MojomWireType, T>;
 
 #[derive(Debug, Clone, PartialEq)]
-/// A type which is simply encoded as itself
+/// A type which contains no nested data
 pub enum PackedLeafType {
     // Note that single booleans should never appear in a struct; they get
     // packed into a bitfield instead.
@@ -191,6 +197,7 @@ pub enum PackedLeafType {
     Float32,
     Float64,
     Enum { is_valid: Predicate<u32> },
+    Handle,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -242,6 +249,7 @@ impl MojomWireType {
                 PackedLeafType::Int32 | PackedLeafType::UInt32 | PackedLeafType::Float32 => 4,
                 PackedLeafType::Int64 | PackedLeafType::UInt64 | PackedLeafType::Float64 => 8,
                 PackedLeafType::Enum { .. } => 4,
+                PackedLeafType::Handle { .. } => 4,
             },
             MojomWireType::Pointer { .. } => 8,
             MojomWireType::Union { .. } => 16,
@@ -268,6 +276,8 @@ impl MojomWireType {
 
     pub fn is_nullable_primitive(&self) -> bool {
         match self {
+            // Handles aren't primitives; they have their own nullability semantics
+            MojomWireType::Leaf { leaf_type: PackedLeafType::Handle, .. } => false,
             MojomWireType::Leaf { is_nullable, .. } => *is_nullable,
             _ => false,
         }

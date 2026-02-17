@@ -202,6 +202,7 @@ pub enum GetMessageDataStatus<'a> {
 // FOR_RELEASE: Add a fully-safe equivalent that allocates memory for the
 // handles instead of taking a buffer as an out-parameter, and/or one that takes
 // in an initialized slice to start with.
+// FOR_RELEASE: Add a mutable equivalent (takes &mut, returns &mut)
 pub fn MojoGetMessageData<'a>(
     message: &'a MessageHandle,
     handles: Option<&mut [std::mem::MaybeUninit<UntypedHandle>]>,

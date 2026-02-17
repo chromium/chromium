@@ -199,8 +199,9 @@ where
                 message,
                 move |mut response: MojomMessage| {
                     response.header.request_id = request_id;
+                    let (payload, handles) = response.into_data();
                     sender.try_send_response(
-                        RawMojoMessage::new_with_bytes(&response.into_bytes()).unwrap(),
+                        RawMojoMessage::new_with_data(&payload, handles).unwrap(),
                     );
                 },
             );

@@ -8,6 +8,39 @@ use anyhow::{bail, Context, Result};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
+/// Wrapper type for the output of the deparser
+pub struct DeparsedData {
+    bytes: Vec<u8>,
+    handles: Vec<UntypedHandle>,
+}
+
+impl DeparsedData {
+    pub fn new() -> Self {
+        DeparsedData { bytes: vec![], handles: vec![] }
+    }
+
+    pub fn into_parts(self) -> (Vec<u8>, Vec<UntypedHandle>) {
+        (self.bytes, self.handles)
+    }
+}
+
+// Convenient implementations: In almost all circumstances we only care about
+// the `bytes` field, so make that easily available (via the . operator).
+// The fields can also be accessed directly, of course.
+impl std::ops::Deref for DeparsedData {
+    type Target = Vec<u8>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.bytes
+    }
+}
+
+impl std::ops::DerefMut for DeparsedData {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.bytes
+    }
+}
+
 /// Return a reference to the field at index `ordinal`
 fn get_field_at_ordinal(field_values: &mut [MojomValue], ordinal: Ordinal) -> Result<&MojomValue> {
     field_values.get(ordinal).with_context(|| {
@@ -78,15 +111,18 @@ fn flatten_possibly_nullable_value(
 ///
 /// This is a macro instead of a function so we can `continue` inside it.
 macro_rules! write_or_extract_nullable {
-    ($data:expr, $val:expr, $is_nullable:expr, $num_bytes:expr) => {
+    ($data:expr, $val:expr, $is_nullable:expr, $num_bytes:expr, $none_indicator_byte:expr) => {
         match flatten_possibly_nullable_value($val, $is_nullable)? {
             None => {
                 // For a null value, we need only write a bunch of 0s
-                $data.extend(vec![0; $num_bytes]);
+                $data.extend(vec![$none_indicator_byte; $num_bytes]);
                 continue;
             }
             Some(v) => v,
         }
+    };
+    ($data:expr, $val:expr, $is_nullable:expr, $num_bytes:expr) => {
+        write_or_extract_nullable!($data, $val, $is_nullable, $num_bytes, 0x00)
     };
 }
 
@@ -97,7 +133,7 @@ macro_rules! wrong_type {
     };
 }
 
-fn pad_to_alignment(data: &mut Vec<u8>, alignment: usize) {
+fn pad_to_alignment(data: &mut DeparsedData, alignment: usize) {
     let mismatch = data.len() % alignment;
     if mismatch != 0 {
         data.extend(vec![0; alignment - mismatch])
@@ -106,7 +142,7 @@ fn pad_to_alignment(data: &mut Vec<u8>, alignment: usize) {
 
 /// Write out the bytes for a leaf node
 fn deparse_leaf_value(
-    data: &mut Vec<u8>,
+    data: &mut DeparsedData,
     value: MojomValue,
     leaf_type: &PackedLeafType,
 ) -> Result<()> {
@@ -125,6 +161,14 @@ fn deparse_leaf_value(
         (MojomValue::Float32(value), PackedLeafType::Float32) => data.extend(value.to_le_bytes()),
         (MojomValue::Float64(value), PackedLeafType::Float64) => data.extend(value.to_le_bytes()),
         (MojomValue::Enum(value), PackedLeafType::Enum { .. }) => data.extend(value.to_le_bytes()),
+        (MojomValue::Handle(handle), PackedLeafType::Handle) => {
+            // Handles are represented on the wire as a 32-bit index into the
+            // attached handles array. So instead of writing the value directly
+            // to the wire, push it to the array and write its index instead.
+            let handle_idx = u32::try_from(data.handles.len()).unwrap();
+            data.handles.push(handle);
+            data.extend(handle_idx.to_le_bytes())
+        }
         (value, _) => wrong_type!(leaf_type, value),
     }
     Ok(())
@@ -172,7 +216,7 @@ fn write_to_slice(data: &mut [u8], start: usize, len: usize, value: &[u8]) {
 }
 
 pub fn deparse_struct(
-    data: &mut Vec<u8>,
+    data: &mut DeparsedData,
     field_values: Vec<MojomValue>,
     packed_fields: &[StructuredBodyElementOwned],
 ) -> Result<()> {
@@ -189,7 +233,7 @@ pub fn deparse_struct(
 }
 
 fn deparse_array(
-    data: &mut Vec<u8>,
+    data: &mut DeparsedData,
     contents: MojomValue,
     element_type: &Arc<MojomWireType>,
     array_type: &PackedArrayType,
@@ -233,7 +277,7 @@ fn deparse_array(
 /// See the documentation of parse_union in parse_values.rs for an explanation
 /// of the `enclosing_nested_data_list` argument
 fn deparse_union<'a>(
-    data: &mut Vec<u8>,
+    data: &mut DeparsedData,
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
     tag: u32,
     contained_value: MojomValue,
@@ -260,7 +304,7 @@ fn deparse_union<'a>(
 }
 
 fn deparse_map(
-    data: &mut Vec<u8>,
+    data: &mut DeparsedData,
     values_map: BTreeMap<MojomValue, MojomValue>,
     key_type: &Arc<MojomWireType>,
     value_type: &Arc<MojomWireType>,
@@ -294,7 +338,7 @@ fn deparse_map(
     deparse_struct(data, field_values, &packed_fields)
 }
 
-fn deparse_string(data: &mut Vec<u8>, value: String) -> Result<()> {
+fn deparse_string(data: &mut DeparsedData, value: String) -> Result<()> {
     let bytes = value.as_bytes();
     let num_bytes: u32 = bytes
         .len()
@@ -320,7 +364,7 @@ fn deparse_string(data: &mut Vec<u8>, value: String) -> Result<()> {
 /// For arrays, the padding is not included in the header; for structs, it is.
 // FOR_RELEASE: Try to take the value by value instead of by reference
 fn deparse_structured_body<'a, 'b, IterT, BitfieldT>(
-    data: &mut Vec<u8>,
+    data: &mut DeparsedData,
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
     is_array: bool,
     mut field_values: Vec<MojomValue>,
@@ -376,8 +420,16 @@ where
                     MojomWireType::Leaf { leaf_type, is_nullable } => {
                         let num_bytes = wire_type.size();
                         let leaf_value = take_field_at_ordinal(&mut field_values, ordinal)?;
-                        let leaf_value =
-                            write_or_extract_nullable!(data, leaf_value, *is_nullable, num_bytes);
+                        // Null handles are indicated with all `f`s, everything else is all `0`s.
+                        let none_indicator_byte =
+                            if leaf_type == &PackedLeafType::Handle { 0xff } else { 0x00 };
+                        let leaf_value = write_or_extract_nullable!(
+                            data,
+                            leaf_value,
+                            *is_nullable,
+                            num_bytes,
+                            none_indicator_byte
+                        );
                         pad_to_alignment(data, packed_field.alignment());
                         deparse_leaf_value(data, leaf_value, leaf_type)?
                     }
@@ -500,8 +552,8 @@ where
 pub fn deparse_single_value_for_testing(
     value: MojomValue,
     wire_type: &MojomWireType,
-) -> Result<Vec<u8>> {
-    let mut data: Vec<u8> = vec![];
+) -> Result<DeparsedData> {
+    let mut data = DeparsedData::new();
     match (wire_type, value) {
         (MojomWireType::Leaf { leaf_type, .. }, value) => {
             deparse_leaf_value(&mut data, value, leaf_type)?

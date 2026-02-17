@@ -32,7 +32,7 @@
 
 impl {{args_struct(method)}} {
   fn serialize_from_parts({{typed_fields(method.param_struct.fields)}}) -> bindings::message::MojomMessage {
-    let payload = mojom_value_parser::serialize(Self { {{field_names(method.param_struct.fields)}} } );
+    let (payload, handles) = mojom_value_parser::serialize(Self { {{field_names(method.param_struct.fields)}} } );
     {%- if method.response_parameters %}
     let flags = bindings::message_header::MessageHeaderFlags::EXPECTS_RESPONSE;
     {%- else %}
@@ -41,7 +41,8 @@ impl {{args_struct(method)}} {
     bindings::message::MojomMessage {
       header: bindings::message_header::MessageHeaderV3::new(
         0, {{ method.ordinal }}, flags, 0),
-      payload
+      payload,
+      handles
     }
   }
 }
@@ -51,13 +52,14 @@ impl {{args_struct(method)}} {
 
 impl {{response_struct(method)}} {
   fn serialize_from_parts({{typed_fields(method.response_param_struct.fields)}}) -> bindings::message::MojomMessage {
-    let payload = mojom_value_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} } );
+    let (payload, handles) = mojom_value_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} } );
     let flags = bindings::message_header::MessageHeaderFlags::IS_RESPONSE;
     bindings::message::MojomMessage {
       header: bindings::message_header::MessageHeaderV3::new(
         0, {{ method.ordinal }}, flags, 0
       ),
-      payload
+      payload,
+      handles
     }
   }
 }
@@ -87,11 +89,14 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
     where Self: Sized
   {
     let _ = send_response; // Mark as used in case no messages take a response
+    // We could also do this with std::mem::transmute due to the null-pointer optimization,
+    // but that's unsafe.
+    let mut handles = message.handles.into_iter().map(|h| Some(h)).collect::<Vec<_>>();
     match message.header.name {
       {%- for method in interface.methods %}
       {{method.ordinal}} => {
         let {{"_" if not method.parameters}}parsed: {{args_struct(method)}} =
-          mojom_value_parser::deserialize_exact(&message.payload)
+          mojom_value_parser::deserialize_exact(&message.payload, &mut handles)
           .expect("FOR_RELEASE: figure out what to do here");
         {%- if method.response_parameters %}
         let callback = move |{{typed_fields(method.response_param_struct.fields)}}| {
@@ -125,11 +130,14 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
   type ResponseCallbackTy = {{callback_ty_name}};
 
   fn handle_incoming_response(message: bindings::message::MojomMessage, send_response: Self::ResponseCallbackTy) {
+    // We could also do this with std::mem::transmute due to the null-pointer optimization,
+    // but that's unsafe.
+    let mut handles = message.handles.into_iter().map(|h| Some(h)).collect::<Vec<_>>();
     match (message.header.name, send_response) {
       {%- for method in interface.methods if method.response_parameters %}
       ({{method.ordinal}}, {{callback_ty_name}}::{{method.name}}(callback)) => {
         let parsed: {{response_struct(method)}} =
-          mojom_value_parser::deserialize_exact(&message.payload)
+          mojom_value_parser::deserialize_exact(&message.payload, &mut handles)
           .expect("FOR_RELEASE: figure out what to do here");
         callback(
           {%- for field in method.response_param_struct.fields -%}

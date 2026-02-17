@@ -214,9 +214,10 @@ where
 
         // This can only fail if the other end is closed, in which case we've nothing to
         // do here (we'll get a disconnection notification separately).
+        let (payload, handles) = message.into_data();
         let _ = self
             .endpoint_watcher
-            .send_message(RawMojoMessage::new_with_bytes(&message.into_bytes()).unwrap());
+            .send_message(RawMojoMessage::new_with_data(&payload, handles).unwrap());
     }
 
     /// This is the function which is called by the endpoint watcher

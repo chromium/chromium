@@ -54,6 +54,8 @@ pub enum ParsingErrorType {
     MismatchedMap { key_len: usize, value_len: usize },
     /// Indicates that the corresponding mojom feature has yet to be implemented
     NotImplemented { feature_name: String },
+    /// Indicates that we failed to retrieve a handle from the given index
+    InvalidHandleIndex { idx: usize },
 }
 
 impl ParsingError {
@@ -119,6 +121,10 @@ impl ParsingError {
 
     pub fn not_implemented(offset: usize, feature_name: String) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::NotImplemented { feature_name } }
+    }
+
+    pub fn invalid_handle_index(offset: usize, idx: usize) -> ParsingError {
+        ParsingError { offset, ty: ParsingErrorType::InvalidHandleIndex { idx } }
     }
 }
 
@@ -198,6 +204,13 @@ impl std::fmt::Display for ParsingError {
             }
             ParsingErrorType::NotImplemented { feature_name } => {
                 write!(f, "The rust bindings do not yet support {feature_name}")
+            }
+            ParsingErrorType::InvalidHandleIndex { idx } => {
+                write!(
+                    f,
+                    "Failed to retrieve the handle attached to the message at index {idx}. \
+                    Either the index was invalid or it was already retrieved."
+                )
             }
         }
     }

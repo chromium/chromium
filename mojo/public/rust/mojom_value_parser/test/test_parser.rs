@@ -48,11 +48,12 @@ where
         // that return a result, if we get access to them.
         expect_eq!(
             &value,
-            &parse_single_value_for_testing(wire_data.as_ref(), T::wire_type())?.try_into()?
+            &parse_single_value_for_testing(wire_data.as_ref(), &mut [], T::wire_type())?
+                .try_into()?
         );
         expect_eq!(
             wire_data.as_ref(),
-            deparse_single_value_for_testing(value.into(), T::wire_type())?
+            *deparse_single_value_for_testing(value.into(), T::wire_type())?
         );
         Ok(())
     };
@@ -68,7 +69,9 @@ where
     T: MojomParse + PartialEq + std::fmt::Debug,
 {
     let wire_data = validation_parser::parse(data).map_err(anyhow::Error::msg)?.data;
-    expect_true!(parse_single_value_for_testing(wire_data.as_ref(), T::wire_type()).is_err());
+    expect_true!(
+        parse_single_value_for_testing(wire_data.as_ref(), &mut [], T::wire_type()).is_err()
+    );
     Ok(())
 }
 

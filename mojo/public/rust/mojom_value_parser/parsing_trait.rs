@@ -3,10 +3,18 @@
 // found in the LICENSE file.
 
 //! FOR_RELASE: Docs
+
+chromium::import! {
+    "//mojo/public/rust/system";
+}
+
 use crate::ast::*;
 use crate::pack::pack_mojom_type;
 use ordered_float::OrderedFloat;
 use std::collections::HashMap;
+
+use system::message_pipe::MessageEndpoint;
+use system::mojo_types::UntypedHandle;
 
 /// This trait allows a type to be serialized/deserialized into a Mojom message.
 pub trait MojomParse:
@@ -131,6 +139,9 @@ mojomparse_leaf_impl!(OrderedFloat<f64>, Float64);
 
 mojomparse_leaf_impl!(bool, Bool);
 mojomparse_leaf_impl!(String, String);
+
+mojomparse_leaf_impl!(UntypedHandle, Handle);
+mojomparse_leaf_impl!(MessageEndpoint, Handle);
 
 // Implement MojomParse for any type that implements PrimitiveEnum and the other
 // requirements for MojomParse. All requirements are derived by

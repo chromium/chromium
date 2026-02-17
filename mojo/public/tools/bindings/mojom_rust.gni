@@ -137,6 +137,7 @@ template("mojom_rust") {
         ":$rust_generator_target_name",
         "//mojo/public/rust/bindings",
         "//mojo/public/rust/mojom_value_parser",
+        "//mojo/public/rust/system",
         "//third_party/rust/anyhow/v1:lib",
         "//third_party/rust/ordered_float/v5:lib",
       ]

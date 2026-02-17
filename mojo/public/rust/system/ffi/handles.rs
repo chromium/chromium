@@ -47,7 +47,7 @@ static_assertions::assert_type_eq_all!(raw_ffi::MojoMessageHandle, usize);
 /// A wrapper for the MojoHandle C type which is guaranteed to be live.
 /// This type can represent any handle except for a message object.
 #[repr(transparent)]
-#[derive(Debug)] // Do NOT derive Copy or Clone!
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)] // Do NOT derive Copy or Clone!
 pub struct UntypedHandle {
     pub(crate) handle_value: std::num::NonZeroUsize,
     // Private member to force construction using the `wrap_raw_value`
@@ -59,6 +59,9 @@ impl UntypedHandle {
     /// Create a new UntypedHandle from a raw value.
     /// SAFETY: The value must represent a live, unonwned handle.
     pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoHandle) -> Self {
+        // FOR_RELEASE: There are apparently other types of handle ("Pseudohandles")
+        // that should not be representable by this type. Look into these and check for
+        // them here.
         Self { handle_value: raw_value.try_into().unwrap(), _private: () }
     }
 

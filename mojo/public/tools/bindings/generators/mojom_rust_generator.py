@@ -24,6 +24,8 @@ _mojom_primitive_type_to_rust_type = {
     mojom.FLOAT: "f32",
     mojom.DOUBLE: "f64",
     mojom.STRING: "String",
+    mojom.HANDLE: "system::mojo_types::UntypedHandle",
+    mojom.MSGPIPE: "system::message_pipe::MessageEndpoint",
 }
 
 
@@ -59,7 +61,6 @@ def _MojomTypeToRustType(ty: mojom.Kind) -> str:
     sys.exit(1)
 
   return _mojom_primitive_type_to_rust_type[ty]
-
 
 def _ShouldDeriveClone(ty: mojom.Kind) -> bool:
   '''We derive clone as a convenience to the user, but we can't do so if the
