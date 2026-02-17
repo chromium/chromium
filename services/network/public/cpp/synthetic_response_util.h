@@ -30,11 +30,16 @@ bool CheckHeaderConsistencyForSyntheticResponseForTesting(
     const net::HttpResponseHeaders& expected_headers,
     const std::vector<std::string>& ignored_headers);
 
+struct WriteSyntheticResponseFallbackResult {
+  MojoResult result;
+  size_t bytes_written;
+};
+
 // Writes the hardcoded fallback body to the provided data pipe.
 // TODO(crbug.com/447039330): This is temporary for the SyntheticResponse
 // experiment and will be removed after standardization.
 COMPONENT_EXPORT(NETWORK_CPP)
-size_t WriteSyntheticResponseFallbackBody(
+WriteSyntheticResponseFallbackResult WriteSyntheticResponseFallbackBody(
     mojo::ScopedDataPipeProducerHandle& response_body_stream);
 
 }  // namespace network

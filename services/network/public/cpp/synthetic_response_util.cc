@@ -141,7 +141,7 @@ bool CheckHeaderConsistencyForSyntheticResponseForTesting(  // IN-TEST
       actual_headers, expected_headers, ignored_headers);
 }
 
-size_t WriteSyntheticResponseFallbackBody(
+WriteSyntheticResponseFallbackResult WriteSyntheticResponseFallbackBody(
     mojo::ScopedDataPipeProducerHandle& response_body_stream) {
   CHECK(response_body_stream.is_valid());
   static constexpr std::string_view kFallbackBody =
@@ -150,9 +150,13 @@ size_t WriteSyntheticResponseFallbackBody(
   MojoResult result = response_body_stream->WriteData(
       base::as_byte_span(kFallbackBody), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
       num_bytes);
-  CHECK_EQ(result, MOJO_RESULT_OK);
+  if (result != MOJO_RESULT_OK) {
+    // TODO(crbug.com/483762288): Remove this dump once the bug is fixed.
+    SCOPED_CRASH_KEY_NUMBER("SyntheticResponse", "WriteFallbackResult", result);
+    base::debug::DumpWithoutCrashing();
+  }
 
-  return num_bytes;
+  return {result, num_bytes};
 }
 
 }  // namespace network

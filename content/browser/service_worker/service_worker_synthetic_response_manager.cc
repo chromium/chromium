@@ -567,7 +567,11 @@ void ServiceWorkerSyntheticResponseManager::NotifyReloading() {
               "ServiceWorkerSyntheticResponseManager::NotifyReloading");
   auto producer = write_buffer_manager_->ReleaseProducerHandle();
   CHECK(producer.is_valid());
-  size_t written_bytes = network::WriteSyntheticResponseFallbackBody(producer);
+  auto [result, written_bytes] =
+      network::WriteSyntheticResponseFallbackBody(producer);
+  if (result != MOJO_RESULT_OK) {
+    return;
+  }
   CHECK_GE(written_bytes, 0u);
   OnCloneCompleted();
 }
