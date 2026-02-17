@@ -19707,12 +19707,11 @@
     "PerfCombined2025": [
         {
             "platforms": [
-                "android",
                 "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "EnabledConservative_20251114",
+                    "name": "EnabledConservative",
                     "params": {
                         "MacCriticalDiskSpacePressureThresholdMB": "250"
                     },
@@ -19742,133 +19741,6 @@
                         "MemoryCacheStrongReference",
                         "SuppressMemoryListeners",
                         "SuppressMemoryMonitor"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "chromeos",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledConservative_20251114",
-                    "params": {
-                        "MacCriticalDiskSpacePressureThresholdMB": "250"
-                    },
-                    "enable_features": [
-                        "AbslFlatMapInVariantMap",
-                        "AsyncSetCookie",
-                        "AvoidCloneArgsOnExtensionFunctionDispatch",
-                        "AvoidUnnecessaryGetMinimizeButtonOffset",
-                        "AvoidUnnecessaryShouldRenderRichAnimation",
-                        "CompressParkableStrings",
-                        "FastPathNoRaster",
-                        "GCOnArrayBufferAllocationFailure",
-                        "MacAllowBackgroundingRenderProcesses",
-                        "MacCriticalDiskSpacePressure",
-                        "MvcUpdateViewWhenModelChanged",
-                        "NoPreReadMainDllIfSsd",
-                        "PageAllocatorRetryOnCommitFailure",
-                        "ReducePPMs",
-                        "ReloadTabUiResourcesIfChanged",
-                        "RemoveCancelledScriptedIdleTasks",
-                        "ScreenWinDisplayLookupByHMONITOR",
-                        "SlimDirectReceiverIpc",
-                        "TerminationTargetPolicy",
-                        "UpdateDirectManipulationHelperOnParentChange"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledConservative_20251114",
-                    "params": {
-                        "MacCriticalDiskSpacePressureThresholdMB": "250",
-                        "suppress_memory_listeners_mask": "0000200200220200020020000002020000000000000000020",
-                        "suppress_memory_monitor_mask": "00020000020000"
-                    },
-                    "enable_features": [
-                        "AbslFlatMapInVariantMap",
-                        "AsyncSetCookie",
-                        "AvoidCloneArgsOnExtensionFunctionDispatch",
-                        "AvoidUnnecessaryGetMinimizeButtonOffset",
-                        "AvoidUnnecessaryShouldRenderRichAnimation",
-                        "CompressParkableStrings",
-                        "FastPathNoRaster",
-                        "GCOnArrayBufferAllocationFailure",
-                        "MacAllowBackgroundingRenderProcesses",
-                        "MacCriticalDiskSpacePressure",
-                        "MemoryCacheStrongReference",
-                        "MvcUpdateViewWhenModelChanged",
-                        "NoPreReadMainDllIfSsd",
-                        "PageAllocatorRetryOnCommitFailure",
-                        "ReducePPMs",
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure",
-                        "ReloadTabUiResourcesIfChanged",
-                        "RemoveCancelledScriptedIdleTasks",
-                        "ScreenWinDisplayLookupByHMONITOR",
-                        "SlimDirectReceiverIpc",
-                        "SuppressMemoryListeners",
-                        "SuppressMemoryMonitor",
-                        "TerminationTargetPolicy",
-                        "UpdateDirectManipulationHelperOnParentChange"
-                    ],
-                    "disable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledConservative_20251114",
-                    "params": {
-                        "MacCriticalDiskSpacePressureThresholdMB": "250",
-                        "suppress_memory_listeners_mask": "0000200200220200020020000002020000000000000000020",
-                        "suppress_memory_monitor_mask": "00020000020000"
-                    },
-                    "enable_features": [
-                        "AbslFlatMapInVariantMap",
-                        "AsyncSetCookie",
-                        "AvoidCloneArgsOnExtensionFunctionDispatch",
-                        "AvoidUnnecessaryGetMinimizeButtonOffset",
-                        "AvoidUnnecessaryShouldRenderRichAnimation",
-                        "CompressParkableStrings",
-                        "DirectCompositorThreadIpc",
-                        "FastPathNoRaster",
-                        "GCOnArrayBufferAllocationFailure",
-                        "MacAllowBackgroundingRenderProcesses",
-                        "MacCriticalDiskSpacePressure",
-                        "MemoryCacheStrongReference",
-                        "MvcUpdateViewWhenModelChanged",
-                        "NoPreReadMainDllIfSsd",
-                        "PageAllocatorRetryOnCommitFailure",
-                        "ReducePPMs",
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure",
-                        "ReloadTabUiResourcesIfChanged",
-                        "RemoveCancelledScriptedIdleTasks",
-                        "ScreenWinDisplayLookupByHMONITOR",
-                        "SlimDirectReceiverIpc",
-                        "SuppressMemoryListeners",
-                        "SuppressMemoryMonitor",
-                        "TerminationTargetPolicy",
-                        "UpdateDirectManipulationHelperOnParentChange"
-                    ],
-                    "disable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay"
                     ]
                 }
             ]
