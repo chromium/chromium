@@ -447,6 +447,16 @@ BASE_FEATURE(kConsumeCodeCacheOffThread, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kContentCaptureConstantStreaming,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, content:// URLs are considered local, and won't be allowed
+// to be downloaded.
+BASE_FEATURE(kContentSchemeIsLocal,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // When enabled, add a new option, {imageOrientation: 'none'}, to
 // createImageBitmap, which ignores the image orientation metadata of the source
 // and renders the image as encoded.

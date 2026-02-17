@@ -44,6 +44,7 @@
 #include "media/base/media_track.h"
 #include "services/media_session/public/mojom/media_session.mojom-blink.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -2454,8 +2455,11 @@ bool HTMLMediaElement::SupportsSave() const {
     return false;
 
   // It is not useful to offer a save feature on local files.
-  if (url.IsLocalFile())
+  if (url.IsLocalFile() ||
+      (base::FeatureList::IsEnabled(blink::features::kContentSchemeIsLocal) &&
+       url.ProtocolIs(url::kContentScheme))) {
     return false;
+  }
 
   // MediaStream can't be downloaded.
   if (GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream)

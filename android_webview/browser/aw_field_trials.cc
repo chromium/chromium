@@ -316,4 +316,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Launched for WebView. Experimentation needed for Chrome on Android.
   aw_feature_overrides.EnableFeature(
       stylus_handwriting::android::kProbeStylusWritingInBackground);
+
+  // As WebSettings.setAllowContentAccess() allows this to be controlled by
+  // the WebView's host, we keep the old behavior for content:// URLs.
+  aw_feature_overrides.DisableFeature(blink::features::kContentSchemeIsLocal);
 }

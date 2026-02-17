@@ -657,6 +657,24 @@ TEST_F(MediaControlsImplTest, DownloadButtonNotDisplayedEmptyUrl) {
   EXPECT_FALSE(IsOverflowElementVisible(*download_button));
 }
 
+TEST_F(MediaControlsImplTest, DownloadButtonNotDisplayedForContentUrl) {
+  EnsureSizing();
+
+  MediaControlDownloadButtonElement* download_button = DownloadButtonElement();
+  ASSERT_NE(nullptr, download_button);
+
+  // Download button should not be displayed for content URLs.
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("content://media/external/video/media/1"));
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(IsOverflowElementVisible(*download_button));
+#else
+  EXPECT_TRUE(IsOverflowElementVisible(*download_button));
+#endif
+}
+
 TEST_F(MediaControlsImplTest, DownloadButtonNotDisplayedInfiniteDuration) {
   EnsureSizing();
 

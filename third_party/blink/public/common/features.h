@@ -270,6 +270,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kConsumeCodeCacheOffThread);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kContentCaptureConstantStreaming);
 
+// If enabled, content:// URLs are considered local, and won't be allowed
+// to be downloaded.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kContentSchemeIsLocal);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCreateImageBitmapOrientationNone);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeclarativeCSSModulesUseDataURI);
