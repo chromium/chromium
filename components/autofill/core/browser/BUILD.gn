@@ -1669,6 +1669,7 @@ source_set("unit_tests") {
     "metrics/stored_profile_metrics_unittest.cc",
     "metrics/suggestions_list_metrics_unittest.cc",
     "ml_model/autofill_ai/autofill_ai_model_cache_impl_unittest.cc",
+    "network/autofill_ai/private_pass_conversion_util_unittest.cc",
     "network/autofill_ai/wallet_pass_access_manager_impl_unittest.cc",
     "payments/amount_extraction_heuristic_regexes_unittest.cc",
     "payments/amount_extraction_manager_unittest.cc",
