@@ -87,7 +87,8 @@ class AccountCheckerTest : public testing::Test {
   ~AccountCheckerTest() override = default;
 
   void SetUp() override {
-    test_features_.InitAndEnableFeature(kShoppingList);
+    test_features_.InitWithFeatures(
+        {kShoppingList, syncer::kReplaceSyncPromosWithSignInPromos}, {});
     RegisterProfilePrefs(pref_service_.registry());
     scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -138,7 +139,7 @@ TEST_F(AccountCheckerTest, TestFetchPriceEmailPref) {
 
   ASSERT_EQ(false, pref_service_.GetBoolean(kPriceEmailNotificationsEnabled));
   identity_test_env_.MakePrimaryAccountAvailable("mock_email@gmail.com",
-                                                 signin::ConsentLevel::kSync);
+                                                 signin::ConsentLevel::kSignin);
   SetFetchResponse("{ \"preferences\": { \"price_track_email\" : true } }");
   FetchPriceEmailPref();
   pref_service_.user_prefs_store()->WaitForValue(
@@ -159,7 +160,7 @@ TEST_F(AccountCheckerTest, TestSendPriceEmailPrefOnPrefChange) {
 
   ASSERT_EQ(false, pref_service_.GetBoolean(kPriceEmailNotificationsEnabled));
   identity_test_env_.MakePrimaryAccountAvailable("mock_email@gmail.com",
-                                                 signin::ConsentLevel::kSync);
+                                                 signin::ConsentLevel::kSignin);
   SetFetchResponse("{ \"preferences\": { \"price_track_email\" : true } }");
   pref_service_.SetBoolean(kPriceEmailNotificationsEnabled, true);
   pref_service_.user_prefs_store()->WaitForValue(
