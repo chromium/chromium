@@ -976,7 +976,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   NSString* nsFrameID =
       frame ? base::SysUTF8ToNSString(frame->GetFrameId()) : @"";
 
-  BOOL perfectFilling = autofill::IsFormPerfectlyFilled(form);
+  BOOL perfectFilling = autofill::IsFormDataPerfectlyFilled(form);
 
   // Use YES as a dummy value for `userInitiated` since that bit isn't supported
   // by the _delegate implementations and we can't get that information on

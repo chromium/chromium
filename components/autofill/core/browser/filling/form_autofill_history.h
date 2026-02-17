@@ -53,6 +53,8 @@ class FormAutofillHistory {
     // because fields that are autofilled might be reset to still autofilled
     // field, considering cases where autofill is allowed to override autofilled
     // fields.
+    // TODO(crbug.com/393114125): Remove after launching
+    // `kAutofillFixIsAutofilled`.
     bool is_autofilled_according_to_renderer;
 
     // The sequence of modifiers that have affected the field.

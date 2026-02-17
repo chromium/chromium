@@ -80,7 +80,7 @@ class TouchToFillForPaymentMethodsTest
     ASSERT_EQ(form.fields().size(), fields_have_autofilled_values.size());
     ASSERT_EQ(form.fields().size(), field_types.size());
     for (size_t i = 0; i < fields_have_autofilled_values.size(); i++) {
-      test_api(form).field(i).set_is_autofilled(
+      test_api(form).field(i).set_is_autofilled_according_to_renderer(
           fields_have_autofilled_values[i]);
       CreditCard test_card = test::GetCreditCard();
       test_api(form).field(i).set_value(
@@ -161,21 +161,21 @@ INSTANTIATE_TEST_SUITE_P(
         // All autofilled and nothing edited manually
         TouchToFillForPaymentMethodsTestCase{
             {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH},
-            /*fields_is_autofilled_values=*/{true, true, true},
+            /*fields_have_autofilled_values=*/{true, true, true},
             /*is_all_autofilled=*/true,
             /*is_all_accepted=*/true},
         // Not all autofilled and nothing edited manually
         TouchToFillForPaymentMethodsTestCase{
             {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH,
              CREDIT_CARD_VERIFICATION_CODE},
-            /*fields_is_autofilled_values=*/{true, true, true, false},
+            /*fields_have_autofilled_values=*/{true, true, true, false},
             /*is_all_autofilled=*/false,
             /*is_all_accepted=*/true},
         // Not all autofilled and something edited manually
         TouchToFillForPaymentMethodsTestCase{
             {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH,
              CREDIT_CARD_VERIFICATION_CODE},
-            /*fields_is_autofilled_values=*/{true, true, true, false},
+            /*fields_have_autofilled_values=*/{true, true, true, false},
             /*is_all_autofilled=*/false,
             /*is_all_accepted=*/false}));
 

@@ -69,7 +69,7 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
                            FormControlType::kInputText),
        CreateTestFormField("Unknown", "unknown", "garbage",
                            FormControlType::kInputText)});
-  test_api(form).field(0).set_is_autofilled(true);
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL, PHONE_HOME_NUMBER,
                                             ADDRESS_HOME_CITY, UNKNOWN_TYPE};

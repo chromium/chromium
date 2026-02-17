@@ -4180,7 +4180,9 @@ class FormDataImporterTest_ExtractCreditCardFromForm
     AutofillField& f = test_api(form_).PushField();
     f.set_server_predictions({test::CreateFieldPrediction(field_type)});
     f.set_value(std::move(value));
-    f.set_is_autofilled(mode == Mode::kAutofilled);
+    if (mode == Mode::kAutofilled) {
+      f.AddFieldModifier(FieldModifier::kAutofill);
+    }
     if (mode == Mode::kUserEdited) {
       f.AddFieldModifier(FieldModifier::kUser);
     }

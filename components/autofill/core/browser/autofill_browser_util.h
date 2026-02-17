@@ -26,6 +26,12 @@ bool IsFormOrClientNonSecure(const AutofillClient& client,
 // content if is displayed on a secure context, but submits to an insecure one.
 bool IsFormMixedContent(const AutofillClient& client, const FormData& form);
 
+// Returns true if `form` is considered "perfectly filled".
+//
+// A form is perfectly filled if the user did not have to manually type into any
+// field that Autofill didn't assist with.
+bool IsFormStructurePerfectlyFilled(const FormStructure& form);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_BROWSER_UTIL_H_

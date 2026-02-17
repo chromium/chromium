@@ -103,7 +103,7 @@ void SetFillDataForField(
     absl::flat_hash_map<FieldGlobalId, FieldType>* field_type_map) {
   CHECK(field);
   field->set_value(value);
-  field->set_is_autofilled(true);
+  field->set_is_autofilled_according_to_renderer(true);
   (*field_type_map)[field->global_id()] = field_type;
 }
 
@@ -1022,7 +1022,7 @@ TEST_F(AutofillAcrossIframesTest, Fill_MainFrameForm) {
       ADD_FAILURE() << "Found unexpected field with placeholder: "
                     << field.placeholder();
     }
-    field.set_is_autofilled(true);
+    field.set_is_autofilled_according_to_renderer(true);
   }
 
   main_frame_driver()->ApplyFormAction(

@@ -162,7 +162,9 @@ TEST_F(PerFillMetricsTest,
   // Simulate that JavaScript modifies the expiration date field incorrectly.
   FormData form_after_js_modification = form;
   test_api(form_after_js_modification).field(2).set_value(u"04 / 20");
-  test_api(form_after_js_modification).field(2).set_is_autofilled(true);
+  test_api(form_after_js_modification)
+      .field(2)
+      .set_is_autofilled_according_to_renderer(false);
 
   base::HistogramTester histogram_tester;
   autofill_manager().OnJavaScriptChangedAutofilledValue(

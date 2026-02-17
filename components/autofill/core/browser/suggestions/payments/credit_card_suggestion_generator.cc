@@ -90,7 +90,11 @@ FetchCreditCardOrCvcFieldSuggestionDataSync(
   }
 
   const bool allow_payment_swapping =
-      trigger_field.is_autofilled() && IsPaymentsFieldSwappingEnabled();
+      // TODO(crbug.com/393114125): Change to use
+      // `AutofillField::field_modifiers_` after launching
+      // `kAutofillFixIsAutofilled`.
+      trigger_field.is_autofilled_according_to_renderer() &&
+      IsPaymentsFieldSwappingEnabled();
 
   bool suppress_disused_cards =
       SanitizeCreditCardFieldValue(trigger_field.value()).empty();
@@ -205,8 +209,11 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
   std::ranges::move(
       GetCreditCardFooterSuggestions(
           client, should_show_bnpl_suggestions, should_show_scan_credit_card,
-          trigger_field.is_autofilled(), display_gpay_logo,
-          amount_extraction_status),
+          // TODO(crbug.com/393114125): Change to use
+          // `AutofillField::field_modifiers_` after launching
+          // `kAutofillFixIsAutofilled`.
+          trigger_field.is_autofilled_according_to_renderer(),
+          display_gpay_logo, amount_extraction_status),
       std::back_inserter(suggestions));
 
   return suggestions;
@@ -293,12 +300,15 @@ std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
     return suggestions;
   }
 
-  std::ranges::move(
-      GetCreditCardFooterSuggestions(
-          client, /*should_show_bnpl_suggestion=*/false,
-          /*should_show_scan_credit_card=*/false, trigger_field.is_autofilled(),
-          /*with_gpay_logo=*/true, amount_extraction_status),
-      std::back_inserter(suggestions));
+  std::ranges::move(GetCreditCardFooterSuggestions(
+                        client, /*should_show_bnpl_suggestion=*/false,
+                        /*should_show_scan_credit_card=*/false,
+                        // TODO(crbug.com/393114125): Change to use
+                        // `AutofillField::field_modifiers_` after launching
+                        // `kAutofillFixIsAutofilled`.
+                        trigger_field.is_autofilled_according_to_renderer(),
+                        /*with_gpay_logo=*/true, amount_extraction_status),
+                    std::back_inserter(suggestions));
 
   return suggestions;
 }
@@ -419,7 +429,10 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
         autofill_field &&
         autofill_field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER) {
       card_number_field_value += SanitizeCreditCardFieldValue(field.value());
-      is_card_number_autofilled |= field.is_autofilled();
+      // TODO(crbug.com/393114125): Change to use
+      // `AutofillField::field_modifiers_` after launching
+      // `kAutofillFixIsAutofilled`.
+      is_card_number_autofilled |= field.is_autofilled_according_to_renderer();
     }
   }
 
@@ -505,8 +518,11 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
                      client, /*should_show_bnpl_suggestion=*/false,
                      ShouldShowScanCreditCard(*form_structure,
                                               *trigger_autofill_field, client),
-                     trigger_field.is_autofilled(), display_gpay_logo,
-                     amount_extraction_status_.get()));
+                     // TODO(crbug.com/393114125): Change to use
+                     // `AutofillField::field_modifiers_` after launching
+                     // `kAutofillFixIsAutofilled`.
+                     trigger_field.is_autofilled_according_to_renderer(),
+                     display_gpay_logo, amount_extraction_status_.get()));
   } else if (all_suggestion_data.contains(
                  SuggestionDataSource::kVirtualStandaloneCvc)) {
     // Only trigger GetVirtualCreditCardsForStandaloneCvcField if it's

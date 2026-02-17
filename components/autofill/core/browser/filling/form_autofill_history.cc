@@ -70,21 +70,23 @@ void FormAutofillHistory::AddFormFillingEntry(
     // this is what happened from a user's perspective.
     size_ +=
         history_.front()
-            .emplace(field->global_id(),
-                     FieldFillingEntry(
-                         field->value(), field->is_autofilled(),
-                         autofill_field->field_modifiers(
-                             base::PassKey<FormAutofillHistory>()),
-                         autofill_field->autofill_source_profile_guid(),
-                         autofill_field->autofilled_type(),
-                         autofill_field->filling_product(),
-                         // `FormAutofillHistory::AddFormFillingEntry` only gets
-                         // fields that were autofilled. In case a field has an
-                         // empty value, this means Autofill intentionally
-                         // filled an empty string into it, and therefore when
-                         // undoing changes to this field we should not look at
-                         // `FormFieldData::is_autofilled`.
-                         /*ignore_is_autofilled=*/field->value().empty()))
+            .emplace(
+                field->global_id(),
+                FieldFillingEntry(
+                    field->value(),
+                    field->is_autofilled_according_to_renderer(),
+                    autofill_field->field_modifiers(
+                        base::PassKey<FormAutofillHistory>()),
+                    autofill_field->autofill_source_profile_guid(),
+                    autofill_field->autofilled_type(),
+                    autofill_field->filling_product(),
+                    // `FormAutofillHistory::AddFormFillingEntry` only gets
+                    // fields that were autofilled. In case a field has an
+                    // empty value, this means Autofill intentionally
+                    // filled an empty string into it, and therefore when
+                    // undoing changes to this field we should not look at
+                    // `FormFieldData::is_autofilled_according_to_renderer`.
+                    /*ignore_is_autofilled=*/field->value().empty()))
             .second;
   }
   // Drop the last history entry while the history size exceeds the limit.

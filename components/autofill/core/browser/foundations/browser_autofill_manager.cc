@@ -504,8 +504,8 @@ void MaybeAddAddressSuggestionStrikes(AutofillClient& client,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   for (const auto& field : form) {
     if (field->autocomplete_attribute() == "off" &&
-        field->did_trigger_suggestions() && !field->is_autofilled() &&
-        !field->previously_autofilled_deprecated()) {
+        field->did_trigger_suggestions() &&
+        !field->all_modifiers().contains(FieldModifier::kAutofill)) {
       // This means that the user triggered suggestions and ignored them. In
       // that case we record a strike for this specific field. Multiple strikes
       // will lead to automatic address suggestions to be suppressed.
@@ -664,7 +664,7 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
     }
 
     if (autofill_field->Type().GetLoyaltyCardType() == LOYALTY_MEMBERSHIP_ID &&
-        autofill_field->is_autofilled()) {
+        autofill_field->last_modifier() == FieldModifier::kAutofill) {
       // Only store loyalty cards values in Autocomplete if they were filled
       // manually.
       fields_for_autocomplete.back().set_should_autocomplete(false);
@@ -1123,17 +1123,19 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
           ToOptionalBoolean(!autofill_field->value().empty())});
 
   UpdatePendingForm(form);
+  const bool edited_autofilled_field =
+      autofill_field->last_modifier() == FieldModifier::kAutofill;
 
-  if (!metrics_->user_did_type || autofill_field->is_autofilled()) {
+  if (!metrics_->user_did_type || edited_autofilled_field) {
     metrics_->user_did_type = true;
     client().GetFormInteractionsUkmLogger().LogTextFieldValueChanged(
         driver().GetPageUkmSourceId(), *form_structure, *autofill_field);
   }
 
+  autofill_field->AddFieldModifier(FieldModifier::kUser);
+
   auto* logger = GetEventFormLogger(*autofill_field);
-  if (autofill_field->is_autofilled()) {
-    autofill_field->set_is_autofilled(false);
-    autofill_field->set_previously_autofilled_deprecated(true);
+  if (edited_autofilled_field) {
     if (logger) {
       logger->OnEditedAutofilledField(field_id);
     }
@@ -1179,7 +1181,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
           autofill_field->form_control_type() ==
               FormControlType::kInputPassword &&
           !autofill_field->value().empty() &&
-          !autofill_field->is_autofilled()) {
+          autofill_field->last_modifier() != FieldModifier::kAutofill) {
         // Hiding the dialog is put behind this feature flag since the agent is
         // also performing a hide.
         if (base::FeatureList::IsEnabled(
@@ -2218,10 +2220,12 @@ void BrowserAutofillManager::OnSelectControlSelectionChangedImpl(
 
   UpdatePendingForm(form);
 
+  const bool edited_autofilled_field =
+      autofill_field->last_modifier() == FieldModifier::kAutofill;
+  autofill_field->AddFieldModifier(FieldModifier::kUser);
+
   auto* logger = GetEventFormLogger(*autofill_field);
-  if (autofill_field->is_autofilled()) {
-    autofill_field->set_is_autofilled(false);
-    autofill_field->set_previously_autofilled_deprecated(true);
+  if (edited_autofilled_field) {
     if (logger) {
       logger->OnEditedAutofilledField(field_id);
     }
@@ -3277,7 +3281,10 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
             ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
                 *valuables_manager,
                 client().GetLastCommittedPrimaryMainFrameURL(),
-                field.is_autofilled(), suggestions);
+                // TODO(crbug.com/393114125): Change to use
+                // `AutofillField::field_modifiers_` after launching
+                // `kAutofillFixIsAutofilled`.
+                field.is_autofilled_according_to_renderer(), suggestions);
           }
         }
       }

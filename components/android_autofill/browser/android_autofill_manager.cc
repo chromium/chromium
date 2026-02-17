@@ -68,8 +68,8 @@ void AndroidAutofillManager::OnTextFieldValueChangedImpl(
     return;
   }
 
-  // We cannot use `field` is_autofilled state because it has already been
-  // cleared by blink. Check `provider` cache.
+  // We cannot use `field.is_autofilled_according_to_renderer()` because it
+  // has already been cleared by blink. Check `provider` cache.
   bool cached_is_autofilled = provider->GetCachedIsAutofilled(*field);
 
   provider->OnTextFieldValueChanged(this, form, *field, timestamp);
@@ -247,7 +247,8 @@ void AndroidAutofillManager::FillOrPreviewForm(
   std::erase_if(fields, [&](const FormFieldData& field) {
     // The renderer doesn't fill such fields, and therefore they can be removed
     // from here to reduce IPC traffic and avoid accidental filling.
-    return !field.is_autofilled() || field.value().empty();
+    return !field.is_autofilled_according_to_renderer() ||
+           field.value().empty();
   });
 
   driver().ApplyFormAction(mojom::FormActionType::kFill, action_persistence,

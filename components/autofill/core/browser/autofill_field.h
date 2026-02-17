@@ -267,6 +267,8 @@ class AutofillField : public FormFieldData {
   std::optional<FieldModifier> last_modifier() const;
   // Adds `modifier` as the most recent field modifier.
   void AddFieldModifier(FieldModifier modifier);
+  void RemoveFieldModifier(FieldModifier modifier,
+                           base::PassKey<FormFiller> pass_key);
 
   // TODO(crbug.com/456719060): Remove `FormStructure` from the `pass_key` of
   // both functions below after launching `kAutofillOptimizeCacheUpdates`.
@@ -639,9 +641,6 @@ class AutofillField : public FormFieldData {
   // The autofill profile's GUID that was used for field filling. It corresponds
   // to the autofill profile's GUID for the last address filling value of the
   // field. nullopt means the field was never autofilled with address data.
-  // Note: `is_autofilled` is true for autocompleted fields. So `is_autofilled`
-  // is not a sufficient condition for `autofill_source_profile_guid_` to have a
-  // value. This is not tracked for fields filled with field by field filling.
   std::optional<std::string> autofill_source_profile_guid_;
 
   // Denotes the type that was used to fill the field in its last autofill

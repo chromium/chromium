@@ -50,7 +50,7 @@ struct FieldDescription {
   std::optional<AutocompleteParsingResult> parsed_autocomplete;
   const FormControlType form_control_type = FormControlType::kInputText;
   bool should_autocomplete = true;
-  std::optional<bool> is_autofilled;
+  std::optional<bool> is_autofilled_according_to_renderer;
   std::optional<url::Origin> origin;
   std::vector<SelectOption> select_options;
   std::vector<SelectOption> datalist_options;

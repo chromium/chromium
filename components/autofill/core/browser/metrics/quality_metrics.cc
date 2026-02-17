@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
@@ -53,7 +54,7 @@ void LogPerfectFillingMetric(const FormStructure& form) {
   // without subsequent changes. This means that in a perfect filling
   // scenario, a field is either autofilled, empty, has value at page load or
   // has value set by JS.
-  const bool perfect_filling = IsFormPerfectlyFilled(form.ToFormData());
+  const bool perfect_filling = IsFormStructurePerfectlyFilled(form);
 
   // The perfect filling metric is only recorded if Autofill was used on at
   // least one field. This conditions this metric on Assistance, Readiness and
@@ -81,9 +82,11 @@ void LogDurationMetrics(
       std::ranges::count_if(form, &FieldHasMeaningfulPossibleFieldTypes,
                             &std::unique_ptr<AutofillField>::operator*);
   bool form_has_autofilled_fields = std::ranges::any_of(
-      form, [](const auto& field) { return field->is_autofilled(); });
-  bool has_observed_one_time_code_field =
-      std::ranges::any_of(form, [](const auto& field) {
+      form.fields(), [](const std::unique_ptr<AutofillField>& field) {
+        return field->last_modifier() == FieldModifier::kAutofill;
+      });
+  bool has_observed_one_time_code_field = std::ranges::any_of(
+      form.fields(), [](const std::unique_ptr<AutofillField>& field) {
         return field->html_type() == HtmlFieldType::kOneTimeCode;
       });
   if (num_detected_field_types >= kMinRequiredFieldsForHeuristics ||
@@ -215,12 +218,12 @@ void LogFillingMetrics(
 
   FieldTypeSet autofilled_field_types;
   for (const std::unique_ptr<AutofillField>& field : form) {
-    if (field->is_autofilled() || field->previously_autofilled_deprecated()) {
+    if (field->all_modifiers().contains(FieldModifier::kAutofill)) {
       AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
           form_interactions_ukm_logger, source_id, form, *field);
     }
     if (FieldHasMeaningfulPossibleFieldTypes(*field) &&
-        field->is_autofilled()) {
+        field->last_modifier() == FieldModifier::kAutofill) {
       autofilled_field_types.insert_all(field->Type().GetTypes());
     }
   }

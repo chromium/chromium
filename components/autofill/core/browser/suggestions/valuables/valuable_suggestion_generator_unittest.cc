@@ -9,6 +9,7 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/valuables/test_valuables_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
@@ -153,7 +154,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
        GetSuggestionsForLoyaltyCards_NoMatchingDomainAndFieldAutofilled) {
   test_autofill_client().set_last_committed_primary_main_frame_url(
       GURL("https://not-existing-domain.example/test"));
-  field().set_is_autofilled(true);
+  field().AddFieldModifier(FieldModifier::kAutofill);
   EXPECT_THAT(GetSuggestionsForLoyaltyCards(
                   form().ToFormData(), &form(), field(), &field(),
                   PasswordFormClassification(), client()),
@@ -205,7 +206,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
        GetSuggestionsForLoyaltyCards_WithMatchingDomainAndFieldAutofilled) {
   test_autofill_client().set_last_committed_primary_main_frame_url(
       GURL("https://domain2.example/test"));
-  field().set_is_autofilled(true);
+  field().set_is_autofilled_according_to_renderer(true);
   std::vector<Suggestion> suggestions_with_matching_domain =
       GetSuggestionsForLoyaltyCards(form().ToFormData(), &form(), field(),
                                     &field(), PasswordFormClassification(),

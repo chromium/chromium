@@ -128,9 +128,6 @@ FormData CreateFormDataForFrame(FormData form, LocalFrameToken frame_token);
 // Returns a copy of `form` with cleared values.
 FormData WithoutValues(FormData form);
 
-// Returns a copy of `form` with `is_autofilled` set as specified.
-FormData AsAutofilled(FormData form, bool is_autofilled = true);
-
 // Strips those members from `form` and `field` that are not serialized via
 // mojo, i.e., resets them to `{}`.
 FormData WithoutUnserializedData(FormData form);

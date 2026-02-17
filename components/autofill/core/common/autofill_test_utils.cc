@@ -128,15 +128,8 @@ FormData WithoutValues(FormData form) {
   for (FormFieldData& field : test_api(form).fields()) {
     field.set_user_input({});
     field.set_value({});
-    field.set_is_autofilled(false);
+    field.set_is_autofilled_according_to_renderer(false);
     field.set_check_status(FormFieldData::CheckStatus::kNotCheckable);
-  }
-  return form;
-}
-
-FormData AsAutofilled(FormData form, bool is_autofilled) {
-  for (FormFieldData& field : test_api(form).fields()) {
-    field.set_is_autofilled(is_autofilled);
   }
   return form;
 }

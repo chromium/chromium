@@ -48,7 +48,7 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
           {test::CreateFieldPrediction(test_field.predicted_type)});
       if (test_field.is_autofilled) {
         field->set_autofilled_type(test_field.predicted_type);
-        field->set_is_autofilled(true);
+        field->AddFieldModifier(FieldModifier::kAutofill);
       }
       pt.types = test_field.ambiguous_possible_field_types;
     }

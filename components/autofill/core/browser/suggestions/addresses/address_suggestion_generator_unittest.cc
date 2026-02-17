@@ -1082,7 +1082,7 @@ TEST_F(
   // Create a triggering field that was autofilled with `profile1`.
   FormFieldData triggering_field;
   triggering_field.set_value(profile1.GetRawInfo(NAME_FULL));
-  triggering_field.set_is_autofilled(true);
+  triggering_field.set_is_autofilled_according_to_renderer(true);
 
   // Expect that only the second address yields a suggestion because the first
   // one would be removed for exactly matching the field's content.
@@ -1127,7 +1127,7 @@ TEST_F(
   // Create a triggering field that was autofilled with `profile1`.
   FormFieldData triggering_field;
   triggering_field.set_value(profile1.GetRawInfo(NAME_FULL));
-  triggering_field.set_is_autofilled(true);
+  triggering_field.set_is_autofilled_according_to_renderer(true);
 
   // Expect that only the second address yields a suggestion because the first
   // one would be removed for exactly matching the field's content, even though
@@ -1252,7 +1252,7 @@ TEST_F(AddressSuggestionGeneratorTest,
 TEST_F(AddressSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
   address_data().AddProfile(test::GetFullProfile());
   FormFieldData field;
-  field.set_is_autofilled(true);
+  field.set_is_autofilled_according_to_renderer(true);
   std::vector<Suggestion> suggestions =
       GetSuggestionsForProfiles(field, NAME_FIRST);
   EXPECT_THAT(

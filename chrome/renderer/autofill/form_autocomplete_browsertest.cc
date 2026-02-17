@@ -197,14 +197,14 @@ FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   FormFieldData field_data;
   field_data.set_name(u"fname");
   field_data.set_value(u"John");
-  field_data.set_is_autofilled(true);
+  field_data.set_is_autofilled_according_to_renderer(true);
   field_data.set_renderer_id(form_util::GetFieldRendererId(fname_element));
   test_api(data).Append(field_data);
 
   if (lname_element) {
     field_data.set_name(u"lname");
     field_data.set_value(u"Smith");
-    field_data.set_is_autofilled(true);
+    field_data.set_is_autofilled_according_to_renderer(true);
     field_data.set_renderer_id(form_util::GetFieldRendererId(lname_element));
     test_api(data).Append(field_data);
   }

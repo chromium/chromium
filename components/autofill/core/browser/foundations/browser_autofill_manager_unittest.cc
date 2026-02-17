@@ -39,6 +39,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader_test_api.h"
@@ -2154,7 +2155,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // First name is already autofilled which will make the section appear as
   // "already autofilled".
-  test_api(form).field(0).set_is_autofilled(true);
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
 
   // Two profiles have the same last name, and the third shares the same first
   // letter for last name.
@@ -2205,7 +2206,7 @@ TEST_F(BrowserAutofillManagerTest,
   ASSERT_EQ(firstname_field.name(), u"firstname");
   // First name is already autofilled which will make the section appear as
   // "already autofilled".
-  firstname_field.set_is_autofilled(true);
+  firstname_field.set_is_autofilled_according_to_renderer(true);
   firstname_field.set_value(u"E");
   FormsSeen({form});
 
@@ -3367,7 +3368,7 @@ TEST_F(
 
   // Fill data in CC Number field and set it as autofilled.
   test_api(form).field(1).set_value(u"4444 4444 4444 4444");
-  test_api(form).field(1).set_is_autofilled(true);
+  test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
 
   // Expect that suggestions are returned for the expiry type field.
   const FormFieldData& expiry_type_field = form.fields()[2];
@@ -3386,7 +3387,7 @@ TEST_F(
 
   // Fill data in CC Number field and set it as not autofilled.
   test_api(form).field(1).set_value(u"4444 4444 4444 4444");
-  test_api(form).field(1).set_is_autofilled(false);
+  test_api(form).field(1).set_is_autofilled_according_to_renderer(false);
 
   // Ensure that the single field suggestions are not considered for any
   // field.
@@ -3818,7 +3819,7 @@ TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWhenFormIsAutofilled) {
   FormsSeen({form});
 
   // Mark one of the fields as filled.
-  test_api(form).field(2).set_is_autofilled(true);
+  test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
   OnAskForValuesToFill(form, form.fields()[0]);
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
@@ -3858,7 +3859,7 @@ TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWithDuplicateValues) {
   AutofillField* autofill_field = form_structure->field(0);
   ASSERT_TRUE(autofill_field);
   ASSERT_TRUE(field.global_id() == autofill_field->global_id());
-  field.set_is_autofilled(true);
+  field.set_is_autofilled_according_to_renderer(true);
   autofill_field->set_autofilled_type(autofill_field->Type().GetAddressType());
   field.set_value(u"Elvis");
   OnAskForValuesToFill(form, field);
@@ -3925,15 +3926,15 @@ TEST_F(BrowserAutofillManagerTest,
 // Tests that when focusing on an autofilled field, the user gets field-by-field
 // filling suggestions without prefix matching.
 TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_FieldSwapping) {
-  FormData form =
-      test::GetFormData({.fields = {{.role = NAME_FULL,
-                                     .value = u"Full Name",
-                                     .autocomplete_attribute = "name",
-                                     .is_autofilled = true},
-                                    {.role = ADDRESS_HOME_COUNTRY,
-                                     .value = u"Country",
-                                     .autocomplete_attribute = "country",
-                                     .is_autofilled = true}}});
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL,
+                   .value = u"Full Name",
+                   .autocomplete_attribute = "name",
+                   .is_autofilled_according_to_renderer = true},
+                  {.role = ADDRESS_HOME_COUNTRY,
+                   .value = u"Country",
+                   .autocomplete_attribute = "country",
+                   .is_autofilled_according_to_renderer = true}}});
   FormsSeen({form});
   test_api(autofill_manager())
       .FindCachedFormById(form.global_id())
@@ -6110,7 +6111,13 @@ TEST_F(BrowserAutofillManagerTest,
                                      }});
   autofill_manager().AddSeenForm(form, {LOYALTY_MEMBERSHIP_ID});
   // Mark the loyalty card field as autofilled.
-  test_api(form).field(0).set_is_autofilled(true);
+  test_api(autofill_manager())
+      .FindCachedFormById(form.global_id())
+      ->field(0)
+      ->AddFieldModifier(FieldModifier::kAutofill);
+  if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
+    test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+  }
   test_api(form).field(0).set_value(u"LOYALTYCARDNUMBER");
 
   FormSubmitted(form);

@@ -85,8 +85,8 @@ TEST_F(QualityMetricsFillingTest, AutomationRate100EmittedForAutofilledForm) {
 
   form_structure->fields()[0]->set_value(u"Jane");
   form_structure->fields()[1]->set_value(u"Doe");
-  form_structure->fields()[0]->set_is_autofilled(true);
-  form_structure->fields()[1]->set_is_autofilled(true);
+  form_structure->fields()[0]->AddFieldModifier(FieldModifier::kAutofill);
+  form_structure->fields()[1]->AddFieldModifier(FieldModifier::kAutofill);
 
   LogFillingQualityMetrics(
       *form_structure,
@@ -106,7 +106,7 @@ TEST_F(QualityMetricsFillingTest,
 
   form_structure->fields()[0]->set_value(u"Jane");
   form_structure->fields()[1]->set_value(u"Doe");
-  form_structure->fields()[0]->set_is_autofilled(true);
+  form_structure->fields()[0]->AddFieldModifier(FieldModifier::kAutofill);
 
   LogFillingQualityMetrics(
       *form_structure,
@@ -129,7 +129,7 @@ TEST_F(QualityMetricsFillingTest, AutomationRateEmittedIgnoringLongValues) {
       u"Very very very very very very very very very very very "
       u"very very very very very very very very very very very "
       u"very very very very very very very long text");
-  form_structure->fields()[0]->set_is_autofilled(true);
+  form_structure->fields()[0]->AddFieldModifier(FieldModifier::kAutofill);
 
   LogFillingQualityMetrics(
       *form_structure,
@@ -149,7 +149,7 @@ TEST_F(QualityMetricsFillingTest,
                                    {.role = ADDRESS_HOME_LINE1}}});
 
   form_structure->fields()[1]->set_value(u"Doe");
-  form_structure->fields()[1]->set_is_autofilled(true);
+  form_structure->fields()[1]->AddFieldModifier(FieldModifier::kAutofill);
 
   LogFillingQualityMetrics(
       *form_structure,
@@ -325,7 +325,7 @@ TEST_F(QualityMetricsFillingTest,
       GetFormStructure({.fields = {{}}});
 
   form_structure->field(0)->set_value(u"Foo");
-  form_structure->field(0)->set_is_autofilled(true);
+  form_structure->field(0)->AddFieldModifier(FieldModifier::kAutofill);
   form_structure->field(0)->set_possible_types({NAME_FIRST});
   form_structure->field(0)->SetTypeTo(AutofillType(NAME_FIRST),
                                       AutofillPredictionSource::kHeuristics);

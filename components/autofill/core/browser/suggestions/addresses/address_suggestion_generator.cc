@@ -479,7 +479,9 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
   // Similarly, prefix matching is disabled for <select> fields. Select fields
   // are only used as trigger fields during actor flows, in which the initial
   // value is likely irrelevant.
-  if (!trigger_field.is_autofilled() &&
+  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`
+  // after launching `kAutofillFixIsAutofilled`.
+  if (!trigger_field.is_autofilled_according_to_renderer() &&
       trigger_field.form_control_type() != FormControlType::kSelectOne) {
     profiles_to_suggest = GetPrefixMatchedProfiles(
         profiles_to_suggest, trigger_field_type, normalized_field_contents);
@@ -511,7 +513,10 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
   // filtering logic after it, this case is fine since for field-by-field
   // filling suggestions, deduplication is rather trivial and the problem
   // explained above wouldn't apply.
-  if (trigger_field.is_autofilled() && profiles_to_suggest.size() > 1 &&
+  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`
+  // after launching `kAutofillFixIsAutofilled`.
+  if (trigger_field.is_autofilled_according_to_renderer() &&
+      profiles_to_suggest.size() > 1 &&
       base::FeatureList::IsEnabled(
           features::kAutofillImproveAddressFieldSwapping)) {
     std::erase_if(profiles_to_suggest, [&](const ProfileWithText& profile) {
@@ -519,7 +524,10 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
     });
     CHECK(!profiles_to_suggest.empty());
   }
-  if (trigger_field.is_autofilled() && profiles_to_suggest.size() > 1) {
+  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`
+  // after launching `kAutofillFixIsAutofilled`.
+  if (trigger_field.is_autofilled_according_to_renderer() &&
+      profiles_to_suggest.size() > 1) {
     // This is just a simulation of the logic behind the feature flag in order
     // to understand the reason behind the CHECK failure. Profiles are copied so
     // that the ones used for suggestions are not modified and the branch
@@ -686,7 +694,9 @@ SuggestionType GetSuggestionType(FormFieldData trigger_field) {
   // If the user triggers suggestions on an autofilled field, field-by-field
   // filling suggestions should be shown so that the user could easily correct
   // values to something present in different stored addresses.
-  return trigger_field.is_autofilled()
+  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`
+  // after launching `kAutofillFixIsAutofilled`.
+  return trigger_field.is_autofilled_according_to_renderer()
              ? SuggestionType::kAddressFieldByFieldFilling
              : SuggestionType::kAddressEntry;
 }
@@ -1184,7 +1194,11 @@ std::vector<Suggestion> AddressSuggestionGenerator::GenerateAddressSuggestions(
     return {};
   }
   base::Extend(suggestions,
-               GetAddressFooterSuggestions(trigger_field.is_autofilled()));
+               // TODO(crbug.com/393114125): Change to use
+               // `AutofillField::field_modifiers_` after launching
+               // `kAutofillFixIsAutofilled`.
+               GetAddressFooterSuggestions(
+                   trigger_field.is_autofilled_according_to_renderer()));
   return suggestions;
 }
 

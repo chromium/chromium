@@ -625,7 +625,9 @@ bool AndroidAutofillProvider::GetCachedIsAutofilled(
   size_t field_index = 0u;
   return session_state_ && session_state_->form &&
          session_state_->form->GetFieldIndex(field, &field_index) &&
-         session_state_->form->form().fields()[field_index].is_autofilled();
+         session_state_->form->form()
+             .fields()[field_index]
+             .is_autofilled_according_to_renderer();
 }
 
 bool AndroidAutofillProvider::IntendsToShowBottomSheet(

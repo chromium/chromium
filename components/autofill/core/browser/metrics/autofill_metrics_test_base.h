@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/zip.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
@@ -184,9 +185,9 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
   }
 
   // Emulates that the user manually changed a field by resetting the
-  // `is_autofilled` field attribute, settings the field's value to `new_value`
-  // and notifying the `AutofillManager` of the change that is emulated to have
-  // happened at `timestamp`.
+  // `is_autofilled_according_to_renderer` field attribute, settings the field's
+  // value to `new_value` and notifying the `AutofillManager` of the change that
+  // is emulated to have happened at `timestamp`.
   void SimulateUserChangedFieldTo(FormData& form,
                                   const FieldGlobalId& field_id,
                                   const std::u16string& new_value,
@@ -196,7 +197,7 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
         CHECK_DEREF(form.FindFieldByGlobalId(field_id)));
     // Assert that the field is actually set to a different value.
     ASSERT_NE(field.value(), new_value);
-    field.set_is_autofilled(false);
+    field.set_is_autofilled_according_to_renderer(false);
     field.set_value(new_value);
     if (field.IsSelectElement()) {
       autofill_manager().OnSelectControlSelectionChanged(form,
@@ -237,7 +238,7 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
       for (auto [field, field_description] :
            base::zip(form_structure->fields(), form_description.fields)) {
         test_api(*field).set_initial_value(u"");
-        if (field->is_autofilled()) {
+        if (field->is_autofilled_according_to_renderer()) {
           field->set_autofilled_type(field_description.role);
         }
       }

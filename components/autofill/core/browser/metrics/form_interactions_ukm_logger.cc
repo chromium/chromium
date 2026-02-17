@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -172,7 +173,7 @@ void FormInteractionsUkmLogger::LogTextFieldValueChanged(
   e.SetServerType(static_cast<int>(field.server_type()));
   e.SetHtmlFieldType(static_cast<int>(field.html_type()));
   e.SetHtmlFieldMode(static_cast<int>(field.html_mode()));
-  e.SetIsAutofilled(field.is_autofilled());
+  e.SetIsAutofilled(field.last_modifier() == FieldModifier::kAutofill);
   e.SetIsEmpty(field.value().empty());
   e.SetMillisecondsSinceFormParsed(MillisecondsSinceFormParsed(
       form.form_parsed_timestamp(), base::TimeTicks::Now()));
@@ -193,9 +194,11 @@ void FormInteractionsUkmLogger::LogFieldFillStatus(
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetValidationEvent(static_cast<int64_t>(metric_type))
-      .SetIsAutofilled(static_cast<int64_t>(field.is_autofilled()))
-      .SetWasPreviouslyAutofilled(
-          static_cast<int64_t>(field.previously_autofilled_deprecated()))
+      .SetIsAutofilled(static_cast<int64_t>(field.last_modifier() ==
+                                            FieldModifier::kAutofill))
+      .SetWasPreviouslyAutofilled(static_cast<int64_t>(
+          field.last_modifier() != FieldModifier::kAutofill &&
+          field.all_modifiers().contains(FieldModifier::kAutofill)))
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp(), now))
       .Record(autofill_client_->GetUkmRecorder());

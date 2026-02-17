@@ -11,6 +11,7 @@
 
 #include "base/check_deref.h"
 #include "base/notreached.h"
+#include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -205,7 +206,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
   const int autofill_ai_filled_field_count = std::ranges::count(
       form, FillingProduct::kAutofillAi, &AutofillField::filling_product);
 
-  const bool perfect_filling = IsFormPerfectlyFilled(form.ToFormData());
+  const bool perfect_filling = IsFormStructurePerfectlyFilled(form);
 
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
           client_->GetMqlsUploadService();

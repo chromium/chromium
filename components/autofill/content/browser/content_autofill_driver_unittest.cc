@@ -97,7 +97,8 @@ MATCHER(EqualsFillData, "") {
   return lhs_field.value() == rhs_field.value &&
          lhs_field.renderer_id() == rhs_field.renderer_id &&
          lhs_field.host_form_id() == rhs_field.host_form_id &&
-         lhs_field.is_autofilled() == rhs_field.is_autofilled &&
+         lhs_field.is_autofilled_according_to_renderer() ==
+             rhs_field.is_autofilled &&
          lhs_field.force_override() == rhs_field.force_override;
 }
 

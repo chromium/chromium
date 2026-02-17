@@ -162,7 +162,9 @@ std::vector<Suggestion> GetFooterSuggestions(
   suggestions.reserve(3);
 
   suggestions.emplace_back(SuggestionType::kSeparator);
-  if (trigger_field.is_autofilled()) {
+  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`
+  // after launching `kAutofillFixIsAutofilled`.
+  if (trigger_field.is_autofilled_according_to_renderer()) {
     suggestions.emplace_back(CreateUndoSuggestion());
   }
   if (base::FeatureList::IsEnabled(

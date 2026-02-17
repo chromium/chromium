@@ -520,7 +520,7 @@ void FormActivityTabHelper::FormSubmissionHandler(
 
   // A form is considered "perfectly filled" if none of its fields were edited
   // by the user, unless that field was autofilled in the first place.
-  const bool perfect_filling = IsFormPerfectlyFilled(form);
+  const bool perfect_filling = IsFormDataPerfectlyFilled(form);
 
   for (auto& observer : observers_) {
     observer.DocumentSubmitted(web_state, sender_frame, form, submitted_by_user,

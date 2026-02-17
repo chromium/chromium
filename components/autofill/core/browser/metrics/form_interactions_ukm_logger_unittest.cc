@@ -139,9 +139,9 @@ TEST_F(FormInteractionsUkmLoggerTest, TypeOfEditedAutofilledFieldsUkmLogging) {
                            "buddy@gmail.com", FormControlType::kInputText),
        CreateTestFormField("Phone", "phone", "2345678901",
                            FormControlType::kInputTelephone)});
-  test_api(form).field(0).set_is_autofilled(true);
-  test_api(form).field(1).set_is_autofilled(true);
-  test_api(form).field(2).set_is_autofilled(true);
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS,
                                             PHONE_HOME_CITY_AND_NUMBER};
@@ -150,6 +150,11 @@ TEST_F(FormInteractionsUkmLoggerTest, TypeOfEditedAutofilledFieldsUkmLogging) {
                                          PHONE_HOME_CITY_AND_NUMBER};
 
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
+  FormStructure& form_structure =
+      *test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  for (const std::unique_ptr<AutofillField>& field : form_structure.fields()) {
+    field->AddFieldModifier(FieldModifier::kAutofill);
+  }
 
   EXPECT_THAT(GetEventUrls(test_ukm_recorder(), UkmFormEventType::kEntryName),
               Each(form.main_frame_origin().GetURL()));

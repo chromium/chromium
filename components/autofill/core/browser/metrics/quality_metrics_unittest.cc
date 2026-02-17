@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -105,29 +107,29 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
       .fields = {{.role = NAME_FIRST,
                   .heuristic_type = NAME_FULL,
                   .value = u"Elvis Aaron Presley",
-                  .is_autofilled = true},
+                  .is_autofilled_according_to_renderer = true},
                  {.role = EMAIL_ADDRESS,
                   .heuristic_type = PHONE_HOME_NUMBER,
                   .value = u"buddy@gmail.com",
-                  .is_autofilled = false},
+                  .is_autofilled_according_to_renderer = false},
                  {.role = NAME_FIRST,
                   .heuristic_type = NAME_FULL,
                   .value = u"",
-                  .is_autofilled = false},
+                  .is_autofilled_according_to_renderer = false},
                  {.role = EMAIL_ADDRESS,
                   .heuristic_type = PHONE_HOME_NUMBER,
                   .value = u"garbage",
-                  .is_autofilled = false},
+                  .is_autofilled_according_to_renderer = false},
                  {.role = NO_SERVER_DATA,
                   .heuristic_type = UNKNOWN_TYPE,
                   .value = u"USA",
                   .form_control_type = FormControlType::kSelectOne,
-                  .is_autofilled = false},
+                  .is_autofilled_according_to_renderer = false},
                  {.role = PHONE_HOME_CITY_AND_NUMBER,
                   .heuristic_type = PHONE_HOME_CITY_AND_NUMBER,
                   .value = u"2345678901",
                   .form_control_type = FormControlType::kInputTelephone,
-                  .is_autofilled = true}},
+                  .is_autofilled_according_to_renderer = true}},
       .renderer_id = test::MakeFormRendererId(),
       .main_frame_origin = url::Origin::Create(autofill_driver().url())};
 
@@ -219,7 +221,7 @@ TEST_P(AlternativeNameFieldValueCharacterSetTest, LoggedCorrectly) {
   test::FormDescription form_description = {
       .fields = {{.role = ALTERNATIVE_FULL_NAME,
                   .value = GetParam().name,
-                  .is_autofilled = true}},
+                  .is_autofilled_according_to_renderer = true}},
       .renderer_id = test::MakeFormRendererId(),
       .main_frame_origin = url::Origin::Create(autofill_driver().url())};
 
@@ -275,7 +277,7 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationOk) {
        // RATIONALIZATION_OK because it's a type mismatch.
        CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley",
                            FormControlType::kInputText)});
-  test_api(form).field(2).set_is_autofilled(true);
+  test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL,
                                             ADDRESS_HOME_LINE1,
@@ -324,7 +326,7 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationGood) {
        // RATIONALIZATION_GOOD because it's empty.
        CreateTestFormField("Phone1", "phone1", "",
                            FormControlType::kInputText)});
-  test_api(form).field(2).set_is_autofilled(true);
+  test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
 
   std::vector<FieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                         PHONE_HOME_CITY_AND_NUMBER,
@@ -365,7 +367,6 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationBad) {
       CreateTestFormField("Phone1", "phone1", "12345678901",
                           FormControlType::kInputText),
   });
-  test_api(form).field(2).set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                             PHONE_HOME_CITY_AND_NUMBER,
@@ -380,6 +381,10 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationBad) {
   FormStructure* form_structure =
       test_api(autofill_manager()).FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
+  if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
+    test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
+  }
+  form_structure->field(2)->AddFieldModifier(FieldModifier::kAutofill);
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
 
@@ -412,7 +417,6 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForOnlyFillWhenFocusedField) {
        // FALSE_NEGATIVE_MISMATCH + RATIONALIZATION_OK
        CreateTestFormField("Phone3", "phone3", "Elvis Aaron Presley",
                            FormControlType::kInputText)});
-  test_api(form).field(2).set_is_autofilled(true);
 
   std::vector<FieldType> heuristic_types = {NAME_FULL,
                                             ADDRESS_HOME_LINE1,
@@ -433,6 +437,10 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForOnlyFillWhenFocusedField) {
   FormStructure* form_structure =
       test_api(autofill_manager()).FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
+  if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
+    test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
+  }
+  form_structure->field(2)->AddFieldModifier(FieldModifier::kAutofill);
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
 
@@ -800,8 +808,8 @@ TEST_F(QualityMetricsTest, NoSubmission) {
                            FormControlType::kSelectOne),
        CreateTestFormField("Phone", "phone", "2345678901",
                            FormControlType::kInputTelephone)});
-  test_api(form).field(0).set_is_autofilled(true);
-  test_api(form).field(-1).set_is_autofilled(true);
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(-1).set_is_autofilled_according_to_renderer(true);
 
   std::vector<FieldType> heuristic_types = {
       NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,

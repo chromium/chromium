@@ -14,9 +14,9 @@ namespace autofill::autofill_metrics {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class AutofillDataUtilization {
-  // On form submission, `FormFieldData::is_autofilled_` is `false`.
+  // On form submission, `AutofillField::last_modifier()` is not `kAutofill`.
   kNotAutofilled = 0,
-  // On form submission, `FormFieldData::is_autofilled_` is `true`.
+  // On form submission, `AutofillField::last_modifier()` is `kAutofill`.
   kAutofilled = 1,
   kMaxValue = kAutofilled
 };

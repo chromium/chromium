@@ -29,6 +29,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -151,32 +152,60 @@ TEST_F(AutofillMetricsTest, PerfectFilling_Addresses_CreditCards) {
   FormData address_form = test::GetFormData(
       {.fields = {{.role = NAME_FULL,
                    .value = u"Elvis Aaron Presley",
-                   .is_autofilled = true},
+                   .is_autofilled_according_to_renderer = true},
                   {.role = ADDRESS_HOME_CITY, .value = u"Munich"}}});
   FormData payments_form = test::GetFormData(
       {.fields = {{.role = CREDIT_CARD_NAME_FULL,
                    .value = u"Elvis Aaron Presley",
-                   .is_autofilled = true},
+                   .is_autofilled_according_to_renderer = true},
                   {.role = CREDIT_CARD_NUMBER, .value = u"01230123012399"}}});
-  FormData autocompleted_form =
-      test::GetFormData({.fields = {{.role = CREDIT_CARD_NUMBER,
-                                     .value = u"01230123012399",
-                                     .is_autofilled = true},
-                                    {.role = ADDRESS_HOME_CITY,
-                                     .value = u"Munich",
-                                     .is_autofilled = true}}});
-  test_api(payments_form).field(-1).set_properties_mask(kUserTyped);
-  autofill_manager().AddSeenForm(address_form, {NAME_FULL, ADDRESS_HOME_LINE1});
-  autofill_manager().AddSeenForm(payments_form,
-                                 {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER});
-  test_api(autofill_manager())
-      .FindCachedFormById(address_form.global_id())
-      ->GetFieldById(address_form.fields().front().global_id())
-      ->set_filling_product(FillingProduct::kAddress);
-  test_api(autofill_manager())
-      .FindCachedFormById(payments_form.global_id())
-      ->GetFieldById(payments_form.fields().front().global_id())
-      ->set_filling_product(FillingProduct::kCreditCard);
+  FormData autocomplete_form = test::GetFormData(
+      {.fields = {{.role = CREDIT_CARD_NUMBER,
+                   .value = u"01230123012399",
+                   .is_autofilled_according_to_renderer = true},
+                  {.role = ADDRESS_HOME_CITY,
+                   .value = u"Munich",
+                   .is_autofilled_according_to_renderer = true}}});
+
+  {  // Setup the address form.
+    autofill_manager().AddSeenForm(address_form,
+                                   {NAME_FULL, ADDRESS_HOME_LINE1});
+    FormStructure& address_form_structure =
+        *test_api(autofill_manager())
+             .FindCachedFormById(address_form.global_id());
+    address_form_structure.field(0)->AddFieldModifier(FieldModifier::kAutofill);
+    address_form_structure.field(0)->set_filling_product(
+        FillingProduct::kAddress);
+  }
+
+  {  // Setup the payments form.
+    autofill_manager().AddSeenForm(payments_form,
+                                   {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER});
+    FormStructure& payments_form_structure =
+        *test_api(autofill_manager())
+             .FindCachedFormById(payments_form.global_id());
+    payments_form_structure.field(0)->AddFieldModifier(
+        FieldModifier::kAutofill);
+    payments_form_structure.field(1)->AddFieldModifier(FieldModifier::kUser);
+    payments_form_structure.field(0)->set_filling_product(
+        FillingProduct::kCreditCard);
+  }
+
+  {  // Setup the autocomplete form.
+    autofill_manager().AddSeenForm(autocomplete_form,
+                                   {CREDIT_CARD_NAME_FULL, ADDRESS_HOME_CITY});
+    FormStructure& autocomplete_form_structure =
+        *test_api(autofill_manager())
+             .FindCachedFormById(autocomplete_form.global_id());
+    autocomplete_form_structure.field(0)->AddFieldModifier(
+        FieldModifier::kAutofill);
+    autocomplete_form_structure.field(1)->AddFieldModifier(
+        FieldModifier::kAutofill);
+    autocomplete_form_structure.field(0)->set_filling_product(
+        FillingProduct::kAutocomplete);
+    autocomplete_form_structure.field(1)->set_filling_product(
+        FillingProduct::kAutocomplete);
+  }
 
   base::HistogramTester histogram_tester;
   // Upon submitting the address form, we expect logging a perfect address
@@ -195,7 +224,7 @@ TEST_F(AutofillMetricsTest, PerfectFilling_Addresses_CreditCards) {
   // Upon submitting the autocompleted form, we expect not logging anything for
   // both metrics, since the product of filling the form is neither addresses
   // nor credit cards.
-  SubmitForm(autocompleted_form);
+  SubmitForm(autocomplete_form);
   histogram_tester.ExpectUniqueSample("Autofill.PerfectFilling.Addresses", 1,
                                       1);
   histogram_tester.ExpectUniqueSample("Autofill.PerfectFilling.CreditCards", 0,
@@ -213,9 +242,9 @@ TEST_F(AutofillMetricsTest, TimingMetrics) {
                            "buddy@gmail.com", FormControlType::kInputText),
        CreateTestFormField("Phone", "phone", "2345678901",
                            FormControlType::kInputTelephone)});
-  test_api(form).field(0).set_is_autofilled(true);
-  test_api(form).field(1).set_is_autofilled(false);
-  test_api(form).field(2).set_is_autofilled(false);
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(1).set_is_autofilled_according_to_renderer(false);
+  test_api(form).field(2).set_is_autofilled_according_to_renderer(false);
 
   SeeForm(form);
 
@@ -285,22 +314,27 @@ TEST_F(AutofillMetricsTest, EditedAutofilledFieldAtSubmission) {
       .description_for_logging = "NumberOfAutofilledFields",
       .fields = {{.role = NAME_FULL,
                   .value = u"Elvis Aaron Presley",
-                  .is_autofilled = true},
+                  .is_autofilled_according_to_renderer = true},
                  {.role = ADDRESS_HOME_COUNTRY,
                   .value = u"United States",
                   .form_control_type = FormControlType::kSelectOne,
-                  .is_autofilled = true},
+                  .is_autofilled_according_to_renderer = true},
                  {.role = ADDRESS_HOME_STATE,
                   .value = u"New York",
                   .form_control_type = FormControlType::kSelectOne,
-                  .is_autofilled = true},
+                  .is_autofilled_according_to_renderer = true},
                  {.role = EMAIL_ADDRESS,
                   .value = u"buddy@gmail.com",
-                  .is_autofilled = true}},
+                  .is_autofilled_according_to_renderer = true}},
       .renderer_id = test::MakeFormRendererId(),
       .main_frame_origin = url::Origin::Create(autofill_driver().url())};
 
   FormData form = GetAndAddSeenForm(form_description);
+  FormStructure& form_structure =
+      *test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  for (const std::unique_ptr<AutofillField>& field : form_structure.fields()) {
+    field->AddFieldModifier(FieldModifier::kAutofill);
+  }
 
   // Simulate user changing values in the first and second fields.
   SimulateUserChangedField(form, form.fields()[0]);
@@ -1894,6 +1928,21 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
   test_api(second_form).field(2).set_value(u"12345678901");
   test_api(second_form).field(3).set_value(u"51512345678");
 
+  auto autofill_form = [&](FormData& form) {
+    if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
+      for (FormFieldData& field : test_api(form).fields()) {
+        field.set_is_autofilled_according_to_renderer(true);
+      }
+    }
+    FormStructure& form_structure =
+        *test_api(autofill_manager()).FindCachedFormById(form.global_id());
+    for (const std::unique_ptr<AutofillField>& field :
+         form_structure.fields()) {
+      field->AddFieldModifier(FieldModifier::kAutofill);
+    }
+    AutofillForm(form);
+  };
+
   // Expect only form load metrics to be logged if the form is submitted without
   // user interaction.
   {
@@ -1950,12 +1999,11 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
     SCOPED_TRACE("Test 3 - all fields are autofilled");
     base::HistogramTester histogram_tester;
     SeeForm(empty_form);
-
-    FormData autofilled_form = test::AsAutofilled(filled_form);
+    FormData filled_form_copy = filled_form;
     task_environment_.FastForwardBy(base::Microseconds(5));
-    AutofillForm(autofilled_form);
+    autofill_form(filled_form_copy);
     task_environment_.FastForwardBy(base::Microseconds(12));
-    SubmitForm(autofilled_form);
+    SubmitForm(filled_form_copy);
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.FillDuration.FromLoad.WithAutofill", 16, 1);
@@ -1980,10 +2028,9 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
     base::HistogramTester histogram_tester;
 
     SeeForm(empty_form);
-
-    FormData mixed_filled_form = test::AsAutofilled(filled_form);
+    FormData mixed_filled_form = filled_form;
     task_environment_.FastForwardBy(base::Microseconds(5));
-    AutofillForm(mixed_filled_form);
+    autofill_form(mixed_filled_form);
     task_environment_.FastForwardBy(base::Microseconds(3));
     SimulateUserChangedField(mixed_filled_form,
                              mixed_filled_form.fields().front(),
@@ -2014,9 +2061,9 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
 
     SeeForm(test::WithoutValues(second_form));
 
-    FormData mixed_filled_form = test::AsAutofilled(filled_form);
+    FormData mixed_filled_form = filled_form;
     task_environment_.FastForwardBy(base::Microseconds(5));
-    AutofillForm(mixed_filled_form);
+    autofill_form(mixed_filled_form);
     task_environment_.FastForwardBy(base::Microseconds(3));
     SimulateUserChangedField(mixed_filled_form,
                              mixed_filled_form.fields().front(),
@@ -2732,18 +2779,18 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
              {
                  {.label = u"Cardholder name",
                   .name = u"card_name",
-                  .is_autofilled = false},
+                  .is_autofilled_according_to_renderer = false},
                  {.label = u"CCNumber",
                   .name = u"ccnumber",
-                  .is_autofilled = false,
+                  .is_autofilled_according_to_renderer = false,
                   .origin = other_origin},
                  {.label = u"ExpDate",
                   .name = u"expdate",
-                  .is_autofilled = false},
+                  .is_autofilled_according_to_renderer = false},
                  {.is_visible = false,
                   .label = u"CVC",
                   .name = u"cvc",
-                  .is_autofilled = false,
+                  .is_autofilled_according_to_renderer = false,
                   .origin = other_origin},
              },
          .renderer_id = test::MakeFormRendererId(),
@@ -2784,7 +2831,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
   // form. Therefore, after each manual fill or autofill, we shall call
   // SetFormValues()
   void SetFormValues(const FieldTypeSet& fill_field_types,
-                     bool is_autofilled,
+                     bool is_autofilled_according_to_renderer,
                      bool is_user_typed) {
     auto type_to_index = base::MakeFixedFlatMap<FieldType, size_t>(
         {{CREDIT_CARD_NAME_FULL, 0},
@@ -2797,7 +2844,8 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
       ASSERT_NE(index_it, type_to_index.end());
       FormFieldData& field = test_api(form_).field(index_it->second);
       field.set_value(credit_card().GetRawInfo(fill_type));
-      field.set_is_autofilled(is_autofilled);
+      field.set_is_autofilled_according_to_renderer(
+          is_autofilled_according_to_renderer);
       field.set_properties_mask((field.properties_mask() & ~kUserTyped) |
                                 (is_user_typed ? kUserTyped : 0));
     }
@@ -2878,7 +2926,7 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   SetFormValues(
       {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
        CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, CREDIT_CARD_VERIFICATION_CODE},
-      /*is_autofilled=*/false, /*is_user_typed=*/true);
+      /*is_autofilled_according_to_renderer=*/false, /*is_user_typed=*/true);
 
   SubmitForm(form_);
   DeleteDriverToCommitMetrics();
@@ -2939,7 +2987,8 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   // The CVC field is invisible.
   FillForm(form_.fields()[0]);
   SetFormValues({CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-                /*is_autofilled=*/true, /*is_user_typed=*/false);
+                /*is_autofilled_according_to_renderer=*/true,
+                /*is_user_typed=*/false);
 
   // Fakes an Autofill with the following behavior:
   // - before security and assuming a complete profile: kFullFill;
@@ -2951,7 +3000,8 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   // The CVC field is invisible.
   FillForm(form_.fields()[1]);
   SetFormValues({CREDIT_CARD_NUMBER},
-                /*is_autofilled=*/true, /*is_user_typed=*/false);
+                /*is_autofilled_according_to_renderer=*/true,
+                /*is_user_typed=*/false);
 
   SubmitForm(form_);
   DeleteDriverToCommitMetrics();
@@ -3078,14 +3128,16 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
   // card number and CVC code fields, which are in an unsafe iframe.
   FillForm(form_.fields()[0]);
   SetFormValues({CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-                /*is_autofilled=*/true, /*is_user_typed=*/false);
+                /*is_autofilled_according_to_renderer=*/true,
+                /*is_user_typed=*/false);
 
   // Triggering autofill from the credit card number field can fill all the
   // credit card fields with values.
   FillForm(form_.fields()[1]);
   SetFormValues({CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
                  CREDIT_CARD_VERIFICATION_CODE},
-                /*is_autofilled=*/true, /*is_user_typed=*/false);
+                /*is_autofilled_according_to_renderer=*/true,
+                /*is_user_typed=*/false);
 
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
   SubmitForm(form_);

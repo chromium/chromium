@@ -844,7 +844,7 @@ bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault(
   // autocomplete attribute's value to unrecognized. This is done in order to
   // preserve the ability to swap an autofilled value for a different one.
   // See crbug.com/469057923 for details.
-  if (is_autofilled() &&
+  if (last_modifier() == FieldModifier::kAutofill &&
       base::FeatureList::IsEnabled(
           features::kShowSugesstionsOnAlreadyAutofilledUnrecognized)) {
     return false;
@@ -969,6 +969,21 @@ void AutofillField::AddFieldModifier(FieldModifier modifier) {
   }
   std::erase(field_modifiers_, modifier);
   field_modifiers_.push_back(modifier);
+}
+
+void AutofillField::RemoveFieldModifier(FieldModifier modifier,
+                                        base::PassKey<FormFiller> pass_key) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
+    if (modifier == FieldModifier::kUser) {
+      set_is_user_edited_deprecated(false);
+    }
+    if (modifier == FieldModifier::kAutofill) {
+      set_is_autofilled_according_to_renderer(false);
+      set_previously_autofilled_deprecated(false);
+    }
+    return;
+  }
+  std::erase(field_modifiers_, modifier);
 }
 
 }  // namespace autofill

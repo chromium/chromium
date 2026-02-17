@@ -814,7 +814,7 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
 
   std::u16string prior_value = form.fields()[0].value();
   test_api(form).field(0).set_value(form.fields()[0].value() + u"AUTOFILLED");
-  test_api(form).field(0).set_is_autofilled(true);
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
 
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
   autofill_agent().ApplyFieldsAction(
@@ -1005,7 +1005,7 @@ TEST_P(AutofillAgentSubmissionTest,
       &form_field);
 
   form_field.set_value(u"autofilled");
-  form_field.set_is_autofilled(true);
+  form_field.set_is_autofilled_according_to_renderer(true);
 
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
   FormData form;
@@ -1048,7 +1048,7 @@ TEST_P(AutofillAgentSubmissionTest,
 
   ASSERT_EQ(1u, form.fields().size());
   test_api(form).field(0).set_value(u"autofilled");
-  test_api(form).field(0).set_is_autofilled(true);
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
 
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
   autofill_agent().ApplyFieldsAction(
@@ -1270,7 +1270,7 @@ TEST_P(AutofillAgentSubmissionTest,
 
   for (FormFieldData& field : test_api(*form).fields()) {
     field.set_value(field.id_attribute() + u" autofilled");
-    field.set_is_autofilled(true);
+    field.set_is_autofilled_according_to_renderer(true);
   }
 
   // Update `AutofillAgent::last_queried_element_`.

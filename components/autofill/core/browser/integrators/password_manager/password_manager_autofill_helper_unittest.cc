@@ -19,7 +19,7 @@ TEST(PasswordManagerAutofillHelperTest, IsOtpFilledField) {
   EXPECT_FALSE(PasswordManagerAutofillHelper::IsOtpFilledField(field));
 
   // Autofilled, but not with OTP.
-  field.set_is_autofilled(true);
+  field.AddFieldModifier(FieldModifier::kAutofill);
   field.set_filling_product(FillingProduct::kAddress);
   EXPECT_FALSE(PasswordManagerAutofillHelper::IsOtpFilledField(field));
 
@@ -28,7 +28,7 @@ TEST(PasswordManagerAutofillHelperTest, IsOtpFilledField) {
   EXPECT_TRUE(PasswordManagerAutofillHelper::IsOtpFilledField(field));
 
   // Previously autofilled with OTP, but corrected by the user.
-  field.set_is_autofilled(false);
+  field.AddFieldModifier(FieldModifier::kUser);
   EXPECT_FALSE(PasswordManagerAutofillHelper::IsOtpFilledField(field));
 }
 

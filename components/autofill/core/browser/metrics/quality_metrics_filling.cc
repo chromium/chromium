@@ -5,10 +5,12 @@
 #include "components/autofill/core/browser/metrics/quality_metrics_filling.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
@@ -50,7 +52,7 @@ void LogAutomationRate(
     AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   size_t total_length_autofilled_fields = 0;
   size_t total_length = 0;
-  for (const auto& field : form.fields()) {
+  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
     if (!field->IsTextInputElement()) {
       continue;
     }
@@ -64,7 +66,7 @@ void LogAutomationRate(
     if (field_size > kAutomationRateFieldSizeThreshold) {
       continue;
     }
-    if (field->is_autofilled()) {
+    if (field->last_modifier() == FieldModifier::kAutofill) {
       total_length_autofilled_fields += field_size;
     }
     total_length += field_size;
@@ -102,7 +104,7 @@ int GetFieldTypeAutofillDataUtilization(
 // entered". Note that fields that were submitted with a prefilled value
 // don't get recorded. Emitted on form submission.
 void LogDataUtilization(const FormStructure& form) {
-  for (const auto& field : form.fields()) {
+  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
     // A pre-filled field value should have changed since page load. Otherwise,
     // no reporting is necessary.
     if (field->initial_value() == field->value()) {
@@ -123,8 +125,9 @@ void LogDataUtilization(const FormStructure& form) {
         kFieldTypesRepresentingSmallNumbers);
 
     const AutofillDataUtilization sample =
-        field->is_autofilled() ? AutofillDataUtilization::kAutofilled
-                               : AutofillDataUtilization::kNotAutofilled;
+        field->last_modifier() == FieldModifier::kAutofill
+            ? AutofillDataUtilization::kAutofilled
+            : AutofillDataUtilization::kNotAutofilled;
 
     const bool autocomplete_state_is_garbage =
         AutofillMetrics::AutocompleteStateForSubmittedField(*field) ==

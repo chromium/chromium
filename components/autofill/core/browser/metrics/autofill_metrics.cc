@@ -555,11 +555,12 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field) {
+  CHECK(field.all_modifiers().contains(FieldModifier::kAutofill));
   AutofilledFieldUserEditingStatusMetric editing_metric =
-      field.previously_autofilled_deprecated()
-          ? AutofilledFieldUserEditingStatusMetric::AUTOFILLED_FIELD_WAS_EDITED
-          : AutofilledFieldUserEditingStatusMetric::
-                AUTOFILLED_FIELD_WAS_NOT_EDITED;
+      field.last_modifier() == FieldModifier::kAutofill
+          ? AutofilledFieldUserEditingStatusMetric::
+                AUTOFILLED_FIELD_WAS_NOT_EDITED
+          : AutofilledFieldUserEditingStatusMetric::AUTOFILLED_FIELD_WAS_EDITED;
 
   // Record the aggregated UMA statistics.
   base::UmaHistogramEnumeration(

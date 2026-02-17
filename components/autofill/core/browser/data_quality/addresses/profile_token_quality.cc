@@ -15,6 +15,7 @@
 #include "base/rand_util.h"
 #include "base/strings/levenshtein_distance.h"
 #include "base/strings/string_util.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -268,7 +269,7 @@ ObservationType ProfileTokenQuality::GetObservationTypeFromField(
       [](const AutofillProfile* p) { return p->guid(); }));
 
   const FieldType type = field.Type().GetAddressType();
-  if (field.is_autofilled()) {
+  if (field.last_modifier() == FieldModifier::kAutofill) {
     // The filled value was accepted without editing.
     return AutofillProfile::kDatabaseStoredTypes.contains(type)
                ? ObservationType::kAccepted

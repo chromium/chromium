@@ -337,7 +337,8 @@ FormData FindForm(const blink::WebFormControlElement& element) {
     EXPECT_EQ(expected.placeholder(), actual.placeholder());                 \
     EXPECT_EQ(expected.max_length(), actual.max_length());                   \
     EXPECT_EQ(expected.css_classes(), actual.css_classes());                 \
-    EXPECT_EQ(expected.is_autofilled(), actual.is_autofilled());             \
+    EXPECT_EQ(expected.is_autofilled_according_to_renderer(),                \
+              actual.is_autofilled_according_to_renderer());                 \
     EXPECT_EQ(expected.check_status(), actual.check_status());               \
     EXPECT_EQ(expected.properties_mask(), actual.properties_mask());         \
     EXPECT_EQ(expected.id_attribute(), actual.id_attribute());               \
@@ -521,7 +522,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
                 fields[i].value());
       test_api(form).field(i).set_value(
           ASCIIToUTF16(field_cases[i].autofill_value));
-      test_api(form).field(i).set_is_autofilled(true);
+      test_api(form).field(i).set_is_autofilled_according_to_renderer(true);
     }
 
     // Fill and validate.
@@ -800,28 +801,28 @@ class FormAutofillTest : public test::AutofillRendererTest {
     expected.set_id_attribute(u"firstname");
     expected.set_name(expected.id_attribute());
     expected.set_max_length(5);
-    expected.set_is_autofilled(false);
+    expected.set_is_autofilled_according_to_renderer(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
 
     expected.set_id_attribute(u"lastname");
     expected.set_name(expected.id_attribute());
     expected.set_max_length(7);
-    expected.set_is_autofilled(false);
+    expected.set_is_autofilled_according_to_renderer(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
 
     expected.set_id_attribute(u"email");
     expected.set_name(expected.id_attribute());
     expected.set_max_length(9);
-    expected.set_is_autofilled(false);
+    expected.set_is_autofilled_according_to_renderer(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 
     // Fill the form.
     test_api(form).field(0).set_value(u"Brother");
     test_api(form).field(1).set_value(u"Jonathan");
     test_api(form).field(2).set_value(u"brotherj@example.com");
-    test_api(form).field(0).set_is_autofilled(true);
-    test_api(form).field(1).set_is_autofilled(true);
-    test_api(form).field(2).set_is_autofilled(true);
+    test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields(),
                       mojom::ActionPersistence::kFill);
@@ -842,21 +843,21 @@ class FormAutofillTest : public test::AutofillRendererTest {
     expected.set_name(expected.id_attribute());
     expected.set_value(u"Broth");
     expected.set_max_length(5);
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[0]);
 
     expected.set_id_attribute(u"lastname");
     expected.set_name(expected.id_attribute());
     expected.set_value(u"Jonatha");
     expected.set_max_length(7);
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[1]);
 
     expected.set_id_attribute(u"email");
     expected.set_name(expected.id_attribute());
     expected.set_value(u"brotherj@");
     expected.set_max_length(9);
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
   }
 
@@ -1028,26 +1029,32 @@ class FormAutofillTest : public test::AutofillRendererTest {
 
     expected.set_id_attribute(u"apple");
     expected.set_name(expected.id_attribute());
-    expected.set_is_autofilled(false);
+    expected.set_is_autofilled_according_to_renderer(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[unowned_offset]);
 
     expected.set_id_attribute(u"banana");
     expected.set_name(expected.id_attribute());
-    expected.set_is_autofilled(false);
+    expected.set_is_autofilled_according_to_renderer(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[unowned_offset + 1]);
 
     expected.set_id_attribute(u"cantelope");
     expected.set_name(expected.id_attribute());
-    expected.set_is_autofilled(false);
+    expected.set_is_autofilled_according_to_renderer(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[unowned_offset + 2]);
 
     // Fill the form.
     test_api(form).field(unowned_offset + 0).set_value(u"Red");
     test_api(form).field(unowned_offset + 1).set_value(u"Yellow");
     test_api(form).field(unowned_offset + 2).set_value(u"Also Yellow");
-    test_api(form).field(unowned_offset + 0).set_is_autofilled(true);
-    test_api(form).field(unowned_offset + 1).set_is_autofilled(true);
-    test_api(form).field(unowned_offset + 2).set_is_autofilled(true);
+    test_api(form)
+        .field(unowned_offset + 0)
+        .set_is_autofilled_according_to_renderer(true);
+    test_api(form)
+        .field(unowned_offset + 1)
+        .set_is_autofilled_according_to_renderer(true);
+    test_api(form)
+        .field(unowned_offset + 2)
+        .set_is_autofilled_according_to_renderer(true);
     ExecuteJavaScriptForTests("document.getElementById('apple').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields(),
                       mojom::ActionPersistence::kFill);
@@ -1065,19 +1072,19 @@ class FormAutofillTest : public test::AutofillRendererTest {
     expected.set_id_attribute(u"apple");
     expected.set_name(expected.id_attribute());
     expected.set_value(u"Red");
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[unowned_offset + 0]);
 
     expected.set_id_attribute(u"banana");
     expected.set_name(expected.id_attribute());
     expected.set_value(u"Yellow");
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[unowned_offset + 1]);
 
     expected.set_id_attribute(u"cantelope");
     expected.set_name(expected.id_attribute());
     expected.set_value(u"Also Yellow");
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[unowned_offset + 2]);
   }
 
@@ -1120,7 +1127,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label(ASCIIToUTF16(placeholder_firstname));
       expected.set_placeholder(ASCIIToUTF16(placeholder_firstname));
     }
-    expected.set_is_autofilled(false);
+    expected.set_is_autofilled_according_to_renderer(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
 
     expected.set_id_attribute(u"lastname");
@@ -1136,7 +1143,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_value({});
     }
-    expected.set_is_autofilled(false);
+    expected.set_is_autofilled_according_to_renderer(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
 
     expected.set_id_attribute(u"email");
@@ -1152,16 +1159,16 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_value({});
     }
-    expected.set_is_autofilled(false);
+    expected.set_is_autofilled_according_to_renderer(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 
     // Preview the form and verify that the cursor position has been updated.
     test_api(form).field(0).set_value(u"Wyatt");
     test_api(form).field(1).set_value(u"Earp");
     test_api(form).field(2).set_value(u"wyatt@example.com");
-    test_api(form).field(0).set_is_autofilled(true);
-    test_api(form).field(1).set_is_autofilled(true);
-    test_api(form).field(2).set_is_autofilled(true);
+    test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields(),
                       mojom::ActionPersistence::kPreview);
@@ -1193,7 +1200,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[0]);
 
     expected.set_id_attribute(u"lastname");
@@ -1206,7 +1213,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[1]);
 
     expected.set_id_attribute(u"email");
@@ -1219,7 +1226,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     // Verify that the cursor position has been updated.
@@ -1297,12 +1304,12 @@ class FormAutofillTest : public test::AutofillRendererTest {
     test_api(form).field(3).set_value(u"1111-2222-3333-4444");
     test_api(form).field(4).set_value(u"Montreal");
     test_api(form).field(5).set_value(u"AA");
-    test_api(form).field(0).set_is_autofilled(true);
-    test_api(form).field(1).set_is_autofilled(true);
-    test_api(form).field(2).set_is_autofilled(true);
-    test_api(form).field(3).set_is_autofilled(true);
-    test_api(form).field(4).set_is_autofilled(true);
-    test_api(form).field(5).set_is_autofilled(true);
+    test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(3).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(4).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(5).set_is_autofilled_according_to_renderer(true);
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields(),
                       mojom::ActionPersistence::kPreview);
@@ -1333,7 +1340,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[0]);
 
     // The last name field is not filled, because there is a value in it.
@@ -1347,7 +1354,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(false);
+    expected.set_is_autofilled_according_to_renderer(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[1]);
 
     expected.set_id_attribute(u"phone");
@@ -1360,7 +1367,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     expected.set_id_attribute(u"cc");
@@ -1373,7 +1380,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[3]);
 
     expected.set_id_attribute(u"city");
@@ -1386,7 +1393,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[4]);
 
     expected.set_form_control_type(FormControlType::kSelectOne);
@@ -1401,7 +1408,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     expected.set_max_length(0);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[5]);
   }
@@ -1446,9 +1453,9 @@ class FormAutofillTest : public test::AutofillRendererTest {
     test_api(form).field(0).set_value(u"1111-2222-3333-4444");
     test_api(form).field(1).set_value(u"03/2030");
     test_api(form).field(2).set_value(u"Susan Smith");
-    test_api(form).field(0).set_is_autofilled(true);
-    test_api(form).field(1).set_is_autofilled(true);
-    test_api(form).field(2).set_is_autofilled(true);
+    test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
     ExecuteJavaScriptForTests("document.getElementById('cc').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields(),
                       mojom::ActionPersistence::kPreview);
@@ -1482,7 +1489,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[0]);
 
     expected.set_id_attribute(u"expiration_date");
@@ -1495,7 +1502,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[1]);
 
     expected.set_id_attribute(u"name");
@@ -1508,7 +1515,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(false);
+    expected.set_is_autofilled_according_to_renderer(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     // Verify that the cursor position has been updated.
@@ -1560,9 +1567,9 @@ class FormAutofillTest : public test::AutofillRendererTest {
     test_api(form).field(0).set_value(u"1111-2222-3333-4444");
     test_api(form).field(1).set_value(u"03/2030");
     test_api(form).field(2).set_value(u"Susan Smith");
-    test_api(form).field(0).set_is_autofilled(true);
-    test_api(form).field(1).set_is_autofilled(true);
-    test_api(form).field(2).set_is_autofilled(true);
+    test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
+    test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
     ExecuteJavaScriptForTests("document.getElementById('cc').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields(),
                       mojom::ActionPersistence::kPreview);
@@ -1596,7 +1603,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[0]);
 
     expected.set_id_attribute(u"expiration_date");
@@ -1609,7 +1616,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(true);
+    expected.set_is_autofilled_according_to_renderer(true);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[1]);
 
     expected.set_id_attribute(u"name");
@@ -1622,7 +1629,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
       expected.set_label({});
       expected.set_placeholder({});
     }
-    expected.set_is_autofilled(false);
+    expected.set_is_autofilled_according_to_renderer(false);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     // Verify that the cursor position has been updated.
@@ -1898,7 +1905,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutofilled) {
   expected.set_value(u"value");
   expected.set_form_control_type(FormControlType::kInputText);
   expected.set_max_length(FormFieldData::kDefaultMaxLength);
-  expected.set_is_autofilled(true);
+  expected.set_is_autofilled_according_to_renderer(true);
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
 }
 
@@ -1958,7 +1965,7 @@ TEST_F(FormAutofillTest,
   expected.set_max_length(0);
   expected.set_form_control_type(FormControlType::kSelectOne);
   // We check that the extra attributes have been copied to `result1`.
-  expected.set_is_autofilled(true);
+  expected.set_is_autofilled_according_to_renderer(true);
   expected.set_autocomplete_attribute("off");
   expected.set_should_autocomplete(false);
   expected.set_is_focusable(true);
@@ -4387,7 +4394,7 @@ TEST_F(FormAutofillTest, UndoAutofill) {
   for (size_t i = 0; i < 4; i += 2) {
     std::u16string type = i == 0 ? u"text" : u"select_option";
     test_api(form).field(i).set_value(u"undo_" + type + u"_1");
-    test_api(form).field(i).set_is_autofilled(false);
+    test_api(form).field(i).set_is_autofilled_according_to_renderer(false);
     undo_fields.push_back(form.fields()[i]);
   }
 

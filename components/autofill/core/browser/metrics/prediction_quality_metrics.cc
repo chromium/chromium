@@ -548,7 +548,7 @@ bool DuplicatedFilling(const FormStructure& form, const AutofillField& field) {
           return false;
         }
         return field.value_for_import() == form_field->value_for_import() &&
-               form_field->is_autofilled();
+               form_field->last_modifier() == FieldModifier::kAutofill;
       };
   return std::ranges::any_of(form, is_autofilled_with_same_value);
 }

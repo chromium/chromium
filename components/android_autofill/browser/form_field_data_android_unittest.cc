@@ -100,11 +100,11 @@ TEST_F(FormFieldDataAndroidTest, OnFormFieldDidChange) {
   constexpr std::u16string_view kSampleValue = u"SomeValue";
 
   FormFieldData field;
-  field.set_is_autofilled(true);
+  field.set_is_autofilled_according_to_renderer(true);
   FormFieldDataAndroid field_android(&field);
   EXPECT_CALL(bridge(), UpdateValue(kSampleValue));
   field_android.OnFormFieldDidChange(kSampleValue);
-  EXPECT_FALSE(field.is_autofilled());
+  EXPECT_FALSE(field.is_autofilled_according_to_renderer());
   EXPECT_EQ(field.value(), kSampleValue);
 }
 

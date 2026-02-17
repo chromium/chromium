@@ -591,7 +591,9 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   extract_data_and_remove_field_if(fields, [](const auto& field) {
     return field.all_modifiers().contains(FieldModifier::kUser);
   });
-  extract_data_and_remove_field_if(fields, &AutofillField::is_autofilled);
+  extract_data_and_remove_field_if(fields, [](const AutofillField& field) {
+    return field.last_modifier() == FieldModifier::kAutofill;
+  });
   extract_data_and_remove_field_if(fields, [](const auto&) { return true; });
   return result;
 }

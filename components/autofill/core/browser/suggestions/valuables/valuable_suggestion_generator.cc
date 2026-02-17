@@ -401,9 +401,12 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
   if (generate_flat_suggestions) {
     std::vector<Suggestion> suggestions = CreateSuggestionsFromLoyaltyCards(
         affiliated_cards, *client.GetValuablesDataManager());
-    std::ranges::move(
-        GetLoyaltyCardsFooterSuggestions(trigger_field.is_autofilled()),
-        std::back_inserter(suggestions));
+    std::ranges::move(GetLoyaltyCardsFooterSuggestions(
+                          // TODO(crbug.com/393114125): Change to use
+                          // `AutofillField::field_modifiers_`
+                          // after launching `kAutofillFixIsAutofilled`.
+                          trigger_field.is_autofilled_according_to_renderer()),
+                      std::back_inserter(suggestions));
     callback({FillingProduct::kLoyaltyCard, std::move(suggestions)});
     return;
   }
@@ -430,9 +433,11 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
   submenu_suggestion.children = CreateSuggestionsFromLoyaltyCards(
       client.GetValuablesDataManager()->GetLoyaltyCardsToSuggest(),
       *client.GetValuablesDataManager());
-  std::ranges::move(
-      GetLoyaltyCardsFooterSuggestions(trigger_field.is_autofilled()),
-      std::back_inserter(suggestions));
+  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`
+  // after launching `kAutofillFixIsAutofilled`.
+  std::ranges::move(GetLoyaltyCardsFooterSuggestions(
+                        trigger_field.is_autofilled_according_to_renderer()),
+                    std::back_inserter(suggestions));
   callback({FillingProduct::kLoyaltyCard, std::move(suggestions)});
 }
 

@@ -339,7 +339,7 @@ TEST_F(AutofillFieldTest, UpdateFieldData) {
 
   // Update information in `AutofillField` that come from `FormFieldData`.
   field.set_value(u"John Doe");
-  field.set_is_autofilled(true);
+  field.set_is_autofilled_according_to_renderer(true);
   ASSERT_FALSE(
       FormFieldData::IdenticalAndEquivalentDomElements(field, autofill_field));
 

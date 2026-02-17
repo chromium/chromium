@@ -136,7 +136,8 @@ namespace autofill::internal {
 //    long as the renderer form is known to the FormForest).
 // 3. Call GetRendererFormsOfBrowserFields(browser_fields) only if
 //    `browser_fields` was previously returned by GetBrowserForm(), perhaps with
-//    different FormFieldData::value, FormFieldData::is_autofilled.
+//    different FormFieldData::value,
+//    FormFieldData::is_autofilled_according_to_renderer.
 //
 // For FormForest to be memory safe,
 // 1. UpdateTreeOfRendererForm() and GetRendererFormsOfBrowserFields() must only

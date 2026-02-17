@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -601,7 +602,9 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
   // Don't fill previously autofilled fields except the initiating field or
   // when it's a refill or for credit card fields, when
   // `kAutofillPaymentsFieldSwapping` is enabled.
-  add_if(field.is_autofilled() && !is_trigger_field &&
+  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`
+  // after launching `kAutofillFixIsAutofilled`.
+  add_if(field.is_autofilled_according_to_renderer() && !is_trigger_field &&
              !refill_options.is_refill() &&
              !AllowPaymentSwapping(trigger_field, autofill_field,
                                    refill_options.is_refill()),
@@ -741,7 +744,11 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
         // suggestion swapping.
         // Note that `field_fill_operation` is guaranteed to have an entry for
         // `field.global_id()` because of the condition right above.
-        (!field.is_autofilled() && !field.value().empty() &&
+        // TODO(crbug.com/393114125): Change to use
+        // `AutofillField::field_modifiers_` after launching
+        // `kAutofillFixIsAutofilled`.
+        (!field.is_autofilled_according_to_renderer() &&
+         !field.value().empty() &&
          field_fill_operation_it->at(field.global_id()).ignore_is_autofilled) ||
         // Skip fields that are not cached to avoid unexpected outcomes.
         !cached_fields.contains(field.global_id()) ||
@@ -762,13 +769,20 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
 
     // Update the FormFieldData to be sent for the renderer.
     field.set_value(previous_state.value);
-    field.set_is_autofilled(previous_state.is_autofilled_according_to_renderer);
+
+    // This is an abuse of naming. `is_autofilled_according_to_renderer` is
+    // being set here so that the form is sent to the renderer and the renderer
+    // is able to fill them and update the background accordingly.
+    field.set_is_autofilled_according_to_renderer(
+        previous_state.is_autofilled_according_to_renderer);
 
     // Update the cached AutofillField in the browser if the operation isn't a
     // preview.
     if (action_persistence == mojom::ActionPersistence::kFill) {
-      autofill_field.set_is_autofilled(
-          previous_state.is_autofilled_according_to_renderer);
+      if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
+        autofill_field.set_is_autofilled_according_to_renderer(
+            previous_state.is_autofilled_according_to_renderer);
+      }
       autofill_field.set_field_modifiers(previous_state.field_modifiers,
                                          base::PassKey<FormFiller>());
       autofill_field.set_autofill_source_profile_guid(
@@ -817,7 +831,7 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
           filling_product,
           /*is_refill=*/false);
     }
-    autofill_field->set_is_autofilled(true);
+    autofill_field->AddFieldModifier(FieldModifier::kAutofill);
     autofill_field->set_autofilled_type(field_type_used);
     autofill_field->set_filling_product(filling_product);
     autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
@@ -945,21 +959,25 @@ void FormFiller::FillOrPreviewForm(
                        : std::map<FieldGlobalId, ValueAndType>();
 
     bool allow_suggestion_swapping =
-        form.fields()[i].is_autofilled() &&
+        // TODO(crbug.com/393114125): Change to use
+        // `AutofillField::field_modifiers_` after launching
+        // `kAutofillFixIsAutofilled`.
+        form.fields()[i].is_autofilled_according_to_renderer() &&
         AllowPaymentSwapping(autofill_trigger_field, autofill_field,
                              refill_trigger_reason.has_value());
 
     // Fill the data from `augmented_filling_payload` into `result_form`, which
     // will be sent to the renderer. When `allow_suggestion_swapping` is true,
-    // the fields can also be emptied. In that scenario, the
-    // `field->is_autofilled()` becomes false.
+    // the fields can also be emptied. In that scenario,
+    // `field.is_autofilled_according_to_renderer()` becomes false.
     const std::optional<FieldType> filled_field_type =
         FillField(autofill_field, augmented_filling_payload, forced_fill_values,
                   result_fields[i], action_persistence,
                   allow_suggestion_swapping, &failure_to_fill);
     const bool is_newly_autofilled_or_emptied = filled_field_type.has_value();
     const bool autofilled_value_did_not_change =
-        form.fields()[i].is_autofilled() && result_fields[i].is_autofilled() &&
+        form.fields()[i].is_autofilled_according_to_renderer() &&
+        result_fields[i].is_autofilled_according_to_renderer() &&
         form.fields()[i].value() == result_fields[i].value();
 
     if (is_newly_autofilled_or_emptied && autofilled_value_did_not_change) {
@@ -980,8 +998,10 @@ void FormFiller::FillOrPreviewForm(
 
     const bool has_value_before = !form.fields()[i].value().empty();
     const bool has_value_after = !result_fields[i].value().empty();
-    const bool is_autofilled_before = form.fields()[i].is_autofilled();
-    const bool is_autofilled_after = result_fields[i].is_autofilled();
+    const bool is_autofilled_before =
+        form.fields()[i].is_autofilled_according_to_renderer();
+    const bool is_autofilled_after =
+        result_fields[i].is_autofilled_according_to_renderer();
     LOG_AF(buffer)
         << Tr{}
         << base::StringPrintf(
@@ -1070,7 +1090,8 @@ void FormFiller::FillOrPreviewForm(
     // This map will tell us if the field was modified or cleared by Autofill.
     auto autofilled_field_map = base::MakeFlatMap<FieldGlobalId, bool>(
         result_fields, {}, [](const FormFieldData& field) {
-          return std::pair(field.global_id(), field.is_autofilled());
+          return std::pair(field.global_id(),
+                           field.is_autofilled_according_to_renderer());
         });
     for (const std::unique_ptr<AutofillField>& field : form_structure) {
       const FieldType* autofilled_type =
@@ -1080,7 +1101,11 @@ void FormFiller::FillOrPreviewForm(
       }
       const FillingProduct filling_product =
           augmented_filling_payload.filling_product();
-      field->set_is_autofilled(autofilled_field_map[field->global_id()]);
+      if (autofilled_field_map[field->global_id()]) {
+        field->AddFieldModifier(FieldModifier::kAutofill);
+      } else {
+        field->RemoveFieldModifier(FieldModifier::kAutofill, /*pass_key=*/{});
+      }
       field->set_filling_product(filling_product);
       field->set_autofilled_type(*autofilled_type);
       if (filling_product == FillingProduct::kAddress) {
@@ -1134,7 +1159,7 @@ void FormFiller::MaybeScheduleProgrammaticRefill(const FillId& fill_id) {
             // Taking the form from the cache is not entirely correct until the
             // AutofillField::is_autofilled() semantics is fixed:
             // crbug.com/393114125.
-            // TODO(crbug.com/466333215): Make sure crbug.com/467804204 is fixed
+            // TODO(crbug.com/466333215): Make sure crbug.com/393114125 is fixed
             // before programmatic refills move beyond prototyping.
             const FormStructure* form_structure =
                 self->manager_->FindCachedFormById(form_id);
@@ -1420,12 +1445,15 @@ std::optional<FieldType> FormFiller::FillField(
   field_data.set_value(filling_content.value);
   field_data.set_force_override(filling_content.value_is_an_override ||
                                 allow_suggestion_swapping);
-  // Mark the field as autofilled when a non-empty value is assigned to
-  // it. This allows the renderer to distinguish autofilled fields from
-  // fields with non-empty values, such as select-one fields. Sometimes the
-  // field can be cleared by Autofill instead of being filled (e.g. payments
-  // swapping) and in those cases `is_autofilled` should become false.
-  field_data.set_is_autofilled(!filling_content.value.empty());
+
+  // This is an abuse of naming. `is_autofilled_according_to_renderer` is being
+  // set here so that the form is sent to the renderer and the renderer is able
+  // to fill them and update the background accordingly.
+  // Sometimes the field can be cleared by Autofill instead of being filled
+  // (e.g. payments swapping) and in those cases
+  // `set_is_autofilled_according_to_renderer` should become false.
+  field_data.set_is_autofilled_according_to_renderer(
+      !filling_content.value.empty());
   return filling_content.type;
 }
 

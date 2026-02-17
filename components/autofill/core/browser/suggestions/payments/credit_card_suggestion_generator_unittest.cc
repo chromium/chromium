@@ -1050,9 +1050,10 @@ TEST_F(PaymentsSuggestionGeneratorTest, PaymentsFieldSwapping) {
   payments_data().AddCreditCard(credit_card2);
 
   auto get_cards = [&](std::u16string field_value, FieldType type,
-                       bool is_autofilled) {
+                       bool is_autofilled_according_to_renderer) {
     FormFieldData field;
-    field.set_is_autofilled(is_autofilled);
+    field.set_is_autofilled_according_to_renderer(
+        is_autofilled_according_to_renderer);
     field.set_value(std::move(field_value));
     return GetOrderedCardsToSuggestForTest(
         autofill_client(), field, type,
@@ -1062,19 +1063,26 @@ TEST_F(PaymentsSuggestionGeneratorTest, PaymentsFieldSwapping) {
         /*include_virtual_cards=*/false);
   };
 
-  EXPECT_THAT(get_cards(u"", CREDIT_CARD_NUMBER, false),
+  EXPECT_THAT(get_cards(u"", CREDIT_CARD_NUMBER,
+                        /*is_autofilled_according_to_renderer=*/false),
               ElementsAre(credit_card2, credit_card1));
-  EXPECT_THAT(get_cards(u"1111222233334444", CREDIT_CARD_NUMBER, true),
+  EXPECT_THAT(get_cards(u"1111222233334444", CREDIT_CARD_NUMBER,
+                        /*is_autofilled_according_to_renderer=*/true),
               ElementsAre(credit_card2, credit_card1));
-  EXPECT_THAT(get_cards(u"4444333322221111", CREDIT_CARD_NUMBER, true),
+  EXPECT_THAT(get_cards(u"4444333322221111", CREDIT_CARD_NUMBER,
+                        /*is_autofilled_according_to_renderer=*/true),
               ElementsAre(credit_card2, credit_card1));
-  EXPECT_THAT(get_cards(u"1111222233334444", CREDIT_CARD_NUMBER, false),
+  EXPECT_THAT(get_cards(u"1111222233334444", CREDIT_CARD_NUMBER,
+                        /*is_autofilled_according_to_renderer=*/false),
               ElementsAre(credit_card2, credit_card1));
-  EXPECT_THAT(get_cards(u"1", CREDIT_CARD_NUMBER, true),
+  EXPECT_THAT(get_cards(u"1", CREDIT_CARD_NUMBER,
+                        /*is_autofilled_according_to_renderer=*/true),
               ElementsAre(credit_card2, credit_card1));
-  EXPECT_THAT(get_cards(u"", CREDIT_CARD_NAME_FULL, false),
+  EXPECT_THAT(get_cards(u"", CREDIT_CARD_NAME_FULL,
+                        /*is_autofilled_according_to_renderer=*/false),
               ElementsAre(credit_card2, credit_card1));
-  EXPECT_THAT(get_cards(u"Cardholder name", CREDIT_CARD_NAME_FULL, false),
+  EXPECT_THAT(get_cards(u"Cardholder name", CREDIT_CARD_NAME_FULL,
+                        /*is_autofilled_according_to_renderer=*/false),
               ElementsAre(credit_card2, credit_card1));
 }
 
@@ -1183,7 +1191,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       {server_card.guid(), VirtualCardUsageData::VirtualCardLastFour(u"4444")});
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   FormFieldData field;
-  field.set_is_autofilled(true);
+  field.set_is_autofilled_according_to_renderer(true);
   std::vector<Suggestion> suggestions =
       GetVirtualCardStandaloneCvcFieldSuggestions(
           autofill_client(), field, metadata_logging_context,
@@ -1332,7 +1340,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
 
 TEST_F(PaymentsSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
   FormFieldData field;
-  field.set_is_autofilled(true);
+  field.set_is_autofilled_according_to_renderer(true);
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
@@ -1479,7 +1487,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
        FieldWasAutofilled_UndoAutofillOnCreditCardForm) {
   payments_data().AddCreditCard(test::GetCreditCard());
   FormFieldData field;
-  field.set_is_autofilled(true);
+  field.set_is_autofilled_according_to_renderer(true);
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
@@ -4620,11 +4628,11 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
 // affect suggestions.
 TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
        GetSuggestionsForCreditCards_NormalCreditCardForm) {
-  FormData form =
-      test::GetFormData({.fields = {{.role = CREDIT_CARD_NUMBER,
-                                     .value = u"4111111111111111",
-                                     .autocomplete_attribute = "cc-number",
-                                     .is_autofilled = true}}});
+  FormData form = test::GetFormData(
+      {.fields = {{.role = CREDIT_CARD_NUMBER,
+                   .value = u"4111111111111111",
+                   .autocomplete_attribute = "cc-number",
+                   .is_autofilled_according_to_renderer = true}}});
 
   FormFieldData trigger_field;
   AutofillField trigger_autofill_field(trigger_field);

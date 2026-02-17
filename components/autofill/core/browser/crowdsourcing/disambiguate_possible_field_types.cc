@@ -46,7 +46,8 @@ bool IsNameType(const AutofillField& field) {
 [[nodiscard]] FieldTypeSet OverridePossibleTypesToAutofilledTypeIfAvailable(
     const AutofillField& field,
     FieldTypeSet possible_types) {
-  if (field.is_autofilled() && field.autofilled_type() &&
+  if (field.last_modifier() == FieldModifier::kAutofill &&
+      field.autofilled_type() &&
       base::FeatureList::IsEnabled(
           features::kAutofillDisambiguateContradictingFieldTypes)) {
     return {*field.autofilled_type()};

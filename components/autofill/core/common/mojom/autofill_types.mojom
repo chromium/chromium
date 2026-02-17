@@ -358,7 +358,6 @@ struct FormFieldData {
   int32 form_control_ax_id;
 
   uint64 max_length;
-  bool is_autofilled;
   bool is_autofilled_according_to_renderer;
   CheckStatus check_status;
   bool is_focusable;

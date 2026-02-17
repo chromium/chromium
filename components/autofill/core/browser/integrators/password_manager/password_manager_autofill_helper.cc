@@ -37,7 +37,7 @@ const AutofillField* GetAutofillField(AutofillManager* manager,
 // static
 bool PasswordManagerAutofillHelper::IsOtpFilledField(
     const AutofillField& field) {
-  return field.is_autofilled() &&
+  return field.last_modifier() == FieldModifier::kAutofill &&
          field.filling_product() == FillingProduct::kOneTimePassword;
 }
 

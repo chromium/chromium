@@ -372,13 +372,12 @@ class FormFieldData {
   uint64_t max_length() const { return max_length_; }
   void set_max_length(uint64_t max_length) { max_length_ = max_length; }
 
-  bool is_autofilled() const { return is_autofilled_; }
   bool is_autofilled_according_to_renderer() const {
     return is_autofilled_according_to_renderer_;
   }
-  void set_is_autofilled(bool is_autofilled) { is_autofilled_ = is_autofilled; }
-  void set_is_autofilled_according_to_renderer(bool is_autofilled) {
-    is_autofilled_according_to_renderer_ = is_autofilled;
+  void set_is_autofilled_according_to_renderer(
+      bool is_autofilled_according_to_renderer) {
+    is_autofilled_according_to_renderer_ = is_autofilled_according_to_renderer;
   }
 
   CheckStatus check_status() const { return check_status_; }
@@ -491,7 +490,6 @@ class FormFieldData {
   url::Origin origin_;
   int32_t form_control_ax_id_ = 0;
   uint64_t max_length_ = std::numeric_limits<uint32_t>::max();
-  bool is_autofilled_ = false;
   bool is_autofilled_according_to_renderer_ = false;
   CheckStatus check_status_ = CheckStatus::kNotCheckable;
   bool is_focusable_ = true;

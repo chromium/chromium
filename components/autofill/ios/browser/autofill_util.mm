@@ -346,10 +346,9 @@ bool ExtractFormFieldData(const base::DictValue& field,
   if (const std::string* value = field.FindString("value")) {
     field_data->set_value(base::UTF8ToUTF16(*value));
   }
-  field_data->set_is_autofilled(
-      field.FindBool("is_autofilled").value_or(field_data->is_autofilled()));
   field_data->set_is_autofilled_according_to_renderer(
-      field.FindBool("is_autofilled").value_or(field_data->is_autofilled()));
+      field.FindBool("is_autofilled")
+          .value_or(field_data->is_autofilled_according_to_renderer()));
 
   if (const std::string* autocomplete_attribute =
           field.FindString("autocomplete_attribute")) {
