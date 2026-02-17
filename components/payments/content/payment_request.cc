@@ -575,9 +575,11 @@ void PaymentRequest::CanMakePayment() {
   }
 
   if (!can_make_payment_allowed_by_pref) {
-    CanMakePaymentCallback(
-        /*can_make_payment=*/PaymentsExperimentalFeatures::IsEnabled(
-            features::kCanMakePaymentTrueWhenPrivate));
+    // When the pref is disabled, we lie and always tell the website that the
+    // payment method is supported. This reduces data leakage, by requiring the
+    // site to call show() (which should show UX if the app is available) if it
+    // wants to know if the user can make a payment.
+    CanMakePaymentCallback(true);
   } else {
     state_->CanMakePayment(
         base::BindOnce(&PaymentRequest::CanMakePaymentCallback,

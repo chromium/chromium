@@ -27,7 +27,6 @@ public abstract class PaymentFeatureList {
     public static final String GOOGLE_PAY_VIA_ANDROID_INTENTS = "GooglePayViaAndroidIntents";
     public static final String OMIT_PARAMETERS_IN_READY_TO_PAY = "OmitParametersInReadyToPay";
     public static final String ALLOW_SHOW_WITHOUT_READY_TO_PAY = "AllowShowWithoutReadyToPay";
-    public static final String CAN_MAKE_PAYMENT_TRUE_WHEN_PRIVATE = "CanMakePaymentTrueWhenPrivate";
     public static final String RESTRICT_IS_READY_TO_PAY_QUERY = "RestrictIsReadyToPayQuery";
     public static final String RECONNECT_ON_LOST_CONNECTION_TO_UPDATE_PAYMENT_DETAILS_SERVICE =
             "ReconnectOnLostConnectionToUpdatePaymentDetailsService";

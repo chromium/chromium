@@ -924,29 +924,16 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
-    @EnableFeatures({PaymentFeatureList.CAN_MAKE_PAYMENT_TRUE_WHEN_PRIVATE})
-    public void testCanMakePayment_WithTrueWhenPrivateFeature() {
+    public void testCanMakePayment_whenPrefIsDisabled() {
         PaymentRequestService service = defaultBuilder().setPrefsCanMakePayment(false).build();
         service.canMakePayment();
-        mPaymentAppServiceDelegate.onCanMakePaymentCalculated(true);
-        mPaymentAppServiceDelegate.onDoneCreatingPaymentApps(List.of(createDefaultPaymentApp()));
+        // The pref is disabled, so the response should be true even if the app factory reports
+        // false for canMakePayment and returns no apps.
+        mPaymentAppServiceDelegate.onCanMakePaymentCalculated(false);
+        mPaymentAppServiceDelegate.onDoneCreatingPaymentApps(List.of());
         Assert.assertEquals(
-                "PaymentRequest.canMakePayment() should return true when the feature is enabled.",
+                "PaymentRequest.canMakePayment() should return true when the pref is disabled.",
                 CanMakePaymentQueryResult.CAN_MAKE_PAYMENT,
-                mSentCanMakePayment);
-    }
-
-    @Test
-    @Feature({"Payments"})
-    @DisableFeatures({PaymentFeatureList.CAN_MAKE_PAYMENT_TRUE_WHEN_PRIVATE})
-    public void testCanMakePayment_WithTrueWhenPrivateFeatureDisabled() {
-        PaymentRequestService service = defaultBuilder().setPrefsCanMakePayment(false).build();
-        service.canMakePayment();
-        mPaymentAppServiceDelegate.onCanMakePaymentCalculated(true);
-        mPaymentAppServiceDelegate.onDoneCreatingPaymentApps(List.of(createDefaultPaymentApp()));
-        Assert.assertEquals(
-                "PaymentRequest.canMakePayment() should return false when the feature is disabled.",
-                CanMakePaymentQueryResult.CANNOT_MAKE_PAYMENT,
                 mSentCanMakePayment);
     }
 }

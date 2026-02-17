@@ -35,41 +35,113 @@ class PaymentRequestCanMakePaymentQueryTest
   }
 };
 
-// A user has installed a payment app that responds "false" to the
-// "canmakepayment" event. PaymentRequest.canMakePayment() should  return true,
-// but PaymentRequest.hasEnrolledInstrument() should return false.
-IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
-                       AppRespondsFalseToCanMakePaymentEvent) {
-  std::string method;
-  InstallPaymentApp("a.com", "/can_make_payment_false_responder.js", &method);
+// Tests for canMakePayment() and hasEnrolledInstrument() with different
+// values of the CanMakePaymentEnabled pref.
+class PaymentRequestCanMakePaymentQueryWithPref
+    : public PaymentRequestCanMakePaymentQueryTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ~PaymentRequestCanMakePaymentQueryWithPref() override = default;
 
-  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
+  void SetUpOnMainThread() override {
+    PaymentRequestCanMakePaymentQueryTest::SetUpOnMainThread();
+    test_controller()->SetCanMakePaymentEnabledPref(
+        CanMakePaymentEnabledPref());
+  }
 
-  ExpectCanMakePayment(true, method);
-  ExpectHasEnrolledInstrument(false, method);
-}
+  bool CanMakePaymentEnabledPref() const { return GetParam(); }
+};
 
 // A user has installed a payment app that responds "true" to the
-// "canmakepayment" event. Both PaymentRequest.canMakePayment() and
-// PaymentRequest.hasEnrolledInstrument() should return true."
-IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
+// "canmakepayment" event.
+IN_PROC_BROWSER_TEST_P(PaymentRequestCanMakePaymentQueryWithPref,
                        AppRespondsTrueToCanMakePaymentEvent) {
   base::HistogramTester histogram_tester;
+
   std::string method;
   InstallPaymentApp("a.com", "/can_make_payment_true_responder.js", &method);
 
   NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
 
-  ExpectCanMakePayment(true, method);
+  // Whether the pref is enabled or disabled, canMakePayment should be true,
+  // as there is a payment app.
+  ExpectCanMakePayment(/*expected=*/true, method);
   histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.CanMakePayment.CallAllowedByPref", /*sample=*/1,
+      "PaymentRequest.CanMakePayment.CallAllowedByPref",
+      /*sample=*/CanMakePaymentEnabledPref(),
       /*expected_bucket_count=*/1);
 
-  ExpectHasEnrolledInstrument(true, method);
+  // hasEnrolledInstrument is only true if the pref is enabled, as otherwise we
+  // lie and return false.
+  ExpectHasEnrolledInstrument(CanMakePaymentEnabledPref(), method);
   histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref", /*sample=*/1,
+      "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
+      /*sample=*/CanMakePaymentEnabledPref(),
       /*expected_bucket_count=*/1);
 }
+
+// A user has installed a payment app that responds "false" to the
+// "canmakepayment" event.
+IN_PROC_BROWSER_TEST_P(PaymentRequestCanMakePaymentQueryWithPref,
+                       AppRespondsFalseToCanMakePaymentEvent) {
+  base::HistogramTester histogram_tester;
+
+  std::string method;
+  InstallPaymentApp("a.com", "/can_make_payment_false_responder.js", &method);
+
+  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
+
+  // Whether the pref is enabled or disabled, canMakePayment should be true,
+  // as there is a payment app.
+  ExpectCanMakePayment(/*expected=*/true, method);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.CanMakePayment.CallAllowedByPref",
+      /*sample=*/CanMakePaymentEnabledPref(),
+      /*expected_bucket_count=*/1);
+
+  // Whether the pref is enabled or disabled, hasEnrolledInstrument is always
+  // false for this app (because the app responds false to the query).
+  ExpectHasEnrolledInstrument(false, method);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
+      /*sample=*/CanMakePaymentEnabledPref(),
+      /*expected_bucket_count=*/1);
+}
+
+// A website requests a payment method that is not supported by any installed
+// payment handler.
+IN_PROC_BROWSER_TEST_P(PaymentRequestCanMakePaymentQueryWithPref,
+                       UnsupportedUrlBasedMethod) {
+  base::HistogramTester histogram_tester;
+
+  // Use a non-existent payment app.
+  std::string method = "https://non-existent-payment-handler.com/pay.js";
+
+  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
+
+  // canMakePayment should be true if the pref is disabled, as we lie to the
+  // website to reduce data leakage.
+  ExpectCanMakePayment(!CanMakePaymentEnabledPref(), method);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.CanMakePayment.CallAllowedByPref",
+      /*sample=*/CanMakePaymentEnabledPref(),
+      /*expected_bucket_count=*/1);
+
+  // hasEnrolledInstrument is always false since the app doesn't exist.
+  ExpectHasEnrolledInstrument(false, method);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
+      /*sample=*/CanMakePaymentEnabledPref(),
+      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PaymentRequestCanMakePaymentQueryWithPref,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return base::StringPrintf(
+                               "PrefIs%s", info.param ? "Enabled" : "Disabled");
+                         });
 
 // A user has installed a payment app that responds "true" to the
 // "canmakepayment" event and the user is in incognito mode. In this case,
@@ -115,171 +187,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
   ExpectCanMakePayment(true, method);
   ExpectHasEnrolledInstrument(false, method);
 }
-
-// Test the case where hasEnrolledInstrument would return true, but the user has
-// disabled the API in settings.
-IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
-                       HasEnrolledInstrument_SupportedButDisabled) {
-  base::HistogramTester histogram_tester;
-  test_controller()->SetCanMakePaymentEnabledPref(false);
-
-  std::string method;
-  InstallPaymentApp("a.com", "/can_make_payment_true_responder.js", &method);
-
-  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
-
-  ExpectHasEnrolledInstrument(false, method);
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref", /*sample=*/0,
-      /*expected_bucket_count=*/1);
-}
-
-class PaymentRequestCanMakePaymentQueryWithFeatureTest
-    : public PaymentRequestCanMakePaymentQueryTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
- public:
-  PaymentRequestCanMakePaymentQueryWithFeatureTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features = {
-        features::kWebPaymentsExperimentalFeatures};
-
-    if (CanMakePaymentTrueWhenPrivateFeatureEnabled()) {
-      enabled_features.push_back(
-          {features::kCanMakePaymentTrueWhenPrivate, {}});
-    } else {
-      disabled_features.push_back(features::kCanMakePaymentTrueWhenPrivate);
-    }
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features);
-  }
-
-  ~PaymentRequestCanMakePaymentQueryWithFeatureTest() override = default;
-
-  void SetUpOnMainThread() override {
-    PaymentRequestCanMakePaymentQueryTest::SetUpOnMainThread();
-    test_controller()->SetCanMakePaymentEnabledPref(
-        CanMakePaymentEnabledPref());
-  }
-
-  bool CanMakePaymentEnabledPref() const { return std::get<0>(GetParam()); }
-
-  bool CanMakePaymentTrueWhenPrivateFeatureEnabled() const {
-    return std::get<1>(GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// A user has installed a payment app that responds "true" to the
-// "canmakepayment" event. This test verifies the behavior of canMakePayment()
-// and hasEnrolledInstrument() with different combinations of the
-// CanMakePaymentEnabled pref and the kCanMakePaymentTrueWhenPrivate feature
-// flag.
-IN_PROC_BROWSER_TEST_P(PaymentRequestCanMakePaymentQueryWithFeatureTest,
-                       AppRespondsTrueToCanMakePaymentEvent) {
-  base::HistogramTester histogram_tester;
-
-  std::string method;
-  InstallPaymentApp("a.com", "/can_make_payment_true_responder.js", &method);
-
-  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
-
-  // When the pref is true, canMakePayment should be true.
-  // When the pref is false, canMakePayment is true only if the
-  // kCanMakePaymentTrueWhenPrivate feature is enabled.
-  ExpectCanMakePayment(CanMakePaymentEnabledPref() ||
-                           CanMakePaymentTrueWhenPrivateFeatureEnabled(),
-                       method);
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.CanMakePayment.CallAllowedByPref",
-      /*sample=*/CanMakePaymentEnabledPref(),
-      /*expected_bucket_count=*/1);
-
-  // hasEnrolledInstrument is only true if the pref is true. The feature
-  // does not affect it.
-  ExpectHasEnrolledInstrument(CanMakePaymentEnabledPref(), method);
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
-      /*sample=*/CanMakePaymentEnabledPref(),
-      /*expected_bucket_count=*/1);
-}
-
-// A user has installed a payment app that responds "false" to the
-// "canmakepayment" event. This test verifies the behavior of canMakePayment()
-// and hasEnrolledInstrument() with different combinations of the
-// CanMakePaymentEnabled pref and the kCanMakePaymentTrueWhenPrivate feature
-// flag. hasEnrolledInstrument() should always be false in this case.
-IN_PROC_BROWSER_TEST_P(PaymentRequestCanMakePaymentQueryWithFeatureTest,
-                       AppRespondsFalseToCanMakePaymentEvent) {
-  base::HistogramTester histogram_tester;
-
-  std::string method;
-  InstallPaymentApp("a.com", "/can_make_payment_false_responder.js", &method);
-
-  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
-
-  // When the pref is true, canMakePayment should be true.
-  // When the pref is false, canMakePayment is true only if the
-  // kCanMakePaymentTrueWhenPrivate feature is enabled.
-  ExpectCanMakePayment(CanMakePaymentEnabledPref() ||
-                           CanMakePaymentTrueWhenPrivateFeatureEnabled(),
-                       method);
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.CanMakePayment.CallAllowedByPref",
-      /*sample=*/CanMakePaymentEnabledPref(),
-      /*expected_bucket_count=*/1);
-
-  // hasEnrolledInstrument is always false for this app.
-  ExpectHasEnrolledInstrument(false, method);
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
-      /*sample=*/CanMakePaymentEnabledPref(),
-      /*expected_bucket_count=*/1);
-}
-
-// A website requests a payment method that is not supported by any installed
-// payment handler. This test verifies the behavior of canMakePayment() and
-// hasEnrolledInstrument() with different combinations of the
-// CanMakePaymentEnabled pref and the kCanMakePaymentTrueWhenPrivate feature
-// flag. hasEnrolledInstrument() should always be false in this case.
-IN_PROC_BROWSER_TEST_P(PaymentRequestCanMakePaymentQueryWithFeatureTest,
-                       UnsupportedUrlBasedMethod) {
-  base::HistogramTester histogram_tester;
-
-  // Use a non-existent payment app.
-  std::string method = "https://non-existent-payment-handler.com/pay.js";
-
-  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
-
-  // canMakePayment should only be true if the pref is false and the
-  // kCanMakePaymentTrueWhenPrivate feature is enabled.
-  ExpectCanMakePayment(!CanMakePaymentEnabledPref() &&
-                           CanMakePaymentTrueWhenPrivateFeatureEnabled(),
-                       method);
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.CanMakePayment.CallAllowedByPref",
-      /*sample=*/CanMakePaymentEnabledPref(),
-      /*expected_bucket_count=*/1);
-
-  // hasEnrolledInstrument is always false since the app doesn't exist.
-  ExpectHasEnrolledInstrument(false, method);
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
-      /*sample=*/CanMakePaymentEnabledPref(),
-      /*expected_bucket_count=*/1);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PaymentRequestCanMakePaymentQueryWithFeatureTest,
-    testing::Combine(testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
-      return base::StringPrintf(
-          "Pref%s_Feature%s", std::get<0>(info.param) ? "True" : "False",
-          std::get<1>(info.param) ? "Enabled" : "Disabled");
-    });
 
 // Pages without a valid SSL certificate always get "false" from
 // canMakePayment() and hasEnrolledInstrument() and NotSupported error from

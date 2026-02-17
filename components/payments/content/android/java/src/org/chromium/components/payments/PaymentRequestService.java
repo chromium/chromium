@@ -1081,14 +1081,12 @@ public class PaymentRequestService
                     "PaymentRequest.CanMakePayment.CallAllowedByPref", allowedByPref);
         }
 
-        boolean response = true;
+        // When the pref is disabled, we lie and always tell the website that the payment method is
+        // supported. This reduces data leakage, by requiring the site to call show() (which should
+        // show UX if the app is available) if it wants to know if the user can make a payment.
+        boolean response = !allowedByPref || mCanMakePayment;
         if (!allowedByPref) {
-            response =
-                    PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                            PaymentFeatureList.CAN_MAKE_PAYMENT_TRUE_WHEN_PRIVATE);
-            Log.i(TAG, "Can make payment API disabled by settings, returning \"%b\".", response);
-        } else {
-            response = mCanMakePayment;
+            Log.i(TAG, "Can make payment API disabled by settings, returning \"true\".");
         }
 
         mBrowserPaymentRequest.maybeOverrideCanMakePaymentResponse(

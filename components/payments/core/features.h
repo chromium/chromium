@@ -26,10 +26,6 @@ BASE_DECLARE_FEATURE(kAppStoreBilling);
 // installed from specific app stores.
 BASE_DECLARE_FEATURE(kAppStoreBillingDebug);
 
-// If enabled, CanMakePayment returns true (and HasEnrolledInstrument returns
-// false) when the `kCanMakePaymentEnabled` pref is false.
-BASE_DECLARE_FEATURE(kCanMakePaymentTrueWhenPrivate);
-
 // Used to control whether allow crawling just-in-time installable payment app.
 BASE_DECLARE_FEATURE(kWebPaymentsJustInTimePaymentApp);
 
