@@ -14,7 +14,7 @@ class _PresubmitCheckContext:
 
   This is used as a key to cache results of a presubmit check. The histograms
   directory hash is used to lower the probability of changes in one file
-  impacing health status of presubmit checks in the other. This still doesn't
+  impacting health status of presubmit checks in the other. This still doesn't
   eliminate the risk of changes from outside of this directory affecting the
   health status, but given how PRESUBMIT is triggered, this seems to be inline
   with the risk of that happening because of PRESUBMIT not being triggered.

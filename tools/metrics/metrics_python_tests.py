@@ -56,7 +56,7 @@ def main():
 
   typ.main(tests=filtered_tests_files_paths,
            top_level_dirs=_TEST_DIRECTORIES_RELATIVE_TO_SRC,
-           jobs=1)
+           jobs=128)
 
 
 if __name__ == '__main__':

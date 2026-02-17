@@ -13,14 +13,26 @@ from chromium_src.tools.metrics.histograms.presubmit_caching_support import Pres
 
 from chromium_src.PRESUBMIT_test_mocks import MockAffectedFile, MockInputApi, MockOutputApi
 
-_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_BASE_DIR = os.path.dirname(__file__)
 _TOP_LEVEL_ENUMS_PATH = (f'{os.path.dirname(__file__)}/enums.xml')
+
+
+_INITIAL_HISTOGRAMS_CONTENT = '<histogram name="Foo" enum="Boolean" />'
+_MODIFIED_HISTOGRAMS_CONTENT = '<histogram name="Foo" units="Boolean" />'
 
 
 def _TempCacheFile():
   file_handle, file_path = tempfile.mkstemp(suffix='.json', text=True)
   os.close(file_handle)
   return file_path
+
+
+def _PrepareTestWorkingDirectory():
+  test_dir = tempfile.mkdtemp()
+  histograms_path = os.path.join(test_dir, 'histograms.xml')
+  with open(histograms_path, 'w') as f:
+    f.write(_INITIAL_HISTOGRAMS_CONTENT)
+  return test_dir, histograms_path
 
 
 def _MockInputFromTestFile(relative_path: str) -> (MockInputApi, str):
@@ -47,7 +59,9 @@ def _MockInputFromTestFile(relative_path: str) -> (MockInputApi, str):
   return (mock_input_api, full_path)
 
 
-def _MockInputFromString(path: str, contents: str) -> MockInputApi:
+def _MockInputFromString(path: str,
+                         contents: str,
+                         test_directory_path: str = _BASE_DIR) -> MockInputApi:
   """ Returns a MockInputApi with single changed file with given contents.Api.
 
   Args:
@@ -58,7 +72,7 @@ def _MockInputFromString(path: str, contents: str) -> MockInputApi:
     A MockInputApi that lists the provided file as only one changed.
   """
   mock_input_api = MockInputApi()
-  mock_input_api.presubmit_local_path = _BASE_DIR
+  mock_input_api.presubmit_local_path = test_directory_path
   mock_input_api.files = [
       MockAffectedFile(path, [contents]),
   ]
@@ -185,12 +199,15 @@ class MetricsPresubmitTest(unittest.TestCase):
     return len(cache.InspectCacheForTesting().data)
 
   def testSecondCheckOnTheSameDataReturnsSameResult(self):
+    test_dir_path, _ = _PrepareTestWorkingDirectory()
     test_cache_file = _TempCacheFile()
+
     mock_input_api = _MockInputFromString(
-        'histograms.xml', '<histogram name="Foo" units="Boolean" />')
+        'histograms.xml', '<histogram name="Foo" units="Boolean" />',
+        test_dir_path)
 
     # The cache should be empty before we run any presubmit checks.
-    self.assertEqual(self._CacheSize(test_cache_file, _BASE_DIR), 0)
+    self.assertEqual(self._CacheSize(test_cache_file, test_dir_path), 0)
 
     results = PRESUBMIT.CheckBooleansAreEnums(mock_input_api,
                                               MockOutputApi(),
@@ -203,7 +220,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(results[0].type, 'promptOrNotify')
 
     # The cache should now store a single entry for the check above.
-    self.assertEqual(self._CacheSize(test_cache_file, _BASE_DIR), 1)
+    self.assertEqual(self._CacheSize(test_cache_file, test_dir_path), 1)
 
     second_results = PRESUBMIT.CheckBooleansAreEnums(
         mock_input_api, MockOutputApi(), cache_file_path=test_cache_file)
@@ -213,15 +230,18 @@ class MetricsPresubmitTest(unittest.TestCase):
 
     # The check result should be retrieved from the cache and the cache should
     # still have only one entry.
-    self.assertEqual(self._CacheSize(test_cache_file, _BASE_DIR), 1)
+    self.assertEqual(self._CacheSize(test_cache_file, test_dir_path), 1)
 
   def testSecondCheckOnTheSameDataReturnsSameEmptyResult(self):
+    test_dir_path, _ = _PrepareTestWorkingDirectory()
     test_cache_file = _TempCacheFile()
+
     mock_input_api = _MockInputFromString(
-        'histograms.xml', '<histogram name="Foo" enum="Boolean" />')
+        'histograms.xml', '<histogram name="Foo" enum="Boolean" />',
+        test_dir_path)
 
     # The cache should be empty before we run any presubmit checks.
-    self.assertEqual(self._CacheSize(test_cache_file, _BASE_DIR), 0)
+    self.assertEqual(self._CacheSize(test_cache_file, test_dir_path), 0)
 
     results = PRESUBMIT.CheckBooleansAreEnums(mock_input_api,
                                               MockOutputApi(),
@@ -230,7 +250,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(len(results), 0)
 
     # The cache should now store a single entry for the check above.
-    self.assertEqual(self._CacheSize(test_cache_file, _BASE_DIR), 1)
+    self.assertEqual(self._CacheSize(test_cache_file, test_dir_path), 1)
 
     second_results = PRESUBMIT.CheckBooleansAreEnums(
         mock_input_api, MockOutputApi(), cache_file_path=test_cache_file)
@@ -239,26 +259,20 @@ class MetricsPresubmitTest(unittest.TestCase):
 
     # The check result should be retrieved from the cache and the cache should
     # still have only one entry.
-    self.assertEqual(self._CacheSize(test_cache_file, _BASE_DIR), 1)
+    self.assertEqual(self._CacheSize(test_cache_file, test_dir_path), 1)
 
   def testFailureInModifiedFileIsDetected(self):
-    test_dir = tempfile.mkdtemp()
-    initial_histograms_content = '<histogram name="Foo" enum="Boolean" />'
-    modified_histograms_content = '<histogram name="Foo" units="Boolean" />'
-    histograms_path = os.path.join(test_dir, 'histograms.xml')
-
-    with open(histograms_path, 'w') as f:
-      f.write(initial_histograms_content)
+    test_dir_path, histograms_path = _PrepareTestWorkingDirectory()
 
     test_cache_file = _TempCacheFile()
     mock_input_api = MockInputApi()
-    mock_input_api.presubmit_local_path = test_dir
+    mock_input_api.presubmit_local_path = test_dir_path
     mock_input_api.files = [
-        MockAffectedFile('histograms.xml', [initial_histograms_content]),
+        MockAffectedFile('histograms.xml', [_INITIAL_HISTOGRAMS_CONTENT]),
     ]
 
     # The cache should be empty before we run any presubmit checks.
-    self.assertEqual(self._CacheSize(test_cache_file, test_dir), 0)
+    self.assertEqual(self._CacheSize(test_cache_file, test_dir_path), 0)
 
     results = PRESUBMIT.CheckBooleansAreEnums(mock_input_api,
                                               MockOutputApi(),
@@ -267,13 +281,13 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(len(results), 0)
 
     # The cache should now store a single entry for the check above.
-    self.assertEqual(self._CacheSize(test_cache_file, test_dir), 1)
+    self.assertEqual(self._CacheSize(test_cache_file, test_dir_path), 1)
 
     with open(histograms_path, 'w') as f:
-      f.write(modified_histograms_content)
+      f.write(_MODIFIED_HISTOGRAMS_CONTENT)
 
     mock_input_api.files = [
-        MockAffectedFile('histograms.xml', [modified_histograms_content]),
+        MockAffectedFile('histograms.xml', [_MODIFIED_HISTOGRAMS_CONTENT]),
     ]
 
     second_results = PRESUBMIT.CheckBooleansAreEnums(
@@ -288,7 +302,7 @@ class MetricsPresubmitTest(unittest.TestCase):
 
     # The cache should now have an extra entry as the second check was done on
     # a different version of the file.
-    self.assertEqual(self._CacheSize(test_cache_file, test_dir), 2)
+    self.assertEqual(self._CacheSize(test_cache_file, test_dir_path), 2)
 
   def testRegisteredVariantsArePassingValidation(self):
     valid_tokens_histograms_relative_paths = [

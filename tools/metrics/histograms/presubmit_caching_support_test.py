@@ -22,58 +22,46 @@ def _TempCacheFile():
   os.close(file_handle)
   return file_path
 
-
 class PresubmitCachingSupportTest(unittest.TestCase):
 
-  def testCanCacheAndRetrieveResult(self):
-    storage_path = _TempCacheFile()
-    cache = presubmit_caching_support.PresubmitCache(storage_path,
-                                                     os.path.dirname(__file__))
-    cache.StoreResultInCache(1, DummyResult('dummy result'))
+  def setUp(self):
+    self.checked_dir = tempfile.mkdtemp()
+    self.storage_path = _TempCacheFile()
+    self.cache = presubmit_caching_support.PresubmitCache(
+        self.storage_path, self.checked_dir)
+    self.cache.StoreResultInCache(1, DummyResult('dummy result'))
 
-    retrieved_result = cache.RetrieveResultFromCache(1)
+  def testCanCacheAndRetrieveResult(self):
+    retrieved_result = self.cache.RetrieveResultFromCache(1)
     self.assertEqual(retrieved_result.msg, 'dummy result')
 
   def testCanReloadCacheFromDisk(self):
-    storage_path = _TempCacheFile()
-
-    cache = presubmit_caching_support.PresubmitCache(storage_path,
-                                                     os.path.dirname(__file__))
-    cache.StoreResultInCache(1, DummyResult('dummy result'))
-
     restored_cache = presubmit_caching_support.PresubmitCache(
-        storage_path, os.path.dirname(__file__))
+        self.storage_path, self.checked_dir)
     retrieved_result = restored_cache.RetrieveResultFromCache(1)
     self.assertIsNotNone(retrieved_result)
     self.assertEqual(retrieved_result.msg, 'dummy result')
 
   def testDoesntReturnFromDifferentCheck(self):
-    storage_path = _TempCacheFile()
-
-    cache = presubmit_caching_support.PresubmitCache(storage_path,
-                                                     os.path.dirname(__file__))
-    cache.StoreResultInCache(1, DummyResult('dummy result'))
-
     restored_cache = presubmit_caching_support.PresubmitCache(
-        storage_path, os.path.dirname(__file__))
+        self.storage_path, self.checked_dir)
     retrieved_result = restored_cache.RetrieveResultFromCache(17)
     self.assertIsNone(retrieved_result)
 
   def testChangingDirectoryContentInvalidatesCache(self):
-    checked_dir = tempfile.mkdtemp()
-    storage_path = _TempCacheFile()
-    cache = presubmit_caching_support.PresubmitCache(storage_path, checked_dir)
-    cache.StoreResultInCache(1, DummyResult('dummy result'))
-
-    retrieved_result = cache.RetrieveResultFromCache(1)
+    retrieved_result = self.cache.RetrieveResultFromCache(1)
     self.assertEqual(retrieved_result.msg, 'dummy result')
 
-    with open(os.path.join(checked_dir, 'dummy_file'), 'w') as f:
+    with open(os.path.join(self.checked_dir, 'dummy_file'), 'w') as f:
       f.write('changing contents of observed directory')
 
     # The cache should be invalidated by the change in the observed directory.
-    new_retrieved_result = cache.RetrieveResultFromCache(1)
+    new_retrieved_result = self.cache.RetrieveResultFromCache(1)
     self.assertIsNone(new_retrieved_result)
+
+  checked_dir: str = ""
+  storage_path: str = ""
+  cache: presubmit_caching_support.PresubmitCache = None
 
 
 if __name__ == '__main__':
