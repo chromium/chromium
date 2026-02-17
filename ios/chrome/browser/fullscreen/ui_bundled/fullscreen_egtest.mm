@@ -122,10 +122,18 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 
   // Initial y scroll positions are set to make room for the toolbar.
-  CGFloat yOffset = -[FullscreenAppInterface currentViewportInsets].top;
-  DCHECK_LT(yOffset, 0);
+  // Starting from iOS 26, PDFs are using the framing resizing strategy. The
+  // webView frame starts below the toolbar. Since the container itself is
+  // already positioned correctly on the screen, the content offset should be 0
+  // to show the start of the document.
+  CGFloat expectedYOffset = 0;
+  if (!@available(iOS 26, *)) {
+    expectedYOffset = -[FullscreenAppInterface currentViewportInsets].top;
+    DCHECK_LT(expectedYOffset, 0);
+  }
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
-      assertWithMatcher:grey_scrollViewContentOffset(CGPointMake(0, yOffset))];
+      assertWithMatcher:grey_scrollViewContentOffset(
+                            CGPointMake(0, expectedYOffset))];
 }
 
 // Verifies that the toolbar is not hidden when scrolling a short pdf, as the
@@ -521,6 +529,23 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
 - (void)testEmpty {
 }
 
+// Override this tests as when smooth scrolling is enabled, PDF resizing
+// strategy is using content inset so the offset initial values are different.
+- (void)testLongPDFInitialState {
+  GURL URL = web::test::HttpServer::MakeUrl(
+      "http://ios/testing/data/http_server_files/two_pages.pdf");
+  [ChromeEarlGrey loadURL:URL];
+  WaitforPDFExtensionView();
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // Initial y scroll positions are set to make room for the toolbar.
+  CGFloat expectedYOffset = -[FullscreenAppInterface currentViewportInsets].top;
+  DCHECK_LT(expectedYOffset, 0);
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      assertWithMatcher:grey_scrollViewContentOffset(
+                            CGPointMake(0, expectedYOffset))];
+}
+
 @end
 
 #pragma mark - Bottom omnibox Tests
@@ -565,6 +590,23 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
 
 // This is currently needed to prevent this test case from being ignored.
 - (void)testEmpty {
+}
+
+// Override this tests as when smooth scrolling is enabled, PDF resizing
+// strategy is using content inset so the offset initial values are different.
+- (void)testLongPDFInitialState {
+  GURL URL = web::test::HttpServer::MakeUrl(
+      "http://ios/testing/data/http_server_files/two_pages.pdf");
+  [ChromeEarlGrey loadURL:URL];
+  WaitforPDFExtensionView();
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // Initial y scroll positions are set to make room for the toolbar.
+  CGFloat expectedYOffset = -[FullscreenAppInterface currentViewportInsets].top;
+  DCHECK_LT(expectedYOffset, 0);
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      assertWithMatcher:grey_scrollViewContentOffset(
+                            CGPointMake(0, expectedYOffset))];
 }
 
 @end

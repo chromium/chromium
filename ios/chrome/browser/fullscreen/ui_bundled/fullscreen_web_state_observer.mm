@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_web_view_proxy_observer.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
+#import "ios/web/common/features.h"
 #import "ios/web/common/url_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -81,13 +82,23 @@ void FullscreenWebStateObserver::DidFinishNavigation(
   bool is_pdf = web_state->GetContentsMimeType() == "application/pdf";
   id<CRWWebViewProxy> web_view_proxy =
       WebViewProxyTabHelper::FromWebState(web_state)->GetWebViewProxy();
-  web_view_proxy.shouldUseViewContentInset = is_pdf;
+  bool resizes_scroll_view =
+      !is_pdf && !ios::provider::IsFullscreenSmoothScrollingSupported();
+  if (@available(iOS 26, *)) {
+    if (is_pdf) {
+      // Starting from iOS 26, PDFs use frame-based resizing rather than
+      // content insets to avoid document misalignment, unless smooth scrolling
+      // is enabled.
+      web_view_proxy.shouldUseViewContentInset =
+          base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault);
+      resizes_scroll_view = !web_view_proxy.shouldUseViewContentInset;
+    }
+  } else {
+    web_view_proxy.shouldUseViewContentInset = is_pdf;
+  }
 
-  model_->SetResizesScrollView(
-      !is_pdf && !ios::provider::IsFullscreenSmoothScrollingSupported());
-
+  model_->SetResizesScrollView(resizes_scroll_view);
   model_->SetScrollViewHeight(web_state->GetView().bounds.size.height);
-
   // Only reset the model for document-changing navigations.
   if (!navigation_context->IsSameDocument()) {
     model_->ResetForNavigation();
