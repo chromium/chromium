@@ -18636,6 +18636,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.Omnibox.MobileFusebox.Action.LensSearch">
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>christianxu@google.com</owner>
+  <description>Recorded when user taps Lens button in Fusebox.</description>
+</action>
+
+<action name="IOS.Omnibox.MobileFusebox.Action.QRScanner">
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>christianxu@google.com</owner>
+  <description>
+    Recorded when user taps QR Scanner button in Fusebox.
+  </description>
+</action>
+
+<action name="IOS.Omnibox.MobileFusebox.Action.VoiceSearch">
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>christianxu@google.com</owner>
+  <description>Recorded when user taps Voice button in Fusebox.</description>
+</action>
+
 <action name="IOS.OpenIn">
   <obsolete>Renamed to IOS.OpenIn.Tapped, 08/2020</obsolete>
   <owner>ewannpv@chromium.org</owner>

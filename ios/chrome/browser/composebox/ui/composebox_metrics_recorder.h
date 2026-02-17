@@ -101,6 +101,10 @@ enum class ComposeboxDragAndDropType {
                                       requestType:
                                           (AutocompleteRequestType)requestType;
 
+- (void)recordVoiceSearchButtonUsed;
+- (void)recordLensSearchButtonUsed;
+- (void)recordQRScannerButtonUsed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_METRICS_RECORDER_H_

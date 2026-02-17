@@ -7,6 +7,7 @@
 #import <set>
 
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 
 namespace {
@@ -152,6 +153,21 @@ std::string GetStringForDragAndDropType(ComposeboxDragAndDropType type) {
     base::UmaHistogramEnumeration("Omnibox.FocusResultedInNavigation" + suffix,
                                   type);
   }
+}
+
+- (void)recordVoiceSearchButtonUsed {
+  base::RecordAction(
+      base::UserMetricsAction("IOS.Omnibox.MobileFusebox.Action.VoiceSearch"));
+}
+
+- (void)recordLensSearchButtonUsed {
+  base::RecordAction(
+      base::UserMetricsAction("IOS.Omnibox.MobileFusebox.Action.LensSearch"));
+}
+
+- (void)recordQRScannerButtonUsed {
+  base::RecordAction(
+      base::UserMetricsAction("IOS.Omnibox.MobileFusebox.Action.QRScanner"));
 }
 
 #pragma mark - private
