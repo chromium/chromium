@@ -38,6 +38,8 @@ std::u16string GetGeolocationBlockedUIDescription(QuietUiReason reason) {
           IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI);
     case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
     case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
+    // TODO(crbug.com/412962300) use custom string
+    case QuietUiReason::kTriggeredDueToLackOfGesture:
       return l10n_util::GetStringUTF16(
           IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_PREDICTION_SERVICE);
     default:
