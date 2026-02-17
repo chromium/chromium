@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/notifier_metadata.h"
 #include "ash/public/cpp/notifier_settings_controller.h"
 #include "ash/shell.h"
@@ -17,7 +16,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -110,45 +108,10 @@ TEST_F(NotifierSettingsViewTest, AccessibleProperties) {
                 IDS_ASH_MESSAGE_CENTER_SETTINGS_DIALOG_DESCRIPTION));
 }
 
-// Tests the notifier settings view with kSettingsAppNotificationSettings
-// enabled/disabled.
-class NotifierSettingsViewSettingsAppNotificationTest
-    : public NotifierSettingsViewTest,
-      public testing::WithParamInterface<bool> {
- public:
-  NotifierSettingsViewSettingsAppNotificationTest() = default;
-  NotifierSettingsViewSettingsAppNotificationTest(
-      const NotifierSettingsViewSettingsAppNotificationTest&) = delete;
-  NotifierSettingsViewSettingsAppNotificationTest& operator=(
-      const NotifierSettingsViewSettingsAppNotificationTest&) = delete;
-  ~NotifierSettingsViewSettingsAppNotificationTest() = default;
-
-  void SetUp() override {
-    feature_list_.InitWithFeatureState(
-        features::kSettingsAppNotificationSettings, GetParam());
-    NotifierSettingsViewTest::SetUp();
-  }
-
-  bool IsSettingsAppNotificationSettingsEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         NotifierSettingsViewSettingsAppNotificationTest,
-                         testing::Bool());
-
-TEST_P(NotifierSettingsViewSettingsAppNotificationTest,
-       NotificationSettingsLabelTest) {
+TEST_F(NotifierSettingsViewTest, NotificationSettingsLabelTest) {
   auto notifier_settings_view = std::make_unique<NotifierSettingsView>();
   EXPECT_TRUE(notifier_settings_view->get_quiet_mode_icon_view_for_test());
   EXPECT_TRUE(notifier_settings_view->get_quiet_mode_toggle_for_test());
-  EXPECT_EQ(
-      IsSettingsAppNotificationSettingsEnabled(),
-      !!notifier_settings_view->get_notification_settings_lable_for_test());
-  EXPECT_NE(IsSettingsAppNotificationSettingsEnabled(),
-            !!notifier_settings_view->get_scroller_view_for_test());
 }
 
 }  // namespace ash

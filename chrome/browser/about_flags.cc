@@ -8235,13 +8235,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"settings-app-notification-settings",
-     flag_descriptions::kSettingsAppNotificationSettingsName,
-     flag_descriptions::kSettingsAppNotificationSettingsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSettingsAppNotificationSettings)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_ANDROID)
     {"web-otp-backend", flag_descriptions::kWebOtpBackendName,
      flag_descriptions::kWebOtpBackendDescription, kOsAndroid,

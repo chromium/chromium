@@ -1728,10 +1728,6 @@ BASE_FEATURE(kSessionManagerLongKillTimeout, base::FEATURE_DISABLED_BY_DEFAULT);
 // file session_manager_service.cc.
 BASE_FEATURE(kSessionManagerLivenessCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Removes notifier settings from quick settings view.
-BASE_FEATURE(kSettingsAppNotificationSettings,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Whether theme changes should be animated for the Settings app.
 BASE_FEATURE(kSettingsAppThemeChangeAnimation,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3116,10 +3112,6 @@ bool IsSeparateNetworkIconsEnabled() {
 
 bool IsSeparateWebAppShortcutBadgeIconEnabled() {
   return base::FeatureList::IsEnabled(kSeparateWebAppShortcutBadgeIcon);
-}
-
-bool IsSettingsAppNotificationSettingsEnabled() {
-  return base::FeatureList::IsEnabled(kSettingsAppNotificationSettings);
 }
 
 bool IsSettingsAppThemeChangeAnimationEnabled() {

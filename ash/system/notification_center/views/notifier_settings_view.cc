@@ -801,12 +801,8 @@ NotifierSettingsView::NotifierSettingsView() {
   auto header_view = std::make_unique<views::View>();
   header_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
-  // There should be no bottom border under the header view if quick
-  // settings notification permissions split is enabled.
-  if (!features::IsSettingsAppNotificationSettingsEnabled()) {
-    header_view->SetBorder(views::CreateSolidSidedBorder(
-        gfx::Insets::TLBR(0, 0, 4, 0), kTopBorderColor));
-  }
+  header_view->SetBorder(views::CreateSolidSidedBorder(
+      gfx::Insets::TLBR(0, 0, 4, 0), kTopBorderColor));
 
   // Row for the app badging toggle button.
   auto app_badging_icon = std::make_unique<AdaptiveBadgingIcon>();
@@ -862,58 +858,35 @@ NotifierSettingsView::NotifierSettingsView() {
   SetQuietModeState(MessageCenter::Get()->IsQuietMode());
   header_view->AddChildView(std::move(quiet_mode_view));
 
-  // With SettingsAppNotificationSettings enabled, notification settings should
-  // be managed through the settings app. The Quick Settings notification
-  // settings UI should redirect users to the settings app in that case.
-  // TODO(crbug/1194632): Add links to open settings page or lacros-browser.
-  if (features::IsSettingsAppNotificationSettingsEnabled()) {
-    auto notification_settings_label =
-        std::make_unique<PrimaryTextColorLabel>(l10n_util::GetStringUTF16(
-            IDS_ASH_MESSAGE_CENTER_NOTIFICATION_SETTINGS_LABEL));
-    notification_settings_label->SetFontList(gfx::FontList().Derive(
-        kLabelFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-    notification_settings_label->SetAutoColorReadabilityEnabled(false);
-    notification_settings_label->SetEnabledColor(
-        cros_tokens::kTextColorPrimary);
-    notification_settings_label->SetSubpixelRenderingEnabled(false);
-    notification_settings_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    notification_settings_label->SetMultiLine(true);
-    notification_settings_label->SetBorder(
-        views::CreateEmptyBorder(kLabelPadding));
-    notification_settings_label_ =
-        header_view->AddChildView(std::move(notification_settings_label));
-    header_view_ = AddChildView(std::move(header_view));
-  } else {
-    auto top_label =
-        std::make_unique<PrimaryTextColorLabel>(l10n_util::GetStringUTF16(
-            IDS_ASH_MESSAGE_CENTER_SETTINGS_DIALOG_DESCRIPTION));
-    top_label->SetBorder(views::CreateEmptyBorder(kLabelPadding));
-    // "Roboto-Medium, 13sp" is specified in the mock.
-    top_label->SetFontList(gfx::FontList().Derive(
-        kLabelFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-    top_label->SetAutoColorReadabilityEnabled(false);
-    top_label->SetEnabledColor(cros_tokens::kTextColorPrimary);
-    top_label->SetSubpixelRenderingEnabled(false);
-    top_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    top_label->SetMultiLine(true);
-    top_label_ = header_view->AddChildView(std::move(top_label));
+  auto top_label =
+      std::make_unique<PrimaryTextColorLabel>(l10n_util::GetStringUTF16(
+          IDS_ASH_MESSAGE_CENTER_SETTINGS_DIALOG_DESCRIPTION));
+  top_label->SetBorder(views::CreateEmptyBorder(kLabelPadding));
+  // "Roboto-Medium, 13sp" is specified in the mock.
+  top_label->SetFontList(gfx::FontList().Derive(
+      kLabelFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+  top_label->SetAutoColorReadabilityEnabled(false);
+  top_label->SetEnabledColor(cros_tokens::kTextColorPrimary);
+  top_label->SetSubpixelRenderingEnabled(false);
+  top_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  top_label->SetMultiLine(true);
+  top_label_ = header_view->AddChildView(std::move(top_label));
 
-    header_view_ = AddChildView(std::move(header_view));
+  header_view_ = AddChildView(std::move(header_view));
 
-    auto scroller = std::make_unique<views::ScrollView>();
-    scroller->SetBackgroundColor(std::nullopt);
-    scroll_bar_ = scroller->SetVerticalScrollBar(
-        std::make_unique<views::OverlayScrollBar>(
-            views::ScrollBar::Orientation::kVertical));
-    scroller->SetDrawOverflowIndicator(false);
-    scroller_ = AddChildView(std::move(scroller));
+  auto scroller = std::make_unique<views::ScrollView>();
+  scroller->SetBackgroundColor(std::nullopt);
+  scroll_bar_ =
+      scroller->SetVerticalScrollBar(std::make_unique<views::OverlayScrollBar>(
+          views::ScrollBar::Orientation::kVertical));
+  scroller->SetDrawOverflowIndicator(false);
+  scroller_ = AddChildView(std::move(scroller));
 
-    no_notifiers_view_ = AddChildView(std::make_unique<EmptyNotifierView>());
+  no_notifiers_view_ = AddChildView(std::make_unique<EmptyNotifierView>());
 
-    OnNotifiersUpdated({});
-    NotifierSettingsController::Get()->AddNotifierSettingsObserver(this);
-    NotifierSettingsController::Get()->GetNotifiers();
-  }
+  OnNotifiersUpdated({});
+  NotifierSettingsController::Get()->AddNotifierSettingsObserver(this);
+  NotifierSettingsController::Get()->GetNotifiers();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kList);
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
@@ -943,9 +916,6 @@ void NotifierSettingsView::SetQuietModeState(bool is_quiet_mode) {
 
 void NotifierSettingsView::OnNotifiersUpdated(
     const std::vector<NotifierMetadata>& notifiers) {
-  // We do not show notifier metadata when notifications settings are
-  // split out of the notifier_settings_view.
-  DCHECK(!features::IsSettingsAppNotificationSettingsEnabled());
   // TODO(tetsui): currently notifier settings list doesn't update after once
   // it's loaded, in order to retain scroll position.
   if (scroller_->contents() && buttons_.size() > 0) {
@@ -984,11 +954,6 @@ void NotifierSettingsView::OnNotifiersUpdated(
 
 void NotifierSettingsView::OnNotifierIconUpdated(const NotifierId& notifier_id,
                                                  const gfx::ImageSkia& icon) {
-  // Notifier icons are not shown when notification permissions splitting is
-  // enabled.
-  if (features::IsSettingsAppNotificationSettingsEnabled()) {
-    return;
-  }
   for (NotifierButton* button : buttons_) {
     if (button->notifier_id() == notifier_id) {
       button->UpdateIconImage(icon);
@@ -1000,11 +965,6 @@ void NotifierSettingsView::OnNotifierIconUpdated(const NotifierId& notifier_id,
 void NotifierSettingsView::Layout(PassKey) {
   int header_height = header_view_->GetHeightForWidth(width());
   header_view_->SetBounds(0, 0, width(), header_height);
-  // |scroller_| and |no_notifiers_view_| do not exist when notifications
-  // settings are split out of the notifier_settings_view.
-  if (features::IsSettingsAppNotificationSettingsEnabled()) {
-    return;
-  }
 
   views::View* contents_view = scroller_->contents();
   int original_scroll_position = scroller_->GetVisibleRect().y();
@@ -1025,14 +985,6 @@ void NotifierSettingsView::Layout(PassKey) {
 
 gfx::Size NotifierSettingsView::GetMinimumSize() const {
   gfx::Size size(kWidth, kMinimumHeight);
-  // |scroller_| does not exist when notifications settings are split out of the
-  // notifier_settings_view. Thus, minimum size should only take |header_view_|
-  // into consideration.
-  if (features::IsSettingsAppNotificationSettingsEnabled()) {
-    size.set_height(
-        std::max(size.height(), header_view_->GetPreferredSize().height()));
-    return size;
-  }
   int total_height = header_view_->GetPreferredSize().height() +
                      scroller_->contents()->GetPreferredSize().height();
   if (total_height > kMinimumHeight) {
@@ -1044,12 +996,6 @@ gfx::Size NotifierSettingsView::GetMinimumSize() const {
 gfx::Size NotifierSettingsView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   gfx::Size header_size = header_view_->GetPreferredSize();
-  // |scroller_| and |no_notifiers_view_| do not exist when notifications
-  // settings are split out of the notifier_settings_view.
-  if (features::IsSettingsAppNotificationSettingsEnabled()) {
-    return gfx::Size(header_size.width(),
-                     std::max(kMinimumHeight, header_size.height()));
-  }
 
   gfx::Size content_size = scroller_->contents()->GetPreferredSize();
   int no_notifiers_height = 0;
@@ -1068,20 +1014,10 @@ bool NotifierSettingsView::OnKeyPressed(const ui::KeyEvent& event) {
     return true;
   }
 
-  // |scroller_| does not exist when notifications settings are split out of the
-  // notifier_settings_view so it cannot consume key events.
-  if (features::IsSettingsAppNotificationSettingsEnabled()) {
-    return false;
-  }
   return scroller_->OnKeyPressed(event);
 }
 
 bool NotifierSettingsView::OnMouseWheel(const ui::MouseWheelEvent& event) {
-  // |scroller_| does not exist when notifications settings are split out of the
-  // notifier_settings_view so mouse wheel events are not consumed.
-  if (features::IsSettingsAppNotificationSettingsEnabled()) {
-    return false;
-  }
   return scroller_->OnMouseWheel(event);
 }
 

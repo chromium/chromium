@@ -8550,11 +8550,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "settings-app-notification-settings",
-    "owners": [ "yulunwu@chromium.org" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "settings-multi-column",
     "owners": ["hidehiko@chromium.org"],
     "expiry_milestone": 170

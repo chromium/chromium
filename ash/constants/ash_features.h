@@ -776,7 +776,6 @@ BASE_DECLARE_FEATURE(kSessionManagerLongKillTimeout);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kSessionManagerLivenessCheck);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kSettingsAppNotificationSettings);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kSettingsAppThemeChangeAnimation);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kShelfAutoHideSeparation);
@@ -1234,8 +1233,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSeaPenTextInputTranslationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSeaPenUseExptTemplateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSeparateNetworkIconsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSeparateWebAppShortcutBadgeIconEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsSettingsAppNotificationSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSettingsAppThemeChangeAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShelfLauncherNudgeEnabled();

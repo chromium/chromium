@@ -3744,13 +3744,6 @@ inline constexpr char kSensitiveContentWhileSwitchingTabsDescription[] =
     "screen recording, and similar actions. This feature works only on Android "
     "V or above, and if #sensitive-content is also enabled.";
 
-inline constexpr char kSettingsAppNotificationSettingsName[] =
-    "Split notification permission settings";
-inline constexpr char kSettingsAppNotificationSettingsDescription[] =
-    "Remove per-app notification permissions settings from the quick settings "
-    "menu. Notification permission settings will be moved to the ChromeOS "
-    "settings app.";
-
 inline constexpr char kRecordWebAppDebugInfoName[] =
     "Record web app debug info";
 inline constexpr char kRecordWebAppDebugInfoDescription[] =

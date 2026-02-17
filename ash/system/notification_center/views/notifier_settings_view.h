@@ -51,10 +51,6 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   void OnNotifierIconUpdated(const message_center::NotifierId& notifier_id,
                              const gfx::ImageSkia& icon) override;
 
-  views::ScrollView* get_scroller_view_for_test() { return scroller_; }
-  views::Label* get_notification_settings_lable_for_test() {
-    return notification_settings_label_;
-  }
   views::ImageView* get_quiet_mode_icon_view_for_test() {
     return quiet_mode_icon_;
   }
@@ -152,7 +148,6 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   raw_ptr<views::ImageView> quiet_mode_icon_ = nullptr;
   raw_ptr<views::ToggleButton> quiet_mode_toggle_ = nullptr;
   raw_ptr<views::View> header_view_ = nullptr;
-  raw_ptr<views::Label> notification_settings_label_ = nullptr;
   raw_ptr<views::Label> top_label_ = nullptr;
   raw_ptr<views::ScrollBar> scroll_bar_ = nullptr;
   raw_ptr<views::ScrollView> scroller_ = nullptr;
