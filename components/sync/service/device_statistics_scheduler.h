@@ -10,12 +10,10 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/wall_clock_timer.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
 
 struct CoreAccountInfo;
 class PrefRegistrySimple;
@@ -28,7 +26,7 @@ class DeviceStatisticsTracker;
 
 // Responsible for scheduling the recording of multi-account device metrics
 // (from DeviceStatisticsTracker) once per day.
-class DeviceStatisticsScheduler {
+class DeviceStatisticsScheduler : public signin::IdentityManager::Observer {
  public:
   class Delegate {
    public:
@@ -53,9 +51,12 @@ class DeviceStatisticsScheduler {
                             PrefService* pref_service,
                             signin::IdentityManager* identity_manager,
                             const GURL& sync_server_url);
-  ~DeviceStatisticsScheduler();
+  ~DeviceStatisticsScheduler() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // IdentityManager::Observer:
+  void OnRefreshTokensLoaded() override;
 
  private:
   base::Time ComputeEarliestAllowedTimeToRun() const;
@@ -70,6 +71,10 @@ class DeviceStatisticsScheduler {
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   const GURL sync_server_url_;
+
+  // Only used while the refresh tokens aren't loaded yet.
+  base::ScopedObservation<signin::IdentityManager, DeviceStatisticsScheduler>
+      identity_manager_observation_{this};
 
   // Timer to schedule the next metrics recording run. Not running while a run
   // is ongoing (i.e. `tracker_` is non-null).
