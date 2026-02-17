@@ -86,12 +86,6 @@ BASE_DECLARE_FEATURE(kWebAuthnPublishPrelinkingInfo);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnHelloSignal);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables the WebAuthn Signal API for Chrome on Android.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidSignal);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // When enabled, skips configuring hybrid when Windows can do hybrid. Hybrid may
 // still be delegated to Windows regardless of this flag.
 COMPONENT_EXPORT(FIDO_PUBLIC)

@@ -46,7 +46,6 @@ import org.chromium.url.Origin;
 @SmallTest
 @EnableFeatures({
     DeviceFeatureList.WEBAUTHN_IMMEDIATE_GET,
-    DeviceFeatureList.WEBAUTHN_ANDROID_SIGNAL
 })
 public class AuthenticatorImplTest {
     private AuthenticatorImpl mAuthenticator;

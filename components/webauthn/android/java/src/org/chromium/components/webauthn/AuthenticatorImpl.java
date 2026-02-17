@@ -267,10 +267,6 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     @Override
     public void report(PublicKeyCredentialReportOptions options, Report_Response callback) {
         log(TAG, "report");
-        if (!DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_SIGNAL)) {
-            callback.call(AuthenticatorStatus.NOT_IMPLEMENTED, null);
-            return;
-        }
 
         WebauthnRequestCallback requestCallback = WebauthnRequestCallback.forReport(callback);
         if (mRequestCallback != null) {
@@ -382,25 +378,21 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                                                             DeviceFeatureList
                                                                     .WEBAUTHN_IMMEDIATE_GET)
                                                     && isUvpaa));
-                            boolean signalSupported =
-                                    isUvpaa
-                                            && DeviceFeatureMap.isEnabled(
-                                                    DeviceFeatureList.WEBAUTHN_ANDROID_SIGNAL);
                             capabilities.add(
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants
                                                     .CAPABILITY_SIGNAL_ALL_ACCEPTED_CREDENTIALS,
-                                            signalSupported));
+                                            isUvpaa));
                             capabilities.add(
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants
                                                     .CAPABILITY_SIGNAL_CURRENT_USER_DETAILS,
-                                            signalSupported));
+                                            isUvpaa));
                             capabilities.add(
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants
                                                     .CAPABILITY_SIGNAL_UNKNOWN_CREDENTIAL,
-                                            signalSupported));
+                                            isUvpaa));
                             callback.call(capabilities.toArray(new WebAuthnClientCapability[0]));
                         });
     }
