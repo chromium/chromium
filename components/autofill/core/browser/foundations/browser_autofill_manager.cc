@@ -278,6 +278,7 @@ bool IsSingleFieldFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kIdentityCredential:
     case FillingProduct::kDataList:
     case FillingProduct::kOneTimePassword:
+    case FillingProduct::kAtMemory:
       return false;
   }
 }
@@ -526,9 +527,6 @@ DenseSet<FillingProduct> GetFillingProductsToSuggest(
   using enum AutofillSuggestionTriggerSource;
   switch (trigger_source) {
     case kUnspecified:
-    case kAtMemory:
-      // TODO(crbug.com/481980303): Return appropriate products
-      return {};
     case kTextareaFocusedWithoutClick:
     case kComposeDialogLostFocus:
     case kComposeDelayedProactiveNudge:
@@ -551,6 +549,8 @@ DenseSet<FillingProduct> GetFillingProductsToSuggest(
     case kGlic:
       return {FillingProduct::kAddress, FillingProduct::kCreditCard,
               FillingProduct::kPassword};
+    case kAtMemory:
+      return {FillingProduct::kAtMemory};
   }
 }
 

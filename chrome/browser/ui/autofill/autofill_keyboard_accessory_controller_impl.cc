@@ -93,6 +93,7 @@ Suggestion::Text FormatLabelsByFillingProduct(
     case FillingProduct::kDataList:
     case FillingProduct::kOneTimePassword:
     case FillingProduct::kPasskey:
+    case FillingProduct::kAtMemory:
     case FillingProduct::kNone:
       return Suggestion::Text(label);
   }
@@ -515,6 +516,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
     case FillingProduct::kIdentityCredential:
     case FillingProduct::kDataList:
     case FillingProduct::kOneTimePassword:
+    case FillingProduct::kAtMemory:
       break;
   }
 

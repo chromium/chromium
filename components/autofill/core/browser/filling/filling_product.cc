@@ -49,6 +49,8 @@ std::string FillingProductToString(FillingProduct filling_product) {
       return "DataList";
     case FillingProduct::kOneTimePassword:
       return "OneTimePassword";
+    case FillingProduct::kAtMemory:
+      return "AtMemory";
   }
   NOTREACHED();
 }

@@ -173,6 +173,8 @@ chromium-metrics-reviews@google.com.
 <variants name="Autofill.FillingProduct">
   <variant name="Address"
       summary="User chose to fill a form or field with an address profile."/>
+  <variant name="AtMemory"
+      summary="User chose to fill a field with @memory search pop-up."/>
   <variant name="Autocomplete"
       summary="User chose to fill a field with autocomplete."/>
   <variant name="AutofillAi"

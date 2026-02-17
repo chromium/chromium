@@ -552,6 +552,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
     case FillingProduct::kIdentityCredential:
     case FillingProduct::kDataList:
     case FillingProduct::kOneTimePassword:
+    case FillingProduct::kAtMemory:
       break;
   }
 

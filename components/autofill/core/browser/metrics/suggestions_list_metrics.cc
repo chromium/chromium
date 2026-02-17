@@ -41,6 +41,7 @@ void LogSuggestionsCount(size_t num_suggestions,
     case FillingProduct::kDataList:
     case FillingProduct::kOneTimePassword:
     case FillingProduct::kPasskey:
+    case FillingProduct::kAtMemory:
       NOTREACHED();
   }
 }
@@ -76,6 +77,7 @@ void LogSuggestionAcceptedIndex(int index,
     case FillingProduct::kDataList:
     case FillingProduct::kOneTimePassword:
     case FillingProduct::kPasskey:
+    case FillingProduct::kAtMemory:
       // It is NOTREACHED because all other types should be handled separately.
       NOTREACHED();
   }

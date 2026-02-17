@@ -138,6 +138,7 @@ bool IsDeactivatedPasswordOrPasskey(const Suggestion& suggestion) {
     case FillingProduct::kIdentityCredential:
     case FillingProduct::kDataList:
     case FillingProduct::kOneTimePassword:
+    case FillingProduct::kAtMemory:
     case FillingProduct::kNone:
       return false;
   }
@@ -184,6 +185,7 @@ void FormatLabel(views::Label& label,
     case FillingProduct::kDataList:
     case FillingProduct::kNone:
     case FillingProduct::kOneTimePassword:
+    case FillingProduct::kAtMemory:
       break;
   }
 }

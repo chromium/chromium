@@ -31,7 +31,8 @@ enum class FillingProduct {
   kDataList,
   kOneTimePassword,
   kPasskey,
-  kMaxValue = kPasskey
+  kAtMemory,
+  kMaxValue = kAtMemory
 };
 
 FillingProduct GetFillingProductFromSuggestionType(SuggestionType type);

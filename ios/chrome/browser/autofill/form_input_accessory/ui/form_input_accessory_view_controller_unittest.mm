@@ -43,6 +43,7 @@ bool IsAvailableOnIos(autofill::FillingProduct filling_product) {
     case autofill::FillingProduct::kLoyaltyCard:
     case autofill::FillingProduct::kIdentityCredential:
     case autofill::FillingProduct::kOneTimePassword:
+    case autofill::FillingProduct::kAtMemory:
       return false;
   }
 }

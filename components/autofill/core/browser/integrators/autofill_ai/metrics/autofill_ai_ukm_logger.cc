@@ -197,6 +197,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
           case FillingProduct::kCompose:
           case FillingProduct::kDataList:
           case FillingProduct::kPasskey:
+          case FillingProduct::kAtMemory:
           case FillingProduct::kNone:
             return false;
         }
