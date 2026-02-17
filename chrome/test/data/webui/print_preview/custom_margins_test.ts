@@ -122,12 +122,27 @@ suite('CustomMarginsTest', function() {
     // Simulate events in the same order they are fired by the browser.
     // Need to provide a valid |pointerId| for setPointerCapture() to not
     // throw an error.
-    control.dispatchEvent(new PointerEvent(
-        'pointerdown', {pointerId: 1, clientX: xStart, clientY: yStart}));
-    control.dispatchEvent(new PointerEvent(
-        'pointermove', {pointerId: 1, clientX: xEnd, clientY: yEnd}));
-    control.dispatchEvent(new PointerEvent(
-        'pointerup', {pointerId: 1, clientX: xEnd, clientY: yEnd}));
+    control.$.line.dispatchEvent(new PointerEvent('pointerdown', {
+      bubbles: true,
+      composed: true,
+      pointerId: 1,
+      clientX: xStart,
+      clientY: yStart,
+    }));
+    control.$.line.dispatchEvent(new PointerEvent('pointermove', {
+      bubbles: true,
+      composed: true,
+      pointerId: 1,
+      clientX: xEnd,
+      clientY: yEnd,
+    }));
+    control.$.line.dispatchEvent(new PointerEvent('pointerup', {
+      bubbles: true,
+      composed: true,
+      pointerId: 1,
+      clientX: xEnd,
+      clientY: yEnd,
+    }));
   }
 
   /**
@@ -142,7 +157,7 @@ suite('CustomMarginsTest', function() {
    *     the default measurement system.
    * @return Promise that resolves when the test is complete.
    */
-  function testControlTextbox(
+  async function testControlTextbox(
       control: PrintPreviewMarginControlElement, key: string,
       currentValuePts: number, input: string, invalid: boolean,
       newValuePts?: number): Promise<void> {
@@ -158,15 +173,13 @@ suite('CustomMarginsTest', function() {
         new CustomEvent('input', {composed: true, bubbles: true}));
 
     if (!invalid) {
-      return eventToPromise('text-change', control).then(() => {
-        assertEquals(
-            newValuePts, container.getSettingValue('customMargins')[key]);
-        assertFalse(control.invalid);
-      });
+      await eventToPromise('text-change', control);
+      assertEquals(
+          newValuePts, container.getSettingValue('customMargins')[key]);
+      assertFalse(control.invalid);
     } else {
-      return eventToPromise('input-change', control).then(() => {
-        assertTrue(control.invalid);
-      });
+      await eventToPromise('input-change', control);
+      assertTrue(control.invalid);
     }
   }
 
@@ -198,120 +211,115 @@ suite('CustomMarginsTest', function() {
    * @param newValue The value to set the setting to.
    * @return Promise that resolves when the check is complete.
    */
-  function validateMarginsClearedForSetting(
+  async function validateMarginsClearedForSetting(
       settingName: keyof Settings, newValue: any) {
     const marginValues = setupCustomMargins();
-    return finishSetup().then(() => {
-      // Simulate setting custom margins.
-      model.setSetting('margins', MarginsType.CUSTOM);
+    await finishSetup();
 
-      // Validate control positions are set based on the custom values.
-      const controls = getControls();
-      controls.forEach((control, index) => {
-        const side = sides[index]!;
-        assertEquals(side, control.side);
-        assertEquals(marginValues.get(side), control.getPositionInPts());
-      });
+    // Simulate setting custom margins.
+    model.setSetting('margins', MarginsType.CUSTOM);
 
-      // Simulate setting the media size.
-      container.setSetting(settingName, newValue);
-      container.previewLoaded = false;
-
-      // Custom margins values should be cleared.
-      assertEquals(
-          '{}', JSON.stringify(container.getSettingValue('customMargins')));
-      // The margins-settings element will also set the margins type to DEFAULT.
-      model.setSetting('margins', MarginsType.DEFAULT);
-
-      // When preview loads, custom margins should still be empty, since
-      // custom margins are not selected. We do not want to set the sticky
-      // values until the user has selected custom margins.
-      container.previewLoaded = true;
-      assertEquals(
-          '{}', JSON.stringify(container.getSettingValue('customMargins')));
+    // Validate control positions are set based on the custom values.
+    const controls = getControls();
+    controls.forEach((control, index) => {
+      const side = sides[index]!;
+      assertEquals(side, control.side);
+      assertEquals(marginValues.get(side), control.getPositionInPts());
     });
+
+    // Simulate setting the media size.
+    container.setSetting(settingName, newValue);
+    container.previewLoaded = false;
+
+    // Custom margins values should be cleared.
+    assertEquals(
+        '{}', JSON.stringify(container.getSettingValue('customMargins')));
+    // The margins-settings element will also set the margins type to DEFAULT.
+    model.setSetting('margins', MarginsType.DEFAULT);
+
+    // When preview loads, custom margins should still be empty, since
+    // custom margins are not selected. We do not want to set the sticky
+    // values until the user has selected custom margins.
+    container.previewLoaded = true;
+    assertEquals(
+        '{}', JSON.stringify(container.getSettingValue('customMargins')));
   }
 
   // Test that controls correctly appear when custom margins are selected and
   // disappear when the preview is loading.
-  test('ControlsCheck', function() {
+  test('ControlsCheck', async function() {
     const getCustomMarginsValue = function(): MarginsSetting {
       return container.getSettingValue('customMargins') as MarginsSetting;
     };
-    return finishSetup()
-        .then(() => {
-          const controls = getControls();
-          assertEquals(4, controls.length);
+    await finishSetup();
 
-          // Controls are not visible when margin type DEFAULT is selected.
-          controls.forEach(control => {
-            assertEquals('0', window.getComputedStyle(control).opacity);
-          });
+    const controls = getControls();
+    assertEquals(4, controls.length);
 
-          const onTransitionEnd = getAllTransitions(controls);
-          // Controls become visible when margin type CUSTOM is selected.
-          model.setSetting('margins', MarginsType.CUSTOM);
+    // Controls are not visible when margin type DEFAULT is selected.
+    controls.forEach(control => {
+      assertEquals('0', window.getComputedStyle(control).opacity);
+    });
 
-          // Wait for the opacity transitions to finish.
-          return onTransitionEnd;
-        })
-        .then(function() {
-          // Verify margins are correctly set based on previous value.
-          assertEquals(defaultMarginPts, getCustomMarginsValue().marginTop);
-          assertEquals(defaultMarginPts, getCustomMarginsValue().marginLeft);
-          assertEquals(defaultMarginPts, getCustomMarginsValue().marginRight);
-          assertEquals(defaultMarginPts, getCustomMarginsValue().marginBottom);
+    let onTransitionEnd = getAllTransitions(controls);
+    // Controls become visible when margin type CUSTOM is selected.
+    model.setSetting('margins', MarginsType.CUSTOM);
 
-          // Verify there is one control for each side and that controls are
-          // visible and positioned correctly.
-          const controls = getControls();
-          controls.forEach((control, index) => {
-            assertFalse(control.invisible);
-            assertFalse(control.disabled);
-            assertEquals('1', window.getComputedStyle(control).opacity);
-            assertEquals(sides[index], control.side);
-            assertEquals(defaultMarginPts, control.getPositionInPts());
-          });
+    // Wait for the opacity transitions to finish.
+    await onTransitionEnd;
 
-          const onTransitionEnd = getAllTransitions(controls);
+    // Verify margins are correctly set based on previous value.
+    assertEquals(defaultMarginPts, getCustomMarginsValue().marginTop);
+    assertEquals(defaultMarginPts, getCustomMarginsValue().marginLeft);
+    assertEquals(defaultMarginPts, getCustomMarginsValue().marginRight);
+    assertEquals(defaultMarginPts, getCustomMarginsValue().marginBottom);
 
-          // Disappears when preview is loading or an error message is shown.
-          // Check that all the controls also disappear.
-          container.previewLoaded = false;
-          // Wait for the opacity transitions to finish.
-          return onTransitionEnd;
-        })
-        .then(function() {
-          const controls = getControls();
-          controls.forEach(control => {
-            assertEquals('0', window.getComputedStyle(control).opacity);
-            assertTrue(control.invisible);
-            assertTrue(control.disabled);
-          });
-        });
+    // Verify there is one control for each side and that controls are
+    // visible and positioned correctly.
+    controls.forEach((control, index) => {
+      assertFalse(control.invisible);
+      assertFalse(control.disabled);
+      assertEquals('1', window.getComputedStyle(control).opacity);
+      assertEquals(sides[index], control.side);
+      assertEquals(defaultMarginPts, control.getPositionInPts());
+    });
+
+    onTransitionEnd = getAllTransitions(controls);
+
+    // Disappears when preview is loading or an error message is shown.
+    // Check that all the controls also disappear.
+    container.previewLoaded = false;
+    // Wait for the opacity transitions to finish.
+    await onTransitionEnd;
+
+    const newControls = getControls();
+    newControls.forEach(control => {
+      assertEquals('0', window.getComputedStyle(control).opacity);
+      assertTrue(control.invisible);
+      assertTrue(control.disabled);
+    });
   });
 
   // Tests that the margin controls can be correctly set from the sticky
   // settings.
-  test('SetFromStickySettings', function() {
-    return finishSetup().then(() => {
-      const controls = getControls();
+  test('SetFromStickySettings', async function() {
+    await finishSetup();
+    const controls = getControls();
 
-      // Simulate setting custom margins from sticky settings.
-      model.setSetting('margins', MarginsType.CUSTOM);
-      const marginValues = setupCustomMargins();
+    // Simulate setting custom margins from sticky settings.
+    model.setSetting('margins', MarginsType.CUSTOM);
+    const marginValues = setupCustomMargins();
 
-      // Validate control positions have been updated.
-      controls.forEach((control, index) => {
-        const side = sides[index]!;
-        assertEquals(side, control.side);
-        assertEquals(marginValues.get(side), control.getPositionInPts());
-      });
+    // Validate control positions have been updated.
+    controls.forEach((control, index) => {
+      const side = sides[index]!;
+      assertEquals(side, control.side);
+      assertEquals(marginValues.get(side), control.getPositionInPts());
     });
   });
 
   // Test that dragging margin controls updates the custom margins setting.
-  test('DragControls', function() {
+  test('DragControls', async function() {
     /**
      * Tests that the control can be moved from its current position (assumed
      * to be the default margins) to newPositionInPts by dragging it.
@@ -320,9 +328,11 @@ suite('CustomMarginsTest', function() {
      *     of controls.
      * @param {number} newPositionInPts The new position in points.
      */
-    const testControl = function(
+    const testControl = async function(
         control: PrintPreviewMarginControlElement, index: number,
         newPositionInPts: number): Promise<void> {
+      assertFalse(control.disabled);
+      assertFalse(control.invisible);
       const oldValue =
           container.getSettingValue('customMargins') as {[k: string]: number};
       assertEquals(defaultMarginPts, oldValue[keys[index]!]);
@@ -335,29 +345,29 @@ suite('CustomMarginsTest', function() {
 
       const whenDragChanged = eventToPromise('margin-drag-changed', container);
       dragControl(control, oldPositionInPixels, newPositionInPixels);
-      return whenDragChanged.then(function() {
-        const newValue = container.getSettingValue('customMargins');
-        assertEquals(newPositionInPts, newValue[keys[index]!]);
-      });
+      await whenDragChanged;
+      await microtasksFinished();
+      const newValue = container.getSettingValue('customMargins');
+      assertEquals(newPositionInPts, newValue[keys[index]!]);
     };
 
-    return finishSetup().then(() => {
-      const controls = getControls();
-      model.setSetting('margins', MarginsType.CUSTOM);
+    await finishSetup();
+    const controls = getControls();
+    // Setting the setting triggers the container to update the location of
+    // all the controls.
+    model.setSetting('margins', MarginsType.CUSTOM);
+    await microtasksFinished();
 
-
-      // Wait for an animation frame. The position of the controls is set in
-      // an animation frame, and this needs to be initialized before dragging
-      // the control so that the computation of the new location is performed
-      // with the correct initial margin offset.
-      // Set all controls to 108 = 1.5" in points.
-      window.requestAnimationFrame(function() {
-        return testControl(controls[0]!, 0, 108)
-            .then(() => testControl(controls[1]!, 1, 108))
-            .then(() => testControl(controls[2]!, 2, 108))
-            .then(() => testControl(controls[3]!, 3, 108));
-      });
-    });
+    // Wait for an animation frame. The position of the controls is set in
+    // an animation frame, and this needs to be initialized before dragging
+    // the control so that the computation of the new location is performed
+    // with the correct initial margin offset.
+    // Set all controls to 108 = 1.5" in points.
+    await whenAnimationFrameDone();
+    await testControl(controls[0]!, 0, 108);
+    await testControl(controls[1]!, 1, 108);
+    await testControl(controls[2]!, 2, 108);
+    await testControl(controls[3]!, 3, 108);
   });
 
   /**
@@ -370,153 +380,129 @@ suite('CustomMarginsTest', function() {
    * @return Promise that resolves when all controls have been
    *     tested.
    */
-  function testAllTextboxes(
+  async function testAllTextboxes(
       controls: PrintPreviewMarginControlElement[], currentValue: number,
       input: string, invalid: boolean, newValuePts?: number): Promise<void> {
-    return testControlTextbox(
-               controls[0]!, keys[0]!, currentValue, input, invalid,
-               newValuePts)
-        .then(
-            () => testControlTextbox(
-                controls[1]!, keys[1]!, currentValue, input, invalid,
-                newValuePts))
-        .then(
-            () => testControlTextbox(
-                controls[2]!, keys[2]!, currentValue, input, invalid,
-                newValuePts))
-        .then(
-            () => testControlTextbox(
-                controls[3]!, keys[3]!, currentValue, input, invalid,
-                newValuePts));
+    await testControlTextbox(
+        controls[0]!, keys[0]!, currentValue, input, invalid, newValuePts);
+    await testControlTextbox(
+        controls[1]!, keys[1]!, currentValue, input, invalid, newValuePts);
+    await testControlTextbox(
+        controls[2]!, keys[2]!, currentValue, input, invalid, newValuePts);
+    await testControlTextbox(
+        controls[3]!, keys[3]!, currentValue, input, invalid, newValuePts);
   }
 
   // Test that setting the margin controls with their textbox inputs updates
   // the custom margins setting.
-  test('SetControlsWithTextbox', function() {
-    return finishSetup().then(async () => {
-      const controls = getControls();
-      // Set a shorter delay for testing so the test doesn't take too
-      // long.
-      controls.forEach(c => {
-        c.getInput().setAttribute('data-timeout-delay', '1');
-      });
-      model.setSetting('margins', MarginsType.CUSTOM);
-      await microtasksFinished();
-
-      // Verify entering a new value updates the settings.
-      // Then verify entering an invalid value invalidates the control
-      // and does not update the settings.
-      const value1 = '1.75';  // 1.75 inches
-      const newMargin1 = Math.round(parseFloat(value1) * pointsPerInch);
-      const value2 = '.6';
-      const newMargin2 = Math.round(parseFloat(value2) * pointsPerInch);
-      const value3 = '2';  // 2 inches
-      const newMargin3 = Math.round(parseFloat(value3) * pointsPerInch);
-      const maxTopMargin = container.pageSize.height - newMargin3 -
-          72 /* MINIMUM_DISTANCE, see margin_control.js */;
-      return testAllTextboxes(controls, defaultMarginPts, value1, false)
-          .then(() => testAllTextboxes(controls, newMargin1, 'abc', true))
-          .then(() => testAllTextboxes(controls, newMargin1, '1.2abc', true))
-          .then(() => testAllTextboxes(controls, newMargin1, '1.   2', true))
-          .then(() => testAllTextboxes(controls, newMargin1, '.', true))
-          .then(() => testAllTextboxes(controls, newMargin1, value2, false))
-          .then(() => testAllTextboxes(controls, newMargin2, value3, false))
-          .then(
-              () => testControlTextbox(
-                  controls[0]!, keys[0]!, newMargin3, '100', false,
-                  maxTopMargin))
-          .then(
-              () => testControlTextbox(
-                  controls[0]!, keys[0]!, maxTopMargin, '1,000', false,
-                  maxTopMargin));
+  test('SetControlsWithTextbox', async function() {
+    await finishSetup();
+    const controls = getControls();
+    // Set a shorter delay for testing so the test doesn't take too
+    // long.
+    controls.forEach(c => {
+      c.getInput().setAttribute('data-timeout-delay', '1');
     });
+    model.setSetting('margins', MarginsType.CUSTOM);
+    await microtasksFinished();
+
+    // Verify entering a new value updates the settings.
+    // Then verify entering an invalid value invalidates the control
+    // and does not update the settings.
+    const value1 = '1.75';  // 1.75 inches
+    const newMargin1 = Math.round(parseFloat(value1) * pointsPerInch);
+    const value2 = '.6';
+    const newMargin2 = Math.round(parseFloat(value2) * pointsPerInch);
+    const value3 = '2';  // 2 inches
+    const newMargin3 = Math.round(parseFloat(value3) * pointsPerInch);
+    const maxTopMargin = container.pageSize.height - newMargin3 -
+        72 /* MINIMUM_DISTANCE, see margin_control.js */;
+    await testAllTextboxes(controls, defaultMarginPts, value1, false);
+    await testAllTextboxes(controls, newMargin1, 'abc', true);
+    await testAllTextboxes(controls, newMargin1, '1.2abc', true);
+    await testAllTextboxes(controls, newMargin1, '1.   2', true);
+    await testAllTextboxes(controls, newMargin1, '.', true);
+    await testAllTextboxes(controls, newMargin1, value2, false);
+    await testAllTextboxes(controls, newMargin2, value3, false);
+    await testControlTextbox(
+        controls[0]!, keys[0]!, newMargin3, '100', false, maxTopMargin);
+    await testControlTextbox(
+        controls[0]!, keys[0]!, maxTopMargin, '1,000', false, maxTopMargin);
   });
 
   // Test that setting the margin controls with their textbox inputs updates
   // the custom margins setting, using a metric measurement system with a ','
   // as the decimal delimiter and '.' as the thousands delimiter. Regression
   // test for https://crbug.com/1005816.
-  test('SetControlsWithTextboxMetric', function() {
+  test('SetControlsWithTextboxMetric', async function() {
     measurementSystem =
         new MeasurementSystem('.', ',', MeasurementSystemUnitType.METRIC);
-    return finishSetup().then(async () => {
-      const controls = getControls();
-      // Set a shorter delay for testing so the test doesn't take too
-      // long.
-      controls.forEach(c => {
-        c.getInput().setAttribute('data-timeout-delay', '1');
-      });
-      model.setSetting('margins', MarginsType.CUSTOM);
-      await microtasksFinished();
-
-      // Verify entering a new value updates the settings.
-      // Then verify entering an invalid value invalidates the control
-      // and does not update the settings.
-      const pointsPerMM = pointsPerInch / 25.4;
-      const newMargin1 = '50,0';
-      const newMargin1Pts = Math.round(50 * pointsPerMM);
-      const newMargin2 = ',9';
-      const newMargin2Pts = Math.round(.9 * pointsPerMM);
-      const newMargin3 = '60';
-      const newMargin3Pts = Math.round(60 * pointsPerMM);
-      const maxTopMargin = container.pageSize.height - newMargin3Pts -
-          72 /* MINIMUM_DISTANCE, see margin_control.js */;
-      return testAllTextboxes(
-                 controls, defaultMarginPts, newMargin1, false, newMargin1Pts)
-          .then(
-              () => testAllTextboxes(
-                  controls, newMargin1Pts, 'abc', true, newMargin1Pts))
-          .then(
-              () => testAllTextboxes(
-                  controls, newMargin1Pts, '50,2abc', true, newMargin1Pts))
-          .then(
-              () => testAllTextboxes(
-                  controls, newMargin1Pts, '10,   2', true, newMargin1Pts))
-          .then(
-              () => testAllTextboxes(
-                  controls, newMargin1Pts, ',', true, newMargin1Pts))
-          .then(
-              () => testAllTextboxes(
-                  controls, newMargin1Pts, newMargin2, false, newMargin2Pts))
-          .then(
-              () => testAllTextboxes(
-                  controls, newMargin2Pts, newMargin3, false, newMargin3Pts))
-          .then(
-              () => testControlTextbox(
-                  controls[0]!, keys[0]!, newMargin3Pts, '1.000.000', false,
-                  maxTopMargin))
-          .then(
-              () => testControlTextbox(
-                  controls[0]!, keys[0]!, maxTopMargin, '1.000', false,
-                  maxTopMargin));
+    await finishSetup();
+    const controls = getControls();
+    // Set a shorter delay for testing so the test doesn't take too
+    // long.
+    controls.forEach(c => {
+      c.getInput().setAttribute('data-timeout-delay', '1');
     });
+    model.setSetting('margins', MarginsType.CUSTOM);
+    await microtasksFinished();
+
+    // Verify entering a new value updates the settings.
+    // Then verify entering an invalid value invalidates the control
+    // and does not update the settings.
+    const pointsPerMM = pointsPerInch / 25.4;
+    const newMargin1 = '50,0';
+    const newMargin1Pts = Math.round(50 * pointsPerMM);
+    const newMargin2 = ',9';
+    const newMargin2Pts = Math.round(.9 * pointsPerMM);
+    const newMargin3 = '60';
+    const newMargin3Pts = Math.round(60 * pointsPerMM);
+    const maxTopMargin = container.pageSize.height - newMargin3Pts -
+        72 /* MINIMUM_DISTANCE, see margin_control.js */;
+    await testAllTextboxes(
+        controls, defaultMarginPts, newMargin1, false, newMargin1Pts);
+    await testAllTextboxes(controls, newMargin1Pts, 'abc', true, newMargin1Pts);
+    await testAllTextboxes(
+        controls, newMargin1Pts, '50,2abc', true, newMargin1Pts);
+    await testAllTextboxes(
+        controls, newMargin1Pts, '10,   2', true, newMargin1Pts);
+    await testAllTextboxes(controls, newMargin1Pts, ',', true, newMargin1Pts);
+    await testAllTextboxes(
+        controls, newMargin1Pts, newMargin2, false, newMargin2Pts);
+    await testAllTextboxes(
+        controls, newMargin2Pts, newMargin3, false, newMargin3Pts);
+    await testControlTextbox(
+        controls[0]!, keys[0]!, newMargin3Pts, '1.000.000', false,
+        maxTopMargin);
+    await testControlTextbox(
+        controls[0]!, keys[0]!, maxTopMargin, '1.000', false, maxTopMargin);
   });
 
   // Test that if there is a custom margins sticky setting, it is restored
   // when margin setting changes.
-  test('RestoreStickyMarginsAfterDefault', function() {
+  test('RestoreStickyMarginsAfterDefault', async function() {
     const marginValues = setupCustomMargins();
-    return finishSetup().then(() => {
-      // Simulate setting custom margins.
-      const controls = getControls();
-      model.setSetting('margins', MarginsType.CUSTOM);
+    await finishSetup();
 
-      // Validate control positions are set based on the custom values.
-      controls.forEach((control, index) => {
-        const side = sides[index]!;
-        assertEquals(side, control.side);
-        assertEquals(marginValues.get(side), control.getPositionInPts());
-      });
+    // Simulate setting custom margins.
+    const controls = getControls();
+    model.setSetting('margins', MarginsType.CUSTOM);
 
-      // Simulate setting minimum margins.
-      model.setSetting('margins', MarginsType.MINIMUM);
+    // Validate control positions are set based on the custom values.
+    controls.forEach((control, index) => {
+      const side = sides[index]!;
+      assertEquals(side, control.side);
+      assertEquals(marginValues.get(side), control.getPositionInPts());
+    });
 
-      // Validate control positions still reflect the custom values.
-      controls.forEach((control, index) => {
-        const side = sides[index]!;
-        assertEquals(side, control.side);
-        assertEquals(marginValues.get(side), control.getPositionInPts());
-      });
+    // Simulate setting minimum margins.
+    model.setSetting('margins', MarginsType.MINIMUM);
+
+    // Validate control positions still reflect the custom values.
+    controls.forEach((control, index) => {
+      const side = sides[index]!;
+      assertEquals(side, control.side);
+      assertEquals(marginValues.get(side), control.getPositionInPts());
     });
   });
 
@@ -558,19 +544,18 @@ suite('CustomMarginsTest', function() {
   // Test that if the margins are not available, the custom margins setting is
   // not updated based on the document margins - i.e. PDFs do not change the
   // custom margins state.
-  test('IgnoreDocumentMarginsFromPDF', function() {
+  test('IgnoreDocumentMarginsFromPDF', async function() {
     model.setSettingAvailableForTesting('margins', false);
-    return finishSetup().then(() => {
-      assertEquals(
-          '{}', JSON.stringify(container.getSettingValue('customMargins')));
-    });
+    await finishSetup();
+    assertEquals(
+        '{}', JSON.stringify(container.getSettingValue('customMargins')));
   });
 
   // Test that if margins are not available but the user changes the media
   // size, the custom margins are cleared.
-  test('MediaSizeClearsCustomMarginsPDF', function() {
+  test('MediaSizeClearsCustomMarginsPDF', async function() {
     model.setSettingAvailableForTesting('margins', false);
-    return validateMarginsClearedForSetting(
+    await validateMarginsClearedForSetting(
         'mediaSize', {height_microns: 200000, width_microns: 200000});
   });
 
@@ -580,57 +565,50 @@ suite('CustomMarginsTest', function() {
 
   // Test that if the user focuses a textbox that is not visible, the
   // text-focus event is fired with the correct values to scroll by.
-  test('RequestScrollToOutOfBoundsTextbox', function() {
-    return finishSetup()
-        .then(() => {
-          // Wait for the controls to be set up, which occurs in an
-          // animation frame.
-          return whenAnimationFrameDone();
-        })
-        .then(() => {
-          const onTransitionEnd = getAllTransitions(getControls());
+  test('RequestScrollToOutOfBoundsTextbox', async function() {
+    await finishSetup();
+    // Wait for the controls to be set up, which occurs in an
+    // animation frame.
+    await whenAnimationFrameDone();
 
-          // Controls become visible when margin type CUSTOM is selected.
-          model.setSetting('margins', MarginsType.CUSTOM);
-          return onTransitionEnd;
-        })
-        .then(async () => {
-          // Zoom in by 2x, so that some margin controls will not be
-          // visible.
-          container.updateScaleTransform(pixelsPerInch * 2 / pointsPerInch);
-          await microtasksFinished();
-          return whenAnimationFrameDone();
-        })
-        .then(() => {
-          const controls = getControls();
-          assertEquals(4, controls.length);
+    const onTransitionEnd = getAllTransitions(getControls());
 
-          // Focus the bottom control, which is currently not visible since
-          // the viewer is showing only the top left quarter of the page.
-          const bottomControl = controls[2]!;
-          const whenEventFired =
-              eventToPromise('text-focus-position', container);
-          bottomControl.$.input.focus();
-          // Workaround for mac so that this does not need to be an
-          // interactive test: manually fire the focus event from the
-          // control.
-          bottomControl.dispatchEvent(
-              new CustomEvent('text-focus', {bubbles: true, composed: true}));
-          return whenEventFired;
-        })
-        .then((args) => {
-          // Shifts left by padding of 50px to ensure that the full textbox
-          // is visible.
-          assertEquals(50, args.detail.x);
+    // Controls become visible when margin type CUSTOM is selected.
+    model.setSetting('margins', MarginsType.CUSTOM);
+    await onTransitionEnd;
 
-          // Offset top will be 2097 = 200 px/in / 72 pts/in * (794pts -
-          // 36ptx) - 9px radius of line
-          // Height of the clip box is 200 px/in * 11in = 2200px
-          // Shifts down by offsetTop = 2097 - height / 2 + padding =
-          // 1047px. This will ensure that the textbox is in the visible
-          // area.
-          assertEquals(1047, args.detail.y);
-        });
+    // Zoom in by 2x, so that some margin controls will not be
+    // visible.
+    container.updateScaleTransform(pixelsPerInch * 2 / pointsPerInch);
+    await microtasksFinished();
+    await whenAnimationFrameDone();
+
+    const controls = getControls();
+    assertEquals(4, controls.length);
+
+    // Focus the bottom control, which is currently not visible since
+    // the viewer is showing only the top left quarter of the page.
+    const bottomControl = controls[2]!;
+    const whenEventFired = eventToPromise('text-focus-position', container);
+    bottomControl.$.input.focus();
+    // Workaround for mac so that this does not need to be an
+    // interactive test: manually fire the focus event from the
+    // control.
+    bottomControl.dispatchEvent(
+        new CustomEvent('text-focus', {bubbles: true, composed: true}));
+    const args = await whenEventFired;
+
+    // Shifts left by padding of 50px to ensure that the full textbox
+    // is visible.
+    assertEquals(50, args.detail.x);
+
+    // Offset top will be 2097 = 200 px/in / 72 pts/in * (794pts -
+    // 36ptx) - 9px radius of line
+    // Height of the clip box is 200 px/in * 11in = 2200px
+    // Shifts down by offsetTop = 2097 - height / 2 + padding =
+    // 1047px. This will ensure that the textbox is in the visible
+    // area.
+    assertEquals(1047, args.detail.y);
   });
 
   // Tests that the margin controls can be correctly set from the sticky
