@@ -7,30 +7,11 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {DictionaryValue} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
+import {EventDispatcher} from './event_dispatcher.js';
+import type {EventDict, EventMap} from './event_dispatcher.js';
 import {getCss} from './slim_web_view.css.js';
 import {getHtml} from './slim_web_view.html.js';
 import {BrowserProxyImpl} from './slim_web_view_browser_proxy.js';
-
-function dispatchEvent(
-    eventName: string, _args: DictionaryValue, instanceId: number) {
-  // TODO(crbug.com/460804848): Implement processing of events that aren't
-  // dispatched to views.
-  const view =
-      chrome.slimWebViewPrivate.getViewFromId(instanceId) as SlimWebViewElement;
-  if (!view) {
-    console.warn(
-        'Skipping event %s for instance id %d because it was not found.',
-        eventName, instanceId);
-    return;
-  }
-  // TODO(crbug.com/460804848): Implement passing of event fields.
-  view.dispatchEvent(new Event(eventName));
-}
-
-window.addEventListener('load', () => {
-  const proxy = BrowserProxyImpl.getInstance();
-  proxy.callbackRouter.dispatchEvent.addListener(dispatchEvent);
-});
 
 export interface SlimWebViewElement {
   $: {
@@ -39,6 +20,62 @@ export interface SlimWebViewElement {
 }
 
 const GUEST_INSTANCE_ID_PENDING: number = 0;
+
+class LoadCommitEvent extends Event {
+  readonly url: string;
+  readonly isTopLevel: boolean;
+
+  static factory(args: EventDict) {
+    return new LoadCommitEvent(args);
+  }
+
+  private constructor(args: EventDict) {
+    super('loadcommit', {
+      bubbles: true,
+      cancelable: false,
+    });
+    this.url = args.getString('url');
+    this.isTopLevel = args.getBool('isTopLevel');
+  }
+}
+
+class LoadAbortEvent extends Event {
+  readonly url: string;
+  readonly isTopLevel: boolean;
+  readonly code: number;
+  readonly reason: string;
+
+  static factory(args: EventDict) {
+    return new LoadAbortEvent(args);
+  }
+
+  private constructor(args: EventDict) {
+    super('loadabort', {
+      bubbles: true,
+      cancelable: false,
+    });
+    this.url = args.getString('url');
+    this.isTopLevel = args.getBool('isTopLevel');
+    this.code = args.getInt('code');
+    this.reason = args.getString('reason');
+  }
+}
+
+const eventDescriptors: EventMap = new Map([
+  ['contentload', {}],
+  [
+    'loadabort',
+    {
+      factory: LoadAbortEvent.factory,
+    },
+  ],
+  [
+    'loadcommit',
+    {
+      factory: LoadCommitEvent.factory,
+    },
+  ],
+]);
 
 export class SlimWebViewElement extends CrLitElement {
   static get is() {
@@ -67,11 +104,25 @@ export class SlimWebViewElement extends CrLitElement {
   private viewInstanceId: number = chrome.slimWebViewPrivate.getNextId();
   private containerId: number|null = null;
   private guestInstanceId: number|null = null;
+  private eventDispatcher: EventDispatcher|null = null;
 
   constructor() {
     super();
 
     chrome.slimWebViewPrivate.registerView(this.viewInstanceId, this);
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.maybeSetupEventDispatcher();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.eventDispatcher !== null) {
+      this.eventDispatcher.disconnect();
+      this.eventDispatcher = null;
+    }
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -107,6 +158,8 @@ export class SlimWebViewElement extends CrLitElement {
       assertNotReached('Failed to create guest');
     }
     this.guestInstanceId = guestInstanceId;
+    this.maybeSetupEventDispatcher();
+    assert(this.eventDispatcher !== null);
     const params = {instanceId: this.viewInstanceId};
     const iframeElement = this.shadowRoot.querySelector('iframe');
     assert(iframeElement);
@@ -124,6 +177,15 @@ export class SlimWebViewElement extends CrLitElement {
           this.navigate();
         },
     );
+  }
+
+  private maybeSetupEventDispatcher() {
+    if (this.guestInstanceId === null || this.eventDispatcher !== null) {
+      return;
+    }
+    this.eventDispatcher = new EventDispatcher(
+        eventDescriptors, this.viewInstanceId, this.guestInstanceId, this);
+    this.eventDispatcher.connect();
   }
 
   private navigate() {
