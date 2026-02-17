@@ -246,14 +246,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   // Check that one card is stored in the account storage.
   EXPECT_EQ(1U, GetServerCards(account_data).size());
 
-  // Check whether cards are stored in-memory or on-disk, which depends on
-  // feature flags. The corresponding metric is recorded twice as an artifact
-  // of the test setup: SyncTest creates a new profile for single-client tests,
-  // disregarding the existing profile that browser tests already have.
   EXPECT_FALSE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForTesting());
-  histogram_tester_.ExpectUniqueSample("WebDatabase.AutofillAccountStorage",
-                                       /*sample=*/2,  // kOnDisk_SignedOut.
-                                       /*expected_bucket_count=*/2);
 
   ASSERT_NE(nullptr, paydm);
   std::vector<const CreditCard*> cards = paydm->GetCreditCards();

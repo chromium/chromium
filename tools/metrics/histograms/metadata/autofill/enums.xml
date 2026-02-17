@@ -4547,18 +4547,6 @@ Called by update_autofill_enums.py.-->
   <int value="6" label="User already opted into FIDO auth, no need to offer"/>
 </enum>
 
-<!-- LINT.IfChange(AutofillAccountStorageResult) -->
-
-<enum name="WebDatabaseAutofillAccountStorageResult">
-  <int value="0" label="In memory (flag disabled)"/>
-  <int value="1" label="In memory (signed in implicitly)"/>
-  <int value="2" label="On disk (signed out)"/>
-  <int value="3" label="On disk (signed in explicitly)"/>
-  <int value="4" label="On disk (full sync on)"/>
-</enum>
-
-<!-- LINT.ThenChange(/chrome/browser/webdata_services/web_data_service_factory.cc:AutofillAccountStorageResult) -->
-
 <!-- LINT.IfChange(YourSavedInfoDataCategory) -->
 
 <enum name="YourSavedInfoDataCategory">

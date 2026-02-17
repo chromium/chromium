@@ -31,8 +31,7 @@ std::unique_ptr<KeyedService> BuildWebDataService(ProfileIOS* profile) {
   return std::make_unique<WebDataServiceWrapper>(
       state_path, GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
       web::GetUIThreadTaskRunner({}), base::DoNothing(),
-      GetApplicationContext()->GetOSCryptAsync(),
-      /*use_in_memory_autofill_account_database=*/false);
+      GetApplicationContext()->GetOSCryptAsync());
 }
 
 }  // namespace

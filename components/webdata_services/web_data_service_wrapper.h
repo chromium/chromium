@@ -75,8 +75,7 @@ class WebDataServiceWrapper : public KeyedService {
       const std::string& application_locale,
       const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
       const ShowErrorCallback& show_error_callback,
-      os_crypt_async::OSCryptAsync* os_crypt,
-      bool use_in_memory_autofill_account_database);
+      os_crypt_async::OSCryptAsync* os_crypt);
 
   WebDataServiceWrapper(const WebDataServiceWrapper&) = delete;
   WebDataServiceWrapper& operator=(const WebDataServiceWrapper&) = delete;

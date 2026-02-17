@@ -9383,19 +9383,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="WebDatabase.AutofillAccountStorage"
-    enum="WebDatabaseAutofillAccountStorageResult" expires_after="2026-08-16">
-  <owner>mastiz@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Recorded upon construction of WebDataService, usually during profile
-    startup, it logs whether the web database used for autofill account data is
-    stored in-memory only or on-disk. Rather than logging two possible values,
-    it also conveys the reason why a specific choice was made. Recorded on
-    desktop only, as on mobile the storage is always on disk.
-  </summary>
-</histogram>
-
 <histogram name="WebDatabase.AutofillWebDataBackendImpl.OperationResult"
     enum="AutofillWebDataBackendImplOperationResult" expires_after="2026-12-12">
   <owner>battre@chromium.org</owner>
