@@ -213,6 +213,7 @@ if (is_android) {
     # Add common, internal protobuf imports.
     android_protoc_import_files = [
       "//third_party/protobuf/src/google/protobuf/descriptor.proto",
+
       # cpp_features.proto can be used for C++-specific codegen options.  While
       # it's not particularly useful for Java, protos can be written for both
       # Java and C++, so we need to support it here too in order not to throw
@@ -337,19 +338,16 @@ if (is_android) {
     # //build/android/location_rewriter). Turned on for "default" and "canary"
     # channel for tracing.
     enable_java_location_rewrite =
-        build_with_chromium &&
+        # Do not want to add deps from //base.
+        build_with_chromium && !is_cronet_build &&
+        # Do not want the added build-time outside of official builds.
+        is_official_build &&
         (android_channel == "default" || android_channel == "canary")
   }
 
   if (is_asan) {
     # Disable lint since increasing min_sdk_version can cause ObsoleteSdkInt warnings.
     disable_android_lint = true
-  }
-
-  if (is_cronet_build) {
-    # Disable Java bytecode rewriting for cronet to prevent pulling in bytecode
-    # rewriter's dependencies
-    enable_java_location_rewrite = false
   }
 
   assert(
