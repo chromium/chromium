@@ -8,6 +8,7 @@
 
 #include <optional>
 
+#include "base/android/android_info.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -32,6 +33,7 @@
 #include "media/base/media_serializers_base.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
+#include "media/gpu/android/ndk_video_encode_accelerator_svc_api.h"
 #include "media/gpu/android/video_accelerator_util.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
@@ -70,6 +72,86 @@ struct AMediaFormatDeleter {
     }
   }
 };
+
+std::vector<std::string> GetSupportedLayeringSchemas(
+    const std::string& codec_name) {
+  const auto* api = NdkVideoEncodeAcceleratorSvcApi::Get();
+  if (!api->AMediaCodecStore_getCodecInfo) {
+    return {};
+  }
+
+  const AMediaCodecInfo* info = nullptr;
+  media_status_t status =
+      api->AMediaCodecStore_getCodecInfo(codec_name.c_str(), &info);
+  if (status != AMEDIA_OK || !info) {
+    LOG(ERROR) << "AMediaCodecStore_getCodecInfo failed for " << codec_name
+               << " status: " << status;
+    return {};
+  }
+
+  const ACodecEncoderCapabilities* encoder_caps = nullptr;
+  status = api->AMediaCodecInfo_getEncoderCapabilities(info, &encoder_caps);
+  if (status != AMEDIA_OK || !encoder_caps) {
+    LOG(ERROR) << "AMediaCodecInfo_getEncoderCapabilities failed status: "
+               << status;
+    return {};
+  }
+
+  const char* const* schemas = nullptr;
+  size_t count = 0;
+  status = api->ACodecEncoderCapabilities_getSupportedLayeringSchemas(
+      encoder_caps, &schemas, &count);
+  if (status != AMEDIA_OK) {
+    LOG(ERROR) << "ACodecEncoderCapabilities_getSupportedLayeringSchemas "
+                  "failed status: "
+               << status;
+    return {};
+  }
+
+  std::vector<std::string> supported_schemas;
+  if (count > 0 && schemas) {
+    // SAFETY: The NDK API guarantees that `schemas` points to an array of
+    // `count` elements.
+    auto schemas_span = UNSAFE_BUFFERS(base::span(schemas, count));
+    for (const char* schema : schemas_span) {
+      if (schema) {
+        supported_schemas.emplace_back(schema);
+      }
+    }
+  }
+
+  return supported_schemas;
+}
+
+std::string GetOptimalLayeringSchema(MediaLog* log,
+                                     const std::string& codec_name,
+                                     int num_temporal_layers) {
+  std::vector<std::string> supported = GetSupportedLayeringSchemas(codec_name);
+  std::string android_schema =
+      base::StringPrintf("android.generic.%d", num_temporal_layers);
+
+  if (supported.empty()) {
+    return android_schema;
+  }
+
+  // Preference: webrtc.svc.l1tN > android.generic.N
+  std::string webrtc_schema =
+      base::StringPrintf("webrtc.svc.l1t%d", num_temporal_layers);
+  for (const auto& s : supported) {
+    if (s == webrtc_schema) {
+      MEDIA_LOG(INFO, log) << "Using SVC layering schema: " << webrtc_schema;
+      return webrtc_schema;
+    }
+  }
+
+  // Fallback to android.generic.N if webrtc schema not found.
+  // We use this even if it's not explicitly in the supported list, as it's
+  // the platform default fallback.
+  MEDIA_LOG(INFO, log)
+      << "No exact match for WebRTC SVC layering schema found. Fallback to "
+      << android_schema;
+  return android_schema;
+}
 
 enum class CodecProfileLevel {
   // Subset of MediaCodecInfo.CodecProfileLevel
@@ -309,6 +391,8 @@ bool SetFormatColorSpace(AMediaFormat* format, const gfx::ColorSpace& cs) {
 using MediaFormatPtr = std::unique_ptr<AMediaFormat, AMediaFormatDeleter>;
 
 MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
+                                 MediaLog* log,
+                                 const std::string& codec_name,
                                  int framerate,
                                  const gfx::Size& frame_size,
                                  const Bitrate& bitrate,
@@ -388,7 +472,7 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
     AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_MAX_B_FRAMES, 0);
 
     auto svc_layer_config =
-        base::StringPrintf("android.generic.%d", num_temporal_layers);
+        GetOptimalLayeringSchema(log, codec_name, num_temporal_layers);
     AMediaFormat_setString(result.get(), AMEDIAFORMAT_KEY_TEMPORAL_LAYERING,
                            svc_layer_config.c_str());
   }
@@ -1548,8 +1632,9 @@ EncoderStatus NdkVideoEncodeAccelerator::ResetMediaCodec() {
   // if it doesn't unaligned resolutions.
   do {
     auto media_format = CreateVideoFormat(
-        config_, effective_framerate_, configured_size, effective_bitrate_,
-        encoder_color_space_, num_temporal_layers_, pixel_format);
+        config_, log_.get(), *name, effective_framerate_, configured_size,
+        effective_bitrate_, encoder_color_space_, num_temporal_layers_,
+        pixel_format);
     if (!media_format) {
       MEDIA_LOG(ERROR, log_) << "Fail to create media format for: "
                              << config_.AsHumanReadableString();
