@@ -64,11 +64,11 @@ void CallPrintPreviewBrowserDelegateMethods(
   base::test::TestFuture<bool> future1;
   adapter->RequestPrintPreview(token, std::move(params_ptr),
                                future1.GetCallback());
-  EXPECT_TRUE(future1.Wait());
+  EXPECT_TRUE(future1.Get());
 
   base::test::TestFuture<bool> future2;
   adapter->PrintPreviewDone(token, future2.GetCallback());
-  EXPECT_TRUE(future2.Wait());
+  EXPECT_TRUE(future2.Get());
 }
 
 class PrintPreviewAshBrowserTest : public InProcessBrowserTest {
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, ApiCalls) {
     print_preview_cros_adapter->StartGetPreview(
         base::UnguessableToken::Create(),
         chromeos::CreatePrintSettings(/*preview_id=*/0), future.GetCallback());
-    EXPECT_TRUE(future.Wait());
+    EXPECT_TRUE(future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, HandleDialogClosed) {
