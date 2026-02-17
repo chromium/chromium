@@ -66,11 +66,25 @@ ${isGlicVersion() ? html`
       $i18n{openAllProfilesButtonText}
     </cr-button>
   </div>
-  <cr-checkbox id="askOnStartup" ?checked="${this.askOnStartup_}"
-      @checked-changed="${this.onAskOnStartupChangedByUser_}"
-      ?hidden="${this.hideAskOnStartup_}">
-    $i18n{askOnStartupCheckboxText}
-  </cr-checkbox>
+
+  ${this.isRefreshedUI_ ? html`
+    <div id="ask-on-startup-container" ?hidden="${this.hideAskOnStartup_}">
+      <span id="ask-on-startup-label" aria-hidden="true">
+        $i18n{askOnStartupText}
+      </span>
+      <cr-toggle id="askOnStartup"
+          aria-labelledby="ask-on-startup-label"
+          ?checked="${this.askOnStartup_}"
+          @checked-changed="${this.onAskOnStartupChangedByUser_}">
+      </cr-toggle>
+    </div>
+  ` : html`
+    <cr-checkbox id="askOnStartup" ?checked="${this.askOnStartup_}"
+        @checked-changed="${this.onAskOnStartupChangedByUser_}"
+        ?hidden="${this.hideAskOnStartup_}">
+      $i18n{askOnStartupText}
+    </cr-checkbox>
+  `}
 </div>
 
 <signin-error-dialog id="signinErrorDialog">
