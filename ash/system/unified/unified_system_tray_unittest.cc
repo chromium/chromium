@@ -1475,12 +1475,8 @@ TEST_F(UnifiedSystemTrayAccessibilityTest, NameWithBatterySaverDisabled) {
 }
 
 // This tests the logic in `PowerStatus::GetAccessibleNameString` where
-// `features::IsBatteryChargeLimitAvailable()` and `IsBatteryChargeLimited()`
-// are both true.
+// `IsBatteryChargeLimited()` is true.
 TEST_F(UnifiedSystemTrayAccessibilityTest, NameWithBatteryChargeLimitEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kBatteryChargeLimit);
-
   std::vector<std::u16string> status;
   CreateDefaultStatusForTesting(&status);
 

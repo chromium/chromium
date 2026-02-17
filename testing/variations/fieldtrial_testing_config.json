@@ -8095,21 +8095,6 @@
             ]
         }
     ],
-    "CrosBatteryChargeLimit": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrosBatteryChargeLimit"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrosBatterySaver": [
         {
             "platforms": [

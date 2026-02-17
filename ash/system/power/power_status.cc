@@ -327,9 +327,7 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
         chromeos::features::IsBatteryBadgeIconEnabled()
             ? &kUnifiedMenuBatteryUnreliableOutlineMaskIcon
             : &kUnifiedMenuBatteryUnreliableOutlineMaskLegacyIcon;
-  } else if (IsLinePowerConnected() &&
-             features::IsBatteryChargeLimitAvailable() &&
-             IsBatteryChargeLimited()) {
+  } else if (IsLinePowerConnected() && IsBatteryChargeLimited()) {
     info->icon_badge = &kChargeLimitShieldIcon;
     info->badge_outline = &kChargeLimitShieldOutlineMaskIcon;
   } else if (IsLinePowerConnected()) {
@@ -398,8 +396,7 @@ std::u16string PowerStatus::GetAccessibleNameString(
   }
 
   int percentage_accessibility_token = -1;
-  if (ash::features::IsBatteryChargeLimitAvailable() &&
-      IsBatteryChargeLimited()) {
+  if (IsBatteryChargeLimited()) {
     percentage_accessibility_token =
         IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ON_HOLD_ACCESSIBLE;
   } else if (IsBatteryCharging()) {
@@ -420,8 +417,7 @@ std::u16string PowerStatus::GetAccessibleNameString(
   // When Charge limit is enabled, the full description is simply the battery
   // percentage and that charging is on hold. We don't show calculating,
   // unreliable, or time to empty/full.
-  if (!full_description || (ash::features::IsBatteryChargeLimitAvailable() &&
-                            IsBatteryChargeLimited())) {
+  if (!full_description || IsBatteryChargeLimited()) {
     return battery_percentage_accessible;
   }
 
@@ -469,8 +465,7 @@ std::pair<std::u16string, std::u16string> PowerStatus::GetStatusStrings()
     if (IsUsbChargerConnected()) {
       status = l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE);
-    } else if (features::IsBatteryChargeLimitAvailable() &&
-               IsBatteryChargeLimited()) {
+    } else if (IsBatteryChargeLimited()) {
       status = l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_ON_HOLD);
     } else if (IsBatteryTimeBeingCalculated()) {

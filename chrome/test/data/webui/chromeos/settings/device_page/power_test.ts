@@ -128,7 +128,6 @@ suite('<settings-power>', () => {
     // Adaptive charging setting should be shown.
     loadTimeData.overrideValues({
       isAdaptiveChargingSupported: true,
-      isBatteryChargeLimitAvailable: false,
     });
 
     browserProxy = new TestDevicePageBrowserProxy();
@@ -488,39 +487,6 @@ suite('<settings-power>', () => {
     });
   });
 
-  suite('Adaptive charging', () => {
-    function queryAdaptiveChargingToggle(): SettingsToggleButtonElement|null {
-      return powerSubpage.shadowRoot!
-          .querySelector<SettingsToggleButtonElement>(
-              '#adaptiveChargingToggle');
-    }
-
-    test('Toggle is deep-linkable', async () => {
-      await deepLinkToSetting(settingMojom.Setting.kAdaptiveCharging);
-
-      const adaptiveChargingToggle = queryAdaptiveChargingToggle();
-      assertTrue(!!adaptiveChargingToggle);
-      await assertElementIsDeepLinked(adaptiveChargingToggle);
-    });
-
-    test('Toggle reflects managed policy', () => {
-      sendPowerManagementSettings({
-        adaptiveCharging: true,
-        adaptiveChargingManaged: true,
-      });
-
-      const adaptiveChargingToggle = queryAdaptiveChargingToggle();
-      assertTrue(!!adaptiveChargingToggle);
-      assertTrue(adaptiveChargingToggle.checked);
-      assertTrue(adaptiveChargingToggle.controlDisabled());
-      assertTrue(adaptiveChargingToggle.isPrefEnforced());
-
-      // Must have policy icon.
-      assertTrue(isVisible(adaptiveChargingToggle.shadowRoot!.querySelector(
-          'cr-policy-pref-indicator')));
-    });
-  });
-
   suite('Lid closed', () => {
     function queryLidClosedToggle(): SettingsToggleButtonElement|null {
       return powerSubpage.shadowRoot!
@@ -700,13 +666,9 @@ suite('<settings-power>', () => {
       flush();
     }
 
-    async function initTestState(
-        batteryStatus: BatteryStatus|undefined,
-        featureEnabled: boolean): Promise<void> {
-      loadTimeData.overrideValues({
-        isBatteryChargeLimitAvailable: featureEnabled,
-      });
-      // Re-initialize the subpage with the new loadTimeData.
+    async function initTestState(batteryStatus: BatteryStatus|undefined):
+        Promise<void> {
+      // Re-initialize the subpage.
       await initSubpage();
 
       webUIListenerCallback('battery-status-changed', batteryStatus);
@@ -754,7 +716,6 @@ suite('<settings-power>', () => {
           // Setup test with adaptive charging being supported.
           loadTimeData.overrideValues({
             isAdaptiveChargingEnabled: true,
-            isBatteryChargeLimitAvailable: true,
           });
           await initSubpage();
 
@@ -773,23 +734,14 @@ suite('<settings-power>', () => {
               sublabelSpan.innerText.trim());
         });
 
-    test(
-        'is visible with undefined battery status, and feature enabled.',
-        async () => {
-          // Case 1: batteryStatus is undefined
-          await initTestState(undefined, /*featureEnabled=*/ true);
-          assertTrue(isVisible(queryOptimizedChargingRow()));
-        });
+    test('is visible with undefined battery status.', async () => {
+      // Case 1: batteryStatus is undefined
+      await initTestState(undefined);
+      assertTrue(isVisible(queryOptimizedChargingRow()));
+    });
 
     test(
-        'is hidden with undefined battery status, and feature disabled.',
-        async () => {
-          await initTestState(undefined, /*featureEnabled=*/ false);
-          assertFalse(isVisible(queryOptimizedChargingRow()));
-        });
-
-    test(
-        'is visible with a battery present, and feature enabled.', async () => {
+        'is visible with a battery present.', async () => {
           // Case 2: batteryStatus.present = true
           const mockBatteryStatus: BatteryStatus = {
             present: true,
@@ -799,28 +751,12 @@ suite('<settings-power>', () => {
             statusText: 'stub',
           };
 
-          await initTestState(mockBatteryStatus, /*featureEnabled=*/ true);
+          await initTestState(mockBatteryStatus);
           assertTrue(isVisible(queryOptimizedChargingRow()));
         });
 
     test(
-        'is hidden with a battery present, and feature disabled.', async () => {
-          // Case 2: batteryStatus.present = true
-          const mockBatteryStatus: BatteryStatus = {
-            present: true,
-            charging: false,
-            calculating: false,
-            percent: 50,
-            statusText: 'stub',
-          };
-
-          await initTestState(mockBatteryStatus, /*featureEnabled=*/ false);
-          assertFalse(isVisible(queryOptimizedChargingRow()));
-        });
-
-    test(
-        'is visible without a battery present, and feature enabled.',
-        async () => {
+        'is visible without a battery present.', async () => {
           // Case 3: batteryStatus.present = false
           // (This can happen when there is no battery, and a low power adapter
           // is plugged in, and it is discharging).
@@ -832,30 +768,13 @@ suite('<settings-power>', () => {
             statusText: 'stub',
           };
 
-          await initTestState(mockBatteryStatus, /*featureEnabled=*/ true);
+          await initTestState(mockBatteryStatus);
           assertTrue(isVisible(queryOptimizedChargingRow()));
-        });
-
-    test(
-        'is hidden without a battery present, and feature disabled.',
-        async () => {
-          // Case 3: batteryStatus.present = false
-          const mockBatteryStatus = {
-            present: false,
-            charging: false,
-            calculating: false,
-            percent: 50,
-            statusText: 'stub',
-          };
-
-          await initTestState(mockBatteryStatus, /*featureEnabled=*/ false);
-          assertFalse(isVisible(queryOptimizedChargingRow()));
         });
 
     test('is deep-linkable.', async () => {
       loadTimeData.overrideValues({
         isAdaptiveChargingEnabled: true,
-        isBatteryChargeLimitAvailable: true,
       });
       await initSubpage();
 
@@ -868,7 +787,6 @@ suite('<settings-power>', () => {
     test('Charge limit is deep-linkable.', async () => {
       loadTimeData.overrideValues({
         isAdaptiveChargingEnabled: true,
-        isBatteryChargeLimitAvailable: true,
       });
       await initSubpage();
 
@@ -884,7 +802,6 @@ suite('<settings-power>', () => {
         async () => {
           loadTimeData.overrideValues({
             isAdaptiveChargingEnabled: true,
-            isBatteryChargeLimitAvailable: true,
           });
           await initSubpage();
 
@@ -898,7 +815,6 @@ suite('<settings-power>', () => {
     test('can open the change dialog.', async () => {
       loadTimeData.overrideValues({
         isAdaptiveChargingEnabled: true,
-        isBatteryChargeLimitAvailable: true,
       });
       await initSubpage();
 
@@ -918,7 +834,6 @@ suite('<settings-power>', () => {
         async () => {
           loadTimeData.overrideValues({
             isAdaptiveChargingEnabled: true,
-            isBatteryChargeLimitAvailable: true,
           });
           await initSubpage();
 
@@ -942,7 +857,6 @@ suite('<settings-power>', () => {
         async () => {
           loadTimeData.overrideValues({
             isAdaptiveChargingEnabled: true,
-            isBatteryChargeLimitAvailable: true,
           });
           await initSubpage();
 
@@ -964,7 +878,6 @@ suite('<settings-power>', () => {
     test('dialog saves changes made to radio group.', async () => {
       loadTimeData.overrideValues({
         isAdaptiveChargingEnabled: true,
-        isBatteryChargeLimitAvailable: true,
       });
       await initSubpage();
 
@@ -1048,7 +961,6 @@ suite('<settings-power>', () => {
     test('dialog does not save changes when cancelled.', async () => {
       loadTimeData.overrideValues({
         isAdaptiveChargingEnabled: true,
-        isBatteryChargeLimitAvailable: true,
       });
       await initSubpage();
       // Set up the test with a default selected Charge Limit strategy, and with
@@ -1101,7 +1013,6 @@ suite('<settings-power>', () => {
         async () => {
           loadTimeData.overrideValues({
             isAdaptiveChargingEnabled: true,
-            isBatteryChargeLimitAvailable: true,
           });
           await initSubpage();
 
@@ -1127,7 +1038,6 @@ suite('<settings-power>', () => {
     test('should have a policy indicator present when managed.', async () => {
       loadTimeData.overrideValues({
         isAdaptiveChargingEnabled: true,
-        isBatteryChargeLimitAvailable: true,
       });
       await initSubpage();
 
@@ -1151,7 +1061,6 @@ suite('<settings-power>', () => {
     test('toggle state reflects the pref values.', async () => {
       loadTimeData.overrideValues({
         isAdaptiveChargingEnabled: true,
-        isBatteryChargeLimitAvailable: true,
       });
       await initSubpage();
 
@@ -1190,7 +1099,6 @@ suite('<settings-power>', () => {
         async () => {
           loadTimeData.overrideValues({
             isAdaptiveChargingEnabled: true,
-            isBatteryChargeLimitAvailable: true,
           });
           await initSubpage();
 
@@ -1230,7 +1138,6 @@ suite('<settings-power>', () => {
         async () => {
           loadTimeData.overrideValues({
             isAdaptiveChargingEnabled: true,
-            isBatteryChargeLimitAvailable: true,
           });
           await initSubpage();
 
@@ -1271,7 +1178,6 @@ suite('<settings-power>', () => {
           // Ensure the feature is available.
           loadTimeData.overrideValues({
             isAdaptiveChargingEnabled: true,
-            isBatteryChargeLimitAvailable: true,
           });
           await initSubpage();
 

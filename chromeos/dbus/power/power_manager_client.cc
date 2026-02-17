@@ -65,11 +65,9 @@ power_manager::PowerSupplyProperties SanitizePowerSupplyProperties(
   // battery is still reported as full, but it's not actually full. Therefore,
   // this rounding should not occur, since the battery could be significantly
   // lowered than 99.2% (e.g., somewhere between 80% <= x <= 100%).
-  const bool isChargeLimitFeatureEnabled =
-      base::FeatureList::IsEnabled(ash::features::kBatteryChargeLimit);
   if (sanitized.battery_state() ==
           power_manager::PowerSupplyProperties_BatteryState_FULL &&
-      (isChargeLimitFeatureEnabled ? !sanitized.charge_limited() : true)) {
+      !sanitized.charge_limited()) {
     sanitized.set_battery_percent(100.0);
   }
 

@@ -43,7 +43,7 @@
 </div>
 
 <!-- optimizedCharging -->
-<template is="dom-if" if="[[!optimizedChargingHidden_]]" restamp>
+<template is="dom-if" if="[[adaptiveChargingSupported_]]" restamp>
   <div id="optimizedChargingSettingsRow"
       class$="[[getClassForRow_(batteryStatus_.present, 'optimizedCharging')]]">
     <div class="flex layout horizontal center">
@@ -94,21 +94,6 @@
     disabled="[[isExternalPowerAC_]]"
     deep-link-focus-id$="[[Setting.kBatterySaver]]">
 </settings-toggle-button>
-
-<!-- adaptiveCharging -->
-<template is="dom-if" if="[[!batteryChargeLimitAvailable_]]" restamp>
-  <settings-toggle-button id="adaptiveChargingToggle"
-      class$="[[getClassForRow_(batteryStatus_.present, 'adaptiveCharging')]]"
-      hidden$="[[!adaptiveChargingSupported_]]"
-      pref="[[adaptiveChargingPref_]]"
-      label="$i18n{powerAdaptiveChargingLabel}"
-      sub-label="$i18n{powerAdaptiveChargingSubtext}"
-      learn-more-url="$i18n{powerAdaptiveChargingLearnMoreUrl}"
-      on-settings-boolean-control-change="onAdaptiveChargingToggleChange_"
-      deep-link-focus-id$="[[Setting.kAdaptiveCharging]]"
-      no-set-pref>
-  </settings-toggle-button>
-</template>
 
 <!-- idle -->
 <template is="dom-if" if="[[!batteryStatus_.present]]" restamp>

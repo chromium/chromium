@@ -226,9 +226,6 @@ void PowerSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           Shell::Get()
                               ->adaptive_charging_controller()
                               ->IsAdaptiveChargingSupported());
-
-  html_source->AddBoolean("isBatteryChargeLimitAvailable",
-                          ash::features::IsBatteryChargeLimitAvailable());
 }
 
 void PowerSection::AddHandlers(content::WebUI* web_ui) {
@@ -297,9 +294,7 @@ void PowerSection::PowerChanged(
 
         // Assume that Adaptive Charging must be enabled and supported for
         // charge limit to be supported.
-        if (ash::features::IsBatteryChargeLimitAvailable()) {
-          updater.AddSearchTags(GetPowerWithOptimizedChargingSearchConcepts());
-        }
+        updater.AddSearchTags(GetPowerWithOptimizedChargingSearchConcepts());
       }
 
       const auto* battery_saver_controller =

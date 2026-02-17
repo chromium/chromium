@@ -390,7 +390,7 @@ void PowerHandler::SendBatteryStatus() {
   }
 
   std::u16string status_text;
-  if (features::IsBatteryChargeLimitAvailable() && proto->charge_limited()) {
+  if (proto->charge_limited()) {
     status_text =
         l10n_util::GetStringFUTF16(IDS_SETTINGS_BATTERY_STATUS_CHARGING_ON_HOLD,
                                    base::NumberToString16(percent));
