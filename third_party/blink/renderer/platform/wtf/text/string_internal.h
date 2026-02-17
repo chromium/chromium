@@ -149,10 +149,6 @@ ALWAYS_INLINE wtf_size_t FindInternal(base::span<const LChar> search,
 inline wtf_size_t Find(const StringView& string,
                        const StringView& match,
                        wtf_size_t index) {
-  if (match.IsNull()) [[unlikely]] {
-    return kNotFound;
-  }
-
   const wtf_size_t match_length = match.length();
 
   // Optimization: fast case for strings of length 1.

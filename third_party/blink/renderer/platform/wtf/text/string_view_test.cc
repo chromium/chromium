@@ -648,9 +648,9 @@ TEST(StringViewTest, NextCodePointOffset) {
 }
 
 TEST(StringViewTest, FindSubstring) {
-  EXPECT_EQ(kNotFound, StringView().find(StringView()));
-  EXPECT_EQ(kNotFound, StringView("").find(StringView()));
-  EXPECT_EQ(kNotFound, StringView(u"").find(StringView()));
+  EXPECT_EQ(0u, StringView().find(StringView()));
+  EXPECT_EQ(0u, StringView("").find(StringView()));
+  EXPECT_EQ(0u, StringView(u"").find(StringView()));
   EXPECT_EQ(kNotFound, StringView().find("a"));
   EXPECT_EQ(kNotFound, StringView("").find("a"));
   EXPECT_EQ(kNotFound, StringView(u"").find("a"));

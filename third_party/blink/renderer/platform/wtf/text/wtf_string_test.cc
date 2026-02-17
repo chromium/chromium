@@ -473,9 +473,9 @@ TEST(StringTest, StringPrinter) {
 }
 
 TEST(StringTest, FindSubstring) {
-  EXPECT_EQ(kNotFound, String().find(StringView()));
-  EXPECT_EQ(kNotFound, String("").find(StringView()));
-  EXPECT_EQ(kNotFound, String(u"").find(StringView()));
+  EXPECT_EQ(0u, String().find(StringView()));
+  EXPECT_EQ(0u, String("").find(StringView()));
+  EXPECT_EQ(0u, String(u"").find(StringView()));
   EXPECT_EQ(kNotFound, String().find("a"));
   EXPECT_EQ(kNotFound, String("").find("a"));
   EXPECT_EQ(kNotFound, String(u"").find("a"));

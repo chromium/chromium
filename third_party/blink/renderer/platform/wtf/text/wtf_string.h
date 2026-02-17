@@ -248,9 +248,7 @@ class WTF_EXPORT String {
                   wtf_size_t index = 0) const;
 
   // Find substrings.
-  size_type find(const StringView& value, size_type start = 0) const {
-    return impl_ ? impl_->Find(value, start) : kNotFound;
-  }
+  size_type find(const StringView& value, size_type start = 0) const;
   wtf_size_t Find(const StringView& value,
                   wtf_size_t start,
                   TextCaseSensitivity case_sensitivity) const {

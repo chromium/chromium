@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/copy_lchars_from_uchar_source.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_internal.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
@@ -114,6 +115,10 @@ int CodeUnitCompareIgnoringASCIICase(const String& a, const char* b) {
 wtf_size_t String::Find(base::RepeatingCallback<bool(UChar)> match_callback,
                         wtf_size_t index) const {
   return impl_ ? impl_->Find(match_callback, index) : kNotFound;
+}
+
+String::size_type String::find(const StringView& value, size_type start) const {
+  return internal::Find(impl_.get(), value, start);
 }
 
 UChar32 String::CharacterStartingAt(unsigned i) const {
