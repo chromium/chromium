@@ -24,17 +24,32 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 @NullMarked
-class AndroidxDeviceAuthenticatorControllerImpl implements DeviceAuthenticatorController {
+class AndroidxDeviceAuthenticatorControllerImpl {
     FragmentActivity mActivity;
     Delegate mDelegate;
     private @Nullable BiometricPrompt mBiometricPrompt;
+
+    interface Delegate {
+
+        /**
+         * Notifies about authentication completion.
+         *
+         * @param result the result of the authentication (success with biometrics, success with
+         *     fallback or failure).
+         */
+        void onAuthenticationCompleted(@DeviceAuthUIResult int result);
+    }
 
     public AndroidxDeviceAuthenticatorControllerImpl(FragmentActivity activity, Delegate delegate) {
         mActivity = activity;
         mDelegate = delegate;
     }
 
-    @Override
+    /**
+     * Checks if biometric authentication is available.
+     *
+     * @return the enum value, which represents either the auth being available or the error type.
+     */
     public @BiometricsAvailability int canAuthenticateWithBiometric() {
         BiometricManager biometricManager = BiometricManager.from(mActivity);
         switch (biometricManager.canAuthenticate(
@@ -56,7 +71,11 @@ class AndroidxDeviceAuthenticatorControllerImpl implements DeviceAuthenticatorCo
         }
     }
 
-    @Override
+    /**
+     * A general method to check whether we can authenticate either via biometrics or screen lock.
+     *
+     * @return true, if either biometrics are enrolled or screen lock is setup, false otherwise.
+     */
     public boolean canAuthenticateWithBiometricOrScreenLock() {
         @BiometricsAvailability int availability = canAuthenticateWithBiometric();
         return (availability == BiometricsAvailability.AVAILABLE) || hasScreenLockSetUp();
@@ -67,7 +86,10 @@ class AndroidxDeviceAuthenticatorControllerImpl implements DeviceAuthenticatorCo
                 .isDeviceSecure();
     }
 
-    @Override
+    /**
+     * Launches biometric authentication on the device. {@link canAuthenticateWithBiometric} should
+     * be called before this method.
+     */
     public void authenticate() {
         PromptInfo promptInfo =
                 new PromptInfo.Builder()
@@ -123,7 +145,7 @@ class AndroidxDeviceAuthenticatorControllerImpl implements DeviceAuthenticatorCo
         mDelegate.onAuthenticationCompleted(result);
     }
 
-    @Override
+    /** Cancels authentication. */
     public void cancel() {
         if (mBiometricPrompt == null) return;
         mBiometricPrompt.cancelAuthentication();
