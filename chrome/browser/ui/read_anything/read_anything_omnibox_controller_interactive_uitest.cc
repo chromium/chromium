@@ -280,20 +280,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
-                       EntryPointLoggedAfterOmniboxShownAndClicked) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  RunTestSequence(InstrumentTab(kActiveTab),
-                  NavigateWebContents(kActiveTab, distillable_url_),
-                  WaitForWebContentsReady(kActiveTab),
-                  WaitForPageActionChipVisible(), InvokePageAction(),
-                  WaitForPageActionChipNotVisible(), Do([this]() {
-                    histogram_tester().ExpectUniqueSample(
-                        "Accessibility.ReadAnything.EntryPointAfterOmnibox",
-                        ReadAnythingOpenTrigger::kOmniboxChip, 1);
-                  }));
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
                        LogRmOpenedAfterOmniboxIphShown) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   RunTestSequence(

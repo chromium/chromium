@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
@@ -47,31 +48,6 @@ class TestReadAnythingOmniboxController : public ReadAnythingOmniboxController {
 
  private:
   int checks_ = 0;
-};
-
-class ReadAnythingOmniboxControllerTestBase
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  bool IsImmersiveEnabled() const { return GetParam(); }
-
-  void VerifyUIState() {
-    if (IsImmersiveEnabled()) {
-      auto* controller =
-          ReadAnythingController::From(browser()->GetActiveTabInterface());
-      ASSERT_EQ(controller->GetPresentationState(),
-                ReadAnythingController::PresentationState::kInImmersiveOverlay);
-    } else {
-      auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
-      ASSERT_TRUE(base::test::RunUntil([&]() {
-        return side_panel_ui->IsSidePanelEntryShowing(
-            SidePanelEntryKey(SidePanelEntryId::kReadAnything));
-      }));
-    }
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ReadAnythingOmniboxControllerBrowserTest : public InProcessBrowserTest {
@@ -151,4 +127,37 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
   // Now after the full delay, the check should run once.
   mocked_task_runner->FastForwardBy(base::Milliseconds(100));
   EXPECT_EQ(controller_->CheckCount(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
+                       Activate_LogsOmniboxEntrypointAfterOmniboxClicked) {
+  base::HistogramTester histogram_tester;
+  controller_ = CreateController();
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  tab->GetTabFeatures()->page_action_controller()->Show(
+      kActionSidePanelShowReadAnything);
+
+  controller_->Activate(true, ReadAnythingOpenTrigger::kOmniboxChip);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.EntryPointAfterOmnibox",
+      ReadAnythingOpenTrigger::kOmniboxChip, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
+                       Activate_LogsNotOmniboxEntrypointAfterOmniboxShown) {
+  base::HistogramTester histogram_tester;
+  controller_ = CreateController();
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  tab->GetTabFeatures()->page_action_controller()->Show(
+      kActionSidePanelShowReadAnything);
+
+  controller_->Activate(true,
+                        ReadAnythingOpenTrigger::kReadAnythingContextMenu);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.EntryPointAfterOmnibox",
+      ReadAnythingOpenTrigger::kReadAnythingContextMenu, 1);
 }
