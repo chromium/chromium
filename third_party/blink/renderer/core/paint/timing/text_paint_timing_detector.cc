@@ -86,12 +86,7 @@ void TextPaintTimingDetector::LayoutObjectWillBeDestroyed(
     const LayoutObject& object) {
   auto it = texts_queued_for_paint_time_.find(&object);
   if (it != texts_queued_for_paint_time_.end()) {
-    if (RuntimeEnabledFeatures::
-            PaintTimingRecordTimingForDetachedPaintedElementsEnabled()) {
-      it->value->OnImageOrTextRemovedWhilePending();
-    } else {
-      texts_queued_for_paint_time_.erase(it);
-    }
+    it->value->OnImageOrTextRemovedWhilePending();
   }
   if (const TextRecord* record = ltp_manager_.LargestIgnoredText();
       record && record->GetNode() == object.GetNode()) {
@@ -320,8 +315,6 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
     // check if there's a layout object, because the node could have been
     // re-added.
     if (record->WasImageOrTextRemovedWhilePending()) {
-      CHECK(RuntimeEnabledFeatures::
-                PaintTimingRecordTimingForDetachedPaintedElementsEnabled());
       if (is_needed_for_lcp && record->RecordedSize() > 0u &&
           (!largest_removed_text ||
            largest_removed_text->RecordedSize() < record->RecordedSize())) {

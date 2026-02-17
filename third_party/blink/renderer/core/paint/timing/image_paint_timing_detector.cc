@@ -228,12 +228,9 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     // from that collection if the image was removed between painting it and
     // running this callback, in which case we still want to set its paint time.
     auto it = pending_images_.find(record->Hash());
-    if (it == pending_images_.end()) {
-      if (!RuntimeEnabledFeatures::
-              PaintTimingRecordTimingForDetachedPaintedElementsEnabled() ||
-          !record->WasImageOrTextRemovedWhilePending()) {
-        continue;
-      }
+    if (it == pending_images_.end() &&
+        !record->WasImageOrTextRemovedWhilePending()) {
+      continue;
     }
 
     // Set paint time if it hasn't been set. Note for first video frame with

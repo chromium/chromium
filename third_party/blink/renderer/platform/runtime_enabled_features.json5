@@ -4006,10 +4006,6 @@
       status: "stable",
     },
     {
-      name: "PaintTimingRecordTimingForDetachedPaintedElements",
-      status: "stable",
-    },
-    {
       name: "PaintUnderInvalidationChecking",
       settable_from_internals: true,
     },
