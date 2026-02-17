@@ -898,20 +898,25 @@ IN_PROC_BROWSER_TEST_F(GlicShareImageEnablementBrowserTest, LiveEligibility) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::NONE);
-
-  SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount);
-
-  // In all cases, share image should be enabled here.
-  EXPECT_TRUE(IsShareImageEnabled());
-
   auto* const identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
+
+  SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount);
   AccountInfo primary_account =
       identity_manager->FindExtendedAccountInfoByAccountId(
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
   ASSERT_FALSE(primary_account.IsEmpty());
-
   AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
+
+  // Set the account capability to true.
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_test_env_->identity_manager(),
+                                      primary_account);
+
+  // Share image should be enabled here.
+  EXPECT_TRUE(IsShareImageEnabled());
+
+  // Now disable the account capability.
   mutator.set_can_use_model_execution_features(false);
   signin::UpdateAccountInfoForAccount(identity_test_env_->identity_manager(),
                                       primary_account);
