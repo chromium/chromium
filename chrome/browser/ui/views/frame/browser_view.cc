@@ -1543,9 +1543,9 @@ void BrowserView::OnProjectsPanelStateChanged(
 
 void BrowserView::Show() {
   if (auto* manager = InitialWebUIManager::From(browser())) {
-    if (manager->ShouldDeferShow()) {
-      manager->SetWebUIReadyCallback(base::BindOnce(
-          &BrowserView::OnInitialWebUIReady, weak_ptr_factory_.GetWeakPtr()));
+    if (manager->RequestDeferShow(
+            base::BindOnce(&BrowserView::OnInitialWebUIReady,
+                           weak_ptr_factory_.GetWeakPtr()))) {
       return;
     }
   }

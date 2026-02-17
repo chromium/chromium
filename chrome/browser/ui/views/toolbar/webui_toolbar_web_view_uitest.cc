@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest, FocusReloadButton) {
           [this]() {
             auto* manager = InitialWebUIManager::From(browser());
             CHECK(manager);
-            return manager->ShouldDeferShow();
+            return manager->RequestDeferShow(base::DoNothing());
           },
           false),
       Do([this]() {
