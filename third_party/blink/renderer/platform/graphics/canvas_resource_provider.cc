@@ -892,9 +892,10 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
     return nullptr;
   }
 
-  // We don't need to EndWriteAccess here since that's required to make the
-  // rendering results visible on the GpuMemoryBuffer while we return cpu
-  // memory, rendererd to by skia, here.
+  // We don't need to EndWriteAccess here since that's required to upload the
+  // rendering results to the resource's SharedImage (e.g., for GPU compositing)
+  // while in this case we are simply returning the rendered CPU-side results to
+  // the client.
   if (!is_accelerated_) {
     return UnacceleratedSnapshot(orientation);
   }
