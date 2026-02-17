@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.os.IBinder;
+import android.util.Pair;
 
 import androidx.core.app.ActivityCompat;
 
@@ -51,9 +52,9 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -76,8 +77,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
     private BaseNotificationManagerProxy mNotificationManager;
     private SharedPreferencesManager mSharedPreferences;
     private final TreeMap<Integer, Set<@MediaType Integer>> mNotificationsType = new TreeMap<>();
-    private final TreeMap<Integer, NotificationWrapper> mNotifications =
-            new TreeMap<>(Comparator.reverseOrder());
+    private final List<Pair<Integer, NotificationWrapper>> mNotifications = new ArrayList<>();
 
     private boolean mStartedForegroundService;
     private int mForgroundServiceType;
@@ -220,9 +220,11 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
             }
             mNotificationsType.remove(notificationId);
             if (DeviceInfo.isDesktop()) {
+                int lastIndex = mNotifications.size() - 1;
                 boolean isRemovingLatestNotification =
-                        !mNotifications.isEmpty() && notificationId == mNotifications.firstKey();
-                mNotifications.remove(notificationId);
+                        lastIndex >= 0 && mNotifications.get(lastIndex).first == notificationId;
+                mNotifications.removeIf(
+                        notificationEntry -> notificationEntry.first == notificationId);
                 if (!hasNewMediaTypesToUpate) {
                     if (mNotifications.isEmpty()) {
                         stopForegroundService();
@@ -233,10 +235,9 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                         //    going to be removed.
                         // 2. Update service if the current foreground type no longer matches the
                         //    required type.
-                        int latestNotificationId = mNotifications.firstKey();
-                        NotificationWrapper latestNotification =
-                                assumeNonNull(mNotifications.get(latestNotificationId));
-                        startOrUpdateForegroundService(latestNotificationId, latestNotification);
+                        Pair<Integer, NotificationWrapper> latest =
+                                mNotifications.get(mNotifications.size() - 1);
+                        startOrUpdateForegroundService(latest.first, latest.second);
                     }
                 }
             }
@@ -317,7 +318,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
             // For large screen device, we use the latest notification to start or update
             // the foreground service.
             startOrUpdateForegroundService(notificationId, notification);
-            mNotifications.put(notificationId, notification);
+            mNotifications.add(new Pair<>(notificationId, notification));
         } else {
             mNotificationManager.notify(notification);
         }
