@@ -1123,6 +1123,47 @@
             ]
         }
     ],
+    "AndroidPermissionOptIns": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "FirstPromptDay7_SecondPromptDay14",
+                    "params": {
+                        "initial_prompt_delay_days": "7",
+                        "permission_request_interval_days": "7",
+                        "permission_request_max_count": "2"
+                    },
+                    "enable_features": [
+                        "NotificationPermissionVariant"
+                    ]
+                },
+                {
+                    "name": "FirstPromptDay7_Only",
+                    "params": {
+                        "initial_prompt_delay_days": "7",
+                        "permission_request_max_count": "1"
+                    },
+                    "enable_features": [
+                        "NotificationPermissionVariant"
+                    ]
+                },
+                {
+                    "name": "FirstPromptDay56_SecondPromptDay63",
+                    "params": {
+                        "initial_prompt_delay_days": "56",
+                        "permission_request_interval_days": "7",
+                        "permission_request_max_count": "2"
+                    },
+                    "enable_features": [
+                        "NotificationPermissionVariant"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidReaderModeFastFollows": [
         {
             "platforms": [
@@ -1287,37 +1328,6 @@
                     "name": "EnablePerfettoSystemTracing",
                     "enable_features": [
                         "EnablePerfettoSystemTracing"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AndroidTNotifications": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "RationaleShownAtFirstRequest_20220909",
-                    "params": {
-                        "always_show_rationale_before_requesting_permission": "true",
-                        "notification_permission_dialog_text_variant_2": "false",
-                        "permission_request_interval_days": "7"
-                    },
-                    "enable_features": [
-                        "NotificationPermissionVariant"
-                    ]
-                },
-                {
-                    "name": "TextVariant2_20220909",
-                    "params": {
-                        "always_show_rationale_before_requesting_permission": "true",
-                        "notification_permission_dialog_text_variant_2": "true",
-                        "permission_request_interval_days": "7"
-                    },
-                    "enable_features": [
-                        "NotificationPermissionVariant"
                     ]
                 }
             ]
