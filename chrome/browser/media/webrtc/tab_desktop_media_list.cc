@@ -189,9 +189,11 @@ void TabDesktopMediaList::Refresh(bool update_thumbnails) {
     }
 
     // Only new or changed favicon need update.
-    new_favicon_hashes[media_id] = GetImageHash(favicon);
-    if (!favicon_hashes_.count(media_id) ||
-        (favicon_hashes_[media_id] != new_favicon_hashes[media_id])) {
+    auto new_it =
+        new_favicon_hashes.insert_or_assign(media_id, GetImageHash(favicon))
+            .first;
+    if (auto it = favicon_hashes_.find(media_id);
+        it == favicon_hashes_.end() || (it->second != new_it->second)) {
       gfx::ImageSkia image = favicon.AsImageSkia();
       image.MakeThreadSafe();
       favicon_pairs.emplace_back(media_id, image);
