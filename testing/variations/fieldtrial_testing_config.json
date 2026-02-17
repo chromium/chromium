@@ -29423,6 +29423,21 @@
             ]
         }
     ],
+    "WebViewDeferStartupGmsCalls": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260206",
+                    "enable_features": [
+                        "WebViewDeferStartupGmsCalls"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewDisableCHIPS": [
         {
             "platforms": [
