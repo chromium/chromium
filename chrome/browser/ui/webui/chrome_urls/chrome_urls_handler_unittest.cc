@@ -25,8 +25,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
-#include "ash/webui/sanitize_ui/url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using testing::_;

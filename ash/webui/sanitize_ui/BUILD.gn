@@ -12,11 +12,7 @@ static_library("sanitize_ui") {
     "sanitize_ui.h",
     "sanitize_ui_delegate.h",
     "sanitize_ui_uma.h",
-    "url_constants.cc",
-    "url_constants.h",
   ]
-
-  public_deps = [ ":url_constants" ]
 
   deps = [
     "//ash",
@@ -33,14 +29,5 @@ static_library("sanitize_ui") {
     "//ui/web_dialogs",
     "//ui/webui",
     "//ui/webui/resources",
-  ]
-}
-
-# Url constants pulled out to enable depending on production url constants in
-# browser tests.
-source_set("url_constants") {
-  sources = [
-    "url_constants.cc",
-    "url_constants.h",
   ]
 }

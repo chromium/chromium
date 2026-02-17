@@ -23,7 +23,6 @@ static_library("main_extra_parts") {
     "//ash/public/cpp",
     "//ash/quick_pair/keyed_service",
     "//ash/webui/annotator",
-    "//ash/webui/sanitize_ui:url_constants",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",

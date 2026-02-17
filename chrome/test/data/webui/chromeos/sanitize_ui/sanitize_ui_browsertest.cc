@@ -7,7 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/sanitize_ui/url_constants.h"
+#include "ash/constants/webui_url_constants.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"

@@ -5,10 +5,10 @@
 #ifndef ASH_WEBUI_SANITIZE_UI_SANITIZE_UI_H_
 #define ASH_WEBUI_SANITIZE_UI_SANITIZE_UI_H_
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/sanitize_ui/mojom/sanitize_ui.mojom.h"
 #include "ash/webui/sanitize_ui/sanitize_ui_delegate.h"
-#include "ash/webui/sanitize_ui/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace ash {

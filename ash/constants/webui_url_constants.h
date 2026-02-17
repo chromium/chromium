@@ -140,6 +140,7 @@ inline constexpr char kChromeUIPasswordChangeURL[] = "chrome://password-change";
 inline constexpr char kChromeUIPowerHost[] = "power";
 inline constexpr char kChromeUIRemoteManagementCurtainHost[] =
     "security-curtain";
+inline constexpr char kChromeUISanitizeAppHost[] = "sanitize";
 inline constexpr char kChromeUISanitizeAppURL[] = "chrome://sanitize";
 inline constexpr char kChromeUISetTimeHost[] = "set-time";
 inline constexpr char kChromeUISetTimeURL[] = "chrome://set-time/";
