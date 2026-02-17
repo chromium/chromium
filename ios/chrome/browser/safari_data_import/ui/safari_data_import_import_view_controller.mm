@@ -96,14 +96,13 @@
 /// The banner image should be hidden on iPhone landscape mode. This method
 /// makes sure of that when the user rotates the device.
 - (void)makeBannerImageVisibilityAdaptive {
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
   __weak __typeof(self) weakSelf = self;
   UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                    UITraitCollection* previousCollection) {
     weakSelf.shouldHideBanner = IsCompactHeight(traitEnvironment);
   };
-  [self registerForTraitChanges:traits withHandler:handler];
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                    withHandler:handler];
 }
 
 /// Adds an instructional view to show import steps  to the view hierarchy and
