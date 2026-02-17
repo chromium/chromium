@@ -472,7 +472,7 @@ enum WebDXFeature {
   kReporting = 410,
   kFontLanguageOverride = 411,
   kWebnn = 412,
-  kTextDetect = 413,
+  kTextDetection = 413,
   kTextJustify = 414,
   kSummarizer = 415,
   kTranslationApi = 416,

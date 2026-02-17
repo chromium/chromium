@@ -8817,7 +8817,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="410" label="Reporting"/>
   <int value="411" label="FontLanguageOverride"/>
   <int value="412" label="Webnn"/>
-  <int value="413" label="TextDetect"/>
+  <int value="413" label="TextDetection"/>
   <int value="414" label="TextJustify"/>
   <int value="415" label="Summarizer"/>
   <int value="416" label="TranslationApi"/>

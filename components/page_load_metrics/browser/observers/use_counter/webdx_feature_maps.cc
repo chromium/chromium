@@ -458,7 +458,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kReportingObserver, WebDXFeature::kReporting},
           {WebFeature::kReportingEndpointsHeader, WebDXFeature::kReporting},
           {WebFeature::kV8MLContext_Dispatch_Method, WebDXFeature::kWebnn},
-          {WebFeature::kTextDetectorDetect, WebDXFeature::kTextDetect},
+          {WebFeature::kTextDetectorDetect, WebDXFeature::kTextDetection},
           {WebFeature::kSummarizer_Summarize, WebDXFeature::kSummarizer},
           {WebFeature::kSummarizer_SummarizeStreaming,
            WebDXFeature::kSummarizer},
