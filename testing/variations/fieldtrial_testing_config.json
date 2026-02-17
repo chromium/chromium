@@ -14081,21 +14081,6 @@
             ]
         }
     ],
-    "IOSDownloadSanitizeFilename": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSDownloadSanitizeFilename"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSEnablePasswordManagerTrustedVaultWidget": [
         {
             "platforms": [

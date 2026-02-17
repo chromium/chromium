@@ -101,7 +101,7 @@ BASE_FEATURE(kUpdateSSLStatusOnNavigationItemLazyCreation,
 BASE_FEATURE(kEnableBEContextMenuConfiguration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSDownloadSanitizeFilename, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSDownloadSanitizeFilename, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableContextMenuTimeout, base::FEATURE_DISABLED_BY_DEFAULT);
 
