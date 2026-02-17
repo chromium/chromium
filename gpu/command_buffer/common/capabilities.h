@@ -46,10 +46,8 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
   bool texture_rg = false;
   bool texture_norm16 = false;
   bool texture_half_float_linear = false;
-  bool image_ycbcr_420v = false;
   bool image_ar30 = false;
   bool image_ab30 = false;
-  bool image_ycbcr_p010 = false;
   bool render_buffer_format_bgra8888 = false;
   bool msaa_is_slow = false;
   bool avoid_stencil_buffers = false;

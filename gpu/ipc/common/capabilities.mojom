@@ -19,10 +19,8 @@ struct Capabilities {
   bool texture_rg;
   bool texture_norm16;
   bool texture_half_float_linear;
-  bool image_ycbcr_420v;
   bool image_ar30;
   bool image_ab30;
-  bool image_ycbcr_p010;
   bool render_buffer_format_bgra8888;
   bool msaa_is_slow;
   bool avoid_stencil_buffers;

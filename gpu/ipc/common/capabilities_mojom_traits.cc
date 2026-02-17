@@ -19,10 +19,8 @@ bool StructTraits<gpu::mojom::CapabilitiesDataView, gpu::Capabilities>::Read(
   out->texture_rg = data.texture_rg();
   out->texture_norm16 = data.texture_norm16();
   out->texture_half_float_linear = data.texture_half_float_linear();
-  out->image_ycbcr_420v = data.image_ycbcr_420v();
   out->image_ar30 = data.image_ar30();
   out->image_ab30 = data.image_ab30();
-  out->image_ycbcr_p010 = data.image_ycbcr_p010();
   out->render_buffer_format_bgra8888 = data.render_buffer_format_bgra8888();
   out->msaa_is_slow = data.msaa_is_slow();
   out->avoid_stencil_buffers = data.avoid_stencil_buffers();

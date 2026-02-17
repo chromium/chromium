@@ -111,10 +111,8 @@ TEST_F(GLTest, FeatureFlagsMatchCapabilities) {
   EXPECT_EQ(gl_caps.sync_query, flags.chromium_sync_query);
   EXPECT_EQ(caps.sync_query, flags.chromium_sync_query);
   EXPECT_EQ(caps.texture_rg, flags.ext_texture_rg);
-  EXPECT_EQ(caps.image_ycbcr_420v, flags.chromium_image_ycbcr_420v);
   EXPECT_EQ(caps.image_ar30, flags.chromium_image_ar30);
   EXPECT_EQ(caps.image_ab30, flags.chromium_image_ab30);
-  EXPECT_EQ(caps.image_ycbcr_p010, flags.chromium_image_ycbcr_p010);
   EXPECT_EQ(caps.render_buffer_format_bgra8888,
             flags.ext_render_buffer_format_bgra8888);
   EXPECT_EQ(gl_caps.occlusion_query_boolean, flags.occlusion_query_boolean);

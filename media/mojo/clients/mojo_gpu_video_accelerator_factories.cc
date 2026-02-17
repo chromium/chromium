@@ -285,7 +285,8 @@ MojoGpuVideoAcceleratorFactories::VideoFrameOutputFormat(
       context_provider_->SharedImageInterface()->GetCapabilities();
   const size_t bit_depth = media::BitDepth(pixel_format);
   if (bit_depth > 8) {
-    if (capabilities.image_ycbcr_p010 && bit_depth == 10) {
+    if (shared_image_capabilities.supports_ycbcr_p010_sampling &&
+        bit_depth == 10) {
       return OutputFormat::P010;
     }
 
@@ -327,12 +328,12 @@ MojoGpuVideoAcceleratorFactories::VideoFrameOutputFormat(
 #if BUILDFLAG(IS_FUCHSIA)
   // Hardware support for NV12 GMBs is expected to be present on all supported
   // Fuchsia devices.
-  CHECK(capabilities.image_ycbcr_420v);
+  CHECK(shared_image_capabilities.supports_ycbcr_nv12_sampling);
   CHECK(shared_image_capabilities.supports_native_nv12_mappable_shared_images);
   return OutputFormat::NV12;
 #else
 
-  if (capabilities.image_ycbcr_420v &&
+  if (shared_image_capabilities.supports_ycbcr_nv12_sampling &&
       shared_image_capabilities.supports_native_nv12_mappable_shared_images) {
     return OutputFormat::NV12;
   }

@@ -29,6 +29,8 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT SharedImageCapabilities {
   bool supports_luminance_shared_images = false;
   bool supports_r16_shared_images = false;
   bool supports_native_nv12_mappable_shared_images = false;
+  bool supports_ycbcr_nv12_sampling = false;
+  bool supports_ycbcr_p010_sampling = false;
   bool is_r16f_supported = false;
   bool disable_r8_shared_images = false;
   bool disable_webgpu_shared_images = false;

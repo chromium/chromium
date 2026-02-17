@@ -45,17 +45,11 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::CapabilitiesDataView,
   static bool texture_half_float_linear(const gpu::Capabilities& cap) {
     return cap.texture_half_float_linear;
   }
-  static bool image_ycbcr_420v(const gpu::Capabilities& cap) {
-    return cap.image_ycbcr_420v;
-  }
   static bool image_ar30(const gpu::Capabilities& cap) {
     return cap.image_ar30;
   }
   static bool image_ab30(const gpu::Capabilities& cap) {
     return cap.image_ab30;
-  }
-  static bool image_ycbcr_p010(const gpu::Capabilities& cap) {
-    return cap.image_ycbcr_p010;
   }
   static bool render_buffer_format_bgra8888(const gpu::Capabilities& cap) {
     return cap.render_buffer_format_bgra8888;
