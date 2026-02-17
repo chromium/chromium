@@ -1,10 +1,9 @@
 # The bulk of the files in this directory are related to WebGL, though
 # there are a couple used by accelerated 2D canvas as well.
 
-
 # WebGL, WebGPU, Dawn, etc.
 kainino@chromium.org
-enga@chromium.org
+lokokung@google.com
 cwallez@chromium.org
 
 # WebXR
