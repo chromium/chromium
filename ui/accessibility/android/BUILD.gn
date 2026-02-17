@@ -1,0 +1,19 @@
+import("//build/config/android/rules.gni")
+
+android_resources("accessibility_test_support_resources") {
+  testonly = true
+  sources = [ "res/xml/accessibility_service_config.xml" ]
+  custom_package = "org.chromium.ui.accessibility.testservice"
+}
+
+android_apk("accessibility_test_support_apk") {
+  testonly = true
+  apk_name = "AccessibilityTestService"
+  android_manifest = "AndroidManifest.xml"
+  sources = [ "javatest/src/org/chromium/ui/accessibility/testservice/AccessibilityTestService.java" ]
+  manifest_package = "org.chromium.ui.accessibility.testservice"
+  deps = [
+    ":accessibility_test_support_resources",
+    "//base:base_java",
+  ]
+}

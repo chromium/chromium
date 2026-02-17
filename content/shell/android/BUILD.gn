@@ -248,12 +248,18 @@ content_shell_apk_tmpl("content_shell_test_apk") {
     "//content/public/android:content_javatests",
     "//net/android:net_tests_java",
   ]
-  data_deps = [ "//testing/buildbot/filters:content_shell_test_apk_filters" ]
+  data_deps = [
+    "//testing/buildbot/filters:content_shell_test_apk_filters",
+    "//ui/accessibility/android:accessibility_test_support_apk",
+  ]
   if (enable_chrome_android_internal) {
     data_deps += [ "//clank/build/bot/filters:content_shell_test_apk_filters" ]
   }
 
-  additional_apks = [ "//net/android:net_test_support_apk" ]
+  additional_apks = [
+    "//net/android:net_test_support_apk",
+    "//ui/accessibility/android:accessibility_test_support_apk",
+  ]
 }
 
 android_library("content_shell_test_java") {
