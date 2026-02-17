@@ -5,9 +5,6 @@
 #ifndef BASE_APPLE_SWIFT_INTEROP_UTIL_H_
 #define BASE_APPLE_SWIFT_INTEROP_UTIL_H_
 
-#include "base/functional/callback.h"
-#include "base/memory/scoped_refptr.h"
-
 #if __swift__
 #include <swift/bridging>
 #endif  // __swift__
