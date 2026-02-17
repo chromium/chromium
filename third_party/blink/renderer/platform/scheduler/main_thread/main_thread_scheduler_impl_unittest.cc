@@ -4818,6 +4818,31 @@ TEST_P(BusyLoopOnRendererMainTest,
   }
 }
 
+TEST_P(BusyLoopOnRendererMainTest, BusyLoopLessWhenCompositorGesture) {
+  if (!IsFeatureEnabled() || !Is120HzDisplay()) {
+    GTEST_SKIP() << "The BusyLoopLessWhenCompositorGesture feature only impacts"
+                 << "clients that busy loop.";
+  }
+
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {kBusyLoopOnRendererMain, kBusyLoopLessWhenCompositorGesture}, {});
+
+  CheckScaleFactor([](UseCase use_case, float scale_factor) {
+    const float expected_scale_factor =
+        (use_case == UseCase::kNone || use_case == UseCase::kCompositorGesture)
+            ? .5f
+            : 1.f;
+    if (scale_factor == expected_scale_factor) {
+      return ::testing::AssertionSuccess();
+    }
+    return ::testing::AssertionFailure()
+           << "scale factor is " << scale_factor << ", "
+           << "expected " << expected_scale_factor << " "
+           << "for use case " << UseCaseToString(use_case).value;
+  });
+}
+
 }  // namespace main_thread_scheduler_impl_unittest
 }  // namespace scheduler
 }  // namespace blink

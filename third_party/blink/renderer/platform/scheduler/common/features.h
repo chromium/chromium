@@ -65,6 +65,8 @@ BASE_FEATURE(kMbiOverrideTaskRunnerHandle,
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kBusyLoopOnRendererMain);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kBusyLoopTime);
 
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kBusyLoopLessWhenCompositorGesture);
+
 }  // namespace scheduler
 }  // namespace blink
 

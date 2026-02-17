@@ -102,5 +102,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "busy_loop_for",
                    base::Milliseconds(2));
 
+// Prevent scaling BusyLoopOnMainThread to its maximum value during compositor
+// driven gestures.
+BASE_FEATURE(kBusyLoopLessWhenCompositorGesture,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace scheduler
 }  // namespace blink

@@ -3162,7 +3162,12 @@ void MainThreadSchedulerImpl::MaybeSetBusyLoop() {
     busy_loop_scale_factor = 0.f;
   } else if (main_thread_only().blocking_input_expected_soon ||
              main_thread_only().current_use_case != UseCase::kNone) {
-    busy_loop_scale_factor = 1.f;
+    if (main_thread_only().current_use_case == UseCase::kCompositorGesture &&
+        base::FeatureList::IsEnabled(kBusyLoopLessWhenCompositorGesture)) {
+      busy_loop_scale_factor = 0.5f;
+    } else {
+      busy_loop_scale_factor = 1.f;
+    }
   } else {
     busy_loop_scale_factor = 0.5f;
   }
