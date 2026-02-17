@@ -176,7 +176,7 @@ gfx::RectF LayoutSVGResourceContainer::ResolveRectangle(
 void LayoutSVGResourceContainer::InvalidateClientsIfActiveResource() {
   NOT_DESTROYED();
   // Avoid doing unnecessary work if the document is being torn down.
-  if (DocumentBeingDestroyedActual()) {
+  if (GetDocument().Lifecycle().GetState() >= DocumentLifecycle::kStopping) {
     return;
   }
   // If this is the 'active' resource (the first element with the specified 'id'
@@ -377,7 +377,7 @@ void LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
     bool needs_layout) {
   DCHECK(object.GetNode());
 
-  if (needs_layout && !object.DocumentBeingDestroyed()) {
+  if (needs_layout) {
     object.SetNeedsLayoutAndFullPaintInvalidation(
         layout_invalidation_reason::kSvgResourceInvalidated);
   }

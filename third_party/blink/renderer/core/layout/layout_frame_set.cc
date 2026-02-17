@@ -35,9 +35,6 @@ void LayoutFrameSet::AddChild(LayoutObject* new_child,
 void LayoutFrameSet::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   LayoutBlock::RemoveChild(child);
-  if (DocumentBeingDestroyed()) {
-    return;
-  }
   To<HTMLFrameSetElement>(GetNode())->DirtyEdgeInfoAndFullPaintInvalidation();
 }
 

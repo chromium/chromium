@@ -763,11 +763,9 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
   if (last_ == old_child)
     last_ = old_child->PreviousSibling();
 
-  if (!GetLayoutObject().DocumentBeingDestroyed()) {
-    // Dirty the z-order list in which we are contained.
-    old_child->DirtyStackingContextZOrderLists();
-    MarkAncestorChainForFlagsUpdate();
-  }
+  // Dirty the z-order list in which we are contained.
+  old_child->DirtyStackingContextZOrderLists();
+  MarkAncestorChainForFlagsUpdate();
 
   if (GetLayoutObject().StyleRef().Visibility() != EVisibility::kVisible) {
     DirtyVisibleContentStatus();

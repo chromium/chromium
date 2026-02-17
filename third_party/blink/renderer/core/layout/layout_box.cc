@@ -532,9 +532,7 @@ void LayoutBox::WillBeDestroyed() {
 
   ShapeOutsideInfo::RemoveInfo(*this);
 
-  if (!DocumentBeingDestroyed()) {
-    DisassociatePhysicalFragments();
-  }
+  DisassociatePhysicalFragments();
 
   if (!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled()) {
     if (Style() && StyleRef().HasOutOfFlowPosition()) {

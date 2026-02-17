@@ -264,14 +264,10 @@ void LayoutText::StyleDidChange(
 
 void LayoutText::RemoveAndDestroyTextBoxes() {
   NOT_DESTROYED();
-  if (!DocumentBeingDestroyed()) {
-    if (FirstInlineFragmentItemIndex()) {
-      DetachAxHooksIfNeeded();
-      FragmentItems::LayoutObjectWillBeDestroyed(*this);
-      ClearFirstInlineFragmentItemIndex();
-    }
-  } else if (FirstInlineFragmentItemIndex()) {
+
+  if (FirstInlineFragmentItemIndex()) {
     DetachAxHooksIfNeeded();
+    FragmentItems::LayoutObjectWillBeDestroyed(*this);
     ClearFirstInlineFragmentItemIndex();
   }
   DeleteTextBoxes();

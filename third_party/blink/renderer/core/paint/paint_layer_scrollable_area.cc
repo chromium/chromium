@@ -201,7 +201,7 @@ void PaintLayerScrollableArea::DisposeImpl() {
        scroll_marker_group_data_set_) {
     scroll_marker_group->SetNeedsScrollersMapUpdate();
   }
-  if (InResizeMode() && !GetLayoutBox()->DocumentBeingDestroyed()) {
+  if (InResizeMode()) {
     if (LocalFrame* frame = GetLayoutBox()->GetFrame())
       frame->GetEventHandler().ResizeScrollableAreaDestroyed();
   }
@@ -212,9 +212,8 @@ void PaintLayerScrollableArea::DisposeImpl() {
     probe::UpdateScrollableFlag(GetLayoutBox()->GetNode(), false);
   }
 
-  if (!GetLayoutBox()->DocumentBeingDestroyed()) {
-    if (auto* element = DynamicTo<Element>(GetLayoutBox()->GetNode()))
-      element->SetSavedLayerScrollOffset(scroll_offset_);
+  if (auto* element = DynamicTo<Element>(GetLayoutBox()->GetNode())) {
+    element->SetSavedLayerScrollOffset(scroll_offset_);
   }
 
   // Note: it is not safe to call ScrollAnchor::clear if the document is being

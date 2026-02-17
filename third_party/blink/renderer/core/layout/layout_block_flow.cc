@@ -260,12 +260,6 @@ static bool IsMergeableAnonymousBlock(const LayoutBlockFlow* block) {
 
 void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
   NOT_DESTROYED();
-  // No need to waste time in merging or removing empty anonymous blocks.
-  // We can just bail out if our document is getting destroyed.
-  if (DocumentBeingDestroyed()) {
-    LayoutBox::RemoveChild(old_child);
-    return;
-  }
 
   // If this child is a block, and if our previous and next siblings are both
   // anonymous blocks with inline content, then we can go ahead and fold the
@@ -474,8 +468,9 @@ void LayoutBlockFlow::ReparentSubsequentFloatingOrOutOfFlowSiblings() {
   auto* parent_block_flow = DynamicTo<LayoutBlockFlow>(Parent());
   if (!parent_block_flow)
     return;
-  if (BeingDestroyed() || DocumentBeingDestroyed())
+  if (BeingDestroyed()) {
     return;
+  }
   LayoutObject* child = NextSibling();
   while (child && child->IsFloatingOrOutOfFlowPositioned()) {
     LayoutObject* sibling = child->NextSibling();
@@ -495,8 +490,9 @@ void LayoutBlockFlow::ReparentPrecedingFloatingOrOutOfFlowSiblings() {
   auto* parent_block_flow = DynamicTo<LayoutBlockFlow>(Parent());
   if (!parent_block_flow)
     return;
-  if (BeingDestroyed() || DocumentBeingDestroyed())
+  if (BeingDestroyed()) {
     return;
+  }
   LayoutObject* child = PreviousSibling();
   while (child && child->IsFloatingOrOutOfFlowPositioned()) {
     LayoutObject* sibling = child->PreviousSibling();

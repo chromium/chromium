@@ -3962,8 +3962,7 @@ RespectImageOrientationEnum LayoutObject::GetImageOrientation(
 inline void LayoutObject::ClearLayoutRootIfNeeded() const {
   NOT_DESTROYED();
   if (LocalFrameView* view = GetFrameView()) {
-    if (!DocumentBeingDestroyed())
-      view->ClearLayoutSubtreeRoot(*this);
+    view->ClearLayoutSubtreeRoot(*this);
   }
 }
 
@@ -4195,11 +4194,6 @@ void LayoutObject::MaybeClearIsScrollAnchorObject() {
 void LayoutObject::DestroyAndCleanupAnonymousWrappers(
     bool performing_reattach) {
   NOT_DESTROYED();
-  // If the tree is destroyed, there is no need for a clean-up phase.
-  if (DocumentBeingDestroyed()) {
-    Destroy();
-    return;
-  }
 
   LayoutObject* destroy_root = this;
   LayoutObject* destroy_root_parent = destroy_root->Parent();

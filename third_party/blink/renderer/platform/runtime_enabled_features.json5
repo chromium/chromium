@@ -2000,10 +2000,6 @@
       origin_trial_allows_insecure: true,
     },
     {
-      name: "DisableDocumentBeingDestroyed",
-      status: "stable",
-    },
-    {
       // Switch from ellipsis to clip when a container is scrolled.
       // This shipped in M146 and the flag can be removed in M148.
       name: "DisableEllipsisWhenScrolled",
@@ -3279,12 +3275,11 @@
     },
     {
       name: "LayoutMergeAnonymousFix",
-      depends_on: ["DisableDocumentBeingDestroyed"],
       status: "stable",
     },
     {
       name: "LayoutReinsertOnInFlowStateChange",
-      depends_on: ["LayoutMergeAnonymousFix", "DisableDocumentBeingDestroyed"],
+      depends_on: ["LayoutMergeAnonymousFix"],
       status: "stable",
     },
     {

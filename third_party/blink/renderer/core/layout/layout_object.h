@@ -2611,12 +2611,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   virtual PhysicalRect LocalCaretRect(int caret_offset,
                                       CaretShape caret_shape) const;
 
-  // When performing a global document tear-down, the layoutObject of the
-  // document is cleared. We use this as a hook to detect the case of document
-  // destruction and don't waste time doing unnecessary work.
-  bool DocumentBeingDestroyed() const;
-  bool DocumentBeingDestroyedActual() const;
-
   void DestroyAndCleanupAnonymousWrappers(bool performing_reattach);
 
   void Destroy();
@@ -4235,18 +4229,6 @@ struct ThreadingTrait<T> {
 // Allow equality comparisons of LayoutObjects by reference or pointer,
 // interchangeably.
 DEFINE_COMPARISON_OPERATORS_WITH_REFERENCES(LayoutObject)
-
-inline bool LayoutObject::DocumentBeingDestroyed() const {
-  NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::DisableDocumentBeingDestroyedEnabled()) {
-    return false;
-  }
-  return GetDocument().Lifecycle().GetState() >= DocumentLifecycle::kStopping;
-}
-inline bool LayoutObject::DocumentBeingDestroyedActual() const {
-  NOT_DESTROYED();
-  return GetDocument().Lifecycle().GetState() >= DocumentLifecycle::kStopping;
-}
 
 inline bool LayoutObject::IsPseudoElementContent(PseudoId pseudo_id) const {
   NOT_DESTROYED();

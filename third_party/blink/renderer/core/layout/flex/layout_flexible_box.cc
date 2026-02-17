@@ -123,8 +123,7 @@ const DevtoolsFlexInfo* LayoutFlexibleBox::FlexLayoutData() const {
 }
 
 void LayoutFlexibleBox::RemoveChild(LayoutObject* child) {
-  if (!RuntimeEnabledFeatures::LayoutMergeAnonymousFixEnabled() &&
-      !DocumentBeingDestroyed()) {
+  if (!RuntimeEnabledFeatures::LayoutMergeAnonymousFixEnabled()) {
     MergeAnonymousFlexItems(child);
   }
 

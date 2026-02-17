@@ -148,9 +148,6 @@ void LayoutSVGText::SubtreeStructureChanged(
   if (BeingDestroyed() || !EverHadLayout()) {
     return;
   }
-  if (DocumentBeingDestroyed()) {
-    return;
-  }
 
   SetNeedsTextMetricsUpdate();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this);

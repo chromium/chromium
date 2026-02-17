@@ -138,8 +138,6 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
   NOT_DESTROYED();
   DCHECK(View());
   DCHECK(View()->GetFrameView());
-  if (DocumentBeingDestroyed())
-    return;
 
   if (HasBoxDecorationBackground() || HasMask() || HasShapeOutside() ||
       HasReflection())
