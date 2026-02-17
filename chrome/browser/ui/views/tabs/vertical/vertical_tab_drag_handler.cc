@@ -243,10 +243,15 @@ bool VerticalTabDragHandlerImpl::ContinueDrag(views::View& event_source_view,
 void VerticalTabDragHandlerImpl::EndDrag(EndDragReason reason) {
   if (TabDragController::IsSystemDnDSessionRunning()) {
     TabDragController::OnSystemDnDEnded();
-  } else if (drag_controller_ && drag_controller_->started_drag()) {
+    return;
+  }
+
+  // Let TabDragController decide whether this reason should actually end the
+  // drag (e.g. capture loss while dragging a detached window) and destroy
+  // itself when appropriate.
+  if (drag_controller_) {
     drag_controller_->EndDrag(reason);
   }
-  ResetDragState();
 }
 
 void VerticalTabDragHandlerImpl::HandleDraggedTabsOverNode(
