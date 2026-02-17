@@ -234,9 +234,9 @@ void ExtensionSettingsOverriddenDialog::HandleDialogResult(
 
   base::UmaHistogramEnumeration(params_.dialog_result_histogram_name, result);
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kSearchEngineExplicitChoiceDialog)) {
-    CHECK(dialog_result_callback_);
+  if (dialog_result_callback_) {
+    CHECK(base::FeatureList::IsEnabled(
+        extensions_features::kSearchEngineExplicitChoiceDialog));
     std::move(dialog_result_callback_).Run(result);
   }
 
