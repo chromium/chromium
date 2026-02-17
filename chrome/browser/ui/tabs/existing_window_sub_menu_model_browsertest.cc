@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -50,7 +51,7 @@ class ExistingWindowSubMenuModelTest : public InProcessBrowserTest {
 
     Browser* browser =
         Browser::Create(Browser::CreateParams(type, profile, true));
-    BrowserList::SetLastActive(browser);
+    ActivateBrowser(browser);
     // Self deleting.
     return browser;
   }
@@ -60,7 +61,7 @@ class ExistingWindowSubMenuModelTest : public InProcessBrowserTest {
                                  true);
     params.initial_workspace = desk_index;
     Browser* browser = Browser::Create(params);
-    BrowserList::SetLastActive(browser);
+    ActivateBrowser(browser);
     return browser;
   }
 #endif
@@ -104,6 +105,20 @@ class ExistingWindowSubMenuModelTest : public InProcessBrowserTest {
       // Title should always have at least a few characters.
       EXPECT_GE(tokens[0].size(), 3u);
     }
+  }
+
+  // TODO(crbug.com/480103891): We should not be faking browser activation state
+  // via indirect means (such as direct calls to `DidBecomeActive()`). We should
+  // instead convert this to an interactive browser test and directly activate
+  // the browser's backing ui::BaseWindow.
+  void ActivateBrowser(BrowserWindowInterface* browser) {
+    // We must fake deactivation the previously activated browser first.
+    GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+        ->GetBrowserForMigrationOnly()
+        ->DidBecomeInactive();
+
+    // Simulate activation of `browser`.
+    browser->GetBrowserForMigrationOnly()->DidBecomeActive();
   }
 };
 
@@ -163,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, ShouldShowSubmenuPopup) {
 // Validate that windows appear in MRU order and with the expected labels.
 IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
   // Add some browsers.
-  BrowserList::SetLastActive(browser());
+  ActivateBrowser(browser());
   Browser* browser_2(CreateTestBrowser(false, false));
   Browser* browser_3(CreateTestBrowser(false, false));
   Browser* browser_4(CreateTestBrowser(false, false));
@@ -201,8 +216,10 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
   CheckBrowserTitle(menu2->GetLabelAt(4), "Browser 1", 1);
 
   // Rearrange the MRU and re-test.
-  BrowserList::SetLastActive(browser());
-  BrowserList::SetLastActive(browser_2);
+  ActivateBrowser(browser_3);
+  ActivateBrowser(browser_4);
+  ActivateBrowser(browser());
+  ActivateBrowser(browser_2);
 
   auto menu3 = ExistingWindowSubMenuModel::Create(
       nullptr, browser_3->GetFeatures().tab_menu_model_delegate(),
@@ -221,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
 // Ensure that normal browsers and incognito browsers have their own lists.
 IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuIncognito) {
   // Add some browsers.
-  BrowserList::SetLastActive(browser());
+  ActivateBrowser(browser());
   Browser* browser_2(CreateTestBrowser(false, false));
   Browser* browser_3(CreateTestBrowser(false, false));
   Browser* incognito_browser_1(CreateTestBrowser(true, false));
@@ -262,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuIncognito) {
 // Ensure that popups don't appear in the list of existing windows.
 IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuPopups) {
   // Add some browsers.
-  BrowserList::SetLastActive(browser());
+  ActivateBrowser(browser());
   Browser* browser_2(CreateTestBrowser(false, false));
   Browser* browser_3(CreateTestBrowser(false, false));
   Browser* popup_browser_1(CreateTestBrowser(false, true));
@@ -309,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest,
   ash::AutotestDesksApi().CreateNewDesk();
 
   // Add some browsers and put them in each desk.
-  BrowserList::SetLastActive(browser());
+  ActivateBrowser(browser());
   Browser* browser_2(CreateTestBrowserOnWorkspace("0"));
   Browser* browser_3(CreateTestBrowserOnWorkspace("1"));
   Browser* browser_4(CreateTestBrowserOnWorkspace("1"));
@@ -327,12 +344,12 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest,
 
   // Scramble their MRU order by activating them. The MRU order should be:
   // [b7, b5, b4, b2, b3, b6] (left-most is MRU).
-  BrowserList::SetLastActive(browser_6);
-  BrowserList::SetLastActive(browser_3);
-  BrowserList::SetLastActive(browser_2);
-  BrowserList::SetLastActive(browser_4);
-  BrowserList::SetLastActive(browser_5);
-  BrowserList::SetLastActive(browser_7);
+  ActivateBrowser(browser_6);
+  ActivateBrowser(browser_3);
+  ActivateBrowser(browser_2);
+  ActivateBrowser(browser_4);
+  ActivateBrowser(browser_5);
+  ActivateBrowser(browser_7);
 
   const std::initializer_list<BrowserWindowInterface* const> expected_mru_order{
       browser_7, browser_5, browser_4, browser_2, browser_3, browser_6};
@@ -392,10 +409,10 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest,
 
   // Scramble the MRU order by activating them. The MRU order should be:
   // [b4, b2, b3, b5] (left-most is MRU).
-  BrowserList::SetLastActive(browser_5);
-  BrowserList::SetLastActive(browser_3);
-  BrowserList::SetLastActive(browser_2);
-  BrowserList::SetLastActive(browser_4);
+  ActivateBrowser(browser_5);
+  ActivateBrowser(browser_3);
+  ActivateBrowser(browser_2);
+  ActivateBrowser(browser_4);
 
   const std::initializer_list<BrowserWindowInterface* const> expected_mru_order{
       browser_4, browser_2, browser_3, browser_5};
