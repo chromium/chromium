@@ -92,7 +92,7 @@ class RemoteDeviceLifeCycleImpl
   RemoteDeviceLifeCycle::State state_;
 
   // Observers added to the life cycle.
-  base::ObserverList<Observer>::Unchecked observers_{
+  base::ObserverList<Observer> observers_{
       base::ObserverListPolicy::EXISTING_ONLY};
 
   // The messenger for sending and receiving messages in the

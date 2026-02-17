@@ -5,16 +5,19 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_MONITOR_OBSERVER_H_
 #define CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_MONITOR_OBSERVER_H_
 
+#include "base/observer_list_types.h"
+
 namespace proximity_auth {
 
 // The observer interface for the ProximityMonitor class.
-class ProximityMonitorObserver {
+class ProximityMonitorObserver : public base::CheckedObserver {
  public:
-  virtual ~ProximityMonitorObserver() {}
-
   // Callback to be called when the proximity state of the remote device
   // changes.
   virtual void OnProximityStateChanged() = 0;
+
+ protected:
+  ~ProximityMonitorObserver() override = default;
 };
 
 }  // namespace proximity_auth

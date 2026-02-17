@@ -34,11 +34,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
     AUTO_CONNECT_REASON_CERTIFICATE_RESOLVED = 1 << 2
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Note: |auto_connect_reasons| is computed by applying the bitwise OR
     // operation to all AutoConnectReasons which triggered auto-connect.
     virtual void OnAutoConnectedInitiated(int auto_connect_reasons) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   AutoConnectHandler(const AutoConnectHandler&) = delete;
@@ -185,7 +188,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   // connection.
   int auto_connect_reasons_;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<AutoConnectHandler> weak_ptr_factory_{this};
 };

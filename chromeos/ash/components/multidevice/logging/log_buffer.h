@@ -35,13 +35,16 @@ class LogBuffer {
                logging::LogSeverity severity);
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when a new message is added to the log buffer.
     virtual void OnLogMessageAdded(const LogMessage& log_message) = 0;
 
     // Called when all messages in the log buffer are cleared.
     virtual void OnLogBufferCleared() = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   LogBuffer();
@@ -76,7 +79,7 @@ class LogBuffer {
   std::list<LogMessage> log_messages_;
 
   // List of observers.
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash::multidevice

@@ -41,7 +41,7 @@ class ProximityMonitor {
 
  private:
   // The observers attached to the ProximityMonitor.
-  base::ObserverList<ProximityMonitorObserver>::Unchecked observers_;
+  base::ObserverList<ProximityMonitorObserver> observers_;
 };
 
 }  // namespace proximity_auth

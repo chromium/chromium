@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+#include "base/observer_list_types.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
 namespace ash {
@@ -48,12 +49,13 @@ class RemoteDeviceLifeCycle {
   };
 
   // Interface for observing changes to the life cycle.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() {}
-
     // Called when the state in the life cycle changes.
     virtual void OnLifeCycleStateChanged(State old_state, State new_state) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   virtual ~RemoteDeviceLifeCycle() {}

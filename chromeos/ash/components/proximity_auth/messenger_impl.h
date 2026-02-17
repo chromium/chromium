@@ -92,7 +92,7 @@ class MessengerImpl : public Messenger,
   std::unique_ptr<ash::secure_channel::ClientChannel> channel_;
 
   // The registered observers of |this_| messenger.
-  base::ObserverList<MessengerObserver>::Unchecked observers_;
+  base::ObserverList<MessengerObserver> observers_;
 
   // Queue of messages to send to the remote device.
   base::circular_deque<PendingMessage> queued_messages_;

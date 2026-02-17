@@ -52,12 +52,12 @@ class FakeRemoteDeviceLifeCycle : public RemoteDeviceLifeCycle {
 
   ash::multidevice::RemoteDeviceRef local_device() { return *local_device_; }
 
-  base::ObserverList<Observer>::Unchecked& observers() { return observers_; }
+  base::ObserverList<Observer>& observers() { return observers_; }
 
  private:
   ash::multidevice::RemoteDeviceRef remote_device_;
   std::optional<ash::multidevice::RemoteDeviceRef> local_device_;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
   bool started_;
   State state_;
   raw_ptr<ash::secure_channel::ClientChannel, DanglingUntriaged> channel_;

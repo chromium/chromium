@@ -5,12 +5,14 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_MESSENGER_OBSERVER_H_
 #define CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_MESSENGER_OBSERVER_H_
 
+#include "base/observer_list_types.h"
+
 namespace proximity_auth {
 
 struct RemoteStatusUpdate;
 
 // An interface for observing events that happen on a Messenger.
-class MessengerObserver {
+class MessengerObserver : public base::CheckedObserver {
  public:
   // Called when sending an "Easy Unlock used"  local event message completes.
   // |success| is true iff the event was sent successfully.
@@ -25,6 +27,9 @@ class MessengerObserver {
 
   // Called when the underlying secure channel disconnects.
   virtual void OnDisconnected() {}
+
+ protected:
+  ~MessengerObserver() override = default;
 };
 
 }  // namespace proximity_auth

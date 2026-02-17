@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/observer_list_types.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -21,13 +22,13 @@ extern const char kUTCTimezoneName[];
 // This interface provides access to Chrome OS timezone settings.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) TimezoneSettings {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the timezone has changed. |timezone| is non-null.
     virtual void TimezoneChanged(const icu::TimeZone& timezone) = 0;
 
    protected:
-    virtual ~Observer();
+    ~Observer() override = default;
   };
 
   static TimezoneSettings* GetInstance();

@@ -53,7 +53,7 @@ constexpr char kPSimDisconnectByPolicyHistogram[] =
 class TestAutoConnectHandlerObserver : public AutoConnectHandler::Observer {
  public:
   TestAutoConnectHandlerObserver() = default;
-  virtual ~TestAutoConnectHandlerObserver() = default;
+  ~TestAutoConnectHandlerObserver() override = default;
 
   int num_auto_connect_events() { return num_auto_connect_events_; }
 

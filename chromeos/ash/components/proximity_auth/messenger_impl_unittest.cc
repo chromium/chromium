@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -32,14 +33,14 @@ namespace {
 
 class MockMessengerObserver : public MessengerObserver {
  public:
-  explicit MockMessengerObserver(Messenger* messenger) : messenger_(messenger) {
-    messenger_->AddObserver(this);
+  explicit MockMessengerObserver(Messenger* messenger) {
+    observation_.Observe(messenger);
   }
 
   MockMessengerObserver(const MockMessengerObserver&) = delete;
   MockMessengerObserver& operator=(const MockMessengerObserver&) = delete;
 
-  virtual ~MockMessengerObserver() { messenger_->RemoveObserver(this); }
+  ~MockMessengerObserver() override = default;
 
   MOCK_METHOD1(OnUnlockEventSent, void(bool success));
   MOCK_METHOD1(OnRemoteStatusUpdate,
@@ -48,8 +49,7 @@ class MockMessengerObserver : public MessengerObserver {
   MOCK_METHOD0(OnDisconnected, void());
 
  private:
-  // The messenger that |this| instance observes.
-  const raw_ptr<Messenger> messenger_;
+  base::ScopedObservation<Messenger, MessengerObserver> observation_{this};
 };
 
 class TestMessenger : public MessengerImpl {
@@ -60,7 +60,7 @@ class TestMessenger : public MessengerImpl {
   TestMessenger(const TestMessenger&) = delete;
   TestMessenger& operator=(const TestMessenger&) = delete;
 
-  ~TestMessenger() override {}
+  ~TestMessenger() override = default;
 };
 
 }  // namespace

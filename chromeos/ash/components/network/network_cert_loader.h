@@ -38,13 +38,13 @@ namespace ash {
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
     : public PolicyCertificateProvider::Observer {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the certificates have completed loading or have been updated.
     virtual void OnCertificatesLoaded() = 0;
 
    protected:
-    virtual ~Observer() {}
+    ~Observer() override = default;
   };
 
   // Holds a certificate that can be used in network configs along with
@@ -261,7 +261,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   // observers anymore.
   bool is_shutting_down_ = false;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   // Cache for certificates from the system-token NSSCertDatabase.
   std::unique_ptr<CertCache> system_slot_cert_cache_;
