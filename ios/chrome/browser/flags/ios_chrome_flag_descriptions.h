@@ -579,9 +579,6 @@ extern const char kLensOverlayCustomBottomSheetDescription[];
 extern const char kLensOverlayEnableLandscapeCompatibilityName[];
 extern const char kLensOverlayEnableLandscapeCompatibilityDescription[];
 
-extern const char kLensOverlayForceShowOnboardingScreenName[];
-extern const char kLensOverlayForceShowOnboardingScreenDescription[];
-
 extern const char kLensOverlayNavigationHistoryName[];
 extern const char kLensOverlayNavigationHistoryDescription[];
 

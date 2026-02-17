@@ -942,12 +942,6 @@ const char kLensOverlayEnableLandscapeCompatibilityName[] =
 const char kLensOverlayEnableLandscapeCompatibilityDescription[] =
     "When enabled, it allows Lens Overlay to run in landscape orientation";
 
-const char kLensOverlayForceShowOnboardingScreenName[] =
-    "Force show Lens overlay onboarding screen";
-const char kLensOverlayForceShowOnboardingScreenDescription[] =
-    "When enabled, it forces showing the onboarding screen everytime lens "
-    "overlay is open";
-
 const char kLensOverlayNavigationHistoryName[] =
     "Enable Lens overlay navigation history";
 const char kLensOverlayNavigationHistoryDescription[] =

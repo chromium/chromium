@@ -6140,11 +6140,6 @@
     "expiry_milestone": 142
   },
   {
-    "name": "lens-overlay-force-show-onboarding-screen",
-    "owners": [ "ameurhosni@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "lens-overlay-navigation-history",
     "owners": [ "christianxu@google.com", "stkhapugin@chromium.org"],
     "expiry_milestone": 145

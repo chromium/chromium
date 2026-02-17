@@ -1246,10 +1246,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     return NO;
   }
 
-  BOOL forceShowConsent =
-      base::FeatureList::IsEnabled(kLensOverlayForceShowOnboardingScreen);
-
-  return !self.termsOfServiceAccepted || forceShowConsent;
+  return !self.termsOfServiceAccepted;
 }
 
 // Return whether or not the terms of service has been accepted.
