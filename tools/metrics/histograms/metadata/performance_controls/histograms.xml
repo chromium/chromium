@@ -108,7 +108,7 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.HealthStatusChange.{Time}"
-    enum="InterventionHealthChange" expires_after="2026-06-14">
+    enum="InterventionHealthChange" expires_after="2026-08-16">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>

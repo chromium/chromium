@@ -398,7 +398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.NetworkPanelResponsePreviewOpened"
-    enum="DevToolsMediaType" expires_after="M150">
+    enum="DevToolsMediaType" expires_after="2026-08-16">
   <owner>bmeurer@google.com</owner>
   <owner>szuend@google.com</owner>
   <summary>

@@ -517,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.GroupingTransition2" enum="TabGroupingTransitionType"
-    expires_after="2026-06-11">
+    expires_after="2026-08-16">
   <owner>temao@chromium.org</owner>
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -2003,7 +2003,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.ArchivedTabs.MaxLimitReachedAt" units="count"
-    expires_after="2026-06-11">
+    expires_after="2026-08-16">
   <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>

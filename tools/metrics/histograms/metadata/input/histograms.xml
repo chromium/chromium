@@ -2220,7 +2220,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TextInputClient.FirstRect" units="ms" expires_after="M147">
+<histogram name="TextInputClient.FirstRect" units="ms"
+    expires_after="2026-08-16">
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -2235,7 +2236,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TextInputClient.LockWait" units="ms" expires_after="M147">
+<histogram name="TextInputClient.LockWait" units="ms"
+    expires_after="2026-08-16">
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

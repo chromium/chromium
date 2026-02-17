@@ -2174,7 +2174,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Memory.Experimental.Windows.DemandZeroFaultsFulfilledPerSecond2"
-    units="faults/sec" expires_after="2026-05-24">
+    units="faults/sec" expires_after="2026-08-16">
   <owner>spvm@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

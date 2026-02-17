@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.CacheHit"
-    enum="BooleanCacheHit" expires_after="2026-05-01">
+    enum="BooleanCacheHit" expires_after="2026-08-16">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>

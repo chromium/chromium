@@ -1055,7 +1055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.Intercept{Direction}"
-    enum="BackPressConsumer" expires_after="2026-06-14">
+    enum="BackPressConsumer" expires_after="2026-08-16">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
@@ -2645,7 +2645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputHintChecker.InitializationResult"
-    enum="InputHintInitializationResult" expires_after="2026-06-14">
+    enum="InputHintInitializationResult" expires_after="2026-08-16">
   <owner>pasko@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <summary>
@@ -3817,7 +3817,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.InputToNavigationControllerStart2" units="ms"
-    expires_after="2026-05-31">
+    expires_after="2026-08-16">
   <owner>spelchat@chromium.org</owner>
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
@@ -5476,7 +5476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Scrim.MissingParent.Client" enum="ScrimClient"
-    expires_after="2026-06-11">
+    expires_after="2026-08-16">
   <owner>skym@chromium.org</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
@@ -5488,7 +5488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Scrim.ShowRequest.Client" enum="ScrimClient"
-    expires_after="2026-06-11">
+    expires_after="2026-08-16">
   <owner>skym@chromium.org</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>

@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Composebox.FromNTPLoadToSessionStart" units="ms"
-    expires_after="2026-06-17">
+    expires_after="2026-08-16">
   <owner>niharm@google.com</owner>
   <owner>rtatum@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -612,7 +612,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.Customization.Theme.ThemeCollection.DailyRefresh.TurnOff"
-    enum="NTPCollectionId" expires_after="2026-06-01">
+    enum="NTPCollectionId" expires_after="2026-08-16">
   <owner>hanxi@chromium.org</owner>
   <owner>yyanting@google.com</owner>
   <owner>clank-start@google.com</owner>
@@ -625,7 +625,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.Customization.Theme.ThemeCollection.DailyRefresh.TurnOn"
-    enum="NTPCollectionId" expires_after="2026-06-01">
+    enum="NTPCollectionId" expires_after="2026-08-16">
   <owner>hanxi@chromium.org</owner>
   <owner>yyanting@google.com</owner>
   <owner>clank-start@google.com</owner>

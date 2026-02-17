@@ -1300,7 +1300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.Spotlight.{Request}.ErrorCode" enum="ApiErrorCode"
-    expires_after="2026-04-25">
+    expires_after="2026-08-16">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1325,7 +1325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.{Request}.ErrorCode" enum="ApiErrorCode"
-    expires_after="2026-04-23">
+    expires_after="2026-08-16">
   <owner>zifanzhang@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -2968,7 +2968,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.{EntryPoint}.BarAction.{BarAction}"
-    enum="BooleanHit" expires_after="2026-05-21">
+    enum="BooleanHit" expires_after="2026-08-16">
   <owner>dandersson@chromium.org</owner>
   <owner>yongshun@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -7107,7 +7107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.CreationFlow.{TabletOrClamshellMode}"
-    enum="ProjectorCreationFlow" expires_after="2026-06-15">
+    enum="ProjectorCreationFlow" expires_after="2026-08-16">
   <owner>dorianbrandon@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
@@ -7178,7 +7178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.SpeechRecognitionEndState.{Location}"
-    enum="SpeechRecognitionEndState" expires_after="2026-06-15">
+    enum="SpeechRecognitionEndState" expires_after="2026-08-16">
   <owner>dorianbrandon@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
@@ -9714,7 +9714,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowLayoutState.ActiveWindowState"
-    enum="WindowStateType" expires_after="2026-05-21">
+    enum="WindowStateType" expires_after="2026-08-16">
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>

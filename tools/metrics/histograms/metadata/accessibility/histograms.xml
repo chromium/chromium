@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.FindElementType.Usage2.{RunningATs}"
-    enum="AccessibilityPredicateType" expires_after="2026-06-01">
+    enum="AccessibilityPredicateType" expires_after="2026-08-16">
   <owner>mschillaci@google.com</owner>
   <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
@@ -3050,7 +3050,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.EntryPointAfterOmnibox"
-    enum="ReadAnythingOpenTrigger" expires_after="2026-06-01">
+    enum="ReadAnythingOpenTrigger" expires_after="2026-08-16">
   <owner>kristislee@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>

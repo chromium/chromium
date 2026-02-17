@@ -2680,7 +2680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Is4XXOr5XXStatusCode" enum="Boolean"
-    expires_after="2026-04-05">
+    expires_after="2026-08-16">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -3133,7 +3133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HistoryPage.ActorContextMenuActions"
-    enum="VisitContextMenuAction" expires_after="2026-06-01">
+    enum="VisitContextMenuAction" expires_after="2026-08-16">
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>

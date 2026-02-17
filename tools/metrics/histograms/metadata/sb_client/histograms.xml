@@ -1244,7 +1244,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.PhishingClassifierMatchOnStrippedEmptyPath{RequestType}"
-    enum="BooleanMatched" expires_after="2026-06-11">
+    enum="BooleanMatched" expires_after="2026-08-16">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

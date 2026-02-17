@@ -1178,7 +1178,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram
     name="Autofill.AddressSuggestionOnTypingAcceptance.{ClassificationTypes}"
     enum="BooleanAutofillAddressSuggestionOnTypingAcceptance"
-    expires_after="2026-06-13">
+    expires_after="2026-08-16">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1731,7 +1731,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.AiAmountExtraction.InvalidResponseReason"
-    enum="AiAmountExtractionInvalidResponseReason" expires_after="2026-06-01">
+    enum="AiAmountExtractionInvalidResponseReason" expires_after="2026-08-16">
   <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2348,7 +2348,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Bnpl.PopupWindowLatency.{Issuer}.{Result}" units="ms"
-    expires_after="2026-06-01">
+    expires_after="2026-08-16">
   <owner>longsheng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2658,7 +2658,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.CardUnmask.ScreenLockCheckBox.InitialState"
-    enum="CheckBoxStatus" expires_after="2026-06-01">
+    enum="CheckBoxStatus" expires_after="2026-08-16">
   <owner>osaul@google.com</owner>
   <owner>siashah@chromium.org</owner>
   <owner>longsheng@chromium.org</owner>
@@ -7333,7 +7333,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Snackbar.{SnackbarType}.ActionClicked"
-    enum="BooleanShown" expires_after="2026-06-01">
+    enum="BooleanShown" expires_after="2026-08-16">
   <owner>siashah@chromium.org</owner>
   <owner>osaul@google.com</owner>
   <owner>darwinyang@google.com</owner>
@@ -8051,7 +8051,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.TouchToFill.Bnpl.SelectIssuerScreen.NumberOfIssuersShown"
-    units="issuers" expires_after="2026-06-01">
+    units="issuers" expires_after="2026-08-16">
   <owner>vinnypersky@google.com</owner>
   <owner>viplavkadam@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -9314,7 +9314,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="WebDatabase.AutofillAccountStorage"
-    enum="WebDatabaseAutofillAccountStorageResult" expires_after="2026-05-24">
+    enum="WebDatabaseAutofillAccountStorageResult" expires_after="2026-08-16">
   <owner>mastiz@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
