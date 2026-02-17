@@ -46,6 +46,7 @@
 #include "media/base/media_content_type.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/memory_dump_provider_proxy.h"
 #include "media/base/output_device_info.h"
 #include "media/base/remoting_constants.h"
@@ -1680,10 +1681,17 @@ void WebMediaPlayerImpl::GetUrlData(
 base::SequenceBound<media::HlsDataSourceProvider>
 WebMediaPlayerImpl::GetHlsDataSourceProvider() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  // Every single HLS fetch (segment or manifest) will create a new DataSource,
+  // which will log it's size, CORS status, and a "started" notice, which can
+  // end up spamming the media log quite heavily. ManifestDemuxer already logs
+  // these things when they change, for example when CORS mode changes from
+  // untainted to tainted. Using a NullMediaLog here prevents the unnecessary
+  // spamming.
+  auto media_log = std::make_unique<media::NullMediaLog>();
   return base::SequenceBound<media::HlsDataSourceProviderImpl>(
       main_task_runner_,
       std::make_unique<MultiBufferDataSourceFactory>(
-          media_log_.get(),
+          media_log.get(),
           blink::BindRepeating(&WebMediaPlayerImpl::GetUrlData,
                                weak_factory_.GetWeakPtr()),
           main_task_runner_, tick_clock_));
