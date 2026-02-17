@@ -62,11 +62,10 @@ struct ParamTraits<gfx::NativeWindow> {
 #if BUILDFLAG(IS_WIN)
     return iter->ReadUInt32(reinterpret_cast<uint32_t*>(r));
 #else
-    const char *data;
-    size_t data_size = 0;
-    bool result = iter->ReadData(&data, &data_size);
-    if (result && data_size == sizeof(gfx::NativeWindow)) {
-      UNSAFE_TODO(memcpy(r, data, sizeof(gfx::NativeWindow)));
+    std::string_view data;
+    bool result = iter->ReadStringPiece(&data);
+    if (result && data.size() == sizeof(gfx::NativeWindow)) {
+      UNSAFE_TODO(memcpy(r, data.data(), data.size()));
     } else {
       result = false;
       NOTREACHED();

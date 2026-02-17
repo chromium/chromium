@@ -61,12 +61,6 @@ class BASE_EXPORT PickleIterator {
   // message.
   [[nodiscard]] bool ReadStringPiece16(std::u16string_view* result);
 
-  // A pointer to the data will be placed in |*data|, and the length will be
-  // placed in |*length|. The pointer placed into |*data| points into the
-  // message's buffer so it will be scoped to the lifetime of the message (or
-  // until the message data is mutated). Do not keep the pointer around!
-  [[nodiscard]] bool ReadData(const char** data, size_t* length);
-
   // Similar, but using span for convenience.
   [[nodiscard]] std::optional<span<const uint8_t>> ReadData();
 

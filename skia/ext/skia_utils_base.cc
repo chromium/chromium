@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -20,14 +22,13 @@
 namespace skia {
 
 bool ReadSkString(base::PickleIterator* iter, SkString* str) {
-  size_t reply_length;
-  const char* reply_text;
-
-  if (!iter->ReadData(&reply_text, &reply_length))
+  std::string_view reply;
+  if (!iter->ReadStringPiece(&reply)) {
     return false;
+  }
 
   if (str)
-    str->set(reply_text, reply_length);
+    str->set(reply);
   return true;
 }
 
@@ -35,18 +36,17 @@ bool ReadSkFontIdentity(base::PickleIterator* iter,
                         SkFontConfigInterface::FontIdentity* identity) {
   uint32_t reply_id;
   uint32_t reply_ttcIndex;
-  size_t reply_length;
-  const char* reply_text;
+  std::string_view reply;
 
-  if (!iter->ReadUInt32(&reply_id) ||
-      !iter->ReadUInt32(&reply_ttcIndex) ||
-      !iter->ReadData(&reply_text, &reply_length))
+  if (!iter->ReadUInt32(&reply_id) || !iter->ReadUInt32(&reply_ttcIndex) ||
+      !iter->ReadStringPiece(&reply)) {
     return false;
+  }
 
   if (identity) {
     identity->fID = reply_id;
     identity->fTTCIndex = reply_ttcIndex;
-    identity->fString.set(reply_text, reply_length);
+    identity->fString.set(reply);
   }
   return true;
 }

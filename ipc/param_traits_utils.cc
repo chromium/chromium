@@ -78,14 +78,11 @@ bool ReadCharVector(const base::Pickle* m,
                     std::vector<CharType>* r) {
   static_assert(sizeof(CharType) == 1);
   static_assert(std::is_integral_v<CharType>);
-  const char* data;
-  size_t data_size = 0;
-  if (!iter->ReadData(&data, &data_size)) {
+  std::string_view data;
+  if (!iter->ReadStringPiece(&data)) {
     return false;
   }
-  const CharType* begin = reinterpret_cast<const CharType*>(data);
-  const CharType* end = UNSAFE_TODO(begin + data_size);
-  r->assign(begin, end);
+  r->assign_range(data);
   return true;
 }
 
@@ -1123,13 +1120,12 @@ void ParamTraits<Message>::Write(base::Pickle* m, const Message& p) {
 bool ParamTraits<Message>::Read(const base::Pickle* m,
                                 base::PickleIterator* iter,
                                 Message* r) {
-  size_t payload_size;
-  const char* payload;
-  if (!iter->ReadData(&payload, &payload_size)) {
+  std::string_view payload;
+  if (!iter->ReadStringPiece(&payload)) {
     return false;
   }
 
-  r->WriteBytes(payload, payload_size);
+  r->WriteData(payload);
   return true;
 }
 
@@ -1158,11 +1154,10 @@ void ParamTraits<MSG>::Write(base::Pickle* m, const param_type& p) {
 bool ParamTraits<MSG>::Read(const base::Pickle* m,
                             base::PickleIterator* iter,
                             param_type* r) {
-  const char* data;
-  size_t data_size = 0;
-  bool result = iter->ReadData(&data, &data_size);
-  if (result && data_size == sizeof(MSG)) {
-    UNSAFE_TODO(memcpy(r, data, sizeof(MSG)));
+  std::string_view data;
+  bool result = iter->ReadStringPiece(&data);
+  if (result && data.size() == sizeof(MSG)) {
+    UNSAFE_TODO(memcpy(r, data.data(), data.size()));
   } else {
     NOTREACHED();
   }

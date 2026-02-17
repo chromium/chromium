@@ -236,26 +236,13 @@ bool PickleIterator::ReadStringPiece16(std::u16string_view* result) {
   return true;
 }
 
-bool PickleIterator::ReadData(const char** data, size_t* length) {
-  *length = 0;
-  *data = nullptr;
-
-  if (!ReadLength(length)) {
-    return false;
-  }
-
-  return ReadBytes(data, *length);
-}
-
 std::optional<span<const uint8_t>> PickleIterator::ReadData() {
-  const char* ptr;
   size_t length;
-
-  if (!ReadData(&ptr, &length)) {
+  if (!ReadLength(&length)) {
     return std::nullopt;
   }
 
-  return as_bytes(UNSAFE_TODO(span(ptr, length)));
+  return ReadBytes(length);
 }
 
 bool PickleIterator::ReadBytes(const char** data, size_t length) {
