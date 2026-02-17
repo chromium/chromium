@@ -63,9 +63,8 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   [self configureAlertScreen];
   [self layoutAlertScreen];
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitVerticalSizeClass.class, UITraitUserInterfaceStyle.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:
+            @[ UITraitVerticalSizeClass.class, UITraitUserInterfaceStyle.class ]
                      withAction:@selector(updateUIOnTraitChange)];
 }
 
