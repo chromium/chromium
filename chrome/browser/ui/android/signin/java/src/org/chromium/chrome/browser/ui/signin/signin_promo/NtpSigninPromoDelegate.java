@@ -35,6 +35,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.BooleanSupplier;
 
 /** {@link SigninPromoDelegate} for ntp signin promo. */
 @NullMarked
@@ -50,6 +51,8 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
         /** The promo content should promote sign-in. Shown to signed-out user. */
         int SIGNIN = 1;
     }
+
+    private final BooleanSupplier mIsSetupListActiveSupplier;
 
     static final int MAX_IMPRESSIONS_NTP = 5;
 
@@ -95,8 +98,10 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
             Context context,
             Profile profile,
             SigninAndHistorySyncActivityLauncher launcher,
-            Runnable onPromoStateChange) {
+            Runnable onPromoStateChange,
+            BooleanSupplier isSetupListActiveSupplier) {
         super(context, profile, launcher, onPromoStateChange);
+        mIsSetupListActiveSupplier = isSetupListActiveSupplier;
         resetNtpSyncPromoLimitsIfHiddenForTooLong();
     }
 
@@ -242,6 +247,9 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     private @PromoState int computePromoState(@Nullable CoreAccountInfo visibleAccount) {
+        if (mIsSetupListActiveSupplier.getAsBoolean()) {
+            return PromoState.NONE;
+        }
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
                 && isPromoSuppressed()) {
             return PromoState.NONE;

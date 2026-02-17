@@ -113,6 +113,7 @@ if (is_android) {
       "//chrome/browser/device:java",
       "//chrome/browser/device_reauth/android:java",
       "//chrome/browser/download/android:java",
+      "//chrome/browser/educational_tip:java",
       "//chrome/browser/enterprise/util:java",
       "//chrome/browser/feature_engagement:java",
       "//chrome/browser/feed/android:java",

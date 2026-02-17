@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -165,7 +166,8 @@ public class FeedSurfaceMediator
                                     mContext,
                                     mProfile,
                                     SigninAndHistorySyncActivityLauncherImpl.get(),
-                                    this::onPromoStateChange));
+                                    this::onPromoStateChange,
+                                    SetupListModuleUtils::isSetupListActive));
             mCanShowPersonalizedSuggestions = canShowPersonalizedSuggestions;
             mCanShowPromo =
                     mSigninPromoCoordinator.canShowPromo() && mCanShowPersonalizedSuggestions;

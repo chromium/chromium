@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesLayout;
@@ -678,7 +679,8 @@ public class NewTabPageLayout extends LinearLayout
                         mModalDialogManagerSupplier,
                         mSnackbarManager,
                         DeviceLockActivityLauncherImpl.get(),
-                        signinPromoViewContainerStub);
+                        signinPromoViewContainerStub,
+                        SetupListModuleUtils::isSetupListActive);
     }
 
     /** Updates the search box when the parent view's scroll position is changed. */

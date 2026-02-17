@@ -180,7 +180,11 @@ public class SigninPromoMediatorTest {
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
         NtpSigninPromoDelegate delegate =
                 new NtpSigninPromoDelegate(
-                        ApplicationProvider.getApplicationContext(), mProfile, mLauncher, () -> {});
+                        ApplicationProvider.getApplicationContext(),
+                        mProfile,
+                        mLauncher,
+                        () -> {},
+                        () -> false);
 
         createSigninPromoMediator(delegate);
 
@@ -209,7 +213,11 @@ public class SigninPromoMediatorTest {
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
         NtpSigninPromoDelegate delegate =
                 new NtpSigninPromoDelegate(
-                        ApplicationProvider.getApplicationContext(), mProfile, mLauncher, () -> {});
+                        ApplicationProvider.getApplicationContext(),
+                        mProfile,
+                        mLauncher,
+                        () -> {},
+                        () -> false);
         createSigninPromoMediator(delegate);
 
         assertFalse(mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON));
@@ -261,7 +269,11 @@ public class SigninPromoMediatorTest {
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
         NtpSigninPromoDelegate delegate =
                 new NtpSigninPromoDelegate(
-                        ApplicationProvider.getApplicationContext(), mProfile, mLauncher, () -> {});
+                        ApplicationProvider.getApplicationContext(),
+                        mProfile,
+                        mLauncher,
+                        () -> {},
+                        () -> false);
         createSigninPromoMediator(delegate);
 
         assertFalse(mMediator.getModel().get(SigninPromoProperties.SHOULD_SHOW_LOADING_STATE));

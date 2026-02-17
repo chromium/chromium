@@ -175,6 +175,7 @@ public class SigninPromoCoordinatorTest {
     private PersonalizedSigninPromoView mPromoView;
     private SigninPromoCoordinator mPromoCoordinator;
     private SigninPromoDelegate mDelegate;
+    private boolean mIsSetupListActive;
 
     @Before
     public void setUp() {
@@ -1157,6 +1158,15 @@ public class SigninPromoCoordinatorTest {
                                 SigninAccessPoint.NTP_FEED_TOP_PROMO, nightModeEnabled));
     }
 
+    @Test
+    @MediumTest
+    public void testNtpPromoSuppressed_setupListActive() {
+        mIsSetupListActive = true;
+        setUpSignInPromo(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> assertFalse(mPromoCoordinator.canShowPromo()));
+    }
+
     private void setUpSignInPromo(@SigninAccessPoint int accessPoint) {
         @LayoutRes int layoutResId = SigninPromoCoordinator.getLayoutResId(accessPoint);
         ThreadUtils.runOnUiThreadBlocking(
@@ -1204,7 +1214,12 @@ public class SigninPromoCoordinatorTest {
                             mOnPromoStateChange,
                             /* isCreatedInCct= */ false);
             case SigninAccessPoint.NTP_FEED_TOP_PROMO ->
-                    new NtpSigninPromoDelegate(activity, mProfile, mLauncher, mOnPromoStateChange);
+                    new NtpSigninPromoDelegate(
+                            activity,
+                            mProfile,
+                            mLauncher,
+                            mOnPromoStateChange,
+                            () -> mIsSetupListActive);
             case SigninAccessPoint.RECENT_TABS ->
                     new RecentTabsSigninPromoDelegate(
                             activity, mProfile, mLauncher, mOnPromoStateChange);

@@ -674,8 +674,25 @@ public class SigninPromoDelegateTest {
                         .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
     }
 
+    @Test
+    public void testNtpPromoHidden_setupListActive() {
+        setupDelegate(
+                SigninAccessPoint.NTP_FEED_TOP_PROMO,
+                /* visibleAccount= */ null,
+                /* isSetupListActive= */ true);
+
+        assertFalse(mDelegate.canShowPromo());
+    }
+
     private void setupDelegate(
             @SigninAccessPoint int accessPoint, @Nullable CoreAccountInfo visibleAccount) {
+        setupDelegate(accessPoint, visibleAccount, /* isSetupListActive= */ false);
+    }
+
+    private void setupDelegate(
+            @SigninAccessPoint int accessPoint,
+            @Nullable CoreAccountInfo visibleAccount,
+            boolean isSetupListActive) {
         mDelegate =
                 switch (accessPoint) {
                     case SigninAccessPoint.BOOKMARK_MANAGER ->
@@ -694,7 +711,11 @@ public class SigninPromoDelegateTest {
                                     /* isCreatedInCct= */ false);
                     case SigninAccessPoint.NTP_FEED_TOP_PROMO ->
                             new NtpSigninPromoDelegate(
-                                    mContext, mProfile, mLauncher, mOnPromoStateChange);
+                                    mContext,
+                                    mProfile,
+                                    mLauncher,
+                                    mOnPromoStateChange,
+                                    () -> isSetupListActive);
                     case SigninAccessPoint.RECENT_TABS ->
                             new RecentTabsSigninPromoDelegate(
                                     mContext, mProfile, mLauncher, mOnPromoStateChange);
