@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /** Tests for the CookieManager with disabled cookie partitioning. */
-@DoNotBatch(reason = "The cookie manager is global state")
+@DoNotBatch(reason = "CookieManager is global state, so we use a fresh process out of caution.")
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @NullMarked
@@ -74,10 +74,12 @@ public class CookieManagerDisabledPartitioningTest extends AwParameterizedTest {
 
     @After
     public void tearDown() {
+        // Even though we use a fresh process, we still need to clear cookie state off of disk so
+        // that it's not read in for the next test case.
         try {
             clearCookies();
         } catch (Throwable e) {
-            throw new RuntimeException("Could not clear cookies.");
+            throw new RuntimeException("Could not clear cookies.", e);
         }
     }
 

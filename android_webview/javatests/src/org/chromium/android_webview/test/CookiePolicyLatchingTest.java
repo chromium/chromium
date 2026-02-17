@@ -35,7 +35,7 @@ import org.chromium.net.test.util.TestWebServer;
  * <p>These tests use document.cookie to verify RCM behavior, since CookieManager.setCookie()
  * bypasses the RCM and goes directly to the cookie store.
  */
-@DoNotBatch(reason = "The cookie manager is global state")
+@DoNotBatch(reason = "CookieManager is global state, so we use a fresh process out of caution.")
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class CookiePolicyLatchingTest extends AwParameterizedTest {
@@ -67,10 +67,12 @@ public class CookiePolicyLatchingTest extends AwParameterizedTest {
         if (mWebServer != null) {
             mWebServer.shutdown();
         }
+        // Even though we use a fresh process, we still need to clear cookie state off of disk so
+        // that it's not read in for the next test case.
         try {
             CookieUtils.clearCookies(InstrumentationRegistry.getInstrumentation(), mCookieManager);
         } catch (Throwable e) {
-            throw new RuntimeException("Could not clear cookies.");
+            throw new RuntimeException("Could not clear cookies.", e);
         }
     }
 

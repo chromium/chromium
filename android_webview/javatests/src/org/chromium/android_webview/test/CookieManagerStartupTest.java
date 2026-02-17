@@ -12,6 +12,7 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,6 +28,7 @@ import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -40,6 +42,7 @@ import org.chromium.net.test.ServerCertificate;
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@DoNotBatch(reason = "CookieManager needs to support running before chromium is initialized.")
 public class CookieManagerStartupTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -70,10 +73,21 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
         AwBrowserProcess.loadLibrary(null);
     }
 
+    @After
+    public void tearDown() {
+        // Even though we use a fresh process, we still need to clear cookie state off of disk so
+        // that it's not read in for the next test case.
+        AwCookieManager cookieManager = new AwCookieManager();
+        try {
+            CookieUtils.clearCookies(InstrumentationRegistry.getInstrumentation(), cookieManager);
+        } catch (Throwable e) {
+            throw new RuntimeException("Could not clear cookies.", e);
+        }
+    }
+
     /**
-     * Called when a test wants to initiate normal Chromium process startup, after
-     * doing any CookieManager calls that are supposed to happen before the UI thread
-     * is committed.
+     * Called when a test wants to initiate normal Chromium process startup, after doing any
+     * CookieManager calls that are supposed to happen before the UI thread is committed.
      */
     private void startChromium() {
         ThreadUtils.setUiThread(Looper.getMainLooper());
