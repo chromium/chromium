@@ -24,6 +24,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/network_change_notifier.h"
+#include "third_party/omnibox_proto/aim_eligibility_client_request.pb.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 
 class PrefRegistrySimple;
@@ -82,12 +83,24 @@ class AimEligibilityService
   static std::string EligibilityResponseSourceToString(
       EligibilityResponseSource source);
 
+  // Enum describing the eligibility request mode.
+  enum class ServerEligibilityRequestMode {
+    kLegacyGet = 0,
+    kGetWithLocale = 1,
+    kPostWithProto = 2,
+  };
+
+  // Returns the current server eligibility request mode based on the feature
+  // flag configuration.
+  static ServerEligibilityRequestMode GetServerEligibilityRequestMode();
+
   AimEligibilityService(
       PrefService& pref_service,
       TemplateURLService* template_url_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      bool is_off_the_record);
+      bool is_off_the_record,
+      const std::string& locale);
   ~AimEligibilityService() override;
 
   // Checks if the application country matches the given country.
@@ -230,10 +243,12 @@ class AimEligibilityService
   // e.g., Google is not the default search provider.
   GURL GetRequestUrl(RequestSource request_source,
                      const TemplateURLService* template_url_service,
-                     signin::IdentityManager* identity_manager);
+                     signin::IdentityManager* identity_manager,
+                     const std::string& locale);
 
   // Fetch eligibility from the server.
-  void StartServerEligibilityRequest(RequestSource request_source);
+  void StartServerEligibilityRequest(RequestSource request_source,
+                                     const std::string& locale);
   void OnServerEligibilityResponse(
       std::unique_ptr<network::SimpleURLLoader> loader,
       RequestSource request_source,

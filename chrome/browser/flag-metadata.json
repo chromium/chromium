@@ -99,6 +99,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "aim-server-eligibility-include-client-locale",
+    "owners": ["kiehl@google.com", "mahmadi@chromium.org"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "aim-use-pec-api",
     "owners": ["ananyaseelam@google.com", "mahmadi@chromium.org"],
     "expiry_milestone": 160

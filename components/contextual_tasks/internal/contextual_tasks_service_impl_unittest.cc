@@ -44,8 +44,12 @@ using ::testing::Return;
 class MockAimEligibilityService : public AimEligibilityService {
  public:
   explicit MockAimEligibilityService(PrefService* pref_service)
-      : AimEligibilityService(*pref_service, nullptr, nullptr, nullptr, false) {
-  }
+      : AimEligibilityService(*pref_service,
+                              nullptr,
+                              nullptr,
+                              nullptr,
+                              false,
+                              "en-US") {}
   MOCK_METHOD(bool, IsAimEligible, (), (const, override));
 
   // The following methods are marked as pure virtual in AimEligibilityService,

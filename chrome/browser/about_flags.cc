@@ -1291,6 +1291,23 @@ const FeatureEntry::FeatureVariation kRemotePageMetadataVariations[] = {
     {"High Performance Canonicalization", nullptr, 0, "3362133"},
 };
 
+const FeatureEntry::FeatureParam
+    kAimServerEligibilityRequestModePostWithProto[] = {
+        {"mode", "post_with_proto"}};
+const FeatureEntry::FeatureParam
+    kAimServerEligibilityRequestModeGetWithLocale[] = {
+        {"mode", "get_with_locale"}};
+
+const FeatureEntry::FeatureVariation
+    kAimServerEligibilityIncludeClientLocaleVariations[] = {
+        {"GET with Locale", kAimServerEligibilityRequestModeGetWithLocale,
+         std::size(kAimServerEligibilityRequestModeGetWithLocale),
+         nullptr},
+        {"POST with Proto", kAimServerEligibilityRequestModePostWithProto,
+         std::size(kAimServerEligibilityRequestModeGetWithLocale),
+         nullptr},
+};
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
 
@@ -7163,6 +7180,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxAimServerEligibilityName,
      flag_descriptions::kOmniboxAimServerEligibilityDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kAimServerEligibilityEnabled)},
+
+    {"aim-server-eligibility-include-client-locale",
+     flag_descriptions::kAimServerEligibilityIncludeClientLocaleName,
+     flag_descriptions::kAimServerEligibilityIncludeClientLocaleDescription,
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kAimServerEligibilityIncludeClientLocale,
+         kAimServerEligibilityIncludeClientLocaleVariations,
+         "AimServerEligibilityIncludeClientLocale")},
 
     {"aim-use-pec-api", flag_descriptions::kAimUsePecApiName,
      flag_descriptions::kAimUsePecApiDescription, kOsAll,
