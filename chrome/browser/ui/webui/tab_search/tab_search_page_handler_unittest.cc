@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom-forward.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -1391,6 +1392,51 @@ TEST_F(TabSearchPageHandlerTest, ReplaceActiveSplitTab) {
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(3);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+}
+
+TEST_F(TabSearchPageHandlerTest, TabSearchUsedPref) {
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
+
+  PrefService* prefs = profile1()->GetPrefs();
+  EXPECT_FALSE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
+
+  // SwitchToTab should set the pref.
+  const int32_t tab_id1 =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  auto switch_to_tab_info = tab_search::mojom::SwitchToTabInfo::New();
+  switch_to_tab_info->tab_id = tab_id1;
+  handler()->SwitchToTab(std::move(switch_to_tab_info));
+  EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
+
+  // Reset the pref.
+  prefs->SetBoolean(tab_search_prefs::kTabSearchUsed, false);
+  EXPECT_FALSE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
+
+  // CloseTab should set the pref.
+  const int32_t tab_id2 =
+      browser1()->tab_strip_model()->GetTabAtIndex(1)->GetHandle().raw_value();
+  handler()->CloseTab(tab_id2);
+  EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
+
+  // OpenRecentlyClosedEntry should set the pref.
+  // We need to add an entry to the tab restore service first.
+  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
+  AddTabWithTitle(browser1(), GURL(kTabUrl3), kTabName3);
+  const int32_t tab_id3 =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  handler()->CloseTab(tab_id3);
+  // Reset the pref.
+  prefs->SetBoolean(tab_search_prefs::kTabSearchUsed, false);
+  EXPECT_FALSE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
+
+  handler()->OpenRecentlyClosedEntry(tab_id3);
+  EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
+
+  EXPECT_CALL(page_, TabUpdated(_)).Times(2);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
 }
 
 }  // namespace
