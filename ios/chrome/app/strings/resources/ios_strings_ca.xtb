@@ -388,7 +388,7 @@
 <translation id="2403129868389095715">El paquet no es pot entregar</translation>
 <translation id="2410754283952462441">Tria un compte</translation>
 <translation id="2422174748424038845">Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i se suprimirà de tots els dispositius.</translation>
-<translation id="2424805048070062787">Continua amb aquesta pestanya</translation>
+<translation id="2424805048070062787">Continua navegant des d'aquesta pestanya</translation>
 <translation id="2426805022920575512">Tria un altre compte</translation>
 <translation id="243275146591958220">Cancel·la la baixada</translation>
 <translation id="2434405374328098816">Ja has desat una contrasenya per a <ph name="USERNAME" /> a <ph name="WEBSITE" /></translation>
@@ -1250,7 +1250,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5745598824054949526">No s'ha trobat text</translation>
 <translation id="5745916533876677730">Ves a la pestanya anterior</translation>
 <translation id="574762237186762643">Esdeveniments</translation>
-<translation id="5749158352074143502">Continua amb aquesta pestanya</translation>
+<translation id="5749158352074143502">Continua navegant des d'aquesta pestanya</translation>
 <translation id="5753021559215751319">Desa la contrasenya</translation>
 <translation id="5756525336488841345">Amaga l'opció Adreces d'interès</translation>
 <translation id="5758631781033351321">Trobaràs la llista de lectura aquí</translation>
