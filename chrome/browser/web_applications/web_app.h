@@ -517,7 +517,6 @@ class WebApp {
   void SetManifestUpdateTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
   void SetManifestUrl(const GURL& manifest_url);
-  void SetManifestId(const webapps::ManifestId& manifest_id);
   void SetWindowControlsOverlayEnabled(bool enabled);
   void SetLaunchHandler(std::optional<LaunchHandler> launch_handler);
   void SetParentAppId(const std::optional<webapps::AppId>& parent_app_id);
@@ -651,6 +650,10 @@ class WebApp {
          const GURL& start_url,
          const GURL& scope,
          std::optional<webapps::AppId> parent_app_id);
+
+  // This shouldn't be a public API. If the `manifest_id` needs to be set for a
+  // web app, use the constructors to do so.
+  void SetManifestId(const webapps::ManifestId& manifest_id);
 
   // LINT.IfChange(MemberVariables)
   webapps::AppId app_id_;

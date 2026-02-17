@@ -721,10 +721,9 @@ void CreateWebAppInstallTabHelpers(content::WebContents* web_contents) {
 void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
                              WebApp& web_app,
                              bool skip_icons_on_download_failure) {
-  // TODO(crbug.com/344718166): ManifestId should already be set the same,
-  // otherwise setting it here would be changing the app's ID. This should be a
-  // CHECK_EQ instead of a set.
-  web_app.SetManifestId(web_app_info.manifest_id());
+  // Ensuring WebAppInstallInfo's manifest_id matches the one used to create the
+  // WebApp.
+  CHECK_EQ(web_app_info.manifest_id(), web_app.manifest_id());
 
   DCHECK(!web_app_info.title.empty());
   web_app.SetName(base::UTF16ToUTF8(web_app_info.title.value()));

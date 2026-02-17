@@ -830,10 +830,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
 
   app->SetName(name);
   app->SetDescription(description);
-  if (relative_manifest_id) {
-    app->SetManifestId(
-        GenerateManifestId(relative_manifest_id.value(), start_url));
-  }
 
   if (random.next_bool()) {
     app->SetThemeColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
