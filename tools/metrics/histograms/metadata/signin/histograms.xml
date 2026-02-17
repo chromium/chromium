@@ -1767,7 +1767,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.GetAccountsBackoffRetries" units="retries"
-    expires_after="2026-04-01">
+    expires_after="2027-04-01">
   <owner>samarchehade@google.com</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
