@@ -229,6 +229,19 @@ interface DesktopSessionRequestHandler {
   CrashNetworkProcess();
 };
 
+// A set of options used when creating the desktop session.
+struct DesktopSessionOptions {
+  // The initial screen resolution.
+  ScreenResolution screen_resolution;
+
+  // Whether the desktop session should be curtained. Note that Linux currently
+  // does not support non-curtained sessions, and this option will be ignored.
+  bool is_curtained;
+
+  // If non-empty, the login user of the desktop session must match `username`.
+  string required_username;
+};
+
 // Allows the network process to ask the daemon process to create, update, or
 // destroy the current desktop session.
 // The remote for this interface is owned in the low-privilege network process
@@ -238,8 +251,7 @@ interface DesktopSessionManager {
   // |terminal_id|. This is done by injecting a desktop agent process and
   // establishing IPC channels between the daemon, desktop, and network
   // processes.
-  CreateDesktopSession(int32 terminal_id, ScreenResolution screen_resolution,
-                       bool is_curtained);
+  CreateDesktopSession(int32 terminal_id, DesktopSessionOptions options);
 
   // Closes the desktop session identified by |terminal_id|. This involves
   // terminating the desktop agent process and removing any references to the

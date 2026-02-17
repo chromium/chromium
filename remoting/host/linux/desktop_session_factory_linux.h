@@ -52,7 +52,8 @@ class DesktopSessionFactoryLinux final
   // Creates a new desktop session instance.
   std::unique_ptr<DesktopSession> CreateDesktopSession(
       int id,
-      DaemonProcess* daemon_process);
+      DaemonProcess* daemon_process,
+      const mojom::DesktopSessionOptions& options);
 
  private:
   class DesktopSessionLinux;

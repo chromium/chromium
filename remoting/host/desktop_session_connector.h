@@ -5,6 +5,8 @@
 #ifndef REMOTING_HOST_DESKTOP_SESSION_CONNECTOR_H_
 #define REMOTING_HOST_DESKTOP_SESSION_CONNECTOR_H_
 
+#include <string_view>
+
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
@@ -49,6 +51,11 @@ class DesktopSessionConnector : public mojom::DesktopSessionConnectionEvents {
   // was successfully bound, otherwise false.
   virtual bool BindConnectionEventsReceiver(
       mojo::ScopedInterfaceEndpointHandle handle) = 0;
+
+  // If set to a non-empty value, the login user of the desktop session must
+  // match `username`. This can only be set when there are no active
+  // connections.
+  virtual void SetRequiredUsername(std::string_view username) = 0;
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX)
   // Notifies the network process that |terminal_id| is now attached to

@@ -158,7 +158,7 @@ class RdpSession : public DesktopSessionWin {
   ~RdpSession() override;
 
   // Performs the part of initialization that can fail.
-  bool Initialize(const ScreenResolution& resolution);
+  bool Initialize(const mojom::DesktopSessionOptions& options);
 
   // Mirrors IRdpDesktopSessionEventHandler.
   void OnRdpConnected();
@@ -267,8 +267,14 @@ RdpSession::RdpSession(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
 
 RdpSession::~RdpSession() {}
 
-bool RdpSession::Initialize(const ScreenResolution& resolution) {
+bool RdpSession::Initialize(const mojom::DesktopSessionOptions& options) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
+
+  if (!options.required_username.empty()) {
+    LOG(WARNING)
+        << "Policy host_username_match_required ignored since it is not "
+        << "supported on Windows.";
+  }
 
   if (!VerifyRdpSettings()) {
     LOG(ERROR) << "Could not create an RDP session due to invalid settings.";
@@ -285,7 +291,7 @@ bool RdpSession::Initialize(const ScreenResolution& resolution) {
     return false;
   }
 
-  ScreenResolution local_resolution = resolution;
+  ScreenResolution local_resolution = options.screen_resolution;
 
   // If the screen resolution is not specified, use the default screen
   // resolution.
@@ -489,7 +495,7 @@ std::unique_ptr<DesktopSession> DesktopSessionWin::CreateForConsole(
     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
     DaemonProcess* daemon_process,
     int id,
-    const ScreenResolution& resolution) {
+    const mojom::DesktopSessionOptions& options) {
   return std::make_unique<ConsoleSession>(caller_task_runner, io_task_runner,
                                           daemon_process, id,
                                           HostService::GetInstance());
@@ -501,11 +507,11 @@ std::unique_ptr<DesktopSession> DesktopSessionWin::CreateForVirtualTerminal(
     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
     DaemonProcess* daemon_process,
     int id,
-    const ScreenResolution& resolution) {
+    const mojom::DesktopSessionOptions& options) {
   std::unique_ptr<RdpSession> session(
       new RdpSession(caller_task_runner, io_task_runner, daemon_process, id,
                      HostService::GetInstance()));
-  if (!session->Initialize(resolution)) {
+  if (!session->Initialize(options)) {
     return nullptr;
   }
 

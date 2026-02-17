@@ -81,8 +81,7 @@ class DaemonProcessLinux : public DaemonProcess {
   // DaemonProcess implementation.
   std::unique_ptr<DesktopSession> DoCreateDesktopSession(
       int terminal_id,
-      const ScreenResolution& resolution,
-      bool is_curtained) override;
+      const mojom::DesktopSessionOptions& options) override;
   void DoCrashNetworkProcess(const base::Location& location) override;
   void LaunchNetworkProcess() override;
   void SendHostConfigToNetworkProcess(
@@ -172,11 +171,11 @@ void DaemonProcessLinux::StartDesktopSessionFactory() {
 
 std::unique_ptr<DesktopSession> DaemonProcessLinux::DoCreateDesktopSession(
     int terminal_id,
-    const ScreenResolution& resolution,
-    bool is_curtained) {
+    const mojom::DesktopSessionOptions& options) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  return desktop_session_factory_.CreateDesktopSession(terminal_id, this);
+  return desktop_session_factory_.CreateDesktopSession(terminal_id, this,
+                                                       options);
 }
 
 void DaemonProcessLinux::DoCrashNetworkProcess(const base::Location& location) {

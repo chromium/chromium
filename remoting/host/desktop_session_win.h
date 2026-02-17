@@ -31,7 +31,6 @@ namespace remoting {
 class AutoThreadTaskRunner;
 class DaemonProcess;
 class DesktopSession;
-class ScreenResolution;
 class WorkerProcessLauncher;
 class WtsTerminalMonitor;
 
@@ -50,7 +49,7 @@ class DesktopSessionWin : public DesktopSession,
       scoped_refptr<AutoThreadTaskRunner> io_task_runner,
       DaemonProcess* daemon_process,
       int id,
-      const ScreenResolution& resolution);
+      const mojom::DesktopSessionOptions& options);
 
   // Creates a desktop session instance that attaches to a virtual console.
   static std::unique_ptr<DesktopSession> CreateForVirtualTerminal(
@@ -58,7 +57,7 @@ class DesktopSessionWin : public DesktopSession,
       scoped_refptr<AutoThreadTaskRunner> io_task_runner,
       DaemonProcess* daemon_process,
       int id,
-      const ScreenResolution& resolution);
+      const mojom::DesktopSessionOptions& options);
 
   DesktopSessionWin(const DesktopSessionWin&) = delete;
   DesktopSessionWin& operator=(const DesktopSessionWin&) = delete;

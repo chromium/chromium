@@ -182,9 +182,9 @@ DaemonProcess::DaemonProcess(
   }
 }
 
-void DaemonProcess::CreateDesktopSession(int terminal_id,
-                                         const ScreenResolution& resolution,
-                                         bool is_curtained) {
+void DaemonProcess::CreateDesktopSession(
+    int terminal_id,
+    mojom::DesktopSessionOptionsPtr options) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   // Validate the supplied terminal ID. An attempt to create a desktop session
@@ -201,7 +201,7 @@ void DaemonProcess::CreateDesktopSession(int terminal_id,
 
   // Create the desktop session.
   std::unique_ptr<DesktopSession> session =
-      DoCreateDesktopSession(terminal_id, resolution, is_curtained);
+      DoCreateDesktopSession(terminal_id, *options);
   if (!session) {
     LOG(ERROR) << "Failed to create a desktop session.";
     SendTerminalDisconnected(terminal_id);

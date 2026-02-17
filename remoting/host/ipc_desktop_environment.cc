@@ -192,7 +192,11 @@ void IpcDesktopEnvironmentFactory::ConnectTerminal(
 
   VLOG(1) << "Network: registered desktop environment " << id;
 
-  desktop_session_manager_->CreateDesktopSession(id, resolution, is_curtained);
+  mojom::DesktopSessionOptionsPtr options = mojom::DesktopSessionOptions::New();
+  options->screen_resolution = resolution;
+  options->is_curtained = is_curtained;
+  options->required_username = required_username_;
+  desktop_session_manager_->CreateDesktopSession(id, std::move(options));
 }
 
 void IpcDesktopEnvironmentFactory::DisconnectTerminal(
@@ -243,6 +247,15 @@ bool IpcDesktopEnvironmentFactory::BindConnectionEventsReceiver(
   desktop_session_connection_events_.Bind(std::move(pending_receiver));
 
   return true;
+}
+
+void IpcDesktopEnvironmentFactory::SetRequiredUsername(
+    std::string_view username) {
+  DCHECK(network_task_runner_->BelongsToCurrentThread());
+  CHECK(active_connections_.empty())
+      << "Cannot change required username when there are active connections.";
+
+  required_username_ = std::string(username);
 }
 
 void IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached(

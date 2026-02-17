@@ -59,8 +59,7 @@ class MockDaemonProcess : public DaemonProcess {
 
   std::unique_ptr<DesktopSession> DoCreateDesktopSession(
       int terminal_id,
-      const ScreenResolution& resolution,
-      bool is_curtained) override;
+      const mojom::DesktopSessionOptions& options) override;
 
   MOCK_METHOD(bool,
               OnDesktopSessionAgentAttached,
@@ -95,9 +94,15 @@ MockDaemonProcess::~MockDaemonProcess() = default;
 
 std::unique_ptr<DesktopSession> MockDaemonProcess::DoCreateDesktopSession(
     int terminal_id,
-    const ScreenResolution& resolution,
-    bool is_curtained) {
+    const mojom::DesktopSessionOptions& options) {
   return base::WrapUnique(DoCreateDesktopSessionPtr(terminal_id));
+}
+
+mojom::DesktopSessionOptionsPtr CreateSessionOptions() {
+  auto options = mojom::DesktopSessionOptions::New();
+  options->screen_resolution = ScreenResolution();
+  options->is_curtained = false;
+  return options;
 }
 
 }  // namespace
@@ -202,9 +207,7 @@ TEST_F(DaemonProcessTest, OpenClose) {
   StartDaemonProcess();
 
   int id = terminal_id_++;
-  ScreenResolution resolution;
-
-  daemon_process_->CreateDesktopSession(id, resolution, false);
+  daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
   EXPECT_EQ(1u, desktop_sessions().size());
   EXPECT_EQ(id, desktop_sessions().front()->id());
 
@@ -220,9 +223,7 @@ TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
   StartDaemonProcess();
 
   int id = terminal_id_++;
-  ScreenResolution resolution;
-
-  daemon_process_->CreateDesktopSession(id, resolution, false);
+  daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
   EXPECT_EQ(1u, desktop_sessions().size());
   EXPECT_EQ(id, desktop_sessions().front()->id());
 
@@ -240,9 +241,7 @@ TEST_F(DaemonProcessTest, DoubleDisconnectTerminal) {
   StartDaemonProcess();
 
   int id = terminal_id_++;
-  ScreenResolution resolution;
-
-  daemon_process_->CreateDesktopSession(id, resolution, false);
+  daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
   EXPECT_EQ(1u, desktop_sessions().size());
   EXPECT_EQ(id, desktop_sessions().front()->id());
 
@@ -285,13 +284,11 @@ TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
   StartDaemonProcess();
 
   int id = terminal_id_++;
-  ScreenResolution resolution;
-
-  daemon_process_->CreateDesktopSession(id, resolution, false);
+  daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
   EXPECT_EQ(1u, desktop_sessions().size());
   EXPECT_EQ(id, desktop_sessions().front()->id());
 
-  daemon_process_->CreateDesktopSession(id, resolution, false);
+  daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
   EXPECT_TRUE(desktop_sessions().empty());
   EXPECT_EQ(0, terminal_id_);
 }

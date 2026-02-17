@@ -394,7 +394,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnAllowPinAuthenticationUpdate(const base::DictValue& policies);
 
   std::optional<ErrorCode> OnSessionPoliciesReceived(
-      const SessionPolicies& session_policies) const;
+      const SessionPolicies& session_policies);
 
   void InitializeSignaling();
 
@@ -441,6 +441,11 @@ class HostProcess : public ConfigWatcher::Delegate,
   void OnAgentProcessBrokerDisconnected();
 #endif
 
+  // Sets the required username on the daemon process based on
+  // `require_host_username_match_` and `current_host_owner_email_`. Must be
+  // called when `multi_process_` is true.
+  void SetRequiredUsernameOnDaemonProcess();
+
   std::unique_ptr<ChromotingHostContext> context_;
 
 #if BUILDFLAG(IS_MAC)
@@ -470,6 +475,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::string service_account_email_;
   base::DictValue config_;
   std::set<std::string> host_owner_emails_;
+  std::string current_host_owner_email_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
   PolicyState policy_state_ = POLICY_INITIALIZING;
@@ -482,6 +488,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool is_cloud_host_ = false;
   bool is_corp_host_ = false;
   bool require_session_authorization_ = false;
+  bool require_host_username_match_ = false;
   LocalSessionPoliciesProvider local_session_policies_provider_;
 
   DesktopEnvironmentOptions desktop_environment_options_;
@@ -1190,13 +1197,17 @@ void HostProcess::OnUpdateHostOwner(const std::string& owner_email) {
   DCHECK(!owner_email.empty());
 
   // Use a canonical email form here for matching against FTL signaling IDs.
-  auto new_owner_email = GetCanonicalEmail(owner_email);
-  if (host_owner_emails_.contains(new_owner_email)) {
+  current_host_owner_email_ = GetCanonicalEmail(owner_email);
+  if (multi_process_) {
+    SetRequiredUsernameOnDaemonProcess();
+  }
+  if (host_owner_emails_.contains(current_host_owner_email_)) {
     return;
   }
 
-  LOG(INFO) << "Adding '" << new_owner_email << "' to host owner emails.";
-  host_owner_emails_.emplace(std::move(new_owner_email));
+  LOG(INFO) << "Adding '" << current_host_owner_email_
+            << "' to host owner emails.";
+  host_owner_emails_.emplace(current_host_owner_email_);
 
   ApplyHostDomainListPolicy();
 }
@@ -1345,6 +1356,26 @@ void HostProcess::OnAgentProcessBrokerDisconnected() {
 }
 
 #endif  // BUILDFLAG(IS_MAC)
+
+void HostProcess::SetRequiredUsernameOnDaemonProcess() {
+  DCHECK(multi_process_);
+
+  if (current_host_owner_email_.empty()) {
+    // SetRequiredUsernameOnDaemonProcess() will be called again once
+    // `current_host_owner_email_` is set.
+    return;
+  }
+  if (!require_host_username_match_) {
+    desktop_session_connector_->SetRequiredUsername({});
+    return;
+  }
+  auto email_parts = base::SplitStringOnce(current_host_owner_email_, '@');
+  if (!email_parts.has_value()) {
+    LOG(ERROR) << current_host_owner_email_ << " is not a valid email address";
+    return;
+  }
+  desktop_session_connector_->SetRequiredUsername(email_parts->first);
+}
 
 // Applies the host config, returning true if successful.
 bool HostProcess::ApplyConfig(const base::DictValue& config) {
@@ -1714,20 +1745,27 @@ bool HostProcess::OnAllowRemoteAccessConnections(
 }
 
 std::optional<ErrorCode> HostProcess::OnSessionPoliciesReceived(
-    const SessionPolicies& session_policies) const {
+    const SessionPolicies& session_policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
   // We currently only validate the host_username_match_required policy here.
   // Other policies are validated by ClientSession.
 
-  if (!session_policies.host_username_match_required.value_or(false)) {
+  require_host_username_match_ =
+      session_policies.host_username_match_required.value_or(false);
+  if (multi_process_) {
+    // For multi-process hosts, the host username match policy will be enforced
+    // by the daemon process.
+    SetRequiredUsernameOnDaemonProcess();
+    return std::nullopt;
+  }
+  if (!require_host_username_match_) {
     return std::nullopt;
   }
 
 #if BUILDFLAG(IS_WIN)
-  VLOG(1) << "Policy host_username_match_required ignored since it is not "
-          << "supported on Windows.";
-  return std::nullopt;
+  // The Windows host is always multi-process.
+  NOTREACHED();
 #else  // BUILDFLAG(IS_WIN) #else
 
 #if BUILDFLAG(IS_APPLE)

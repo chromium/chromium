@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -21,6 +22,7 @@
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/switches.h"
@@ -52,6 +54,7 @@ class DesktopSessionFactoryLinux::DesktopSessionLinux
       DaemonProcess* daemon_process,
       int id,
       std::string_view display_name,
+      std::string_view required_username,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       base::OnceClosure remove_from_factory);
   ~DesktopSessionLinux() override;
@@ -85,9 +88,17 @@ class DesktopSessionFactoryLinux::DesktopSessionLinux
  private:
   void CrashDesktopProcess(const base::Location& location);
 
+  // Returns whether the current desktop session is allowed based on
+  // `required_username_`. If the session info is not ready yet, this method
+  // will still return true, since it will be called again once the session info
+  // is ready.
+  bool IsSessionUsernameAllowed(
+      const RemoteDisplaySessionManager::RemoteDisplayInfo& info);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::string display_name_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::string required_username_ GUARDED_BY_CONTEXT(sequence_checker_);
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::OnceClosure remove_from_factory_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -104,10 +115,12 @@ DesktopSessionFactoryLinux::DesktopSessionLinux::DesktopSessionLinux(
     DaemonProcess* daemon_process,
     int id,
     std::string_view display_name,
+    std::string_view required_username,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     base::OnceClosure remove_from_factory)
     : DesktopSession(daemon_process, id),
       display_name_(display_name),
+      required_username_(required_username),
       io_task_runner_(io_task_runner),
       remove_from_factory_(std::move(remove_from_factory)) {}
 
@@ -130,12 +143,22 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::
     return;
   }
 
+  if (!IsSessionUsernameAllowed(info)) {
+    LOG(ERROR) << "User " << info.user_info->username
+               << " is not allowed for local login.";
+    // TODO: crbug.com/475611769 - Pass the SESSION_REJECTED error code to the
+    // network process so that the client can see the correct error message.
+    TerminateSession();
+    return;
+  }
+
   if (!IsLocalLoginAllowed(info.user_info->username)) {
     LOG(ERROR) << "User " << info.user_info->username
                << " is not allowed for local login.";
     // TODO: crbug.com/475611769 - Pass the SESSION_REJECTED error code to the
     // network process so that the client can see the correct error message.
     TerminateSession();
+    return;
   }
 
   // TODO: crbug.com/475611769 - See if we need a dedicated desktop process
@@ -256,6 +279,31 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::CrashDesktopProcess(
   launcher_->Crash(location);
 }
 
+bool DesktopSessionFactoryLinux::DesktopSessionLinux::IsSessionUsernameAllowed(
+    const RemoteDisplaySessionManager::RemoteDisplayInfo& info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (required_username_.empty()) {
+    return true;
+  }
+  if (!info.user_info.has_value() || !info.session_info.has_value()) {
+    // The session info is not ready yet. This method will be called again when
+    // it is ready, so we just return true here.
+    return true;
+  }
+  if (info.session_info->session_class == "greeter") {
+    HOST_LOG << "Login username check skipped for greeter session.";
+    return true;
+  }
+  if (base::EqualsCaseInsensitiveASCII(required_username_,
+                                       info.user_info->username)) {
+    return true;
+  }
+  LOG(ERROR) << "User " << info.user_info->username
+             << " does not match the required username: " << required_username_;
+  return false;
+}
+
 // DesktopSessionFactoryLinux implementation.
 
 DesktopSessionFactoryLinux::DesktopSessionFactoryLinux(
@@ -278,7 +326,8 @@ void DesktopSessionFactoryLinux::Start(Callback callback) {
 std::unique_ptr<DesktopSession>
 DesktopSessionFactoryLinux::CreateDesktopSession(
     int id,
-    DaemonProcess* daemon_process) {
+    DaemonProcess* daemon_process,
+    const mojom::DesktopSessionOptions& options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::string display_name = IdToDisplayName(id);
@@ -287,7 +336,8 @@ DesktopSessionFactoryLinux::CreateDesktopSession(
     return nullptr;
   }
   auto desktop_session = std::make_unique<DesktopSessionLinux>(
-      daemon_process, id, display_name, io_task_runner_,
+      daemon_process, id, display_name, options.required_username,
+      io_task_runner_,
       base::BindOnce(&DesktopSessionFactoryLinux::RemoveDesktopSession,
                      weak_ptr_factory_.GetWeakPtr(), display_name));
   // TODO: crbug.com/475611769 - Add timeout mechanism for waiting for the
@@ -365,6 +415,8 @@ void DesktopSessionFactoryLinux::OnRemoteDisplayTerminated(
   // session may be nullptr if the desktop session has already been removed by
   // RemoveDesktopSession().
   if (session) {
+    // TODO: crbug.com/475611769 - Pass the SESSION_REJECTED error code to the
+    // network process so that the client can see the correct error message.
     session->TerminateSession();
   }
 }

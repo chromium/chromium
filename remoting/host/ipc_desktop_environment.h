@@ -122,6 +122,7 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
                            const ScreenResolution& resolution) override;
   bool BindConnectionEventsReceiver(
       mojo::ScopedInterfaceEndpointHandle handle) override;
+  void SetRequiredUsername(std::string_view username) override;
   void OnDesktopSessionAgentAttached(
       int terminal_id,
       int session_id,
@@ -147,6 +148,9 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
   // This gives us more than 67 years of unique IDs assuming a new ID is
   // allocated every second.
   int next_id_ = 0;
+
+  // See DesktopSessionConnector::SetRequiredUsername().
+  std::string required_username_;
 
   mojo::AssociatedRemote<mojom::DesktopSessionManager> desktop_session_manager_;
 

@@ -157,7 +157,7 @@ class MockDesktopSessionManager : public mojom::DesktopSessionManager {
   // mojom::DesktopSessionManager implementation.
   MOCK_METHOD(void,
               CreateDesktopSession,
-              (int, const ScreenResolution&, bool),
+              (int, mojom::DesktopSessionOptionsPtr),
               (override));
   MOCK_METHOD(void, CloseDesktopSession, (int), (override));
   MOCK_METHOD(void,
@@ -192,8 +192,7 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   void TearDown() override;
 
   void CreateDesktopSession(int terminal_id,
-                            const ScreenResolution& resolution,
-                            bool is_curtained);
+                            mojom::DesktopSessionOptionsPtr options);
   void CloseDesktopSession(int terminal_id);
 
   // Creates a DesktopEnvironment with a fake webrtc::DesktopCapturer, to mock
@@ -340,7 +339,7 @@ void IpcDesktopEnvironmentTest::SetUp() {
           Invoke(this, &IpcDesktopEnvironmentTest::DestroyDesktopProcess));
 
   // Intercept requests to connect and disconnect a terminal.
-  EXPECT_CALL(mock_desktop_session_manager_, CreateDesktopSession(_, _, _))
+  EXPECT_CALL(mock_desktop_session_manager_, CreateDesktopSession(_, _))
       .Times(AnyNumber())
       .WillRepeatedly(
           Invoke(this, &IpcDesktopEnvironmentTest::CreateDesktopSession));
@@ -401,8 +400,7 @@ void IpcDesktopEnvironmentTest::TearDown() {
 
 void IpcDesktopEnvironmentTest::CreateDesktopSession(
     int terminal_id,
-    const ScreenResolution& resolution,
-    bool is_curtained) {
+    mojom::DesktopSessionOptionsPtr options) {
   EXPECT_NE(terminal_id_, terminal_id);
 
   terminal_id_ = terminal_id;

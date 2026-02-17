@@ -77,8 +77,7 @@ class DaemonProcess : public ConfigWatcher::Delegate,
 
   // mojom::DesktopSessionManager implementation.
   void CreateDesktopSession(int terminal_id,
-                            const ScreenResolution& resolution,
-                            bool is_curtained) override;
+                            mojom::DesktopSessionOptionsPtr options) override;
   void CloseDesktopSession(int terminal_id) override;
   void SetScreenResolution(int terminal_id,
                            const ScreenResolution& resolution) override;
@@ -125,8 +124,7 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // An implementation should validate |params| as they are received via IPC.
   virtual std::unique_ptr<DesktopSession> DoCreateDesktopSession(
       int terminal_id,
-      const ScreenResolution& resolution,
-      bool is_curtained) = 0;
+      const mojom::DesktopSessionOptions& options) = 0;
 
   // Requests the network process to crash.
   virtual void DoCrashNetworkProcess(const base::Location& location) = 0;
