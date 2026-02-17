@@ -61,6 +61,7 @@ export class ContextualEntrypointButtonElement extends
       showMenuOnClick: {type: Boolean},
       inputState: {type: Object},
       glifAnimationState: {type: String, reflect: true},
+      uploadButtonDisabled: {type: Boolean},
 
       // =========================================================================
       // Protected properties
@@ -81,6 +82,7 @@ export class ContextualEntrypointButtonElement extends
   accessor inputState: InputState|null = null;
   accessor glifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
+  accessor uploadButtonDisabled: boolean = false;
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
