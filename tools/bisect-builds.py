@@ -44,7 +44,7 @@ import zipfile
 DEFAULT_CATAPULT_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'catapult_bisect_dep'))
 CATAPULT_DIR = os.environ.get('CATAPULT_DIR', DEFAULT_CATAPULT_DIR)
-CATAPULT_REPO = 'https://github.com/catapult-project/catapult.git'
+CATAPULT_REPO = 'https://chromium.googlesource.com/catapult.git'
 DEVIL_PATH = os.path.abspath(os.path.join(CATAPULT_DIR, 'devil'))
 
 # The base URL for stored build archives.
