@@ -4478,11 +4478,6 @@
       name: "RenderPriorityAttribute",
     },
     {
-      // See https://crbug.com/40896371 for details.
-      name: "ReplacedElementCursorPositioningFix",
-      status: "stable",
-    },
-    {
       name: "ReportFirstFrameTimeAsRenderTime",
       status: "test",
     },

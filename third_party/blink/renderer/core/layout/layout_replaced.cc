@@ -522,9 +522,7 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
     return PositionBeforeThis();  // coordinates are above
 
   if (block_direction_position >= bottom) {
-    return RuntimeEnabledFeatures::ReplacedElementCursorPositioningFixEnabled()
-               ? PositionAfterThis()
-               : PositionBeforeThis();  // coordinates are below
+    return PositionAfterThis();  // coordinates are below
   }
 
   if (GetNode()) {
