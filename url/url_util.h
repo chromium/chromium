@@ -296,7 +296,7 @@ void EncodeURIComponent(std::string_view input, CanonOutput* output);
 // TODO(crbug.com/40281561): Remove this when event-level reportEvent is removed
 // (if it is still this function's only consumer).
 COMPONENT_EXPORT(URL)
-bool IsURIComponentChar(char c);
+bool IsUriComponentChar(char c);
 
 // Checks an arbitrary string for invalid escape sequences.
 //

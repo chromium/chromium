@@ -908,7 +908,7 @@ void EncodeURIComponent(std::string_view input, CanonOutput* output) {
   }
 }
 
-bool IsURIComponentChar(char c) {
+bool IsUriComponentChar(char c) {
   return IsComponentChar(c);
 }
 
