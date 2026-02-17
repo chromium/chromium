@@ -60,7 +60,8 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, BasicBackToOpener) {
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
   // Click the link to open in new tab
-  content::SimulateMouseClickOrTapElementWithId(opener_contents, "link");
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "document.getElementById('link').click();"));
 
   content::WebContents* dest_contents = tab_waiter.Wait();
   ASSERT_NE(dest_contents, nullptr);
@@ -114,7 +115,8 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
   // Wait for new tab to open
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
-  content::SimulateMouseClickOrTapElementWithId(opener_contents, "link");
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "document.getElementById('link').click();"));
 
   content::WebContents* dest_contents = tab_waiter.Wait();
   ASSERT_NE(dest_contents, opener_contents);
@@ -154,7 +156,8 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
   // Wait for new tab to open
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
-  content::SimulateMouseClickOrTapElementWithId(opener_contents, "link");
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "document.getElementById('link').click();"));
 
   content::WebContents* dest_contents = tab_waiter.Wait();
   ASSERT_NE(dest_contents, opener_contents);
@@ -203,7 +206,8 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
   // Wait for new tab to open
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
-  content::SimulateMouseClickOrTapElementWithId(opener_contents, "link");
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "document.getElementById('link').click();"));
 
   content::WebContents* dest_contents = tab_waiter.Wait();
   ASSERT_NE(dest_contents, opener_contents);
@@ -243,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, PinnedTabDisablesBackButton) {
   // Wait for new tab to open
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
-  content::SimulateMouseClickOrTapElementWithId(opener_contents, "link");
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "document.getElementById('link').click();"));
 
   content::WebContents* dest_contents = tab_waiter.Wait();
   ASSERT_NE(dest_contents, opener_contents);
@@ -290,7 +295,8 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, OpenerMovedToAnotherWindow) {
   // Wait for new tab to open
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
-  content::SimulateMouseClickOrTapElementWithId(opener_contents, "link");
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "document.getElementById('link').click();"));
 
   content::WebContents* dest_contents = tab_waiter.Wait();
   ASSERT_NE(dest_contents, opener_contents);
@@ -366,7 +372,8 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, BackToOpenerMenuAppears) {
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
   // Click the link to open in new tab
-  content::SimulateMouseClickOrTapElementWithId(opener_contents, "link");
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "document.getElementById('link').click();"));
   content::WebContents* dest_contents = tab_waiter.Wait();
   ASSERT_NE(dest_contents, opener_contents);
   EXPECT_TRUE(content::WaitForLoadStop(dest_contents));
@@ -443,7 +450,8 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
   // Click the link to open in new tab
-  content::SimulateMouseClickOrTapElementWithId(opener_contents, "link");
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "document.getElementById('link').click();"));
 
   content::WebContents* dest_contents = tab_waiter.Wait();
   ASSERT_NE(dest_contents, nullptr);
@@ -546,7 +554,8 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
   // Click the link to open in new tab
-  content::SimulateMouseClickOrTapElementWithId(opener_contents, "link");
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "document.getElementById('link').click();"));
   content::WebContents* dest_contents = tab_waiter.Wait();
   ASSERT_NE(dest_contents, nullptr);
   ASSERT_NE(dest_contents, opener_contents);
