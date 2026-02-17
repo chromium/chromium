@@ -1021,8 +1021,8 @@ ExternalVkImageBacking::GetMapPlaneData() const {
     // Ensure that the start of the next plane is 4 byte aligned. For all
     // multi-planar formats the max texel block size is 4 bytes so this will
     // always satisfy the next planes alignment requirement.
-    size_t plane_bytes = data.back().image_info.computeMinByteSize();
-    base::bits::AlignUp<size_t>(plane_bytes, 4u);
+    size_t plane_bytes = base::bits::AlignUp<size_t>(
+        data.back().image_info.computeMinByteSize(), 4u);
 
     total_data_bytes += plane_bytes;
   }
