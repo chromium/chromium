@@ -35,6 +35,8 @@ class GlicSidePanelCoordinatorAndroid : public GlicSidePanelCoordinator {
   int GetPreferredWidth() override;
   bool IsGlicSidePanelActive() override;
 
+  void OnClose(JNIEnv* env);
+
  private:
   void SetState(State state);
   void OnTabDidActivate(tabs::TabInterface* tab);

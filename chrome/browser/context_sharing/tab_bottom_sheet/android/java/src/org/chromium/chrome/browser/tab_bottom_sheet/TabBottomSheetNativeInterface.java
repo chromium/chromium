@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -43,7 +44,7 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
         if (tabBottomSheetManager != null) {
             return tabBottomSheetManager.tryToShowBottomSheet(
                     /* nativeInterfaceDelegate= */ this,
-                    /* shouldShowToolbar= */ true,
+                    /* shouldShowToolbar= */ false,
                     /* shouldShowFusebox= */ true);
         }
         return false;
@@ -82,5 +83,12 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
     }
 
     @Override
-    public void onBottomSheetClosed() {}
+    public void onBottomSheetClosed() {
+        TabBottomSheetNativeInterfaceJni.get().onClose(mNativePtr);
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onClose(long nativeGlicSidePanelCoordinatorAndroid);
+    }
 }

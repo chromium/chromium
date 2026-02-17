@@ -17,6 +17,8 @@ using base::android::AttachCurrentThread;
 
 namespace glic {
 
+DEFINE_JNI(TabBottomSheetNativeInterface)
+
 GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
     tabs::TabInterface* tab)
     : GlicSidePanelCoordinator(tab), tab_(*tab) {
@@ -114,6 +116,10 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(
     return;
   }
   SetState(State::kBackgrounded);
+}
+
+void GlicSidePanelCoordinatorAndroid::OnClose(JNIEnv* env) {
+  SetState(State::kClosed);
 }
 
 TabAndroid* GlicSidePanelCoordinatorAndroid::GetTabAndroid() const {
