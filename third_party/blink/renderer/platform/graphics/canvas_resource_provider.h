@@ -554,8 +554,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       const Canvas2DColorParams& color_params,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       RasterMode raster_mode,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      Delegate* delegate = nullptr);
+      gpu::SharedImageUsageSet shared_image_usage_flags);
 
   // The returned instance will have been cleared at creation.
   static std::unique_ptr<Canvas2DResourceProviderSharedImage>
