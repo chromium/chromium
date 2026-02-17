@@ -117,6 +117,7 @@ void SkillsUiTabController::ShowDialog(Skill skill) {
                                   std::move(skill));
     }
   }
+  dialog_delegate_->SetInitiallyFocusedView(dialog_view->web_view());
   dialog_delegate_->SetContentsView(std::move(dialog_view));
   dialog_widget_ = constrained_window::ShowWebModalDialogViewsOwned(
       dialog_delegate_.get(), tab_->GetContents(),
