@@ -594,18 +594,11 @@ bool SharedContextState::InitializeGraphite(
           context_options, use_shader_cache_shm_count)) {
     graphite_shared_context =
         dawn_context_provider_->GetGraphiteSharedContext();
-  } else {
-    // There is currently no way for the GPU process to gracefully handle
-    // failure to initialize Dawn, leaving the user in an unknown state if we
-    // allow GPU process initialization to continue. Intentionally crash the
-    // GPU process in this case to trigger browser-side fallback logic (either
-    // to software or to Ganesh depending on the platform).
-    // TODO(crbug.com/325000752): Handle this case within the GPU process.
-    NOTREACHED();
   }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
   if (!graphite_shared_context) {
+    // Note: the caller will handle this case by exiting the GPU process.
     LOG(ERROR) << "Skia Graphite disabled: Graphite Context creation failed.";
     return false;
   }
