@@ -97,7 +97,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [PutForwards=href, LegacyUnforgeable] readonly attribute Location? location;
     [RaisesException=Setter] attribute USVString domain;
     readonly attribute USVString referrer;
-    [RaisesException, RuntimeCallStatsCounter=DocumentCookie] attribute DOMString cookie;
+    [LogActivity=GetterOnly, RaisesException, RuntimeCallStatsCounter=DocumentCookie] attribute DOMString cookie;
     readonly attribute DOMString lastModified;
     readonly attribute DocumentReadyState readyState;
 

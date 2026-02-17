@@ -42,7 +42,7 @@
 
     readonly attribute DOMString type;
     [CEReactions] attribute DOMString defaultValue;
-    [CEReactions, ImplementedAs=valueForBinding] attribute [LegacyNullToEmptyString] DOMString value;
+    [LogActivity=GetterOnly, CEReactions, ImplementedAs=valueForBinding] attribute [LegacyNullToEmptyString] DOMString value;
     readonly attribute unsigned long textLength;
 
     readonly attribute boolean willValidate;
