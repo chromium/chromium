@@ -18,7 +18,7 @@ ${this.showContextEntrypoint_ ? html`
       .showMenuOnClick="${false}"
       entrypoint-name="Omnibox"
       searchbox-layout-mode="${this.searchboxLayoutMode_}"
-      .tabSuggestions="${this.tabSuggestions_}"
+      .recentTabForChip="${this.recentTabForChip_}"
       ?hide-entrypoint-button="${this.shouldHideEntrypointButton_}"
       ?show-dropdown="${this.hasVisibleMatches_}"
       ?show-lens-search-chip="${

@@ -129,6 +129,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      showRecentTabChip: {type: Boolean},
+      recentTabForChip: {type: Object},
 
       // =========================================================================
       // Protected properties
@@ -147,9 +149,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      showRecentTabChip: {type: Boolean},
       activeTool_: {type: Number},
-      recentTabForChip_: {type: Object},
       carouselOnTop_: {type: Boolean},
       submitButtonShown: {type: Boolean},
       isOmniboxInCompactMode_: {
@@ -179,6 +179,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor inComposebox: boolean = false;
   accessor showModelPicker: boolean = false;
   accessor isOmniboxInCompactMode_: boolean = false;
+  accessor recentTabForChip: TabInfo|null = null;
 
   protected accessor attachmentFileTypes_: string[] =
       loadTimeData.getString('composeboxAttachmentFileTypes').split(',');
@@ -198,7 +199,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor showFileCarousel_: boolean = false;
   protected accessor activeTool_: ComposeboxToolMode =
       ComposeboxToolMode.kUnspecified;
-  protected accessor recentTabForChip_: TabInfo|null = null;
   protected accessor submitButtonShown: boolean = false;
   protected accessor hideEntrypointButton: boolean = false;
 
@@ -249,18 +249,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   private shouldShowContextualSearchChips_(): boolean {
-    return this.files_.size === 0 && !this.inToolMode_ &&
-        !(this.searchboxLayoutMode === 'Compact' &&
-          this.entrypointName === 'Realbox');
-  }
-
-  protected get shouldShowRecentTabChip_(): boolean {
-    const isBrowserTabAllowed = !this.showModelPicker ||
-        (!!this.inputState &&
-         this.inputState.allowedInputTypes.includes(InputType.kBrowserTab));
-    return this.shouldShowContextualSearchChips_() &&
-        !!this.recentTabForChip_ && this.showRecentTabChip &&
-        isBrowserTabAllowed;
+    return this.files_.size === 0 && !this.inToolMode_;
   }
 
   protected get shouldShowLensSearchChip_(): boolean {
@@ -269,7 +258,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   protected get shouldShowContextualChipsForCompactMode_(): boolean {
     return this.searchboxLayoutMode === 'Compact' &&
-        (this.shouldShowRecentTabChip_ || this.shouldShowLensSearchChip_);
+        (this.showRecentTabChip || this.shouldShowLensSearchChip_);
   }
 
   protected get shouldShowToolChipsForTallMode_(): boolean {
@@ -283,7 +272,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected get toolChipsVisible_(): boolean {
-    return this.shouldShowRecentTabChip_ || this.shouldShowLensSearchChip_ ||
+    return this.showRecentTabChip || this.shouldShowLensSearchChip_ ||
         this.inToolMode_;
   }
 
@@ -320,7 +309,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected shouldShowDescription_(): boolean {
-    return this.showContextMenuDescription_ && !this.shouldShowRecentTabChip_ &&
+    return this.showContextMenuDescription_ && !this.showRecentTabChip &&
         !this.shouldShowLensSearchChip_;
   }
 
@@ -387,15 +376,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       this.uploadButtonDisabled_ = this.computeUploadButtonDisabled();
       this.showFileCarousel_ = this.files_.size > 0;
       this.fire('on-context-files-changed', {files: this.files_.size});
-    }
-
-    if (changedProperties.has('tabSuggestions')) {
-      this.recentTabForChip_ =
-          this.tabSuggestions.find(tab => tab.showInCurrentTabChip) || null;
-      if (!this.recentTabForChip_) {
-        this.recentTabForChip_ =
-            this.tabSuggestions.find(tab => tab.showInPreviousTabChip) || null;
-      }
     }
 
     if (changedProperties.has('entrypointName') ||
