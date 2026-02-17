@@ -180,21 +180,28 @@ void TransientKeepAlivePolicy::OnProcessNodeRemoved(
     return;
   }
 
+  content::RenderProcessHost* rph =
+      process_node->GetRenderProcessHostProxy().Get();
+  CHECK(rph);
+
+  auto SafeDecrement = [](content::RenderProcessHost* rph) {
+    // If the RenderProcessHost is already destroying, the pending reuse ref
+    // count has already been forcibly cleared. Decrementing it again would be
+    // incorrect.
+    if (!rph->IsDeletingSoon()) {
+      rph->DecrementPendingReuseRefCount();
+    }
+  };
+
   // Check if it's in the "active" set.
   if (tracked_processes_with_frames_.erase(process_node)) {
-    content::RenderProcessHost* render_process_host =
-        process_node->GetRenderProcessHostProxy().Get();
-    CHECK(render_process_host);
-    render_process_host->DecrementPendingReuseRefCount();
+    SafeDecrement(rph);
     return;
   }
 
   // Check if it's in the "empty" map.
   if (empty_kept_alive_processes_.erase(process_node)) {
-    content::RenderProcessHost* render_process_host =
-        process_node->GetRenderProcessHostProxy().Get();
-    CHECK(render_process_host);
-    render_process_host->DecrementPendingReuseRefCount();
+    SafeDecrement(rph);
   }
 }
 
