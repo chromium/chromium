@@ -9668,6 +9668,11 @@ crbug.com/482121289 [ Win ] external/wpt/geolocation/enabled-by-permission-polic
 # Temporary entry while fixing semantics
 crbug.com/483413086 external/wpt/html/browsers/the-window-object/named-access-on-the-window-object/window-named-properties.html [ Failure Pass ]
 
+# Temporary to allow crrev.com/c/7572408 to land in DevTools before the tests are rebased and re-enabled.
+crbug.com/477241796 http/tests/devtools/elements/styles-1/commit-selector-mark-matching.js [ Failure Pass ]
+crbug.com/477241796 http/tests/devtools/elements/styles-1/add-new-rule-keyboard.js [ Failure Pass ]
+
+
 # Gardener 2026-02-13
 crbug.com/483892110 [ Mac12 ] external/wpt/shadow-dom/focus-navigation/delegatesFocus-highlight-sibling.html [ Pass Timeout ]
 crbug.com/483962364 [ Mac12 ] external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-fallback.html [ Pass Timeout ]
