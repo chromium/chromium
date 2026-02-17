@@ -362,6 +362,24 @@ TEST_F(WalletHttpClientImplTest, UpsertPass_Latency) {
       "Wallet.NetworkRequest.UpsertPass.Latency", kLatency, 1);
 }
 
+TEST_F(WalletHttpClientImplTest, UpsertPass_ResponseSize) {
+  base::HistogramTester histogram_tester;
+  UpsertPublicPassCallback callback;
+  client()->UpsertPublicPass(Pass(), callback.GetCallback());
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  api::UpsertPassResponse response;
+  response.set_pass_id("pass-id");
+  std::string response_string = response.SerializeAsString();
+  test_url_loader_factory()->SimulateResponseForPendingRequest(
+      GetUpsertPassUrl().spec(), response_string);
+
+  histogram_tester.ExpectUniqueSample(
+      "Wallet.NetworkRequest.UpsertPass.ResponseByteSize",
+      response_string.size(), 1);
+}
+
 TEST_F(WalletHttpClientImplTest, UpsertPrivatePass_Latency) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<

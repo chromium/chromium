@@ -74,6 +74,17 @@ chromium-metrics-reviews@google.com.
   <token key="RequestType" variants="Wallet.NetworkRequest.RequestType"/>
 </histogram>
 
+<histogram name="Wallet.NetworkRequest.{RequestType}.ResponseByteSize"
+    units="bytes" expires_after="2026-12-31">
+  <owner>vizcay@google.com</owner>
+  <owner>1p-integrations-autofill@google.com</owner>
+  <summary>
+    Records the size of network responses received from the wallet server for
+    {RequestType}.
+  </summary>
+  <token key="RequestType" variants="Wallet.NetworkRequest.RequestType"/>
+</histogram>
+
 <histogram name="Wallet.WalletablePass.OptIn.Funnel.{PassCategory}"
     enum="WalletablePassOptInFunnelEvents" expires_after="2026-12-31">
   <owner>hanfeng@google.com</owner>

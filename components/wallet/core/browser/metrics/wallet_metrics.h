@@ -87,6 +87,11 @@ void RecordHttpResponseOrErrorCode(WalletRequest::WalletNetworkRequestType type,
 void RecordNetworkRequestLatency(WalletRequest::WalletNetworkRequestType type,
                                  base::TimeDelta request_latency);
 
+// Logs the size of the response to a `type` of network request.
+void RecordNetworkRequestResponseSize(
+    WalletRequest::WalletNetworkRequestType type,
+    size_t response_size);
+
 std::string WalletNetworkRequestTypeToString(
     WalletRequest::WalletNetworkRequestType type);
 

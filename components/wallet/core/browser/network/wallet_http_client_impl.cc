@@ -215,6 +215,11 @@ void WalletHttpClientImpl::OnSimpleLoaderComplete(
         request->GetRequestType(), base::TimeTicks::Now() - request_start);
   }
 
+  if (response_body) {
+    metrics::RecordNetworkRequestResponseSize(request->GetRequestType(),
+                                              response_body->size());
+  }
+
   const bool success = response_body && IsHttpSuccess(http_response_code);
   if (!success) {
     std::move(*request).OnResponse(

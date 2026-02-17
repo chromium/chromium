@@ -62,6 +62,16 @@ void RecordNetworkRequestLatency(WalletRequest::WalletNetworkRequestType type,
       request_latency);
 }
 
+void RecordNetworkRequestResponseSize(
+    WalletRequest::WalletNetworkRequestType type,
+    size_t response_size) {
+  base::UmaHistogramCounts10000(base::ReplaceStringPlaceholders(
+                                    "Wallet.NetworkRequest.$1.ResponseByteSize",
+                                    {WalletNetworkRequestTypeToString(type)},
+                                    /*offsets=*/nullptr),
+                                response_size);
+}
+
 std::string WalletNetworkRequestTypeToString(
     WalletRequest::WalletNetworkRequestType type) {
   switch (type) {
