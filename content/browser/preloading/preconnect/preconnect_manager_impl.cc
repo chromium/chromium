@@ -216,6 +216,7 @@ void PreconnectManagerImpl::StartPreconnectUrl(
     net::NetworkAnonymizationKey network_anonymization_key,
     net::NetworkTrafficAnnotationTag traffic_annotation,
     const content::StoragePartitionConfig* storage_partition_config,
+    base::optional_ref<base::UnguessableToken> network_restrictions_id,
     std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
     mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
         connection_change_observer_client) {
@@ -226,15 +227,13 @@ void PreconnectManagerImpl::StartPreconnectUrl(
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
-  // TODO(crbug.com/447954811): Right now, we only provide a
-  // network_restrictions_id for direct invocations of StartPreresolveHost(s).
-  // We still need to provide the ID for preconnect requests as well.
+
   PreresolveJobId job_id = preresolve_jobs_.Add(std::make_unique<PreresolveJob>(
       url.DeprecatedGetOriginAsURL(), 1, allow_credentials,
       std::move(network_anonymization_key), traffic_annotation,
       base::OptionalFromPtr(storage_partition_config),
       std::move(keepalive_config), std::move(connection_change_observer_client),
-      nullptr, /*network_restrictions_id=*/std::nullopt));
+      nullptr, network_restrictions_id));
   queued_jobs_.push_front(job_id);
 
   TryToLaunchPreresolveJobs();

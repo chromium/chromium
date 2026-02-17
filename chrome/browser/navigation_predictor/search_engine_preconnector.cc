@@ -272,10 +272,15 @@ void SearchEnginePreconnector::PreconnectDSE() {
     net::SchemefulSite schemeful_site(preconnect_url);
     auto network_anonymziation_key =
         net::NetworkAnonymizationKey::CreateSameSite(schemeful_site);
+
+    // Preconnection initiated by search engine is out of scope of connection
+    // allowlist, so there is no `network_restrictions_id`.
+    // See https://wicg.github.io/connection-allowlists/#threat-model.
     GetPreconnectManager().StartPreconnectUrl(
         preconnect_url, /*allow_credentials=*/true, network_anonymziation_key,
         predictors::kSearchEnginePreconnectTrafficAnnotation,
-        /*storage_partition_config=*/nullptr, std::move(keepalive_config),
+        /*storage_partition_config=*/nullptr,
+        /*network_restrictions_id=*/std::nullopt, std::move(keepalive_config),
         std::move(observer));
   }
 

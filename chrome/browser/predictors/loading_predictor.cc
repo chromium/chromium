@@ -420,10 +420,14 @@ bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
     if (is_new_origin || now - preconnect_data.last_preconnect_time_ >=
                              kMinDelayBetweenPreconnectRequests) {
       preconnect_data.last_preconnect_time_ = now;
+
+      // TODO(crbug.com/447954811): pass the `network_restrictions_id` from the
+      // caller.
       preconnect_manager()->StartPreconnectUrl(
           url, true, network_anonymization_key,
           kLoadingPredictorPreconnectTrafficAnnotation,
           /*storage_partition_config=*/nullptr,
+          /*network_restrictions_id=*/std::nullopt,
           /*keepalive_config=*/std::nullopt, mojo::NullRemote());
     }
     return true;
@@ -503,10 +507,12 @@ void LoadingPredictor::PreconnectURLIfAllowed(
     return;
   }
 
+  // TODO(crbug.com/447954811): pass the `network_restrictions_id` from the
+  // caller.
   preconnect_manager()->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key, traffic_annotation,
-      storage_partition_config, /*keepalive_config=*/std::nullopt,
-      mojo::NullRemote());
+      storage_partition_config, /*network_restrictions_id=*/std::nullopt,
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
 void LoadingPredictor::MaybePrewarmResources(

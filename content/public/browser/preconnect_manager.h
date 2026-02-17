@@ -138,6 +138,7 @@ class CONTENT_EXPORT PreconnectManager {
       net::NetworkAnonymizationKey network_anonymization_key,
       net::NetworkTrafficAnnotationTag traffic_annotation,
       const StoragePartitionConfig* storage_partition_config,
+      base::optional_ref<base::UnguessableToken> network_restrictions_id,
       std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
       mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
           connection_change_observer_client) = 0;

@@ -69,13 +69,14 @@ class MockPreconnectManager : public PreconnectManager {
            net::NetworkTrafficAnnotationTag traffic_annotation,
            const content::StoragePartitionConfig*,
            base::optional_ref<base::UnguessableToken> network_restrictions_id));
-  MOCK_METHOD7(
+  MOCK_METHOD8(
       StartPreconnectUrl,
       void(const GURL& url,
            bool allow_credentials,
            net::NetworkAnonymizationKey network_anonymization_key,
            net::NetworkTrafficAnnotationTag traffic_annotation,
            const content::StoragePartitionConfig*,
+           base::optional_ref<base::UnguessableToken> network_restrictions_id,
            std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
            mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
                observer_client));
@@ -360,7 +361,7 @@ TEST_F(LoadingPredictorPreconnectTest, TestHandleOmniboxHint) {
               StartPreconnectUrl(
                   preconnect_suggestion, true,
                   CreateNetworkanonymization_key(preconnect_suggestion),
-                  kLoadingPredictorPreconnectTrafficAnnotation, _, _, _));
+                  kLoadingPredictorPreconnectTrafficAnnotation, _, _, _, _));
   predictor_->PrepareForPageLoad(/*initiator_origin=*/std::nullopt,
                                  preconnect_suggestion, HintOrigin::OMNIBOX,
                                  true);
@@ -644,7 +645,7 @@ TEST_F(LoadingPredictorPreconnectTest, TestHandleHintWhenOnlyHttpsAllowed) {
               StartPreconnectUrl(
                   main_frame_url_https, true,
                   CreateNetworkanonymization_key(main_frame_url_https),
-                  kLoadingPredictorPreconnectTrafficAnnotation, _, _, _));
+                  kLoadingPredictorPreconnectTrafficAnnotation, _, _, _, _));
   EXPECT_TRUE(predictor_->HandleHintByOrigin(main_frame_url_https,
                                              /*preconnectable=*/true,
                                              /*only_allow_https=*/true,

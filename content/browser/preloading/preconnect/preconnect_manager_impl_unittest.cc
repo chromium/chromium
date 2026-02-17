@@ -1054,6 +1054,7 @@ TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrl) {
       url, allow_credentials, network_anonymization_key,
       TRAFFIC_ANNOTATION_FOR_TESTS,
       /*storage_partition_config=*/nullptr,
+      /*network_restrictions_id=*/std::nullopt,
       /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 
   EXPECT_CALL(
@@ -1072,6 +1073,7 @@ TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrl) {
       non_http_url, allow_credentials, network_anonymization_key,
       TRAFFIC_ANNOTATION_FOR_TESTS,
       /*storage_partition_config=*/nullptr,
+      /*network_restrictions_id=*/std::nullopt,
       /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
@@ -1091,6 +1093,7 @@ TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrlDisabled) {
       url, allow_credentials, network_anonymization_key,
       TRAFFIC_ANNOTATION_FOR_TESTS,
       /*storage_partition_config=*/nullptr,
+      /*network_restrictions_id=*/std::nullopt,
       /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
@@ -1110,6 +1113,7 @@ TEST_F(PreconnectManagerImplTest,
       url, allow_credentials, network_anonymization_key,
       TRAFFIC_ANNOTATION_FOR_TESTS,
       /*storage_partition_config=*/nullptr,
+      /*network_restrictions_id=*/std::nullopt,
       /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 
   EXPECT_CALL(
