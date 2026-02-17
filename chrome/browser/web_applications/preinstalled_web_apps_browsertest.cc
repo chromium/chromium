@@ -99,6 +99,11 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
           "https://notebooklm.google.com/install",
           "https://notebooklm.google.com/",
       },
+      {
+          ash::kVidsAppId,
+          "https://docs.google.com/videos/installwebapp?usp=chrome_default",
+          "https://docs.google.com/videos/?usp=installed_webapp",
+      },
 #endif  // BUILDFLAG(IS_CHROMEOS)
       {
           ash::kGoogleDocsAppId,
