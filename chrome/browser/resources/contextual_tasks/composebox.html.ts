@@ -10,35 +10,31 @@ import type {ContextualTasksComposeboxElement} from './composebox.js';
 
 // clang-format off
 export function getHtml(this: ContextualTasksComposeboxElement) {
-  const suggestions = this.enableNativeZeroStateSuggestions ?
-    html`
-      <cr-composebox-dropdown
-          id="contextualTasksSuggestionsContainer"
-          role="listbox"
-          .result="${this.zeroStateSuggestions_}"
-          .selectedMatchIndex="${-1}"
-          .maxSuggestions="${5}"
-          .inDeepSearchMode="${false}"
-          ?hidden="${!this.isZeroState || !this.enableNativeZeroStateSuggestions}">
-      </cr-composebox-dropdown>`
-      : ``;
-
   /* 'suggestions' ternary is to change DOM order:
    *  Side panel has suggestions appear between header and composebox.
    *  Full tab has suggestions appear below the composebox (which is below the header).
    */
   return html`<!--_html_template_start_-->
-  ${this.isSidePanel ? suggestions : ``}
-  <div id="composeboxContainer"
-    style="
-      --composebox-height: ${this.composeboxHeight_}px;
-      --composebox-dropdown-height: ${this.composeboxDropdownHeight_}px;"
-      >
-    ${this.showOnboardingTooltip_ ? html`
-      <contextual-tasks-onboarding-tooltip id="onboardingTooltip"
-          @onboarding-tooltip-dismissed="${this.onTooltipDismissed_}">
-      </contextual-tasks-onboarding-tooltip>` : ''}
-    <cr-composebox
+${this.isSidePanel && this.enableNativeZeroStateSuggestions ? html`
+  <cr-composebox-dropdown
+      id="contextualTasksSuggestionsContainer"
+      role="listbox"
+      .result="${this.zeroStateSuggestions_}"
+      .maxSuggestions="${5}"
+      ?hidden="${!this.isZeroState}">
+  </cr-composebox-dropdown>
+` : ''}
+<div id="composeboxContainer"
+  style="
+    --composebox-height: ${this.composeboxHeight_}px;
+    --composebox-dropdown-height: ${this.composeboxDropdownHeight_}px;"
+    >
+  ${this.showOnboardingTooltip_ ? html`
+    <contextual-tasks-onboarding-tooltip id="onboardingTooltip"
+        @onboarding-tooltip-dismissed="${this.onTooltipDismissed_}">
+    </contextual-tasks-onboarding-tooltip>
+  ` : ''}
+  <cr-composebox
       id="composebox"
       ?autofocus="${false}"
       carousel-on-top_
@@ -49,11 +45,18 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       .disableCaretColorAnimation="${true}"
       .isInCoBrowsingZeroState = "${this.isZeroState}"
       .lensButtonTriggersOverlay="${true}"
-      @zero-state-result-changed="${this.onZeroStateResultReceived_}"
-    >
-    </cr-composebox>
-  </div>
-  ${!this.isSidePanel ? suggestions : ``}
+      @zero-state-result-changed="${this.onZeroStateResultReceived_}">
+  </cr-composebox>
+</div>
+${!this.isSidePanel && this.enableNativeZeroStateSuggestions ? html`
+  <cr-composebox-dropdown
+      id="contextualTasksSuggestionsContainer"
+      role="listbox"
+      .result="${this.zeroStateSuggestions_}"
+      .maxSuggestions="${5}"
+      ?hidden="${!this.isZeroState}">
+  </cr-composebox-dropdown>
+` : ''}
   <!--_html_template_end_-->`;
 }
 // clang-format on
