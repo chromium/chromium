@@ -853,6 +853,7 @@ _CONFIG = [
             'net::CookiePriority',
             'net::CookieSameSite',
             'net::CookieSourceScheme',
+            'net::cookie_util::GetCookieDomainWithString',
 
             # Net error codes
             'net::OK',

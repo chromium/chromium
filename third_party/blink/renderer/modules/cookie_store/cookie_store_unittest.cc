@@ -254,6 +254,32 @@ TEST_F(CookieStoreTest, SetWithMixedCaseDomain) {
           Property("Domain", &net::CanonicalCookie::Domain, ".example.com"))));
 }
 
+TEST_F(CookieStoreTest, SetWithPublicSuffixDomain) {
+  V8TestingScope v8_testing_scope((KURL("https://foo.example.test/page.html")));
+  CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
+
+  ScriptState* script_state = v8_testing_scope.GetScriptState();
+  ASSERT_TRUE(script_state);
+  DummyExceptionStateForTesting exception_state;
+
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
+
+  CookieInit* set_options = CookieInit::Create();
+  set_options->setName("cookie-name");
+  set_options->setValue("cookie-value");
+  set_options->setDomain("test");
+
+  ScriptPromise<IDLUndefined> promise =
+      cookie_store->set(script_state, set_options, exception_state);
+  ScriptPromiseTester promise_tester(script_state, promise, &exception_state);
+  promise_tester.WaitUntilSettled();
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ("Cookie domain must domain-match current host",
+            exception_state.Message());
+  EXPECT_TRUE(promise_tester.IsRejected());
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
+}
+
 TEST_F(CookieStoreTest, SetWithHttpPrefix) {
   V8TestingScope v8_testing_scope((KURL(kDefaultUrl)));
   CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
