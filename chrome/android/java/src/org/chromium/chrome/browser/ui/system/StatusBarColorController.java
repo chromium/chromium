@@ -320,7 +320,7 @@ public class StatusBarColorController
                     @Override
                     public void onBackgroundImageChanged(
                             Bitmap originalBitmap,
-                            @Nullable BackgroundImageInfo backgroundImageInfo,
+                            BackgroundImageInfo backgroundImageInfo,
                             boolean fromInitialization,
                             @NtpBackgroundType int oldType,
                             @NtpBackgroundType int newType) {

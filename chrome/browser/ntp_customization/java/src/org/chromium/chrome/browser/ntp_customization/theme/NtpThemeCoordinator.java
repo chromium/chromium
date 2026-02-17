@@ -142,8 +142,7 @@ public class NtpThemeCoordinator {
             // Full Activity recreation to finalize theme changes is deferred
             // until the ntp customization bottom sheets are fully dismissed.
             BackgroundImageInfo info =
-                    NtpCustomizationUtils.calculateInitialThemeCollectionImageMatrices(
-                            mContext, bitmap);
+                    NtpCustomizationUtils.getDefaultBackgroundImageInfo(mContext, bitmap);
             NtpCustomizationConfigManager.getInstance().onUploadedImageSelected(bitmap, info);
             onPreviewClosed(/* isImageSelected= */ true);
             return;

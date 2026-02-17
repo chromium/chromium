@@ -158,8 +158,7 @@ public class NtpThemeCollectionManager {
                     }
 
                     BackgroundImageInfo backgroundImageInfo =
-                            NtpCustomizationUtils.calculateInitialThemeCollectionImageMatrices(
-                                    mContext, bitmap);
+                            NtpCustomizationUtils.getDefaultBackgroundImageInfo(mContext, bitmap);
 
                     if (isNextThemeCollectionImage(info)) {
                         NtpCustomizationUtils.saveDailyRefreshBackgroundInfo(
