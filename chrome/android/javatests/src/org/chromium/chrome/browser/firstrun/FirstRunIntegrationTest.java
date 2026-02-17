@@ -341,7 +341,7 @@ public class FirstRunIntegrationTest {
 
     private FakeAccountManagerFacade.UpdateBlocker blockOnFlowIsKnown() {
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
-        return mFakeAccountManagerFacade.blockGetAccounts(/* populateCache= */ false);
+        return mFakeAccountManagerFacade.blockGetAccounts();
     }
 
     @Test
