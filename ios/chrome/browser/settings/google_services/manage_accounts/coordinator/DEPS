@@ -1,0 +1,23 @@
+include_rules = [
+  # keep-sorted start
+  "+components/trusted_vault/trusted_vault_server_constants.h",
+  "+ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h",
+  "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
+  "+ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
+  "+ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h",
+  "+ios/chrome/browser/signin/model/authentication_service.h",
+  "+ios/chrome/browser/signin/model/authentication_service_factory.h",
+  "+ios/chrome/browser/signin/model/authentication_service_observer_bridge.h",
+  "+ios/chrome/browser/signin/model/avatar/avatar_provider.h",
+  "+ios/chrome/browser/signin/model/chrome_account_manager_service.h",
+  "+ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h",
+  "+ios/chrome/browser/signin/model/constants.h",
+  "+ios/chrome/browser/signin/model/identity_manager_factory.h",
+  "+ios/chrome/browser/signin/model/system_identity.h",
+  "+ios/chrome/browser/signin/model/system_identity_manager.h",
+  # keep-sorted end
+]

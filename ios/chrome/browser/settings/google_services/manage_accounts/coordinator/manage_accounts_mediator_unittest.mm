@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_mediator.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_mediator.h"
 
 #import "components/signin/public/base/signin_pref_names.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_mediator_delegate.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_mediator_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"

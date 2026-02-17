@@ -1,5 +1,0 @@
-include_rules = [
-  # keep-sorted start
-  "+components/trusted_vault/trusted_vault_server_constants.h",
-  # keep-sorted end
-]

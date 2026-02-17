@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_coordinator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
@@ -16,11 +16,11 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator_delegate.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_mediator.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_mediator_delegate.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_coordinator_delegate.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_mediator.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_mediator_delegate.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/public/manage_accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/ui/manage_accounts_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"

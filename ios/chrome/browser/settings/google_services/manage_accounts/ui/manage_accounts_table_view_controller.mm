@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/ui/manage_accounts_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/identity_view_item.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_model_identity_data_source.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_mutator.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/public/manage_accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/ui/identity_view_item.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/ui/manage_accounts_model_identity_data_source.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/ui/manage_accounts_mutator.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"

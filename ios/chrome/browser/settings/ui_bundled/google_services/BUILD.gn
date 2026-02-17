@@ -70,6 +70,9 @@ source_set("google_services") {
     "//ios/chrome/browser/policy/ui_bundled:management_util",
     "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/settings/google_services/manage_accounts/coordinator",
+    "//ios/chrome/browser/settings/google_services/manage_accounts/public",
+    "//ios/chrome/browser/settings/google_services/manage_accounts/ui",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
     "//ios/chrome/browser/settings/ui_bundled:constants",
@@ -78,9 +81,6 @@ source_set("google_services") {
     "//ios/chrome/browser/settings/ui_bundled/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/settings/ui_bundled/elements:info_popover_view_controller",
     "//ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload",
-    "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts",
-    "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts:constants",
-    "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts:manage_accounts_ui",
     "//ios/chrome/browser/settings/ui_bundled/sync",
     "//ios/chrome/browser/settings/ui_bundled/utils",
     "//ios/chrome/browser/shared/coordinator/alert",
@@ -161,7 +161,7 @@ source_set("constants") {
     "manage_sync_settings_constants.mm",
   ]
   deps = [
-    "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts:constants",
+    "//ios/chrome/browser/settings/google_services/manage_accounts/public",
     "//ios/chrome/browser/shared/ui/list_model",
   ]
 }
@@ -226,11 +226,11 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/reading_list/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/settings/google_services/manage_accounts/public",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
     "//ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload:constants",
-    "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts:constants",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/ui/manage_accounts_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/callback_helpers.h"
@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "google_apis/gaia/core_account_id.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_mediator.h"
+#import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_mediator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
