@@ -198,6 +198,14 @@ export class SkillsDialogAppElement extends CrLitElement {
         this.isRefineLoading_;
   }
 
+  protected isUndoDisabled_(): boolean {
+    return !this.canUndoRefine_ || this.isRefineLoading_;
+  }
+
+  protected isRedoDisabled_(): boolean {
+    return !this.canRedoRefine_ || this.isRefineLoading_;
+  }
+
   protected onNameChanged_(e: CustomEvent<{value: string}>) {
     this.skill_ = {...this.skill_, name: e.detail.value};
   }

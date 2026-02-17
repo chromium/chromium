@@ -328,18 +328,22 @@ suite('SkillsDialogAppPage', function() {
     // 3. Mock the refine call and Click Refine
     const refinedMockText = 'AI Refined Prompt';
 
-
     dialogHandler.setResultFor(
         'refineSkill',
         Promise.resolve({refinedSkill: {prompt: refinedMockText}}));
 
     skillsDialogApp.$.iconRefine.click();
-
     await dialogHandler.whenCalled('refineSkill');
-
     await microtasksFinished();
 
-    assertEquals(refinedMockText, skillsDialogApp.$.instructionsText.value);
+    // Accessing the element via the $ map fails here because the element is
+    // conditionally rendered and may be removed from the DOM during the
+    // loading state. Querying shadowRoot directly allows us to safely check
+    // its current state.
+    let instructionsInput =
+        skillsDialogApp.shadowRoot.querySelector('textarea');
+    assertTrue(!!instructionsInput);
+    assertEquals(refinedMockText, instructionsInput.value);
 
     // Check buttons
     assertFalse(skillsDialogApp.$.iconUndo.disabled);
@@ -349,7 +353,9 @@ suite('SkillsDialogAppPage', function() {
     skillsDialogApp.$.iconUndo.click();
     await microtasksFinished();
 
-    assertEquals(originalText, skillsDialogApp.$.instructionsText.value);
+    instructionsInput = skillsDialogApp.shadowRoot.querySelector('textarea');
+    assertTrue(!!instructionsInput);
+    assertEquals(originalText, instructionsInput.value);
     assertTrue(skillsDialogApp.$.iconUndo.disabled);
     assertFalse(skillsDialogApp.$.iconRedo.disabled);
 
@@ -357,7 +363,9 @@ suite('SkillsDialogAppPage', function() {
     skillsDialogApp.$.iconRedo.click();
     await microtasksFinished();
 
-    assertEquals(refinedMockText, skillsDialogApp.$.instructionsText.value);
+    instructionsInput = skillsDialogApp.shadowRoot.querySelector('textarea');
+    assertTrue(!!instructionsInput);
+    assertEquals(refinedMockText, instructionsInput.value);
     assertFalse(skillsDialogApp.$.iconUndo.disabled);
     assertTrue(skillsDialogApp.$.iconRedo.disabled);
 
@@ -435,22 +443,31 @@ suite('SkillsDialogAppPage', function() {
   });
 
   test('RefineLoadingState', async function() {
-    const instructionsInput = skillsDialogApp.$.instructionsText;
     const refineBtn = skillsDialogApp.$.iconRefine;
 
+    // 1. Setup Input
     await updateInstructions('Start');
 
     const resolver = new PromiseResolver<{refinedSkill: Skill}>();
     dialogHandler.refineSkill = () => resolver.promise;
 
-    // Click Refine
+    // 2. Click Refine
     refineBtn.click();
     await microtasksFinished();
 
-    // Assert Loading State
+    // 3. ASSERT LOADING STATE
     assertTrue(refineBtn.disabled);
+    assertTrue(skillsDialogApp.$.iconUndo.disabled);
+    assertTrue(skillsDialogApp.$.iconRedo.disabled);
+    assertTrue(skillsDialogApp.$.textareaWrapper.hasAttribute('loading'));
+    const textarea =
+        skillsDialogApp.shadowRoot.querySelector('#instructionsText');
+    assertEquals(null, textarea);
+    const loader =
+        skillsDialogApp.shadowRoot.querySelector('#instructionsLoader');
+    assertTrue(!!loader);
 
-    // Resolve Request
+    // 4. Resolve Request
     resolver.resolve({
       refinedSkill: {
         id: '',
@@ -467,13 +484,20 @@ suite('SkillsDialogAppPage', function() {
 
     await microtasksFinished();
 
-    // Assert Normal State
+    // 5. ASSERT NORMAL STATE
     assertFalse(refineBtn.disabled);
-    assertEquals('Done', instructionsInput.value);
+    assertFalse(skillsDialogApp.$.iconUndo.disabled);
+    assertFalse(skillsDialogApp.$.textareaWrapper.hasAttribute('loading'));
+    const loaderAfter =
+        skillsDialogApp.shadowRoot.querySelector('#instructionsLoader');
+    assertEquals(null, loaderAfter);
+    const textareaAfter =
+        skillsDialogApp.shadowRoot.querySelector('#instructionsText');
+    assertTrue(!!textareaAfter);
+    assertEquals('Done', (textareaAfter as HTMLTextAreaElement).value);
   });
 
   test('LateResponseDoesNotOverwriteError', async function() {
-    const instructionsInput = skillsDialogApp.$.instructionsText;
     const refineBtn = skillsDialogApp.$.iconRefine;
     const textareaWrapper = skillsDialogApp.$.textareaWrapper;
     const errorMessage = skillsDialogApp.$.errorMessage;
@@ -500,6 +524,10 @@ suite('SkillsDialogAppPage', function() {
     // 5. Verify Error UI
     assertFalse(errorMessage.hidden);
     assertTrue(textareaWrapper.hasAttribute('error'));
+    assertFalse(textareaWrapper.hasAttribute('loading'));
+    const textarea =
+        skillsDialogApp.shadowRoot.querySelector('#instructionsText');
+    assertTrue(!!textarea);
 
     // 6. Resolve the "Late" Response
     resolver.resolve({
@@ -519,7 +547,7 @@ suite('SkillsDialogAppPage', function() {
     await microtasksFinished();
 
     // 7. Verify the "Late" response was IGNORED
-    assertEquals('Original Text', instructionsInput.value);
+    assertEquals('Original Text', (textarea as HTMLTextAreaElement).value);
     assertFalse(errorMessage.hidden);
   });
 
