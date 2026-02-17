@@ -52,7 +52,9 @@ bool TopContainerView::IsPositionInWindowCaption(
     const gfx::Point& test_point) const {
   const ToolbarView* const toolbar = browser_view_->toolbar();
   for (auto& child : children()) {
-    if (child->GetVisible() && child->bounds().Contains(test_point)) {
+    gfx::Point logical_test_point(GetMirroredXInView(test_point.x()),
+                                  test_point.y());
+    if (child->GetVisible() && child->bounds().Contains(logical_test_point)) {
       if (child == toolbar) {
         const auto in_toolbar =
             views::View::ConvertPointToTarget(this, toolbar, test_point);

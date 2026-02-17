@@ -21,9 +21,11 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -47,6 +49,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/widget_activation_waiter.h"
@@ -520,7 +523,43 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, SecurityStateChanged) {
   EXPECT_TRUE(browser_view->UpdateToolbarSecurityState());
 }
 
+class ToolbarViewVerticalTabsRTLTest
+    : public VerticalTabsInteractiveTestMixin<ToolbarViewTest> {
+ public:
+  ToolbarViewVerticalTabsRTLTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ToolbarViewTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII("force-ui-direction", "rtl");
+  }
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
+    ToolbarViewTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ToolbarViewVerticalTabsRTLTest, ReloadButtonWorks) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  RunTestSequence(EnterVerticalTabsMode(), InstrumentTab(kTabId),
+                  NavigateWebContents(kTabId, url),
+                  PressButton(kReloadButtonElementId),
+                  WaitForWebContentsNavigation(kTabId));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     ToolbarViewTest,
     ::testing::Values(false, true));
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ToolbarViewVerticalTabsRTLTest,
+    ::testing::Values(false));
