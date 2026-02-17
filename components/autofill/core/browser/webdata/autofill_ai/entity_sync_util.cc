@@ -209,16 +209,13 @@ void FinalizeEntityAttributes(
   }
 }
 
-// Reads the `specifics` message and extract attribute-information from its
-// different fields. In particular, it also deserializes the metadata stored in
-// the sync message.
+// Reads the `flight_reservation` proto and extract attribute-information from
+// its different fields. It also deserializes the provided
+// `serialized_metadata`.
 base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
 GetFlightReservationAttributesFromSpecifics(
-    const sync_pb::AutofillValuableSpecifics& specifics) {
-  CHECK_EQ(specifics.valuable_data_case(),
-           sync_pb::AutofillValuableSpecifics::kFlightReservation);
-  const sync_pb::FlightReservation& flight_reservation =
-      specifics.flight_reservation();
+    const sync_pb::FlightReservation& flight_reservation,
+    const sync_pb::Any& serialized_metadata) {
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attributes;
 
@@ -240,8 +237,7 @@ GetFlightReservationAttributesFromSpecifics(
     // offset to get the local time of the departure.
     base::Time offsetted_departure_time =
         base::Time::FromMillisecondsSinceUnixEpoch(
-            specifics.flight_reservation().departure_date_unix_epoch_micros() /
-            1000) +
+            flight_reservation.departure_date_unix_epoch_micros() / 1000) +
         base::Seconds(
             flight_reservation.departure_airport_utc_offset_seconds());
 
@@ -255,8 +251,7 @@ GetFlightReservationAttributesFromSpecifics(
   }
 
   FinalizeEntityAttributes(EntityType(EntityTypeName::kFlightReservation),
-                           specifics.serialized_chrome_valuables_metadata(),
-                           attributes);
+                           serialized_metadata, attributes);
   return attributes;
 }
 
@@ -292,16 +287,11 @@ sync_pb::AutofillValuableSpecifics GetFlightReservationSpecifics(
   return specifics;
 }
 
-// Reads the `specifics` message and extract attribute-information from its
-// different fields. In particular, it also deserializes the metadata stored in
-// the sync message.
+// Reads the `vehicle` proto and extract attribute-information from its
+// different fields. It also deserializes the provided `serialized_metadata`.
 base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
-GetVehicleAttributesFromSpecifics(
-    const sync_pb::AutofillValuableSpecifics& specifics) {
-  CHECK_EQ(specifics.valuable_data_case(),
-           sync_pb::AutofillValuableSpecifics::kVehicleRegistration);
-  const sync_pb::VehicleRegistration& vehicle =
-      specifics.vehicle_registration();
+GetVehicleAttributesFromSpecifics(const sync_pb::VehicleRegistration& vehicle,
+                                  const sync_pb::Any& serialized_metadata) {
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attributes;
 
@@ -316,8 +306,7 @@ GetVehicleAttributesFromSpecifics(
   AddAttribute(kVehicleOwner, vehicle.owner_name(), attributes);
 
   FinalizeEntityAttributes(EntityType(EntityTypeName::kVehicle),
-                           specifics.serialized_chrome_valuables_metadata(),
-                           attributes);
+                           serialized_metadata, attributes);
   return attributes;
 }
 
@@ -350,16 +339,13 @@ sync_pb::AutofillValuableSpecifics GetVehicleInformationSpecifics(
   return specifics;
 }
 
-// Reads the passport specifics message and extracts attribute-information from
-// its fields. In particular, it also deserializes the metadata stored in the
-// sync message.
+// Reads the `passport` proto and extract attribute-information from its
+// different fields. It also deserializes the provided `serialized_metadata`.
 base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
 GetPassportAttributesFromSpecifics(
-    const sync_pb::AutofillValuableSpecifics& specifics,
+    const sync_pb::Passport& passport,
+    const sync_pb::Any& serialized_metadata,
     AttributeInstance::MarkAsMaskedPasskey passkey) {
-  CHECK_EQ(specifics.valuable_data_case(),
-           sync_pb::AutofillValuableSpecifics::kPassport);
-  const sync_pb::Passport& passport = specifics.passport();
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attributes;
 
@@ -372,8 +358,7 @@ GetPassportAttributesFromSpecifics(
                    passport.expiration_date_unix_epoch_micros(), attributes);
 
   FinalizeEntityAttributes(EntityType(EntityTypeName::kPassport),
-                           specifics.serialized_chrome_valuables_metadata(),
-                           attributes);
+                           serialized_metadata, attributes);
   return attributes;
 }
 
@@ -403,15 +388,13 @@ sync_pb::AutofillValuableSpecifics GetPassportSpecifics(
   return specifics;
 }
 
-// Reads the driver's license specifics message and extracts
-// attribute-information.
+// Reads the `license` proto and extract attribute-information from its
+// different fields. It also deserializes the provided `serialized_metadata`.
 base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
 GetDriversLicenseAttributesFromSpecifics(
-    const sync_pb::AutofillValuableSpecifics& specifics,
+    const sync_pb::DriverLicense& license,
+    const sync_pb::Any& serialized_metadata,
     AttributeInstance::MarkAsMaskedPasskey passkey) {
-  CHECK_EQ(specifics.valuable_data_case(),
-           sync_pb::AutofillValuableSpecifics::kDriverLicense);
-  const sync_pb::DriverLicense& license = specifics.driver_license();
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attributes;
 
@@ -426,8 +409,7 @@ GetDriversLicenseAttributesFromSpecifics(
                    license.expiration_date_unix_epoch_micros(), attributes);
 
   FinalizeEntityAttributes(EntityType(EntityTypeName::kDriversLicense),
-                           specifics.serialized_chrome_valuables_metadata(),
-                           attributes);
+                           serialized_metadata, attributes);
   return attributes;
 }
 
@@ -459,15 +441,13 @@ sync_pb::AutofillValuableSpecifics GetDriversLicenseSpecifics(
   return specifics;
 }
 
-// Reads the national ID card specifics message and extracts
-// attribute-information.
+// Reads the `card` proto and extract attribute-information from its
+// different fields. It also deserializes the provided `serialized_metadata`.
 base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
 GetNationalIdCardAttributesFromSpecifics(
-    const sync_pb::AutofillValuableSpecifics& specifics,
+    const sync_pb::NationalIdCard& card,
+    const sync_pb::Any& serialized_metadata,
     AttributeInstance::MarkAsMaskedPasskey passkey) {
-  CHECK_EQ(specifics.valuable_data_case(),
-           sync_pb::AutofillValuableSpecifics::kNationalIdCard);
-  const sync_pb::NationalIdCard& card = specifics.national_id_card();
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attributes;
 
@@ -481,8 +461,7 @@ GetNationalIdCardAttributesFromSpecifics(
                    card.expiry_date_unix_epoch_micros(), attributes);
 
   FinalizeEntityAttributes(EntityType(EntityTypeName::kNationalIdCard),
-                           specifics.serialized_chrome_valuables_metadata(),
-                           attributes);
+                           serialized_metadata, attributes);
   return attributes;
 }
 
@@ -514,15 +493,13 @@ sync_pb::AutofillValuableSpecifics GetNationalIdCardSpecifics(
   return specifics;
 }
 
-// Reads the redress number specifics message and extracts
-// attribute-information.
+// Reads the `redress` proto and extract attribute-information from its
+// different fields. It also deserializes the provided `serialized_metadata`.
 base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
 GetRedressNumberAttributesFromSpecifics(
-    const sync_pb::AutofillValuableSpecifics& specifics,
+    const sync_pb::RedressNumber& redress,
+    const sync_pb::Any& serialized_metadata,
     AttributeInstance::MarkAsMaskedPasskey passkey) {
-  CHECK_EQ(specifics.valuable_data_case(),
-           sync_pb::AutofillValuableSpecifics::kRedressNumber);
-  const sync_pb::RedressNumber& redress = specifics.redress_number();
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attributes;
 
@@ -531,8 +508,7 @@ GetRedressNumberAttributesFromSpecifics(
                attributes);
 
   FinalizeEntityAttributes(EntityType(EntityTypeName::kRedressNumber),
-                           specifics.serialized_chrome_valuables_metadata(),
-                           attributes);
+                           serialized_metadata, attributes);
   return attributes;
 }
 
@@ -558,15 +534,13 @@ sync_pb::AutofillValuableSpecifics GetRedressNumberSpecifics(
   return specifics;
 }
 
-// Reads the known traveler number specifics message and extracts
-// attribute-information.
+// Reads the `ktn` proto and extract attribute-information from its
+// different fields. It also deserializes the provided `serialized_metadata`.
 base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
 GetKnownTravelerNumberAttributesFromSpecifics(
-    const sync_pb::AutofillValuableSpecifics& specifics,
+    const sync_pb::KnownTravelerNumber& ktn,
+    const sync_pb::Any& serialized_metadata,
     AttributeInstance::MarkAsMaskedPasskey passkey) {
-  CHECK_EQ(specifics.valuable_data_case(),
-           sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber);
-  const sync_pb::KnownTravelerNumber& ktn = specifics.known_traveler_number();
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attributes;
 
@@ -577,8 +551,7 @@ GetKnownTravelerNumberAttributesFromSpecifics(
                    ktn.expiry_date_unix_epoch_micros(), attributes);
 
   FinalizeEntityAttributes(EntityType(EntityTypeName::kKnownTravelerNumber),
-                           specifics.serialized_chrome_valuables_metadata(),
-                           attributes);
+                           serialized_metadata, attributes);
   return attributes;
 }
 
@@ -691,7 +664,10 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
     case sync_pb::AutofillValuableSpecifics::kVehicleRegistration: {
       return EntityInstance(
           EntityType(EntityTypeName::kVehicle),
-          GetVehicleAttributesFromSpecifics(specifics), guid,
+          GetVehicleAttributesFromSpecifics(
+              specifics.vehicle_registration(),
+              specifics.serialized_chrome_valuables_metadata()),
+          guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
           /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
@@ -708,7 +684,10 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
       }
       return EntityInstance(
           EntityType(EntityTypeName::kFlightReservation),
-          GetFlightReservationAttributesFromSpecifics(specifics), guid,
+          GetFlightReservationAttributesFromSpecifics(
+              specifics.flight_reservation(),
+              specifics.serialized_chrome_valuables_metadata()),
+          guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
           /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
@@ -718,7 +697,9 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
       return EntityInstance(
           EntityType(EntityTypeName::kPassport),
           GetPassportAttributesFromSpecifics(
-              specifics, AttributeInstance::MarkAsMaskedPasskey()),
+              specifics.passport(),
+              specifics.serialized_chrome_valuables_metadata(),
+              AttributeInstance::MarkAsMaskedPasskey()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
           /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
@@ -729,7 +710,9 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
       return EntityInstance(
           EntityType(EntityTypeName::kDriversLicense),
           GetDriversLicenseAttributesFromSpecifics(
-              specifics, AttributeInstance::MarkAsMaskedPasskey()),
+              specifics.driver_license(),
+              specifics.serialized_chrome_valuables_metadata(),
+              AttributeInstance::MarkAsMaskedPasskey()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
           /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
@@ -740,7 +723,9 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
       return EntityInstance(
           EntityType(EntityTypeName::kNationalIdCard),
           GetNationalIdCardAttributesFromSpecifics(
-              specifics, AttributeInstance::MarkAsMaskedPasskey()),
+              specifics.national_id_card(),
+              specifics.serialized_chrome_valuables_metadata(),
+              AttributeInstance::MarkAsMaskedPasskey()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
           /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
@@ -751,7 +736,9 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
       return EntityInstance(
           EntityType(EntityTypeName::kRedressNumber),
           GetRedressNumberAttributesFromSpecifics(
-              specifics, AttributeInstance::MarkAsMaskedPasskey()),
+              specifics.redress_number(),
+              specifics.serialized_chrome_valuables_metadata(),
+              AttributeInstance::MarkAsMaskedPasskey()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
           /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
@@ -762,7 +749,9 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
       return EntityInstance(
           EntityType(EntityTypeName::kKnownTravelerNumber),
           GetKnownTravelerNumberAttributesFromSpecifics(
-              specifics, AttributeInstance::MarkAsMaskedPasskey()),
+              specifics.known_traveler_number(),
+              specifics.serialized_chrome_valuables_metadata(),
+              AttributeInstance::MarkAsMaskedPasskey()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
           /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
