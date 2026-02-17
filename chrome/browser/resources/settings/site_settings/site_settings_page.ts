@@ -404,6 +404,16 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       shouldShow: () =>
           loadTimeData.getBoolean('enableSmartCardReadersContentSetting'),
     },
+    {
+      route: routes.SITE_SETTINGS_WEB_PRINTING,
+      id: Id.WEB_PRINTING,
+      label: 'siteSettingsWebPrinting',
+      icon: 'settings:printer',
+      enabledLabel: 'siteSettingsWebPrintingAsk',
+      disabledLabel: 'siteSettingsWebPrintingBlock',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableWebPrintingContentSetting'),
+    },
     // </if>
     {
       route: routes.SITE_SETTINGS_SOUND,
@@ -445,16 +455,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       enabledLabel: 'siteSettingsWebAppInstallationAsk',
       disabledLabel: 'siteSettingsWebAppInstallationBlock',
       shouldShow: () => loadTimeData.getBoolean('enableWebAppInstallation'),
-    },
-    {
-      route: routes.SITE_SETTINGS_WEB_PRINTING,
-      id: Id.WEB_PRINTING,
-      label: 'siteSettingsWebPrinting',
-      icon: 'settings:printer',
-      enabledLabel: 'siteSettingsWebPrintingAsk',
-      disabledLabel: 'siteSettingsWebPrintingBlock',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableWebPrintingContentSetting'),
     },
     {
       route: routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
@@ -553,7 +553,6 @@ export class SettingsSiteSettingsPageElement extends
               Id.VR,
               Id.HAND_TRACKING,
               Id.IDLE_DETECTION,
-              Id.WEB_PRINTING,
               Id.WINDOW_MANAGEMENT,
               Id.LOCAL_FONTS,
               Id.AUTO_PICTURE_IN_PICTURE,
@@ -561,6 +560,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.KEYBOARD_LOCK,
               // <if expr="is_chromeos">
               Id.SMART_CARD_READERS,
+              Id.WEB_PRINTING,
               // </if>
               Id.WEB_APP_INSTALLATION,
               Id.LOCAL_NETWORK_ACCESS,

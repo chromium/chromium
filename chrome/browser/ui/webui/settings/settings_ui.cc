@@ -531,6 +531,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableSmartCardReadersContentSetting",
       base::FeatureList::IsEnabled(blink::features::kSmartCard) &&
           content::AreIsolatedWebAppsEnabled(profile));
+  html_source->AddBoolean("enableWebPrintingContentSetting",
+                          content::AreIsolatedWebAppsEnabled(profile));
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

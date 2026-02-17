@@ -310,13 +310,13 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'siteSettingsSiteDetails':
       // <if expr="is_chromeos">
       case 'siteSettingsSmartCardReaders':
+      case 'siteSettingsWebPrinting':
       // </if>
       case 'siteSettingsSound':
       case 'siteSettingsStorageAccess':
       case 'siteSettingsUsbDevices':
       case 'siteSettingsVr':
       case 'siteSettingsWebAppInstallation':
-      case 'siteSettingsWebPrinting':
       case 'siteSettingsWindowManagement':
       case 'siteSettingsZoomLevels':
         triggerId = 'siteSettingsLinkRow';

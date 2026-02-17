@@ -57,9 +57,9 @@ suite('SiteDetails', function() {
   // in test_site_settings_prefs_browser_proxy.ts.
   setup(function() {
     loadTimeData.overrideValues({
-      enableWebPrintingContentSetting: true,
       // <if expr="is_chromeos">
       enableSmartCardReadersContentSetting: true,
+      enableWebPrintingContentSetting: true,
       // </if>
     });
     prefs = createSiteSettingsPrefs(
@@ -136,6 +136,9 @@ suite('SiteDetails', function() {
               [createRawSiteException('https://foo.com:443', {
                 setting: ContentSetting.BLOCK,
               })]),
+          createContentSettingTypeToValuePair(
+              ContentSettingsTypes.WEB_PRINTING,
+              [createRawSiteException('https://foo.com:443')]),
           // </if>
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.SERIAL_PORTS,
@@ -168,9 +171,6 @@ suite('SiteDetails', function() {
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.WEB_APP_INSTALLATION,
-              [createRawSiteException('https://foo.com:443')]),
-          createContentSettingTypeToValuePair(
-              ContentSettingsTypes.WEB_PRINTING,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.WINDOW_MANAGEMENT,

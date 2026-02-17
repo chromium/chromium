@@ -1998,12 +1998,6 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
 class SettingsSiteSettingsPageTestWithoutWebPrinting
     : public SettingsBrowserTest {};
 
-IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTestWithoutWebPrinting,
-                       WebPrintingNotShown) {
-  RunTest("settings/site_settings_page_test.js",
-          "runMochaSuite('WebPrintingNotShown')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, SoundPage) {
   RunTest("settings/sound_page_test.js", "runMochaSuite('SoundPage')");
 }

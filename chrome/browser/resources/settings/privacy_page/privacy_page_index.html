@@ -542,6 +542,17 @@
       </settings-smart-card-readers-page>
     </template>
   </template>
+
+  <template is="dom-if" if="[[enableWebPrintingContentSetting_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_WEB_PRINTING, currentRoute, inSearchMode)]]"
+        update-when-false>
+      <settings-web-printing-page slot="view"
+          id="siteSettingsWebPrinting" data-parent-view-id="privacy"
+          route-path$="[[routes_.SITE_SETTINGS_WEB_PRINTING.path]]">
+      </settings-web-printing-page>
+    </template>
+  </template>
 </if>
 
   <template is="dom-if" if="[[renderView_(
@@ -605,17 +616,6 @@
           id="siteSettingsWebAppInstallation" data-parent-view-id="privacy"
           route-path$="[[routes_.SITE_SETTINGS_WEB_APP_INSTALLATION.path]]">
       </settings-web-applications-page>
-    </template>
-  </template>
-
-  <template is="dom-if" if="[[enableWebPrintingContentSetting_]]">
-    <template is="dom-if" if="[[renderView_(
-        routes_.SITE_SETTINGS_WEB_PRINTING, currentRoute, inSearchMode)]]"
-        update-when-false>
-      <settings-web-printing-page slot="view"
-          id="siteSettingsWebPrinting" data-parent-view-id="privacy"
-          route-path$="[[routes_.SITE_SETTINGS_WEB_PRINTING.path]]">
-      </settings-web-printing-page>
     </template>
   </template>
 

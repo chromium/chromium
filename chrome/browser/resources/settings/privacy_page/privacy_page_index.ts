@@ -138,6 +138,11 @@ export class SettingsPrivacyPageIndexElement extends
               'enableSmartCardReadersContentSetting');
         },
       },
+
+      enableWebPrintingContentSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableWebPrintingContentSetting'),
+      },
       // </if>
 
       enableSafeBrowsingSubresourceFilter_: {
@@ -171,11 +176,6 @@ export class SettingsPrivacyPageIndexElement extends
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
-      },
-
-      enableWebPrintingContentSetting_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableWebPrintingContentSetting'),
       },
 
       isAdPrivacyAvailable_: {
@@ -213,6 +213,7 @@ export class SettingsPrivacyPageIndexElement extends
   declare private enableHandTrackingContentSetting_: boolean;
   // <if expr="is_chromeos">
   declare private enableSmartCardReadersContentSetting_: boolean;
+  declare private enableWebPrintingContentSetting_: boolean;
   // </if>
   declare private enableSafeBrowsingSubresourceFilter_: boolean;
   declare private enableKeyboardLockPrompt_: boolean;
@@ -223,7 +224,6 @@ export class SettingsPrivacyPageIndexElement extends
   declare private enableSecurityKeysSubpage_: boolean;
   declare private enableWebAppInstallation_: boolean;
   declare private enableWebBluetoothNewPermissionsBackend_: boolean;
-  declare private enableWebPrintingContentSetting_: boolean;
   declare private isAdPrivacyAvailable_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
 

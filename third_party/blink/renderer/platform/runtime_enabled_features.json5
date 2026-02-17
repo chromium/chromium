@@ -6188,7 +6188,7 @@
     },
     {
       name: "WebPrinting",
-      status: {"Android": "", "default": "test"},
+      status: {"Android": "", "ChromeOS": "stable", "default": "test"},
     },
     // WebShare is enabled by default on Android (non-WebView), Win, ChromeOS, and Mac.
     // This is done in chrome/renderer/chrome_content_renderer_client.cc to prevent

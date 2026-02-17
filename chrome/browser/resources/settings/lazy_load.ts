@@ -83,6 +83,7 @@ import './site_settings/site_details_permission_device_entry.js';
 import './site_settings/site_settings_page.js';
 // <if expr="is_chromeos">
 import './site_settings/smart_card_readers_page.js';
+import './site_settings/web_printing_page.js';
 // </if>
 import './site_settings/sound_page.js';
 import './site_settings/storage_access_page.js';
@@ -90,7 +91,6 @@ import './site_settings/usb_devices_page.js';
 import './site_settings/v8_page.js';
 import './site_settings/vr_page.js';
 import './site_settings/web_applications_page.js';
-import './site_settings/web_printing_page.js';
 import './site_settings/window_management_page.js';
 import './site_settings/zoom_levels.js';
 // <if expr="not is_chromeos">
@@ -333,6 +333,7 @@ export {StorageAccessSiteListEntryElement} from './site_settings/storage_access_
 export {StorageAccessStaticSiteListEntryElement} from './site_settings/storage_access_static_site_list_entry.js';
 export type {StorageAccessStaticSiteListEntry} from './site_settings/storage_access_static_site_list_entry.js';
 export {V8PageElement} from './site_settings/v8_page.js';
+export {WebPrintingPageElement} from './site_settings/web_printing_page.js';
 export {WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
 export type {WebsiteUsageBrowserProxy} from './site_settings/website_usage_browser_proxy.js';
 export {ZoomLevelsElement} from './site_settings/zoom_levels.js';

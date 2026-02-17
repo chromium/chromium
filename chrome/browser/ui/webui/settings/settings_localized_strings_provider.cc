@@ -3895,10 +3895,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
                           false);
 #endif
 
-  html_source->AddBoolean(
-      "enableWebPrintingContentSetting",
-      base::FeatureList::IsEnabled(blink::features::kWebPrinting));
-
   html_source->AddBoolean("enableFederatedIdentityApiContentSetting",
                           base::FeatureList::IsEnabled(features::kFedCm));
 

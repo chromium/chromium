@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -207,8 +206,6 @@ class WebPrintingBrowserTestBase
   content::RenderFrameHost* app_frame() { return app_frame_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_{blink::features::kWebPrinting};
-
   raw_ptr<content::RenderFrameHost> app_frame_ = nullptr;
 };
 

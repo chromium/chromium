@@ -120,10 +120,6 @@ export class TestSiteSettingsBrowserProxy extends TestBrowserProxy implements
       ContentSettingsTypes.WINDOW_MANAGEMENT,
     ];
 
-    if (loadTimeData.getBoolean('enableWebPrintingContentSetting')) {
-      this.categoryList_.push(ContentSettingsTypes.WEB_PRINTING);
-    }
-
     if (loadTimeData.getBoolean('enableCapturedSurfaceControl')) {
       this.categoryList_.push(ContentSettingsTypes.CAPTURED_SURFACE_CONTROL);
     }
@@ -138,6 +134,10 @@ export class TestSiteSettingsBrowserProxy extends TestBrowserProxy implements
     // <if expr="is_chromeos">
     if (loadTimeData.getBoolean('enableSmartCardReadersContentSetting')) {
       this.categoryList_.push(ContentSettingsTypes.SMART_CARD_READERS);
+    }
+
+    if (loadTimeData.getBoolean('enableWebPrintingContentSetting')) {
+      this.categoryList_.push(ContentSettingsTypes.WEB_PRINTING);
     }
     // </if>
 

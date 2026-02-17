@@ -203,15 +203,16 @@
             chooser-type="[[chooserTypeEnum_.SMART_CARD_READERS_DEVICES]]">
         </site-details-permission>
       </template>
-</if>
-      <site-details-permission category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
-          icon="privacy:developer-board" label="$i18n{siteSettingsSerialPorts}"
-          chooser-type="[[chooserTypeEnum_.SERIAL_PORTS]]">
-      </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.WEB_PRINTING]]"
           icon="settings:printer"
           label="$i18n{siteSettingsWebPrinting}">
+      </site-details-permission>
+</if>
+      <site-details-permission
+          category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
+          icon="privacy:developer-board" label="$i18n{siteSettingsSerialPorts}"
+          chooser-type="[[chooserTypeEnum_.SERIAL_PORTS]]">
       </site-details-permission>
       <template is="dom-if" if="[[enableWebBluetoothNewPermissionsBackend_]]">
         <site-details-permission
