@@ -1944,6 +1944,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.PrefModelAssociator.OnPrefValueChanged{SyncDataType}"
+    enum="SyncablePref" expires_after="2026-06-21">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the syncable preference id when it is changed. This is recorded as
+    soon as an OnPrefValueChanged notification is received. Note that this is
+    only recorded for syncable preferences and has been introduced to
+    investigate metric changes in crbug.com/418991364.
+
+    This is different from Sync.SyncablePrefValueChanged in the sense that this
+    one is recorded even before the pref sync data type has started.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
 <histogram name="Sync.ProblematicServerSideBookmarks"
     enum="RemoteBookmarkUpdateError" expires_after="2026-03-29">
   <owner>mastiz@chromium.org</owner>
