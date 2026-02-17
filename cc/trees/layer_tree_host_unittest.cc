@@ -891,7 +891,11 @@ class LayerTreeHostTestSetNeedsCommit2 : public LayerTreeHostTest {
   int num_draws_;
 };
 
-MULTI_THREAD_TEST_F(LayerTreeHostTestSetNeedsCommit2);
+// TODO(crbug.com/485089667): Flaky. Reenable it.
+TEST_F(LayerTreeHostTestSetNeedsCommit2,
+       DISABLED_RunMultiThread_DelegatingRenderer) {
+  RunTest(CompositorMode::THREADED);
+}
 
 // Verify that we pass property values in PushPropertiesTo.
 class LayerTreeHostTestPushPropertiesTo : public LayerTreeHostTest {
