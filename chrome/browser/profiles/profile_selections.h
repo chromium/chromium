@@ -58,8 +58,9 @@ class ProfileSelections {
     Builder& WithSystem(ProfileSelection selection);
     // In Ash there are internal profiles that are not user profiles, such as a
     // the signin or the lockscreen profile.
-    // Note: ash internal profiles are regular profiles. If the value is not
-    // set, they will default to the regular profiles behavior.
+    // Note: Even though ash internal profiles are technically regular profiles,
+    // many services do not need to be created for them. By default, no service
+    // is created for ash internal profiles.
     Builder& WithAshInternals(ProfileSelection selection);
 
     // Builds the `ProfileSelections`.
@@ -72,10 +73,6 @@ class ProfileSelections {
   // - Predefined `ProfileSelections` builders:
 
   // Only select the regular profile.
-  // Note: Ash internal profiles are of type Regular. In order to have a
-  // different filter for those profiles, a specific builder should be
-  // constructed with a value for
-  // `ProfileSelections::Builder::WithAshInternals()`.
   // +---------+------------+------------+
   // |         |  Original  |    OTR     |
   // +---------+------------+------------+
@@ -99,10 +96,6 @@ class ProfileSelections {
 
   // Only select the regular profile and incognito for regular profiles. No
   // profiles for Guest and System profiles.
-  // Note: Ash internal profiles are of type Regular. In order to have a
-  // different filter for those profiles, a specific builder should be
-  // constructed with a value for
-  // `ProfileSelections::Builder::WithAshInternals()`.
   // +---------+------------+------------+
   // |         |  Original  |    OTR     |
   // +---------+------------+------------+
@@ -115,10 +108,6 @@ class ProfileSelections {
 
   // Redirects incognito profiles to their original regular profile. No
   // profiles for Guest and System profiles.
-  // Note: Ash internal profiles are of type Regular. In order to have a
-  // different filter for those profiles, a specific builder should be
-  // constructed with a value for
-  // `ProfileSelections::Builder::WithAshInternals()`.
   // +---------+------------+------------+
   // |         |  Original  |    OTR     |
   // +---------+------------+------------+
