@@ -507,7 +507,11 @@ bool GlicEnabling::IsMultiInstanceEnabledByFlags() {
 
 bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
   if (!IsEnabledForProfile(profile) ||
-      !base::FeatureList::IsEnabled(features::kGlicShareImage)) {
+      !base::FeatureList::IsEnabled(features::kGlicShareImage) ||
+      // TODO(b:482429737): Live requires the same capability needed for share
+      // image. In future, this should be a separate bit on the
+      // ProfileEnablement struct.
+      !EnablementForProfile(profile).EligibleForLive()) {
     return false;
   }
 
