@@ -558,6 +558,56 @@ sync_pb::AutofillValuableSpecifics GetRedressNumberSpecifics(
   return specifics;
 }
 
+// Reads the known traveler number specifics message and extracts
+// attribute-information.
+base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+GetKnownTravelerNumberAttributesFromSpecifics(
+    const sync_pb::AutofillValuableSpecifics& specifics,
+    AttributeInstance::MarkAsMaskedPasskey passkey) {
+  CHECK_EQ(specifics.valuable_data_case(),
+           sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber);
+  const sync_pb::KnownTravelerNumber& ktn = specifics.known_traveler_number();
+  base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+      attributes;
+
+  AddAttribute(kKnownTravelerNumberName, ktn.owner_name(), attributes);
+  AddAttribute(kKnownTravelerNumberNumber, ktn.masked_number(), passkey,
+               attributes);
+  AddDateAttribute(kKnownTravelerNumberExpirationDate,
+                   ktn.expiry_date_unix_epoch_micros(), attributes);
+
+  FinalizeEntityAttributes(EntityType(EntityTypeName::kKnownTravelerNumber),
+                           specifics.serialized_chrome_valuables_metadata(),
+                           attributes);
+  return attributes;
+}
+
+// Takes an `entity` and returns a proto message with the information.
+// Note: Known traveler numbers are read-only and not synced to the server.
+// This serialization is primarily for debugging (e.g., sync-internals).
+sync_pb::AutofillValuableSpecifics GetKnownTravelerNumberSpecifics(
+    const EntityInstance& entity,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+  CHECK_EQ(entity.type().name(), EntityTypeName::kKnownTravelerNumber);
+
+  sync_pb::AutofillValuableSpecifics specifics = base_specifics;
+  specifics.set_id(*entity.guid());
+  specifics.set_is_editable(!entity.are_attributes_read_only());
+
+  sync_pb::KnownTravelerNumber& ktn =
+      *specifics.mutable_known_traveler_number();
+  SET_OR_CLEAR_STRING_FIELD(entity, kKnownTravelerNumberNumber, masked_number,
+                            ktn);
+  SET_OR_CLEAR_STRING_FIELD(entity, kKnownTravelerNumberName, owner_name, ktn);
+  SetDateInSpecifics(
+      entity, kKnownTravelerNumberExpirationDate, ktn,
+      &sync_pb::KnownTravelerNumber::set_expiry_date_unix_epoch_micros);
+
+  *specifics.mutable_serialized_chrome_valuables_metadata() =
+      AnyWrapProto(SerializeChromeValuablesMetadata(entity));
+  return specifics;
+}
+
 #undef SET_OR_CLEAR_STRING_FIELD
 
 }  // namespace
@@ -629,8 +679,7 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
     case EntityTypeName::kRedressNumber:
       return GetRedressNumberSpecifics(entity, base_specifics);
     case EntityTypeName::kKnownTravelerNumber:
-      // Those entity types are not synced.
-      NOTREACHED();
+      return GetKnownTravelerNumberSpecifics(entity, base_specifics);
   }
   NOTREACHED();
 }
@@ -709,9 +758,17 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
-    case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
-      // TODO(crbug.com/481650251): Implement
-      return std::nullopt;
+    case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber: {
+      return EntityInstance(
+          EntityType(EntityTypeName::kKnownTravelerNumber),
+          GetKnownTravelerNumberAttributesFromSpecifics(
+              specifics, AttributeInstance::MarkAsMaskedPasskey()),
+          guid,
+          /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
+          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
+          /*frecency_override=*/"");
+    }
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       // Such specifics shouldn't reach this function as they aren't supported

@@ -167,6 +167,21 @@ sync_pb::AutofillValuableSpecifics TestRedressNumberSpecifics(
   return specifics;
 }
 
+// Returns a `sync_pb::AutofillValuableSpecifics` message with the known
+// traveler number entity type.
+sync_pb::AutofillValuableSpecifics TestKnownTravelerNumberSpecifics(
+    test::KnownTravelerNumberOptions options = {}) {
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id(std::string(options.guid));
+  sync_pb::KnownTravelerNumber* ktn = specifics.mutable_known_traveler_number();
+  ktn->set_masked_number(base::UTF16ToUTF8(options.number));
+  ktn->set_owner_name(base::UTF16ToUTF8(options.name));
+  ktn->set_expiry_date_unix_epoch_micros(
+      ParseDateStrToMicros(options.expiration_date));
+
+  return specifics;
+}
+
 void ExpectTimestampEquals(int64_t actual_micros,
                            const std::string& expected_date_str) {
   base::Time expected_date;
@@ -940,6 +955,55 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_RedressNumber) {
             specifics.redress_number().masked_number());
   EXPECT_EQ(GetStringValue(redress, AttributeTypeName::kRedressNumberName),
             specifics.redress_number().owner_name());
+}
+
+// Tests that `CreateEntityInstanceFromSpecifics` correctly deserializes
+// the known traveler number entity from its proto representation.
+TEST(EntitySyncUtilTest,
+     CreateEntityInstanceFromSpecifics_KnownTravelerNumber) {
+  test::KnownTravelerNumberOptions options;
+  sync_pb::AutofillValuableSpecifics specifics =
+      TestKnownTravelerNumberSpecifics(options);
+  std::optional<EntityInstance> ktn =
+      CreateEntityInstanceFromSpecifics(specifics);
+
+  ASSERT_TRUE(ktn.has_value());
+  EXPECT_EQ(ktn->guid().value(), options.guid);
+  EXPECT_EQ(GetStringValue(*ktn, AttributeTypeName::kKnownTravelerNumberNumber),
+            base::UTF16ToUTF8(options.number));
+  EXPECT_TRUE(ktn->attribute(AttributeType(
+                                 AttributeTypeName::kKnownTravelerNumberNumber))
+                  ->masked());
+  EXPECT_EQ(GetStringValue(*ktn, AttributeTypeName::kKnownTravelerNumberName),
+            base::UTF16ToUTF8(options.name));
+  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
+                *ktn, AttributeTypeName::kKnownTravelerNumberExpirationDate))),
+            ParseDateStrToMicros(options.expiration_date));
+  EXPECT_EQ(ktn->record_type(), EntityInstance::RecordType::kServerWallet);
+}
+
+// Tests that `CreateSpecificsFromEntityInstance` correctly serializes
+// fields.
+TEST(EntitySyncUtilTest,
+     CreateSpecificsFromEntityInstance_KnownTravelerNumber) {
+  test::KnownTravelerNumberOptions options;
+  std::optional<EntityInstance> maybe_ktn = CreateEntityInstanceFromSpecifics(
+      TestKnownTravelerNumberSpecifics(options));
+  ASSERT_TRUE(maybe_ktn.has_value());
+  EntityInstance ktn = *maybe_ktn;
+
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(ktn, /*base_specifics=*/{});
+
+  EXPECT_EQ(ktn.guid().value(), specifics.id());
+  EXPECT_EQ(GetStringValue(ktn, AttributeTypeName::kKnownTravelerNumberNumber),
+            specifics.known_traveler_number().masked_number());
+  EXPECT_EQ(GetStringValue(ktn, AttributeTypeName::kKnownTravelerNumberName),
+            specifics.known_traveler_number().owner_name());
+
+  ExpectTimestampEquals(
+      specifics.known_traveler_number().expiry_date_unix_epoch_micros(),
+      base::UTF16ToUTF8(options.expiration_date));
 }
 
 }  // namespace
