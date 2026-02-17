@@ -792,6 +792,17 @@ void PageInfo::OnSitePermissionChanged(
             permission_type, web_contents_->GetPrimaryMainFrame()) ||
         is_subscribed_to_permission_change_for_testing;
 
+    permissions::PermissionUmaUtil::RecordPageInfoCameraMicPermissionChange(
+        type, setting_old, ToContentSettingForMetrics(info, setting),
+        is_subscribed_to_permission_change_event);
+
+    permissions::PermissionUmaUtil::RecordPageInfoPermissionChange(
+        type, setting_old, ToContentSettingForMetrics(info, setting),
+        is_subscribed_to_permission_change_event);
+  }
+
+  if (type == ContentSettingsType::NOTIFICATIONS ||
+      type == ContentSettingsType::GEOLOCATION) {
     permissions::PermissionUmaUtil::RecordPageInfoPermissionChange(
         type, setting_old, ToContentSettingForMetrics(info, setting),
         is_subscribed_to_permission_change_event);
