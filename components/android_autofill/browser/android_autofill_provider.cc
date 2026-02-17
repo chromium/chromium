@@ -449,9 +449,12 @@ void AndroidAutofillProvider::OnTextFieldDidScroll(
     return;
   }
 
-  // TODO(crbug.com/40929724): Investigate whether the update of the value
-  // is needed - why would it have changed?
-  session_state_->form->OnFormFieldDidChange(field_info.index, field.value());
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillDoNotFireFormFieldChangedOnWebviewScrollEvents)) {
+    // TODO(crbug.com/40929724): Investigate whether the update of the value
+    // is needed - why would it have changed?
+    session_state_->form->OnFormFieldDidChange(field_info.index, field.value());
+  }
 
   field_info.bounds = ToClientAreaBound(field.bounds());
   bridge_->OnTextFieldDidScroll(field_info);

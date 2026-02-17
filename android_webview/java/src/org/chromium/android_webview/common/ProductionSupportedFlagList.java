@@ -295,6 +295,10 @@ public final class ProductionSupportedFlagList {
                 "Disallows labels that only contain em dashes, minuses, fullwidth hyphens and other"
                         + " special characters."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_DO_NOT_FIRE_FORM_FIELD_CHANGED_ON_WEBVIEW_SCROLL_EVENTS,
+                "When enabled, AndroidAutofillProvider::OnTextFieldDidScroll() will not fire"
+                        + " FormFieldData::OnFormFieldDidChange()."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_MOVE_SMALL_FORM_LOGIC_TO_CLIENT,
                 "Moves the small form handling from Autofill server to client."),
         Flag.baseFeature(

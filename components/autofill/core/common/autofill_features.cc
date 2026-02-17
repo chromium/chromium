@@ -422,6 +422,11 @@ BASE_FEATURE(kAutofillDisallowMoreHyphenLikeLabels,
 BASE_FEATURE(kAutofillDisambiguateContradictingFieldTypes,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, AndroidAutofillProvider::OnTextFieldDidScroll() will not fire
+// FormFieldData::OnFormFieldDidChange().
+BASE_FEATURE(kAutofillDoNotFireFormFieldChangedOnWebviewScrollEvents,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.
 BASE_FEATURE(kAutofillEnableAblationStudy, base::FEATURE_DISABLED_BY_DEFAULT);
