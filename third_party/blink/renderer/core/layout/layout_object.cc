@@ -3959,13 +3959,6 @@ RespectImageOrientationEnum LayoutObject::GetImageOrientation(
                        : ComputedStyleInitialValues::InitialImageOrientation();
 }
 
-inline void LayoutObject::ClearLayoutRootIfNeeded() const {
-  NOT_DESTROYED();
-  if (LocalFrameView* view = GetFrameView()) {
-    view->ClearLayoutSubtreeRoot(*this);
-  }
-}
-
 void LayoutObject::WillBeDestroyed() {
   NOT_DESTROYED();
   // Destroy any leftover anonymous children.
@@ -3996,8 +3989,6 @@ void LayoutObject::WillBeDestroyed() {
     }
   }
 
-  ClearLayoutRootIfNeeded();
-
   // Remove this object as ImageResourceObserver.
   if (style_ && !IsText())
     UpdateImageObservers(style_.Get(), nullptr);
@@ -4008,9 +3999,10 @@ void LayoutObject::WillBeDestroyed() {
   SECURITY_DCHECK(as_image_observer_count_ == 0u);
 #endif
 
-  if (GetFrameView()) {
-    GetFrameView()->RemovePendingTransformUpdate(*this);
-    GetFrameView()->RemovePendingOpacityUpdate(*this);
+  if (LocalFrameView* view = GetFrameView()) {
+    view->ClearLayoutSubtreeRoot(*this);
+    view->RemovePendingTransformUpdate(*this);
+    view->RemovePendingOpacityUpdate(*this);
   }
 }
 

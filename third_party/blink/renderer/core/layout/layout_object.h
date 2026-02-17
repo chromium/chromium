@@ -3615,8 +3615,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                                          const LayoutBoxModelObject* ancestor,
                                          MapCoordinatesFlags = 0) const;
 
-  void ClearLayoutRootIfNeeded() const;
-
   void ScheduleRelayout();
 
   void AddAsImageObserver(StyleImage*);
