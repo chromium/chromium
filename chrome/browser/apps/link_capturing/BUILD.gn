@@ -156,5 +156,8 @@ source_set("app_service_browser_tests") {
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//components/web_package",
+    "//components/web_package/test_support",
+    "//components/webapps/services/web_app_origin_association/test:test_support",
   ]
 }

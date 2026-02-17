@@ -226,9 +226,13 @@ class NavigationCapturingProcess
   MaybeNavigationCapturingOverride ForcedNewAppContext(
       blink::mojom::DisplayMode app_display_mode,
       Browser* host_browser);
+  MaybeNavigationCapturingOverride ForcedNewIwaAppContextWithScopeExtendedUrl(
+      blink::mojom::DisplayMode app_display_mode);
   MaybeNavigationCapturingOverride CapturedNewClient(
       blink::mojom::DisplayMode app_display_mode,
       Browser* host_browser);
+  MaybeNavigationCapturingOverride CapturedNewIwaClientWithScopeExtendedUrl(
+      blink::mojom::DisplayMode app_display_mode);
   MaybeNavigationCapturingOverride CapturedNavigateExisting(
       Browser* app_browser,
       int browser_tab);

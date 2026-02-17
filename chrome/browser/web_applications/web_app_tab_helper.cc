@@ -33,6 +33,7 @@
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/webapps/browser/launch_queue/launch_queue.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
@@ -46,6 +47,29 @@
 #endif
 
 namespace web_app {
+
+namespace {
+
+std::optional<webapps::AppId> FindTabAppIdForUrlInScope(
+    WebAppRegistrar& registrar,
+    const GURL& url) {
+  // 1. Check for IWAs or Isolated Sub-Apps, strictly excluding scope
+  // extensions.
+  std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
+      url, WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp(),
+      {.exclude_scope_extensions = true});
+  if (app_id) {
+    return app_id;
+  }
+  // 2. Fallback to regular apps in Chrome, excluding IWAs, allowing scope
+  // extensions.
+  return registrar.FindBestAppWithUrlInScope(
+      url,
+      WebAppFilter::InstalledInChrome() &
+          !(WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp()));
+}
+
+}  // namespace
 
 // static
 void WebAppTabHelper::Create(tabs::TabInterface* tab,
@@ -188,8 +212,7 @@ void WebAppTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame()) {
     const GURL& url = navigation_handle->GetURL();
-    SetAppId(provider_->registrar_unsafe().FindBestAppWithUrlInScope(
-        url, web_app::WebAppFilter::InstalledInChrome()));
+    SetAppId(FindTabAppIdForUrlInScope(provider_->registrar_unsafe(), url));
   }
 
   // If navigating to a Web App (including navigation in sub frames), let
@@ -240,9 +263,9 @@ WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
       tab->GetBrowserWindowInterface()->GetProfile());
   CHECK(provider_);
   observation_.Observe(&provider_->install_manager());
-  SetState(provider_->registrar_unsafe().FindBestAppWithUrlInScope(
-               contents->GetLastCommittedURL(),
-               web_app::WebAppFilter::InstalledInChrome()),
+
+  SetState(FindTabAppIdForUrlInScope(provider_->registrar_unsafe(),
+                                     contents->GetLastCommittedURL()),
            /*window_app_id=*/std::nullopt);
 }
 
@@ -279,10 +302,9 @@ bool WebAppTabHelper::CanBeUsedForFocusExisting() const {
 void WebAppTabHelper::OnWebAppInstalled(
     const webapps::AppId& installed_app_id) {
   // Check if current web_contents url is in scope for the newly installed app.
-  std::optional<webapps::AppId> app_id =
-      provider_->registrar_unsafe().FindBestAppWithUrlInScope(
-          web_contents()->GetLastCommittedURL(),
-          web_app::WebAppFilter::InstalledInChrome());
+  std::optional<webapps::AppId> app_id = FindTabAppIdForUrlInScope(
+      provider_->registrar_unsafe(), web_contents()->GetLastCommittedURL());
+
   if (app_id == installed_app_id) {
     SetAppId(app_id);
   }

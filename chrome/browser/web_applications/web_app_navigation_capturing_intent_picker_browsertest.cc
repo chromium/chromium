@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -274,11 +275,44 @@ std::string OriginAssociationFileFromAppIdentity(std::string iwa_bundle_id) {
       base::DictValue().Set("scope",
                             "/web_apps/intent_picker_nav_capture/index.html")));
 }
+
+enum class IwaInitialState { kClosed, kOpen };
+
+std::string GenerateTestName(
+    const testing::TestParamInfo<
+        std::tuple<ManifestBuilder::ClientMode, IwaInitialState>>& info) {
+  std::string mode_str;
+  switch (std::get<0>(info.param)) {
+    case ManifestBuilder::ClientMode::kFocusExisting:
+      mode_str = "FocusExisting";
+      break;
+    case ManifestBuilder::ClientMode::kNavigateExisting:
+      mode_str = "NavigateExisting";
+      break;
+    case ManifestBuilder::ClientMode::kAuto:
+    case ManifestBuilder::ClientMode::kNavigateNew:
+      mode_str = "NavigateNew";
+      break;
+  }
+  std::string open_str;
+  switch (std::get<1>(info.param)) {
+    case IwaInitialState::kOpen:
+      open_str = "InitiallyOpen";
+      break;
+    case IwaInitialState::kClosed:
+      open_str = "InitiallyClosed";
+      break;
+  }
+
+  return mode_str + "_" + open_str;
+}
+
 }  // namespace
 
 class IsolatedWebAppNavigationCapturingIntentPickerBrowserTest
     : public WebAppNavigationCapturingBrowserTestBase,
-      public testing::WithParamInterface<ManifestBuilder::ClientMode> {
+      public testing::WithParamInterface<
+          std::tuple<ManifestBuilder::ClientMode, IwaInitialState>> {
  public:
   IsolatedWebAppNavigationCapturingIntentPickerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -291,6 +325,14 @@ class IsolatedWebAppNavigationCapturingIntentPickerBrowserTest
   }
 
  protected:
+  ManifestBuilder::ClientMode GetClientMode() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool IsIwaInitiallyOpened() const {
+    return std::get<1>(GetParam()) == IwaInitialState::kOpen;
+  }
+
   GURL GetAppUrl() {
     return https_server()->GetURL(
         "/web_apps/intent_picker_nav_capture/index.html");
@@ -351,28 +393,35 @@ class IsolatedWebAppNavigationCapturingIntentPickerBrowserTest
 #endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppNavigationCapturingIntentPickerBrowserTest,
                        MAYBE_LaunchParams) {
-  ManifestBuilder::ClientMode client_mode = GetParam();
-  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp(client_mode);
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp(GetClientMode());
+  content::WebContents* first_app_contents = nullptr;
 
-  // Launch First Instance (Window 1)
-  content::RenderFrameHost* first_app_rfh =
-      OpenIsolatedWebApp(profile(), url_info.app_id());
-  content::WebContents* first_app_contents =
-      content::WebContents::FromRenderFrameHost(first_app_rfh);
+  // Conditionally Launch First Instance.
+  if (IsIwaInitiallyOpened()) {
+    first_app_contents = content::WebContents::FromRenderFrameHost(
+        OpenIsolatedWebApp(profile(), url_info.app_id()));
 
-  // Verify Window 1 received its initial launch param.
-  WaitForLaunchParams(first_app_contents, /*min_launch_params_to_wait_for=*/1);
-  EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
-                  first_app_contents, "launchParamsTargetUrls"),
-              testing::ElementsAre(url_info.origin().GetURL()));
+    // Verify Window 1 received its initial launch param.
+    WaitForLaunchParams(first_app_contents,
+                        /*min_launch_params_to_wait_for=*/1);
+    EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                    first_app_contents, "launchParamsTargetUrls"),
+                testing::ElementsAre(url_info.origin().GetURL()));
+  }
 
-  // Navigate Main Browser to capturable URL
+  // Navigate Main Browser to capturable URL.
   content::RenderFrameHost* host =
       ui_test_utils::NavigateToURL(browser(), GetAppUrlWithQuery());
   ASSERT_NE(nullptr, host);
 
-  if (client_mode == ManifestBuilder::ClientMode::kNavigateNew) {
-    // Click Intent Picker and Wait for New Browser (Window 2)
+  // Verify the Intent Picker appears.
+  EXPECT_TRUE(web_app::WaitForIntentPickerToShow(browser()));
+
+  bool expect_new_window =
+      GetClientMode() == ManifestBuilder::ClientMode::kNavigateNew ||
+      !IsIwaInitiallyOpened();
+
+  if (expect_new_window) {
     ui_test_utils::BrowserCreatedObserver browser_observer;
     ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
     Browser* second_app_browser = browser_observer.Wait();
@@ -381,40 +430,46 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppNavigationCapturingIntentPickerBrowserTest,
     EXPECT_TRUE(AppBrowserController::IsForWebApp(second_app_browser,
                                                   url_info.app_id()));
     EXPECT_NE(second_app_browser, browser());
-    EXPECT_NE(second_app_browser->tab_strip_model()->GetWebContentsAt(0),
-              first_app_contents);
 
-    // Verify Launch Params.
+    // If we had an initial window, ensure the new one is distinct.
+    if (first_app_contents) {
+      EXPECT_NE(second_app_browser->tab_strip_model()->GetWebContentsAt(0),
+                first_app_contents);
+    }
+
+    // Verify Launch Params in the NEW window.
     content::WebContents* second_app_contents =
         second_app_browser->tab_strip_model()->GetActiveWebContents();
     WaitForLaunchParams(second_app_contents,
                         /*min_launch_params_to_wait_for=*/1);
 
-    // Window 1 should NOT have received new params (still size 1).
-    EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
-                    first_app_contents, "launchParamsTargetUrls"),
-                testing::ElementsAre(url_info.origin().GetURL()));
-
-    // Window 2 SHOULD have received the captured navigation param.
+    // The new window should only see the captured URL as its launch param.
     EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
                     second_app_contents, "launchParamsTargetUrls"),
                 testing::ElementsAre(GetAppUrlWithQuery()));
+
+    // If Window 1 existed, it should NOT have received new params.
+    if (first_app_contents) {
+      EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                      first_app_contents, "launchParamsTargetUrls"),
+                  testing::ElementsAre(url_info.origin().GetURL()));
+    }
+
   } else {
-    // kFocusExisting and kNavigateExisting behavior for IWA in this context:
-    // Warning: A `tab_contents` pointer obtained from browser() will be invalid
-    // after calling this function.
+    // Expectation: Reuse Existing Window.
+    // This path is only taken if IsIwaInitiallyOpened() is true AND
+    // ClientMode is NOT kNavigateNew.
+
+    ASSERT_TRUE(first_app_contents);
     ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
 
     WaitForLaunchParams(first_app_contents,
                         /* min_launch_params_to_wait_for= */ 2);
 
-    // Check the end state for the browser() -- it should have survived the
-    // Intent Picker action.
+    // Browser check: should have survived.
     EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
-    // There should be two launch params -- one for the initial launch and one
-    // for when the existing app got focus (via the Intent Picker) and launch
-    // params were enqueued.
+    // Window 1 should have received the NEW param appended to the old one.
     EXPECT_THAT(
         apps::test::GetLaunchParamUrlsInContents(first_app_contents,
                                                  "launchParamsTargetUrls"),
@@ -425,20 +480,11 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppNavigationCapturingIntentPickerBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IsolatedWebAppNavigationCapturingIntentPickerBrowserTest,
-    testing::Values(ManifestBuilder::ClientMode::kFocusExisting,
-                    ManifestBuilder::ClientMode::kNavigateExisting,
-                    ManifestBuilder::ClientMode::kNavigateNew),
-    [](const testing::TestParamInfo<ManifestBuilder::ClientMode>& info) {
-      switch (info.param) {
-        case ManifestBuilder::ClientMode::kFocusExisting:
-          return "FocusExisting";
-        case ManifestBuilder::ClientMode::kNavigateExisting:
-          return "NavigateExisting";
-        case ManifestBuilder::ClientMode::kNavigateNew:
-          return "NavigateNew";
-        default:
-          return "Unknown";
-      }
-    });
+    testing::Combine(
+        testing::Values(ManifestBuilder::ClientMode::kFocusExisting,
+                        ManifestBuilder::ClientMode::kNavigateExisting,
+                        ManifestBuilder::ClientMode::kNavigateNew),
+        testing::Values(IwaInitialState::kClosed, IwaInitialState::kOpen)),
+    GenerateTestName);
 
 }  // namespace web_app
