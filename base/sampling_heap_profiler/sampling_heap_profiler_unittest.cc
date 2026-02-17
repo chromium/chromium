@@ -88,6 +88,7 @@ class SamplesCollector : public PoissonAllocationSampler::SamplesObserver {
   void SampleRemoved(void* address) override {
     if (address == sample_address_) {
       sample_removed = true;
+      sample_address_ = nullptr;
     }
   }
 
@@ -96,7 +97,7 @@ class SamplesCollector : public PoissonAllocationSampler::SamplesObserver {
 
  private:
   size_t watch_size_;
-  raw_ptr<void, DanglingUntriaged> sample_address_ = nullptr;
+  raw_ptr<void> sample_address_ = nullptr;
 };
 
 TEST_F(SamplingHeapProfilerTest, SampleObserver) {
