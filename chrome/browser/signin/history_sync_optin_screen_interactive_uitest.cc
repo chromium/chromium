@@ -76,12 +76,6 @@ class HistorySyncOptinScreenFromPromoEntryPointInteractiveTest
     return state_change;
   }
 
-  auto ClickButton(ui::ElementIdentifier parent_element_id,
-                   DeepQuery button_query) {
-    return Steps(
-        ExecuteJsAt(parent_element_id, button_query, "e => e.click()"));
-  }
-
   bool IsUnrestricted() { return GetParam(); }
 
  protected:
@@ -123,12 +117,12 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
-      // Check that the buttons are visible.
-      CheckJsResultAt(kHistorySyncOptinDialogContentsId,
-                      kHistoryOptinAcceptButton, kIsVisibleFn, true),
-      CheckJsResultAt(kHistorySyncOptinDialogContentsId,
-                      kHistoryOptinRejectButton, kIsVisibleFn, true),
-      ClickButton(kHistorySyncOptinDialogContentsId, kHistoryOptinAcceptButton),
+      WaitForElementVisible(kHistorySyncOptinDialogContentsId,
+                            kHistoryOptinAcceptButton),
+      WaitForElementVisible(kHistorySyncOptinDialogContentsId,
+                            kHistoryOptinRejectButton),
+      ClickElement(kHistorySyncOptinDialogContentsId,
+                   kHistoryOptinAcceptButton),
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
   EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->profile())
@@ -184,11 +178,12 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
       // Check that the buttons are visible.
-      CheckJsResultAt(kHistorySyncOptinDialogContentsId,
-                      kHistoryOptinAcceptButton, kIsVisibleFn, true),
-      CheckJsResultAt(kHistorySyncOptinDialogContentsId,
-                      kHistoryOptinRejectButton, kIsVisibleFn, true),
-      ClickButton(kHistorySyncOptinDialogContentsId, kHistoryOptinAcceptButton),
+      WaitForElementVisible(kHistorySyncOptinDialogContentsId,
+                            kHistoryOptinAcceptButton),
+      WaitForElementVisible(kHistorySyncOptinDialogContentsId,
+                            kHistoryOptinRejectButton),
+      ClickElement(kHistorySyncOptinDialogContentsId,
+                   kHistoryOptinAcceptButton),
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
   EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->profile())
@@ -268,7 +263,8 @@ IN_PROC_BROWSER_TEST_P(
                          UiElementHasAppeared(kHistoryOptinAcceptButton)),
       WaitForStateChange(kHistorySyncOptinDialogContentsId,
                          UiElementHasAppeared(kHistoryOptinRejectButton)),
-      ClickButton(kHistorySyncOptinDialogContentsId, kHistoryOptinAcceptButton),
+      ClickElement(kHistorySyncOptinDialogContentsId,
+                   kHistoryOptinAcceptButton),
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
   EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->profile())
@@ -337,11 +333,13 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
-      // Use kFireAndForget because clicking the reject button closes the
-      // dialog immediately, causing the default visibility check to fail.
-      ExecuteJsAt(kHistorySyncOptinDialogContentsId, kHistoryOptinRejectButton,
-                  "e => e.click()",
-                  InteractiveBrowserTestApi::ExecuteJsMode::kFireAndForget),
+      WaitForElementVisible(kHistorySyncOptinDialogContentsId,
+                            kHistoryOptinAcceptButton),
+      WaitForElementVisible(kHistorySyncOptinDialogContentsId,
+                            kHistoryOptinRejectButton),
+      ClickElement(kHistorySyncOptinDialogContentsId,
+                   kHistoryOptinRejectButton),
+
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
   EXPECT_FALSE(SyncServiceFactory::GetForProfile(browser()->profile())
