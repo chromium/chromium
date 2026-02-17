@@ -7900,6 +7900,16 @@
     "expiry_milestone": 146
   },
   {
+    "name": "projects-panel",
+    "owners": [
+      "chazzy@chromium.org",
+      "davidjm@google.com",
+      "chrome-shopping-eng@google.com",
+      "top-chrome-desktop-ui@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "prompt-api-for-gemini-nano",
    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
     "expiry_milestone": 148

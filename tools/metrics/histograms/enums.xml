@@ -14965,6 +14965,7 @@ from previous Chrome versions.
   <int value="192693676"
       label="QueryTilesRemoveTrendingAfterInactivity:disabled"/>
   <int value="193322103" label="XSLT:enabled"/>
+  <int value="193665311" label="ProjectsPanel:disabled"/>
   <int value="193865288" label="EnableSuggestedLocalFiles:enabled"/>
   <int value="193885882" label="WebXrInternals:disabled"/>
   <int value="194573877" label="MacViewsNativeDialogs:disabled"/>
@@ -19655,6 +19656,7 @@ from previous Chrome versions.
   <int value="1785884719" label="TabGroupHome:enabled"/>
   <int value="1785914867"
       label="DeprecateOldKeyboardShortcutsAccelerator:disabled"/>
+  <int value="1785927182" label="ProjectsPanel:enabled"/>
   <int value="1786182939" label="ExoPointerLock:enabled"/>
   <int value="1786229999" label="disable-md-downloads"/>
   <int value="1786386775" label="TranslateCompactUI:disabled"/>
