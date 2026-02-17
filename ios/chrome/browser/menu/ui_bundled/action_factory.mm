@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/color_palette/tab_group_color_palette.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -728,13 +729,20 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
       }
     };
 
-    UIAction* groupAction = [self
-        actionWithTitle:title
-                  image:[circleImage imageWithTintColor:
-                                         tab_groups::ColorForTabGroupColorId(
-                                             group->GetColor())]
-                   type:MenuActionType::MoveTabToExistingGroup
-                  block:actionBlock];
+    UIColor* imageColor;
+    if (IsTabGroupColorOnSurfaceEnabled()) {
+      imageColor =
+          [[TabGroupColorPalette alloc] initWithSeedColorId:group->GetColor()]
+              .commonColor;
+    } else {
+      imageColor = tab_groups::ColorForTabGroupColorId(group->GetColor());
+    }
+
+    UIAction* groupAction =
+        [self actionWithTitle:title
+                        image:[circleImage imageWithTintColor:imageColor]
+                         type:MenuActionType::MoveTabToExistingGroup
+                        block:actionBlock];
 
     if (group == currentGroup) {
       groupAction.state = UIMenuElementStateOn;

@@ -31,6 +31,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util/color_palette:group_color",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/window_activities/model",
