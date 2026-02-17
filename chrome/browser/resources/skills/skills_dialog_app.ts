@@ -160,10 +160,16 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   protected onEmojiKeyDown_(e: KeyboardEvent) {
+    if (e.key === 'Tab') {
+      return;
+    }
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      this.onEmojiBtnClick_(e);
+      return;
+    }
     // Block everything else (a-z, 1-9, symbols).
     // This stops the user from manually typing, making it feel "read-only".
-    // NOTE: The OS Emoji Picker bypasses this check, so emojis still get
-    // through.
     e.preventDefault();
   }
 

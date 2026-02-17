@@ -281,7 +281,7 @@ suite('SkillsDialogAppPage', function() {
     assertEquals('⚡', emojiTrigger.value);
   });
 
-  test('EmojiPreventsManualTyping', function() {
+  test('EmojiPreventsManualTyping', async function() {
     const emojiTrigger = skillsDialogApp.$.emojiTrigger;
     const letterEvent = new KeyboardEvent('keydown', {
       key: 'a',
@@ -291,6 +291,25 @@ suite('SkillsDialogAppPage', function() {
     });
     emojiTrigger.dispatchEvent(letterEvent);
     assertTrue(letterEvent.defaultPrevented);
+
+    const tabEvent = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      cancelable: true,
+      bubbles: true,
+      composed: true,
+    });
+    emojiTrigger.dispatchEvent(tabEvent);
+    assertFalse(tabEvent.defaultPrevented);
+
+    const enterEvent = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      cancelable: true,
+      bubbles: true,
+      composed: true,
+    });
+    emojiTrigger.dispatchEvent(enterEvent);
+    assertTrue(enterEvent.defaultPrevented);
+    await dialogHandler.whenCalled('showEmojiPicker');
   });
 
   test('RefineUndoRedoFlow', async function() {
