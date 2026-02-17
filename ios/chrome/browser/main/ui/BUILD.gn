@@ -12,6 +12,7 @@ source_set("ui") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/browser_view/ui_bundled:safe_area_provider",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/shared/public/features",

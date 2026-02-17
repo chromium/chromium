@@ -13,6 +13,7 @@
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/fake_browser_view_controller.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -175,10 +176,18 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     incognito_tab_view_controller_ = [[FakeBrowserViewController alloc] init];
     incognito_tab_view_controller_.view.frame = CGRectMake(40, 40, 10, 10);
 
+    safe_area_provider_ =
+        [[SafeAreaProvider alloc] initWithBrowser:browser_.get()];
+    incognito_safe_area_provider_ =
+        [[SafeAreaProvider alloc] initWithBrowser:incognito_browser_.get()];
+
     layout_view_controller_ = [[BrowserLayoutViewController alloc] init];
+    layout_view_controller_.safeAreaProvider = safe_area_provider_;
     incognito_layout_view_controller_ =
         [[BrowserLayoutViewController alloc] init];
     incognito_layout_view_controller_.incognito = YES;
+    incognito_layout_view_controller_.safeAreaProvider =
+        incognito_safe_area_provider_;
   }
 
   void TearDown() override {
@@ -222,6 +231,8 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
   FakeBrowserViewController* incognito_tab_view_controller_;
   BrowserLayoutViewController* layout_view_controller_;
   BrowserLayoutViewController* incognito_layout_view_controller_;
+  SafeAreaProvider* safe_area_provider_;
+  SafeAreaProvider* incognito_safe_area_provider_;
 
   // Used to test logging the time spent in tab grid.
   base::HistogramTester histogram_tester_;

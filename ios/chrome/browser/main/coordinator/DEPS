@@ -1,4 +1,5 @@
 include_rules = [
+  "+ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/tab_switcher/tab_strip/coordinator",
   "+ios/chrome/browser/tab_switcher/tab_strip/ui",

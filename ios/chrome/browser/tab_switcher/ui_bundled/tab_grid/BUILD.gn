@@ -259,6 +259,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
+    "//ios/chrome/browser/browser_view/ui_bundled:safe_area_provider",
     "//ios/chrome/browser/browser_view/ui_bundled:test_support",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
     "//ios/chrome/browser/main/ui",

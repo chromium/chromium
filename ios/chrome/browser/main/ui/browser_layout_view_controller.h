@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_context_provider.h"
 
 @protocol BrowserLayoutConsumer;
+@class SafeAreaProvider;
 
 // A container view controller that manages the layout of the browser.
 // It is designed to contain an instance of BrowserViewController ("BVC") as a
@@ -20,6 +21,9 @@
 // needed.
 @interface BrowserLayoutViewController
     : UIViewController <FullscreenUIElement, TabGridTransitionContextProvider>
+
+// The safe area provider.
+@property(nonatomic, weak) SafeAreaProvider* safeAreaProvider;
 
 // The browserViewController instance being contained. If this is set, the
 // current BVC (if any) will be removed as a child view controller, and the new

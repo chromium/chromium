@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/main/coordinator/browser_layout_coordinator.h"
 
+#import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/main/ui/browser_layout_consumer.h"
@@ -17,6 +18,7 @@
 @implementation BrowserLayoutCoordinator {
   TabStripCoordinator* _tabStripCoordinator;
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
+  SafeAreaProvider* _safeAreaProvider;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser {
@@ -24,8 +26,11 @@
 }
 
 - (void)start {
+  _safeAreaProvider = [[SafeAreaProvider alloc] initWithBrowser:self.browser];
+
   _viewController = [[BrowserLayoutViewController alloc] init];
   _viewController.incognito = self.browser->GetProfile()->IsOffTheRecord();
+  _viewController.safeAreaProvider = _safeAreaProvider;
 
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(self.browser);
@@ -51,6 +56,7 @@
 
   _fullscreenUIUpdater = nullptr;
   _viewController = nil;
+  _safeAreaProvider = nil;
 }
 
 #pragma mark - Properties

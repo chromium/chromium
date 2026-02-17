@@ -4,6 +4,19 @@
 
 import("//build/config/apple/symbols.gni")
 
+source_set("safe_area_provider") {
+  sources = [
+    "safe_area_provider.h",
+    "safe_area_provider.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+  ]
+}
+
 source_set("ui_bundled") {
   sources = [
     "browser_coordinator+Testing.h",
@@ -16,8 +29,6 @@ source_set("ui_bundled") {
     "browser_view_controller.mm",
     "key_commands_provider.h",
     "key_commands_provider.mm",
-    "safe_area_provider.h",
-    "safe_area_provider.mm",
     "tab_consumer.h",
     "tab_events_mediator.h",
     "tab_events_mediator.mm",
@@ -25,6 +36,7 @@ source_set("ui_bundled") {
     "tab_lifecycle_mediator.mm",
   ]
   deps = [
+    ":safe_area_provider",
     "//base",
     "//base:i18n",
     "//build/config/ios:buildflags",
@@ -377,6 +389,7 @@ source_set("unit_tests") {
     "key_commands_provider_unittest.mm",
   ]
   deps = [
+    ":safe_area_provider",
     ":test_support",
     ":ui_bundled",
     "//components/bookmarks/browser",

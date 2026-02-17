@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/browser_view/ui_bundled/browser_view_layout_consumer.h",
+  "+ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/tab_switcher/tab_strip/ui",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_context_provider.h",
