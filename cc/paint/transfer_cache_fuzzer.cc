@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 #include "cc/test/transfer_cache_test_helper.h"
 #include "components/viz/test/test_context_provider.h"
@@ -44,24 +40,26 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
 #if DCHECK_IS_ON()
   // Align data on debug builds. ImageTransferCacheEntry requires 16-byte
-  // alignment on debug builds. Note: Consume one byte becauase the first
+  // alignment on debug builds. Note: Consume one byte because the first
   // byte was used for `TransferCacheEntryType`
-  const uint8_t* aligned_data = base::bits::AlignUp(&data[1], 16);
+  const uint8_t* aligned_data = base::bits::AlignUp(&UNSAFE_TODO(data[1]), 16);
   size_t alignment_gap = aligned_data - data;
   if (size < alignment_gap) {
     return 0;
   }
-  base::span<const uint8_t> span(aligned_data, size - alignment_gap);
+  base::span<const uint8_t> span = UNSAFE_TODO(
+      base::span<const uint8_t>(aligned_data, size - alignment_gap));
 #else
   // Support memory backing to discover bugs in release builds that require
   // unaligned memory.
-  size_t offset = data[1] % 16;
-  const uint8_t* unaligned_data = &data[2] + offset;
+  size_t offset = UNSAFE_TODO(data[1]) % 16;
+  const uint8_t* unaligned_data = UNSAFE_TODO(&data[2] + offset);
   size_t unaligned_gap = unaligned_data - data;
   if (size < unaligned_gap) {
     return 0;
   }
-  base::span<const uint8_t> span(unaligned_data, size - unaligned_gap);
+  base::span<const uint8_t> span = UNSAFE_TODO(
+      base::span<const uint8_t>(unaligned_data, size - unaligned_gap));
 #endif
 
   if (!entry->Deserialize(/*gr_context=*/nullptr,

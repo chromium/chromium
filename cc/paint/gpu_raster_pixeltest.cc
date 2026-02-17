@@ -3,18 +3,13 @@
 // found in the LICENSE file.
 
 #include <array>
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <cmath>
 #include <memory>
 #include <tuple>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -2811,17 +2806,17 @@ TEST_P(GpuRasterYUVToRGBPixelTest, CopyI420SharedImage) {
   // Create Y+U+V image planes for a solid blue image.
   SkBitmap y_bitmap;
   y_bitmap.allocPixels(y_info);
-  memset(y_bitmap.getPixels(), 0x1d, y_bitmap.computeByteSize());
+  UNSAFE_TODO(memset(y_bitmap.getPixels(), 0x1d, y_bitmap.computeByteSize()));
   pixmaps[0] = SkPixmap(y_info, y_bitmap.getPixels(), y_info.minRowBytes());
 
   SkBitmap u_bitmap;
   u_bitmap.allocPixels(uv_info);
-  memset(u_bitmap.getPixels(), 0xff, u_bitmap.computeByteSize());
+  UNSAFE_TODO(memset(u_bitmap.getPixels(), 0xff, u_bitmap.computeByteSize()));
   pixmaps[1] = SkPixmap(uv_info, u_bitmap.getPixels(), uv_info.minRowBytes());
 
   SkBitmap v_bitmap;
   v_bitmap.allocPixels(uv_info);
-  memset(v_bitmap.getPixels(), 0x6b, v_bitmap.computeByteSize());
+  UNSAFE_TODO(memset(v_bitmap.getPixels(), 0x6b, v_bitmap.computeByteSize()));
   pixmaps[2] = SkPixmap(uv_info, v_bitmap.getPixels(), uv_info.minRowBytes());
 
   SkYUVColorSpace yuv_color_space = kIdentity_SkYUVColorSpace;
@@ -2898,15 +2893,15 @@ TEST_F(GpuRasterPixelTest, CopyNV12SharedImage) {
   // Create Y+UV image planes for a solid blue image.
   SkBitmap y_bitmap;
   y_bitmap.allocPixels(y_info);
-  memset(y_bitmap.getPixels(), 0x1d, y_bitmap.computeByteSize());
+  UNSAFE_TODO(memset(y_bitmap.getPixels(), 0x1d, y_bitmap.computeByteSize()));
   pixmaps[0] = SkPixmap(y_info, y_bitmap.getPixels(), y_info.minRowBytes());
 
   SkBitmap uv_bitmap;
   uv_bitmap.allocPixels(uv_info);
   uint8_t* uv_pix = static_cast<uint8_t*>(uv_bitmap.getPixels());
   for (size_t i = 0; i < uv_bitmap.computeByteSize(); i += 2) {
-    uv_pix[i] = 0xff;
-    uv_pix[i + 1] = 0x6d;
+    UNSAFE_TODO(uv_pix[i]) = 0xff;
+    UNSAFE_TODO(uv_pix[i + 1]) = 0x6d;
   }
   pixmaps[1] = SkPixmap(uv_info, uv_bitmap.getPixels(), uv_info.minRowBytes());
 
