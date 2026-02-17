@@ -224,3 +224,45 @@ android_test {
     manifest: "components/cronet/android/test/javatests/AndroidManifest.xml",
     resource_dirs: ["components/cronet/android/test/res"],
 }
+
+// Generates a linker version script ("intersection.ld") containing the list of
+// symbols that are shared between libhttpengine.so and libcrypto.so.
+//
+// Mechanism:
+//   It calculates the intersection of:
+//   1. Undefined symbols in the Cronet object (what Cronet needs).
+//   2. Defined symbols in the Libcrypto (what Libcrypto provides).
+//
+// Why:
+// To satisfy FIPS compliance, libcrypto must be a shared library, which defaults
+// to exporting all symbols and prevents dead-code elimination. Because
+// libhttpengine.so is the exclusive consumer, we generate a map of only the
+// symbols it actually uses. This restricts the export list, enabling the
+// linker to delete unused code and discard unused libcrypto functions.
+//
+// How:
+// libhttpengine.so is initially linked against the full libcrypto.so to
+// determine necessary symbols. These symbols are used to generate a pruned
+// libcrypto_stripped.so. Finally, libhttpengine.so is recompiled against this
+// stripped version to ensure link-time integrity.
+cc_genrule {
+    name: "${GN2BP_MODULE_PREFIX}generate_libcronet_libcrypto_symbol_linker_script",
+    srcs: [
+        ":${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_against_unstripped_libcrypto",
+        ":${GN2BP_MODULE_PREFIX}libcrypto_unstripped",
+    ],
+    out: ["intersection.ld"],
+    tools: ["llvm-objdump"],
+    tool_files: [
+        "components/cronet/tools/symbols_map_generator/generate_version_script_from_symbols_intersection.py",
+        "components/cronet/tools/utils.py",
+    ],
+    cmd: "python3 $$(location components/cronet/tools/symbols_map_generator/generate_version_script_from_symbols_intersection.py) " +
+         "--objdump $$(location llvm-objdump) " +
+         "--lib-undefined $$(location :${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_against_unstripped_libcrypto) " +
+         "--lib-defined $$(location :${GN2BP_MODULE_PREFIX}libcrypto_unstripped) " +
+         "--out $$(out)",
+    apex_available: [
+        "com.android.tethering",
+    ],
+}

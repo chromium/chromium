@@ -56,6 +56,8 @@ java_framework_defaults_module = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE
 # Location of the project in the Android source tree.
 tree_path = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE_THIS_SOMETHING_BROKE_'
 
+LIBCRYPTO_STRIPPED = "libcrypto"
+LIBCRYPTO_UNSTRIPPED = "libcrypto_unstripped"
 
 def initialize_globals(import_channel: str):
   global IMPORT_CHANNEL
@@ -366,7 +368,7 @@ def enable_boringssl(module, arch):
     shared_libs = module.target[arch].shared_libs
     static_libs = module.target[arch].static_libs
     whole_static_libs = module.target[arch].whole_static_libs
-  shared_libs.add(f'{MODULE_PREFIX}libcrypto')
+  shared_libs.add(f'{MODULE_PREFIX}{LIBCRYPTO_UNSTRIPPED}')
   if module.type == "cc_library_static":
     static_libs.add(f'{MODULE_PREFIX}ssl_and_pki')
   else:
@@ -3596,6 +3598,22 @@ def make_cc_defaults_from_boringssl(boringssl_module: Module) -> Module:
   libcrypto_cc_defaults_flags_module.defaults = [cc_defaults_module]
   return (cc_default_flags_module, libcrypto_cc_defaults_flags_module)
 
+
+def setup_libcrypto_stripping(blueprint):
+  # Two-step build process for libhttpengine.so:
+  # 1. Build against the full libcrypto to identify required symbols and
+  # generate a stripped variant of libcrypto.
+  # 2. Rebuild against that stripped libcrypto to guarantee no undefined symbols.
+  cronet_shared_library_module = blueprint.modules[
+      f"{MODULE_PREFIX}components_cronet_android_cronet"]
+  cronet_shared_library_copy = copy.deepcopy(cronet_shared_library_module)
+  cronet_shared_library_copy.name += "_against_unstripped_libcrypto"
+  cronet_shared_library_module.shared_libs.remove(
+      f"{MODULE_PREFIX}{LIBCRYPTO_UNSTRIPPED}")
+  cronet_shared_library_module.shared_libs.add(
+      f"{MODULE_PREFIX}{LIBCRYPTO_STRIPPED}")
+  blueprint.add_module(cronet_shared_library_copy)
+
 def create_blueprint_for_targets(gn, targets, test_targets):
   """Generate a blueprint for a list of GN targets."""
   blueprint = Blueprint()
@@ -3628,6 +3646,8 @@ def create_blueprint_for_targets(gn, targets, test_targets):
   for module in make_cc_defaults_from_boringssl(blueprint.modules[
       label_to_module_name("//third_party/boringssl:boringssl")]):
     blueprint.add_module(module)
+
+  setup_libcrypto_stripping(blueprint)
   return blueprint
 
 

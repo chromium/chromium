@@ -128,11 +128,8 @@ cc_object {
 //
 // See https://boringssl.googlesource.com/boringssl/+/master/crypto/fipsmodule/FIPS.md#shared-build
 // for more information on FIPS compliance.
-cc_library_shared {
-    name: "${GN2BP_MODULE_PREFIX}libcrypto",
-    // Make sure to use the same name between tot and stable, so that
-    // AFDO understands they are the same library.
-    stem: "libcrypto_httpengine",
+cc_defaults {
+    name: "${GN2BP_MODULE_PREFIX}libcrypto_shared_library_defaults",
     defaults: [
         "${GN2BP_MODULE_PREFIX}boringssl_defaults",
         "${GN2BP_MODULE_PREFIX}libcrypto_defaults",
@@ -156,7 +153,23 @@ cc_library_shared {
             inject_bssl_hash: true,
         },
     },
-    afdo: true,
+}
+
+cc_library_shared {
+    name: "${GN2BP_MODULE_PREFIX}libcrypto",
+    // Make sure to use the same name between tot and stable, so that
+    // AFDO understands they are the same library.
+    stem: "libcrypto_httpengine",
+    defaults: ["${GN2BP_MODULE_PREFIX}libcrypto_shared_library_defaults"],
+    // See the comment on the target in `version_script` for more information about why this
+    // setup exists this way.
+    version_script: ":${GN2BP_MODULE_PREFIX}generate_libcronet_libcrypto_symbol_linker_script",
+    afdo: true
+}
+
+cc_library_shared {
+    name: "${GN2BP_MODULE_PREFIX}libcrypto_unstripped",
+    defaults: ["${GN2BP_MODULE_PREFIX}libcrypto_shared_library_defaults"],
 }
 
 cc_library_static {
@@ -167,5 +180,5 @@ cc_library_static {
         "${GN2BP_MODULE_PREFIX}libpki_sources",
         "${GN2BP_MODULE_PREFIX}third_party_boringssl_boringssl__flags",
     ],
-    shared_libs: ["${GN2BP_MODULE_PREFIX}libcrypto"],
+    shared_libs: ["${GN2BP_MODULE_PREFIX}libcrypto_unstripped"],
 }
