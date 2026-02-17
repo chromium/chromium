@@ -141,9 +141,7 @@ export class PrintPreviewDestinationListElement extends CrLitElement {
     const listItem = e.target as PrintPreviewDestinationListItemElement;
     assert(listItem.destination);
 
-    this.dispatchEvent(new CustomEvent(
-        'destination-selected',
-        {bubbles: true, composed: true, detail: listItem.destination}));
+    this.fire('destination-selected', listItem.destination);
   }
 
   /**

@@ -354,9 +354,7 @@ export class PrintPreviewMarginControlContainerElement extends
           position.y);
     }
 
-    this.dispatchEvent(new CustomEvent(
-        'text-focus-position',
-        {bubbles: true, composed: true, detail: position}));
+    this.fire('text-focus-position', position);
   }
 
   /**
@@ -454,9 +452,7 @@ export class PrintPreviewMarginControlContainerElement extends
    * @param dragChanged
    */
   private fireDragChanged_(dragChanged: boolean) {
-    this.dispatchEvent(new CustomEvent(
-        'margin-drag-changed',
-        {bubbles: true, composed: true, detail: dragChanged}));
+    this.fire('margin-drag-changed', dragChanged);
   }
 
   /**

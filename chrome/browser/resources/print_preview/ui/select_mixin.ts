@@ -45,8 +45,7 @@ export const SelectMixin =
           this.selectedValue = newValue;
           this.onProcessSelectChange(newValue);
           // For testing only
-          this.dispatchEvent(new CustomEvent(
-              'process-select-change', {bubbles: true, composed: true}));
+          this.fire('process-select-change');
         }
 
         onProcessSelectChange(_value: string) {}

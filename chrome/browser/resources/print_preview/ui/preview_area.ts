@@ -746,9 +746,7 @@ export class PrintPreviewPreviewAreaElement extends
     }
     this.lastTicket_ = ticket;
 
-    this.dispatchEvent(new CustomEvent(
-        'preview-start',
-        {bubbles: true, composed: true, detail: this.inFlightRequestId_}));
+    this.fire('preview-start', this.inFlightRequestId_);
     return this.nativeLayer_!.getPreview(JSON.stringify(ticket));
   }
 

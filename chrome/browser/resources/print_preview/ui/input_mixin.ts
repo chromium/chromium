@@ -84,8 +84,7 @@ export const InputMixin = <T extends Constructor<CrLitElement>>(
       const value = this.getInput().value || '';
       if (this.lastValue_ !== value) {
         this.lastValue_ = value;
-        this.dispatchEvent(new CustomEvent(
-            'input-change', {bubbles: true, composed: true, detail: value}));
+        this.fire('input-change', value);
       }
     }
 
