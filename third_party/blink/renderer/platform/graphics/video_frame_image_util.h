@@ -70,6 +70,8 @@ PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
     bool prefer_tagged_orientation = true,
     bool reinterpret_video_as_srgb = false);
+PLATFORM_EXPORT bool ShouldCreateAcceleratedImages(
+    viz::RasterContextProvider* raster_context_provider);
 
 PLATFORM_EXPORT void DrawVideoFrameIntoCanvas(
     scoped_refptr<media::VideoFrame> frame,

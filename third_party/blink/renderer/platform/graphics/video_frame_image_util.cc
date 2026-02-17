@@ -33,8 +33,6 @@
 
 namespace blink {
 
-namespace {
-
 bool ShouldCreateAcceleratedImages(
     viz::RasterContextProvider* raster_context_provider) {
   if (!raster_context_provider) {
@@ -52,8 +50,6 @@ bool ShouldCreateAcceleratedImages(
 
   return true;
 }
-
-}  // namespace
 
 ImageOrientationEnum VideoTransformationToImageOrientation(
     media::VideoTransformation transform) {

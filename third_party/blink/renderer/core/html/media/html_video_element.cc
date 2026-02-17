@@ -64,6 +64,8 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/resource/video_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_non2d_snapshot_provider_bitmap.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -643,8 +645,18 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     snapshot_provider_.reset();
 
     // Providing a null |raster_context_provider| creates a software provider.
-    snapshot_provider_ = CreateSnapshotProviderForVideo(
-        required_provider_info, raster_context_provider);
+    if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
+      snapshot_provider_ =
+          CanvasNon2DSnapshotProviderBitmap::Create(required_provider_info);
+    } else {
+      snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
+          required_provider_info.size, required_provider_info.format,
+          required_provider_info.alpha_type, required_provider_info.color_space,
+          CanvasResourceProvider::ShouldInitialize::kNo,
+          SharedGpuContext::ContextProviderWrapper(),
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+    }
+
     if (!snapshot_provider_) {
       return nullptr;
     }
