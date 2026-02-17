@@ -7333,6 +7333,27 @@
             ]
         }
     ],
+    "ContextualCueingDynamicCues": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "UseDynamicCues": "true"
+                    },
+                    "enable_features": [
+                        "ContextualCueing"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualSuggestionsAnimationImprovements": [
         {
             "platforms": [
@@ -12348,7 +12369,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ContextualCueing",
                         "Glic",
                         "GlicRollout",
                         "GlicUseNonClient",
