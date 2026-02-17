@@ -122,6 +122,17 @@ class ContextualSearchboxHandler
   void GetTabPreview(int32_t tab_id, GetTabPreviewCallback callback) override;
   void GetInputState(GetInputStateCallback callback) override;
 
+  // Continues the process of adding tab context for a given `tab_id`.
+  // This method is used when a `context_token` has already been generated
+  // (e.g., by a composebox handler's AddTabContext) and the tab context needs
+  // to be associated with that specific token. This differs from
+  // `AddTabContext` since `AddTabContext` generates a new context token
+  // associated with a session handle.
+  void ContinueAddTabContext(int32_t tab_id,
+                             bool delay_upload,
+                             base::UnguessableToken context_token,
+                             AddTabContextCallback callback);
+
   // Called from browser code (e.g., Views-based file selector) to add file
   // context.
   void AddFileContextFromBrowser(
