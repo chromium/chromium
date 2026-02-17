@@ -494,7 +494,7 @@ source_set("webview_cts_tests_filters") {
 source_set("webview_instrumentation_test_apk_filters") {
   testonly = true
 
-  data = []
+  data = [ "//testing/buildbot/filters/android.webview_instrumentation_test_apk_bfcache_mutations.filter" ]
 }
 
 source_set("gwp_asan_unittests_filters") {

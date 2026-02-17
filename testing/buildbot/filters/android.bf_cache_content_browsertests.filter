@@ -4,3 +4,6 @@
 # https://crbug.com/483438557
 -TextFragmentAnchorBrowserTest.HistoryDoesntGenerateToken
 -TextFragmentAnchorBrowserTest.UserGestureConsumed
+
+# https://crbug.com/484183125
+-SignedExchangePrefetchBrowserTest.PrefetchMainResourceSXG_CrossOrigin
