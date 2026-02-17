@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/session_config.h"
+#include "remoting/signaling/session_config.h"
 
 #include <algorithm>
 #include <vector>
@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 
-namespace remoting::protocol {
+namespace remoting {
 
 namespace {
 
@@ -298,4 +298,4 @@ void CandidateSessionConfig::PreferTransport(
   UpdateConfigListToPreferTransport(&audio_configs_, transport);
 }
 
-}  // namespace remoting::protocol
+}  // namespace remoting

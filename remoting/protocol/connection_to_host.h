@@ -17,6 +17,10 @@ namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
+namespace remoting {
+class SessionConfig;
+}  // namespace remoting
+
 namespace remoting::protocol {
 
 class AudioStub;
@@ -25,7 +29,6 @@ class ClipboardStub;
 class HostStub;
 class InputStub;
 class Session;
-class SessionConfig;
 class TransportContext;
 struct TransportRoute;
 class VideoRenderer;

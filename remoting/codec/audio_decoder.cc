@@ -7,13 +7,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "remoting/codec/audio_decoder_opus.h"
-#include "remoting/protocol/session_config.h"
+#include "remoting/signaling/session_config.h"
 
 namespace remoting {
 
 std::unique_ptr<AudioDecoder> AudioDecoder::CreateAudioDecoder(
-    const protocol::SessionConfig& config) {
-  if (config.audio_config().codec == protocol::ChannelConfig::CODEC_OPUS) {
+    const SessionConfig& config) {
+  if (config.audio_config().codec == ChannelConfig::CODEC_OPUS) {
     return base::WrapUnique(new AudioDecoderOpus());
   }
 

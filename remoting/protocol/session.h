@@ -11,8 +11,8 @@
 
 #include "remoting/base/source_location.h"
 #include "remoting/protocol/errors.h"
-#include "remoting/protocol/session_config.h"
 #include "remoting/protocol/transport.h"
+#include "remoting/signaling/session_config.h"
 
 namespace remoting::protocol {
 

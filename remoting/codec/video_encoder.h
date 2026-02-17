@@ -14,16 +14,15 @@ class DesktopFrame;
 }  // namespace webrtc
 
 namespace remoting {
-namespace protocol {
+
 class SessionConfig;
-}  // namespace protocol
 class VideoPacket;
 
 // A class to perform the task of encoding a continuous stream of images. The
 // interface is asynchronous to enable maximum throughput.
 class VideoEncoder {
  public:
-  virtual ~VideoEncoder() {}
+  virtual ~VideoEncoder() = default;
 
   // Request that the encoder provide lossless color, if possible.
   virtual void SetLosslessColor(bool want_lossless) {}
@@ -35,8 +34,7 @@ class VideoEncoder {
   virtual std::unique_ptr<VideoPacket> Encode(
       const webrtc::DesktopFrame& frame) = 0;
 
-  static std::unique_ptr<VideoEncoder> Create(
-      const protocol::SessionConfig& config);
+  static std::unique_ptr<VideoEncoder> Create(const SessionConfig& config);
 };
 
 }  // namespace remoting

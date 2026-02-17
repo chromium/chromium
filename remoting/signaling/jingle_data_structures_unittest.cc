@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/jingle_messages.h"
+#include "remoting/signaling/jingle_data_structures.h"
 
 #include <stddef.h>
 
 #include <array>
 
 #include "base/strings/string_util.h"
-#include "remoting/protocol/content_description.h"
-#include "remoting/protocol/jingle_message_xml_converter.h"
+#include "remoting/signaling/content_description.h"
+#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,15 +36,15 @@ bool VerifyXml(const XmlElement* exp,
                const XmlElement* val,
                std::string* error) {
   if (exp->Name() != val->Name()) {
-    *error = "<" + exp->Name().Merged() + ">" + " is expected, but " +
-        "<" + val->Name().Merged() + ">"  + " found";
+    *error = "<" + exp->Name().Merged() + ">" + " is expected, but " + "<" +
+             val->Name().Merged() + ">" + " found";
     return false;
   }
   if (exp->BodyText() != val->BodyText()) {
-    *error = "<" + exp->Name().LocalPart() + ">" + exp->BodyText() +
-        "</" + exp->Name().LocalPart() + ">" " is expected, but found " +
-        "<" + exp->Name().LocalPart() + ">" + val->BodyText() +
-        "</" + exp->Name().LocalPart() + ">";
+    *error = "<" + exp->Name().LocalPart() + ">" + exp->BodyText() + "</" +
+             exp->Name().LocalPart() + ">" + " is expected, but found " + "<" +
+             exp->Name().LocalPart() + ">" + val->BodyText() + "</" +
+             exp->Name().LocalPart() + ">";
     return false;
   }
 
@@ -52,12 +52,12 @@ bool VerifyXml(const XmlElement* exp,
        exp_attr = exp_attr->NextAttr()) {
     if (exp_attr->Name().Namespace() == kXmlNsNs ||
         exp_attr->Name() == QName(kXmlNs)) {
-      continue; // Skip NS attributes.
+      continue;  // Skip NS attributes.
     }
     if (val->Attr(exp_attr->Name()) != exp_attr->Value()) {
       *error = "In <" + exp->Name().LocalPart() + "> attribute " +
-          exp_attr->Name().LocalPart() + " is expected to be set to " +
-          exp_attr->Value();
+               exp_attr->Name().LocalPart() + " is expected to be set to " +
+               exp_attr->Value();
       return false;
     }
   }
@@ -66,11 +66,11 @@ bool VerifyXml(const XmlElement* exp,
        val_attr = val_attr->NextAttr()) {
     if (val_attr->Name().Namespace() == kXmlNsNs ||
         val_attr->Name() == QName(kXmlNs)) {
-      continue; // Skip NS attributes.
+      continue;  // Skip NS attributes.
     }
     if (exp->Attr(val_attr->Name()) != val_attr->Value()) {
       *error = "In <" + exp->Name().LocalPart() + "> unexpected attribute " +
-          val_attr->Name().LocalPart();
+               val_attr->Name().LocalPart();
       return false;
     }
   }
@@ -78,8 +78,9 @@ bool VerifyXml(const XmlElement* exp,
   const XmlElement* exp_child = exp->FirstElement();
   const XmlElement* val_child = val->FirstElement();
   while (exp_child && val_child) {
-    if (!VerifyXml(exp_child, val_child, error))
+    if (!VerifyXml(exp_child, val_child, error)) {
       return false;
+    }
     exp_child = exp_child->NextElement();
     val_child = val_child->NextElement();
   }
@@ -108,7 +109,6 @@ void ParseJingleMessageFromXml(const char* message_text,
   EXPECT_TRUE(JingleMessageFromXml(source_message.get(), parsed, &error))
       << error;
 }
-
 
 // Parses |message_text| to JingleMessage then attempts to format it to XML and
 // verifies that the same XML content is generated.
@@ -259,23 +259,23 @@ TEST(JingleMessageTest, SessionInitiateNoIce) {
 TEST(JingleMessageTest, SessionAccept) {
   const char* kTestSessionAcceptMessage =
       "<cli:iq from='user@gmail.com/chromoting016DBB07' "
-        "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
-        "xmlns:cli='jabber:client'>"
-        "<jingle action='session-accept' sid='2227053353' "
-          "xmlns='urn:xmpp:jingle:1'>"
-          "<content creator='initiator' name='chromoting'>"
-            "<description xmlns='google:remoting'>"
-              "<standard-ice/>"
-              "<control transport='stream' version='2'/>"
-              "<event transport='stream' version='2'/>"
-              "<video codec='vp8' transport='stream' version='2'/>"
-              "<audio transport='stream' version='2' codec='verbatim'/>"
-              "<authentication><certificate>"
-                "MIICpjCCAY6gW0Cert0TANBgkqhkiG9w0BAQUFA="
-              "</certificate></authentication>"
-            "</description>"
-          "</content>"
-        "</jingle>"
+      "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
+      "xmlns:cli='jabber:client'>"
+      "<jingle action='session-accept' sid='2227053353' "
+      "xmlns='urn:xmpp:jingle:1'>"
+      "<content creator='initiator' name='chromoting'>"
+      "<description xmlns='google:remoting'>"
+      "<standard-ice/>"
+      "<control transport='stream' version='2'/>"
+      "<event transport='stream' version='2'/>"
+      "<video codec='vp8' transport='stream' version='2'/>"
+      "<audio transport='stream' version='2' codec='verbatim'/>"
+      "<authentication><certificate>"
+      "MIICpjCCAY6gW0Cert0TANBgkqhkiG9w0BAQUFA="
+      "</certificate></authentication>"
+      "</description>"
+      "</content>"
+      "</jingle>"
       "</cli:iq>";
 
   JingleMessage message;
@@ -290,19 +290,19 @@ TEST(JingleMessageTest, SessionAccept) {
 TEST(JingleMessageTest, SessionAcceptWebrtc) {
   const char* kTestSessionAcceptMessage =
       "<cli:iq from='user@gmail.com/chromoting016DBB07' "
-        "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
-        "xmlns:cli='jabber:client'>"
-        "<jingle action='session-accept' sid='2227053353' "
-          "xmlns='urn:xmpp:jingle:1'>"
-          "<content creator='initiator' name='chromoting'>"
-            "<description xmlns='google:remoting'>"
-              "<authentication><certificate>"
-                "MIICpjCCAY6gW0Cert0TANBgkqhkiG9w0BAQUFA="
-              "</certificate></authentication>"
-            "</description>"
-            "<transport xmlns='google:remoting:webrtc' />"
-          "</content>"
-        "</jingle>"
+      "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
+      "xmlns:cli='jabber:client'>"
+      "<jingle action='session-accept' sid='2227053353' "
+      "xmlns='urn:xmpp:jingle:1'>"
+      "<content creator='initiator' name='chromoting'>"
+      "<description xmlns='google:remoting'>"
+      "<authentication><certificate>"
+      "MIICpjCCAY6gW0Cert0TANBgkqhkiG9w0BAQUFA="
+      "</certificate></authentication>"
+      "</description>"
+      "<transport xmlns='google:remoting:webrtc' />"
+      "</content>"
+      "</jingle>"
       "</cli:iq>";
 
   JingleMessage message;
@@ -318,22 +318,22 @@ TEST(JingleMessageTest, SessionAcceptWebrtc) {
 TEST(JingleMessageTest, SessionAcceptNoIce) {
   const char* kTestSessionAcceptMessage =
       "<cli:iq from='user@gmail.com/chromoting016DBB07' "
-        "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
-        "xmlns:cli='jabber:client'>"
-        "<jingle action='session-accept' sid='2227053353' "
-          "xmlns='urn:xmpp:jingle:1'>"
-          "<content creator='initiator' name='chromoting'>"
-            "<description xmlns='google:remoting'>"
-              "<control transport='stream' version='2'/>"
-              "<event transport='stream' version='2'/>"
-              "<video codec='vp8' transport='stream' version='2'/>"
-              "<audio transport='stream' version='2' codec='verbatim'/>"
-              "<authentication><certificate>"
-                "MIICpjCCAY6gW0Cert0TANBgkqhkiG9w0BAQUFA="
-              "</certificate></authentication>"
-            "</description>"
-          "</content>"
-        "</jingle>"
+      "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
+      "xmlns:cli='jabber:client'>"
+      "<jingle action='session-accept' sid='2227053353' "
+      "xmlns='urn:xmpp:jingle:1'>"
+      "<content creator='initiator' name='chromoting'>"
+      "<description xmlns='google:remoting'>"
+      "<control transport='stream' version='2'/>"
+      "<event transport='stream' version='2'/>"
+      "<video codec='vp8' transport='stream' version='2'/>"
+      "<audio transport='stream' version='2' codec='verbatim'/>"
+      "<authentication><certificate>"
+      "MIICpjCCAY6gW0Cert0TANBgkqhkiG9w0BAQUFA="
+      "</certificate></authentication>"
+      "</description>"
+      "</content>"
+      "</jingle>"
       "</cli:iq>";
 
   JingleMessage message;

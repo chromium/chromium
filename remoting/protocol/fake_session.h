@@ -16,9 +16,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "remoting/protocol/fake_stream_socket.h"
-#include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/transport.h"
+#include "remoting/signaling/jingle_data_structures.h"
 
 namespace remoting::protocol {
 

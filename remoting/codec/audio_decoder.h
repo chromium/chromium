@@ -9,16 +9,13 @@
 
 namespace remoting {
 
-namespace protocol {
-class SessionConfig;
-}  // namespace protocol
-
 class AudioPacket;
+class SessionConfig;
 
 class AudioDecoder {
  public:
   static std::unique_ptr<AudioDecoder> CreateAudioDecoder(
-      const protocol::SessionConfig& config);
+      const SessionConfig& config);
 
   virtual ~AudioDecoder() {}
 

@@ -34,9 +34,9 @@ class PamAuthorizer : public protocol::Authenticator {
   bool started() const override;
   RejectionReason rejection_reason() const override;
   RejectionDetails rejection_details() const override;
-  void ProcessMessage(const protocol::JingleAuthentication& message,
+  void ProcessMessage(const JingleAuthentication& message,
                       base::OnceClosure resume_callback) override;
-  protocol::JingleAuthentication GetNextMessage() override;
+  JingleAuthentication GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<protocol::ChannelAuthenticator> CreateChannelAuthenticator()
@@ -98,9 +98,8 @@ protocol::Authenticator::RejectionDetails PamAuthorizer::rejection_details()
   return underlying_->rejection_details();
 }
 
-void PamAuthorizer::ProcessMessage(
-    const protocol::JingleAuthentication& message,
-    base::OnceClosure resume_callback) {
+void PamAuthorizer::ProcessMessage(const JingleAuthentication& message,
+                                   base::OnceClosure resume_callback) {
   // Always delegate to the underlying authenticator and let it manage its own
   // state machine.
   // |underlying_| is owned, so Unretained() is safe here.
@@ -115,8 +114,8 @@ void PamAuthorizer::OnMessageProcessed(base::OnceClosure resume_callback) {
   std::move(resume_callback).Run();
 }
 
-protocol::JingleAuthentication PamAuthorizer::GetNextMessage() {
-  protocol::JingleAuthentication result = underlying_->GetNextMessage();
+JingleAuthentication PamAuthorizer::GetNextMessage() {
+  JingleAuthentication result = underlying_->GetNextMessage();
   // PAM check may be performed once the state has transitioned to ACCEPTED.
   MaybeCheckLocalLogin();
   return result;

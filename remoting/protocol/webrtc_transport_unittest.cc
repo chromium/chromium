@@ -23,8 +23,6 @@
 #include "remoting/base/compound_buffer.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/fake_authenticator.h"
-#include "remoting/protocol/jingle_message_xml_converter.h"
-#include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/message_channel_factory.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/message_serialization.h"
@@ -32,6 +30,8 @@
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_video_encoder_factory.h"
 #include "remoting/signaling/fake_signal_strategy.h"
+#include "remoting/signaling/jingle_data_structures.h"
+#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 

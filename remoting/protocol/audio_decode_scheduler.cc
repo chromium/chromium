@@ -12,6 +12,7 @@
 #include "remoting/codec/audio_decoder.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/protocol/audio_stub.h"
+#include "remoting/signaling/session_config.h"
 
 namespace remoting::protocol {
 
@@ -26,7 +27,7 @@ AudioDecodeScheduler::~AudioDecodeScheduler() {
   audio_decode_task_runner_->DeleteSoon(FROM_HERE, decoder_.release());
 }
 
-void AudioDecodeScheduler::Initialize(const protocol::SessionConfig& config) {
+void AudioDecodeScheduler::Initialize(const SessionConfig& config) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!decoder_);
   decoder_ = AudioDecoder::CreateAudioDecoder(config);

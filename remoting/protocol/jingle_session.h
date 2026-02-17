@@ -19,10 +19,10 @@
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/datagram_channel_factory.h"
 #include "remoting/protocol/errors.h"
-#include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/session.h"
-#include "remoting/protocol/session_config.h"
 #include "remoting/signaling/iq_sender.h"
+#include "remoting/signaling/jingle_data_structures.h"
+#include "remoting/signaling/session_config.h"
 
 namespace remoting::protocol {
 

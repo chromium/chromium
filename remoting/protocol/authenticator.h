@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/protocol/credentials_type.h"
-#include "remoting/protocol/jingle_messages.h"
+#include "remoting/signaling/jingle_data_structures.h"
 
 namespace jingle_xmpp {
 class XmlElement;

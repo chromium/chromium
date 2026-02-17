@@ -23,7 +23,7 @@
 #include "remoting/protocol/input_filter.h"
 #include "remoting/protocol/monitored_video_stub.h"
 #include "remoting/protocol/session.h"
-#include "remoting/protocol/session_config.h"
+#include "remoting/signaling/session_config.h"
 
 namespace remoting::protocol {
 

@@ -6,13 +6,9 @@
 
 #include "base/notreached.h"
 #include "remoting/protocol/frame_consumer.h"
-#include "remoting/protocol/session_config.h"
+#include "remoting/signaling/session_config.h"
 
 namespace remoting {
-
-namespace {
-using protocol::SessionConfig;
-}
 
 FrameConsumerWrapper::FrameConsumerWrapper(protocol::FrameConsumer* consumer)
     : consumer_(consumer) {
@@ -28,8 +24,7 @@ bool FrameConsumerWrapper::Initialize(
   NOTREACHED();
 }
 
-void FrameConsumerWrapper::OnSessionConfig(
-    const protocol::SessionConfig& config) {
+void FrameConsumerWrapper::OnSessionConfig(const SessionConfig& config) {
   // FrameConsumerWrapper::OnSessionConfig() is not called for WebRTC.
   NOTREACHED();
 }

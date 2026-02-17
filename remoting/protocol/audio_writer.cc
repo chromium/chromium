@@ -14,7 +14,7 @@
 #include "remoting/proto/audio.pb.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/session.h"
-#include "remoting/protocol/session_config.h"
+#include "remoting/signaling/session_config.h"
 
 namespace remoting::protocol {
 

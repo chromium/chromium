@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/content_description.h"
+#include "remoting/signaling/content_description.h"
 
 #include <memory>
 #include <utility>
 
-namespace remoting::protocol {
+namespace remoting {
 
 const char ContentDescription::kChromotingContentName[] = "chromoting";
 
@@ -18,4 +18,4 @@ ContentDescription::ContentDescription(
 
 ContentDescription::~ContentDescription() = default;
 
-}  // namespace remoting::protocol
+}  // namespace remoting

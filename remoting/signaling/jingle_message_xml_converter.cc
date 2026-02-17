@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/jingle_message_xml_converter.h"
+#include "remoting/signaling/jingle_message_xml_converter.h"
 
 #include <memory>
 #include <optional>
@@ -19,16 +19,15 @@
 #include "base/strings/string_util.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/name_value_map.h"
-#include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/content_description.h"
-#include "remoting/protocol/jingle_messages.h"
+#include "remoting/signaling/content_description.h"
+#include "remoting/signaling/jingle_data_structures.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 #include "third_party/webrtc/api/jsep.h"
 
 using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
 
-namespace remoting::protocol {
+namespace remoting {
 
 namespace {
 
@@ -584,6 +583,15 @@ bool ParseSessionInfoAction(const XmlElement* jingle_tag,
   }
   message->SetPayload(std::move(session_info));
   return true;
+}
+
+bool IsAuthenticatorMessage(const jingle_xmpp::XmlElement* message) {
+  return message->Name() == kQNameAuthentication;
+}
+
+const jingle_xmpp::XmlElement* FindAuthenticatorMessage(
+    const jingle_xmpp::XmlElement* message) {
+  return message->FirstNamed(kQNameAuthentication);
 }
 
 }  // namespace
@@ -1290,7 +1298,7 @@ bool SessionInfoFromXml(const jingle_xmpp::XmlElement* jingle_element,
   }
 
   if (child) {
-    if (Authenticator::IsAuthenticatorMessage(child)) {
+    if (IsAuthenticatorMessage(child)) {
       JingleAuthentication authentication;
       if (JingleAuthenticationFromXml(child, &authentication)) {
         session_info->authentication = std::move(authentication);
@@ -1367,7 +1375,7 @@ std::unique_ptr<ContentDescription> ContentDescriptionFromXml(
   }
 
   JingleAuthentication authentication;
-  const XmlElement* child = Authenticator::FindAuthenticatorMessage(element);
+  const XmlElement* child = FindAuthenticatorMessage(element);
   if (child) {
     JingleAuthenticationFromXml(child, &authentication);
   }
@@ -1376,4 +1384,4 @@ std::unique_ptr<ContentDescription> ContentDescriptionFromXml(
                                               authentication);
 }
 
-}  // namespace remoting::protocol
+}  // namespace remoting

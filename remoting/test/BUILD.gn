@@ -131,6 +131,7 @@ if (enable_remoting_host && !is_android && !is_chromeos) {
       "//remoting/base:session_policies",
       "//remoting/protocol",
       "//remoting/protocol:test_support",
+      "//remoting/signaling",
       "//third_party/webrtc_overrides:webrtc_component",
     ]
 

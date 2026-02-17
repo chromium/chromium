@@ -60,11 +60,11 @@
 #include "remoting/protocol/ice_config_fetcher_default.h"
 #include "remoting/protocol/it2me_host_authenticator_factory.h"
 #include "remoting/protocol/jingle_session_manager.h"
-#include "remoting/protocol/session_config.h"
 #include "remoting/protocol/session_manager.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/validating_authenticator.h"
+#include "remoting/signaling/session_config.h"
 #include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/signaling_id_util.h"
 
@@ -380,8 +380,8 @@ void It2MeHost::ConnectOnNetworkThread(
   std::unique_ptr<protocol::SessionManager> session_manager(
       new protocol::JingleSessionManager(signal_strategy_.get()));
 
-  std::unique_ptr<protocol::CandidateSessionConfig> protocol_config =
-      protocol::CandidateSessionConfig::CreateDefault();
+  std::unique_ptr<CandidateSessionConfig> protocol_config =
+      CandidateSessionConfig::CreateDefault();
   // Disable audio by default.
   // TODO(sergeyu): Add UI to enable it.
   protocol_config->DisableAudioChannel();

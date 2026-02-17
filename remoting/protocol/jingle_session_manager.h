@@ -12,9 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/session_manager.h"
 #include "remoting/protocol/session_observer.h"
+#include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/signal_strategy.h"
 
 namespace jingle_xmpp {

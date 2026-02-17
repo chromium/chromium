@@ -32,7 +32,7 @@ class FrameConsumerWrapper : public protocol::VideoRenderer {
   // VideoRenderer interface.
   bool Initialize(const ClientContext& client_context,
                   protocol::FrameStatsConsumer* stats_consumer) override;
-  void OnSessionConfig(const protocol::SessionConfig& config) override;
+  void OnSessionConfig(const SessionConfig& config) override;
   protocol::VideoStub* GetVideoStub() override;
   protocol::FrameConsumer* GetFrameConsumer() override;
   protocol::FrameStatsConsumer* GetFrameStatsConsumer() override;

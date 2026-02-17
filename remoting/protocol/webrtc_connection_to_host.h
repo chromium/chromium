@@ -18,11 +18,14 @@
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/webrtc_transport.h"
 
+namespace remoting {
+class SessionConfig;
+}  // namespace remoting
+
 namespace remoting::protocol {
 
 class ClientControlDispatcher;
 class ClientEventDispatcher;
-class SessionConfig;
 class WebrtcVideoRendererAdapter;
 class WebrtcAudioSinkAdapter;
 

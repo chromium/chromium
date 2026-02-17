@@ -8,12 +8,12 @@
 namespace remoting {
 
 class ClientContext;
+class SessionConfig;
 
 namespace protocol {
 
 class FrameConsumer;
 class FrameStatsConsumer;
-class SessionConfig;
 class VideoStub;
 
 // VideoRenderer is responsible for decoding and displaying incoming video

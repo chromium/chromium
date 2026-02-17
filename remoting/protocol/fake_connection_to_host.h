@@ -34,7 +34,7 @@ class FakeConnectionToHost : public protocol::ConnectionToHost {
                scoped_refptr<protocol::TransportContext> transport_context,
                HostEventCallback* event_callback) override;
   void Disconnect(protocol::ErrorCode error) override;
-  const protocol::SessionConfig& config() override;
+  const SessionConfig& config() override;
   protocol::ClipboardStub* clipboard_forwarder() override;
   protocol::HostStub* host_stub() override;
   protocol::InputStub* input_stub() override;
@@ -58,7 +58,7 @@ class FakeConnectionToHost : public protocol::ConnectionToHost {
   testing::NiceMock<protocol::MockClipboardStub> mock_clipboard_stub_;
   testing::NiceMock<protocol::MockHostStub> mock_host_stub_;
   testing::NiceMock<protocol::MockInputStub> mock_input_stub_;
-  std::unique_ptr<protocol::SessionConfig> session_config_;
+  std::unique_ptr<SessionConfig> session_config_;
 };
 
 }  // namespace remoting::test

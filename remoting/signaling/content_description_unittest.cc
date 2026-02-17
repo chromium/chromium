@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/content_description.h"
+#include "remoting/signaling/content_description.h"
 
 #include <string>
 #include <utility>
 
 #include "base/logging.h"
-#include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/jingle_message_xml_converter.h"
+#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting::protocol {
+namespace remoting {
 
 TEST(ContentDescriptionTest, FormatAndParse) {
   std::unique_ptr<CandidateSessionConfig> config =
@@ -108,4 +107,4 @@ TEST(ContentDescriptionTest, NoneTransportWithCodec) {
   EXPECT_TRUE(parsed->config()->audio_configs().front() == ChannelConfig());
 }
 
-}  // namespace remoting::protocol
+}  // namespace remoting

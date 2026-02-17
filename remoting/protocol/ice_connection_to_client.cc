@@ -33,16 +33,15 @@ namespace remoting::protocol {
 
 namespace {
 
-std::unique_ptr<AudioEncoder> CreateAudioEncoder(
-    const protocol::SessionConfig& config) {
+std::unique_ptr<AudioEncoder> CreateAudioEncoder(const SessionConfig& config) {
 #if BUILDFLAG(IS_IOS)
   // TODO(nicholss): iOS should not use Opus. This is to prevent us from
   // depending on //media. In the future we will use webrtc for connection
   // and this will be a non-issue.
   return nullptr;
 #else
-  const protocol::ChannelConfig& audio_config = config.audio_config();
-  if (audio_config.codec == protocol::ChannelConfig::CODEC_OPUS) {
+  const ChannelConfig& audio_config = config.audio_config();
+  if (audio_config.codec == ChannelConfig::CODEC_OPUS) {
     return base::WrapUnique(new AudioEncoderOpus());
   }
 #endif

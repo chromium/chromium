@@ -20,9 +20,9 @@ class HostExperimentSessionPlugin : public protocol::SessionPlugin {
   using SessionPlugin::SessionPlugin;
 
   // protocol::SessionPlug implementation.
-  std::optional<protocol::Attachment> GetNextMessage() override;
+  std::optional<Attachment> GetNextMessage() override;
 
-  void OnIncomingMessage(const protocol::Attachment& attachment) override;
+  void OnIncomingMessage(const Attachment& attachment) override;
 
   // Whether we have received configuration from client.
   bool configuration_received() const;

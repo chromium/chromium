@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "remoting/host/client_session.h"
 
 #include <algorithm>
@@ -46,8 +45,8 @@
 #include "remoting/protocol/fake_session.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/protocol_mock_objects.h"
-#include "remoting/protocol/session_config.h"
 #include "remoting/protocol/test_event_matchers.h"
+#include "remoting/signaling/session_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/qname.h"
@@ -63,7 +62,6 @@ using protocol::MockClientStub;
 using protocol::MockHostStub;
 using protocol::MockInputStub;
 using protocol::MockVideoStub;
-using protocol::SessionConfig;
 using protocol::test::EqualsClipboardEvent;
 using protocol::test::EqualsKeyEvent;
 using protocol::test::EqualsMouseButtonEvent;

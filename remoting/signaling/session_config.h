@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_SESSION_CONFIG_H_
-#define REMOTING_PROTOCOL_SESSION_CONFIG_H_
+#ifndef REMOTING_SIGNALING_SESSION_CONFIG_H_
+#define REMOTING_SIGNALING_SESSION_CONFIG_H_
 
 #include <list>
 #include <memory>
 #include <string>
 
-namespace remoting::protocol {
+namespace remoting {
 
 extern const int kDefaultStreamVersion;
 
@@ -185,6 +185,6 @@ class CandidateSessionConfig {
   std::list<ChannelConfig> audio_configs_;
 };
 
-}  // namespace remoting::protocol
+}  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_SESSION_CONFIG_H_
+#endif  // REMOTING_SIGNALING_SESSION_CONFIG_H_

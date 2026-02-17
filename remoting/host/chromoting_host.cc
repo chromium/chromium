@@ -334,8 +334,7 @@ void ChromotingHost::OnIncomingSession(
   // Create either IceConnectionToClient or WebrtcConnectionToClient.
   // TODO(sergeyu): Move this logic to the protocol layer.
   std::unique_ptr<protocol::ConnectionToClient> connection;
-  if (session->config().protocol() ==
-      protocol::SessionConfig::Protocol::WEBRTC) {
+  if (session->config().protocol() == SessionConfig::Protocol::WEBRTC) {
     connection = std::make_unique<protocol::WebrtcConnectionToClient>(
         base::WrapUnique(session), transport_context_, audio_task_runner_);
   } else {

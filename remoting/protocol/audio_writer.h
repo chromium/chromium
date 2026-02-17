@@ -13,9 +13,11 @@
 #include "remoting/protocol/audio_stub.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 
-namespace remoting::protocol {
-
+namespace remoting {
 class SessionConfig;
+}  // namespace remoting
+
+namespace remoting::protocol {
 
 class AudioWriter : public ChannelDispatcherBase, public AudioStub {
  public:

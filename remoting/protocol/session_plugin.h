@@ -8,9 +8,11 @@
 #include <memory>
 #include <optional>
 
-namespace remoting::protocol {
-
+namespace remoting {
 struct Attachment;
+}  // namespace remoting
+
+namespace remoting::protocol {
 
 // Interface for Session plugins. Plugins allow to send and receive optional
 // information that is not essential for session handshake. Messages generated
@@ -24,6 +26,7 @@ class SessionPlugin {
 
   // Returns an Attachment if the SessionPlugin has something to attach to the
   // outgoing message.
+  // TODO: crbug.com/359620500 - Use a specific attachment type for plugins.
   virtual std::optional<Attachment> GetNextMessage() = 0;
 
   // Handles messages in |attachment|.

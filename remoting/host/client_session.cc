@@ -86,10 +86,10 @@
 #include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/peer_connection_controls.h"
 #include "remoting/protocol/session.h"
-#include "remoting/protocol/session_config.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/video_frame_pump.h"
 #include "remoting/protocol/webrtc_video_stream.h"
+#include "remoting/signaling/session_config.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
@@ -177,7 +177,7 @@ void ClientSession::NotifyClientResolution(
   webrtc::DesktopSize client_size(resolution.width_pixels(),
                                   resolution.height_pixels());
   if (connection_->session()->config().protocol() ==
-      protocol::SessionConfig::Protocol::WEBRTC) {
+      SessionConfig::Protocol::WEBRTC) {
     // When using WebRTC round down the dimensions to multiple of 2. Otherwise
     // the dimensions will be rounded on the receiver, which will cause blurring
     // due to scaling. The resulting size is still close to the client size and
@@ -1076,12 +1076,12 @@ void ClientSession::SetMouseClampingFilter(const DisplaySize& size) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   switch (connection_->session()->config().protocol()) {
-    case protocol::SessionConfig::Protocol::ICE:
+    case SessionConfig::Protocol::ICE:
       mouse_clamping_filter_.set_input_size(size.WidthAsPixels(),
                                             size.HeightAsPixels());
       break;
 
-    case protocol::SessionConfig::Protocol::WEBRTC: {
+    case SessionConfig::Protocol::WEBRTC: {
 #if BUILDFLAG(IS_APPLE)
       mouse_clamping_filter_.set_input_size(size.WidthAsPixels(),
                                             size.HeightAsPixels());
@@ -1221,7 +1221,7 @@ void ClientSession::OnVideoSizeChanged(protocol::VideoStream* video_stream,
   }
 
   if (connection_->session()->config().protocol() !=
-      protocol::SessionConfig::Protocol::WEBRTC) {
+      SessionConfig::Protocol::WEBRTC) {
     return;
   }
 

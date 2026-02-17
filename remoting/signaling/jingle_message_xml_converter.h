@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_JINGLE_MESSAGE_XML_CONVERTER_H_
-#define REMOTING_PROTOCOL_JINGLE_MESSAGE_XML_CONVERTER_H_
+#ifndef REMOTING_SIGNALING_JINGLE_MESSAGE_XML_CONVERTER_H_
+#define REMOTING_SIGNALING_JINGLE_MESSAGE_XML_CONVERTER_H_
 
 #include <memory>
 #include <string>
@@ -12,16 +12,18 @@ namespace jingle_xmpp {
 class XmlElement;
 }  // namespace jingle_xmpp
 
-namespace remoting::protocol {
-
+namespace remoting {
+struct Attachment;
+class ContentDescription;
 struct IceTransportInfo;
+struct JingleAuthentication;
 class JingleMessage;
 struct JingleMessageReply;
 struct JingleTransportInfo;
-struct Attachment;
-struct JingleAuthentication;
 struct SessionInfo;
-class ContentDescription;
+}  // namespace remoting
+
+namespace remoting {
 
 // Converts between JingleMessage and its XML representation.
 std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
@@ -77,6 +79,6 @@ std::unique_ptr<ContentDescription> ContentDescriptionFromXml(
     const jingle_xmpp::XmlElement* element,
     bool webrtc_transport);
 
-}  // namespace remoting::protocol
+}  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_JINGLE_MESSAGE_XML_CONVERTER_H_
+#endif  // REMOTING_SIGNALING_JINGLE_MESSAGE_XML_CONVERTER_H_

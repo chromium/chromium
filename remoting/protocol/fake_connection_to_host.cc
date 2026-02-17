@@ -11,7 +11,7 @@
 namespace remoting::test {
 
 FakeConnectionToHost::FakeConnectionToHost()
-    : session_config_(protocol::SessionConfig::ForTest()) {}
+    : session_config_(SessionConfig::ForTest()) {}
 FakeConnectionToHost::~FakeConnectionToHost() = default;
 
 void FakeConnectionToHost::set_client_stub(protocol::ClientStub* client_stub) {}
@@ -76,7 +76,7 @@ void FakeConnectionToHost::SignalConnectionReady(bool ready) {
   event_callback_->OnConnectionReady(ready);
 }
 
-const protocol::SessionConfig& FakeConnectionToHost::config() {
+const SessionConfig& FakeConnectionToHost::config() {
   return *session_config_;
 }
 

@@ -20,10 +20,10 @@ namespace remoting {
 
 class AudioDecoder;
 class AudioPacket;
+class SessionConfig;
 
 namespace protocol {
 
-class SessionConfig;
 class AudioStub;
 
 class AudioDecodeScheduler : public AudioStub {
@@ -38,7 +38,7 @@ class AudioDecodeScheduler : public AudioStub {
   ~AudioDecodeScheduler() override;
 
   // Initializes decoder with the information from the protocol config.
-  void Initialize(const protocol::SessionConfig& config);
+  void Initialize(const SessionConfig& config);
 
   // AudioStub implementation.
   void ProcessAudioPacket(std::unique_ptr<AudioPacket> packet,

@@ -14,7 +14,7 @@
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/proto/audio.pb.h"
-#include "remoting/protocol/session_config.h"
+#include "remoting/signaling/session_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting::protocol {

@@ -9,12 +9,12 @@
 #include "base/functional/bind.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/channel_multiplexer.h"
-#include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/pseudotcp_channel_factory.h"
 #include "remoting/protocol/secure_channel_factory.h"
 #include "remoting/protocol/stream_channel_factory.h"
 #include "remoting/protocol/stream_message_pipe_adapter.h"
 #include "remoting/protocol/transport_context.h"
+#include "remoting/signaling/jingle_data_structures.h"
 
 namespace remoting::protocol {
 

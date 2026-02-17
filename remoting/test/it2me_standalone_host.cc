@@ -26,7 +26,7 @@
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/protocol_mock_objects.h"
-#include "remoting/protocol/session_config.h"
+#include "remoting/signaling/session_config.h"
 #include "remoting/test/fake_connection_event_logger.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -64,9 +64,9 @@ It2MeStandaloneHost::It2MeStandaloneHost()
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       // We cannot support audio capturing for linux, since a pipe name is
       // needed to initialize AudioCapturerLinux.
-      config_(protocol::SessionConfig::ForTest()),
+      config_(SessionConfig::ForTest()),
 #else
-      config_(protocol::SessionConfig::ForTestWithAudio()),
+      config_(SessionConfig::ForTestWithAudio()),
 #endif
       event_logger_(&connection_) {
   EXPECT_CALL(*static_cast<MockSession*>(connection_.session()), jid())

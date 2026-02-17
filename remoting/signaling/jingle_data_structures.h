@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_JINGLE_MESSAGES_H_
-#define REMOTING_PROTOCOL_JINGLE_MESSAGES_H_
+#ifndef REMOTING_SIGNALING_JINGLE_DATA_STRUCTURES_H_
+#define REMOTING_SIGNALING_JINGLE_DATA_STRUCTURES_H_
 
 #include <list>
 #include <map>
@@ -14,11 +14,11 @@
 #include <vector>
 
 #include "remoting/base/authentication_method.h"
-#include "remoting/protocol/errors.h"
+#include "remoting/base/errors.h"
 #include "remoting/signaling/signaling_address.h"
 #include "third_party/webrtc/api/candidate.h"
 
-namespace remoting::protocol {
+namespace remoting {
 
 class ContentDescription;
 
@@ -313,12 +313,12 @@ class JingleMessage {
 
   static std::string GetActionName(ActionType action);
 
+  static ActionType ActionFromPayload(const Payload& payload);
+
   ActionType action() const { return action_; }
   const Payload& payload() const { return payload_; }
 
   void SetPayload(Payload payload);
-
-  static ActionType ActionFromPayload(const Payload& payload);
 
   SignalingAddress from;
   SignalingAddress to;
@@ -382,6 +382,6 @@ struct JingleMessageReply {
   std::string text;
 };
 
-}  // namespace remoting::protocol
+}  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_JINGLE_MESSAGES_H_
+#endif  // REMOTING_SIGNALING_JINGLE_DATA_STRUCTURES_H_

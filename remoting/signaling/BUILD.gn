@@ -4,6 +4,8 @@
 
 static_library("signaling") {
   sources = [
+    "content_description.cc",
+    "content_description.h",
     "corp_message_channel_strategy.cc",
     "corp_message_channel_strategy.h",
     "corp_messaging_client.cc",
@@ -31,6 +33,10 @@ static_library("signaling") {
     "ftl_support_host_device_id_provider.h",
     "iq_sender.cc",
     "iq_sender.h",
+    "jingle_data_structures.cc",
+    "jingle_data_structures.h",
+    "jingle_message_xml_converter.cc",
+    "jingle_message_xml_converter.h",
     "message_channel.cc",
     "message_channel.h",
     "message_channel_strategy.h",
@@ -38,6 +44,8 @@ static_library("signaling") {
     "message_tracker.h",
     "messaging_client.h",
     "registration_manager.h",
+    "session_config.cc",
+    "session_config.h",
     "signal_strategy.cc",
     "signal_strategy.h",
     "signaling_address.cc",
@@ -68,6 +76,7 @@ static_library("signaling") {
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",
+    "//remoting/base:errors",
     "//remoting/base:logging",
     "//remoting/base:name_value_map",
     "//remoting/proto:internal_structs",
@@ -100,6 +109,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "content_description_unittest.cc",
     "corp_message_channel_strategy_unittest.cc",
     "corp_messaging_client_unittest.cc",
     "corp_signal_strategy_unittest.cc",
@@ -108,7 +118,9 @@ source_set("unit_tests") {
     "ftl_registration_manager_unittest.cc",
     "ftl_signal_strategy_unittest.cc",
     "iq_sender_unittest.cc",
+    "jingle_data_structures_unittest.cc",
     "message_tracker_unittest.cc",
+    "session_config_unittest.cc",
     "signaling_address_unittest.cc",
     "signaling_id_util_unittest.cc",
   ]

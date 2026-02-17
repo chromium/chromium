@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/jingle_messages.h"
+#include "remoting/signaling/jingle_data_structures.h"
 
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/name_value_map.h"
-#include "remoting/protocol/content_description.h"
-#include "remoting/protocol/jingle_message_xml_converter.h"
-#include "remoting/protocol/session_plugin.h"
+#include "remoting/signaling/content_description.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
-namespace remoting::protocol {
+namespace remoting {
 
 namespace {
 
@@ -232,4 +231,4 @@ SessionTerminate& SessionTerminate::operator=(const SessionTerminate&) =
 SessionTerminate& SessionTerminate::operator=(SessionTerminate&&) = default;
 SessionTerminate::~SessionTerminate() = default;
 
-}  // namespace remoting::protocol
+}  // namespace remoting

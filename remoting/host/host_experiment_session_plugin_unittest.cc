@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "remoting/base/constants.h"
 #include "remoting/host/host_attributes.h"
-#include "remoting/protocol/jingle_messages.h"
+#include "remoting/signaling/jingle_data_structures.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,7 +18,7 @@ namespace remoting {
 
 TEST(HostExperimentSessionPluginTest, AttachAttributes) {
   HostExperimentSessionPlugin plugin;
-  std::optional<protocol::Attachment> attachment = plugin.GetNextMessage();
+  std::optional<Attachment> attachment = plugin.GetNextMessage();
   ASSERT_TRUE(attachment);
   ASSERT_TRUE(attachment->host_attributes);
   EXPECT_THAT(attachment->host_attributes->attribute,
@@ -29,8 +29,8 @@ TEST(HostExperimentSessionPluginTest, AttachAttributes) {
 }
 
 TEST(HostExperimentSessionPluginTest, LoadConfiguration) {
-  protocol::Attachment attachment;
-  protocol::HostConfigAttachment config;
+  Attachment attachment;
+  HostConfigAttachment config;
   config.settings["Detect-Updated-Region"] = "test-value";
   config.settings["Exp1"] = "val1";
   config.settings["Exp2"] = "val2";
@@ -48,8 +48,8 @@ TEST(HostExperimentSessionPluginTest, LoadConfiguration) {
 }
 
 TEST(HostExperimentSessionPluginTest, IgnoreSecondConfiguration) {
-  protocol::Attachment attachment1;
-  protocol::HostConfigAttachment config1;
+  Attachment attachment1;
+  HostConfigAttachment config1;
   config1.settings["Detect-Updated-Region"] = "val1";
   attachment1.host_config = std::move(config1);
 
@@ -59,8 +59,8 @@ TEST(HostExperimentSessionPluginTest, IgnoreSecondConfiguration) {
   EXPECT_EQ(*plugin.configuration().FindString("Detect-Updated-Region"),
             "val1");
 
-  protocol::Attachment attachment2;
-  protocol::HostConfigAttachment config2;
+  Attachment attachment2;
+  HostConfigAttachment config2;
   config2.settings["Detect-Updated-Region"] = "val2";
   attachment2.host_config = std::move(config2);
   plugin.OnIncomingMessage(attachment2);

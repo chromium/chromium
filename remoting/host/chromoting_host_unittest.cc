@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "remoting/host/chromoting_host.h"
 
 #include <array>
@@ -44,10 +43,10 @@
 #include "remoting/protocol/fake_connection_to_client.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/session.h"
-#include "remoting/protocol/session_config.h"
 #include "remoting/protocol/session_manager.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
+#include "remoting/signaling/session_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,7 +60,6 @@ using ::remoting::protocol::MockHostStub;
 using ::remoting::protocol::MockSession;
 using ::remoting::protocol::MockVideoStub;
 using ::remoting::protocol::Session;
-using ::remoting::protocol::SessionConfig;
 
 using testing::_;
 using testing::AnyNumber;

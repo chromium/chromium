@@ -40,12 +40,12 @@
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/negotiating_client_authenticator.h"
 #include "remoting/protocol/network_settings.h"
-#include "remoting/protocol/session_config.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_connection_to_host.h"
 #include "remoting/signaling/ftl_client_uuid_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
+#include "remoting/signaling/session_config.h"
 #include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -152,7 +152,7 @@ void RemotingClient::StartConnection() {
       webrtc::SdpVideoFormat::AV1Profile0());
 
   CLIENT_LOG << "Creating session manager...";
-  auto protocol_config = protocol::CandidateSessionConfig::CreateDefault();
+  auto protocol_config = CandidateSessionConfig::CreateDefault();
   protocol_config->set_webrtc_supported(true);
   if (!audio_stream_consumer_) {
     protocol_config->DisableAudioChannel();

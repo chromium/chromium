@@ -13,8 +13,8 @@
 #include "base/timer/timer.h"
 #include "remoting/protocol/datagram_channel_factory.h"
 #include "remoting/protocol/ice_transport_channel.h"
-#include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/transport.h"
+#include "remoting/signaling/jingle_data_structures.h"
 
 namespace remoting::protocol {
 

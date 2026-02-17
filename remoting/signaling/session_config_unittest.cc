@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/session_config.h"
+#include "remoting/signaling/session_config.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting::protocol {
+namespace remoting {
 
 void TestGetFinalConfig(std::unique_ptr<SessionConfig> config) {
   std::unique_ptr<CandidateSessionConfig> candidate_config =
@@ -106,4 +106,4 @@ TEST(SessionConfig, IsSupported) {
   EXPECT_TRUE(hybrid_candidate_config->IsSupported(*webrtc_config));
 }
 
-}  // namespace remoting::protocol
+}  // namespace remoting

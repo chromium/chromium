@@ -23,10 +23,7 @@
 namespace remoting {
 class ChromotingHostContext;
 class ClientSession;
-
-namespace protocol {
 class SessionConfig;
-}  // namespace protocol
 
 namespace test {
 
@@ -53,7 +50,7 @@ class It2MeStandaloneHost {
   LocalSessionPoliciesProvider local_session_policies_provider_;
   protocol::FakeConnectionToClient connection_;
   std::string session_jid_;
-  std::unique_ptr<protocol::SessionConfig> config_;
+  std::unique_ptr<SessionConfig> config_;
   FakeConnectionEventLogger event_logger_;
   testing::NiceMock<MockClientSessionEventHandler> handler_;
   std::unique_ptr<ClientSession> session_;

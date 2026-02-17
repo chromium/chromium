@@ -2,29 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_CONTENT_DESCRIPTION_H_
-#define REMOTING_PROTOCOL_CONTENT_DESCRIPTION_H_
+#ifndef REMOTING_SIGNALING_CONTENT_DESCRIPTION_H_
+#define REMOTING_SIGNALING_CONTENT_DESCRIPTION_H_
 
 #include <memory>
 #include <string>
 
-#include "remoting/protocol/jingle_messages.h"
-#include "remoting/protocol/session_config.h"
+#include "remoting/signaling/jingle_data_structures.h"
+#include "remoting/signaling/session_config.h"
 
-namespace remoting::protocol {
+namespace remoting {
 
-// ContentDescription used for chromoting sessions. It contains the information
-// from the content description stanza in the session initialization handshake.
-//
-// This class also provides a type abstraction so that the Chromotocol Session
-// interface does not need to depend on libjingle.
 class ContentDescription {
  public:
   static const char kChromotingContentName[];
 
-  // TODO: joedow - Add a c'tor which accepts a JingleAuthentication&&.
   ContentDescription(std::unique_ptr<CandidateSessionConfig> config,
                      const JingleAuthentication& authentication);
+
+  ContentDescription(const ContentDescription&) = delete;
+  ContentDescription& operator=(const ContentDescription&) = delete;
+
   ~ContentDescription();
 
   const CandidateSessionConfig* config() const {
@@ -38,6 +36,6 @@ class ContentDescription {
   JingleAuthentication authentication_;
 };
 
-}  // namespace remoting::protocol
+}  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_CONTENT_DESCRIPTION_H_
+#endif  // REMOTING_SIGNALING_CONTENT_DESCRIPTION_H_

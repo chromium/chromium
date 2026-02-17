@@ -12,10 +12,13 @@
 #include "net/base/ip_endpoint.h"
 #include "remoting/protocol/errors.h"
 
+namespace remoting {
+struct JingleTransportInfo;
+}  // namespace remoting
+
 namespace remoting::protocol {
 
 class Authenticator;
-struct JingleTransportInfo;
 
 enum class TransportRole {
   SERVER,
