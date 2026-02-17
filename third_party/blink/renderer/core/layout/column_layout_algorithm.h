@@ -135,6 +135,11 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // Add a cross gap at the given inline offset of the current column.
   void AddCrossGap(LayoutUnit column_inline_start_offset);
 
+  // Add an entry for the current row to `columns_per_row_` to store the number
+  // of columns this row contains. Spanners are counted as rows and marked with
+  // `kNotFound`.
+  void AddNumberOfColumnsForCurrentRow(wtf_size_t cols_in_row);
+
   // Populates `range_of_cross_gaps_before_current_main_gap_` with
   // `CrossGapRanges` for each group of `CrossGap`s before each `MainGap`.
   // For each `MainGap` we say that the `CrossGaps` associated with it are any
@@ -142,6 +147,11 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // needed by Paint to calculate the intersection points of row gaps and column
   // gaps.
   void CommitRangeOfCrossGapsBeforeCurrentMainGap();
+
+  // Updates the gap segment states for cross gaps based on the number of
+  // columns in each segment row. This is used to determine which cross gaps
+  // are blocked, empty on one side, or have columns on both sides.
+  void UpdateCrossGapSegmentStates();
 
   // Attempt to position the list-item marker (if any) beside the child
   // fragment. This requires the fragment to have a baseline. If it doesn't,
@@ -308,16 +318,20 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // Tracks the maximum number of columns in any row.
   wtf_size_t max_columns_in_row_ = 0;
 
-  // The state of ranges of gap segments for cross gaps, used for gap
-  // decorations. Each entry corresponds to a cross gap in `cross_gaps_`. The
-  // range is marked as `kBlocked` for decoration segments that would be blocked
-  // by spanners.
-  std::optional<Vector<GapSegmentStateRange>> state_ranges_for_cross_gaps_;
-
   // This will be set during (outer) block fragmentation once we've processed
   // the first piece of content of the multicol container. It is used to check
   // if we're at a valid class A  breakpoint (between block-level siblings).
   bool has_processed_first_child_ = false;
+
+  // This is the number of columns in each row, where the index in the vector
+  // indicates the index of the row of columns. Keep in mind, that this used
+  // used for gap decorations, which treats the area behind a spanner as a
+  // segment. Therefore, this vector also includes spanners as "rows" but marked
+  // as having `kNotFound` columns.
+  // TODO(crbug.com/440123087): Since the number of optionals for gap
+  // decorations has grown, explore encapsulating the logic in an `Accumulator`
+  // class similar to `Flex` and `Grid`.
+  std::optional<Vector<wtf_size_t>> columns_per_row_;
 };
 
 }  // namespace blink
