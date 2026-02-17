@@ -40,6 +40,8 @@ class ExtensionMenuModel : public ui::SimpleMenuModel,
   bool IsCommandIdVisible(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  ContextMenuMatcher& matcher_for_test() { return matcher_; }
+
  private:
   raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<content::WebContents> web_contents_;
