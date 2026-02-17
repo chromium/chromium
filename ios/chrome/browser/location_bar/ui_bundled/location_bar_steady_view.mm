@@ -357,14 +357,13 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 
 - (void)setUpTraitChangeHandler {
   __weak __typeof(self) weakSelf = self;
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
   UITraitChangeHandler traitChangeHandler =
       ^(id<UITraitEnvironment> traitEnvironment,
         UITraitCollection* previousCollection) {
         [weakSelf updateFontOnTraitChange:previousCollection];
       };
-  [self registerForTraitChanges:traits withHandler:traitChangeHandler];
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                    withHandler:traitChangeHandler];
 }
 
 - (void)setUpAccessibility {
