@@ -266,8 +266,10 @@ void BackForwardCacheMetrics::DidCommitNavigation(
   }
   // Save the information about the last cross-document main frame navigation
   // that uses this metrics object.
-  last_committed_cross_document_main_frame_navigation_id_ =
-      navigation->GetNavigationId();
+  if (!navigation->IsSameDocument()) {
+    last_committed_cross_document_main_frame_navigation_id_ =
+        navigation->GetNavigationId();
+  }
 
   // BackForwardCacheMetrics can be reused in some cases. Reset fields for UKM
   // for the next navigation.
