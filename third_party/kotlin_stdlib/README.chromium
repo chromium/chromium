@@ -1,13 +1,14 @@
 Name: Kotlin Standard Library
 Short Name: Kotlin stdlib
-Version: N/A
+URL: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.3.0/kotlin-stdlib-2.3.0.jar
+Version: 2.3.0
 Revision: DEPS
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 Security Critical: Yes
 Shipped: Yes
-URL: https://kotlinlang.org/api/latest/jvm/stdlib/
+Local Modifications: None
 
 Description:
 The Kotlin Standard Library provides living essentials for everyday work with
@@ -18,8 +19,7 @@ versions):
 - org.jetbrains.kotlin:kotlin-stdlib
 - org.jetbrains:annotations
 
-Local Modifications:
-None
+The library is hosted at https://kotlinlang.org/api/latest/jvm/stdlib/
 
 What version is this:
   * Run print_version.sh to find out the version.
