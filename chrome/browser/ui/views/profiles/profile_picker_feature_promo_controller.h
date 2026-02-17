@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
-#include "components/user_education/common/feature_promo/impl/feature_promo_controller_20.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_25.h"
 #include "components/user_education/common/user_education_context.h"
 
 class UserEducationService;
@@ -19,18 +19,22 @@ class ProfilePickerView;
 // The class allows the management of IPH that are displayed in the Profile
 // Picker.
 class ProfilePickerFeaturePromoController
-    : public user_education::FeaturePromoController20 {
+    : public user_education::FeaturePromoController25 {
  public:
   ProfilePickerFeaturePromoController(
       feature_engagement::Tracker* tracker_service,
       UserEducationService* user_education_service,
       ProfilePickerView* profile_picker_view);
+  ~ProfilePickerFeaturePromoController() override;
 
  private:
+  // FeaturePromoController25:
+  void AddPreconditionProviders(
+      user_education::ComposingPreconditionListProvider& to_add_to,
+      Priority priority,
+      bool required) override;
+
   // user_education::FeaturePromoControllerCommon:
-  user_education::FeaturePromoResult CanShowPromoForElement(
-      ui::TrackedElement* anchor_element,
-      const user_education::UserEducationContextPtr&) const override;
   std::u16string GetBodyIconAltText() const override;
   const base::Feature* GetScreenReaderPromptPromoFeature() const override;
   const char* GetScreenReaderPromptPromoEventName() const override;

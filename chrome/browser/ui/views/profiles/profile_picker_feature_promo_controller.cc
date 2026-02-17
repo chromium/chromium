@@ -10,14 +10,41 @@
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/views/interaction/element_tracker_views.h"
+
+namespace {
+
+DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kProfilePickerOpenPrecondition);
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kProfilePickerOpenPrecondition);
+
+class ProfilePickerOpenPrecondition
+    : public user_education::FeaturePromoPreconditionBase {
+ public:
+  ProfilePickerOpenPrecondition()
+      : FeaturePromoPreconditionBase(kProfilePickerOpenPrecondition,
+                                     "Profile picker is open") {}
+  ~ProfilePickerOpenPrecondition() override = default;
+
+  // user_education::FeaturePromoPreconditionBase:
+  user_education::FeaturePromoResult CheckPrecondition(
+      ui::UnownedTypedDataCollection& data) const override {
+    return ProfilePicker::IsOpen()
+               ? user_education::FeaturePromoResult::Success()
+               : user_education::FeaturePromoResult::kBlockedByUi;
+  }
+};
+
+}  // namespace
 
 ProfilePickerFeaturePromoController::ProfilePickerFeaturePromoController(
     feature_engagement::Tracker* tracker_service,
     UserEducationService* user_education_service,
     ProfilePickerView* profile_picker_view)
-    : user_education::FeaturePromoController20(
+    : user_education::FeaturePromoController25(
           tracker_service,
           &user_education_service->feature_promo_registry(),
           &user_education_service->help_bubble_factory_registry(),
@@ -32,13 +59,28 @@ ProfilePickerFeaturePromoController::ProfilePickerFeaturePromoController(
       user_education_service->help_bubble_factory_registry());
 }
 
-user_education::FeaturePromoResult
-ProfilePickerFeaturePromoController::CanShowPromoForElement(
-    ui::TrackedElement* anchor_element,
-    const user_education::UserEducationContextPtr&) const {
-  return ProfilePicker::IsOpen()
-             ? user_education::FeaturePromoResult::Success()
-             : user_education::FeaturePromoResult::kBlockedByUi;
+ProfilePickerFeaturePromoController::~ProfilePickerFeaturePromoController() {
+  OnDestroying();
+}
+
+void ProfilePickerFeaturePromoController::AddPreconditionProviders(
+    user_education::ComposingPreconditionListProvider& to_add_to,
+    Priority priority,
+    bool required) {
+  FeaturePromoController25::AddPreconditionProviders(to_add_to, priority,
+                                                     required);
+
+  if (required) {
+    to_add_to.AddProvider(base::BindRepeating(
+        [](const user_education::FeaturePromoSpecification& spec,
+           const user_education::FeaturePromoParams&,
+           const user_education::UserEducationContextPtr& context) {
+          user_education::FeaturePromoPreconditionList preconditions;
+          preconditions.AddPrecondition(
+              std::make_unique<ProfilePickerOpenPrecondition>());
+          return preconditions;
+        }));
+  }
 }
 
 std::u16string ProfilePickerFeaturePromoController::GetBodyIconAltText() const {

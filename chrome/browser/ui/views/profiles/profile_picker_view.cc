@@ -904,6 +904,7 @@ void ProfilePickerView::InitializeFeaturePromo(Profile* system_profile) {
 
   feature_promo_ = std::make_unique<ProfilePickerFeaturePromoController>(
       tracker_service, user_education_service, g_profile_picker_view);
+  feature_promo_->Init();
 }
 
 ProfilePickerFlowController* ProfilePickerView::GetProfilePickerFlowController()
