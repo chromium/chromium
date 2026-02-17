@@ -1061,4 +1061,13 @@ public class UrlBarUnitTest {
     public void testUrlBarWithoutLigaturesDisabled() {
         assertNull(mUrlBar.getFontFeatureSettings());
     }
+
+    @Test
+    public void setSelection_trimToTextContents() {
+        mUrlBar.setText("a"); // 1 character.
+        mUrlBar.setSelection(10, 10); // no crash.
+        mUrlBar.setSelection(0, 10); // no crash.
+        mUrlBar.setSelection(10, 0); // no crash.
+        mUrlBar.setSelection(1, 1); // no crash.
+    }
 }
