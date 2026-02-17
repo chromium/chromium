@@ -1694,11 +1694,6 @@
     "expiry_milestone": 150
   },
   {
-    "name":"composebox-autoattach-tab",
-    "owners": ["stkhapugin@google.com","christianxu@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "composebox-close-button-top-align",
     "owners": [ "radunitescu@google.com", "bling-search@google.com" ],
     "expiry_milestone": 149

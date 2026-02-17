@@ -187,9 +187,6 @@ extern const char kComposeboxAdditionalAdvancedToolsDescription[];
 extern const char kComposeboxAttachmentsTypedStateName[];
 extern const char kComposeboxAttachmentsTypedStateDescription[];
 
-extern const char kComposeboxAutoattachTabName[];
-extern const char kComposeboxAutoattachTabDescription[];
-
 extern const char kComposeboxCloseButtonTopAlignName[];
 extern const char kComposeboxCloseButtonTopAlignDescription[];
 

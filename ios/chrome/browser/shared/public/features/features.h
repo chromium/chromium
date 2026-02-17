@@ -176,9 +176,6 @@ BASE_DECLARE_FEATURE(kNTPMIAEntrypoint);
 // Like above, but applies regardless of client's locale.
 BASE_DECLARE_FEATURE(kNTPMIAEntrypointAllLocales);
 
-// Autoattach current tab in Composebox.
-BASE_DECLARE_FEATURE(kComposeboxAutoattachTab);
-
 // Used to gate the immersive SRP in the Composebox.
 BASE_DECLARE_FEATURE(kComposeboxImmersiveSRP);
 

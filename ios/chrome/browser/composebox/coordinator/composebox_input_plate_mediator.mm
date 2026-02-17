@@ -324,11 +324,6 @@ CreateInputDataFromAnnotatedPageContent(
     [self extractFaviconForCurrentTab];
   }
 
-  if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) &&
-      canAttachCurrentTab) {
-    [self attachCurrentTabContent];
-  }
-
   [self commitUIUpdates];
 }
 
@@ -406,10 +401,6 @@ CreateInputDataFromAnnotatedPageContent(
   if (_contextualSearchSession) {
     _contextualSearchSession->DeleteFile(item.serverToken);
     [self reloadSuggestions];
-  }
-
-  if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) && _items.empty) {
-    _modeHolder.mode = ComposeboxMode::kRegularSearch;
   }
 
   [self notifyContextChanged];

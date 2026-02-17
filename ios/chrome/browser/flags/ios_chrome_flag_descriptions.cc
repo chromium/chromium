@@ -305,12 +305,6 @@ const char kComposeboxAttachmentsTypedStateDescription[] =
     "Enables showing suggestions for multiple composebox attachments in a "
     "typed state.";
 
-const char kComposeboxAutoattachTabName[] =
-    "Automatically attach current tab within the composebox";
-const char kComposeboxAutoattachTabDescription[] =
-    "When enabled, the composebox will automatically attach curent tab as "
-    "context.";
-
 const char kComposeboxCloseButtonTopAlignName[] =
     "Align the close button in composebox to the top edge of the view";
 const char kComposeboxCloseButtonTopAlignDescription[] =
