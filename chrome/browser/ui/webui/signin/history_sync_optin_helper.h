@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -34,22 +33,14 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-// Kill switch for enabling an observer that awaits the sync engine startup,
-// before displaying the history sync opting screen.
-BASE_DECLARE_FEATURE(kEnableAwaitSyncServiceStartupOnHistorySync);
-
 // Helper class to track the state of the SyncService.
 // Executes a callback when the SyncService's state is no longer pending. The
 // right implementation of the class is chosen based on the state of the
 // `syncer::kEnableAwaitSyncServiceStartup` and
 // `syncer::kReplaceSyncPromosWithSignInPromos` feature flags.
-// TODO(crbug.com/483991595): When the history sync helper becomes the only
-// consumer of this class make it private and simplify the histogram
-// recording logic.
 class SyncServiceStartupStateObserver {
  public:
-  SyncServiceStartupStateObserver();
-  virtual ~SyncServiceStartupStateObserver();
+  virtual ~SyncServiceStartupStateObserver() = default;
 
   static std::unique_ptr<SyncServiceStartupStateObserver>
   MaybeCreateSyncServiceStateObserverForAccountWithClouldPolicies(
@@ -63,18 +54,6 @@ class SyncServiceStartupStateObserver {
   virtual void MockTimeoutReachedForTesting() = 0;
   virtual void OnSyncStartupStateChangedForTesting(
       SyncStartupTracker::ServiceStartupState state) = 0;
-
-  // Callbacks to record any necessary metrics when the sync service
-  // is ready to start or when we timeout waiting.
-  void SetSyncStartupCompleteMetricsCallback(
-      base::OnceCallback<void(base::TimeDelta)> callback);
-  void SetTimeoutMetricsCallback(
-      base::OnceCallback<void(base::TimeDelta)> callback);
-
- protected:
-  base::OnceCallback<void(base::TimeDelta)>
-      sync_startup_complete_metrics_callback_;
-  base::OnceCallback<void(base::TimeDelta)> timeout_metrics_callback_;
 };
 
 // Helper class to determine if a user is managed and fetch the applicable

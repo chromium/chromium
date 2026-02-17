@@ -402,8 +402,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     HistorySyncOptinHelperLaunchContextParamBrowserTest,
     WaitsForSyncServiceStartupBeforeTriggeringHistorySyncScreen) {
-  if (!base::FeatureList::IsEnabled(
-          kEnableAwaitSyncServiceStartupOnHistorySync)) {
+  if (!base::FeatureList::IsEnabled(syncer::kEnableAwaitSyncServiceStartup)) {
     GTEST_SKIP() << "EnableAwaitSyncServiceStartup must be enable to wait the "
                     "sync engine status";
   }
@@ -430,7 +429,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(history_sync_optin_helper
                   ->GetSyncServiceStartupStateObserverForTesting());
 
-  // When sync becomes active, the flow resumes to showing the history sync
+  // When sync becomes active, thepl flow resumes to showing the history sync
   // optin screen.
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), testing::_))
       .Times(1);
@@ -465,19 +464,12 @@ IN_PROC_BROWSER_TEST_P(
                                      /*expected_count=*/0);
   histogram_tester_.ExpectTotalCount("Signin.HistorySyncOptIn.Declined",
                                      /*expected_count=*/0);
-  histogram_tester_.ExpectTotalCount(
-      "Signin.HistorySyncOptin.SyncStartupAwaitTime.Complete",
-      /*expected_count=*/1);
-  histogram_tester_.ExpectTotalCount(
-      "Signin.HistorySyncOptin.SyncStartupAwaitTime.Timeout",
-      /*expected_count=*/0);
 }
 
 IN_PROC_BROWSER_TEST_P(
     HistorySyncOptinHelperLaunchContextParamBrowserTest,
     WaitsForSyncServiceStartupThenSkipsHistorySyncScreenIfSyncDisabledByPolicy) {
-  if (!base::FeatureList::IsEnabled(
-          kEnableAwaitSyncServiceStartupOnHistorySync)) {
+  if (!base::FeatureList::IsEnabled(syncer::kEnableAwaitSyncServiceStartup)) {
     GTEST_SKIP() << "EnableAwaitSyncServiceStartup must be enable to wait the "
                     "sync engine status";
   }
@@ -514,19 +506,12 @@ IN_PROC_BROWSER_TEST_P(
             GetTestSyncService()->GetTransportState());
   ASSERT_TRUE(GetTestSyncService()->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY));
-  histogram_tester_.ExpectTotalCount(
-      "Signin.HistorySyncOptin.SyncStartupAwaitTime.Complete",
-      /*expected_count=*/1);
-  histogram_tester_.ExpectTotalCount(
-      "Signin.HistorySyncOptin.SyncStartupAwaitTime.Timeout",
-      /*expected_count=*/0);
 }
 
 IN_PROC_BROWSER_TEST_P(
     HistorySyncOptinHelperLaunchContextParamBrowserTest,
     WaitsForSyncServiceStartupThenShowsHistorySyncScreenIfWaitingTimesout) {
-  if (!base::FeatureList::IsEnabled(
-          kEnableAwaitSyncServiceStartupOnHistorySync)) {
+  if (!base::FeatureList::IsEnabled(syncer::kEnableAwaitSyncServiceStartup)) {
     GTEST_SKIP() << "EnableAwaitSyncServiceStartup must be enable to wait the "
                     "sync engine status";
   }
@@ -557,11 +542,6 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(1);
   history_sync_optin_helper->GetSyncServiceStartupStateObserverForTesting()
       ->MockTimeoutReachedForTesting();
-  histogram_tester_.ExpectTotalCount(
-      "Signin.HistorySyncOptin.SyncStartupAwaitTime.Timeout",
-      /*expected_count=*/1);
-  histogram_tester_.ExpectTotalCount("Signin.HistorySyncOptin.Complete",
-                                     /*expected_count=*/0);
 }
 
 IN_PROC_BROWSER_TEST_P(HistorySyncOptinHelperLaunchContextParamBrowserTest,
