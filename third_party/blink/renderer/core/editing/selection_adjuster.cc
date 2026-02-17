@@ -266,9 +266,7 @@ class GranularityAdjuster final {
 
         // If we're selecting within a table cell, constrain the selection
         // to stay within that cell to avoid including unwanted table structure
-        if (RuntimeEnabledFeatures::
-                RestrictTableCellSelectionToBoundaryEnabled() &&
-            EnclosingTableCell(visible_paragraph_end.DeepEquivalent())) {
+        if (EnclosingTableCell(visible_paragraph_end.DeepEquivalent())) {
           return visible_paragraph_end.DeepEquivalent();
         }
 
