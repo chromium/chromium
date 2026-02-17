@@ -58,7 +58,7 @@ generate_desktop_file() {
 Version=1.0
 Encoding=UTF-8
 Name=$TITLE
-Exec=$CHROME_WRAPPER %U
+Exec="$CHROME_WRAPPER" %U
 Terminal=false
 Icon=$HERE/product_logo_48.png
 Type=Application
