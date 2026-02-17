@@ -9,6 +9,7 @@ if (is_android) {
 }
 
 _proto_files = [
+  "aim_eligibility_client_request.proto",
   "aim_eligibility_response.proto",
   "answer_data.proto",
   "answer_type.proto",

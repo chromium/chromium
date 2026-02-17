@@ -97,7 +97,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
     kAutoModel = 6,
     kThinkingModel = 7,
     kRegularModel = 8,
-    kMaxValue = kRegularModel,
+    kProNoGenUiModel = 9,
+    kMaxValue = kProNoGenUiModel,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:ContextType,//tools/metrics/histograms/metadata/omnibox/histograms.xml:ContextType)
 
