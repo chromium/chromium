@@ -67,7 +67,7 @@ ContextualTasksCookieSynchronizer::GetCookieManagerForPartition() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 network::mojom::DeviceBoundSessionManager*
 ContextualTasksCookieSynchronizer::GetDeviceBoundSessionManagerForPartition() {
-  return nullptr;
+  return GetStoragePartition()->GetDeviceBoundSessionManager();;
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
