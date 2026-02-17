@@ -57,6 +57,12 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
                          ClipboardBuffer buffer,
                          const DataTransferEndpoint* data_dst) const override;
   void Clear(ClipboardBuffer buffer) override;
+  void ReadText(ClipboardBuffer buffer,
+                const std::optional<DataTransferEndpoint>& data_dst,
+                ReadTextCallback callback) const override;
+  void ReadAsciiText(ClipboardBuffer buffer,
+                     const std::optional<DataTransferEndpoint>& data_dst,
+                     ReadAsciiTextCallback callback) const override;
   void ReadHTML(ClipboardBuffer buffer,
                 const std::optional<DataTransferEndpoint>& data_dst,
                 ReadHtmlCallback callback) const override;
@@ -131,6 +137,10 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
   template <typename Result>
   void ReadAsync(base::OnceCallback<Result(HWND)> read_func,
                  base::OnceCallback<void(Result)> reply_func) const;
+  static std::u16string ReadTextInternal(ClipboardBuffer buffer,
+                                         HWND owner_window);
+  static std::string ReadAsciiTextInternal(ClipboardBuffer buffer,
+                                           HWND owner_window);
   struct ReadHTMLResult {
     std::u16string markup;
     std::string src_url;

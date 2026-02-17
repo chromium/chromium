@@ -401,6 +401,25 @@ std::vector<std::u16string> ClipboardWin::GetStandardFormats(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
+void ClipboardWin::ReadText(ClipboardBuffer buffer,
+                            const std::optional<DataTransferEndpoint>& data_dst,
+                            ReadTextCallback callback) const {
+  ReadAsync(base::BindOnce(&ClipboardWin::ReadTextInternal, buffer),
+            std::move(callback));
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
+void ClipboardWin::ReadAsciiText(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadAsciiTextCallback callback) const {
+  ReadAsync(base::BindOnce(&ClipboardWin::ReadAsciiTextInternal, buffer),
+            std::move(callback));
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
 void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
                             const std::optional<DataTransferEndpoint>& data_dst,
                             ReadHtmlCallback callback) const {
@@ -468,25 +487,36 @@ void ClipboardWin::ReadAvailableTypes(
 void ClipboardWin::ReadText(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
                             std::u16string* result) const {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  RecordRead(ClipboardFormatMetric::kText);
   CHECK(result);
 
   result->clear();
+  *result = ReadTextInternal(buffer, GetClipboardWindow());
+}
+
+// static
+std::u16string ClipboardWin::ReadTextInternal(ClipboardBuffer buffer,
+                                              HWND owner_window) {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  RecordRead(ClipboardFormatMetric::kText);
+
+  std::u16string result;
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
-  if (!clipboard.Acquire(GetClipboardWindow()))
-    return;
+  if (!clipboard.Acquire(owner_window)) {
+    return result;
+  }
 
   HANDLE data = GetClipboardDataWithLimit(CF_UNICODETEXT);
-  if (!data)
-    return;
+  if (!data) {
+    return result;
+  }
 
-  result->assign(static_cast<const char16_t*>(::GlobalLock(data)),
-                 ::GlobalSize(data) / sizeof(char16_t));
+  result.assign(static_cast<const char16_t*>(::GlobalLock(data)),
+                ::GlobalSize(data) / sizeof(char16_t));
   ::GlobalUnlock(data);
-  TrimAfterNull(result);
+  TrimAfterNull(&result);
+  return result;
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -494,25 +524,32 @@ void ClipboardWin::ReadText(ClipboardBuffer buffer,
 void ClipboardWin::ReadAsciiText(ClipboardBuffer buffer,
                                  const DataTransferEndpoint* data_dst,
                                  std::string* result) const {
+  CHECK(result);
+  *result = ReadAsciiTextInternal(buffer, GetClipboardWindow());
+}
+
+// static
+std::string ClipboardWin::ReadAsciiTextInternal(ClipboardBuffer buffer,
+                                                HWND owner_window) {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
-  CHECK(result);
-
-  result->clear();
+  std::string result;
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
-  if (!clipboard.Acquire(GetClipboardWindow()))
-    return;
+  if (!clipboard.Acquire(owner_window)) {
+    return result;
+  }
 
   HANDLE data = GetClipboardDataWithLimit(CF_TEXT);
   if (!data)
-    return;
+    return result;
 
-  result->assign(static_cast<const char*>(::GlobalLock(data)),
-                 ::GlobalSize(data));
+  result.assign(static_cast<const char*>(::GlobalLock(data)),
+                ::GlobalSize(data));
   ::GlobalUnlock(data);
-  TrimAfterNull(result);
+  TrimAfterNull(&result);
+  return result;
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

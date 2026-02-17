@@ -102,9 +102,21 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
   clipboard->ReadText(ClipboardBuffer::kCopyPaste, nullptr, &text_result);
   ASSERT_EQ(data_changed_count(), 0);
 
+  base::test::TestFuture<std::u16string> text_future;
+  clipboard->ReadText(ClipboardBuffer::kCopyPaste, std::nullopt,
+                      text_future.GetCallback());
+  ASSERT_TRUE(text_future.Wait());
+  ASSERT_EQ(data_changed_count(), 0);
+
   std::string ascii_text_result;
   clipboard->ReadAsciiText(ClipboardBuffer::kCopyPaste, nullptr,
                            &ascii_text_result);
+  ASSERT_EQ(data_changed_count(), 0);
+
+  base::test::TestFuture<std::string> ascii_text_future;
+  clipboard->ReadAsciiText(ClipboardBuffer::kCopyPaste, std::nullopt,
+                           ascii_text_future.GetCallback());
+  ASSERT_TRUE(ascii_text_future.Wait());
   ASSERT_EQ(data_changed_count(), 0);
 
   base::test::TestFuture<std::u16string, GURL, uint32_t, uint32_t> html_future;
@@ -303,6 +315,56 @@ TEST_F(ClipboardWinTest, ReadFilenamesAsyncEmptyClipboard) {
                            filenames_future.GetCallback());
   ASSERT_TRUE(filenames_future.Wait());
   EXPECT_TRUE(filenames_future.Get().empty());
+}
+
+TEST_F(ClipboardWinTest, ReadTextAsyncReturnsWrittenData) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"text_test");
+  }
+
+  base::test::TestFuture<std::u16string> text_future;
+  clipboard->ReadText(ClipboardBuffer::kCopyPaste, std::nullopt,
+                      text_future.GetCallback());
+  ASSERT_TRUE(text_future.Wait());
+  EXPECT_EQ(text_future.Get(), u"text_test");
+}
+
+TEST_F(ClipboardWinTest, ReadTextAsyncEmptyClipboard) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  clipboard->Clear(ClipboardBuffer::kCopyPaste);
+
+  base::test::TestFuture<std::u16string> text_future;
+  clipboard->ReadText(ClipboardBuffer::kCopyPaste, std::nullopt,
+                      text_future.GetCallback());
+  ASSERT_TRUE(text_future.Wait());
+  EXPECT_TRUE(text_future.Get().empty());
+}
+
+TEST_F(ClipboardWinTest, ReadAsciiTextAsyncReturnsWrittenData) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"text_test");
+  }
+
+  base::test::TestFuture<std::string> text_future;
+  clipboard->ReadAsciiText(ClipboardBuffer::kCopyPaste, std::nullopt,
+                           text_future.GetCallback());
+  ASSERT_TRUE(text_future.Wait());
+  EXPECT_EQ(text_future.Get(), "text_test");
+}
+
+TEST_F(ClipboardWinTest, ReadAsciiTextAsyncEmptyClipboard) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  clipboard->Clear(ClipboardBuffer::kCopyPaste);
+
+  base::test::TestFuture<std::string> text_future;
+  clipboard->ReadAsciiText(ClipboardBuffer::kCopyPaste, std::nullopt,
+                           text_future.GetCallback());
+  ASSERT_TRUE(text_future.Wait());
+  EXPECT_TRUE(text_future.Get().empty());
 }
 
 }  // namespace ui
