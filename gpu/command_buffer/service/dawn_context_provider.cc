@@ -281,6 +281,9 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
       wgpu::FeatureName::SharedBufferMemoryD3D12Resource,
 
       wgpu::FeatureName::TransientAttachments,
+
+      wgpu::FeatureName::DawnLoadResolveTexture,
+      wgpu::FeatureName::DawnPartialLoadResolveTexture,
       wgpu::FeatureName::DawnTexelCopyBufferRowAlignment,
       wgpu::FeatureName::FlexibleTextureViews,
   };
@@ -290,17 +293,12 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
       continue;
     }
     features.push_back(feature);
-  }
 
-  // Both MSAARenderToSingleSampled and DawnLoadResolveTexture are used to
-  // unresolve a single-sampled texture for multi-sampled rendering.
-  // We prefer the former if it's available,
-  if (adapter.HasFeature(wgpu::FeatureName::MSAARenderToSingleSampled)) {
-    features.push_back(wgpu::FeatureName::MSAARenderToSingleSampled);
-  } else if (adapter.HasFeature(wgpu::FeatureName::DawnLoadResolveTexture)) {
-    features.push_back(wgpu::FeatureName::DawnLoadResolveTexture);
-    if (adapter.HasFeature(wgpu::FeatureName::DawnPartialLoadResolveTexture)) {
-      features.push_back(wgpu::FeatureName::DawnPartialLoadResolveTexture);
+    // Enabling MSAARenderToSingleSampled causes performance regression without
+    // TransientAttachments support.
+    if (feature == wgpu::FeatureName::TransientAttachments &&
+        adapter.HasFeature(wgpu::FeatureName::MSAARenderToSingleSampled)) {
+      features.push_back(wgpu::FeatureName::MSAARenderToSingleSampled);
     }
   }
 
