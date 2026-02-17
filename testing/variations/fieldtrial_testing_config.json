@@ -25738,7 +25738,7 @@
             ]
         }
     ],
-    "StickyActivationTest2": [
+    "StickyActivationTest3": [
         {
             "platforms": [
                 "android",
@@ -28126,6 +28126,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "VSyncDecoding"
+                    ]
+                }
+            ]
+        }
+    ],
+    "VariationsStickyNoopTest": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VariationsStickyNoopTest"
                     ]
                 }
             ]

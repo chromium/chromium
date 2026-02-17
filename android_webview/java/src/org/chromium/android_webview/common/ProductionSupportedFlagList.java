@@ -1232,6 +1232,8 @@ public final class ProductionSupportedFlagList {
                 "Group MemoryDumpProvider by sequence affinity to reduce PostTask hops when"
                         + " collecting dumps"),
         Flag.baseFeature(
+                "VariationsStickyNoopTest", "No-op flag for testing sticky study activation."),
+        Flag.baseFeature(
                 "VariationsStickyPersistence",
                 "Controls how prefs are written and persisted for tracking sticky study activation."
                     + " Note: The actual behavior is controlled by a feature param, but disabling"
