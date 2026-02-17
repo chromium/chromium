@@ -429,6 +429,7 @@ public class AwBrowserContext implements BrowserContextHandle {
 
     @UiThread
     public void setMaxPrerenders(@Nullable Integer maxPrerenders) {
+        assert ThreadUtils.runningOnUiThread();
         AwBrowserContextJni.get()
                 .setAllowedPrerenderingCount(mNativeAwBrowserContext, maxPrerenders);
     }

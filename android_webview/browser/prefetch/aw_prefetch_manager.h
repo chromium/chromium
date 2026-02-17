@@ -27,14 +27,14 @@ namespace android_webview {
 // The default TTL value in `//content` is 10 minutes which is too long for most
 // of WebView cases. This value here can change in the future and that shouldn't
 // affect the `//content` TTL default value.
-inline constexpr int DEFAULT_TTL_IN_SEC = 60;
+inline constexpr int kDefaultTtlInSec = 60;
 // The MaxPrefetches number is not present in the `//content` layer, so it is
 // specific to WebView.
-inline constexpr size_t DEFAULT_MAX_PREFETCHES = 10;
+inline constexpr size_t kDefaultMaxPrefetches = 10;
 // This is the source of truth for the absolute maximum number of prefetches
 // that can ever be cached in WebView. It can override the number set by the
 // AndroidX API.
-inline constexpr int32_t ABSOLUTE_MAX_PREFETCHES = 20;
+inline constexpr int32_t kAbsoluteMaxPrefetches = 20;
 // Returned from `AwPrefetchManager::StartPrefetchRequest` if the prefetch
 // request was unsuccessful (i.e. there is no key for the prefetch).
 inline constexpr int NO_PREFETCH_KEY = -1;
@@ -98,13 +98,24 @@ class AwPrefetchManager {
   bool GetIsPrefetchInCacheForTesting(JNIEnv* env, int32_t prefetch_key);
 
   // Updates Time-To-Live (TTL) for the prefetched content in seconds.
-  void SetTtlInSec(JNIEnv* env, int32_t ttl_in_sec) {
-    ttl_in_sec_ = ttl_in_sec;
+  void SetTtlInSec(JNIEnv* env, std::optional<int> ttl_in_sec) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    int sanitized_ttl_in_sec = ttl_in_sec.value_or(kDefaultTtlInSec);
+
+    CHECK_GT(sanitized_ttl_in_sec, 0);
+    ttl_in_sec_ = sanitized_ttl_in_sec;
   }
 
   // Updates the maximum number of allowed prefetches in cache
-  void SetMaxPrefetches(JNIEnv* env, int32_t max_prefetches) {
-    max_prefetches_ = std::min(max_prefetches, ABSOLUTE_MAX_PREFETCHES);
+  void SetMaxPrefetches(JNIEnv* env, std::optional<int> max_prefetches) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    int sanitized_max_prefetches =
+      max_prefetches.value_or(kDefaultMaxPrefetches);
+
+    CHECK_GT(sanitized_max_prefetches, 0);
+    max_prefetches_ = std::min(sanitized_max_prefetches, kAbsoluteMaxPrefetches);
   }
 
   // Returns the Time-to-Live (TTL) for prefetched content in seconds.
@@ -143,9 +154,9 @@ class AwPrefetchManager {
  private:
   raw_ref<content::BrowserContext> browser_context_;
 
-  int ttl_in_sec_ = DEFAULT_TTL_IN_SEC;
+  int ttl_in_sec_ = kDefaultTtlInSec;
 
-  size_t max_prefetches_ = DEFAULT_MAX_PREFETCHES;
+  size_t max_prefetches_ = kDefaultMaxPrefetches;
 
   std::map<int32_t, std::unique_ptr<content::PrefetchHandle>>
       all_prefetches_map_;

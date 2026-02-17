@@ -202,6 +202,23 @@ public class AwPrefetchManager {
         }
     }
 
+    @UiThread
+    public void setMaxPrefetches(@Nullable Integer maxPrefetches) {
+        try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.SET_MAX_PREFETCHES")) {
+            assert ThreadUtils.runningOnUiThread();
+            AwPrefetchManagerJni.get().setMaxPrefetches(mNativePrefetchManager, maxPrefetches);
+        }
+    }
+
+    @UiThread
+    public void setPrefetchTtlSeconds(@Nullable Integer prefetchTtlSeconds) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.Profile.Prefetch.SET_PREFETCH_TTL_SECONDS")) {
+            assert ThreadUtils.runningOnUiThread();
+            AwPrefetchManagerJni.get().setTtlInSec(mNativePrefetchManager, prefetchTtlSeconds);
+        }
+    }
+
     @VisibleForTesting
     public int getTTlInSec() {
         return AwPrefetchManagerJni.get().getTtlInSec(mNativePrefetchManager);
@@ -277,9 +294,13 @@ public class AwPrefetchManager {
         // IN-TESTS
         boolean getIsPrefetchInCacheForTesting(long nativeAwPrefetchManager, int prefetchKey);
 
-        void setTtlInSec(long nativeAwPrefetchManager, int ttlInSeconds);
+        void setTtlInSec(
+                long nativeAwPrefetchManager,
+                @JniType("std::optional<int>") @Nullable Integer ttlInSeconds);
 
-        void setMaxPrefetches(long nativeAwPrefetchManager, int maxPrefetches);
+        void setMaxPrefetches(
+                long nativeAwPrefetchManager,
+                @JniType("std::optional<int>") @Nullable Integer maxPrefetches);
 
         int getTtlInSec(long nativeAwPrefetchManager);
 

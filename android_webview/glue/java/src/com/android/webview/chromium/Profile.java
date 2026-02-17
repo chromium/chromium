@@ -168,10 +168,34 @@ public class Profile {
     @UiThread
     public void setMaxPrerenders(@Nullable Integer maxPrerenders) {
         if (maxPrerenders != null && maxPrerenders < 0) {
-            Log.w(TAG, "Maximum prerenders can not be negative.");
-            return;
+            Log.e(TAG, "Maximum prerenders can not be negative.");
+            throw new IllegalArgumentException("Maximum prerenders can not be negative.");
         }
         mBrowserContext.setMaxPrerenders(maxPrerenders);
+    }
+
+    /**
+     * @param maxPrefetches The maximum number of prefetches. If null, restores the default.
+     */
+    @UiThread
+    public void setMaxPrefetches(@Nullable Integer maxPrefetches) {
+        if (maxPrefetches != null && maxPrefetches < 0) {
+            Log.e(TAG, "Maximum prefetches can not be negative.");
+            throw new IllegalArgumentException("Maximum prefetches can not be negative.");
+        }
+        mBrowserContext.getPrefetchManager().setMaxPrefetches(maxPrefetches);
+    }
+
+    /**
+     * @param prefetchTTLSeconds Sets the TTL seconds for prefetch. If null, restores the default.
+     */
+    @UiThread
+    public void setPrefetchTtlSeconds(@Nullable Integer prefetchTtlSeconds) {
+        if (prefetchTtlSeconds != null && prefetchTtlSeconds < 0) {
+            Log.e(TAG, "Prefetch TTL seconds can not be negative.");
+            throw new IllegalArgumentException("Prefetch TTL seconds can not be negative.");
+        }
+        mBrowserContext.getPrefetchManager().setPrefetchTtlSeconds(prefetchTtlSeconds);
     }
 
     @UiThread
