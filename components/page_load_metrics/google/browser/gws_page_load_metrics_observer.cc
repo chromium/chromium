@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -668,41 +669,70 @@ void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
     PAGE_LOAD_HISTOGRAM(histogram_name, timing);
     PAGE_LOAD_HISTOGRAM(histogram_with_suffix, timing);
   };
+
   for (const auto& mark : timings) {
     // TODO(crbug.com/436345871): Update the logic to align with the server
     // behavior.
-    auto timing =
-        is_prerendered_
-            ? page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
-                  GetDelegate(), mark->start_time)
-            : mark->start_time;
-    if (mark->mark_name == internal::kGwsAFTStartMarkName) {
-      record_histogram(internal::kHistogramGWSAFTStart, timing);
-      aft_start_time_ = mark->start_time;
-    } else if (mark->mark_name == internal::kGwsAFTEndMarkName) {
-      record_histogram(internal::kHistogramGWSAFTEnd, timing);
-      aft_end_time_ = mark->start_time;
-    } else if (mark->mark_name == internal::kGwsHeadChunkStartMarkName) {
-      record_histogram(internal::kHistogramGWSHeadChunkStart, timing);
-      head_chunk_start_time_ = mark->start_time;
-    } else if (mark->mark_name == internal::kGwsHeadChunkEndMarkName) {
-      record_histogram(internal::kHistogramGWSHeadChunkEnd, timing);
-      head_chunk_end_time_ = mark->start_time;
-    } else if (mark->mark_name == internal::kGwsBodyChunkStartMarkName) {
-      record_histogram(internal::kHistogramGWSBodyChunkStart, timing);
-      body_chunk_start_time_ = mark->start_time;
-    } else if (mark->mark_name == internal::kGwsBodyChunkEndMarkName) {
-      record_histogram(internal::kHistogramGWSBodyChunkEnd, timing);
-    } else if (mark->mark_name == internal::kGwsSGLMarkName) {
-      // Because this is a performance mark for previous navigation, we should
-      // not correct the timing for prerender activation, or else we would get
-      // inconsistent timing.
-      // So, we use `mark->start_time` directly here rather than using the
-      // pre-adjusted `timing`.
-      record_histogram(internal::kHistogramGWSSGL, mark->start_time);
-      sgl_time_ = mark->start_time;
+    const auto mark_timing_info = GetMarkNameToTimingInfo(mark->mark_name);
+    if (mark_timing_info.has_value()) {
+      record_histogram(mark_timing_info->histogram_name,
+                       AdjustPerformanceMarkTiming(mark));
+      if (mark_timing_info->timing_member) {
+        this->*(*mark_timing_info->timing_member) = mark->start_time;
+      }
     }
   }
+}
+
+std::optional<GWSPageLoadMetricsObserver::PerformanceMarkTimingHistogramInfo>
+GWSPageLoadMetricsObserver::GetMarkNameToTimingInfo(
+    std::string_view mark_name) const {
+  static const base::NoDestructor<
+      base::flat_map<std::string_view, PerformanceMarkTimingHistogramInfo>>
+      mark_timing_info({
+          {internal::kGwsAFTStartMarkName,
+           {internal::kHistogramGWSAFTStart,
+            &GWSPageLoadMetricsObserver::aft_start_time_}},
+          {internal::kGwsAFTEndMarkName,
+           {internal::kHistogramGWSAFTEnd,
+            &GWSPageLoadMetricsObserver::aft_end_time_}},
+          {internal::kGwsHeadChunkStartMarkName,
+           {internal::kHistogramGWSHeadChunkStart,
+            &GWSPageLoadMetricsObserver::head_chunk_start_time_}},
+          {internal::kGwsHeadChunkEndMarkName,
+           {internal::kHistogramGWSHeadChunkEnd,
+            &GWSPageLoadMetricsObserver::head_chunk_end_time_}},
+          {internal::kGwsBodyChunkStartMarkName,
+           {internal::kHistogramGWSBodyChunkStart,
+            &GWSPageLoadMetricsObserver::body_chunk_start_time_}},
+          {internal::kGwsBodyChunkEndMarkName,
+           {internal::kHistogramGWSBodyChunkEnd, std::nullopt}},
+          {internal::kGwsSGLMarkName,
+           {internal::kHistogramGWSSGL,
+            &GWSPageLoadMetricsObserver::sgl_time_}},
+      });
+  auto it = mark_timing_info->find(mark_name);
+  if (it != mark_timing_info->end()) {
+    return it->second;
+  }
+  return std::nullopt;
+}
+
+base::TimeDelta GWSPageLoadMetricsObserver::AdjustPerformanceMarkTiming(
+    const page_load_metrics::mojom::CustomUserTimingMarkPtr& mark) {
+  if (mark->mark_name == internal::kGwsSGLMarkName) {
+    // Because this is a performance mark for previous navigation, we should
+    // not correct the timing for prerender activation, or else we would get
+    // inconsistent timing.
+    // So, we use `mark->start_time` directly here.
+    return mark->start_time;
+  }
+  // TODO(crbug.com/436345871): Update the logic to align with the server
+  // behavior.
+  return is_prerendered_
+             ? page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+                   GetDelegate(), mark->start_time)
+             : mark->start_time;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
