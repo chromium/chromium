@@ -72,7 +72,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -400,7 +399,7 @@ public class SigninFirstRunFragmentTest {
     @Test
     @LargeTest
     @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
-    @DisabledTest(message = "crbug.com/484056818")
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFragmentWhenSigninIsForcedByPolicy() {
         // TODO(crbug.com/481972235): Replace this by The {@link @Policies.Add} annotation.
         ThreadUtils.runOnUiThreadBlocking(
