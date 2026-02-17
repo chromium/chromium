@@ -34,6 +34,7 @@ extern const char kFakeJavaScriptFeaturePostMessageReplyValue[];
 // post message.
 class FakeJavaScriptFeature : public JavaScriptFeature {
  public:
+  FakeJavaScriptFeature(ContentWorld content_world, OriginFilter origin_filter);
   FakeJavaScriptFeature(ContentWorld content_world);
   ~FakeJavaScriptFeature() override;
 

@@ -47,22 +47,31 @@ const char kGetErrorCount[] = "javaScriptFeatureTest.getErrorCount";
 // Timeout for response of kGetErrorCount.
 const int kGetErrorCountTimeout = 1;
 
-FakeJavaScriptFeature::FakeJavaScriptFeature(ContentWorld content_world)
+FakeJavaScriptFeature::FakeJavaScriptFeature(ContentWorld content_world,
+                                             OriginFilter origin_filter)
     : JavaScriptFeature(
           content_world,
           {FeatureScript::CreateWithFilename(
                kJavaScriptFeatureInjectOnceTestScript,
-               FeatureScript::InjectionTime::kDocumentEnd,
+               FeatureScript::InjectionTime::kDocumentStart,
                FeatureScript::TargetFrames::kAllFrames,
-               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow),
+               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow,
+               FeatureScript::PlaceholderReplacementsCallback(),
+               origin_filter),
            FeatureScript::CreateWithFilename(
                kJavaScriptFeatureReinjectTestScript,
-               FeatureScript::InjectionTime::kDocumentEnd,
+               FeatureScript::InjectionTime::kDocumentStart,
                FeatureScript::TargetFrames::kAllFrames,
                FeatureScript::ReinjectionBehavior::
-                   kReinjectOnDocumentRecreation)},
-          {}),
+                   kReinjectOnDocumentRecreation,
+               FeatureScript::PlaceholderReplacementsCallback(),
+               origin_filter)},
+          {},
+          origin_filter),
       weak_factory_(this) {}
+
+FakeJavaScriptFeature::FakeJavaScriptFeature(ContentWorld content_world)
+    : FakeJavaScriptFeature(content_world, OriginFilter::kPublic) {}
 FakeJavaScriptFeature::~FakeJavaScriptFeature() = default;
 
 void FakeJavaScriptFeature::ReplaceDivContents(WebFrame* web_frame) {

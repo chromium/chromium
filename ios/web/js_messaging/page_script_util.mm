@@ -38,4 +38,13 @@ NSString* MakeScriptInjectableOnce(NSString* script_identifier,
   return [NSString stringWithFormat:once_wrapper, script];
 }
 
+NSString* MakeScriptPrivate(NSArray<NSString*>* filter, NSString* script) {
+  CHECK(filter);
+  NSString* kPrivateTemplate =
+      @"if (['%@'].includes(window.location.origin)) { %@ }";
+  return [NSString stringWithFormat:kPrivateTemplate,
+                                    [filter componentsJoinedByString:@"','"],
+                                    script];
+}
+
 }  // namespace web

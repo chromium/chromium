@@ -6,12 +6,14 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test.h"
 #import "ios/web/test/js_test_util_internal.h"
 #import "ios/web/web_state/crw_web_view.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"
 
 namespace web {
@@ -39,6 +41,33 @@ TEST_F(PageScriptUtilTest, MakeScriptInjectableOnce) {
 
   test::ExecuteJavaScriptInWebView(
       web_view, MakeScriptInjectableOnce(identifier, @"value = 2;"));
+  EXPECT_NSEQ(@(1), test::ExecuteJavaScript(web_view, @"value"));
+}
+
+// Tests that `MakeScriptPrivate` prevents a script from being injected on some
+// origins.
+TEST_F(PageScriptUtilTest, MakeScriptPrivate) {
+  GURL url_to_load("https://test.local/test");
+  std::string url1 = "https://test.local";
+  std::string url2 = "https://test2.local";
+  std::string url3 = "http://test.local";
+  WKWebView* web_view = BuildWKWebView(CGRectZero, GetBrowserState());
+  EXPECT_TRUE(test::LoadHtml(web_view, @"<html><body>test</body></html>",
+                             net::NSURLWithGURL(url_to_load)));
+
+  test::ExecuteJavaScriptInWebView(
+      web_view,
+      MakeScriptPrivate(@[ base::SysUTF8ToNSString(url1) ], @"var value = 1;"));
+  EXPECT_NSEQ(@(1), test::ExecuteJavaScript(web_view, @"value"));
+
+  test::ExecuteJavaScriptInWebView(
+      web_view,
+      MakeScriptPrivate(@[ base::SysUTF8ToNSString(url2) ], @"value = 2;"));
+  EXPECT_NSEQ(@(1), test::ExecuteJavaScript(web_view, @"value"));
+
+  test::ExecuteJavaScriptInWebView(
+      web_view,
+      MakeScriptPrivate(@[ base::SysUTF8ToNSString(url3) ], @"value = 3;"));
   EXPECT_NSEQ(@(1), test::ExecuteJavaScript(web_view, @"value"));
 }
 

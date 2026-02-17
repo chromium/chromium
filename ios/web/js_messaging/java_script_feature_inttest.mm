@@ -406,4 +406,124 @@ TEST_F(JavaScriptFeatureIsolatedWorldTest,
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));
 }
 
+// Sets up a private FakeJavaScriptFeature.
+class JavaScriptFeaturePrivateTest : public WebTestWithWebState {
+ protected:
+  JavaScriptFeaturePrivateTest()
+      : WebTestWithWebState(std::make_unique<web::FakeWebClient>()),
+        feature_(ContentWorld::kPageContentWorld,
+                 OriginFilter::kValidTestOriginForTesting) {}
+
+  void SetUp() override {
+    WebTestWithWebState::SetUp();
+
+    static_cast<web::FakeWebClient*>(WebTestWithWebState::GetWebClient())
+        ->SetJavaScriptFeatures({feature()});
+  }
+
+  WebFrame* GetMainFrame() {
+    return feature()->GetWebFramesManager(web_state())->GetMainWebFrame();
+  }
+
+  FakeJavaScriptFeature* feature() { return &feature_; }
+
+ private:
+  FakeJavaScriptFeature feature_;
+};
+
+// Tests that a JavaScriptFeature executes its injected JavaScript when
+// in an authorized domain
+TEST_F(JavaScriptFeaturePrivateTest, JavaScriptFeatureInjectJavaScript) {
+  LoadHtml(kPageHTML, GURL("https://test.test"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+  EXPECT_TRUE(test::WaitForWebViewContainingText(
+      web_state(), kFakeJavaScriptFeatureLoadedText));
+}
+
+// Tests that a JavaScriptFeature executes its injected JavaScript when
+// in an authorized domain (case insensitive).
+TEST_F(JavaScriptFeaturePrivateTest,
+       JavaScriptFeatureInjectJavaScriptCaseInsensitive) {
+  LoadHtml(kPageHTML, GURL("https://TEST.test"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+  EXPECT_TRUE(test::WaitForWebViewContainingText(
+      web_state(), kFakeJavaScriptFeatureLoadedText));
+}
+
+// Tests that a JavaScriptFeature executes its injected JavaScript when
+// in an unauthorized domain
+TEST_F(JavaScriptFeaturePrivateTest, JavaScriptFeatureDoNotInjectJavaScript) {
+  LoadHtml(kPageHTML, GURL("http://invalid.test"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+  // Shorter timeout on this as it is expected to fail.
+  EXPECT_FALSE(test::WaitForWebViewContainingText(
+      web_state(), kFakeJavaScriptFeatureLoadedText, base::Seconds(1)));
+}
+
+// Tests that a private JavaScriptFeature receives post messages from JavaScript
+// for registered names in the page content world when on an authorized page.
+TEST_F(JavaScriptFeaturePrivateTest, MessageHandler) {
+  LoadHtml(kPageHTML, GURL("https://test.test/subpage"));
+
+  ASSERT_FALSE(feature()->last_received_web_state());
+  ASSERT_FALSE(feature()->last_received_message());
+
+  auto parameters =
+      base::ListValue().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
+  feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return feature()->last_received_web_state();
+  }));
+
+  EXPECT_EQ(web_state(), feature()->last_received_web_state());
+
+  ASSERT_TRUE(feature()->last_received_message()->body());
+  const std::string* reply =
+      feature()->last_received_message()->body()->GetIfString();
+  ASSERT_TRUE(reply);
+  EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
+}
+
+// Tests that a private JavaScriptFeature receives direct post messages from
+// JavaScript for registered names in the page content world when on an
+// authorized page.
+TEST_F(JavaScriptFeaturePrivateTest, DirectMessageHandlerOnAllowedPage) {
+  LoadHtml(kPageHTML, GURL("https://test.test"));
+  // Send message directly without using any JavaScriptFeature
+  ExecuteJavaScript(
+      @"window.webkit.messageHandlers['FakeHandlerName'].postMessage('test');");
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return feature()->last_received_web_state();
+  }));
+}
+
+// Tests that a private JavaScriptFeature receives direct post messages from
+// JavaScript for registered names in the page content world when on an
+// authorized page (case insensitive).
+TEST_F(JavaScriptFeaturePrivateTest,
+       DirectMessageHandlerOnCaseInsensitivePage) {
+  LoadHtml(kPageHTML, GURL("https://TEST.test"));
+  // Send message directly without using any JavaScriptFeature
+  ExecuteJavaScript(
+      @"window.webkit.messageHandlers['FakeHandlerName'].postMessage('test');");
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return feature()->last_received_web_state();
+  }));
+}
+
+// Tests that a private JavaScriptFeature receives direct post messages from
+// JavaScript for registered names in the page content world when on an
+// filtered page.
+TEST_F(JavaScriptFeaturePrivateTest, DirectMessageHandlerOnFilteredPage) {
+  LoadHtml(kPageHTML, GURL("https://invalid.test"));
+  // Send message directly without using any JavaScriptFeature
+  ExecuteJavaScript(
+      @"window.webkit.messageHandlers['FakeHandlerName'].postMessage('test');");
+  // Shorter timeout on this as it is expected to fail.
+  ASSERT_FALSE(WaitUntilConditionOrTimeout(base::Seconds(1), ^bool {
+    return feature()->last_received_web_state();
+  }));
+}
+
 }  // namespace web

@@ -29,6 +29,7 @@ source_set("js_messaging") {
   ]
 
   sources = [
+    "origin_filter.mm",
     "page_script_util.h",
     "page_script_util.mm",
     "web_frame_impl.h",
@@ -59,6 +60,7 @@ source_set("java_script_feature") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/js_messaging:web_view_js_utils",
+    "//ios/web/util",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",

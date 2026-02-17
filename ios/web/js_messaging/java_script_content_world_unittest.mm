@@ -97,4 +97,28 @@ TEST_F(JavaScriptContentWorldTest, AddAllContentWorldsFeature) {
   EXPECT_EQ(initial_scripts_count + 4, scripts_count);
 }
 
+// Tests adding a private JavaScriptFeature.
+TEST_F(JavaScriptContentWorldTest, AddPrivateJavaScriptFeature) {
+  WKWebViewConfigurationProvider& configuration_provider =
+      WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
+  WKUserContentController* user_content_controller =
+      configuration_provider.GetWebViewConfiguration().userContentController;
+
+  unsigned long initial_scripts_count =
+      [[user_content_controller userScripts] count];
+  ASSERT_GT(initial_scripts_count, 0ul);
+
+  web::JavaScriptContentWorld world(GetBrowserState(),
+                                    WKContentWorld.defaultClientWorld);
+
+  FakeJavaScriptFeature feature(ContentWorld::kIsolatedWorld,
+                                OriginFilter::kValidTestOriginForTesting);
+  world.AddFeature(&feature);
+  EXPECT_TRUE(world.HasFeature(&feature));
+
+  unsigned long scripts_count = [[user_content_controller userScripts] count];
+  // Two scripts are added by FakeJavaScriptFeature.
+  EXPECT_EQ(initial_scripts_count + 2, scripts_count);
+}
+
 }  // namespace web

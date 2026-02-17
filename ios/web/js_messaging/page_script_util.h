@@ -27,6 +27,10 @@ NSString* GetPageScript(NSString* script_file_name);
 NSString* MakeScriptInjectableOnce(NSString* script_identifier,
                                    NSString* script);
 
+// Make sure that script is a no-op when injected on a domain that have a
+// origin that is not in `filter`.
+NSString* MakeScriptPrivate(NSArray<NSString*>* filter, NSString* script);
+
 }  // namespace web
 
 #endif  // IOS_WEB_JS_MESSAGING_PAGE_SCRIPT_UTIL_H_
