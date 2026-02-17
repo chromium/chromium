@@ -303,6 +303,18 @@ export class ContextMenuEntrypointElement extends
     this.fire('context-menu-closed');
   }
 
+  protected getWrapperId_(): string {
+    return this.glifAnimationState !== GlifAnimationState.INELIGIBLE ?
+        'glowWrapper' :
+        '';
+  }
+
+  protected getWrapperCssClass_(): string {
+    return this.glifAnimationState !== GlifAnimationState.INELIGIBLE ?
+        'glow-container' :
+        '';
+  }
+
   private showMenuAtEntrypoint_() {
     const entrypoint =
         this.shadowRoot.querySelector<HTMLElement>('#entrypoint');

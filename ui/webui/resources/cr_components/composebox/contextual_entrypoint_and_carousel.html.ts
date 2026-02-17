@@ -10,87 +10,64 @@ import {ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js'
 import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
 
 export function getHtml(this: ContextualEntrypointAndCarouselElement) {
-  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
-  const getActiveToolChip = () => {
-    switch (this.activeTool_) {
-      case ComposeboxToolMode.kDeepSearch:
-        return html`
-        <cr-composebox-tool-chip
-            id="deepSearchChip"
-            exportparts="tool-chip-label"
-            icon="composebox:deepSearch"
-            label="${this.getToolChipLabel_(ComposeboxToolMode.kDeepSearch)}"
-            remove-chip-aria-label="${
-            this.i18n(
-                'removeToolChipAriaLabel',
-                this.getToolChipLabel_(ComposeboxToolMode.kDeepSearch))}"
-            ?visible="${true}"
-            @click="${this.handleDeepSearchClick_}">
-        </cr-composebox-tool-chip>
-        `;
-      case ComposeboxToolMode.kImageGen:
-        return html`
-        <cr-composebox-tool-chip
-            id="nanoBananaChip"
-            exportparts="tool-chip-label"
-            icon="composebox:nanoBanana"
-            label="${this.getToolChipLabel_(ComposeboxToolMode.kImageGen)}"
-            remove-chip-aria-label="${
-            this.i18n(
-                'removeToolChipAriaLabel',
-                this.getToolChipLabel_(ComposeboxToolMode.kImageGen))}"
-            ?visible="${true}"
-            @click="${this.handleImageGenClick_}">
-        </cr-composebox-tool-chip>
-        `;
-      case ComposeboxToolMode.kCanvas:
-        return html`
-        <cr-composebox-tool-chip
-            id="canvasChip"
-            exportparts="tool-chip-label"
-            icon="composebox:canvas"
-            label="${this.getToolChipLabel_(ComposeboxToolMode.kCanvas)}"
-            remove-chip-aria-label="${
-            this.i18n(
-                'removeToolChipAriaLabel',
-                this.getToolChipLabel_(ComposeboxToolMode.kCanvas))}"
-            ?visible="${true}"
-            @click="${this.handleCanvasClick_}">
-        </cr-composebox-tool-chip>
-        `;
-      default:
-        return '';
-    }
-  };
-
+  // clang-format off
   // eslint-disable-next-line @webui-eslint/lit-element-template-structure
   const toolChips = html`
-        ${
-      this.shouldShowRecentTabChip_ ? html`
-        <composebox-recent-tab-chip id="recentTabChip"
-            class="upload-button contextual-chip"
-            .recentTab="${this.recentTabForChip_}"
-            @add-tab-context="${this.addTabContext_}">
-        </composebox-recent-tab-chip>
-        ` :
-                                      ''}
-      ${
-      this.shouldShowLensSearchChip_ ? html`
-        <cr-composebox-lens-search id="lensSearchChip" class="upload-button contextual-chip">
-        </cr-composebox-lens-search>
-      ` :
-                                       ''}
-      ${getActiveToolChip()}
+    ${this.shouldShowRecentTabChip_ ? html`
+      <composebox-recent-tab-chip id="recentTabChip"
+          class="upload-button contextual-chip"
+          .recentTab="${this.recentTabForChip_}"
+          @add-tab-context="${this.addTabContext_}">
+      </composebox-recent-tab-chip>
+    ` : ''}
+    ${this.shouldShowLensSearchChip_ ? html`
+      <cr-composebox-lens-search id="lensSearchChip"
+          class="upload-button contextual-chip">
+      </cr-composebox-lens-search>
+    ` : ''}
+    ${this.activeTool_ === ComposeboxToolMode.kDeepSearch ? html`
+      <cr-composebox-tool-chip
+          id="deepSearchChip"
+          exportparts="tool-chip-label"
+          icon="composebox:deepSearch"
+          label="${this.getToolChipLabel_(ComposeboxToolMode.kDeepSearch)}"
+          remove-chip-aria-label="${
+          this.i18n(
+              'removeToolChipAriaLabel',
+              this.getToolChipLabel_(ComposeboxToolMode.kDeepSearch))}"
+          ?visible="${true}"
+          @click="${this.handleDeepSearchClick_}">
+      </cr-composebox-tool-chip>
+    ` : ''}
+    ${this.activeTool_ === ComposeboxToolMode.kImageGen ? html`
+      <cr-composebox-tool-chip
+          id="nanoBananaChip"
+          exportparts="tool-chip-label"
+          icon="composebox:nanoBanana"
+          label="${this.getToolChipLabel_(ComposeboxToolMode.kImageGen)}"
+          remove-chip-aria-label="${
+          this.i18n(
+              'removeToolChipAriaLabel',
+              this.getToolChipLabel_(ComposeboxToolMode.kImageGen))}"
+          ?visible="${true}"
+          @click="${this.handleImageGenClick_}">
+      </cr-composebox-tool-chip>
+    ` : ''}
+    ${this.activeTool_ === ComposeboxToolMode.kCanvas ? html`
+      <cr-composebox-tool-chip
+          id="canvasChip"
+          exportparts="tool-chip-label"
+          icon="composebox:canvas"
+          label="${this.getToolChipLabel_(ComposeboxToolMode.kCanvas)}"
+          remove-chip-aria-label="${
+          this.i18n(
+              'removeToolChipAriaLabel',
+              this.getToolChipLabel_(ComposeboxToolMode.kCanvas))}"
+          ?visible="${true}"
+          @click="${this.handleCanvasClick_}">
+      </cr-composebox-tool-chip>
+    ` : ''}
   `;
-
-  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
-  const voiceSearchButton = html`
-          <cr-icon-button id="voiceSearchButton" class="voice-icon"
-              part="voice-icon" iron-icon="cr:mic"
-              @click="${this.onVoiceSearchClick_}"
-              title="${this.i18n('voiceSearchButtonLabel')}">
-          </cr-icon-button>
-        `;
 
   // eslint-disable-next-line @webui-eslint/lit-element-template-structure
   const contextMenu = html`
@@ -144,23 +121,29 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             </cr-composebox-context-menu-entrypoint>
           `}
         `}
-        ${
-      this.searchboxLayoutMode === 'Compact' && this.showVoiceSearch ?
-          voiceSearchButton :
-          ''}
-      ${this.shouldShowToolChipsForTallMode_ ? toolChips : ''}
-        ${
-      this.searchboxLayoutMode === 'TallTopContext' && this.showVoiceSearch ?
-          voiceSearchButton :
-          ''}
-        ${
-      this.searchboxLayoutMode === 'TallTopContext' && this.submitButtonShown ?
-          html`<slot name="submit-button"></slot>` :
-          ''}
+        ${this.searchboxLayoutMode === 'Compact' && this.showVoiceSearch ? html`
+          <cr-icon-button id="voiceSearchButton" class="voice-icon"
+              part="voice-icon" iron-icon="cr:mic"
+              @click="${this.onVoiceSearchClick_}"
+              title="${this.i18n('voiceSearchButtonLabel')}">
+          </cr-icon-button>
+        ` : ''}
+        ${this.shouldShowToolChipsForTallMode_ ? toolChips : ''}
+        ${this.searchboxLayoutMode === 'TallTopContext' ? html`
+          ${this.showVoiceSearch ? html`
+            <cr-icon-button id="voiceSearchButton" class="voice-icon"
+                part="voice-icon" iron-icon="cr:mic"
+                @click="${this.onVoiceSearchClick_}"
+                title="${this.i18n('voiceSearchButtonLabel')}">
+            </cr-icon-button>
+          ` : ''}
+          ${this.submitButtonShown ? html`
+            <slot name="submit-button"></slot>
+          ` : ''}
+        ` : ''}
       </div>
   `;
 
-  // clang-format off
   return html`<!--_html_template_start_-->
   ${this.searchboxLayoutMode === 'Compact' && !this.isOmniboxInCompactMode_ ? contextMenu : ''}
     <div part="carousel-container">
@@ -223,9 +206,12 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       @change="${this.onFileChange_}"
       hidden>
   </input>
-  ${(this.searchboxLayoutMode === 'TallBottomContext' || !this.searchboxLayoutMode) && this.showVoiceSearch ?
-          voiceSearchButton :
-          ''}
+  ${this.shouldShowVoiceSearchAtBottom_() ? html`
+    <cr-icon-button id="voiceSearchButton" class="voice-icon" part="voice-icon"
+        iron-icon="cr:mic" @click="${this.onVoiceSearchClick_}"
+        title="${this.i18n('voiceSearchButtonLabel')}">
+    </cr-icon-button>
+   ` : ''}
   ${this.submitButtonShown && this.searchboxLayoutMode === 'TallBottomContext' ?
       html`<slot name="submit-button"></slot>` :
       ''}
