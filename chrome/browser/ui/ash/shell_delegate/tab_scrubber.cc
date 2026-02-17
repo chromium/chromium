@@ -178,6 +178,13 @@ void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
   // left, positive means right.
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(&browser->GetBrowser());
+
+  if (browser_view->ShouldDrawVerticalTabStrip()) {
+    // TODO(crbug.com/484364227): TabScrubbing is not supported in VerticalTabs
+    // at this point in time.
+    return;
+  }
+
   float x_offset = event->x_offset();
   if (!scrubbing_) {
     BeginScrub(browser_view, x_offset);
@@ -276,6 +283,12 @@ void TabScrubber::OnTabRemoved(int index) {
 void TabScrubber::BeginScrub(BrowserView* browser_view, float x_offset) {
   DCHECK(browser_view);
   DCHECK(browser_view->browser());
+
+  if (browser_view->ShouldDrawVerticalTabStrip()) {
+    // TODO(crbug.com/484364227): TabScrubbing is not supported in VerticalTabs
+    // at this point in time.
+    return;
+  }
 
   scrubbing_start_time_ = base::TimeTicks::Now();
   // TODO(crbug.com/465835455): Move TabScrubber into
