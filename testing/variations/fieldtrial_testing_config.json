@@ -24027,6 +24027,23 @@
             ]
         }
     ],
+    "SearchEngineExplicitChoiceDialog": [
+        {
+            "platforms": [
+                "windows",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SearchEngineExplicitChoiceDialog",
+                        "SearchEngineUnconditionalDialog"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchEnginePreconnectInterval": [
         {
             "platforms": [
