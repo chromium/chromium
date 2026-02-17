@@ -510,6 +510,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
     static class FragmentTracker extends FragmentManager.FragmentLifecycleCallbacks {
         final List<Title> mTitles = new ArrayList<>();
+
+        // Used to force-trigger the observers after activity re-creation, when the title updater
+        // need to display the breadcrumb from the restored titles.
+        private boolean mTitleInitialized;
+
         private final List<Observer> mObservers;
 
         FragmentTracker(List<Observer> observers) {
@@ -601,10 +606,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                 }
             }
 
-            if (updated) {
-                for (Observer o : mObservers) {
-                    o.onTitleUpdated();
-                }
+            if (updated || !mTitleInitialized) {
+                for (Observer o : mObservers) o.onTitleUpdated();
+                mTitleInitialized = true;
             }
         }
 

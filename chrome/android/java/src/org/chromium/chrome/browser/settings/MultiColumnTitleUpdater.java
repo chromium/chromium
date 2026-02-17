@@ -8,6 +8,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import android.content.Context;
 import android.graphics.text.LineBreaker;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,8 @@ import org.chromium.ui.base.LocalizationUtils;
 class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
 
     private static final LinearLayout.LayoutParams LAYOUT_CENTER_VERTICAL;
+
+    private static final String KEY_FIRST_VISIBLE_INDEX = "first_visible_index";
 
     static {
         LAYOUT_CENTER_VERTICAL = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
@@ -106,6 +109,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     private @Nullable MonotonicObservableSupplier<String> mCurrentPageTitle;
 
     MultiColumnTitleUpdater(
+            @Nullable Bundle savedInstanceState,
             MultiColumnSettings multiColumnSettings,
             Context context,
             LinearLayout container,
@@ -116,7 +120,9 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         mContainer = container;
         mMainTitleSetter = mainTitleSetter;
         mTitleTapCallback = titleTapCallback;
-
+        if (savedInstanceState != null) {
+            mFirstVisibleTitleIndex = savedInstanceState.getInt(KEY_FIRST_VISIBLE_INDEX);
+        }
         final int originalHeight =
                 mContainer
                         .getResources()
@@ -318,5 +324,9 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         params.setMarginEnd(endMargin + helpIconSize);
         mContainer.setLayoutParams(params);
         mContainer.invalidate();
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(KEY_FIRST_VISIBLE_INDEX, mFirstVisibleTitleIndex);
     }
 }

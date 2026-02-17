@@ -320,7 +320,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (!mStandalone) {
             if (isMultiColumnSettingEnabled()) {
                 assert mMultiColumnSettings != null;
-                createMultiColumnTitleUpdater();
+                createMultiColumnTitleUpdater(savedInstanceState);
                 createSearchCoordinator(savedInstanceState);
             } else {
                 mTitleUpdater = new TitleUpdater();
@@ -420,9 +420,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     @RequiresNonNull("mMultiColumnSettings")
-    private void createMultiColumnTitleUpdater() {
+    private void createMultiColumnTitleUpdater(@Nullable Bundle savedInstanceState) {
         if (!ChromeFeatureList.sSearchInSettings.isEnabled()) {
-            createMultiColumTitleUpdaterInternal(findViewById(R.id.settings_detailed_pane_title));
+            createMultiColumTitleUpdaterInternal(
+                    savedInstanceState, findViewById(R.id.settings_detailed_pane_title));
         } else {
             getSupportFragmentManager()
                     .registerFragmentLifecycleCallbacks(
@@ -433,9 +434,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                                         @NonNull FragmentManager fm,
                                         @NonNull Fragment f,
                                         @NonNull View v,
-                                        @Nullable Bundle savedInstanceState) {
+                                        @Nullable Bundle savedFragmentState) {
                                     assert mMultiColumnSettings != null;
+
+                                    // Pass the Activity's bundle, as the title updater state is
+                                    // tied to the activity lifecycle.
                                     createMultiColumTitleUpdaterInternal(
+                                            savedInstanceState,
                                             v.findViewById(R.id.settings_title_in_detailed_pane));
                                     fm.unregisterFragmentLifecycleCallbacks(this);
                                 }
@@ -445,9 +450,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     @RequiresNonNull("mMultiColumnSettings")
-    private void createMultiColumTitleUpdaterInternal(LinearLayout titleContainer) {
+    private void createMultiColumTitleUpdaterInternal(
+            @Nullable Bundle savedInstanceState, LinearLayout titleContainer) {
         mMultiColumnTitleUpdater =
                 new MultiColumnTitleUpdater(
+                        savedInstanceState,
                         mMultiColumnSettings,
                         titleContainer.getContext(),
                         titleContainer,
@@ -1105,6 +1112,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mSearchCoordinator != null) mSearchCoordinator.onSaveInstanceState(outState);
+        if (mMultiColumnTitleUpdater != null) {
+            mMultiColumnTitleUpdater.onSaveInstanceState(outState);
+        }
         if (mStartTime > 0) {
             outState.putLong(KEY_START_TIME, mStartTime);
             mStartTimeSaved = true;

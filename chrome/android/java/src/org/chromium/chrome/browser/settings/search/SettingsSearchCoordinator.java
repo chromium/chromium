@@ -275,7 +275,7 @@ public class SettingsSearchCoordinator
         if (savedState != null) {
             int state = savedState.getInt(KEY_FRAGMENT_STATE);
             if (state == FS_SEARCH || state == FS_RESULTS) {
-                enterSearchState(/* showZeroState= */ false);
+                enterSearchState(/* isRestored= */ true);
                 if (state == FS_RESULTS) enterResultState();
                 String queryText = savedState.getString(KEY_QUERY);
                 if (!TextUtils.isEmpty(queryText)) {
@@ -300,7 +300,7 @@ public class SettingsSearchCoordinator
             mFirstUiEntered = false;
         }
 
-        enterSearchState(/* showZeroState= */ true);
+        enterSearchState(/* isRestored= */ false);
     }
 
     private void restoreFragmentState() {
@@ -388,6 +388,7 @@ public class SettingsSearchCoordinator
         View searchBox = mActivity.findViewById(R.id.search_box);
         mHandler.post(
                 () -> {
+                    if (mFragmentState != FS_SETTINGS) return;
                     searchBox.setVisibility(isShowingMainSettings() ? View.VISIBLE : View.GONE);
                 });
 
@@ -597,7 +598,7 @@ public class SettingsSearchCoordinator
         return providerMap;
     }
 
-    private void enterSearchState(boolean showZeroState) {
+    private void enterSearchState(boolean isRestored) {
         initIndex();
 
         if (mMultiColumnSettings != null && !mMultiColumnSettingsBackActionHandlerSet) {
@@ -614,9 +615,9 @@ public class SettingsSearchCoordinator
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         queryEdit.setText("");
         mQueryEntered = false;
-        if (showZeroState) {
-            // Focus is required only if we display a zero-state illustration, not when we simply
-            // mean to clear fragment.
+        if (!isRestored) {
+            // Focus is required only when we display a zero-state illustration, not when we simply
+            // mean to clear fragment at activity restoration.
             queryEdit.requestFocus();
             clearFragment(
                     R.drawable.settings_zero_state, /* addToBackStack= */ true, emptyRunnable());
@@ -629,8 +630,12 @@ public class SettingsSearchCoordinator
             mPaneOpenedBySearch = true;
         }
         if (mUseMultiColumn) {
-            int stackCount = getSettingsFragmentManager().getBackStackEntryCount();
-            mUpdateFirstVisibleTitle.onResult(stackCount + 1);
+            // When being restored, MultiColumnTitleUpdater restores the first-visible title index
+            // from the saved bundle. Do not override it.
+            if (!isRestored) {
+                int stackCount = getSettingsFragmentManager().getBackStackEntryCount();
+                mUpdateFirstVisibleTitle.onResult(stackCount + 1);
+            }
         } else {
             updateSingleColumnSearchUiWidth();
         }
