@@ -46,8 +46,6 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool multisampled_render_to_texture = false;
     // Use the IMG GLenum values rather than EXT.
     bool use_img_for_multisampled_render_to_texture = false;
-    bool chromium_screen_space_antialiasing = false;
-    bool use_chromium_screen_space_antialiasing_via_shaders = false;
     bool oes_standard_derivatives = false;
     bool oes_egl_image_external = false;
     bool oes_egl_image_external_essl3 = false;
@@ -56,13 +54,11 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool oes_compressed_etc1_rgb8_texture = false;
     bool packed_depth24_stencil8 = false;
     bool npot_ok = false;
-    bool enable_texture_filter_anisotropic = false;
     bool enable_texture_float_linear = false;
     bool enable_texture_half_float_linear = false;
     bool enable_color_buffer_float = false;
     bool enable_color_buffer_half_float = false;
     bool angle_translated_shader_source = false;
-    bool angle_pack_reverse_row_order = false;
     bool arb_texture_rectangle = false;
     bool angle_instanced_arrays = false;
     bool occlusion_query_boolean = false;

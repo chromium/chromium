@@ -155,7 +155,6 @@ TEST_P(FeatureInfoTest, Basic) {
   EXPECT_FALSE(info_->feature_flags().oes_depth24);
   EXPECT_FALSE(info_->feature_flags().packed_depth24_stencil8);
   EXPECT_FALSE(info_->feature_flags().angle_translated_shader_source);
-  EXPECT_FALSE(info_->feature_flags().angle_pack_reverse_row_order);
   EXPECT_FALSE(info_->feature_flags().arb_texture_rectangle);
   EXPECT_FALSE(info_->feature_flags().angle_instanced_arrays);
   EXPECT_FALSE(info_->feature_flags().occlusion_query_boolean);
