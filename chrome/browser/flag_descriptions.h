@@ -7772,11 +7772,6 @@ inline constexpr char kCrOSDspBasedNsAllowedName[] =
 inline constexpr char kCrOSDspBasedNsAllowedDescription[] =
     "Allows the system variant of the NS in CRAS to be run on DSP ";
 
-inline constexpr char kCrOSDspBasedAgcAllowedName[] =
-    "Allow CRAS to use a DSP-based AGC if available";
-inline constexpr char kCrOSDspBasedAgcAllowedDescription[] =
-    "Allows the system variant of the AGC in CRAS to be run on DSP ";
-
 inline constexpr char kCrOSEnforceMonoAudioCaptureName[] =
     "Enforce mono audio capture for Chrome";
 inline constexpr char kCrOSEnforceMonoAudioCaptureDescription[] =

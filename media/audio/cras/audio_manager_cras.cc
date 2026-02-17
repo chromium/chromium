@@ -112,9 +112,8 @@ bool IsDspBasedNsDeactivated(int aec_group_id) {
 // allow using DSP-based AGC effect.
 bool IsDspBasedAgcDeactivated(int aec_group_id) {
   return base::GetFieldTrialParamByFeatureAsBool(
-             media::kCrOSDspBasedAgcDeactivatedGroups,
-             base::NumberToString(aec_group_id), false) ||
-         !base::FeatureList::IsEnabled(media::kCrOSDspBasedAgcAllowed);
+      media::kCrOSDspBasedAgcDeactivatedGroups,
+      base::NumberToString(aec_group_id), false);
 }
 
 // Specifies which DSP-based effects are allowed based on media constraints and

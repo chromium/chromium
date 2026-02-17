@@ -598,25 +598,17 @@ TEST_P(AudioManagerCrasTestAEC, BehaviorWithCrOSEnforceSystemAec) {
   }
 }
 
-class AudioManagerCrasTestDSP
-    : public AudioManagerCrasTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+class AudioManagerCrasTestDSP : public AudioManagerCrasTest,
+                                public ::testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
     std::unique_ptr<MockCrasUtil> util = std::make_unique<MockCrasUtil>();
-    ns_on_dsp_allowed_ = std::get<0>(GetParam());
-    agc_on_dsp_allowed_ = std::get<1>(GetParam());
+    ns_on_dsp_allowed_ = GetParam();
 
     if (ns_on_dsp_allowed_) {
       enabled_features_.emplace_back(media::kCrOSDspBasedNsAllowed);
     } else {
       disabled_features_.emplace_back(media::kCrOSDspBasedNsAllowed);
-    }
-
-    if (agc_on_dsp_allowed_) {
-      enabled_features_.emplace_back(media::kCrOSDspBasedAgcAllowed);
-    } else {
-      disabled_features_.emplace_back(media::kCrOSDspBasedAgcAllowed);
     }
 
     EXPECT_CALL(*util, CrasGetAecSupported()).WillOnce(testing::Return(false));
@@ -629,13 +621,11 @@ class AudioManagerCrasTestDSP
   std::vector<base::test::FeatureRef> enabled_features_;
   std::vector<base::test::FeatureRef> disabled_features_;
   bool ns_on_dsp_allowed_;
-  bool agc_on_dsp_allowed_;
 };
 
 INSTANTIATE_TEST_SUITE_P(AllInputParameters,
                          AudioManagerCrasTestDSP,
-                         ::testing::Combine(::testing::Values(false, true),
-                                            ::testing::Values(false, true)));
+                         ::testing::Values(false, true));
 
 TEST_P(AudioManagerCrasTestDSP, BehaviorWithoutAnyEnforcedEffects) {
   base::test::ScopedFeatureList feature_list;
@@ -678,8 +668,7 @@ TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAecAgc) {
 
   EXPECT_TRUE(DspAecAllowed(params));
   EXPECT_FALSE(DspNsAllowed(params));
-  EXPECT_TRUE(DspAgcAllowed(params) && agc_on_dsp_allowed_ ||
-              !DspAgcAllowed(params) && !agc_on_dsp_allowed_);
+  EXPECT_TRUE(DspAgcAllowed(params));
 }
 
 TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAecNsAgc) {
@@ -691,8 +680,7 @@ TEST_P(AudioManagerCrasTestDSP, BehaviorWithCrOSEnforceSystemAecNsAgc) {
   EXPECT_TRUE(DspAecAllowed(params));
   EXPECT_TRUE(DspNsAllowed(params) && ns_on_dsp_allowed_ ||
               !DspNsAllowed(params) && !ns_on_dsp_allowed_);
-  EXPECT_TRUE(DspAgcAllowed(params) && agc_on_dsp_allowed_ ||
-              !DspAgcAllowed(params) && !agc_on_dsp_allowed_);
+  EXPECT_TRUE(DspAgcAllowed(params));
 }
 
 }  // namespace
