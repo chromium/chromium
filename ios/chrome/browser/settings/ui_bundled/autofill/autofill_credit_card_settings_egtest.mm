@@ -300,7 +300,15 @@ id<GREYMatcher> BottomToolbar() {
 
 // Test that reaching the credit card details page for a server card does not
 // require reauthentication.
-- (void)testServerCardViewSkipsMandatoryReauth {
+// TODO(crbug.com/485239638): Test is flaky on device.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testServerCardViewSkipsMandatoryReauth \
+  FLAKY_testServerCardViewSkipsMandatoryReauth
+#else
+#define MAYBE_testServerCardViewSkipsMandatoryReauth \
+  testServerCardViewSkipsMandatoryReauth
+#endif
+- (void)MAYBE_testServerCardViewSkipsMandatoryReauth {
   [AutofillAppInterface saveMaskedCreditCard];
   [self openEditCreditCard:kServerCardHolderName];
 
