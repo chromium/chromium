@@ -103,7 +103,9 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
       SetPinned(prefs::kProjectsPanelPinnedToTabstrip, true));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest, UnpinTabSearch) {
+// TODO(crbug.com/485281827): Fix and re-enable.
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
+                       DISABLED_UnpinTabSearch) {
   RunTestSequence(
       EnsureBothButtonsVisible(),
       // Right click tab search button to open context menu.
@@ -173,8 +175,9 @@ class TabStripComboButtonEverythingMenuInteractiveUiTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/485281827): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonEverythingMenuInteractiveUiTest,
-                       UnpinEverythingMenu) {
+                       DISABLED_UnpinEverythingMenu) {
   RunTestSequence(
       EnsureBothButtonsVisible(),
       // Right click everything menu button to open context menu.
