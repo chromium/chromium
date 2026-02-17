@@ -228,8 +228,7 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     // from that collection if the image was removed between painting it and
     // running this callback, in which case we still want to set its paint time.
     auto it = pending_images_.find(record->Hash());
-    if (it == pending_images_.end() &&
-        !record->WasImageOrTextRemovedWhilePending()) {
+    if (it == pending_images_.end() && !record->WasNodeRemoved()) {
       continue;
     }
 

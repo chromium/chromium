@@ -45,7 +45,7 @@ void TextPaintTimingDetector::SendRectsToHud() {
     return;
   }
 
-  for (const auto& record : texts_queued_for_paint_time_.Values()) {
+  for (const auto& record : texts_queued_for_paint_time_) {
     if (record->FrameIndex() == frame_index_) {
       cc::WebVitalMetricType type;
       if (record->GetSoftNavigationContext()) {
@@ -84,10 +84,6 @@ OptionalPaintTimingCallback TextPaintTimingDetector::TakePaintTimingCallback() {
 
 void TextPaintTimingDetector::LayoutObjectWillBeDestroyed(
     const LayoutObject& object) {
-  auto it = texts_queued_for_paint_time_.find(&object);
-  if (it != texts_queued_for_paint_time_.end()) {
-    it->value->OnImageOrTextRemovedWhilePending();
-  }
   if (const TextRecord* record = ltp_manager_.LargestIgnoredText();
       record && record->GetNode() == object.GetNode()) {
     ltp_manager_.TakeLargestIgnoredText();
@@ -237,7 +233,7 @@ void TextPaintTimingDetector::ReportLargestIgnoredText() {
 
   recorded_set_.insert(record->GetNode()->GetLayoutObject(),
                        TextPaintStatus::kPainted);
-  QueueToMeasurePaintTime(*record->GetNode()->GetLayoutObject(), record);
+  QueueToMeasurePaintTime(record);
 }
 
 void TextPaintTimingDetector::Trace(Visitor* visitor) const {
@@ -290,15 +286,20 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
   bool is_needed_for_lcp = IsRecordingLargestTextPaint();
   bool can_report_timing =
       text_element_timing_ ? text_element_timing_->CanReportElements() : false;
-  HeapVector<Member<const LayoutObject>> keys_to_be_removed;
   TextRecord* largest_removed_text = nullptr;
-  for (const auto& [key, record] : texts_queued_for_paint_time_) {
-    if (record->HasPaintTime() || record->FrameIndex() > frame_index) {
-      continue;
+
+  while (!texts_queued_for_paint_time_.empty()) {
+    TextRecord* record = texts_queued_for_paint_time_.front().Get();
+    // `texts_queued_for_paint_time_` is in frame index order, so we're done
+    // when we find an entry for a later frame.
+    if (record->FrameIndex() > frame_index) {
+      break;
     }
+    texts_queued_for_paint_time_.pop_front();
+
+    CHECK(!record->HasPaintTime());
     record->SetPaintTime(timestamp, paint_timing_info);
 
-    keys_to_be_removed.push_back(key);
     // `record` may have been removed from the `recorded_set_` because the node
     // was detached from the DOM but left in `texts_queued_for_paint_time_` to
     // record paint and presentation time for soft navigation heuristics. To
@@ -311,10 +312,8 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
     //
     // Note: we can't check `recorded_set_` here to detect removal because the
     // `largest_ignored_text_` is not added to that set when document opacity
-    // changes to a non-zero value (crbug.com/459517297). We also can't just
-    // check if there's a layout object, because the node could have been
-    // re-added.
-    if (record->WasImageOrTextRemovedWhilePending()) {
+    // changes to a non-zero value (crbug.com/459517297).
+    if (record->WasNodeRemoved()) {
       if (is_needed_for_lcp && record->RecordedSize() > 0u &&
           (!largest_removed_text ||
            largest_removed_text->RecordedSize() < record->RecordedSize())) {
@@ -331,7 +330,6 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
       lcp_calculator->MaybeUpdateLargestText(record);
     }
   }
-  texts_queued_for_paint_time_.RemoveAll(keys_to_be_removed);
 
   if (largest_removed_text) {
     CHECK(lcp_calculator);
@@ -377,7 +375,7 @@ TextRecord* TextPaintTimingDetector::MaybeRecordTextRecord(
         context);
   }
 
-  QueueToMeasurePaintTime(object, record);
+  QueueToMeasurePaintTime(record);
   return record;
 }
 

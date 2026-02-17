@@ -70,22 +70,16 @@ class CORE_EXPORT PaintTimingRecord
   }
 
   // Returns whether or not the corresponding image or text was removed from the
-  // DOM after the record was created and before getting paint timing. Used to
-  // ensure we get paint timing for such records without reporting them as LCP
-  // candidates.
-  bool WasImageOrTextRemovedWhilePending() const {
-    return was_image_or_text_removed_while_pending_;
-  }
-  void OnImageOrTextRemovedWhilePending() {
-    was_image_or_text_removed_while_pending_ = true;
-  }
+  // DOM after the record was created. Used to ensure we get paint timing for
+  // such records without reporting them as LCP candidates.
+  bool WasNodeRemoved() const;
 
  private:
   const WeakMember<Node> node_;
+  const WeakMember<LayoutObject> layout_object_;
   const uint64_t recorded_size_;
   const gfx::RectF root_visual_rect_;
   uint32_t frame_index_ = 0;
-  bool was_image_or_text_removed_while_pending_ = false;
   base::TimeTicks paint_time_;
   DOMPaintTimingInfo paint_timing_info_;
   Member<SoftNavigationContext> soft_navigation_context_;

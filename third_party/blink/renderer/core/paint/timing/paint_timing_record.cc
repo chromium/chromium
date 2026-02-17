@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_visualizer.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
@@ -20,6 +21,7 @@ PaintTimingRecord::PaintTimingRecord(Node* node,
                                      const gfx::RectF& root_visual_rect,
                                      SoftNavigationContext* context)
     : node_(node),
+      layout_object_(node->GetLayoutObject()),
       recorded_size_(recorded_size),
       root_visual_rect_(root_visual_rect),
       soft_navigation_context_(context),
@@ -33,6 +35,7 @@ PaintTimingRecord::PaintTimingRecord(Node* node,
 
 void PaintTimingRecord::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
+  visitor->Trace(layout_object_);
   visitor->Trace(soft_navigation_context_);
 }
 
@@ -47,6 +50,11 @@ void PaintTimingRecord::PopulateTraceValue(TracedValue& value) const {
   if (lcp_rect_info_) {
     lcp_rect_info_->OutputToTraceValue(value);
   }
+}
+
+bool PaintTimingRecord::WasNodeRemoved() const {
+  return !node_ || !node_->GetLayoutObject() ||
+         node_->GetLayoutObject() != layout_object_;
 }
 
 TextRecord::TextRecord(Node* node,

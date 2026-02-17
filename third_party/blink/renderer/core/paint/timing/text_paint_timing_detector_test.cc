@@ -973,4 +973,31 @@ TEST_F(TextPaintTimingDetectorTest,
   EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 0);
 }
 
+TEST_F(TextPaintTimingDetectorTest, NodeModifiedWhileRecordPending) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target"></div>
+  )HTML");
+
+  // Simulate painting the text node. This should queue a presentation callback
+  // for this frame.
+  Element* target = GetElement("target");
+  To<HTMLElement>(target)->setInnerText("text");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 1);
+
+  // Now simulate modifying the same node with its eligibility reset. This
+  // should queue a second entry for the same node.
+  GetTextPaintTimingDetector()->ResetPaintTrackingOnInteraction(
+      *target->GetLayoutObject());
+  To<Text>(target->firstChild())->setData("new text");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 2);
+
+  InvokeCallback();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 1);
+
+  InvokeCallback();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 0);
+}
+
 }  // namespace blink
