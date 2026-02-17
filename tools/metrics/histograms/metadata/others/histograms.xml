@@ -4200,7 +4200,6 @@ chromium-metrics-reviews@google.com.
   <token key="SurveyName">
     <variant name="BeforeFirstRunDesktopRefreshSurvey"/>
     <variant name="PerformanceControlsPPMSurvey"/>
-    <variant name="PrivacySandboxSentimentSurvey"/>
   </token>
 </histogram>
 

@@ -121,10 +121,6 @@ namespace permissions {
 class PermissionIndicatorsTabData;
 }  // namespace permissions
 
-namespace privacy_sandbox {
-class PrivacySandboxTabObserver;
-}  // namespace privacy_sandbox
-
 #if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
 namespace skills {
 class SkillsUpdateObserver;
@@ -234,10 +230,6 @@ class TabFeatures {
   contextual_tasks::ContextualTasksTabVisitTracker*
   contextual_tasks_tab_visit_tracker() {
     return contextual_tasks_tab_visit_tracker_.get();
-  }
-
-  privacy_sandbox::PrivacySandboxTabObserver* privacy_sandbox_tab_observer() {
-    return privacy_sandbox_tab_observer_.get();
   }
 
   extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
@@ -401,9 +393,6 @@ class TabFeatures {
   // Responsible for updating status indicator of the pinned translate button.
   std::unique_ptr<PinnedTranslateActionListener>
       pinned_translate_action_listener_;
-
-  std::unique_ptr<privacy_sandbox::PrivacySandboxTabObserver>
-      privacy_sandbox_tab_observer_;
 
   // The tab-scoped extension side-panel manager. There is a separate
   // window-scoped extension side-panel manager.

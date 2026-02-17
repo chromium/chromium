@@ -160,14 +160,6 @@ extern const base::FeatureParam<bool>
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAdTopicsContentParity);
 
-// Enables the `Always on` sentiment survey
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxSentimentSurvey);
-
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<std::string>
-    kPrivacySandboxSentimentSurveyTriggerId;
-
 #if BUILDFLAG(IS_ANDROID)
 // The delay in milliseconds between the first click and the next accepted
 // click.

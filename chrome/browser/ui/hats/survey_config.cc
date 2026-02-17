@@ -207,8 +207,6 @@ constexpr char
 constexpr char
     kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback[] =
         "plus-address-filled-plus-address-via-manual-fallback";
-constexpr char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[] =
-    "privacy-sandbox-sentiment-survey";
 constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[] =
     "omnibox-on-focus-happiness";
 constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsUtility[] =
@@ -266,19 +264,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           permissions::kPermissionPromptSurveyInitialPermissionStatusKey,
           permissions::kPermissionPromptSurveyPromptOptionsKey,
           permissions::kPermissionPromptSurveyPromptDisplayDurationKey});
-
-  // Privacy sandbox always on sentiment survey
-  survey_configs.emplace_back(
-      &privacy_sandbox::kPrivacySandboxSentimentSurvey,
-      kHatsSurveyTriggerPrivacySandboxSentimentSurvey,
-      privacy_sandbox::kPrivacySandboxSentimentSurveyTriggerId.Get(),
-      /*product_specific_bits_data_fields=*/
-      std::vector<std::string>{"Topics enabled", "Protected audience enabled",
-                               "Measurement enabled", "Signed in"},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{"Channel"},
-      /*log_responses_to_uma=*/true,
-      /*log_responses_to_ukm=*/true);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Dev tools surveys.

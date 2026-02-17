@@ -112,7 +112,6 @@ extern const char
     kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey[];
 extern const char
     kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback[];
-extern const char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[];
 extern const char kHatsSurveyTriggerPrivacySandboxActSurvey[];
 extern const char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[];
 extern const char kHatsSurveyTriggerOnFocusZpsSuggestionsUtility[];

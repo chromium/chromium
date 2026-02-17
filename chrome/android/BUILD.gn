@@ -991,7 +991,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/metrics/metrics_reporting_state.h",
       "//chrome/browser/notifications/notification_handler.h",
       "//chrome/browser/notifications/notification_platform_bridge_android.cc",
-      "//components/privacy_sandbox/privacy_sandbox_survey_service.h",
     ]
   }
 
