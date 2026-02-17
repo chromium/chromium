@@ -11,4 +11,5 @@ rust_static_library("cbor") {
   deps = [ "//third_party/rust/bytes/v1:lib" ]
   no_chromium_prelude = true
   testonly = true
+  no_clippy = true  # TODO(https://crbug.com/472355480)
 }

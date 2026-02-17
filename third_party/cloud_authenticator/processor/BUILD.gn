@@ -27,6 +27,7 @@ rust_static_library("processor") {
   ]
   no_chromium_prelude = true
   testonly = true
+  no_clippy = true  # TODO(https://crbug.com/472355480)
 
   # Switches to using test keys for the recovery key store.
   features = [ "chromium_integration_test" ]

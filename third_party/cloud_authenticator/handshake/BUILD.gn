@@ -17,4 +17,5 @@ rust_static_library("handshake") {
   ]
   no_chromium_prelude = true
   testonly = true
+  no_clippy = true  # TODO(https://crbug.com/472355480)
 }
