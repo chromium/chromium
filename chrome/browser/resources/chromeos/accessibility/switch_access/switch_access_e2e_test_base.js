@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 GEN_INCLUDE([
-  '../../common/testing/assert_additions.js',
-  '../../common/testing/e2e_test_base.js',
+  '../common/testing/assert_additions.js',
+  '../common/testing/e2e_test_base.js',
 ]);
 
 /** Base class for browser tests for Switch Access. */

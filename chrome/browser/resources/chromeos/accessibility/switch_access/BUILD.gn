@@ -22,7 +22,7 @@ group("build") {
 }
 
 switch_access_dir =
-    "$root_out_dir/resources/chromeos/accessibility/switch_access/mv3"
+    "$root_out_dir/resources/chromeos/accessibility/switch_access"
 
 # Directory where typescript build will occur.
 ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
@@ -73,7 +73,7 @@ ts_library("build_ts") {
 
   composite = true
 
-  deps = [ "../../common:build_ts" ]
+  deps = [ "../common:build_ts" ]
 
   extra_deps = [ ":stage_ts_build" ]
 
@@ -81,23 +81,23 @@ ts_library("build_ts") {
       [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
 
   definitions = [
-    "../../definitions/accessibility_private_mv2.d.ts",
-    "../../definitions/automation.d.ts",
-    "../../definitions/clipboard_mv2.d.ts",
-    "../../definitions/command_line_private.d.ts",
-    "../../definitions/extension_types.d.ts",
-    "../../definitions/extensions.d.ts",
-    "../../definitions/runtime.d.ts",
-    "../../definitions/settings_private_mv2.d.ts",
-    "../../definitions/tabs.d.ts",
-    "../../definitions/windows.d.ts",
+    "../definitions/accessibility_private_mv2.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/clipboard_mv2.d.ts",
+    "../definitions/command_line_private.d.ts",
+    "../definitions/extension_types.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/settings_private_mv2.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/windows.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
 
   in_files = ts_modules
 
-  tsconfig_base = "../../tsconfig.base.json"
+  tsconfig_base = "../tsconfig.base.json"
 }
 
 bundle_js("bundle_js") {
@@ -110,7 +110,7 @@ bundle_js("bundle_js") {
 
   deps = [
     ":build_ts",
-    "../../common:copied_files",
+    "../common:copied_files",
   ]
 }
 
@@ -183,10 +183,10 @@ source_set("browser_tests") {
 }
 
 test_includes = [
-  "../../common/testing/accessibility_test_base.js",
-  "../../common/testing/assert_additions.js",
-  "../../common/testing/callback_helper.js",
-  "../../common/testing/e2e_test_base.js",
+  "../common/testing/accessibility_test_base.js",
+  "../common/testing/assert_additions.js",
+  "../common/testing/callback_helper.js",
+  "../common/testing/e2e_test_base.js",
   "switch_access_e2e_test_base.js",
   "test_utility.js",
 ]
