@@ -38,7 +38,6 @@ std::string ToJSONString(std::string_view in) {
   ret.reserve(in.size() + 2);
   ret.push_back('"');
 
-  base::span<const char> in_bytes = base::span(in);
   const size_t length = in.size();
   size_t offset = 0;
 
@@ -46,23 +45,21 @@ std::string ToJSONString(std::string_view in) {
     const size_t prior_offset = offset;
     // Input strings must be valid UTF-8.
     base_icu::UChar32 codepoint;
-    CHECK(base::ReadUnicodeCharacter(in_bytes.data(), length, &offset,
-                                     &codepoint));
+    CHECK(base::ReadUnicodeCharacter(in, &offset, &codepoint));
     // offset is updated by |ReadUnicodeCharacter| to index the last byte of the
     // codepoint. Increment it to index the first byte of the next codepoint for
     // the subsequent iteration.
     offset++;
 
-    if (codepoint == 0x20 || codepoint == 0x21 ||
-        (codepoint >= 0x23 && codepoint <= 0x5b) || codepoint >= 0x5d) {
-      ret.append(&in_bytes[prior_offset], offset - prior_offset);
-    } else if (codepoint == 0x22) {
+    if (codepoint == 0x22) {
       ret.append("\\\"");
     } else if (codepoint == 0x5c) {
       ret.append("\\\\");
-    } else {
+    } else if (codepoint < 0x20) {
       ret.append("\\u00");
       base::AppendHexEncodedByte(static_cast<uint8_t>(codepoint), ret, false);
+    } else {
+      ret.append(in.substr(prior_offset, offset - prior_offset));
     }
   }
 
