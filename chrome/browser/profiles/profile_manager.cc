@@ -1923,8 +1923,23 @@ std::optional<base::FilePath> ProfileManager::FindLastActiveProfile(
       continue;
     // Check if |entry| preferable over |found_entry|.
     bool entry_loaded = !!GetProfileByPath(entry_path);
-    if (!found_entry || (!found_entry_loaded && entry_loaded) ||
-        found_entry->GetActiveTime() < entry->GetActiveTime()) {
+    bool is_better = false;
+    if (!found_entry) {
+      is_better = true;
+    } else if (found_entry_loaded != entry_loaded) {
+      // Prefer loaded profiles over unloaded ones.
+      is_better = entry_loaded;
+    } else if (found_entry->GetActiveTime() != entry->GetActiveTime()) {
+      // Prefer profiles with more recent active time.
+      is_better = found_entry->GetActiveTime() < entry->GetActiveTime();
+    } else {
+      // Use the profile directory path as a tie-breaker, so that the function
+      // is deterministic, because the ordering of profiles in the container is
+      // unspecified.
+      is_better = entry_path.value() < found_entry->GetPath().value();
+    }
+
+    if (is_better) {
       found_entry = entry;
       found_entry_loaded = entry_loaded;
     }

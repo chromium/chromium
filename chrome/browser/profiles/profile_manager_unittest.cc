@@ -1803,8 +1803,7 @@ TEST_P(ProfileManagerTest, DestroyProfileOnBrowserClose) {
   EXPECT_FALSE(profile_manager->IsValidProfile(profile2));
 }
 
-// TODO(crbug.com/485084704): Flaky. Reenable it.
-TEST_P(ProfileManagerTest, DISABLED_DestroyEphemeralProfileOnBrowserClose) {
+TEST_P(ProfileManagerTest, DestroyEphemeralProfileOnBrowserClose) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kDestroyProfileOnBrowserClose);
 
