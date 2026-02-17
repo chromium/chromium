@@ -132,9 +132,8 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
       android_backing()->EndRead(this, std::move(sync_fd));
     }
 
-    // Set `texture_` to nullptr to signal failure to BeginScopedAccess(), which
-    // will itself then return nullptr to signal failure to the client.
     texture_ = nullptr;
+    return nullptr;
   }
 
   access_mode_ = access_mode;
