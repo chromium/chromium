@@ -26826,6 +26826,24 @@
             ]
         }
     ],
+    "TranslateToastStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260209",
+                    "enable_features": [
+                        "TranslateToast"
+                    ]
+                }
+            ]
+        }
+    ],
     "TransportSecurityFileWriterScheduleAndroid": [
         {
             "platforms": [
