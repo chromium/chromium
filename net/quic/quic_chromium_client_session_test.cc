@@ -66,6 +66,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_decrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_encrypter.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/http_constants.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
@@ -2618,6 +2619,30 @@ TEST_P(QuicChromiumClientSessionTest, SendPeriodicPings) {
 
   // Check if we call keep alive timeout even without any outstanding packets.
   CHECK_EQ(1, keep_alive_timeouts_);
+}
+
+// Tests that allow_extended_connect() returns false initially (before server
+// sends SETTINGS_ENABLE_CONNECT_PROTOCOL=1), and returns true after receiving
+// the setting. Extended CONNECT is required for WebTransport and WebSocket
+// support over HTTP/3.
+TEST_P(QuicChromiumClientSessionTest, AllowExtendedConnect) {
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+
+  // Initially, allow_extended_connect() should return false because the server
+  // hasn't sent SETTINGS_ENABLE_CONNECT_PROTOCOL=1 yet.
+  EXPECT_FALSE(session_->allow_extended_connect());
+
+  // Simulate receiving SETTINGS_ENABLE_CONNECT_PROTOCOL=1 from the server.
+  session_->OnSetting(quic::SETTINGS_ENABLE_CONNECT_PROTOCOL, 1);
+
+  // Now allow_extended_connect() should return true.
+  EXPECT_TRUE(session_->allow_extended_connect());
 }
 
 }  // namespace
