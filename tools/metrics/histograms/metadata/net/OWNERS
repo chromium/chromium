@@ -11,5 +11,5 @@ toyoshim@chromium.org
 drubery@chromium.org #{LAST_RESORT_SUGGESTION}
 thefrog@chromium.org #{LAST_RESORT_SUGGESTION}
 
-# For Crypto.UnexportableKeys
+# For Crypto.UnexportableKeys and DeviceBoundSessions
 alexilin@chromium.org #{LAST_RESORT_SUGGESTION}
