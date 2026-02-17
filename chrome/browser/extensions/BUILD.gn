@@ -547,6 +547,7 @@ source_set("extensions") {
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",
@@ -623,10 +624,7 @@ source_set("extensions") {
   defines = []
 
   if (is_mac || is_win || is_linux || is_chromeos) {
-    deps += [
-      "//chrome/browser/ui/webui:webui_util",
-      "//components/webapps/isolated_web_apps:scheme",
-    ]
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
   }
   if (is_android) {
     sources += [

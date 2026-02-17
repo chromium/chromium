@@ -177,16 +177,14 @@ source_set("webui") {
   }
 }
 
-if (!is_android) {
-  source_set("webui_util") {
-    sources = [
-      "webui_embedding_context.cc",
-      "webui_embedding_context.h",
-    ]
+source_set("webui_util") {
+  sources = [
+    "webui_embedding_context.cc",
+    "webui_embedding_context.h",
+  ]
 
-    deps = [
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/tabs:tabs_public",
-    ]
-  }
+  deps = [
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tabs_public",
+  ]
 }
