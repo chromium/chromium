@@ -12,6 +12,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/browser_view/ui_bundled:safe_area_provider",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/main/ui",
+    "//ios/chrome/browser/overlays/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

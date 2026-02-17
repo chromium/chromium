@@ -414,46 +414,6 @@ const CGFloat kTopDynamicIslandInset = 24;
   return self.browserContentViewController.view;
 }
 
-- (void)setInfobarBannerOverlayContainerViewController:
-    (UIViewController*)infobarBannerOverlayContainerViewController {
-  if (_infobarBannerOverlayContainerViewController ==
-      infobarBannerOverlayContainerViewController) {
-    return;
-  }
-
-  _infobarBannerOverlayContainerViewController =
-      infobarBannerOverlayContainerViewController;
-  if (!_infobarBannerOverlayContainerViewController) {
-    return;
-  }
-
-  DCHECK_EQ(_infobarBannerOverlayContainerViewController.parentViewController,
-            self);
-  DCHECK_EQ(_infobarBannerOverlayContainerViewController.view.superview,
-            self.view);
-  [self updateOverlayContainerOrder];
-}
-
-- (void)setInfobarModalOverlayContainerViewController:
-    (UIViewController*)infobarModalOverlayContainerViewController {
-  if (_infobarModalOverlayContainerViewController ==
-      infobarModalOverlayContainerViewController) {
-    return;
-  }
-
-  _infobarModalOverlayContainerViewController =
-      infobarModalOverlayContainerViewController;
-  if (!_infobarModalOverlayContainerViewController) {
-    return;
-  }
-
-  DCHECK_EQ(_infobarModalOverlayContainerViewController.parentViewController,
-            self);
-  DCHECK_EQ(_infobarModalOverlayContainerViewController.view.superview,
-            self.view);
-  [self updateOverlayContainerOrder];
-}
-
 - (const BrowserViewVisibilityStateChangedCallback&)
     browserViewVisibilityStateChangedCallback {
   return _browserViewVisibilityStateChangedCallback;
@@ -1383,9 +1343,6 @@ const CGFloat kTopDynamicIslandInset = 24;
   if (initialLayout) {
     [self.view bringSubviewToFront:self.typingShield];
   }
-
-  // Move the overlay containers in front of the hierarchy.
-  [self updateOverlayContainerOrder];
 }
 
 // Displays the current webState view.
@@ -1442,31 +1399,6 @@ const CGFloat kTopDynamicIslandInset = 24;
   [self.toolbarCoordinator updateToolbar];
 
   [self updateWebStateVisibility:YES];
-}
-
-- (void)updateOverlayContainerOrder {
-  // Both infobar overlay container views should exist in front of the entire
-  // browser UI, and the banner container should appear behind the modal
-  // container.
-  [self bringOverlayContainerToFront:
-            self.infobarBannerOverlayContainerViewController];
-  [self bringOverlayContainerToFront:
-            self.infobarModalOverlayContainerViewController];
-}
-
-- (void)bringOverlayContainerToFront:
-    (UIViewController*)containerViewController {
-  [self.view bringSubviewToFront:containerViewController.view];
-  // If `containerViewController` is presenting a view over its current context,
-  // its presentation container view is added as a sibling to
-  // `containerViewController`'s view. This presented view should be brought in
-  // front of the container view.
-  UIView* presentedContainerView =
-      containerViewController.presentedViewController.presentationController
-          .containerView;
-  if (presentedContainerView.superview == self.view) {
-    [self.view bringSubviewToFront:presentedContainerView];
-  }
 }
 
 // Invoked when voice search shows.

@@ -113,14 +113,6 @@ typedef struct {
 // Whether web usage is enabled for the WebStates in `self.browser`.
 @property(nonatomic) BOOL webUsageEnabled;
 
-// The container used for infobar banner overlays.
-@property(nonatomic, strong)
-    UIViewController* infobarBannerOverlayContainerViewController;
-
-// The container used for infobar modal overlays.
-@property(nonatomic, strong)
-    UIViewController* infobarModalOverlayContainerViewController;
-
 // Presentation delegate for the non-modal default browser promo.
 @property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>
     nonModalPromoPresentationDelegate;

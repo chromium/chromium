@@ -36,6 +36,14 @@
 // color.
 @property(nonatomic, assign) BOOL incognito;
 
+// The container used for infobar banner overlays.
+@property(nonatomic, weak)
+    UIViewController* infobarBannerOverlayContainerViewController;
+
+// The container used for infobar modal overlays.
+@property(nonatomic, weak)
+    UIViewController* infobarModalOverlayContainerViewController;
+
 // The TabStripViewController instance, managed by the container's coordinator.
 @property(nonatomic, weak) UIViewController* tabStripViewController;
 

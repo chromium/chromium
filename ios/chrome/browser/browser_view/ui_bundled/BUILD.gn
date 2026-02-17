@@ -200,7 +200,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/omnibox/ui/popup",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
-    "//ios/chrome/browser/overlays/ui_bundled",
     "//ios/chrome/browser/overscroll_actions/model",
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
     "//ios/chrome/browser/page_info/coordinator",

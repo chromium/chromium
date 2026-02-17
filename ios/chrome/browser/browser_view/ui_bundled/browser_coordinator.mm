@@ -158,7 +158,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
-#import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/page_info/coordinator/page_info_coordinator.h"
@@ -555,12 +554,6 @@ const char kChromeAppStoreUrl[] =
 // keyboard.
 @property(nonatomic, strong)
     FormInputAccessoryCoordinator* formInputAccessoryCoordinator;
-
-// The container coordinators for the infobar modalities.
-@property(nonatomic, strong)
-    OverlayContainerCoordinator* infobarBannerOverlayContainerCoordinator;
-@property(nonatomic, strong)
-    OverlayContainerCoordinator* infobarModalOverlayContainerCoordinator;
 
 // Coordinator in charge of presenting a mini map.
 @property(nonatomic, strong) MiniMapCoordinator* miniMapCoordinator;
@@ -1602,28 +1595,6 @@ const char kChromeAppStoreUrl[] =
   self.formInputAccessoryCoordinator.navigator = self;
   [self.formInputAccessoryCoordinator start];
 
-  // TODO(crbug.com/40228065): Refactor this coordinator so it doesn't dirctly
-  // access the BVC's view.
-  self.infobarModalOverlayContainerCoordinator =
-      [[OverlayContainerCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                            modality:OverlayModality::kInfobarModal];
-  [self.infobarModalOverlayContainerCoordinator start];
-  self.viewController.infobarModalOverlayContainerViewController =
-      self.infobarModalOverlayContainerCoordinator.viewController;
-
-  // TODO(crbug.com/40228065): Refactor this coordinator so it doesn't directly
-  // access the BVC's view.
-  self.infobarBannerOverlayContainerCoordinator =
-      [[OverlayContainerCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                            modality:OverlayModality::kInfobarBanner];
-  [self.infobarBannerOverlayContainerCoordinator start];
-  self.viewController.infobarBannerOverlayContainerViewController =
-      self.infobarBannerOverlayContainerCoordinator.viewController;
-
   _credentialProviderPromoCoordinator =
       [[CredentialProviderPromoCoordinator alloc]
           initWithBaseViewController:self.viewController
@@ -1721,12 +1692,6 @@ const char kChromeAppStoreUrl[] =
   [self hideTextZoomUI];
 
   [self stopAutofillAddCreditCardCoordinator];
-
-  [self.infobarBannerOverlayContainerCoordinator stop];
-  self.infobarBannerOverlayContainerCoordinator = nil;
-
-  [self.infobarModalOverlayContainerCoordinator stop];
-  self.infobarModalOverlayContainerCoordinator = nil;
 
   [self.nonModalPromoCoordinator stop];
   self.nonModalPromoCoordinator = nil;
