@@ -867,12 +867,10 @@ class FeatureVerificationUnittest(unittest.TestCase):
     gpu_info = CreateGpuInfo(feature_statuses={
         'skia_graphite': 'enabled_on',
     })
-    RunFakeBrowserStartWithArgsAndGpuInfo(['--enable-features=SkiaGraphite'],
-                                          gpu_info)
+    RunFakeBrowserStartWithArgsAndGpuInfo(['--enable-skia-graphite'], gpu_info)
 
     gpu_info = CreateGpuInfo(feature_statuses={})
-    RunFakeBrowserStartWithArgsAndGpuInfo(['--disable-features=SkiaGraphite'],
-                                          gpu_info)
+    RunFakeBrowserStartWithArgsAndGpuInfo(['--disable-skia-graphite'], gpu_info)
 
   def testVerifySkiaGraphiteFailureMismatchedStatus(self):
     """Tests Skia Graphite verification that fails due to mismatched status."""
@@ -881,7 +879,7 @@ class FeatureVerificationUnittest(unittest.TestCase):
         RuntimeError,
         'Requested Skia Graphite status \\(graphite-enabled\\) had no effect '
         'on the browser:.*'):
-      RunFakeBrowserStartWithArgsAndGpuInfo(['--enable-features=SkiaGraphite'],
+      RunFakeBrowserStartWithArgsAndGpuInfo(['--enable-skia-graphite'],
                                             gpu_info)
 
     gpu_info = CreateGpuInfo(feature_statuses={
@@ -891,7 +889,7 @@ class FeatureVerificationUnittest(unittest.TestCase):
         RuntimeError,
         'Requested Skia Graphite status \\(graphite-disabled\\) had no effect '
         'on the browser:.*'):
-      RunFakeBrowserStartWithArgsAndGpuInfo(['--disable-features=SkiaGraphite'],
+      RunFakeBrowserStartWithArgsAndGpuInfo(['--disable-skia-graphite'],
                                             gpu_info)
 
   # pylint: enable=no-self-use

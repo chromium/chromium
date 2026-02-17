@@ -301,15 +301,19 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
 GrContextType ParseGrContextType(const base::CommandLine* command_line) {
   if (features::IsSkiaGraphiteEnabled(command_line)) {
     [[maybe_unused]] auto value =
-        command_line->GetSwitchValueASCII(switches::kSkiaGraphiteBackend);
+        command_line->GetSwitchValueASCII(switches::kSkiaGraphiteDawnBackend);
 #if BUILDFLAG(SKIA_USE_DAWN)
-    if (value.empty() ||
-        base::StartsWith(value, switches::kSkiaGraphiteBackendDawn)) {
+    if (value.empty() || value == switches::kSkiaGraphiteDawnBackendD3D11 ||
+        value == switches::kSkiaGraphiteDawnBackendD3D12 ||
+        value == switches::kSkiaGraphiteDawnBackendMetal ||
+        value == switches::kSkiaGraphiteDawnBackendOpenGLES ||
+        value == switches::kSkiaGraphiteDawnBackendSwiftshader ||
+        value == switches::kSkiaGraphiteDawnBackendVulkan) {
       return GrContextType::kGraphiteDawn;
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
-    LOG(ERROR) << "Skia Graphite backend = \"" << value
-               << "\" not found - falling back to Ganesh!";
+    LOG(ERROR) << "Skia Graphite enabled but no valid Dawn backend found for \""
+               << value << "\" - falling back to Ganesh!";
   }
   if (features::IsUsingVulkan()) {
     return GrContextType::kVulkan;

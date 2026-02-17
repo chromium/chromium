@@ -1788,8 +1788,7 @@
       {
         "args": [
           "--test-launcher-bot-mode",
-          "--enable-features=SkiaGraphite",
-          "--skia-graphite-backend=dawn",
+          "--enable-skia-graphite",
           "--use-gpu-in-tests",
           "--test-launcher-bot-mode",
           "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",

@@ -1237,14 +1237,14 @@ targets.mixin(
 targets.mixin(
     name = "gpu_force_skia_ganesh",
     args = [
-        "--extra-browser-args=--disable-features=SkiaGraphite",
+        "--extra-browser-args=--disable-skia-graphite",
     ],
 )
 
 targets.mixin(
     name = "gpu_force_skia_graphite",
     args = [
-        "--extra-browser-args=--enable-features=SkiaGraphite",
+        "--extra-browser-args=--enable-skia-graphite",
     ],
 )
 

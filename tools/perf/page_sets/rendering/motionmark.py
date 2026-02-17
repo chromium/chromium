@@ -350,7 +350,7 @@ class MotionMarkFixed2SecondsSuits(MotionMarkFixed2SecondsPage):
 class MotionMarkRampCompositeGraphite(MotionMarkRampComposite):
   BASE_NAME = 'motionmark_ramp_composite_graphite'
   SUPPORTED_PLATFORMS = [story.expectations.ALL_MAC, story.expectations.ALL_WIN]
-  EXTRA_BROWSER_ARGS = '--enable-features=SkiaGraphite'
+  EXTRA_BROWSER_ARGS = '--enable-skia-graphite'
 
 
 @benchmark.Info(emails=['chrome-skia-graphite@google.com'],
@@ -358,4 +358,4 @@ class MotionMarkRampCompositeGraphite(MotionMarkRampComposite):
 class MotionMarkRampCompositeGanesh(MotionMarkRampComposite):
   BASE_NAME = 'motionmark_ramp_composite_ganesh'
   SUPPORTED_PLATFORMS = [story.expectations.ALL_MAC, story.expectations.ALL_WIN]
-  EXTRA_BROWSER_ARGS = '--disable-features=SkiaGraphite'
+  EXTRA_BROWSER_ARGS = '--disable-skia-graphite'

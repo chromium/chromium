@@ -4732,7 +4732,7 @@ targets.bundle(
         "webcodecs_tests": [
             targets.mixin(
                 args = [
-                    "--extra-browser-args=--use-cmd-decoder=validating --disable-features=SkiaGraphite",
+                    "--extra-browser-args=--use-cmd-decoder=validating --disable-skia-graphite",
                 ],
             ),
         ],
@@ -4884,7 +4884,7 @@ targets.bundle(
         "webrtc_tests": [
             targets.mixin(
                 args = [
-                    "--extra-browser-args=--use-cmd-decoder=validating --disable-features=SkiaGraphite",
+                    "--extra-browser-args=--use-cmd-decoder=validating --disable-skia-graphite",
                 ],
             ),
         ],

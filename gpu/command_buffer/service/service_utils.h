@@ -37,7 +37,7 @@ ParseGpuPreferences(const base::CommandLine* command_line);
 // rasterization (if enabled) by checking the feature flags for Vulkan and/or
 // Graphite. If they are not enabled, default to GL.
 // If Graphite is enabled, its Dawn backend can be selected by using the
-// --skia-graphite-backend flag.
+// --skia-graphite-dawn-backend flag.
 GPU_GLES2_EXPORT GrContextType
 ParseGrContextType(const base::CommandLine* command_line);
 

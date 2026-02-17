@@ -686,23 +686,19 @@ class GpuIntegrationTest(
     for arg in browser_options.extra_browser_args:
       if arg == cba.DISABLE_GPU:
         cls._ClearFeatureValues()
+        # Early return here since --disable-gpu should override any flags that
+        # come after it which might re-enable GPU features otherwise.
         return
-      if arg.startswith('--use-gl='):
+      if arg == cba.ENABLE_SKIA_GRAPHITE:
+        cls._graphite_status = 'graphite-enabled'
+      elif arg == cba.DISABLE_SKIA_GRAPHITE:
+        cls._graphite_status = 'graphite-disabled'
+      elif arg.startswith('--use-gl='):
         cls._gl_backend = arg[len('--use-gl='):]
       elif arg.startswith('--use-angle='):
         cls._angle_backend = arg[len('--use-angle='):]
       elif arg.startswith('--use-cmd-decoder='):
         cls._command_decoder = arg[len('--use-cmd-decoder='):]
-      elif arg.startswith('--enable-features='):
-        values = arg[len('--enable-features='):]
-        for feature in values.split(','):
-          if feature == 'SkiaGraphite':
-            cls._graphite_status = 'graphite-enabled'
-      elif arg.startswith('--disable-features='):
-        values = arg[len('--disable-features='):]
-        for feature in values.split(','):
-          if feature == 'SkiaGraphite':
-            cls._graphite_status = 'graphite-disabled'
 
   @classmethod
   def _VerifyBrowserFeaturesMatchExpectedValues(cls) -> None:
