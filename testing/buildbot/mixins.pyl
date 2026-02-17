@@ -25,6 +25,11 @@
         },
       ],
     },
+    'resultdb': {
+      'base_variant': {
+        'device_os': 'RSR1.210722.013.A2',
+      },
+    },
   },
   'amd_radeon_rx_5500_xt': {
     'swarming': {

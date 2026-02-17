@@ -2793,6 +2793,11 @@ SWARMING_MIXINS = """\
     'swarming': {
       'value': 'waterfall',
     },
+    'resultdb': {
+      'base_variant': {
+        'variant_key': 'variant_val',
+      },
+    },
   },
 }
 """

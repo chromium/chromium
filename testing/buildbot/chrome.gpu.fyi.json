@@ -24,6 +24,8 @@
         "module_scheme": "flat",
         "name": "context_lost_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true,
           "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
@@ -60,6 +62,8 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true,
           "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
@@ -86,6 +90,8 @@
         "module_scheme": "flat",
         "name": "gpu_process_launch_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true,
           "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
@@ -112,6 +118,8 @@
         "module_scheme": "flat",
         "name": "hardware_accelerated_feature_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true,
           "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
@@ -142,6 +150,8 @@
         "module_scheme": "flat",
         "name": "info_collection_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true,
           "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
@@ -178,6 +188,8 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true,
           "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
@@ -205,6 +217,8 @@
         "module_scheme": "flat",
         "name": "screenshot_sync_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true,
           "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
@@ -231,6 +245,8 @@
         "module_scheme": "flat",
         "name": "trace_test JACUZZI_RELEASE_LKGM",
         "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true,
           "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
@@ -257,6 +273,8 @@
         "module_scheme": "flat",
         "name": "webcodecs_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true,
           "result_format": "native"
         },
         "test": "telemetry_gpu_integration_test",
@@ -285,6 +303,8 @@
         "module_scheme": "flat",
         "name": "webgl2_conformance_gles_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true,
           "result_format": "native"
         },
         "shards": 20,
@@ -313,6 +333,8 @@
         "module_scheme": "flat",
         "name": "webgl_conformance_gles_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true,
           "result_format": "native"
         },
         "shards": 6,

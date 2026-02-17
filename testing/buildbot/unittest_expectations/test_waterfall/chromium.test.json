@@ -8,6 +8,11 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "foo_test",
+        "resultdb": {
+          "base_variant": {
+            "variant_key": "variant_val"
+          }
+        },
         "swarming": {
           "dimensions": {
             "integrity": "high",

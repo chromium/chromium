@@ -398,6 +398,9 @@
         "module_scheme": "junit",
         "name": "cronet_sample_test_apk",
         "resultdb": {
+          "base_variant": {
+            "device_os": "RSR1.210722.013.A2"
+          },
           "enable": true,
           "has_native_resultdb_integration": true
         },
@@ -445,6 +448,9 @@
         "module_scheme": "junit",
         "name": "cronet_smoketests_apk",
         "resultdb": {
+          "base_variant": {
+            "device_os": "RSR1.210722.013.A2"
+          },
           "enable": true,
           "has_native_resultdb_integration": true
         },
@@ -492,6 +498,9 @@
         "module_scheme": "junit",
         "name": "cronet_smoketests_missing_native_library_instrumentation_apk",
         "resultdb": {
+          "base_variant": {
+            "device_os": "RSR1.210722.013.A2"
+          },
           "enable": true,
           "has_native_resultdb_integration": true
         },
@@ -539,6 +548,9 @@
         "module_scheme": "junit",
         "name": "cronet_smoketests_platform_only_instrumentation_apk",
         "resultdb": {
+          "base_variant": {
+            "device_os": "RSR1.210722.013.A2"
+          },
           "enable": true,
           "has_native_resultdb_integration": true
         },
@@ -587,6 +599,9 @@
         "module_scheme": "junit",
         "name": "cronet_test_instrumentation_apk",
         "resultdb": {
+          "base_variant": {
+            "device_os": "RSR1.210722.013.A2"
+          },
           "enable": true,
           "has_native_resultdb_integration": true
         },
@@ -636,6 +651,9 @@
         "module_scheme": "gtest",
         "name": "cronet_unittests_android",
         "resultdb": {
+          "base_variant": {
+            "device_os": "RSR1.210722.013.A2"
+          },
           "enable": true,
           "has_native_resultdb_integration": true
         },
@@ -683,6 +701,9 @@
         "module_scheme": "gtest",
         "name": "net_unittests",
         "resultdb": {
+          "base_variant": {
+            "device_os": "RSR1.210722.013.A2"
+          },
           "enable": true,
           "has_native_resultdb_integration": true
         },

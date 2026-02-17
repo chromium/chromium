@@ -21,6 +21,9 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "resultdb": {
+          "base_variant": {
+            "device_os": "RSR1.210722.013.A2"
+          },
           "enable": true,
           "has_native_resultdb_integration": true
         },
@@ -63,6 +66,9 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "resultdb": {
+          "base_variant": {
+            "device_os": "RSR1.210722.013.A2"
+          },
           "enable": true,
           "has_native_resultdb_integration": true
         },

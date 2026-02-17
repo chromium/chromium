@@ -60,6 +60,13 @@ targets.mixin(
             ),
         ],
     ),
+    resultdb = targets.resultdb(
+        base_variant = {
+            # LINT.IfChange(avd-11-x86-emulator)
+            "device_os": "RSR1.210722.013.A2",
+            # LINT.ThenChange(//tools/android/avd/proto/android_30_google_apis_x86.textpb:avd-11-x86-emulator)
+        },
+    ),
 )
 
 targets.mixin(
