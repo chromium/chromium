@@ -18,6 +18,8 @@
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -995,7 +997,10 @@ IN_PROC_BROWSER_TEST_F(DiceSigninUiUtilBrowserTest,
   ASSERT_TRUE(browser);
   EXPECT_EQ(1, browser->tab_strip_model()->count());
 
-  // Profile deletion closes the browser.
+  // Scheduling a profile for deletion closes the browser. Prevent Profile from
+  // being destroyed before we attempt to show the signin prompt.
+  ScopedProfileKeepAlive profile_keep_alive(
+      new_profile, ProfileKeepAliveOrigin::kBackgroundMode);
   ui_test_utils::BrowserDestroyedObserver observer(browser);
   g_browser_process->profile_manager()
       ->GetDeleteProfileHelper()
