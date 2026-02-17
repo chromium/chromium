@@ -97,7 +97,9 @@ class SwitchAccessTest : public AccessibilityFeatureBrowserTest {
 //
 // A separate bug (crbug.com/431933537) is filed to specifically track the
 // blink::CSSParserImpl::ParseStyleSheet issue.
-#if defined(MEMORY_SANITIZER)
+//
+// TODO(crbug.com/450997936): Flaky on ChromeOS.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ConsumesKeyEvents DISABLED_ConsumesKeyEvents
 #else
 #define MAYBE_ConsumesKeyEvents ConsumesKeyEvents
