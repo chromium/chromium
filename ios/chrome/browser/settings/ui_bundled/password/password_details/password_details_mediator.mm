@@ -322,9 +322,12 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   }
 
   it->stored_in = {password_manager::PasswordForm::Store::kAccountStore};
-  self.savedPasswordsPresenter->MoveCredentialsToAccount(
-      {*it}, password_manager::metrics_util::MoveToAccountStoreTrigger::
-                 kExplicitlyTriggeredInSettings);
+  self.savedPasswordsPresenter->MoveCredentialsToAccount({*it});
+
+  base::UmaHistogramEnumeration(
+      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
+      password_manager::metrics_util::MoveToAccountStoreTrigger::
+          kExplicitlyTriggeredInSettings);
   [self providePasswordsToConsumer];
 }
 

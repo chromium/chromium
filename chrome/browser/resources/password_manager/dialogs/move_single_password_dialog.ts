@@ -15,28 +15,10 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
+import {MoveToAccountStoreTrigger, recordMoveToAccountStoreAccepted, recordMoveToAccountStoreOffered} from '../sharing/metrics_utils.js';
 import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {getTemplate} from './move_single_password_dialog.html.js';
-
-/**
- * This should be kept in sync with the enum in
- * components/password_manager/core/browser/password_manager_metrics_util.h.
- * These values are persisted to logs. Entries should not be renumbered and
- * numeric values should never be reused.
- * @enum {number}
- */
-export enum MoveToAccountStoreTrigger {
-  // LINT.IfChange
-  SUCCESSFUL_LOGIN_WITH_PROFILE_STORE_PASSWORD = 0,
-  EXPLICITLY_TRIGGERED_IN_SETTINGS = 1,
-  EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS = 2,
-  USER_OPTED_IN_AFTER_SAVING_LOCALLY = 3,
-  EXPLICITLY_TRIGGERED_FOR_SINGLE_PASSWORD_IN_DETAILS_IN_SETTINGS = 4,
-  COUNT = 5,
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml)
-}
-
 
 export interface MoveSinglePasswordDialogElement {
   $: {
@@ -68,20 +50,21 @@ export class MoveSinglePasswordDialogElement extends
        * Password UI entry.
        */
       password: Object,
+      trigger_: {
+        type: Object,
+        value: () =>
+            MoveToAccountStoreTrigger
+                .EXPLICITLY_TRIGGERED_FOR_SINGLE_PASSWORD_IN_DETAILS_IN_SETTINGS,
+      },
     };
   }
 
   declare password: chrome.passwordsPrivate.PasswordUiEntry;
+  declare private trigger_: MoveToAccountStoreTrigger;
 
   override connectedCallback() {
     super.connectedCallback();
-
-    chrome.metricsPrivate.recordEnumerationValue(
-        'PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered',
-        MoveToAccountStoreTrigger
-            .EXPLICITLY_TRIGGERED_FOR_SINGLE_PASSWORD_IN_DETAILS_IN_SETTINGS,
-        MoveToAccountStoreTrigger.COUNT);
-
+    recordMoveToAccountStoreOffered(this.trigger_);
     this.$.dialog.showModal();
   }
 
@@ -91,6 +74,7 @@ export class MoveSinglePasswordDialogElement extends
 
   private onMoveButtonClick_() {
     assert(this.isAccountStoreUser);
+
     PasswordManagerImpl.getInstance().movePasswordsToAccount(
         [this.password.id]);
     this.dispatchEvent(new CustomEvent('passwords-moved', {
@@ -98,6 +82,7 @@ export class MoveSinglePasswordDialogElement extends
       composed: true,
       detail: {accountEmail: this.accountEmail, numberOfPasswords: 1},
     }));
+    recordMoveToAccountStoreAccepted(this.trigger_);
 
     this.$.dialog.close();
   }

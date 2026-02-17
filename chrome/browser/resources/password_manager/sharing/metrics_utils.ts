@@ -35,9 +35,41 @@ export enum PasswordSharingActions {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml)
 }
 
+/**
+ * This should be kept in sync with the enum in
+ * components/password_manager/core/browser/password_manager_metrics_util.h.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ * @enum {number}
+ */
+export enum MoveToAccountStoreTrigger {
+  // LINT.IfChange
+  SUCCESSFUL_LOGIN_WITH_PROFILE_STORE_PASSWORD = 0,
+  EXPLICITLY_TRIGGERED_IN_SETTINGS = 1,
+  EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS = 2,
+  USER_OPTED_IN_AFTER_SAVING_LOCALLY = 3,
+  EXPLICITLY_TRIGGERED_FOR_SINGLE_PASSWORD_IN_DETAILS_IN_SETTINGS = 4,
+  COUNT = 5,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml)
+}
+
 export function recordPasswordSharingInteraction(
     interaction: PasswordSharingActions) {
   chrome.metricsPrivate.recordEnumerationValue(
       'PasswordManager.PasswordSharingDesktop.UserAction', interaction,
       PasswordSharingActions.COUNT);
+}
+
+export function recordMoveToAccountStoreOffered(
+    trigger: MoveToAccountStoreTrigger) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered', trigger,
+      MoveToAccountStoreTrigger.COUNT);
+}
+
+export function recordMoveToAccountStoreAccepted(
+    trigger: MoveToAccountStoreTrigger) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2', trigger,
+      MoveToAccountStoreTrigger.COUNT);
 }
