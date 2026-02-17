@@ -381,33 +381,6 @@ class FormFieldData {
     is_autofilled_according_to_renderer_ = is_autofilled;
   }
 
-  // These setter and getter are deprecated. Please use
-  // `AutofillField::all_modifiers()` instead.
-  //
-  // Whether the user has edited this field since page load or resetting the
-  // field.
-  //
-  // Examples that count as edits:
-  // - Typing into a text control.
-  // - Pasting into a text control.
-  // - Clicking and selecting an option of a <select> counts.
-  // - Unfocusing a <select> using TAB (because of the keydown event).
-  //
-  // Examples that do not count as edits:
-  // - Autofill.
-  // - Typing into a contenteditable.
-  // - Setting the field's value directly in JavaScript.
-  // - Untrusted events (see JavaScript's Event.isTrusted).
-  //
-  // The property is sticky: a user-edited field becomes non-user-edited only
-  // when the form is reset (JavaScript's HTMLFormElement.reset()).
-  // TODO(crbug.com/40941928): On iOS, also non-trusted events reset the
-  // property.
-  bool is_user_edited_deprecated() const { return is_user_edited_deprecated_; }
-  void set_is_user_edited_deprecated(bool is_user_edited_deprecated) {
-    is_user_edited_deprecated_ = is_user_edited_deprecated;
-  }
-
   CheckStatus check_status() const { return check_status_; }
   void set_check_status(CheckStatus check_status) {
     check_status_ = check_status;
@@ -520,9 +493,6 @@ class FormFieldData {
   uint64_t max_length_ = std::numeric_limits<uint32_t>::max();
   bool is_autofilled_ = false;
   bool is_autofilled_according_to_renderer_ = false;
-  // TODO(crbug.com/393114125): Remove after fully launching
-  // `AutofillField::field_modifiers_`.
-  bool is_user_edited_deprecated_ = false;
   CheckStatus check_status_ = CheckStatus::kNotCheckable;
   bool is_focusable_ = true;
   bool is_visible_ = true;

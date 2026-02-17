@@ -238,7 +238,6 @@ bool StructTraits<
 
   out->set_form_control_ax_id(data.form_control_ax_id());
   out->set_max_length(data.max_length());
-  out->set_is_user_edited_deprecated(data.is_user_edited_deprecated());
   out->set_is_autofilled(data.is_autofilled());
   out->set_is_autofilled_according_to_renderer(
       data.is_autofilled_according_to_renderer());

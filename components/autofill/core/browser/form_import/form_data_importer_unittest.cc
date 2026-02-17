@@ -4051,7 +4051,6 @@ TEST_F(FormDataImporterTest, ExtractGUIDsOfProfilesWithoutManualEdits) {
   for (auto& field : *form_structure) {
     field->set_autofill_source_profile_guid(counter % 2 ? kDefaultGuid
                                                         : kSecondGuid);
-    field->set_is_user_edited_deprecated(false);
     ++counter;
   }
   base::flat_set<std::string> guids =
@@ -4068,10 +4067,9 @@ TEST_F(FormDataImporterTest,
   for (auto& field : *form_structure) {
     field->set_autofill_source_profile_guid(counter % 2 ? kDefaultGuid
                                                         : kSecondGuid);
-    field->set_is_user_edited_deprecated(false);
     ++counter;
   }
-  form_structure->field(0)->set_is_user_edited_deprecated(true);
+  form_structure->field(0)->AddFieldModifier(FieldModifier::kUser);
   base::flat_set<std::string> guids =
       test_api(form_data_importer().GetAddressFormDataImporter())
           .ExtractGUIDsOfProfilesWithoutManualEdits(*form_structure);
@@ -4183,7 +4181,9 @@ class FormDataImporterTest_ExtractCreditCardFromForm
     f.set_server_predictions({test::CreateFieldPrediction(field_type)});
     f.set_value(std::move(value));
     f.set_is_autofilled(mode == Mode::kAutofilled);
-    f.set_is_user_edited_deprecated(mode == Mode::kUserEdited);
+    if (mode == Mode::kUserEdited) {
+      f.AddFieldModifier(FieldModifier::kUser);
+    }
     f.set_credit_card_number_offset(offset);
   }
 

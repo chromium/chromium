@@ -253,6 +253,13 @@ class AutofillField : public FormFieldData {
     return previously_autofilled_deprecated_;
   }
 
+  // This is deprecated. Please use `AutofillField::AddFieldModifier()` instead.
+  void set_is_user_edited_deprecated(bool is_user_edited_deprecated) {
+    is_user_edited_deprecated_ = is_user_edited_deprecated;
+  }
+  // This is deprecated. Please use `AutofillField::all_modifiers()` instead.
+  bool is_user_edited_deprecated() const { return is_user_edited_deprecated_; }
+
   // Returns all the modifiers to have acted on the field, in no particular
   // order.
   DenseSet<FieldModifier> all_modifiers() const;
@@ -607,6 +614,12 @@ class AutofillField : public FormFieldData {
   // TODO(crbug.com/393114125): Remove after fully launching
   // `AutofillField::field_modifiers_`.
   bool previously_autofilled_deprecated_ = false;
+
+  // This is deprecated, please use `field_modifiers_` instead.
+  // Whether or not the user edited the field. It corresponds to whether the
+  // field is seen by `AutofillManager` in an `OnTextFieldValueChanged()`
+  // signal.
+  bool is_user_edited_deprecated_ = false;
 
   // Tracks the relative order of all the modifiers of the field. Each
   // `FieldModifier` value is present at most once in the list, and the order of

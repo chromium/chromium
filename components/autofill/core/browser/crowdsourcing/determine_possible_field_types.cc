@@ -137,8 +137,8 @@ FindDatesAndSetFormatStrings(
   // Cheap plausibility checks if the field is relevant for date matching.
   auto may_be_interesting = [](const std::unique_ptr<AutofillField>& field) {
     return field->form_control_type() == FormControlType::kInputText &&
-           (field->is_user_edited_deprecated() || field->is_autofilled() ||
-            field->initial_value() != field->value());
+           (field->all_modifiers().contains(FieldModifier::kUser) ||
+            field->is_autofilled() || field->initial_value() != field->value());
   };
 
   // Cheap check if the field's value might contain a year, month, and day.

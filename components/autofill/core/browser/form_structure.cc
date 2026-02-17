@@ -547,6 +547,8 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         cached_field->autofill_source_profile_guid());
     field->set_autofilled_type(cached_field->autofilled_type());
     field->set_filling_product(cached_field->filling_product());
+    field->set_is_user_edited_deprecated(
+        cached_field->is_user_edited_deprecated());
     field->set_previously_autofilled_deprecated(
         cached_field->previously_autofilled_deprecated());
     field->set_field_modifiers(

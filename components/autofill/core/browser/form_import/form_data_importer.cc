@@ -588,8 +588,9 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   for (const std::unique_ptr<AutofillField>& field : form.fields()) {
     fields.push_back(field.get());
   }
-  extract_data_and_remove_field_if(fields,
-                                   &AutofillField::is_user_edited_deprecated);
+  extract_data_and_remove_field_if(fields, [](const auto& field) {
+    return field.all_modifiers().contains(FieldModifier::kUser);
+  });
   extract_data_and_remove_field_if(fields, &AutofillField::is_autofilled);
   extract_data_and_remove_field_if(fields, [](const auto&) { return true; });
   return result;

@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/types/zip.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -1082,7 +1083,7 @@ class FindDatesAndSetFormatStringsTest : public testing::Test {
       FormControlType form_control_type = FormControlType::kInputText) {
     auto field = std::make_unique<AutofillField>(CreateTestFormField(
         /*label=*/"", /*name=*/"", /*value=*/value, form_control_type));
-    field->set_is_user_edited_deprecated(true);
+    field->AddFieldModifier(FieldModifier::kUser);
     return field;
   }
 
@@ -1092,7 +1093,7 @@ class FindDatesAndSetFormatStringsTest : public testing::Test {
     auto field = std::make_unique<AutofillField>(CreateTestSelectField(
         /*label=*/"", /*name=*/"", /*value=*/value, /*values=*/values,
         /*contents=*/values));
-    field->set_is_user_edited_deprecated(true);
+    field->AddFieldModifier(FieldModifier::kUser);
     return field;
   }
 

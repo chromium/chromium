@@ -305,7 +305,6 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.set_max_length(12345);
   input.set_is_autofilled(true);
   input.set_is_autofilled_according_to_renderer(true);
-  input.set_is_user_edited_deprecated(true);
   input.set_check_status(FormFieldData::CheckStatus::kChecked);
   input.set_should_autocomplete(true);
   input.set_role(FormFieldData::RoleAttribute::kPresentation);
@@ -341,7 +340,6 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
   input.set_max_length(12345);
   input.set_is_autofilled(true);
   input.set_is_autofilled_according_to_renderer(true);
-  input.set_is_user_edited_deprecated(true);
   input.set_check_status(FormFieldData::CheckStatus::kChecked);
   input.set_should_autocomplete(true);
   input.set_role(FormFieldData::RoleAttribute::kPresentation);
