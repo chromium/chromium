@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <set>
 #include <vector>
@@ -42,10 +41,6 @@ class GURL;
 
 namespace content {
 class BrowserContext;
-}
-
-namespace url {
-class Origin;
 }
 
 namespace visitedlink {
@@ -135,15 +130,6 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // Clears the visited links table by deleting the file from disk. Used as
   // part of history clearing.
   void DeleteAllURLs();
-
-  // Returns the Delegate of this Writer.
-  VisitedLinkDelegate* GetDelegate();
-
-  // Return the salt used to hash visited links from this origin. If we have not
-  // visited this origin before, a new <origin, salt> pair will be added to the
-  // map, and that new salt value will be retuned. Will return
-  // std::optional if the table is currently being built or rebuilt.
-  std::optional<uint64_t> GetOrAddOriginSalt(const url::Origin& origin);
 
 #if defined(UNIT_TEST) || !defined(NDEBUG) || defined(PERF_TEST)
   // This is a debugging function that can be called to double-check internal
@@ -375,11 +361,6 @@ class VisitedLinkWriter : public VisitedLinkCommon {
       return 0;  // Wrap around.
     return hash + 1;
   }
-  inline Hash DecrementHash(Hash hash) {
-    if (hash <= 0)
-      return table_length_ - 1;  // Wrap around.
-    return hash - 1;
-  }
 
   // Returns a pointer to the start of the hash table, given the mapping
   // containing the hash table.
@@ -409,27 +390,6 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // history query is running. We must only delete it when the query is done.
   scoped_refptr<TableBuilder> table_builder_;
 
-  // Contains every per-origin salt used in creating the hashtable.
-  //
-  // NOTE: When VisitedLinkWriter is created, salts_ is empty.
-  //
-  // At initialization time, we will construct the partitioned hashtable on the
-  // DB thread, where salts_ will be accessed and added to as the table is
-  // built. During this time on the DB thread (when table_builder_ is not null),
-  // salts_ CANNOT be added to or accessed by the UI thread.
-  //
-  // Once initialization is complete and we are marshalled back to the UI
-  // thread (once table_builder_ is set to null again), salts_ can be added to
-  // and accessed by the UI thread, whether we are adding new visits via the
-  // History Service or sending salt values via the
-  // VisitedLinksNavigationThrottle.
-  //
-  // TODO(crbug.com/330548738): Currently we store all salts relevant to this
-  // profile in this one map, but there can be many StoragePartitions per
-  // profile. We should revisit in a future phase to take into account which
-  // StoragePartition each origin is being committed to.
-  std::map<url::Origin, uint64_t> salts_;
-
   // Indicates URLs added and deleted since we started rebuilding the table.
   std::set<Fingerprint> added_since_rebuild_;
   std::set<Fingerprint> deleted_since_rebuild_;
@@ -454,10 +414,6 @@ class VisitedLinkWriter : public VisitedLinkCommon {
 
   // Shared memory consists of a SharedHeader followed by the table.
   base::MappedReadOnlyRegion mapped_table_memory_;
-
-  // When we generate new tables, we increment the serial number of the
-  // shared memory object.
-  int32_t shared_memory_serial_ = 0;
 
   // Number of non-empty items in the table, used to compute fullness.
   int32_t used_items_ = 0;

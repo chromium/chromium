@@ -34,7 +34,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -403,26 +402,6 @@ void VisitedLinkWriter::DeleteAllURLs() {
     WriteFullTable();
 
   listener_->Reset(false);
-}
-
-VisitedLinkDelegate* VisitedLinkWriter::GetDelegate() {
-  return delegate_;
-}
-
-std::optional<uint64_t> VisitedLinkWriter::GetOrAddOriginSalt(
-    const url::Origin& origin) {
-  // To avoid race conditions, we should not get from or add to the salt map
-  // while the hashtable is building.
-  if (table_builder_ || table_is_loading_from_file_) {
-    return std::nullopt;
-  }
-  // Obtain the salt for this origin if it already exists.
-  // Otherwise, generate a new salt for this origin.
-  auto [it, inserted] = salts_.try_emplace(origin);
-  if (inserted) {
-    it->second = base::RandUint64();
-  }
-  return it->second;
 }
 
 void VisitedLinkWriter::DeleteURLs(const std::vector<GURL>& urls) {
@@ -970,8 +949,6 @@ void VisitedLinkWriter::ResizeTable(int32_t new_size) {
     return;
   }
 
-  shared_memory_serial_++;
-
   {
     Fingerprint* old_hash_table =
         GetHashTableFromMapping(old_hash_table_mapping);
@@ -1054,7 +1031,6 @@ void VisitedLinkWriter::OnTableRebuildComplete(
     const std::vector<Fingerprint>& fingerprints) {
   if (success) {
     // Replace the old table with a new blank one.
-    shared_memory_serial_++;
 
     int new_table_size = NewTableSizeForCount(
         static_cast<int>(fingerprints.size() + added_since_rebuild_.size()));

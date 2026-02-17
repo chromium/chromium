@@ -201,12 +201,6 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
     }
     return hash + 1;
   }
-  inline Hash DecrementHash(Hash hash) {
-    if (hash <= 0) {
-      return table_length_ - 1;  // Wrap around.
-    }
-    return hash - 1;
-  }
 
   // Called to add a fingerprint to the table. Returns the index of the inserted
   // fingerprint or null_hash_ if there was a duplicate and this item was
