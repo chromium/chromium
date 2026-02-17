@@ -306,14 +306,14 @@ TEST_F(ImageDocumentTest, ImageStyleContainsTransitionForNonAnimatedImage) {
   CreateDocument(50, 50);
   auto& style =
       GetDocument().ImageElement()->getAttribute(html_names::kStyleAttr);
-  EXPECT_NE(style.Find("transition:"), kNotFound);
+  EXPECT_TRUE(style.contains("transition:"));
 }
 
 TEST_F(ImageDocumentTest, ImageStyleDoesNotContainTransitionForAnimatedImage) {
   CreateDocument(50, 50, /*is_animated*/ true);
   auto& style =
       GetDocument().ImageElement()->getAttribute(html_names::kStyleAttr);
-  EXPECT_EQ(style.Find("transition:"), kNotFound);
+  EXPECT_FALSE(style.contains("transition:"));
 }
 
 #if BUILDFLAG(IS_ANDROID)

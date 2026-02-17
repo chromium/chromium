@@ -117,11 +117,10 @@ class WTF_EXPORT AtomicString {
   }
 
   // Find substrings.
-  wtf_size_t Find(
-      const StringView& value,
-      wtf_size_t start = 0,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
-    return string_.Find(value, start, case_sensitivity);
+
+  // Find a substring. Returns the index of the match, or `kNotFound`.
+  size_type find(const StringView& value, size_type start = 0) const {
+    return string_.find(value, start);
   }
 
   // Unicode aware case insensitive string matching. Non-ASCII characters might

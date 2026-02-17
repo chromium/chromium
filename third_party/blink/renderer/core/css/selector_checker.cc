@@ -1271,9 +1271,10 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
 
       unsigned start_search_at = 0;
       while (true) {
-        wtf_size_t found_pos = value.Find(
-            selector_value, start_search_at,
-            case_insensitive ? kTextCaseASCIIInsensitive : kTextCaseSensitive);
+        wtf_size_t found_pos =
+            case_insensitive
+                ? value.FindIgnoringAsciiCase(selector_value, start_search_at)
+                : value.find(selector_value, start_search_at);
         if (found_pos == kNotFound) {
           return false;
         }
