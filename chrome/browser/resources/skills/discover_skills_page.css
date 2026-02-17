@@ -11,14 +11,17 @@
  * #include=cr-shared-style-lit shared-style
  * #css_wrapper_metadata_end */
 
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  padding: 16px var(--page-right-padding) 0 0;
+}
+
 #discoverCategories {
   display: flex;
   flex-direction: row;
   gap: 8px;
   margin: 16px 0 0 0;
 }
-
-#discoverTopPicks {
-  margin: 16px 0 16px 0;
-}
-

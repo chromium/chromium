@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './card.js';
 import './icons.html.js';
+import './error_page.js';
 
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -45,19 +46,6 @@ export class UserSkillsPageElement extends CrLitElement {
   private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
   private listenerIds_: number[] = [];
   private addSkillButtonDisabledTimer_: number|undefined = undefined;
-
-  get filteredSkills_(): Skill[] {
-    const term = this.searchTerm_.toLowerCase();
-    const allSkillsArray = Array.from(this.skills_.values());
-
-    if (!term) {
-      return allSkillsArray;
-    }
-
-    return allSkillsArray.filter(
-        skill => skill.name.toLowerCase().includes(term) ||
-            skill.prompt.toLowerCase().includes(term));
-  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -104,6 +92,23 @@ export class UserSkillsPageElement extends CrLitElement {
 
   onSearchChanged(searchTerm: string) {
     this.searchTerm_ = searchTerm;
+  }
+
+  protected filteredSkills_(): Skill[] {
+    const term = this.searchTerm_.toLowerCase();
+    const allSkillsArray = Array.from(this.skills_.values());
+
+    if (!term) {
+      return allSkillsArray;
+    }
+
+    return allSkillsArray.filter(
+        skill => skill.name.toLowerCase().includes(term) ||
+            skill.prompt.toLowerCase().includes(term));
+  }
+
+  protected shouldShowNoSearchResults_(): boolean {
+    return this.filteredSkills_().length === 0 && this.searchTerm_.length > 0;
   }
 
   protected onExploreButtonClick_() {

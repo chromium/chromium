@@ -43,6 +43,12 @@
   <message name="IDS_SKILLS_ERROR_PAGE_DESCRIPTION" desc="Description of the error page that occurs when chrome://skills is not accessible" translateable="false">
     To use Skills, sign in to Chrome with a Google account that has Gemini in Chrome enabled
   </message>
+  <message name="IDS_SKILLS_NO_SEARCH_RESULT_TITLE" desc="Title of the page that occurs when chrome://skills has no search results" translateable="false">
+    No search results
+  </message>
+  <message name="IDS_SKILLS_NO_SEARCH_RESULT_DESCRIPTION" desc="Description of the page that occurs when chrome://skills has no search results" translateable="false">
+    It looks like there aren't any search results for your search
+  </message>
 
   <!-- chrome://skills/browse-skills page-->
   <message name="IDS_SKILL_PAGE_BROWSE_SKILLS_TITLE" desc="Text for the title of the chrome://skills/browse-skills page." translateable="false">

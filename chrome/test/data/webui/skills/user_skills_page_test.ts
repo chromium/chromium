@@ -6,6 +6,7 @@ import 'chrome://skills/user_skills_page.js';
 
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsDialogType} from 'chrome://skills/skills.mojom-webui.js';
 import {SkillsPageBrowserProxy} from 'chrome://skills/skills_page_browser_proxy.js';
@@ -20,7 +21,7 @@ suite('UserSkillsPage', function() {
   let page: UserSkillsPageElement;
   let browserProxy: TestSkillsBrowserProxy;
 
-  setup(function() {
+  setup(async function() {
     browserProxy = new TestSkillsBrowserProxy();
     SkillsPageBrowserProxy.setInstance(browserProxy);
     window.history.replaceState({}, '', '/');
@@ -28,8 +29,31 @@ suite('UserSkillsPage', function() {
     CrRouter.resetForTesting();
     page = document.createElement('user-skills-page');
     document.body.appendChild(page);
-    return microtasksFinished();
+    await microtasksFinished();
   });
+
+  // Helper to create a valid Skill object with defaults.
+  function createSkill(overrides: Partial<Skill> = {}): Skill {
+    return {
+      id: '1',
+      sourceSkillId: null,
+      name: 'Default Skill',
+      icon: '',
+      prompt: '',
+      description: '',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+      ...overrides,
+    };
+  }
+
+  async function setUserSkills(skills: Array<Partial<Skill>>) {
+    for (const skill of skills) {
+      browserProxy.callbackRouterRemote.updateSkill(createSkill(skill));
+    }
+    await microtasksFinished();
+  }
 
   test('InitialPageLoadsCorrectly', function() {
     const title = page.$['skillsTitle'];
@@ -57,20 +81,14 @@ suite('UserSkillsPage', function() {
   });
 
   test('UpdateSkillUpdatesPage', async function() {
-    const testSkill = {
+    await setUserSkills([{
       id: '123',
-      sourceSkillId: null,
       name: 'Test Skill',
       icon: 'icon',
       prompt: 'prompt',
-      source: SkillSource.kUserCreated,
       description: 'description',
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-
-    browserProxy.callbackRouterRemote.updateSkill(testSkill);
-    await microtasksFinished();
+      source: SkillSource.kUserCreated,
+    }]);
 
     const skillItems = page.shadowRoot.querySelectorAll('skill-card');
     assertEquals(1, skillItems.length);
@@ -79,25 +97,20 @@ suite('UserSkillsPage', function() {
   });
 
   test('RemoveSkillUpdatesPage', async function() {
-    const testSkill = {
+    await setUserSkills([{
       id: '123',
-      sourceSkillId: null,
       name: 'Test Skill',
       icon: 'icon',
       prompt: 'prompt',
       description: 'description',
       source: SkillSource.kUserCreated,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-    browserProxy.callbackRouterRemote.updateSkill(testSkill);
-    await microtasksFinished();
+    }]);
 
     let skillItems = page.shadowRoot.querySelectorAll('skill-card');
     assertTrue(!!skillItems[0]);
     assertEquals('Test Skill', skillItems[0].skill.name);
 
-    browserProxy.callbackRouterRemote.removeSkill(testSkill.id);
+    browserProxy.callbackRouterRemote.removeSkill('123');
     await microtasksFinished();
 
     skillItems = page.shadowRoot.querySelectorAll('skill-card');
@@ -105,33 +118,20 @@ suite('UserSkillsPage', function() {
   });
 
   test('UpdatesAndRemovalsShowCorrectly', async function() {
-    const skillA = {
-      id: '123',
-      sourceSkillId: null,
-      name: 'A',
-      icon: '',
-      prompt: '',
-      description: '',
-      source: SkillSource.kUserCreated,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-    const skillB = {
-      id: '234',
-      sourceSkillId: null,
-      name: 'B',
-      icon: '',
-      prompt: '',
-      description: '',
-      source: SkillSource.kUserCreated,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
+    await setUserSkills([
+      {
+        id: '123',
+        name: 'A',
+        source: SkillSource.kUserCreated,
+      },
+      {
+        id: '234',
+        name: 'B',
+        source: SkillSource.kUserCreated,
+      },
+    ]);
 
-    browserProxy.callbackRouterRemote.updateSkill(skillA);
-    browserProxy.callbackRouterRemote.updateSkill(skillB);
-    browserProxy.callbackRouterRemote.removeSkill(skillA.id);
-
+    browserProxy.callbackRouterRemote.removeSkill('123');
     await microtasksFinished();
 
     const skillItems = page.shadowRoot.querySelectorAll('skill-card');
@@ -162,44 +162,26 @@ suite('UserSkillsPage', function() {
   });
 
   test('SkillsFilteredBySearchTerm', async function() {
-    const skillA = {
-      id: '1',
-      sourceSkillId: null,
-      name: 'Apple',
-      icon: '',
-      prompt: 'A tasty fruit',
-      description: '',
-      source: SkillSource.kUserCreated,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-    const skillB = {
-      id: '2',
-      sourceSkillId: null,
-      name: 'Banana',
-      icon: '',
-      prompt: 'Yellow fruit',
-      description: '',
-      source: SkillSource.kUserCreated,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-    const skillC = {
-      id: '3',
-      sourceSkillId: null,
-      name: 'Carrot',
-      icon: '',
-      prompt: 'Orange vegetable',
-      description: '',
-      source: SkillSource.kUserCreated,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-
-    browserProxy.callbackRouterRemote.updateSkill(skillA);
-    browserProxy.callbackRouterRemote.updateSkill(skillB);
-    browserProxy.callbackRouterRemote.updateSkill(skillC);
-    await microtasksFinished();
+    await setUserSkills([
+      {
+        id: '1',
+        name: 'Apple',
+        prompt: 'A tasty fruit',
+        source: SkillSource.kUserCreated,
+      },
+      {
+        id: '2',
+        name: 'Banana',
+        prompt: 'Yellow fruit',
+        source: SkillSource.kUserCreated,
+      },
+      {
+        id: '3',
+        name: 'Carrot',
+        prompt: 'Orange vegetable',
+        source: SkillSource.kUserCreated,
+      },
+    ]);
 
     let skillItems = page.shadowRoot.querySelectorAll('skill-card');
     assertEquals(3, skillItems.length);
@@ -222,51 +204,49 @@ suite('UserSkillsPage', function() {
     assertEquals(3, page.shadowRoot.querySelectorAll('skill-card').length);
   });
 
-  test('SkillDeletedFromCardMenu', async function() {
-    const skillA = {
+  test('ShowsNoSearchResultsPage', async function() {
+    await setUserSkills([{
       id: '1',
-      sourceSkillId: null,
       name: 'Apple',
-      icon: '',
-      prompt: 'A tasty fruit',
-      description: '',
       source: SkillSource.kUserCreated,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-    const skillB = {
-      id: '2',
-      sourceSkillId: null,
-      name: 'Banana',
-      icon: '',
-      prompt: 'Yellow fruit',
-      description: '',
-      source: SkillSource.kUserCreated,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-    const skillC = {
-      id: '3',
-      sourceSkillId: null,
-      name: 'Carrot',
-      icon: '',
-      prompt: 'Orange vegetable',
-      description: '',
-      source: SkillSource.kUserCreated,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
+    }]);
 
-    browserProxy.callbackRouterRemote.updateSkill(skillA);
-    browserProxy.callbackRouterRemote.updateSkill(skillB);
-    browserProxy.callbackRouterRemote.updateSkill(skillC);
-    await microtasksFinished();
+    page.onSearchChanged('Banana');
+    await page.updateComplete;
+    assertTrue(!!page.shadowRoot.querySelector('error-page'));
+
+    page.onSearchChanged('');
+    await page.updateComplete;
+    assertFalse(!!page.shadowRoot.querySelector('error-page'));
+  });
+
+  test('SkillDeletedFromCardMenu', async function() {
+    await setUserSkills([
+      {
+        id: '1',
+        name: 'Apple',
+        prompt: 'A tasty fruit',
+        source: SkillSource.kUserCreated,
+      },
+      {
+        id: '2',
+        name: 'Banana',
+        prompt: 'Yellow fruit',
+        source: SkillSource.kUserCreated,
+      },
+      {
+        id: '3',
+        name: 'Carrot',
+        prompt: 'Orange vegetable',
+        source: SkillSource.kUserCreated,
+      },
+    ]);
 
     let skillItems = page.shadowRoot.querySelectorAll('skill-card');
     assertEquals(3, skillItems.length);
 
     // Delete Skill B
-    browserProxy.callbackRouterRemote.removeSkill(skillB.id);
+    browserProxy.callbackRouterRemote.removeSkill('2');
     await microtasksFinished();
     await page.updateComplete;
 
@@ -277,19 +257,12 @@ suite('UserSkillsPage', function() {
   });
 
   test('CopySkillInstructionsToClipboard', async function() {
-    const skillA = {
+    await setUserSkills([{
       id: '1',
-      sourceSkillId: null,
       name: 'Mister Tony Bark',
-      icon: '',
       prompt: 'Describe a good dog',
-      description: '',
       source: SkillSource.kUserCreated,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-    browserProxy.callbackRouterRemote.updateSkill(skillA);
-    await microtasksFinished();
+    }]);
 
     const skillCard = page.shadowRoot.querySelector('skill-card');
     assertTrue(!!skillCard);

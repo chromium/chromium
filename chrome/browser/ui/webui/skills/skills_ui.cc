@@ -75,6 +75,8 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"copyInstructions", IDS_SKILL_PAGE_USER_SKILLS_COPY_INSTRUCTIONS},
       {"skillCardActionMenuLabel", IDS_SKILL_CARD_ACTION_MENU_LABEL},
       {"skillAddNewSkillLabel", IDS_ADD_NEW_SKILL_LABEL},
+      {"noSearchResultsTitle", IDS_SKILLS_NO_SEARCH_RESULT_TITLE},
+      {"noSearchResultsDescription", IDS_SKILLS_NO_SEARCH_RESULT_DESCRIPTION},
   };
 
   source->AddLocalizedStrings(kStrings);

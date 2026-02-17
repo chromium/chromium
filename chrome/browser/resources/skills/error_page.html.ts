@@ -12,10 +12,11 @@ export function getHtml(this: ErrorPageElement) {
   return html`<!--_html_template_start_-->
 <div id="mainContent">
   <div id="header">
-    <cr-icon icon="cr:error-outline"></cr-icon>
-    <h1 class="headline">$i18n{errorPageTitle}</h1>
+    ${this.shouldShowErrorIcon() ? html`
+      <cr-icon icon="cr:error-outline"></cr-icon>` : ''}
+    <h1 class="headline">${this.errorTitle()}</h1>
   </div>
-  <p class="body-text">$i18n{errorPageDescription}</p>
+  <p class="body-text">${this.errorDescription()}</p>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

@@ -8,6 +8,7 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import './card.js';
+import './error_page.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -156,6 +157,12 @@ export class DiscoverSkillsPageElement extends CrLitElement {
     return skills.filter(
         skill => skill.name.toLowerCase().includes(term) ||
             skill.description.toLowerCase().includes(term));
+  }
+
+  protected shouldShowNoSearchResults_(): boolean {
+    return this.topSkills_().length === 0 &&
+        this.getOtherSkills_().length === 0 &&
+        this.getOtherCategories_().length === 0 && this.searchTerm_.length > 0;
   }
 
   protected topSkills_(): Skill[] {
