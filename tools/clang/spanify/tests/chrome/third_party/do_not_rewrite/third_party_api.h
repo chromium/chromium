@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TOOLS_CLANG_SPANIFY_TESTS_THIRD_PARTY_DO_NOT_REWRITE_THIRD_PARTY_API_H_
-#define TOOLS_CLANG_SPANIFY_TESTS_THIRD_PARTY_DO_NOT_REWRITE_THIRD_PARTY_API_H_
+#ifndef TOOLS_CLANG_SPANIFY_TESTS_CHROME_THIRD_PARTY_DO_NOT_REWRITE_THIRD_PARTY_API_H_
+#define TOOLS_CLANG_SPANIFY_TESTS_CHROME_THIRD_PARTY_DO_NOT_REWRITE_THIRD_PARTY_API_H_
 
 #include <cstdint>
 
@@ -27,4 +27,4 @@ struct hb_buffer_t {};
 hb_glyph_position_t* hb_buffer_get_glyph_positions(hb_buffer_t* buffer,
                                                    unsigned int* length);
 
-#endif  // TOOLS_CLANG_SPANIFY_TESTS_THIRD_PARTY_DO_NOT_REWRITE_THIRD_PARTY_API_H_
+#endif  // TOOLS_CLANG_SPANIFY_TESTS_CHROME_THIRD_PARTY_DO_NOT_REWRITE_THIRD_PARTY_API_H_

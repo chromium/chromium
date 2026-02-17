@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TOOLS_CLANG_SPANIFY_TESTS_BASE_MEMORY_RAW_PTR_H_
-#define TOOLS_CLANG_SPANIFY_TESTS_BASE_MEMORY_RAW_PTR_H_
+#ifndef TOOLS_CLANG_SPANIFY_TESTS_CHROME_BASE_MEMORY_RAW_PTR_H_
+#define TOOLS_CLANG_SPANIFY_TESTS_CHROME_BASE_MEMORY_RAW_PTR_H_
 
 namespace base {
 
@@ -67,4 +67,4 @@ using base::raw_ptr;
 constexpr inline auto AllowPtrArithmetic =
     base::RawPtrTraits::kAllowPtrArithmetic;
 
-#endif  // TOOLS_CLANG_SPANIFY_TESTS_BASE_MEMORY_RAW_PTR_H_
+#endif  // TOOLS_CLANG_SPANIFY_TESTS_CHROME_BASE_MEMORY_RAW_PTR_H_

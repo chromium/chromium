@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TOOLS_CLANG_SPANIFY_TESTS_BASE_DUMMY_REWRITE_BAIT_FOR_TESTING_H_
-#define TOOLS_CLANG_SPANIFY_TESTS_BASE_DUMMY_REWRITE_BAIT_FOR_TESTING_H_
+#ifndef TOOLS_CLANG_SPANIFY_TESTS_CHROME_BASE_DUMMY_REWRITE_BAIT_FOR_TESTING_H_
+#define TOOLS_CLANG_SPANIFY_TESTS_CHROME_BASE_DUMMY_REWRITE_BAIT_FOR_TESTING_H_
 
 unsigned UnsafeIndex();
 
@@ -18,4 +18,4 @@ unsigned char GetUnsafeChar(const unsigned char* arg) {
   return arg[UnsafeIndex()];
 }
 
-#endif  // TOOLS_CLANG_SPANIFY_TESTS_BASE_DUMMY_REWRITE_BAIT_FOR_TESTING_H_
+#endif  // TOOLS_CLANG_SPANIFY_TESTS_CHROME_BASE_DUMMY_REWRITE_BAIT_FOR_TESTING_H_

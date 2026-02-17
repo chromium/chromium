@@ -40,7 +40,7 @@ and you can build it again incrementally using:
 ## Run the tests
 
 ```bash
-  ./tools/clang/spanify/tests/run_all_tests.py
+  ./tools/clang/spanify/run_all_tests.py
 ```
 
 ### Troubleshooting
@@ -56,7 +56,7 @@ Finally you need to have a version of libstdc++ installed. If you see errors
 like:
 ```bash
 Failed to process deref-expr-actual.cc
-tools/clang/spanify/tests/deref-expr-actual.cc:4:10: fatal error: 'vector' file not found
+tools/clang/spanify/tests/chrome/deref-expr-actual.cc:4:10: fatal error: 'vector' file not found
     4 | #include <vector>
       |          ^~~~~~~~
 1 error generated.

@@ -22,7 +22,7 @@ void test_frontier_basic() {
   int* spanified_2 = buf.data();
   // Expected rewrite:
   // base::span<int> spanified_1 = spanified_2;
-  int* spanified_1 = spanified_2;          // Expect: frontier not applied.
+  int* spanified_1 = spanified_2;  // Expect: frontier not applied.
   // Expected rewrite:
   // int* not_spanified_2 = spanified_2.data();
   int* not_spanified_2 = spanified_2;      // Expect: frontier applied

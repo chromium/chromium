@@ -128,7 +128,7 @@ else
 fi
 
 echo "*** Testing the rewriter ***"
-tools/clang/spanify/tests/run_all_tests.py || exit 1
+tools/clang/spanify/run_all_tests.py || exit 1
 
 args_for_platform() {
     case "$1" in

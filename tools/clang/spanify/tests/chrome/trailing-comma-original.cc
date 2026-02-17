@@ -4,7 +4,7 @@
 
 #include <tuple>
 
-struct A{
+struct A {
   int a;
   int b;
 };
@@ -75,10 +75,7 @@ void Test() {
   //     {9, 10},
   //     {11, 12},
   // }};
-  A a_6_with_new_line[6] = {
-    {1, 2}, {3, 4}, {5, 6},
-    {7, 8}, {9, 10}, {11, 12}
-  };
+  A a_6_with_new_line[6] = {{1, 2}, {3, 4}, {5, 6}, {7, 8}, {9, 10}, {11, 12}};
   std::ignore = a_6_with_new_line[UnsafeIndex()];
 
   // Expected rewrite:
@@ -103,11 +100,7 @@ void Test() {
   //     {9, 10},
   // }};
   A a_5_with_trailing_comma_2[5] = {
-       {1, 2},
-       {3, 4},
-       {5, 6},
-       {7, 8},
-       {9, 10},
+      {1, 2}, {3, 4}, {5, 6}, {7, 8}, {9, 10},
   };
   std::ignore = a_5_with_trailing_comma_2[UnsafeIndex()];
 }

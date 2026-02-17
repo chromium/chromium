@@ -108,7 +108,7 @@ enum Precedence {
 // Returns true if the `loc` is inside a macro expansion, except for the case
 // that the `loc` is at a macro argument of the exceptional macros (EXPECT_ and
 // ASSERT_ family).
-// Tests are in: gtest-macro-original.cc
+// Tests are in: tests/chrome/gtest-macro-original.cc
 bool IsInExcludedMacro(clang::SourceLocation loc,
                        const clang::ASTContext& ast_context,
                        const clang::SourceManager& source_manager) {
@@ -165,7 +165,7 @@ bool IsInExcludedMacro(clang::SourceLocation loc,
 // Returns true if the Node is inside a macro expansion, except for the case
 // that the Node is inside a macro argument of the exceptional macros (EXPECT_
 // and ASSERT_ family).
-// Tests are in: gtest-macro-original.cc
+// Tests are in: tests/chrome/gtest-macro-original.cc
 AST_POLYMORPHIC_MATCHER(isInExcludedMacroLocation,
                         AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
                                                         clang::Stmt,
@@ -575,7 +575,7 @@ const T* GetNodeOrCrash(const MatchFinder::MatchResult& result,
 // Note that `source_manager` and `lang_opts` arguments must outlive the
 // returned function because the returned function references them.
 //
-// Tests are in: gtest-macro-original.cc
+// Tests are in: tests/chrome/gtest-macro-original.cc
 std::function<clang::SourceLocation(clang::SourceLocation)> GetSpellingLocFunc(
     const clang::SourceManager& source_manager [[clang::lifetimebound]],
     const clang::LangOptions& lang_opts [[clang::lifetimebound]]) {
@@ -945,7 +945,7 @@ std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
   // Since the `type` might be clang deduced type, this node is keyed by the
   // type because it could be different depending on the context. This
   // effectively prevents deduced types from being rewritten.
-  // See test: 'span-template-original.cc' for an example.
+  // See test: 'tests/chrome/span-template-original.cc' for an example.
   const std::string key =
       NodeKeyFromRange(replacement_range, source_manager, type);
   EmitReplacement(key,
@@ -1076,7 +1076,7 @@ SubspanExprReplacement GetSubspanExprReplacement(
 // macro argument, and cannot handle the following case appropriately.
 //     #define MACRO() (will_be_span + offset)
 //
-// See test: 'span-frontier-macro-original.cc'
+// See test: 'tests/chrome/span-frontier-macro-original.cc'
 void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
                           const std::string& key) {
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -1279,7 +1279,7 @@ void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
 // Handles boolean operations that need to be adapted after a span rewrite.
 //   if(expr) => if(!expr.empty())
 //   if(!expr) => if(expr.empty())
-// Tests are in: operator-bool-original.cc
+// Tests are in: tests/chrome/operator-bool-original.cc
 void DecaySpanToBooleanOp(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const std::string& key = GetRHS(result);
@@ -1585,7 +1585,7 @@ void EmitSingleVariableSpan(const std::string& key,
 //     int tmp_width = sk_bitmap.width();
 //     base::span<uint32_t> image_row(tmp_row, tmp_width - x);
 //
-// Tests are in: unsafe-function-to-macro-original.cc and
+// Tests are in: tests/chrome/unsafe-function-to-macro-original.cc and
 // //base/containers/auto_spanification_helper_unittest.cc
 void EmitUnsafeCxxMethodCall(const std::string& key,
                              const clang::CXXMemberCallExpr* member_call_expr,
@@ -1660,7 +1660,7 @@ void EmitUnsafeCxxMethodCall(const std::string& key,
 //         hb_buffer_get_glyph_positions(&buffer, &length);
 //     base::span<hb_glyph_position_t> positions(tmp_pos, length);
 //
-// Tests are in: unsafe-function-to-macro-original.cc and
+// Tests are in: tests/chrome/unsafe-function-to-macro-original.cc and
 // //base/containers/auto_spanification_helper_unittest.cc
 void EmitUnsafeFreeFuncCall(const std::string& key,
                             const clang::CallExpr* call_expr,
@@ -1710,7 +1710,7 @@ void EmitUnsafeFunctionCall(const std::string& key,
 // Note that `auto it = ...` is rewritten to `base::span<T> it = ...`
 // separately.
 //
-// Tests are in: array-tests-original.cc
+// Tests are in: tests/chrome/array-tests-original.cc
 void EmitCArrayIterCallExpr(const std::string& key,
                             const clang::CallExpr* call_expr,
                             const MatchFinder::MatchResult& result) {
@@ -1900,7 +1900,7 @@ void RewriteUnaryOperation(const MatchFinder::MatchResult& result) {
 //   `sizeof(c_array)`
 // Into:
 //   `base::SpanificationSizeofForStdArray(std_array)`
-// Tests are in: array-tests-original.cc
+// Tests are in: tests/chrome/array-tests-original.cc
 void RewriteArraySizeof(const MatchFinder::MatchResult& result) {
   clang::SourceManager& source_manager = *result.SourceManager;
 
@@ -2643,7 +2643,7 @@ std::string getArrayNode(bool is_lhs, const MatchFinder::MatchResult& result) {
 // iterator.
 //   it == std::begin(c_array)
 //   it != std::end(c_array)
-// Tests are in: array-tests-original.cc
+// Tests are in: tests/chrome/array-tests-original.cc
 void RewriteComparisonWithCArrayIter(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::CallExpr* call_expr = GetNodeOrCrash<clang::CallExpr>(
@@ -2667,7 +2667,7 @@ void RewriteComparisonWithCArrayIter(const MatchFinder::MatchResult& result) {
 // In the following implementation, `var` is called LHS and `func` is called
 // RHS.
 //
-// Tests are in: func-ptr-var-original.cc
+// Tests are in: tests/chrome/func-ptr-var-original.cc
 void RewriteFunctionPointerType(const MatchFinder::MatchResult& result) {
   const clang::VarDecl* lhs_var_decl = GetNodeOrCrash<clang::VarDecl>(
       result, "lhs_funcptrvardecl",
@@ -2742,7 +2742,7 @@ void RewriteFunctionPointerType(const MatchFinder::MatchResult& result) {
 // function declarations (forward declarations and overridden methods) to each
 // other bidirectionally per the matched function parameter/return type. Note
 // that a function definition is a function declaration by definition.
-// Tests are in: fct-decl-tests-original.cc
+// Tests are in: tests/chrome/fct-decl-tests-original.cc
 //
 // Example) Given the following C++ code,
 //
@@ -3485,7 +3485,7 @@ class Spanifier {
 
     // When passing now-span buffers to third_party functions as parameters, we
     // need to add `.data()` to extract the pointer and keep things compiling.
-    // See test: 'array-external-call-original.cc'
+    // See test: 'tests/chrome/array-external-call-original.cc'
     //
     // TODO(crbug.com/419598098): we had trouble exercising the "add
     // `.data()` to frontier calls" logic in our test harness. This
