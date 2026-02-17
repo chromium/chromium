@@ -680,7 +680,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.AssistContent.WebPageContentProvider.Latency.CreateToExtractionStart.{RequestType}.{Format}"
-    units="ms" expires_after="2026-03-01">
+    units="ms" expires_after="2026-08-02">
   <owner>salg@google.com</owner>
   <owner>ssid@google.com</owner>
   <summary>
