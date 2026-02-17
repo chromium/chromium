@@ -163,9 +163,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     BOOL isBottomOmnibox =
         IsBottomOmniboxAvailable() &&
         _unfocusedOmniboxToolbarType == ToolbarType::kSecondary;
-    BOOL enableFocusAnimation =
-        isFocusingOmnibox &&
-        (isBottomOmnibox || IsMultilineBrowserOmniboxEnabled());
+    BOOL enableFocusAnimation = isFocusingOmnibox && isBottomOmnibox;
 
     [self initialLayoutAnimated:enableFocusAnimation];
 

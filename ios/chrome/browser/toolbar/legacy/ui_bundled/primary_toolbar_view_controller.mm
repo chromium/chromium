@@ -299,13 +299,9 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 }
 
 - (void)setLocationBarHeightExpanded {
-  // Avoid resetting the location bar height to its steady state when focused
-  // with multiline enabled, since its height may have been adjusted.
-  if (!IsMultilineBrowserOmniboxEnabled() || !self.locationBarFocused) {
-    [self setLocationBarContainerHeight:LocationBarHeight(
-                                            self.traitCollection
-                                                .preferredContentSizeCategory)];
-  }
+  [self setLocationBarContainerHeight:LocationBarHeight(
+                                          self.traitCollection
+                                              .preferredContentSizeCategory)];
   self.view.matchNTPHeight = NO;
 }
 

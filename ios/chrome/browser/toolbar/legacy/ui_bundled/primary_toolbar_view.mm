@@ -329,17 +329,6 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
   return _bannerPromo.intrinsicContentSize.height * progress;
 }
 
-- (void)setLocationBarHeight:(CGFloat)locationBarHeight {
-  /// Location bar height is only handled by this property in multiline omnibox.
-  CHECK(IsMultilineBrowserOmniboxEnabled(), base::NotFatalUntil::M200);
-  if (locationBarHeight == _locationBarHeight) {
-    return;
-  }
-  _locationBarHeight = locationBarHeight;
-  self.locationBarContainerHeight.constant = locationBarHeight;
-  [self invalidateIntrinsicContentSize];
-}
-
 - (void)setCancelButtonStyle:(ToolbarCancelButtonStyle)cancelButtonStyle {
   if (cancelButtonStyle == _cancelButtonStyle) {
     return;
@@ -420,10 +409,6 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
   if (isTopOmnibox) {
     if (self.matchNTPHeight) {
       height += content_suggestions::FakeToolbarHeight();
-    } else if (IsMultilineBrowserOmniboxEnabled()) {
-      height += self.locationBarHeight +
-                LocationBarVerticalMargins(
-                    self.traitCollection.preferredContentSizeCategory);
     } else {
       height += ToolbarExpandedHeight(
           self.traitCollection.preferredContentSizeCategory);

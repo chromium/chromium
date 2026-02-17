@@ -696,12 +696,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       feature_engagement::kIPHiOSAIHubNewBadge);
 }
 
-- (void)locationBarViewController:(LocationBarViewController*)controller
-         didChangeEditStateHeight:(CGFloat)height {
-  [self.heightDelegate locationBarCoordinator:self
-                     didChangeEditStateHeight:height];
-}
-
 #pragma mark - LocationBarBadgeCommands
 
 - (void)updateBadgeConfig:(LocationBarBadgeConfiguration*)config {

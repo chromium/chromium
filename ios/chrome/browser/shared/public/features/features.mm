@@ -879,16 +879,6 @@ int GetSyncedSetUpImpressionLimit() {
       kIOSSyncedSetUp, kSyncedSetUpImpressionLimit, /*default_value=*/1);
 }
 
-BASE_FEATURE(kMultilineBrowserOmnibox, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsMultilineBrowserOmniboxEnabled() {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE ||
-      IsComposeboxIOSEnabled()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kMultilineBrowserOmnibox);
-}
-
 BASE_FEATURE(kDisableKeyboardAccessory, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kDisableKeyboardAccessoryParam[] = "kDisableKeyboardAccessoryParam";

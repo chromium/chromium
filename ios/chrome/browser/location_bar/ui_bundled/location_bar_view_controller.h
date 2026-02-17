@@ -78,10 +78,6 @@ class Tracker;
 // Decides if AI Hub new badge should show.
 - (BOOL)shouldShowAIHubNewFeatureBadge;
 
-// Edit state required `height` changed.
-- (void)locationBarViewController:(LocationBarViewController*)controller
-         didChangeEditStateHeight:(CGFloat)height;
-
 @end
 
 // The view controller displaying the location bar. Manages the two states of

@@ -311,13 +311,7 @@
 }
 
 - (void)setLocationBarHeightExpanded {
-  // With multine omnibox the location bar edit state height is managed by the
-  // toolbar coordinator. This will only update the expanded corner radius.
-  if (IsMultilineBrowserOmniboxEnabled()) {
-    self.view.locationBarContainer.layer.cornerRadius =
-        LocationBarHeight(self.traitCollection.preferredContentSizeCategory) /
-        2;
-  }
+  // NO OP.
 }
 
 // Changes related to the toolbar itself.

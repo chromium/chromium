@@ -817,12 +817,6 @@ extern const char kSyncedSetUpImpressionLimit[];
 // promo, as specified by the `kSyncedSetUpImpressionLimit` Finch parameter.
 int GetSyncedSetUpImpressionLimit();
 
-// Enables the MultilineBrowserOmnibox feature.
-BASE_DECLARE_FEATURE(kMultilineBrowserOmnibox);
-
-// Returns true if the MultilineBrowserOmnibox feature is enabled.
-bool IsMultilineBrowserOmniboxEnabled();
-
 // Enables the DisableKeyboardAccessory feature.
 BASE_DECLARE_FEATURE(kDisableKeyboardAccessory);
 

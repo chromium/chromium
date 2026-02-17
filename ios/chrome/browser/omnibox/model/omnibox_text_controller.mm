@@ -160,11 +160,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   // Exiting pre edit also shows the selections handle when animating the
   // defocus (crbug.com/458055336).
   BOOL skipExitPreEdit =
-      (IsMultilineBrowserOmniboxEnabled() &&
-       _presentationContext == OmniboxPresentationContext::kLocationBar) ||
-      (IsComposeboxIOSEnabled() &&
-       _presentationContext == OmniboxPresentationContext::kComposebox);
-  ;
+      IsComposeboxIOSEnabled() &&
+      _presentationContext == OmniboxPresentationContext::kComposebox;
   if (!skipExitPreEdit) {
     [self.textInput exitPreEditState];
   }

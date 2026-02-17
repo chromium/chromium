@@ -804,12 +804,9 @@ using base::UserMetricsAction;
     // Skip the revert here to avoid changing the size of the multiline omnibox
     // when accepting input, changes will be reverted at endEditing
     // (crbug.com/458055336).
-    BOOL skipRevert = (IsMultilineBrowserOmniboxEnabled() &&
-                       _omniboxPresentationContext ==
-                           OmniboxPresentationContext::kLocationBar) ||
-                      (IsComposeboxIOSEnabled() &&
-                       _omniboxPresentationContext ==
-                           OmniboxPresentationContext::kComposebox);
+    BOOL skipRevert =
+        IsComposeboxIOSEnabled() &&
+        _omniboxPresentationContext == OmniboxPresentationContext::kComposebox;
     if (!skipRevert) {
       base::AutoReset<bool> tmp(&_omniboxTextModel->in_revert, true);
       [self.omniboxTextController

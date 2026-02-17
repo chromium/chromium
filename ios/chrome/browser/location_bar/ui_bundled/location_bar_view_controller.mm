@@ -86,8 +86,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 }  // namespace
 
-@interface LocationBarViewController () <TextFieldViewContainingHeightDelegate,
-                                         UIContextMenuInteractionDelegate,
+@interface LocationBarViewController () <UIContextMenuInteractionDelegate,
                                          UIIndirectScribbleInteractionDelegate>
 // The injected edit view.
 @property(nonatomic, strong) UIView<TextFieldViewContaining>* editView;
@@ -175,7 +174,6 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
   DCHECK(!self.editView);
   _editView = editView;
-  _editView.heightDelegate = self;
   _textField = editView.textFieldView;
 }
 
@@ -1207,14 +1205,6 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
       lens::ContainerPresentationType::kFullscreenCover;
   [_lensOverlayPlaceholderView
       setLensOverlayActive:shouldIndicateLensInUse && _lensOverlayVisible];
-}
-
-#pragma mark - TextFieldViewContainingHeightDelegate
-
-- (void)textFieldViewContaining:(UIView<TextFieldViewContaining>*)sender
-                didChangeHeight:(CGFloat)height {
-  [self.delegate locationBarViewController:self
-                  didChangeEditStateHeight:height];
 }
 
 - (UIView*)locationBarSteadyViewVisualCopy {

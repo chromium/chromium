@@ -71,7 +71,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 @interface ToolbarCoordinator () <ContextualPanelEntrypointCommands,
                                   GuidedTourCommands,
                                   LocationBarBadgeCommands,
-                                  LocationBarCoordinatorHeightDelegate,
                                   PageActionMenuEntryPointCommands,
                                   PrimaryToolbarViewControllerDelegate,
                                   ToolbarCommands,
@@ -94,8 +93,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 @property(nonatomic, strong) OmniboxFocusOrchestrator* orchestrator;
 /// Whether the omnibox is currently focused.
 @property(nonatomic, assign) BOOL locationBarFocused;
-/// The height of the location bar in edit state.
-@property(nonatomic, assign) CGFloat locationBarEditStateHeight;
 /// Dynamic response system view controller is an omnibox presenter. Only
 /// defined  when kOmniboxDRSPrototype is set.
 @property(nonatomic, strong) OmniboxDRSViewController* drsViewController;
@@ -227,7 +224,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   self.locationBarCoordinator =
       [[LocationBarCoordinator alloc] initWithBrowser:browser];
   self.locationBarCoordinator.delegate = self.omniboxFocusDelegate;
-  self.locationBarCoordinator.heightDelegate = self;
   self.locationBarCoordinator.popupPresenterDelegate =
       self.popupPresenterDelegate;
   [self.locationBarCoordinator start];
@@ -263,7 +259,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   }
 
   [self updateToolbarsLayout];
-  [self updateLocationBarHeightWithAnimation:NO focusStateDidChange:NO];
 
   self.started = YES;
 }
@@ -462,7 +457,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   [self.secondaryToolbarCoordinator.viewController
       setLocationBarFocused:focused];
   self.locationBarFocused = focused;
-  [self updateLocationBarHeightWithAnimation:YES focusStateDidChange:YES];
 }
 
 - (BOOL)isOmniboxFirstResponder {
@@ -482,10 +476,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)setBottomOmniboxOffsetForPopup:(CGFloat)bottomOffset {
   [self.legacyToolbarMediator setBottomOmniboxOffsetForPopup:bottomOffset];
-}
-
-- (ToolbarType)omniboxPosition {
-  return _omniboxPosition;
 }
 
 #pragma mark ToolbarHeightProviding
@@ -909,46 +899,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   [_bottomLocationBarCoordinator markDisplayedBadgeAsUnread:read];
 }
 
-#pragma mark - LocationBarCoordinatorHeightDelegate
-
-- (void)locationBarCoordinator:(LocationBarCoordinator*)coordinator
-      didChangeEditStateHeight:(CGFloat)height {
-  if (height == self.locationBarEditStateHeight) {
-    return;
-  }
-  self.locationBarEditStateHeight = height;
-  [self updateLocationBarHeightWithAnimation:NO focusStateDidChange:NO];
-}
-
-- (void)updateLocationBarHeightWithAnimation:(BOOL)animated
-                         focusStateDidChange:(BOOL)focusStateDidChange {
-  if (!IsMultilineBrowserOmniboxEnabled()) {
-    // Location bar height is constant when multiline is not enabled. The height
-    // is management in primary and secondary toolbar view controllers.
-    return;
-  }
-  // Steady state height by default.
-  CGFloat height =
-      LocationBarHeight(self.primaryToolbarViewController.traitCollection
-                            .preferredContentSizeCategory);
-
-  // Apply the edit state height only when the location bar is focused and we
-  // are not in a transition to focused state.
-  if (self.locationBarFocused && !focusStateDidChange) {
-    height = self.locationBarEditStateHeight;
-  }
-
-  [self.primaryToolbarCoordinator setLocationBarHeight:height];
-  [self.secondaryToolbarCoordinator setLocationBarHeight:height];
-
-  BOOL layoutChange = [self inEditState] || focusStateDidChange;
-  if (layoutChange) {
-    [self.toolbarHeightDelegate toolbarsHeightChanged];
-    [self.toolbarHeightDelegate
-        layoutToolbarHeightChangeWithAnimation:animated];
-  }
-}
-
 #pragma mark - ContextualPanelEntrypointCommands
 
 - (void)notifyContextualPanelEntrypointIPHDismissed {
@@ -1042,13 +992,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
   if (!self.locationBarFocused) {
     return 0;
-  }
-
-  if (IsMultilineBrowserOmniboxEnabled()) {
-    return self.locationBarEditStateHeight +
-           LocationBarVerticalMargins(
-               self.locationBarCoordinator.locationBarViewController
-                   .traitCollection.preferredContentSizeCategory);
   }
 
   BOOL forceEditState = omnibox::ForceBottomOmniboxInEditState();
@@ -1210,7 +1153,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 - (LocationBarCoordinator*)createLocationBarCoordinator {
   LocationBarCoordinator* coordinator =
       [[LocationBarCoordinator alloc] initWithBrowser:self.browser];
-  coordinator.heightDelegate = self;
   [coordinator start];
 
   return coordinator;

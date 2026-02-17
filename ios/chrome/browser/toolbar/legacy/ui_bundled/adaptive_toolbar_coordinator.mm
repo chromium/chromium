@@ -151,10 +151,6 @@ using tab_groups::VersioningMessageController;
   [self.viewController showPrerenderingAnimation];
 }
 
-- (void)setLocationBarHeight:(CGFloat)height {
-  [self.viewController setLocationBarHeight:height];
-}
-
 #pragma mark - AdaptiveToolbarViewControllerDelegate
 
 - (void)exitFullscreen:(FullscreenExitReason)FullscreenExitReason {

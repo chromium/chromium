@@ -269,10 +269,6 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   [self updateProgressBarVisibility];
 }
 
-- (void)setLocationBarHeight:(CGFloat)height {
-  [self.view setLocationBarHeight:height];
-}
-
 #pragma mark - LegacyToolbarConsumer
 
 - (void)setCanGoForward:(BOOL)canGoForward {
@@ -455,13 +451,6 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 // Updates `locationBarContainer` height and adjusts its corner radius for the
 // fullscreen `progress`
 - (void)updateLocationBarHeightForFullscreenProgress:(CGFloat)progress {
-  /// When multiline omnibox is enabled and focused, refrain from updating the
-  /// location bar container height, this is already handled by the toolbar
-  /// height delegate.
-  if (IsMultilineBrowserOmniboxEnabled() && _locationBarFocused) {
-    return;
-  }
-
   const CGFloat expandedHeight =
       LocationBarHeight(self.traitCollection.preferredContentSizeCategory);
   const CGFloat collapsedHeight =

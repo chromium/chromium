@@ -15,9 +15,6 @@ enum class ToolbarType;
 /// This is NOT used for fullscreen.
 - (void)toolbarsHeightChanged;
 
-/// Layout toolbar height change.
-- (void)layoutToolbarHeightChangeWithAnimation:(BOOL)animated;
-
 /// Secondary toolbar is moving above the keyboard, adjust the constraints to
 /// allow this.
 - (void)secondaryToolbarMovedAboveKeyboard;

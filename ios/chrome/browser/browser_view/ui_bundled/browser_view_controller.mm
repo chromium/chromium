@@ -126,9 +126,6 @@ enum HeaderBehaviour {
 // dynamic island visible.
 const CGFloat kTopDynamicIslandInset = 24;
 
-// The animation duration of focusing/defocusing the multiline omnibox.
-const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
-
 }  // namespace
 
 #pragma mark - HeaderDefinition helper
@@ -324,9 +321,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 // Height constraint for the secondary toolbar.
 @property(nonatomic, strong)
     NSLayoutConstraint* secondaryToolbarHeightConstraint;
-// Keyboard height stored for the secondary toolbar, used when updating the
-// multiline omnibox height while editing.
-@property(nonatomic, assign) CGFloat secondaryToolbarKeyboardHeight;
 // Current Fullscreen progress for the footers.
 @property(nonatomic, assign) CGFloat footerFullscreenProgress;
 // Height of the header view.
@@ -940,14 +934,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
     [weakSelf updateUIOnTraitChange:previousCollection];
   };
   [self registerForTraitChanges:traits withHandler:handler];
-
-  if (IsMultilineBrowserOmniboxEnabled()) {
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(keyboardDidHide:)
-               name:UIKeyboardDidHideNotification
-             object:nil];
-  }
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -1214,13 +1200,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
                          : UIStatusBarStyleDefault;
 }
 
-- (void)keyboardDidHide:(NSNotification*)notification {
-  if (!IsMultilineBrowserOmniboxEnabled()) {
-    return;
-  }
-  self.secondaryToolbarKeyboardHeight = 0;
-}
-
 #pragma mark - ** Private BVC Methods **
 
 // Whether the browser view has appeared.
@@ -1270,12 +1249,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
       omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
     if ([self.toolbarCoordinator inEditState]) {
       CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
-      if (IsMultilineBrowserOmniboxEnabled() &&
-          [self.toolbarCoordinator omniboxPosition] ==
-              ToolbarType::kSecondary) {
-        return MAX(safeAreaBottom, self.secondaryToolbarKeyboardHeight) +
-               self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;
-      }
       CGFloat locationBarDisplayHeight =
           self.toolbarCoordinator.locationBarCompactDisplayHeight;
       return safeAreaBottom + locationBarDisplayHeight;
@@ -1845,8 +1818,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   // It's safe to revert the secondary toolbar to the initial size only if the
   // user fully exited edit state.
   if (omnibox::ForceBottomOmniboxInEditState() ||
-      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition() ||
-      IsMultilineBrowserOmniboxEnabled()) {
+      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
     if (![self.toolbarCoordinator inEditState]) {
       [self
           adjustSecondaryToolbarForKeyboardHeight:0
@@ -2616,33 +2588,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   self.secondaryToolbarHeightConstraint.constant =
       [self secondaryToolbarHeightWithInset];
 
-  const BOOL isBottomOmniboxInEditState =
-      (omnibox::ForceBottomOmniboxInEditState() ||
-       (omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition() &&
-        [self.toolbarCoordinator omniboxPosition] == ToolbarType::kSecondary));
-
-  if (IsMultilineBrowserOmniboxEnabled() && isBottomOmniboxInEditState) {
-    [self.toolbarCoordinator
-        setBottomOmniboxOffsetForPopup:self.secondaryToolbarHeightConstraint
-                                           .constant];
-  }
   [self updateForFullscreenProgress:self.footerFullscreenProgress];
-}
-
-- (void)layoutToolbarHeightChangeWithAnimation:(BOOL)animated {
-  CHECK(!IsChromeNextIaEnabled());
-  if (!self.viewLoaded) {
-    return;
-  }
-
-  if (animated) {
-    [UIView animateWithDuration:kMultilineOmniboxAnimationDuration
-                     animations:^{
-                       [self.view layoutIfNeeded];
-                     }];
-  } else {
-    [self.view layoutIfNeeded];
-  }
 }
 
 - (void)secondaryToolbarMovedAboveKeyboard {
@@ -2662,7 +2608,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
                                        duration:(NSTimeInterval)duration
                                           curve:(UIViewAnimationCurve)curve {
   CHECK(ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET);
-  self.secondaryToolbarKeyboardHeight = keyboardHeight;
   CGFloat keyboardAttachedOffset =
       keyboardHeight +
       self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;

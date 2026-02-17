@@ -382,14 +382,4 @@ UIView* SecondaryToolbarLocationBarContainerView(
   }
 }
 
-- (void)setLocationBarHeight:(CGFloat)locationBarHeight {
-  /// Location bar height is only handled by this property in multiline omnibox.
-  CHECK(IsMultilineBrowserOmniboxEnabled(), base::NotFatalUntil::M200);
-  if (locationBarHeight == _locationBarHeight) {
-    return;
-  }
-  _locationBarHeight = locationBarHeight;
-  self.locationBarContainerHeight.constant = locationBarHeight;
-}
-
 @end

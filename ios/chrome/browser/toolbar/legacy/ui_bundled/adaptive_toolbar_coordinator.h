@@ -43,9 +43,6 @@ class WebState;
 - (void)setLocationBarViewController:
     (UIViewController*)locationBarViewController;
 
-// Sets the height of the location bar. Used when the omnibox is multiline.
-- (void)setLocationBarHeight:(CGFloat)height;
-
 // Prepares the toolbar for a side swipe snapshot with `webState`.
 - (void)updateToolbarForSideSwipeSnapshot:(web::WebState*)webState;
 // Resets the toolbar after a side swipe snapshot.
