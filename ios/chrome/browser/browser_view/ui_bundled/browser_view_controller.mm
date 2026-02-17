@@ -2268,7 +2268,7 @@ const CGFloat kTopDynamicIslandInset = 24;
 
   BOOL isNTP = tabURL == kChromeUINewTabURL;
   BOOL isIncognito = _isOffTheRecord;
-
+  BOOL useDeviceCornerRadius = NO;
   if (isNTP && !isIncognito && !CanShowTabStrip(self)) {
     // Add a snapshot of the primary toolbar to the background as the
     // animation runs.
@@ -2280,6 +2280,9 @@ const CGFloat kTopDynamicIslandInset = 24;
                                                  fromView:self.view];
     [self.contentArea addSubview:toolbarSnapshot];
     newPage.frame = self.view.bounds;
+    // `newPage` takes the full screen and the corner radius should be the same
+    // as the device's.
+    useDeviceCornerRadius = YES;
   } else {
     if (self.ntpCoordinator.isNTPActiveForCurrentWebState &&
         self.webUsageEnabled) {
@@ -2348,6 +2351,7 @@ const CGFloat kTopDynamicIslandInset = 24;
   ForegroundTabAnimationView* animatedView =
       [[ForegroundTabAnimationView alloc] initWithFrame:frame];
   animatedView.contentView = newPage;
+  animatedView.useDeviceCornerRadius = useDeviceCornerRadius;
   animatedView.backgroundView =
       [self.contentArea snapshotViewAfterScreenUpdates:NO];
 

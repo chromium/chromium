@@ -13,7 +13,9 @@ const NSTimeInterval kAnimationDuration = 0.75;
 const CGFloat kTabMotionDamping = 0.75;
 const CGFloat kTabFadeInRelativeDuration = 0.4;
 const CGFloat kBackgroundFadeRelativeDuration = 0.33;
+const CGFloat kCornerRoundingRelativeDuration = 0.33;
 const CGFloat kInitialTabScale = 0.75;
+const CGFloat kInitialTabCornerRadius = 26.0;
 const CGFloat kPositionCoefficient = 0.25;
 const CGFloat kScrimViewOpacity = 0.40;
 const CGFloat kBackgroundTabScale = 0.80;
@@ -74,16 +76,15 @@ const UIBlurEffectStyle kBackgroundTabBlurStyle =
   transform =
       CGAffineTransformScale(transform, kInitialTabScale, kInitialTabScale);
 
-  // Check before the contentView is modified to avoid transient values.
-  BOOL expandsToTopOfDevice = self.contentView.frame.origin.y == 0;
-
   self.contentView.transform = transform;
   self.contentView.alpha = 0;
-  if (expandsToTopOfDevice) {
+  self.contentView.layer.masksToBounds = YES;
+  if (self.useDeviceCornerRadius) {
     self.contentView.layer.cornerRadius = DeviceCornerRadius();
     self.contentView.layer.maskedCorners =
         kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
-    self.contentView.layer.masksToBounds = YES;
+  } else {
+    self.contentView.layer.cornerRadius = kInitialTabCornerRadius;
   }
 
   // Animation components.
@@ -98,6 +99,9 @@ const UIBlurEffectStyle kBackgroundTabBlurStyle =
   auto backgroundFadeAnimation = ^{
     blurView.effect = [UIBlurEffect effectWithStyle:kBackgroundTabBlurStyle];
     scrimView.alpha = kScrimViewOpacity;
+  };
+  auto cornerAnimation = ^{
+    self.contentView.layer.cornerRadius = 0.0;
   };
 
   PropertyAnimatorGroup* animations = [[PropertyAnimatorGroup alloc] init];
@@ -134,6 +138,11 @@ const UIBlurEffectStyle kBackgroundTabBlurStyle =
     [UIView addKeyframeWithRelativeStartTime:0
                             relativeDuration:kBackgroundFadeRelativeDuration
                                   animations:backgroundFadeAnimation];
+    if (!self.useDeviceCornerRadius) {
+      [UIView addKeyframeWithRelativeStartTime:0
+                              relativeDuration:kCornerRoundingRelativeDuration
+                                    animations:cornerAnimation];
+    }
   };
   UIViewPropertyAnimator* additionalAnimations = [[UIViewPropertyAnimator alloc]
       initWithDuration:kAnimationDuration

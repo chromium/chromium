@@ -19,6 +19,10 @@
 // behind the animation.
 @property(nonatomic, strong) UIView* backgroundView;
 
+// If DeviceCornerRadius should be applied to the contentView, ideally only when
+// the contentView takes the full screen. Default is NO.
+@property(nonatomic, assign) BOOL useDeviceCornerRadius;
+
 // Starts a New Tab animation in `parentView`, from `originPoint` with
 // a `completion` block. The new tab will scale up and move from the direction
 // if `originPoint` to the center of the receiver. `originPoint` must be in
