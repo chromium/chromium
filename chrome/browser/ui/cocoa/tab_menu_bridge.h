@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_UI_COCOA_TAB_MENU_BRIDGE_H_
 #define CHROME_BROWSER_UI_COCOA_TAB_MENU_BRIDGE_H_
 
+#include <map>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/tabs/public/tab_interface.h"
 
 @class NSMutableArray;
 @class NSMenuItem;
@@ -48,6 +51,10 @@ class TabMenuBridge : public TabStripModelObserver {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabMenuBridgeTest, ClickingMenuActivatesTab);
+  FRIEND_TEST_ALL_PREFIXES(TabMenuBridgeTest,
+                           ClickingStaleMenuItemDoesNotCrash);
+  FRIEND_TEST_ALL_PREFIXES(TabMenuBridgeTest,
+                           ClickingMenuItemAfterReorderActivatesCorrectTab);
 
   // These methods are used manage the dynamic menu items.
   NSMutableArray* DynamicMenuItems();
@@ -81,6 +88,11 @@ class TabMenuBridge : public TabStripModelObserver {
   // non-dynamic section of the menu. This offset is used to map menu items to
   // their underlying tabs.
   int dynamic_items_start_;
+
+  // Maps each dynamic NSMenuItem to the TabInterface it was created for.
+  // This allows activating the correct tab even if the menu becomes stale
+  // (e.g., a tab is closed or reordered while the menu is open).
+  std::map<NSMenuItem*, raw_ptr<tabs::TabInterface>> menu_item_to_tab_;
 
   // Flag when set forces the menu to be immediately rebuilt on modal change
   // instead of only doing so during menu show.
