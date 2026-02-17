@@ -79,6 +79,9 @@ void WebUISplitTabsControl::HandleContextMenu(
         !tab_strip_model->GetActiveTab()->IsSplit()) {
       return;
     }
+    // Destroy the old menu runner first to avoid a dangling pointer since it
+    // holds a raw_ptr to the old menu model.
+    menu_runner_.reset();
     split_tab_menu_ = std::make_unique<SplitTabMenuModel>(
         tab_strip_model, SplitTabMenuModel::MenuSource::kToolbarButton);
     RunMenuAt(screen_location.x(), screen_location.y());
@@ -87,6 +90,9 @@ void WebUISplitTabsControl::HandleContextMenu(
     Browser* actual_browser =
         chrome::FindBrowserWithWindow(browser->GetWindow()->GetNativeWindow());
     if (actual_browser) {
+      // Destroy the old menu runner first to avoid a dangling pointer since it
+      // holds a raw_ptr to the old menu model.
+      menu_runner_.reset();
       split_tab_menu_ = std::make_unique<PinnedActionToolbarButtonMenuModel>(
           actual_browser, kActionSplitTab);
       RunMenuAt(screen_location.x(), screen_location.y());
