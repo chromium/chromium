@@ -39,8 +39,21 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace {
+
+// The extension in "extensions/search_provider_override" uses "example.com"
+// as the search URL.
+constexpr char kExtensionSearchUrl[] = "https://www.example.com/?q=Penguin";
+
+enum class DefaultSearch {
+  kUseDefault,
+  kUseNonGoogleFromDefaultList,
+  kUseNewSearch,
+};
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 
 using testing::_;
 
@@ -67,7 +80,7 @@ class MockImageFetcherService : public image_fetcher::ImageFetcherService {
 
 class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
     : public InteractiveBrowserTest {
- public:
+ protected:
   SettingsOverriddenExplicitChoiceDialogInteractiveUiTest() {
     feature_list_.InitAndEnableFeature(
         extensions_features::kSearchEngineExplicitChoiceDialog);
@@ -99,13 +112,6 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
               return std::make_unique<MockImageFetcherService>();
             }));
   }
-
- protected:
-  enum class DefaultSearch {
-    kUseDefault,
-    kUseNonGoogleFromDefaultList,
-    kUseNewSearch,
-  };
 
   auto SetNewSearchProvider(DefaultSearch search) {
     return Do([this, search]() {
@@ -188,6 +194,33 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
     return steps;
   }
 
+  auto CheckActiveUrl(const GURL& expected_url) {
+    return CheckResult(
+        [this]() {
+          return browser()
+              ->tab_strip_model()
+              ->GetActiveWebContents()
+              ->GetLastCommittedURL();
+        },
+        expected_url,
+        "Check that navigation is deferred and hasn't reached the extension "
+        "URL");
+  }
+
+  // Some Google search URL parameters are dynamic. Therefore, for testing
+  // purpose, the host will be used for validation.
+  auto CheckWebContentsNavigateToGoogle() {
+    return CheckResult(
+        [this]() {
+          return browser()
+              ->tab_strip_model()
+              ->GetActiveWebContents()
+              ->GetLastCommittedURL()
+              .host();
+        },
+        "www.google.com", "Wait for navigation to Google");
+  }
+
  private:
   // Sets up the mock ImageFetcher so that we can exercise icon fetching, rather
   // than having the dialog fall back to generated placeholder icons. Note that
@@ -226,25 +259,45 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       SearchOverriddenDialogWhenPreviouslyGoogle) {
-  RunTestSequence(SetNewSearchProvider(DefaultSearch::kUseDefault),
+                       WhenPreviouslyGoogleChoosingPreviousRestoresGoogle) {
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  SetNewSearchProvider(DefaultSearch::kUseDefault),
                   LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-                  WaitForDialogToShow(), ScreenshotDialog());
+                  WaitForDialogToShow(), CheckActiveUrl(GURL("about:blank")),
+                  ScreenshotDialog(),
+                  PressButton(kSettingsOverriddenDialogPreviousSettingButtonId),
+                  // Click Save.
+                  PressButton(kSettingsOverriddenDialogSaveButtonId),
+                  WaitForHide(kSettingsOverriddenDialogId),
+                  // Verify navigation proceeds to the default search URL
+                  // (Google) instead of the extension URL.
+                  WaitForWebContentsNavigation(kWebContentsId),
+                  CheckWebContentsNavigateToGoogle());
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       SearchOverriddenDialogWhenPreviouslyNonGoogle) {
+IN_PROC_BROWSER_TEST_F(
+    SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
+    WhenPreviouslyNonGoogleChoosingPreviousRestoresNonGoogle) {
   RunTestSequence(
+      InstrumentTab(kWebContentsId),
       SetNewSearchProvider(DefaultSearch::kUseNonGoogleFromDefaultList),
       LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-      WaitForDialogToShow(), ScreenshotDialog());
+      WaitForDialogToShow(), CheckActiveUrl(GURL("about:blank")),
+      ScreenshotDialog(),
+      // Select previous search setting.
+      PressButton(kSettingsOverriddenDialogNewSettingButtonId),
+      PressButton(kSettingsOverriddenDialogSaveButtonId),
+      WaitForHide(kSettingsOverriddenDialogId),
+      // Verify navigation proceeds to the extension's search URL.
+      WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       SearchOverriddenDialogWhenPreviouslyOldExtension) {
+                       WhenPreviouslyOldExtension) {
   RunTestSequence(SetNewSearchProvider(DefaultSearch::kUseNewSearch),
                   LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-                  WaitForDialogToShow(), ScreenshotDialog());
+                  WaitForDialogToShow(), CheckActiveUrl(GURL("about:blank")),
+                  ScreenshotDialog());
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
@@ -252,9 +305,10 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
   // This test covers the unconventional explicit-choice dialog behavior,
   // having no initially-selected radio button.
   RunTestSequence(
+      InstrumentTab(kWebContentsId),
       SetNewSearchProvider(DefaultSearch::kUseDefault),
       LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-      WaitForDialogToShow(),
+      WaitForDialogToShow(), CheckActiveUrl(GURL("about:blank")),
       // Assert that neither radio button is initially selected or focused.
       CheckViewProperty(kSettingsOverriddenDialogPreviousSettingButtonId,
                         &views::View::HasFocus, false),
@@ -283,7 +337,53 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
                         &views::View::GetEnabled, true),
       // Click the save button.
       PressButton(kSettingsOverriddenDialogSaveButtonId),
-      WaitForHide(kSettingsOverriddenDialogSaveButtonId));
+      WaitForHide(kSettingsOverriddenDialogId),
+      WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
+                       EscapeDoesNotCloseDialog) {
+  // This test verifies that pressing Escape does not close the dialog.
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      SetNewSearchProvider(DefaultSearch::kUseDefault),
+      LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
+      WaitForDialogToShow(),
+      // Send Escape.
+      SendAccelerator(kSettingsOverriddenDialogId,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)),
+      // Verify dialog is still present (Wait a bit or just ensure present).
+      EnsurePresent(kSettingsOverriddenDialogId),
+      // Clean up by choosing an option so the dialog closes and the navigation
+      // finishes.
+      PressButton(kSettingsOverriddenDialogNewSettingButtonId),
+      PressButton(kSettingsOverriddenDialogSaveButtonId),
+      WaitForHide(kSettingsOverriddenDialogId),
+      WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
+                       DialogShownOnNonNewTabPage) {
+  // Test that if we are on a real website (e.g. google.com) and perform a
+  // search that is intercepted by the extension, the visible URL remains
+  // on the existing page until the dialog is resolved.
+  const GURL kInitialUrl("https://www.google.com/");
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      NavigateWebContents(kWebContentsId, kInitialUrl),
+      SetNewSearchProvider(DefaultSearch::kUseDefault),
+      LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
+      WaitForDialogToShow(),
+      // Visible URL should still be the initial site, not the extension's
+      // search.
+      CheckActiveUrl(kInitialUrl),
+      // Select previous search setting.
+      PressButton(kSettingsOverriddenDialogNewSettingButtonId),
+      PressButton(kSettingsOverriddenDialogSaveButtonId),
+      WaitForHide(kSettingsOverriddenDialogId),
+      // Only now should the navigation complete.
+      WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
 }
 
 }  // namespace
