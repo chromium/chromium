@@ -2410,7 +2410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.OnShutdown.NumSqlErrors" units="Errors"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -2601,7 +2601,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Worklet.Error.Type"
-    enum="SharedStorageWorkletErrorType" expires_after="2026-06-14">
+    enum="SharedStorageWorkletErrorType" expires_after="2026-08-16">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -2820,7 +2820,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Worklet.Timing.Set" units="ms"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>

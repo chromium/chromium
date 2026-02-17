@@ -570,7 +570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NumberOfUnusedProfiles{ProfileActivityThreshold}"
-    units="profiles" expires_after="2026-06-14">
+    units="profiles" expires_after="2026-08-16">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>

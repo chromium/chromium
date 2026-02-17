@@ -763,7 +763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.MissedVsyncs{Operator}.FixedWindow"
-    units="counts" expires_after="2026-06-14">
+    units="counts" expires_after="2026-08-16">
   <owner>kartarsingh@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -789,7 +789,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.MissedVsyncs{Operator}.PerScroll"
-    units="counts" expires_after="2026-06-14">
+    units="counts" expires_after="2026-08-16">
   <owner>kartarsingh@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -1003,7 +1003,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.{NonScrollPinchEventType}.TotalLatency"
-    units="microseconds" expires_after="2026-06-14">
+    units="microseconds" expires_after="2026-08-16">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>

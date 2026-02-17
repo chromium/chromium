@@ -243,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AndroidOperationResult2.{Operation}"
-    enum="ConversionAndroidOperationResult" expires_after="2026-06-14">
+    enum="ConversionAndroidOperationResult" expires_after="2026-08-16">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

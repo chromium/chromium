@@ -1249,7 +1249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.GestureTransition.CacheHitOrMissReason"
-    enum="NavigationTransitionCacheHitOrMissReason" expires_after="2026-06-14">
+    enum="NavigationTransitionCacheHitOrMissReason" expires_after="2026-08-16">
   <owner>liuwilliam@google.com</owner>
   <owner>baranerf@google.com</owner>
   <owner>chrome-seamless-core@google.com</owner>
@@ -3602,7 +3602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation{Initiator}.DuplicateNavStartTimeDiff2" units="ms"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>

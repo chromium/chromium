@@ -1416,7 +1416,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ConnectionReuseStatus{ConnectionProtocolType}{Profile}"
-    enum="ConnectionReuseStatus" expires_after="2026-06-14">
+    enum="ConnectionReuseStatus" expires_after="2026-08-16">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2034,7 +2034,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.PaintTiming.{MileStone}{PageLoadType}{IncognitoSuffix}{SyntheticResponseSuffix}"
-    units="ms" expires_after="2026-06-14">
+    units="ms" expires_after="2026-08-16">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -4000,7 +4000,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.ErrorCode" enum="InternalErrorLoadEvent"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>csharrison@chromium.org</owner>
   <owner>bmcquade@chromium.org</owner>
   <summary>

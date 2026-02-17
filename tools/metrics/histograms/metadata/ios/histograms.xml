@@ -1373,7 +1373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.GenericPromoDisplayCount"
-    units="count" expires_after="2026-06-14">
+    units="count" expires_after="2026-08-16">
   <owner>gayane@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1486,7 +1486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserVideoPromo.Fullscreen"
-    enum="IOSDefaultBrowserVideoPromoAction" expires_after="2026-06-14">
+    enum="IOSDefaultBrowserVideoPromoAction" expires_after="2026-08-16">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>bling-mony-pod@google.com</owner>

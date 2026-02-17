@@ -1171,7 +1171,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.OnDeviceModelSessionCreationSuccess"
-    enum="BooleanSuccess" expires_after="2026-06-14">
+    enum="BooleanSuccess" expires_after="2026-08-16">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

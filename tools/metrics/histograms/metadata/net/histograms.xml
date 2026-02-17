@@ -4947,7 +4947,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.AcceptChFrameReceivedViaAlps"
-    enum="AcceptChEntries" expires_after="2026-06-14">
+    enum="AcceptChEntries" expires_after="2026-08-16">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -8661,7 +8661,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.TcpSocketPoolLimitRandomization.Transition.{Action}.{PastState}To{NextState}"
-    units="sockets" expires_after="2026-06-15">
+    units="sockets" expires_after="2026-08-16">
   <owner>arichiv@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
   <summary>
@@ -8881,7 +8881,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.URLLoader.ProportionOfWritesBlockedByMojo" units="%"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>yoichio@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>

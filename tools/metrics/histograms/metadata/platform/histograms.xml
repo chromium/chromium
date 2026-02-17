@@ -131,7 +131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Chaps.Session.{Operation}" enum="ChapsSessionStatus"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>chenyian@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -2036,7 +2036,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.MountEncrypted.EncryptionKeyStatus"
-    enum="MountEncryptedEncryptionKeyStatus" expires_after="2026-06-14">
+    enum="MountEncryptedEncryptionKeyStatus" expires_after="2026-08-16">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -2047,7 +2047,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.MountEncrypted.SystemKeyStatus"
-    enum="MountEncryptedSystemKeyStatus" expires_after="2026-06-14">
+    enum="MountEncryptedSystemKeyStatus" expires_after="2026-08-16">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -2584,7 +2584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.AuthErrorCode" enum="TPMResultCodeEnum"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -2635,7 +2635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.DictionaryAttackCounter" units="units"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -2664,7 +2664,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.ErrorCode" enum="TPMResultCodeEnum"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>

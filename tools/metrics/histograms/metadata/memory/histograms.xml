@@ -2414,7 +2414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.MemoryDumpOutcome" enum="RequestOutcome"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

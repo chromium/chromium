@@ -1193,7 +1193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.TimeOpsBlockedDueToGlobalOp" units="ms"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>morlovich@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>

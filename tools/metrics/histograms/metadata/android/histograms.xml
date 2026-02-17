@@ -3173,7 +3173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Enqueued" enum="MessageIdentifier"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -3211,7 +3211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Enqueued.Visible" enum="MessageIdentifier"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -8149,7 +8149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.HistogramRecordAge"
-    units="minutes" expires_after="2026-06-14">
+    units="minutes" expires_after="2026-08-16">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8162,7 +8162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.NumHistograms"
-    units="histograms" expires_after="2026-06-14">
+    units="histograms" expires_after="2026-08-16">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8174,7 +8174,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.ParsingLogResult"
     enum="AndroidWebViewNonEmbeddedMetricsParsingLogResult"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8186,7 +8186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.TransmissionResult"
-    enum="AndroidWebViewDevUiMetricsTransmission" expires_after="2026-06-14">
+    enum="AndroidWebViewDevUiMetricsTransmission" expires_after="2026-08-16">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

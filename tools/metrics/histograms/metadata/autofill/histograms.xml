@@ -1858,7 +1858,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Autocomplete.NotOff.FillingAcceptance.{FormType}"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2026-06-14">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2026-08-16">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

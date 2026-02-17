@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.InstallEvent" enum="WebApkInstallEvent"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>

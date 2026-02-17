@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.IndexRuleset.Verify.Status"
-    enum="SubresourceFilterVerifyStatus" expires_after="2026-06-14">
+    enum="SubresourceFilterVerifyStatus" expires_after="2026-08-16">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -343,7 +343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.SafeBrowsing.TotalCheckTime" units="ms"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

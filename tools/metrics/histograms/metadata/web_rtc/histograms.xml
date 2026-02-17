@@ -772,7 +772,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.BWE.InitialRtt" units="ms" expires_after="2026-06-14">
+<histogram name="WebRTC.BWE.InitialRtt" units="ms" expires_after="2026-08-16">
   <owner>holmer@chromium.org</owner>
   <summary>
     The round-trip time as measured 2 seconds into a WebRTC call.
@@ -780,7 +780,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.BWE.InitialVsConvergedDiff" units="kbps"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>holmer@chromium.org</owner>
   <summary>
     The difference between the bandwidth estimate at 2 seconds and 20 seconds
@@ -904,7 +904,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.AudioBitrateReceivedInKbps" units="kbps"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>holmer@chromium.org</owner>
   <summary>
     Average audio bitrate received during a call, counted from first packet
@@ -952,7 +952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.RtcpBitrateReceivedInBps" units="bits/s"
-    expires_after="2026-06-14">
+    expires_after="2026-08-16">
   <owner>holmer@chromium.org</owner>
   <summary>
     Average RTCP bitrate received during a call, counted from first packet

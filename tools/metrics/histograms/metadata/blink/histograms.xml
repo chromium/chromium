@@ -454,7 +454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.RasterDuration{BlinkCanvasRasterDurationType}"
-    units="microseconds" expires_after="2026-06-14">
+    units="microseconds" expires_after="2026-08-16">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2739,7 +2739,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.ForcedStyleAndLayout.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2026-06-14">
+    units="microseconds" expires_after="2026-08-16">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -3297,7 +3297,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.IntersectionObservation.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2026-06-14">
+    units="microseconds" expires_after="2026-08-16">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -3447,7 +3447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Layout.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2026-06-14">
+    units="microseconds" expires_after="2026-08-16">
   <owner>pdr@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -4156,7 +4156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MainFrame.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2026-06-14">
+    units="microseconds" expires_after="2026-08-16">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -4419,7 +4419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Paint.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2026-06-14">
+    units="microseconds" expires_after="2026-08-16">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -4566,7 +4566,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.PrePaint.UpdateTime{BlinkUpdateTimeSuffixes}"
-    units="microseconds" expires_after="2026-06-14">
+    units="microseconds" expires_after="2026-08-16">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>

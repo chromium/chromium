@@ -718,7 +718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.MobileSessionShutdownType"
-    enum="MobileSessionShutdownType" expires_after="2026-06-14">
+    enum="MobileSessionShutdownType" expires_after="2026-08-16">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
