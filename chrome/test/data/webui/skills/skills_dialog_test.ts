@@ -215,7 +215,7 @@ suite('SkillsDialogAppPage', function() {
     assertEquals(SkillSource.kDerivedFromFirstParty, submittedSkill.source);
   });
 
-  test('SubmitsEditedSkill', async function() {
+  test('EditUserCreatedSkill', async function() {
     const userCreatedSkill: Skill = {
       id: 'user-created-skill',
       sourceSkillId: '',
@@ -242,6 +242,35 @@ suite('SkillsDialogAppPage', function() {
     assertEquals(editedName, submittedSkill.name);
     assertEquals(editedPrompt, submittedSkill.prompt);
     assertEquals(SkillSource.kUserCreated, submittedSkill.source);
+  });
+
+  test('EditDerivedFromFirstPartySkill', async function() {
+    const derivedFromFirstPartySkill: Skill = {
+      id: 'derived-from-first-party-skill',
+      sourceSkillId: 'first-party-skill',
+      name: 'test skill',
+      icon: '',
+      prompt: 'test prompt',
+      description: 'test description',
+      source: SkillSource.kDerivedFromFirstParty,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+    await setupDialogWithSkill(derivedFromFirstPartySkill);
+
+    // Edit the fields.
+    const editedName = 'edited skill';
+    const editedPrompt = 'edited prompt';
+    await updateName(editedName);
+    await updateInstructions(editedPrompt);
+
+    // Click the save button and verify the proxy call.
+    skillsDialogApp.$.saveButton.click();
+    const submittedSkill = await dialogHandler.whenCalled('submitSkill');
+    assertEquals(derivedFromFirstPartySkill.id, submittedSkill.id);
+    assertEquals(editedName, submittedSkill.name);
+    assertEquals(editedPrompt, submittedSkill.prompt);
+    assertEquals(SkillSource.kDerivedFromFirstParty, submittedSkill.source);
   });
 
   test('EmojiTriggerOpensPicker', async function() {
