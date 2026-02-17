@@ -313,6 +313,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "active_task_context_provider_impl_unittest.cc",
     "ai_mode_context_library_converter_unittest.cc",
     "contextual_tasks_context_scoring_utils_unittest.cc",
     "contextual_tasks_context_signal_utils_unittest.cc",
@@ -343,13 +344,18 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser:global_features",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/contextual_search",
     "//chrome/browser/sync",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/tab_list:test_support",
     "//chrome/test:test_support",
     "//components/application_locale_storage",
     "//components/contextual_search:public",
+    "//components/contextual_search:test_support",
     "//components/contextual_tasks/public",
     "//components/contextual_tasks/public:test_support",
     "//components/passage_embeddings/content",
+    "//components/tabs:test_support",
     "//content/test:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
@@ -369,10 +375,8 @@ source_set("unit_tests") {
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
-      "//components/contextual_search:test_support",
       "//components/omnibox/browser:test_support",
       "//components/passage_embeddings/core",
-      "//components/tabs:test_support",
       "//components/variations:test_support",
       "//services/network/public/cpp",
     ]

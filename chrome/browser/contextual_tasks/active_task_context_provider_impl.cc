@@ -80,12 +80,21 @@ ActiveTaskContextProviderImpl::ActiveTaskContextProviderImpl(
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
   CHECK(contextual_tasks_service_);
-  contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
-  auto* tab_list_interface = TabListInterface::From(browser_window_);
-  if (tab_list_interface) {
-    tab_list_interface->AddTabListInterfaceObserver(this);
-    // Observe the active tab's WebContents on startup.
-    OnActiveTabChanged(tab_list_interface->GetActiveTab());
+}
+
+void ActiveTaskContextProviderImpl::SetContextualTasksPanelController(
+    ContextualTasksPanelController* contextual_tasks_panel_controller) {
+  contextual_tasks_panel_controller_ = contextual_tasks_panel_controller;
+
+  if (contextual_tasks_panel_controller_) {
+    // Start observing the tab strip and ContextualTasksService.
+    contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
+    auto* tab_list_interface = TabListInterface::From(browser_window_);
+    if (tab_list_interface) {
+      tab_list_interface->AddTabListInterfaceObserver(this);
+      // Observe the active tab's WebContents on startup.
+      OnActiveTabChanged(tab_list_interface->GetActiveTab());
+    }
   }
 }
 
@@ -103,11 +112,6 @@ void ActiveTaskContextProviderImpl::AddObserver(
 void ActiveTaskContextProviderImpl::RemoveObserver(
     ActiveTaskContextProvider::Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void ActiveTaskContextProviderImpl::SetSessionHandleGetter(
-    SessionHandleGetter session_handle_getter) {
-  session_handle_getter_ = session_handle_getter;
 }
 
 void ActiveTaskContextProviderImpl::OnActiveTabChanged(
@@ -177,8 +181,9 @@ void ActiveTaskContextProviderImpl::RefreshContext() {
   callback_id_++;
 
   contextual_search::ContextualSearchSessionHandle* session_handle = nullptr;
-  if (session_handle_getter_) {
-    auto [task_id, handle] = session_handle_getter_.value().Run();
+  if (contextual_tasks_panel_controller_) {
+    auto [task_id, handle] = contextual_tasks_panel_controller_
+                                 ->GetSessionHandleForActiveTabOrSidePanel();
     session_handle = handle;
     active_task_id_ = task_id;
   } else {
@@ -220,9 +225,10 @@ void ActiveTaskContextProviderImpl::OnGetContextForTask(
       GetTabsFromContext(*context, browser_window_);
 
   // Add auto-suggested tab if chip is showing.
-  auto* controller = ContextualTasksPanelController::From(browser_window_);
-  if (controller && controller->IsPanelOpenForContextualTask()) {
-    auto maybe_handle = controller->GetAutoSuggestedTabHandle();
+  if (contextual_tasks_panel_controller_ &&
+      contextual_tasks_panel_controller_->IsPanelOpenForContextualTask()) {
+    auto maybe_handle =
+        contextual_tasks_panel_controller_->GetAutoSuggestedTabHandle();
     if (maybe_handle) {
       tabs_to_underline.insert(*maybe_handle);
     }

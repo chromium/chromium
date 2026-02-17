@@ -73,6 +73,11 @@ class ContextualTasksPanelController {
   // Get the task associated with the active tab.
   virtual std::optional<ContextualTask> GetCurrentTask() = 0;
 
+  // Returns currently showing task's task ID and session handle.
+  virtual std::pair<std::optional<base::Uuid>,
+                    contextual_search::ContextualSearchSessionHandle*>
+  GetSessionHandleForActiveTabOrSidePanel() = 0;
+
   // Metrics.
   // Returns the number of active tasks tracked by `this`.
   virtual size_t GetNumberOfActiveTasks() const = 0;

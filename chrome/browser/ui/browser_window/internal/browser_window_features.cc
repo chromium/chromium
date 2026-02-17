@@ -726,7 +726,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         GetUserDataFactory()
             .CreateInstance<
                 contextual_tasks::ContextualTasksSidePanelCoordinator>(
-                *browser_, browser_);
+                *browser_, browser_,
+                contextual_tasks_active_task_context_provider_.get());
 
     contextual_tasks_entry_point_eligibility_manager_ =
         GetUserDataFactory()

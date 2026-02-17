@@ -257,11 +257,12 @@ class ContextualTasksWebView
 };
 
 ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
-    BrowserWindowInterface* browser_window)
+    BrowserWindowInterface* browser_window,
+    ActiveTaskContextProvider* active_task_context_provider)
     : ContextualTasksSidePanelCoordinator(
           browser_window,
           browser_window->GetFeatures().side_panel_ui(),
-          ActiveTaskContextProvider::From(browser_window)) {}
+          active_task_context_provider) {}
 
 ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
     BrowserWindowInterface* browser_window,
@@ -280,10 +281,7 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
   CreateAndRegisterEntry(SidePanelRegistry::From(browser_window_));
-  active_task_context_provider_->SetSessionHandleGetter(
-      base::BindRepeating(&ContextualTasksSidePanelCoordinator::
-                              GetSessionHandleForActiveTabOrSidePanel,
-                          base::Unretained(this)));
+  active_task_context_provider_->SetContextualTasksPanelController(this);
   if (base::FeatureList::IsEnabled(kContextualTasksTabListInterfaceObserver)) {
     TabListInterface::From(browser_window_)->AddTabListInterfaceObserver(this);
   } else {
@@ -292,6 +290,7 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
 }
 
 ContextualTasksSidePanelCoordinator::~ContextualTasksSidePanelCoordinator() {
+  active_task_context_provider_->SetContextualTasksPanelController(nullptr);
   browser_window_->GetTabStripModel()->RemoveObserver(this);
   TabListInterface::From(browser_window_)->RemoveTabListInterfaceObserver(this);
 

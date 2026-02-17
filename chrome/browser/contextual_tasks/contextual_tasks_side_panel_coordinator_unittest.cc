@@ -136,7 +136,10 @@ class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RefreshContext, (), (override));
-  MOCK_METHOD(void, SetSessionHandleGetter, (SessionHandleGetter), (override));
+  MOCK_METHOD(void,
+              SetContextualTasksPanelController,
+              (ContextualTasksPanelController*),
+              (override));
 };
 
 }  // namespace
