@@ -364,6 +364,26 @@ std::optional<ValuableMetadata> ValuablesTable::GetValuableMetadata(
   return GetValuableMetadataFromDb(db(), valuable_id);
 }
 
+absl::flat_hash_map<ValuableId, ValuableMetadata>
+ValuablesTable::GetAllValuableMetadata() const {
+  absl::flat_hash_map<ValuableId, ValuableMetadata> all_metadata;
+  sql::Statement s;
+  SelectBuilder(db(), s, kValuablesMetadataTable,
+                {kValuableId, kUseCount, kUseDate});
+
+  while (s.Step()) {
+    ValuableId valuable_id = ValuableId(s.ColumnString(0));
+    int64_t use_count = s.ColumnInt64(1);
+    base::Time use_date = s.ColumnTime(2);
+    all_metadata.emplace(valuable_id,
+                         ValuableMetadata(valuable_id, use_date, use_count));
+  }
+  if (!s.Succeeded()) {
+    return {};
+  }
+  return all_metadata;
+}
+
 bool ValuablesTable::AddValuableMetadata(
     const ValuableMetadata& metadata) const {
   sql::Statement s;

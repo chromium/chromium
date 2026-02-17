@@ -10,6 +10,7 @@
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/webdata/common/web_database_table.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class WebDatabase;
 
@@ -98,6 +99,11 @@ class ValuablesTable : public WebDatabaseTable {
   // Returns the valuable metadata for the given valuable id.
   std::optional<ValuableMetadata> GetValuableMetadata(
       ValuableId valuable_id) const;
+
+  // Returns the map of valuable metadata stored in the database keyed by
+  // ValuableId.
+  absl::flat_hash_map<ValuableId, ValuableMetadata> GetAllValuableMetadata()
+      const;
 
  private:
   bool InitLoyaltyCardsTable();

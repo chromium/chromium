@@ -282,11 +282,18 @@ void ValuableMetadataSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   std::unique_ptr<sql::Transaction> transaction =
       web_data_backend_->GetDatabase()->AcquireTransaction();
-  EntityTable* table = GetEntityTable();
+  EntityTable* entity_table = GetEntityTable();
   // When sync is disabled, the metadata should be cleared.
   for (const auto& [storage_key, metadata] :
        GetEntityTable()->GetSyncedMetadata()) {
-    table->RemoveEntityMetadata(storage_key);
+    entity_table->RemoveEntityMetadata(storage_key);
+  }
+
+  ValuablesTable* valuables_table = GetValuablesTable();
+  // When sync is disabled, the valuables metadata should be cleared.
+  for (const auto& [storage_key, metadata] :
+       valuables_table->GetAllValuableMetadata()) {
+    valuables_table->RemoveValuableMetadata(storage_key);
   }
 
   ApplyMetadataChanges(std::move(delete_metadata_change_list));
@@ -509,6 +516,10 @@ ValuableMetadataSyncBridge::GetPassTypeForEntityId(
 const EntityTable* ValuableMetadataSyncBridge::GetEntityTable() const {
   return const_cast<const EntityTable*>(
       const_cast<ValuableMetadataSyncBridge*>(this)->GetEntityTable());
+}
+
+ValuablesTable* ValuableMetadataSyncBridge::GetValuablesTable() {
+  return ValuablesTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 
 }  // namespace autofill

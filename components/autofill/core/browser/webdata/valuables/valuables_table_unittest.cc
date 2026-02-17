@@ -17,6 +17,7 @@ namespace autofill {
 namespace {
 
 using ::testing::IsEmpty;
+using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 class ValuablesTableTest : public testing::Test {
@@ -210,6 +211,18 @@ TEST_F(ValuablesTableTest, GetValuableMetadata_NonExistentEntity) {
   std::optional<ValuableMetadata> metadata =
       valuables_table().GetValuableMetadata(ValuableId("non-existent-id"));
   EXPECT_FALSE(metadata.has_value());
+}
+
+TEST_F(ValuablesTableTest, GetAllValuableMetadata) {
+  LoyaltyCard card1 = test::CreateLoyaltyCard();
+  LoyaltyCard card2 = test::CreateLoyaltyCard2();
+
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card1));
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card2));
+
+  EXPECT_THAT(valuables_table().GetAllValuableMetadata(),
+              UnorderedElementsAre(Pair(card1.id(), card1.metadata()),
+                                   Pair(card2.id(), card2.metadata())));
 }
 
 }  // namespace

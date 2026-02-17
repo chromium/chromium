@@ -130,6 +130,9 @@ class ValuableMetadataSyncBridge
   std::optional<sync_pb::AutofillValuableMetadataSpecifics::PassType>
   GetPassTypeForEntityId(const EntityInstance::EntityId& guid);
 
+  // Returns the `ValuablesTable` associated with the `web_data_backend_`.
+  ValuablesTable* GetValuablesTable();
+
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 
   // Queries all valuable metadata from the database.

@@ -18,6 +18,8 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table_test_api.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_sync_test_utils.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -95,6 +97,7 @@ class ValuableMetadataSyncBridgeTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&entity_table_);
+    db_.AddTable(&valuables_table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"),
              &encryptor_);
     ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
@@ -105,8 +108,17 @@ class ValuableMetadataSyncBridgeTest : public testing::Test {
         mock_processor_.CreateForwardingProcessor(), &backend_);
   }
 
-  std::vector<EntityInstance::EntityMetadata> GetMetadataEntries() {
+  std::vector<EntityInstance::EntityMetadata> GetEntityMetadataEntries() {
     return test_api(entity_table_).GetMetadataEntries();
+  }
+
+  std::vector<ValuableMetadata> GetValuableMetadataEntries() {
+    std::vector<ValuableMetadata> all_metadata;
+    for (const auto& [guid, metadata] :
+         valuables_table_.GetAllValuableMetadata()) {
+      all_metadata.push_back(metadata);
+    }
+    return all_metadata;
   }
 
   ValuableMetadataSyncBridge& bridge() { return *bridge_; }
@@ -114,6 +126,8 @@ class ValuableMetadataSyncBridgeTest : public testing::Test {
   testing::NiceMock<MockAutofillWebDataBackend>& backend() { return backend_; }
 
   EntityTable& entity_table() { return entity_table_; }
+
+  ValuablesTable& valuables_table() { return valuables_table_; }
 
   syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
@@ -126,6 +140,7 @@ class ValuableMetadataSyncBridgeTest : public testing::Test {
   const os_crypt_async::Encryptor encryptor_ =
       os_crypt_async::GetTestEncryptorForTesting();
   EntityTable entity_table_;
+  ValuablesTable valuables_table_;
   AutofillSyncMetadataTable sync_metadata_table_;
   WebDatabase db_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
@@ -202,7 +217,7 @@ TEST_F(ValuableMetadataSyncBridgeTest, MergeFullSyncData_NoLocalData) {
                                       std::move(entity_change_list))
                    .has_value());
 
-  EXPECT_THAT(GetMetadataEntries(), UnorderedElementsAre(metadata));
+  EXPECT_THAT(GetEntityMetadataEntries(), UnorderedElementsAre(metadata));
 }
 
 // Test that MergeFullSyncData() correctly merges remote data when local data
@@ -240,7 +255,7 @@ TEST_F(ValuableMetadataSyncBridgeTest,
                                       std::move(entity_change_list))
                    .has_value());
 
-  EXPECT_THAT(GetMetadataEntries(),
+  EXPECT_THAT(GetEntityMetadataEntries(),
               UnorderedElementsAre(vehicle1.metadata(), vehicle2.metadata()));
 }
 
@@ -273,7 +288,7 @@ TEST_F(ValuableMetadataSyncBridgeTest,
                                       std::move(entity_change_list))
                    .has_value());
 
-  EXPECT_THAT(GetMetadataEntries(),
+  EXPECT_THAT(GetEntityMetadataEntries(),
               UnorderedElementsAre(vehicle1.metadata(), vehicle2.metadata()));
 }
 
@@ -344,7 +359,7 @@ TEST_F(ValuableMetadataSyncBridgeTest, ApplyIncrementalSyncChanges_Add) {
                                        std::move(entity_change_list))
           .has_value());
 
-  EXPECT_THAT(GetMetadataEntries(), UnorderedElementsAre(metadata));
+  EXPECT_THAT(GetEntityMetadataEntries(), UnorderedElementsAre(metadata));
 }
 
 // Tests that ApplyIncrementalSyncChanges() correctly updates an existing
@@ -386,7 +401,7 @@ TEST_F(ValuableMetadataSyncBridgeTest, ApplyIncrementalSyncChanges_Update) {
                                        std::move(update_changes))
           .has_value());
 
-  EXPECT_THAT(GetMetadataEntries(), UnorderedElementsAre(metadata));
+  EXPECT_THAT(GetEntityMetadataEntries(), UnorderedElementsAre(metadata));
 }
 
 // Tests that ApplyIncrementalSyncChanges() ignores deletions.
@@ -403,7 +418,7 @@ TEST_F(ValuableMetadataSyncBridgeTest, ApplyIncrementalSyncChanges_Delete) {
           /*base_specifics=*/{}))));
   bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
                                        std::move(add_changes));
-  ASSERT_THAT(GetMetadataEntries(), SizeIs(1));
+  ASSERT_THAT(GetEntityMetadataEntries(), SizeIs(1));
 
   // Now, delete it.
   syncer::EntityChangeList delete_changes;
@@ -426,7 +441,7 @@ TEST_F(ValuableMetadataSyncBridgeTest, ApplyIncrementalSyncChanges_Delete) {
           .has_value());
 
   // The metadata should still be there.
-  EXPECT_THAT(GetMetadataEntries(), SizeIs(1));
+  EXPECT_THAT(GetEntityMetadataEntries(), SizeIs(1));
 }
 
 // Tests that GetAllData() returns all metadata entries from the database.
@@ -510,8 +525,9 @@ TEST_F(ValuableMetadataSyncBridgeTest, GetDataForCommit_UnknownFields) {
               HasUnknownField("unknown_field"));
 }
 
-// Tests that ApplyDisableSyncChanges() clears all the metadata.
-TEST_F(ValuableMetadataSyncBridgeTest, ApplyDisableSyncChanges_ClearsMetadata) {
+// Tests that ApplyDisableSyncChanges() clears all the `EntityMetadata`.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       ApplyDisableSyncChanges_ClearsEntityMetadata) {
   const EntityInstance server_vehicle1 = CreateServerVehicleEntityInstance(
       {.guid = "00000000-0000-2000-8000-300000000000",
        .use_date = base::Time::FromSecondsSinceUnixEpoch(100),
@@ -528,13 +544,30 @@ TEST_F(ValuableMetadataSyncBridgeTest, ApplyDisableSyncChanges_ClearsMetadata) {
   entity_table().AddOrUpdateEntityInstance(server_vehicle2);
   entity_table().AddOrUpdateEntityInstance(local_vehicle2);
 
-  ASSERT_THAT(GetMetadataEntries(),
+  ASSERT_THAT(GetEntityMetadataEntries(),
               UnorderedElementsAre(server_vehicle1.metadata(),
                                    server_vehicle2.metadata(),
                                    local_vehicle2.metadata()));
 
   bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
-  EXPECT_THAT(GetMetadataEntries(), ElementsAre(local_vehicle2.metadata()));
+  EXPECT_THAT(GetEntityMetadataEntries(),
+              ElementsAre(local_vehicle2.metadata()));
+}
+
+// Tests that ApplyDisableSyncChanges() clears all the `ValuableMetadata`.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       ApplyDisableSyncChanges_ClearsValuableMetadata) {
+  const LoyaltyCard loyalty_card1 = TestLoyaltyCard("1");
+  const LoyaltyCard loyalty_card2 = TestLoyaltyCard("2");
+  valuables_table().AddOrUpdateLoyaltyCard(loyalty_card1);
+  valuables_table().AddOrUpdateLoyaltyCard(loyalty_card2);
+
+  ASSERT_THAT(
+      GetValuableMetadataEntries(),
+      UnorderedElementsAre(loyalty_card1.metadata(), loyalty_card2.metadata()));
+
+  bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
+  EXPECT_THAT(GetValuableMetadataEntries(), IsEmpty());
 }
 
 // Tests that `ServerEntityInstanceMetadataChanged()` handles ADD and UPDATE
@@ -544,7 +577,7 @@ TEST_F(ValuableMetadataSyncBridgeTest,
   ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
   const EntityInstance vehicle = CreateServerVehicleEntityInstance();
   entity_table().AddOrUpdateEntityInstance(vehicle);
-  ASSERT_THAT(GetMetadataEntries(), ElementsAre(vehicle.metadata()));
+  ASSERT_THAT(GetEntityMetadataEntries(), ElementsAre(vehicle.metadata()));
 
   EXPECT_CALL(mock_processor(), Put(*vehicle.guid(), _, _));
   bridge().ServerEntityInstanceMetadataChanged(EntityInstanceMetadataChange(
@@ -662,7 +695,7 @@ TEST_F(ValuableMetadataSyncBridgeTest, DeleteOldOrphanMetadata) {
                              std::move(entity_change_list));
 
   ASSERT_THAT(
-      GetMetadataEntries(),
+      GetEntityMetadataEntries(),
       UnorderedElementsAre(server_vehicle1.metadata(),
                            server_vehicle2.metadata(), orphan_metadata));
 
@@ -676,7 +709,7 @@ TEST_F(ValuableMetadataSyncBridgeTest, DeleteOldOrphanMetadata) {
 
   // 4. Verify that the orphan metadata is deleted locally and the UMA metric is
   // recorded.
-  EXPECT_THAT(GetMetadataEntries(),
+  EXPECT_THAT(GetEntityMetadataEntries(),
               UnorderedElementsAre(server_vehicle1.metadata(),
                                    server_vehicle2.metadata()));
   histogram_tester.ExpectUniqueSample(
