@@ -88,7 +88,9 @@ public class TabBottomSheetCoordinator {
     }
 
     void closeBottomSheet() {
-        assert mIsSheetCurrentlyManagedByController : "Sheet not managed by controller";
+        if (!mIsSheetCurrentlyManagedByController) {
+            return;
+        }
         mBottomSheetController.hideContent(mSheetContent, false, StateChangeReason.NONE);
     }
 

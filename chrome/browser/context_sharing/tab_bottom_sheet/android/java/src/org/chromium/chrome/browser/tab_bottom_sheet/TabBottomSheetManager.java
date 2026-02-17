@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 import android.view.View;
 
@@ -186,7 +184,10 @@ public class TabBottomSheetManager implements Destroyable {
                     mNativeInterfaceDelegate.onBottomSheetClosed();
                     mNativeInterfaceDelegate = null;
                 }
-                assumeNonNull(mTabBottomSheetCoordinator).destroy();
+                if (mTabBottomSheetCoordinator != null) {
+                    mTabBottomSheetCoordinator.destroy();
+                    mTabBottomSheetCoordinator = null;
+                }
             }
         };
     }
