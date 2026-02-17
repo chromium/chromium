@@ -1,178 +1,142 @@
 @@include@@repo_variables.include
 @@include@@key.include
 
-APT_GET="`command -v apt-get 2> /dev/null`"
-APT_CONFIG="`command -v apt-config 2> /dev/null`"
+APT_CONFIG="$(command -v apt-config 2>/dev/null)"
 
-SOURCES_PREAMBLE="### THIS FILE IS AUTOMATICALLY CONFIGURED ###
-# You may comment out this entry, but any other modifications may be lost.\n"
+GPG_FILE="/usr/share/keyrings/@@PACKAGE.gpg"
 
 # Set variables for the locations of the apt trusted keyrings.
 find_apt_trusted() {
   eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
 }
 
-# Install the repository/package signing keys.
-# (see also: https://www.google.com/linuxrepositories/)
+# Set variables for the locations of the apt sources lists.
+find_apt_sources() {
+  eval $("$APT_CONFIG" shell APT_SOURCESDIR 'Dir::Etc::sourceparts/d')
+  SOURCES_FILE="$APT_SOURCESDIR/@@PACKAGE.sources"
+}
+
+# Install the repository/package signing keys. The key cannot be part of the
+# package since it's still needed if the package is removed but not purged.
 install_key() {
-  find_apt_trusted
-  # ASCII-armored keyrings are only supported in apt 1.4 and later, but we must
-  # continue supporting Trusty and Xenial which have older versions of apt, so
-  # the keyring is installed as a binary blob.  base64 is used to decode the
-  # ASCII keyring, which should always be available since it comes from the
-  # coreutils.
-  echo "$PGP_KEY_DATA" | base64 -d > "$APT_TRUSTEDDIR/@@PACKAGE.gpg"
+  if [ ! -e /usr/share/keyrings ]; then
+    mkdir -p /usr/share/keyrings
+    chmod 755 /usr/share/keyrings
+  fi
+
+  # Use a temporary file to ensure atomic updates
+  echo "$PGP_KEY_DATA" | base64 -d >"$GPG_FILE.$$.tmp"
+  chmod 644 "$GPG_FILE.$$.tmp"
+  mv "$GPG_FILE.$$.tmp" "$GPG_FILE"
 }
 
 uninstall_key() {
+  rm -f "$GPG_FILE"
+}
+
+remove_legacy_key() {
   find_apt_trusted
   rm -f "$APT_TRUSTEDDIR/@@PACKAGE.gpg"
 }
 
-# Set variables for the locations of the apt sources lists.
-find_apt_sources() {
-  eval $("$APT_CONFIG" shell APT_SOURCESDIR 'Dir::Etc::sourceparts/d')
-}
-
-# Update the Google repository if it's not set correctly.
-# Note: this doesn't necessarily enable the repository, it just makes sure the
-# correct settings are available in the sources list.
-# Returns:
-# 0 - no update necessary
-# 2 - error
-update_bad_sources() {
-  if [ ! "$REPOCONFIG" ]; then
-    return 0
-  fi
-
+remove_legacy_list() {
   find_apt_sources
-
-  SOURCELIST="$APT_SOURCESDIR/@@PACKAGE.list"
-  # Don't do anything if the file isn't there, since that probably means the
-  # user disabled it.
-  if [ ! -r "$SOURCELIST" ]; then
-    return 0
+  LEGACY_LIST="$APT_SOURCESDIR/@@PACKAGE.list"
+  if [ ! -f "$LEGACY_LIST" ]; then
+    return
   fi
 
-  # Basic check for active configurations (non-blank, non-comment lines).
-  ACTIVECONFIGS=$(grep -v "^[[:space:]]*\(#.*\)\?$" "$SOURCELIST" 2>/dev/null)
-
-  # Check if the correct repository configuration is in there.
-  REPOMATCH=$(grep -E "^[[:space:]#]*\b$REPOCONFIGREGEX\b" "$SOURCELIST" \
-    2>/dev/null)
-
-  # Check if the correct repository is disabled.
-  MATCH_DISABLED=$(echo "$REPOMATCH" | grep "^[[:space:]]*#" 2>/dev/null)
-
-  # Now figure out if we need to fix things.
-  BADCONFIG=1
-  if [ "$REPOMATCH" ]; then
-    # If it's there and active, that's ideal, so nothing to do.
-    if [ ! "$MATCH_DISABLED" ]; then
-      BADCONFIG=0
-    else
-      # If it's not active, but neither is anything else, that's fine too.
-      if [ ! "$ACTIVECONFIGS" ]; then
-        BADCONFIG=0
-      fi
-    fi
-  fi
-
-  if [ $BADCONFIG -eq 0 ]; then
-    return 0
-  fi
-
-  # At this point, either the correct configuration is completely missing, or
-  # the wrong configuration is active. In that case, just abandon the mess and
-  # recreate the file with the correct configuration. If there were no active
-  # configurations before, create the new configuration disabled.
-  DISABLE=""
-  if [ ! "$ACTIVECONFIGS" ]; then
-    DISABLE="#"
-  fi
-  printf "$SOURCES_PREAMBLE" > "$SOURCELIST"
-  printf "$DISABLE$REPOCONFIG\n" >> "$SOURCELIST"
-  if [ $? -eq 0 ]; then
-    return 0
-  fi
-  return 2
-}
-
-# Add the Google repository to the apt sources.
-# Returns:
-# 0 - sources list was created
-# 2 - error
-create_sources_lists() {
-  if [ ! "$REPOCONFIG" ]; then
-    return 0
-  fi
-
-  find_apt_sources
-
-  SOURCELIST="$APT_SOURCESDIR/@@PACKAGE.list"
-  if [ -d "$APT_SOURCESDIR" ]; then
-    printf "$SOURCES_PREAMBLE" > "$SOURCELIST"
-    printf "$REPOCONFIG\n" >> "$SOURCELIST"
-    if [ $? -eq 0 ]; then
-      return 0
-    fi
-  fi
-  return 2
-}
-
-# Remove our custom sources list file.
-# Returns:
-# 0 - successfully removed, or not configured
-# !0 - failed to remove
-clean_sources_lists() {
-  if [ ! "$REPOCONFIG" ]; then
-    return 0
-  fi
-
-  find_apt_sources
-
-  rm -f "$APT_SOURCESDIR/@@PACKAGE.list"
-}
-
-# Detect if the repo config was disabled by distro upgrade and enable if
-# necessary.
-handle_distro_upgrade() {
-  if [ ! "$REPOCONFIG" ]; then
-    return 0
-  fi
-
-  find_apt_sources
-  SOURCELIST="$APT_SOURCESDIR/@@PACKAGE.list"
-  if [ -r "$SOURCELIST" ]; then
-    REPOLINE=$(grep -E "^[[:space:]]*#[[:space:]]*$REPOCONFIGREGEX[[:space:]]*# disabled on upgrade to .*" "$SOURCELIST")
-    if [ $? -eq 0 ]; then
-      sed -i -e "s,^[[:space:]]*#[[:space:]]*\(.*\)[[:space:]]*# disabled on upgrade to .*,\1," \
-        "$SOURCELIST"
-      LOGGER=$(command -v logger 2> /dev/null)
-      if [ "$LOGGER" ]; then
-        "$LOGGER" -t "$0" "Reverted repository modification: $REPOLINE."
-      fi
-    fi
-  fi
-}
-
-DEFAULT_ARCH="@@architecture"
-
-get_lib_dir() {
-  if [ "$DEFAULT_ARCH" = "i386" ]; then
-    LIBDIR=lib/i386-linux-gnu
-  elif [ "$DEFAULT_ARCH" = "amd64" ]; then
-    LIBDIR=lib/x86_64-linux-gnu
-  elif [ "$DEFAULT_ARCH" = "armhf" ]; then
-    LIBDIR=lib/arm-linux-gnueabihf
-  elif [ "$DEFAULT_ARCH" = "arm64" ]; then
-    LIBDIR=lib/aarch64-linux-gnu
-  elif [ "$DEFAULT_ARCH" = "mipsel" ]; then
-    LIBDIR=lib/mipsel-linux-gnu
-  elif [ "$DEFAULT_ARCH" = "mips64el" ]; then
-    LIBDIR=lib/mips64el-linux-gnuabi64
+  # Check for other sources (strict check for 'ours')
+  # If there are any lines starting with 'deb' (commented or not) that do NOT
+  # match our strict regex, keep the file.
+  if grep -E "^[[:space:]]*#?[[:space:]]*deb" "$LEGACY_LIST" |
+    grep -v -E \
+    "^[[:space:]]*#?[[:space:]]*$REPOCONFIGREGEX" >/dev/null;
+  then
+    # Other sources exist, comment out ours (strict match)
+    sed -i -E "s|^[[:space:]]*($REPOCONFIGREGEX)|# \1|" "$LEGACY_LIST"
   else
-    echo Unknown CPU Architecture: "$DEFAULT_ARCH"
-    exit 1
+    # No other sources, safe to remove
+    rm -f "$LEGACY_LIST"
+  fi
+}
+
+# Generate the content of the .sources file
+gen_sources_content() {
+  cat <<EOF
+### THIS FILE IS AUTOMATICALLY CONFIGURED ###
+# Changes to this file will not be preserved.
+# This file will not be recreated if removed.
+X-Repolib-Name: @@MENUNAME
+Types: deb
+URIs: https://dl.google.com/linux/chrome-$CHANNEL/deb/
+Suites: stable
+Components: main
+Signed-By: $GPG_FILE
+EOF
+}
+
+# Add the Google repository to the apt sources. The sources cannot be part of
+# the package since it's still needed if the package is removed but not purged.
+create_sources_lists() {
+  find_apt_sources
+
+  gen_sources_content >"$SOURCES_FILE.$$.tmp"
+  chmod 644 "$SOURCES_FILE.$$.tmp"
+  mv "$SOURCES_FILE.$$.tmp" "$SOURCES_FILE"
+
+  if [ -r "$DEFAULTS_FILE" ]; then
+    if grep -q "^[[:space:]]*repo_add_once=" "$DEFAULTS_FILE"; then
+      sed -i -e \
+        's/^[[:space:]]*repo_add_once=.*/repo_add_once="false"/' \
+        "$DEFAULTS_FILE"
+    else
+      echo 'repo_add_once="false"' >>"$DEFAULTS_FILE"
+    fi
+  fi
+}
+
+# Remove our custom sources file.
+clean_sources_lists() {
+  find_apt_sources
+  rm -f "$SOURCES_FILE"
+}
+
+install_deb822_sources() {
+  find_apt_sources
+  LEGACY_LIST="$APT_SOURCESDIR/@@PACKAGE.list"
+
+  SHOULD_INSTALL_SOURCES=0
+  # Detect new installs.
+  if [ -r "$DEFAULTS_FILE" ]; then
+    if grep -E -q \
+      '^[[:space:]]*repo_add_once=[[:space:]]*["'\'']?true["'\'']?' \
+      "$DEFAULTS_FILE"; then
+      SHOULD_INSTALL_SOURCES=1
+    fi
+  else
+    SHOULD_INSTALL_SOURCES=1
+    echo 'repo_add_once="true"' >"$DEFAULTS_FILE"
+    echo 'repo_reenable_on_distupgrade="true"' >>"$DEFAULTS_FILE"
+  fi
+
+  if [ -f "$SOURCES_FILE" ]; then
+    # The new .sources file already exists. Recreate it in case it got disabled
+    # during a dist upgrade.
+    SHOULD_INSTALL_SOURCES=1
+  elif [ -f "$LEGACY_LIST" ]; then
+    # Migrate a legacy .list file to the new .sources format.
+    if grep -E -q "^[[:space:]]*$REPOCONFIGREGEX" "$LEGACY_LIST"; then
+      SHOULD_INSTALL_SOURCES=1
+    elif grep -E -q \
+      "^[[:space:]]*#[[:space:]]*$REPOCONFIGREGEX[[:space:]]*# disabled on \
+upgrade to .*" \
+      "$LEGACY_LIST"; then
+      SHOULD_INSTALL_SOURCES=1
+    fi
+  fi
+
+  if [ "$SHOULD_INSTALL_SOURCES" -eq 1 ]; then
+    create_sources_lists
   fi
 }

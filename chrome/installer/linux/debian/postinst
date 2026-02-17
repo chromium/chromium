@@ -61,10 +61,9 @@ update-alternatives --install /usr/bin/@@package_orig @@package_orig \
 remove_udev_symlinks
 
 ## MAIN ##
-if [ ! -e "$DEFAULTS_FILE" ]; then
-  echo 'repo_add_once="true"' > "$DEFAULTS_FILE"
-  echo 'repo_reenable_on_distupgrade="true"' >> "$DEFAULTS_FILE"
-fi
-
-# Run the cron job immediately to perform repository configuration.
-nohup sh /etc/cron.daily/@@PACKAGE > /dev/null 2>&1 &
+install_key
+install_deb822_sources
+# TODO(thomasanderson): Enable removal of legacy repo files once the new format
+# is verified in the wild.
+# remove_legacy_list
+# remove_legacy_key

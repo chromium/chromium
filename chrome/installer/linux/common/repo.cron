@@ -13,9 +13,11 @@
 # for any other reason, this won't re-enable it.
 #
 # This functionality can be controlled by creating the $DEFAULTS_FILE and
-# setting "repo_add_once" and/or "repo_reenable_on_distupgrade" to "true" or
-# "false" as desired. An empty $DEFAULTS_FILE is the same as setting both values
-# to "false".
+# setting "repo_reenable_on_distupgrade" to "true" or "false" as desired.
+# An empty $DEFAULTS_FILE is the same as setting it to "false".
+#
+# The $DEFAULTS_FILE also has a setting "repo_add_once" which can be set
+# to "false" to prevent the package install from adding the repo altogether.
 
 @@include@@../common/variables.include
 
@@ -30,15 +32,6 @@ install_key
 
 if [ "$repo_add_once" = "true" ]; then
   create_sources_lists
-  RES=$?
-  # Sources creation succeeded, so stop trying.
-  if [ $RES -ne 2 ]; then
-    sed -i -e 's/[[:space:]]*repo_add_once=.*/repo_add_once="false"/' "$DEFAULTS_FILE"
-  fi
-else
-  update_bad_sources
-fi
-
-if [ "$repo_reenable_on_distupgrade" = "true" ]; then
-  handle_distro_upgrade
+elif [ "$repo_reenable_on_distupgrade" = "true" ]; then
+  install_deb822_sources
 fi
