@@ -2,56 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SearchboxElement} from './searchbox.js';
+import {getHtml as getContextualEntrypointHtml} from './searchbox_contextual_entrypoint.html.js';
+import {getHtml as getDropdownHtml} from './searchbox_searchbox_dropdown.html.js';
 
 export function getHtml(this: SearchboxElement) {
   // clang-format off
-  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
-  const dropdown = html`
-    <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
-        class="${!this.ntpRealboxNextEnabled ? 'dropdownContainer' : nothing}"
-        exportparts="dropdown-content"
-        role="listbox" .result="${this.result_}"
-        selected-match-index="${this.selectedMatchIndex_}"
-        @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
-        ?can-show-secondary-side="${this.canShowSecondarySide}"
-        ?had-secondary-side="${this.hadSecondarySide}"
-        @had-secondary-side-changed="${this.onHadSecondarySideChanged_}"
-        ?has-secondary-side="${this.hasSecondarySide}"
-        @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
-        @match-focusin="${this.onMatchFocusin_}"
-        @match-click="${this.onMatchClick_}"
-        ?hidden="${!this.dropdownIsVisible}"
-        ?show-thumbnail="${this.showThumbnail}">
-    </cr-searchbox-dropdown>`;
-
-  // eslint-disable-next-line @webui-eslint/lit-element-template-structure
-  const contextualEntrypoint = html`
-    <contextual-entrypoint-and-carousel id="context"
-        part="contextual-entrypoint-and-carousel"
-        exportparts="composebox-entrypoint, context-menu-entrypoint-icon, voice-icon, context-menu-and-tools"
-        .tabSuggestions="${this.tabSuggestions_}"
-        entrypoint-name="Realbox"
-        @add-tab-context="${this.addTabContext_}"
-        @add-file-context="${this.addFileContext_}"
-        @set-tool-mode="${this.onSetToolMode_}"
-        @model-click="${this.onModelClick_}"
-        @get-tab-preview="${this.getTabPreview_}"
-        @context-menu-container-click="${this.onContextMenuContainerClick_}"
-        @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
-        @context-menu-closed="${this.onContextMenuClosed_}"
-        @context-menu-opened="${this.onContextMenuOpened_}"
-        ?show-dropdown="${this.dropdownIsVisible}"
-        ?show-recent-tab-chip="${this.computeShowRecentTabChip_()}"
-        .inputState="${this.inputState_}"
-        ?show-model-picker="${this.showModelPicker_}"
-        searchbox-layout-mode="${this.searchboxLayoutMode}"
-        context-menu-glif-animation-state="${this.contextMenuGlifAnimationState}">
-      ${!this.useCompactLayout_() ? dropdown : nothing}
-    </contextual-entrypoint-and-carousel>`;
-
   return html`<!--_html_template_start_-->
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout_}"
     @keydown="${this.onInputWrapperKeydown_}"
@@ -67,7 +25,7 @@ export function getHtml(this: SearchboxElement) {
   <div id="inputInnerContainer">
     ${this.ntpRealboxNextEnabled && this.useCompactLayout_() ? html`
       <div class="contextualEntrypointContainer contextualEntrypointContainerCompact">
-        ${contextualEntrypoint}
+        ${getContextualEntrypointHtml.bind(this)()}
       </div>
     ` : ''}
     <cr-searchbox-icon id="icon" .match="${this.selectedMatch_}"
@@ -139,7 +97,7 @@ export function getHtml(this: SearchboxElement) {
   ${this.ntpRealboxNextEnabled ? html`
     ${this.useCompactLayout_() ? html`
       <div class="dropdownContainer">
-        ${dropdown}
+        ${getDropdownHtml.bind(this)()}
         ${this.shouldShowRecentTabChipInDropdown_() ? html`
           <div id="recentTabChipContainer">
             <composebox-recent-tab-chip
@@ -152,7 +110,7 @@ export function getHtml(this: SearchboxElement) {
     ` : html`
       <div id="inputInnerBottomContainer">
         <div class="contextualEntrypointContainer">
-          ${contextualEntrypoint}
+          ${getContextualEntrypointHtml.bind(this)()}
         </div>
         ${this.searchboxVoiceSearchEnabled_ ? html`
           <div class="searchbox-icon-button-container voice">
@@ -172,9 +130,7 @@ export function getHtml(this: SearchboxElement) {
         ` : ''}
       </div>
     `}
-  ` : html`
-    ${dropdown}
-  `}
+  ` : getDropdownHtml.bind(this)()}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on
