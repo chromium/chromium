@@ -168,7 +168,6 @@ int GetMainViewSingleProfileSubtitleId(bool is_glic_version) {
   return IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE;
 }
 
-// TODO(crbug.com/484264605): Refactor this once discussion has ended.
 int GetProfileTypeChoiceNotNowButtonLabelId() {
   if (base::FeatureList::IsEnabled(
           switches::kProfileCreationDeclineSigninCTAExperiment)) {
