@@ -9,6 +9,7 @@ option optimize_for = LITE_RUNTIME;
 package lens;
 
 import "aim_query.proto";
+import "modality_chip_props.proto";
 
 // Feature Capabilities shared between AIM and Client. Both sides need to
 // support a feature for it to WAI. Sent in the handshake request/response so
@@ -32,7 +33,7 @@ enum FeatureCapability {
   // notifyZeroStateRendered() method
   NOTIFY_ZERO_STATE_RENDERED = 20;
 
-  // SetChromeDesktopInputPlateConfiguration() method
+  // setChromeDesktopInputPlateConfiguration() method
   SET_CHROME_DESKTOP_INPUT_PLATE_CONFIGURATION = 24;
 
   // unlockInput() method
@@ -84,6 +85,23 @@ message OpenThreadsView {
   OpenThreadsViewPayload payload = 1;
 }
 
+// Payload for InjectedInputUpdate event.
+message InjectedInputUpdatePayload {
+  enum UpdateType {
+    UNKNOWN = 0;
+    REMOVED = 1;
+  }
+  // The ID of the input that was updated.
+  string id = 1;
+
+  UpdateType update_type = 2;
+}
+
+// Message from client to AIM to send an update on an injected input.
+message InjectedInputUpdate {
+  InjectedInputUpdatePayload payload = 1;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // AIM -> Client messages
 ////////////////////////////////////////////////////////////////////////////////
@@ -102,6 +120,7 @@ message ClientToAimMessage {
     SubmitQuery submit_query = 2;
     OpenThreadsView open_threads_view = 3;
     SetCobrowsingDisplayMode set_cobrowsing_display_mode = 4;
+    InjectedInputUpdate injected_input_update = 5;
   }
 }
 
@@ -115,7 +134,10 @@ message AimToClientMessage {
     ExitBasicMode exit_basic_mode = 5;
     UpdateThreadContextLibrary update_thread_context_library = 7;
     NotifyZeroStateRendered notify_zero_state_rendered = 8;
-    InputPlateParametersRequest set_chrome_desktop_input_plate_configuration = 9;
+    InputPlateParametersRequest set_chrome_desktop_input_plate_configuration =
+        9;
+    InjectInput inject_input = 10;
+    RemoveInjectedInput remove_injected_input = 11;
     UnlockInput unlock_input = 12;
     LockInput lock_input = 13;
   }
@@ -142,6 +164,17 @@ message ExitBasicMode {}
 // Message AIM sends to clients to notify when zero state is rendered.
 message NotifyZeroStateRendered {
   bool is_zero_state_rendered = 1;
+}
+
+// Message AIM sends to client to update chrome input plate position and size.
+// Can use negative margins if need top or right margins. Max width and height
+// will be converted to uint32 in Chrome due to Mojo security constraints, so
+// keep values within uint32 AND int32 range [0, 2,147,483,647].
+message InputPlateParametersRequest {
+  int32 max_width = 1;      // [0, 2,147,483,647]
+  int32 max_height = 2;     // [0, 2,147,483,647]
+  int32 margin_bottom = 3;  // [-2,147,483,648, 2,147,483,647]
+  int32 margin_left = 4;    // [-2,147,483,648, 2,147,483,647]
 }
 
 // Message AIM sends to clients to update the thread context library.
@@ -176,9 +209,28 @@ message Webpage {
   string url = 2;
 }
 
-message InputPlateParametersRequest {
-  int32 max_width = 1;
-  int32 max_height = 2;
-  int32 margin_bottom = 3;
-  int32 margin_left = 4;
+// Message AIM sends to clients to inject an input into the input plate.
+message InjectInput {
+  // Optional string with which to populate the input plate after injecting.
+  string query_text = 1;
+
+  // When true, the input plate will expand to show all current inputs.
+  bool expand = 2;
+
+  // A modality, which can serve as a unimodal or multimodal input. Contains
+  // generic rendering info, as well as modality-specific data.
+  ModalityChipProps modality = 3;
+
+  // When true, the input plate will submit the query after injecting the input.
+  bool submit_after_injection = 4;
+
+  // When true, the scrim will be hidden when the input plate is expanded.
+  bool hide_scrim_on_expand = 5;
+}
+
+// Message AIM sends to clients to remove a specified injected input from the
+// input plate.
+message RemoveInjectedInput {
+  // The ID of the input to remove.
+  string id = 1;
 }

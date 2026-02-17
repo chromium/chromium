@@ -1,13 +1,32 @@
-edition = "2023";
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2024";
+
+option optimize_for = LITE_RUNTIME;
 
 package lens;
 
 import "added_inputs.proto";
 
-option optimize_for = LITE_RUNTIME;
-
 message ModalityChipProps {
+  // Displayed text on the modality chip.
+  string title = 1;
+
+  // Thumbnail of the chip.
+  oneof thumbnail {
+    // Thumbnail - can be a data URL or URI.
+    string thumbnail_src = 2;
+
+    // Thumbnail - in a bitmap format.
+    bytes thumbnail_bitmap = 13;
+  }
+
   AddedInput added_input = 10;
 
+  // Optional consumer-provided ID used for de-duplication.
   string id = 11;
+
+  reserved 3 to 9, 12;
 }
