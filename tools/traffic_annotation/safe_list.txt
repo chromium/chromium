@@ -291,7 +291,6 @@ missing_new_fields,google_apis/gcm/engine/unregistration_request.cc
 missing_new_fields,headless/lib/browser/headless_request_context_manager.cc
 missing_new_fields,media/cast/net/udp_transport_impl.cc
 missing_new_fields,net/cert_net/cert_net_fetcher_url_request.cc
-missing_new_fields,net/dns/dns_transaction.cc
 missing_new_fields,net/http/bidirectional_stream.cc
 missing_new_fields,net/proxy_resolution/proxy_config_service.cc
 missing_new_fields,net/proxy_resolution/proxy_config_with_annotation.cc
