@@ -333,6 +333,10 @@ void DoParseAfterSpecialScheme(std::basic_string_view<CHAR> spec,
   size_t end_auth =
       FindNextAuthorityTerminator(spec, after_slashes, ParserMode::kSpecialURL);
 
+  // Workaround for crbug.com/484253361. For some reasons, `after_slashes` can
+  // be greater than `end_auth`.
+  after_slashes = std::min(after_slashes, end_auth);
+
   Component authority = MakeRange(after_slashes, end_auth);
   // Everything starting from the slash to the end is the path.
   Component full_path = MakeRange(end_auth, spec.length());
