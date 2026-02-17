@@ -49,6 +49,9 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     serial_globs = set()
     if host_information.IsMac():
       serial_globs |= {
+          # Flakily gets timeout when capturing screenshots, see
+          # crbug.com/421318674.
+          'Pixel_MeetEffects*',
           # Flakily produces only half the image when run in parallel on Mac.
           'Pixel_OffscreenCanvasWebGL*',
           # Flakily fails to capture a screenshot when run in parallel on Mac.
