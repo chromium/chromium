@@ -44,6 +44,8 @@ public final class WindowInsetsUtils {
 
     private static @Nullable Size sFrameForTesting;
     private static @Nullable Rect sWidestUnoccludedRectForTesting;
+    private static @Nullable List<Rect> sBoundingRectsForTesting;
+    private static boolean sUnoccludedRegionComplexForTesting;
 
     /**
      * Class to encapsulate information about the uncoccluded region determined by {@link
@@ -158,7 +160,7 @@ public final class WindowInsetsUtils {
     public static UnoccludedRegion getUnoccludedRegion(Rect regionRect, List<Rect> blockedRects) {
         if (sWidestUnoccludedRectForTesting != null) {
             return new UnoccludedRegion(
-                    sWidestUnoccludedRectForTesting, /* isRegionComplex= */ false);
+                    sWidestUnoccludedRectForTesting, sUnoccludedRegionComplexForTesting);
         }
         if (blockedRects.isEmpty()) {
             return new UnoccludedRegion(new Rect(), /* isRegionComplex= */ false);
@@ -210,6 +212,8 @@ public final class WindowInsetsUtils {
     @SuppressWarnings("NewApi")
     public static List<Rect> getBoundingRectsFromInsets(
             @Nullable WindowInsets windowInsets, @InsetsType int insetType) {
+        if (sBoundingRectsForTesting != null) return sBoundingRectsForTesting;
+
         // This invocation is wrapped in a try-catch block to allow backporting of the
         // #getBoundingRects() API on pre-V devices. On pre-V devices not supporting this API, a
         // default value will be cached on the first failure and returned subsequently.
@@ -258,13 +262,25 @@ public final class WindowInsetsUtils {
     /** Sets the window frame size for testing purposes. */
     public static void setFrameForTesting(Size frame) {
         sFrameForTesting = frame;
-        ResettersForTesting.register(() -> sFrameForTesting = DEFAULT_INSETS_FRAME);
+        ResettersForTesting.register(() -> sFrameForTesting = null);
     }
 
     /** Sets a rect to be returned by {@code #getWidestUnoccludedRect()} for testing purposes. */
     public static void setWidestUnoccludedRectForTesting(Rect widestUnoccludedRect) {
         sWidestUnoccludedRectForTesting = widestUnoccludedRect;
-        ResettersForTesting.register(() -> sWidestUnoccludedRectForTesting = new Rect());
+        ResettersForTesting.register(() -> sWidestUnoccludedRectForTesting = null);
+    }
+
+    /** Sets the bounding rects for testing purposes. */
+    public static void setBoundingRectsForTesting(List<Rect> boundingRects) {
+        sBoundingRectsForTesting = boundingRects;
+        ResettersForTesting.register(() -> sBoundingRectsForTesting = null);
+    }
+
+    /** Sets whether the unoccluded region is complex for testing purposes. */
+    public static void setUnoccludedRegionComplexForTesting(boolean isComplex) {
+        sUnoccludedRegionComplexForTesting = isComplex;
+        ResettersForTesting.register(() -> sUnoccludedRegionComplexForTesting = false);
     }
 
     /** Returns whether the insets has a non-zero left, right, or bottom inset. */

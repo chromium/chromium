@@ -23,9 +23,6 @@
 +org.chromium.components.media_router.caf.CastMediaSource
 +org.chromium.components.url_formatter.UrlFormatter
 +org.chromium.ui.InsetsRectProvider$BoundingRectHelper
-+org.chromium.ui.display.DisplayAndroid
-+org.chromium.ui.display.DisplayAndroidManager
-+org.chromium.ui.insets.WindowInsetsUtils
 +org.chromium.webapk.shell_apk.LaunchHostBrowserSelector
 
 # Disallow new shadows of chrome-authored code.

@@ -43,8 +43,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
@@ -60,21 +58,7 @@ import org.chromium.ui.mojom.WindowShowState;
 /** Unit tests for {@link ChromeAndroidTaskTrackerImpl}. */
 @NullMarked
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = ChromeAndroidTaskTrackerImplUnitTest.ShadowDisplayAndroid.class)
 public class ChromeAndroidTaskTrackerImplUnitTest {
-    @Implements(DisplayAndroid.class)
-    static class ShadowDisplayAndroid {
-        private static @Nullable DisplayAndroid sDisplayAndroid;
-
-        public static void setDisplayAndroid(@Nullable DisplayAndroid displayAndroid) {
-            sDisplayAndroid = displayAndroid;
-        }
-
-        @Implementation
-        public static DisplayAndroid getNonMultiDisplay(Context context) {
-            return assumeNonNull(sDisplayAndroid);
-        }
-    }
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
@@ -92,7 +76,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         DisplayAndroid mockDisplay = mock(DisplayAndroid.class);
         when(mockDisplay.getDipScale()).thenReturn(1.0f);
-        ShadowDisplayAndroid.setDisplayAndroid(mockDisplay);
+        DisplayAndroid.setNonMultiDisplayForTesting(mockDisplay);
 
         ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
     }
@@ -100,7 +84,6 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     @After
     public void tearDown() {
         mChromeAndroidTaskTracker.removeAllForTesting();
-        ShadowDisplayAndroid.setDisplayAndroid(null);
     }
 
     @Test
@@ -279,7 +262,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         float dipScale = 2.0f;
         DisplayAndroid mockDisplay = mock(DisplayAndroid.class);
         when(mockDisplay.getDipScale()).thenReturn(dipScale);
-        ShadowDisplayAndroid.setDisplayAndroid(mockDisplay);
+        DisplayAndroid.setNonMultiDisplayForTesting(mockDisplay);
 
         Rect boundsInDp = new Rect(10, 20, 800, 600);
         var mockParams =

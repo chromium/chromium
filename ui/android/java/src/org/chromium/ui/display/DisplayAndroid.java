@@ -10,6 +10,7 @@ import android.view.Display;
 import android.view.Surface;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -96,6 +97,8 @@ public class DisplayAndroid {
     private static final DisplayAndroidObserver[] EMPTY_OBSERVER_ARRAY =
             new DisplayAndroidObserver[0];
 
+    private static @Nullable DisplayAndroid sNonMultiDisplayForTesting;
+
     private final WeakHashMap<DisplayAndroidObserver, Object /* null */> mObservers;
     // Do NOT add strong references to objects with potentially complex lifetime, like Context.
 
@@ -134,9 +137,9 @@ public class DisplayAndroid {
      * Get the non-multi-display DisplayAndroid for the given context. It's safe to call this with
      * any type of context, including the Application.
      *
-     * To support multi-display, obtain DisplayAndroid from WindowAndroid instead.
+     * <p>To support multi-display, obtain DisplayAndroid from WindowAndroid instead.
      *
-     * This function is intended to be analogous to GetPrimaryDisplay() for other platforms.
+     * <p>This function is intended to be analogous to GetPrimaryDisplay() for other platforms.
      * However, Android has historically had no real concept of a Primary Display, and instead uses
      * the notion of a default display for an Activity. Under normal circumstances, this function,
      * called with the correct context, will return the expected display for an Activity. However,
@@ -146,8 +149,14 @@ public class DisplayAndroid {
      * @return What the Android WindowManager considers to be the default display for this context.
      */
     public static DisplayAndroid getNonMultiDisplay(Context context) {
+        if (sNonMultiDisplayForTesting != null) return sNonMultiDisplayForTesting;
         Display display = DisplayAndroidManager.getDefaultDisplayForContext(context);
         return getManager().getDisplayAndroid(display);
+    }
+
+    public static void setNonMultiDisplayForTesting(DisplayAndroid display) {
+        sNonMultiDisplayForTesting = display;
+        ResettersForTesting.register(() -> sNonMultiDisplayForTesting = null);
     }
 
     /**

@@ -19,13 +19,11 @@ import static org.mockito.Mockito.doReturn;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.View;
-import android.view.WindowInsets;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,15 +32,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.insets.InsetsRectProvider.Consumer;
-import org.chromium.ui.insets.InsetsRectProviderTest.ShadowWindowInsetsUtils;
-import org.chromium.ui.insets.WindowInsetsUtils.UnoccludedRegion;
 
 import java.util.List;
 
@@ -52,7 +46,7 @@ import java.util.List;
  * certain window insets has an update.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 30, shadows = ShadowWindowInsetsUtils.class)
+@Config(sdk = 30)
 public class InsetsRectProviderTest {
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 800;
@@ -80,11 +74,6 @@ public class InsetsRectProviderTest {
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
-    }
-
-    @After
-    public void tearDown() {
-        ShadowWindowInsetsUtils.reset();
     }
 
     @Test
@@ -251,7 +240,7 @@ public class InsetsRectProviderTest {
         mInsetsRectProvider.setConsumer(createInsetsRectConsumer(/* consumeRectUpdate= */ false));
 
         // Simulate a complex unoccluded region.
-        ShadowWindowInsetsUtils.sUnoccludedRegionComplex = true;
+        WindowInsetsUtils.setUnoccludedRegionComplexForTesting(true);
         List<Rect> blockingRects = List.of(new Rect(10, 0, 20, WINDOW_HEIGHT));
         Rect availableArea = new Rect(20, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -592,9 +581,10 @@ public class InsetsRectProviderTest {
         doReturn(Insets.NONE).when(windowInsetsCompat).getInsets(anyInt());
         doReturn(insets).when(windowInsetsCompat).getInsets(eq(type));
 
-        ShadowWindowInsetsUtils.sWidestUnoccludedRect = availableArea;
-        ShadowWindowInsetsUtils.sFrame = frameSize;
-        ShadowWindowInsetsUtils.sTestRects = blockingRects != null ? blockingRects : List.of();
+        WindowInsetsUtils.setWidestUnoccludedRectForTesting(availableArea);
+        WindowInsetsUtils.setFrameForTesting(frameSize);
+        WindowInsetsUtils.setBoundingRectsForTesting(
+                blockingRects != null ? blockingRects : List.of());
 
         return windowInsetsCompat;
     }
@@ -644,39 +634,5 @@ public class InsetsRectProviderTest {
             mConsumerCallback.notifyCalled();
             return consumeRectUpdate;
         };
-    }
-
-    /** Helper class to get the results using test values. */
-    @Implements(WindowInsetsUtils.class)
-    public static class ShadowWindowInsetsUtils {
-        static Rect sWidestUnoccludedRect;
-        static Size sFrame = new Size(0, 0);
-        static List<Rect> sTestRects = List.of();
-        static boolean sUnoccludedRegionComplex;
-
-        private static void reset() {
-            sWidestUnoccludedRect = null;
-            sFrame = new Size(0, 0);
-            sTestRects = List.of();
-            sUnoccludedRegionComplex = false;
-        }
-
-        @Implementation
-        protected static UnoccludedRegion getUnoccludedRegion(
-                Rect regionRect, List<Rect> blockedRects) {
-            Rect widestRect = sWidestUnoccludedRect != null ? sWidestUnoccludedRect : new Rect();
-            return new UnoccludedRegion(widestRect, sUnoccludedRegionComplex);
-        }
-
-        @Implementation
-        protected static Size getFrameFromInsets(WindowInsets windowInsets) {
-            return sFrame;
-        }
-
-        @Implementation
-        protected static List<Rect> getBoundingRectsFromInsets(
-                WindowInsets windowInsets, @InsetsType int insetType) {
-            return sTestRects;
-        }
     }
 }

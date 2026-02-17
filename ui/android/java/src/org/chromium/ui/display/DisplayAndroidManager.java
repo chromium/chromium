@@ -103,6 +103,7 @@ public class DisplayAndroidManager {
     }
 
     private static @Nullable DisplayAndroidManager sDisplayAndroidManager;
+    private static @Nullable Display sDefaultDisplayForContextForTesting;
 
     private static boolean sDisableHdrSdkRatioCallback;
     private static @Nullable Boolean sIsDisplayTopologyAvailable;
@@ -144,7 +145,16 @@ public class DisplayAndroidManager {
         sDisableHdrSdkRatioCallback = true;
     }
 
+    /** Sets the default display for the given context for testing purposes. */
+    public static void setDefaultDisplayForContextForTesting(Display display) {
+        sDefaultDisplayForContextForTesting = display;
+        ResettersForTesting.register(() -> sDefaultDisplayForContextForTesting = null);
+    }
+
     public static Display getDefaultDisplayForContext(Context context) {
+        if (sDefaultDisplayForContextForTesting != null) {
+            return sDefaultDisplayForContextForTesting;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Display display = null;
             try {

@@ -28,12 +28,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.ui.base.WindowAndroidTest.ShadowDisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetObserver;
@@ -43,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = ShadowDisplayAndroid.class, sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+@Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @EnableFeatures({UiAndroidFeatures.ANDROID_USE_CORRECT_WINDOW_BOUNDS})
 public class WindowAndroidTest {
 
@@ -63,20 +60,6 @@ public class WindowAndroidTest {
     private static final Rect INITIAL_WINDOW_BOUNDS = new Rect(10, 20, 1900, 1000);
     private static final long MOCK_NATIVE_POINTER = 1;
 
-    @Implements(DisplayAndroid.class)
-    static class ShadowDisplayAndroid {
-        private static DisplayAndroid sDisplayAndroid;
-
-        public static void setDisplayAndroid(DisplayAndroid displayAndroid) {
-            sDisplayAndroid = displayAndroid;
-        }
-
-        @Implementation
-        public static DisplayAndroid getNonMultiDisplay(Context context) {
-            return sDisplayAndroid;
-        }
-    }
-
     @Before
     public void setup() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -86,7 +69,7 @@ public class WindowAndroidTest {
         }
 
         doReturn(1.0f).when(mDisplay).getDipScale();
-        ShadowDisplayAndroid.setDisplayAndroid(mDisplay);
+        DisplayAndroid.setNonMultiDisplayForTesting(mDisplay);
 
         doAnswer(
                         invocation -> {
