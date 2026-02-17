@@ -462,6 +462,11 @@ BASE_FEATURE_PARAM(int,
                    "SqlDiskCacheOptimisticWriteBufferSize",
                    32 * 1024 * 1024);
 BASE_FEATURE_PARAM(bool,
+                   kSqlDiskCachePreloadDatabase,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCachePreloadDatabase",
+                   false);
+BASE_FEATURE_PARAM(bool,
                    kSqlDiskCacheSynchronousOff,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheSynchronousOff",
