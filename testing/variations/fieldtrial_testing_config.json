@@ -26618,6 +26618,7 @@
     "ThreadPoolForegroundBlockingTimeouts": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
