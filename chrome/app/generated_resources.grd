@@ -8705,6 +8705,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_FILE_TYPE_NOT_ALLOWED_ERROR" desc="Error text displayed when user attempts to upload file in non-supported format.">
         Can't upload.  Try a different file format.
       </message>
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_NOT_ALLOWED" desc="Error text displayed when a user attempts to upload file when attachments are not allowed in the current context.">
+        Can’t upload. Attachments are not allowed.
+      </message>
       <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_FAILED">
         Unexpected error, file upload failed.
       </message>
