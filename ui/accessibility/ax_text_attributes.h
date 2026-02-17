@@ -35,8 +35,19 @@ struct AX_BASE_EXPORT AXTextAttributes final {
   AXTextAttributes(AXTextAttributes&& other);
   AXTextAttributes& operator=(AXTextAttributes&& other);
 
+  // Use compiler-generated equality operator that compares all fields.
+  // This is important for format boundary detection - nodes with different
+  // marker_types or highlight_types should be considered different formats.
   friend bool operator==(const AXTextAttributes&,
                          const AXTextAttributes&) = default;
+  bool operator!=(const AXTextAttributes& other) const;
+
+  // Compares visual formatting attributes (font, color, style, etc.) but
+  // intentionally excludes invalid_state, marker_types, and highlight_types.
+  // Used by DefaultAbortMovePredicate for format boundary detection between
+  // nodes, where spelling/grammar markers are compared separately via
+  // GetSpellingGrammarMarkerTypeAtOffset.
+  bool HasSameFormattingAs(const AXTextAttributes& other) const;
 
   bool IsUnset() const;
 

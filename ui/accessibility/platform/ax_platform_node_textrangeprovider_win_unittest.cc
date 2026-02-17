@@ -8281,4 +8281,1053 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                   /*expected_count*/ 1);
 }
 
+// Test that misspelled words (MarkerType::kSpelling) are treated as format
+// boundaries. This simulates a contenteditable with spelling mistakes like:
+// "This iss a lin that has a few diffferent misspelled words."
+// where "iss", "lin", and "diffferent" are misspelled.
+TEST_F(AXPlatformNodeTextRangeProviderTest, MisspellingsAreFormatBoundaries) {
+  // Build a tree that represents:
+  // <div contenteditable>This iss a lin that has a few diffferent misspelled
+  // words.</div>
+  // With misspellings on "iss" (5-8), "lin" (11-14), and "diffferent" (30-40)
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData contenteditable_data;
+  contenteditable_data.id = 2;
+  contenteditable_data.role = ax::mojom::Role::kGenericContainer;
+  contenteditable_data.AddState(ax::mojom::State::kEditable);
+  contenteditable_data.AddState(ax::mojom::State::kRichlyEditable);
+  contenteditable_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+
+  AXNodeData static_text_data;
+  static_text_data.id = 3;
+  static_text_data.role = ax::mojom::Role::kStaticText;
+  static_text_data.SetName(
+      "This iss a lin that has a few diffferent misspelled words.");
+  static_text_data.AddState(ax::mojom::State::kEditable);
+  static_text_data.AddState(ax::mojom::State::kRichlyEditable);
+  // Add spelling markers for misspelled words
+  // "iss" at positions 5-8, "lin" at 11-14, "diffferent" at 30-40
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int>(ax::mojom::MarkerType::kSpelling),
+       static_cast<int>(ax::mojom::MarkerType::kSpelling),
+       static_cast<int>(ax::mojom::MarkerType::kSpelling)});
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerStarts, {5, 11, 30});
+  static_text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                       {8, 14, 40});
+
+  AXNodeData inline_box_data;
+  inline_box_data.id = 4;
+  inline_box_data.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data.SetName(
+      "This iss a lin that has a few diffferent misspelled words.");
+  inline_box_data.AddState(ax::mojom::State::kEditable);
+  inline_box_data.AddState(ax::mojom::State::kRichlyEditable);
+
+  static_text_data.child_ids = {inline_box_data.id};
+  contenteditable_data.child_ids = {static_text_data.id};
+  root_data.child_ids = {contenteditable_data.id};
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, contenteditable_data, static_text_data,
+                  inline_box_data};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  AXNode* root_node = GetRoot();
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  // Full text: "This iss a lin that has a few diffferent misspelled words."
+  // Expected format boundaries at misspelling start/end positions:
+  // - "This " (0-5) - normal text
+  // - "iss" (5-8) - misspelled
+  // - " a " (8-11) - normal text
+  // - "lin" (11-14) - misspelled
+  // - " that has a few " (14-30) - normal text
+  // - "diffferent" (30-40) - misspelled
+  // - " misspelled words." (40-58) - normal text
+
+  // Start at the beginning - should get "This " (before first misspelling)
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 0,
+                  /*expected_text*/
+                  L"This iss a lin that has a few diffferent misspelled words.",
+                  /*expected_count*/ 0);
+
+  // Move by format should stop at the misspelling boundary
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
+      /*count*/ -6,
+      /*expected_text*/ L"This ",
+      /*expected_count*/ -6);
+
+  // Move forward should get the misspelled word "iss"
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"iss",
+                  /*expected_count*/ 1);
+
+  // Move forward should get " a "
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" a ",
+                  /*expected_count*/ 1);
+
+  // Move forward should get "lin"
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"lin",
+                  /*expected_count*/ 1);
+
+  // Move forward should get " that has a few "
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" that has a few ",
+                  /*expected_count*/ 1);
+
+  // Move forward should get "diffferent"
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"diffferent",
+                  /*expected_count*/ 1);
+
+  // Move forward should get " misspelled words."
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" misspelled words.",
+                  /*expected_count*/ 1);
+
+  // Trying to move past the last format should have no effect
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" misspelled words.",
+                  /*expected_count*/ 0);
+}
+
+// Test that misspelled words are treated as format boundaries across multiple
+// paragraphs in a contenteditable. This simulates the HTML:
+// <div contenteditable="true">
+//   Hello world,
+//   <div><br></div>
+//   <div>This iss a line of text wijth misspellings. Here are twoo wors next
+//        to each other. This is a wo</div>
+//   <div>rd that is split across lines.</div>
+//   <div><br></div>
+//   <div>This paragraph has no misspellings...</div>
+// </div>
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       MoveByFormatWithMisspellingsAcrossParagraphs) {
+  // Structure:
+  // 1 - RootWebArea
+  //   2 - GenericContainer (contenteditable)
+  //     3 - StaticText "Hello world,"
+  //       4 - InlineTextBox "Hello world,"
+  //     5 - GenericContainer (empty line)
+  //       6 - LineBreak "\n"
+  //     7 - GenericContainer (paragraph with misspellings)
+  //       8 - StaticText "This iss a line..."
+  //         9 - InlineTextBox "This iss a line..."
+  //     10 - GenericContainer (continuation)
+  //       11 - StaticText "rd that is split across lines."
+  //         12 - InlineTextBox "rd that is split across lines."
+  //     13 - GenericContainer (empty line)
+  //       14 - LineBreak "\n"
+  //     15 - GenericContainer (paragraph without misspellings)
+  //       16 - StaticText "This paragraph has no misspellings..."
+  //         17 - InlineTextBox "This paragraph has no misspellings..."
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData contenteditable_data;
+  contenteditable_data.id = 2;
+  contenteditable_data.role = ax::mojom::Role::kGenericContainer;
+  contenteditable_data.AddState(ax::mojom::State::kEditable);
+  contenteditable_data.AddState(ax::mojom::State::kRichlyEditable);
+  contenteditable_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+
+  // "Hello world,"
+  AXNodeData static_text_1;
+  static_text_1.id = 3;
+  static_text_1.role = ax::mojom::Role::kStaticText;
+  static_text_1.SetName("Hello world,");
+  static_text_1.AddState(ax::mojom::State::kEditable);
+  static_text_1.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData inline_box_1;
+  inline_box_1.id = 4;
+  inline_box_1.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_1.SetName("Hello world,");
+  inline_box_1.AddState(ax::mojom::State::kEditable);
+  static_text_1.child_ids = {inline_box_1.id};
+
+  // Empty line (br)
+  AXNodeData empty_line_1;
+  empty_line_1.id = 5;
+  empty_line_1.role = ax::mojom::Role::kGenericContainer;
+  empty_line_1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  AXNodeData line_break_1;
+  line_break_1.id = 6;
+  line_break_1.role = ax::mojom::Role::kLineBreak;
+  line_break_1.SetName("\n");
+  empty_line_1.child_ids = {line_break_1.id};
+
+  // Paragraph with misspellings:
+  // "This iss a line of text wijth misspellings. Here are twoo wors next to
+  // each other. This is a wo"
+  // Misspellings: "iss" (5-8), "wijth" (24-29), "twoo" (47-51), "wors" (52-56)
+  AXNodeData para_with_misspellings;
+  para_with_misspellings.id = 7;
+  para_with_misspellings.role = ax::mojom::Role::kGenericContainer;
+  para_with_misspellings.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData static_text_2;
+  static_text_2.id = 8;
+  static_text_2.role = ax::mojom::Role::kStaticText;
+  static_text_2.SetName(
+      "This iss a line of text wijth misspellings. Here are twoo wors next to "
+      "each other. This is a wo");
+  static_text_2.AddState(ax::mojom::State::kEditable);
+  // Misspellings: "iss" (5-8), "wijth" (24-29), "twoo" (53-57), "wors" (58-62)
+  static_text_2.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int>(ax::mojom::MarkerType::kSpelling),
+       static_cast<int>(ax::mojom::MarkerType::kSpelling),
+       static_cast<int>(ax::mojom::MarkerType::kSpelling),
+       static_cast<int>(ax::mojom::MarkerType::kSpelling)});
+  static_text_2.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
+                                    {5, 24, 53, 58});
+  static_text_2.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                    {8, 29, 57, 62});
+
+  AXNodeData inline_box_2;
+  inline_box_2.id = 9;
+  inline_box_2.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_2.SetName(
+      "This iss a line of text wijth misspellings. Here are twoo wors next to "
+      "each other. This is a wo");
+  inline_box_2.AddState(ax::mojom::State::kEditable);
+  static_text_2.child_ids = {inline_box_2.id};
+  para_with_misspellings.child_ids = {static_text_2.id};
+
+  // Continuation: "rd that is split across lines."
+  AXNodeData continuation;
+  continuation.id = 10;
+  continuation.role = ax::mojom::Role::kGenericContainer;
+  continuation.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  AXNodeData static_text_3;
+  static_text_3.id = 11;
+  static_text_3.role = ax::mojom::Role::kStaticText;
+  static_text_3.SetName("rd that is split across lines.");
+  static_text_3.AddState(ax::mojom::State::kEditable);
+
+  AXNodeData inline_box_3;
+  inline_box_3.id = 12;
+  inline_box_3.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_3.SetName("rd that is split across lines.");
+  inline_box_3.AddState(ax::mojom::State::kEditable);
+  static_text_3.child_ids = {inline_box_3.id};
+  continuation.child_ids = {static_text_3.id};
+
+  // Empty line (br)
+  AXNodeData empty_line_2;
+  empty_line_2.id = 13;
+  empty_line_2.role = ax::mojom::Role::kGenericContainer;
+  empty_line_2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  AXNodeData line_break_2;
+  line_break_2.id = 14;
+  line_break_2.role = ax::mojom::Role::kLineBreak;
+  line_break_2.SetName("\n");
+  empty_line_2.child_ids = {line_break_2.id};
+
+  // Paragraph without misspellings
+  AXNodeData para_no_misspellings;
+  para_no_misspellings.id = 15;
+  para_no_misspellings.role = ax::mojom::Role::kGenericContainer;
+  para_no_misspellings.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData static_text_4;
+  static_text_4.id = 16;
+  static_text_4.role = ax::mojom::Role::kStaticText;
+  static_text_4.SetName(
+      "This paragraph has no misspellings to contrast it from the paragraph "
+      "above. This should be able to be considered as a single format for "
+      "boundary detection purposes.");
+  static_text_4.AddState(ax::mojom::State::kEditable);
+
+  AXNodeData inline_box_4;
+  inline_box_4.id = 17;
+  inline_box_4.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_4.SetName(
+      "This paragraph has no misspellings to contrast it from the paragraph "
+      "above. This should be able to be considered as a single format for "
+      "boundary detection purposes.");
+  inline_box_4.AddState(ax::mojom::State::kEditable);
+  static_text_4.child_ids = {inline_box_4.id};
+  para_no_misspellings.child_ids = {static_text_4.id};
+
+  // Wire up the tree
+  contenteditable_data.child_ids = {
+      static_text_1.id, empty_line_1.id, para_with_misspellings.id,
+      continuation.id,  empty_line_2.id, para_no_misspellings.id};
+  root_data.child_ids = {contenteditable_data.id};
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {
+      root_data,    contenteditable_data, static_text_1,          inline_box_1,
+      empty_line_1, line_break_1,         para_with_misspellings, static_text_2,
+      inline_box_2, continuation,         static_text_3,          inline_box_3,
+      empty_line_2, line_break_2,         para_no_misspellings,   static_text_4,
+      inline_box_4};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  AXNode* root_node = GetRoot();
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  // Verify the full document text first (move by 0 has no effect but shows
+  // current range)
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 0,
+                  /*expected_text*/
+                  L"Hello world,\nThis iss a line of text wijth misspellings. "
+                  L"Here are twoo wors next to each other. This is a wo\nrd "
+                  L"that is split across lines.\nThis paragraph has no "
+                  L"misspellings to contrast it from the paragraph above. This "
+                  L"should be able to be considered as a single format for "
+                  L"boundary detection purposes.",
+                  /*expected_count*/ 0);
+
+  // Move forward by format from the full document. All unmarked text at the
+  // start (including "Hello world,\n" and "This ") forms a single format unit
+  // because they have the same formatting and neither is in a spelling marker.
+  // The first Move(1) collapses to start then moves to the 2nd format unit,
+  // which is the first misspelling.
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"iss",
+                  /*expected_count*/ 1);
+
+  // Move forward - should get " a line of text " (text between misspellings)
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" a line of text ",
+                  /*expected_count*/ 1);
+
+  // Move forward - should get "wijth" (misspelled word)
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"wijth",
+                  /*expected_count*/ 1);
+
+  // Move forward - should get " misspellings. Here are " (text between)
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" misspellings. Here are ",
+                  /*expected_count*/ 1);
+
+  // Move forward - should get "twoo" (misspelled word)
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"twoo",
+                  /*expected_count*/ 1);
+
+  // Move forward - should get " " (single space between adjacent misspellings)
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" ",
+                  /*expected_count*/ 1);
+
+  // Move forward - should get "wors" (misspelled word)
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"wors",
+                  /*expected_count*/ 1);
+
+  // Move forward - after the last misspelling, all remaining text with no
+  // markers and same text attributes forms a single format unit. This includes
+  // text across paragraph breaks and wrapped lines.
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/
+                  L" next to each other. This is a wo\n"
+                  L"rd that is split across lines.\n"
+                  L"This paragraph has no "
+                  L"misspellings to contrast it from the paragraph above. This "
+                  L"should be able to be considered as a single format for "
+                  L"boundary detection purposes.",
+                  /*expected_count*/ 1);
+
+  // Trying to move past the end should have no effect
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/
+                  L" next to each other. This is a wo\n"
+                  L"rd that is split across lines.\n"
+                  L"This paragraph has no "
+                  L"misspellings to contrast it from the paragraph above. This "
+                  L"should be able to be considered as a single format for "
+                  L"boundary detection purposes.",
+                  /*expected_count*/ 0);
+}
+
+// Test that grammar errors (MarkerType::kGrammar) are also treated as format
+// boundaries, similar to spelling errors.
+TEST_F(AXPlatformNodeTextRangeProviderTest, GrammarErrorsAreFormatBoundaries) {
+  // Build a tree representing:
+  // <div contenteditable>She dont like it when they gos there.</div>
+  // With grammar errors on "dont" (4-8) and "gos" (27-30)
+  // Character positions:
+  // S  h  e     d  o  n  t     l   i   k   e       i   t       w   h   e   n
+  // 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17  18  19  20
+  //    t   h   e   y       g   o   s       t   h   e   r   e   .
+  //   21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData contenteditable_data;
+  contenteditable_data.id = 2;
+  contenteditable_data.role = ax::mojom::Role::kGenericContainer;
+  contenteditable_data.AddState(ax::mojom::State::kEditable);
+  contenteditable_data.AddState(ax::mojom::State::kRichlyEditable);
+  contenteditable_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+
+  AXNodeData static_text_data;
+  static_text_data.id = 3;
+  static_text_data.role = ax::mojom::Role::kStaticText;
+  static_text_data.SetName("She dont like it when they gos there.");
+  static_text_data.AddState(ax::mojom::State::kEditable);
+  static_text_data.AddState(ax::mojom::State::kRichlyEditable);
+  // Add grammar markers for grammatically incorrect words
+  // "dont" at positions 4-8, "gos" at 27-30
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int>(ax::mojom::MarkerType::kGrammar),
+       static_cast<int>(ax::mojom::MarkerType::kGrammar)});
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerStarts, {4, 27});
+  static_text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                       {8, 30});
+
+  AXNodeData inline_box_data;
+  inline_box_data.id = 4;
+  inline_box_data.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data.SetName("She dont like it when they gos there.");
+  inline_box_data.AddState(ax::mojom::State::kEditable);
+  inline_box_data.AddState(ax::mojom::State::kRichlyEditable);
+
+  static_text_data.child_ids = {inline_box_data.id};
+  contenteditable_data.child_ids = {static_text_data.id};
+  root_data.child_ids = {contenteditable_data.id};
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, contenteditable_data, static_text_data,
+                  inline_box_data};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  AXNode* root_node = GetRoot();
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  // Full text: "She dont like it when they gos there."
+  // Expected format boundaries:
+  // - "She " (0-4) - normal
+  // - "dont" (4-8) - grammar error
+  // - " like it when they " (8-27) - normal
+  // - "gos" (27-30) - grammar error
+  // - " there." (30-37) - normal
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
+      /*count*/ -4,
+      /*expected_text*/ L"She ",
+      /*expected_count*/ -4);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"dont",
+                  /*expected_count*/ 1);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" like it when they ",
+                  /*expected_count*/ 1);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"gos",
+                  /*expected_count*/ 1);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" there.",
+                  /*expected_count*/ 1);
+}
+
+// Test format boundaries when misspelling is at the start of text.
+// Note: Markers ending at text_length-1 or later don't create a format boundary
+// at the end, so we use a longer suffix to test the end case.
+TEST_F(AXPlatformNodeTextRangeProviderTest, MisspellingsAtTextBoundaries) {
+  // Build a tree representing:
+  // <div contenteditable>Teh quick brown fox jumpd quickly.</div>
+  // With misspellings on "Teh" (0-3) at start and "jumpd" (20-25) in middle
+  // Character positions:
+  // T  e  h     q  u  i  c  k     b   r   o   w   n       f   o   x
+  // 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17  18
+  //    j   u   m   p   d       q   u   i   c   k   l   y   .
+  //   19  20  21  22  23  24  25  26  27  28  29  30  31  32  33
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData contenteditable_data;
+  contenteditable_data.id = 2;
+  contenteditable_data.role = ax::mojom::Role::kGenericContainer;
+  contenteditable_data.AddState(ax::mojom::State::kEditable);
+  contenteditable_data.AddState(ax::mojom::State::kRichlyEditable);
+  contenteditable_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+
+  AXNodeData static_text_data;
+  static_text_data.id = 3;
+  static_text_data.role = ax::mojom::Role::kStaticText;
+  static_text_data.SetName("Teh quick brown fox jumpd quickly.");
+  static_text_data.AddState(ax::mojom::State::kEditable);
+  static_text_data.AddState(ax::mojom::State::kRichlyEditable);
+  // "Teh" at positions 0-3, "jumpd" at 20-25
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int>(ax::mojom::MarkerType::kSpelling),
+       static_cast<int>(ax::mojom::MarkerType::kSpelling)});
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerStarts, {0, 20});
+  static_text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                       {3, 25});
+
+  AXNodeData inline_box_data;
+  inline_box_data.id = 4;
+  inline_box_data.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data.SetName("Teh quick brown fox jumpd quickly.");
+  inline_box_data.AddState(ax::mojom::State::kEditable);
+  inline_box_data.AddState(ax::mojom::State::kRichlyEditable);
+
+  static_text_data.child_ids = {inline_box_data.id};
+  contenteditable_data.child_ids = {static_text_data.id};
+  root_data.child_ids = {contenteditable_data.id};
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, contenteditable_data, static_text_data,
+                  inline_box_data};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  AXNode* root_node = GetRoot();
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  // Full text: "Teh quick brown fox jumpd quickly."
+  // Expected format boundaries:
+  // - "Teh" (0-3) - misspelled at start
+  // - " quick brown fox " (3-20) - normal
+  // - "jumpd" (20-25) - misspelled
+  // - " quickly." (25-34) - normal at end
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
+      /*count*/ -3,
+      /*expected_text*/ L"Teh",
+      /*expected_count*/ -3);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" quick brown fox ",
+                  /*expected_count*/ 1);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"jumpd",
+                  /*expected_count*/ 1);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" quickly.",
+                  /*expected_count*/ 1);
+}
+
+// Test backward navigation through format boundaries with misspellings.
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       MoveByFormatBackwardWithMisspellings) {
+  // Build a tree representing:
+  // <div contenteditable>This iss a tesst now.</div>
+  // With misspellings on "iss" (5-8) and "tesst" (11-16)
+  // Character positions:
+  // T  h  i  s     i  s  s     a       t   e   s   s   t       n   o   w   .
+  // 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17  18  19  20
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData contenteditable_data;
+  contenteditable_data.id = 2;
+  contenteditable_data.role = ax::mojom::Role::kGenericContainer;
+  contenteditable_data.AddState(ax::mojom::State::kEditable);
+  contenteditable_data.AddState(ax::mojom::State::kRichlyEditable);
+  contenteditable_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+
+  AXNodeData static_text_data;
+  static_text_data.id = 3;
+  static_text_data.role = ax::mojom::Role::kStaticText;
+  static_text_data.SetName("This iss a tesst now.");
+  static_text_data.AddState(ax::mojom::State::kEditable);
+  static_text_data.AddState(ax::mojom::State::kRichlyEditable);
+  // "iss" at 5-8, "tesst" at 11-16
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int>(ax::mojom::MarkerType::kSpelling),
+       static_cast<int>(ax::mojom::MarkerType::kSpelling)});
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerStarts, {5, 11});
+  static_text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                       {8, 16});
+
+  AXNodeData inline_box_data;
+  inline_box_data.id = 4;
+  inline_box_data.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data.SetName("This iss a tesst now.");
+  inline_box_data.AddState(ax::mojom::State::kEditable);
+  inline_box_data.AddState(ax::mojom::State::kRichlyEditable);
+
+  static_text_data.child_ids = {inline_box_data.id};
+  contenteditable_data.child_ids = {static_text_data.id};
+  root_data.child_ids = {contenteditable_data.id};
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, contenteditable_data, static_text_data,
+                  inline_box_data};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  AXNode* root_node = GetRoot();
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  // Full text: "This iss a tesst now."
+  // Expected format boundaries (5 total):
+  // - "This " (0-5) - normal
+  // - "iss" (5-8) - misspelled
+  // - " a " (8-11) - normal
+  // - "tesst" (11-16) - misspelled
+  // - " now." (16-21) - normal
+
+  // Move to the last format unit. Starting at format 0 ("This "), moving by 4
+  // lands on format 4 (" now."), which is the 5th and last format.
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 4,
+                  /*expected_text*/ L" now.",
+                  /*expected_count*/ 4);
+
+  // Now move backward through the format units
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ -1,
+                  /*expected_text*/ L"tesst",
+                  /*expected_count*/ -1);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ -1,
+                  /*expected_text*/ L" a ",
+                  /*expected_count*/ -1);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ -1,
+                  /*expected_text*/ L"iss",
+                  /*expected_count*/ -1);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ -1,
+                  /*expected_text*/ L"This ",
+                  /*expected_count*/ -1);
+
+  // Trying to move before the start should have no effect
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ -1,
+                  /*expected_text*/ L"This ",
+                  /*expected_count*/ 0);
+}
+
+// Test mixed spelling and grammar markers in the same text.
+TEST_F(AXPlatformNodeTextRangeProviderTest, MixedSpellingAndGrammarMarkers) {
+  // Build a tree representing:
+  // <div contenteditable>She dont like teh book.</div>
+  // With grammar error on "dont" (4-8) and spelling error on "teh" (14-17)
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData contenteditable_data;
+  contenteditable_data.id = 2;
+  contenteditable_data.role = ax::mojom::Role::kGenericContainer;
+  contenteditable_data.AddState(ax::mojom::State::kEditable);
+  contenteditable_data.AddState(ax::mojom::State::kRichlyEditable);
+  contenteditable_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+
+  AXNodeData static_text_data;
+  static_text_data.id = 3;
+  static_text_data.role = ax::mojom::Role::kStaticText;
+  static_text_data.SetName("She dont like teh book.");
+  static_text_data.AddState(ax::mojom::State::kEditable);
+  static_text_data.AddState(ax::mojom::State::kRichlyEditable);
+  // Grammar: "dont" at 4-8, Spelling: "teh" at 14-17
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int>(ax::mojom::MarkerType::kGrammar),
+       static_cast<int>(ax::mojom::MarkerType::kSpelling)});
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerStarts, {4, 14});
+  static_text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                       {8, 17});
+
+  AXNodeData inline_box_data;
+  inline_box_data.id = 4;
+  inline_box_data.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data.SetName("She dont like teh book.");
+  inline_box_data.AddState(ax::mojom::State::kEditable);
+  inline_box_data.AddState(ax::mojom::State::kRichlyEditable);
+
+  static_text_data.child_ids = {inline_box_data.id};
+  contenteditable_data.child_ids = {static_text_data.id};
+  root_data.child_ids = {contenteditable_data.id};
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, contenteditable_data, static_text_data,
+                  inline_box_data};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  AXNode* root_node = GetRoot();
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  // Full text: "She dont like teh book."
+  // Expected format boundaries:
+  // - "She " (0-4) - normal
+  // - "dont" (4-8) - grammar error
+  // - " like " (8-14) - normal
+  // - "teh" (14-17) - spelling error
+  // - " book." (17-23) - normal
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
+      /*count*/ -4,
+      /*expected_text*/ L"She ",
+      /*expected_count*/ -4);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"dont",
+                  /*expected_count*/ 1);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" like ",
+                  /*expected_count*/ 1);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"teh",
+                  /*expected_count*/ 1);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" book.",
+                  /*expected_count*/ 1);
+}
+
+// Test that when text wraps across multiple InlineTextBoxes, misspelling
+// markers on the first line do NOT bleed through to the second line.
+// This simulates wrapped content where only the first line has a misspelling.
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       MisspellingsDoNotBleedToWrappedLines) {
+  // Build a tree representing wrapped text:
+  // <div contenteditable>This iss a long line that wraps here</div>
+  // The text wraps into two InlineTextBoxes:
+  //   Line 1: "This iss a long " (chars 0-17 in parent)
+  //   Line 2: "line that wraps here" (chars 17-37 in parent)
+  // With spelling marker on "iss" at positions 5-8 in the parent.
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData contenteditable_data;
+  contenteditable_data.id = 2;
+  contenteditable_data.role = ax::mojom::Role::kGenericContainer;
+  contenteditable_data.AddState(ax::mojom::State::kEditable);
+  contenteditable_data.AddState(ax::mojom::State::kRichlyEditable);
+  contenteditable_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
+
+  AXNodeData static_text_data;
+  static_text_data.id = 3;
+  static_text_data.role = ax::mojom::Role::kStaticText;
+  static_text_data.SetName("This iss a long line that wraps here");
+  static_text_data.AddState(ax::mojom::State::kEditable);
+  static_text_data.AddState(ax::mojom::State::kRichlyEditable);
+  // Spelling marker for "iss" at parent offsets 5-8 (only in first line).
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int>(ax::mojom::MarkerType::kSpelling)});
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerStarts, {5});
+  static_text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                       {8});
+
+  // First InlineTextBox: "This iss a long " (first 17 chars)
+  AXNodeData inline_box1_data;
+  inline_box1_data.id = 4;
+  inline_box1_data.role = ax::mojom::Role::kInlineTextBox;
+  inline_box1_data.SetName("This iss a long ");
+  inline_box1_data.AddState(ax::mojom::State::kEditable);
+  inline_box1_data.AddState(ax::mojom::State::kRichlyEditable);
+
+  // Second InlineTextBox: "line that wraps here" (chars 17-37)
+  AXNodeData inline_box2_data;
+  inline_box2_data.id = 5;
+  inline_box2_data.role = ax::mojom::Role::kInlineTextBox;
+  inline_box2_data.SetName("line that wraps here");
+  inline_box2_data.AddState(ax::mojom::State::kEditable);
+  inline_box2_data.AddState(ax::mojom::State::kRichlyEditable);
+
+  static_text_data.child_ids = {inline_box1_data.id, inline_box2_data.id};
+  contenteditable_data.child_ids = {static_text_data.id};
+  root_data.child_ids = {contenteditable_data.id};
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, contenteditable_data, static_text_data,
+                  inline_box1_data, inline_box2_data};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  AXNode* root_node = GetRoot();
+  AXNode* inline_box1_node =
+      root_node->children()[0]->children()[0]->children()[0];
+
+  // Create a degenerate range at the start of inline_box1.
+  ComPtr<AXPlatformNodeTextRangeProviderWin> text_range_provider_win;
+  CreateTextRangeProviderWin(
+      text_range_provider_win,
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(root_node)),
+      inline_box1_node, 0, ax::mojom::TextAffinity::kDownstream,
+      inline_box1_node, 0, ax::mojom::TextAffinity::kDownstream);
+  ComPtr<ITextRangeProvider> text_range_provider;
+  text_range_provider_win.As(&text_range_provider);
+
+  // Expand to enclosing format - should expand to "This " (before misspelling)
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->ExpandToEnclosingUnit(TextUnit_Format));
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"This ");
+
+  // Move forward to next format - should get the misspelled word "iss"
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"iss",
+                  /*expected_count*/ 1);
+
+  // Move forward to next format - should get all remaining normal text.
+  // Because the misspelling marker from the first InlineTextBox does NOT
+  // bleed through to the second one, the second InlineTextBox has NO format
+  // boundaries. Both boxes share the same text attributes, so the normal
+  // text after "iss" through the end of the second line is one format unit:
+  // " a long " (rest of first line) + "line that wraps here" (entire second
+  // line).
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" a long line that wraps here",
+                  /*expected_count*/ 1);
+
+  // Trying to move forward past the end should have no effect.
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" a long line that wraps here",
+                  /*expected_count*/ 0);
+}
+
+// Test that newlines and other non-text nodes do NOT create spurious format
+// boundaries when they have the same text attributes as surrounding text.
+// This simulates a multi-paragraph document where all paragraphs share the
+// same formatting - they should all be part of one format unit.
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       NewlinesDoNotCreateFormatBoundaries) {
+  // Build a tree representing:
+  // <div>
+  //   Paragraph one.
+  //   <div><br></div>
+  //   Paragraph two.
+  //   <div><br></div>
+  //   Paragraph three.
+  // </div>
+  // All paragraphs have the same text attributes and NO misspellings.
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData container_data;
+  container_data.id = 2;
+  container_data.role = ax::mojom::Role::kGenericContainer;
+
+  // Paragraph 1
+  AXNodeData static_text_1;
+  static_text_1.id = 3;
+  static_text_1.role = ax::mojom::Role::kStaticText;
+  static_text_1.SetName("Paragraph one.");
+  static_text_1.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData inline_box_1;
+  inline_box_1.id = 4;
+  inline_box_1.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_1.SetName("Paragraph one.");
+  static_text_1.child_ids = {inline_box_1.id};
+
+  // Empty line (br)
+  AXNodeData empty_line_1;
+  empty_line_1.id = 5;
+  empty_line_1.role = ax::mojom::Role::kGenericContainer;
+  empty_line_1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  AXNodeData line_break_1;
+  line_break_1.id = 6;
+  line_break_1.role = ax::mojom::Role::kLineBreak;
+  line_break_1.SetName("\n");
+  empty_line_1.child_ids = {line_break_1.id};
+
+  // Paragraph 2
+  AXNodeData static_text_2;
+  static_text_2.id = 7;
+  static_text_2.role = ax::mojom::Role::kStaticText;
+  static_text_2.SetName("Paragraph two.");
+  static_text_2.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData inline_box_2;
+  inline_box_2.id = 8;
+  inline_box_2.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_2.SetName("Paragraph two.");
+  static_text_2.child_ids = {inline_box_2.id};
+
+  // Empty line (br)
+  AXNodeData empty_line_2;
+  empty_line_2.id = 9;
+  empty_line_2.role = ax::mojom::Role::kGenericContainer;
+  empty_line_2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  AXNodeData line_break_2;
+  line_break_2.id = 10;
+  line_break_2.role = ax::mojom::Role::kLineBreak;
+  line_break_2.SetName("\n");
+  empty_line_2.child_ids = {line_break_2.id};
+
+  // Paragraph 3
+  AXNodeData static_text_3;
+  static_text_3.id = 11;
+  static_text_3.role = ax::mojom::Role::kStaticText;
+  static_text_3.SetName("Paragraph three.");
+  static_text_3.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData inline_box_3;
+  inline_box_3.id = 12;
+  inline_box_3.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_3.SetName("Paragraph three.");
+  static_text_3.child_ids = {inline_box_3.id};
+
+  // Wire up the tree
+  container_data.child_ids = {static_text_1.id, empty_line_1.id,
+                              static_text_2.id, empty_line_2.id,
+                              static_text_3.id};
+  root_data.child_ids = {container_data.id};
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data,    container_data, static_text_1, inline_box_1,
+                  empty_line_1, line_break_1,   static_text_2, inline_box_2,
+                  empty_line_2, line_break_2,   static_text_3, inline_box_3};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  AXNode* root_node = GetRoot();
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  // The full text should be: "Paragraph one.\nParagraph two.\nParagraph three."
+  // Since all paragraphs have the same text attributes and NO misspellings,
+  // the entire document should be ONE format unit.
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 0,
+                  /*expected_text*/
+                  L"Paragraph one.\nParagraph two.\nParagraph three.",
+                  /*expected_count*/ 0);
+
+  // Moving by format should NOT move because there's only one format unit.
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/
+                  L"Paragraph one.\nParagraph two.\nParagraph three.",
+                  /*expected_count*/ 0);
+
+  // Moving backward should also not move.
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ -1,
+                  /*expected_text*/
+                  L"Paragraph one.\nParagraph two.\nParagraph three.",
+                  /*expected_count*/ 0);
+}
+
 }  // namespace ui

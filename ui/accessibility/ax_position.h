@@ -957,8 +957,19 @@ class AXPosition {
         if (format_starts.size() <= 1) {
           return GetFormatStartBoundaryType() != AXBoundaryType::kNone;
         }
-        return std::ranges::contains(format_starts,
-                                     int32_t{text_position->text_offset_});
+        if (!std::ranges::contains(format_starts,
+                                   int32_t{text_position->text_offset_})) {
+          return false;
+        }
+        // Offset 0 is always in the format start offsets list, but it only
+        // represents an actual format boundary if there is an inter-node
+        // boundary (e.g. content start or different text attributes from the
+        // previous node). This handles wrapped InlineTextBoxes that share the
+        // same format as their previous sibling.
+        if (text_position->text_offset_ == 0) {
+          return GetFormatStartBoundaryType() != AXBoundaryType::kNone;
+        }
+        return true;
       }
     }
   }
@@ -1010,8 +1021,19 @@ class AXPosition {
         if (format_ends.size() <= 1) {
           return GetFormatEndBoundaryType() != AXBoundaryType::kNone;
         }
-        return std::ranges::contains(format_ends,
-                                     int32_t{text_position->text_offset_});
+        if (!std::ranges::contains(format_ends,
+                                   int32_t{text_position->text_offset_})) {
+          return false;
+        }
+        // text_length is always in the format end offsets list, but it only
+        // represents an actual format boundary if there is an inter-node
+        // boundary (e.g. content end or different text attributes from the
+        // next node). This handles wrapped InlineTextBoxes that share the
+        // same format as their next sibling.
+        if (text_position->AtEndOfAnchor()) {
+          return GetFormatEndBoundaryType() != AXBoundaryType::kNone;
+        }
+        return true;
       }
     }
   }
@@ -3612,6 +3634,25 @@ class AXPosition {
         // direction until the next logical text position is reached.
         text_position = next_position->CreatePositionAtFirstOffsetBoundary(
             move_direction, get_start_offsets);
+
+        // When moving forward and the first offset in a new anchor is not a
+        // boundary start (e.g., offset 0 is not a format start because the
+        // inter-node comparison shows no boundary), try subsequent offsets
+        // within the same anchor before jumping to the next leaf. This is
+        // essential for finding sub-node format boundaries from spelling/
+        // grammar markers when the inter-node boundary detection does not
+        // create a boundary at offset 0.
+        if (move_direction == ax::mojom::MoveDirection::kForward &&
+            !at_start_condition.Run(text_position) &&
+            !get_start_offsets.is_null()) {
+          AXPositionInstance next_in_anchor =
+              text_position->CreatePositionAtNextOffsetBoundary(
+                  move_direction, get_start_offsets);
+          if (*next_in_anchor != *text_position) {
+            text_position = std::move(next_in_anchor);
+            continue;
+          }
+        }
       }
     }
 
@@ -3779,6 +3820,24 @@ class AXPosition {
         // direction until the next logical text position is reached.
         text_position = next_position->CreatePositionAtFirstOffsetBoundary(
             move_direction, get_end_offsets);
+
+        // When moving backward and the last offset in a new anchor is not a
+        // boundary end (e.g., text_length is not a format end because the
+        // inter-node comparison shows no boundary), try earlier offsets within
+        // the same anchor before jumping to the previous leaf. This is
+        // essential for finding sub-node format boundaries from spelling/
+        // grammar markers.
+        if (move_direction == ax::mojom::MoveDirection::kBackward &&
+            !at_end_condition.Run(text_position) &&
+            !get_end_offsets.is_null()) {
+          AXPositionInstance prev_in_anchor =
+              text_position->CreatePositionAtNextOffsetBoundary(
+                  move_direction, get_end_offsets);
+          if (*prev_in_anchor != *text_position) {
+            text_position = std::move(prev_in_anchor);
+            continue;
+          }
+        }
       }
     }
 
@@ -4983,34 +5042,41 @@ class AXPosition {
     }
     DCHECK(GetAnchor());
 
-    std::vector<int32_t> format_starts;
-    format_starts.push_back(0);
-
     // Format is almost always consistent throughout any node -- the only
-    // exception are inline text boxes with CSS highlights. Therefore, unless
-    // the node is an inline text box with CSS highlights, we can assume the
-    // node's format starts only at index 0.
+    // exceptions are inline text boxes with CSS highlights or spelling/grammar
+    // markers. Therefore, unless the node is an inline text box with such
+    // markers, we can assume the node's format starts only at index 0.
     if (GetAnchor()->GetRole() != ax::mojom::Role::kInlineTextBox) {
-      static const base::NoDestructor<std::vector<int32_t>> format_starts_copy(
-          std::move(format_starts));
-      return *format_starts_copy;
+      static const base::NoDestructor<std::vector<int32_t>>
+          default_format_starts{{0}};
+      return *default_format_starts;
     }
 
     AXNode* parent = GetAnchor()->GetUnignoredParent();
+    if (!parent) {
+      static const base::NoDestructor<std::vector<int32_t>>
+          default_format_starts{{0}};
+      return *default_format_starts;
+    }
 
     const std::vector<int32_t>& marker_types =
         parent->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
+
+    // If there are no markers, there are no format boundaries to add.
+    if (marker_types.empty()) {
+      static const base::NoDestructor<std::vector<int32_t>>
+          default_format_starts{{0}};
+      return *default_format_starts;
+    }
+
     const std::vector<int32_t>& highlight_types = parent->GetIntListAttribute(
         ax::mojom::IntListAttribute::kHighlightTypes);
 
-    // Since, there are no highlights, there is no possibility of any spelling
-    // or grammar highlights.
-    if (highlight_types.empty()) {
-      static const base::NoDestructor<std::vector<int32_t>> format_starts_copy(
-          std::move(format_starts));
-      return *format_starts_copy;
+    // highlight_types may be empty for regular spelling/grammar markers.
+    const bool has_highlight_types = !highlight_types.empty();
+    if (has_highlight_types) {
+      CHECK_EQ(marker_types.size(), highlight_types.size());
     }
-    CHECK_EQ(marker_types.size(), highlight_types.size());
 
     const std::vector<int>& marker_starts =
         parent->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
@@ -5020,23 +5086,53 @@ class AXPosition {
     CHECK_EQ(marker_types.size(), marker_starts.size());
     CHECK_EQ(marker_types.size(), marker_ends.size());
 
+    // Compute the InlineTextBox's start offset within the parent's text.
+    // When text wraps, multiple InlineTextBoxes share the same parent, each
+    // covering a different range. Marker offsets are parent-relative, so we
+    // must clip them to this box's range and convert to box-relative offsets.
+    int box_start = ComputeTextStartOfChildInParent(GetAnchor(), parent);
     int text_length = GetAnchor()->GetTextContentLengthUTF16();
+    int box_end = box_start + text_length;
+
+    // Store in member variable to return by reference.
+    cached_format_start_offsets_.clear();
+    cached_format_start_offsets_.push_back(0);
+
     for (size_t i = 0; i < marker_types.size(); ++i) {
-      if (HasSpellingOrGrammarErrorHighlight(
-              static_cast<ax::mojom::MarkerType>(marker_types[i]),
-              static_cast<ax::mojom::HighlightType>(highlight_types[i]))) {
-        if (marker_starts[i] != 0) {  // 0 is already added
-          format_starts.push_back(marker_starts[i]);
-        }
-        if (marker_ends[i] < text_length - 1) {
-          format_starts.push_back(marker_ends[i]);
-        }
+      ax::mojom::MarkerType marker_type =
+          static_cast<ax::mojom::MarkerType>(marker_types[i]);
+      // Check for regular spelling/grammar markers or CSS highlight-based ones.
+      bool is_spelling_or_grammar =
+          marker_type == ax::mojom::MarkerType::kSpelling ||
+          marker_type == ax::mojom::MarkerType::kGrammar;
+      if (!is_spelling_or_grammar && has_highlight_types) {
+        is_spelling_or_grammar = HasSpellingOrGrammarErrorHighlight(
+            marker_type,
+            static_cast<ax::mojom::HighlightType>(highlight_types[i]));
+      }
+      if (!is_spelling_or_grammar) {
+        continue;
+      }
+
+      // Skip markers that don't overlap with this InlineTextBox's range.
+      if (marker_ends[i] <= box_start || marker_starts[i] >= box_end) {
+        continue;
+      }
+
+      // Clip marker offsets to the box range and convert to box-relative.
+      int local_start = std::max(marker_starts[i], box_start) - box_start;
+      int local_end = std::min(marker_ends[i], box_end) - box_start;
+
+      if (local_start != 0) {  // 0 is already added
+        cached_format_start_offsets_.push_back(local_start);
+      }
+      // Add marker_end as a format start if there's text after the marker.
+      if (local_end < text_length) {
+        cached_format_start_offsets_.push_back(local_end);
       }
     }
 
-    static const base::NoDestructor<std::vector<int32_t>> format_starts_copy(
-        std::move(format_starts));
-    return *format_starts_copy;
+    return cached_format_start_offsets_;
   }
 
   const std::vector<int32_t>& GetFormatEndOffsets() const {
@@ -5047,34 +5143,39 @@ class AXPosition {
     DCHECK(GetAnchor());
 
     int text_length = GetAnchor()->GetTextContentLengthUTF16();
-    std::vector<int32_t> format_ends;
-    format_ends.push_back(text_length);
 
     // Format is almost always consistent throughout any node -- the only
-    // exception are inline text boxes with CSS highlights. Therefore, unless
-    // the node is an inline text box with CSS highlights, we can assume the
-    // node's format ends only at the text length.
+    // exceptions are inline text boxes with CSS highlights or spelling/grammar
+    // markers. Therefore, unless the node is an inline text box with such
+    // markers, we can assume the node's format ends only at the text length.
     if (GetAnchor()->GetRole() != ax::mojom::Role::kInlineTextBox) {
-      static const base::NoDestructor<std::vector<int32_t>> format_ends_copy(
-          std::move(format_ends));
-      return *format_ends_copy;
+      cached_format_end_offsets_ = {text_length};
+      return cached_format_end_offsets_;
     }
 
     AXNode* parent = GetAnchor()->GetUnignoredParent();
+    if (!parent) {
+      cached_format_end_offsets_ = {text_length};
+      return cached_format_end_offsets_;
+    }
 
     const std::vector<int32_t>& marker_types =
         parent->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
+
+    // If there are no markers, there are no format boundaries to add.
+    if (marker_types.empty()) {
+      cached_format_end_offsets_ = {text_length};
+      return cached_format_end_offsets_;
+    }
+
     const std::vector<int32_t>& highlight_types = parent->GetIntListAttribute(
         ax::mojom::IntListAttribute::kHighlightTypes);
 
-    // Since, there are no highlights, there is no possibility of any spelling
-    // or grammar highlights.
-    if (highlight_types.empty()) {
-      static const base::NoDestructor<std::vector<int32_t>> format_ends_copy(
-          std::move(format_ends));
-      return *format_ends_copy;
+    // highlight_types may be empty for regular spelling/grammar markers.
+    const bool has_highlight_types = !highlight_types.empty();
+    if (has_highlight_types) {
+      CHECK_EQ(marker_types.size(), highlight_types.size());
     }
-    CHECK_EQ(marker_types.size(), highlight_types.size());
 
     const std::vector<int>& marker_starts =
         parent->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
@@ -5084,25 +5185,68 @@ class AXPosition {
     CHECK_EQ(marker_types.size(), marker_starts.size());
     CHECK_EQ(marker_types.size(), marker_ends.size());
 
-    format_ends.clear();
+    // Compute the InlineTextBox's start offset within the parent's text.
+    int box_start = ComputeTextStartOfChildInParent(GetAnchor(), parent);
+    int box_end = box_start + text_length;
+
+    // Store in member variable to return by reference.
+    cached_format_end_offsets_.clear();
     for (size_t i = 0; i < marker_types.size(); ++i) {
-      if (HasSpellingOrGrammarErrorHighlight(
-              static_cast<ax::mojom::MarkerType>(marker_types[i]),
-              static_cast<ax::mojom::HighlightType>(highlight_types[i]))) {
-        if (marker_starts[i] > 0) {
-          format_ends.push_back(marker_starts[i]);
-        }
-        format_ends.push_back(marker_ends[i]);
+      ax::mojom::MarkerType marker_type =
+          static_cast<ax::mojom::MarkerType>(marker_types[i]);
+      // Check for regular spelling/grammar markers or CSS highlight-based ones.
+      bool is_spelling_or_grammar =
+          marker_type == ax::mojom::MarkerType::kSpelling ||
+          marker_type == ax::mojom::MarkerType::kGrammar;
+      if (!is_spelling_or_grammar && has_highlight_types) {
+        is_spelling_or_grammar = HasSpellingOrGrammarErrorHighlight(
+            marker_type,
+            static_cast<ax::mojom::HighlightType>(highlight_types[i]));
       }
+      if (!is_spelling_or_grammar) {
+        continue;
+      }
+
+      // Skip markers that don't overlap with this InlineTextBox's range.
+      if (marker_ends[i] <= box_start || marker_starts[i] >= box_end) {
+        continue;
+      }
+
+      // Clip marker offsets to the box range and convert to box-relative.
+      int local_start = std::max(marker_starts[i], box_start) - box_start;
+      int local_end = std::min(marker_ends[i], box_end) - box_start;
+
+      if (local_start > 0) {
+        cached_format_end_offsets_.push_back(local_start);
+      }
+      cached_format_end_offsets_.push_back(local_end);
     }
 
-    if (format_ends.empty() || format_ends.back() != text_length) {
-      format_ends.push_back(text_length);
+    if (cached_format_end_offsets_.empty() ||
+        cached_format_end_offsets_.back() != text_length) {
+      cached_format_end_offsets_.push_back(text_length);
     }
 
-    static const base::NoDestructor<std::vector<int32_t>> format_ends_copy(
-        std::move(format_ends));
-    return *format_ends_copy;
+    return cached_format_end_offsets_;
+  }
+
+  // Returns the text start offset of |child| within |parent|'s text
+  // representation. Computes the sum of GetTextContentLengthUTF16() for all
+  // siblings preceding |child|. This is a lightweight alternative to
+  // AnchorTextOffsetInParent() that operates directly on AXNode pointers
+  // without creating position objects.
+  static int ComputeTextStartOfChildInParent(const AXNode* child,
+                                             const AXNode* parent) {
+    DCHECK(child);
+    DCHECK(parent);
+    int offset = 0;
+    for (size_t c = 0; c < parent->GetChildCount(); ++c) {
+      if (parent->GetChildAtIndex(c) == child) {
+        break;
+      }
+      offset += parent->GetChildAtIndex(c)->GetTextContentLengthUTF16();
+    }
+    return offset;
   }
 
   static bool HasSpellingOrGrammarErrorHighlight(
@@ -5531,6 +5675,225 @@ class AXPosition {
     return !position->IsIgnored() && position->AtEndOfWord();
   }
 
+  // Helper to check if a position is in a context where spelling/grammar
+  // markers can be reliably checked. Only InlineTextBox nodes qualify because
+  // marker data (kMarkerTypes/kMarkerStarts/kMarkerEnds) is stored on the
+  // parent StaticText, and the InlineTextBox helper converts box-relative
+  // offsets to parent coordinates for accurate range checking. StaticText
+  // itself is excluded because during tree traversal, InlineTextBox->StaticText
+  // (parent) transitions would produce false marker boundary detections.
+  static bool IsMarkerCapableNode(const AXPosition& pos) {
+    AXNode* anchor = pos.GetAnchor();
+    if (!anchor) {
+      return false;
+    }
+    return anchor->GetRole() == ax::mojom::Role::kInlineTextBox;
+  }
+
+  // Helper to check if a specific text offset is within a spelling/grammar
+  // marker. For InlineTextBoxes, converts the offset to parent coordinates.
+  // Returns true if the offset is within any spelling/grammar marker range.
+  // This version takes a separate offset parameter for flexibility.
+  static bool IsOffsetInSpellingOrGrammarMarkerAt(const AXPosition& pos,
+                                                  int offset) {
+    AXNode* anchor = pos.GetAnchor();
+    if (!anchor) {
+      return false;
+    }
+
+    if (anchor->GetRole() == ax::mojom::Role::kInlineTextBox) {
+      AXNode* parent = anchor->GetUnignoredParent();
+      if (!parent) {
+        return false;
+      }
+
+      // Convert box-relative offset to parent-relative offset.
+      int box_start = ComputeTextStartOfChildInParent(anchor, parent);
+      int parent_offset = box_start + offset;
+
+      const std::vector<int32_t>& marker_types = parent->GetIntListAttribute(
+          ax::mojom::IntListAttribute::kMarkerTypes);
+      const std::vector<int>& marker_starts = parent->GetIntListAttribute(
+          ax::mojom::IntListAttribute::kMarkerStarts);
+      const std::vector<int>& marker_ends =
+          parent->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
+
+      for (size_t i = 0; i < marker_types.size(); ++i) {
+        ax::mojom::MarkerType marker_type =
+            static_cast<ax::mojom::MarkerType>(marker_types[i]);
+        if (marker_type == ax::mojom::MarkerType::kSpelling ||
+            marker_type == ax::mojom::MarkerType::kGrammar) {
+          if (i < marker_starts.size() && i < marker_ends.size() &&
+              parent_offset >= marker_starts[i] &&
+              parent_offset < marker_ends[i]) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    // For StaticText or other nodes, check if offset is in any marker range.
+    const std::vector<int32_t>& marker_types =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
+    const std::vector<int>& marker_starts =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
+    const std::vector<int>& marker_ends =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
+
+    for (size_t i = 0; i < marker_types.size(); ++i) {
+      if (marker_types[i] ==
+              static_cast<int32_t>(ax::mojom::MarkerType::kSpelling) ||
+          marker_types[i] ==
+              static_cast<int32_t>(ax::mojom::MarkerType::kGrammar)) {
+        if (i < marker_starts.size() && i < marker_ends.size() &&
+            offset >= marker_starts[i] && offset < marker_ends[i]) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  // Helper using the position's own text_offset.
+  static bool IsOffsetInSpellingOrGrammarMarker(const AXPosition& pos) {
+    return IsOffsetInSpellingOrGrammarMarkerAt(pos, pos.text_offset());
+  }
+
+  // Returns a bitmask of spelling/grammar marker types active at the given
+  // offset. For InlineTextBox nodes, converts box-relative offset to parent
+  // StaticText coordinates. Returns 0 if no relevant markers are active.
+  // This distinguishes between kSpelling and kGrammar so that boundaries
+  // between different marker types are detected.
+  static int32_t GetSpellingGrammarMarkerTypeAtOffset(const AXPosition& pos,
+                                                      int offset) {
+    AXNode* anchor = pos.GetAnchor();
+    if (!anchor) {
+      return 0;
+    }
+
+    int32_t result = 0;
+
+    if (anchor->GetRole() == ax::mojom::Role::kInlineTextBox) {
+      AXNode* parent = anchor->GetUnignoredParent();
+      if (!parent) {
+        return 0;
+      }
+
+      // Convert box-relative offset to parent-relative offset.
+      int box_start = 0;
+      for (size_t c = 0; c < parent->GetChildCount(); ++c) {
+        if (parent->GetChildAtIndex(c) == anchor) {
+          break;
+        }
+        box_start += parent->GetChildAtIndex(c)->GetTextContentLengthUTF16();
+      }
+      int parent_offset = box_start + offset;
+
+      const std::vector<int32_t>& marker_types = parent->GetIntListAttribute(
+          ax::mojom::IntListAttribute::kMarkerTypes);
+      const std::vector<int>& marker_starts = parent->GetIntListAttribute(
+          ax::mojom::IntListAttribute::kMarkerStarts);
+      const std::vector<int>& marker_ends =
+          parent->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
+
+      for (size_t i = 0; i < marker_types.size(); ++i) {
+        ax::mojom::MarkerType marker_type =
+            static_cast<ax::mojom::MarkerType>(marker_types[i]);
+        if (marker_type == ax::mojom::MarkerType::kSpelling ||
+            marker_type == ax::mojom::MarkerType::kGrammar) {
+          if (i < marker_starts.size() && i < marker_ends.size() &&
+              parent_offset >= marker_starts[i] &&
+              parent_offset < marker_ends[i]) {
+            result |= marker_types[i];
+          }
+        }
+      }
+      return result;
+    }
+
+    // For other node types, check markers directly on the node.
+    const std::vector<int32_t>& marker_types =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
+    const std::vector<int>& marker_starts =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
+    const std::vector<int>& marker_ends =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
+
+    for (size_t i = 0; i < marker_types.size(); ++i) {
+      ax::mojom::MarkerType marker_type =
+          static_cast<ax::mojom::MarkerType>(marker_types[i]);
+      if (marker_type == ax::mojom::MarkerType::kSpelling ||
+          marker_type == ax::mojom::MarkerType::kGrammar) {
+        if (i < marker_starts.size() && i < marker_ends.size() &&
+            offset >= marker_starts[i] && offset < marker_ends[i]) {
+          result |= marker_types[i];
+        }
+      }
+    }
+    return result;
+  }
+
+  // Helper to check if a position is in a spelling/grammar marker context.
+  // For InlineTextBoxes, checks if any markers overlap with the box's range.
+  static bool HasSpellingOrGrammarMarkers(const AXPosition& pos) {
+    AXNode* anchor = pos.GetAnchor();
+    if (!anchor) {
+      return false;
+    }
+
+    // For InlineTextBox nodes, check if any markers overlap with this box's
+    // character range, not just if the parent has any markers.
+    if (anchor->GetRole() == ax::mojom::Role::kInlineTextBox) {
+      AXNode* parent = anchor->GetUnignoredParent();
+      if (!parent) {
+        return false;
+      }
+
+      // Calculate this box's offset range within the parent.
+      int box_start = 0;
+      for (size_t c = 0; c < parent->GetChildCount(); ++c) {
+        if (parent->GetChildAtIndex(c) == anchor) {
+          break;
+        }
+        box_start += parent->GetChildAtIndex(c)->GetTextContentLengthUTF16();
+      }
+      int box_end = box_start + anchor->GetTextContentLengthUTF16();
+
+      const std::vector<int32_t>& marker_types = parent->GetIntListAttribute(
+          ax::mojom::IntListAttribute::kMarkerTypes);
+      const std::vector<int>& marker_starts = parent->GetIntListAttribute(
+          ax::mojom::IntListAttribute::kMarkerStarts);
+      const std::vector<int>& marker_ends =
+          parent->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
+
+      for (size_t i = 0; i < marker_types.size(); ++i) {
+        ax::mojom::MarkerType marker_type =
+            static_cast<ax::mojom::MarkerType>(marker_types[i]);
+        if (marker_type == ax::mojom::MarkerType::kSpelling ||
+            marker_type == ax::mojom::MarkerType::kGrammar) {
+          // Check if this marker overlaps with the box's range.
+          if (i < marker_starts.size() && i < marker_ends.size() &&
+              marker_ends[i] > box_start && marker_starts[i] < box_end) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    // For StaticText or other nodes, check if they have any markers.
+    const std::vector<int32_t>& marker_types =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
+    for (int32_t type : marker_types) {
+      if (type == static_cast<int32_t>(ax::mojom::MarkerType::kSpelling) ||
+          type == static_cast<int32_t>(ax::mojom::MarkerType::kGrammar)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   static bool DefaultAbortMovePredicate(const AXPosition& move_from,
                                         const AXPosition& move_to,
                                         const AXMoveType move_type,
@@ -5554,13 +5917,42 @@ class AXPosition {
     ax::mojom::Role from_role = move_from.GetAnchorRole();
     ax::mojom::Role to_role = move_to.GetAnchorRole();
     if (from_role != to_role) {
-      if (IsFormatBoundary(from_role) || IsFormatBoundary(to_role))
+      if (IsFormatBoundary(from_role) || IsFormatBoundary(to_role)) {
         return true;
+      }
     }
 
-    // Stop moving when text attributes differ.
-    return move_from.AsLeafTreePosition()->GetTextAttributes() !=
-           move_to.AsLeafTreePosition()->GetTextAttributes();
+    // Resolve both positions to their deepest leaf nodes (InlineTextBox).
+    // These carry the actual visual formatting and spelling/grammar markers.
+    auto from_leaf = move_from.AsLeafTreePosition();
+    auto to_leaf = move_to.AsLeafTreePosition();
+
+    // Check if visual text attributes differ between the leaf nodes.
+    // This comparison excludes marker_types/highlight_types since those are
+    // handled separately below.
+    if (!from_leaf->GetTextAttributes().HasSameFormattingAs(
+            to_leaf->GetTextAttributes())) {
+      return true;
+    }
+
+    // Check if spelling/grammar markers differ at the boundary between the
+    // two leaf nodes. Skip when both positions resolve to the same leaf
+    // (e.g., going from InlineTextBox up to its parent StaticText) since
+    // intra-node marker changes are handled by GetFormatStartOffsets.
+    if (from_leaf->GetAnchor() != to_leaf->GetAnchor()) {
+      int from_end = from_leaf->MaxTextOffset();
+      int32_t from_markers = 0;
+      if (from_end > 0) {
+        from_markers =
+            GetSpellingGrammarMarkerTypeAtOffset(*from_leaf, from_end - 1);
+      }
+      int32_t to_markers = GetSpellingGrammarMarkerTypeAtOffset(*to_leaf, 0);
+      if (from_markers != to_markers) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   static bool MoveCrossesLineBreakingObject(
@@ -6057,6 +6449,12 @@ class AXPosition {
   // In the case of a leaf position, its text content (in UTF16 format). Used
   // for initializing a grapheme break iterator.
   mutable std::u16string name_;
+
+  // Cached format offset boundaries for inline text boxes with markers.
+  // These are computed per-instance because the values depend on the specific
+  // anchor node and its markers.
+  mutable std::vector<int32_t> cached_format_start_offsets_;
+  mutable std::vector<int32_t> cached_format_end_offsets_;
 };
 
 template <class AXPositionType, class AXNodeType>

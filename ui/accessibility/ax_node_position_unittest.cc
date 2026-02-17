@@ -17036,4 +17036,161 @@ INSTANTIATE_TEST_SUITE_P(
              "TextPosition anchor_id=3 text_offset=0 "
              "affinity=downstream annotated_text=<>"}}));
 
+// Tests for ComputeTextStartOfChildInParent, exercised indirectly through
+// format navigation (CreateNextFormatStartPosition). This creates a StaticText
+// with two InlineTextBoxes (simulating a line wrap), and a spelling marker on
+// the parent that partially overlaps the boxes. Format navigation should stop
+// at marker boundaries within an InlineTextBox, which requires correct
+// box-start computation via ComputeTextStartOfChildInParent.
+//
+// Tree structure:
+// ++1 kRootWebArea
+// ++++2 kStaticText "HelloWorld" (markers: spelling at [3,8])
+// ++++++3 kInlineTextBox "Hello" (box range [0,5) in parent)
+// ++++++4 kInlineTextBox "World" (box range [5,10) in parent)
+//
+// The spelling marker [3,8] clips to:
+//   Box 1 ("Hello"): local [3,5) — format boundary at offset 3
+//   Box 2 ("World"): local [0,3) — format boundary at offset 3
+TEST_F(AXPositionTest, ComputeTextStartOfChildInParent_FormatNavigation) {
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  root_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
+
+  AXNodeData static_text_data;
+  static_text_data.id = 2;
+  static_text_data.role = ax::mojom::Role::kStaticText;
+  static_text_data.SetName("HelloWorld");
+  // Spelling marker crossing the box boundary: parent offsets [3,8).
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)});
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerStarts, {3});
+  static_text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                       {8});
+
+  AXNodeData inline_box_1;
+  inline_box_1.id = 3;
+  inline_box_1.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_1.SetName("Hello");
+  inline_box_1.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                   {0});
+  inline_box_1.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds, {5});
+
+  AXNodeData inline_box_2;
+  inline_box_2.id = 4;
+  inline_box_2.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_2.SetName("World");
+  inline_box_2.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                   {0});
+  inline_box_2.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds, {5});
+
+  static_text_data.child_ids = {inline_box_1.id, inline_box_2.id};
+  root_data.child_ids = {static_text_data.id};
+
+  SetTree(
+      CreateAXTree({root_data, static_text_data, inline_box_1, inline_box_2}));
+
+  // Start at position 0 of box 1 ("Hello"). Navigate forward by format.
+  // The spelling marker starts at local offset 3 in box 1, so the next
+  // format start should be at offset 3 in inline_box_1.
+  TestPositionType pos = CreateTextPosition(
+      inline_box_1, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_TRUE(pos->IsTextPosition());
+
+  TestPositionType next_format = pos->CreateNextFormatStartPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  ASSERT_TRUE(next_format->IsTextPosition());
+  // Should stop at the marker boundary at offset 3 in the first box.
+  EXPECT_EQ(next_format->text_offset(), 3);
+  EXPECT_EQ(next_format->GetAnchor()->GetRole(),
+            ax::mojom::Role::kInlineTextBox);
+}
+
+// Tests ComputeTextStartOfChildInParent with three InlineTextBoxes to verify
+// the offset accumulation across multiple siblings. Format navigation on the
+// third box should correctly compute box_start = 6 (3 + 3).
+//
+// Tree structure:
+// ++1 kRootWebArea
+// ++++2 kStaticText "AAABBBCCC" (markers: spelling at [7,9])
+// ++++++3 kInlineTextBox "AAA" (box range [0,3) in parent)
+// ++++++4 kInlineTextBox "BBB" (box range [3,6) in parent)
+// ++++++5 kInlineTextBox "CCC" (box range [6,9) in parent)
+//
+// The spelling marker [7,9] clips to box 3 ("CCC") as local [1,3).
+TEST_F(AXPositionTest,
+       ComputeTextStartOfChildInParent_ThreeBoxesFormatNavigation) {
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  root_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
+
+  AXNodeData static_text_data;
+  static_text_data.id = 2;
+  static_text_data.role = ax::mojom::Role::kStaticText;
+  static_text_data.SetName("AAABBBCCC");
+  // Spelling marker at parent offsets [7,9) — only overlaps the third box.
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)});
+  static_text_data.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerStarts, {7});
+  static_text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                       {9});
+
+  AXNodeData inline_box_1;
+  inline_box_1.id = 3;
+  inline_box_1.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_1.SetName("AAA");
+  inline_box_1.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                   {0});
+  inline_box_1.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds, {3});
+
+  AXNodeData inline_box_2;
+  inline_box_2.id = 4;
+  inline_box_2.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_2.SetName("BBB");
+  inline_box_2.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                   {0});
+  inline_box_2.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds, {3});
+
+  AXNodeData inline_box_3;
+  inline_box_3.id = 5;
+  inline_box_3.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_3.SetName("CCC");
+  inline_box_3.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                   {0});
+  inline_box_3.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds, {3});
+
+  static_text_data.child_ids = {inline_box_1.id, inline_box_2.id,
+                                inline_box_3.id};
+  root_data.child_ids = {static_text_data.id};
+
+  SetTree(CreateAXTree(
+      {root_data, static_text_data, inline_box_1, inline_box_2, inline_box_3}));
+
+  // Start at position 0 of box 3 ("CCC"). Navigate forward by format.
+  // Marker [7,9] clips to local [1,3) in box 3. The next format start
+  // from offset 0 should be at offset 1 (start of the misspelled region).
+  TestPositionType pos = CreateTextPosition(
+      inline_box_3, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_TRUE(pos->IsTextPosition());
+
+  TestPositionType next_format = pos->CreateNextFormatStartPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  ASSERT_TRUE(next_format->IsTextPosition());
+  // Should stop at the marker boundary at local offset 1, which requires
+  // ComputeTextStartOfChildInParent to correctly compute box_start = 6.
+  EXPECT_EQ(next_format->text_offset(), 1);
+  EXPECT_EQ(next_format->GetAnchor()->GetRole(),
+            ax::mojom::Role::kInlineTextBox);
+}
+
 }  // namespace ui

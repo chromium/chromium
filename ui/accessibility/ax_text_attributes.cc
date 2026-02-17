@@ -117,4 +117,21 @@ bool AXTextAttributes::HasTextStyle(
           (1U << static_cast<uint32_t>(text_style_enum))) != 0;
 }
 
+bool AXTextAttributes::operator!=(const AXTextAttributes& other) const {
+  return !(*this == other);
+}
+
+bool AXTextAttributes::HasSameFormattingAs(
+    const AXTextAttributes& other) const {
+  return background_color == other.background_color && color == other.color &&
+         overline_style == other.overline_style &&
+         strikethrough_style == other.strikethrough_style &&
+         text_direction == other.text_direction &&
+         text_position == other.text_position &&
+         text_style == other.text_style &&
+         underline_style == other.underline_style &&
+         font_size == other.font_size && font_weight == other.font_weight &&
+         font_family == other.font_family;
+}
+
 }  // namespace ui
