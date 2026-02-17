@@ -47,10 +47,6 @@
 
 namespace glic {
 
-// TODO(crbug.com/461326322): Remove this flag when crbug.com/461326322 is
-// resolved.
-BASE_FEATURE(kGlicButtonHideLabelOnTaskNudge, base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 constexpr int kHighlightMargin = 2;
@@ -326,10 +322,6 @@ void TabStripGlicButton::SetNudgeLabel(std::string label) {
 }
 
 void TabStripGlicButton::Expand() {
-  if (!base::FeatureList::IsEnabled(kGlicButtonHideLabelOnTaskNudge)) {
-    return;
-  }
-
   // Update state.
   if (width_state_ != WidthState::kCollapsed) {
     return;
@@ -361,10 +353,6 @@ void TabStripGlicButton::Expand() {
 }
 
 void TabStripGlicButton::Collapse() {
-  if (!base::FeatureList::IsEnabled(kGlicButtonHideLabelOnTaskNudge)) {
-    return;
-  }
-
   WidthState old_width_state = width_state_;
   if (width_state_ == WidthState::kCollapsed) {
     return;

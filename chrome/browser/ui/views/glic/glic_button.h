@@ -60,8 +60,6 @@ class MenuRunner;
 }  // namespace views
 
 namespace glic {
-BASE_FEATURE(kGlicButtonHideLabelOnTaskNudge, base::FEATURE_ENABLED_BY_DEFAULT);
-
 inline constexpr int kHighlightMargin = 2;
 inline constexpr int kHighlightCornerRadius = 8;
 inline constexpr int kCloseButtonMargin = 6;
@@ -282,10 +280,6 @@ class GlicButton : public GlicButtonShim<T>,
   //
   // Suppresses the default label on the glic button with a hide animation.
   void Collapse() {
-    if (!base::FeatureList::IsEnabled(kGlicButtonHideLabelOnTaskNudge)) {
-      return;
-    }
-
     WidthState old_width_state = width_state_;
     if (width_state_ == WidthState::kCollapsed) {
       return;
@@ -305,10 +299,6 @@ class GlicButton : public GlicButtonShim<T>,
 
   // Shows the default label on the glic button with a show animation.
   void Expand() {
-    if (!base::FeatureList::IsEnabled(kGlicButtonHideLabelOnTaskNudge)) {
-      return;
-    }
-
     // Update state.
     if (width_state_ != WidthState::kCollapsed) {
       return;
