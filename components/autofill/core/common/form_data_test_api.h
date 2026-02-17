@@ -22,6 +22,11 @@ class FormDataTestApi {
 
   FormFieldData& field(int i) { return form_->fields_[to_index(i)]; }
 
+  FormFieldData* FindFieldById(const FieldGlobalId& field_id) {
+    auto it = std::ranges::find(fields(), field_id, &FormFieldData::global_id);
+    return it != fields().end() ? &*it : nullptr;
+  }
+
   // Finds a field in the FormData by its name or id.
   // Returns a pointer to the field if found, otherwise returns nullptr.
   FormFieldData* FindFieldByNameForTest(std::u16string_view name_or_id) {

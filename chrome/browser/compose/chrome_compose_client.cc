@@ -122,8 +122,7 @@ void ChromeComposeClient::FieldChangeObserver::OnSuggestionsShown(
 void ChromeComposeClient::FieldChangeObserver::OnAfterTextFieldValueChanged(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form,
-    autofill::FieldGlobalId field,
-    const std::u16string& text_value) {
+    autofill::FieldGlobalId field) {
   ++text_field_value_change_event_count_;
   if (text_field_value_change_event_count_ >=
       compose::GetComposeConfig().nudge_field_change_event_max) {

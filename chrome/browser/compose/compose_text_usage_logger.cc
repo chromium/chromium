@@ -80,8 +80,7 @@ ComposeTextUsageLogger::~ComposeTextUsageLogger() {
 void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form,
-    autofill::FieldGlobalId field,
-    const std::u16string& text_value) {
+    autofill::FieldGlobalId field) {
   autofill::DenseSet<autofill::FormType> form_types;
   int64_t form_control_type = -1;
   autofill::FieldSignature field_signature;
@@ -89,6 +88,7 @@ void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
   const autofill::FormStructure* form_structure =
       manager.FindCachedFormById(form);
   bool is_long_field = false;
+  std::u16string text_value = u"";
   if (form_structure) {
     form_signature = form_structure->form_signature();
     const autofill::AutofillField* field_data =
@@ -96,6 +96,7 @@ void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
     if (field_data) {
       form_types = field_data->Type().GetFormTypes();
       form_control_type = static_cast<int64_t>(field_data->form_control_type());
+      text_value = field_data->value();
 
       switch (field_data->form_control_type()) {
         case autofill::FormControlType::kContentEditable:

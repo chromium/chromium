@@ -1031,10 +1031,18 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextNotifiesObserver) {
   // OnAfterTextFieldValueChanged will eventually be called with the final text
   // "Montreal".
   EventWaiter<bool> waiter({true});
-  EXPECT_CALL(observer, OnAfterTextFieldValueChanged(_, _, _, _))
-      .WillRepeatedly([&](AutofillManager&, FormGlobalId, FieldGlobalId,
-                          std::u16string text_value) {
-        if (text_value == u"Montreal") {
+  EXPECT_CALL(observer, OnAfterTextFieldValueChanged)
+      .WillRepeatedly([&](AutofillManager& manager, FormGlobalId form_id,
+                          FieldGlobalId field_id) {
+        const FormStructure* form = manager.FindCachedFormById(form_id);
+        if (!form) {
+          return;
+        }
+        const AutofillField* field = form->GetFieldById(field_id);
+        if (!field) {
+          return;
+        }
+        if (field->value() == u"Montreal") {
           waiter.OnEvent(true);
         }
       });
@@ -1072,10 +1080,18 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   autofill_manager->AddObserver(&observer);
 
   EventWaiter<bool> waiter({true});
-  EXPECT_CALL(observer, OnAfterTextFieldValueChanged(_, _, _, _))
-      .WillRepeatedly([&](AutofillManager&, FormGlobalId, FieldGlobalId,
-                          std::u16string text_value) {
-        if (text_value == u"My Address") {
+  EXPECT_CALL(observer, OnAfterTextFieldValueChanged)
+      .WillRepeatedly([&](AutofillManager& manager, FormGlobalId form_id,
+                          FieldGlobalId field_id) {
+        const FormStructure* form = manager.FindCachedFormById(form_id);
+        if (!form) {
+          return;
+        }
+        const AutofillField* field = form->GetFieldById(field_id);
+        if (!field) {
+          return;
+        }
+        if (field->value() == u"My Address") {
           waiter.OnEvent(true);
         }
       });

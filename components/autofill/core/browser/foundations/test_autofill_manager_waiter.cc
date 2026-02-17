@@ -176,8 +176,7 @@ void TestAutofillManagerWaiter::OnBeforeTextFieldValueChanged(
 void TestAutofillManagerWaiter::OnAfterTextFieldValueChanged(
     AutofillManager& manager,
     FormGlobalId form,
-    FieldGlobalId field,
-    const std::u16string& text_value) {
+    FieldGlobalId field) {
   OnAfter(Event::kTextFieldValueChanged);
 }
 

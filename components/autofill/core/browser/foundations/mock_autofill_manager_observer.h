@@ -47,11 +47,10 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               OnBeforeTextFieldValueChanged,
               (AutofillManager&, FormGlobalId, FieldGlobalId),
               (override));
-  MOCK_METHOD(
-      void,
-      OnAfterTextFieldValueChanged,
-      (AutofillManager&, FormGlobalId, FieldGlobalId, const std::u16string&),
-      (override));
+  MOCK_METHOD(void,
+              OnAfterTextFieldValueChanged,
+              (AutofillManager&, FormGlobalId, FieldGlobalId),
+              (override));
 
   MOCK_METHOD(void,
               OnBeforeTextFieldDidScroll,

@@ -23,8 +23,7 @@ class ComposeTextUsageLogger
   // autofill::AutofillManager::Observer:
   void OnAfterTextFieldValueChanged(autofill::AutofillManager& manager,
                                     autofill::FormGlobalId form,
-                                    autofill::FieldGlobalId field,
-                                    const std::u16string& text_value) override;
+                                    autofill::FieldGlobalId field) override;
 
  private:
   // No public constructors to force going through static methods of

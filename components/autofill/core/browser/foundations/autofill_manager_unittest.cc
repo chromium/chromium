@@ -438,8 +438,7 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     base::RunLoop run_loop;
     EXPECT_CALL(observer(), OnBeforeTextFieldValueChanged(m, f, ff));
     autofill_manager().OnTextFieldValueChanged(form, field.global_id(), {});
-    EXPECT_CALL(observer(),
-                OnAfterTextFieldValueChanged(m, f, ff, std::u16string()))
+    EXPECT_CALL(observer(), OnAfterTextFieldValueChanged(m, f, ff))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     EXPECT_CALL(observer(),
                 OnFieldTypesDetermined(m, f, heuristics, small_forms_parsing));
@@ -603,10 +602,10 @@ TEST_F(AutofillManagerTest_ObserverCalls_FullCache,
   // Nonetheless, OnAfterTextFieldValueChanged() is fired for `form2`.
   testing::InSequence s;
   EXPECT_CALL(observer(), OnBeforeTextFieldValueChanged(_, form_id1, _));
-  EXPECT_CALL(observer(), OnAfterTextFieldValueChanged(_, form_id1, _, _))
+  EXPECT_CALL(observer(), OnAfterTextFieldValueChanged(_, form_id1, _))
       .WillOnce(RunClosure(run_loop1.QuitClosure()));
   EXPECT_CALL(observer(), OnBeforeTextFieldValueChanged(_, form_id2, _));
-  EXPECT_CALL(observer(), OnAfterTextFieldValueChanged(_, form_id2, _, _))
+  EXPECT_CALL(observer(), OnAfterTextFieldValueChanged(_, form_id2, _))
       .WillOnce(RunClosure(run_loop2.QuitClosure()));
 
   autofill_manager().OnTextFieldValueChanged(
@@ -643,8 +642,8 @@ TEST_F(AutofillManagerTest_ObserverCalls_FullCache,
   testing::InSequence s;
   EXPECT_CALL(observer(), OnBeforeTextFieldValueChanged(_, form_id1, _));
   EXPECT_CALL(observer(), OnBeforeTextFieldValueChanged(_, form_id2, _));
-  EXPECT_CALL(observer(), OnAfterTextFieldValueChanged(_, form_id1, _, _));
-  EXPECT_CALL(observer(), OnAfterTextFieldValueChanged(_, form_id2, _, _))
+  EXPECT_CALL(observer(), OnAfterTextFieldValueChanged(_, form_id1, _));
+  EXPECT_CALL(observer(), OnAfterTextFieldValueChanged(_, form_id2, _))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   autofill_manager().OnTextFieldValueChanged(

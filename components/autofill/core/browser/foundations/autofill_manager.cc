@@ -399,13 +399,13 @@ void AutofillManager::OnTextFieldValueChanged(const FormData& form,
   }
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   NotifyObservers(&Observer::OnBeforeTextFieldValueChanged, form.global_id(),
-                  field_id);
+                  field.global_id());
   ParseFormAsync(
-      form, ParsingCallback(&AutofillManager::OnTextFieldValueChangedImpl,
-                            field_id, timestamp)
-                .Then(NotifyObserversCallback(
-                    &Observer::OnAfterTextFieldValueChanged, form.global_id(),
-                    field_id, field.value())));
+      form,
+      ParsingCallback(&AutofillManager::OnTextFieldValueChangedImpl,
+                      field.global_id(), timestamp)
+          .Then(NotifyObserversCallback(&Observer::OnAfterTextFieldValueChanged,
+                                        form.global_id(), field.global_id())));
 }
 
 void AutofillManager::OnTextFieldDidScroll(const FormData& form,

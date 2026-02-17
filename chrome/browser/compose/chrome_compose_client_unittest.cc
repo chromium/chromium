@@ -3056,23 +3056,22 @@ TEST_F(ChromeComposeClientTest, TextFieldChangeThresholdHidesProactiveNudge) {
   EXPECT_TRUE(autofill_client()->IsShowingAutofillPopup());
 
   // Simulate field change events up to limit specified by config.
-  std::u16string text_value = u"a";
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
+  field_data.set_value(u"a");
   unsigned int max = config.nudge_field_change_event_max;
   for (size_t i = 1; i < max; i++) {
-    client().field_change_observer_.OnAfterTextFieldValueChanged(
-        *autofill_manager(), form_data.global_id(),
-        form_data.fields()[0].global_id(), text_value);
+    autofill_manager()->OnTextFieldValueChanged(
+        form_data, field_data.global_id(), /*timestamp=*/{});
     EXPECT_EQ(
         i,
         client().field_change_observer_.text_field_value_change_event_count_);
-    text_value = text_value + u"a";
+    field_data.set_value(field_data.value() + u"a");
   }
 
   // Reaching the event threshold resets the event count and hides the Autofill
   // popup.
-  client().field_change_observer_.OnAfterTextFieldValueChanged(
-      *autofill_manager(), form_data.global_id(),
-      form_data.fields()[0].global_id(), text_value);
+  autofill_manager()->OnTextFieldValueChanged(form_data, field_data.global_id(),
+                                              /*timestamp=*/{});
   EXPECT_EQ(
       0U, client().field_change_observer_.text_field_value_change_event_count_);
   EXPECT_FALSE(autofill_client()->IsShowingAutofillPopup());

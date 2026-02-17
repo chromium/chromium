@@ -124,12 +124,9 @@ class AutofillManager
                                                FormGlobalId form,
                                                FieldGlobalId field) {}
 
-    // TODO(crbug.com/40227496): Get rid of `text_value`.
-    virtual void OnAfterTextFieldValueChanged(
-        AutofillManager& manager,
-        FormGlobalId form,
-        FieldGlobalId field,
-        const std::u16string& text_value) {}
+    virtual void OnAfterTextFieldValueChanged(AutofillManager& manager,
+                                              FormGlobalId form,
+                                              FieldGlobalId field) {}
 
     virtual void OnBeforeTextFieldDidScroll(AutofillManager& manager,
                                             FormGlobalId form,
