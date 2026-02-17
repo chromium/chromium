@@ -512,6 +512,13 @@ def main(args):
 
   dex_cmd = build_utils.JavaCmd(xmx=_DEX_XMX)
 
+  # As of Feb 2026, a hyperfine benchmark of dexing chrome_java:
+  # Without flags:
+  # Time (mean ± σ): 7.744 s ±  0.177 s   [User: 161.982 s, System: 8.416 s]
+  # With flags:
+  # Time (mean ± σ): 6.579 s ±  0.057 s   [User: 37.612 s, System: 8.015 s]
+  dex_cmd += ['-XX:TieredStopAtLevel=1']
+
   if options.dump_inputs:
     dex_cmd += ['-Dcom.android.tools.r8.dumpinputtofile=d8inputs.zip']
 
