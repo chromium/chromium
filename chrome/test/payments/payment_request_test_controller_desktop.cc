@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/payments/payment_request_test_controller.h"
-
 #include "base/check.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -11,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "chrome/browser/ui/views/payments/test_chrome_payment_request_delegate.h"
+#include "chrome/test/payments/payment_request_test_controller.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
@@ -75,6 +74,7 @@ class PaymentRequestTestController::ObserverConverter
   void OnPayCalled() override {}
   void OnAbortCalled() override { controller_->OnAbortCalled(); }
   void OnCompleteCalled() override { controller_->OnCompleteCalled(); }
+  void OnInternalError() override { controller_->OnInternalError(); }
 
   // PaymentUIObserver:
   void OnUIDisplayed() const override { controller_->OnUIDisplayed(); }
@@ -255,6 +255,7 @@ void PaymentRequestTestController::UpdateDelegateFactory() {
         auto* request =
             new PaymentRequest(std::move(delegate), std::move(receiver));
         request->set_observer_for_test(observer_for_test);
+        request->set_window_size_check_enabled_for_test(false);
       },
       observer_converter_->GetWeakPtr(), is_off_the_record_, valid_ssl_,
       prefs_.get(), twa_package_name_, has_authenticator_,
@@ -300,6 +301,12 @@ void PaymentRequestTestController::OnErrorDisplayed() {
 void PaymentRequestTestController::OnCompleteCalled() {
   if (observer_) {
     observer_->OnCompleteCalled();
+  }
+}
+
+void PaymentRequestTestController::OnInternalError() {
+  if (observer_) {
+    observer_->OnInternalError();
   }
 }
 

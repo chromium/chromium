@@ -155,6 +155,10 @@ void PaymentRequestBrowserTestBase::SetBrowserWindowInactive() {
   is_browser_window_active_ = false;
 }
 
+void PaymentRequestBrowserTestBase::SetBrowserWindowSizeCheckEnabled() {
+  is_browser_window_size_check_enabled_ = true;
+}
+
 void PaymentRequestBrowserTestBase::OnCanMakePaymentCalled() {
   if (event_waiter_) {
     event_waiter_->OnEvent(DialogEvent::CAN_MAKE_PAYMENT_CALLED);
@@ -192,6 +196,12 @@ void PaymentRequestBrowserTestBase::OnPayCalled() {}
 void PaymentRequestBrowserTestBase::OnAbortCalled() {
   if (event_waiter_) {
     event_waiter_->OnEvent(DialogEvent::ABORT_CALLED);
+  }
+}
+
+void PaymentRequestBrowserTestBase::OnInternalError() {
+  if (event_waiter_) {
+    event_waiter_->OnEvent(DialogEvent::INTERNAL_ERROR);
   }
 }
 
@@ -552,6 +562,8 @@ void PaymentRequestBrowserTestBase::CreatePaymentRequestForTest(
 
   auto* request = new PaymentRequest(std::move(delegate), std::move(receiver));
   request->set_observer_for_test(GetWeakPtr());
+  request->set_window_size_check_enabled_for_test(
+      is_browser_window_size_check_enabled_);
   requests_.push_back(request->GetWeakPtr());
 }
 
@@ -961,6 +973,9 @@ std::ostream& operator<<(
       break;
     case DialogEvent::ABORT_CALLED:
       out << "ABORT_CALLED";
+      break;
+    case DialogEvent::INTERNAL_ERROR:
+      out << "INTERNAL_ERROR";
       break;
     case DialogEvent::PROCESSING_SPINNER_SHOWN:
       out << "PROCESSING_SPINNER_SHOWN";

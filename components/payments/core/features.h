@@ -54,6 +54,10 @@ BASE_DECLARE_FEATURE(kSecurePaymentConfirmationFallback);
 // stop the IsReadyToPay query from being sent to payment handlers.
 BASE_DECLARE_FEATURE(kRestrictIsReadyToPayQuery);
 
+// Used to control whether Payment Request/Handler dialogs are rejected if the
+// browser window is too small to contain them.
+BASE_DECLARE_FEATURE(kPaymentRequestRejectTooSmallWindows);
+
 }  // namespace features
 }  // namespace payments
 

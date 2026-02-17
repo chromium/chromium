@@ -5281,6 +5281,7 @@ if (!is_android) {
         "../browser/ui/views/payments/payment_request_show_promise_browsertest.cc",
         "../browser/ui/views/payments/payment_request_update_with_browsertest.cc",
         "../browser/ui/views/payments/payment_request_use_stats_browsertest.cc",
+        "../browser/ui/views/payments/payment_request_window_size_browsertest.cc",
         "../browser/ui/views/payments/payment_sheet_view_controller_browsertest.cc",
         "../browser/ui/views/payments/profile_list_view_controller_browsertest.cc",
         "../browser/ui/views/payments/secure_payment_confirmation_dialog_view_browsertest.cc",
