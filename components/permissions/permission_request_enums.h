@@ -56,7 +56,7 @@ enum class PermissionRequestLikelihood {
 // LINT.IfChange(PermissionAiRelevanceModel)
 enum class PermissionAiRelevanceModel {
   kUnknown = 0,
-  kAIv3 = 1,
+  // kAIv3 = 1, (Deprecated)
   kAIv4 = 2,
   kMaxValue = kAIv4,
 };
@@ -71,7 +71,7 @@ enum class PermissionPredictionSource {
   kOnDeviceCpssV1Model = 1,
   kServerSideCpssV3Model = 2,
   // kOnDeviceAiv1AndServerSideModel = 3, (Deprecated)
-  kOnDeviceAiv3AndServerSideModel = 4,
+  // kOnDeviceAiv3AndServerSideModel = 4, (Deprecated)
   kOnDeviceAiv4AndServerSideModel = 5,
 
   // Always keep at the end.
@@ -104,7 +104,7 @@ enum class PredictionModelType {
   kServerSideCpssV3Model = 1,
   kOnDeviceCpssV1Model = 2,
   // kOnDeviceAiV1Model = 3, (Deprecated)
-  kOnDeviceAiV3Model = 4,
+  // kOnDeviceAiV3Model = 4, (Deprecated)
   kOnDeviceAiV4Model = 5,
 
   // Always keep at the end.

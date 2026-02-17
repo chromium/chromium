@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="PermissionAiRelevanceModel">
   <int value="0" label="Unknown"/>
-  <int value="1" label="AIv3"/>
+  <int value="1" label="(Obsolete) AIv3"/>
   <int value="2" label="AIv4"/>
 </enum>
 
@@ -199,7 +199,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="CPSSv1 model"/>
   <int value="2" label="CPSSv3 model"/>
   <int value="3" label="(Obsolete) AIv1 model"/>
-  <int value="4" label="AIv3 model"/>
+  <int value="4" label="(Obsolete) AIv3 model"/>
   <int value="5" label="AIv4 model"/>
 </enum>
 

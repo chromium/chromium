@@ -3492,13 +3492,6 @@ inline constexpr char kCrosSystemLevelPermissionBlockedWarningsDescription[] =
     "Displays warnings in browser if camera, microphone or geolocation is "
     "disabled in the OS.";
 
-inline constexpr char kPermissionsAIv3Name[] = "PermissionsAIv3";
-inline constexpr char kPermissionsAIv3Description[] =
-    "Use the Permission Predictions Service and the AIv3 model to surface "
-    "permission notification requests using a quieter UI when the likelihood "
-    "of the user granting the permission is predicted to be low. Requires "
-    "`Make Searches and Browsing Better` to be enabled.";
-
 inline constexpr char kPermissionsAIv4Name[] = "PermissionsAIv4";
 inline constexpr char kPermissionsAIv4Description[] =
     "Use the Permission Predictions Service and the AIv4 model to surface "
