@@ -6,11 +6,12 @@
    <div class="content-settings-header secondary">
      $i18n{siteSettingsAutoPictureInPictureDescription}
    </div>
+   <!-- This options uses "allowed" language but is implemented as "ask". -->
    <settings-category-default-radio-group
        category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"
-       allow-option-label=
+       ask-option-label=
            "$i18n{siteSettingsAutoPictureInPictureAllowed}"
-       allow-option-icon="settings:picture-in-picture"
+       ask-option-icon="settings:picture-in-picture"
        block-option-label="$i18n{siteSettingsAutoPictureInPictureBlocked}"
        block-option-icon="settings:picture-in-picture-off">
    </settings-category-default-radio-group>

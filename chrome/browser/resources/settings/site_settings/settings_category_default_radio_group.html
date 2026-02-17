@@ -31,27 +31,41 @@
       pref="{{pref_}}"
       selectable-elements="settings-collapse-radio-button"
       on-change="onSelectedChanged_"
-      group-aria-label=[[header]]>
+      group-aria-label="[[header]]">
     <settings-collapse-radio-button
-        id="enabledRadioOption"
-        class$="[[getEnabledButtonClass_(allowOptionSubLabel)]]"
-        name="[[siteContentRadioSettingEnum_.ENABLED]]"
+        id="allowRadioOption"
+        class$="[[getButtonClass_(allowOptionSubLabel)]]"
+        name="[[contentSettingEnum_.ALLOW]]"
         pref="[[pref_]]"
         label="[[allowOptionLabel]]"
         sub-label="[[allowOptionSubLabel]]"
         disabled$="[[isRadioGroupDisabled_(category)]]"
         icon="[[allowOptionIcon]]"
+        hidden="[[!allowOptionLabel]]"
         no-collapse>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button
-        id="disabledRadioOption"
-        class$="[[getDisabledButtonClass_(blockOptionSubLabel)]]"
-        name="[[siteContentRadioSettingEnum_.DISABLED]]"
+        id="askRadioOption"
+        class$="[[getButtonClass_(askOptionSubLabel)]]"
+        name="[[contentSettingEnum_.ASK]]"
+        pref="[[pref_]]"
+        label="[[askOptionLabel]]"
+        sub-label="[[askOptionSubLabel]]"
+        disabled$="[[isRadioGroupDisabled_(category)]]"
+        icon="[[askOptionIcon]]"
+        hidden="[[!askOptionLabel]]"
+        no-collapse>
+    </settings-collapse-radio-button>
+    <settings-collapse-radio-button
+        id="blockRadioOption"
+        class$="[[getButtonClass_(blockOptionSubLabel)]]"
+        name="[[contentSettingEnum_.BLOCK]]"
         pref="[[pref_]]"
         label="[[blockOptionLabel]]"
         sub-label="[[blockOptionSubLabel]]"
         disabled$="[[isRadioGroupDisabled_(category)]]"
         icon="[[blockOptionIcon]]"
+        hidden="[[!blockOptionLabel]]"
         no-collapse>
     </settings-collapse-radio-button>
   </settings-radio-group>

@@ -88,8 +88,8 @@ suite(`NotificationsPage`, function() {
     assertTrue(isVisible(radioGroup));
     assertTrue(isVisible(cpssRadioGroup));
 
-    const blockNotification = radioGroup.shadowRoot!.querySelector<HTMLElement>(
-        '#disabledRadioOption');
+    const blockNotification =
+        radioGroup.shadowRoot!.querySelector<HTMLElement>('#blockRadioOption');
     assertTrue(!!blockNotification);
     blockNotification.click();
     await flushTasks();
@@ -97,10 +97,10 @@ suite(`NotificationsPage`, function() {
     assertEquals(
         SettingsState.BLOCK, page.get('prefs.generated.notification.value'));
 
-    const allowNotification = radioGroup.shadowRoot!.querySelector<HTMLElement>(
-        '#enabledRadioOption');
-    assertTrue(!!allowNotification);
-    allowNotification.click();
+    const askForNotification =
+        radioGroup.shadowRoot!.querySelector<HTMLElement>('#askRadioOption');
+    assertTrue(!!askForNotification);
+    askForNotification.click();
     await flushTasks();
     assertTrue(isVisible(cpssRadioGroup));
     assertEquals(

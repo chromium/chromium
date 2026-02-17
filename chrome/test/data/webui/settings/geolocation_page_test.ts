@@ -71,7 +71,7 @@ suite(`GeolocationPage`, function() {
 
   test('locationCPSS', async function() {
     siteSettingsBrowserProxy.setPrefs(
-        createPref(ContentSettingsTypes.GEOLOCATION, ContentSetting.ALLOW));
+        createPref(ContentSettingsTypes.GEOLOCATION, ContentSetting.ASK));
 
     const radioGroup = page.shadowRoot!.querySelector<HTMLElement>(
         'settings-category-default-radio-group');
@@ -79,8 +79,8 @@ suite(`GeolocationPage`, function() {
     assertTrue(isVisible(radioGroup));
     assertTrue(isChildVisible(page, '#locationCpssRadioGroup'));
 
-    const blockLocation = radioGroup.shadowRoot!.querySelector<HTMLElement>(
-        '#disabledRadioOption');
+    const blockLocation =
+        radioGroup.shadowRoot!.querySelector<HTMLElement>('#blockRadioOption');
     assertTrue(!!blockLocation);
     blockLocation.click();
     await flushTasks();
@@ -88,10 +88,10 @@ suite(`GeolocationPage`, function() {
     assertEquals(
         SettingsState.BLOCK, page.get('prefs.generated.geolocation.value'));
 
-    const allowLocation = radioGroup.shadowRoot!.querySelector<HTMLElement>(
-        '#enabledRadioOption');
-    assertTrue(!!allowLocation);
-    allowLocation.click();
+    const askForLocation =
+        radioGroup.shadowRoot!.querySelector<HTMLElement>('#askRadioOption');
+    assertTrue(!!askForLocation);
+    askForLocation.click();
     await flushTasks();
     assertTrue(isChildVisible(page, '#locationCpssRadioGroup'));
     assertEquals(

@@ -2567,7 +2567,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_DESCRIPTION" desc="Description of the automatic downloads content setting.">
     Sites might automatically download related files together to save you time
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_ALLOWED" desc="Label for the enabled option of the automatic downloads content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_ASK" desc="Label for the enabled option of the automatic downloads content setting.">
     Sites can ask to automatically download multiple files
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_BLOCKED" desc="Label for the disabled option of the automatic downloads content setting.">
@@ -2615,7 +2615,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_DESCRIPTION" desc="Description of the bluetooth devices site setting.">
     Sites usually connect to Bluetooth devices for features like setting up or syncing a low-energy beacon, a health or fitness tracker, or a smart light bulb
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_ALLOWED" desc="Label for the enabled option of bluetooth devices site setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_ASK" desc="Label for the ask-before-use option of bluetooth devices site setting.">
     Sites can ask to connect to Bluetooth devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_BLOCKED" desc="Label for the disabled option of the bluetooth devices site setting.">
@@ -2624,7 +2624,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAPTURED_SURFACE_CONTROL_DESCRIPTION" desc="Description of the Captured Surface Control content setting.">
     Sites use this feature to scroll and zoom shared tabs
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CAPTURED_SURFACE_CONTROL_ALLOWED" desc="Label for the enabled option of the Captured Surface Control content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CAPTURED_SURFACE_CONTROL_ASK" desc="Label for the ask-before-use option of the Captured Surface Control content setting.">
     Sites can ask to scroll and zoom shared tabs
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAPTURED_SURFACE_CONTROL_BLOCKED" desc="Label for the disabled option of the Captured Surface Control content setting.">
@@ -2639,7 +2639,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_DESCRIPTION" desc="Description of the camera content setting.">
     Sites usually use your video camera for communication features like video chatting
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_ALLOWED" desc="Label for the enabled option of the camera content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_ASK" desc="Label for the ask-before-use option of the camera content setting.">
     Sites can ask to use your camera
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_BLOCKED" desc="Label for the disabled option of the camera content setting.">
@@ -2657,7 +2657,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_DESCRIPTION" desc="Description of the clipboard content setting.">
     Sites usually read your clipboard for features like keeping the formatting of text you copied
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_ALLOWED" desc="Label for the enabled option of the clipboard content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_ASK" desc="Label for the ask-before-use option of the clipboard content setting.">
     Sites can ask to see text and images on your clipboard
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_BLOCKED" desc="Label for the disabled option of the clipboard content setting.">
@@ -2672,7 +2672,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_DESCRIPTION" desc="Description of the device use content setting.">
     Sites usually detect when you're actively using your device to set your availability on chat apps
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_ALLOWED" desc="Label for the enabled option of the device use content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_ASK" desc="Label for the ask-before-use option of the device use content setting.">
     Sites can ask to know when you're actively using your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_BLOCKED" desc="Label for the disabled option of the device use content setting.">
@@ -2702,7 +2702,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_DESCRIPTION" desc="Description of the file system write content setting.">
     Sites usually access files and folders on your device for features like automatically saving your work
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_ALLOWED" desc="Label for the enabled option of the file system write content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_ASK" desc="Label for the ask-before-use option of the file system write content setting.">
     Sites can ask to edit files and folders on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_BLOCKED" desc="Label for the disabled option of the file system write content setting.">
@@ -2714,7 +2714,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_DESCRIPTION" desc="Description of the fonts content setting.">
     Sites usually use your fonts so you can create high-fidelity content with online design and graphics tools
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_ALLOWED" desc="Label for the enabled option of the fonts content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_ASK" desc="Label for the ask-before-use option of the fonts content setting.">
     Sites can ask to use fonts installed on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_BLOCKED" desc="Label for the disabled option of the fonts content setting.">
@@ -2747,7 +2747,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_DESCRIPTION" desc="Description of the hid devices site setting.">
     Sites usually connect to HID devices for features that use uncommon keyboards, game controllers, and other devices
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ALLOWED" desc="Label for the enabled option of hid devices site setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ASK" desc="Label for the ask-before-use option of hid devices site setting.">
     Sites can ask to connect to HID devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_BLOCKED" desc="Label for the disabled option of the hid devices site setting.">
@@ -2762,7 +2762,7 @@
   <message name="IDS_SITE_SETTINGS_SMART_CARDS_DEFAULT_DESCRIPTION" desc="Label indicating the default behavior for smart card access.">
     Isolated web apps automatically follow this setting
   </message>
-  <message name="IDS_SITE_SETTINGS_SMART_CARDS_ALLOWED" desc="Option to allow isolated web apps to control smart card readers.">
+  <message name="IDS_SITE_SETTINGS_SMART_CARDS_ASK" desc="Option to allow isolated web apps to control smart card readers.">
     Isolated web apps can ask to control smart card readers
   </message>
   <message name="IDS_SITE_SETTINGS_SMART_CARDS_BLOCKED" desc="Option to block isolated web apps from controlling smart card readers.">
@@ -2840,7 +2840,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_DESCRIPTION" desc="Description of the keyboard lock content setting.">
     Sites use this feature to override the input of your keyboard, like for games or remote desktop apps
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_ALLOWED" desc="Label for the enabled option of the keyboard lock content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_ASK" desc="Label for the ask-before-use option of the keyboard lock content setting.">
     Sites can ask to override your keyboard input
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_KEYBOARD_LOCK_BLOCKED" desc="Label for the disabled option of the keyboard lock content setting.">
@@ -2855,7 +2855,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_DESCRIPTION" desc="Description of the location content setting.">
     Sites usually use your location for relevant features or info, like local news or nearby shops
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_ALLOWED" desc="Label for the enabled option of the location content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_ASK" desc="Label for the ask-before-use option of the location content setting.">
     Sites can ask for your location
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED" desc="Label for the blocked option of the location content setting.">
@@ -2873,7 +2873,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_DESCRIPTION" desc="Description of the microphone content setting.">
     Sites usually use your microphone for communication features like video chatting
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_ALLOWED" desc="Label for the enabled option of the microphone content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_ASK" desc="Label for the ask-before-use option of the microphone content setting.">
     Sites can ask to use your microphone
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_BLOCKED" desc="Label for the disabled option of the microphone content setting.">
@@ -2891,7 +2891,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DESCRIPTION" desc="Description of the MIDI devices content setting.">
     Sites usually ask to control and reprogram MIDI devices to create music, edit music, or update device firmware
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_ALLOWED" desc="Label for the enabled option of the MIDI devices content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_ASK" desc="Label for the ask-before-use option of the MIDI devices content setting.">
     Sites can ask to control and reprogram your MIDI devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_BLOCKED" desc="Label for the disabled option of the MIDI devices content setting.">
@@ -3063,7 +3063,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_DESCRIPTION" desc="Description of the serial ports content setting.">
     Sites usually connect to serial ports for data transfer features, like setting up your network
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_ALLOWED" desc="Label for the enabled option of the serial ports content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_ASK" desc="Label for the ask-before-use option of the serial ports content setting.">
     Sites can ask to connect to serial ports
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_BLOCKED" desc="Label for the disabled option of the serial ports content setting.">
@@ -3090,7 +3090,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DESCRIPTION" desc="Description of the USB devices content setting.">
     Sites usually connect to USB devices for features like printing a document or saving to a storage device
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_USB_ALLOWED" desc="Label for the enabled option of the USB devices content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_USB_ASK" desc="Label for the ask-before-use option of the USB devices content setting.">
     Sites can ask to connect to USB devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_USB_BLOCKED" desc="Label for the disabled option of the USB devices content setting.">
@@ -3099,7 +3099,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR_DESCRIPTION" desc="Description of the virtual reality content setting.">
     Sites usually use your virtual reality devices and data to let you enter VR sessions
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_VR_ALLOWED" desc="Label for the enabled option of the virtual reality content setting.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_VR_ASK" desc="Label for the ask-before-use option of the virtual reality content setting.">
     Sites can ask to use virtual reality devices and data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR_BLOCKED" desc="Label for the disabled option of the virtual reality content setting.">
@@ -3255,12 +3255,6 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_APP_DISALLOWED_PROTOCOL_HANDLERS_DESCRIPTION" desc="Description of the disallowed protocol handlers list. The user has previously diallowed the launch of these apps.">
     Apps listed below will never handle protocol links.
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ASK" desc="The ask label for HID devices in site settings.">
-    Ask when a site wants to access HID devices
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_BLOCK" desc="The block label for HID devices in site settings.">
-    Do not allow any sites to access HID devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_BLOCK" desc="Label explaining that insecure content is blocked by default in secure sites. Insecure content refers to content served over HTTP, secure sites refers to sites served over HTTPS.">
     Insecure content is blocked by default on secure sites
@@ -3670,7 +3664,7 @@
   <message name="IDS_SETTINGS_STORAGE_ACCESS_DESCRIPTION" desc="The body description on the Embedded content settings page.">
     Sites you visit can embed content from other sites, for example images, ads, and text. These other sites can ask for permission to use information they've saved about you as you browse the site.
   </message>
-  <message name="IDS_SETTINGS_STORAGE_ACCESS_ALLOWED" desc="One of two radio buttons on the Embedded content settings page. If a user chooses this option, they're allowing a new permission prompt that may get shown as the user browses sites. In the description below, “Google Docs” is just used as an example. 1) “use information” means retrieve existing info and save additional info. 2) “they've' saved about you”: Google Docs can only prompt the user for permission on www.myfavoritesite.com if the user has previously used Google Docs.">
+  <message name="IDS_SETTINGS_STORAGE_ACCESS_ASK" desc="One of two radio buttons on the Embedded content settings page. If a user chooses this option, they're allowing a new permission prompt that may get shown as the user browses sites. In the description below, “Google Docs” is just used as an example. 1) “use information” means retrieve existing info and save additional info. 2) “they've' saved about you”: Google Docs can only prompt the user for permission on www.myfavoritesite.com if the user has previously used Google Docs.">
     Sites can ask to use information they've saved about you
   </message>
   <message name="IDS_SETTINGS_STORAGE_ACCESS_BLOCKED" desc="The second of two radio buttons on the Embedded content settings page. If a user chooses this option, they're not allowing a new permission prompt that may get shown as the user browses sites. In the description below, “www.myfavoritesite.com” and “Google Docs” are just used as examples. 1) “use information” means retrieve existing info and save additional info. 2) “they've' saved about you”: Google Docs can only prompt the user for permission on www.myfavoritesite.com if the user has previously used Google Docs.">

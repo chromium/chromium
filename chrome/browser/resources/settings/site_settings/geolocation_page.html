@@ -21,7 +21,7 @@
           name="location-ask-radio-button"
           checked$="[[isLocationAllowed_]]">
         <cr-icon icon="settings:location-on"></cr-icon>
-        $i18n{siteSettingsLocationAllowed}
+        $i18n{siteSettingsLocationAsk}
       </cr-radio-button>
       <settings-radio-group
           id="locationCpssRadioGroup"
@@ -60,8 +60,8 @@
   <settings-category-default-radio-group
       id="locationDefaultRadioGroup"
       category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
-      allow-option-label="$i18n{siteSettingsLocationAllowed}"
-      allow-option-icon="settings:location-on"
+      ask-option-label="$i18n{siteSettingsLocationAsk}"
+      ask-option-icon="settings:location-on"
       block-option-label="$i18n{siteSettingsLocationBlocked}"
       block-option-icon="privacy:location-off"
       on-selected-changed="onLocationTopLevelRadioChanged2_">

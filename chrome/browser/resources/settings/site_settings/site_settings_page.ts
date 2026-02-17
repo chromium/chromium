@@ -84,7 +84,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.AUTOMATIC_DOWNLOADS,
       label: 'siteSettingsAutomaticDownloads',
       icon: 'cr:file-download',
-      enabledLabel: 'siteSettingsAutomaticDownloadsAllowed',
+      enabledLabel: 'siteSettingsAutomaticDownloadsAsk',
       disabledLabel: 'siteSettingsAutomaticDownloadsBlocked',
     },
     {
@@ -114,7 +114,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.BLUETOOTH_DEVICES,
       label: 'siteSettingsBluetoothDevices',
       icon: 'settings:bluetooth',
-      enabledLabel: 'siteSettingsBluetoothDevicesAllowed',
+      enabledLabel: 'siteSettingsBluetoothDevicesAsk',
       disabledLabel: 'siteSettingsBluetoothDevicesBlocked',
       shouldShow: () =>
           loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
@@ -134,7 +134,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.CAMERA,
       label: 'siteSettingsCamera',
       icon: 'cr:videocam',
-      enabledLabel: 'siteSettingsCameraAllowed',
+      enabledLabel: 'siteSettingsCameraAsk',
       disabledLabel: 'siteSettingsCameraBlocked',
     },
     {
@@ -142,7 +142,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.CAPTURED_SURFACE_CONTROL,
       label: 'siteSettingsCapturedSurfaceControl',
       icon: 'settings:touchpad-mouse',
-      enabledLabel: 'siteSettingsCapturedSurfaceControlAllowed',
+      enabledLabel: 'siteSettingsCapturedSurfaceControlAsk',
       disabledLabel: 'siteSettingsCapturedSurfaceControlBlocked',
       shouldShow: () => loadTimeData.getBoolean('enableCapturedSurfaceControl'),
     },
@@ -151,7 +151,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.CLIPBOARD,
       label: 'siteSettingsClipboard',
       icon: 'privacy:content-paste',
-      enabledLabel: 'siteSettingsClipboardAllowed',
+      enabledLabel: 'siteSettingsClipboardAsk',
       disabledLabel: 'siteSettingsClipboardBlocked',
     },
     {
@@ -169,7 +169,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.FILE_SYSTEM_WRITE,
       label: 'siteSettingsFileSystemWrite',
       icon: 'privacy:file-save',
-      enabledLabel: 'siteSettingsFileSystemWriteAllowed',
+      enabledLabel: 'siteSettingsFileSystemWriteAsk',
       disabledLabel: 'siteSettingsFileSystemWriteBlocked',
     },
     {
@@ -177,7 +177,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.GEOLOCATION,
       label: 'siteSettingsLocation',
       icon: 'settings:location-on',
-      enabledLabel: 'siteSettingsLocationAllowed',
+      enabledLabel: 'siteSettingsLocationAsk',
       disabledLabel: 'siteSettingsLocationBlocked',
     },
     {
@@ -196,14 +196,14 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       label: 'siteSettingsHidDevices',
       icon: 'privacy:videogame-asset',
       enabledLabel: 'siteSettingsHidDevicesAsk',
-      disabledLabel: 'siteSettingsHidDevicesBlock',
+      disabledLabel: 'siteSettingsHidDevicesBlocked',
     },
     {
       route: routes.SITE_SETTINGS_IDLE_DETECTION,
       id: Id.IDLE_DETECTION,
       label: 'siteSettingsIdleDetection',
       icon: 'settings:devices',
-      enabledLabel: 'siteSettingsDeviceUseAllowed',
+      enabledLabel: 'siteSettingsDeviceUseAsk',
       disabledLabel: 'siteSettingsDeviceUseBlocked',
     },
     {
@@ -235,7 +235,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.KEYBOARD_LOCK,
       label: 'siteSettingsKeyboardLock',
       icon: 'settings20:keyboard-lock',
-      enabledLabel: 'siteSettingsKeyboardLockAllowed',
+      enabledLabel: 'siteSettingsKeyboardLockAsk',
       disabledLabel: 'siteSettingsKeyboardLockBlocked',
       shouldShow: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
     },
@@ -244,7 +244,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.LOCAL_FONTS,
       label: 'fonts',
       icon: 'privacy:font-download',
-      enabledLabel: 'siteSettingsFontsAllowed',
+      enabledLabel: 'siteSettingsFontsAsk',
       disabledLabel: 'siteSettingsFontsBlocked',
     },
     // If LNA is enabled, we show either the LOCAL_NETWORK_ACCESS setting, or
@@ -289,7 +289,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.MIC,
       label: 'siteSettingsMic',
       icon: 'privacy:mic',
-      enabledLabel: 'siteSettingsMicAllowed',
+      enabledLabel: 'siteSettingsMicAsk',
       disabledLabel: 'siteSettingsMicBlocked',
     },
     {
@@ -297,7 +297,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.MIDI_DEVICES,
       label: 'siteSettingsMidiDevices',
       icon: 'privacy:piano',
-      enabledLabel: 'siteSettingsMidiAllowed',
+      enabledLabel: 'siteSettingsMidiAsk',
       disabledLabel: 'siteSettingsMidiBlocked',
     },
     {
@@ -384,7 +384,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.SERIAL_PORTS,
       label: 'siteSettingsSerialPorts',
       icon: 'privacy:developer-board',
-      enabledLabel: 'siteSettingsSerialPortsAllowed',
+      enabledLabel: 'siteSettingsSerialPortsAsk',
       disabledLabel: 'siteSettingsSerialPortsBlocked',
     },
     {
@@ -399,7 +399,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.SMART_CARD_READERS,
       label: 'siteSettingsSmartCardReaders',
       icon: 'privacy:smart-card-reader',
-      enabledLabel: 'siteSettingsSmartCardReadersAllowed',
+      enabledLabel: 'siteSettingsSmartCardReadersAsk',
       disabledLabel: 'siteSettingsSmartCardReadersBlocked',
       shouldShow: () =>
           loadTimeData.getBoolean('enableSmartCardReadersContentSetting'),
@@ -418,7 +418,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.STORAGE_ACCESS,
       label: 'siteSettingsStorageAccess',
       icon: 'privacy:storage-access',
-      enabledLabel: 'storageAccessAllowed',
+      enabledLabel: 'storageAccessAsk',
       disabledLabel: 'storageAccessBlocked',
     },
     {
@@ -426,7 +426,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.USB_DEVICES,
       label: 'siteSettingsUsbDevices',
       icon: 'privacy:usb',
-      enabledLabel: 'siteSettingsUsbAllowed',
+      enabledLabel: 'siteSettingsUsbAsk',
       disabledLabel: 'siteSettingsUsbBlocked',
     },
     {
@@ -434,7 +434,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.VR,
       label: 'siteSettingsVr',
       icon: 'privacy:cardboard',
-      enabledLabel: 'siteSettingsVrAllowed',
+      enabledLabel: 'siteSettingsVrAsk',
       disabledLabel: 'siteSettingsVrBlocked',
     },
     {
