@@ -118,7 +118,8 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
 
   if (bwg_gateway_) {
     bwg_link_opening_handler_ = [[BWGLinkOpeningHandler alloc]
-        initWithURLLoader:UrlLoadingBrowserAgent::FromBrowser(browser_)];
+        initWithURLLoader:UrlLoadingBrowserAgent::FromBrowser(browser_)
+               dispatcher:browser_->GetCommandDispatcher()];
     gemini_page_state_change_handler_ = [[GeminiPageStateChangeHandler alloc]
         initWithPrefService:browser_->GetProfile()->GetPrefs()];
     bwg_gateway_.pageStateChangeHandler = gemini_page_state_change_handler_;
