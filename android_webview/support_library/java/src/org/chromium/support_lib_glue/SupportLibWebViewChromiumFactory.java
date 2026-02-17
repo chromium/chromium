@@ -11,6 +11,7 @@ import android.webkit.WebView;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.webview.chromium.CallbackConverter;
@@ -19,6 +20,7 @@ import com.android.webview.chromium.SharedStatics;
 import com.android.webview.chromium.SharedTracingControllerAdapter;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebViewChromiumAwInit.CallSite;
+import com.android.webview.chromium.WebViewChromiumAwInit.WebViewStartUpDiagnostics;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
 import org.chromium.android_webview.AwProxyController;
@@ -37,6 +39,8 @@ import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /** Support library glue version of WebViewChromiumFactoryProvider. */
 public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundaryInterface {
@@ -123,6 +127,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.ASYNC_WEBVIEW_STARTUP_ASYNC_STARTUP_LOCATIONS + Features.DEV_SUFFIX,
                 Features.CUSTOM_REQUEST_HEADERS,
                 Features.RENDERER_LIBRARY_PREFETCH_MODE + Features.DEV_SUFFIX,
+                Features.ASYNC_WEBVIEW_STARTUP_V2 + Features.DEV_SUFFIX,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_V1,
                 Features.ADD_QUIC_HINTS_V1,
                 Features.ON_NAVIGATION_COMPLETED_NON_COMMITTED,
@@ -780,6 +785,94 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 }
 
                 return mProfileStore;
+            }
+        }
+    }
+
+    @Override
+    public void startUpWebView(
+            @NonNull Consumer<BiConsumer<@StartUpConfigField Integer, Object>> config,
+            @NonNull Consumer<Consumer<BiConsumer<@StartUpResultField Integer, Object>>> onSuccess,
+            @NonNull Consumer<Consumer<BiConsumer<@StartupErrorType Integer, Object>>> onFailure) {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.START_UP_WEBVIEW")) {
+            recordApiCall(ApiCall.START_UP_WEBVIEW);
+
+            StartUpConfig startUpConfig = new StartUpConfig(config);
+
+            WebViewChromiumAwInit.WebViewStartUpCallback chromiumCallback =
+                    result -> handleStartupResult(onSuccess, result);
+
+            mAwInit.startUpWebView(
+                    chromiumCallback,
+                    startUpConfig.mShouldRunUiThreadStartUpTasks,
+                    startUpConfig.mProfileNamesToLoad);
+        }
+    }
+
+    private static void handleStartupResult(
+            Consumer<Consumer<BiConsumer<@StartUpResultField Integer, Object>>> callbackProvider,
+            WebViewStartUpDiagnostics result) {
+        // This is the "resultStream" consumer that we pass to the caller.
+        // Its job is to receive the final result-handling BiConsumer.
+        Consumer<BiConsumer<@StartUpResultField Integer, Object>> resultStream =
+                (finalResultHandler) -> {
+                    // Once we have the final handler, stream the results.
+                    finalResultHandler.accept(
+                            StartUpResultField.TOTAL_TIME_UI_THREAD_MILLIS,
+                            result.getTotalTimeUiThreadChromiumInitMillis());
+                    finalResultHandler.accept(
+                            StartUpResultField.MAX_TIME_PER_TASK_UI_THREAD_MILLIS,
+                            result.getMaxTimePerTaskUiThreadChromiumInitMillis());
+
+                    Throwable syncLoc = result.getSynchronousChromiumInitLocationOrNull();
+                    if (syncLoc != null) {
+                        finalResultHandler.accept(
+                                StartUpResultField.BLOCKING_START_UP_LOCATION, syncLoc);
+                    }
+
+                    Throwable providerLoc = result.getProviderInitOnMainLooperLocationOrNull();
+                    if (providerLoc != null) {
+                        finalResultHandler.accept(
+                                StartUpResultField.BLOCKING_START_UP_LOCATION, providerLoc);
+                    }
+
+                    Throwable asyncLoc = result.getAsynchronousChromiumInitLocationOrNull();
+                    if (asyncLoc != null) {
+                        finalResultHandler.accept(
+                                StartUpResultField.ASYNC_START_UP_LOCATION, List.of(asyncLoc));
+                    }
+                };
+
+        callbackProvider.accept(resultStream);
+    }
+
+    private static class StartUpConfig implements BiConsumer<@StartUpConfigField Integer, Object> {
+        private boolean mShouldRunUiThreadStartUpTasks = true;
+        private @Nullable Set<String> mProfileNamesToLoad;
+
+        public StartUpConfig(Consumer<BiConsumer<@StartUpConfigField Integer, Object>> consumer) {
+            consumer.accept(this);
+        }
+
+        @Override
+        public void accept(@StartUpConfigField Integer key, Object value) {
+            switch (key) {
+                case StartUpConfigField.BACKGROUND_EXECUTOR:
+                    // We don't use this value yet.
+                    break;
+                case StartUpConfigField.UI_THREAD_START_UP_TASKS:
+                    mShouldRunUiThreadStartUpTasks = (boolean) value;
+                    break;
+                case StartUpConfigField.PROFILE_NAMES_TO_LOAD:
+                    mProfileNamesToLoad = (Set<String>) value;
+                    break;
+                default:
+                    if (key < 0) {
+                        throw new UnsupportedOperationException(
+                                "The current WebView version doesn't support this config: " + key);
+                    }
+                    // If we get here then it means that there's an optional operation that the
+                    // current WebView version doesn't support and it's safe to ignore.
             }
         }
     }
