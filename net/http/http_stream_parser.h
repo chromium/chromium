@@ -36,7 +36,7 @@ class IOBuffer;
 class StreamSocket;
 class UploadDataStream;
 
-class NET_EXPORT_PRIVATE HttpStreamParser {
+class NET_EXPORT_PRIVATE HttpStreamParser final {
  public:
   // |connection_is_reused| must be |true| if |stream_socket| has previously
   // been used successfully for an HTTP/1.x request.
@@ -63,7 +63,7 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   HttpStreamParser(const HttpStreamParser&) = delete;
   HttpStreamParser& operator=(const HttpStreamParser&) = delete;
 
-  virtual ~HttpStreamParser();
+  ~HttpStreamParser();
 
   // These functions implement the interface described in HttpStream with
   // some additional functionality
