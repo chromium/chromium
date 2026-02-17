@@ -10692,6 +10692,27 @@
             ]
         }
     ],
+    "EnterpriseConnectorEnableNewUploadCountLimit": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Raise_to_20",
+                    "params": {
+                        "ParallelContentAnalysisRequestCountMax": "20"
+                    },
+                    "enable_features": [
+                        "EnableNewUploadCountLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseFileObfuscation": [
         {
             "platforms": [
