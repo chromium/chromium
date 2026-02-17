@@ -412,8 +412,8 @@ TEST(ProtoValueConversionsTest, GeminiThreadSpecificsToValue) {
               Pointee(Eq("1770989828")));
 }
 
-TEST(ProtoValueConversionsTest, ThemeSpecificsIosToValue) {
-  sync_pb::ThemeSpecificsIos specifics;
+TEST(ProtoValueConversionsTest, ThemeIosSpecificsToValue) {
+  sync_pb::ThemeIosSpecifics specifics;
 
   // Populate `UserColorTheme`.
   auto* color_theme = specifics.mutable_user_color_theme();
@@ -427,7 +427,7 @@ TEST(ProtoValueConversionsTest, ThemeSpecificsIosToValue) {
   background->set_collection_id("nature_collection");
   background->set_main_color(4278190080);
 
-  base::DictValue value = ThemeSpecificsIosToValue(specifics).TakeDict();
+  base::DictValue value = ThemeIosSpecificsToValue(specifics).TakeDict();
   EXPECT_FALSE(value.empty());
 
   const base::DictValue* color_dict = value.FindDict("user_color_theme");

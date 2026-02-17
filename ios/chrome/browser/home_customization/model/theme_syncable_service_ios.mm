@@ -32,7 +32,7 @@ void ThemeSyncableServiceIOS::WaitUntilReadyToSync(base::OnceClosure done) {
 void ThemeSyncableServiceIOS::WillStartInitialSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/481713548): Save current `ThemeSpecificsIos` to prefs. This
+  // TODO(crbug.com/481713548): Save current `ThemeIosSpecifics` to prefs. This
   // is used to restore the local theme upon signout.
 }
 

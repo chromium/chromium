@@ -16,7 +16,7 @@
 #import "components/sync/model/sync_data.h"
 #import "components/sync/protocol/entity_data.h"
 #import "components/sync/protocol/entity_specifics.pb.h"
-#import "components/sync/protocol/theme_specifics_ios.pb.h"
+#import "components/sync/protocol/theme_ios_specifics.pb.h"
 #import "components/sync/test/fake_sync_change_processor.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"

@@ -63,8 +63,8 @@
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/protocol/tab_group_attribution_metadata.pb.h"
+#include "components/sync/protocol/theme_ios_specifics.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
-#include "components/sync/protocol/theme_specifics_ios.pb.h"
 #include "components/sync/protocol/theme_types.pb.h"
 #include "components/sync/protocol/typed_url_specifics.pb.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
@@ -1624,7 +1624,7 @@ VISIT_PROTO_FIELDS(
   VISIT(color);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::ThemeSpecificsIos& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::ThemeIosSpecifics& proto) {
   VISIT(user_color_theme);
   VISIT(ntp_background);
 }

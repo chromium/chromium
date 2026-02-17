@@ -19,7 +19,7 @@ package sync_pb;
 import "components/sync/protocol/theme_types.proto";
 
 // Properties of theme sync objects for iOS themes.
-message ThemeSpecificsIos {
+message ThemeIosSpecifics {
   optional UserColorTheme user_color_theme = 1;
 
   optional NtpCustomBackground ntp_background = 2;

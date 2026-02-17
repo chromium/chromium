@@ -387,7 +387,7 @@ inline constexpr char kIosSaveToDriveDownloadManagerPolicySettings[] =
 inline constexpr char kIosChooseFromDriveFilePickerPolicySettings[] =
     "ios.choose_from_drive.file_picker_policy";
 
-// Preference to store the current ThemeSpecificsIos for the user's background
+// Preference to store the current `ThemeIosSpecifics` for the user's background
 // choices.
 inline constexpr char kIosSavedThemeSpecificsIos[] =
     "ios.saved_theme_specifics_ios";
@@ -447,7 +447,7 @@ inline constexpr char kIosNtpFeedTopSigninPromoDisplayedCount[] =
 inline constexpr char kIosNtpThemeMigrationComplete[] =
     "ios.ntp.theme_migration_complete";
 
-// String preference to store the active `ThemeSpecificsIos` for the user's
+// String preference to store the active `ThemeIosSpecifics` for the user's
 // background choices. This is the "live" source of truth for the current NTP
 // background, updated by both local changes and remote sync updates.
 inline constexpr char kIosNtpThemeSpecifics[] = "ios.ntp.theme_specifics";
