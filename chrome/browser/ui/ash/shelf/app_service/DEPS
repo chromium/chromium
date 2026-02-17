@@ -32,7 +32,6 @@ include_rules = [
   "+chrome/browser/extensions/context_menu_matcher.h",
   "+chrome/browser/extensions/launch_util.h",
   "+chrome/browser/extensions/menu_manager.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/shelf",

@@ -19,13 +19,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_feedback.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -718,7 +718,9 @@ void ArcVmDataMigrationScreen::UpdateUIState(
 
 void ArcVmDataMigrationScreen::OnSkipClicked() {
   ReportEvent(ArcVmDataMigrationScreenEvent::kSkipButtonClicked, resuming_);
-  chrome::AttemptRelaunch();
+  // TODO(crbug.com/479113713): Use better reason and description.
+  ash::SessionTerminationManager::Get()->Reboot(
+      power_manager::REQUEST_RESTART_OTHER, "Chrome relaunch");
 }
 
 void ArcVmDataMigrationScreen::OnUpdateClicked() {
@@ -746,7 +748,9 @@ void ArcVmDataMigrationScreen::OnResumeClicked() {
 
 void ArcVmDataMigrationScreen::OnFinishClicked() {
   ReportEvent(ArcVmDataMigrationScreenEvent::kFinishButtonClicked, resuming_);
-  chrome::AttemptRelaunch();
+  // TODO(crbug.com/479113713): Use better reason and description.
+  ash::SessionTerminationManager::Get()->Reboot(
+      power_manager::REQUEST_RESTART_OTHER, "Chrome relaunch");
 }
 
 void ArcVmDataMigrationScreen::OnReportClicked() {
@@ -778,7 +782,9 @@ void ArcVmDataMigrationScreen::HandleSetupFailure(
 void ArcVmDataMigrationScreen::HandleRetriableFatalError() {
   DCHECK(!resuming_);
   // TODO(b/258278176): Show an appropriate UI.
-  chrome::AttemptRelaunch();
+  // TODO(crbug.com/479113713): Use better reason and description.
+  ash::SessionTerminationManager::Get()->Reboot(
+      power_manager::REQUEST_RESTART_OTHER, "Chrome relaunch");
 }
 
 device::mojom::WakeLock* ArcVmDataMigrationScreen::GetWakeLock() {

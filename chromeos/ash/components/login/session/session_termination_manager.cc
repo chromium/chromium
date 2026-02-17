@@ -15,17 +15,13 @@ namespace ash {
 
 namespace {
 
-const char kLockedToSingleUserRebootDescription[] = "Reboot forced by policy";
-const char kRemoteCommandSignoutRebootDescription[] =
+constexpr char kLockedToSingleUserRebootDescription[] =
+    "Reboot forced by policy";
+constexpr char kRemoteCommandSignoutRebootDescription[] =
     "Reboot remote command (sign out)";
 bool g_send_stop_request_to_session_manager = false;
 
 SessionTerminationManager* g_instance = nullptr;
-
-void Reboot(power_manager::RequestRestartReason reason,
-            const std::string& description) {
-  chromeos::PowerManagerClient::Get()->RequestRestart(reason, description);
-}
 
 }  // namespace
 
@@ -78,6 +74,12 @@ void SessionTerminationManager::RebootIfNecessary() {
   CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&SessionTerminationManager::DidWaitForServiceToBeAvailable,
                      weak_factory_.GetWeakPtr()));
+}
+
+void SessionTerminationManager::Reboot(
+    power_manager::RequestRestartReason reason,
+    const std::string& description) {
+  chromeos::PowerManagerClient::Get()->RequestRestart(reason, description);
 }
 
 void SessionTerminationManager::SetDeviceLockedToSingleUser() {

@@ -32,6 +32,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -229,6 +230,8 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
       user_manager_;
   session_manager::SessionManager session_manager_{
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+
+  ash::SessionTerminationManager session_termination_manager_;
 
   raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> update_engine_client_ =
       nullptr;  // Not owned.

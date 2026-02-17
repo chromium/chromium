@@ -60,6 +60,7 @@ static_library("add_supervision") {
     "//components/constrained_window",
     "//components/google/core/common",
     "//components/services/app_service/public/cpp:app_types",
+    "//components/session_manager/core",
     "//components/signin/public/base",
     "//components/supervised_user/core/browser",
     "//components/user_manager",

@@ -21,7 +21,6 @@
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
@@ -37,13 +36,6 @@ ash::UpdateEngineClient* GetUpdateEngineClient() {
       ash::UpdateEngineClient::Get();
   DCHECK(update_engine_client);
   return update_engine_client;
-}
-
-chromeos::PowerManagerClient* GetPowerManagerClient() {
-  chromeos::PowerManagerClient* power_manager_client =
-      chromeos::PowerManagerClient::Get();
-  DCHECK(power_manager_client);
-  return power_manager_client;
 }
 
 void ReportSessionUMAMetrics() {
@@ -118,8 +110,8 @@ void AttemptUserExit() {
 }
 
 void AttemptRelaunch() {
-  GetPowerManagerClient()->RequestRestart(power_manager::REQUEST_RESTART_OTHER,
-                                          "Chrome relaunch");
+  ash::SessionTerminationManager::Get()->Reboot(
+      power_manager::REQUEST_RESTART_OTHER, "Chrome relaunch");
 }
 
 void AttemptExit() {

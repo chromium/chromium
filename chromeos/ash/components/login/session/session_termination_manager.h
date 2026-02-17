@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 
 namespace ash {
@@ -48,6 +49,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_SESSION)
 
   // To be called on login screen if the policy is set.
   void RebootIfNecessary();
+
+  // Relaunches the entire OS, instead of just relaunching the browser.
+  void Reboot(power_manager::RequestRestartReason reason,
+              const std::string& description);
 
   // To be called when the device gets locked to single user.
   void SetDeviceLockedToSingleUser();

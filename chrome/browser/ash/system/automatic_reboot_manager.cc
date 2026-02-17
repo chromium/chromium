@@ -35,7 +35,6 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
-#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -164,9 +163,8 @@ AutomaticRebootManager::AutomaticRebootManager(
       prefs::kRebootAfterUpdate,
       base::BindRepeating(&AutomaticRebootManager::Reschedule,
                           base::Unretained(this)));
-  on_app_terminating_subscription_ =
-      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
-          &AutomaticRebootManager::OnAppTerminating, base::Unretained(this)));
+  session_termination_observation_.Observe(
+      ash::SessionTerminationManager::Get());
 
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   UpdateEngineClient::Get()->AddObserver(this);
@@ -429,7 +427,7 @@ void AutomaticRebootManager::Reboot() {
   grace_start_timer_.reset();
   grace_end_timer_.reset();
   VLOG(1) << "Rebooting immediately.";
-  chromeos::PowerManagerClient::Get()->RequestRestart(
+  ash::SessionTerminationManager::Get()->Reboot(
       power_manager::REQUEST_RESTART_OTHER, "automatic reboot manager");
 }
 

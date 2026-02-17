@@ -33,6 +33,7 @@ static_library("app_mode") {
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/login/session",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
     "//components/crash/core/common",

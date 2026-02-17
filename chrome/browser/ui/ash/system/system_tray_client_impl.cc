@@ -45,7 +45,6 @@
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -734,7 +733,7 @@ void SystemTrayClientImpl::SetLocaleAndExit(
     const std::string& locale_iso_code) {
   ProfileManager::GetActiveUserProfile()->ChangeAppLocale(
       locale_iso_code, Profile::APP_LOCALE_CHANGED_VIA_SYSTEM_TRAY);
-  chrome::AttemptUserExit();
+  session_manager::SessionManager::Get()->RequestSignOut();
 }
 
 void SystemTrayClientImpl::ShowAccessCodeCastingDialog(

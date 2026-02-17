@@ -43,6 +43,7 @@ static_library("crostini") {
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/common:constants",
+    "//chromeos/ash/components/login/session",
     "//chromeos/ash/experiences/arc",
     "//components/policy/core/common",
     "//content/public/browser",

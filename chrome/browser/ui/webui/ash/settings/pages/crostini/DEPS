@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/usb",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/enterprise/browser_management",
-  "+chrome/browser/lifetime",
   "+chrome/browser/policy/profile_policy_connector.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/views/bruschetta",

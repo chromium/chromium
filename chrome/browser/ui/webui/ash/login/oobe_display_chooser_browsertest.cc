@@ -8,7 +8,6 @@
 #include "ash/shell.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "content/public/test/browser_test.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"

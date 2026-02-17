@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -44,6 +45,7 @@ class OobeUI;
 class WebUILoginView : public views::View,
                        public content::WebContentsDelegate,
                        public session_manager::SessionManagerObserver,
+                       public ash::SessionTerminationManager::Observer,
                        public ChromeWebModalDialogManagerDelegate,
                        public web_modal::WebContentsModalDialogHost,
                        public SystemTrayObserver {
@@ -115,8 +117,10 @@ class WebUILoginView : public views::View,
   // session_manager::SessionManagerObserver:
   void OnLoginOrLockScreenVisible() override;
 
+  // ash::SessionTerminationManager::Observer:
+  void OnAppTerminating() override;
+
  private:
-  void OnAppTerminating();
 
   // Map type for the accelerator-to-identifier map.
   typedef std::map<ui::Accelerator, LoginAcceleratorAction> AccelMap;
@@ -145,11 +149,12 @@ class WebUILoginView : public views::View,
   // 2. Notifies OOBE/sign classes.
   void OnLoginPromptVisible();
 
-  base::CallbackListSubscription on_app_terminating_subscription_;
-
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
+  base::ScopedObservation<ash::SessionTerminationManager,
+                          ash::SessionTerminationManager::Observer>
+      session_termination_observation_{this};
 
   base::WeakPtr<LoginDisplayHostWebUI> controller_;
 

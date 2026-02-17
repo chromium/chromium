@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ash/system",
   "+chrome/browser/ash/system_web_apps/apps/personalization_app",
   "+chrome/browser/chromeos/extensions/vpn_provider",
-  "+chrome/browser/lifetime",
   "+chrome/browser/media/router/discovery/access_code",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/cast_config",

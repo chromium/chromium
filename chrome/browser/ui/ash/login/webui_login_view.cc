@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/renderer_preferences_util.h"
@@ -107,11 +106,9 @@ void InitializeWebView(views::WebView* web_view) {
 
 WebUILoginView::WebUILoginView(base::WeakPtr<LoginDisplayHostWebUI> controller)
     : controller_(controller) {
-  on_app_terminating_subscription_ =
-      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
-          &WebUILoginView::OnAppTerminating, base::Unretained(this)));
-
   session_observation_.Observe(session_manager::SessionManager::Get());
+  session_termination_observation_.Observe(
+      ash::SessionTerminationManager::Get());
 
   for (size_t i = 0; i < kLoginAcceleratorDataLength; ++i) {
     ui::Accelerator accelerator(kLoginAcceleratorData[i].keycode,

@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/supervised_user",

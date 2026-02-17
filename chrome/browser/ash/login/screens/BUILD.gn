@@ -290,6 +290,7 @@ static_library("screens") {
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/growth",
     "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/login/session",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/policy",
     "//chromeos/ash/components/quick_start",

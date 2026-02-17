@@ -55,7 +55,6 @@
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -250,12 +249,13 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
     oobe_cros_events_metrics_ =
         std::make_unique<OobeCrosEventsMetrics>(oobe_metrics_helper_.get());
   }
+
+  browser_controller_observation_.Observe(BrowserController::GetInstance());
+
   // Close the login screen on app termination (for the case where shutdown
   // occurs before login completes).
-  app_terminating_subscription_ =
-      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
-          &LoginDisplayHostCommon::OnAppTerminating, base::Unretained(this)));
-  browser_controller_observation_.Observe(BrowserController::GetInstance());
+  session_termination_observation_.Observe(
+      ash::SessionTerminationManager::Get());
 }
 
 LoginDisplayHostCommon::~LoginDisplayHostCommon() = default;
@@ -698,7 +698,7 @@ void LoginDisplayHostCommon::OnBrowserCreated(BrowserDelegate* browser) {
     // yet. Lock window has to be closed at this point so that a browser window
     // exists and the window can acquire input focus.
     OnBrowserCreated();
-    app_terminating_subscription_ = {};
+    session_termination_observation_.Reset();
     browser_controller_observation_.Reset();
   }
 }
@@ -785,7 +785,7 @@ void LoginDisplayHostCommon::Cleanup() {
   }
 
   SigninProfileHandler::Get()->ClearSigninProfile(base::DoNothing());
-  app_terminating_subscription_ = {};
+  session_termination_observation_.Reset();
   browser_controller_observation_.Reset();
   login_ui_pref_controller_.reset();
 

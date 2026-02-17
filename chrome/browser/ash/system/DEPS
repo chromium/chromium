@@ -37,9 +37,3 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
-
-specific_include_rules = {
-  "automatic_reboot_manager\\.cc": [
-    "+chrome/browser/lifetime/termination_notification.h",
-  ]
-}

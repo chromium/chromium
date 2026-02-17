@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/public/cpp/login_accelerators.h"
-#include "base/callback_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_ui_pref_controller.h"
 #include "chrome/browser/ui/ash/login/signin_ui.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_manager/user_type.h"
 
@@ -36,7 +36,8 @@ class OobeCrosEventsMetrics;
 // LoginDisplayHostMojo and LoginDisplayHostWebUI.
 class LoginDisplayHostCommon : public LoginDisplayHost,
                                public BrowserController::Observer,
-                               public SigninUI {
+                               public SigninUI,
+                               public ash::SessionTerminationManager::Observer {
  public:
   explicit LoginDisplayHostCommon(bool update_geolocation_usage_allowed);
 
@@ -94,10 +95,11 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   // BrowserController::Observer:
   void OnBrowserCreated(BrowserDelegate* browser) override;
-
   WizardContext* GetWizardContext() override;
-
   OobeMetricsHelper* GetOobeMetricsHelper() override;
+
+  // ash::SessionTerminationManager::Observer:
+  void OnAppTerminating() override;
 
  protected:
   virtual void OnStartSignInScreen() = 0;
@@ -132,8 +134,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
       bool is_reset_allowed,
       std::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode);
 
-  void OnAppTerminating();
-
   // True if session start is in progress.
   bool session_starting_ = false;
 
@@ -162,14 +162,16 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   std::unique_ptr<ash::quick_start::TargetDeviceBootstrapController>
       bootstrap_controller_;
 
-  base::CallbackListSubscription app_terminating_subscription_;
-
   std::unique_ptr<OobeMetricsHelper> oobe_metrics_helper_;
 
   std::unique_ptr<OobeCrosEventsMetrics> oobe_cros_events_metrics_;
 
   base::ScopedObservation<BrowserController, BrowserController::Observer>
       browser_controller_observation_{this};
+
+  base::ScopedObservation<ash::SessionTerminationManager,
+                          ash::SessionTerminationManager::Observer>
+      session_termination_observation_{this};
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 };

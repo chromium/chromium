@@ -30,7 +30,6 @@ include_rules = [
   "+chrome/browser/extensions/extension_service_test_base.h",
   "+chrome/browser/extensions/forced_extensions",
   "+chrome/browser/extensions/policy_handlers.h",
-  "+chrome/browser/lifetime",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/keyboard",
