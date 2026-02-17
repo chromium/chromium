@@ -702,7 +702,7 @@
     },
     {
       name: "AvoidForcedLayoutOnInvisibleDocumentClose",
-      status: "test",
+      status: "stable",
     },
     {
       // Fix for https://crbug.com/471876082
