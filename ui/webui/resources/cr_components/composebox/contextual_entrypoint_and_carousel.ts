@@ -85,6 +85,7 @@ enum ProcessFilesError {
   MAX_FILES_EXCEEDED = 4,
   MAX_IMAGES_EXCEEDED = 5,
   MAX_PDFS_EXCEEDED = 6,
+  FILE_UPLOAD_NOT_ALLOWED = 7,
 }
 
 
@@ -766,6 +767,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       case ProcessFilesError.INVALID_TYPE:
         errorMessage = 'composeFileTypesAllowedError';
         break;
+      case ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED:
+        errorMessage = 'composeboxFileUploadNotAllowed';
+        break;
       default:
         break;
     }
@@ -813,6 +817,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       return;
     }
 
+    if (this.activeTool_ === ComposeboxToolMode.kDeepSearch) {
+      this.handleProcessFilesError_(ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED);
+      return;
+    }
+
     if (this.entrypointName === 'Realbox') {
       this.addFileContext_(Array.from(files));
       return;
@@ -843,6 +852,17 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
 
     for (const file of files) {
+      const inputType = this.getInputType_(file.type);
+      if (this.inputState &&
+          this.activeTool_ !== ComposeboxToolMode.kUnspecified) {
+        const disabledTypes = this.inputState.disabledInputTypes || [];
+        if (disabledTypes.includes(inputType)) {
+          errorToDisplay =
+              Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
+          continue;
+        }
+      }
+
       if (file.size === 0 || file.size > this.maxFileSize_) {
         const sizeError = file.size === 0 ? ProcessFilesError.FILE_EMPTY :
                                             ProcessFilesError.FILE_TOO_LARGE;
@@ -856,7 +876,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         continue;
       }
 
-      const inputType = this.getInputType_(file.type);
       let maxType = maxTotal;
       if (this.inputState &&
           this.inputState.maxInstances[inputType] !== undefined) {
