@@ -248,7 +248,7 @@ class AutofillManager
   // See autofill_driver.mojom for documentation.
   // Some functions are virtual for testing.
   virtual void OnFormsSeen(const std::vector<FormData>& updated_forms,
-                           const std::vector<FormGlobalId>& removed_forms);
+                           const std::vector<FormGlobalId>& removed_form_ids);
   virtual void OnFormSubmitted(const FormData& form,
                                mojom::SubmissionSource source);
   virtual void OnTextFieldValueChanged(const FormData& form,

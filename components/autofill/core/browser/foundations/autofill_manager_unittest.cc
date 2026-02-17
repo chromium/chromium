@@ -46,6 +46,7 @@ using ::base::test::RunClosure;
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
@@ -572,12 +573,26 @@ TEST_F(AutofillManagerTest_ObserverCalls_FullCache,
        CallsOnAfterFoo_IfCacheIsFull_ParseFormsAsync) {
   base::RunLoop run_loop;
 
+  std::vector<FormData> updated_forms = CreateTestForms(10);
+  std::vector<FormGlobalId> updated_form_ids =
+      base::ToVector(updated_forms, &FormData::global_id);
+  std::vector<FormGlobalId> removed_form_ids = {test::MakeFormGlobalId()};
+
+  // The cache is too full to accommodate `updated_forms`.
+  // Nonetheless, OnBeforeFormsSeen() and OnAfterFormsSeen() must both be
+  // called with the same arguments.
   testing::InSequence s;
-  EXPECT_CALL(observer(), OnBeforeFormsSeen);
-  EXPECT_CALL(observer(), OnAfterFormsSeen)
+  EXPECT_CALL(observer(),
+              OnBeforeFormsSeen(_, ElementsAreArray(updated_form_ids),
+                                ElementsAreArray(removed_form_ids)));
+  EXPECT_CALL(observer(),
+              OnAfterFormsSeen(_, ElementsAreArray(updated_form_ids),
+                               ElementsAreArray(removed_form_ids)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
-  autofill_manager().OnFormsSeen(CreateTestForms(10), {});
+  EXPECT_GT(GetCacheSize() + updated_form_ids.size() - removed_form_ids.size(),
+            kAutofillManagerMaxFormCacheSize);
+  autofill_manager().OnFormsSeen(updated_forms, removed_form_ids);
   std::move(run_loop).Run();
   EXPECT_EQ(GetCacheSize(), kAutofillManagerMaxFormCacheSize);
 }
