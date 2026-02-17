@@ -3306,39 +3306,6 @@ const FeatureEntry::FeatureVariation kVcSegmentationModelVariations[] = {
     {"Lower resolution model", kVcSegmentationModelLowerResolution, nullptr},
 };
 
-const FeatureEntry::FeatureParam kVcLightIntensity10[] = {
-    {"light_intensity", "1.0"},
-};
-
-const FeatureEntry::FeatureParam kVcLightIntensity13[] = {
-    {"light_intensity", "1.3"},
-};
-
-const FeatureEntry::FeatureParam kVcLightIntensity15[] = {
-    {"light_intensity", "1.5"},
-};
-
-const FeatureEntry::FeatureParam kVcLightIntensity17[] = {
-    {"light_intensity", "1.7"},
-};
-
-const FeatureEntry::FeatureParam kVcLightIntensity18[] = {
-    {"light_intensity", "1.8"},
-};
-
-const FeatureEntry::FeatureParam kVcLightIntensity20[] = {
-    {"light_intensity", "2.0"},
-};
-
-const FeatureEntry::FeatureVariation kVcLightIntensityVariations[] = {
-    {"1.0", kVcLightIntensity10, nullptr},
-    {"1.3", kVcLightIntensity13, nullptr},
-    {"1.5", kVcLightIntensity15, nullptr},
-    {"1.7", kVcLightIntensity17, nullptr},
-    {"1.8", kVcLightIntensity18, nullptr},
-    {"2.0", kVcLightIntensity20, nullptr},
-};
-
 const FeatureEntry::FeatureParam
     kCrOSLateBootMissiveDisableStorageDegradation[] = {
         {"controlled_degradation", "false"}};
@@ -9295,11 +9262,6 @@ const FeatureEntry kFeatureEntries[] = {
          ash::features::kVcSegmentationInferenceBackend,
          kVcSegmentationInferenceBackendVariations,
          "VcSegmentationInferenceBackend")},
-    {"vc-light-intensity", flag_descriptions::kVcLightIntensityName,
-     flag_descriptions::kVcLightIntensityDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kVcLightIntensity,
-                                    kVcLightIntensityVariations,
-                                    "VCLightIntensity")},
     {"vc-web-api", flag_descriptions::kVcWebApiName,
      flag_descriptions::kVcWebApiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kVcWebApi)},

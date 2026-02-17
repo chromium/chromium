@@ -9604,11 +9604,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "vc-light-intensity",
-    "owners": [ "ardoerlemans@chromium.org", "jmpollock@chromium.org", "nbowe@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "vc-relighting-inference-backend",
     "owners": [
       "shik@chromium.org",

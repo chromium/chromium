@@ -2017,12 +2017,6 @@ BASE_FEATURE(kVcTrayTitleHeader,
              "VCTrayTitleHeader",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables alternative light intensity for ChromeOS video
-// conferencing relighting.
-BASE_FEATURE(kVcLightIntensity,
-             "VCLightIntensity",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables web API support for ChromeOS video conferencing.
 BASE_FEATURE(kVcWebApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
