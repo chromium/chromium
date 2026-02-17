@@ -807,7 +807,7 @@ TEST(StringViewTest, RfindChar) {
   EXPECT_EQ(kNotFound, view16_with_null.rfind(UChar(0), 3));
 }
 
-TEST(StringViewTest, Contains) {
+TEST(StringViewTest, ContainsChar) {
   EXPECT_FALSE(StringView().contains(0));
   EXPECT_FALSE(StringView("").contains(0));
   EXPECT_FALSE(StringView(u"").contains(0));
@@ -819,6 +819,27 @@ TEST(StringViewTest, Contains) {
   EXPECT_FALSE(StringView("ascii").contains(uchar::kBlackSquare));
   EXPECT_FALSE(StringView(u"ascii").contains(uchar::kBlackSquare));
   EXPECT_TRUE(StringView(u"ascii\u25A0").contains(uchar::kBlackSquare));
+}
+
+TEST(StringViewTest, ContainsString) {
+  EXPECT_TRUE(StringView().contains(""));
+  EXPECT_FALSE(StringView().contains("foo"));
+
+  EXPECT_TRUE(StringView("").contains(""));
+  EXPECT_TRUE(StringView(u"").contains(""));
+  EXPECT_FALSE(StringView(u"").contains("foo"));
+
+  EXPECT_TRUE(StringView("ascii").contains(""));
+  EXPECT_TRUE(StringView(u"ascii").contains(""));
+  EXPECT_TRUE(
+      StringView(base::byte_span_from_cstring("as\0cii")).contains("cii"));
+  EXPECT_TRUE(StringView(base::span_from_cstring(u"unico\0de")).contains("de"));
+  EXPECT_TRUE(StringView(base::span_from_cstring(u"unico\0de"))
+                  .contains(StringView(base::span_from_cstring(u"\0"))));
+
+  EXPECT_FALSE(StringView("ascii").contains(u"\u25A0"));
+  EXPECT_FALSE(StringView(u"ascii").contains(u"\u25A0"));
+  EXPECT_TRUE(StringView(u"ascii\u25A0").contains(u"\u25A0"));
 }
 
 TEST(StringViewTest, StartsWith) {

@@ -242,6 +242,10 @@ bool StringView::contains(UChar ch) const {
   return find(ch) != kNotFound;
 }
 
+bool StringView::contains(const StringView& other) const {
+  return find(other) != kNotFound;
+}
+
 bool StringView::starts_with(const StringView& other) const {
   if (other.empty()) {
     return true;

@@ -302,6 +302,8 @@ class WTF_EXPORT StringView {
 
   // Returns `true` if this StringView contains the specified character.
   bool contains(UChar ch) const;
+  // Returns `true` if this StringView contains the specified string.
+  bool contains(const StringView& other) const;
 
   // Returns `true` if `this` string starts with `other`.
   bool starts_with(const StringView& other) const;

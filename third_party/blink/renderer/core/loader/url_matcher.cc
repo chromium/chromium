@@ -33,8 +33,8 @@ bool UrlMatcher::Match(const KURL& url) const {
       if (!it.second.has_value())
         return true;
       // Otherwise check if the path or query contains the string.
-      if (url.GetPath().ToString().Contains(it.second.value()) ||
-          url.Query().ToString().Contains(it.second.value())) {
+      if (url.GetPath().contains(it.second.value()) ||
+          url.Query().contains(it.second.value())) {
         return true;
       }
     }
