@@ -48,11 +48,11 @@ source_set("unit_tests") {
   deps = [
     ":ui",
     "//base/test:test_support",
+    "//components/autofill/core/common:features",
     "//components/autofill/ios/browser",
     "//ios/chrome/browser/autofill/form_input_accessory/ui",
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/ui_bundled/branding:branding_ui",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/test:test_support",
     "//testing/gtest",

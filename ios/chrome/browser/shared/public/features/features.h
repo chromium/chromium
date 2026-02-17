@@ -445,9 +445,6 @@ bool IsContentPushNotificationsSetUpListRegistrationOnly();
 // false otherwise.
 bool IsLiquidGlassEffectEnabled();
 
-// Feature flag to enable Enhanced Autofill.
-BASE_DECLARE_FEATURE(kIOSEnhancedAutofill);
-
 // Feature flag to enable the default input accessory view.
 BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryDefaultView);
 

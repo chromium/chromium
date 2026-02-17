@@ -5779,11 +5779,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "ios-enhanced-autofill",
-    "owners": [ "tmartino@google.com", "bling-transactions@google.com" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "ios-expanded-setup-list",
     "owners": [
       "pabouchard@google.com",

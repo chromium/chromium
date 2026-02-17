@@ -10,11 +10,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller+testing.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -92,7 +92,7 @@ class FormInputAccessoryViewControllerTest : public PlatformTest {
 TEST_F(FormInputAccessoryViewControllerTest, ManualFillButtonPress) {
   base::test::ScopedFeatureList scoped_featurelist;
   scoped_featurelist.InitWithFeatures(
-      /*enabled_features=*/{kIOSEnhancedAutofill},
+      /*enabled_features=*/{autofill::features::kAutofillAiWithDataSchema},
       /*disabled_features=*/{});
 
   FormInputAccessoryView* accessory_view =

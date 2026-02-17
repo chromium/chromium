@@ -462,9 +462,6 @@ extern const char kIOSEnableCloudProfileReportingDescription[];
 extern const char kIOSEnableRealtimeEventReportingName[];
 extern const char kIOSEnableRealtimeEventReportingDescription[];
 
-extern const char kIOSEnhancedAutofillName[];
-extern const char kIOSEnhancedAutofillDescription[];
-
 extern const char kIOSExpandedSetupListName[];
 extern const char kIOSExpandedSetupListDescription[];
 

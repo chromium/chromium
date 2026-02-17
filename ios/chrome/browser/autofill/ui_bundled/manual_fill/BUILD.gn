@@ -199,10 +199,7 @@ source_set("manual_fill_constants") {
     "manual_fill_constants.h",
     "manual_fill_constants.mm",
   ]
-  deps = [
-    "//components/autofill/core/browser",
-    "//ios/chrome/browser/shared/public/features",
-  ]
+  deps = [ "//components/autofill/core/browser" ]
 }
 
 source_set("unit_tests") {

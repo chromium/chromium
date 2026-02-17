@@ -750,11 +750,6 @@ const char kIOSEnableRealtimeEventReportingDescription[] =
     "When enabled, realtime events will be reported to the user's "
     "organization.";
 
-const char kIOSEnhancedAutofillName[] = "Enhanced Autofill";
-const char kIOSEnhancedAutofillDescription[] =
-    "Saving, updating, editing, and filling entities (Passports, IBANs, "
-    "Loyalty Cards) via LLM-based classification";
-
 const char kIOSExpandedSetupListName[] = "Expanded Setup List";
 const char kIOSExpandedSetupListDescription[] =
     "Enables a feature that adds new items in the Setup List.";

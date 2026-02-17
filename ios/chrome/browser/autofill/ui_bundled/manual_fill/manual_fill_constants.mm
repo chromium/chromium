@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 
 #import "base/feature_list.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "components/autofill/core/common/autofill_features.h"
 
 namespace manual_fill {
 
@@ -111,7 +111,8 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
       // For AutofillAi suggestions, the manual fill menu opens to the Address
       // tab and scrolls to the "Manage Addresses and More..." button, allowing
       // users to manage AutofillAi related data.
-      if (!base::FeatureList::IsEnabled(kIOSEnhancedAutofill)) {
+      if (!base::FeatureList::IsEnabled(
+              autofill::features::kAutofillAiWithDataSchema)) {
         // Only allow kAutofillAi if the associated feature is enabled.
         NOTREACHED();
       }
