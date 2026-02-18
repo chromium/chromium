@@ -111,6 +111,14 @@ class NET_EXPORT IPEndPoint {
   bool operator<(const IPEndPoint& that) const;
   friend bool operator==(const IPEndPoint&, const IPEndPoint&) = default;
 
+  template <typename H>
+  friend H AbslHashValue(H h, const IPEndPoint& ep) {
+    auto addr_bytes = ep.address_.bytes();
+    return H::combine(H::combine_contiguous(std::move(h), addr_bytes.data(),
+                                            addr_bytes.size()),
+                      ep.port_, ep.scope_id_);
+  }
+
   base::Value ToValue() const;
 
  private:

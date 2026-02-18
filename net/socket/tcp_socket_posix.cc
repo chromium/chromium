@@ -11,11 +11,13 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/posix/eintr_wrapper.h"
@@ -24,6 +26,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -46,6 +49,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC)
+#include "net/socket/ephemeral_port_randomizer_mac.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 // If we don't have a definition for TCPI_OPT_SYN_DATA, create one.
 #if !defined(TCPI_OPT_SYN_DATA)
@@ -285,6 +292,50 @@ int TCPSocketPosix::Connect(const IPEndPoint& address,
     return ERR_ADDRESS_INVALID;
   }
 
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kTcpPortRandomizationMac)) {
+    port_randomization_data_.reset();
+    EphemeralPortRandomizer& randomizer =
+        EphemeralPortRandomizer::GetInstance();
+    constexpr int kMaxBindAttempts = 5;
+    for (int attempt = 0; attempt < kMaxBindAttempts; ++attempt) {
+      std::optional<uint16_t> port = randomizer.PickPort(address);
+      if (!port) {
+        break;
+      }
+
+      IPAddress local_ip = address.address().IsIPv6()
+                               ? IPAddress::IPv6AllZeros()
+                               : IPAddress::IPv4AllZeros();
+      IPEndPoint local_endpoint(local_ip, *port);
+      SockaddrStorage local_storage;
+      if (!local_endpoint.ToSockAddr(local_storage.addr(),
+                                     &local_storage.addr_len)) {
+        break;
+      }
+
+      int bind_result = HANDLE_EINTR(bind(
+          socket_->socket_fd(), local_storage.addr(), local_storage.addr_len));
+      if (bind_result == 0) {
+        port_randomization_data_ = {address, *port};
+        break;
+      }
+
+      int bind_error = errno;
+      if (bind_error == EADDRINUSE || bind_error == EACCES) {
+        // Someone else is using this port. Record it as used so we won't
+        // try it again in the near future.
+        randomizer.RecordPortUse(address, *port);
+        continue;
+      }
+      if (bind_error != EINVAL) {
+        DPLOG(ERROR) << "bind() failed while randomizing source port";
+      }
+      break;
+    }
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   int rv = socket_->Connect(
       storage, base::BindOnce(&TCPSocketPosix::ConnectCompleted,
                               base::Unretained(this), std::move(callback)));
@@ -475,6 +526,14 @@ int TCPSocketPosix::SetIPv6Only(bool ipv6_only) {
 
 void TCPSocketPosix::Close() {
   TRACE_EVENT("base", perfetto::StaticString{"CloseSocketTCP"});
+#if BUILDFLAG(IS_MAC)
+  if (port_randomization_data_) {
+    EphemeralPortRandomizer::GetInstance().RecordPortUse(
+        port_randomization_data_->peer_address,
+        port_randomization_data_->local_port);
+    port_randomization_data_.reset();
+  }
+#endif  // BUILDFLAG(IS_MAC)
   socket_.reset();
   tag_ = SocketTag();
 }
@@ -582,6 +641,12 @@ int TCPSocketPosix::HandleConnectCompleted(int rv) {
     net_log_.EndEvent(NetLogEventType::TCP_CONNECT_ATTEMPT);
     NotifySocketPerformanceWatcher();
   }
+
+#if BUILDFLAG(IS_MAC)
+  if (port_randomization_data_.has_value()) {
+    base::UmaHistogramSparse("Net.EphemeralPortRandomizer.ConnectResult", -rv);
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   // Give a more specific error when the user is offline.
   if (rv == ERR_ADDRESS_UNREACHABLE && NetworkChangeNotifier::IsOffline())

@@ -330,6 +330,16 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTcpPortReuseMetricsWin);
 NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketIoCompletionPortWin);
 #endif
 
+#if BUILDFLAG(IS_MAC)
+// Whether or not to enable TCP port randomization on macOS by choosing a
+// randomized ephemeral source port.
+NET_EXPORT BASE_DECLARE_FEATURE(kTcpPortRandomizationMac);
+// How long (in seconds) to avoid reusing a recently-used ephemeral port for
+// the same peer. Defaults to 120 to match common NAT timeout values.
+NET_EXPORT extern const base::FeatureParam<int>
+    kTcpPortRandomizationReuseDelaySec;
+#endif
+
 // Avoid creating cache entries for transactions that are most likely no-store.
 NET_EXPORT BASE_DECLARE_FEATURE(kAvoidEntryCreationForNoStore);
 NET_EXPORT extern const base::FeatureParam<int>

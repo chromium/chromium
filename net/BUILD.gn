@@ -1532,6 +1532,12 @@ component("net") {
       "socket/udp_socket_posix.cc",
       "socket/udp_socket_posix.h",
     ]
+    if (is_mac) {
+      sources += [
+        "socket/ephemeral_port_randomizer_mac.cc",
+        "socket/ephemeral_port_randomizer_mac.h",
+      ]
+    }
     if (!is_ios) {
       sources += [ "disk_cache/blockfile/file_posix.cc" ]
     }
@@ -3165,6 +3171,7 @@ target(_test_target_type, "net_unittests") {
   if (is_mac) {
     sources += [
       "cert/internal/trust_store_mac_unittest.cc",
+      "socket/ephemeral_port_randomizer_mac_unittest.cc",
       "ssl/client_cert_store_mac_unittest.cc",
       "ssl/ssl_platform_key_mac_unittest.cc",
     ]

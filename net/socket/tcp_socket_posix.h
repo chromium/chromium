@@ -8,10 +8,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/log/net_log_with_source.h"
@@ -28,7 +31,6 @@ namespace net {
 
 class AddressList;
 class IOBuffer;
-class IPEndPoint;
 class SocketPosix;
 class NetLog;
 struct NetLogSource;
@@ -232,6 +234,14 @@ class NET_EXPORT TCPSocketPosix {
   // Current socket tag if |socket_| is valid, otherwise the tag to apply when
   // |socket_| is opened.
   SocketTag tag_;
+
+#if BUILDFLAG(IS_MAC)
+  struct PortRandomizationData {
+    IPEndPoint peer_address;
+    uint16_t local_port;
+  };
+  std::optional<PortRandomizationData> port_randomization_data_;
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 }  // namespace net
