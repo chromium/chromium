@@ -38,6 +38,9 @@ class VerticalTabStripTopContainer : public views::View,
       BrowserWindowInterface* browser);
   ~VerticalTabStripTopContainer() override;
 
+  // View:
+  void Layout(PassKey) override;
+
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
@@ -61,10 +64,9 @@ class VerticalTabStripTopContainer : public views::View,
   void SetCaptionButtonWidthForLayout(int caption_button_width);
 
  private:
-  void UpdateComboButtonVisibility();
-
-  void OnCollapsedStateChanged(
-      tabs::VerticalTabStripStateController* controller);
+  // Calculates the width of the visible buttons and returns the sum along with
+  // the padding between them.
+  int GetPreferredWidth() const;
 
   raw_ptr<tabs::VerticalTabStripStateController> state_controller_ = nullptr;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
@@ -73,7 +75,6 @@ class VerticalTabStripTopContainer : public views::View,
   raw_ptr<views::LabelButton> collapse_button_ = nullptr;
   raw_ptr<views::LabelButton> unfocus_button_ = nullptr;
 
-  base::CallbackListSubscription collapsed_state_changed_subscription_;
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 
   // This represents the toolbar (element containing toolbar buttons, omnibox,
