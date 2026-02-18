@@ -138,7 +138,7 @@ media::AudioDecoderConfig ToAudioDecoderConfig(
 
   return media::AudioDecoderConfig(
       media_audio_codec, media::SampleFormat::kSampleFormatF32,
-      media::GuessChannelLayout(audio_capture_config.channels),
+      media::ChannelLayoutConfig::Guess(audio_capture_config.channels),
       audio_capture_config.sample_rate /* samples_per_second */,
       media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted);
 }

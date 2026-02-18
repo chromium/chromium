@@ -65,7 +65,7 @@ class RpcCallMessageHandlerTest : public testing::Test {
   media::AudioDecoderConfig test_audio_config_ =
       media::AudioDecoderConfig(media::AudioCodec::kAAC,
                                 media::SampleFormat::kSampleFormatF32,
-                                media::CHANNEL_LAYOUT_MONO,
+                                media::ChannelLayoutConfig::Mono(),
                                 10000,
                                 media::EmptyExtraData(),
                                 media::EncryptionScheme::kUnencrypted);

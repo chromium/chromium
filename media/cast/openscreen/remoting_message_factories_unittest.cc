@@ -90,7 +90,7 @@ TEST_F(RemotingMessageFactoriesTest, CreateMessageForAudioConfigChange) {
   const char extra_data[4] = {'A', 'C', 'E', 'G'};
   media::AudioDecoderConfig audio_config(
       media::AudioCodec::kOpus, media::kSampleFormatF32,
-      media::CHANNEL_LAYOUT_MONO, 48000,
+      media::ChannelLayoutConfig::Mono(), 48000,
       std::vector<uint8_t>(std::begin(extra_data), std::end(extra_data)),
       media::EncryptionScheme::kUnencrypted);
   ASSERT_TRUE(audio_config.IsValidConfig());
