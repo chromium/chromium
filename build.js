@@ -42,27 +42,25 @@ if (currentPlatform() == "macOS") {
 const archSuffix = buildArm ? "-arm" : "";
 
 if (!REPLAY_LOCAL_DRIVER_DIR) {
-  // Download the record/replay driver archive, using the version stored in
-  // REPLAY_BACKEND_REV unless it was overridden via the environment.
+  // Download the record/replay driver archive. If DRIVER_REVISION is set,
+  // download that specific version. Otherwise download the latest.
   console.log(`Downloading driver...`);
   const driverArchive = `${currentPlatform()}-recordreplay${archSuffix}.tgz`;
-  const driverRevision = driverRevisionIsSet ? DRIVER_REVISION : fs.readFileSync("REPLAY_BACKEND_REV", "utf8");
-  const downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision.trim().substring(0,12)}${archSuffix}.tgz`;
-  const downloadUrl = `https://static.replay.io/downloads/${downloadArchive}`;
 
-  // try versioned driver first, fall back to unversioned (latest)
-  let rv = spawnSync(
-    "curl",
-    ["-f", downloadUrl, "-o", driverArchive],
-    { stdio: "inherit" }
-  );
-  if (rv.status !== 0) {
-    const fallbackArchive = `${currentPlatform()}-recordreplay${archSuffix}.tgz`;
-    const fallbackUrl = `https://static.replay.io/downloads/${fallbackArchive}`;
-    console.log(`Versioned driver not found, falling back to latest: ${fallbackUrl}`);
+  if (driverRevisionIsSet) {
+    const downloadArchive = `${currentPlatform()}-recordreplay-${DRIVER_REVISION.trim().substring(0,12)}${archSuffix}.tgz`;
+    const downloadUrl = `https://static.replay.io/downloads/${downloadArchive}`;
     spawnChecked(
       "curl",
-      ["-f", fallbackUrl, "-o", driverArchive],
+      ["-f", downloadUrl, "-o", driverArchive],
+      { stdio: "inherit" }
+    );
+  } else {
+    const downloadUrl = `https://static.replay.io/downloads/${driverArchive}`;
+    console.log(`Downloading latest driver: ${downloadUrl}`);
+    spawnChecked(
+      "curl",
+      ["-f", downloadUrl, "-o", driverArchive],
       { stdio: "inherit" }
     );
   }

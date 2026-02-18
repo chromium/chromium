@@ -617,29 +617,24 @@ function computeBuildId(
     driverJSONStr = fs.readFileSync(driverJSONFileFull, "utf8");
   } else {
     const driverFile = `${currentPlatform()}-recordreplay.${driverExtension()}`;
-
     const driverArchive = `${currentPlatform()}-recordreplay.tgz`;
-    driverRevision = driverRevisionIsSet
-      ? driverRevision
-      : fs.readFileSync("REPLAY_BACKEND_REV", "utf8");
-    // NOTE(dmiller): we seem to always download the x86 driver here but that's OK because we're just using
-    // the archive to check the date and revision in the metadata JSON file.
-    const downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision
-      .trim()
-      .substring(0, 12)}.tgz`;
-    const downloadUrl = `https://static.replay.io/downloads/${downloadArchive}`;
-    let rv = spawnSync(
-      "curl",
-      ["-f", downloadUrl, "-o", driverArchive],
-      { stdio: "inherit" }
-    );
-    if (rv.status !== 0) {
-      const fallbackArchive = `${currentPlatform()}-recordreplay.tgz`;
-      const fallbackUrl = `https://static.replay.io/downloads/${fallbackArchive}`;
-      log(`Versioned driver not found, falling back to latest: ${fallbackUrl}`);
+
+    if (driverRevisionIsSet) {
+      const downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision
+        .trim()
+        .substring(0, 12)}.tgz`;
+      const downloadUrl = `https://static.replay.io/downloads/${downloadArchive}`;
       spawnChecked(
         "curl",
-        ["-f", fallbackUrl, "-o", driverArchive],
+        ["-f", downloadUrl, "-o", driverArchive],
+        { stdio: "inherit" }
+      );
+    } else {
+      const downloadUrl = `https://static.replay.io/downloads/${driverArchive}`;
+      log(`Downloading latest driver: ${downloadUrl}`);
+      spawnChecked(
+        "curl",
+        ["-f", downloadUrl, "-o", driverArchive],
         { stdio: "inherit" }
       );
     }
