@@ -765,6 +765,7 @@ export namespace BrowsingContext {
       navigation: z.union([BrowsingContext.NavigationSchema, z.null()]),
       timestamp: JsUintSchema,
       url: z.string(),
+      userContext: Browser.UserContextSchema.optional(),
     }),
   );
 }
@@ -905,6 +906,7 @@ export namespace BrowsingContext {
   export const CreateResultSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
+      userContext: Browser.UserContextSchema.optional(),
     }),
   );
 }
@@ -1168,6 +1170,7 @@ export namespace BrowsingContext {
       context: BrowsingContext.BrowsingContextSchema,
       timestamp: JsUintSchema,
       url: z.string(),
+      userContext: Browser.UserContextSchema.optional(),
     }),
   );
 }
@@ -1277,6 +1280,7 @@ export namespace BrowsingContext {
       context: BrowsingContext.BrowsingContextSchema,
       accepted: z.boolean(),
       type: BrowsingContext.UserPromptTypeSchema,
+      userContext: Browser.UserContextSchema.optional(),
       userText: z.string().optional(),
     }),
   );
@@ -1296,6 +1300,7 @@ export namespace BrowsingContext {
       handler: Session.UserPromptHandlerTypeSchema,
       message: z.string(),
       type: BrowsingContext.UserPromptTypeSchema,
+      userContext: Browser.UserContextSchema.optional(),
       defaultValue: z.string().optional(),
     }),
   );
@@ -1726,6 +1731,7 @@ export namespace Network {
       redirectCount: JsUintSchema,
       request: Network.RequestDataSchema,
       timestamp: JsUintSchema,
+      userContext: z.union([Browser.UserContextSchema, z.null()]).optional(),
       intercepts: z.array(Network.InterceptSchema).min(1).optional(),
     }),
   );
@@ -2589,6 +2595,7 @@ export namespace Script {
       z.object({
         type: z.literal('window'),
         context: BrowsingContext.BrowsingContextSchema,
+        userContext: Browser.UserContextSchema.optional(),
         sandbox: z.string().optional(),
       }),
     ),
@@ -2995,6 +3002,7 @@ export namespace Script {
     z.object({
       realm: Script.RealmSchema,
       context: BrowsingContext.BrowsingContextSchema.optional(),
+      userContext: Browser.UserContextSchema.optional(),
     }),
   );
 }
@@ -3698,6 +3706,7 @@ export namespace Input {
   export const FileDialogInfoSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
+      userContext: Browser.UserContextSchema.optional(),
       element: Script.SharedReferenceSchema.optional(),
       multiple: z.boolean(),
     }),
