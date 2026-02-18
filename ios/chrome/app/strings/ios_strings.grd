@@ -2853,7 +2853,7 @@
         Payment methods
       </message>
       <message name="IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU" desc="Edit Menu button to explain the selected text with Gemini.">
-        Explain
+        Explain with Gemini
       </message>
       <message name="IDS_IOS_EXPLAIN_GEMINI_PROMPT_PREFIX" desc="This text will be appended before a body of text which Gemini is being asked to explain to the user.">
           Explain this to me
