@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -15,21 +17,21 @@
 HandoffObserver::HandoffObserver(NSObject<HandoffObserverDelegate>* delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
   SetActiveBrowser(chrome::FindLastActive());
 }
 
 HandoffObserver::~HandoffObserver() {
-  BrowserList::RemoveObserver(this);
   SetActiveBrowser(nullptr);
 }
 
-void HandoffObserver::OnBrowserSetLastActive(Browser* browser) {
+void HandoffObserver::OnBrowserActivated(BrowserWindowInterface* browser) {
   SetActiveBrowser(browser);
   [delegate_ handoffContentsChanged:GetActiveWebContents()];
 }
 
-void HandoffObserver::OnBrowserRemoved(Browser* removed_browser) {
+void HandoffObserver::OnBrowserClosed(BrowserWindowInterface* removed_browser) {
   if (active_browser_ != removed_browser) {
     return;
   }
@@ -58,20 +60,20 @@ void HandoffObserver::TitleWasSet(content::NavigationEntry* entry) {
   [delegate_ handoffContentsChanged:GetActiveWebContents()];
 }
 
-void HandoffObserver::SetActiveBrowser(Browser* active_browser) {
+void HandoffObserver::SetActiveBrowser(BrowserWindowInterface* active_browser) {
   if (active_browser == active_browser_) {
     return;
   }
 
   if (active_browser_) {
-    active_browser_->tab_strip_model()->RemoveObserver(this);
+    active_browser_->GetTabStripModel()->RemoveObserver(this);
     StopObservingWebContents();
   }
 
   active_browser_ = active_browser;
 
   if (active_browser_) {
-    active_browser_->tab_strip_model()->AddObserver(this);
+    active_browser_->GetTabStripModel()->AddObserver(this);
     content::WebContents* web_contents = GetActiveWebContents();
     if (web_contents) {
       StartObservingWebContents(web_contents);
@@ -94,5 +96,5 @@ content::WebContents* HandoffObserver::GetActiveWebContents() {
     return nullptr;
   }
 
-  return active_browser_->tab_strip_model()->GetActiveWebContents();
+  return active_browser_->GetTabStripModel()->GetActiveWebContents();
 }
