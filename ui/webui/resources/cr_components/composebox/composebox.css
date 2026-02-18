@@ -253,7 +253,7 @@ search-animated-glow {
   caret-color: var(--color-composebox-font-light);
   color: var(--color-composebox-font-light);
   field-sizing: content;
-  mask-image: linear-gradient(transparent 7px, black calc(var(--text-input-top-spacing) + 7px));
+  mask-image: linear-gradient(transparent 7px, black var(--text-input-top-spacing));
   height: calc-size(fit-content, min(size + 4px, var(--text-input-max-height)));
   outline: none;
   position: relative;
