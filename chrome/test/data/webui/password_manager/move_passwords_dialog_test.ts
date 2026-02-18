@@ -8,6 +8,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PasswordManagerImpl, PluralStringProxyImpl, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 import type {MovePasswordsDialogElement} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -20,6 +22,7 @@ suite('MovePasswordsDialogTest', function() {
   let passwordManager: TestPasswordManagerProxy;
   let syncProxy: TestSyncBrowserProxy;
   let pluralStringProxy: TestPluralStringProxy;
+  let metrics: MetricsTracker;
   let dialog: MovePasswordsDialogElement;
 
   setup(function() {
@@ -35,12 +38,14 @@ suite('MovePasswordsDialogTest', function() {
     syncProxy.accountInfo = {
       email: 'test@gmail.com',
     };
+    metrics = fakeMetricsPrivate();
     return flushTasks();
   });
 
   async function createDialog(
       passwords: chrome.passwordsPrivate.PasswordUiEntry[],
       hasOnlyOneDeviceCredential = false) {
+    passwordManager.setRequestCredentialsDetailsResponse(passwords);
     dialog = document.createElement('move-passwords-dialog');
     dialog.passwords = passwords;
     dialog.hasOnlyOneDeviceCredential = hasOnlyOneDeviceCredential;
@@ -190,5 +195,22 @@ suite('MovePasswordsDialogTest', function() {
     await flushTasks();
 
     assertFalse(dialog.$.dialog.open);
+  });
+
+  test('Metrics recorded', async function() {
+    const password = createPasswordEntry({id: 0, username: 'user1'});
+    await createDialog([password], /*hasOnlyOneDeviceCredential=*/ true);
+
+    assertEquals(
+        1,
+        metrics.count(
+            'PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered'));
+
+    dialog.$.acceptButton.click();
+
+    assertEquals(
+        1,
+        metrics.count(
+            'PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2'));
   });
 });

@@ -714,12 +714,7 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
     credentials_to_move.push_back(*entry);
   }
 
-  // TODO(crbug.com/479793180): Use different trigger depending where the upload
-  // is coming from, and for how many passwords.
-  saved_passwords_presenter_.MoveCredentialsToAccount(
-      credentials_to_move,
-      password_manager::metrics_util::MoveToAccountStoreTrigger::
-          kExplicitlyTriggeredInSettings);
+  saved_passwords_presenter_.MoveCredentialsToAccount(credentials_to_move);
 }
 
 void PasswordsPrivateDelegateImpl::FetchFamilyMembers(

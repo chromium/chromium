@@ -33,7 +33,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {PasswordsMovedEvent, ValueCopiedEvent} from '../password_manager_app.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
-import {PasswordSharingActions, recordPasswordSharingInteraction} from '../sharing/metrics_utils.js';
+import {MoveToAccountStoreTrigger, PasswordSharingActions, recordMoveToAccountStoreAccepted, recordPasswordSharingInteraction} from '../sharing/metrics_utils.js';
 import {ShowPasswordMixin} from '../show_password_mixin.js';
 import {UserUtilMixin} from '../user_utils_mixin.js';
 
@@ -136,6 +136,12 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
       },
 
       isUsingAccountStore: Boolean,
+      trigger_: {
+        type: Object,
+        value: () =>
+            MoveToAccountStoreTrigger
+                .EXPLICITLY_TRIGGERED_FOR_SINGLE_PASSWORD_IN_DETAILS_IN_SETTINGS,
+      },
     };
   }
 
@@ -154,6 +160,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   declare private showShareButton_: boolean;
   declare private showMovePasswordDialog_: boolean;
   declare private showSingleClickUploadUi_: boolean;
+  declare private trigger_: MoveToAccountStoreTrigger;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -346,6 +353,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
       composed: true,
       detail: {accountEmail: this.accountEmail, numberOfPasswords: 1},
     }));
+    recordMoveToAccountStoreAccepted(this.trigger_);
   }
 
   private showMovePasswordEntry_(): boolean {

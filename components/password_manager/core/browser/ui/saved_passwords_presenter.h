@@ -177,11 +177,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                                   const CredentialUIEntry& updated_credential);
 
   // Moves credential to an account by deleting them from profile password store
-  // and adding them to the account password store. `trigger` is used to record
-  // per entry point metrics.
+  // and adding them to the account password store.
   void MoveCredentialsToAccount(
-      const std::vector<CredentialUIEntry>& credentials,
-      metrics_util::MoveToAccountStoreTrigger trigger);
+      const std::vector<CredentialUIEntry>& credentials);
 
   // PasswordsProvider:
   std::vector<CredentialUIEntry> GetSavedCredentials() const override;

@@ -1229,12 +1229,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
 
   delegate->MovePasswordsToAccount({first_id}, web_contents.get());
   base::RunLoop().RunUntilIdle();
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
-      password_manager::metrics_util::MoveToAccountStoreTrigger::
-          kExplicitlyTriggeredInSettings,
-      1);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportEntryStatus) {
