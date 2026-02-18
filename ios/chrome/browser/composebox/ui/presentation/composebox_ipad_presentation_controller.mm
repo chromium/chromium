@@ -50,6 +50,7 @@ const CGFloat kComposeboxOmniboxLayoutGuideHorizontalMargin = 10.0f;
   CHECK(self.layoutGuideCenter);
   _layoutGuide = [self.layoutGuideCenter makeLayoutGuideNamed:kTopOmniboxGuide];
   [self.containerView addLayoutGuide:_layoutGuide];
+  self.containerView.accessibilityViewIsModal = YES;
 
   UIView* dimmingView = _dimmingView;
   dimmingView.frame = self.containerView.bounds;
