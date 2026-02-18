@@ -297,12 +297,6 @@ public class ManualFillingTestHelper {
                     },
                     "Waited for suggestions that never appeared.");
         }
-        waitForManualFillingIconsToBeLoaded();
-    }
-
-    private void waitForManualFillingIconsToBeLoaded() {
-        pollUiThread(
-                () -> Criteria.checkThat(getKeyboardAccessoryBar().hasTabs(), Matchers.is(true)));
     }
 
     public DropdownPopupWindowInterface waitForAutofillPopup(String filterInput) {
