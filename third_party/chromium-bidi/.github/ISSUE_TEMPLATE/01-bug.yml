@@ -1,0 +1,30 @@
+name: Bug report
+description: File a bug report for puppeteer or puppeteer-core
+title: '[Bug]: '
+type: 'Bug'
+body:
+  - type: markdown
+    attributes:
+      value: >
+        ### Thanks for taking the time to fill out this bug report!
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Feature description
+      description: Please describe your feature request with as many details as possible.
+    validations:
+      required: true
+  - id: mvce
+    type: textarea
+    attributes:
+      label: Minimal, reproducible example
+      render: TypeScript
+
+  - id: chrome-version
+    type: input
+    attributes:
+      label: Chromium-BiDi version (or Chrome version)
+      description: >
+        What version of Chromium-BiDi are you running?
+        Or which version of Chrome?
