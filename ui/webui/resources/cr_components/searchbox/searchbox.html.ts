@@ -132,7 +132,7 @@ export function getHtml(this: SearchboxElement) {
               title="${this.i18n('lensSearchButtonLabel')}">
           </button>
         </div>
-      ` : ''};
+      ` : ''}
     ` : ''}
     ${this.composeButtonEnabled ? html`
       <cr-searchbox-compose-button id="composeButton"
@@ -173,7 +173,7 @@ export function getHtml(this: SearchboxElement) {
                 title="${this.i18n('lensSearchButtonLabel')}">
             </button>
           </div>
-        ` : ''};
+        ` : ''}
       </div>
     `}
   ` : html`
