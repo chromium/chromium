@@ -1803,12 +1803,23 @@ BASE_FEATURE_PARAM(int,
                    kMemoryCacheStrongReferenceTotalSizeThresholdParam,
                    &kMemoryCacheStrongReference,
                    "memory_cache_strong_ref_total_size_threshold",
-                   15 * 1024 * 1024);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+                   200 * 1024 * 1024
+#else
+                   15 * 1024 * 1024
+#endif
+);
+
 BASE_FEATURE_PARAM(int,
                    kMemoryCacheStrongReferenceResourceSizeThresholdParam,
                    &kMemoryCacheStrongReference,
                    "memory_cache_strong_ref_resource_size_threshold",
-                   3 * 1024 * 1024);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+                   100 * 1024 * 1024
+#else
+                   3 * 1024 * 1024
+#endif
+);
 
 BASE_FEATURE(kMemoryPurgeOnFreeze,
 #if BUILDFLAG(IS_ANDROID)
@@ -2097,11 +2108,21 @@ BASE_FEATURE(kReducedReferrerGranularity, base::FEATURE_ENABLED_BY_DEFAULT);
 // Whether `blink::MemoryCache` and `blink::ResourceFetcher` release their
 // strong references to resources on memory pressure.
 BASE_FEATURE(kReleaseResourceStrongReferencesOnMemoryPressure,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Whether `blink::Resource` deletes its decoded data on memory pressure.
 BASE_FEATURE(kReleaseResourceDecodedDataOnMemoryPressure,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Flag guard for removing usage of the CommitNavigationParams.redirects
 // array of URLs in the renderer process.

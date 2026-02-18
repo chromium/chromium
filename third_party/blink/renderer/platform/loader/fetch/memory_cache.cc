@@ -142,12 +142,21 @@ int GetResourceTypePriority(ResourceType type) {
 static Persistent<MemoryCache>* g_memory_cache;
 
 static constexpr base::TimeDelta kDefaultStrongReferencePruneDelay =
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    base::Minutes(60);
+#else
     base::Minutes(5);
+#endif
 
 // Feature to control the duration for which a strong reference may remain
 // in the MemoryCache after its last access.
 BASE_FEATURE(kMemoryCacheChangeStrongReferencePruneDelay,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Parameter defining the delay after which a strong reference is removed
 // from the MemoryCache after its last access.
