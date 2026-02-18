@@ -29316,25 +29316,6 @@
             ]
         }
     ],
-    "WebUIReloadButtonStudy": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Control_20251030",
-                    "disable_features": [
-                        "InitialWebUI",
-                        "WebUIReloadButton"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebUITabStripDeprecation": [
         {
             "platforms": [
