@@ -812,6 +812,8 @@ void GeminiBrowserAgent::PresentFloatyWithState(
     }
     ios::provider::UpdatePageContext(pageContext);
     ForceShowFloatyIfInvoked();
+    ios::provider::UpdateGeminiViewState(
+        ios::provider::GeminiViewState::kExpanded, /*animated=*/true);
     return;
   }
 
