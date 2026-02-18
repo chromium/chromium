@@ -190,9 +190,11 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   // and `session_` owns the packet writer, which has a raw pointer to the
   // socket.
   std::unique_ptr<QuicChromiumPacketReader> packet_reader_;
+  // This must be destroyed after `session_` whose destruction may access it
+  // (the raw_ptr) via OnConnectStreamDeleted().
+  raw_ptr<quic::WebTransportSession> web_transport_session_ = nullptr;
   std::unique_ptr<quic::QuicSpdyClientSession> session_;
   raw_ptr<quic::QuicConnection> connection_;  // owned by |session_|
-  raw_ptr<quic::WebTransportSession> web_transport_session_ = nullptr;
   std::unique_ptr<QuicEventLogger> event_logger_;
   quic::DeterministicConnectionIdGenerator connection_id_generator_{
       quic::kQuicDefaultConnectionIdLength};
