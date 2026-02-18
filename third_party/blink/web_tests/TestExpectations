@@ -9678,3 +9678,6 @@ crbug.com/484692934 [ Linux ] external/wpt/html/semantics/forms/the-select-eleme
 
 # Flaky from 2026-02-12
 crbug.com/485066960 [ Linux ] external/wpt/html/dom/partial-updates/tentative/template-for-mutation-records.html [ Failure Pass ]
+
+# Gardener 2026-02-18
+crbug.com/469578374 [ Win ] external/wpt/html/semantics/permission-element/geolocation-element/display-values.tentative.html [ Failure Pass ]
