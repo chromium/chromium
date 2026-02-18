@@ -8753,6 +8753,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_MOST_RECENT_TABS" desc="Heading for a list of tabs that can be added to a contextual search. This is a subsection of a menu.">
         Most recent tabs
       </message>
+      <message name="IDS_NTP_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE" desc="Title for the Composebox tab picker when no tabs are selected.">
+        Add recent tabs
+      </message>
       <message name="IDS_NTP_COMPOSE_ADD_IMAGE"  desc="Text for a button label that opens a menu so users can add an image to their search.">
         Add image
       </message>

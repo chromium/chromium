@@ -335,7 +335,7 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"addContext", IDS_NTP_COMPOSE_ADD_CONTEXTS},
       {"addContextTitle", IDS_NTP_COMPOSE_ADD_CONTEXT_TITLE},
       {"addImage", IDS_NTP_COMPOSE_ADD_IMAGE},
-      {"addTab", IDS_NTP_COMPOSE_MOST_RECENT_TABS},
+      {"addTab", IDS_NTP_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE},
       {"dismissButton", IDS_NTP_DISMISS},
       // TODO(b/467036804): Update the value of `lensSearchAriaLabel`.
       {"lensSearchAriaLabel", IDS_CONTENT_CONTEXT_LENS_OVERLAY},
