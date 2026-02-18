@@ -152,8 +152,7 @@ class MockPrintingContextWin : public PrintingContextSystemDialogWin {
   }
 };
 
-// Disabled - see crbug.com/1231528 for context.
-TEST_F(PrintingContextTest, DISABLED_PrintAll) {
+TEST_F(PrintingContextTest, PrintAll) {
   if (IsTestCaseDisabled())
     return;
 
@@ -168,8 +167,7 @@ TEST_F(PrintingContextTest, DISABLED_PrintAll) {
   EXPECT_EQ(0u, settings.ranges().size());
 }
 
-// Disabled - see crbug.com/1231528 for context.
-TEST_F(PrintingContextTest, DISABLED_Color) {
+TEST_F(PrintingContextTest, Color) {
   if (IsTestCaseDisabled())
     return;
 
@@ -184,8 +182,7 @@ TEST_F(PrintingContextTest, DISABLED_Color) {
   EXPECT_NE(settings.color(), mojom::ColorModel::kUnknownColorModel);
 }
 
-// Disabled - see crbug.com/1231528 for context.
-TEST_F(PrintingContextTest, DISABLED_Base) {
+TEST_F(PrintingContextTest, Base) {
   if (IsTestCaseDisabled())
     return;
 

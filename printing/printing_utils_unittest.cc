@@ -161,8 +161,7 @@ TEST(PrintingUtilsTest, GetCenteredPageContentRect) {
   EXPECT_EQ(1100, page_content.height());
 }
 
-// Disabled - see crbug.com/1231528 for context.
-TEST_F(PrintingUtilsWinTest, DISABLED_GetPrintableAreaDeviceUnits) {
+TEST_F(PrintingUtilsWinTest, GetPrintableAreaDeviceUnits) {
   if (IsTestCaseDisabled()) {
     return;
   }
