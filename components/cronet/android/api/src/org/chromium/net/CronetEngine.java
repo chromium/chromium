@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.impl.CronetLogger;
 import org.chromium.net.impl.CronetLoggerFactory;
 
@@ -42,6 +43,9 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public abstract class CronetEngine {
     private static final String TAG = CronetEngine.class.getSimpleName();
+
+    static final String USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME =
+            "Cronet_UseScoreBasedProviderSelection";
 
     /** The value of the active request count is unknown */
     public static final int ACTIVE_REQUEST_COUNT_UNKNOWN = -1;
@@ -588,11 +592,9 @@ public abstract class CronetEngine {
                     ScopedSysTraceEvent.scoped("CronetEngine#createBuilderDelegate")) {
                 var startUptimeMillis = SystemClock.uptimeMillis();
                 CronetProvider.ProviderInfo providerInfo =
-                        getEnabledCronetProviders(
-                                        context,
-                                        new ArrayList<>(
-                                                CronetProvider.getAllProviderInfos(context)))
-                                .get(0);
+                        getPreferredCronetProvider(
+                                context,
+                                new ArrayList<>(CronetProvider.getAllProviderInfos(context)));
                 var logger = CronetLoggerFactory.createLogger(context, providerInfo.logSource);
                 var logInfo = new CronetLogger.CronetEngineBuilderInitializedInfo();
                 try {
@@ -626,27 +628,10 @@ public abstract class CronetEngine {
             }
         }
 
-        /**
-         * Returns the list of available and enabled {@link CronetProvider}. The returned list is
-         * sorted based on the provider versions and types.
-         *
-         * @param context Android Context to use.
-         * @param providers the list of enabled and disabled providers to filter out and sort.
-         * @return the sorted list of enabled providers. The list contains at least one provider.
-         * @throws RuntimeException is the list of providers is empty or all of the providers are
-         *     disabled.
-         */
-        @VisibleForTesting
-        static List<CronetProvider.ProviderInfo> getEnabledCronetProviders(
-                Context context, List<CronetProvider.ProviderInfo> providers) {
-            // Check that there is at least one available provider.
-            if (providers.isEmpty()) {
-                throw new RuntimeException(
-                        "Unable to find any Cronet provider."
-                                + " Have you included all necessary jars?");
-            }
-
-            // Exclude disabled providers from the list.
+        private static CronetProvider.@Nullable ProviderInfo getPreferredCronetProviderUsingVersion(
+                List<CronetProvider.ProviderInfo> providers) {
+            // Remove the disabled providers before sorting, as we shouldn't call getVersion() on a
+            // disabled provider.
             for (Iterator<CronetProvider.ProviderInfo> i = providers.iterator(); i.hasNext(); ) {
                 CronetProvider.ProviderInfo providerInfo = i.next();
                 if (!providerInfo.provider.isEnabled()) {
@@ -654,15 +639,12 @@ public abstract class CronetEngine {
                 }
             }
 
-            // Check that there is at least one enabled provider.
             if (providers.isEmpty()) {
-                throw new RuntimeException(
-                        "All available Cronet providers are disabled."
-                                + " A provider should be enabled before it can be used.");
+                return null;
             }
 
             // Sort providers based on version and type.
-            Collections.sort(
+            return Collections.min(
                     providers,
                     new Comparator<CronetProvider.ProviderInfo>() {
                         @Override
@@ -678,50 +660,75 @@ public abstract class CronetEngine {
                                 return -1;
                             }
                             // A provider with higher version should go first.
-                            return -compareVersions(
+                            return -CronetProvider.compareVersions(
                                     p1.provider.getVersion(), p2.provider.getVersion());
                         }
                     });
-            return providers;
+        }
+
+        private static CronetProvider.@Nullable ProviderInfo getPreferredCronetProviderUsingScore(
+                List<CronetProvider.ProviderInfo> providers) {
+            // We don't need to check isEnabled() to get the score, therefore we can sort first
+            // and then return the first provider for which isEnabled() returns true. This
+            // matters a lot for performance, because checking isEnabled() can be expensive for
+            // some providers (e.g. Play Services).
+            Collections.sort(
+                    providers,
+                    new Comparator<CronetProvider.ProviderInfo>() {
+                        @Override
+                        public int compare(
+                                CronetProvider.ProviderInfo p1, CronetProvider.ProviderInfo p2) {
+                            // A provider with higher score should go first.
+                            return -Integer.compare(p1.providerScore, p2.providerScore);
+                        }
+                    });
+            for (Iterator<CronetProvider.ProviderInfo> i = providers.iterator(); i.hasNext(); ) {
+                CronetProvider.ProviderInfo providerInfo = i.next();
+                if (providerInfo.provider.isEnabled()) {
+                    return providerInfo;
+                }
+            }
+            return null;
         }
 
         /**
-         * Compares two strings that contain versions. The string should only contain dot-separated
-         * segments that contain an arbitrary number of digits digits [0-9].
+         * Returns a single provider which the sorting mechanism thinks is the best. The returned
+         * provider is always guaranteed to be usable.
          *
-         * @param s1 the first string.
-         * @param s2 the second string.
-         * @return -1 if s1<s2, +1 if s1>s2 and 0 if s1=s2. If two versions are equal, the version
-         *         with
-         * the higher number of segments is considered to be higher.
-         * @throws IllegalArgumentException if any of the strings contains an illegal version
-         *         number.
+         * <p>Sorts providers based on the {@code USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME}
+         * flag. If the flag is enabled, providers are sorted by version; otherwise, they are sorted
+         * by {@link providerInfo.score}.
+         *
+         * @param context Android Context to use.
+         * @param providers the list of enabled and disabled providers to filter out and sort.
+         * @return The single most preferred and enabled provider.
+         * @throws RuntimeException if the list of providers is empty or all of the providers are
+         *     disabled.
          */
         @VisibleForTesting
-        static int compareVersions(String s1, String s2) {
-            if (s1 == null || s2 == null) {
-                throw new IllegalArgumentException("The input values cannot be null");
+        static @NonNull CronetProvider.ProviderInfo getPreferredCronetProvider(
+                Context context, List<CronetProvider.ProviderInfo> providers) {
+            // Check that there is at least one available provider.
+            if (providers.isEmpty()) {
+                throw new RuntimeException(
+                        "Unable to find any Cronet provider."
+                                + " Have you included all necessary jars?");
             }
-            String[] s1segments = s1.split("\\.");
-            String[] s2segments = s2.split("\\.");
-            for (int i = 0; i < s1segments.length && i < s2segments.length; i++) {
-                try {
-                    int s1segment = Integer.parseInt(s1segments[i]);
-                    int s2segment = Integer.parseInt(s2segments[i]);
-                    if (s1segment != s2segment) {
-                        return Integer.signum(s1segment - s2segment);
-                    }
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException(
-                            "Unable to convert version segments into"
-                                    + " integers: "
-                                    + s1segments[i]
-                                    + " & "
-                                    + s2segments[i],
-                            e);
-                }
+            var shouldUseSmartProviderLogic =
+                    HttpFlagsForApi.getHttpFlags(context)
+                            .flags()
+                            .get(USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME);
+            CronetProvider.ProviderInfo cronetProvider =
+                    (shouldUseSmartProviderLogic == null
+                                    || !shouldUseSmartProviderLogic.getBoolValue())
+                            ? getPreferredCronetProviderUsingVersion(providers)
+                            : getPreferredCronetProviderUsingScore(providers);
+            if (cronetProvider == null) {
+                throw new RuntimeException(
+                        "All available Cronet providers are disabled."
+                                + " A provider should be enabled before it can be used.");
             }
-            return Integer.signum(s1segments.length - s2segments.length);
+            return cronetProvider;
         }
 
         private int getMaximumApiLevel() {

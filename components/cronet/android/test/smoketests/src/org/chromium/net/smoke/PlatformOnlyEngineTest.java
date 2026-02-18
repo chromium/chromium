@@ -6,6 +6,8 @@ package org.chromium.net.smoke;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assume.assumeFalse;
+
 import static org.chromium.net.smoke.CronetSmokeTestRule.assertJavaEngine;
 import static org.chromium.net.smoke.CronetSmokeTestRule.assertSuccessfulNonEmptyResponse;
 
@@ -20,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.net.UrlRequest;
+import org.chromium.net.impl.HttpEngineNativeProvider;
 
 /** Tests scenario when an app doesn't contain the native Cronet implementation. */
 @RunWith(AndroidJUnit4.class)
@@ -50,6 +53,12 @@ public class PlatformOnlyEngineTest {
     @Test
     @SmallTest
     public void testSuccessfulResponse() {
+        // On Android 14 (U) and above, HttpEngine is available. This makes this test—and
+        // its associated APK—obsolete, as it is designed to simulate a "Fallback-only" environment
+        // that no longer exists on these versions.
+        assumeFalse(
+                "This test runs only on Android devices that do not have HttpEngine available.",
+                HttpEngineNativeProvider.isHttpEngineAvailable());
         mRule.initCronetEngine();
         assertJavaEngine(mRule.getCronetEngine());
         SmokeTestRequestCallback callback = new SmokeTestRequestCallback();

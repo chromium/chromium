@@ -5,8 +5,12 @@
 package org.chromium.net;
 
 import android.content.Context;
+import android.net.http.HttpEngine;
+import android.os.Build;
+import android.os.ext.SdkExtensions;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.net.impl.CronetLogger;
@@ -32,6 +36,18 @@ import java.util.Set;
  * <p>{@hide}
  */
 public abstract class CronetProvider {
+    @VisibleForTesting
+    static final String PREFERRED_MINIMUM_HTTPENGINE_VERSION_HTTP_FLAG_NAME =
+            "Cronet_PreferredMinimumHttpEngineVersion";
+
+    // Prioritizes providers with higher scores when score-based selection is active.
+    @VisibleForTesting static final int RESOURCES_CRONET_PROVIDER_SCORE = 6;
+    @VisibleForTesting static final int EMBEDDED_CRONET_PROVIDER_SCORE = 5;
+    @VisibleForTesting static final int PREFERRED_HTTP_ENGINE_PROVIDER_SCORE = 4;
+    @VisibleForTesting static final int PLAY_SERVICES_CRONET_PROVIDER_SCORE = 3;
+    @VisibleForTesting static final int NOT_PREFERRED_HTTP_ENGINE_PROVIDER_SCORE = 2;
+    @VisibleForTesting static final int FALLBACK_CRONET_PROVIDER_SCORE = 1;
+
     /**
      * String returned by {@link CronetProvider#getName} for {@link CronetProvider} that provides
      * native Cronet implementation packaged inside an application. This implementation offers
@@ -39,6 +55,15 @@ public abstract class CronetProvider {
      * #PROVIDER_NAME_FALLBACK}).
      */
     public static final String PROVIDER_NAME_APP_PACKAGED = "App-Packaged-Cronet-Provider";
+
+    /**
+     * String returned by {@link CronetProvider#getName} for {@link CronetProvider} that provides
+     * Cronet implementation based on the HttpEngine implementation present in the Platform. This
+     * implementation doesn't provide functionality which was deemed to be implementation specific,
+     * namely access to the netlog and internal metrics. Additionally, support for experimental
+     * features is not guaranteed (as with any other Cronet provider).
+     */
+    public static final String PROVIDER_NAME_HTTPENGINE_NATIVE = "HttpEngine-Native-Provider";
 
     /**
      * String returned by {@link CronetProvider#getName} for {@link CronetProvider} that provides
@@ -126,6 +151,10 @@ public abstract class CronetProvider {
     private static final String JAVA_CRONET_PROVIDER_CLASS =
             "org.chromium.net.impl.JavaCronetProvider";
 
+    /** Name of the HttpEngine {@link CronetProvider} class. */
+    private static final String HTTPENGINE_PROVIDER_CLASS =
+            "org.chromium.net.impl.HttpEngineNativeProvider";
+
     /** Name of the native {@link CronetProvider} class. */
     private static final String NATIVE_CRONET_PROVIDER_CLASS =
             "org.chromium.net.impl.NativeCronetProvider";
@@ -143,6 +172,12 @@ public abstract class CronetProvider {
 
     static final class ProviderInfo {
         public CronetProvider provider;
+        // Populates the provider score to determine sort order.
+        // When score-based selection is active, providers are sorted by score in descending order.
+        // Note: we compute scores in this code. We do not let providers decide their own score,
+        // because providers are not shipped alongside this code - changing them would require
+        // tedious release coordination.
+        public int providerScore;
         public CronetLogger.CronetSource logSource;
 
         // Delegate ProviderInfo comparisons to `provider`. This actually matters in some cases such
@@ -188,28 +223,119 @@ public abstract class CronetProvider {
         addCronetProviderImplByClassName(
                 context,
                 PLAY_SERVICES_CRONET_PROVIDER_CLASS,
+                /* score= */ PLAY_SERVICES_CRONET_PROVIDER_SCORE,
                 CronetLogger.CronetSource.CRONET_SOURCE_PLAY_SERVICES,
                 providers,
                 false);
         addCronetProviderImplByClassName(
                 context,
                 GMS_CORE_CRONET_PROVIDER_CLASS,
+                /* score= */ PLAY_SERVICES_CRONET_PROVIDER_SCORE,
                 CronetLogger.CronetSource.CRONET_SOURCE_PLAY_SERVICES,
                 providers,
                 false);
         addCronetProviderImplByClassName(
                 context,
                 NATIVE_CRONET_PROVIDER_CLASS,
+                /* score= */ EMBEDDED_CRONET_PROVIDER_SCORE,
                 CronetLogger.CronetSource.CRONET_SOURCE_STATICALLY_LINKED,
                 providers,
                 false);
         addCronetProviderImplByClassName(
                 context,
+                HTTPENGINE_PROVIDER_CLASS,
+                /* score= */ calculateHttpEngineNativeProviderScore(context),
+                CronetLogger.CronetSource.CRONET_SOURCE_PLATFORM,
+                providers,
+                false);
+        addCronetProviderImplByClassName(
+                context,
                 JAVA_CRONET_PROVIDER_CLASS,
+                /* score= */ FALLBACK_CRONET_PROVIDER_SCORE,
                 CronetLogger.CronetSource.CRONET_SOURCE_FALLBACK,
                 providers,
                 false);
         return Collections.unmodifiableList(new ArrayList<>(providers));
+    }
+
+    private static int calculateHttpEngineNativeProviderScore(Context context) {
+        return calculateHttpEngineNativeProviderScoreInternal(context, /*versionOverrideForTesting=*/null);
+    }
+
+    @VisibleForTesting
+    static int calculateHttpEngineNativeProviderScoreInternal(Context context, String versionOverrideForTesting) {
+        // This logic must be kept in sync with HttpEngineNativeProvider#isEnabled(). Direct
+        // invocation is avoided to prevent circular dependencies between CronetAPI and the
+        // HttpEngineNativeProvider  implementation, simplifying library integration. Resolving such
+        // a dependency would typically involve merging the libraries with their downstream
+        // dependencies, which is a complex and tedious process.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+                || SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S) < 7) {
+            // HttpEngine is not available on the device, go for the lowest score available.
+            // HttpEngineNativeProvider#isEnabled() will return false anyway
+            return Integer.MIN_VALUE;
+        }
+
+        var minimumHttpEngineVersionFlag =
+                HttpFlagsForApi.getHttpFlags(context)
+                        .flags()
+                        .get(PREFERRED_MINIMUM_HTTPENGINE_VERSION_HTTP_FLAG_NAME);
+        var minimumHttpEngineVersion =
+                minimumHttpEngineVersionFlag == null
+                        // This is the version of HttpEngine that shipped in B+ devices
+                        // with preloading enabled. We'll be using this as the default
+                        // minimum preferred HttpEngine version.
+                        ? "133.0.6876.3"
+                        : minimumHttpEngineVersionFlag.getStringValue();
+        return compareVersions(
+                        (versionOverrideForTesting != null ? versionOverrideForTesting : HttpEngine.getVersionString()),
+                        minimumHttpEngineVersion)
+                >= 0 ? PREFERRED_HTTP_ENGINE_PROVIDER_SCORE : NOT_PREFERRED_HTTP_ENGINE_PROVIDER_SCORE;
+    }
+
+    /**
+     * Compares two strings that contain versions. The string should only contain dot-separated
+     * segments that contain an arbitrary number of digits digits [0-9].
+     *
+     * @param s1 the first string.
+     * @param s2 the second string.
+     * @return -1 if s1<s2, +1 if s1>s2 and 0 if s1=s2. If two versions are equal, the version with
+     *     the higher number of segments is considered to be higher.
+     * @throws IllegalArgumentException if any of the strings contains an illegal version number.
+     */
+    @VisibleForTesting
+    static int compareVersions(String s1, String s2) {
+        if (s1 == null || s2 == null) {
+            throw new IllegalArgumentException("The input values cannot be null");
+        }
+        String[] s1segments = s1.split("\\.");
+        String[] s2segments = s2.split("\\.");
+        if (s1segments.length != s2segments.length) {
+            throw new IllegalArgumentException(
+                    "Version strings must have an equal number of segments for comparison: "
+                            + s1
+                            + " vs "
+                            + s2);
+        }
+        for (int i = 0; i < s1segments.length; i++) {
+            try {
+                int s1segment = Integer.parseInt(s1segments[i]);
+                int s2segment = Integer.parseInt(s2segments[i]);
+                if (s1segment != s2segment) {
+                    return Integer.compare(s1segment, s2segment);
+                }
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(
+                        "Unable to convert version segments into"
+                                + " integers: "
+                                + s1segments[i]
+                                + " & "
+                                + s2segments[i],
+                        e);
+            }
+        }
+        // If we reached this point then all segments are equal which means equal versions.
+        return 0;
     }
 
     /**
@@ -223,6 +349,7 @@ public abstract class CronetProvider {
     private static boolean addCronetProviderImplByClassName(
             Context context,
             String className,
+            int score,
             CronetLogger.CronetSource logSource,
             Set<ProviderInfo> providers,
             boolean logError) {
@@ -234,6 +361,7 @@ public abstract class CronetProvider {
                     providerClass.getConstructor(Context.class);
             var providerInfo = new ProviderInfo();
             providerInfo.provider = ctor.newInstance(context);
+            providerInfo.providerScore = score;
             providerInfo.logSource = logSource;
             providers.add(providerInfo);
             return true;
@@ -300,11 +428,18 @@ public abstract class CronetProvider {
                 || className.equals(PLAY_SERVICES_CRONET_PROVIDER_CLASS)
                 || className.equals(GMS_CORE_CRONET_PROVIDER_CLASS)
                 || className.equals(JAVA_CRONET_PROVIDER_CLASS)
-                || className.equals(NATIVE_CRONET_PROVIDER_CLASS)) {
+                || className.equals(NATIVE_CRONET_PROVIDER_CLASS)
+                || className.equals(HTTPENGINE_PROVIDER_CLASS)) {
             return false;
         }
 
-        if (!addCronetProviderImplByClassName(context, className, logSource, providers, true)) {
+        if (!addCronetProviderImplByClassName(
+                context,
+                className,
+                /* score= */ RESOURCES_CRONET_PROVIDER_SCORE,
+                logSource,
+                providers,
+                true)) {
             Log.e(
                     TAG,
                     "Unable to instantiate Cronet implementation class "

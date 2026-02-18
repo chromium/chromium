@@ -21,20 +21,10 @@ import org.chromium.net.ExperimentalCronetEngine;
  * platform.
  *
  * <p>Note that the httpengine native provider doesn't provide functionality which was deemed to be
- *  too implementation specific, namely access to the netlog and internal metrics. Additionally,
+ * too implementation specific, namely access to the netlog and internal metrics. Additionally,
  * support for experimental features is not guaranteed (as with any other Cronet provider).
  */
 public class HttpEngineNativeProvider extends CronetProvider {
-    /**
-     * String returned by {@link CronetProvider#getName} for {@link CronetProvider} that provides
-     * Cronet implementation based on the HttpEngine implementation present in the Platform. This
-     * implementation doesn't provide functionality which was deemed to be implementation specific,
-     * namely access to the netlog and internal metrics. Additionally, support for experimental
-     * features is not guaranteed (as with any other Cronet provider).
-     */
-    // TODO(crbug.com/40287946): Move this to CronetProvider
-    public static final String PROVIDER_NAME_HTTPENGINE_NATIVE = "HttpEngine-Native-Provider";
-
     static final int EXT_API_LEVEL = Build.VERSION_CODES.S;
     static final int EXT_VERSION = 7;
 
@@ -55,7 +45,7 @@ public class HttpEngineNativeProvider extends CronetProvider {
 
     @Override
     public String getName() {
-        return PROVIDER_NAME_HTTPENGINE_NATIVE;
+        return CronetProvider.PROVIDER_NAME_HTTPENGINE_NATIVE;
     }
 
     @Override
@@ -69,7 +59,7 @@ public class HttpEngineNativeProvider extends CronetProvider {
         return isHttpEngineAvailable();
     }
 
-    static boolean isHttpEngineAvailable() {
+    public static boolean isHttpEngineAvailable() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
                 && SdkExtensions.getExtensionVersion(EXT_API_LEVEL) >= EXT_VERSION;
     }
