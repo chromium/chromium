@@ -58,6 +58,7 @@ COMMIT_FOOTER = \
 Bug: TODO. Remove the Tricium: line below when filling this in.
 Tricium: skip
 Disable-Rts: True
+Cq-Include-Trybots: chromium/try:android-16-x64-dbg
 Cq-Include-Trybots: chromium/try:android-cronet-riscv64-dbg
 Cq-Include-Trybots: chromium/try:android-cronet-riscv64-rel
 Cq-Include-Trybots: chromium/try:chromeos-amd64-generic-cfi-thin-lto-rel
