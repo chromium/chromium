@@ -153,6 +153,10 @@ inline constexpr base::FeatureParam<std::string> kAimUrlInterceptionParams{
 // Enable debug logs that can be read from an internals page.
 BASE_DECLARE_FEATURE(kOmniboxDebugLogs);
 
+// Feature flag to enable the "Astrophotography Mode" (Sparkles) icon for the
+// Thinking Pro model when multiple Pro models are available.
+BASE_DECLARE_FEATURE(kThinkingModelIconUpdate);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kDiagnostics);
 BASE_DECLARE_FEATURE(kJumpStartOmnibox);

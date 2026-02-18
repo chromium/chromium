@@ -22,6 +22,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "add_chrome_refresh.icon",
     "add_circle.icon",
     "add_photo_alternate.icon",
+    "astrophotography_mode.icon",
     "attach_file.icon",
     "auto_tab_groups.icon",
     "autofill/local_offer_flipped_refresh.icon",
