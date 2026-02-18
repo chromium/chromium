@@ -217,7 +217,7 @@
     {
         "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
-        "version": "1.11.0-alpha04"
+        "version": "1.11.0-alpha05"
     },
     {
         "name": "runtime-retain",
