@@ -72,4 +72,9 @@ public class SystemStateUtil {
         }
         return PrimaryCpuAbiBitness.UNKNOWN;
     }
+
+    @CalledByNative
+    public static String getProcessName() {
+        return ContextUtils.getProcessName();
+    }
 }

@@ -6518,6 +6518,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.AgsaProcessName" enum="AgsaProcessName"
+    expires_after="2026-11-30">
+  <owner>elabadysayed@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The name of the process when WebView is loaded by the AGSA app
+    (com.google.android.googlequicksearchbox).
+
+    This is recorded every time a metrics log is created, but only if the host
+    app is AGSA.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.AndroidX.ApiCall" enum="AndroidXWebkitApiCall"
     expires_after="2026-05-03">
   <owner>ntfschr@chromium.org</owner>

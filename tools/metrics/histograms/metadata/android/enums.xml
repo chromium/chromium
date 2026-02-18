@@ -48,6 +48,13 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Auto with Read Aloud (Listen to this page)"/>
 </enum>
 
+<enum name="AgsaProcessName">
+  <int value="0" label=":googleapp"/>
+  <int value="1" label=":search"/>
+  <int value="2" label=":interactor"/>
+  <int value="3" label="Other"/>
+</enum>
+
 <!-- LINT.IfChange(AInputEventType) -->
 
 <enum name="AInputEventType">

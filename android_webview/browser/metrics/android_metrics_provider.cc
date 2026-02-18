@@ -4,7 +4,11 @@
 
 #include "android_webview/browser/metrics/android_metrics_provider.h"
 
+#include <string>
+
 #include "android_webview/browser/metrics/system_state_util.h"
+#include "base/android/apk_info.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/metrics/android_metrics_helper.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -27,11 +31,20 @@ void EmitPrimaryCpuAbiBitness(PrimaryCpuAbiBitness primary_cpu_abi_bitness) {
   }
 }
 
+void EmitAgsaProcessName() {
+  std::optional<AgsaProcessName> process_name = GetAgsaProcessNameEnum();
+  if (process_name) {
+    base::UmaHistogramEnumeration("Android.WebView.AgsaProcessName",
+                                  *process_name);
+  }
+}
+
 }  // namespace
 
 void AndroidMetricsProvider::ProvidePreviousSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   EmitMultipleUserProfilesHistogram();
+  EmitAgsaProcessName();
 
   // Make sure we didn't overwrite the stored state yet.
   CHECK(!local_state_saved_);
@@ -46,6 +59,7 @@ void AndroidMetricsProvider::ProvidePreviousSessionData(
 
 void AndroidMetricsProvider::OnDidCreateMetricsLog() {
   EmitMultipleUserProfilesHistogram();
+  EmitAgsaProcessName();
 
   PrimaryCpuAbiBitness primary_cpu_abi_bitness = GetPrimaryCpuAbiBitness();
   // This value may change across sessions, even though unlikely, so save  in

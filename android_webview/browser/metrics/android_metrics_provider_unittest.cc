@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/metrics/android_metrics_provider.h"
 
+#include "android_webview/browser/metrics/system_state_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/metrics/android_metrics_helper.h"
 #include "components/prefs/testing_pref_service.h"
@@ -38,6 +39,7 @@ TEST_F(AndroidMetricsProviderTest, OnDidCreateMetricsLog) {
   histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
   histogram_tester_.ExpectTotalCount("Android.WebView.PrimaryCpuAbiBitness", 1);
+  histogram_tester_.ExpectTotalCount("Android.WebView.AgsaProcessName", 0);
 }
 
 TEST_F(AndroidMetricsProviderTest, ProvidePreviousSessionData) {
@@ -46,6 +48,7 @@ TEST_F(AndroidMetricsProviderTest, ProvidePreviousSessionData) {
   histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
   histogram_tester_.ExpectTotalCount("Android.WebView.PrimaryCpuAbiBitness", 0);
+  histogram_tester_.ExpectTotalCount("Android.WebView.AgsaProcessName", 0);
 }
 
 TEST_F(AndroidMetricsProviderTest,
@@ -57,6 +60,24 @@ TEST_F(AndroidMetricsProviderTest,
   histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
   histogram_tester_.ExpectTotalCount("Android.WebView.PrimaryCpuAbiBitness", 1);
+  histogram_tester_.ExpectTotalCount("Android.WebView.AgsaProcessName", 0);
+}
+
+TEST_F(AndroidMetricsProviderTest, AgsaProcessNameMapping) {
+  EXPECT_EQ(internal::GetAgsaProcessNameEnumImpl(
+                "com.google.android.googlequicksearchbox:googleapp"),
+            AgsaProcessName::kGoogleApp);
+  EXPECT_EQ(internal::GetAgsaProcessNameEnumImpl(
+                "com.google.android.googlequicksearchbox:search"),
+            AgsaProcessName::kSearch);
+  EXPECT_EQ(internal::GetAgsaProcessNameEnumImpl(
+                "com.google.android.googlequicksearchbox:interactor"),
+            AgsaProcessName::kInteractor);
+  EXPECT_EQ(internal::GetAgsaProcessNameEnumImpl(
+                "com.google.android.googlequicksearchbox"),
+            AgsaProcessName::kOther);
+  EXPECT_EQ(internal::GetAgsaProcessNameEnumImpl("other"),
+            AgsaProcessName::kOther);
 }
 
 }  // namespace android_webview
