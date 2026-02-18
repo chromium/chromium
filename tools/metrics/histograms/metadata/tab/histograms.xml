@@ -885,17 +885,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabGroups.NumberOfRootIdsFixed" units="groups"
-    expires_after="2026-03-29">
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>clank-tab-dev@chromium.org</owner>
-  <summary>
-    [Android] Records the number of tab groups where the root identifier did not
-    match a tab from its tab group and the root identifier had to be corrected.
-    Emitted once per start during tab state initialization.
-  </summary>
-</histogram>
-
 <histogram
     name="TabGroups.ParseSavedTabGroupDataEntries.ParseFailurePercentage"
     units="%" expires_after="2026-12-15">
