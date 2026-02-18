@@ -259,7 +259,7 @@ void TestNumberIsReversible(const AtomicString& locale_identifier,
   std::unique_ptr<Locale> locale = Locale::Create(locale_identifier);
   String localized = locale->ConvertToLocalizedNumber(original);
   if (should_have)
-    EXPECT_TRUE(localized.Contains(should_have));
+    EXPECT_TRUE(localized.contains(should_have));
   String converted = locale->ConvertFromLocalizedNumber(localized);
   EXPECT_EQ(original, converted);
 }

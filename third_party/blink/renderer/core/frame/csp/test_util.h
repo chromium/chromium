@@ -21,7 +21,7 @@
 namespace blink {
 
 MATCHER_P2(HasConsole, str, level, "") {
-  return arg.first.Contains(str) && arg.second == level;
+  return arg.first.contains(str) && arg.second == level;
 }
 
 // Simple CSP delegate that stores the console messages logged by the

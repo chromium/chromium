@@ -1112,7 +1112,7 @@ void TestRepeatStyleViaShorthandParsing(const String& testValue,
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
   CSSParser::ParseValue(style, propID, testValue, false /* important */);
   ASSERT_NE(style, nullptr);
-  EXPECT_TRUE(style->AsText().Contains(expectedCssText));
+  EXPECT_TRUE(style->AsText().contains(expectedCssText));
 }
 
 void TestRepeatStyleViaShorthandsParsing(const String& testValue,
@@ -1142,7 +1142,7 @@ void TestMaskPositionParsing(const String& testValue,
   CSSParser::ParseValue(style, CSSPropertyID::kMaskPosition, testValue,
                         false /* important */);
   ASSERT_NE(style, nullptr);
-  EXPECT_TRUE(style->AsText().Contains(expectedCssText));
+  EXPECT_TRUE(style->AsText().contains(expectedCssText));
 }
 
 TEST(CSSPropertyParserTest, MaskPositionCenter) {

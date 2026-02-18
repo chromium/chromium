@@ -272,7 +272,7 @@ static void TestNumberIsReversible(LCID lcid,
       LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
   String localized = locale->ConvertToLocalizedNumber(original);
   if (should_have)
-    EXPECT_TRUE(localized.Contains(should_have));
+    EXPECT_TRUE(localized.contains(should_have));
   String converted = locale->ConvertFromLocalizedNumber(localized);
   EXPECT_EQ(original, converted);
 }

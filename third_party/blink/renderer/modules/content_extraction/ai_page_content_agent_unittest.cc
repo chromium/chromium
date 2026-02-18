@@ -140,7 +140,7 @@ class AIPageContentAgentTest : public testing::Test {
     if (attributes.attribute_type ==
             mojom::blink::AIPageContentAttributeType::kText &&
         attributes.text_info &&
-        attributes.text_info->text_content.Contains(substring)) {
+        attributes.text_info->text_content.contains(substring)) {
       return true;
     }
 

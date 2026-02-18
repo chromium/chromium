@@ -241,7 +241,7 @@ VTTParser::ParseState VTTParser::CollectRegionSettings(const String& line) {
 }
 
 VTTParser::ParseState VTTParser::CollectStyleSheet(const String& line) {
-  if (line.empty() || line.Contains("-->")) {
+  if (line.empty() || line.contains("-->")) {
     auto* parser_context = MakeGarbageCollected<CSSParserContext>(
         *document_, NullURL(), true /* origin_clean */, Referrer(),
         Utf8Encoding(), ResourceFetchRestriction::kOnlyDataUrls);
@@ -269,7 +269,7 @@ VTTParser::ParseState VTTParser::CollectStyleSheet(const String& line) {
 VTTParser::ParseState VTTParser::CollectWebVTTBlock(const String& line) {
   // collect a WebVTT block parsing. (WebVTT parser algorithm step 14)
 
-  if (!previous_line_.Contains("-->")) {
+  if (!previous_line_.contains("-->")) {
     // If Region support is enabled.
     if (RuntimeEnabledFeatures::WebVTTRegionsEnabled() &&
         CheckAndCreateRegion(line))
@@ -289,8 +289,9 @@ VTTParser::ParseState VTTParser::CollectWebVTTBlock(const String& line) {
   // Handle cue block.
   ParseState state = CheckAndRecoverCue(line);
   if (state != kHeader) {
-    if (!previous_line_.empty() && !previous_line_.Contains("-->"))
+    if (!previous_line_.empty() && !previous_line_.contains("-->")) {
       current_id_ = AtomicString(previous_line_);
+    }
 
     return state;
   }
@@ -306,7 +307,7 @@ VTTParser::ParseState VTTParser::CollectWebVTTBlock(const String& line) {
 
 VTTParser::ParseState VTTParser::CheckAndRecoverCue(const String& line) {
   // parse cue timings and settings
-  if (line.Contains("-->")) {
+  if (line.contains("-->")) {
     ParseState state = RecoverCue(line);
     if (state != kBadCue) {
       return state;
@@ -328,8 +329,9 @@ bool VTTParser::CheckAndCreateRegion(const String& line) {
 }
 
 bool VTTParser::CheckAndStoreRegion(const String& line) {
-  if (!line.empty() && !line.Contains("-->"))
+  if (!line.empty() && !line.contains("-->")) {
     return false;
+  }
 
   if (!current_region_->id().empty())
     region_map_.Set(current_region_->id(), current_region_);
@@ -338,8 +340,9 @@ bool VTTParser::CheckAndStoreRegion(const String& line) {
 }
 
 VTTParser::ParseState VTTParser::CollectCueId(const String& line) {
-  if (line.Contains("-->"))
+  if (line.contains("-->")) {
     return CollectTimingsAndSettings(line);
+  }
   current_id_ = AtomicString(line);
   return kTimingsAndSettings;
 }
@@ -386,7 +389,7 @@ VTTParser::ParseState VTTParser::CollectCueText(const String& line) {
     return kId;
   }
   // Step 35.
-  if (line.Contains("-->")) {
+  if (line.contains("-->")) {
     // Step 39-40.
     CreateNewCue();
 
@@ -411,8 +414,9 @@ VTTParser::ParseState VTTParser::RecoverCue(const String& line) {
 VTTParser::ParseState VTTParser::IgnoreBadCue(const String& line) {
   if (line.empty())
     return kId;
-  if (line.Contains("-->"))
+  if (line.contains("-->")) {
     return RecoverCue(line);
+  }
   return kBadCue;
 }
 

@@ -135,7 +135,7 @@ TEST_F(DocumentPolicySimTest, ReportErrorWhenDocumentPolicyIncompatible) {
                                ->ConsoleMessages();
 
   ASSERT_EQ(console_messages.size(), 1u);
-  EXPECT_TRUE(console_messages.front().Contains("document policy"));
+  EXPECT_TRUE(console_messages.front().contains("document policy"));
 
   // Should replace the document's origin with an opaque origin.
   EXPECT_EQ(child_document->Url(), SecurityOrigin::UrlWithUniqueOpaqueOrigin());

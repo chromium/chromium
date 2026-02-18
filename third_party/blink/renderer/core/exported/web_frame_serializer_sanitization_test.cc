@@ -141,7 +141,7 @@ TEST_F(WebFrameSerializerSanitizationTest, RemoveInlineScriptInAttributes) {
   EXPECT_FALSE(mhtml.contains("ONLOAD="));
   EXPECT_FALSE(mhtml.contains("onclick="));
   EXPECT_FALSE(mhtml.contains("href="));
-  EXPECT_FALSE(mhtml.Contains("from="));
+  EXPECT_FALSE(mhtml.contains("from="));
   EXPECT_FALSE(mhtml.contains("to="));
   EXPECT_FALSE(mhtml.contains("javascript:"));
 
@@ -304,7 +304,7 @@ TEST_F(WebFrameSerializerSanitizationTest, LinkIntegrity) {
 
   // beautifull.css remains, without 'integrity'. integrityfail.css is removed.
   EXPECT_TRUE(
-      mhtml.Contains("<link rel=3D\"stylesheet\" "
+      mhtml.contains("<link rel=3D\"stylesheet\" "
                      "href=3D\"http://www.test.com/beautifull.css\">"));
   EXPECT_FALSE(mhtml.contains("http://www.test.com/integrityfail.css"));
 }

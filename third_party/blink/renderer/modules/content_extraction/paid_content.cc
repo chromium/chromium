@@ -123,7 +123,7 @@ std::unique_ptr<JSONObject> ScriptHasPaidContent(
   if (context_value && context_value->GetType() == JSONValue::kTypeString) {
     String str_val;
     context_value->AsString(&str_val);
-    if (str_val.Contains("schema.org")) {
+    if (str_val.contains("schema.org")) {
       is_context_valid = true;
     }
   }

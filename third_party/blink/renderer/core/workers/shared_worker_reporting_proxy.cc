@@ -52,7 +52,7 @@ void SharedWorkerReportingProxy::ReportException(const String& error_message,
   // errors that occur during script evaluation are considered runtime errors
   // and should dispatch a detailed `ErrorEvent`. This should be replaced with a
   // more robust mechanism if one becomes available.
-  const bool is_eval_error = !error_message.Contains("SyntaxError");
+  const bool is_eval_error = !error_message.contains("SyntaxError");
 
   PostCrossThreadTask(
       *main_thread_task_runner_, FROM_HERE,

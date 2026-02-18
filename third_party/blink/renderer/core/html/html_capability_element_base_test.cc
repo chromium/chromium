@@ -364,7 +364,7 @@ class DeferredChecker {
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return ConsoleMessages().size() > message_index; }));
 
-    EXPECT_TRUE(ConsoleMessages()[message_index].Contains(expected_text));
+    EXPECT_TRUE(ConsoleMessages()[message_index].contains(expected_text));
   }
 
  private:
@@ -1613,7 +1613,7 @@ TEST_F(HTMLCapabilityElementBaseIntersectionTest,
       protocol::Audits::PermissionElementIssueTypeEnum::ActivationDisabled);
   EXPECT_TRUE(issue);
   EXPECT_EQ(issue->getDisableReason(), "intersection occluded or distorted");
-  EXPECT_TRUE(issue->getOccluderNodeInfo().value().Contains(div->ToString()));
+  EXPECT_TRUE(issue->getOccluderNodeInfo().value().contains(div->ToString()));
 }
 
 TEST_F(HTMLCapabilityElementBaseIntersectionTest, IntersectionOccluderLogging) {
@@ -1679,9 +1679,9 @@ TEST_F(HTMLCapabilityElementBaseIntersectionTest, IntersectionOccluderLogging) {
           }));
   EXPECT_TRUE(issue);
   EXPECT_TRUE(issue->hasOccluderNodeInfo());
-  EXPECT_TRUE(issue->getOccluderNodeInfo().value().Contains(div->ToString()));
+  EXPECT_TRUE(issue->getOccluderNodeInfo().value().contains(div->ToString()));
   EXPECT_TRUE(issue->hasOccluderParentNodeInfo());
-  EXPECT_TRUE(issue->getOccluderParentNodeInfo().value().Contains(
+  EXPECT_TRUE(issue->getOccluderParentNodeInfo().value().contains(
       parent_div->ToString()));
   EXPECT_EQ(CountPermissionElementIssues(GetDocument()), 3u);
 }

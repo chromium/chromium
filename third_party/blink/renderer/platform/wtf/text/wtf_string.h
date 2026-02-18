@@ -273,11 +273,6 @@ class WTF_EXPORT String {
 
   bool Contains(char c) const { return find(c) != kNotFound; }
   bool contains(const StringView& value) const { return find(value) != npos; }
-  bool Contains(
-      const StringView& value,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
-    return Find(value, 0, case_sensitivity) != kNotFound;
-  }
 
   // Find the last instance of a single character or string.
   wtf_size_t ReverseFind(UChar c, unsigned start = UINT_MAX) const {

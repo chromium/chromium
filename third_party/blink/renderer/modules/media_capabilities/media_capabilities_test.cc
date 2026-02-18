@@ -517,7 +517,7 @@ TEST(MediaCapabilitiesTests, ConfigMatchesFeatures) {
   const MediaDecodingConfiguration* kDecodingConfig = CreateDecodingConfig();
   const media::mojom::blink::PredictionFeatures kFeatures = CreateFeatures();
 
-  EXPECT_TRUE(kDecodingConfig->video()->contentType().Contains("vp09.00"));
+  EXPECT_TRUE(kDecodingConfig->video()->contentType().contains("vp09.00"));
   EXPECT_EQ(static_cast<media::VideoCodecProfile>(kFeatures.profile),
             media::VP9PROFILE_PROFILE0);
   EXPECT_EQ(kCodecProfile, media::VP9PROFILE_PROFILE0);
@@ -818,8 +818,8 @@ TEST(MediaCapabilitiesTests, WebrtcConfigMatchesFeatures) {
   EXPECT_TRUE(kDecodeFeatures.is_decode_stats);
   EXPECT_FALSE(kEncodeFeatures.is_decode_stats);
 
-  EXPECT_TRUE(kDecodingConfig->video()->contentType().Contains("video/VP9"));
-  EXPECT_TRUE(kEncodingConfig->video()->contentType().Contains("video/VP9"));
+  EXPECT_TRUE(kDecodingConfig->video()->contentType().contains("video/VP9"));
+  EXPECT_TRUE(kEncodingConfig->video()->contentType().contains("video/VP9"));
   EXPECT_EQ(static_cast<media::VideoCodecProfile>(kDecodeFeatures.profile),
             media::VP9PROFILE_PROFILE0);
   EXPECT_EQ(static_cast<media::VideoCodecProfile>(kEncodeFeatures.profile),

@@ -510,7 +510,7 @@ Value FunContains::Evaluate(EvaluationContext& context) const {
   if (s2.empty())
     return true;
 
-  return s1.Contains(s2) != 0;
+  return s1.contains(s2) != 0;
 }
 
 Value FunSubstringBefore::Evaluate(EvaluationContext& context) const {

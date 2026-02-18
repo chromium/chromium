@@ -676,7 +676,7 @@ WebGLRenderingContextBase::CreateContextProviderInternal(
   }
   gpu::gles2::GLES2Interface* gl = context_provider->ContextGL();
   if (!String(gl->GetString(GL_EXTENSIONS))
-           .Contains("GL_OES_packed_depth_stencil")) {
+           .contains("GL_OES_packed_depth_stencil")) {
     host->HostDispatchEvent(WebGLContextEvent::Create(
         event_type_names::kWebglcontextcreationerror,
         "OES_packed_depth_stencil support is required."));
@@ -1436,7 +1436,7 @@ void WebGLRenderingContextBase::InitializeNewContext() {
 
   // This limits the count of threads if the extension is yet to be requested.
   if (String(ContextGL()->GetString(GL_EXTENSIONS))
-          .Contains("GL_KHR_parallel_shader_compile")) {
+          .contains("GL_KHR_parallel_shader_compile")) {
     ContextGL()->MaxShaderCompilerThreadsKHR(2);
   }
   is_web_gl2_formats_types_added_ = false;

@@ -61,7 +61,7 @@ TEST(WebTransportErrorTest, InternalCreate) {
   v8::Local<v8::String> stack_as_v8string;
   ASSERT_TRUE(stack->ToString(context).ToLocal(&stack_as_v8string));
   String stack_string = ToCoreString(isolate, stack_as_v8string);
-  EXPECT_TRUE(stack_string.Contains("badness"));
+  EXPECT_TRUE(stack_string.contains("badness"));
 
   WebTransportError* error = V8WebTransportError::ToWrappable(isolate, v8value);
   ASSERT_TRUE(error);

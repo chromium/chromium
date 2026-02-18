@@ -561,10 +561,10 @@ void ClipboardPromise::WriteClipboardItemData(
       // have args (ex. 'text/plain' only), so ensure that Blob->type is
       // contained in type.
       String web_custom_format = Clipboard::ParseWebCustomFormat(type);
-      if ((!type_with_args.Contains(type.LowerASCII()) &&
+      if ((!type_with_args.contains(type.LowerASCII()) &&
            web_custom_format.empty()) ||
           (!web_custom_format.empty() &&
-           !type_with_args.Contains(web_custom_format))) {
+           !type_with_args.contains(web_custom_format))) {
         script_promise_resolver_->RejectWithDOMException(
             DOMExceptionCode::kNotAllowedError,
             StrCat({"Type ", type, " does not match the blob's type ",

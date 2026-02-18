@@ -368,11 +368,11 @@ TEST_F(FrameSerializerTest, IFrames) {
       "<meta http-equiv=\"Content-Type\" content=\"text/html; "
       "charset=EUC-KR\">";
   EXPECT_TRUE(GetSerializedData("encoded_iframe.html", "text/html")
-                  .Contains(expected_meta_charset));
+                  .contains(expected_meta_charset));
   EXPECT_TRUE(GetSerializedData("encoded_iframe.html", "text/html")
-                  .Contains("\xE4\xC5\xD1\xE2"));
+                  .contains("\xE4\xC5\xD1\xE2"));
   EXPECT_FALSE(GetSerializedData("encoded_iframe.html", "text/html")
-                   .Contains("\xE4\xC5\xE4\xC5"));
+                   .contains("\xE4\xC5\xE4\xC5"));
 }
 
 // Tests that when serializing a page with blank frames these are reported with
@@ -470,9 +470,9 @@ TEST_F(FrameSerializerTest, CSS) {
 
   // Ensure that stylesheet contents are not NFC-normalized before encoding.
   EXPECT_TRUE(GetSerializedData("encoding.css", "text/css")
-                  .Contains("\xE4\xC5\xD1\xE2"));
+                  .contains("\xE4\xC5\xD1\xE2"));
   EXPECT_FALSE(GetSerializedData("encoding.css", "text/css")
-                   .Contains("\xE4\xC5\xE4\xC5"));
+                   .contains("\xE4\xC5\xE4\xC5"));
 }
 
 TEST_F(FrameSerializerTest, CSSImport) {

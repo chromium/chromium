@@ -383,7 +383,7 @@ static void TestNumberIsReversible(const AtomicString& locale_string,
   std::unique_ptr<LocaleMac> locale = LocaleMac::Create(locale_string);
   String localized = locale->ConvertToLocalizedNumber(original);
   if (should_have)
-    EXPECT_TRUE(localized.Contains(should_have));
+    EXPECT_TRUE(localized.contains(should_have));
   String converted = locale->ConvertFromLocalizedNumber(localized);
   EXPECT_EQ(original, converted);
 }

@@ -101,7 +101,7 @@ void BlinkOTSContext::AppendErrorMessage(const String&& new_error_string) {
   if (accumulated_error_string_.empty()) {
     accumulated_error_string_ = new_error_string;
   } else {
-    if (accumulated_error_string_.Contains(new_error_string)) {
+    if (accumulated_error_string_.contains(new_error_string)) {
       return;
     }
     accumulated_error_string_ =

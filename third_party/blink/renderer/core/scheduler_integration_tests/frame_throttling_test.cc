@@ -1978,7 +1978,7 @@ TEST_P(FrameThrottlingTest, PrintThrottledFrame) {
   web_frame->PrintPage(0, recorder.beginRecording());
   auto record = recorder.finishRecordingAsPicture();
   String record_string = RecordAsDebugString(record);
-  EXPECT_TRUE(record_string.Contains("drawTextBlob")) << record_string.Utf8();
+  EXPECT_TRUE(record_string.contains("drawTextBlob")) << record_string.Utf8();
   web_frame->PrintEnd();
 }
 
