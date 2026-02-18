@@ -14,14 +14,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (!size)
     return 0;
 
+  // SAFETY: The fuzzer guarantees that |data| is valid for |size| bytes.
+  const auto input = UNSAFE_BUFFERS(base::span<const uint8_t>(data, size));
+
   for (bool add_parameter_sets_in_bitstream : {false, true}) {
     std::vector<uint8_t> output(size);
     size_t size_out;
     bool config_changed;
     media::H264AnnexBToAvcBitstreamConverter converter(
         add_parameter_sets_in_bitstream);
-    base::span<const uint8_t> input =
-        UNSAFE_TODO(base::span<const uint8_t>(data, data + size));
 
     auto status =
         converter.ConvertChunk(input, output, &config_changed, &size_out);
