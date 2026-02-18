@@ -995,7 +995,7 @@ void Tab::SetData(TabRendererData data) {
   }
 
   std::u16string title = data_.title;
-  if (title.empty() && !data_.should_render_empty_title) {
+  if (data_.should_render_loading_title) {
     title = icon_->GetShowingLoadingAnimation()
                 ? l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE)
                 : CoreTabHelper::GetDefaultTitle();

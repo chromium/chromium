@@ -59,9 +59,10 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, TitleChangeIsNotified) {
       browser()->tab_strip_model()->GetActiveTab();
   TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface);
   EXPECT_EQ(tab_ui_helper->GetTitle(), u"Title Of Awesomeness");
-  auto title_change_waiter =
+  auto title_change_subscriber =
       std::make_unique<MockTabUIHelperSubscriber>(tab_ui_helper);
-  EXPECT_CALL(*title_change_waiter, OnTabUIChange());
+  EXPECT_CALL(*title_change_subscriber, OnTabUIChange())
+      .Times(testing::AnyNumber());
   ASSERT_NE(ui_test_utils::NavigateToURL(
                 browser(), embedded_test_server()->GetURL("/title3.html")),
             nullptr);

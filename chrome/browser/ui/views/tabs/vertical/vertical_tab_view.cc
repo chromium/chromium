@@ -738,7 +738,7 @@ void VerticalTabView::UpdateTabData(tabs::TabInterface* tab) {
 
 void VerticalTabView::UpdateTitle() {
   std::u16string title = tab_data_.title;
-  if (title.empty() && !tab_data_.should_render_empty_title) {
+  if (tab_data_.should_render_loading_title) {
     title = icon_->GetShowingLoadingAnimation()
                 ? l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE)
                 : CoreTabHelper::GetDefaultTitle();

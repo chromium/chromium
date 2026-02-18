@@ -22,9 +22,13 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
@@ -86,6 +90,11 @@ std::u16string TabUIHelper::GetTitle() const {
 #endif
 }
 
+bool TabUIHelper::ShouldRenderLoadingTitle() {
+  return GetTitle().empty() &&
+         !GetVisibleURL().SchemeIs(content::kChromeUIUntrustedScheme);
+}
+
 ui::ImageModel TabUIHelper::GetFavicon() const {
   const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
       tab().GetTabFeatures()->saved_tab_group_web_contents_listener();
@@ -130,6 +139,17 @@ bool TabUIHelper::IsCrashed() {
           crashed_status == base::TERMINATION_STATUS_LAUNCH_FAILED);
 }
 
+GURL TabUIHelper::GetVisibleURL() {
+  content::WebContents* const contents = tab().GetContents();
+  content::NavigationEntry* entry =
+      contents->GetController().GetLastCommittedEntry();
+  const bool missing_navigation_entry = !entry || entry->IsInitialEntry();
+  // In the case of reverted uncommitted navigations, there might not be a valid
+  // NavigationEntry. In that case, show about:blank to match the omnibox.
+  return missing_navigation_entry ? GURL(url::kAboutBlankURL)
+                                  : contents->GetVisibleURL();
+}
+
 void TabUIHelper::TitleWasSet(content::NavigationEntry* entry) {
   tab_ui_change_callbacks_.Notify();
 }
@@ -153,6 +173,12 @@ void TabUIHelper::WasDiscarded() {
   if (ShouldShowDiscardStatus()) {
     tab_ui_change_callbacks_.Notify();
   }
+}
+
+void TabUIHelper::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Navigation committed so the visible URL might have changed.
+  tab_ui_change_callbacks_.Notify();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

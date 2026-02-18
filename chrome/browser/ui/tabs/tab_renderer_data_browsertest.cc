@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, Urls) {
   EXPECT_EQ(data.visible_url, kUrl);
   EXPECT_EQ(data.last_committed_url, kUrl);
   EXPECT_TRUE(data.should_display_url);
-  EXPECT_FALSE(data.should_render_empty_title);
+  EXPECT_FALSE(data.should_render_loading_title);
 }
 
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, DomainUrlHiddenForNtpAndTabSearch) {
@@ -261,10 +261,10 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, UncomittedNavigationUrl) {
   EXPECT_EQ(data.visible_url, GURL(url::kAboutBlankURL));
   EXPECT_EQ(data.last_committed_url, GURL(url::kAboutBlankURL));
   EXPECT_TRUE(data.should_display_url);
-  EXPECT_FALSE(data.should_render_empty_title);
+  EXPECT_FALSE(data.should_render_loading_title);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, ShouldRenderEmptyTitle) {
+IN_PROC_BROWSER_TEST_F(TabRendererDataTest, ShouldRenderLoadingTitle) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
@@ -279,12 +279,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, ShouldRenderEmptyTitle) {
   entry->SetURL(kUntrustedUrl);
 
   TabRendererData data = TabRendererData::FromTabInterface(tab_interface);
-#if BUILDFLAG(IS_MAC)
-  // Mac requires "Untitled" to display for an empty title.
-  EXPECT_FALSE(data.should_render_empty_title);
-#else
-  EXPECT_TRUE(data.should_render_empty_title);
-#endif
+  EXPECT_FALSE(data.should_render_loading_title);
 }
 
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, CrashedStatus) {

@@ -57,7 +57,7 @@ struct TabRendererData {
   bool blocked = false;
   std::vector<tabs::TabAlert> alert_state;
   bool should_hide_throbber = false;
-  bool should_render_empty_title = false;
+  bool should_render_loading_title = false;
   bool should_themify_favicon = false;
   bool is_tab_discarded = false;
   base::WeakPtr<tab_groups::CollaborationMessagingTabData>

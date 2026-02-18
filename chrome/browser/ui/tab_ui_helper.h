@@ -15,18 +15,19 @@
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
+namespace content {
+class NavigationEntry;
+class NavigationHandle;
+class Page;
+}  // namespace content
+
 namespace tabs {
 class TabInterface;
-}
+}  // namespace tabs
 
 namespace ui {
 class ImageModel;
 }  // namespace ui
-
-namespace content {
-class NavigationEntry;
-class Page;
-}
 
 // TabUIHelper is used by UI code to obtain the title and favicon for a
 // WebContents. The values returned by TabUIHelper differ from the WebContents
@@ -48,6 +49,8 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   // a customized title is used.
   std::u16string GetTitle() const;
 
+  bool ShouldRenderLoadingTitle();
+
   // Get the favicon of the tab. It will return a favicon from history service
   // if it needs to, otherwise, it will return the favicon of the WebContents.
   ui::ImageModel GetFavicon() const;
@@ -60,11 +63,15 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   // Returns true if the tab is crashed and false otherwise.
   bool IsCrashed();
 
+  GURL GetVisibleURL();
+
   // tabs::ContentsObservingTabFeature override:
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidStopLoading() override;
   void OnVisibilityChanged(content::Visibility visiblity) override;
   void WasDiscarded() override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 #if !BUILDFLAG(IS_ANDROID)
   void PrimaryPageChanged(content::Page& page) override;
 #endif

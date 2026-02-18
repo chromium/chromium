@@ -125,19 +125,8 @@ TabRendererData TabRendererData::FromTabInterface(tabs::TabInterface* tab) {
   data.collaboration_messaging = GetCollaborationMessage(tab);
   data.network_state = TabNetworkStateForWebContents(contents);
 
-  // In the case of reverted uncommitted navigations, there might not be a valid
-  // NavigationEntry. In that case, show about:blank to match the omnibox.
-  content::NavigationEntry* entry =
-      contents->GetController().GetLastCommittedEntry();
-  const bool missing_navigation_entry = !entry || entry->IsInitialEntry();
-  data.visible_url = missing_navigation_entry ? GURL(url::kAboutBlankURL)
-                                              : contents->GetVisibleURL();
-
-  // Allow empty title for chrome-untrusted:// URLs.
-  if (data.title.empty() &&
-      data.visible_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
-    data.should_render_empty_title = true;
-  }
+  data.visible_url = tab_ui_helper->GetVisibleURL();
+  data.should_render_loading_title = tab_ui_helper->ShouldRenderLoadingTitle();
   data.last_committed_url = contents->GetLastCommittedURL();
   data.should_display_url = should_display_url;
   data.is_crashed = tab_ui_helper->IsCrashed();
@@ -148,6 +137,8 @@ TabRendererData TabRendererData::FromTabInterface(tabs::TabInterface* tab) {
   data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
   data.alert_state = tabs::TabAlertController::From(tab)->GetAllActiveAlerts();
 
+  content::NavigationEntry* entry =
+      contents->GetController().GetLastCommittedEntry();
   data.should_themify_favicon =
       entry && favicon::ShouldThemifyFaviconForEntry(entry);
 
