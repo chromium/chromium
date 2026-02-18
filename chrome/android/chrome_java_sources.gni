@@ -898,7 +898,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/omaha/RequestGenerator.java",
   "java/src/org/chromium/chrome/browser/omaha/ResponseParser.java",
   "java/src/org/chromium/chrome/browser/omaha/UpdateMenuItemHelper.java",
-  "java/src/org/chromium/chrome/browser/omnibox/OmniboxActionDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/page_info/ChromePageInfo.java",
   "java/src/org/chromium/chrome/browser/page_info/ChromePageInfoControllerDelegate.java",
   "java/src/org/chromium/chrome/browser/page_info/PageInfoAboutThisSiteController.java",

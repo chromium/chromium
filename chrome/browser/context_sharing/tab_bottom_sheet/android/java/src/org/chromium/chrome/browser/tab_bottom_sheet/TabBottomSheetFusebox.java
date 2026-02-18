@@ -17,10 +17,10 @@ import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /** The fusebox (omnibox) component for the tab bottom sheet. */
@@ -33,7 +33,7 @@ public class TabBottomSheetFusebox {
         public final View anchorView;
         public final View controlContainer;
         public final View bottomContainer;
-        public final OmniboxActionDelegate omniboxActionDelegate;
+        public final OmniboxActionDelegateImpl omniboxActionDelegate;
 
         public TabBottomSheetFuseboxConfig(
                 View contentView,
@@ -41,7 +41,7 @@ public class TabBottomSheetFusebox {
                 View anchorView,
                 View controlContainer,
                 View bottomContainer,
-                OmniboxActionDelegate omniboxActionDelegate) {
+                OmniboxActionDelegateImpl omniboxActionDelegate) {
             this.contentView = contentView;
             this.locationBarLayout = locationBarLayout;
             this.anchorView = anchorView;

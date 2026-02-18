@@ -36,13 +36,13 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -74,7 +74,7 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private Callback<String> mBringToForegroundCallback;
     @Mock private BasicSuggestionProcessor.BookmarkState mBookmarkState;
-    @Mock private OmniboxActionDelegate mOmniboxActionDelegate;
+    @Mock private OmniboxActionDelegateImpl mOmniboxActionDelegate;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private DeferredIMEWindowInsetApplicationCallback mDeferredImeInsetCb;

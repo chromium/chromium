@@ -930,13 +930,6 @@ if (is_android) {
   }
 
   robolectric_library(
-      "chrome_junit_tests_org.chromium.chrome.browser.omnibox") {
-    sources = [ "//chrome/android/java/src/org/chromium/chrome/browser/omnibox/OmniboxActionDelegateImplUnitTest.java" ]
-
-    deps = [ ":chrome_junit_tests_helper" ]
-  }
-
-  robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.page_info") {
     sources = [
       "src/org/chromium/chrome/browser/page_info/PageInfoCookiesSettingsUnitTest.java",
