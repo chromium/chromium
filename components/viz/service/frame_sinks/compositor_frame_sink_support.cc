@@ -285,6 +285,8 @@ void CompositorFrameSinkSupport::SetIsHandlingInteraction(
     bool is_handling_interaction) {
   if (is_handling_interaction_ != is_handling_interaction) {
     is_handling_interaction_ = is_handling_interaction;
+    frame_sink_manager_->OnFrameSinkInteractionChanged(frame_sink_id_,
+                                                       is_handling_interaction);
   }
 
   if (is_handling_interaction_) {

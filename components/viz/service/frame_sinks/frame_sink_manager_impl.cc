@@ -723,6 +723,7 @@ void FrameSinkManagerImpl::UnregisterCompositorFrameSinkSupport(
   }
 
   captured_frame_sink_ids_.erase(frame_sink_id);
+  interactive_frame_sink_ids_.erase(frame_sink_id);
 
   support_map_.erase(frame_sink_id);
 }
@@ -1124,6 +1125,20 @@ void FrameSinkManagerImpl::EvictBackBuffer(uint32_t cache_id,
 void FrameSinkManagerImpl::UpdateDebugRendererSettings(
     const DebugRendererSettings& debug_settings) {
   debug_settings_ = debug_settings;
+}
+
+void FrameSinkManagerImpl::OnFrameSinkInteractionChanged(
+    const FrameSinkId& frame_sink_id,
+    bool is_handling_interaction) {
+  if (is_handling_interaction) {
+    interactive_frame_sink_ids_.insert(frame_sink_id);
+  } else {
+    interactive_frame_sink_ids_.erase(frame_sink_id);
+  }
+
+  // TODO(crbug.com/467315115): Interaction throttling changes global
+  // state, so do a full throttling update.
+  // UpdateThrottling();
 }
 
 void FrameSinkManagerImpl::UpdateThrottlingRecursively(

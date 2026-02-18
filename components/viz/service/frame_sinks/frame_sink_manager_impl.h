@@ -335,6 +335,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void OnFrameSinkMobileOptimizedChanged(const FrameSinkId& frame_sink_id,
                                          bool is_mobile_optimized);
 
+  void OnFrameSinkInteractionChanged(const FrameSinkId& frame_sink_id,
+                                     bool is_handling_interaction);
+
   // Returns ids of all FrameSinks that were registered.
   std::vector<FrameSinkId> GetRegisteredFrameSinkIds() const;
 
@@ -427,6 +430,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   const gfx::Size& copy_output_request_result_size_for_testing() const {
     return copy_output_request_result_size_for_testing_;
+  }
+
+  base::flat_set<FrameSinkId> interactive_frame_sink_ids_for_testing() const {
+    return interactive_frame_sink_ids_;
   }
 
   void RequestBeginFrameForGpuService(bool toggle);
@@ -632,6 +639,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // The ids of the frame sinks that are currently being captured.
   // These frame sinks should not be throttled.
   base::flat_set<FrameSinkId> captured_frame_sink_ids_;
+  // The ids of the frame sinks that are currently handling interaction.
+  // These frame sinks should not be throttled, and other frame sinks may be
+  // throttled when this set is not empty.
+  base::flat_set<FrameSinkId> interactive_frame_sink_ids_;
 
   // Ids of the frame sinks that have been requested to throttle.
   base::flat_set<FrameSinkId> frame_sink_ids_to_throttle_;
