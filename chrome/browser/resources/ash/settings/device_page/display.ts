@@ -200,13 +200,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
-      excludeDisplayInMirrorModeEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('excludeDisplayInMirrorModeEnabled');
-        },
-      },
-
       opsDisplayScaleFactorEnabled_: {
         type: Boolean,
         value() {
@@ -324,7 +317,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private displayModeList_: DropdownMenuOptionList;
   private displaySettingsProvider: DisplaySettingsProviderInterface;
   private displayTabNames_: string[];
-  private readonly excludeDisplayInMirrorModeEnabled_: boolean;
   private hasAmbientLightSensor_: boolean;
   private invalidDisplayId_: string;
   private isAmbientLightSensorEnabled_: boolean;
@@ -1056,19 +1048,15 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   }
 
   private showExcludeInMirror_(
-      unifiedDesktopMode: boolean,
-      excludeDisplayInMirrorModeEnabled: boolean,
-      allowExcludeDisplayInMirrorModePref: boolean,
-      displays: DisplayUnitInfo[],
-      selectedDisplay: DisplayUnitInfo): boolean {
+      unifiedDesktopMode: boolean, allowExcludeDisplayInMirrorModePref: boolean,
+      displays: DisplayUnitInfo[], selectedDisplay: DisplayUnitInfo): boolean {
     if (!selectedDisplay) {
       return false;
     }
     if (this.isMirrored(displays)) {
       return selectedDisplay.id === this.mirroringExcludedId_;
     }
-    if (!excludeDisplayInMirrorModeEnabled &&
-        !allowExcludeDisplayInMirrorModePref) {
+    if (!allowExcludeDisplayInMirrorModePref) {
       return false;
     }
     if (displays.length < 3) {

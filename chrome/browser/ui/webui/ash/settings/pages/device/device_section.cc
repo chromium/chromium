@@ -505,10 +505,6 @@ bool IsTouchscreenRemappingExperienceAvailable() {
          display::HasExternalTouchscreenDevice();
 }
 
-bool IsExcludeDisplayInMirrorModeEnabled() {
-  return display::features::IsExcludeDisplayInMirrorModeEnabled();
-}
-
 bool IsOpsDisplayScaleFactorEnabled() {
   return display::features::IsOpsDisplayScaleFactorEnabled();
 }
@@ -1678,9 +1674,6 @@ void DeviceSection::AddDeviceDisplayStrings(
 
   html_source->AddBoolean("enableDisplayBrightnessControlInSettings",
                           features::IsBrightnessControlInSettingsEnabled());
-
-  html_source->AddBoolean("excludeDisplayInMirrorModeEnabled",
-                          IsExcludeDisplayInMirrorModeEnabled());
 
   html_source->AddBoolean("opsDisplayScaleFactorEnabled",
                           IsOpsDisplayScaleFactorEnabled());

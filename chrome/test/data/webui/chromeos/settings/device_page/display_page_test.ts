@@ -867,7 +867,7 @@ suite('<settings-display>', () => {
         });
   });
 
-  test('Exclude display visibility without flag/pref and with pref', async () => {
+  test('Exclude display visibility with and without pref', async () => {
     await initPage();
 
     addDisplay(1);
@@ -878,7 +878,7 @@ suite('<settings-display>', () => {
     await fakeSystemDisplay.getLayoutCalled.promise;
     assertEquals(3, displayPage.displays.length);
 
-    // Exclude Display is not supported without flag or pref.
+    // Exclude Display is not supported without pref.
     let excludeDisplayToggleRow =
         displayPage.shadowRoot!.querySelector('#excludeDisplayToggleRow');
     assertFalse(isVisible(excludeDisplayToggleRow));
@@ -893,12 +893,16 @@ suite('<settings-display>', () => {
     excludeDisplayToggleRow =
         displayPage.shadowRoot!.querySelector('#excludeDisplayToggleRow');
     assertTrue(isVisible(excludeDisplayToggleRow));
-    // Visibility with flag will be tested with the feature.
   });
 
-  test('Exclude display support with flag', async () => {
-    loadTimeData.overrideValues({excludeDisplayInMirrorModeEnabled: true});
+  test('Exclude display support with pref', async () => {
     await initPage();
+
+    // Set pref to true.
+    const newPrefs = getFakePrefs();
+    newPrefs.settings.display.allow_exclude_display_in_mirror_mode.value = true;
+    displayPage.prefs = newPrefs;
+    flush();
 
     addDisplay(1);
     addDisplay(2);
