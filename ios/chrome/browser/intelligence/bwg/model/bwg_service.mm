@@ -38,9 +38,10 @@ BwgService::BwgService(ProfileIOS* profile,
   // entrypoints when we know whether they are eligible. Otherwise, we're OK
   // with having the entrypoint maybe disappear at a later time (actual Gemini
   // requests to ineligible accounts will fail regardless).
-  is_disabled_by_gemini_policy_ =
-      auth_service_ &&
-      auth_service_->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
+  if (auth_service_ &&
+      auth_service_->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin)) {
+    is_disabled_by_gemini_policy_ = true;
+  }
 
   if (IsAskGeminiChipEnabled()) {
     optimization_guide_ = optimization_guide;
@@ -68,22 +69,25 @@ void BwgService::Shutdown() {
 bool BwgService::IsProfileEligibleForGemini() {
   AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  bool tokens_ok =
-      identity_manager_
-          ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
-          .state() == GoogleServiceAuthError::NONE;
-
   const bool can_use_model_execution = CanUseGeminiModelExecution(account_info);
-
-  // Checks the Chrome and Gemini Enterprise policies.
   // kGeminiEnabledByPolicy is 0 for allowed, 1 for disallowed.
-  bool is_disabled_by_policy =
-      pref_service_->GetInteger(prefs::kGeminiEnabledByPolicy) == 1 ||
-      is_disabled_by_gemini_policy_;
-
-  bool is_eligible = can_use_model_execution && !is_disabled_by_policy &&
-                     tokens_ok && !profile_->IsOffTheRecord();
-
+  const bool disabled_by_enterprise =
+      pref_service_->GetInteger(prefs::kGeminiEnabledByPolicy) == 1;
+  const bool authenticated =
+      !account_info.IsEmpty() &&
+      identity_manager_
+              ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
+              .state() == GoogleServiceAuthError::NONE;
+  const bool is_eligible = can_use_model_execution && !disabled_by_enterprise &&
+                           !is_disabled_by_gemini_policy_.value_or(false) &&
+                           authenticated && !profile_->IsOffTheRecord();
+  const gemini::IneligibilityReasons ineligibility_reasons =
+      gemini::IneligibilityReasons()
+          .set_workspace(is_disabled_by_gemini_policy_.value_or(false))
+          .set_chrome_enterprise(disabled_by_enterprise)
+          .set_account_capability(!can_use_model_execution)
+          .set_authentication(!authenticated);
+  RecordGeminiIneligibilityReasons(ineligibility_reasons);
   RecordGeminiEligibility(is_eligible);
 
   return is_eligible;

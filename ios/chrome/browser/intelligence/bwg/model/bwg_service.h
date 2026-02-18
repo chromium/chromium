@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_H_
 
+#include <optional>
+
 #import "base/memory/raw_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -48,6 +50,8 @@ class BwgService : public KeyedService,
       signin::IdentityManager* identity_manager) override;
 
  private:
+  friend class BwgServiceTest;
+
   // The associated profile.
   raw_ptr<ProfileIOS> profile_;
 
@@ -65,7 +69,7 @@ class BwgService : public KeyedService,
 
   // Whether the user is ineligible by the Gemini Enterprise policy (not Chrome
   // Enterprise).
-  bool is_disabled_by_gemini_policy_ = false;
+  std::optional<bool> is_disabled_by_gemini_policy_;
 
   // Checks if the account is eligible for Gemini Enterprise and populates
   // `is_disabled_by_gemini_policy_`.
