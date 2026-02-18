@@ -216,12 +216,6 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Add new signed-in profile from the Profile picker"/>
 </enum>
 
-<enum name="ProfileAllAccountsNames">
-  <int value="0" label="At most one name (or a rare hash collision)"/>
-  <int value="1" label="Multiple names (no sync)"/>
-  <int value="2" label="Multiple names (sync enabled for one of them)"/>
-</enum>
-
 <enum name="ProfileAvatar">
   <int value="0" label="Generic"/>
   <int value="1" label="Generic Aqua"/>

@@ -107,21 +107,6 @@ void RecordProfilesState() {
       .RecordProfilesState();
 }
 
-void RecordAccountMetrics(const Profile* profile) {
-  DCHECK(profile);
-
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath());
-  if (!entry) {
-    // This can happen if the profile is deleted / for guest profile.
-    return;
-  }
-
-  entry->RecordAccountNamesMetric();
-}
-
 }  // namespace
 
 // static
@@ -142,7 +127,6 @@ void ProfileActivityMetricsRecorder::OnBrowserActivated(
   Profile* active_profile = browser->GetProfile()->GetOriginalProfile();
 
   RecordBrowserActivation(active_profile);
-  RecordAccountMetrics(active_profile);
 
   if (running_session_profile_ != active_profile) {
     // No-op, if starting a new session (|running_session_profile_| is nullptr).

@@ -18,21 +18,6 @@ enum class UnconsentedPrimaryAccountType {
   kMaxValue = kSignedOut
 };
 
-// Classification of what gaia names appear or appeared in this profile since
-// the last time gaia cookies got deleted. Thus, this also includes signed-out
-// accounts. In order to protect privacy, only classifies whether multiple
-// distinct gaia names appeared in this profile and if so, whether sync is
-// enabled for one of them. Furthermore, this classification uses a low-entropy
-// hash to detect distinct names. In case of a rare hash collision (less than
-// 0.1% of cases), multiple names get recorded as a single name. Entries should
-// not be renumbered and numeric values should never be reused.
-enum class AllAccountsNames {
-  kLikelySingleName = 0,  // Gets also rare false records due to hash collision.
-  kMultipleNamesWithoutSync = 1,
-  kMultipleNamesWithSync = 2,
-  kMaxValue = kMultipleNamesWithSync
-};
-
 // Different types of reporting for profile state. This is used as a histogram
 // suffix.
 // LINT.IfChange(StateSuffix)
@@ -75,9 +60,6 @@ void LogProfileDaysSinceLastUse(int days_since_last_use, StateSuffix suffix);
 // Records the context of a profile deletion, whether it is the last profile and
 // whether it happens while no browser windows are opened.
 void LogProfileDeletionContext(bool is_last_profile, bool no_browser_windows);
-
-// Records the state of account names used in multi-login.
-void LogProfileAllAccountsNames(AllAccountsNames names);
 
 }  // namespace profile_metrics
 

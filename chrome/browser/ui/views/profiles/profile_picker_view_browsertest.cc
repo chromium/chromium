@@ -3357,7 +3357,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // Fake sync is enabled in this profile with Joe's account.
   other_entry->SetAuthInfo(test_gaia_id, u"joe.consumer@gmail.com",
                            /*is_consented_primary_account=*/true);
-  other_entry->SetGaiaIds({test_gaia_id});
 
   size_t initial_profile_count = g_browser_process->profile_manager()
                                      ->GetProfileAttributesStorage()
@@ -3426,7 +3425,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // Fake sync is enabled in this profile with Joe's account.
   other_entry->SetAuthInfo(test_gaia_id, u"joe.consumer@gmail.com",
                            /*is_consented_primary_account=*/true);
-  other_entry->SetGaiaIds({test_gaia_id});
 
   size_t initial_profile_count = g_browser_process->profile_manager()
                                      ->GetProfileAttributesStorage()

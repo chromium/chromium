@@ -84,10 +84,6 @@ AccountInfo GetValidAccountInfo(std::string email,
   return account_info;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-const char kChromiumOrgDomain[] = "chromium.org";
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 }  // namespace
 
 class GAIAInfoUpdateServiceTest : public testing::Test {
@@ -265,102 +261,6 @@ TEST_F(GAIAInfoUpdateServiceTest, RevokeSyncConsent) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_picture, entry->GetAvatarIcon()));
 }
 
-TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
-  std::string email1 = "pat1@example.com";
-  AccountInfo info1 = signin::MakeAccountAvailable(
-      identity_manager(),
-      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
-          .WithCookie()
-          .Build(email1));
-  base::RunLoop().RunUntilIdle();
-  info1 = GetValidAccountInfo(info1.email, info1.gaia, "Pat 1",
-                              "Pat Foo The First", std::string());
-  signin::UpdateAccountInfoForAccount(identity_manager(), info1);
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
-  ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
-
-  // Test correct histogram recording for all accounts info that has no getters.
-  base::HistogramTester tester;
-  entry->RecordAccountNamesMetric();
-  tester.ExpectBucketCount(
-      "Profile.AllAccounts.Names",
-      /*sample=*/profile_metrics::AllAccountsNames::kLikelySingleName,
-      /*expected_count=*/1);
-
-  // Log out and record the metric again, sign-out wipes previous info in the
-  // entry so again the default values get reported.
-  signin::SetCookieAccounts(identity_manager(), test_url_loader_factory(), {});
-  entry->RecordAccountNamesMetric();
-  tester.ExpectBucketCount(
-      "Profile.AllAccounts.Names",
-      /*sample=*/profile_metrics::AllAccountsNames::kLikelySingleName,
-      /*expected_count=*/2);
-
-  std::string email2 = "pat2@example.com";
-  AccountInfo info2 = signin::MakeAccountAvailable(
-      identity_manager(),
-      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
-          .WithCookie()
-          .Build(email2));
-  base::RunLoop().RunUntilIdle();
-  info2 = GetValidAccountInfo(info2.email, info2.gaia, "Pat 2",
-                              "Pat Foo The Second", kChromiumOrgDomain);
-  signin::UpdateAccountInfoForAccount(identity_manager(), info2);
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
-
-  // Because due to the complete sign-out, the info about the previous account
-  // got wiped. Thus the same default metrics get recorded again, despite the
-  // second account has a different gaia name than the first one.
-  entry->RecordAccountNamesMetric();
-  tester.ExpectBucketCount(
-      "Profile.AllAccounts.Names",
-      /*sample=*/profile_metrics::AllAccountsNames::kLikelySingleName,
-      /*expected_count=*/3);
-  tester.ExpectTotalCount("Profile.AllAccounts.Names", /*expected_count=*/3);
-}
-
-TEST_F(GAIAInfoUpdateServiceTest, MultiLoginAndLogOut) {
-  // Make two accounts available with both refresh token and cookies.
-  AccountInfo info1 =
-      signin::MakeAccountAvailable(identity_manager(), "pat@example.com");
-  AccountInfo info2 =
-      signin::MakeAccountAvailable(identity_manager(), "pat2@example.com");
-  signin::SetCookieAccounts(
-      identity_manager(), test_url_loader_factory(),
-      {{info1.email, info1.gaia}, {info2.email, info2.gaia}});
-  base::RunLoop().RunUntilIdle();
-  info1 = GetValidAccountInfo(info1.email, info1.gaia, "Pat 1",
-                              "Pat Foo The First", std::string());
-  // Make the second account an enterprise account by setting a hosted domain.
-  info2 = GetValidAccountInfo(info2.email, info2.gaia, "Pat 2",
-                              "Pat Foo The Second", kChromiumOrgDomain);
-  signin::UpdateAccountInfoForAccount(identity_manager(), info1);
-  signin::UpdateAccountInfoForAccount(identity_manager(), info2);
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
-  ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
-
-  // Test correct histogram recording for all accounts info that has no getters.
-  // The two accounts have different gaia names.
-  base::HistogramTester tester;
-  entry->RecordAccountNamesMetric();
-  tester.ExpectBucketCount(
-      "Profile.AllAccounts.Names",
-      /*sample=*/profile_metrics::AllAccountsNames::kMultipleNamesWithoutSync,
-      /*expected_count=*/1);
-
-  // Log out and record the metric again, sign-out wipes previous info in the
-  // entry so the default values get reported.
-  signin::SetCookieAccounts(identity_manager(), test_url_loader_factory(), {});
-  entry->RecordAccountNamesMetric();
-  tester.ExpectBucketCount(
-      "Profile.AllAccounts.Names",
-      /*sample=*/profile_metrics::AllAccountsNames::kLikelySingleName,
-      /*expected_count=*/1);
-  tester.ExpectTotalCount("Profile.AllAccounts.Names", /*expected_count=*/2);
-}
 #endif  // !BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {

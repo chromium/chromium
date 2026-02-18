@@ -44,8 +44,6 @@ class GAIAInfoUpdateService : public KeyedService,
   bool ShouldUpdatePrimaryAccount();
   void UpdatePrimaryAccount(const AccountInfo& info);
 
-  void UpdateAnyAccount(const AccountInfo& info);
-
   // Overridden from signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;

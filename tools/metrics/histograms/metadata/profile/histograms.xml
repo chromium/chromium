@@ -90,22 +90,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.AllAccounts.Names" enum="ProfileAllAccountsNames"
-    expires_after="2026-03-22">
-  <owner>droger@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Classification of what gaia names appear or appeared in this profile since
-    the last time gaia cookies got deleted. Thus, this also includes signed-out
-    accounts. In order to protect privacy, only reports whether multiple
-    distinct gaia names appeared in this profile and if so, whether sync is
-    enabled for one of them. Furthermore, this metric uses a low-entropy hash to
-    detect distinct names. In case of a rare hash collision (less than 0.1% of
-    cases), multiple names get recorded as a single name. Recorded on every
-    activation of a Chrome window (for the respective profile).
-  </summary>
-</histogram>
-
 <histogram name="Profile.AppCount" units="units" expires_after="2024-07-07">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>

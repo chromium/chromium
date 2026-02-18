@@ -85,8 +85,4 @@ void LogProfileDeletionContext(bool is_last_profile, bool no_browser_windows) {
   base::UmaHistogramEnumeration("Profile.DeleteProfileContext", context);
 }
 
-void LogProfileAllAccountsNames(AllAccountsNames names) {
-  base::UmaHistogramEnumeration("Profile.AllAccounts.Names", names);
-}
-
 }  // namespace profile_metrics

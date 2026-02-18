@@ -237,11 +237,6 @@ class ProfileAttributesEntry {
   // the signed in account. Signed out profiles are ineligible.
   bool IsGlicEligible() const;
 
-  // Gets/Sets the gaia IDs of the accounts signed into the profile (accounts
-  // known by the `IdentityManager`).
-  base::flat_set<GaiaId> GetGaiaIds() const;
-  void SetGaiaIds(const base::flat_set<GaiaId>& gaia_ids);
-
   // |is_using_default| should be set to false for non default profile names.
   void SetLocalProfileName(const std::u16string& name, bool is_default_name);
   void SetEnterpriseProfileLabel(const std::u16string& name);
@@ -286,19 +281,8 @@ class ProfileAttributesEntry {
 
   void SetIsGlicEligible(bool value);
 
-  // Update info about accounts. These functions are idempotent, only the first
-  // call for a given input matters.
-  void AddAccountName(const std::string& name);
-
-  // Clears info about all accounts that have been added in the past via
-  // AddAccountName().
-  void ClearAccountNames();
-
   // Lock/Unlock the profile, should be called only if force-sign-in is enabled.
   void LockForceSigninProfile(bool is_lock);
-
-  // Records aggregate metrics about all accounts used in this profile.
-  void RecordAccountNamesMetric() const;
 
   static const char kSupervisedUserId[];
   static const char kAvatarIconKey[];
@@ -358,11 +342,6 @@ class ProfileAttributesEntry {
   gfx::Image GetPlaceholderAvatarIcon(
       int size,
       const profiles::PlaceholderAvatarIconParams& icon_params) const;
-
-  // Returns if this profile has accounts (signed-in or signed-out) with
-  // different account names. This is approximate as only a short hash of an
-  // account name is stored so there can be false negatives.
-  bool HasMultipleAccountNames() const;
 
   // Loads and saves the data to the local state.
   const base::DictValue* GetEntryData() const;

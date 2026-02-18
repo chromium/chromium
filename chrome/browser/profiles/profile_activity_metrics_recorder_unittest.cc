@@ -263,20 +263,3 @@ TEST_F(ProfileActivityMetricsRecorderTest, ProfileState) {
   ActivateBrowser(regular_profile);
   histograms()->ExpectTotalCount("Profile.State.LastUsed_All", 2);
 }
-
-TEST_F(ProfileActivityMetricsRecorderTest, AccountMetrics) {
-  Profile* regular_profile = profile_manager()->CreateTestingProfile("p1");
-  Profile* guest_profile = profile_manager()->CreateGuestProfile();
-  histograms()->ExpectTotalCount("Profile.AllAccounts.Names", 0);
-
-  ActivateBrowser(regular_profile);
-  histograms()->ExpectTotalCount("Profile.AllAccounts.Names", 1);
-
-  // Repeating the same thing records the metric again.
-  ActivateBrowser(regular_profile);
-  histograms()->ExpectTotalCount("Profile.AllAccounts.Names", 2);
-
-  // We don't record for the guest profile.
-  ActivateGuestBrowser(guest_profile);
-  histograms()->ExpectTotalCount("Profile.AllAccounts.Names", 2);
-}

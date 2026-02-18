@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -67,16 +66,6 @@ const char kProfileManagementOidcState[] = "profile_management_oidc_state";
 const char kUserAcceptedAccountManagement[] =
     "user_accepted_account_management";
 
-// All accounts info. This is a dictionary containing sub-dictionaries of
-// account information, keyed by the gaia ID. The sub-dictionaries are empty for
-// now but can be populated in the future. Example for two accounts:
-//
-// "all_accounts": {
-//   "gaia_id1": {},
-//   "gaia_id2": {}
-// }
-const char kAllAccountsKey[] = "all_accounts";
-
 // Avatar info.
 const char kLastDownloadedGAIAPictureUrlWithSizeKey[] =
     "last_downloaded_gaia_picture_url_with_size";
@@ -88,21 +77,16 @@ const char kDefaultAvatarFillColorKey[] = "default_avatar_fill_color";
 const char kDefaultAvatarStrokeColorKey[] = "default_avatar_stroke_color";
 const char kProfileColorSeedKey[] = "profile_color_seed";
 
-// Low-entropy accounts info, for metrics only.
-const char kFirstAccountNameHash[] = "first_account_name_hash";
-const char kHasMultipleAccountNames[] = "has_multiple_account_names";
-
+constexpr int kIntegerNotSet = -1;
 // Local state pref to keep track of the next available profile bucket.
 const char kNextMetricsBucketIndex[] = "profile.metrics.next_bucket_index";
 
 // Deprecated 3/2023.
 const char kAccountCategories[] = "account_categories";
-
-constexpr int kIntegerNotSet = -1;
-
-// Number of distinct low-entropy hash values. Changing this value invalidates
-// existing persisted hashes.
-constexpr int kNumberOfLowEntropyHashValues = 1024;
+// Deprecated 2/2026.
+const char kAllAccountsKey[] = "all_accounts";
+const char kFirstAccountNameHash[] = "first_account_name_hash";
+const char kHasMultipleAccountNames[] = "has_multiple_account_names";
 
 // Returns the next available metrics bucket index and increases the index
 // counter. I.e. two consecutive calls will return two consecutive numbers.
@@ -114,10 +98,6 @@ int NextAvailableMetricsBucketIndex() {
   local_prefs->SetInteger(kNextMetricsBucketIndex, next_index + 1);
 
   return next_index;
-}
-
-int GetLowEntropyHashValue(const std::string& value) {
-  return base::PersistentHash(value) % kNumberOfLowEntropyHashValues;
 }
 
 }  // namespace
@@ -653,27 +633,6 @@ void ProfileAttributesEntry::SetIsGlicEligible(bool value) {
   SetBool(kIsGlicEligible, value);
 }
 
-base::flat_set<GaiaId> ProfileAttributesEntry::GetGaiaIds() const {
-  const base::Value* accounts = GetValue(kAllAccountsKey);
-  if (!accounts || !accounts->is_dict()) {
-    return base::flat_set<GaiaId>();
-  }
-
-  return base::MakeFlatSet<GaiaId>(
-      accounts->GetDict(), {}, [](const auto& it) { return GaiaId(it.first); });
-}
-
-void ProfileAttributesEntry::SetGaiaIds(
-    const base::flat_set<GaiaId>& gaia_ids) {
-  base::DictValue accounts;
-  for (const auto& gaia_id : gaia_ids) {
-    // The dictionary is empty for now, but can hold account-specific info in
-    // the future.
-    accounts.Set(gaia_id.ToString(), base::DictValue());
-  }
-  SetValue(kAllAccountsKey, base::Value(std::move(accounts)));
-}
-
 void ProfileAttributesEntry::SetLocalProfileName(const std::u16string& name,
                                                  bool is_default_name) {
   bool changed = SetString16(kNameKey, name);
@@ -912,24 +871,6 @@ void ProfileAttributesEntry::SetAuthInfo(const GaiaId& gaia_id,
   profile_attributes_storage_->NotifyProfileAuthInfoChanged(profile_path_);
 }
 
-void ProfileAttributesEntry::AddAccountName(const std::string& name) {
-  int hash = GetLowEntropyHashValue(name);
-  int first_hash = GetInteger(kFirstAccountNameHash);
-  if (first_hash == kIntegerNotSet) {
-    SetInteger(kFirstAccountNameHash, hash);
-    return;
-  }
-
-  if (first_hash != hash) {
-    SetBool(kHasMultipleAccountNames, true);
-  }
-}
-
-void ProfileAttributesEntry::ClearAccountNames() {
-  ClearValue(kFirstAccountNameHash);
-  ClearValue(kHasMultipleAccountNames);
-}
-
 const gfx::Image* ProfileAttributesEntry::GetHighResAvatar() const {
   const size_t avatar_index = GetAvatarIconIndex();
 
@@ -967,23 +908,6 @@ gfx::Image ProfileAttributesEntry::GetPlaceholderAvatarIcon(
   return profiles::GetPlaceholderAvatarIconWithColors(
       colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
       size, icon_params);
-}
-
-bool ProfileAttributesEntry::HasMultipleAccountNames() const {
-  // If the value is not set, GetBool() returns false.
-  return GetBool(kHasMultipleAccountNames);
-}
-
-void ProfileAttributesEntry::RecordAccountNamesMetric() const {
-  if (HasMultipleAccountNames()) {
-    profile_metrics::LogProfileAllAccountsNames(
-        IsAuthenticated()
-            ? profile_metrics::AllAccountsNames::kMultipleNamesWithSync
-            : profile_metrics::AllAccountsNames::kMultipleNamesWithoutSync);
-  } else {
-    profile_metrics::LogProfileAllAccountsNames(
-        profile_metrics::AllAccountsNames::kLikelySingleName);
-  }
 }
 
 const base::DictValue* ProfileAttributesEntry::GetEntryData() const {
@@ -1108,6 +1032,10 @@ bool ProfileAttributesEntry::ClearValue(const char* key) {
 void ProfileAttributesEntry::MigrateObsoleteProfileAttributes() {
   // Added 3/2023.
   ClearValue(kAccountCategories);
+  // Added 2/2026.
+  ClearValue(kAllAccountsKey);
+  ClearValue(kFirstAccountNameHash);
+  ClearValue(kHasMultipleAccountNames);
 }
 
 void ProfileAttributesEntry::SetIsOmittedInternal(bool is_omitted) {
