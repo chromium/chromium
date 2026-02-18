@@ -160,6 +160,8 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kCredentialExchangeImport:
     case signin_metrics::AccessPoint::kSetSyncConsentFromSyncInternals:
     case signin_metrics::AccessPoint::kIosChromeWebView:
+    case signin_metrics::AccessPoint::kAshUserSessionManager:
+    case signin_metrics::AccessPoint::kAshChromeSessionManager:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.

@@ -235,6 +235,10 @@ class SigninMetricsTest : public ::testing::Test {
         return "SetSyncConsentFromSyncInternals";
       case AccessPoint::kIosChromeWebView:
         return "IosChromeWebView";
+      case AccessPoint::kAshChromeSessionManager:
+        return "AshChromeSessionManager";
+      case AccessPoint::kAshUserSessionManager:
+        return "AshUserSessionManager";
     }
   }
 };

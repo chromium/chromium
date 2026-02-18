@@ -324,10 +324,12 @@ enum class AccessPoint : int {
   // Set sync consent from sync internals.
   kSetSyncConsentFromSyncInternals = 93,
   kIosChromeWebView = 94,
+  kAshUserSessionManager = 95,
+  kAshChromeSessionManager = 96,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kIosChromeWebView,  // This must be last.
+  kMaxValue = kAshChromeSessionManager,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

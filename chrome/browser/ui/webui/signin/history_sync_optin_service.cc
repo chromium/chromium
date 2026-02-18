@@ -277,6 +277,8 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
     case signin_metrics::AccessPoint::kCredentialExchangeImport:
     case signin_metrics::AccessPoint::kSetSyncConsentFromSyncInternals:
     case signin_metrics::AccessPoint::kIosChromeWebView:
+    case signin_metrics::AccessPoint::kAshChromeSessionManager:
+    case signin_metrics::AccessPoint::kAshUserSessionManager:
       return;
   }
 

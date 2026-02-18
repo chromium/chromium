@@ -139,6 +139,8 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kCredentialExchangeImport:
     case AccessPoint::kSetSyncConsentFromSyncInternals:
     case AccessPoint::kIosChromeWebView:
+    case AccessPoint::kAshUserSessionManager:
+    case AccessPoint::kAshChromeSessionManager:
       return access_point;
   }
 
@@ -571,6 +573,8 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kManagedProfileAutoSigninIos:
     case AccessPoint::kSetSyncConsentFromSyncInternals:
     case AccessPoint::kIosChromeWebView:
+    case AccessPoint::kAshChromeSessionManager:
+    case AccessPoint::kAshUserSessionManager:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
     case AccessPoint::kCollaborationShareTabGroup:
@@ -886,6 +890,8 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kNtpFeaturePromo:
     case AccessPoint::kSetSyncConsentFromSyncInternals:
     case AccessPoint::kIosChromeWebView:
+    case AccessPoint::kAshUserSessionManager:
+    case AccessPoint::kAshChromeSessionManager:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

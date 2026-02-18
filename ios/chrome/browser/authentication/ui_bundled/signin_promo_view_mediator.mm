@@ -140,6 +140,8 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kCredentialExchangeImport:
     case signin_metrics::AccessPoint::kSetSyncConsentFromSyncInternals:
     case signin_metrics::AccessPoint::kIosChromeWebView:
+    case signin_metrics::AccessPoint::kAshUserSessionManager:
+    case signin_metrics::AccessPoint::kAshChromeSessionManager:
       return false;
   }
 }
@@ -239,6 +241,8 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kCredentialExchangeImport:
     case signin_metrics::AccessPoint::kSetSyncConsentFromSyncInternals:
     case signin_metrics::AccessPoint::kIosChromeWebView:
+    case signin_metrics::AccessPoint::kAshChromeSessionManager:
+    case signin_metrics::AccessPoint::kAshUserSessionManager:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -339,6 +343,8 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kCredentialExchangeImport:
     case signin_metrics::AccessPoint::kSetSyncConsentFromSyncInternals:
     case signin_metrics::AccessPoint::kIosChromeWebView:
+    case signin_metrics::AccessPoint::kAshChromeSessionManager:
+    case signin_metrics::AccessPoint::kAshUserSessionManager:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -428,6 +434,8 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kCredentialExchangeImport:
     case signin_metrics::AccessPoint::kSetSyncConsentFromSyncInternals:
     case signin_metrics::AccessPoint::kIosChromeWebView:
+    case signin_metrics::AccessPoint::kAshChromeSessionManager:
+    case signin_metrics::AccessPoint::kAshUserSessionManager:
       return nullptr;
   }
 }
@@ -516,6 +524,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kCredentialExchangeImport:
     case signin_metrics::AccessPoint::kSetSyncConsentFromSyncInternals:
     case signin_metrics::AccessPoint::kIosChromeWebView:
+    case signin_metrics::AccessPoint::kAshChromeSessionManager:
+    case signin_metrics::AccessPoint::kAshUserSessionManager:
       return nullptr;
   }
 }

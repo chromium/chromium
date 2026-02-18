@@ -1551,7 +1551,7 @@ void UserSessionManager::InitProfilePreferences(
         set_account_result =
             identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
                 account_id, ConsentLevel::kSync,
-                signin_metrics::AccessPoint::kUnknown);
+                signin_metrics::AccessPoint::kAshUserSessionManager);
     VLOG(1) << "SetPrimaryAccount result="
             << static_cast<int>(set_account_result);
 

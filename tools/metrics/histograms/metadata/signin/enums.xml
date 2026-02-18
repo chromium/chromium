@@ -980,6 +980,8 @@ chromium-metrics-reviews@google.com.
   <int value="92" label="Credential Exchange import"/>
   <int value="93" label="Set sync consent from sync internals"/>
   <int value="94" label="Chrome WebView (iOS only)"/>
+  <int value="95" label="Ash user session manager (ChromeOS only)"/>
+  <int value="96" label="Ash Chrome session manager (ChromeOS only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

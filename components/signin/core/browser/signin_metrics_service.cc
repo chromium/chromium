@@ -193,6 +193,8 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kCredentialExchangeImport:
     case signin_metrics::AccessPoint::kSetSyncConsentFromSyncInternals:
     case signin_metrics::AccessPoint::kIosChromeWebView:
+    case signin_metrics::AccessPoint::kAshUserSessionManager:
+    case signin_metrics::AccessPoint::kAshChromeSessionManager:
       return;
   }
 

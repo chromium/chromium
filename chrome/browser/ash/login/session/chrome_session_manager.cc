@@ -148,7 +148,7 @@ void UpsertStubUserToAccountManager(Profile* user_profile,
   // 3. Set it as the Primary Account.
   identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id, signin::ConsentLevel::kSync,
-      signin_metrics::AccessPoint::kUnknown);
+      signin_metrics::AccessPoint::kAshChromeSessionManager);
 
   CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   CHECK_EQ(
