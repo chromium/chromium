@@ -49,11 +49,21 @@ constexpr base::FeatureParam<bool> kReaderModeUseReadabilityUseDistiller{
 #endif
 constexpr base::FeatureParam<int> kReaderModeUseReadabilityHeuristicMinScore{
     &kReaderModeUseReadability, /*name=*/"heuristic_min_score",
-    /*default_value=*/50};
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    /*default_value=*/50
+#else
+    /*default_value=*/75
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+};
 constexpr base::FeatureParam<int>
     kReaderModeUseReadabilityHeuristicMinContentLength{
         &kReaderModeUseReadability, /*name=*/"heuristic_min_content_length",
-        /*default_value=*/160};
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+        /*default_value=*/160
+#else
+        /*default_value=*/200
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    };
 constexpr base::FeatureParam<int> kReaderModeUseReadabilityMinContentLength{
     &kReaderModeUseReadability, /*name=*/"min_content_length",
 #if !BUILDFLAG(IS_ANDROID)
