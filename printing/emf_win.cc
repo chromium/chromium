@@ -42,14 +42,19 @@ bool DIBFormatNativelySupported(HDC dc,
 
 const BITMAPINFOHEADER* GetBitmapInfoHeader(
     const EMRSTRETCHDIBITS* sdib_record) {
-  const BYTE* record_start = reinterpret_cast<const BYTE*>(sdib_record);
+  // SAFETY: Trust that `emr.nSize` is set correctly.
+  auto record_span = UNSAFE_BUFFERS(base::span(
+      reinterpret_cast<const uint8_t*>(sdib_record), sdib_record->emr.nSize));
+
   return reinterpret_cast<const BITMAPINFOHEADER*>(
-      UNSAFE_TODO(record_start + sdib_record->offBmiSrc));
+      record_span.subspan(sdib_record->offBmiSrc).data());
 }
 
 const BYTE* GetBitmapBits(const EMRSTRETCHDIBITS* sdib_record) {
-  const BYTE* record_start = reinterpret_cast<const BYTE*>(sdib_record);
-  return UNSAFE_TODO(record_start + sdib_record->offBitsSrc);
+  // SAFETY: Trust that `emr.nSize` is set correctly.
+  auto record_span = UNSAFE_BUFFERS(base::span(
+      reinterpret_cast<const uint8_t*>(sdib_record), sdib_record->emr.nSize));
+  return record_span.subspan(sdib_record->offBitsSrc).data();
 }
 
 }  // namespace
@@ -128,9 +133,9 @@ bool Emf::SafePlayback(HDC context) const {
   gfx::Rect bound = GetPageBounds(1);
   RECT rect = bound.ToRECT();
   return bound.IsEmpty() ||
-         EnumEnhMetaFile(context, emf_, &Emf::SafePlaybackProc,
-                         reinterpret_cast<void*>(&playback_context),
-                         &rect) != 0;
+         ::EnumEnhMetaFile(context, emf_, &Emf::SafePlaybackProc,
+                           reinterpret_cast<void*>(&playback_context),
+                           &rect) != 0;
 }
 
 gfx::Rect Emf::GetPageBounds(unsigned int page_number) const {
@@ -332,45 +337,45 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
       const XFORM* xform = reinterpret_cast<const XFORM*>(record()->dParm);
       HDC hdc = context->hdc;
       if (base_matrix) {
-        res = 0 != SetWorldTransform(hdc, base_matrix) &&
-              ModifyWorldTransform(hdc, xform, MWT_LEFTMULTIPLY);
+        res = 0 != ::SetWorldTransform(hdc, base_matrix) &&
+              ::ModifyWorldTransform(hdc, xform, MWT_LEFTMULTIPLY);
       } else {
-        res = 0 != SetWorldTransform(hdc, xform);
+        res = 0 != ::SetWorldTransform(hdc, xform);
       }
       break;
     }
     case EMR_MODIFYWORLDTRANSFORM: {
-      DCHECK_EQ(record()->nSize,
-                sizeof(DWORD) * 2 + sizeof(XFORM) + sizeof(DWORD));
-      const XFORM* xform = reinterpret_cast<const XFORM*>(record()->dParm);
-      UNSAFE_TODO({
-        const DWORD* option = reinterpret_cast<const DWORD*>(xform + 1);
-        HDC hdc = context->hdc;
-        switch (*option) {
-          case MWT_IDENTITY:
-            if (base_matrix) {
-              res = 0 != SetWorldTransform(hdc, base_matrix);
-            } else {
-              res = 0 != ModifyWorldTransform(hdc, xform, MWT_IDENTITY);
-            }
-            break;
-          case MWT_LEFTMULTIPLY:
-          case MWT_RIGHTMULTIPLY:
-            res = 0 != ModifyWorldTransform(hdc, xform, *option);
-            break;
-          case 4:  // MWT_SET
-            if (base_matrix) {
-              res = 0 != SetWorldTransform(hdc, base_matrix) &&
-                    ModifyWorldTransform(hdc, xform, MWT_LEFTMULTIPLY);
-            } else {
-              res = 0 != SetWorldTransform(hdc, xform);
-            }
-            break;
-          default:
-            res = false;
-            break;
-        }
-      });
+      CHECK_EQ(record()->nSize, sizeof(EMRMODIFYWORLDTRANSFORM));
+      const auto* modify_world_transform =
+          reinterpret_cast<const EMRMODIFYWORLDTRANSFORM*>(record());
+      HDC hdc = context->hdc;
+      switch (modify_world_transform->iMode) {
+        case MWT_IDENTITY:
+          if (base_matrix) {
+            res = 0 != ::SetWorldTransform(hdc, base_matrix);
+          } else {
+            res = 0 != ::ModifyWorldTransform(
+                           hdc, &modify_world_transform->xform, MWT_IDENTITY);
+          }
+          break;
+        case MWT_LEFTMULTIPLY:
+        case MWT_RIGHTMULTIPLY:
+          res = 0 != ::ModifyWorldTransform(hdc, &modify_world_transform->xform,
+                                            modify_world_transform->iMode);
+          break;
+        case 4:  // MWT_SET
+          if (base_matrix) {
+            res = 0 != ::SetWorldTransform(hdc, base_matrix) &&
+                  ::ModifyWorldTransform(hdc, &modify_world_transform->xform,
+                                         MWT_LEFTMULTIPLY);
+          } else {
+            res = 0 != ::SetWorldTransform(hdc, &modify_world_transform->xform);
+          }
+          break;
+        default:
+          res = false;
+          break;
+      }
       break;
     }
     case EMR_SETLAYOUT:
@@ -396,8 +401,8 @@ bool Emf::FinishPage() {
 
 Emf::Enumerator::Enumerator(const Emf& emf, HDC context, const RECT* rect) {
   items_.clear();
-  if (!EnumEnhMetaFile(context, emf.emf(), &Emf::Enumerator::EnhMetaFileProc,
-                       reinterpret_cast<void*>(this), rect)) {
+  if (!::EnumEnhMetaFile(context, emf.emf(), &Emf::Enumerator::EnhMetaFileProc,
+                         reinterpret_cast<void*>(this), rect)) {
     NOTREACHED();
   }
   DCHECK_EQ(context_.hdc, context);

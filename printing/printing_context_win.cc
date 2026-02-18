@@ -8,11 +8,11 @@
 
 #include <algorithm>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/memory/free_deleter.h"
 #include "base/notimplemented.h"
@@ -147,35 +147,37 @@ mojom::ResultCode PrintingContextWin::UseDefaultSettings() {
     return GetResultCodeFromSystemErrorCode(code);
   }
 
-  DCHECK_GE(bytes_needed, count_returned * sizeof(PRINTER_INFO_2));
-  std::vector<BYTE> printer_info_buffer(bytes_needed);
+  CHECK_GE(bytes_needed, count_returned * sizeof(PRINTER_INFO_2));
+  auto printer_info_buffer = base::HeapArray<uint8_t>::Uninit(bytes_needed);
   BOOL ret = ::EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS,
                             nullptr, 2, printer_info_buffer.data(),
                             bytes_needed, &bytes_needed, &count_returned);
   if (ret && count_returned) {  // have printers
-    UNSAFE_TODO({
-      // Open the first successfully found printer.
-      const PRINTER_INFO_2* info_2 =
-          reinterpret_cast<PRINTER_INFO_2*>(printer_info_buffer.data());
-      const PRINTER_INFO_2* info_2_end = info_2 + count_returned;
-      for (; info_2 < info_2_end; ++info_2) {
-        ScopedPrinterHandle printer;
-        if (!printer.OpenPrinterWithName(info_2->pPrinterName)) {
-          continue;
-        }
-        std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode =
-            CreateDevMode(printer.Get(), nullptr);
-        if (InitializeSettings(info_2->pPrinterName, dev_mode.get()) ==
-            mojom::ResultCode::kSuccess) {
-          return mojom::ResultCode::kSuccess;
-        }
+    // SAFETY: printer_info_buffer contains room for `count_returned`
+    // PRINTER_INFO_2 structs, per CHECK_GE above.
+    auto printer_infos = UNSAFE_BUFFERS(base::span(
+        reinterpret_cast<const PRINTER_INFO_2*>(printer_info_buffer.data()),
+        count_returned));
+
+    for (const PRINTER_INFO_2& info : printer_infos) {
+      ScopedPrinterHandle printer;
+      if (!printer.OpenPrinterWithName(info.pPrinterName)) {
+        continue;
       }
-    });
+
+      std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode =
+          CreateDevMode(printer.Get(), nullptr);
+
+      if (InitializeSettings(info.pPrinterName, dev_mode.get()) ==
+          mojom::ResultCode::kSuccess) {
+        return mojom::ResultCode::kSuccess;
+      }
+    }
+
     if (context_) {
       return mojom::ResultCode::kSuccess;
     }
   }
-
   return OnError();
 }
 
@@ -186,10 +188,12 @@ gfx::Size PrintingContextWin::GetPdfPaperSizeDeviceUnits() {
   // Get settings from locale. Paper type buffer length is at most 4.
   const int paper_type_buffer_len = 4;
   wchar_t paper_type_buffer[paper_type_buffer_len] = {};
-  GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IPAPERSIZE, paper_type_buffer,
-                paper_type_buffer_len);
-  if (UNSAFE_TODO(wcslen(paper_type_buffer))) {  // The call succeeded.
-    int paper_code = _wtoi(paper_type_buffer);
+  int chars_written = ::GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IPAPERSIZE,
+                                      paper_type_buffer, paper_type_buffer_len);
+  // If the call succeeded and returned at least one character, in addition to
+  // the null terminator.
+  int paper_code;
+  if (chars_written > 1 && base::StringToInt(paper_type_buffer, &paper_code)) {
     switch (paper_code) {
       case DMPAPER_LEGAL:
         paper_size.SetSize(kLegalWidthInch, kLegalHeightInch);

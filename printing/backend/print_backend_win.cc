@@ -323,8 +323,8 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
   DWORD count_returned = 0;
   constexpr DWORD kFlags = PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS;
   const DWORD kLevel = 4;
-  EnumPrinters(kFlags, nullptr, kLevel, nullptr, 0, &bytes_needed,
-               &count_returned);
+  ::EnumPrinters(kFlags, nullptr, kLevel, nullptr, 0, &bytes_needed,
+                 &count_returned);
   logging::SystemErrorCode code = logging::GetLastSystemErrorCode();
   if (code == ERROR_SUCCESS) {
     // If EnumPrinters() succeeded, that means there are no printer drivers
@@ -340,30 +340,31 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
     return GetResultCodeFromSystemErrorCode(code);
   }
 
+  CHECK_GE(bytes_needed, count_returned * sizeof(PRINTER_INFO_4));
   auto printer_info_buffer = base::HeapArray<BYTE>::Uninit(bytes_needed);
-  if (!EnumPrinters(kFlags, nullptr, kLevel, printer_info_buffer.data(),
-                    printer_info_buffer.size(), &bytes_needed,
-                    &count_returned)) {
+  if (!::EnumPrinters(kFlags, nullptr, kLevel, printer_info_buffer.data(),
+                      printer_info_buffer.size(), &bytes_needed,
+                      &count_returned)) {
     return GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode());
   }
-
-  const auto* printer_info =
-      reinterpret_cast<PRINTER_INFO_4*>(printer_info_buffer.data());
-  UNSAFE_TODO({
-    for (DWORD index = 0; index < count_returned; index++) {
-      ScopedPrinterHandle printer;
-      if (!printer.OpenPrinterWithName(printer_info[index].pPrinterName)) {
-        continue;
-      }
-
-      std::optional<PrinterBasicInfo> info = GetBasicPrinterInfo(printer.Get());
-      if (!info.has_value()) {
-        continue;
-      }
-
-      printer_list.push_back(info.value());
+  // SAFETY: Trust `bytes_needed` and `count_returned` computed and used
+  // correctly by `EnumPrinters`. See the CHECK_GE above.
+  auto printer_infos = UNSAFE_BUFFERS(base::span(
+      reinterpret_cast<const PRINTER_INFO_4*>(printer_info_buffer.data()),
+      count_returned));
+  for (const auto& printer_info : printer_infos) {
+    ScopedPrinterHandle printer;
+    if (!printer.OpenPrinterWithName(printer_info.pPrinterName)) {
+      continue;
     }
-  });
+
+    std::optional<PrinterBasicInfo> info = GetBasicPrinterInfo(printer.Get());
+    if (!info.has_value()) {
+      continue;
+    }
+
+    printer_list.push_back(info.value());
+  }
 
   VLOG(1) << "Found " << printer_list.size() << " printers";
   return mojom::ResultCode::kSuccess;
