@@ -6121,6 +6121,12 @@ const WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() const {
 }
 
 void BrowserView::PaintAsActiveChanged() {
+  // Do not propagate Browser active state changes if the Browser has already
+  // been scheduled for destruction.
+  if (browser_->is_delete_scheduled()) {
+    return;
+  }
+
   const bool is_active = browser_widget_->ShouldPaintAsActive();
 
   // TODO: Unify semantics of "active" between the BrowserList and
