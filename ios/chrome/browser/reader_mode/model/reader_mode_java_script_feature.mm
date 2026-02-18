@@ -36,7 +36,7 @@ ReaderModeJavaScriptFeature::ReaderModeJavaScriptFeature()
           web::ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
-              FeatureScript::InjectionTime::kDocumentEnd,
+              FeatureScript::InjectionTime::kDocumentStart,
               FeatureScript::TargetFrames::kMainFrame,
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}) {}
 
