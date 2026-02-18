@@ -548,7 +548,11 @@ views::ProposedLayout VerticalTabView::CalculateProposedLayout(
   gfx::Rect bounds_remaining = gfx::Rect(0, 0, width, height);
   bounds_remaining.Inset(gfx::Insets::VH(0, kHorizontalInset));
 
-  const bool is_centered = collapsed_ || pinned_;
+  // If the tab is collapsed but animating with a wider width then we shouldn't
+  // center the contents.
+  const bool is_centered =
+      (collapsed_ && width < VerticalTabStripRegionView::kCollapsedWidth) ||
+      pinned_;
 
   int placed_children = 0;
   for (const auto& child : tab_children_configs_) {
