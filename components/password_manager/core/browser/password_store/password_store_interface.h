@@ -13,6 +13,7 @@
 #include "base/types/strong_alias.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 
 namespace base {
@@ -72,15 +73,19 @@ class PasswordStoreInterface : public RefcountedKeyedService {
     // Notifies the observer that error state of the password store may have
     // changed. This happens when the store backend receives a notification
     // from Sync or performs an operation that either reports an error state or
-    // may have resolved an error state. Use `GetError()` to synchronously
-    // receive the last known error state which may be stale on Android!
+    // may have resolved an error state. This method passes the `changed_error`
+    // when a new error occurred.
+    // On Android: it's possible that another call to the store is necessary to
+    // get an updated error state. Use `GetError()` to synchronously receive the
+    // last known error state which may be stale!
     // Will be called from the UI thread. The passed `store` issued the observer
     // notification in case there might be multiple ones.
-    virtual void OnErrorStateChanged(PasswordStoreInterface* store) {}
+    virtual void OnErrorStateChanged(PasswordStoreInterface* store,
+                                     ActionableError changed_error) {}
   };
 
   // Necessary condition to offer saving passwords.
-  virtual bool IsAbleToSavePasswords() const = 0;
+  virtual ActionableError GetError() const = 0;
 
   // Adds the given PasswordForm to the secure password store asynchronously.
   // `completion` will be run after the form is added.

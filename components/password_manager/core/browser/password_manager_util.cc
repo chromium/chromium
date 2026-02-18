@@ -36,6 +36,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -122,12 +123,12 @@ bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
     // saving passwords when sync is enabled. If either of conditions above is
     // not satisfied fallback to ProfilePasswordStore.
     return client->GetAccountPasswordStore() &&
-           client->GetAccountPasswordStore()->IsAbleToSavePasswords();
+           IsAbleToSavePasswords(client->GetAccountPasswordStore()->GetError());
   }
 #endif
   // TODO(b/324054761): Check AccountPasswordStore store when needed.
   return client->GetProfilePasswordStore() &&
-         client->GetProfilePasswordStore()->IsAbleToSavePasswords();
+         IsAbleToSavePasswords(client->GetProfilePasswordStore()->GetError());
 }
 
 std::string_view GetSignonRealmWithProtocolExcluded(const PasswordForm& form) {

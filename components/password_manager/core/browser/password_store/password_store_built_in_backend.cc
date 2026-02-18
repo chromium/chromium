@@ -139,8 +139,9 @@ void PasswordStoreBuiltInBackend::Shutdown(
   }
 }
 
-bool PasswordStoreBuiltInBackend::IsAbleToSavePasswords() {
-  return is_database_initialized_successfully_;
+ActionableError PasswordStoreBuiltInBackend::GetError() {
+  return is_database_initialized_successfully_ ? ActionableError::kNoError
+                                               : ActionableError::kInactionable;
 }
 
 void PasswordStoreBuiltInBackend::InitBackend(

@@ -56,7 +56,7 @@ TEST_F(PasswordStoreEmptyBackendTest, InitAndShutdownSignalBack) {
 
 TEST_F(PasswordStoreEmptyBackendTest, NotAbleToSavePasswords) {
   PasswordStoreBackend* backend = CreateAndInitBackend();
-  EXPECT_FALSE(backend->IsAbleToSavePasswords());
+  EXPECT_NE(ActionableError::kNoError, backend->GetError());
 }
 
 TEST_F(PasswordStoreEmptyBackendTest, GetAllLoginsAsyncReturnsEmpty) {

@@ -47,7 +47,11 @@ enum class PasswordStoreBackendErrorType {
 };
 
 struct PasswordStoreBackendError {
-  PasswordStoreBackendError(PasswordStoreBackendErrorType error_type);
+  explicit PasswordStoreBackendError(PasswordStoreBackendErrorType error_type);
+  PasswordStoreBackendError(const PasswordStoreBackendError& rhs);
+  PasswordStoreBackendError(PasswordStoreBackendError&& rhs);
+  PasswordStoreBackendError& operator=(const PasswordStoreBackendError& rhs);
+  PasswordStoreBackendError& operator=(PasswordStoreBackendError&& rhs);
 
   friend bool operator==(const PasswordStoreBackendError&,
                          const PasswordStoreBackendError&) = default;

@@ -61,7 +61,7 @@ class PasswordStore : public PasswordStoreInterface {
   void ShutdownOnUIThread() override;
 
   // PasswordStoreInterface:
-  bool IsAbleToSavePasswords() const override;
+  ActionableError GetError() const override;
   void AddLogin(const PasswordForm& form,
                 base::OnceClosure completion = base::DoNothing()) override;
   void AddLogins(const std::vector<PasswordForm>& forms,

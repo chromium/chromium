@@ -290,23 +290,35 @@ void RecordCancelledRetryMetrics(PasswordStoreOperation operation,
       kMaxReportedRetryAttempts);
 }
 
-bool ShouldRetryOperationOnError(PasswordStoreOperation operation,
-                                 AndroidBackendAPIErrorCode api_error_code,
-                                 base::TimeDelta delay) {
+bool IsRetriableOperation(PasswordStoreOperation operation) {
   const base::flat_set<PasswordStoreOperation> kRetriableOperations = {
       PasswordStoreOperation::kGetAllLoginsAsync,
       PasswordStoreOperation::kGetAutofillableLoginsAsync,
   };
+  return kRetriableOperations.contains(operation);
+}
+
+bool IsRetriableApiError(AndroidBackendAPIErrorCode api_error_code) {
   const base::flat_set<AndroidBackendAPIErrorCode> kRetriableErrors = {
       AndroidBackendAPIErrorCode::kNetworkError,
       AndroidBackendAPIErrorCode::kApiNotConnected,
       AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall,
       AndroidBackendAPIErrorCode::kReconnectionTimedOut,
       AndroidBackendAPIErrorCode::kBackendGeneric};
-  return delay < kTaskRetryTimeout &&
-         kRetriableOperations.contains(operation) &&
-         kRetriableErrors.contains(
-             static_cast<AndroidBackendAPIErrorCode>(api_error_code));
+  return kRetriableErrors.contains(api_error_code);
+}
+
+bool IsRetriableError(const PasswordStoreBackendError& reported_error) {
+  return reported_error.android_backend_api_error.has_value() &&
+         IsRetriableApiError(static_cast<AndroidBackendAPIErrorCode>(
+             reported_error.android_backend_api_error.value()));
+}
+
+bool ShouldRetryOperationOnError(PasswordStoreOperation operation,
+                                 AndroidBackendAPIErrorCode api_error_code,
+                                 base::TimeDelta delay) {
+  return delay < kTaskRetryTimeout && IsRetriableOperation(operation) &&
+         IsRetriableApiError(api_error_code);
 }
 
 PasswordStoreBackendErrorType APIErrorCodeToErrorType(
@@ -349,6 +361,14 @@ PasswordStoreBackendErrorType APIErrorCodeToErrorType(
   // switch, so that the compiler still warns when a new enum value is added and
   // not explicitly handled here.
   return PasswordStoreBackendErrorType::kUncategorized;
+}
+
+ActionableError GetLastErrorForOperation(
+    const PasswordStoreBackendError& reported_error,
+    PasswordStoreOperation operation) {
+  return IsRetriableError(reported_error) && IsRetriableOperation(operation)
+             ? ActionableError::kInactionableTemporaryError
+             : BackendErrorToActionableError(reported_error.type);
 }
 
 }  // namespace
@@ -751,7 +771,7 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
     return;  // Task cleaned up after returning from background.
   }
 
-  OnCallToGMSCoreSucceeded();
+  last_error_ = ActionableError::kNoError;
   reply->RecordMetrics(/*error=*/std::nullopt);
   DCHECK(reply->Holds<LoginsOrErrorReply>());
   main_task_runner_->PostTask(
@@ -769,7 +789,7 @@ void PasswordStoreAndroidBackend::OnLoginsChanged(JobId job_id,
   reply->RecordMetrics(/*error=*/std::nullopt);
   DCHECK(reply->Holds<PasswordChangesOrErrorReply>());
 
-  OnCallToGMSCoreSucceeded();
+  last_error_ = ActionableError::kNoError;
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(*reply).Get<PasswordChangesOrErrorReply>(),
@@ -810,12 +830,13 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       reported_error.type = APIErrorCodeToErrorType(api_error_code);
     }
   }
+  last_error_ = GetLastErrorForOperation(reported_error, operation);
 
   reply->RecordMetrics(std::move(error));
   if (reply->Holds<LoginsOrErrorReply>()) {
     main_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(*reply).Get<LoginsOrErrorReply>(),
-                                  reported_error));
+                                  std::move(reported_error)));
     return;
   }
   if (reply->Holds<PasswordChangesOrErrorReply>()) {
@@ -823,7 +844,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     main_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(*reply).Get<PasswordChangesOrErrorReply>(),
-                       reported_error));
+                       std::move(reported_error)));
   }
 }
 

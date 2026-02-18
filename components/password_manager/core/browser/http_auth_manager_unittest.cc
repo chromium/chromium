@@ -149,7 +149,8 @@ class HttpAuthManagerTest : public testing::Test,
 
     httpauth_manager_ = std::make_unique<HttpAuthManagerImpl>(&client_);
 
-    EXPECT_CALL(*store_, IsAbleToSavePasswords()).WillRepeatedly(Return(true));
+    EXPECT_CALL(*store_, GetError())
+        .WillRepeatedly(Return(ActionableError::kNoError));
   }
 
   HttpAuthManagerImpl* httpauth_manager() { return httpauth_manager_.get(); }

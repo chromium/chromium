@@ -11,4 +11,12 @@ PasswordStoreBackendError::PasswordStoreBackendError(
     PasswordStoreBackendErrorType error_type)
     : type(error_type) {}
 
+PasswordStoreBackendError::PasswordStoreBackendError(
+    const PasswordStoreBackendError& rhs) = default;
+PasswordStoreBackendError::PasswordStoreBackendError(
+    PasswordStoreBackendError&& rhs) = default;
+PasswordStoreBackendError& PasswordStoreBackendError::operator=(
+    const PasswordStoreBackendError& rhs) = default;
+PasswordStoreBackendError& PasswordStoreBackendError::operator=(
+    PasswordStoreBackendError&& rhs) = default;
 }  // namespace password_manager

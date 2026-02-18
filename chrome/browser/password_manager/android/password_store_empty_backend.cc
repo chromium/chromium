@@ -32,8 +32,8 @@ void PasswordStoreEmptyBackend::Shutdown(base::OnceClosure shutdown_completed) {
   std::move(shutdown_completed).Run();
 }
 
-bool PasswordStoreEmptyBackend::IsAbleToSavePasswords() {
-  return false;
+ActionableError PasswordStoreEmptyBackend::GetError() {
+  return ActionableError::kInactionable;
 }
 
 void PasswordStoreEmptyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {

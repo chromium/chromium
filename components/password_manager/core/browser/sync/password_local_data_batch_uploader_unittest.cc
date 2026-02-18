@@ -59,23 +59,21 @@ PasswordForm CreatePasswordForm(const std::string& url) {
 }
 
 // Extension of TestPasswordStore that allows controlling the value of
-// IsAbleToSavePasswords() (without actually having other methods honor it).
+// GetError() (without actually having other methods honor it).
 class FakePasswordStore : public TestPasswordStore {
  public:
   explicit FakePasswordStore(password_manager::IsAccountStore is_account_store)
       : TestPasswordStore(is_account_store) {}
 
   // PasswordStoreInterface implementation.
-  bool IsAbleToSavePasswords() const override { return able_to_save_; }
+  ActionableError GetError() const override { return error_; }
 
-  void SetAbleToSavePasswords(bool able_to_save) {
-    able_to_save_ = able_to_save;
-  }
+  void SetError(ActionableError error) { error_ = error; }
 
  private:
   ~FakePasswordStore() override = default;
 
-  bool able_to_save_ = true;
+  ActionableError error_ = ActionableError::kNoError;
 };
 
 // Create `count` local passwords and returns them as a list.
@@ -158,7 +156,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   account_store()->AddLogin(CreatePasswordForm("http://account.com"),
                             wait_add.GetCallback());
   ASSERT_TRUE(wait_add.WaitAndClear());
-  account_store()->SetAbleToSavePasswords(false);
+  account_store()->SetError(ActionableError::kInactionable);
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
   base::test::TestFuture<syncer::LocalDataDescription> description;
 
@@ -272,7 +270,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   PasswordForm account_password = CreatePasswordForm("http://account.com");
   account_store()->AddLogin(account_password, wait_add.GetCallback());
   ASSERT_TRUE(wait_add.WaitAndClear());
-  account_store()->SetAbleToSavePasswords(false);
+  account_store()->SetError(ActionableError::kInactionable);
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
 
   uploader.TriggerLocalDataMigration();

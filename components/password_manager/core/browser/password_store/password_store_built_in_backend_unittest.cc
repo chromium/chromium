@@ -863,7 +863,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, NotAbleSavePasswordsWhenDatabaseIsBad) {
       CreateBackend(std::make_unique<BadLoginDatabase>(GetParam()));
   InitializeBackend(bad_backend);
 
-  EXPECT_FALSE(bad_backend->IsAbleToSavePasswords());
+  EXPECT_EQ(bad_backend->GetError(), ActionableError::kInactionable);
 }
 
 INSTANTIATE_TEST_SUITE_P(, PasswordStoreBuiltInBackendTest, ::testing::Bool());

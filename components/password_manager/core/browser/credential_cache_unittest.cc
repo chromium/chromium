@@ -303,9 +303,11 @@ TEST_F(CredentialCacheTest, StoresBackendErrorAndCredentials) {
   // Only backend error.
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {}, IsOriginBlocklisted(false),
-      PasswordStoreBackendErrorType::kAuthErrorResolvable,
+      PasswordStoreBackendError(
+          PasswordStoreBackendErrorType::kAuthErrorResolvable),
       Origin::Create(GURL(kExampleSite)));
-  EXPECT_EQ(PasswordStoreBackendErrorType::kAuthErrorResolvable,
+  EXPECT_EQ(PasswordStoreBackendError(
+                PasswordStoreBackendErrorType::kAuthErrorResolvable),
             cache()->backend_error());
   EXPECT_THAT(cache()->GetCredentialStore(origin).GetCredentials(), IsEmpty());
 
@@ -314,9 +316,11 @@ TEST_F(CredentialCacheTest, StoresBackendErrorAndCredentials) {
       "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, IsOriginBlocklisted(false),
-      PasswordStoreBackendErrorType::kAuthErrorResolvable,
+      PasswordStoreBackendError(
+          PasswordStoreBackendErrorType::kAuthErrorResolvable),
       Origin::Create(GURL(kExampleSite)));
-  EXPECT_EQ(PasswordStoreBackendErrorType::kAuthErrorResolvable,
+  EXPECT_EQ(PasswordStoreBackendError(
+                PasswordStoreBackendErrorType::kAuthErrorResolvable),
             cache()->backend_error());
   EXPECT_THAT(cache()->GetCredentialStore(origin).GetCredentials(),
               testing::ElementsAre(MakeUiCredential("Ben", "S3cur3")));

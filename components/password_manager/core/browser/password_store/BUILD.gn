@@ -4,6 +4,7 @@
 
 source_set("password_store_interface") {
   sources = [
+    "actionable_error.h",
     "interactions_stats.h",
     "password_store_backend_error.cc",
     "password_store_backend_error.h",

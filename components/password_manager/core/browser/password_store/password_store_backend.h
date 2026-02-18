@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 
@@ -66,8 +67,8 @@ class PasswordStoreBackend {
   // to a crash.
   virtual void Shutdown(base::OnceClosure shutdown_completed) = 0;
 
-  // Necessary condition to offer saving passwords.
-  virtual bool IsAbleToSavePasswords() = 0;
+  // Returns the last known error state.
+  virtual ActionableError GetError() = 0;
 
   // Returns the complete list of PasswordForms (regardless of their blocklist
   // status). Callback is called on the main sequence.

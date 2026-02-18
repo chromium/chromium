@@ -138,6 +138,8 @@ class PasswordStoreAndroidBackend
       const AndroidBackendError& reason,
       const PasswordStoreBackendError& reply_error);
 
+  ActionableError last_error() { return last_error_; }
+
   PasswordStoreAndroidBackendBridgeHelper* bridge_helper() {
     return bridge_helper_.get();
   }
@@ -145,9 +147,6 @@ class PasswordStoreAndroidBackend
   // Subclasses can override this method
   // to have a special handling for different errors.
   virtual void RecoverOnError(AndroidBackendAPIErrorCode error) = 0;
-  // Subclasses can override this method to react when GMSCore responds
-  // successfully.
-  virtual void OnCallToGMSCoreSucceeded() = 0;
   // Subclasses have to provide an account which will be used for retries.
   virtual std::string GetAccountToRetryOperation() = 0;
   // Subclasses have to provide a store backend type that is used for tracking
@@ -366,6 +365,9 @@ class PasswordStoreAndroidBackend
 
   // This will be set to false once the first foregrounding has been handled.
   bool should_delay_refresh_on_foregrounding_ = true;
+
+  // Last seen backend error.
+  ActionableError last_error_ = ActionableError::kNoError;
 
   base::WeakPtrFactory<PasswordStoreAndroidBackend> weak_ptr_factory_{this};
 };

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
@@ -39,7 +40,7 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
-  bool IsAbleToSavePasswords() override;
+  ActionableError GetError() override;
   void GetAllLoginsAsync(LoginsOrErrorReply callback) override;
   void GetAllLoginsWithAffiliationAndBrandingAsync(
       LoginsOrErrorReply callback) override;
@@ -75,7 +76,6 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
  private:
   // PasswordStoreAndroidBackend implementation.
   void RecoverOnError(AndroidBackendAPIErrorCode error) override;
-  void OnCallToGMSCoreSucceeded() override;
   std::string GetAccountToRetryOperation() override;
   PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
   GetStorageType() override;
@@ -106,8 +106,6 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   // Legacy delegate to handle sync events.
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>
       sync_controller_delegate_;
-
-  bool should_disable_saving_due_to_error_ = false;
 
   base::RepeatingClosure sync_enabled_or_disabled_cb_;
 

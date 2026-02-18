@@ -429,7 +429,7 @@ void CheckMetricHasValue(const ukm::TestUkmRecorder& test_ukm_recorder,
 }
 
 class FailingPasswordStoreBackend : public FakePasswordStoreBackend {
-  bool IsAbleToSavePasswords() override { return false; }
+  ActionableError GetError() override { return ActionableError::kInactionable; }
 };
 
 }  // namespace

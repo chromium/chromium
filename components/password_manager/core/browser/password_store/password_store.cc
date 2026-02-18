@@ -400,9 +400,9 @@ void PasswordStore::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool PasswordStore::IsAbleToSavePasswords() const {
+ActionableError PasswordStore::GetError() const {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  return backend_ && backend_->IsAbleToSavePasswords();
+  return backend_ ? backend_->GetError() : ActionableError::kInactionable;
 }
 
 void PasswordStore::ShutdownOnUIThread() {

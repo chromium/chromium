@@ -1457,10 +1457,10 @@ TEST_F(PasswordStoreTest, AbleToSavePasswords) {
         std::move(completion).Run(true);
       }));
   store->Init(/*affiliated_match_helper=*/nullptr);
-  EXPECT_CALL(*mock_backend, IsAbleToSavePasswords)
-      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_backend, GetError)
+      .WillOnce(testing::Return(ActionableError::kNoError));
 
-  EXPECT_TRUE(store->IsAbleToSavePasswords());
+  EXPECT_EQ(store->GetError(), ActionableError::kNoError);
   store->ShutdownOnUIThread();
 }
 
@@ -1471,10 +1471,10 @@ TEST_F(PasswordStoreTest, NotAbleToSavePasswords) {
         std::move(completion).Run(true);
       }));
   store->Init(/*affiliated_match_helper=*/nullptr);
-  EXPECT_CALL(*mock_backend, IsAbleToSavePasswords)
-      .WillOnce(testing::Return(false));
+  EXPECT_CALL(*mock_backend, GetError)
+      .WillOnce(testing::Return(ActionableError::kInactionable));
 
-  EXPECT_FALSE(store->IsAbleToSavePasswords());
+  EXPECT_EQ(store->GetError(), ActionableError::kInactionable);
   store->ShutdownOnUIThread();
 }
 

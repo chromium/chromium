@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 
@@ -30,6 +31,14 @@ PasswordChanges GetPasswordChangesOrNulloptOnFailure(
 // Wraps all password forms in the provided vector in a unique pointer.
 std::vector<std::unique_ptr<PasswordForm>> ConvertPasswordToUniquePtr(
     std::vector<PasswordForm> forms);
+
+// Returns whether the backend error is actionable.
+ActionableError BackendErrorToActionableError(
+    PasswordStoreBackendErrorType error);
+
+// Returns true if saving is allowed with the given `error`. This typically
+// means there is no error or the error is retriable.
+bool IsAbleToSavePasswords(ActionableError error);
 
 }  // namespace password_manager
 

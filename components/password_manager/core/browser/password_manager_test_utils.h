@@ -194,7 +194,7 @@ class MockPasswordStoreObserver : public PasswordStoreInterface::Observer {
               (override));
   MOCK_METHOD((void),
               OnErrorStateChanged,
-              (PasswordStoreInterface*),
+              (PasswordStoreInterface*, ActionableError),
               (override));
 };
 
@@ -220,7 +220,8 @@ class PasswordStoreWaiter : public PasswordStoreInterface::Observer {
       PasswordStoreInterface* store,
       const std::vector<PasswordForm>& retained_passwords) override {}
 
-  void OnErrorStateChanged(PasswordStoreInterface* store) override {}
+  void OnErrorStateChanged(PasswordStoreInterface* store,
+                           ActionableError error) override {}
 
   base::ScopedObservation<PasswordStoreInterface,
                           PasswordStoreInterface::Observer>

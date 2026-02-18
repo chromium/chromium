@@ -108,7 +108,8 @@ class IOSChromePasswordManagerClientTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    ON_CALL(*store_, IsAbleToSavePasswords).WillByDefault(Return(true));
+    ON_CALL(*store_, GetError)
+        .WillByDefault(Return(password_manager::ActionableError::kNoError));
 
     // When waiting for predictions is on, it makes tests more complicated.
     // Disable waiting, since most tests have nothing to do with predictions.

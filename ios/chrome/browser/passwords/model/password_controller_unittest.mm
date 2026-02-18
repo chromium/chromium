@@ -277,7 +277,8 @@ class PasswordControllerTest : public PlatformTest {
 
     store_ =
         new testing::NiceMock<password_manager::MockPasswordStoreInterface>();
-    ON_CALL(*store_, IsAbleToSavePasswords).WillByDefault(Return(true));
+    ON_CALL(*store_, GetError)
+        .WillByDefault(Return(password_manager::ActionableError::kNoError));
 
     // When waiting for predictions is on, it makes tests more complicated.
     // Disable wating, since most tests have nothing to do with predictions. All
@@ -1279,7 +1280,8 @@ class PasswordControllerTestSimple : public PlatformTest {
 
     store_ =
         new testing::NiceMock<password_manager::MockPasswordStoreInterface>();
-    ON_CALL(*store_, IsAbleToSavePasswords).WillByDefault(Return(true));
+    ON_CALL(*store_, GetError)
+        .WillByDefault(Return(password_manager::ActionableError::kNoError));
 
     web::test::OverrideJavaScriptFeatures(
         profile_.get(),

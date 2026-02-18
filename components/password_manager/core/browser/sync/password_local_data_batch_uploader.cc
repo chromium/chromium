@@ -236,7 +236,7 @@ bool PasswordLocalDataBatchUploader::CanUpload() const {
   // could incorrectly report that local data exists, simply because the
   // migration hasn't completed just yet.
   return profile_store_ && account_store_ &&
-         account_store_->IsAbleToSavePasswords() &&
+         account_store_->GetError() == ActionableError::kNoError &&
          !trigger_local_data_migration_ongoing_;
 }
 

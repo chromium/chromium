@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/password_store/password_data_type_controller_delegate_android.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
@@ -96,11 +97,11 @@ void PasswordStoreAndroidAccountBackend::Shutdown(
   PasswordStoreAndroidBackend::Shutdown(std::move(shutdown_completed));
 }
 
-bool PasswordStoreAndroidAccountBackend::IsAbleToSavePasswords() {
+ActionableError PasswordStoreAndroidAccountBackend::GetError() {
   base::UmaHistogramBoolean(
       "PasswordManager.PasswordSavingDisabledDueToGMSCoreError",
-      should_disable_saving_due_to_error_);
-  return sync_service_ != nullptr && !should_disable_saving_due_to_error_;
+      !IsAbleToSavePasswords(last_error()));
+  return sync_service_ ? last_error() : ActionableError::kInactionable;
 }
 
 void PasswordStoreAndroidAccountBackend::GetAllLoginsAsync(
@@ -242,12 +243,6 @@ void PasswordStoreAndroidAccountBackend::RecoverOnError(
   if (error == AndroidBackendAPIErrorCode::kPassphraseRequired) {
     sync_service_->SendExplicitPassphraseToPlatformClient();
   }
-  should_disable_saving_due_to_error_ = true;
-}
-
-void PasswordStoreAndroidAccountBackend::OnCallToGMSCoreSucceeded() {
-  // Since the API call has succeeded, it's safe to reenable saving.
-  should_disable_saving_due_to_error_ = false;
 }
 
 std::string PasswordStoreAndroidAccountBackend::GetAccountToRetryOperation() {

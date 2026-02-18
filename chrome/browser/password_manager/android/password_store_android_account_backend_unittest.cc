@@ -33,6 +33,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -244,15 +245,14 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
   syncer::TestSyncService sync_service_;
 };
 
-TEST_F(PasswordStoreAndroidAccountBackendTest,
-       IsAbleToSavePasswordsDependsOnSyncInit) {
+TEST_F(PasswordStoreAndroidAccountBackendTest, GetErrorDependsOnSyncInit) {
   backend().InitBackend(
       /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
-  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), ActionableError::kInactionable);
   backend().OnSyncServiceInitialized(sync_service());
-  EXPECT_TRUE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), ActionableError::kNoError);
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForLogins) {
@@ -949,7 +949,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
       PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
   backend().OnSyncServiceInitialized(sync_service());
-  EXPECT_TRUE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), ActionableError::kNoError);
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
@@ -967,7 +967,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   consumer().OnError(kJobId, std::move(error));
   RunUntilIdle();
 
-  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), ActionableError::kSignInNeeded);
   histogram_tester.ExpectBucketCount(
       "PasswordManager.PasswordSavingDisabledDueToGMSCoreError", 0, 1);
 }
@@ -980,7 +980,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
       base::NullCallback(), base::DoNothing());
   backend().OnSyncServiceInitialized(sync_service());
 
-  EXPECT_TRUE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), ActionableError::kNoError);
 
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(base::DoNothing());
@@ -989,7 +989,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
       static_cast<int>(AndroidBackendAPIErrorCode::kAuthErrorUnresolvable);
   consumer().OnError(kJobId, std::move(error));
 
-  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), ActionableError::kSignInNeeded);
 
   // Simulate a successful logins call.
   base::MockCallback<LoginsOrErrorReply> mock_reply;
@@ -1000,7 +1000,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   consumer().OnCompleteWithLogins(kJobId, {});
   RunUntilIdle();
 
-  EXPECT_TRUE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), ActionableError::kNoError);
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,
@@ -1031,7 +1031,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
                               .api_error_code = kPassphraseRequiredErrorCode});
   RunUntilIdle();
 
-  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), ActionableError::kInactionable);
   histogram_tester.ExpectBucketCount(kBackendErrorCodeMetric, 7, 1);
   histogram_tester.ExpectBucketCount(kBackendApiErrorMetric,
                                      kPassphraseRequiredErrorCode, 1);
@@ -1689,8 +1689,9 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 class PasswordStoreAndroidAccountBackendAbleToSaveTest
     : public PasswordStoreAndroidAccountBackendTest,
       public testing::WithParamInterface<
-          std::pair<AndroidBackendAPIErrorCode,
-                    PasswordStoreBackendErrorType>> {
+          std::tuple<AndroidBackendAPIErrorCode,
+                     PasswordStoreBackendErrorType,
+                     ActionableError>> {
  protected:
   PasswordStoreAndroidAccountBackendAbleToSaveTest() {
     backend().InitBackend(
@@ -1700,11 +1701,15 @@ class PasswordStoreAndroidAccountBackendAbleToSaveTest
     backend().OnSyncServiceInitialized(sync_service());
   }
 
-  AndroidBackendAPIErrorCode GetAPIErrorCode() { return GetParam().first; }
+  AndroidBackendAPIErrorCode GetAPIErrorCode() {
+    return std::get<0>(GetParam());
+  }
 
   PasswordStoreBackendErrorType GetBackendErrorType() {
-    return GetParam().second;
+    return std::get<1>(GetParam());
   }
+
+  ActionableError GetActionableError() { return std::get<2>(GetParam()); }
 
   AndroidBackendError GetError() {
     AndroidBackendError error(AndroidBackendErrorType::kExternalError);
@@ -1753,9 +1758,10 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest, GetAllLogins) {
   }
 
   if (IsRetriableError()) {
-    EXPECT_TRUE(backend().IsAbleToSavePasswords());
+    EXPECT_EQ(backend().GetError(),
+              ActionableError::kInactionableTemporaryError);
   } else {
-    EXPECT_FALSE(backend().IsAbleToSavePasswords());
+    EXPECT_EQ(backend().GetError(), GetActionableError());
   }
 }
 
@@ -1788,9 +1794,10 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
   }
 
   if (IsRetriableError()) {
-    EXPECT_TRUE(backend().IsAbleToSavePasswords());
+    EXPECT_EQ(backend().GetError(),
+              ActionableError::kInactionableTemporaryError);
   } else {
-    EXPECT_FALSE(backend().IsAbleToSavePasswords());
+    EXPECT_EQ(backend().GetError(), GetActionableError());
   }
 }
 
@@ -1812,7 +1819,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
 
-  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), GetActionableError());
 }
 
 TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
@@ -1837,7 +1844,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
 
-  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), GetActionableError());
 }
 
 TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
@@ -1862,7 +1869,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
 
-  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), GetActionableError());
 }
 
 TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest, AddLogin) {
@@ -1879,7 +1886,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest, AddLogin) {
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
 
-  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), GetActionableError());
 }
 
 TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest, UpdateLogin) {
@@ -1896,7 +1903,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest, UpdateLogin) {
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
 
-  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), GetActionableError());
 }
 
 TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest, RemoveLogin) {
@@ -1912,59 +1919,78 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest, RemoveLogin) {
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
 
-  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(backend().GetError(), GetActionableError());
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     PasswordStoreAndroidAccountBackendAbleToSaveTest,
     testing::ValuesIn(
-        {std::make_pair(AndroidBackendAPIErrorCode::kBackendGeneric,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kNetworkError,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kInternalError,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kDeveloperError,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(
+        {std::make_tuple(AndroidBackendAPIErrorCode::kBackendGeneric,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kNetworkError,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kInternalError,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kDeveloperError,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(
              AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall,
-             PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kReconnectionTimedOut,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kAccessDenied,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kBadRequest,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kBackendResourceExhausted,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kInvalidData,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kUnmappedErrorCode,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kUnexpectedError,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kApiNotConnected,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kPassphraseRequired,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kAuthErrorResolvable,
-                        PasswordStoreBackendErrorType::kAuthErrorResolvable),
-         std::make_pair(AndroidBackendAPIErrorCode::kAuthErrorUnresolvable,
-                        PasswordStoreBackendErrorType::kAuthErrorUnresolvable),
-         std::make_pair(AndroidBackendAPIErrorCode::kKeyRetrievalRequired,
-                        PasswordStoreBackendErrorType::kKeyRetrievalRequired),
-         std::make_pair(AndroidBackendAPIErrorCode::kEmptySecurityDomain,
-                        PasswordStoreBackendErrorType::kEmptySecurityDomain),
-         std::make_pair(
+             PasswordStoreBackendErrorType::kUncategorized,
+             ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kReconnectionTimedOut,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kAccessDenied,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kBadRequest,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kBackendResourceExhausted,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kInvalidData,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kUnmappedErrorCode,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kUnexpectedError,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kApiNotConnected,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kPassphraseRequired,
+                         PasswordStoreBackendErrorType::kUncategorized,
+                         ActionableError::kInactionable),
+         std::make_tuple(AndroidBackendAPIErrorCode::kAuthErrorResolvable,
+                         PasswordStoreBackendErrorType::kAuthErrorResolvable,
+                         ActionableError::kSignInNeeded),
+         std::make_tuple(AndroidBackendAPIErrorCode::kAuthErrorUnresolvable,
+                         PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
+                         ActionableError::kSignInNeeded),
+         std::make_tuple(AndroidBackendAPIErrorCode::kKeyRetrievalRequired,
+                         PasswordStoreBackendErrorType::kKeyRetrievalRequired,
+                         ActionableError::kTrustedVaultKeyNeeded),
+         std::make_tuple(AndroidBackendAPIErrorCode::kEmptySecurityDomain,
+                         PasswordStoreBackendErrorType::kEmptySecurityDomain,
+                         ActionableError::kTrustedVaultKeyNeeded),
+         std::make_tuple(
              AndroidBackendAPIErrorCode::kIrretrievableSecurityDomain,
-             PasswordStoreBackendErrorType::kIrretrievableSecurityDomain)}),
+             PasswordStoreBackendErrorType::kIrretrievableSecurityDomain,
+             ActionableError::kTrustedVaultKeyNeeded)}),
 
-    [](const ::testing::TestParamInfo<
-        std::pair<AndroidBackendAPIErrorCode, PasswordStoreBackendErrorType>>&
-           info) {
+    [](const ::testing::TestParamInfo<std::tuple<AndroidBackendAPIErrorCode,
+                                                 PasswordStoreBackendErrorType,
+                                                 ActionableError>>& info) {
       return "APIErrorCode_" +
-             base::ToString(static_cast<int>(info.param.first));
+             base::ToString(static_cast<int>(std::get<0>(info.param)));
     });
 
 class PasswordStoreAndroidAccountBackendTestForMetrics

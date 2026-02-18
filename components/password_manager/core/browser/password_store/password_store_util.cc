@@ -51,4 +51,34 @@ std::vector<std::unique_ptr<PasswordForm>> ConvertPasswordToUniquePtr(
   return result;
 }
 
+ActionableError BackendErrorToActionableError(
+    PasswordStoreBackendErrorType error) {
+  switch (error) {
+    case PasswordStoreBackendErrorType::kUncategorized:
+      return ActionableError::kInactionable;
+    case PasswordStoreBackendErrorType::kAuthErrorResolvable:
+    case PasswordStoreBackendErrorType::kAuthErrorUnresolvable:
+      return ActionableError::kSignInNeeded;
+    case PasswordStoreBackendErrorType::kKeyRetrievalRequired:
+    case PasswordStoreBackendErrorType::kEmptySecurityDomain:
+    case PasswordStoreBackendErrorType::kIrretrievableSecurityDomain:
+      return ActionableError::kTrustedVaultKeyNeeded;
+    case PasswordStoreBackendErrorType::kKeychainError:
+      return ActionableError::kKeychainError;
+  }
+}
+
+bool IsAbleToSavePasswords(ActionableError error) {
+  switch (error) {
+    case ActionableError::kNoError:
+    case ActionableError::kInactionableTemporaryError:
+      return true;
+    case ActionableError::kInactionable:
+    case ActionableError::kSignInNeeded:
+    case ActionableError::kKeychainError:
+    case ActionableError::kTrustedVaultKeyNeeded:
+      return false;
+  }
+}
+
 }  // namespace password_manager

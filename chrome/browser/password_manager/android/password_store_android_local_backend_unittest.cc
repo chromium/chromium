@@ -279,7 +279,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
       /*affiliated_match_helper=*/nullptr,
       PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
-  EXPECT_TRUE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(ActionableError::kNoError, backend().GetError());
 
   std::string TestURL1("https://example.com/");
   PasswordFormDigest form_digest(PasswordForm::Scheme::kHtml, TestURL1,
@@ -292,7 +292,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
       static_cast<int>(AndroidBackendAPIErrorCode::kApiNotConnected);
   consumer().OnError(kJobId, std::move(error));
 
-  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+  EXPECT_NE(ActionableError::kNoError, backend().GetError());
 
   // Simulate a successful logins call.
   base::MockCallback<LoginsOrErrorReply> mock_reply;
@@ -304,7 +304,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
   consumer().OnCompleteWithLogins(kJobId, {});
   RunUntilIdle();
 
-  EXPECT_TRUE(backend().IsAbleToSavePasswords());
+  EXPECT_EQ(ActionableError::kNoError, backend().GetError());
 }
 
 class PasswordStoreAndroidLocalBackendRetriesTest

@@ -98,6 +98,7 @@ using password_manager::PasswordGenerationFrameHelper;
 using password_manager::PasswordManagerClient;
 using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerInterface;
+using password_manager::PasswordStoreBackendError;
 using password_manager::PasswordStoreInterface;
 using password_manager::TestPasswordStore;
 using plus_addresses::FakePlusAddressService;
@@ -118,7 +119,7 @@ using FillingSource = ManualFillingController::FillingSource;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 using IsExactMatch = autofill::UserInfo::IsExactMatch;
 using ShouldShowAction = ManualFillingController::ShouldShowAction;
-
+using BackendErrorType = password_manager::PasswordStoreBackendErrorType;
 constexpr char kExampleSite[] = "https://example.com";
 constexpr char kExampleAndroidApp[] = "android://hash@com.example.android";
 constexpr char kExampleHttpSite[] = "http://example.com";
@@ -1965,7 +1966,7 @@ TEST_F(PasswordAccessoryControllerTest, ShowTrustedVaultError) {
   CreateSheetController();
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {}, CredentialCache::IsOriginBlocklisted(false),
-      password_manager::PasswordStoreBackendErrorType::kKeyRetrievalRequired,
+      PasswordStoreBackendError(BackendErrorType::kKeyRetrievalRequired),
       url::Origin::Create(GURL(kExampleSite)));
 
   EXPECT_CALL(mock_manual_filling_controller_,
@@ -2004,7 +2005,7 @@ TEST_F(PasswordAccessoryControllerTest,
   CreateSheetController();
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {}, CredentialCache::IsOriginBlocklisted(false),
-      password_manager::PasswordStoreBackendErrorType::kKeyRetrievalRequired,
+      PasswordStoreBackendError(BackendErrorType::kKeyRetrievalRequired),
       url::Origin::Create(GURL(kExampleSite)));
 
   // Trusted vault error key retrieval required on a username field should show
