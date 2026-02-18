@@ -47,7 +47,8 @@ NativeWebContentsModalDialogManagerViews::
   for (views::Widget* widget : observed_widgets_) {
     widget->RemoveObserver(this);
   }
-  CHECK(!IsInObserverList());
+  CHECK(!WidgetObserver::IsInObserverList());
+  CHECK(!ModalDialogHostObserver::IsInObserverList());
 }
 
 void NativeWebContentsModalDialogManagerViews::ManageDialog() {

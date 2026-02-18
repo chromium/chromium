@@ -47,7 +47,7 @@ class ExtensionViewHostWebModalHandler
   const raw_ptr<content::WebContents> web_contents_;
   const gfx::NativeView view_;
 
-  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+  base::ObserverList<web_modal::ModalDialogHostObserver>
       modal_dialog_host_observers_;
 };
 

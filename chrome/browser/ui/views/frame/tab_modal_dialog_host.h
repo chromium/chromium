@@ -59,8 +59,7 @@ class TabModalDialogHost : public web_modal::WebContentsModalDialogHost,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 
-  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
-      observer_list_;
+  base::ObserverList<web_modal::ModalDialogHostObserver> observer_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TAB_MODAL_DIALOG_HOST_H_

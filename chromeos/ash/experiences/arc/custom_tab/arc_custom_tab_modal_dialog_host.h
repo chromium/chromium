@@ -66,8 +66,7 @@ class ArcCustomTabModalDialogHost
   raw_ptr<content::WebContents> web_contents_;
 
  private:
-  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
-      observer_list_;
+  base::ObserverList<web_modal::ModalDialogHostObserver> observer_list_;
 };
 
 #endif  // CHROMEOS_ASH_EXPERIENCES_ARC_CUSTOM_TAB_ARC_CUSTOM_TAB_MODAL_DIALOG_HOST_H_

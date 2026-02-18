@@ -394,7 +394,7 @@ class GlicWindowControllerImpl
 
   // Used by web modals to listens for glic window events, e.g. size change or
   // window close.
-  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+  base::ObserverList<web_modal::ModalDialogHostObserver>
       modal_dialog_host_observers_;
 
   // The announcement should happen the first time focus is lost after the FRE.

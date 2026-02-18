@@ -174,7 +174,7 @@ class LockScreenStartReauthDialog
   bool is_network_dialog_loaded_for_testing_ = false;
   bool is_captive_portal_dialog_loaded_for_testing_ = false;
 
-  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+  base::ObserverList<web_modal::ModalDialogHostObserver>
       modal_dialog_host_observer_list_;
   std::unique_ptr<ModalDialogManagerCleanup> modal_dialog_manager_cleanup_;
 

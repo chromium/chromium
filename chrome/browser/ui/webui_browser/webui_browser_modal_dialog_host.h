@@ -27,7 +27,7 @@ class WebUIBrowserModalDialogHost
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
  private:
-  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked observers_;
+  base::ObserverList<web_modal::ModalDialogHostObserver> observers_;
 
   raw_ptr<WebUIBrowserWindow> browser_window_;
 };

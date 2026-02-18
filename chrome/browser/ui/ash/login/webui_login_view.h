@@ -184,8 +184,7 @@ class WebUILoginView : public views::View,
 
   bool shelf_enabled_ = true;
 
-  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
-      observer_list_;
+  base::ObserverList<web_modal::ModalDialogHostObserver> observer_list_;
 };
 
 }  // namespace ash

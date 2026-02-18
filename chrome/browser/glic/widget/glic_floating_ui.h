@@ -145,7 +145,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
 
   // Used by web modals to listens for glic window events, e.g. size change or
   // window close.
-  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+  base::ObserverList<web_modal::ModalDialogHostObserver>
       modal_dialog_host_observers_;
 
   raw_ptr<Profile> profile_;

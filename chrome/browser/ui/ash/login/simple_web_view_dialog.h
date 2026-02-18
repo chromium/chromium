@@ -129,7 +129,7 @@ class SimpleWebViewDialog : public views::View,
 
   std::unique_ptr<StubBubbleModelDelegate> bubble_model_delegate_;
 
-  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked observers_;
+  base::ObserverList<web_modal::ModalDialogHostObserver> observers_;
 };
 
 }  // namespace ash

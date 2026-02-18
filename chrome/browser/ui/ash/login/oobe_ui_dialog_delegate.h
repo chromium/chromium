@@ -167,7 +167,7 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   // dialog is opened.
   bool should_display_captive_portal_ = false;
 
-  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+  base::ObserverList<web_modal::ModalDialogHostObserver>
       modal_dialog_host_observer_list_;
   std::unique_ptr<ModalDialogManagerCleanup> modal_dialog_manager_cleanup_;
 };

@@ -117,7 +117,7 @@ class BrowserViewLayout::BrowserModalDialogHostViews
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       browser_widget_observation_{this};
 
-  base::ObserverList<ModalDialogHostObserver>::Unchecked observer_list_;
+  base::ObserverList<ModalDialogHostObserver> observer_list_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
