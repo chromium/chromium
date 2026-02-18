@@ -9,11 +9,15 @@
 #include <memory>
 
 #include "base/base_paths.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
 #include "chrome/installer/util/work_item.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::Eq;
 
 namespace {
 class CreateDirWorkItemTest : public testing::Test {
@@ -69,6 +73,53 @@ TEST_F(CreateDirWorkItemTest, CreateExistingPath) {
   // Rollback should not remove the path since it exists before
   // the CreateDirWorkItem is called.
   EXPECT_TRUE(base::PathExists(dir_to_create));
+}
+
+// Do fails if there is a file where the desired directory belongs.
+TEST_F(CreateDirWorkItemTest, CreateExistingFile) {
+  base::FilePath a_file = temp_dir_.GetPath().AppendASCII("aa");
+  ASSERT_TRUE(base::WriteFile(a_file, base::as_byte_span(a_file.value())));
+
+  base::FilePath dir_to_create = a_file;
+  std::unique_ptr<CreateDirWorkItem> work_item(
+      WorkItem::CreateCreateDirWorkItem(dir_to_create));
+
+  // The item fails because there's a file in the way.
+  EXPECT_FALSE(work_item->Do());
+
+  // The file has not been touched.
+  EXPECT_THAT(base::ReadFileToBytes(a_file),
+              Eq(base::as_byte_span(a_file.value())));
+
+  work_item->Rollback();
+
+  // The file has not been touched.
+  EXPECT_THAT(base::ReadFileToBytes(a_file),
+              Eq(base::as_byte_span(a_file.value())));
+}
+
+// Do fails if there is a file as a parent of the desired directory.
+TEST_F(CreateDirWorkItemTest, CreateExistingFileAsParent) {
+  base::FilePath a_file = temp_dir_.GetPath().AppendASCII("aa");
+  ASSERT_TRUE(base::WriteFile(a_file, base::as_byte_span(a_file.value())));
+
+  base::FilePath dir_to_create = a_file.AppendASCII("bb");
+
+  std::unique_ptr<CreateDirWorkItem> work_item(
+      WorkItem::CreateCreateDirWorkItem(dir_to_create));
+
+  // The item fails because there's a file in the way of a parent.
+  EXPECT_FALSE(work_item->Do());
+
+  // The file has not been touched.
+  EXPECT_THAT(base::ReadFileToBytes(a_file),
+              Eq(base::as_byte_span(a_file.value())));
+
+  work_item->Rollback();
+
+  // The file has not been touched.
+  EXPECT_THAT(base::ReadFileToBytes(a_file),
+              Eq(base::as_byte_span(a_file.value())));
 }
 
 TEST_F(CreateDirWorkItemTest, CreateSharedPath) {
