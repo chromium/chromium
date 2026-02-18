@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_mediator.h"
+#import "ios/chrome/browser/intelligence/explain_with_gemini/coordinator/explain_with_gemini_mediator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
@@ -12,7 +12,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
-#import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -61,7 +63,12 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
 // Checks if Explain With Gemini can be performed in `webState`.
 - (BOOL)canPerformExplainWithGeminiInWebState:(web::WebState*)webState {
-  if (!webState || ![self canPerformExplainWithGemini]) {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(webState->GetBrowserState());
+  raw_ptr<BwgService> geminiService = BwgServiceFactory::GetForProfile(profile);
+  const BOOL geminiAvailable =
+      geminiService && geminiService->IsBwgAvailableForWebState(webState);
+  if (!geminiAvailable) {
     return NO;
   }
   WebSelectionTabHelper* tabHelper =
@@ -121,7 +128,8 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   __weak __typeof(self) weakSelf = self;
   tabHelper->GetSelectedText(base::BindOnce(^(WebSelectionResponse* response) {
     if (weakSelf && response.valid && response.selectedText.length) {
-      [weakSelf triggerExplainWithGeminiForText:response.selectedText];
+      [weakSelf triggerExplainWithGeminiForText:response.selectedText
+                                       webState:webState];
     }
   }));
 }
@@ -144,7 +152,9 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   __weak __typeof(self) weakSelf = self;
   tabHelper->GetSelectedText(base::BindOnce(^(WebSelectionResponse* response) {
     if (weakSelf) {
-      [weakSelf addItemWithResponse:response completion:completion];
+      [weakSelf addItemWithResponse:response
+                         completion:completion
+                           webState:webState];
       return;
     }
     completion(@[]);
@@ -153,7 +163,8 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
 // Adds Explain With Gemini item to the menu with a web selection response.
 - (void)addItemWithResponse:(WebSelectionResponse*)response
-                 completion:(ProceduralBlockWithItemArray)completion {
+                 completion:(ProceduralBlockWithItemArray)completion
+                   webState:(web::WebState*)webState {
   if (!response.valid || ![self canPerformExplainWithGemini]) {
     completion(@[]);
     return;
@@ -169,16 +180,17 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
   __weak __typeof(self) weakSelf = self;
   UIAction* action = [self actionWithHandler:^(UIAction* a) {
-    [weakSelf triggerExplainWithGeminiForText:text];
+    [weakSelf triggerExplainWithGeminiForText:text webState:webState];
   }];
   completion(@[ action ]);
 }
 
 // Triggers Explain with Gemini action for the selected text.
-- (void)triggerExplainWithGeminiForText:(NSString*)text {
+- (void)triggerExplainWithGeminiForText:(NSString*)text
+                               webState:(web::WebState*)webState {
   CHECK(ExplainGeminiEditMenuPosition() !=
         PositionForExplainGeminiEditMenu::kDisabled);
-  if (![self canPerformExplainWithGemini]) {
+  if (![self canPerformExplainWithGeminiInWebState:webState]) {
     return;
   }
 

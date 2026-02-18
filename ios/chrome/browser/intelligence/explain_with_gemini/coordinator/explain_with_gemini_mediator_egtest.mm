@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_app_interface.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_matchers.h"
-#import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
+#import "ios/chrome/browser/intelligence/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
@@ -103,9 +103,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled_and_params.push_back(
-      {kExplainGeminiEditMenu, {{{kExplainGeminiEditMenuParams, "2"}}}});
+      {kExplainGeminiEditMenu, {{{kExplainGeminiEditMenuParams, "1"}}}});
   config.features_enabled_and_params.push_back(
       {kBWGPromoConsent, {{{kBWGPromoConsentParams, "3"}}}});
+  config.features_enabled_and_params.push_back({kPageActionMenu, {}});
   if ([self isRunningTest:@selector(testExplainWithGeminiInReadingMode)]) {
     config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
   }

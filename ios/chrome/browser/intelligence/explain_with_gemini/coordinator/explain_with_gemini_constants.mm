@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
+#import "ios/chrome/browser/intelligence/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
 
 const char kExplainWithGeminiURL[] =
     "https://gemini.google.com/"
