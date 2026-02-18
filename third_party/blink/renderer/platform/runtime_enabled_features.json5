@@ -343,6 +343,13 @@
       name: "AIPageContentPaidContentAnnotation",
       status: "stable"
     },
+    // Clamp AIPageContent visible bounding boxes to the local-root viewport
+    // after visual-viewport mapping to normalize viewport-relative geometry.
+    {
+      name: "AIPageContentVisualViewportClamp",
+      status: "stable",
+      implied_by: ["AIPageContentBuildOnLoadForTesting"],
+    },
     {
       name: "AIPromptAPI",
       public: true,

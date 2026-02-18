@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
 #include <cstddef>
+#include <limits>
 #include <optional>
 #include <string>
 
@@ -18,6 +19,7 @@
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-shared.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -29,6 +31,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -45,7 +48,10 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/graphics/visual_rect_flags.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -57,6 +63,8 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/display/screen_info.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -494,6 +502,320 @@ TEST_F(AIPageContentAgentTest, Basic) {
   EXPECT_FALSE(text_attributes.node_interaction_info);
   EXPECT_EQ(text_attributes.geometry->outer_bounding_box.x(), -20);
   EXPECT_EQ(text_attributes.geometry->outer_bounding_box.y(), -10);
+}
+
+TEST_F(AIPageContentAgentTest, VisibleBoundingBoxClampsToVisualViewport) {
+  // Keep this regression test pinned to the runtime-flagged clamp behavior.
+  ScopedAIPageContentVisualViewportClampForTest enable_viewport_clamp(true);
+
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    body {"
+      "      background-color: cornflowerblue;"
+      "      margin: 0;"
+      "    }"
+      "    #wideElement {"
+      "      position: absolute;"
+      "      top: 20px;"
+      "      left: 0;"
+      "      width: 800px;"
+      "      height: 100px;"
+      "      background-color: limegreen;"
+      "    }"
+      "    .corner {"
+      "      position: fixed;"
+      "      width: 100px;"
+      "      height: 100px;"
+      "      background-color: coral;"
+      "    }"
+      "    ::view-transition-group(*),"
+      "    ::view-transition-new(*),"
+      "    ::view-transition-old(*) {"
+      "      animation-play-state: paused;"
+      "    }"
+      "    ::view-transition-old(*) {"
+      "      display: none;"
+      "    }"
+      "    ::view-transition-new(*) {"
+      "      animation-name: none;"
+      "      opacity: 1;"
+      "    }"
+      "  </style>"
+      "  <div class='corner'"
+      "       style='top: 0; right: 0; view-transition-name: topright;'></div>"
+      "  <div id='wideElement'></div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  LocalFrameView* view = document->View();
+  ASSERT_TRUE(view);
+
+  // Establish a stable layout baseline before moving the visual viewport. This
+  // keeps the test focused on viewport coordinate mapping rather than pending
+  // layout or style work.
+  view->UpdateAllLifecyclePhasesForTest();
+
+  Page* page = document->GetPage();
+  ASSERT_TRUE(page);
+
+  // Simulate a visual viewport offset via browser controls. On mobile, the
+  // top controls can partially hide/show to reclaim screen space; that shifts
+  // the visual viewport origin without changing layout viewport coordinates.
+  // View transitions create a view-transition root layer that is positioned
+  // relative to the visual viewport, which is the same setup as the failing
+  // web test.
+  //
+  // Simple mental model (not to scale):
+  //
+  // Layout viewport coordinates (used for layout):
+  //   y=0  +----------------------+
+  //        |  <div id=target>     |
+  //        |  height=50           |
+  //        +----------------------+
+  //
+  // Visual viewport (what is actually visible):
+  //   y=0  +----------------------+
+  //        |  (starts 20px lower) |
+  //        |  so top 20px hidden  |
+  //        +----------------------+
+  //
+  // The browser-controls adjustment is a renderer-side representation of that
+  // shift. It should result in negative visual-viewport coordinates after
+  // mapping, which we clamp.
+  const int kVisualViewportOffset = 20;
+  document->GetPage()->GetChromeClient().SetBrowserControlsState(
+      kVisualViewportOffset, 0, /*shrinks_layout=*/true);
+
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(helper_.LocalMainFrame()->GetFrame());
+  ScriptState::Scope scope(script_state);
+  ViewTransitionSupplement::startViewTransition(script_state, *document,
+                                                IGNORE_EXCEPTION_FOR_TESTING);
+  test::RunPendingTasks();
+  auto* view_transitions = document->GetViewTransitionsIfExists();
+  ASSERT_TRUE(view_transitions);
+  ASSERT_TRUE(view_transitions->GetTransition());
+
+  // Recompute layout and paint properties with the new visual viewport state
+  // so the geometry mapping observes the updated visual-viewport transform.
+  view->UpdateAllLifecyclePhasesForTest();
+
+  GetAIPageContentWithActionableElements();
+
+  int min_visible_y = std::numeric_limits<int>::max();
+  bool saw_geometry = false;
+  auto visit_nodes = [&](auto& self,
+                         const mojom::blink::AIPageContentNode* node) -> void {
+    if (!node) {
+      return;
+    }
+    if (node->content_attributes && node->content_attributes->geometry) {
+      const auto& geometry = *node->content_attributes->geometry;
+      if (!geometry.visible_bounding_box.IsEmpty()) {
+        min_visible_y =
+            std::min(min_visible_y, geometry.visible_bounding_box.y());
+        saw_geometry = true;
+      }
+    }
+    for (const auto& child : node->children_nodes) {
+      self(self, child.get());
+    }
+  };
+  visit_nodes(visit_nodes, Content()->root_node.get());
+  ASSERT_TRUE(saw_geometry);
+  EXPECT_EQ(min_visible_y, 0);
+}
+
+TEST_F(AIPageContentAgentTest,
+       VisibleBoundingBoxClampUsesConsistentUnitsOnHighDPI) {
+  // Keep this regression test pinned to the runtime-flagged clamp behavior.
+  ScopedAIPageContentVisualViewportClampForTest enable_viewport_clamp(true);
+
+  // This is a regression test for a subtle unit mismatch in
+  // ComputeVisibleBoundingBox().
+  //
+  // Background:
+  // - APC's visible_bounding_box is consumed by browser-side hit-testing
+  //   (e.g. Actor TOCTOU validation) in device pixels (BlinkSpace).
+  // - The visible-bounding-box calculation maps LayoutObject geometry using
+  //   MapToVisualRectInAncestorSpace(), which produces values in the same
+  //   coordinate space that the browser expects (BlinkSpace/device pixels).
+  //
+  // The geo-fixes branch introduced a clamp intended to normalize negative
+  // coordinates that can occur when the visual viewport is offset relative to
+  // the layout viewport (browser controls, pinch zoom). That clamp must use a
+  // viewport rect in the *same* coordinate space as the mapped object rect.
+  //
+  // If the clamp instead uses unscaled CSS/layout pixels (DIPs), HighDPI pages
+  // (device_scale_factor > 1) will have their geometry truncated by ~DSF. This
+  // makes APC look DIP-bounded and causes browser-side hit-testing at scaled
+  // points to miss.
+
+  // Configure the test WebView to behave like a HighDPI display.
+  //
+  // Important: The widget's ScreenInfo must be set during widget creation, not
+  // after initialization. Many coordinate conversions (including
+  // DIPsToBlinkSpace) cache the screen info early, and updating it late won't
+  // affect geometry computations.
+  frame_test_helpers::WebViewHelper high_dpi_helper(base::BindRepeating(
+      [](base::PassKey<WebLocalFrame> pass_key,
+         CrossVariantMojoAssociatedRemote<
+             mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
+         CrossVariantMojoAssociatedReceiver<
+             mojom::blink::FrameWidgetInterfaceBase> frame_widget,
+         CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
+             widget_host,
+         CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
+             widget,
+         scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+         const viz::FrameSinkId& frame_sink_id, bool hidden,
+         bool never_composited, bool is_for_child_local_root,
+         bool is_for_nested_main_frame,
+         bool is_for_scalable_page) -> frame_test_helpers::TestWebFrameWidget* {
+        auto* test_web_frame_widget =
+            MakeGarbageCollected<frame_test_helpers::TestWebFrameWidget>(
+                std::move(pass_key), std::move(frame_widget_host),
+                std::move(frame_widget), std::move(widget_host),
+                std::move(widget), std::move(task_runner), frame_sink_id,
+                hidden, never_composited, is_for_child_local_root,
+                is_for_nested_main_frame, is_for_scalable_page);
+        display::ScreenInfo screen_info;
+        screen_info.device_scale_factor = 2.f;
+        test_web_frame_widget->SetInitialScreenInfo(screen_info);
+        return test_web_frame_widget;
+      }));
+  // Keep WebSettings consistent with the main fixture's setup. We can't reuse
+  // AIPageContentAgentTest::UpdateWebSettings here because it's private to the
+  // fixture base class.
+  high_dpi_helper.InitializeWithSettings(
+      [](WebSettings* settings) { settings->SetTextAreasAreResizable(true); });
+  high_dpi_helper.LoadAhem();
+  ASSERT_TRUE(high_dpi_helper.LocalMainFrame());
+
+  // Use a small viewport size to make it easy to see clamping errors in the
+  // resulting bounding boxes.
+  //
+  // Note: WebViewHelper::Resize() takes the widget size in *device pixels*.
+  // With device_scale_factor=2, a 464x828 DIP viewport corresponds to a
+  // 928x1656 device-pixel widget size.
+  constexpr gfx::Size kDipViewportSize{464, 828};
+  constexpr int kDeviceScaleFactor = 2;
+  high_dpi_helper.Resize(
+      gfx::Size(kDipViewportSize.width() * kDeviceScaleFactor,
+                kDipViewportSize.height() * kDeviceScaleFactor));
+
+  frame_test_helpers::LoadHTMLString(
+      high_dpi_helper.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    body {"
+      "      margin: 0;"
+      "      padding: 0;"
+      "    }"
+      "    #target {"
+      "      position: absolute;"
+      "      left: 0;"
+      "      top: 0;"
+      "      width: 100%;"
+      "      height: 100%;"
+      "      background: limegreen;"
+      "    }"
+      "    ::view-transition-group(*),"
+      "    ::view-transition-new(*),"
+      "    ::view-transition-old(*) {"
+      "      animation-play-state: paused;"
+      "    }"
+      "    ::view-transition-old(*) {"
+      "      display: none;"
+      "    }"
+      "    ::view-transition-new(*) {"
+      "      animation-name: none;"
+      "      opacity: 1;"
+      "    }"
+      "  </style>"
+      "  <div id='target'></div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  Document* document =
+      high_dpi_helper.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  LocalFrameView* view = document->View();
+  ASSERT_TRUE(view);
+
+  // Establish a stable baseline before applying the visual viewport shift.
+  view->UpdateAllLifecyclePhasesForTest();
+
+  // Create a visual-viewport offset (same mechanism as the clamp test above).
+  constexpr int kVisualViewportOffsetDip = 20;
+  document->GetPage()->GetChromeClient().SetBrowserControlsState(
+      kVisualViewportOffsetDip, 0, /*shrinks_layout=*/true);
+
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(high_dpi_helper.LocalMainFrame()->GetFrame());
+  ScriptState::Scope scope(script_state);
+  ViewTransitionSupplement::startViewTransition(script_state, *document,
+                                                IGNORE_EXCEPTION_FOR_TESTING);
+  test::RunPendingTasks();
+
+  // Recompute layout and paint properties so mapping sees the new viewport
+  // transform.
+  view->UpdateAllLifecyclePhasesForTest();
+
+  // Extract APC using the HighDPI document. We intentionally don't use the
+  // AIPageContentAgentTest fixture helpers here because those are wired to the
+  // fixture's `helper_` WebView, not the HighDPI helper created above.
+  mojom::blink::AIPageContentOptions options =
+      AIPageContentAgentTest::GetAIPageContentOptionsForTest();
+  options.mode = mojom::blink::AIPageContentMode::kActionableElements;
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(*document);
+  ASSERT_TRUE(agent);
+  auto content = agent->GetAIPageContentInternal(options);
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // We don't rely on a specific node ordering here. Instead, collect the
+  // maximum extents over all visible_bounding_box values and verify they match
+  // the device-pixel viewport size (BlinkSpace), not the DIP viewport size.
+  int max_right = 0;
+  int max_bottom = 0;
+  bool saw_geometry = false;
+
+  auto visit_nodes = [&](auto& self,
+                         const mojom::blink::AIPageContentNode* node) -> void {
+    if (!node) {
+      return;
+    }
+    if (node->content_attributes && node->content_attributes->geometry) {
+      const auto& geometry = *node->content_attributes->geometry;
+      if (!geometry.visible_bounding_box.IsEmpty()) {
+        saw_geometry = true;
+        max_right = std::max(max_right, geometry.visible_bounding_box.right());
+        max_bottom =
+            std::max(max_bottom, geometry.visible_bounding_box.bottom());
+      }
+    }
+    for (const auto& child : node->children_nodes) {
+      self(self, child.get());
+    }
+  };
+  visit_nodes(visit_nodes, content->root_node.get());
+
+  ASSERT_TRUE(saw_geometry);
+
+  // On HighDPI, the device-pixel viewport should be (layout viewport in CSS
+  // pixels) * DSF.
+  //
+  // Note: When browser controls are involved, the layout viewport height can be
+  // reduced by an implementation-defined amount (it is *not* guaranteed to be
+  // exactly kVisualViewportOffsetDip). Use LocalFrameView's post-adjustment
+  // viewport size to compute the expected BlinkSpace/device-pixel extents.
+  EXPECT_EQ(max_right, view->ViewportWidth() * kDeviceScaleFactor);
+  EXPECT_EQ(max_bottom, view->ViewportHeight() * kDeviceScaleFactor);
 }
 
 TEST_F(AIPageContentAgentTest, Image) {
@@ -2048,6 +2370,15 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFoundOnIframe) {
 
 #if DCHECK_IS_ON()
 TEST_F(AIPageContentAgentTest, AutoBuildRunsDuringDOMContentLoadedDispatch) {
+  base::test::MockLog log;
+  // Allow unrelated INFO logs; we only assert on the auto-build dump below.
+  EXPECT_CALL(log, Log(logging::LOGGING_INFO, testing::_, testing::_,
+                       testing::_, testing::Not(testing::HasSubstr("<Root>"))))
+      .Times(testing::AnyNumber());
+  // Start capturing early so we can assert that no auto-build dump appears
+  // until we invoke RunAutoBuildAfterDOMContentLoadedForTesting().
+  log.StartCapturingLogs();
+
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(), "<body><div>Auto build content</div></body>",
       url_test_helpers::ToKURL("http://example.com"));
@@ -2064,17 +2395,23 @@ TEST_F(AIPageContentAgentTest, AutoBuildRunsDuringDOMContentLoadedDispatch) {
   auto* agent = AIPageContentAgent::GetOrCreateForTesting(*document);
   ASSERT_TRUE(agent);
   EXPECT_EQ(AIPageContentAgent::From(*document), agent);
-  base::test::MockLog log;
-  // Allow unrelated INFO logs; we only assert on the auto-build dump below.
-  EXPECT_CALL(log, Log(logging::LOGGING_INFO, testing::_, testing::_,
-                       testing::_, testing::_))
-      .Times(testing::AnyNumber());
-  // TODO(crbug.com/474330989): Re-enable the blink_unittests auto-build guard
-  // so this test can assert no auto-build during DOMContentLoaded.
 
   // Simulate DOMContentLoaded dispatch still being in progress by forcing the
   // parsing state to "in DCL".
   document->SetParsingState(Document::kInDOMContentLoaded);
+
+  // Auto-build should not run until we explicitly invoke it below. This
+  // enforces that the unit-test guard in ListenForDOMContentLoadedForAutoBuild
+  // keeps auto-build from being scheduled implicitly in blink_unittests.
+  EXPECT_CALL(log, Log(logging::LOGGING_INFO, testing::_, testing::_,
+                       testing::_, testing::HasSubstr("<Root>")))
+      .Times(0);
+  test::RunPendingTasks();
+  log.StopCapturingLogs();
+  testing::Mock::VerifyAndClearExpectations(&log);
+  EXPECT_CALL(log, Log(logging::LOGGING_INFO, testing::_, testing::_,
+                       testing::_, testing::Not(testing::HasSubstr("<Root>"))))
+      .Times(testing::AnyNumber());
 
   // Invoke the auto-build entry point directly to keep the test deterministic;
   // it should run while DOMContentLoaded dispatch is in progress.

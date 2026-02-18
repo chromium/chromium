@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -61,6 +62,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
@@ -80,6 +82,37 @@
 
 namespace blink {
 #if DCHECK_IS_ON()
+bool IsVisualViewportAlignedWithLayoutViewport(Document& document,
+                                               LocalFrameView& view) {
+  VisualViewport& visual_viewport = document.GetPage()->GetVisualViewport();
+  PaintLayerScrollableArea* layout_viewport = view.LayoutViewport();
+
+  // "Layout viewport" vs "visual viewport" terminology:
+  // `docs/website/site/developers/design-documents/blink-coordinate-spaces/`
+  // "visual viewport" APIs:
+  // `third_party/blink/renderer/core/frame/visual_viewport.h`
+
+  // If the scroll offsets differ, the viewports are not aligned.
+  if (visual_viewport.GetScrollOffset() != layout_viewport->GetScrollOffset()) {
+    return false;
+  }
+
+  // A non-zero browser-controls adjustment (e.g. mobile toolbar show/hide)
+  // shifts the visual-viewport coordinate space even if the scroll offsets
+  // match, so treat that as misaligned for these DCHECKs.
+  if (visual_viewport.BrowserControlsAdjustment() != 0.f) {
+    return false;
+  }
+
+  // If pinch-zoom is active (scale != 1), the visual viewport is transformed
+  // relative to the layout viewport.
+  if (visual_viewport.Scale() != 1.f) {
+    return false;
+  }
+
+  return true;
+}
+
 class AutoBuildHelper final : public NativeEventListener {
  public:
   explicit AutoBuildHelper(AIPageContentAgent& agent) : agent_(agent) {}
@@ -185,12 +218,12 @@ gfx::Rect ComputeVisibleBoundingBox(
       << "ComputeVisibleBoundingBox only works when layout is complete";
 
   // Get the object's local bounding box before viewport clipping.
-  gfx::RectF object_rect =
+  gfx::RectF local_object_rect =
       ClipPathClipper::LocalClipPathBoundingBox(object).value_or(
           object.LocalBoundingBoxRectForAccessibility(
               LayoutObject::IncludeDescendants(false)));
   if (local_bounding_box_out) {
-    *local_bounding_box_out = object_rect;
+    *local_bounding_box_out = local_object_rect;
   }
 
   // Transform the local bounding box to viewport coordinates, applying:
@@ -200,12 +233,98 @@ gfx::Rect ComputeVisibleBoundingBox(
   // 4. Viewport clipping (anything outside the viewport is clipped)
   //
   // The nullptr ancestor means "map to the root of the document". When used
-  // with kVisualRectFlags, this gives us viewport-relative coordinates.
+  // with kVisualRectFlags, this gives us visual viewport-relative coordinates,
+  // but clips to the layout viewport -- a potential source of confusion.
   // TODO(khushalsagar): It might be more optimal to derive this from output of
   // paint.
-  object.MapToVisualRectInAncestorSpace(nullptr, object_rect, kVisualRectFlags);
+  gfx::RectF visual_viewport_relative_rect = local_object_rect;
+  object.MapToVisualRectInAncestorSpace(nullptr, visual_viewport_relative_rect,
+                                        kVisualRectFlags);
 
-  gfx::Rect visible_box_in_viewport_coords = ToEnclosingRect(object_rect);
+  // Why do we clamp/intersect after MapToVisualRectInAncestorSpace()?
+  //
+  // Visual vs layout viewport: the visual viewport can be offset relative to
+  // the layout viewport (for example while browser controls animate during
+  // scroll on mobile, or during pinch-zoom).
+  //
+  // In that situation, visual-rect mapping can legitimately return negative
+  // coordinates even after viewport clipping. The visual viewport origin is no
+  // longer at the layout viewport origin.
+  //
+  // APC's `visible_bounding_box` is defined to be viewport-relative with a
+  // (0, 0) origin. Intersect with the local-root viewport to normalize into
+  // that coordinate space and keep geometry DCHECKs from firing on valid
+  // layouts.
+  //
+  // This is intentionally done here because MapToVisualRectInAncestorSpace()
+  // clips in layout-viewport space before applying the visual-viewport
+  // transform, so negative coordinates are a valid outcome for some viewport
+  // configurations.
+  //
+  // For local subframes, the mapped rect is in local-root (main-frame)
+  // coordinates, so clamp against the local-root viewport instead of the
+  // subframe viewport.
+  // TODO(crbug.com/474330989): Consider clamping to the visual viewport size
+  // instead of the layout viewport size if those dimensions can diverge.
+  if (RuntimeEnabledFeatures::AIPageContentVisualViewportClampEnabled()) {
+    if (LocalFrameView* view = object.GetDocument().View()) {
+      LocalFrame* frame = object.GetDocument().GetFrame();
+      LocalFrameView* root_view =
+          frame ? frame->LocalFrameRoot().View() : nullptr;
+      LocalFrameView* viewport_view = root_view ? root_view : view;
+      // LocalFrameView::ViewportWidth/Height are in CSS/layout pixels (only
+      // adjusted for absolute zoom), while `visual_viewport_relative_rect` is
+      // produced by MapToVisualRectInAncestorSpace() in
+      // visual-viewport-relative BlinkSpace/device pixels. Convert the
+      // viewport size into BlinkSpace to ensure we clamp in a consistent
+      // coordinate space.
+      float viewport_width_blink = viewport_view->ViewportWidth();
+      float viewport_height_blink = viewport_view->ViewportHeight();
+      if (frame) {
+        if (FrameWidget* widget = frame->GetWidgetForLocalRoot()) {
+          viewport_width_blink =
+              widget->DIPsToBlinkSpace(viewport_view->ViewportWidth());
+          viewport_height_blink =
+              widget->DIPsToBlinkSpace(viewport_view->ViewportHeight());
+        }
+      }
+      gfx::RectF local_root_viewport_rect_in_blink_space(
+          0, 0, viewport_width_blink, viewport_height_blink);
+
+#if DCHECK_IS_ON()
+      gfx::RectF unclamped_rect = visual_viewport_relative_rect;
+
+      const bool can_clamp_to_viewport =
+          !frame || frame->LocalFrameRoot().IsMainFrame();
+      if (can_clamp_to_viewport && frame && frame->IsMainFrame()) {
+        const bool is_viewport_aligned =
+            IsVisualViewportAlignedWithLayoutViewport(object.GetDocument(),
+                                                      *viewport_view);
+        if (is_viewport_aligned) {
+          // When the visual viewport matches the layout viewport, the mapping
+          // is expected to already be viewport-relative. Clamping should be a
+          // no-op. We DCHECK this to detect any future cases where the mapping
+          // still yields negative coordinates, which would indicate another
+          // layout/visual-viewport discrepancy that APC should account for.
+          DCHECK_GE(unclamped_rect.x(),
+                    local_root_viewport_rect_in_blink_space.x());
+          DCHECK_GE(unclamped_rect.y(),
+                    local_root_viewport_rect_in_blink_space.y());
+        }
+      }
+#endif
+      // Skip clamping for out-of-process iframes because their geometry is
+      // reported in main-frame coordinates, while the local viewport is
+      // iframe-relative and would incorrectly zero out visible rects.
+      if (!frame || frame->LocalFrameRoot().IsMainFrame()) {
+        visual_viewport_relative_rect.Intersect(
+            local_root_viewport_rect_in_blink_space);
+      }
+    }
+  }
+
+  gfx::Rect visible_box_in_viewport_coords =
+      ToEnclosingRect(visual_viewport_relative_rect);
 
 #if DCHECK_IS_ON()
   if (RuntimeEnabledFeatures::AIPageContentCheckGeometryEnabled()) {
@@ -2011,7 +2130,6 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
 
   AddNodeGeometry(object, attributes);
   AddLabel(object, attributes);
-
   attributes.is_ad_related = element && element->IsAdRelated();
 
   return content_node;

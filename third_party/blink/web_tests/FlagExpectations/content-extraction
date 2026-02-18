@@ -5,12 +5,4 @@
 # Expectations for --enable-blink-features=AIPageContentBuildOnLoadForTesting
 
 # Subpixel rendering issue on Mac only caused by activating display locks.
-crbug.com/475504307 [ Mac ] html/details_summary/details-replace-text.html [ Failure Pass ]
-
-# APC auto‑build forces lifecycle updates during DOMContentLoaded; this exposes a pending/error
-# mask-image timing bug where invalid masks are treated as transparent instead of ignored, causing
-# the masked element to disappear.
-crbug.com/475537047 external/wpt/css/css-masking/mask-image/bad-mask-image-svg-3.html [ Failure Pass ]
-# APC auto-build hits a CHECK when view-transition root offsets push geometry
-# above the viewport during DOMContentLoaded.
-crbug.com/474330989 wpt_internal/view-transition/browser-controls-root-offset-new.html [ Crash Pass ]
+crbug.com/475504307 [ Mac ] html/details_summary/details-replace-text.html [ Pass Failure ]
