@@ -128,7 +128,7 @@ ActionChipsHandler::ActionChipsHandler(
   pref_change_registrar_.Add(
       prefs::kNtpToolChipsVisible,
       base::BindRepeating(&ActionChipsHandler::OnVisibilityChanged,
-                          base::Unretained(this)));
+                          weak_factory_.GetWeakPtr()));
 }
 
 ActionChipsHandler::~ActionChipsHandler() = default;
