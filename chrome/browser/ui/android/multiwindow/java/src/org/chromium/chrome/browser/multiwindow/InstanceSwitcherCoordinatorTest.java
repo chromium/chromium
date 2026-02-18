@@ -2001,6 +2001,34 @@ public class InstanceSwitcherCoordinatorTest {
         onView(allOf(withId(R.id.title_more_button), isDisplayed())).check(doesNotExist());
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
+    public void testCommandUiAtInstanceLimit_RobustWindowManagement() throws Exception {
+        // Simulate persistence of (MAX_INSTANCE_COUNT - 1) active instances and 1 inactive
+        // instance.
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ MAX_INSTANCE_COUNT - 1,
+                        /* numInactiveInstances= */ 1);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            mDelegate,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
+                });
+
+        // Verify the "+ New window" command is displayed, since # of active instances is less than
+        // the instance limit.
+        onView(withId(R.id.new_window)).inRoot(isDialog()).check(matches(isDisplayed()));
+    }
+
     private InstanceInfo[] createPersistedInstances(
             int numActiveInstances, int numInactiveInstances) {
         int totalInstances = numActiveInstances + numInactiveInstances;
