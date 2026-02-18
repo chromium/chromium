@@ -30,6 +30,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
@@ -191,7 +193,8 @@ public class FuseboxMediatorUnitTest {
     }
 
     private void addTabAttachment(Tab tab) {
-        mMediator.uploadAndAddAttachment(FuseboxAttachment.forTab(tab, mResources));
+        mMediator.uploadAndAddAttachment(
+                FuseboxAttachment.forTab(tab, mResources, FuseboxAttachmentButtonType.TAB_PICKER));
     }
 
     private FuseboxAttachment addAttachment(
@@ -205,15 +208,29 @@ public class FuseboxMediatorUnitTest {
                     .thenReturn(null); // This will trigger addTabContextFromCache path
             when(mComposeboxQueryControllerBridge.addTabContext(mockTab)).thenReturn(token);
             when(mComposeboxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
-            attachment = FuseboxAttachment.forTab(mockTab, mResources);
+            attachment =
+                    FuseboxAttachment.forTab(
+                            mockTab, mResources, FuseboxAttachmentButtonType.TAB_PICKER);
         } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_FILE) {
             doReturn(token).when(mComposeboxQueryControllerBridge).addFile(eq(title), any(), any());
-            attachment = FuseboxAttachment.forFile(null, title, "image/", new byte[0]);
+            attachment =
+                    FuseboxAttachment.forFile(
+                            null,
+                            title,
+                            "image/",
+                            new byte[0],
+                            SystemClock.elapsedRealtime(),
+                            FuseboxAttachmentButtonType.FILES);
         } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
             doReturn(token).when(mComposeboxQueryControllerBridge).addFile(eq(title), any(), any());
             attachment =
-                    FuseboxAttachment.forCameraImage(
-                            /* thumbnail= */ null, title, "image/", new byte[0]);
+                    FuseboxAttachment.forImage(
+                            /* thumbnail= */ null,
+                            title,
+                            "image/",
+                            new byte[0],
+                            SystemClock.elapsedRealtime(),
+                            FuseboxAttachmentButtonType.CAMERA);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -395,7 +412,14 @@ public class FuseboxMediatorUnitTest {
         // Success is captured with a valid unique token.
         doReturn("123").when(mComposeboxQueryControllerBridge).addFile(any(), any(), any());
         byte[] byteArray = new byte[] {1, 2, 3};
-        FuseboxAttachment attachment = FuseboxAttachment.forFile(null, "title", "image", byteArray);
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forFile(
+                        /* thumbnail= */ null,
+                        "title",
+                        "image",
+                        byteArray,
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
         mMediator.uploadAndAddAttachment(attachment);
         assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
         verify(mComposeboxQueryControllerBridge).addFile("title", "image", byteArray);
@@ -406,7 +430,14 @@ public class FuseboxMediatorUnitTest {
         // Failure: no token.
         doReturn(null).when(mComposeboxQueryControllerBridge).addFile(any(), any(), any());
         byte[] byteArray = new byte[] {1, 2, 3};
-        FuseboxAttachment attachment = FuseboxAttachment.forFile(null, "title", "image", byteArray);
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forFile(
+                        /* thumbnail= */ null,
+                        "title",
+                        "image",
+                        byteArray,
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
         mMediator.uploadAndAddAttachment(attachment);
         assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
     }
@@ -624,7 +655,9 @@ public class FuseboxMediatorUnitTest {
                         null,
                         "integration-test.txt",
                         "text/plain",
-                        "integration content".getBytes());
+                        "integration content".getBytes(),
+                        SystemClock.elapsedRealtime(),
+                        FuseboxAttachmentButtonType.FILES);
 
         // Action: Use mediator's uploadAndAddAttachment method
         mMediator.uploadAndAddAttachment(attachment);

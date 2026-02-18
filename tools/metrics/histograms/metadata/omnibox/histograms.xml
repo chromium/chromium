@@ -2480,6 +2480,33 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.AttachmentAbandoned" units="ms"
+    expires_after="2027-02-01">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the amount of time between when the user choose to add an
+    attachment, and when it was abandoned. Being abandoned might mean the user
+    removed the attachment, or navigated, or backed out of the UI. Note that
+    abandonment, success, and failure are exclusive outcomes, only one will be
+    reported.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.MobileFusebox.AttachmentAbandoned{FuseboxAttachmentButtonType}"
+    units="ms" expires_after="2027-02-01">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the amount of time between when the user choose to add an
+    attachment, and when it was abandoned. Being abandoned might mean the user
+    removed the attachment, or navigated, or backed out of the UI. Scoped to a
+    particular button type. Note that abandonment, success, and failure are
+    exclusive outcomes, only one will be reported.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.AttachmentButtonShown"
     enum="FuseboxAttachmentButtonType" expires_after="2026-11-11">
   <owner>pnoland@google.com</owner>
@@ -2514,6 +2541,30 @@ Keep consistent with active providers. Doesn't need to include every provider in
       variants="FuseboxAttachmentButtonType"/>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.AttachmentFailed" units="ms"
+    expires_after="2027-02-01">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the amount of time between when the user choose to add an
+    attachment, and when it failed to upload. Note that abandonment, success,
+    and failure are exclusive outcomes, only one will be reported.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.MobileFusebox.AttachmentFailed{FuseboxAttachmentButtonType}"
+    units="ms" expires_after="2027-02-01">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the amount of time between when the user choose to add an
+    attachment, and when it failed to upload. Scoped to a particular button
+    type. Note that abandonment, success, and failure are exclusive outcomes,
+    only one will be reported.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.AttachmentsPopupToggled" enum="Boolean"
     expires_after="2026-11-11">
   <owner>pnoland@google.com</owner>
@@ -2522,6 +2573,30 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Counts the number of times the user deliberately toggled the attachments
     popup on or off. Does not count popup dismissals as the result of attaching
     an item.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.AttachmentSucceeded" units="ms"
+    expires_after="2027-02-01">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the amount of time between when the user choose to add an
+    attachment, and when it succeeded uploading. Note that abandonment, success,
+    and failure are exclusive outcomes, only one will be reported.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.MobileFusebox.AttachmentSucceeded{FuseboxAttachmentButtonType}"
+    units="ms" expires_after="2027-02-01">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the amount of time between when the user choose to add an
+    attachment, and when it succeeded uploading. Scoped to a particular button
+    type. Note that abandonment, success, and failure are exclusive outcomes,
+    only one will be reported.
   </summary>
 </histogram>
 

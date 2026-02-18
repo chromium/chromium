@@ -248,7 +248,7 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
         }
 
         attachment.model.set(FuseboxAttachmentProperties.COLOR_SCHEME, mBrandedColorScheme);
-        attachment.setOnRemoveCallback(() -> remove(attachment));
+        attachment.setOnRemoveCallback(() -> remove(attachment, /* isFailure= */ false));
         mModelList.add(attachment);
 
         maybeEmitListChangedEvent(/* asResultOfChange= */ true);
@@ -260,12 +260,19 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
      * removing attachments.
      *
      * @param attachment The attachment to remove
+     * @param isFailure Whether the removal is from a failure or a decision by the user.
      */
-    public void remove(FuseboxAttachment attachment) {
+    public void remove(FuseboxAttachment attachment, boolean isFailure) {
         mModelList.remove(attachment);
 
         if (attachment.type == FuseboxAttachmentType.ATTACHMENT_TAB) {
             mAttachedTabIds.remove(attachment.tabId);
+        }
+
+        if (isFailure) {
+            FuseboxMetrics.notifyAttachmentFailed(attachment.startTime, attachment.buttonType);
+        } else if (!attachment.isUploadComplete()) {
+            FuseboxMetrics.notifyAttachmentAbandoned(attachment.startTime, attachment.buttonType);
         }
 
         // Always try to remove from backend using the model list's bridge
@@ -302,7 +309,7 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
 
         // Execute removal using the existing single-item method.
         for (FuseboxAttachment attachment : attachmentsToRemove) {
-            remove(attachment);
+            remove(attachment, /* isFailure= */ false);
         }
 
         // Since we executed actual removal logic one or more times, return true.
@@ -320,6 +327,10 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
         for (int index = 0; index < size(); index++) {
             var attachment = get(index);
             attachment.removeFromBackend(assumeNonNull(mComposeboxQueryControllerBridge));
+            if (!attachment.isUploadComplete()) {
+                FuseboxMetrics.notifyAttachmentAbandoned(
+                        attachment.startTime, attachment.buttonType);
+            }
         }
 
         mAttachedTabIds.clear();
@@ -370,12 +381,14 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
                 }
                 notifyAttachmentUploadFailed();
                 pendingAttachment.setUploadIsComplete();
-                remove(pendingAttachment);
+                remove(pendingAttachment, /* isFailure= */ true);
                 break;
             case FileUploadStatus.UPLOAD_SUCCESSFUL:
                 pendingAttachment.setUploadIsComplete();
                 int index = indexOf(pendingAttachment);
                 mModelList.update(index, pendingAttachment);
+                FuseboxMetrics.notifyAttachmentSucceeded(
+                        pendingAttachment.startTime, pendingAttachment.buttonType);
                 break;
         }
 

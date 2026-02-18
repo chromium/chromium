@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.util.Size;
@@ -22,6 +23,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +44,8 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
     private final Uri mUri;
     private final @FuseboxAttachmentType int mType;
     private final Callback<FuseboxAttachment> mCallback;
+    private final long mStartTime = SystemClock.elapsedRealtime();
+    private final @FuseboxAttachmentButtonType int mButtonType;
     private @Nullable Drawable mThumbnail;
     private @Nullable String mTitle;
     private @Nullable String mMimeType;
@@ -52,12 +56,14 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
             ContentResolver contentResolver,
             Uri uri,
             @FuseboxAttachmentType int type,
-            Callback<FuseboxAttachment> callback) {
+            Callback<FuseboxAttachment> callback,
+            @FuseboxAttachmentButtonType int buttonType) {
         mContext = context;
         mContentResolver = contentResolver;
         mUri = uri;
         mType = type;
         mCallback = callback;
+        mButtonType = buttonType;
     }
 
     @Override
@@ -128,18 +134,22 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         FuseboxAttachment attachment;
         if (mType == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
             attachment =
-                    FuseboxAttachment.forCameraImage(
+                    FuseboxAttachment.forImage(
                             assumeNonNull(mThumbnail),
                             assumeNonNull(mTitle),
                             assumeNonNull(mMimeType),
-                            assumeNonNull(mData));
+                            assumeNonNull(mData),
+                            mStartTime,
+                            mButtonType);
         } else {
             attachment =
                     FuseboxAttachment.forFile(
                             assumeNonNull(mThumbnail),
                             assumeNonNull(mTitle),
                             assumeNonNull(mMimeType),
-                            assumeNonNull(mData));
+                            assumeNonNull(mData),
+                            mStartTime,
+                            mButtonType);
         }
         mCallback.onResult(attachment);
     }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import android.annotation.SuppressLint;
+import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 
@@ -23,6 +24,10 @@ import java.lang.annotation.Target;
 import java.util.Arrays;
 
 public class FuseboxMetrics {
+    private static final String ABANDONED_HISTOGRAM = "Omnibox.MobileFusebox.AttachmentAbandoned";
+    private static final String FAILED_HISTOGRAM = "Omnibox.MobileFusebox.AttachmentFailed";
+    private static final String SUCCEEDED_HISTOGRAM = "Omnibox.MobileFusebox.AttachmentSucceeded";
+    private static final String TOKEN_SEPARATOR = ".";
 
     // LINT.IfChange(AiModeActivationSource)
     @IntDef({
@@ -158,6 +163,18 @@ public class FuseboxMetrics {
         Arrays.fill(sAttachmentButtonsUsedInSession, false);
     }
 
+    static void notifyAttachmentAbandoned(long startTime, @FuseboxAttachmentButtonType int type) {
+        notifyAttachmentTime(startTime, type, ABANDONED_HISTOGRAM);
+    }
+
+    static void notifyAttachmentFailed(long startTime, @FuseboxAttachmentButtonType int type) {
+        notifyAttachmentTime(startTime, type, FAILED_HISTOGRAM);
+    }
+
+    static void notifyAttachmentSucceeded(long startTime, @FuseboxAttachmentButtonType int type) {
+        notifyAttachmentTime(startTime, type, SUCCEEDED_HISTOGRAM);
+    }
+
     @SuppressLint("SwitchIntDef") // COUNT entry missing
     private static String getStringForAttachmentType(
             @FuseboxAttachmentButtonType int attachmentType) {
@@ -187,6 +204,19 @@ public class FuseboxMetrics {
                     model.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE);
             default -> false;
         };
+    }
+
+    private static void notifyAttachmentTime(
+            long startTime, @FuseboxAttachmentButtonType int type, String genericHistogram) {
+        long duration = SystemClock.elapsedRealtime() - startTime;
+        RecordHistogram.recordMediumTimesHistogram(genericHistogram, duration);
+        String typeHistogram = typeScopedHistogram(genericHistogram, type);
+        RecordHistogram.recordMediumTimesHistogram(typeHistogram, duration);
+    }
+
+    private static String typeScopedHistogram(
+            String baseHistogram, @FuseboxAttachmentButtonType int type) {
+        return baseHistogram + TOKEN_SEPARATOR + getStringForAttachmentType(type);
     }
 
     static void resetForTesting() {
