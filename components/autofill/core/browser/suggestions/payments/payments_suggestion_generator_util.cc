@@ -994,6 +994,12 @@ Suggestion CreateManageCreditCardsSuggestion(bool with_gpay_logo) {
                                          with_gpay_logo);
 }
 
+Suggestion CreateBnplFootnoteSuggestion() {
+  Suggestion bnpl_footnote = Suggestion(SuggestionType::kBnplFootnote);
+  bnpl_footnote.acceptability = Suggestion::Acceptability::kUnacceptable;
+  return bnpl_footnote;
+}
+
 Suggestion CreateSaveAndFillSuggestion(const AutofillClient& client,
                                        bool& display_gpay_logo) {
   Suggestion save_and_fill(
@@ -1040,6 +1046,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kUndoOrClear:
+    case SuggestionType::kBnplFootnote:
       return true;
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
@@ -1361,20 +1368,24 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
 
   // TODO(crbug.com/444684996): Add another check to not show BNPL chip anymore
   // for this transaction if the previous amount extraction is timeout.
-  if (should_show_bnpl_suggestion &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnablePayNowPayLaterTabs)) {
+  if (should_show_bnpl_suggestion) {
     if (base::FeatureList::IsEnabled(
-            features::
-                kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString)) {
-      footer_suggestions.emplace_back(SuggestionType::kSeparator);
-    }
+            features::kAutofillEnablePayNowPayLaterTabs)) {
+      footer_suggestions.push_back(CreateBnplFootnoteSuggestion());
+    } else {
+      if (base::FeatureList::IsEnabled(
+              features::
+                  kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString)) {
+        footer_suggestions.emplace_back(SuggestionType::kSeparator);
+      }
 
-    footer_suggestions.push_back(CreateBnplSuggestion(
-        client.GetPersonalDataManager()
-            .payments_data_manager()
-            .GetBnplIssuers(),
-        /*extracted_amount_in_micros=*/std::nullopt, amount_extraction_status));
+      footer_suggestions.push_back(
+          CreateBnplSuggestion(client.GetPersonalDataManager()
+                                   .payments_data_manager()
+                                   .GetBnplIssuers(),
+                               /*extracted_amount_in_micros=*/std::nullopt,
+                               amount_extraction_status));
+    }
   }
 
   if (should_show_scan_credit_card) {

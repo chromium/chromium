@@ -157,11 +157,29 @@ Matcher<Suggestion> EqualsManagePaymentsMethodsSuggestion(bool with_gpay_logo) {
 #endif
 }
 
-auto ContainsCreditCardFooterSuggestions(bool with_gpay_logo) {
+testing::Matcher<const std::vector<Suggestion>&>
+ContainsCreditCardFooterSuggestions(bool with_gpay_logo,
+                                    bool with_bnpl_footnote = false) {
+  // TODO(crbug.com/477689220): Verify that the BNPL footnote suggestion and the
+  // Manage Payments suggestion have distinct `tab_index` values to ensure they
+  // will not be shown at the same time after suggestion filtering
+  // infrastructure is updated.
+  if (with_bnpl_footnote) {
+    return AllOf(
+        SizeIs(Ge(3)),
+        ResultOf(
+            [](const std::vector<Suggestion>& container) {
+              return base::span(container).template last<3>();
+            },
+            ElementsAre(
+                EqualsSuggestion(SuggestionType::kBnplFootnote),
+                EqualsSuggestion(SuggestionType::kSeparator),
+                EqualsManagePaymentsMethodsSuggestion(with_gpay_logo))));
+  }
   return AllOf(
       SizeIs(Ge(2)),
       ResultOf(
-          [](const auto& container) {
+          [](const std::vector<Suggestion>& container) {
             return base::span(container).template last<2>();
           },
           ElementsAre(EqualsSuggestion(SuggestionType::kSeparator),
@@ -2311,14 +2329,15 @@ TEST_F(
       /*should_show_scan_credit_card=*/false, summary,
       /*is_card_number_field_empty=*/true);
 
-  ASSERT_EQ(suggestions.size(), 6U);
+  ASSERT_EQ(suggestions.size(), 7U);
 
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
   EXPECT_EQ(suggestions[1].type, SuggestionType::kBnplEntry);
   EXPECT_EQ(suggestions[2].type, SuggestionType::kBnplEntry);
   EXPECT_EQ(suggestions[3].type, SuggestionType::kBnplEntry);
   EXPECT_THAT(suggestions,
-              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false,
+                                                  /*with_bnpl_footnote=*/true));
 }
 
 TEST_F(
@@ -2414,6 +2433,79 @@ TEST_F(
   EXPECT_EQ(suggestions[2].type, SuggestionType::kBnplEntry);
   EXPECT_EQ(suggestions[3].type, SuggestionType::kSeparator);
   EXPECT_EQ(suggestions[4].type, SuggestionType::kManageCreditCard);
+}
+
+TEST_F(
+    PaymentsSuggestionGeneratorBnplTest,
+    GenerateCreditCardOrCvcFieldSuggestionsSync_PayLaterTabsEnabled_BnplFootnote) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnablePayNowPayLaterTabs,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableAiBasedAmountExtraction},
+      /*disabled_features=*/{});
+
+  payments_data().AddCreditCard(test::GetCreditCard());
+  payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      {}, CREDIT_CARD_NUMBER,
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/true);
+
+  auto bnpl_footnote = std::find_if(
+      suggestions.begin(), suggestions.end(), [](const Suggestion& s) {
+        return s.type == SuggestionType::kBnplFootnote;
+      });
+
+  ASSERT_NE(bnpl_footnote, suggestions.end())
+      << "Expected a BNPL footnote suggestion to be generated.";
+
+  EXPECT_EQ(bnpl_footnote->acceptability,
+            Suggestion::Acceptability::kUnacceptable);
+}
+
+TEST_F(
+    PaymentsSuggestionGeneratorBnplTest,
+    GenerateCreditCardOrCvcFieldSuggestionsSync_PayLaterTabsDisabled_NoBnplFootnote) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableAiBasedAmountExtraction},
+      /*disabled_features=*/{features::kAutofillEnablePayNowPayLaterTabs});
+
+  payments_data().AddCreditCard(test::GetCreditCard());
+  payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      {}, CREDIT_CARD_NUMBER,
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/true);
+
+  EXPECT_FALSE(std::any_of(suggestions.begin(), suggestions.end(),
+                           [](const Suggestion& s) {
+                             return s.type == SuggestionType::kBnplFootnote;
+                           }));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

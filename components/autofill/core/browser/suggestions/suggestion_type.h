@@ -179,8 +179,12 @@ enum class SuggestionType {
   // Memory search result for @memory feature.
   kAtMemorySearchResult = 78,
 
-  // Next ID: 79
-  kMaxValue = kAtMemorySearchResult
+  // Buy-Now-Pay-Later footnote suggestion to display the privacy notice with
+  // bold and link text.
+  kBnplFootnote = 79,
+
+  // Next ID: 80
+  kMaxValue = kBnplFootnote
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

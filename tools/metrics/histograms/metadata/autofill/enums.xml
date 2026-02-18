@@ -4473,7 +4473,7 @@ Called by update_autofill_enums.py.-->
   <int value="58" label="(Obsolete) Autofill AI details"/>
   <int value="59" label="(Obsolete) Autofill AI error"/>
   <int value="60" label="(Obsolete) Edit Autofill AI information"/>
-  <int value="61" label="Bnpl entry"/>
+  <int value="61" label="BNPL entry"/>
   <int value="62" label="Save and fill credit card entry"/>
   <int value="63" label="Address suggestion displayed when typing"/>
   <int value="64" label="Manage AutofillAi information"/>
@@ -4492,6 +4492,7 @@ Called by update_autofill_enums.py.-->
   <int value="76" label="Manage travel information"/>
   <int value="77" label="Loading throbber"/>
   <int value="78" label="@memory search result"/>
+  <int value="79" label="BNPL footnote"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_type.h:SuggestionType) -->

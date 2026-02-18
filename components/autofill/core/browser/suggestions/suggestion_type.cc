@@ -123,6 +123,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "OneTimePasswordEntry";
     case SuggestionType::kLoadingThrobber:
       return "kLoadingThrobber";
+    case SuggestionType::kBnplFootnote:
+      return "kBnplFootnote";
   }
   NOTREACHED();
 }
