@@ -457,10 +457,10 @@ void ContextualTasksSidePanelCoordinator::OnAiInteraction() {
 contextual_search::ContextualSearchSessionHandle*
 ContextualTasksSidePanelCoordinator::
     GetContextualSearchSessionHandleForPanel() {
-  if (!web_view_ || !web_view_->GetWebContents()) {
+  if (!web_view_ || !web_view_->web_contents()) {
     return nullptr;
   }
-  auto* web_contents = web_view_->GetWebContents();
+  auto* web_contents = web_view_->web_contents();
   auto* web_ui_interface = GetWebUiInterface(web_contents);
   return web_ui_interface
              ? web_ui_interface->GetOrCreateContextualSessionHandle()
@@ -619,7 +619,7 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
     return false;
   }
 
-  content::WebContents* prev_web_contents = web_view_->GetWebContents();
+  content::WebContents* prev_web_contents = web_view_->web_contents();
   if (prev_web_contents) {
     auto* cache_item = GetWebContentsCacheItemForWebContents(prev_web_contents);
     if (cache_item) {
@@ -796,8 +796,7 @@ void ContextualTasksSidePanelCoordinator::UpdateContextualTaskUI() {
     return;
   }
 
-  content::WebContents* web_contents = web_view_->GetWebContents();
-  if (auto* web_ui_interface = GetWebUiInterface(web_contents)) {
+  if (auto* web_ui_interface = GetWebUiInterface(web_view_->web_contents())) {
     web_ui_interface->OnActiveTabContextStatusChanged();
   }
 }
@@ -930,8 +929,8 @@ std::pair<std::optional<base::Uuid>,
 ContextualTasksSidePanelCoordinator::GetSessionHandleForActiveTabOrSidePanel() {
   content::WebContents* web_contents = nullptr;
   if (IsPanelOpenForContextualTask()) {
-    if (web_view_ && web_view_->GetWebContents()) {
-      web_contents = web_view_->GetWebContents();
+    if (web_view_ && web_view_->web_contents()) {
+      web_contents = web_view_->web_contents();
     }
   } else {
     tabs::TabInterface* active_tab_interface =
@@ -969,8 +968,7 @@ size_t ContextualTasksSidePanelCoordinator::GetNumberOfActiveTasks() const {
 
 std::optional<tabs::TabHandle>
 ContextualTasksSidePanelCoordinator::GetAutoSuggestedTabHandle() {
-  auto* web_contents = web_view_->GetWebContents();
-  auto* web_ui_interface = GetWebUiInterface(web_contents);
+  auto* web_ui_interface = GetWebUiInterface(web_view_->web_contents());
   if (!web_ui_interface ||
       !web_ui_interface->IsActiveTabContextSuggestionShowing()) {
     return std::nullopt;
