@@ -53,6 +53,10 @@ void TabSearchToolbarButtonController::OnBubbleDestroying() {
       base::Seconds(1));
 }
 
+void TabSearchToolbarButtonController::OnHostDestroying() {
+  UpdateBubbleHost(nullptr);
+}
+
 void TabSearchToolbarButtonController::UpdateBubbleHost(
     TabSearchBubbleHost* new_tab_search_bubble_host) {
   tab_search_bubble_host_observation_.Reset();

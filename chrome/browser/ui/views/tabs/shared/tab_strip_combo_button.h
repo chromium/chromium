@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_COMBO_BUTTON_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/ui/views/tab_search_bubble_host_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -26,13 +29,15 @@ class MenuRunner;
 }  // namespace views
 
 class BrowserWindowInterface;
+class TabSearchBubbleHost;
 class TabStripFlatEdgeButton;
 
 // A container for two TabStripFlatEdgeButtons that manages their flat edges
 // based on visibility and the combo button's orientation.
 class TabStripComboButton : public views::View,
                             public views::ContextMenuController,
-                            public ui::SimpleMenuModel::Delegate {
+                            public ui::SimpleMenuModel::Delegate,
+                            public TabSearchBubbleHostObserver {
   METADATA_HEADER(TabStripComboButton, views::View)
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabSearchUnpinMenuItem);
@@ -58,6 +63,13 @@ class TabStripComboButton : public views::View,
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  // TabSearchBubbleHostObserver:
+  void OnBubbleInitializing() override;
+  void OnBubbleDestroying() override;
+  void OnHostDestroying() override;
+
+  void SetTabSearchBubbleHost(TabSearchBubbleHost* host);
+
  protected:
   // views::View:
   void ChildVisibilityChanged(views::View* child) override;
@@ -75,10 +87,14 @@ class TabStripComboButton : public views::View,
 
   void OnMenuClosed();
 
+  void MaybeHideTabSearchButton();
+
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<TabStripFlatEdgeButton> start_button_ = nullptr;
   raw_ptr<TabStripFlatEdgeButton> end_button_ = nullptr;
   views::LayoutOrientation orientation_ = views::LayoutOrientation::kHorizontal;
+
+  bool show_tab_search_ephemerally_ = false;
 
   PrefChangeRegistrar pref_registrar_;
 
@@ -89,6 +105,10 @@ class TabStripComboButton : public views::View,
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  base::OneShotTimer hide_tab_search_timer_;
+  base::ScopedObservation<TabSearchBubbleHost, TabSearchBubbleHostObserver>
+      tab_search_bubble_host_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_COMBO_BUTTON_H_

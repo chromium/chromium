@@ -30,6 +30,7 @@ class TabSearchToolbarButtonController : public TabSearchBubbleHostObserver {
   // TabSearchBubbleHostObserver:
   void OnBubbleInitializing() override;
   void OnBubbleDestroying() override;
+  void OnHostDestroying() override;
 
   void UpdateBubbleHost(TabSearchBubbleHost* new_tab_search_bubble_host);
 

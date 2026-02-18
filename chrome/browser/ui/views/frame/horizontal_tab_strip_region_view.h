@@ -99,6 +99,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   TabStrip* tab_strip() { return tab_strip_; }
 
   TabStripFlatEdgeButton* GetTabSearchButton();
+  TabStripComboButton* GetComboButton() { return combo_button_; }
 
 #if BUILDFLAG(ENABLE_GLIC)
   views::LabelButton* GetGlicButton();

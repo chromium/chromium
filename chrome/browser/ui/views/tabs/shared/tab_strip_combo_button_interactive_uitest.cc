@@ -51,6 +51,18 @@ class TabStripComboButtonInteractiveUiTest
                     });
   }
 
+  auto TriggerEphemeralState() {
+    return WithView(kTabStripComboButtonElementId, [](views::View* view) {
+      views::AsViewClass<TabStripComboButton>(view)->OnBubbleInitializing();
+    });
+  }
+
+  auto TriggerBubbleDestroying() {
+    return WithView(kTabStripComboButtonElementId, [](views::View* view) {
+      views::AsViewClass<TabStripComboButton>(view)->OnBubbleDestroying();
+    });
+  }
+
   auto EnsureBothButtonsVisible() {
     return Steps(SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
                  SetPinned(prefs::kProjectsPanelPinnedToTabstrip, true),
@@ -58,7 +70,7 @@ class TabStripComboButtonInteractiveUiTest
                  WaitForShow(kVerticalTabStripProjectsButtonElementId));
   }
 
-  auto ExecuteUnpinCommand(ui::ElementIdentifier id, int command_id) {
+  auto ExecuteCommand(ui::ElementIdentifier id, int command_id) {
     return WithView(id, [command_id](views::View* button) {
       views::AsViewClass<TabStripComboButton>(button->parent())
           ->ExecuteCommand(command_id, 0);
@@ -114,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest, UnpinTabSearch) {
   RunTestSequence(
       EnsureBothButtonsVisible(),
-      ExecuteUnpinCommand(kTabSearchButtonElementId, IDC_TAB_SEARCH_TOGGLE_PIN),
+      ExecuteCommand(kTabSearchButtonElementId, IDC_TAB_SEARCH_TOGGLE_PIN),
       // Verify button is hidden and pref is updated.
       WaitForHide(kTabSearchButtonElementId),
       CheckResult(
@@ -129,8 +141,8 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
                        UnpinProjectsPanel) {
   RunTestSequence(
       EnsureBothButtonsVisible(),
-      ExecuteUnpinCommand(kVerticalTabStripProjectsButtonElementId,
-                          IDC_PROJECTS_PANEL_TOGGLE_PIN),
+      ExecuteCommand(kVerticalTabStripProjectsButtonElementId,
+                     IDC_PROJECTS_PANEL_TOGGLE_PIN),
       // Verify button is hidden and pref is updated.
       WaitForHide(kVerticalTabStripProjectsButtonElementId),
       CheckResult(
@@ -139,6 +151,36 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
                 prefs::kProjectsPanelPinnedToTabstrip);
           },
           false));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
+                       HideTabSearchAfterEphemeralShow) {
+  RunTestSequence(
+      // Ensure tab search is not pinned.
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, false),
+      WaitForHide(kTabSearchButtonElementId),
+      // Trigger ephemeral state.
+      TriggerEphemeralState(), FinishTabstripAnimations(),
+      WaitForShow(kTabSearchButtonElementId), TriggerBubbleDestroying(),
+      FinishTabstripAnimations(),
+      // Button should disappear after a couple seconds.
+      WaitForHide(kTabSearchButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
+                       PinTabSearchWhileEphemeral) {
+  RunTestSequence(
+      // Ensure tab search is not pinned.
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, false),
+      WaitForHide(kTabSearchButtonElementId),
+      // Trigger ephemeral state.
+      TriggerEphemeralState(), FinishTabstripAnimations(),
+      WaitForShow(kTabSearchButtonElementId),
+      ExecuteCommand(kTabSearchButtonElementId, IDC_TAB_SEARCH_TOGGLE_PIN),
+      FinishTabstripAnimations(),
+      // Button should still be visible.
+      CheckView(kTabSearchButtonElementId,
+                [](views::View* view) { return view->GetVisible(); }));
 }
 
 class TabStripComboButtonEverythingMenuInteractiveUiTest
@@ -163,7 +205,7 @@ class TabStripComboButtonEverythingMenuInteractiveUiTest
                  WaitForShow(kSavedTabGroupButtonElementId));
   }
 
-  auto ExecuteUnpinCommand(ui::ElementIdentifier id, int command_id) {
+  auto ExecuteCommand(ui::ElementIdentifier id, int command_id) {
     return WithView(id, [command_id](views::View* button) {
       views::AsViewClass<TabStripComboButton>(button->parent())
           ->ExecuteCommand(command_id, 0);
@@ -178,8 +220,8 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonEverythingMenuInteractiveUiTest,
                        UnpinEverythingMenu) {
   RunTestSequence(
       EnsureBothButtonsVisible(),
-      ExecuteUnpinCommand(kSavedTabGroupButtonElementId,
-                          IDC_EVERYTHING_MENU_TOGGLE_PIN),
+      ExecuteCommand(kSavedTabGroupButtonElementId,
+                     IDC_EVERYTHING_MENU_TOGGLE_PIN),
       // Verify button is hidden and pref is updated.
       WaitForHide(kSavedTabGroupButtonElementId),
       CheckResult(

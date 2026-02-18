@@ -32,6 +32,7 @@ class TabSearchBubbleHostObserver : public base::CheckedObserver {
  public:
   virtual void OnBubbleInitializing() {}
   virtual void OnBubbleDestroying() {}
+  virtual void OnHostDestroying() {}
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_SEARCH_BUBBLE_HOST_OBSERVER_H_

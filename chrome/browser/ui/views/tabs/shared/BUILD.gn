@@ -9,6 +9,7 @@ source_set("shared") {
   ]
 
   deps = [
+    "//chrome/browser/ui/views",
     "//components/prefs",
     "//ui/base/metadata",
     "//ui/menus",
