@@ -930,9 +930,10 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
   // Set the lens overlay suggest inputs, if available.
   if (std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
           controller_->client()->GetLensOverlaySuggestInputs()) {
-    // Don't set lens params if in "Create Image" mode. This prevents the
-    // contextual client from being used in this tool mode.
-    if (!GetInputState().image_gen_upload_active) {
+    // Don't set lens params if in "Create Image" or "Canvas" mode. This
+    // prevents the contextual client from being used in this tool mode.
+    if (!GetInputState().image_gen_upload_active ||
+        GetInputState().active_tool != omnibox::ToolMode::TOOL_MODE_CANVAS) {
       autocomplete_input.set_lens_overlay_suggest_inputs(*suggest_inputs);
     }
   }
