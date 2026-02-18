@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.hierarchicalmenu.MenuItemWithSubmenuView;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -260,6 +261,9 @@ class AppMenuItemViewBinder {
             } else {
                 ViewHighlighter.turnOffHighlight(view);
             }
+        } else if (key == AppMenuItemWithSubmenuProperties.IS_EXPANDED) {
+            ((MenuItemWithSubmenuView) view)
+                    .setIsExpanded(model.get(AppMenuItemWithSubmenuProperties.IS_EXPANDED));
         } else if (key == AppMenuItemProperties.ICON) {
             setIcon(view, model);
         } else if (key == AppMenuItemWithSubmenuProperties.CLICK_LISTENER) {

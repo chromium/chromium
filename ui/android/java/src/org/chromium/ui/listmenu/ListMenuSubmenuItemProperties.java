@@ -18,6 +18,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TOOLTIP;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.List;
@@ -27,6 +28,8 @@ import java.util.List;
 public class ListMenuSubmenuItemProperties {
     public static final WritableObjectPropertyKey<List<ListItem>> SUBMENU_ITEMS =
             new WritableObjectPropertyKey<>();
+
+    public static final WritableBooleanPropertyKey IS_EXPANDED = new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
         TITLE,
@@ -38,6 +41,7 @@ public class ListMenuSubmenuItemProperties {
         IS_HIGHLIGHTED,
         ENABLED,
         SUBMENU_ITEMS,
+        IS_EXPANDED,
         IS_TEXT_ELLIPSIZED_AT_END,
         KEY_LISTENER
     };

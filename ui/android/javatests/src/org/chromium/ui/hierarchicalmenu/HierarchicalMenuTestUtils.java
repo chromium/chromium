@@ -34,6 +34,7 @@ public class HierarchicalMenuTestUtils {
     public static final WritableBooleanPropertyKey ENABLED = new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_HIGHLIGHTED =
             new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_EXPANDED = new WritableBooleanPropertyKey();
     public static final WritableIntPropertyKey MENU_ITEM_ID = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<List<ListItem>> SUBMENU_ITEMS =
             new WritableObjectPropertyKey<>();
@@ -58,6 +59,7 @@ public class HierarchicalMenuTestUtils {
                 IS_HIGHLIGHTED,
                 MENU_ITEM_ID,
                 SUBMENU_ITEMS,
+                IS_EXPANDED,
                 KEY_LISTENER
             };
 
@@ -105,6 +107,11 @@ public class HierarchicalMenuTestUtils {
             @Override
             public WritableBooleanPropertyKey getIsHighlightedKey() {
                 return IS_HIGHLIGHTED;
+            }
+
+            @Override
+            public WritableBooleanPropertyKey getIsExpandedKey() {
+                return IS_EXPANDED;
             }
         };
     }

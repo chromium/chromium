@@ -156,5 +156,10 @@ public class AppMenuUtil {
         public WritableBooleanPropertyKey getIsHighlightedKey() {
             return AppMenuItemProperties.HAS_HOVER_BACKGROUND;
         }
+
+        @Override
+        public WritableBooleanPropertyKey getIsExpandedKey() {
+            return AppMenuItemWithSubmenuProperties.IS_EXPANDED;
+        }
     }
 }

@@ -5,6 +5,7 @@
 package org.chromium.ui.hierarchicalmenu;
 
 import static android.view.accessibility.AccessibilityNodeInfo.EXPANDED_STATE_COLLAPSED;
+import static android.view.accessibility.AccessibilityNodeInfo.EXPANDED_STATE_FULL;
 
 import static org.chromium.ui.base.KeyNavigationUtil.isGoForward;
 
@@ -25,7 +26,9 @@ import org.chromium.build.annotations.Nullable;
  * AppMenuItemType.MENU_ITEM_WITH_SUBMENU}, {@code ListItemType.MENU_ITEM_WITH_SUBMENU}).
  */
 @NullMarked
-class MenuItemWithSubmenuView extends LinearLayout {
+public class MenuItemWithSubmenuView extends LinearLayout {
+
+    private boolean mIsExpanded;
 
     public MenuItemWithSubmenuView(Context context) {
         super(context);
@@ -45,6 +48,10 @@ class MenuItemWithSubmenuView extends LinearLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    public void setIsExpanded(boolean isExpanded) {
+        mIsExpanded = isExpanded;
+    }
+
     @Override
     public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
         super.onInitializeAccessibilityNodeInfo(info);
@@ -53,7 +60,7 @@ class MenuItemWithSubmenuView extends LinearLayout {
         // constant is private in AccessibilityNodeInfoCompat (possibly by mistake?). We filed a bug
         // and hope to clean this up after it is fixed.
         if (Build.VERSION.SDK_INT >= 36) {
-            info.setExpandedState(EXPANDED_STATE_COLLAPSED);
+            info.setExpandedState(mIsExpanded ? EXPANDED_STATE_FULL : EXPANDED_STATE_COLLAPSED);
         }
     }
 

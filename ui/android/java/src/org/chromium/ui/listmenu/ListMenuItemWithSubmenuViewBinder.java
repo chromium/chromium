@@ -16,6 +16,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TOOLTIP;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.IS_EXPANDED;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
+import org.chromium.ui.hierarchicalmenu.MenuItemWithSubmenuView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -63,6 +65,8 @@ class ListMenuItemWithSubmenuViewBinder {
             view.setOnHoverListener(model.get(HOVER_LISTENER));
         } else if (propertyKey == IS_HIGHLIGHTED) {
             view.setHovered(model.get(IS_HIGHLIGHTED));
+        } else if (propertyKey == IS_EXPANDED) {
+            ((MenuItemWithSubmenuView) view).setIsExpanded(model.get(IS_EXPANDED));
         } else if (propertyKey == ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END) {
             if (model.get(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END)) {
                 textView.setMaxLines(1);

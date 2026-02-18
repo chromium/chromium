@@ -11,6 +11,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.IS_EXPANDED;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.content.Context;
@@ -203,6 +204,11 @@ public class ListMenuUtils {
         @Override
         public WritableBooleanPropertyKey getIsHighlightedKey() {
             return IS_HIGHLIGHTED;
+        }
+
+        @Override
+        public WritableBooleanPropertyKey getIsExpandedKey() {
+            return IS_EXPANDED;
         }
     }
 }

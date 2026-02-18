@@ -41,4 +41,6 @@ public interface HierarchicalMenuKeyProvider {
     WritableObjectPropertyKey<List<ListItem>> getSubmenuItemsKey();
 
     WritableBooleanPropertyKey getIsHighlightedKey();
+
+    WritableBooleanPropertyKey getIsExpandedKey();
 }

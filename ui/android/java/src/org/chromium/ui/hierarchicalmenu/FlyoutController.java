@@ -187,6 +187,10 @@ public class FlyoutController<T> implements Destroyable {
         }
 
         for (int i = mPopups.size() - 1; i >= clearFromIndex; i--) {
+            ListItem parentItem = mPopups.get(i).parentItem;
+            if (parentItem != null) {
+                parentItem.model.set(mKeyProvider.getIsExpandedKey(), false);
+            }
             mFlyoutHandler.dismissPopup(mPopups.get(i).popupWindow);
         }
 
@@ -254,11 +258,14 @@ public class FlyoutController<T> implements Destroyable {
                             () -> {
                                 removeFlyoutWindows(levelOfHoveredItem + 1);
                             });
-            mPopups.add(new FlyoutPopupEntry<T>(null, popup));
+            mPopups.add(new FlyoutPopupEntry<T>(item, popup));
 
             assert mPopups.size() > 1;
             mFlyoutHandler.setWindowFocus(mPopups.get(mPopups.size() - 2).popupWindow, false);
             mFlyoutHandler.setWindowFocus(popup, true);
+
+            item.model.set(
+                    mKeyProvider.getIsExpandedKey(), levelOfHoveredItem < mPopups.size() - 1);
         }
     }
 
