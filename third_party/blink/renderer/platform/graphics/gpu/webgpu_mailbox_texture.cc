@@ -69,21 +69,11 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
           ? 1
           : image_sub_rect.height();
 
-  auto format = image->GetSharedImageFormat();
-
-  // TODO(crbug.com/371227617): This is historical artifact of us jumping
-  // through the formats back and forth and unfortunately we're not guaranteed
-  // to get the same format back. In practice it should be fine, so we need to
-  // remove this in the follow-up.
-  if (image->IsTextureBacked()) {
-    format = viz::SkColorTypeToSinglePlaneSharedImageFormat(
-        ToClosestSkColorType(format));
-  }
-
   // Get a recyclable resource for producing WebGPU-compatible shared images.
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
       dawn_control_client->GetOrCreateCanvasResource(
-          format, gfx::Size(mailbox_texture_width, mailbox_texture_height),
+          image->GetSharedImageFormat(),
+          gfx::Size(mailbox_texture_width, mailbox_texture_height),
           image->GetColorSpace(), image->GetAlphaType());
 
   if (!recyclable_canvas_resource) {
