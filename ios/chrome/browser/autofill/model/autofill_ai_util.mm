@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 
 #import "base/strings/string_util.h"
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #import "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
 #import "components/variations/service/variations_service.h"
@@ -13,8 +14,10 @@
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace autofill {
 
@@ -65,6 +68,43 @@ bool CanPerformAutofillAiAction(ProfileIOS* profile, AutofillAiAction action) {
       SyncServiceFactory::GetForProfile(profile),
       IsWalletStorageEnabled(profile), profile->IsOffTheRecord(),
       GeoIpCountryCode(GetCountryCodeFromVariations()), action);
+}
+
+UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
+                                            CGFloat symbol_point_size) {
+  NSString* symbol_name = nil;
+  switch (entity_type_name) {
+    case EntityTypeName::kPassport:
+      // TODO(crbug.com/480933607): Change this placeholder to a custom passport
+      // symbol when the SVG file is ready.
+      symbol_name = kPersonTextRectangleSymbol;
+      break;
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kNationalIdCard:
+      symbol_name = kPersonTextRectangleSymbol;
+      break;
+    case EntityTypeName::kVehicle:
+      symbol_name = kCarSymbol;
+      break;
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+      symbol_name = kPersonFillCheckmarkSymbol;
+      break;
+    case EntityTypeName::kFlightReservation:
+      if (@available(iOS 26, *)) {
+        symbol_name = kAirplaneUpRightSymbol;
+      } else {
+        symbol_name = kAirplaneSymbol;
+      }
+      break;
+    default:
+      return nil;
+  }
+
+  return SymbolWithPalette(
+      DefaultSymbolWithPointSize(symbol_name, symbol_point_size), @[
+        [UIColor colorNamed:kTextPrimaryColor],
+      ]);
 }
 
 }  // namespace autofill

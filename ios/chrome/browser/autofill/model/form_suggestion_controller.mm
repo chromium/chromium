@@ -23,6 +23,7 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/plus_addresses/core/common/features.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
@@ -121,43 +122,6 @@ base::optional_ref<const autofill::EntityInstance> GetAutofillAiEntity(
       base::Uuid::ParseCaseInsensitive(guid)));
 }
 
-// Returns the default icon for the autofill AI entity type.
-UIImage* defaultIconForEntityType(autofill::EntityTypeName entity_type_name) {
-  NSString* symbol_name = nil;
-  switch (entity_type_name) {
-    case autofill::EntityTypeName::kPassport:
-      // TODO(crbug.com/480933607): Change this placeholder to a custom passport
-      // symbol when the SVG file is ready.
-      symbol_name = kPersonTextRectangleSymbol;
-      break;
-    case autofill::EntityTypeName::kDriversLicense:
-    case autofill::EntityTypeName::kNationalIdCard:
-      symbol_name = kPersonTextRectangleSymbol;
-      break;
-    case autofill::EntityTypeName::kVehicle:
-      symbol_name = kCarSymbol;
-      break;
-    case autofill::EntityTypeName::kKnownTravelerNumber:
-    case autofill::EntityTypeName::kRedressNumber:
-      symbol_name = kPersonFillCheckmarkSymbol;
-      break;
-    case autofill::EntityTypeName::kFlightReservation:
-      if (@available(iOS 26, *)) {
-        symbol_name = kAirplaneUpRightSymbol;
-      } else {
-        symbol_name = kAirplaneSymbol;
-      }
-      break;
-    default:
-      return nil;
-  }
-
-  return SymbolWithPalette(
-      DefaultSymbolWithPointSize(symbol_name, kSymbolPointSize), @[
-        [UIColor colorNamed:kTextPrimaryColor],
-      ]);
-}
-
 // Returns the default icon for the suggestion type.
 UIImage* defaultIconForType(FormSuggestion* suggestion,
                             web::WebState* web_state) {
@@ -218,7 +182,8 @@ UIImage* defaultIconForType(FormSuggestion* suggestion,
           return nil;
         }
 
-        return defaultIconForEntityType(entity->type().name());
+        return autofill::DefaultIconForAutofillAiEntityType(
+            entity->type().name(), kSymbolPointSize);
       }
 
       return nil;

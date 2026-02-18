@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_AI_UTIL_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_AI_UTIL_H_
 
-#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#import <UIKit/UIKit.h>
+
+#import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 
 class ProfileIOS;
 
@@ -20,6 +22,10 @@ bool IsWalletStorageEnabled(ProfileIOS* profile);
 
 // Returns YES if the Autofill AI action can be performed for the given profile.
 bool CanPerformAutofillAiAction(ProfileIOS* profile, AutofillAiAction action);
+
+// Returns the default icon for the Autofill AI entity type.
+UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
+                                            CGFloat symbol_point_size);
 
 }  // namespace autofill
 
