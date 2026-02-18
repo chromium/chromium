@@ -34,6 +34,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -372,6 +373,7 @@ public class ChromeAndroidTaskIntegrationTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @DisabledTest(message = "https://crbug.com/485551955")
     public void createPendingTask_withInitialBounds_createsTaskWithCorrectBounds() {
         // Arrange.
         mFreshCtaTransitTestRule.startOnBlankPage();
