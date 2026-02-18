@@ -135,6 +135,10 @@ enum class ShopCardTrackItemResult {
   kTrackError,
 };
 
+static const base::FeatureParam<int> kShopCardMaxImpressionsFeature{
+    &commerce::kTabResumptionShopCard, commerce::kShopCardMaxImpressions,
+    kShopCardMaxImpressions};
+
 // Salient images should come from gstatic.com.
 const char kGStatic[] = ".gstatic.com";
 
@@ -302,9 +306,7 @@ bool IsShopCardImpressionLimitsEnabled() {
 }
 
 int GetImpressionLimit() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      commerce::kTabResumptionShopCard, commerce::kShopCardMaxImpressions,
-      kShopCardMaxImpressions);
+  return kShopCardMaxImpressionsFeature.Get();
 }
 
 const char* GetImpressionLimitPref() {

@@ -49,6 +49,12 @@ const char kFeedSettingDiscoverReferrerParameter[] =
 
 const char kFeedSwipeInProductHelpArmParam[] = "feed-swipe-in-product-help-arm";
 
+BASE_FEATURE_PARAM(int,
+                   kFeedSwipeInProductHelpArmParamFeature,
+                   &kFeedSwipeInProductHelp,
+                   kFeedSwipeInProductHelpArmParam,
+                   static_cast<int>(FeedSwipeIPHVariation::kStaticAfterFRE));
+
 #pragma mark - Helpers
 
 bool IsNTPViewHierarchyRepairEnabled() {
@@ -72,10 +78,7 @@ bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service) {
 FeedSwipeIPHVariation GetFeedSwipeIPHVariation() {
   if (base::FeatureList::IsEnabled(kFeedSwipeInProductHelp)) {
     return static_cast<FeedSwipeIPHVariation>(
-        base::GetFieldTrialParamByFeatureAsInt(
-            kFeedSwipeInProductHelp,
-            kFeedSwipeInProductHelpArmParam, /*default_value=*/
-            static_cast<int>(FeedSwipeIPHVariation::kStaticAfterFRE)));
+        kFeedSwipeInProductHelpArmParamFeature.Get());
   }
   return FeedSwipeIPHVariation::kDisabled;
 }
