@@ -151,6 +151,9 @@ void AddDefaultZeroStateStrings(content::WebUIDataSource* source) {
                     l10n_util::GetStringUTF16(
                         IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE_WITHOUT_NAME));
   source->AddString("friendlyZeroStateSubtitle", "");
+  source->AddString("friendlyZeroStateGaiaName", "");
+  source->AddString("friendlyZeroStateTitleBeforeName", "");
+  source->AddString("friendlyZeroStateTitleAfterName", "");
 }
 
 void AddZeroStateStrings(content::WebUIDataSource* source, Profile* profile) {
@@ -169,17 +172,32 @@ void AddZeroStateStrings(content::WebUIDataSource* source, Profile* profile) {
   }
 
   std::u16string gaia_name = entry->GetGAIANameToDisplay();
-  std::u16string full_string;
   if (gaia_name.empty()) {
-    full_string = l10n_util::GetStringUTF16(
-        IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE_WITHOUT_NAME);
-  } else {
-    full_string = l10n_util::GetStringFUTF16(
-        IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE, gaia_name);
+    AddDefaultZeroStateStrings(source);
+    return;
   }
+
+  std::vector<size_t> offsets;
+  const std::u16string full_string = l10n_util::GetStringFUTF16(
+      IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE, {gaia_name}, &offsets);
   std::vector<std::u16string> parts = base::SplitStringUsingSubstr(
       full_string, u"<br>", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   source->AddString("friendlyZeroStateTitle", parts.empty() ? u"" : parts[0]);
+
+  if (offsets.size() == 1 && !parts.empty() &&
+      offsets[0] + gaia_name.length() <= parts[0].length()) {
+    source->AddString("friendlyZeroStateGaiaName", gaia_name);
+    source->AddString("friendlyZeroStateTitleBeforeName",
+                      parts[0].substr(0, offsets[0]));
+    source->AddString(
+        "friendlyZeroStateTitleAfterName",
+        parts[0].substr(offsets[0] + gaia_name.length()));
+  } else {
+    // Fallback to default behavior if name replacement fails.
+    source->AddString("friendlyZeroStateGaiaName", "");
+    source->AddString("friendlyZeroStateTitleBeforeName", "");
+    source->AddString("friendlyZeroStateTitleAfterName", "");
+  }
   source->AddString("friendlyZeroStateSubtitle",
                     parts.size() > 1 ? parts[1] : u"");
 }

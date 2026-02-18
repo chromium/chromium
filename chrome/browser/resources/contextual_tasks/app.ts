@@ -168,9 +168,18 @@ export class ContextualTasksAppElement extends CrLitElement {
         type: Boolean,
       },
       forcedComposeboxBounds_: {type: Object},
+      friendlyZeroStateGaiaName_: {type: String},
+      friendlyZeroStateTitleBeforeName_: {type: String},
+      friendlyZeroStateTitleAfterName_: {type: String},
     };
   }
 
+  protected accessor friendlyZeroStateGaiaName_: string =
+      loadTimeData.getString('friendlyZeroStateGaiaName');
+  protected accessor friendlyZeroStateTitleBeforeName_: string =
+      loadTimeData.getString('friendlyZeroStateTitleBeforeName');
+  protected accessor friendlyZeroStateTitleAfterName_: string =
+      loadTimeData.getString('friendlyZeroStateTitleAfterName');
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   protected accessor enableBasicModeZOrder_: boolean =
       loadTimeData.getBoolean('enableBasicModeZOrder');
