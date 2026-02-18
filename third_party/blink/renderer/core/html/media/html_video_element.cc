@@ -648,6 +648,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
       snapshot_provider_ =
           CanvasNon2DSnapshotProviderBitmap::Create(required_provider_info);
+      CHECK(snapshot_provider_);
     } else {
       snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
           required_provider_info.size, required_provider_info.format,
@@ -655,11 +656,11 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(),
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+      if (!snapshot_provider_) {
+        return nullptr;
+      }
     }
 
-    if (!snapshot_provider_) {
-      return nullptr;
-    }
     allow_accelerated_images_ = allow_accelerated_images;
   }
   cache_deleting_timer_.StartOneShot(kTemporaryResourceDeletionDelay,
