@@ -1149,6 +1149,7 @@ H264Parser::Result H264Parser::ParsePPS(int* pps_id) {
       }
 
       READ_SE_OR_RETURN(&pps->second_chroma_qp_index_offset);
+      IN_RANGE_OR_RETURN(pps->second_chroma_qp_index_offset, -12, 12);
     }
   }
 
