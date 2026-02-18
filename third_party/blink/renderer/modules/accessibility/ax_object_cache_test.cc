@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -249,6 +251,41 @@ TEST_F(AccessibilityTest, AccessibilityFocus) {
   ASSERT_NE(nullptr, ax_ul);
   ax_ul->PerformAction(action);
   EXPECT_EQ(ul, cache.GetAccessibilityFocus());
+}
+
+TEST_F(AccessibilityTest, SetMenuListOptionsBoundsBasePickerClearsState) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        #sel, #sel::picker(select) {
+          appearance: base-select;
+        }
+      </style>
+      <select id="sel" autofocus>
+        <option>one</option>
+        <option>two</option>
+      </select>)HTML");
+
+  auto* select = To<HTMLSelectElement>(GetElementById("sel"));
+  ASSERT_NE(select, nullptr);
+  select->ShowPopup();
+  EXPECT_TRUE(select->PopupIsVisible());
+
+  auto& cache = GetAXObjectCache();
+  cache.current_menu_list_axid_ = 123;
+  Vector<gfx::Rect> stale_bounds;
+  stale_bounds.push_back(gfx::Rect(1, 2, 3, 4));
+  cache.options_bounds_ = stale_bounds;
+
+  Vector<gfx::Rect> new_bounds;
+  new_bounds.push_back(gfx::Rect(5, 6, 7, 8));
+  cache.SetMenuListOptionsBounds(select, new_bounds);
+
+  EXPECT_EQ(cache.current_menu_list_axid_, 0);
+  EXPECT_TRUE(cache.options_bounds_.empty());
+
+  AXObject* ax_select = GetAXObjectByElementId("sel");
+  ASSERT_NE(ax_select, nullptr);
+  EXPECT_EQ(cache.GetOptionsBounds(*ax_select), nullptr);
 }
 
 #if AX_FAIL_FAST_BUILD()

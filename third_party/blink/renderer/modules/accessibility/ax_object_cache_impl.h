@@ -1394,6 +1394,8 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
                            UpdateAXForAllDocumentsAfterPausedUpdates);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, RemoveReferencesToAXID);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, NodesRequiringCacheUpdate);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
+                           SetMenuListOptionsBoundsBasePickerClearsState);
 
   // The ID of the object to fetch image data for.
   AXID image_data_node_id_ = ui::AXNodeData::kInvalidAXID;

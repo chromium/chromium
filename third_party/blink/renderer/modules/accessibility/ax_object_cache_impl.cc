@@ -4430,6 +4430,17 @@ void AXObjectCacheImpl::SetMenuListOptionsBounds(
     const Vector<gfx::Rect>& options_bounds) {
   CHECK(select->PopupIsVisible());
   CHECK_EQ(select->GetDocument(), GetDocument());
+  if (select->IsAppearanceBasePicker()) {
+    // Customizable select does not render in a special popup document and does
+    // not need to supply bounding boxes via options_bounds_.
+    //
+    // During a picker appearance transition, this method can still be reached
+    // from the native popup code. Clear any stale native popup state to
+    // prevent CHECK failures in AXObjectCacheImpl::GetOptionsBounds().
+    current_menu_list_axid_ = ui::AXNodeData::kInvalidAXID;
+    options_bounds_ = {};
+    return;
+  }
   options_bounds_ = options_bounds;
   current_menu_list_axid_ = select->GetDomNodeId();
 }
