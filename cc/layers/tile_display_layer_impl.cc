@@ -207,8 +207,8 @@ int TileDisplayLayerImpl::AppendQuadsSpecialization(
   // TileDisplayLayerImpl does not currently track the number of missing tiles,
   // as that info is used only to pass to `checkerboarded_needs_raster` on the
   // client side.
-  // TODO(crbug.com/401566175): Track `checkerboarded_needs_raster` on the Viz
-  // side.
+  // TODO(crbug.com/401566175): Determine if we need to
+  // track `checkerboarded_needs_raster` on the Viz side in the longer term.
   return 0;
 }
 
