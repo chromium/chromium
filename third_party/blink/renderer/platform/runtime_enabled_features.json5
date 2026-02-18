@@ -530,6 +530,12 @@
       status: "stable",
     },
     {
+      // This is a bug fix for rendering a missing focus ring on <a> elements.
+      // Shipping in M147, safe to remove in M150.
+      name: "AnchorFocusRingFix",
+      status: "stable",
+    },
+    {
       // Kill switch for https://crbug.com/415834974 which changes anchor
       // positioning adjustments to occur even in cases where there is no
       // scrollable overflow.
