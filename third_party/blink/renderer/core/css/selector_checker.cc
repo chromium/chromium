@@ -1300,23 +1300,21 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
       if (selector_value.empty()) {
         return false;
       }
-      return value.StartsWith(selector_value, case_insensitive
-                                                  ? kTextCaseASCIIInsensitive
-                                                  : kTextCaseSensitive);
+      return case_insensitive
+                 ? value.StartsWithIgnoringAsciiCase(selector_value)
+                 : value.StartsWith(selector_value);
     case CSSSelector::kAttributeEnd:
       if (selector_value.empty()) {
         return false;
       }
-      return value.EndsWith(selector_value, case_insensitive
-                                                ? kTextCaseASCIIInsensitive
-                                                : kTextCaseSensitive);
+      return case_insensitive ? value.EndsWithIgnoringAsciiCase(selector_value)
+                              : value.EndsWith(selector_value);
     case CSSSelector::kAttributeHyphen:
       if (value.length() < selector_value.length()) {
         return false;
       }
-      if (!value.StartsWith(selector_value, case_insensitive
-                                                ? kTextCaseASCIIInsensitive
-                                                : kTextCaseSensitive)) {
+      if (case_insensitive ? !value.StartsWithIgnoringAsciiCase(selector_value)
+                           : !value.StartsWith(selector_value)) {
         return false;
       }
       // It they start the same, check for exact match or following '-':
@@ -2865,8 +2863,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (!RuntimeEnabledFeatures::CSSLangExtendedRangesEnabled()) {
         DCHECK_EQ(selector.ArgumentList()->size(), 1u);
         const AtomicString& argument = (*selector.ArgumentList())[0];
-        if (value.empty() ||
-            !value.StartsWith(argument, kTextCaseASCIIInsensitive)) {
+        if (value.empty() || !value.StartsWithIgnoringAsciiCase(argument)) {
           break;
         }
         if (value.length() != argument.length() &&

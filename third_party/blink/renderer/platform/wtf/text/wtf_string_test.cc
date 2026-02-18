@@ -345,6 +345,13 @@ TEST(StringTest, StartsWithIgnoringAsciiCase) {
 }
 
 TEST(StringTest, EndsWithIgnoringAsciiCase) {
+  EXPECT_TRUE(String().EndsWithIgnoringAsciiCase(""));
+  EXPECT_TRUE(String().EndsWithIgnoringAsciiCase(StringView()));
+  EXPECT_TRUE(String("").EndsWithIgnoringAsciiCase(""));
+  EXPECT_TRUE(String("").EndsWithIgnoringAsciiCase(StringView()));
+  EXPECT_TRUE(String("foo").EndsWithIgnoringAsciiCase(""));
+  EXPECT_TRUE(String("foo").EndsWithIgnoringAsciiCase(StringView()));
+
   String all_ascii("LINK");
   String all_ascii_lower_case("link");
   EXPECT_TRUE(all_ascii.EndsWithIgnoringAsciiCase(all_ascii_lower_case));

@@ -330,8 +330,10 @@ class WTF_EXPORT String {
     return impl_ ? impl_->DeprecatedEndsWithIgnoringCase(prefix)
                  : prefix.empty();
   }
-  bool EndsWithIgnoringAsciiCase(const StringView& prefix) const {
-    return impl_ ? impl_->EndsWithIgnoringAsciiCase(prefix) : prefix.empty();
+  // Returns true if this string ends with the specified `suffix`, using ASCII
+  // case-insensitive matching. If `suffix` is empty, this returns `true`.
+  bool EndsWithIgnoringAsciiCase(const StringView& suffix) const {
+    return impl_ ? impl_->EndsWithIgnoringAsciiCase(suffix) : suffix.empty();
   }
   bool EndsWith(UChar character) const {
     return impl_ ? impl_->EndsWith(character) : false;

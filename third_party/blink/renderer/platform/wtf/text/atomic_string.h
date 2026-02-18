@@ -155,10 +155,8 @@ class WTF_EXPORT AtomicString {
     return string_.ReverseFind(value, start);
   }
 
-  bool StartsWith(
-      const StringView& prefix,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
-    return string_.StartsWith(prefix, case_sensitivity);
+  bool StartsWith(const StringView& prefix) const {
+    return string_.StartsWith(prefix);
   }
   bool StartsWithIgnoringAsciiCase(const StringView& prefix) const {
     return string_.StartsWithIgnoringAsciiCase(prefix);
@@ -167,12 +165,15 @@ class WTF_EXPORT AtomicString {
     return string_.StartsWith(character);
   }
 
-  bool EndsWith(
-      const StringView& suffix,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
-    return string_.EndsWith(suffix, case_sensitivity);
+  bool EndsWith(const StringView& suffix) const {
+    return string_.EndsWith(suffix);
   }
   bool EndsWith(UChar character) const { return string_.EndsWith(character); }
+  // Returns true if this string ends with the specified `suffix`, using ASCII
+  // case-insensitive matching. If `suffix` is empty, this returns `true`.
+  bool EndsWithIgnoringAsciiCase(const StringView& suffix) const {
+    return string_.EndsWithIgnoringAsciiCase(suffix);
+  }
 
   // Returns a lowercase/uppercase version of the string.
   // These functions convert ASCII characters only.

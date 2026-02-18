@@ -375,7 +375,7 @@ static bool TypefacesHasWeightSuffix(const AtomicString& family,
       {" black", 6, FontSelectionValue(900)},
       {" heavy", 6, FontSelectionValue(900)}};
   for (const auto& entry : kVariantForSuffix) {
-    if (family.EndsWith(entry.suffix, kTextCaseASCIIInsensitive)) {
+    if (family.EndsWithIgnoringAsciiCase(entry.suffix)) {
       StringView family_name(family);
       family_name.remove_suffix(entry.length);
       adjusted_name = AtomicString(family_name);
@@ -410,7 +410,7 @@ static bool TypefacesHasStretchSuffix(const AtomicString& family,
       {" extraexpanded", 14, kExtraExpandedWidthValue},
       {" ultraexpanded", 14, kUltraExpandedWidthValue}};
   for (const auto& entry : kVariantForSuffix) {
-    if (family.EndsWith(entry.suffix, kTextCaseASCIIInsensitive)) {
+    if (family.EndsWithIgnoringAsciiCase(entry.suffix)) {
       StringView family_name(family);
       family_name.remove_suffix(entry.length);
       adjusted_name = AtomicString(family_name);

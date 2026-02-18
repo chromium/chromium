@@ -33,8 +33,8 @@ static inline bool IsValidDirAttribute(const AtomicString& value) {
 // Keywords from CSS font-size are skipped.
 static inline bool IsDisallowedMathSizeAttribute(const AtomicString& value) {
   return EqualIgnoringASCIICase(value, "medium") ||
-         value.EndsWith("large", kTextCaseASCIIInsensitive) ||
-         value.EndsWith("small", kTextCaseASCIIInsensitive) ||
+         value.EndsWithIgnoringAsciiCase("large") ||
+         value.EndsWithIgnoringAsciiCase("small") ||
          EqualIgnoringASCIICase(value, "smaller") ||
          EqualIgnoringASCIICase(value, "larger") ||
          EqualIgnoringASCIICase(value, "math");
