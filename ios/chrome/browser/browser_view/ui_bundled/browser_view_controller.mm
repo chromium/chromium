@@ -1980,6 +1980,7 @@ const CGFloat kTopDynamicIslandInset = 24;
 #pragma mark - OmniboxFocusDelegate (Public)
 
 - (void)omniboxDidBecomeFirstResponder {
+  CHECK(!IsComposeboxIOSEnabled());
   if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
     [self.ntpCoordinator locationBarDidBecomeFirstResponder];
   }
@@ -2001,6 +2002,7 @@ const CGFloat kTopDynamicIslandInset = 24;
 }
 
 - (void)omniboxDidResignFirstResponder {
+  CHECK(!IsComposeboxIOSEnabled());
   [_sideSwipeCoordinator setEnabled:YES];
 
   [self.ntpCoordinator locationBarWillResignFirstResponder];

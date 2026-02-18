@@ -1391,7 +1391,9 @@ const char kChromeAppStoreUrl[] =
   [_lensViewFinderCoordinator start];
 
   _toolbarCoordinator.baseViewController = viewController;
-  _toolbarCoordinator.omniboxFocusDelegate = viewController;
+  if (!IsChromeNextIaEnabled()) {
+    _toolbarCoordinator.omniboxFocusDelegate = viewController;
+  }
   _toolbarCoordinator.popupPresenterDelegate = viewController;
   _toolbarCoordinator.toolbarHeightDelegate = viewController;
   [_toolbarCoordinator start];
