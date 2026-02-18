@@ -1858,8 +1858,14 @@ class StartupBrowserWithListAppsFeature : public StartupBrowserCreatorTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/484997712): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ListAppsForAllProfiles DISABLED_ListAppsForAllProfiles
+#else
+#define MAYBE_ListAppsForAllProfiles ListAppsForAllProfiles
+#endif
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
-                       ListAppsForAllProfiles) {
+                       MAYBE_ListAppsForAllProfiles) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath user_data_dir = profile_manager->user_data_dir();
   Profile* profile1 = browser()->profile();
