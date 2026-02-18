@@ -16,7 +16,7 @@ found in the LICENSE file.
     <dimen name="signin_promo_desc_margin_top_signed_in_compact">6dp</dimen>
     <dimen name="signin_promo_button_margin_two_buttons">20dp</dimen>
     <dimen name="signin_promo_button_margin_compact">16dp</dimen>
-
+    <dimen name="signin_promo_dismiss_button_touch_target_increase">12dp</dimen>
     <dimen name="signin_promo_two_buttons_container_vertical_padding">16dp</dimen>
     <dimen name="signin_promo_two_buttons_container_horizontal_padding">20dp</dimen>
     <dimen name="signin_promo_two_buttons_title_horizontal_padding">32dp</dimen>
