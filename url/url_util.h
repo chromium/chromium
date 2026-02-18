@@ -288,8 +288,22 @@ void DecodeURLEscapeSequences(std::string_view input,
 
 // Escapes the given string as defined by the JS method encodeURIComponent. See
 // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/encodeURIComponent
+//
+// This is used when we need a std::string_view result.
+//
+//   url::RawCanonOutputT<char> output;
+//   url::EncodeURIComponent(input, &output);
+//   // Use output.view() here.
 COMPONENT_EXPORT(URL)
 void EncodeURIComponent(std::string_view input, CanonOutput* output);
+
+// Escapes the given string as defined by the JS method encodeURIComponent. See
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/encodeURIComponent
+//
+// This function is less efficient than EncodeURIComponent(input, output)
+// because this allocates a std::string instance and copies the content to it.
+COMPONENT_EXPORT(URL)
+std::string EncodeUriComponent(std::string_view input);
 
 // Returns true if `c` is a character that does not require escaping in
 // encodeURIComponent.

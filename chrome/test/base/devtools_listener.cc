@@ -35,12 +35,6 @@ std::string_view SpanToStringPiece(const base::span<const uint8_t>& s) {
   return {reinterpret_cast<const char*>(s.data()), s.size()};
 }
 
-std::string EncodeURIComponent(const std::string& component) {
-  url::RawCanonOutputT<char> encoded;
-  url::EncodeURIComponent(component, &encoded);
-  return std::string(encoded.view());
-}
-
 }  // namespace
 
 DevToolsListener::DevToolsListener(content::DevToolsAgentHost* host,
@@ -173,7 +167,7 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   }
 
   std::string url = host->GetURL().spec();
-  result->Set("encodedHostURL", EncodeURIComponent(url));
+  result->Set("encodedHostURL", url::EncodeUriComponent(url));
   result->Set("hostTitle", host->GetTitle());
   result->Set("hostType", host->GetType());
   result->Set("hostTest", test);
@@ -358,7 +352,7 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
     base::DictValue* params = script.FindDict("params");
     CHECK(params) << "Can't find params from script: " << script;
 
-    params->Set("encodedURL", EncodeURIComponent(url));
+    params->Set("encodedURL", url::EncodeUriComponent(url));
     params->Set("hash", hash);
     params->Set("text", text);
     params->Set("url", url);

@@ -121,9 +121,7 @@ void MediaBrowserTest::CleanupTest() {
 
 std::string MediaBrowserTest::EncodeErrorMessage(
     const std::string& original_message) {
-  url::RawCanonOutputT<char> buffer;
-  url::EncodeURIComponent(original_message, &buffer);
-  return std::string(buffer.view());
+  return url::EncodeUriComponent(original_message);
 }
 
 void MediaBrowserTest::AddTitlesToAwait(content::TitleWatcher* title_watcher) {

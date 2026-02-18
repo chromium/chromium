@@ -908,6 +908,12 @@ void EncodeURIComponent(std::string_view input, CanonOutput* output) {
   }
 }
 
+std::string EncodeUriComponent(std::string_view input) {
+  RawCanonOutputT<char> output;
+  EncodeURIComponent(input, &output);
+  return std::string(output.view());
+}
+
 bool IsUriComponentChar(char c) {
   return IsComponentChar(c);
 }

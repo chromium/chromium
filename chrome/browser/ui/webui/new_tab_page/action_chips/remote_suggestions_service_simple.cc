@@ -64,9 +64,7 @@ std::string GenerateTruncatedTitle(const std::u16string_view title) {
   static constexpr size_t kMaxPageTitleLength = 128;
   std::string truncated =
       base::UTF16ToUTF8(TruncateUTF16(title, kMaxPageTitleLength));
-  url::RawCanonOutputT<char> encoded;
-  url::EncodeURIComponent(truncated, &encoded);
-  return std::string(encoded.view());
+  return url::EncodeUriComponent(truncated);
 }
 
 base::expected<std::optional<std::string>,

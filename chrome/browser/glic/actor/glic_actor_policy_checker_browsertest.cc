@@ -69,12 +69,6 @@ namespace glic {
 
 namespace {
 
-std::string EncodeURI(const std::string& component) {
-  url::RawCanonOutputT<char> encoded;
-  url::EncodeURIComponent(component, &encoded);
-  return std::string(encoded.view());
-}
-
 struct TestAccount {
   std::string_view email;
   std::string_view host_domain;
@@ -652,8 +646,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
   const GURL cross_origin_url =
       embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
   const GURL link_page_url = embedded_https_test_server().GetURL(
-      "foo.com", base::StrCat({"/actor/link_full_page.html?href=",
-                               EncodeURI(cross_origin_url.spec())}));
+      "foo.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(cross_origin_url.spec())}));
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), link_page_url));
 
@@ -692,8 +687,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
   const GURL cross_origin_url = embedded_https_test_server().GetURL(
       "blocked.example.com", "/actor/blank.html");
   const GURL link_page_url = embedded_https_test_server().GetURL(
-      "foo.com", base::StrCat({"/actor/link_full_page.html?href=",
-                               EncodeURI(cross_origin_url.spec())}));
+      "foo.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(cross_origin_url.spec())}));
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), link_page_url));
 

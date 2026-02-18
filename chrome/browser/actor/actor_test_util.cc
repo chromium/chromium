@@ -671,12 +671,6 @@ void SetUpBlocklist(base::CommandLine* command_line,
       base::Base64Encode(CreateOptimizationGuideConfig(blocked_host)));
 }
 
-std::string EncodeURI(const std::string& component) {
-  url::RawCanonOutputT<char> encoded;
-  url::EncodeURIComponent(component, &encoded);
-  return std::string(encoded.view());
-}
-
 void WaitForPostedTask() {
   {
     base::RunLoop run_loop;

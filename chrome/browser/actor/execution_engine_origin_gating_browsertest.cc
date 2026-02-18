@@ -26,6 +26,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "url/origin.h"
+#include "url/url_util.h"
 
 namespace actor {
 
@@ -563,8 +564,9 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   const GURL cross_origin_url =
       embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
   const GURL link_page_url = embedded_https_test_server().GetURL(
-      "foo.com", base::StrCat({"/actor/link_full_page.html?href=",
-                               EncodeURI(cross_origin_url.spec())}));
+      "foo.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(cross_origin_url.spec())}));
 
   // Start on foo.com.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
@@ -614,8 +616,9 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   const GURL cross_origin_url =
       embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
   const GURL link_page_url = embedded_https_test_server().GetURL(
-      "foo.com", base::StrCat({"/actor/link_full_page.html?href=",
-                               EncodeURI(cross_origin_url.spec())}));
+      "foo.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(cross_origin_url.spec())}));
 
   // Start on foo.com.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), link_page_url));
@@ -651,10 +654,11 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   const GURL blocked_origin_link_url = embedded_https_test_server().GetURL(
       "blocked.example.com",
       base::StrCat({"/actor/link_full_page.html?href=",
-                    EncodeURI(blocked_origin_url.spec())}));
+                    url::EncodeUriComponent(blocked_origin_url.spec())}));
   const GURL link_page_url = embedded_https_test_server().GetURL(
-      "www.example.com", base::StrCat({"/actor/link_full_page.html?href=",
-                                       EncodeURI(blocked_origin_url.spec())}));
+      "www.example.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(blocked_origin_url.spec())}));
 
   // Start on example.com.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
@@ -715,8 +719,9 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   const GURL blocked_page = embedded_https_test_server().GetURL(
       "blocked.example.com", "/actor/blank.html");
   const GURL normal_page_with_link = embedded_https_test_server().GetURL(
-      "www.example.com", base::StrCat({"/actor/link_full_page.html?href=",
-                                       EncodeURI(blocked_page.spec())}));
+      "www.example.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(blocked_page.spec())}));
 
   // Start on sandboxed page.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), sandboxed_blocked_page));
@@ -1436,8 +1441,9 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest, PerTaskAllowlist) {
   const GURL other_url_same_site =
       embedded_https_test_server().GetURL("other.foo.com", "/actor/blank.html");
   const GURL cross_site_url_with_link = embedded_https_test_server().GetURL(
-      "bar.com", base::StrCat({"/actor/link_full_page.html?href=",
-                               EncodeURI(other_url_same_site.spec())}));
+      "bar.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(other_url_same_site.spec())}));
 
   // Start on example.com.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));

@@ -312,17 +312,12 @@ bool GlicTestEnvironment::SetupEmbeddedTestServers(
 
   // Append the query parameters to the URL.
   bool first_param = true;
-  auto encode = [](const std::string_view& value) {
-    url::RawCanonOutputT<char> encoded;
-    url::EncodeURIComponent(value, &encoded);
-    return std::string(encoded.view());
-  };
   for (const auto& [key, value] : mock_glic_query_params_) {
     path << (first_param ? "?" : "&");
     first_param = false;
-    path << encode(key);
+    path << url::EncodeUriComponent(key);
     if (!value.empty()) {
-      path << "=" << encode(value);
+      path << "=" << url::EncodeUriComponent(value);
     }
   }
 

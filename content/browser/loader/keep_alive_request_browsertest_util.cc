@@ -234,8 +234,6 @@ std::string KeepAliveRequestBrowserTestBase::GetKeepAliveEndpoint(
 
 // static
 std::string KeepAliveRequestBrowserTestBase::EncodeURL(const GURL& url) {
-  url::RawCanonOutputT<char> buffer;
-  url::EncodeURIComponent(url.spec(), &buffer);
-  return std::string(buffer.view());
+  return url::EncodeUriComponent(url.spec());
 }
 }  // namespace content

@@ -29,6 +29,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "url/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
@@ -664,8 +665,9 @@ class ActorToolAgnosticBrowserTestWithDeferWhileInterrupted
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithDeferWhileInterrupted,
                        ActCallbackDeferredWhileInterrupted) {
   const GURL next_url = embedded_test_server()->GetURL("/actor/blank.html");
-  const GURL start_url = embedded_test_server()->GetURL(base::StrCat(
-      {"/actor/link_full_page.html?href=", EncodeURI(next_url.spec())}));
+  const GURL start_url = embedded_test_server()->GetURL(
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(next_url.spec())}));
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
 

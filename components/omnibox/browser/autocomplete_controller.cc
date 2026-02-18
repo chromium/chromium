@@ -343,12 +343,6 @@ std::u16string GetDomain(const AutocompleteMatch& match) {
   return url_domain;
 }
 
-std::string EncodeURIComponent(const std::string& component) {
-  url::RawCanonOutputT<char> encoded;
-  url::EncodeURIComponent(component, &encoded);
-  return std::string(encoded.view());
-}
-
 // Returns whether contextual suggestions can be shown to the user.
 // If the page has a paywall signal, contextual suggestions cannot be shown.
 // If the page paywall signal could not be determined (this `paywall_signal` is
@@ -1030,7 +1024,7 @@ void AutocompleteController::SetMatchDestinationURL(
   TRACE_EVENT0("omnibox", "AutocompleteController::SetMatchDestinationURL");
 
   // Convert search terms to UTF8 and URI-component encode the string.
-  const std::string encoded_search_terms = EncodeURIComponent(
+  const std::string encoded_search_terms = url::EncodeUriComponent(
       base::UTF16ToUTF8(match->search_terms_args->search_terms));
 
   // Append an extra header to navigations from the @gemini scope.

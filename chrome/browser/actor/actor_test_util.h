@@ -234,9 +234,6 @@ bool SetUpOptimizationGuideComponentBlocklist(const base::FilePath& path,
 void SetUpBlocklist(base::CommandLine* command_line,
                     const std::string& blocked_host);
 
-// For tests with link pages whose destination is encoded in URL parameters.
-std::string EncodeURI(const std::string& component);
-
 // Waits until a posted task is invoked. Used to ensures any prior posted tasks
 // are run (assuming a sequenced task runner).
 void WaitForPostedTask();
