@@ -238,6 +238,8 @@ class CC_EXPORT TileDisplayLayerImpl
       float ideal_contents_scale) override;
   TilingResolution GetTilingResolutionForDebugBorders(
       const TileDisplayLayerTiling* tiling) const override;
+  void ComputeCheckerboardedNeedsRecord(
+      AppendQuadsData* append_quads_data) override;
 
   void AppendQuadForTile(TilingSetCoverageIterator<TileDisplayLayerTiling> iter,
                          const AppendQuadsContext& context,

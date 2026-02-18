@@ -80,6 +80,8 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl<FakeTiling> {
                                 float max_contents_scale) override {
     return 0;
   }
+  void ComputeCheckerboardedNeedsRecord(
+      AppendQuadsData* append_quads_data) override {}
   float GetMaximumContentsScaleForUseInAppendQuads() const override {
     return 1.f;
   }

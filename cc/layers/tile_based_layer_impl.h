@@ -101,6 +101,11 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       viz::SharedQuadState* shared_quad_state,
       const Occlusion& scaled_occlusion) = 0;
 
+  // Called from AppendQuads() for subclasses to compute and set
+  // `checkerboarded_needs_record` on `append_quads_data` as relevant.
+  virtual void ComputeCheckerboardedNeedsRecord(
+      AppendQuadsData* append_quads_data) = 0;
+
   // Called when AppendQuads() goes through a flow for which behavior is
   // subclass-specific (i.e., not defined in TileBasedLayerImpl::AppendQuads()
   // itself). `quad_offset` is the offset by which appended quads should be
@@ -288,6 +293,8 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   // *this* invocation in order to determine which scales are now unused and can
   // be considered for removal.
   ClearLastAppendQuadsScales();
+
+  ComputeCheckerboardedNeedsRecord(append_quads_data);
 
   int missing_tile_count = AppendQuadsSpecialization(
       context, render_pass, append_quads_data, shared_quad_state,

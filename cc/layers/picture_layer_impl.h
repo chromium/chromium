@@ -414,6 +414,8 @@ class CC_EXPORT PictureLayerImpl
       const gfx::Rect& coverage_rect,
       float coverage_scale,
       float ideal_contents_scale) override;
+  void ComputeCheckerboardedNeedsRecord(
+      AppendQuadsData* append_quads_data) override;
 
   // Returns whether the tile was missing.
   bool AppendQuadForTile(TilingSetCoverageIterator<PictureLayerTiling> iter,
@@ -428,8 +430,6 @@ class CC_EXPORT PictureLayerImpl
                          const gfx::Rect& scaled_recorded_bounds);
   TilingResolution GetTilingResolutionForDebugBorders(
       const PictureLayerTiling* tiling) const override;
-
-  void ComputeCheckerboardedNeedsRecord(AppendQuadsData* append_quads_data);
 };
 
 }  // namespace cc
