@@ -50,6 +50,7 @@
 
 // Plus menu actions.
 @property(nonatomic, readonly) bool createImageHidden;
+@property(nonatomic, readonly) bool createImageDisabled;
 @property(nonatomic, readonly) bool canvasHidden;
 @property(nonatomic, readonly) bool deepSearchHidden;
 
@@ -97,6 +98,7 @@
 - (void)disableCanvasActions:(BOOL)disabled {
 }
 - (void)disableCreateImageActions:(BOOL)disabled {
+  _createImageDisabled = disabled;
 }
 - (void)hideCameraActions:(BOOL)hidden {
 }
@@ -165,7 +167,7 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
         std::move(web_state),
         WebStateList::InsertionParams::AtIndex(0).Activate());
 
-    searchboxConfig.Clear();
+    searchbox_config_.Clear();
     aim_eligibility_service_ =
         std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
             pref_service_, template_url_service(),
@@ -248,13 +250,15 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
         .WillRepeatedly(testing::Return(AIMEligible));
   }
 
-  void SetCreateImageEligible(bool createImagesEligible) {
+  void SetCreateImageEligible(bool createImagesEligible,
+                              bool add_tool_rule = true) {
     EXPECT_CALL(*aim_eligibility_service_, IsCreateImagesEligible())
         .WillRepeatedly(testing::Return(createImagesEligible));
 
     if (createImagesEligible) {
-      SetToolAllowed(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-      SetToolAllowed(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+      SetToolAllowed(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, add_tool_rule);
+      SetToolAllowed(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD,
+                     add_tool_rule);
     }
 
     ForwardSearchboxConfig();
@@ -284,16 +288,19 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
                 userInputInProgress:NO];
   }
 
-  void SetToolAllowed(omnibox::ToolMode tool) {
-    auto* rule_set = searchboxConfig.mutable_rule_set();
+  void SetToolAllowed(omnibox::ToolMode tool, bool add_tool_rule = true) {
+    auto* rule_set = searchbox_config_.mutable_rule_set();
     rule_set->add_allowed_tools(tool);
-    auto* rule = rule_set->add_tool_rules();
-    rule->set_tool(tool);
-    rule->set_allow_all_input_types(true);
+
+    if (add_tool_rule) {
+      auto* rule = rule_set->add_tool_rules();
+      rule->set_tool(tool);
+      rule->set_allow_all_input_types(true);
+    }
   }
 
   void ForwardSearchboxConfig() {
-    [mediator_ setSearchboxConfig:&searchboxConfig];
+    [mediator_ setSearchboxConfig:&searchbox_config_];
   }
 
   void EraseOmniboxText() { SetOmniboxText(u""); }
@@ -351,7 +358,7 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   TestComposeboxInputPlateConsumer* consumer_;
   ComposeboxInputPlateMediator* mediator_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  omnibox::SearchboxConfig searchboxConfig;
+  omnibox::SearchboxConfig searchbox_config_;
 };
 
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithAttachments) {
@@ -552,6 +559,22 @@ TEST_F(ComposeboxInputPlateMediatorTest, DeepSearchOptionShownWhenEligible) {
   SetDeepSearchEligible(true);
 
   EXPECT_FALSE(consumer_.deepSearchHidden);
+}
+
+// Tests tools without rule in config are marked as disabled
+TEST_F(ComposeboxInputPlateMediatorTest, ToolWithoutRuleIsMarkedDisabled) {
+  EnableInputPlateFeatures({
+      .compactMode = true,
+      .serverSideState = true,
+  });
+
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  SetCreateImageEligible(/*deepSearchEligible=*/true,
+                         /*add_tool_rule=*/false);
+
+  EXPECT_FALSE(consumer_.createImageHidden);
+  EXPECT_TRUE(consumer_.createImageDisabled);
 }
 
 }  // namespace
