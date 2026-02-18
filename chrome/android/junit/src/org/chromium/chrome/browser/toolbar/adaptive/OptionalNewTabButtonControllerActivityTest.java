@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -25,8 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -37,8 +34,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.top.OptionalBrowsingModeButtonController;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
@@ -54,7 +49,6 @@ import java.util.NoSuchElementException;
  * Robolectric tests running {@link OptionalNewTabButtonController} in a {@link
  * ChromeTabbedActivity}.
  */
-@Config(shadows = {OptionalNewTabButtonControllerActivityTest.ShadowDelegate.class})
 @RunWith(ChromeRobolectricTestRunner.class)
 @EnableFeatures(
         ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
@@ -64,31 +58,6 @@ import java.util.NoSuchElementException;
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
 public class OptionalNewTabButtonControllerActivityTest {
-
-    /**
-     * Shadow of {@link OptionalNewTabButtonController.Delegate}. Injects testing values into every
-     * instance of {@link OptionalNewTabButtonController}.
-     */
-    @Implements(OptionalNewTabButtonController.Delegate.class)
-    public static class ShadowDelegate {
-        private static MockTabCreatorManager sTabCreatorManager;
-        private static MockTabModelSelector sTabModelSelector;
-
-        protected static void reset() {
-            sTabModelSelector = null;
-            sTabCreatorManager = null;
-        }
-
-        @Implementation
-        protected TabCreatorManager getTabCreatorManager() {
-            return sTabCreatorManager;
-        }
-
-        @Implementation
-        protected TabModelSelector getTabModelSelector() {
-            return sTabModelSelector;
-        }
-    }
 
     private ActivityScenario<ChromeTabbedActivity> mActivityScenario;
     private AdaptiveToolbarButtonController mAdaptiveButtonController;
@@ -122,10 +91,10 @@ public class OptionalNewTabButtonControllerActivityTest {
                             doReturn(Mockito.mock(WebContents.class)).when(tab).getWebContents();
                             return tab;
                         });
-        assertNull(ShadowDelegate.sTabModelSelector);
-        assertNull(ShadowDelegate.sTabCreatorManager);
-        ShadowDelegate.sTabModelSelector = tabModelSelector;
-        ShadowDelegate.sTabCreatorManager = new MockTabCreatorManager(tabModelSelector);
+        OptionalNewTabButtonController.setActiveTabSupplierForTesting(
+                tabModelSelector::getCurrentTab);
+        OptionalNewTabButtonController.setTabCreatorManagerForTesting(
+                new MockTabCreatorManager(tabModelSelector));
         mTab = tabModelSelector.getCurrentTab();
         mTab.setGurlOverrideForTesting(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -141,7 +110,6 @@ public class OptionalNewTabButtonControllerActivityTest {
     @After
     public void tearDown() {
         mActivityScenario.close();
-        ShadowDelegate.reset();
     }
 
     @Test
