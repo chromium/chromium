@@ -43,8 +43,6 @@ BASE_FEATURE(kAnnotatedPageContentAutofillCreditCardRedactions,
 
 namespace {
 
-constexpr char kHasMediaTranscripts[] = "has_media_transcripts";
-
 std::optional<AutofillFieldMetadata> GetAutofillFieldData(
     std::optional<content::GlobalRenderFrameHostToken> source_frame_token,
     ConvertAIPageContentToProtoSession& session,
