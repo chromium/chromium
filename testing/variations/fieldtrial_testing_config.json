@@ -30318,20 +30318,5 @@
                 }
             ]
         }
-    ],
-    "iOSCPEPerformanceImprovements": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "enable_features": [
-                        "CredentialProviderPerformanceImprovements"
-                    ]
-                }
-            ]
-        }
     ]
 }

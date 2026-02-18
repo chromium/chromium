@@ -485,10 +485,6 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
 }
 
 TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      kCredentialProviderPerformanceImprovements, true);
-
   CreateCredentialProviderService();
   ASSERT_EQ(credential_store_.credentials.count, 0u);
 
@@ -529,12 +525,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
   ASSERT_TRUE(WaitForCredentialCount(2u));
 }
 
-TEST_F(CredentialProviderServiceTest,
-       OnLoginsChanged_WithPerformanceImprovements_SingleOperation) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      kCredentialProviderPerformanceImprovements, true);
-
+TEST_F(CredentialProviderServiceTest, OnLoginsChanged_SingleOperation) {
   CreateCredentialProviderService();
   ASSERT_EQ(credential_store_.credentials.count, 0u);
 
@@ -587,124 +578,6 @@ TEST_F(CredentialProviderServiceTest,
 
   ASSERT_TRUE(WaitForCredentialCount(0u));
   histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 3);
-}
-
-TEST_F(CredentialProviderServiceTest,
-       OnLoginsChanged_WithPerformanceImprovements_MultipleOperations) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      kCredentialProviderPerformanceImprovements, true);
-
-  CreateCredentialProviderService();
-  ASSERT_EQ(credential_store_.credentials.count, 0u);
-
-  // Setup
-  password_manager::PasswordForm test_form;
-  test_form.url = GURL("http://example.com/login");
-  test_form.username_value = u"username";
-  test_form.password_value = u"12345";
-
-  password_manager::PasswordForm test_form2;
-  test_form2.url = GURL("http://homersimpson.com/login");
-  test_form2.username_value = u"homer";
-  test_form2.password_value = u"simpson";
-
-  password_manager::PasswordStoreChangeList change_list;
-  change_list.emplace_back(password_manager::PasswordStoreChange(
-      password_manager::PasswordStoreChange::ADD, test_form));
-  change_list.emplace_back(password_manager::PasswordStoreChange(
-      password_manager::PasswordStoreChange::ADD, test_form2));
-
-  credential_provider_service_->OnLoginsChanged(password_store_.get(),
-                                                change_list);
-  task_environment_.RunUntilIdle();
-
-  ASSERT_TRUE(WaitForCredentialCount(2u));
-
-  // Prepare simultaneous ADD, UPDATE and REMOVE operations.
-  password_manager::PasswordForm test_form3;
-  test_form3.url = GURL("http://margesimpson.com/login");
-  test_form3.username_value = u"marge";
-  test_form3.password_value = u"bouvier";
-
-  test_form2.password_value = u"JSimpson";
-
-  change_list.clear();
-  change_list.emplace_back(password_manager::PasswordStoreChange(
-      password_manager::PasswordStoreChange::ADD, test_form3));
-  change_list.emplace_back(password_manager::PasswordStoreChange(
-      password_manager::PasswordStoreChange::UPDATE, test_form2,
-      /*password_changed=*/true));
-  change_list.emplace_back(password_manager::PasswordStoreChange(
-      password_manager::PasswordStoreChange::REMOVE, test_form));
-
-  base::HistogramTester histogram_tester;
-
-  // Test results.
-  credential_provider_service_->OnLoginsChanged(password_store_.get(),
-                                                change_list);
-  task_environment_.RunUntilIdle();
-
-  ASSERT_EQ(credential_store_.credentials.count, 2u);
-  EXPECT_NSEQ(credential_store_.credentials[0].username, @"homer");
-  EXPECT_NSEQ(credential_store_.credentials[0].password, @"JSimpson");
-  EXPECT_NSEQ(credential_store_.credentials[1].username, @"marge");
-  EXPECT_NSEQ(credential_store_.credentials[1].password, @"bouvier");
-
-  // There should have been only one write to disk.
-  histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 1);
-}
-
-// Tests that a PasswordStoreChange Update that doesn't change the password
-// doesn't result in a write to disk.
-TEST_F(
-    CredentialProviderServiceTest,
-    OnLoginsChanged_WithPerformanceImprovements_UpdateWithoutPasswordChangeNoDiskSave) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      kCredentialProviderPerformanceImprovements, true);
-
-  CreateCredentialProviderService();
-  ASSERT_EQ(credential_store_.credentials.count, 0u);
-
-  // Setup
-  password_manager::PasswordForm test_form;
-  test_form.url = GURL("http://example.com/login");
-  test_form.username_value = u"username";
-  test_form.password_value = u"12345";
-
-  password_manager::PasswordStoreChangeList change_list;
-  change_list.emplace_back(password_manager::PasswordStoreChange(
-      password_manager::PasswordStoreChange::ADD, test_form));
-
-  credential_provider_service_->OnLoginsChanged(password_store_.get(),
-                                                change_list);
-  task_environment_.RunUntilIdle();
-
-  ASSERT_TRUE(WaitForCredentialCount(1u));
-
-  // Update the PasswordForm without changing its username, url or password.
-  // This mimicks a password usage.
-  test_form.date_last_used = base::Time::Now();
-
-  change_list.clear();
-  change_list.emplace_back(password_manager::PasswordStoreChange(
-      password_manager::PasswordStoreChange::UPDATE, test_form,
-      /*password_changed=*/false));
-
-  base::HistogramTester histogram_tester;
-
-  // Test results.
-  credential_provider_service_->OnLoginsChanged(password_store_.get(),
-                                                change_list);
-  task_environment_.RunUntilIdle();
-
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_NSEQ(credential_store_.credentials[0].username, @"username");
-  EXPECT_NSEQ(credential_store_.credentials[0].password, @"12345");
-
-  // There should have been only one write to disk.
-  histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 0);
 }
 
 TEST_F(CredentialProviderServiceTest, AddPasskeys) {

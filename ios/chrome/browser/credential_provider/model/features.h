@@ -14,15 +14,8 @@ BASE_DECLARE_FEATURE(kCredentialProviderPasskeyPRF);
 // Feature flag to enable passkey Large Blob support in the credential provider.
 BASE_DECLARE_FEATURE(kCredentialProviderPasskeyLargeBlob);
 
-// Feature flag to enable the performance improvements for the credential
-// provider.
-BASE_DECLARE_FEATURE(kCredentialProviderPerformanceImprovements);
-
 // Feature flag to enable signal API in the credential provider.
 BASE_DECLARE_FEATURE(kCredentialProviderSignalAPI);
-
-// Returns whether the CPE Performance Improvement Feature is enabled.
-bool IsCPEPerformanceImprovementsEnabled();
 
 // Credential exchange feature is controlled by a build-time flag, because
 // it is defined in capabilities that are linked to the Credential Provider

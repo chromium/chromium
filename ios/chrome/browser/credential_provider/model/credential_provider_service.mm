@@ -261,17 +261,13 @@ void CredentialProviderService::OnLoginsChanged(
         forms_to_add.push_back(change.form());
         break;
       case PasswordStoreChange::UPDATE:
-        // Only act on updates if they involve a password change. This is
-        // because using a passwords triggers this code path, since it updates
+        // Using a password triggers this code path, since it updates
         // the use count and use date. Ideally we shouldn't care about this, but
         // for now the whole password file is re-written on every change, which
         // is inefficient. Username changes are not considered updates, but
         // instead treated as a new credential (REMOVE then ADD).
-        if (!IsCPEPerformanceImprovementsEnabled() ||
-            change.password_changed()) {
-          forms_to_remove.push_back(change.form());
-          forms_to_add.push_back(change.form());
-        }
+        forms_to_remove.push_back(change.form());
+        forms_to_add.push_back(change.form());
         break;
       case PasswordStoreChange::REMOVE:
         forms_to_remove.push_back(change.form());
@@ -281,35 +277,14 @@ void CredentialProviderService::OnLoginsChanged(
     }
   }
 
-  if (IsCPEPerformanceImprovementsEnabled()) {
-    if (!forms_to_remove.empty()) {
-      RemoveCredentials(GetCredentialStore(store), std::move(forms_to_remove));
+  RemoveCredentials(GetCredentialStore(store), std::move(forms_to_remove));
 
-      // Need to commit the removal to disk if there will not be forms added
-      // afterwards.
-      if (forms_to_add.empty()) {
-        SyncStore();
-      }
-    }
+  auto callback = base::BindOnce(
+      &CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged,
+      weak_ptr_factory_.GetWeakPtr(), base::Unretained(store));
 
-    if (!forms_to_add.empty()) {
-      auto callback = base::BindOnce(
-          &CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged,
-          weak_ptr_factory_.GetWeakPtr(), base::Unretained(store));
-
-      affiliated_helper_->InjectAffiliationAndBrandingInformation(
-          std::move(forms_to_add), std::move(callback));
-    }
-  } else {
-    RemoveCredentials(GetCredentialStore(store), std::move(forms_to_remove));
-
-    auto callback = base::BindOnce(
-        &CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged,
-        weak_ptr_factory_.GetWeakPtr(), base::Unretained(store));
-
-    affiliated_helper_->InjectAffiliationAndBrandingInformation(
-        std::move(forms_to_add), std::move(callback));
-  }
+  affiliated_helper_->InjectAffiliationAndBrandingInformation(
+      std::move(forms_to_add), std::move(callback));
 }
 
 void CredentialProviderService::RequestSyncAllCredentials() {
@@ -386,11 +361,7 @@ void CredentialProviderService::CompleteSync(
 void CredentialProviderService::AddCredentials(
     MemoryCredentialStore* store,
     std::vector<PasswordForm> forms) {
-  if (IsCPEPerformanceImprovementsEnabled()) {
-    AddCredentialsRefactored(store, forms);
-  } else {
     AddCredentialsLegacy(store, forms);
-  }
 }
 
 NSString* CredentialProviderService::PrimaryAccountId() const {
