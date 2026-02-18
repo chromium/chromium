@@ -118,8 +118,7 @@ InstrumentedVideoEncoderWrapper::OnEncodedImage(
   VideoEncoderStateObserver::EncodeResult encode_result{
       .width = base::checked_cast<int>(encoded_image._encodedWidth),
       .height = base::checked_cast<int>(encoded_image._encodedHeight),
-      .keyframe =
-          encoded_image._frameType == webrtc::VideoFrameType::kVideoFrameKey,
+      .keyframe = encoded_image.IsKey(),
       .spatial_index = encoded_image.SpatialIndex(),
       .rtp_timestamp = encoded_image.RtpTimestamp(),
       .encode_end_time = base::TimeTicks::Now(),

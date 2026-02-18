@@ -1713,9 +1713,9 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   image._encodedHeight = encoded_size.height();
   image.SetRtpTimestamp(rtp_timestamp.value());
   image.capture_time_ms_ = capture_timestamp_ms.value();
-  image._frameType =
-      (metadata.key_frame ? webrtc::VideoFrameType::kVideoFrameKey
-                          : webrtc::VideoFrameType::kVideoFrameDelta);
+  image.set_frame_type((metadata.key_frame
+                            ? webrtc::VideoFrameType::kVideoFrameKey
+                            : webrtc::VideoFrameType::kVideoFrameDelta));
   image.content_type_ = video_content_type_;
   // Default invalid qp value is -1 in webrtc::EncodedImage and
   // media::BitstreamBufferMetadata, and libwebrtc would parse bitstream to get

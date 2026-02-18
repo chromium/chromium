@@ -1610,7 +1610,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
     webrtc::EncodedImageCallback::Result OnEncodedImage(
         const webrtc::EncodedImage& encoded_image,
         const webrtc::CodecSpecificInfo* codec_specific_info) override {
-      if (encoded_image._frameType == webrtc::VideoFrameType::kVideoFrameKey) {
+      if (encoded_image.IsKey()) {
         EXPECT_TRUE(codec_specific_info->codecSpecific.VP9.ss_data_available);
         const size_t num_spatial_layers = codec_->VP9().numberOfSpatialLayers;
         const auto& vp9_specific = codec_specific_info->codecSpecific.VP9;

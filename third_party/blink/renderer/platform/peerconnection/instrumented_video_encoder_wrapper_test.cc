@@ -75,7 +75,7 @@ class FakeVideoEncoder : public webrtc::VideoEncoder {
       encoded_image._encodedWidth = frame.width();
       encoded_image._encodedHeight = frame.height();
       encoded_image.SetRtpTimestamp(frame.rtp_timestamp());
-      encoded_image._frameType = frame_types->at(0);
+      encoded_image.set_frame_type(frame_types->at(0));
       callback_->OnEncodedImage(encoded_image,
                                 /*codec_specific_info=*/nullptr);
     }

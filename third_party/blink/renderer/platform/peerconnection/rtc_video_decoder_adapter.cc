@@ -143,8 +143,7 @@ scoped_refptr<media::DecoderBuffer> ConvertToDecoderBuffer(
           input_image.GetEncodedData()));
   DCHECK(buffer);
   buffer->set_timestamp(base::Microseconds(input_image.RtpTimestamp()));
-  buffer->set_is_key_frame(input_image._frameType ==
-                           webrtc::VideoFrameType::kVideoFrameKey);
+  buffer->set_is_key_frame(input_image.IsKey());
 
   const int max_sl_index = input_image.SpatialIndex().value_or(0);
   if (max_sl_index == 0)
@@ -705,8 +704,9 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
   }
 
   if (status_ == Status::kNeedKeyFrame) {
-    if (input_image._frameType != webrtc::VideoFrameType::kVideoFrameKey)
+    if (!input_image.IsKey()) {
       return DecodeResult::kErrorRequestKeyFrame;
+    }
 
     ChangeStatus(Status::kOk);
   }
@@ -726,8 +726,9 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
           RTCVideoDecoderFallbackReason::kReinitializationFailed);
       return std::nullopt;
     }
-    if (input_image._frameType != webrtc::VideoFrameType::kVideoFrameKey)
+    if (!input_image.IsKey()) {
       return DecodeResult::kErrorRequestKeyFrame;
+    }
   }
 
   auto buffer = ConvertToDecoderBuffer(input_image);

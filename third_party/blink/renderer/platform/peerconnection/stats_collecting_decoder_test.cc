@@ -173,9 +173,10 @@ class StatsCollectingDecoderTest : public ::testing::Test {
       encoded_frame.SetRtpTimestamp(
           90000 * frame_counter /
           frame_rate);  // RTP timestamp using 90 kHz clock.
-      encoded_frame._frameType = frame_counter % key_frame_interval == 0
-                                     ? webrtc::VideoFrameType::kVideoFrameKey
-                                     : webrtc::VideoFrameType::kVideoFrameDelta;
+      encoded_frame.set_frame_type(
+          frame_counter % key_frame_interval == 0
+              ? webrtc::VideoFrameType::kVideoFrameKey
+              : webrtc::VideoFrameType::kVideoFrameDelta);
       ++frame_counter;
       base::TimeDelta delta = base::Milliseconds(1000 / frame_rate);
       task_environment_.AdvanceClock(delta);

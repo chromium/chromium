@@ -63,8 +63,7 @@ int32_t StatsCollectingDecoder::Decode(const webrtc::EncodedImage& input_image,
   }
   {
     base::AutoLock auto_lock(lock_);
-    number_of_new_keyframes_ +=
-        input_image._frameType == webrtc::VideoFrameType::kVideoFrameKey;
+    number_of_new_keyframes_ += input_image.IsKey();
   }
   return decoder_->Decode(input_image, missing_frames, render_time_ms);
 }

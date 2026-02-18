@@ -386,9 +386,9 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
     input_image.SetEncodedData(
         webrtc::EncodedImageBuffer::Create(data, sizeof(data)));
     if (timestamp == 0 || keyframe) {
-      input_image._frameType = webrtc::VideoFrameType::kVideoFrameKey;
+      input_image.set_frame_type(webrtc::VideoFrameType::kVideoFrameKey);
     } else {
-      input_image._frameType = webrtc::VideoFrameType::kVideoFrameDelta;
+      input_image.set_frame_type(webrtc::VideoFrameType::kVideoFrameDelta);
     }
     input_image.SetRtpTimestamp(timestamp);
     return adapter_wrapper_->Decode(input_image, false, 0);
@@ -427,7 +427,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
     static const uint8_t data[1] = {0};
     input_image.SetEncodedData(
         webrtc::EncodedImageBuffer::Create(data, sizeof(data)));
-    input_image._frameType = webrtc::VideoFrameType::kVideoFrameKey;
+    input_image.set_frame_type(webrtc::VideoFrameType::kVideoFrameKey);
     input_image.SetRtpTimestamp(timestamp);
     webrtc::ColorSpace webrtc_color_space;
     webrtc_color_space.set_primaries_from_uint8(1);
@@ -445,7 +445,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
     static const uint8_t data[1] = {0};
     input_image.SetEncodedData(
         webrtc::EncodedImageBuffer::Create(data, sizeof(data)));
-    input_image._frameType = webrtc::VideoFrameType::kVideoFrameKey;
+    input_image.set_frame_type(webrtc::VideoFrameType::kVideoFrameKey);
     input_image.SetRtpTimestamp(timestamp);
     // Input image only has 1 spatial layer, but non-zero spatial index.
     input_image.SetSpatialIndex(kSpatialIndex);
