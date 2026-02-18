@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.view.View;
 
+import androidx.core.view.ViewCompat;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -15,8 +17,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class ExtensionsMenuViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey key) {
         if (key == ExtensionsMenuProperties.CLOSE_CLICK_LISTENER) {
-            view.findViewById(R.id.extensions_menu_close_button)
-                    .setOnClickListener(model.get(ExtensionsMenuProperties.CLOSE_CLICK_LISTENER));
+            View closeButton = view.findViewById(R.id.extensions_menu_close_button);
+            closeButton.setOnClickListener(
+                    model.get(ExtensionsMenuProperties.CLOSE_CLICK_LISTENER));
+            ViewCompat.setTooltipText(closeButton, view.getContext().getString(R.string.close));
         } else if (key == ExtensionsMenuProperties.DISCOVER_EXTENSIONS_CLICK_LISTENER) {
             view.findViewById(R.id.extensions_menu_discover_extensions_button)
                     .setOnClickListener(
