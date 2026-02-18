@@ -165,6 +165,14 @@ mojom::InitializeToolResultPtr ToolExecutor::InitializeToolImpl(
   ValidationResult validation = tool_->Validate();
 
   if (!IsOk(*validation.result)) {
+    // Add the error result with the current state before cleaning up.
+    validation.result->execution_end_time = base::TimeTicks::Now();
+    validation.result->requires_page_stabilization |=
+        performed_scroll_into_view_;
+    // Reset tool so that the ToolExecutor can receive new ToolInvocations if we
+    // are erroring after validation.
+    tool_.reset();
+    performed_scroll_into_view_ = false;
     return mojom::InitializeToolResult::NewErrorResult(
         std::move(validation.result));
   }
@@ -208,21 +216,31 @@ void ToolExecutor::ExecuteTool(const actor::TaskId& task_id,
 
 void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
                               ToolExecutorCallback callback) {
-  invoke_journal_entry_ =
+  auto invoke_entry =
       journal_->CreatePendingAsyncEntry(invocation->task_id, "InvokeTool", {});
   // Send the buffer now so the journal shows we received the message. This
   // helps when debugging unresponsive renderers.
   journal_->SendLogBuffer();
-  is_split_execution_ = false;
   actor::TaskId task_id = invocation->task_id;
   mojom::InitializeToolResultPtr result =
       InitializeToolImpl(std::move(invocation));
   if (result->is_error_result()) {
+    // The tool failed to initialize because another tool is active. Abort this
+    // invocation immediately without disturbing the running tool.
+    if (result->get_error_result()->code ==
+        mojom::ActionResultCode::kExecutorBusy) {
+      std::move(callback).Run(std::move(result->get_error_result()));
+      return;
+    }
     CHECK(!completion_callback_);
     completion_callback_ = std::move(callback);
     ToolFinished(std::move(result->get_error_result()));
     return;
   }
+  // Set after the busy check to avoid corrupting an active split-execution
+  // tool.
+  is_split_execution_ = false;
+  invoke_journal_entry_ = std::move(invoke_entry);
   ExecuteTool(task_id, std::move(callback));
 }
 
@@ -259,13 +277,18 @@ void ToolExecutor::CancelTool(const actor::TaskId& task_id) {
 
 void ToolExecutor::ToolFinished(mojom::ActionResultPtr result) {
   phase_ = ExecutionPhase::kStart;
-  CHECK(completion_callback_);
   execute_journal_entry_.reset();
   invoke_journal_entry_.reset();
   result->execution_end_time = base::TimeTicks::Now();
   result->requires_page_stabilization |= performed_scroll_into_view_;
+  // Reset for future ToolInvocations.
+  performed_scroll_into_view_ = false;
   tool_.reset();
-  std::move(completion_callback_).Run(std::move(result));
+  // The completion callback could be null if we receive a CancelTool call
+  // before ExecuteTool has started.
+  if (completion_callback_) {
+    std::move(completion_callback_).Run(std::move(result));
+  }
 }
 
 }  // namespace actor
