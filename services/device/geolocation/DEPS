@@ -1,6 +1,5 @@
 include_rules = [
   "+chromeos",
-  "+chromeos/crosapi",
   "+components/content_settings/core/common",
   "+components/dbus",
   "+components/device_event_log",

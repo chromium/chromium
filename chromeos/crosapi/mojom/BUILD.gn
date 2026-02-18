@@ -29,7 +29,6 @@ mojom("mojom") {
 
   public_deps = [
     ":structured_metrics_service",
-    ":video_capture",
     "//chromeos/components/in_session_auth/mojom",
     "//chromeos/components/payments/mojom",
     "//chromeos/components/remote_apps/mojom",
@@ -58,20 +57,6 @@ mojom("mojom") {
     "//ui/gfx/image/mojom",
     "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
-  ]
-}
-
-# This needs a separate target, because this is also used
-# by the Video Capture Service in Ash and blink bindings
-# are needed.
-mojom("video_capture") {
-  sources = [ "video_capture.mojom" ]
-  public_deps = [
-    "//media/capture/mojom:image_capture",
-    "//media/capture/mojom:video_capture_types",
-    "//mojo/public/mojom/base",
-    "//ui/gfx/geometry/mojom",
-    "//ui/gfx/mojom",
   ]
 }
 

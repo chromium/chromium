@@ -12,9 +12,6 @@ if (is_android) {
 
 source_set("power_save_blocker") {
   visibility = [
-    # Crosapi power API needs to directly use the Ash PowerSaveBlocker.
-    "//chrome/browser/ash/crosapi",
-
     # Exo Wayland idle inhibit protocol needs to directly use the Ash
     # PowerSaveBlocker.
     "//components/exo/wayland",

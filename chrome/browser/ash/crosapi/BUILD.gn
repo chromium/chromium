@@ -192,7 +192,6 @@ static_library("crosapi") {
     "//printing/backend",
     "//remoting/host/chromeos:remoting_service",
     "//services/data_decoder/public/cpp",
-    "//services/device/wake_lock/power_save_blocker",
     "//services/video_capture:lib",
     "//services/video_capture/public/cpp",
     "//services/video_capture/public/mojom",

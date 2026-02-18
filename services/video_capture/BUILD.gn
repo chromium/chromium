@@ -55,25 +55,6 @@ source_set("lib") {
     "//media/capture:capture_lib",
     "//media/capture:capture_switches",
   ]
-
-  if (is_chromeos) {
-    deps += [ "//chromeos/crosapi/mojom" ]
-  }
-
-  if (is_chromeos) {
-    sources += [
-      "ash/video_frame_handler_ash.cc",
-      "ash/video_frame_handler_ash.h",
-    ]
-
-    deps += [
-      "//base",
-      "//services/video_capture/public/cpp",
-      "//services/video_capture/public/mojom",
-    ]
-
-    public_deps += [ "//media/capture/video/chromeos/mojom:cros_camera" ]
-  }
 }
 
 source_set("tests") {
