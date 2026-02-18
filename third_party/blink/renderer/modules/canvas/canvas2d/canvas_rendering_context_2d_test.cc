@@ -1718,9 +1718,9 @@ TEST_P(CanvasRenderingContext2DTest,
        SoftwareCanvasIsCompositedIfImageChromium) {
   ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
 
-  // Ensure that native support for BGRA GMBs is present, as otherwise
-  // compositing will not occur irrespective of whether
-  // `ScopedCanvas2dImageChromium` is enabled.
+  // Ensure that support for BGRA overlays is present, as otherwise compositing
+  // will not occur irrespective of whether `ScopedCanvas2dImageChromium` is
+  // enabled.
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
@@ -1743,9 +1743,9 @@ TEST_P(CanvasRenderingContext2DTest,
   CreateContext(kNonOpaque);
   EXPECT_TRUE(Context2D()->GetOrCreateResourceProvider());
 
-  // Ensure that native support for BGRA GMBs is present, as otherwise
-  // compositing will not occur irrespective of whether
-  // `ScopedCanvas2dImageChromium` is enabled.
+  // Ensure that support for BGRA overlays is present, as otherwise compositing
+  // will not occur irrespective of whether `ScopedCanvas2dImageChromium` is
+  // enabled.
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
