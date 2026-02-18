@@ -282,7 +282,7 @@ const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
 const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ContextMenuMaxTabSuggestions",
-    5);
+    3);
 const base::FeatureParam<int> kMaxNumFiles(&internal::kWebUIOmniboxAimPopup,
                                            "MaxNumFiles",
                                            10);
