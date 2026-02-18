@@ -8,7 +8,7 @@ import type {CrExpandButtonElement, SettingsSecureDnsV2Element, SettingsSecurity
 import {HttpsFirstModeSetting, JavascriptOptimizerSetting, SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import type {ControlledRadioButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, Router, routes, resetRouterForTesting, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, Router, routes, resetRouterForTesting, SecureDnsMode, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -942,5 +942,166 @@ suite('SecurityPageV2HappinessTrackingSurveys_SecureDnsLegacy', function() {
 
     assertDeepEquals(
         [SecurityPageV2Interaction.SECURE_DNS_TOGGLE_CLICK], interactions);
+  });
+});
+
+suite('ManagedEnvironment', function() {
+  let settingsPrefs: SettingsPrefsElement;
+  let page: SettingsSecurityPageV2Element;
+
+  setup(async function() {
+    loadTimeData.overrideValues({
+      enableBundledSecuritySettingsSecureDnsV2: true,
+    });
+    await setUpPage();
+  });
+
+  async function setUpPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    settingsPrefs = document.createElement('settings-prefs');
+    document.body.appendChild(settingsPrefs);
+    await CrSettingsPrefs.initialized;
+
+    page = document.createElement('settings-security-page-v2');
+    page.prefs = settingsPrefs.prefs;
+    document.body.appendChild(page);
+    await flushTasks();
+
+    // Ensure the bundles are always initially visible.
+    assertTrue(isVisible(page.$.bundlesRadioGroup));
+  }
+
+  test('BundlesAreVisibleWhenNotEnforced', async function() {
+    page.set('prefs.generated.safe_browsing', {
+      ...page.get('prefs.generated.safe_browsing'),
+      enforcement: undefined,
+      controlledBy: undefined,
+    });
+    page.set('prefs.dns_over_https.mode', {
+      ...page.get('prefs.dns_over_https.mode'),
+      enforcement: undefined,
+      controlledBy: undefined,
+    });
+    page.set('prefs.generated.javascript_optimizer', {
+      ...page.get('prefs.generated.javascript_optimizer'),
+      enforcement: undefined,
+      controlledBy: undefined,
+    });
+    await flushTasks();
+
+    assertTrue(isVisible(page.$.bundlesRadioGroup));
+  });
+
+  test('BundlesAreHiddenWhenSafeBrowsingIsEnforced', async function() {
+    page.set('prefs.generated.safe_browsing', {
+      ...page.get('prefs.generated.safe_browsing'),
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    });
+    await flushTasks();
+
+    assertFalse(isVisible(page.$.bundlesRadioGroup));
+  });
+
+  test('BundlesAreHiddenWhenSecureDnsEnforced', async function() {
+    page.set('prefs.dns_over_https.mode', {
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: SecureDnsMode.SECURE,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    });
+    await flushTasks();
+
+    assertFalse(isVisible(page.$.bundlesRadioGroup));
+  });
+
+  test('BundlesAreHiddenWhenJavascriptOptimizerEnforced', async function() {
+    page.set('prefs.generated.javascript_optimizer', {
+      ...page.get('prefs.generated.javascript_optimizer'),
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    });
+    await flushTasks();
+
+    assertFalse(isVisible(page.$.bundlesRadioGroup));
+  });
+
+  test('BundlesAreVisibleWhenSecureDnsEnforcedButNotBundled', async function() {
+    loadTimeData.overrideValues({
+      enableBundledSecuritySettingsSecureDnsV2: false,
+    });
+    await setUpPage();
+
+    page.set('prefs.dns_over_https.mode', {
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: SecureDnsMode.SECURE,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    });
+    await flushTasks();
+
+    assertTrue(isVisible(page.$.bundlesRadioGroup));
+  });
+
+  test('BundlesAreVisibleWhenSettingsOff', async function() {
+    page.set('prefs.generated.safe_browsing', {
+      ...page.get('prefs.generated.safe_browsing'),
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: SafeBrowsingSetting.DISABLED,
+      enforcement: undefined,
+      controlledBy: undefined,
+    });
+    await flushTasks();
+    assertTrue(
+        isVisible(page.$.bundlesRadioGroup),
+        'Bundles should still be visible when Safe Browsing is off');
+
+    page.set('prefs.dns_over_https.mode', {
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: SecureDnsMode.OFF,
+      enforcement: undefined,
+      controlledBy: undefined,
+    });
+    await flushTasks();
+    assertTrue(
+        isVisible(page.$.bundlesRadioGroup),
+        'Bundles should still be visible when secure DNS is off');
+
+    page.set('prefs.generated.javascript_optimizer', {
+      ...page.get('prefs.generated.javascript_optimizer'),
+      enforcement: undefined,
+      controlledBy: undefined,
+    });
+    await flushTasks();
+    assertTrue(
+        isVisible(page.$.bundlesRadioGroup),
+        'Bundles should still be visible when JavaScript guardrails is off');
+  });
+
+  test('SettingsAreVisibleWhenEnforced', async function() {
+    page.set('prefs.generated.safe_browsing', {
+      ...page.get('prefs.generated.safe_browsing'),
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    });
+    page.set('prefs.dns_over_https.mode', {
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: SecureDnsMode.SECURE,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    });
+    page.set('prefs.generated.javascript_optimizer', {
+      ...page.get('prefs.generated.javascript_optimizer'),
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    });
+    await flushTasks();
+
+    assertFalse(isVisible(page.$.bundlesRadioGroup));
+
+    assertTrue(isVisible(page.$.safeBrowsingRow));
+    assertTrue(isChildVisible(page, '#secureDnsV2Row'));
+    assertTrue(isVisible(page.$.javascriptGuardrailsRow));
   });
 });

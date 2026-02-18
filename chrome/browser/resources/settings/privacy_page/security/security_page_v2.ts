@@ -206,6 +206,15 @@ export class SettingsSecurityPageV2Element extends
         type: Object,
         value: JavascriptOptimizerSetting,
       },
+
+      shouldHideBundles_: {
+        type: Boolean,
+        computed: 'computeShouldHideBundles_(' +
+            'prefs.generated.safe_browsing.*, ' +
+            'prefs.dns_over_https.mode.*, ' +
+            'prefs.generated.javascript_optimizer.*, ' +
+            'enableBundledSecuritySettingsSecureDnsV2_)',
+      },
     };
   }
 
@@ -237,6 +246,7 @@ export class SettingsSecurityPageV2Element extends
   declare private javascriptGuardrailsStateTextMap_: Object;
   declare private safeBrowsingOff_: SafeBrowsingSetting[];
   declare private safeBrowsingStateTextMap_: Object;
+  declare private shouldHideBundles_: boolean;
 
   private lastFocusTime_: number|undefined;
   private totalTimeInFocus_: number = 0;
@@ -577,6 +587,28 @@ export class SettingsSecurityPageV2Element extends
     this.isSafeBrowsingWarningIconVisible_ = !this.isSafeBrowsingEnabled_ &&
         safeBrowsingPref.enforcement !==
             chrome.settingsPrivate.Enforcement.ENFORCED;
+  }
+
+  private computeShouldHideBundles_(): boolean {
+    if (this.getPref('generated.safe_browsing').enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return true;
+    }
+
+    if (this.enableBundledSecuritySettingsSecureDnsV2_ &&
+        this.getPref('dns_over_https.mode').enforcement ===
+            chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return true;
+    }
+
+    if (this.getPref('generated.javascript_optimizer').enforcement ===
+            chrome.settingsPrivate.Enforcement.ENFORCED &&
+        this.getPref('generated.javascript_optimizer').controlledBy !==
+            chrome.settingsPrivate.ControlledBy.SAFE_BROWSING_OFF) {
+      return true;
+    }
+
+    return false;
   }
 
   // SettingsViewMixin implementation.

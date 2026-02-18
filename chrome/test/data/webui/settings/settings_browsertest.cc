@@ -1870,6 +1870,11 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test,
           "SecureDnsLegacy')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, ManagedEnvironment) {
+  RunTest("settings/security_page_v2_test.js",
+          "runMochaSuite('ManagedEnvironment')");
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 using SettingsSpellCheckPageTest = SettingsBrowserTest;
 

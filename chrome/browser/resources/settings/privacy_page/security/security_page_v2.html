@@ -74,7 +74,7 @@
     border-bottom: var(--cr-separator-line);
   }
 
-  settings-section:last-of-type{
+  settings-section:last-of-type {
     --cr-card-shadow: none;
   }
 
@@ -170,7 +170,8 @@
     padding-block-end: var(--cr-section-vertical-padding);
   }
 
-  #safeBrowsingRadioGroup .settings-columned-section, #learnMoreLabelContainer {
+  #safeBrowsingRadioGroup .settings-columned-section,
+  #learnMoreLabelContainer {
     font-size: 90%;
     font-weight: 80;
     padding-inline: 0 36px;
@@ -204,7 +205,8 @@
         pref="{{prefs.generated.security_settings_bundle}}"
         on-change="onSecurityBundleChanged_"
         selectable-elements="controlled-radio-button" nested-selectable
-        is-horizontal>
+        is-horizontal
+        hidden$="[[shouldHideBundles_]]">
       <div class="box card card-start">
         <controlled-radio-button id="securitySettingsBundleStandard"
             name="[[securitySettingsBundleSettingEnum_.STANDARD]]"
