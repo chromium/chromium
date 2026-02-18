@@ -20,14 +20,13 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class ExtensionContextMenuBrowserTest;
-
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
 }
 
 namespace extensions {
+class ExtensionContextMenuBrowserTest;
 
 // This class contains code that is shared between the various places where
 // context menu items added by the extension or app should be shown.
@@ -94,7 +93,7 @@ class ContextMenuMatcher {
                       const content::ContextMenuParams& params);
 
  private:
-  friend class ::ExtensionContextMenuBrowserTest;
+  friend class ExtensionContextMenuBrowserTest;
 
   bool GetRelevantExtensionTopLevelItems(
       const MenuItem::ExtensionKey& extension_key,

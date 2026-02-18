@@ -55,20 +55,17 @@
 #endif
 
 using content::WebContents;
-using extensions::ContextMenuMatcher;
 using ContextType = extensions::browser_test_util::ContextType;
-using extensions::MenuItem;
-using extensions::ResultCatcher;
 using ui::MenuModel;
 
+namespace extensions {
 namespace {
 
 constexpr char kPersistentExtensionId[] = "knldjmfmopnpolahpmmgbagdohdnhkik";
 
 }  // namespace
 
-class ExtensionContextMenuBrowserTest
-    : public extensions::ExtensionBrowserTest {
+class ExtensionContextMenuBrowserTest : public ExtensionBrowserTest {
  public:
   explicit ExtensionContextMenuBrowserTest(
       ContextType context_type = ContextType::kNone)
@@ -80,15 +77,13 @@ class ExtensionContextMenuBrowserTest
       const ExtensionContextMenuBrowserTest&) = delete;
 
   // Shortcut to return the current MenuManager.
-  extensions::MenuManager* menu_manager() {
-    return extensions::MenuManager::Get(profile());
-  }
+  MenuManager* menu_manager() { return MenuManager::Get(profile()); }
 
   // Returns a pointer to the currently loaded extension with |name|, or null
   // if not found.
-  const extensions::Extension* GetExtensionNamed(const std::string& name) {
-    const extensions::ExtensionSet& extensions =
-        extensions::ExtensionRegistry::Get(profile())->enabled_extensions();
+  const Extension* GetExtensionNamed(const std::string& name) {
+    const ExtensionSet& extensions =
+        ExtensionRegistry::Get(profile())->enabled_extensions();
     for (const auto& ext : extensions) {
       if (ext->name() == name)
         return ext.get();
@@ -140,8 +135,9 @@ class ExtensionContextMenuBrowserTest
     MenuItem::Id menu_item_id;
     menu_item_id.string_uid = target_menu_item_id;
     int command_id = -1;
-    if (!FindCommandId(&menu, menu_item_id, &command_id))
+    if (!FindCommandId(&menu, menu_item_id, &command_id)) {
       return "Menu item not found: " + target_menu_item_id;
+    }
 
     ExtensionTestMessageListener listener;
     menu.ExecuteCommand(command_id, 0);
@@ -199,7 +195,7 @@ class ExtensionContextMenuBrowserTest
 
   // Given a menu item id, executes the item's command.
   void ExecuteCommand(TestRenderViewContextMenu* menu,
-                      const extensions::ExtensionId& extension_id,
+                      const ExtensionId& extension_id,
                       const std::string& item_uid) {
     MenuItem::Id id(false, MenuItem::ExtensionKey(extension_id));
     id.string_uid = item_uid;
@@ -209,11 +205,10 @@ class ExtensionContextMenuBrowserTest
   }
 
   // Verifies a radio item's selection state (checked or unchecked).
-  void VerifyRadioItemSelectionState(
-      TestRenderViewContextMenu* menu,
-      const extensions::ExtensionId& extension_id,
-      const std::string& radio_uid,
-      bool should_be_checked) {
+  void VerifyRadioItemSelectionState(TestRenderViewContextMenu* menu,
+                                     const ExtensionId& extension_id,
+                                     const std::string& radio_uid,
+                                     bool should_be_checked) {
     MenuItem::Id id(false, MenuItem::ExtensionKey(extension_id));
     id.string_uid = radio_uid;
     int command_id = -1;
@@ -240,27 +235,26 @@ class ExtensionContextMenuLazyTest
   void SetUpOnMainThread() override {
     ExtensionContextMenuBrowserTest::SetUpOnMainThread();
     // Set shorter delays to prevent test timeouts.
-    extensions::ProcessManager::SetEventPageIdleTimeForTesting(1);
-    extensions::ProcessManager::SetEventPageSuspendingTimeForTesting(100);
+    ProcessManager::SetEventPageIdleTimeForTesting(1);
+    ProcessManager::SetEventPageSuspendingTimeForTesting(100);
   }
 
  protected:
-  const extensions::Extension* LoadContextMenuExtension(
-      std::string_view subdirectory) {
+  const Extension* LoadContextMenuExtension(std::string_view subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
     return LoadExtension(extension_dir);
   }
 
   // Helper to load an extension from context_menus/top_level/|subdirectory| in
   // the extensions test data dir.
-  const extensions::Extension* LoadTopLevelContextMenuExtension(
+  const Extension* LoadTopLevelContextMenuExtension(
       std::string_view subdirectory) {
     base::FilePath extension_dir =
         GetRootDir().AppendASCII("top_level").AppendASCII(subdirectory);
     return LoadExtension(extension_dir, {});
   }
 
-  const extensions::Extension* LoadContextMenuExtensionWithIncognitoFlags(
+  const Extension* LoadContextMenuExtensionWithIncognitoFlags(
       std::string_view subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
     return LoadExtension(extension_dir, {.allow_in_incognito = true});
@@ -306,8 +300,7 @@ class ExtensionContextMenuPersistentTest
  public:
   // Helper to load an extension from context_menus/|subdirectory| in the
   // extensions test data dir.
-  const extensions::Extension* LoadContextMenuExtension(
-      std::string_view subdirectory) {
+  const Extension* LoadContextMenuExtension(std::string_view subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
     return LoadExtension(extension_dir);
   }
@@ -340,10 +333,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Simple) {
 // Tests that context menus for event page and Service Worker-based
 // extensions are stored properly.
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, PRE_Persistent) {
-  extensions::StateStoreTestObserver observer(profile());
+  StateStoreTestObserver observer(profile());
   ResultCatcher catcher;
-  const extensions::Extension* extension =
-      LoadContextMenuExtension("persistent");
+  const Extension* extension = LoadContextMenuExtension("persistent");
   ASSERT_TRUE(extension);
 
   // Wait for the extension to tell us it's been installed and the
@@ -355,15 +347,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, PRE_Persistent) {
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Persistent) {
-  extensions::MenuManagerTestObserver observer(menu_manager());
+  MenuManagerTestObserver observer(menu_manager());
   ResultCatcher catcher;
 
   // Wait for the context menu to finish loading.
   observer.WaitForExtension(kPersistentExtensionId);
 
   // Open a tab to trigger the update.
-  ASSERT_TRUE(
-      extensions::browsertest_util::AddTab(browser(), GURL("chrome:version")));
+  ASSERT_TRUE(browsertest_util::AddTab(browser(), GURL("chrome:version")));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -377,8 +368,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, UpdateOnclick) {
   ExtensionTestMessageListener listener_update2("update2");
   ExtensionTestMessageListener listener_done("onclick2");
 
-  const extensions::Extension* extension =
-      LoadContextMenuExtension("onclick_null");
+  const Extension* extension = LoadContextMenuExtension("onclick_null");
   ASSERT_TRUE(extension);
 
   // Wait till item has been created and updated.
@@ -430,8 +420,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
   ExtensionTestMessageListener listener_item1_clicked("onclick normal item");
   ExtensionTestMessageListener listener_radio1_updated("radio1 updated");
 
-  const extensions::Extension* extension =
-      LoadContextMenuExtension("radio_check");
+  const Extension* extension = LoadContextMenuExtension("radio_check");
   ASSERT_TRUE(extension);
 
   // Check that all menu items are created.
@@ -477,8 +466,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
       "onclick second normal item");
   ExtensionTestMessageListener listener_radio2_updated("radio2 updated");
 
-  const extensions::Extension* extension =
-      LoadContextMenuExtension("radio_check");
+  const Extension* extension = LoadContextMenuExtension("radio_check");
   ASSERT_TRUE(extension);
 
   // Check that all menu items are created.
@@ -551,7 +539,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, LongTitle) {
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   // Make sure we have an item registered with a long title.
-  size_t limit = extensions::ContextMenuMatcher::kMaxExtensionItemTitleLength;
+  size_t limit = ContextMenuMatcher::kMaxExtensionItemTitleLength;
   MenuItem::List items = GetItems();
   ASSERT_EQ(1u, items.size());
   MenuItem* item = items.at(0);
@@ -682,7 +670,7 @@ static void VerifyMenuForSeparatorsTest(const MenuModel& menu) {
 IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
   // Load the extension.
   ASSERT_TRUE(LoadContextMenuExtension("separators"));
-  const extensions::Extension* extension = GetExtensionNamed("Separators Test");
+  const Extension* extension = GetExtensionNamed("Separators Test");
   ASSERT_TRUE(extension);
 
   // Navigate to test1.html inside the extension, which should create a bunch
@@ -703,8 +691,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
   size_t index = 0;
   std::u16string label;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
-      ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0),
-      &model,
+      ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0), &model,
       &index));
   EXPECT_EQ(base::UTF8ToUTF16(extension->name()), model->GetLabelAt(index));
   ASSERT_EQ(MenuModel::TYPE_SUBMENU, model->GetTypeAt(index));
@@ -724,8 +711,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
   EXPECT_TRUE(listener2.WaitUntilSatisfied());
   menu = TestRenderViewContextMenu::Create(GetActiveWebContents(), url);
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
-      ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0),
-      &model,
+      ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0), &model,
       &index));
   EXPECT_EQ(u"parent", model->GetLabelAt(index));
   submenu = model->GetSubmenuModelAt(index);
@@ -846,8 +832,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, ClickInFrame) {
       GetActiveWebContents()->GetPrimaryPage(),
       base::BindRepeating(&content::FrameMatchesName, "child"));
   ASSERT_TRUE(child_frame);
-  int extension_api_frame_id =
-      extensions::ExtensionApiFrameIdMap::GetFrameId(child_frame);
+  int extension_api_frame_id = ExtensionApiFrameIdMap::GetFrameId(child_frame);
   EXPECT_EQ(
       base::StringPrintf("pageUrl=undefined, frameUrl=about:blank, frameId=%d",
                          extension_api_frame_id),
@@ -871,11 +856,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
   if (GetParam() == ContextType::kServiceWorker)
     return;
   GURL about_blank("about:blank");
-  extensions::ExtensionHostTestHelper host_helper(profile());
-  host_helper.RestrictToType(
-      extensions::mojom::ViewType::kExtensionBackgroundPage);
-  const extensions::Extension* extension =
-      LoadContextMenuExtension("event_page");
+  ExtensionHostTestHelper host_helper(profile());
+  host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
+  const Extension* extension = LoadContextMenuExtension("event_page");
   ASSERT_TRUE(extension);
   // Wait for the background page to cycle.
   host_helper.WaitForDocumentElementAvailable();
@@ -888,9 +871,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
                                    std::string("Checkbox 1")));
 
   // Test that checked menu items retain their checkedness.
-  extensions::ExtensionHostTestHelper checkbox_checked(profile());
-  host_helper.RestrictToType(
-      extensions::mojom::ViewType::kExtensionBackgroundPage);
+  ExtensionHostTestHelper checkbox_checked(profile());
+  host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
   std::unique_ptr<TestRenderViewContextMenu> menu(
       TestRenderViewContextMenu::Create(GetActiveWebContents(), about_blank));
 
@@ -942,8 +924,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
 // Tests updating checkboxes' checked state to true and false.
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, UpdateCheckboxes) {
   ExtensionTestMessageListener listener_context_menu_created("Menu created");
-  const extensions::Extension* extension =
-      LoadContextMenuExtension("checkboxes");
+  const Extension* extension = LoadContextMenuExtension("checkboxes");
   ASSERT_TRUE(extension);
 
   ASSERT_TRUE(listener_context_menu_created.WaitUntilSatisfied());
@@ -1024,3 +1005,5 @@ INSTANTIATE_TEST_SUITE_P(EventPage,
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionContextMenuLazyTest,
                          ::testing::Values(ContextType::kServiceWorker));
+
+}  // namespace extensions
