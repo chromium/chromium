@@ -431,6 +431,10 @@ component("network_service") {
     deps += [ "//sandbox/win:sandbox" ]
   }
 
+  if (is_mac) {
+    deps += [ "//components/enterprise/platform_auth:enterprise_platform_auth" ]
+  }
+
   defines = [ "IS_NETWORK_SERVICE_IMPL" ]
 }
 

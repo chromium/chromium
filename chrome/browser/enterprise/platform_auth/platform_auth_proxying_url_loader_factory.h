@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
+#include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/origin.h"
@@ -48,6 +49,10 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
    public:
     ScopedURLSessionOverrideForTesting();
     ~ScopedURLSessionOverrideForTesting();
+
+   private:
+    mojo::Remote<network::mojom::NetworkServiceTest> network_service_test_;
+    static bool instance_exists_;
   };
 
   // network::mojom::URLLoaderFactory:

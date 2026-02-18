@@ -39,4 +39,7 @@ specific_include_rules = {
   "prefetch_matches_unittest\.cc": [
     "+third_party/blink/public/common/navigation/preloading_headers.h",
   ],
+  "network_service\.cc": [
+    "+components/enterprise/platform_auth/url_session_url_loader_bridge.h",
+  ],
 }

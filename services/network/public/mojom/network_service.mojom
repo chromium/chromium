@@ -43,6 +43,7 @@ import "services/network/public/mojom/url_loader_network_service_observer.mojom"
 import "services/network/public/mojom/url_response_head.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+import "services/network/public/mojom/url_request.mojom";
 
 [EnableIf=is_android]
 import "mojo/public/mojom/base/application_state.mojom";
@@ -470,6 +471,15 @@ interface NetworkService {
   // bodies. Storage will be destroyed when the receiver is disconnected.
   AddDurableMessageCollector(
       pending_receiver<DurableMessageCollector> receiver);
+
+  // Creates and starts URLSessionURLLoader which will perform the `request`.
+  // This is only meant to be used for Okta SSO authentication requests.
+  [EnableIf=is_mac]
+  CreateURLSessionURLLoaderAndStart(
+    URLRequest request,
+    pending_receiver<URLLoader> loader_receiver,
+    pending_remote<URLLoaderClient> client_remote
+  );
 };
 
 struct NetworkDurableMessageConfig {
