@@ -423,9 +423,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 #pragma mark - LocationBarSteadyViewConsumer
 
 - (void)updateLocationText:(NSString*)string clipTail:(BOOL)clipTail {
-  [self.locationBarSteadyView setLocationLabelText:string];
-  self.locationBarSteadyView.locationLabel.lineBreakMode =
-      clipTail ? NSLineBreakByTruncatingTail : NSLineBreakByTruncatingHead;
+  [self.locationBarSteadyView setLocationLabelText:string clipTail:clipTail];
 }
 
 - (void)updateLocationIcon:(UIImage*)icon

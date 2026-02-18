@@ -43,6 +43,10 @@
 // Sets the location label's text.
 - (void)setLocationLabelText:(NSString*)string;
 
+// Sets the location label's text. `clipTail` indicates whether the label should
+// truncate the tail or the head.
+- (void)setLocationLabelText:(NSString*)string clipTail:(BOOL)clipTail;
+
 // Sets the location label's text and styles it as if it were placeholder text.
 - (void)setLocationLabelPlaceholderText:(NSString*)string;
 

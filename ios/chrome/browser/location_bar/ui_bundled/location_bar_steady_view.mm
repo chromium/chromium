@@ -429,11 +429,23 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 }
 
 - (void)setLocationLabelText:(NSString*)string {
-  if ([self.locationLabel.text isEqualToString:string]) {
-    return;
-  }
+  [self setLocationLabelText:string clipTail:NO];
+}
+
+- (void)setLocationLabelText:(NSString*)string clipTail:(BOOL)clipTail {
+  // Use attributed text to force LTR direction for URLs, preventing RTL
+  // characters from messing up the visual order (e.g. IDN with RTL scripts).
+  NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+  // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/url_display_guidelines/url_display_guidelines.md#rtl
+  [style setBaseWritingDirection:NSWritingDirectionLeftToRight];
+  [style setLineBreakMode:clipTail ? NSLineBreakByTruncatingTail
+                                   : NSLineBreakByTruncatingHead];
+
+  NSDictionary* attributes = @{NSParagraphStyleAttributeName : style};
+
+  self.locationLabel.attributedText =
+      [[NSAttributedString alloc] initWithString:string attributes:attributes];
   self.locationLabel.textColor = self.colorScheme.fontColor;
-  self.locationLabel.text = string;
   [self updateAccessibility];
 }
 
