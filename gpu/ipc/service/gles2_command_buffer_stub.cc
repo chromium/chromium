@@ -94,11 +94,22 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
 
   // If the `fail_if_major_perf_caveat` context creation attribute was true
   // and we are using a software renderer, fail.
-  if (attribs.fail_if_major_perf_caveat &&
-      context_group_->feature_info()->feature_flags().is_software_webgl) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: "
-                  "fail_if_major_perf_caveat + software gl";
-    return gpu::ContextResult::kFatalFailure;
+  if (attribs.fail_if_major_perf_caveat) {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    const auto useGL = command_line->GetSwitchValueASCII(switches::kUseGL);
+    const auto useANGLE =
+        command_line->GetSwitchValueASCII(switches::kUseANGLE);
+
+    const bool is_software_webgl =
+        (useGL == gl::kGLImplementationANGLEName) &&
+        (useANGLE == gl::kANGLEImplementationSwiftShaderForWebGLName ||
+         useANGLE == gl::kANGLEImplementationD3D11WarpForWebGLName);
+
+    if (is_software_webgl) {
+      LOG(ERROR) << "ContextResult::kFatalFailure: "
+                    "fail_if_major_perf_caveat + software gl";
+      return gpu::ContextResult::kFatalFailure;
+    }
   }
 
 #if BUILDFLAG(IS_MAC)
