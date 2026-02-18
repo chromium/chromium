@@ -453,6 +453,9 @@ extern const char kIOSChooseFromDriveSignedOutDescription[];
 extern const char kIOSCustomFileUploadMenuName[];
 extern const char kIOSCustomFileUploadMenuDescription[];
 
+extern const char kIOSDateToCalendarSignedOutName[];
+extern const char kIOSDateToCalendarSignedOutDescription[];
+
 extern const char kIOSDockingPromoName[];
 extern const char kIOSDockingPromoDescription[];
 
