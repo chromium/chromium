@@ -3816,6 +3816,17 @@
       "features": [
         "ensure_previous_framebuffer_not_deleted"
       ]
+    },
+    {
+      "id": 472,
+      "description": "Validate GL_MAX_*_UNIFORM_BLOCKS at compile time instead of link time to work around compiler bugs.",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "features": [
+        "validate_max_per_stage_uniform_blocks_at_compile_time"
+      ]
     }
   ]
 }
