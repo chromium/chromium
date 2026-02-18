@@ -3933,6 +3933,24 @@
             ]
         }
     ],
+    "BackToOpener": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BackToOpener"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackgroundResourceFetch": [
         {
             "platforms": [
