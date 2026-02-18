@@ -63,14 +63,16 @@ GlicActorNudgeController* GlicActorNudgeController::From(
 }
 
 void GlicActorNudgeController::OnStateUpdate(
+    bool show_bubble,
     ActorTaskNudgeState actor_task_nudge_state) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GlicActorNudgeController::OnStateUpdateImpl,
-                     weak_ptr_factory_.GetWeakPtr(), actor_task_nudge_state));
+      FROM_HERE, base::BindOnce(&GlicActorNudgeController::OnStateUpdateImpl,
+                                weak_ptr_factory_.GetWeakPtr(), show_bubble,
+                                actor_task_nudge_state));
 }
 
 void GlicActorNudgeController::OnStateUpdateImpl(
+    bool show_bubble,
     ActorTaskNudgeState actor_task_nudge_state) {
   // If the task icon is inactive, hide it and perform no additional style
   // changes.
@@ -92,15 +94,18 @@ void GlicActorNudgeController::OnStateUpdateImpl(
       CloseBubble();
       break;
     case ActorTaskNudgeState::Text::kNeedsAttention:
-      UpdateNudgeLabelOrRetrigger(l10n_util::GetPluralStringFUTF16(
-          IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, num_tasks_need_processing));
+      UpdateNudgeLabelOrRetrigger(
+          l10n_util::GetPluralStringFUTF16(
+              IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, num_tasks_need_processing),
+          show_bubble);
       break;
     case ActorTaskNudgeState::Text::kCompleteTasks:
-        UpdateNudgeLabelOrRetrigger(l10n_util::GetPluralStringFUTF16(
-            IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL,
-            actor::ActorKeyedService::Get(profile_)
-                ->GetActorUiStateManager()
-                ->GetInactiveTaskCount()));
+      UpdateNudgeLabelOrRetrigger(l10n_util::GetPluralStringFUTF16(
+                                      IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL,
+                                      actor::ActorKeyedService::Get(profile_)
+                                          ->GetActorUiStateManager()
+                                          ->GetInactiveTaskCount()),
+                                  show_bubble);
       break;
     default:
       NOTREACHED();
@@ -112,32 +117,38 @@ void GlicActorNudgeController::OnStateUpdateImpl(
 }
 
 void GlicActorNudgeController::UpdateNudgeLabelOrRetrigger(
-    std::u16string nudge_label_text) {
+    std::u16string nudge_label_text,
+    bool show_bubble) {
   if (tab_strip_action_container_->GetIsShowingGlicActorTaskIconNudge()) {
     tab_strip_action_container_->glic_actor_task_icon()->ShowNudgeLabel(
         nudge_label_text);
   } else {
     tab_strip_action_container_->TriggerGlicActorNudge(nudge_label_text);
   }
-  // TODO(crbug.com/473593979): The bubble should not always be triggered in
-  // this case.
-  ActorTaskListBubbleController::From(browser_)->ShowBubble(
-      tab_strip_action_container_->glic_actor_task_icon());
+  if (show_bubble) {
+    ActorTaskListBubbleController::From(browser_)->ShowBubble(
+        tab_strip_action_container_->glic_actor_task_icon());
+  }
 }
 
 void GlicActorNudgeController::RegisterActorNudgeStateCallback() {
   if (auto* manager =
           GlicActorTaskIconManagerFactory::GetForProfile(profile_)) {
     actor_nudge_state_change_callback_subscription_.push_back(
-        manager->RegisterTaskNudgeStateChange(base::BindRepeating(
-            &GlicActorNudgeController::OnStateUpdate, base::Unretained(this))));
+        manager->RegisterTaskNudgeStateChange(
+            base::BindRepeating(&GlicActorNudgeController::OnStateUpdate,
+                                base::Unretained(this), /*show_bubble=*/true)));
   }
 }
 
 void GlicActorNudgeController::UpdateCurrentActorNudgeState() {
   if (auto* manager =
           GlicActorTaskIconManagerFactory::GetForProfile(profile_)) {
-    OnStateUpdate(manager->GetCurrentActorTaskNudgeState());
+    // This will "sync" a new window's state to the current nudge state. Do not
+    // show the bubble in the new window as the user navigated away from the
+    // bubble that was previously shown.
+    OnStateUpdate(/*show_bubble=*/false,
+                  manager->GetCurrentActorTaskNudgeState());
   }
 }
 
