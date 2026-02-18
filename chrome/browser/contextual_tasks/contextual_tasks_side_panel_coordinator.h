@@ -77,6 +77,7 @@ class ContextualTasksSidePanelCoordinator
     // The time when the WebContents becomes inactive.
     base::TimeTicks last_active_time_ticks;
   };
+
   DECLARE_USER_DATA(ContextualTasksSidePanelCoordinator);
 
   explicit ContextualTasksSidePanelCoordinator(
@@ -104,6 +105,7 @@ class ContextualTasksSidePanelCoordinator
   std::optional<tabs::TabHandle> GetAutoSuggestedTabHandle() override;
   void OnTaskChanged(content::WebContents* web_contents,
                      base::Uuid task_id) override;
+  void OnAiInteraction() override;
   content::WebContents* GetActiveWebContents() override;
   std::vector<content::WebContents*> GetPanelWebContentsList() const override;
   std::unique_ptr<content::WebContents> DetachWebContentsForTask(
@@ -217,6 +219,8 @@ class ContextualTasksSidePanelCoordinator
   // handle.
   void NotifyActiveTaskContextProvider();
 
+  void RecordSessionEndMetrics();
+
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 
@@ -256,6 +260,8 @@ class ContextualTasksSidePanelCoordinator
 
   ui::ScopedUnownedUserData<ContextualTasksSidePanelCoordinator>
       scoped_unowned_user_data_;
+
+  bool in_cobrowsing_session_ = false;
 };
 
 }  // namespace contextual_tasks

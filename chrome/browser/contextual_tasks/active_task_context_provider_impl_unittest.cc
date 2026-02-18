@@ -62,6 +62,7 @@ class MockContextualTasksPanelController
               OnTaskChanged,
               (content::WebContents*, base::Uuid),
               (override));
+  MOCK_METHOD(void, OnAiInteraction, (), (override));
   MOCK_METHOD(content::WebContents*, GetActiveWebContents, (), (override));
   MOCK_METHOD(std::vector<content::WebContents*>,
               GetPanelWebContentsList,

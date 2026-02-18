@@ -294,6 +294,8 @@ ContextualTasksSidePanelCoordinator::~ContextualTasksSidePanelCoordinator() {
   browser_window_->GetTabStripModel()->RemoveObserver(this);
   TabListInterface::From(browser_window_)->RemoveTabListInterfaceObserver(this);
 
+  RecordSessionEndMetrics();
+
   SidePanelRegistry* global_registry = SidePanelRegistry::From(browser_window_);
   if (global_registry) {
     auto* contextual_tasks_entry = global_registry->GetEntryForKey(
@@ -411,6 +413,8 @@ void ContextualTasksSidePanelCoordinator::Close() {
   Observe(nullptr);
 
   NotifyActiveTaskContextProvider();
+
+  RecordSessionEndMetrics();
 }
 
 bool ContextualTasksSidePanelCoordinator::IsSidePanelOpen() {
@@ -558,6 +562,10 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
   UpdateContextualSearchWebContentsHelperForTask(
       contextual_search_service_, browser_window_, contextual_tasks_service_,
       this, web_contents, new_task_id);
+}
+
+void ContextualTasksSidePanelCoordinator::OnAiInteraction() {
+  in_cobrowsing_session_ = true;
 }
 
 contextual_search::ContextualSearchSessionHandle*
@@ -1151,6 +1159,13 @@ void ContextualTasksSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
 
 void ContextualTasksSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
   NotifyActiveTaskContextProvider();
+}
+
+void ContextualTasksSidePanelCoordinator::RecordSessionEndMetrics() {
+  if (in_cobrowsing_session_) {
+    base::UmaHistogramBoolean("ContextualTasks.Session.Completed", true);
+  }
+  in_cobrowsing_session_ = false;
 }
 
 }  // namespace contextual_tasks
