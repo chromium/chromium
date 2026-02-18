@@ -160,6 +160,29 @@ base::DictValue MakeOverrideManifest() {
           .Set("supported_performance_hints", std::move(hints)));
 }
 
+enum class BaseModel {
+  kUnknown = 0,
+  kXxs = 1,
+  kXs = 2,
+  kV2Nano = 3,
+  kV3Nano = 4,
+  kMaxValue = kV3Nano,
+};
+
+BaseModel ConvertModelNameToEnum(std::string& model_name) {
+  if (model_name == "v3Nano") {
+    return BaseModel::kV3Nano;
+  } else if (model_name == "v2Nano") {
+    return BaseModel::kV2Nano;
+  } else if (model_name == "XS") {
+    return BaseModel::kXs;
+  } else if (model_name == "XXS") {
+    return BaseModel::kXxs;
+  } else {
+    return BaseModel::kUnknown;
+  }
+}
+
 }  // namespace
 
 std::ostream& operator<<(std::ostream& out, OnDeviceModelStatus status) {
@@ -271,6 +294,9 @@ OnDeviceModelComponentStateManager::OnDeviceModelComponentStateManager(
   performance_classifier_->ListenForPerformanceClassAvailable(base::BindOnce(
       &OnDeviceModelComponentStateManager::OnPerformanceClassAvailable,
       weak_ptr_factory_.GetWeakPtr()));
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.OnDeviceModel.OnDeviceModelComponentInstantiated",
+      true);
 }
 
 OnDeviceModelComponentStateManager::~OnDeviceModelComponentStateManager() =
@@ -341,6 +367,9 @@ void OnDeviceModelComponentStateManager::SetReady(
     state_ = std::make_unique<OnDeviceModelComponentState>(install_dir, version,
                                                            *model_spec);
     component_installer_state_ = ComponentInstallerState::kInstalled;
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.OnDeviceModel.InstalledModel",
+        ConvertModelNameToEnum(model_spec->model_name));
   }
 
   NotifyStateChanged();
@@ -404,6 +433,13 @@ void OnDeviceModelComponentStateManager::MaybeBeginBackgroundModelDownload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   background_download_requested_ = true;
   BeginUpdateRegistration();
+}
+
+void OnDeviceModelComponentStateManager::GetFreeDiskSpaceForLogging(
+    base::OnceCallback<void(std::optional<base::ByteCount>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->GetFreeDiskSpace(delegate_->GetInstallDirectory(),
+                              std::move(callback));
 }
 
 void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {

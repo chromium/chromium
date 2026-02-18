@@ -135,6 +135,7 @@
 #include "rlz/buildflags/buildflags.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/on_device_model/public/cpp/buildflags.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -310,6 +311,10 @@
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
+#endif
+
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+#include "chrome/browser/optimization_guide/chrome_browser_main_extra_parts_optimization_guide.h"
 #endif
 
 // Separate per-platform blocks specifically for chrome_browser_main code. Put
@@ -792,6 +797,11 @@ std::unique_ptr<content::BrowserMainParts> ChromeBrowserMainParts::Create(
 #if !BUILDFLAG(IS_ANDROID)
   main_parts->AddParts(
       std::make_unique<headless::ChromeBrowserMainExtraPartsHeadless>());
+#endif
+
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+  main_parts->AddParts(
+      std::make_unique<ChromeBrowserMainExtraPartsOptimizationGuide>());
 #endif
 
   // Always add ChromeBrowserMainExtraPartsGpu last to make sure

@@ -8,6 +8,7 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("optimization_guide") {
   sources = [
+    "chrome_browser_main_extra_parts_optimization_guide.h",
     "chrome_hints_manager.h",
     "chrome_model_quality_logs_uploader_service.h",
     "model_execution/optimization_guide_global_state.h",
@@ -49,6 +50,7 @@ source_set("optimization_guide") {
 
 source_set("impl") {
   sources = [
+    "chrome_browser_main_extra_parts_optimization_guide.cc",
     "chrome_hints_manager.cc",
     "chrome_model_quality_logs_uploader_service.cc",
     "model_execution/optimization_guide_global_state.cc",
@@ -184,6 +186,7 @@ source_set("unit_tests") {
   sources = [
     "chrome_hints_manager_unittest.cc",
     "chrome_model_quality_logs_uploader_service_unittest.cc",
+    "model_execution/optimization_guide_global_state_unittest.cc",
     "prediction/chrome_profile_download_service_tracker_unittest.cc",
   ]
   deps = [

@@ -1675,6 +1675,49 @@ chromium-metrics-reviews@google.com.
   <token key="LogAiDataRequestFeature" variants="LogAiDataRequestFeature"/>
 </histogram>
 
+<histogram name="OptimizationGuide.OnDeviceModel.DetectedVram" units="MB"
+    expires_after="2026-08-03">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the amount of detected VRAM of this device. This is recorded once on
+    startup after a delay.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.OnDeviceModel.FreeDiskSpace" units="MB"
+    expires_after="2026-08-03">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the amount of free disk space of this device. This is recorded once
+    on startup after a delay.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.OnDeviceModel.InstalledModel"
+    enum="InstalledModel" expires_after="2026-08-03">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the on-device model currently installed. Recorded once on each
+    browser startup.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.OnDeviceModel.OnDeviceModelComponentInstantiated"
+    enum="Boolean" expires_after="2026-08-03">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Only records `true`. Recorded once when OnDeviceModelComponent is
+    instantiated. This histogram helps compute the number of clients without an
+    installed model, by subtracting from it the clients that have logged to
+    `OptimizationGuide.OnDeviceModel.InstalledModel`.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.OptimizationFilterStatus.{OptimizationType}"
     enum="OptimizationGuideOptimizationFilterStatus" expires_after="2026-06-28">
   <owner>rajendrant@chromium.org</owner>
