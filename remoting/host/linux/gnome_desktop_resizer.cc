@@ -212,33 +212,6 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
   if (!stream_manager_) {
     return;
   }
-  auto active_screen_ids = base::MakeFlatSet<webrtc::ScreenId>(
-      stream_manager_->GetActiveStreams(), std::less<>(),
-      [](const auto& kv) { return kv.first; });
-  base::flat_set<webrtc::ScreenId> screen_ids_in_video_track;
-  for (const auto& track : layout.video_track()) {
-    if (track.has_screen_id()) {
-      screen_ids_in_video_track.emplace(track.screen_id());
-    }
-  }
-  auto streams_to_be_removed =
-      base::STLSetDifference<base::flat_set<webrtc::ScreenId>>(
-          active_screen_ids, screen_ids_in_video_track);
-  if (!streams_to_be_removed.empty()) {
-    if (!streams_being_removed_.empty()) {
-      LOG(WARNING) << "Streams will not be removed since there are already "
-                   << "streams being removed.";
-    } else {
-      // Set `streams_being_removed_` beforehand so that the
-      // SetResolutionAndPosition() calls below know whether they should be
-      // queued up or executed right away.
-      streams_being_removed_ = streams_to_be_removed;
-      for (webrtc::ScreenId stream_id : streams_being_removed_) {
-        stream_manager_->RemoveVirtualStream(stream_id);
-        preferred_monitors_config_.erase(stream_id);
-      }
-    }
-  }
 
   // `display_config_for_layout_calculation` is just for calculating the
   // layout direction and alignment. It is not meant to be passed to
@@ -259,7 +232,62 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
           GnomeDisplayConfig::LayoutMode::kPhysical;
       break;
   }
+
+  // Compute the set of available screen ids as those that already exist, but
+  // are not present in the video layout. When processing new streams, these
+  // will be used in preference to creating new virtual monitors in order to
+  // minimize monitor layout changes.
+  auto active_screen_ids = base::MakeFlatSet<webrtc::ScreenId>(
+      stream_manager_->GetActiveStreams(), std::less<>(),
+      [](const auto& kv) { return kv.first; });
+  base::flat_set<webrtc::ScreenId> screen_ids_in_video_track;
   for (const auto& track : layout.video_track()) {
+    if (track.has_screen_id()) {
+      screen_ids_in_video_track.emplace(track.screen_id());
+    }
+  }
+  auto available_screen_ids =
+      base::STLSetDifference<base::flat_set<webrtc::ScreenId>>(
+          active_screen_ids, screen_ids_in_video_track);
+
+  // Process displays according to whether they should be created or updated.
+  std::vector<protocol::VideoTrackLayout> displays;
+
+  for (auto track : layout.video_track()) {
+    // An update request for a non-existent screen is equivalent to a create
+    // request. Clear the screen id to indicate this (we can't guarantee that
+    // the requested id will be used anyway).
+    if (track.has_screen_id() &&
+        !active_screen_ids.contains(track.screen_id())) {
+      track.clear_screen_id();
+    }
+    // Reuse existing screen ids if possible.
+    if (!track.has_screen_id() && !available_screen_ids.empty()) {
+      auto it = available_screen_ids.begin();
+      track.set_screen_id(*it);
+      available_screen_ids.erase(it);
+    }
+    displays.push_back(std::move(track));
+  }
+
+  // Any available screens that haven't been reused should be removed first to
+  // ensure that `streams_being_removed_` is accurate, which allows the
+  // SetResolutionAndPosition() calls to know whether they should be queued up
+  // or executed right away.
+  if (!available_screen_ids.empty()) {
+    if (!streams_being_removed_.empty()) {
+      LOG(WARNING) << "Streams will not be removed since there are already "
+                   << "streams being removed.";
+    } else {
+      streams_being_removed_ = available_screen_ids;
+      for (webrtc::ScreenId stream_id : streams_being_removed_) {
+        stream_manager_->RemoveVirtualStream(stream_id);
+        preferred_monitors_config_.erase(stream_id);
+      }
+    }
+  }
+
+  for (const auto& track : displays) {
     // The client doesn't seem to set the initial DPI, so we set it to 1 if
     // the calculated scale is 0. This allows the correct scale to be used if
     // the client later decides to send the initial DPI.
@@ -282,8 +310,9 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
     // Relayout() call in DoApplyPreferredMonitorsConfig() will fix it.
     webrtc::DesktopVector position{track.position_x(), track.position_y()};
 
-    if (!track.has_screen_id() ||
-        !active_screen_ids.contains(track.screen_id())) {
+    if (track.has_screen_id()) {
+      SetResolutionAndPosition(screen_resolution, position, track.screen_id());
+    } else {
       stream_manager_->AddVirtualStream(
           screen_resolution,
           base::BindOnce(&GnomeDesktopResizer::OnAddStreamResult,
@@ -293,8 +322,6 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
                              .position = position,
                              .scale = scale,
                          }));
-    } else {
-      SetResolutionAndPosition(screen_resolution, position, track.screen_id());
     }
     AddMonitorForLayoutCalculation(display_config_for_layout_calculation,
                                    position, screen_resolution);
