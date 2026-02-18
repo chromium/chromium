@@ -19429,10 +19429,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_COPIED_TO_CLIPBOARD_TOAST_BODY" desc="Text on a toast notification that is shown when an item has been copied to clipboard.">
         Copied to clipboard
       </message>
-      <!-- TODO(crbug.com/477845712): Add translation when the string is finalized. -->
-      <message name="IDS_AUTOFILL_AI_TOAST_BUTTON" desc="Button text on a toast notification that allows a user to open the 'Your saved info' page in settings." translateable="false">
-        Manage
-      </message>
     </if>
 
     <if expr="is_android">

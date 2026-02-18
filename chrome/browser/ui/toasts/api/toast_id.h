@@ -46,7 +46,7 @@ enum class ToastId {
   kEnhancedBundledSecuritySettings = 23,
   kSkillSaved = 24,
   kSkillDeleted = 25,
-  kSavedAutofillAiEntityToWallet = 26,
+  // kSavedAutofillAiEntityToWallet = 26,
   kTranslate = 27,
   kAutofillAiWalletErrorMessage = 28,
   kRecordReplay = 29,

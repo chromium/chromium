@@ -365,17 +365,6 @@ void ToastService::RegisterToasts(
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWalletPrivatePasses)) {
     toast_registry_->RegisterToast(
-        ToastId::kSavedAutofillAiEntityToWallet,
-        // TODO(crbug.com/477845712): Use the correct icon.
-        ToastSpecification::Builder(kCheckIcon)
-            .AddCloseButton()
-            .AddActionButton(
-                IDS_AUTOFILL_AI_TOAST_BUTTON,
-                base::BindRepeating(chrome::ShowAutofill,
-                                    base::Unretained(browser_window_interface)))
-            .AddGlobalScoped()
-            .Build());
-    toast_registry_->RegisterToast(
         // TODO(crbug.com/477845712): Use the correct icon.
         ToastId::kAutofillAiWalletErrorMessage,
         ToastSpecification::Builder(kCheckIcon).AddGlobalScoped().Build());
