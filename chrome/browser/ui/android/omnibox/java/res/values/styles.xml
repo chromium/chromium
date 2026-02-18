@@ -97,4 +97,9 @@ found in the LICENSE file.
         <item name="containerInsetRight">@dimen/omnibox_chip_padding</item>
         <item name="containerIconSize">?attr/listItemIconSize</item>
     </style>
+
+    <style name="OmniboxChipThemeOverlay">
+        <item name="colorContainer">?attr/colorSurface</item>
+        <item name="colorOnContainer">?attr/colorOnSurface</item>
+    </style>
 </resources>

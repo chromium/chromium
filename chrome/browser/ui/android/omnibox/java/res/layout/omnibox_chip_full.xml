@@ -19,4 +19,5 @@ found in the LICENSE file.
     android:ellipsize="end"
     app:iconTint="@null"
     app:iconPadding="@dimen/omnibox_chip_padding"
-    app:materialSizeOverlay="@style/OmniboxChipSizeOverlay" />
+    app:materialSizeOverlay="@style/OmniboxChipSizeOverlay"
+    app:materialThemeOverlay="@style/OmniboxChipThemeOverlay" />
