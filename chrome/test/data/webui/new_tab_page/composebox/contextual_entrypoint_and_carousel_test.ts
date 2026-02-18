@@ -136,6 +136,8 @@ suite('NewTabPageContextualEntrypointAndCarouselTest', () => {
       toolsSectionConfig: null,
       modelSectionConfig: null,
       hintText: '',
+      maxInstances: {},
+      maxTotalInputs: 0,
     };
     element.tabSuggestions = [{
       title: 'Tab 1',

@@ -168,5 +168,9 @@ struct InputState {
   SectionConfig? model_section_config;
   // Hint text to display in the input.
   string hint_text;
+  // The max number of inputs of a given type.
+  map<InputType, int32> max_instances;
+  // The max total number of inputs.
+  int32 max_total_inputs;
 };
 // LINT.ThenChange(//components/omnibox/common/input_state.h:InputState)

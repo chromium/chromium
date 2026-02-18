@@ -29,6 +29,8 @@ function createInputState(overrides?: Partial<InputState>): InputState {
         allowedInputTypes: [],
         disabledInputTypes: [],
         inputTypeConfigs: [],
+        maxInstances: {},
+        maxTotalInputs: 0,
       },
       overrides);
 }

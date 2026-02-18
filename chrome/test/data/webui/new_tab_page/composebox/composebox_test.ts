@@ -6,7 +6,7 @@ import type {SelectedFileInfo} from '//resources/mojo/components/omnibox/browser
 import {ComposeboxElement, ComposeboxProxyImpl, VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import {FileUploadErrorType, FileUploadStatus, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {FileUploadErrorType, FileUploadStatus, InputType, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -44,6 +44,54 @@ suite('NewTabPageComposeboxTest', () => {
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
   let metrics: MetricsTracker;
 
+  const deepSearchHint = 'Research anything';
+  const imageGenHint = 'Describe your image';
+  const canvasHint = 'Create anything';
+  const defaultApiHint = loadTimeData.getString('searchboxComposePlaceholder');
+  const mockInputState: InputState = {
+    hintText: defaultApiHint,
+    toolConfigs: [
+      {
+        tool: ComposeboxToolMode.kDeepSearch,
+        hintText: deepSearchHint,
+        menuLabel: '',
+        chipLabel: '',
+        disableActiveModelSelection: false,
+        aimUrlParams: [],
+      },
+      {
+        tool: ComposeboxToolMode.kImageGen,
+        hintText: imageGenHint,
+        menuLabel: '',
+        chipLabel: '',
+        disableActiveModelSelection: false,
+        aimUrlParams: [],
+      },
+      {
+        tool: ComposeboxToolMode.kCanvas,
+        hintText: canvasHint,
+        menuLabel: '',
+        chipLabel: '',
+        disableActiveModelSelection: false,
+        aimUrlParams: [],
+      },
+    ],
+    modelConfigs: [],
+    allowedModels: [],
+    allowedTools: [],
+    allowedInputTypes: [],
+    activeModel: 0,
+    activeTool: 0,
+    disabledModels: [],
+    disabledTools: [],
+    disabledInputTypes: [],
+    inputTypeConfigs: [],
+    toolsSectionConfig: null,
+    modelSectionConfig: null,
+    maxInstances: {},
+    maxTotalInputs: 0,
+  };
+
   setup(() => {
      loadTimeData.overrideValues({
     'composeboxImageFileTypes': 'image/avif,image/bmp,image/jpeg,image/png,image/webp,image/heif,image/heic',
@@ -76,6 +124,8 @@ suite('NewTabPageComposeboxTest', () => {
         toolsSectionConfig: null,
         modelSectionConfig: null,
         hintText: '',
+        maxInstances: {},
+        maxTotalInputs: 0,
       },
     });
     searchboxCallbackRouterRemote =
@@ -1956,53 +2006,6 @@ suite('NewTabPageComposeboxTest', () => {
   });
 
   suite('placeholder text is updated from hint text in ToolConfig', () => {
-    const deepSearchHint = 'Research anything';
-    const imageGenHint = 'Describe your image';
-    const canvasHint = 'Create anything';
-    const defaultApiHint =
-        loadTimeData.getString('searchboxComposePlaceholder');
-
-    const mockInputState: InputState = {
-      hintText: defaultApiHint,
-      toolConfigs: [
-        {
-          tool: ComposeboxToolMode.kDeepSearch,
-          hintText: deepSearchHint,
-          menuLabel: '',
-          chipLabel: '',
-          disableActiveModelSelection: false,
-          aimUrlParams: [],
-        },
-        {
-          tool: ComposeboxToolMode.kImageGen,
-          hintText: imageGenHint,
-          menuLabel: '',
-          chipLabel: '',
-          disableActiveModelSelection: false,
-          aimUrlParams: [],
-        },
-        {
-          tool: ComposeboxToolMode.kCanvas,
-          hintText: canvasHint,
-          menuLabel: '',
-          chipLabel: '',
-          disableActiveModelSelection: false,
-          aimUrlParams: [],
-        },
-      ],
-      modelConfigs: [],
-      allowedModels: [],
-      allowedTools: [],
-      allowedInputTypes: [],
-      activeModel: 0,
-      activeTool: 0,
-      disabledModels: [],
-      disabledTools: [],
-      disabledInputTypes: [],
-      inputTypeConfigs: [],
-      toolsSectionConfig: null,
-      modelSectionConfig: null,
-    };
 
     setup(async () => {
       createComposeboxElement();
@@ -2144,8 +2147,18 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('pasting too many files records metric and prevents paste', async () => {
     // Arrange.
-    loadTimeData.overrideValues({'composeboxFileMaxCount': 1});
+    const testInputState = {
+      ...mockInputState,
+      maxInstances: {
+        [InputType.kBrowserTab]: 1,
+        [InputType.kLensImage]: 1,
+        [InputType.kLensFile]: 1,
+      },
+      maxTotalInputs: 2,
+    };
     createComposeboxElement();
+    searchboxCallbackRouterRemote.onInputStateChanged(testInputState);
+    await microtasksFinished();
 
     searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
       return Promise.resolve({token: {low: BigInt(123), high: BigInt(0)}});
@@ -2251,10 +2264,8 @@ suite('NewTabPageComposeboxTest', () => {
       });
 
   test(
-      'pasting mixed files is processesed correctly ',
-      async () => {
+      'pasting mixed files is processed correctly ', async () => {
         // Arrange.
-        loadTimeData.overrideValues({'composeboxFileMaxCount': 5});
         createComposeboxElement();
         let i = 0;
         searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
@@ -2309,8 +2320,13 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('uploading 6 valid files when limit is 5 uploads 5 and shows error', async () => {
     // Arrange.
-    loadTimeData.overrideValues({'composeboxFileMaxCount': 5});
+    const testInputState = {
+      ...mockInputState,
+      maxTotalInputs: 5,
+    };
     createComposeboxElement();
+    searchboxCallbackRouterRemote.onInputStateChanged(testInputState);
+    await microtasksFinished();
 
     let i = 0;
     searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
@@ -2356,8 +2372,18 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('upload mixed files over limit prioritizes max files error and uploads valid ones', async () => {
     // Arrange.
-    loadTimeData.overrideValues({'composeboxFileMaxCount': 3});
-      createComposeboxElement();
+    const testInputState = {
+      ...mockInputState,
+      maxInstances: {
+        [InputType.kBrowserTab]: 1,
+        [InputType.kLensImage]: 3,
+        [InputType.kLensFile]: 1,
+      },
+      maxTotalInputs: 3,
+    };
+    createComposeboxElement();
+    searchboxCallbackRouterRemote.onInputStateChanged(testInputState);
+    await microtasksFinished();
 
     let i = 0;
       searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
@@ -2737,6 +2763,8 @@ suite('NewTabPageComposeboxTest', () => {
       toolsSectionConfig: null,
       modelSectionConfig: null,
       hintText: '',
+      maxInstances: {},
+      maxTotalInputs: 0,
     } as InputState;
     searchboxCallbackRouterRemote.onInputStateChanged(inputState);
     await microtasksFinished();

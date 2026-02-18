@@ -16,6 +16,7 @@ import {DragAndDropHandler} from 'chrome://resources/cr_components/search/drag_d
 import type {DragAndDropHost} from 'chrome://resources/cr_components/search/drag_drop_host.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -226,6 +227,18 @@ suite('ComposeboxDragAndDrop', () => {
         disabledModels: [],
         disabledTools: [],
         disabledInputTypes: [],
+        inputTypeConfigs: [],
+        toolConfigs: [],
+        modelConfigs: [],
+        toolsSectionConfig: null,
+        modelSectionConfig: null,
+        hintText: '',
+        maxInstances: {
+          [InputType.kBrowserTab]: 1,
+          [InputType.kLensImage]: 1,
+          [InputType.kLensFile]: 1,
+        },
+        maxTotalInputs: 3,
       },
     }));
 

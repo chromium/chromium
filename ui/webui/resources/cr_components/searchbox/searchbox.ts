@@ -1140,7 +1140,9 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected addFileContext_(e: CustomEvent<{
     files: File[],
-    onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => void,
+    errorMessage?: string,
+                onContextAdded:
+                    (files: Map<UnguessableToken, ComposeboxFile>) => void,
   }>) {
     const uploads: ContextualUpload[] = [];
     for (const file of e.detail.files) {
@@ -1149,7 +1151,9 @@ export class SearchboxElement extends SearchboxElementBase implements
       };
       uploads.push(attachment);
     }
-    this.openComposebox_(uploads);
+    this.openComposebox_(
+        uploads, ToolMode.kUnspecified, ModelMode.kUnspecified,
+        e.detail.errorMessage);
   }
 
   protected addTabContext_(e: CustomEvent<{
@@ -1271,7 +1275,7 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected openComposebox_(
       uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
-      model: ModelMode = ModelMode.kUnspecified) {
+      model: ModelMode = ModelMode.kUnspecified, errorMessage: string = '') {
     if (this.ntpRealboxNextEnabled) {
       this.$.context.closeMenu();
     }
@@ -1282,6 +1286,7 @@ export class SearchboxElement extends SearchboxElementBase implements
         mode: mode,
         model: model,
         inputState: this.inputState_,
+        errorMessage: errorMessage,
       },
       bubbles: true,
       composed: true,
