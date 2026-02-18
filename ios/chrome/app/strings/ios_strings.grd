@@ -520,6 +520,24 @@
       <message name="IDS_IOS_AUTOFILL_ADMIN_LEVEL2" desc="Title of the field of a profile address representing the administrative area level 2. A sub-division of a state, e.g. a Municipio in Brazil or Mexico. [Length: 15em] [iOS only]">
         Municipality
       </message>
+      <message name="IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE" desc="Footer text in the save/update dialog indicating that the entity data will be saved locally on the device. [iOS only]">
+      Your info is saved to your device.
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_WALLET" desc="Footer text in the save/update dialog explaining the benefits of saving to Google Wallet. [iOS only]">
+      Save your info and get things done faster, like filling forms across Google products. You can manage your info in Google Wallet for <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>.
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_SAVE_FALLBACK_BODY" desc="Body text of the alert shown when saving to Wallet fails but saving to device succeeds. [iOS only]">
+      You’ll have the chance to save this info to Wallet the next time you fill a relevant form.
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_SAVE_FALLBACK_TITLE" desc="Title of the alert shown when saving to Wallet fails but saving to device succeeds. [iOS only]">
+      Info saved only to device
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_SAVE_PROMPT" desc="The prompt text asking the user to save a new entity to Autofill AI. [iOS only]">
+        Save <ph name="ENTITY_TYPE">$1<ex>Passport</ex></ph>?
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_UPDATE_PROMPT" desc="The prompt text asking the user to update an existing entity in Autofill AI. [iOS only]">
+        Update <ph name="ENTITY_TYPE">$1<ex>Passport</ex></ph>?
+      </message>
       <message name="IDS_IOS_AUTOFILL_AUTOCOMPLETE_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of options available to the user above the keyboard in relation to autocomplete. This announcement is triggered when the user enters edit mode in an autocomplete-related form field and has options available in the keyboard accessory for autofill purposes. According to the number of available options, the string goes from singular to plural. [iOS only]">
         {count, plural,
            =1 {{count} option for autocomplete available above your keyboard.}
@@ -3682,6 +3700,12 @@
       </message>
       <message name="IDS_IOS_INFOBAR_BANNER_OPTIONS_HINT" desc="Accessibility hint that indicates the user that can get more options for the Infobar banner. [Length:Unlimited]">
         More options
+      </message>
+      <message name="IDS_IOS_INFOBAR_MESSAGE_SAVE_TO_DEVICE" desc="A generic infobar message for saving something to device. [iOS only]">
+      Saves to your device.
+      </message>
+      <message name="IDS_IOS_INFOBAR_MESSAGE_SAVE_TO_WALLET" desc="A generic infobar message for saving something to Google Wallet. [iOS only]">
+      In Google Wallet for <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>.
       </message>
       <message name="IDS_IOS_INFOBAR_MODAL_PASSWORD_HIDE_PASSWORD_HINT" desc="Accessibility hint that indicates to the user that then can hide/mask the password. [Length:Unlimited]">
         Hide password
