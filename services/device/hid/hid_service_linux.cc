@@ -10,10 +10,12 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -33,6 +35,7 @@
 #include "device/udev_linux/scoped_udev.h"
 #include "device/udev_linux/udev_watcher.h"
 #include "services/device/hid/hid_connection_linux.h"
+#include "services/device/public/cpp/device_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/system/sys_info.h"
@@ -300,6 +303,28 @@ class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
     str_property = udev_device_get_property_value(parent, kHIDName);
     if (str_property)
       product_name = str_property;
+
+    // On Linux, the HID_NAME property often contains a concatenation of the
+    // manufacturer and product strings (e.g., "Manufacturer Product"). To
+    // provide a cleaner product name consistent with other platforms, we
+    // prefer the USB "product" sysattr if available. See crbug.com/40742501.
+    if (base::FeatureList::IsEnabled(features::kProductNameOverHidName)) {
+      std::optional<std::string> name_property = std::nullopt;
+
+      // Read the product name from the USB property.
+      udev_device* usb_dev = udev_device_get_parent_with_subsystem_devtype(
+          parent, kSubsystemUsb, kDevtypeUsbDevice);
+      if (usb_dev) {
+        const char* value = udev_device_get_sysattr_value(usb_dev, "product");
+        if (value) {
+          name_property = value;
+        }
+      }
+
+      if (name_property) {
+        product_name = std::move(*name_property);
+      }
+    }
 
     const char* parent_sysfs_path = udev_device_get_syspath(parent);
     if (!parent_sysfs_path)

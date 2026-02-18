@@ -124,6 +124,12 @@ BASE_FEATURE(kAutomaticUsbDetach, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutomaticUsbDetach, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Controls whether we report the product name (like macOS and Win)
+// over the HID_NAME in the WebHID API.
+BASE_FEATURE(kProductNameOverHidName, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 #if !BUILDFLAG(IS_WIN)
 // Splits DTR and RTS control signals. See crbug.com/420689824.
 // Can be disabled as a kill switch if needed.

@@ -165,7 +165,23 @@ udev_device* FakeUdevLoader::udev_device_get_parent_with_subsystem_devtype(
     const char* subsystem,
     const char* devtype) {
   DCHECK(device && subsystem);
-  return nullptr;
+  udev_device* result = nullptr;
+  const base::FilePath syspath(device->syspath);
+  for (const auto& d : devices_) {
+    if (d->syspath != device->syspath &&
+        !base::FilePath(d->syspath).IsParent(syspath)) {
+      continue;
+    }
+
+    if (d->subsystem == subsystem) {
+      if (!devtype || (d->devtype && *d->devtype == devtype)) {
+        if (!result || d->syspath.size() > result->syspath.size()) {
+          result = d.get();
+        }
+      }
+    }
+  }
+  return result;
 }
 
 udev_list_entry* FakeUdevLoader::udev_device_get_properties_list_entry(
