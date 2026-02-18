@@ -194,6 +194,9 @@ class AutocompleteResult {
   // Sets a takeover action on all matches to open Lens.
   void AttachContextualSearchOpenLensActionToMatches();
 
+  // Sets |action| in matches that have associated keywords.
+  void AttachSiteSearchActionToMatches(const TemplateURLService* service);
+
   // Sets a smart compose inline hint.
   void set_smart_compose_inline_hint(
       const std::string& smart_compose_inline_hint) {

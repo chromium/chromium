@@ -9,6 +9,7 @@
 #include <iterator>
 #include <optional>
 #include <ostream>
+#include <set>
 #include <sstream>
 #include <string>
 #include <unordered_set>
@@ -32,6 +33,7 @@
 #include "components/omnibox/browser/actions/contextual_search_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
+#include "components/omnibox/browser/actions/omnibox_action_site_search.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/actions/tab_switch_action.h"
@@ -968,6 +970,28 @@ void AutocompleteResult::AttachContextualSearchOpenLensActionToMatches() {
       match.takeover_action =
           base::MakeRefCounted<ContextualSearchOpenLensAction>();
     }
+  }
+}
+
+void AutocompleteResult::AttachSiteSearchActionToMatches(
+    const TemplateURLService* service) {
+  std::set<std::u16string> seen;
+  for (AutocompleteMatch& match : matches_) {
+    if (match.associated_keyword.empty()) {
+      continue;
+    }
+    if (seen.contains(match.associated_keyword)) {
+      continue;
+    }
+    seen.insert(match.associated_keyword);
+
+    const TemplateURL* template_url =
+        service->GetTemplateURLForKeyword(match.associated_keyword);
+    if (!template_url) {
+      continue;
+    }
+    match.actions.push_back(
+        base::MakeRefCounted<OmniboxActionSiteSearch>(template_url));
   }
 }
 

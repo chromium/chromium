@@ -1649,9 +1649,9 @@ void AutocompleteController::PostProcessMatches() {
   internal_result_.Validate();
 #endif  // DCHECK_IS_ON()
 
-  AttachActions();
   UpdateKeywordDescriptions(&internal_result_);
   UpdateAssociatedKeywords(&internal_result_);
+  AttachActions();
   UpdateSearchboxStats(&internal_result_);
   UpdateShownInSession(&internal_result_);
   UpdateTailSuggestPrefix(&internal_result_);
@@ -1785,6 +1785,10 @@ void AutocompleteController::AttachActions() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   internal_result_.SplitActionsToSuggestions();
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  internal_result_.AttachSiteSearchActionToMatches(template_url_service_);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void AutocompleteController::UpdateAssociatedKeywords(
