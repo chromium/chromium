@@ -62,6 +62,8 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   bool CanDisableExtension(const Extension* extension) override;
   void GrantActivePermissions(const Extension* extension) override;
   void UpdateExternalExtensionAlert() override;
+  base::flat_set<int> GetDisableReasonsOnInstalled(const Extension* extension,
+                                                   int install_flags) override;
   void OnExtensionInstalled(const Extension* extension,
                             const syncer::StringOrdinal& page_ordinal,
                             int install_flags,

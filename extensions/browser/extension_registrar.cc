@@ -56,6 +56,15 @@ bool g_disable_lazy_context_spinup_for_test = false;
 
 }  // namespace
 
+// Returns an empty set to clear disable reasons when a new extension version
+// is installed. Override this method to preserve specific disable reasons
+// across extension updates.
+base::flat_set<int> ExtensionRegistrar::Delegate::GetDisableReasonsOnInstalled(
+    const Extension* extension,
+    int install_flags) {
+  return {};
+}
+
 ExtensionRegistrar::ExtensionRegistrar(content::BrowserContext* browser_context)
     : browser_context_(browser_context),
       extension_system_(ExtensionSystem::Get(browser_context)),
@@ -123,7 +132,12 @@ void ExtensionRegistrar::Shutdown() {
 
 void ExtensionRegistrar::OnDelayedInstallFinished(
     scoped_refptr<const Extension> extension) {
-  FinishInstallation(extension.get());
+  ExtensionPrefs::DelayedInstallInfo info =
+      extension_prefs_->GetDelayedInstallInfo(extension->id());
+
+  AddNewOrUpdatedExtension(extension.get(), info.install_flags,
+                           info.page_ordinal, info.install_parameter,
+                           std::move(info.ruleset_install_prefs));
 }
 
 void ExtensionRegistrar::AddExtension(
@@ -241,12 +255,13 @@ void ExtensionRegistrar::AddNewExtension(
 
 void ExtensionRegistrar::AddNewOrUpdatedExtension(
     const Extension* extension,
-    const base::flat_set<int>& disable_reasons,
     int install_flags,
     const syncer::StringOrdinal& page_ordinal,
     const std::string& install_parameter,
     base::DictValue ruleset_install_prefs) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::flat_set<int> disable_reasons =
+      delegate_->GetDisableReasonsOnInstalled(extension, install_flags);
   extension_prefs_->OnExtensionInstalled(
       extension, disable_reasons, page_ordinal, install_flags,
       install_parameter, std::move(ruleset_install_prefs));
@@ -544,7 +559,7 @@ void ExtensionRegistrar::AddComponentExtension(const Extension* extension) {
     }
     // TODO(crbug.com/40508457): If needed, add support for Declarative Net
     // Request to component extensions and pass the ruleset install prefs here.
-    AddNewOrUpdatedExtension(extension, {}, kInstallFlagNone,
+    AddNewOrUpdatedExtension(extension, kInstallFlagNone,
                              syncer::StringOrdinal(), std::string(),
                              /*ruleset_install_prefs=*/{});
     return;

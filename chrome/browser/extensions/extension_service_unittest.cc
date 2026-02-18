@@ -1157,22 +1157,22 @@ TEST_F(ExtensionServiceTest, PendingImports) {
 
   // Each of these extensions should have been rejected because of dependencies
   // that cannot be satisfied.
-  EXPECT_FALSE(
-      prefs()->GetDelayedInstallInfo("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
+  EXPECT_FALSE(prefs()->GetDelayedInstallExtensionInfo(
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
   EXPECT_FALSE(
       prefs()->GetInstalledExtensionInfo("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
-  EXPECT_FALSE(
-      prefs()->GetDelayedInstallInfo("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"));
+  EXPECT_FALSE(prefs()->GetDelayedInstallExtensionInfo(
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"));
   EXPECT_FALSE(
       prefs()->GetInstalledExtensionInfo("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"));
-  EXPECT_FALSE(
-      prefs()->GetDelayedInstallInfo("cccccccccccccccccccccccccccccccc"));
+  EXPECT_FALSE(prefs()->GetDelayedInstallExtensionInfo(
+      "cccccccccccccccccccccccccccccccc"));
   EXPECT_FALSE(
       prefs()->GetInstalledExtensionInfo("cccccccccccccccccccccccccccccccc"));
 
   // Make sure the import started for the extension with a dependency.
-  EXPECT_TRUE(
-      prefs()->GetDelayedInstallInfo("behllobkkfkfnphdnhnkndlbkcpglgmj"));
+  EXPECT_TRUE(prefs()->GetDelayedInstallExtensionInfo(
+      "behllobkkfkfnphdnhnkndlbkcpglgmj"));
   EXPECT_EQ(
       ExtensionPrefs::DelayReason::kWaitForImports,
       prefs()->GetDelayedInstallReason("behllobkkfkfnphdnhnkndlbkcpglgmj"));
@@ -1242,7 +1242,7 @@ TEST_F(ExtensionServiceTest, ReloadExtensionWithPendingImports) {
   EXPECT_EQ("1.0.0", extension->VersionString());
 
   // Make sure the import started for the extension with a dependency.
-  EXPECT_TRUE(prefs()->GetDelayedInstallInfo(id));
+  EXPECT_TRUE(prefs()->GetDelayedInstallExtensionInfo(id));
   EXPECT_EQ(ExtensionPrefs::DelayReason::kWaitForImports,
             prefs()->GetDelayedInstallReason(id));
 
@@ -1265,7 +1265,7 @@ TEST_F(ExtensionServiceTest, ReloadExtensionWithPendingImports) {
   EXPECT_EQ("1.0.0", extension->VersionString());
 
   // The update should remain delayed, with the import pending.
-  EXPECT_TRUE(prefs()->GetDelayedInstallInfo(id));
+  EXPECT_TRUE(prefs()->GetDelayedInstallExtensionInfo(id));
   EXPECT_EQ(ExtensionPrefs::DelayReason::kWaitForImports,
             prefs()->GetDelayedInstallReason(id));
 

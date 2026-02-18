@@ -126,14 +126,16 @@ constexpr const char kExtensionsBlocklistUpdate[] =
 // updates that were waiting for idle.
 constexpr const char kDelayedInstallInfo[] = "idle_install_info";
 
-// Path for pref keys marked for deletion in extension prefs while populating
-// the delayed install info. These keys are deleted from extension prefs when
-// the prefs inside delayed install info are applied to the extension.
-constexpr const char kDelayedInstallInfoDeletedPrefKeys[] =
-    "delay_install_info_deleted_pref_keys";
-
 // Reason why the extension's install was delayed.
 constexpr const char kDelayedInstallReason[] = "delay_install_reason";
+
+bool IsValidDelayReason(int value) {
+  return value >= static_cast<int>(ExtensionPrefs::DelayReason::kNone) &&
+         value <= static_cast<int>(ExtensionPrefs::DelayReason::kMax);
+}
+
+// Install flags for a delayed extension install.
+constexpr const char kDelayedInstallFlags[] = "delay_install_flags";
 
 // Path for the suggested page ordinal of a delayed extension install.
 constexpr const char kPrefSuggestedPageOrdinal[] = "suggested_page_ordinal";
@@ -514,6 +516,15 @@ const base::DictValue* ExtensionPrefs::GetExtensionPref(
 
   return prefs_->GetDict(pref_names::kExtensions)
       .FindDictByDottedPath(extension_id);
+}
+
+const base::DictValue* ExtensionPrefs::GetDelayedInstallDict(
+    const ExtensionId& extension_id) const {
+  const base::DictValue* extension_prefs = GetExtensionPref(extension_id);
+  if (!extension_prefs) {
+    return nullptr;
+  }
+  return extension_prefs->FindDict(kDelayedInstallInfo);
 }
 
 void ExtensionPrefs::SetIntegerPref(const ExtensionId& id,
@@ -1653,136 +1664,102 @@ ExtensionPrefs::ExtensionsInfo ExtensionPrefs::GetInstalledExtensionsInfo(
   return extensions_info;
 }
 
-void ExtensionPrefs::SetDelayedInstallInfo(
-    const Extension* extension,
-    const base::flat_set<int>& disable_reasons,
+ExtensionPrefs::DelayedInstallInfo::DelayedInstallInfo() = default;
+ExtensionPrefs::DelayedInstallInfo::DelayedInstallInfo(
     int install_flags,
     DelayReason delay_reason,
     const syncer::StringOrdinal& page_ordinal,
     const std::string& install_parameter,
-    base::DictValue ruleset_install_prefs) {
+    base::DictValue ruleset_install_prefs)
+    : install_flags(install_flags),
+      delay_reason(delay_reason),
+      page_ordinal(page_ordinal),
+      install_parameter(install_parameter),
+      ruleset_install_prefs(std::move(ruleset_install_prefs)) {}
+ExtensionPrefs::DelayedInstallInfo::~DelayedInstallInfo() = default;
+ExtensionPrefs::DelayedInstallInfo::DelayedInstallInfo(DelayedInstallInfo&&) =
+    default;
+ExtensionPrefs::DelayedInstallInfo&
+ExtensionPrefs::DelayedInstallInfo::operator=(DelayedInstallInfo&&) = default;
+
+void ExtensionPrefs::SetDelayedInstallInfo(const Extension* extension,
+                                           DelayedInstallInfo install_info) {
   ScopedDictionaryUpdate update(this, extension->id(), kDelayedInstallInfo);
   auto extension_dict = update.Create();
   base::ListValue prefs_to_remove;
-  PopulateExtensionInfoPrefs(extension, clock_->Now(), disable_reasons,
-                             install_flags, install_parameter,
-                             std::move(ruleset_install_prefs),
+  // `disable_reasons` will be computed in `OnDelayedInstallFinished`.
+  // `prefs_to_remove` is unused here; unneeded prefs will be removed in
+  // OnExtensionInstalled.
+  PopulateExtensionInfoPrefs(extension, clock_->Now(), /*disable_reasons=*/{},
+                             install_info.install_flags,
+                             install_info.install_parameter,
+                             std::move(install_info.ruleset_install_prefs),
                              extension_dict.get(), prefs_to_remove);
 
-  // Add transient data that is needed by FinishDelayedInstallInfo(), but
-  // should not be in the final extension prefs. All entries here should have
-  // a corresponding Remove() call in FinishDelayedInstallInfo().
-  extension_dict->Set(kDelayedInstallInfoDeletedPrefKeys,
-                      base::Value(std::move(prefs_to_remove)));
   if (AppDisplayInfo::RequiresSortOrdinal(*extension)) {
     extension_dict->SetString(kPrefSuggestedPageOrdinal,
-                              page_ordinal.IsValid()
-                                  ? page_ordinal.ToInternalValue()
+                              install_info.page_ordinal.IsValid()
+                                  ? install_info.page_ordinal.ToInternalValue()
                                   : std::string());
   }
   extension_dict->SetInteger(kDelayedInstallReason,
-                             static_cast<int>(delay_reason));
+                             static_cast<int>(install_info.delay_reason));
+  extension_dict->SetInteger(kDelayedInstallFlags, install_info.install_flags);
 }
 
-bool ExtensionPrefs::RemoveDelayedInstallInfo(const ExtensionId& extension_id) {
-  if (!GetExtensionPref(extension_id)) {
-    return false;
-  }
-  ScopedExtensionPrefUpdate update(prefs_, extension_id);
-  bool result = update->Remove(kDelayedInstallInfo);
-  return result;
-}
-
-bool ExtensionPrefs::FinishDelayedInstallInfo(const ExtensionId& extension_id) {
-  CHECK(crx_file::id_util::IdIsValid(extension_id));
-  ScopedExtensionPrefUpdate update(prefs_, extension_id);
-  auto extension_dict = update.Get();
-  std::unique_ptr<prefs::DictionaryValueUpdate> pending_install_dict;
-  if (!extension_dict->GetDictionary(kDelayedInstallInfo,
-                                     &pending_install_dict)) {
-    return false;
-  }
-
-  // Retrieve and clear transient values populated by SetDelayedInstallInfo().
-  // Also do any other data cleanup that makes sense.
-  std::string serialized_ordinal;
-  syncer::StringOrdinal suggested_page_ordinal;
-  bool needs_sort_ordinal = false;
-  if (pending_install_dict->GetString(kPrefSuggestedPageOrdinal,
-                                      &serialized_ordinal)) {
-    suggested_page_ordinal = syncer::StringOrdinal(serialized_ordinal);
-    needs_sort_ordinal = true;
-    pending_install_dict->Remove(kPrefSuggestedPageOrdinal);
-  }
-  pending_install_dict->Remove(kDelayedInstallReason);
-
-  const base::Time install_time = clock_->Now();
-  std::string install_time_str = base::NumberToString(
-      install_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  pending_install_dict->SetString(kPrefLastUpdateTime, install_time_str);
-
-  // Update first install time only if it does not already exist in committed
-  // data. Otherwise, remove the key from the temp dictionary so it does not
-  // incorrectly update the committed data.
-  if (!extension_dict->HasKey(kPrefFirstInstallTime)) {
-    pending_install_dict->SetString(kPrefFirstInstallTime, install_time_str);
-  } else {
-    pending_install_dict->Remove(kPrefFirstInstallTime);
-  }
-
-  base::ListValue* prefs_to_remove = nullptr;
-  if (pending_install_dict->GetListWithoutPathExpansion(
-          kDelayedInstallInfoDeletedPrefKeys, &prefs_to_remove)) {
-    for (const auto& pref_to_remove : *prefs_to_remove) {
-      extension_dict->Remove(pref_to_remove.GetString());
-    }
-
-    pending_install_dict->Remove(kDelayedInstallInfoDeletedPrefKeys);
-  }
-
-  // Commit the delayed install data.
-  for (const auto [key, value] : *pending_install_dict->AsConstDict()) {
-    extension_dict->Set(key, value.Clone());
-  }
-  FinishExtensionInfoPrefs(extension_id, install_time, needs_sort_ordinal,
-                           suggested_page_ordinal, extension_dict.get());
-  return true;
-}
-
-std::optional<ExtensionInfo> ExtensionPrefs::GetDelayedInstallInfo(
+std::optional<ExtensionInfo> ExtensionPrefs::GetDelayedInstallExtensionInfo(
     const ExtensionId& extension_id) const {
-  const base::DictValue* extension_prefs = GetExtensionPref(extension_id);
-  if (!extension_prefs) {
+  const base::DictValue* dict = GetDelayedInstallDict(extension_id);
+  if (!dict) {
     return std::nullopt;
   }
 
-  const base::DictValue* ext = extension_prefs->FindDict(kDelayedInstallInfo);
-  if (!ext) {
-    return std::nullopt;
-  }
-
-  return GetInstalledInfoHelper(extension_id, *ext,
+  return GetInstalledInfoHelper(extension_id, *dict,
                                 /*include_component_extensions = */ false);
+}
+
+ExtensionPrefs::DelayedInstallInfo ExtensionPrefs::GetDelayedInstallInfo(
+    const ExtensionId& extension_id) const {
+  const base::DictValue* dict = GetDelayedInstallDict(extension_id);
+  if (!dict) {
+    return {};
+  }
+
+  DelayedInstallInfo info;
+  info.install_flags =
+      dict->FindInt(kDelayedInstallFlags).value_or(kInstallFlagNone);
+  int raw_reason = dict->FindInt(kDelayedInstallReason).value_or(0);
+  if (IsValidDelayReason(raw_reason)) {
+    info.delay_reason = static_cast<DelayReason>(raw_reason);
+  }
+
+  const std::string* serialized = dict->FindString(kPrefSuggestedPageOrdinal);
+  if (serialized) {
+    info.page_ordinal = syncer::StringOrdinal(*serialized);
+  }
+
+  const std::string* param = dict->FindString(kPrefInstallParameter);
+  if (param) {
+    info.install_parameter = *param;
+  }
+
+  const base::DictValue* ruleset_prefs = dict->FindDict(kDNRStaticRulesetPref);
+  if (ruleset_prefs) {
+    info.ruleset_install_prefs = ruleset_prefs->Clone();
+  }
+
+  return info;
 }
 
 ExtensionPrefs::DelayReason ExtensionPrefs::GetDelayedInstallReason(
     const ExtensionId& extension_id) const {
-  const base::DictValue* extension_prefs = GetExtensionPref(extension_id);
-  if (!extension_prefs) {
+  const base::DictValue* dict = GetDelayedInstallDict(extension_id);
+  if (!dict) {
     return DelayReason::kNone;
   }
-
-  const base::DictValue* ext = extension_prefs->FindDict(kDelayedInstallInfo);
-  if (!ext) {
-    return DelayReason::kNone;
-  }
-
-  std::optional<int> delay_reason = ext->FindInt(kDelayedInstallReason);
-  if (!delay_reason) {
-    return DelayReason::kNone;
-  }
-
-  return static_cast<DelayReason>(*delay_reason);
+  int raw_reason = dict->FindInt(kDelayedInstallReason).value_or(0);
+  return IsValidDelayReason(raw_reason) ? static_cast<DelayReason>(raw_reason)
+                                        : DelayReason::kNone;
 }
 
 ExtensionPrefs::ExtensionsInfo ExtensionPrefs::GetAllDelayedInstallInfo()
@@ -1795,7 +1772,8 @@ ExtensionPrefs::ExtensionsInfo ExtensionPrefs::GetAllDelayedInstallInfo()
       continue;
     }
 
-    std::optional<ExtensionInfo> info = GetDelayedInstallInfo(extension_id);
+    std::optional<ExtensionInfo> info =
+        GetDelayedInstallExtensionInfo(extension_id);
     if (info) {
       extensions_info.push_back(*std::move(info));
     }

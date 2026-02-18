@@ -121,6 +121,12 @@ class ExtensionRegistrar : public KeyedService,
     // Checks if there are any new external extensions to notify the user about.
     virtual void UpdateExternalExtensionAlert() = 0;
 
+    // Computes the disable reasons to use when installing or updating an
+    // extension.
+    virtual base::flat_set<int> GetDisableReasonsOnInstalled(
+        const Extension* extension,
+        int install_flags);
+
     // Informs the service that an extension's files are in place for loading.
     //
     // `extension`                the extension
@@ -179,7 +185,6 @@ class ExtensionRegistrar : public KeyedService,
   // AddExtension.
   // `install_flags` is a bitmask of InstallFlags.
   void AddNewOrUpdatedExtension(const Extension* extension,
-                                const base::flat_set<int>& disable_reasons,
                                 int install_flags,
                                 const syncer::StringOrdinal& page_ordinal,
                                 const std::string& install_parameter,

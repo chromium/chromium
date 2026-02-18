@@ -161,9 +161,9 @@ TEST_F(ExtensionGarbageCollectorChromeOSUnitTest, SharedExtensions) {
   scoped_refptr<const Extension> extension2 =
       CreateExtension(kExtensionId2, "1.0", path_id2_1);
   GetExtensionPrefs()->SetDelayedInstallInfo(
-      extension2.get(), /*disable_reasons=*/{}, kInstallFlagNone,
-      ExtensionPrefs::DelayReason::kWaitForIdle, syncer::StringOrdinal(),
-      std::string());
+      extension2.get(),
+      {kInstallFlagNone, ExtensionPrefs::DelayReason::kWaitForIdle,
+       syncer::StringOrdinal(), std::string()});
   EXPECT_TRUE(base::PathExists(path_id2_1));
 
   GarbageCollectExtensions();

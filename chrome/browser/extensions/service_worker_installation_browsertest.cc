@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_registry.h"
@@ -13,6 +15,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -144,6 +147,119 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInstallationBrowserTest,
   EXPECT_EQ(2, BackgroundScriptExecutor::ExecuteScript(
                    profile(), id, kGetVersion,
                    BackgroundScriptExecutor::ResultCapture::kSendScriptResult));
+}
+
+// Tests that extension-controlled preferences (like proxy settings) are
+// properly restored after a delayed extension update is finalized via
+// chrome.runtime.reload().
+// Regression test for crbug.com/474530434
+IN_PROC_BROWSER_TEST_F(ServiceWorkerInstallationBrowserTest,
+                       ExtensionPreferencesRestoredAfterReload) {
+  static constexpr char kScriptV1[] =
+      R"(self.version = 1;
+         self.timeout = setTimeout(async () => {
+           if (self.forceActive) {
+             await chrome.tabs.query({});
+           }
+         });
+
+         (async () => {
+           const config = {
+             mode: 'pac_script',
+             pacScript: {
+               data: 'function FindProxyForURL(url, host) { return "DIRECT"; }'
+             }
+           };
+           await chrome.proxy.settings.set({value: config});
+           chrome.test.sendMessage('v1 ready');
+         })();
+        )";
+
+  static constexpr char kScriptV2[] =
+      R"(self.version = 2;
+         chrome.runtime.onInstalled.addListener(async (details) => {
+             chrome.test.assertEq('update', details.reason,
+                                  'Extension should be updated via reload');
+             const result = await chrome.proxy.settings.get({});
+             chrome.test.assertEq('controlled_by_this_extension',
+                                  result.levelOfControl,
+                                  'Extension should still control proxy');
+             chrome.test.assertEq('pac_script', result.value.mode,
+                                  'Proxy mode should still be pac_script');
+           chrome.test.notifyPass();
+         });)";
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Proxy Test Extension",
+           "manifest_version": 3,
+           "version": "%d",
+           "permissions": ["proxy"],
+           "background": {"service_worker": "background.js"}
+         })";
+
+  // Create two packed versions of the extension.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(kManifest, 1));
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kScriptV1);
+  base::FilePath v1_crx = test_dir.Pack("v1.crx");
+
+  test_dir.WriteManifest(base::StringPrintf(kManifest, 2));
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kScriptV2);
+  base::FilePath v2_crx = test_dir.Pack("v2.crx");
+
+  // Install version 1.
+  ExtensionTestMessageListener v1_ready("v1 ready");
+  const Extension* extension_v1 =
+      InstallExtensionWithPermissionsGranted(v1_crx, /*expected_change=*/1);
+  ASSERT_TRUE(extension_v1);
+  const ExtensionId id = extension_v1->id();
+  ASSERT_TRUE(v1_ready.WaitUntilSatisfied());
+
+  // Verify proxy settings were set by v1.
+  PrefService* prefs = profile()->GetPrefs();
+  const base::DictValue& proxy_config = prefs->GetDict("proxy");
+  const std::string* mode = proxy_config.FindString("mode");
+  ASSERT_TRUE(mode);
+  EXPECT_EQ("pac_script", *mode);
+
+  // There should be one running worker.
+  ProcessManager* process_manager = ProcessManager::Get(profile());
+  std::vector<WorkerId> worker_ids =
+      process_manager->GetServiceWorkersForExtension(id);
+  ASSERT_EQ(1u, worker_ids.size());
+  WorkerId worker_id_v1 = worker_ids[0];
+
+  // Update the extension to version 2, but don't force it to install
+  // immediately (worker is still active).
+  const Extension* extension_v2 =
+      UpdateExtensionWaitForIdle(id, v2_crx, /*expected_change=*/0);
+  ASSERT_TRUE(extension_v2);
+
+  // The active version should still be version 1.
+  const Extension* active_extension =
+      extension_registry()->enabled_extensions().GetByID(id);
+  ASSERT_TRUE(active_extension);
+  EXPECT_EQ("1", active_extension->version().GetString());
+
+  ResultCatcher result_catcher;
+  // Now trigger chrome.runtime.reload() to finalize the update.
+  static constexpr char kTriggerReload[] = "chrome.runtime.reload();";
+  BackgroundScriptExecutor::ExecuteScriptAsync(profile(), id, kTriggerReload);
+
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  // Verify the active version is now v2.
+  active_extension = extension_registry()->enabled_extensions().GetByID(id);
+  ASSERT_TRUE(active_extension);
+  EXPECT_EQ("2", active_extension->version().GetString());
+
+  // Verify via prefs that proxy settings are still pac_script.
+  const base::DictValue& proxy_config_after = prefs->GetDict("proxy");
+  const std::string* mode_after = proxy_config_after.FindString("mode");
+  ASSERT_TRUE(mode_after);
+  EXPECT_EQ("pac_script", *mode_after)
+      << "Proxy mode reverted to: " << *mode_after;
 }
 
 }  // namespace extensions

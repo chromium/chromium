@@ -526,7 +526,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
         std::optional<ExtensionInfo> info =
             extension_prefs->GetInstalledExtensionInfo(id);
         if (!info || info->extension_path != base::FilePath(*shared_path)) {
-          info = extension_prefs->GetDelayedInstallInfo(id);
+          info = extension_prefs->GetDelayedInstallExtensionInfo(id);
           if (!info || info->extension_path != base::FilePath(*shared_path)) {
             not_used = true;
           }

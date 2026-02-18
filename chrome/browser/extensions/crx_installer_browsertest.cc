@@ -690,6 +690,96 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, Blocklist) {
 }
 #endif
 
+// Tests that extension disable reasons are properly updated after a delayed
+// extension update is finalized.
+// Regression test for crbug.com/474530434
+IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
+                       DelayedInstallUpdatesDisableReasons) {
+  const ExtensionId extension_id("ldnnhddmnhbkjipkidpdiheffobcpfmf");
+  base::FilePath base_path = test_data_dir_.AppendASCII("delayed_install");
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  ASSERT_TRUE(registry);
+
+  // Install version 1 of the test extension. This extension does not have
+  // a background page but does have a browser action.
+  base::FilePath v1_path = PackExtension(base_path.AppendASCII("v1"));
+  ASSERT_FALSE(v1_path.empty());
+  ASSERT_TRUE(InstallExtension(v1_path, 1));
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(extension_id);
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(extension_id, extension->id());
+  ASSERT_EQ("1.0", extension->version().GetString());
+
+  // Make test extension non-idle by opening the extension's options page.
+  ExtensionTabUtil::OpenOptionsPage(extension, browser());
+  WaitForExtensionNotIdle(extension_id);
+
+  // Install version 2 of the extension and check that it is delayed.
+  base::FilePath v2_path = PackExtension(base_path.AppendASCII("v2"));
+  ASSERT_FALSE(v2_path.empty());
+  ASSERT_TRUE(UpdateExtensionWaitForIdle(extension_id, v2_path, 0));
+
+  DelayedInstallManager* manager = DelayedInstallManager::Get(profile());
+  ASSERT_TRUE(manager);
+  ASSERT_EQ(1u, manager->delayed_installs().size());
+  extension = registry->enabled_extensions().GetByID(extension_id);
+  ASSERT_EQ("1.0", extension->version().GetString());
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  ASSERT_TRUE(prefs);
+  // Expect these disable reasons to get cleared by the delayed install since
+  // they are tied to a particular version of the extension (version 1 in this
+  // case), and thus might be fixed by installing a new version.
+  prefs->AddDisableReasons(
+      extension_id,
+      {disable_reason::DisableReason::DISABLE_CORRUPTED,
+       disable_reason::DisableReason::DISABLE_UNSUPPORTED_REQUIREMENT});
+
+  manager->FinishDelayedInstallationIfReady(extension_id, true);
+  extension = registry->enabled_extensions().GetByID(extension_id);
+  ASSERT_EQ("2.0", extension->version().GetString());
+  auto disable_reasons = prefs->GetDisableReasons(extension_id);
+  EXPECT_TRUE(disable_reasons.empty());
+
+  // Verify delayed install state is fully cleaned up.
+  EXPECT_EQ(0u, manager->delayed_installs().size());
+  EXPECT_FALSE(prefs->GetDelayedInstallExtensionInfo(extension_id));
+
+  // Make test extension non-idle by opening the extension's options page.
+  ExtensionTabUtil::OpenOptionsPage(extension, browser());
+  WaitForExtensionNotIdle(extension_id);
+
+  // Install version 3 of the extension and check that it is delayed.
+  base::FilePath v3_path = PackExtension(base_path.AppendASCII("v3"));
+  ASSERT_FALSE(v3_path.empty());
+  ASSERT_TRUE(UpdateExtensionWaitForIdle(extension_id, v3_path, 0));
+
+  ASSERT_EQ(1u, manager->delayed_installs().size());
+  extension = registry->enabled_extensions().GetByID(extension_id);
+  ASSERT_EQ("2.0", extension->version().GetString());
+
+  // Expect DISABLE_USER_ACTION to remain.
+  prefs->AddDisableReasons(
+      extension_id,
+      {disable_reason::DisableReason::DISABLE_USER_ACTION,
+       disable_reason::DisableReason::DISABLE_CORRUPTED,
+       disable_reason::DisableReason::DISABLE_UNSUPPORTED_REQUIREMENT});
+
+  manager->FinishDelayedInstallationIfReady(extension_id, true);
+  extension = registry->enabled_extensions().GetByID(extension_id);
+  EXPECT_FALSE(extension);
+  disable_reasons = prefs->GetDisableReasons(extension_id);
+  EXPECT_EQ(disable_reasons.size(), 1u);
+  EXPECT_THAT(disable_reasons, testing::UnorderedElementsAre(
+                                   disable_reason::DISABLE_USER_ACTION));
+
+  // Verify delayed install state is fully cleaned up.
+  EXPECT_EQ(0u, manager->delayed_installs().size());
+  EXPECT_FALSE(prefs->GetDelayedInstallExtensionInfo(extension_id));
+}
+
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, NonStrictManifestCheck) {
   std::unique_ptr<MockPromptProxy> mock_prompt =
       CreateMockPromptProxyForBrowser(browser());

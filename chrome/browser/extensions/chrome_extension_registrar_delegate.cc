@@ -350,14 +350,43 @@ void ChromeExtensionRegistrarDelegate::UpdateExternalExtensionAlert() {
   ExternalInstallManager::Get(profile_)->UpdateExternalExtensionAlert();
 }
 
+base::flat_set<int>
+ChromeExtensionRegistrarDelegate::GetDisableReasonsOnInstalled(
+    const Extension* extension,
+    int install_flags) {
+  base::flat_set<int> disable_reasons =
+      extension_registrar_->GetDisableReasonsOnInstalled(extension);
+
+  // If the old version of the extension was disabled due to corruption, this
+  // new install may correct the problem.
+  disable_reasons.erase(disable_reason::DISABLE_CORRUPTED);
+
+  // Unsupported requirements overrides the management policy.
+  if (install_flags & kInstallFlagHasRequirementErrors) {
+    disable_reasons.insert(disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT);
+  } else {
+    // Requirement is supported now, remove the corresponding disable reason
+    // instead.
+    disable_reasons.erase(disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT);
+  }
+
+  // Check if the extension was disabled because of the minimum version
+  // requirements from enterprise policy, and satisfies it now.
+  if (ExtensionManagementFactory::GetForBrowserContext(profile_)
+          ->CheckMinimumVersion(extension, nullptr)) {
+    // And remove the corresponding disable reason.
+    disable_reasons.erase(disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY);
+  }
+
+  return disable_reasons;
+}
+
 void ChromeExtensionRegistrarDelegate::OnExtensionInstalled(
     const Extension* extension,
     const syncer::StringOrdinal& page_ordinal,
     int install_flags,
     base::DictValue ruleset_install_prefs) {
   const std::string& id = extension->id();
-  base::flat_set<int> disable_reasons =
-      extension_registrar_->GetDisableReasonsOnInstalled(extension);
   std::string install_parameter;
   auto* pending_extension_manager = PendingExtensionManager::Get(profile_);
   const PendingExtensionInfo* pending_extension_info =
@@ -402,34 +431,6 @@ void ChromeExtensionRegistrarDelegate::OnExtensionInstalled(
 
     install_parameter = pending_extension_info->install_parameter();
     pending_extension_manager->Remove(id);
-  } else if (!is_reinstall_for_corruption) {
-    // We explicitly want to re-enable an uninstalled external
-    // extension; if we're here, that means the user is manually
-    // installing the extension.
-    if (extension_prefs_->IsExternalExtensionUninstalled(id)) {
-      disable_reasons.clear();
-    }
-  }
-
-  // If the old version of the extension was disabled due to corruption, this
-  // new install may correct the problem.
-  disable_reasons.erase(disable_reason::DISABLE_CORRUPTED);
-
-  // Unsupported requirements overrides the management policy.
-  if (install_flags & kInstallFlagHasRequirementErrors) {
-    disable_reasons.insert(disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT);
-  } else {
-    // Requirement is supported now, remove the corresponding disable reason
-    // instead.
-    disable_reasons.erase(disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT);
-  }
-
-  // Check if the extension was disabled because of the minimum version
-  // requirements from enterprise policy, and satisfies it now.
-  if (ExtensionManagementFactory::GetForBrowserContext(profile_)
-          ->CheckMinimumVersion(extension, nullptr)) {
-    // And remove the corresponding disable reason.
-    disable_reasons.erase(disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY);
   }
 
   if (install_flags & kInstallFlagIsBlocklistedForMalware) {
@@ -458,13 +459,13 @@ void ChromeExtensionRegistrarDelegate::OnExtensionInstalled(
   switch (action) {
     case InstallGate::INSTALL:
       extension_registrar_->AddNewOrUpdatedExtension(
-          extension, disable_reasons, install_flags, page_ordinal,
-          install_parameter, std::move(ruleset_install_prefs));
+          extension, install_flags, page_ordinal, install_parameter,
+          std::move(ruleset_install_prefs));
       return;
     case InstallGate::DELAY:
       extension_prefs_->SetDelayedInstallInfo(
-          extension, disable_reasons, install_flags, delay_reason, page_ordinal,
-          install_parameter, std::move(ruleset_install_prefs));
+          extension, {install_flags, delay_reason, page_ordinal,
+                      install_parameter, std::move(ruleset_install_prefs)});
 
       // Transfer ownership of |extension|.
       delayed_install_manager->Insert(extension);

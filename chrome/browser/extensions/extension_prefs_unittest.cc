@@ -487,7 +487,12 @@ TEST_F(ExtensionPrefsAcknowledgment, Acknowledgment) {}
 class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
  public:
   // Sets idle install information for one test extension.
-  void SetIdleInfo(const std::string& id, int num) {
+  void SetIdleInfo(
+      const std::string& id,
+      int num,
+      int install_flags = kInstallFlagNone,
+      const syncer::StringOrdinal& page_ordinal = syncer::StringOrdinal(),
+      const std::string& install_parameter = std::string()) {
     base::DictValue manifest;
     manifest.Set(manifest_keys::kName, "test");
     manifest.Set(manifest_keys::kVersion, "1." + base::NumberToString(num));
@@ -500,16 +505,23 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
                           Extension::NO_FLAGS, id, &errors);
     ASSERT_TRUE(extension.get()) << errors;
     ASSERT_EQ(id, extension->id());
-    prefs()->SetDelayedInstallInfo(extension.get(), /*disable_reasons=*/{},
-                                   kInstallFlagNone,
-                                   ExtensionPrefs::DelayReason::kWaitForIdle,
-                                   syncer::StringOrdinal(), std::string());
+    prefs()->SetDelayedInstallInfo(
+        extension.get(),
+        {install_flags, ExtensionPrefs::DelayReason::kWaitForIdle, page_ordinal,
+         install_parameter});
   }
 
   // Verifies that we get back expected idle install information previously
   // set by SetIdleInfo.
-  void VerifyIdleInfo(const std::string& id, int num) {
-    std::optional<ExtensionInfo> info(prefs()->GetDelayedInstallInfo(id));
+  void VerifyIdleInfo(
+      const std::string& id,
+      int num,
+      int expected_flags = kInstallFlagNone,
+      const syncer::StringOrdinal& expected_page_ordinal =
+          syncer::StringOrdinal(),
+      const std::string& expected_install_parameter = std::string()) {
+    std::optional<ExtensionInfo> info(
+        prefs()->GetDelayedInstallExtensionInfo(id));
     ASSERT_TRUE(info);
     const std::string* version =
         info->extension_manifest->FindString("version");
@@ -517,6 +529,17 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     ASSERT_EQ("1." + base::NumberToString(num), *version);
     ASSERT_EQ(base::NumberToString(num),
               info->extension_path.BaseName().MaybeAsASCII());
+
+    ExtensionPrefs::DelayedInstallInfo delayed_info =
+        prefs()->GetDelayedInstallInfo(id);
+    EXPECT_EQ(expected_flags, delayed_info.install_flags);
+    EXPECT_EQ(delayed_info.page_ordinal.IsValid(),
+              expected_page_ordinal.IsValid());
+    if (expected_page_ordinal.IsValid()) {
+      EXPECT_TRUE(delayed_info.page_ordinal.Equals(expected_page_ordinal));
+    }
+    EXPECT_EQ(expected_install_parameter, delayed_info.install_parameter);
+    EXPECT_TRUE(delayed_info.ruleset_install_prefs.empty());
   }
 
   bool HasInfoForId(const ExtensionPrefs::ExtensionsInfo& info,
@@ -535,7 +558,7 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     id3_ = prefs_.AddExtensionAndReturnId("3");
     id4_ = prefs_.AddExtensionAndReturnId("4");
 
-    // Set info for two extensions, then remove it.
+    // Set info for two extensions.
     SetIdleInfo(id1_, 1);
     SetIdleInfo(id2_, 2);
     VerifyIdleInfo(id1_, 1);
@@ -544,44 +567,27 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     EXPECT_EQ(2u, info.size());
     EXPECT_TRUE(HasInfoForId(info, id1_));
     EXPECT_TRUE(HasInfoForId(info, id2_));
-    prefs()->RemoveDelayedInstallInfo(id1_);
-    prefs()->RemoveDelayedInstallInfo(id2_);
-    info = prefs()->GetAllDelayedInstallInfo();
-    EXPECT_TRUE(info.empty());
+    EXPECT_FALSE(prefs()->GetDelayedInstallExtensionInfo(id3_));
 
-    // Try getting/removing info for an id that used to have info set.
-    EXPECT_FALSE(prefs()->GetDelayedInstallInfo(id1_));
-    EXPECT_FALSE(prefs()->RemoveDelayedInstallInfo(id1_));
-
-    // Try getting/removing info for an id that has not yet had any info set.
-    EXPECT_FALSE(prefs()->GetDelayedInstallInfo(id3_));
-    EXPECT_FALSE(prefs()->RemoveDelayedInstallInfo(id3_));
-
-    // Set info for 4 extensions, then remove for one of them.
-    SetIdleInfo(id1_, 1);
-    SetIdleInfo(id2_, 2);
+    // Set info for 2 more extensions.
     SetIdleInfo(id3_, 3);
-    SetIdleInfo(id4_, 4);
-    VerifyIdleInfo(id1_, 1);
-    VerifyIdleInfo(id2_, 2);
-    VerifyIdleInfo(id3_, 3);
-    VerifyIdleInfo(id4_, 4);
-    prefs()->RemoveDelayedInstallInfo(id3_);
+    SetIdleInfo(id4_, 4, kInstallFlagDoNotSync, syncer::StringOrdinal(),
+                "TestParam");
   }
 
   void Verify() override {
-    // Make sure the info for the 3 extensions we expect is present.
+    // Make sure the info for the 4 extensions we expect is present.
     ExtensionPrefs::ExtensionsInfo info = prefs()->GetAllDelayedInstallInfo();
-    EXPECT_EQ(3u, info.size());
+    EXPECT_EQ(4u, info.size());
     EXPECT_TRUE(HasInfoForId(info, id1_));
     EXPECT_TRUE(HasInfoForId(info, id2_));
+    EXPECT_TRUE(HasInfoForId(info, id3_));
     EXPECT_TRUE(HasInfoForId(info, id4_));
     VerifyIdleInfo(id1_, 1);
     VerifyIdleInfo(id2_, 2);
-    VerifyIdleInfo(id4_, 4);
-
-    // Make sure there isn't info the for the one extension id we removed.
-    EXPECT_FALSE(prefs()->GetDelayedInstallInfo(id3_));
+    VerifyIdleInfo(id3_, 3);
+    VerifyIdleInfo(id4_, 4, kInstallFlagDoNotSync, syncer::StringOrdinal(),
+                   "TestParam");
   }
 
  protected:
@@ -593,70 +599,6 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
   std::string id4_;
 };
 TEST_F(ExtensionPrefsDelayedInstallInfo, DelayedInstallInfo) {}
-
-// Tests the FinishDelayedInstallInfo function.
-class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
- public:
-  void Initialize() override {
-    base::DictValue dictionary;
-    dictionary.Set(manifest_keys::kName, "test");
-    dictionary.Set(manifest_keys::kVersion, "0.1");
-    dictionary.Set(manifest_keys::kManifestVersion, 2);
-    dictionary.SetByDottedPath(manifest_keys::kBackgroundPage,
-                               "background.html");
-    scoped_refptr<Extension> extension = prefs_.AddExtensionWithManifest(
-        dictionary, ManifestLocation::kInternal);
-    id_ = extension->id();
-
-    // Set idle info
-    base::DictValue manifest;
-    manifest.Set(manifest_keys::kName, "test");
-    manifest.Set(manifest_keys::kVersion, "0.2");
-    manifest.Set(manifest_keys::kManifestVersion, 2);
-    base::ListValue scripts;
-    scripts.Append("test.js");
-    manifest.SetByDottedPath(manifest_keys::kBackgroundScripts,
-                             std::move(scripts));
-    base::FilePath path = prefs_.extensions_dir().AppendASCII("test_0.2");
-    std::u16string errors;
-    scoped_refptr<Extension> new_extension =
-        Extension::Create(path, ManifestLocation::kInternal, manifest,
-                          Extension::NO_FLAGS, id_, &errors);
-    ASSERT_TRUE(new_extension.get()) << errors;
-    ASSERT_EQ(id_, new_extension->id());
-    prefs()->SetDelayedInstallInfo(new_extension.get(), /*disable_reasons=*/{},
-                                   kInstallFlagNone,
-                                   ExtensionPrefs::DelayReason::kWaitForIdle,
-                                   syncer::StringOrdinal(), "Param");
-
-    // Finish idle installation
-    ASSERT_TRUE(prefs()->FinishDelayedInstallInfo(id_));
-  }
-
-  void Verify() override {
-    EXPECT_FALSE(prefs()->GetDelayedInstallInfo(id_));
-    EXPECT_EQ(std::string("Param"), GetInstallParam(prefs(), id_));
-
-    const base::DictValue* dict = prefs()->ReadPrefAsDict(id_, "manifest");
-    ASSERT_TRUE(dict);
-    const std::string* name = dict->FindString(manifest_keys::kName);
-    ASSERT_TRUE(name);
-    EXPECT_EQ("test", *name);
-    const std::string* version = dict->FindString(manifest_keys::kVersion);
-    ASSERT_TRUE(version);
-    EXPECT_EQ("0.2", *version);
-    EXPECT_FALSE(dict->FindString(manifest_keys::kBackgroundPage));
-    const base::ListValue* scripts =
-        dict->FindListByDottedPath(manifest_keys::kBackgroundScripts);
-    ASSERT_TRUE(scripts);
-    EXPECT_EQ(1u, scripts->size());
-  }
-
- protected:
-  std::string id_;
-};
-
-TEST_F(ExtensionPrefsFinishDelayedInstallInfo, FinishDelayedInstallInfo) {}
 
 class ExtensionPrefsOnExtensionInstalled : public ExtensionPrefsTest {
  public:

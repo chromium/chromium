@@ -220,8 +220,8 @@ TEST_F(ExtensionGarbageCollectorUnitTest, UpdateOnStartup) {
 
   // Make sure update information got deleted.
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-  EXPECT_FALSE(
-      prefs->GetDelayedInstallInfo("bjafgdebaacbbbecmhlhpofkepfkgcpa"));
+  EXPECT_FALSE(prefs->GetDelayedInstallExtensionInfo(
+      "bjafgdebaacbbbecmhlhpofkepfkgcpa"));
 }
 
 }  // namespace extensions
