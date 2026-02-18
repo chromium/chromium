@@ -309,9 +309,6 @@ class VIEWS_EXPORT BubbleFrameView : public FrameView {
   // Returns the positioning options for the buttons.
   ButtonsPositioning GetButtonsPositioning() const;
 
-  // Returns true if there're buttons in the title row.
-  bool TitleRowHasButtons() const;
-
   // The insets of the text portion of the title, based on |title_margins_| and
   // whether there is an icon and/or close button. Note there may be no title,
   // in which case only insets required for the close button are returned.

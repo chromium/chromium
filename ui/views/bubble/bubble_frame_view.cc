@@ -1188,12 +1188,6 @@ BubbleFrameView::ButtonsPositioning BubbleFrameView::GetButtonsPositioning()
              : ButtonsPositioning::kOnFrameEdge;
 }
 
-bool BubbleFrameView::TitleRowHasButtons() const {
-  return GetButtonsPositioning() == ButtonsPositioning::kInTitleRow &&
-         (GetWidget()->widget_delegate()->ShouldShowCloseButton() ||
-          GetWidget()->widget_delegate()->CanMinimize());
-}
-
 gfx::Insets BubbleFrameView::GetTitleLabelInsetsFromFrame() const {
   const gfx::Rect content_bounds = GetContentsBounds();
   const int header_height =
