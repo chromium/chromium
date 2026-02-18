@@ -1151,7 +1151,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{O Chrome impediu o envio de notificações de um site que você não visita faz tempo}one{O Chrome impediu o envio de notificações de um site que você não visita faz tempo}other{O Chrome impediu o envio de notificações de sites que você não visita faz tempo}}</translation>
 <translation id="5962718611393537961">Toque para recolher</translation>
 <translation id="5964869237734432770">Parar descrição de imagens</translation>
-<translation id="5972844218283131174">Desmarcar tudo</translation>
+<translation id="5972844218283131174">Desmarcar todas</translation>
 <translation id="5975083100439434680">Diminuir zoom</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 página na sua Lista de Leitura}one{# página na sua Lista de Leitura}other{# páginas na sua Lista de Leitura}}</translation>

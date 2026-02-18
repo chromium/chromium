@@ -117,7 +117,7 @@
 <translation id="4565377596337484307">عدم نمایش گذرواژه</translation>
 <translation id="4588090240171750605">پیمایش به راست</translation>
 <translation id="4689010477870442157">{YEARS,plural, =1{یک سال قبل}one{# سال قبل}other{# سال قبل}}</translation>
-<translation id="4724120544754982507">مرکز اعلان، <ph name="UNREAD_NOTIFICATION_COUNT" /> اعلان خوانده‌نشده</translation>
+<translation id="4724120544754982507">«مرکز اعلان‌ها»، <ph name="UNREAD_NOTIFICATION_COUNT" /> اعلان خوانده‌نشده</translation>
 <translation id="4729257764711776855">شماره</translation>
 <translation id="4746179598275229723">سنجاق افزونه برداشته شد</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{۱ ماه باقی مانده است}one{# ماه باقی مانده است}other{# ماه باقی مانده است}}</translation>
