@@ -111,6 +111,21 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 @interface QuickDeleteMediator () <IdentityManagerObserverBridgeDelegate,
                                    PrefObserverDelegate,
                                    SearchEngineObserving>
+
+// Private designated initializer for this mediator.
+- (instancetype)initWithPrefs:(PrefService*)prefs
+    browsingDataCounterWrapperProducer:
+        (BrowsingDataCounterWrapperProducer*)counterWrapperProducer
+                       identityManager:(signin::IdentityManager*)identityManager
+                   browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
+                   discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                    templateURLService:(TemplateURLService*)templateURLService
+         canPerformRadialWipeAnimation:(BOOL)canPerformRadialWipeAnimation
+                             timeRange:(browsing_data::TimePeriod)timeRange
+                       uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget
+              featureEngagementTracker:(feature_engagement::Tracker*)tracker
+    NS_DESIGNATED_INITIALIZER;
+
 @end
 
 @implementation QuickDeleteMediator {
@@ -187,11 +202,10 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
                    discoverFeedService:(DiscoverFeedService*)discoverFeedService
                     templateURLService:(TemplateURLService*)templateURLService
          canPerformRadialWipeAnimation:(BOOL)canPerformRadialWipeAnimation
+                             timeRange:(browsing_data::TimePeriod)timeRange
                        uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget
               featureEngagementTracker:(feature_engagement::Tracker*)tracker {
   if ((self = [super init])) {
-    CHECK(uiBlockerTarget);
-    _uiBlockerTarget = uiBlockerTarget;
     _prefs = prefs;
     _counterWrapperProducer = counterWrapperProducer;
     _identityManager = identityManager;
@@ -209,20 +223,47 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
     }
     _defaultSearchEngineState =
         quick_delete_util::GetDefaultSearchEngineState(_templateURLService);
+    _canPerformRadialWipeAnimation = canPerformRadialWipeAnimation;
+    _selectedTimeRange = timeRange;
+
+    CHECK(uiBlockerTarget);
+    _uiBlockerTarget = uiBlockerTarget;
+
     _tracker = tracker;
 
     _prefChangeRegistrar.Init(_prefs);
     _prefObserverBridge.reset(new PrefObserverBridge(self));
 
-    _selectedTimeRange = static_cast<browsing_data::TimePeriod>(
-        _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
-
     // Start observing preferences.
     [self observePreferences];
-
-    _canPerformRadialWipeAnimation = canPerformRadialWipeAnimation;
   }
   return self;
+}
+
+- (instancetype)initWithPrefs:(PrefService*)prefs
+    browsingDataCounterWrapperProducer:
+        (BrowsingDataCounterWrapperProducer*)counterWrapperProducer
+                       identityManager:(signin::IdentityManager*)identityManager
+                   browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
+                   discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                    templateURLService:(TemplateURLService*)templateURLService
+         canPerformRadialWipeAnimation:(BOOL)canPerformRadialWipeAnimation
+                       uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget
+              featureEngagementTracker:(feature_engagement::Tracker*)tracker {
+  browsing_data::TimePeriod defaultTimeRange =
+      static_cast<browsing_data::TimePeriod>(
+          prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
+
+  return [self initWithPrefs:prefs
+      browsingDataCounterWrapperProducer:counterWrapperProducer
+                         identityManager:identityManager
+                     browsingDataRemover:browsingDataRemover
+                     discoverFeedService:discoverFeedService
+                      templateURLService:templateURLService
+           canPerformRadialWipeAnimation:canPerformRadialWipeAnimation
+                               timeRange:defaultTimeRange
+                         uiBlockerTarget:uiBlockerTarget
+                featureEngagementTracker:tracker];
 }
 
 - (instancetype)initWithPrefs:(PrefService*)prefs
@@ -235,39 +276,16 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
                              timeRange:(browsing_data::TimePeriod)timeRange
                        uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget
               featureEngagementTracker:(feature_engagement::Tracker*)tracker {
-  if ((self = [super init])) {
-    CHECK(uiBlockerTarget);
-    _uiBlockerTarget = uiBlockerTarget;
-    _prefs = prefs;
-    _counterWrapperProducer = counterWrapperProducer;
-    _identityManager = identityManager;
-    _isSignedIn =
-        _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-    _identityManagerObserver =
-        std::make_unique<signin::IdentityManagerObserverBridge>(
-            _identityManager, self);
-    _browsingDataRemover = browsingDataRemover;
-    _discoverFeedService = discoverFeedService;
-    _templateURLService = templateURLService;
-    if (_templateURLService) {
-      _searchEngineObserver = std::make_unique<SearchEngineObserverBridge>(
-          self, templateURLService);
-    }
-    _defaultSearchEngineState =
-        quick_delete_util::GetDefaultSearchEngineState(_templateURLService);
-    _tracker = tracker;
-
-    _prefChangeRegistrar.Init(_prefs);
-    _prefObserverBridge.reset(new PrefObserverBridge(self));
-
-    _selectedTimeRange = timeRange;
-
-    // Start observing preferences.
-    [self observePreferences];
-
-    _canPerformRadialWipeAnimation = NO;
-  }
-  return self;
+  return [self initWithPrefs:prefs
+      browsingDataCounterWrapperProducer:counterWrapperProducer
+                         identityManager:identityManager
+                     browsingDataRemover:browsingDataRemover
+                     discoverFeedService:discoverFeedService
+                      templateURLService:templateURLService
+           canPerformRadialWipeAnimation:NO
+                               timeRange:timeRange
+                         uiBlockerTarget:uiBlockerTarget
+                featureEngagementTracker:tracker];
 }
 
 - (void)setConsumer:(id<QuickDeleteConsumer>)consumer {
