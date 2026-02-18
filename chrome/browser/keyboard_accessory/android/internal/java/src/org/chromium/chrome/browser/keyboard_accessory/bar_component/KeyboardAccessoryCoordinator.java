@@ -316,6 +316,11 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
         mButtonGroup.getTabSwitchingDelegate().setActiveTab(tabType);
     }
 
+    @VisibleForTesting
+    public boolean hasTabs() {
+        return mButtonGroup.getTabSwitchingDelegate().hasTabs();
+    }
+
     /**
      * Allows any {@link Provider} to communicate with the {@link KeyboardAccessoryMediator} of this
      * component.
