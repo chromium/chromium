@@ -413,7 +413,7 @@ void HTMLVideoElement::OnVisibilityRatioReport(double ratio) {
 
 void HTMLVideoElement::ResetCache(TimerBase*) {
   snapshot_provider_.reset();
-  sw_draw_info_.reset();
+  cached_draw_info_.reset();
 }
 
 bool HTMLVideoElement::IsPersistent() const {
@@ -634,9 +634,8 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       *media_video_frame, size, reinterpret_as_srgb);
 
   bool cached_info_matches_required_info =
-      (snapshot_provider_ &&
-       required_provider_info.Matches(*snapshot_provider_)) ||
-      (sw_draw_info_ && required_provider_info.Matches(sw_draw_info_.value()));
+      cached_draw_info_ &&
+      required_provider_info.Matches(cached_draw_info_.value());
   if (!cached_info_matches_required_info ||
       allow_accelerated_images != allow_accelerated_images_) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
@@ -647,7 +646,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       }
     }
     snapshot_provider_.reset();
-    sw_draw_info_.reset();
+    cached_draw_info_ = required_provider_info;
 
     if (ShouldCreateAcceleratedImages(raster_context_provider)) {
       snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
@@ -659,8 +658,6 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       if (!snapshot_provider_) {
         return nullptr;
       }
-    } else {
-      sw_draw_info_ = required_provider_info;
     }
 
     allow_accelerated_images_ = allow_accelerated_images;
@@ -668,9 +665,11 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   cache_deleting_timer_.StartOneShot(kTemporaryResourceDeletionDelay,
                                      FROM_HERE);
 
+  std::optional<CanvasSnapshotProvider::Info> sw_draw_info =
+      snapshot_provider_ ? std::nullopt : cached_draw_info_;
   auto image = CreateImageFromVideoFrame(
-      std::move(media_video_frame), snapshot_provider_.get(), sw_draw_info_,
-      video_renderer,
+      std::move(media_video_frame), snapshot_provider_.get(),
+      std::move(sw_draw_info), video_renderer,
       /*prefer_tagged_orientation=*/true, reinterpret_as_srgb);
   if (image)
     image->SetOriginClean(!WouldTaintOrigin());
