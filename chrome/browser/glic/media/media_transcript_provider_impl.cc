@@ -43,4 +43,10 @@ MediaTranscriptProviderImpl::GetTranscriptsForFrame(
   return transcripts;
 }
 
+void MediaTranscriptProviderImpl::OnTranscriptionBeginForFrame(
+    content::RenderFrameHost* rfh) {
+  DCHECK(rfh);
+  // TODO: implement this function.
+}
+
 }  // namespace glic

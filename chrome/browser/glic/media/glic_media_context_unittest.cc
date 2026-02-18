@@ -11,6 +11,8 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/content/browser/media_transcript_provider.h"
+#include "components/optimization_guide/content/browser/mock_media_transcript_provider.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_media_session.h"
@@ -607,6 +609,17 @@ TEST_F(GlicMediaContextTest, GetMediaSessionIfExists_FiltersByRoutedFrame) {
   ON_CALL(mock_media_session(), GetRoutedFrame).WillByDefault(Return(rfh()));
   EXPECT_TRUE(context()->OnResult(CreateSpeechRecognitionResult("test", true)));
   EXPECT_EQ(context()->GetContext(), "test");
+}
+
+TEST_F(GlicMediaContextTest, OnResult_NotifiesTranscriptProvider) {
+  auto mock_provider =
+      std::make_unique<optimization_guide::MockMediaTranscriptProvider>();
+  EXPECT_CALL(*mock_provider, OnTranscriptionBeginForFrame(rfh()));
+  optimization_guide::MediaTranscriptProvider::SetFor(web_contents(),
+                                                      std::move(mock_provider));
+
+  // The first final result should trigger the notification.
+  EXPECT_TRUE(context()->OnResult(CreateSpeechRecognitionResult("test", true)));
 }
 
 }  // namespace glic
