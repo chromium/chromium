@@ -153,7 +153,6 @@ TEST_P(FeatureInfoTest, Basic) {
   EXPECT_FALSE(info_->feature_flags().oes_egl_image_external);
   EXPECT_FALSE(info_->feature_flags().nv_egl_stream_consumer_external);
   EXPECT_FALSE(info_->feature_flags().oes_depth24);
-  EXPECT_FALSE(info_->feature_flags().packed_depth24_stencil8);
   EXPECT_FALSE(info_->feature_flags().angle_translated_shader_source);
   EXPECT_FALSE(info_->feature_flags().arb_texture_rectangle);
   EXPECT_FALSE(info_->feature_flags().angle_instanced_arrays);
@@ -165,7 +164,6 @@ TEST_P(FeatureInfoTest, Basic) {
   EXPECT_FALSE(info_->feature_flags().nv_draw_buffers);
   EXPECT_FALSE(info_->feature_flags().ext_discard_framebuffer);
   EXPECT_FALSE(info_->feature_flags().angle_depth_texture);
-  EXPECT_FALSE(info_->feature_flags().ext_read_format_bgra);
 
 #define GPU_OP(type, name) EXPECT_FALSE(info_->workarounds().name);
   GPU_DRIVER_BUG_WORKAROUNDS(GPU_OP)
@@ -441,7 +439,6 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_format_BGRA8888GLES2) {
       GL_BGRA8_EXT));
   EXPECT_FALSE(info_->feature_flags().ext_render_buffer_format_bgra8888);
   EXPECT_FALSE(info_->validators()->read_pixel_format.IsValid(GL_BGRA8_EXT));
-  EXPECT_FALSE(info_->feature_flags().ext_read_format_bgra);
 }
 
 TEST_P(FeatureInfoTest, InitializeEXT_texture_format_BGRA8888Apple) {
@@ -460,7 +457,6 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_format_BGRA8888Apple) {
       GL_BGRA8_EXT));
   EXPECT_FALSE(info_->feature_flags().ext_render_buffer_format_bgra8888);
   EXPECT_FALSE(info_->validators()->read_pixel_format.IsValid(GL_BGRA8_EXT));
-  EXPECT_FALSE(info_->feature_flags().ext_read_format_bgra);
 }
 
 TEST_P(FeatureInfoTest, InitializeGLES_no_EXT_texture_format_BGRA8888GL) {
@@ -477,7 +473,6 @@ TEST_P(FeatureInfoTest, InitializeGLES2EXT_read_format_bgra) {
       "GL_EXT_read_format_bgra", "", "OpenGL ES 2.0");
   EXPECT_TRUE(
       gfx::HasExtension(info_->extensions(), "GL_EXT_read_format_bgra"));
-  EXPECT_TRUE(info_->feature_flags().ext_read_format_bgra);
   EXPECT_TRUE(info_->validators()->read_pixel_format.IsValid(
       GL_BGRA_EXT));
 
@@ -495,7 +490,6 @@ TEST_P(FeatureInfoTest, InitializeGLES_no_EXT_read_format_bgra) {
   SetupInitExpectationsWithGLVersion("", "", "OpenGL ES 2.0");
   EXPECT_FALSE(
       gfx::HasExtension(info_->extensions(), "GL_EXT_read_format_bgra"));
-  EXPECT_FALSE(info_->feature_flags().ext_read_format_bgra);
   EXPECT_FALSE(info_->validators()->read_pixel_format.IsValid(GL_BGRA_EXT));
 }
 
@@ -1208,7 +1202,6 @@ TEST_P(FeatureInfoTest, InitializeWithES3) {
   EXPECT_FALSE(info_->validators()->pixel_type.IsValid(GL_UNSIGNED_SHORT));
   EXPECT_FALSE(info_->validators()->pixel_type.IsValid(GL_UNSIGNED_INT));
   EXPECT_FALSE(info_->validators()->pixel_type.IsValid(GL_UNSIGNED_INT_24_8));
-  EXPECT_TRUE(info_->feature_flags().packed_depth24_stencil8);
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(), "GL_OES_depth24"));
   EXPECT_TRUE(
       info_->validators()->render_buffer_format.IsValid(GL_DEPTH_COMPONENT24));
@@ -1244,7 +1237,6 @@ TEST_P(FeatureInfoTest, InitializeWithES3AndDepthTexture) {
   EXPECT_TRUE(info_->validators()->pixel_type.IsValid(GL_UNSIGNED_SHORT));
   EXPECT_TRUE(info_->validators()->pixel_type.IsValid(GL_UNSIGNED_INT));
   EXPECT_TRUE(info_->validators()->pixel_type.IsValid(GL_UNSIGNED_INT_24_8));
-  EXPECT_TRUE(info_->feature_flags().packed_depth24_stencil8);
   EXPECT_TRUE(
       info_->validators()->texture_internal_format.IsValid(GL_DEPTH_STENCIL));
   EXPECT_TRUE(info_->validators()->texture_format.IsValid(GL_DEPTH_STENCIL));
@@ -1301,7 +1293,6 @@ TEST_P(FeatureInfoTest, BlendEquationAdvancedDisabled) {
       "GL_KHR_blend_equation_advanced_coherent GL_KHR_blend_equation_advanced",
       workarounds);
   EXPECT_FALSE(info_->feature_flags().blend_equation_advanced);
-  EXPECT_FALSE(info_->feature_flags().blend_equation_advanced_coherent);
 }
 
 TEST_P(FeatureInfoTest, InitializeNoKHR_blend_equation_advanced) {
@@ -1327,7 +1318,6 @@ TEST_P(FeatureInfoTest, InitializeNV_blend_equations_advanced) {
 
 TEST_P(FeatureInfoTest, InitializeNoKHR_blend_equation_advanced_coherent) {
   SetupInitExpectationsWithGLVersion("", "ANGLE", "OpenGL ES 3.0");
-  EXPECT_FALSE(info_->feature_flags().blend_equation_advanced_coherent);
   EXPECT_FALSE(gfx::HasExtension(info_->extensions(),
                                  "GL_KHR_blend_equation_advanced_coherent"));
 }
@@ -1337,7 +1327,6 @@ TEST_P(FeatureInfoTest, InitializeKHR_blend_equations_advanced_coherent) {
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
                                 "GL_KHR_blend_equation_advanced_coherent"));
   EXPECT_TRUE(info_->feature_flags().blend_equation_advanced);
-  EXPECT_TRUE(info_->feature_flags().blend_equation_advanced_coherent);
 }
 
 TEST_P(FeatureInfoTest, InitializeEXT_texture_rgWithFloat) {

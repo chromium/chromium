@@ -368,7 +368,6 @@ void FeatureInfo::EnableEXTColorBufferFloat() {
       GL_RGBA32F);
   validators_.texture_sized_color_renderable_internal_format.AddValue(
       GL_R11F_G11F_B10F);
-  feature_flags_.enable_color_buffer_float = true;
 }
 
 void FeatureInfo::EnableEXTColorBufferHalfFloat() {
@@ -385,7 +384,6 @@ void FeatureInfo::EnableEXTColorBufferHalfFloat() {
       GL_RGB16F);
   validators_.texture_sized_color_renderable_internal_format.AddValue(
       GL_RGBA16F);
-  feature_flags_.enable_color_buffer_half_float = true;
 }
 
 void FeatureInfo::EnableEXTTextureFilterAnisotropic() {
@@ -576,8 +574,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
   }
 
   if (enable_dxt1) {
-    feature_flags_.ext_texture_format_dxt1 = true;
-
     AddExtensionString("GL_ANGLE_texture_compression_dxt1");
     validators_.compressed_texture_format.AddValue(
         GL_COMPRESSED_RGB_S3TC_DXT1_EXT);
@@ -602,8 +598,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
   }
 
   if (enable_dxt5) {
-    feature_flags_.ext_texture_format_dxt5 = true;
-
     // The difference between GL_EXT_texture_compression_s3tc and
     // GL_ANGLE_texture_compression_dxt5 is that the former
     // requires on the fly compression. The latter does not.
@@ -617,7 +611,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
   bool have_bptc =
       gfx::HasExtension(extensions, "GL_EXT_texture_compression_bptc");
   if (have_bptc) {
-    feature_flags_.ext_texture_compression_bptc = true;
     AddExtensionString("GL_EXT_texture_compression_bptc");
     validators_.compressed_texture_format.AddValue(
         GL_COMPRESSED_RGBA_BPTC_UNORM_EXT);
@@ -640,7 +633,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
   bool have_rgtc =
       gfx::HasExtension(extensions, "GL_EXT_texture_compression_rgtc");
   if (have_rgtc) {
-    feature_flags_.ext_texture_compression_rgtc = true;
     AddExtensionString("GL_EXT_texture_compression_rgtc");
     validators_.compressed_texture_format.AddValue(GL_COMPRESSED_RED_RGTC1_EXT);
     validators_.compressed_texture_format.AddValue(
@@ -662,7 +654,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
   bool have_astc =
       gfx::HasExtension(extensions, "GL_KHR_texture_compression_astc_ldr");
   if (have_astc) {
-    feature_flags_.ext_texture_format_astc = true;
     AddExtensionString("GL_KHR_texture_compression_astc_ldr");
 
     bool have_astc_hdr =
@@ -693,8 +684,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
       gfx::HasExtension(extensions, "GL_AMD_compressed_ATC_texture") ||
       gfx::HasExtension(extensions, "GL_ATI_texture_compression_atitc");
   if (have_atc) {
-    feature_flags_.ext_texture_format_atc = true;
-
     AddExtensionString("GL_AMD_compressed_ATC_texture");
     validators_.compressed_texture_format.AddValue(GL_ATC_RGB_AMD);
     validators_.compressed_texture_format.AddValue(
@@ -753,7 +742,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
       gfx::HasExtension(extensions, "GL_OES_packed_depth_stencil") ||
       gl_version_info_->is_es3) {
     AddExtensionString("GL_OES_packed_depth_stencil");
-    feature_flags_.packed_depth24_stencil8 = true;
     if (enable_depth_texture) {
       if (gl_version_info_->is_es3) {
         depth_stencil_texture_format = GL_DEPTH24_STENCIL8;
@@ -993,7 +981,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
       gfx::HasExtension(extensions, "GL_EXT_read_format_bgra");
 
   if (enable_read_format_bgra) {
-    feature_flags_.ext_read_format_bgra = true;
     AddExtensionString("GL_EXT_read_format_bgra");
     validators_.read_pixel_format.AddValue(GL_BGRA_EXT);
   }
@@ -1363,8 +1350,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
 
       AddExtensionString("GL_KHR_blend_equation_advanced");
       feature_flags_.blend_equation_advanced = true;
-      feature_flags_.blend_equation_advanced_coherent =
-          blend_equation_advanced_coherent;
     }
   }
 
@@ -1497,21 +1482,12 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
   feature_flags_.angle_webgl_compatibility = is_webgl_compatibility_context;
   feature_flags_.chromium_copy_texture =
       gfx::HasExtension(extensions, "GL_CHROMIUM_copy_texture");
-  feature_flags_.chromium_copy_compressed_texture =
-      gfx::HasExtension(extensions, "GL_CHROMIUM_copy_compressed_texture");
   feature_flags_.angle_client_arrays =
       gfx::HasExtension(extensions, "GL_ANGLE_client_arrays");
   feature_flags_.angle_request_extension =
       gfx::HasExtension(extensions, "GL_ANGLE_request_extension");
   feature_flags_.ext_pixel_buffer_object =
       gfx::HasExtension(extensions, "GL_NV_pixel_buffer_object");
-  feature_flags_.ext_unpack_subimage =
-      gfx::HasExtension(extensions, "GL_EXT_unpack_subimage");
-  feature_flags_.oes_rgb8_rgba8 =
-      gfx::HasExtension(extensions, "GL_OES_rgb8_rgba8");
-  feature_flags_.angle_robust_resource_initialization =
-      gfx::HasExtension(extensions, "GL_ANGLE_robust_resource_initialization");
-  feature_flags_.nv_fence = gfx::HasExtension(extensions, "GL_NV_fence");
 
   if (gfx::HasExtension(extensions, "GL_EXT_debug_marker")) {
     feature_flags_.ext_debug_marker = true;
@@ -1556,7 +1532,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
 
   if (gfx::HasExtension(extensions, "GL_KHR_robust_buffer_access_behavior")) {
     AddExtensionString("GL_KHR_robust_buffer_access_behavior");
-    feature_flags_.khr_robust_buffer_access_behavior = true;
   }
 
   EnableWEBGLMultiDrawIfPossible(extensions);
