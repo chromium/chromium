@@ -876,20 +876,6 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
     }
   }
 
-  // ------------------------------------------------------------------------
-  // To avoid spurious reordering, don't remove headers that will be updated
-  // anyway.
-  std::erase_if(
-      updates_for_resource_request.removed_headers,
-      [&](const std::string& header) {
-        return updates_for_resource_request.modified_headers.HasHeader(header);
-      });
-  std::erase_if(
-      updates_for_follow_redirect.removed_headers,
-      [&](const std::string& header) {
-        return updates_for_follow_redirect.modified_headers.HasHeader(header);
-      });
-
   return std::make_tuple(std::move(updates_for_resource_request),
                          std::move(updates_for_follow_redirect));
 }

@@ -3407,13 +3407,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // - headers that should be present on the request to `modified_headers`, and
   // - cors-exempt headers that should be present on the request to
   //   `modified_cors_exempt_headers`.
-  //
-  // Note that when the same header is added to both `removed_headers` and
-  // `modified_headers`, the header is simply overridden instead of being
-  // removed and then added to keep the header order. On the other hand, when
-  // the same header is added to both `removed_headers` and
-  // `modified_cors_exempt_headers`, the header is removed and then added,
-  // possibly with ordering change.
   virtual void ModifyRequestHeadersForPrefetch(
       const GURL& url,
       std::vector<std::string>& removed_headers,
