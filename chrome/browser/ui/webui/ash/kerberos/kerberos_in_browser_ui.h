@@ -10,10 +10,6 @@
 #include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace ash {
 
 class KerberosInBrowserUI;
@@ -23,8 +19,6 @@ class KerberosInBrowserUIConfig
     : public ChromeOSWebUIConfig<KerberosInBrowserUI> {
  public:
   KerberosInBrowserUIConfig();
-
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // Kerberos UI class. This UI is invoked, when Kerberos authentication

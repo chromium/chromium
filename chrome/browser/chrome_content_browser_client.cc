@@ -24,7 +24,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -369,7 +368,6 @@
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/data_url.h"
-#include "net/base/features.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/ssl/client_cert_store.h"
@@ -6874,9 +6872,8 @@ ChromeContentBrowserClient::CreateLoginDelegate(
   // create a TGT using their credentials. Note that the credentials are NOT
   // passed to the browser and everything happens on OS level, hence we return
   // nullptr instead of LoginDelegate to fail authentication. (See b/260522530).
-  if (base::FeatureList::IsEnabled(net::features::kKerberosInBrowserRedirect) &&
-      auth_info.scheme ==
-          net::HttpAuth::SchemeToString(net::HttpAuth::AUTH_SCHEME_NEGOTIATE)) {
+  if (auth_info.scheme ==
+      net::HttpAuth::SchemeToString(net::HttpAuth::AUTH_SCHEME_NEGOTIATE)) {
     ash::KerberosInBrowserDialog::Show();
     return nullptr;
   }

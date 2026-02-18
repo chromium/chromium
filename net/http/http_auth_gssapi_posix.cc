@@ -10,7 +10,6 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -21,7 +20,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_gssapi_posix.h"
@@ -664,11 +662,7 @@ bool HttpAuthGSSAPI::NeedsIdentity() const {
 
 bool HttpAuthGSSAPI::AllowsExplicitCredentials() const {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(features::kKerberosInBrowserRedirect)) {
-    return true;
-  } else {
-    return false;
-  }
+  return true;
 #else
   return false;
 #endif
