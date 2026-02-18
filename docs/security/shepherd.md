@@ -1,17 +1,13 @@
 # Security Shepherd
 
 ## What is Security Shepherding?
-Security Shepherding is a rotational assignment for security bug triage
-(Primary Shepherd) and managing the flow of incoming inquiries and progressing
-security issues (Secondary Shepherd). The Shepherding rota pool is made up of
-people actively working on security in Chrome.
+Security Shepherding is a rotation for security bug triage. The Shepherding
+rotation is made up of people actively working on security in Chrome. At any
+given time there are two shepherds on shift.
 
 All Security Shepherds are Googlers; therefore, some links on this page may
 not be externally accessible or even further restricted to just Chrome Security
 Googlers.
-
-There is a Primary and Secondary Shepherd scheduled each rotation, with two
-rotations each week, one Tuesday - Thursday and Friday - Monday.
 
 Security Shepherding is *not* an on-call rotation. There’s no pager duty, nor
 are you expected to perform Shepherding duties outside of your usual working
@@ -68,14 +64,6 @@ wild (0-day), triage it **as soon as possible**. Often, such a bug is reported
 by Google's Threat Analysis Group (TAG) and is described as a 0-day. Even if you
 are not sure, reach out in the Shepherds chat to see if you need an Incident
 Responder (IR). See [Incident response](#Incident-response) for further details.
-
-## TL;DR Checklist for Secondary Shepherding
-(“I’m Secondary Shepherd, what do I do???”)
-
-* [*Check in on triaged issues*](#Check-in-on-triaged-issues) to ensure progress
-  is being made on medium+ (S2-S0) severity security bugs.
-* [*Manage incoming security email*](#Handle-incoming-security-emails).
-
 
 [TOC]
 
@@ -497,60 +485,6 @@ help, please do!
 You may also like the classic [HOWTO: Be a Security Shepherd deck](https://docs.google.com/presentation/d/1eISJXxyv7dUCGUKk_rvUI9t9s2xb98QY4d_-dZSa7Wg/edit#slide=id.p)
 
 Because shepherding is fun. You like fun. Don't you? Fun is great.
-
-## Secondary Shepherd
-
-### Check in on triaged issues
-
-Review open security bug reports and check that progress is occurring. This does
-not apply to the new bug reports as these are handled by the primary shepherd.
-The rule of thumb is *if there is any red cell on the dashboard, it needs your
-attention*: that especially includes the `last updated` column. Our [severity
-guidelines](severity-guidelines.md) contain the expected duration for shipping
-fixes, but it’s important to remember that to get a fix to all users in 60 days
-or so, this may require us to land a fix in a week or two.
-
-*Suggestions for cultivating progress on security bugs:*
-* Don’t just add a comment to the bug as these can disappear into spam (though a
-  well-crafted, meaningful, actionable comment can be effective).
-* Contact the owner via chat or email in addition to commenting on the bug (so
-  others on the bug can see an update is needed).
-* cc: more relevant people
-* Think about what you can do to unblock the bug. What would _you_ do next?
- Perhaps you bring in a subject matter expert of some aspect of the bug that is
- a particular sticking point or suggest a different approach to reproduce the
- bug. Sometimes a security perspective can help shed light on a different way
- forward.
-* Are there old, open `Security_Impact-None` bugs in unlaunched features, where
-  the response has been that there are no plans to launch that feature? Perhaps
-  inquire as to if that code can be removed rather than keeping vulnerable code
-  production code base. (Removing code that is not being used is a win!)
-* Consider if it is better for you to make meaningful steps forward on three
-  bugs versus simple pings on many bugs.
-
-You can’t possibly usher all bugs toward meaningful progress during your shift.
-As a general rule, expect to spend a solid two hours each day  ushering bugs
-toward progress during your shift. Use the `last updated` column to avoid
-duplicating the work of the previous secondary.
-
-### Handle incoming security emails
-
-Ensure that all incoming inquiries to the [security@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/security),
-[security-dev@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/security-dev),
-and
-[chrome-security@google.com](https://groups.google.com/a/google.com/forum/#!forum/chrome-security)
-lists get a reply (by someone; not necessarily you). See
-[go/chrome-security-emails](https://goto.google.com/chrome-security-emails)
-for a dashboard.
-
-* When triaging an email to be handled off of the list, make sure to bcc: the
-list that it arrived on, so that others (including future secondary shepherds)
-can see that it has been handled.
-* Some of these emails are requests for the inclusion of third-party code.
-By the time you do shift handoff, please ensure these are either completed or
-have been acknowledged by some other owner. If not, you may need to do them
-yourself.
-  * Please see [How to do Chrome Third-Party Security Reviews](https://goto.google.com/how-to-do-chrome-third-party-security-reviews) for tips.
 
 ## Other Helpful Info
 
