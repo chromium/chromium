@@ -1,8 +1,19 @@
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 import("//chrome/common/features.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+# Target to generate Java enums from C++ headers
+if (is_android) {
+  java_cpp_enum("enums_java") {
+    sources = [ "actor_task.h" ]
+    visibility = [ "//chrome/browser/actor/*" ]
+  }
+}
 
 source_set("actor") {
   public = [
@@ -213,7 +224,10 @@ source_set("impl") {
   }
 
   if (is_android) {
-    deps += [ "//chrome/browser/ui/android/tab_model" ]
+    deps += [
+      "//chrome/browser/actor/android",
+      "//chrome/browser/ui/android/tab_model",
+    ]
   }
 
   if (!skip_android_unmigrated_actor_files) {

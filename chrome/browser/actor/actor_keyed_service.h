@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/supports_user_data.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
@@ -47,6 +48,7 @@ class ToolRequest;
 // This class owns all ActorTasks for a given profile. ActorTasks are kept in
 // memory until the process is destroyed.
 class ActorKeyedService : public KeyedService,
+                          public base::SupportsUserData,
                           public ProfileObserver,
                           public download::AllDownloadItemNotifier::Observer {
  public:

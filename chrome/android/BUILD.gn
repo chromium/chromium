@@ -389,6 +389,7 @@ if (_is_default_toolchain) {
 
       # TODO(ssid): Decouple dependency on internal library.
       "//base:holder_java",
+      "//chrome/browser/actor/android:actor_java",
       "//chrome/browser/autofill/android:third_party_provider_java",
       "//chrome/browser/collaboration:utils_java",
       "//chrome/browser/data_sharing:data_sharing_public_java",
@@ -920,6 +921,7 @@ if (_is_default_toolchain) {
     deps = [
       ":chrome_java",
       "//chrome/android/features/keyboard_accessory:internal_java",
+      "//chrome/browser/actor/android:actor_java",
       "//chrome/browser/android/content:java",
       "//chrome/browser/android/httpclient:java",
       "//chrome/browser/commerce/merchant_viewer/android:java",

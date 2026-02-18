@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -57,7 +58,7 @@ struct ActionResultWithLatencyInfo;
 //
 // The task is created under actor control. It may be paused or resumed to move
 // between actor and user control.
-class ActorTask {
+class ActorTask : public base::SupportsUserData {
  public:
   using ActCallback =
       base::OnceCallback<void(mojom::ActionResultPtr,
@@ -73,7 +74,7 @@ class ActorTask {
             webui::mojom::TaskOptionsPtr options,
             const EnterprisePolicyUrlChecker* policy_checker,
             base::WeakPtr<ActorTaskDelegate> delegate = nullptr);
-  ~ActorTask();
+  ~ActorTask() override;
 
   ActorTask() = delete;
   ActorTask(const ActorTask&) = delete;
@@ -102,6 +103,8 @@ class ActorTask {
   // rather than querying `state_` directly.
   //
   // LINT.IfChange(State)
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.actor
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ActorTaskState
   // These enum values are persisted to logs. Do not renumber or reuse numeric
   // values.
   enum class State {
@@ -119,6 +122,7 @@ class ActorTask {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:ActorTaskState)
 
   // LINT.IfChange(StoppedReason)
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.actor
   // The reason a task was stopped.
   enum class StoppedReason {
     kStoppedByUser = 0,

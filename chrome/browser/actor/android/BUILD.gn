@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("actor_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorTask.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/profiles/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  srcjar_deps = [
+    ":jni_headers",
+    "//chrome/browser/actor:enums_java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [ ":*" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorTask.java",
+  ]
+}
+
+source_set("android") {
+  sources = [
+    "actor_keyed_service_android.cc",
+    "actor_keyed_service_android.h",
+    "actor_task_android.cc",
+    "actor_task_android.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/actor",
+    "//chrome/browser/profiles",
+  ]
+}
