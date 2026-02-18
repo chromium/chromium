@@ -40,29 +40,23 @@ struct JustificationContext {
   std::pair<bool, bool> CheckOpportunity8(TextJustify method, LChar ch);
   std::pair<bool, bool> CheckOpportunity16(TextJustify method, UChar32 ch);
 
+  // Returns the number of justification opportunities around `ch`.
+  //
+  // CountOpportunity8() is for a 8-bit string.
+  // CountOpportunity16() is for a 16-bit string.
+  inline wtf_size_t CountOpportunity8(TextJustify method, LChar ch) {
+    auto [before, after] = CheckOpportunity8(method, ch);
+    return (before ? 1 : 0) + (after ? 1 : 0);
+  }
+  inline wtf_size_t CountOpportunity16(TextJustify method, UChar32 ch) {
+    auto [before, after] = CheckOpportunity16(method, ch);
+    return (before ? 1 : 0) + (after ? 1 : 0);
+  }
+
   // Debug helpers.
   static StringView ToString(JustificationContext::Type type);
   String ToString() const;
 };
-
-// Returns the number of justification opportunities around `ch`.
-//
-// CountJustificationOpportunity8() is for a 8-bit string.
-// CountJustificationOpportunity16() is for a 16-bit string.
-inline wtf_size_t CountJustificationOpportunity8(
-    TextJustify method,
-    LChar ch,
-    JustificationContext& context) {
-  auto [before, after] = context.CheckOpportunity8(method, ch);
-  return (before ? 1 : 0) + (after ? 1 : 0);
-}
-inline wtf_size_t CountJustificationOpportunity16(
-    TextJustify method,
-    UChar32 ch,
-    JustificationContext& context) {
-  auto [before, after] = context.CheckOpportunity16(method, ch);
-  return (before ? 1 : 0) + (after ? 1 : 0);
-}
 
 }  // namespace blink
 

@@ -143,12 +143,11 @@ unsigned Character::ExpansionOpportunityCount(
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
     for (size_t i = 0; i < characters.size(); ++i) {
-      count += CountJustificationOpportunity8(method, characters[i], context);
+      count += context.CountOpportunity8(method, characters[i]);
     }
   } else {
     for (size_t i = characters.size(); i > 0; --i) {
-      count +=
-          CountJustificationOpportunity8(method, characters[i - 1], context);
+      count += context.CountOpportunity8(method, characters[i - 1]);
     }
   }
 
@@ -170,13 +169,13 @@ unsigned Character::ExpansionOpportunityCount(
     for (int i = 0; static_cast<size_t>(i) < characters.size();
          i = iter.Next()) {
       UChar32 character = CodePointAt(characters, i);
-      count += CountJustificationOpportunity16(method, character, context);
+      count += context.CountOpportunity16(method, character);
     }
   } else {
     for (int i = iter.Preceding(characters.size()); i != kTextBreakDone;
          i = iter.Preceding(i)) {
       UChar32 character = CodePointAt(characters, i);
-      count += CountJustificationOpportunity16(method, character, context);
+      count += context.CountOpportunity16(method, character);
     }
   }
   return count;

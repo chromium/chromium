@@ -78,7 +78,7 @@ void ShapeResultSpacing::ExpansionSetup::CountOpportunities(
 void ShapeResultSpacing::ExpansionSetup::CountOpportunities(TextJustify method,
                                                             UChar ch) {
   spacing_->expansion_opportunity_count_ +=
-      CountJustificationOpportunity16(method, ch, justification_context_);
+      justification_context_.CountOpportunity16(method, ch);
 }
 
 void ShapeResultSpacing::SetExpansion(TextJustify method,
