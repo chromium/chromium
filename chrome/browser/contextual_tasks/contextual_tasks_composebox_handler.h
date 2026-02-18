@@ -101,13 +101,15 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
       searchbox::mojom::TabInfoPtr candidate_tab_info);
 
   // Returns true if there is a suggested tab context chip in the compose box.
-  bool has_suggested_tab_context() const { return has_suggested_tab_context_; }
+  bool has_suggested_tab_context() const {
+    return current_suggestion_.has_value();
+  }
 
   // Called to clear the blocklist of auto-suggested tabs. This is used when
   // switching to a new thread.
   void ResetBlocklistedSuggestions() { blocklisted_suggestions_.clear(); }
 
-  void ClearFiles() override;
+  void ClearFiles(bool should_block_auto_suggested_tabs) override;
   void HandleLensButtonClick() override;
   void OnLensThumbnailCreated(const std::string& thumbnail_data);
   virtual void CloseLensOverlay(
@@ -232,8 +234,8 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   // switches to a new thread in which case the whole list will be cleared.
   std::set<GURL> blocklisted_suggestions_;
 
-  // Whether the composebox is currently showing a suggested chip.
-  bool has_suggested_tab_context_ = false;
+  // The URL of the current suggested tab context.
+  std::optional<GURL> current_suggestion_;
 
   // The message to be sent to the webview once uploads are complete.
   std::optional<lens::ClientToAimMessage> pending_message_;

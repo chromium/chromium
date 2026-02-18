@@ -336,7 +336,7 @@ TEST_F(ContextualSearchboxHandlerTest, ClearFiles) {
 
   EXPECT_CALL(query_controller(), ClearFiles).Times(0);
   EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
-  handler().ClearFiles();
+  handler().ClearFiles(/*should_block_auto_suggested_tabs=*/false);
   EXPECT_EQ(handler().GetUploadedContextTokens().size(), 0u);
 }
 

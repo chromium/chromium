@@ -348,7 +348,9 @@ interface PageHandler {
                 bool from_automatic_chip);
 
   // Clears all files from cache.
-  ClearFiles();
+  // `clear_auto_suggested_tabs` indicates whether the URLs of auto suggested
+  // tabs should be blocked from being suggested again.
+  ClearFiles(bool should_block_auto_suggested_tabs);
 
   // Called when a user submits a query with valid input.
   SubmitQuery(string query_text,
