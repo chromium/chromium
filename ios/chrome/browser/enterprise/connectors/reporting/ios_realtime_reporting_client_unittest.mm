@@ -230,6 +230,9 @@ TEST_F(IOSRealtimeReportingClientTest,
                               kAllReportingEnabledEvents.end());
   all_reporting_events.insert(kAllReportingOptInEvents.begin(),
                               kAllReportingOptInEvents.end());
+  // Saas usage event is independent from reporting connector, so it is
+  // neither enabled nor opt-in event.
+  all_reporting_events.insert(kKeySaasUsageEvent);
 
   EXPECT_EQ(all_reporting_events.size(), kEventNameToUmaEnumMap.size());
   for (std::string eventName : all_reporting_events) {

@@ -2520,6 +2520,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Extension install event"/>
   <int value="11" label="Browser crash event"/>
   <int value="12" label="Extension telemetry event"/>
+  <int value="13" label="Saas usage report event"/>
 </enum>
 
 <!-- LINT.IfChange(EnterpriseSkyVaultMigrationDialogAction) -->

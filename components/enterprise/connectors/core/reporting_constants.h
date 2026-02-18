@@ -29,6 +29,7 @@ inline constexpr char kKeySensitiveDataEvent[] = "sensitiveDataEvent";
 inline constexpr char kKeyUnscannedFileEvent[] = "unscannedFileEvent";
 inline constexpr char kKeyLoginEvent[] = "loginEvent";
 inline constexpr char kKeyPasswordBreachEvent[] = "passwordBreachEvent";
+inline constexpr char kKeySaasUsageEvent[] = "saasUsageEvent";
 
 inline constexpr char kEnterpriseWarnedSeenThreatType[] =
     "ENTERPRISE_WARNED_SEEN";
@@ -136,6 +137,8 @@ inline constexpr char kBrowserCrashUmaMetricName[] =
     "Enterprise.ReportingEvent.BrowserCrash.";
 inline constexpr char kExtensionTelemetryUmaMetricName[] =
     "Enterprise.ReportingEvent.ExtensionTelemetry.";
+inline constexpr char kSaasUsageUmaMetricName[] =
+    "Enterprise.ReportingEvent.SaasUsage.";
 inline constexpr char kUnknownUmaMetricName[] =
     "Enterprise.ReportingEvent.Unknown.";
 
@@ -154,7 +157,8 @@ inline constexpr auto kEventNameToUmaMetricNameMap =
           kUrlFilteringInterstitialUmaMetricName},
          {kExtensionInstallEvent, kExtensionInstallUmaMetricName},
          {kBrowserCrashEvent, kBrowserCrashUmaMetricName},
-         {kExtensionTelemetryEvent, kExtensionTelemetryUmaMetricName}});
+         {kExtensionTelemetryEvent, kExtensionTelemetryUmaMetricName},
+         {kKeySaasUsageEvent, kSaasUsageUmaMetricName}});
 
 // Mapping from event case to UMA metric name.
 inline constexpr auto kEventCaseToUmaMetricNameMap =
@@ -173,7 +177,8 @@ inline constexpr auto kEventCaseToUmaMetricNameMap =
           kExtensionInstallUmaMetricName},
          {EventCase::kBrowserCrashEvent, kBrowserCrashUmaMetricName},
          {EventCase::kExtensionTelemetryEvent,
-          kExtensionTelemetryUmaMetricName}});
+          kExtensionTelemetryUmaMetricName},
+         {EventCase::kSaasUsageReportEvent, kSaasUsageUmaMetricName}});
 
 // Mapping from event case to UMA metric name.
 inline constexpr auto kEventCaseToEventNameMap =
@@ -190,7 +195,8 @@ inline constexpr auto kEventCaseToEventNameMap =
           kKeyUrlFilteringInterstitialEvent},
          {EventCase::kBrowserExtensionInstallEvent, kExtensionInstallEvent},
          {EventCase::kBrowserCrashEvent, kBrowserCrashEvent},
-         {EventCase::kExtensionTelemetryEvent, kExtensionTelemetryEvent}});
+         {EventCase::kExtensionTelemetryEvent, kExtensionTelemetryEvent},
+         {EventCase::kSaasUsageReportEvent, kKeySaasUsageEvent}});
 
 std::string GetPayloadSizeUmaMetricName(std::string_view event_name);
 

@@ -100,7 +100,12 @@ enum class EnterpriseReportingEventType {
   kExtensionInstallEvent = 10,
   kBrowserCrashEvent = 11,
   kExtensionTelemetryEvent = 12,
-  kMaxValue = kExtensionTelemetryEvent,
+  // Saas usage report event is not reported through reporting connector,
+  // it is controlled by separate policies:
+  // - SaasUsageReportingDomainUrlsForBrowsers
+  // - SaasUsageReportingDomainUrlsForProfiles
+  kSaasUsageReportEvent = 13,
+  kMaxValue = kSaasUsageReportEvent,
 };
 
 // Mapping from event name to UMA enum for logging histogram.
@@ -128,6 +133,8 @@ inline constexpr auto kEventNameToUmaEnumMap =
         {kBrowserCrashEvent, EnterpriseReportingEventType::kBrowserCrashEvent},
         {kExtensionTelemetryEvent,
          EnterpriseReportingEventType::kExtensionTelemetryEvent},
+        {kKeySaasUsageEvent,
+         EnterpriseReportingEventType::kSaasUsageReportEvent},
     });
 
 // Struct holding the necessary data to tweak the behavior of the reporting
