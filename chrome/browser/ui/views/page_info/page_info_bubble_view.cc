@@ -98,9 +98,9 @@ InternalPageInfoBubbleView::InternalPageInfoBubbleView(
 
   // Title insets assume there is content (and thus have no bottom padding). Use
   // dialog insets to get the bottom margin back.
-  set_title_margins(
-      ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
-  set_margins(gfx::Insets());
+  set_frame_margins({.contents = gfx::Insets(),
+                     .title = ChromeLayoutProvider::Get()->GetInsetsMetric(
+                         views::INSETS_DIALOG)});
 
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));

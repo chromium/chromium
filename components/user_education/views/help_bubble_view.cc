@@ -666,8 +666,7 @@ HelpBubbleView::HelpBubbleView(
   }
 
   SetProperty(views::kElementIdentifierKey, kHelpBubbleElementIdForTesting);
-  set_margins(gfx::Insets());
-  set_title_margins(gfx::Insets());
+  set_frame_margins({.contents = gfx::Insets(), .title = gfx::Insets()});
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_close_on_deactivate(false);
   set_focus_traversable_from_anchor_view(false);

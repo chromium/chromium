@@ -165,8 +165,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_CENTER);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_parent_window(parent);
-  set_title_margins(gfx::Insets());
-  set_margins(gfx::Insets());
+  set_frame_margins({.contents = gfx::Insets(), .title = gfx::Insets()});
   SetAnchorView(anchor_);
   SetTitle(l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE));
   SetShowTitle(false);

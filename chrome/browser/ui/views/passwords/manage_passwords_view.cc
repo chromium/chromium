@@ -55,12 +55,12 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
 
   // Title insets assume there is content (and thus have no bottom padding). Use
   // dialog insets to get the bottom margin back.
-  set_title_margins(
-      ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
   // Set the right and left margins to 0 such that the `page_container_` fills
   // the whole page bubble width. Top margin is handled by the title above, and
   // remove bottom margin such that `page_container_` can assign it if needed.
-  set_margins(gfx::Insets());
+  set_frame_margins({.contents = gfx::Insets(),
+                     .title = ChromeLayoutProvider::Get()->GetInsetsMetric(
+                         views::INSETS_DIALOG)});
 
   page_container_ = AddChildView(
       std::make_unique<PageSwitcherView>(std::make_unique<views::View>()));

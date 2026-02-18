@@ -74,8 +74,7 @@ AutoPipSettingView::AutoPipSettingView(
   SetCloseCallback(std::move(hide_view_cb));
 
   set_use_custom_frame(true);
-  set_margins(kBubbleMargins);
-  set_title_margins(kBubbleTitleMargins);
+  set_frame_margins({.contents = kBubbleMargins, .title = kBubbleTitleMargins});
 
   set_close_on_deactivate(false);
 

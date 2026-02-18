@@ -51,11 +51,10 @@ ResizeConfirmationDialogView::ResizeConfirmationDialogView(
   SetArrow(views::BubbleBorder::Arrow::FLOAT);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_parent_window(parent->GetNativeWindow());
-  set_title_margins(gfx::Insets());
+  set_frame_margins({.contents = gfx::Insets(), .title = gfx::Insets()});
   SetTitle(
       l10n_util::GetStringUTF16(IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_TITLE));
   SetShowTitle(false);
-  set_margins(gfx::Insets());
   SetAnchorView(parent->GetContentsView());
   SetAccessibleWindowRole(ax::mojom::Role::kDialog);
   set_adjust_if_offscreen(false);

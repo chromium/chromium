@@ -72,8 +72,7 @@ class ResizeToggleMenuBubbleDialogDelegate
     SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
     SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     set_parent_window(parent);
-    set_title_margins(gfx::Insets());
-    set_margins(gfx::Insets());
+    set_frame_margins({.contents = gfx::Insets(), .title = gfx::Insets()});
     SetAnchorRect(anchor_rect);
     SetTitle(l10n_util::GetStringUTF16(
         IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TITLE));

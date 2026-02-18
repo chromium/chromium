@@ -20,8 +20,7 @@ AnnouncementView::AnnouncementView(gfx::NativeView parent,
   SetCanActivate(false);
   DCHECK(parent);
   set_parent_window(parent);
-  set_margins(gfx::Insets());
-  set_title_margins(gfx::Insets());
+  set_frame_margins({.contents = gfx::Insets(), .title = gfx::Insets()});
   set_shadow(views::BubbleBorder::NO_SHADOW);
 
   announcement_label_ = AddChildView(std::make_unique<AnnouncementLabel>(name));
