@@ -132,6 +132,7 @@ static_library("file_manager") {
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/intent_helper",
     "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/components/disks:prefs",
     "//chromeos/components/sharesheet:constants",
     "//chromeos/dbus/dlp",

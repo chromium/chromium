@@ -16,6 +16,7 @@
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -67,16 +68,17 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -494,12 +496,14 @@ FileManagerPrivateOpenSettingsSubpageFunction::Run() {
   const optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  Profile* profile = ProfileManager::GetActiveUserProfile();
   if (chromeos::settings::IsOSSettingsSubPage(params->sub_page)) {
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile, params->sub_page);
+    auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+        browser_context());
+    ash::SettingsAppManager::Get()->Open(CHECK_DEREF(user),
+                                         {.sub_page = params->sub_page});
   } else {
-    chrome::ShowSettingsSubPageForProfile(profile, params->sub_page);
+    chrome::ShowSettingsSubPageForProfile(
+        Profile::FromBrowserContext(browser_context()), params->sub_page);
   }
   return RespondNow(NoArguments());
 }

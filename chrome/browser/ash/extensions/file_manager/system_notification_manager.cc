@@ -32,10 +32,11 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -476,8 +477,14 @@ void SystemNotificationManager::HandleDeviceEvent(
 static const char kBulkPinningNotificationId[] = "drive-bulk-pinning-error";
 
 void SystemNotificationManager::HandleBulkPinningNotificationClick() {
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile_, chromeos::settings::mojom::kGoogleDriveSubpagePath);
+  if (auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          profile_.get())) {
+    // TODO(crbug.com/447287122): Revisit here to check if there should be a
+    // case that profile is not user profile.
+    ash::SettingsAppManager::Get()->Open(
+        *user,
+        {.sub_page = chromeos::settings::mojom::kGoogleDriveSubpagePath});
+  }
   GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
                                          kBulkPinningNotificationId);
 }
@@ -805,8 +812,16 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
       base::FilePath volume_root(path);
       platform_util::ShowItemInFolder(profile_, volume_root);
     } else {
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile_, chromeos::settings::mojom::kExternalStorageSubpagePath);
+      if (auto* user =
+              ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+                  profile_.get())) {
+        // TODO(crbug.com/447287122): Revisit here to check if there should be a
+        // case that profile is not user profile.
+        ash::SettingsAppManager::Get()->Open(
+            *user,
+            {.sub_page =
+                 chromeos::settings::mojom::kExternalStorageSubpagePath});
+      }
     }
     if (base::checked_cast<size_t>(button_index.value()) <
         uma_types_for_buttons.size()) {

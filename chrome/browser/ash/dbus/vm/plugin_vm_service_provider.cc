@@ -16,10 +16,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chromeos/ash/components/dbus/plugin_vm_service/plugin_vm_service.pb.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -113,15 +116,20 @@ void PluginVmServiceProvider::ShowSettingsPage(
     return;
   }
 
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   if (request.subpage_path() == kShowSettingsPageDetails) {
+    Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
     chrome::ShowAppManagementPage(
         primary_profile, plugin_vm::kPluginVmShelfAppId,
         settings::AppManagementEntryPoint::kDBusServicePluginVm);
   } else if (request.subpage_path() == kShowSettingsPageSharedPaths) {
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        primary_profile,
-        chromeos::settings::mojom::kPluginVmSharedPathsSubpagePath);
+    if (auto* session =
+            session_manager::SessionManager::Get()->GetPrimarySession()) {
+      ash::SettingsAppManager::Get()->Open(
+          CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+              session->account_id())),
+          {.sub_page =
+               chromeos::settings::mojom::kPluginVmSharedPathsSubpagePath});
+    }
   } else {
     constexpr char error_message[] = "Invalid subpage_path";
     LOG(ERROR) << error_message;

@@ -22,7 +22,9 @@ static_library("geolocation") {
     "//base",
     "//chrome/app:branded_strings_grit",
     "//chrome/browser/ash/privacy_hub",
+    "//chromeos/ash/experiences/settings_ui",
     "//components/prefs",
+    "//components/session_manager/core",
     "//services/device/public/cpp/geolocation",
     "//ui/base",
   ]
