@@ -78,7 +78,9 @@ DevToolsBrowserContextManager::GetBrowserContexts() {
 
 content::BrowserContext*
 DevToolsBrowserContextManager::GetDefaultBrowserContext() {
-  return ProfileManager::GetLastUsedProfile()->GetOriginalProfile();
+  // Do not force profile loading (or it will blow up if called on shutdown).
+  auto* last_profile = ProfileManager::GetLastUsedProfileIfLoaded();
+  return last_profile ? last_profile->GetOriginalProfile() : nullptr;
 }
 
 void DevToolsBrowserContextManager::DisposeBrowserContext(
