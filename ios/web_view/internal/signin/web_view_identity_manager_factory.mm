@@ -71,7 +71,6 @@ WebViewIdentityManagerFactory::BuildServiceInstanceFor(
   params.pref_service = browser_state->GetPrefs();
   params.profile_path = base::FilePath();
   params.signin_client = client;
-  params.require_sync_consent_for_scope_verification = false;
   params.account_fetcher_factory =
       std::make_unique<ios_web_view::AccountFetcherFactoryIOSWebView>();
 

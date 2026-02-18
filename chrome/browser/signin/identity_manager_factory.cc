@@ -168,9 +168,6 @@ IdentityManagerFactory::BuildServiceInstanceForBrowserContext(
                           base::Unretained(profile));
 #endif
 
-  params.require_sync_consent_for_scope_verification =
-      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
-
   std::unique_ptr<signin::IdentityManager> identity_manager =
       signin::BuildIdentityManager(&params);
 
