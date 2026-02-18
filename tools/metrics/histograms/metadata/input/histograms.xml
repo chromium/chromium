@@ -108,6 +108,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Input.FirstGestureScrollUpdate.DeltaY" units="pixels"
+    expires_after="2027-02-10">
+  <owner>anandrv@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Records the Y scroll delta of the first gesture scroll update event in a
+    touch sequence. Subsampled to 1/100.
+  </summary>
+</histogram>
+
 <histogram name="Input.PointerTypePrimary" enum="PrimaryPointerType"
     expires_after="2025-02-10">
   <owner>flackr@chromium.org</owner>

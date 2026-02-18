@@ -899,6 +899,10 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types.
   ScrollSourceType last_latched_scroll_source_type_ = ScrollSourceType::kNone;
 
+  // This tracks if a scroll update event has been received for the current
+  // touch sequence.
+  bool has_received_scroll_update_for_sequence_ = false;
+
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.
   base::WeakPtrFactory<InputHandler> weak_factory_{this};
