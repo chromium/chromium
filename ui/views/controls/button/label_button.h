@@ -330,6 +330,9 @@ class VIEWS_EXPORT LabelButton : public Button,
 
   bool appear_disabled_in_inactive_widget_ = false;
 
+  // Updates the icon when ink drop highlight changes (forced-colors mode).
+  base::CallbackListSubscription ink_drop_highlighted_subscription_;
+
   base::CallbackListSubscription flip_canvas_on_paint_subscription_ =
       AddFlipCanvasOnPaintForRTLUIChangedCallback(
           base::BindRepeating(&LabelButton::FlipCanvasOnPaintForRTLUIChanged,
