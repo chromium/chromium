@@ -1765,28 +1765,12 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
           raster_context_provider, video_frame->coded_size(),
           video_frame->CompatRGBColorSpace());
     }
-    scoped_refptr<gpu::ClientSharedImage> client_shared_image =
-        cache_->texture_backing->GetSharedImage();
-
     // Copy into the shared image backing of the cached copy.
-    std::unique_ptr<gpu::RasterScopedAccess> dst_ri_access =
-        client_shared_image->BeginRasterAccess(
-            ri, cache_->texture_backing->sync_token(),
-            /*readonly=*/false);
-    std::unique_ptr<gpu::RasterScopedAccess> src_ri_access =
-        video_frame_si->BeginRasterAccess(ri, video_frame->acquire_sync_token(),
-                                          /*readonly=*/true);
-    ri->CopySharedImage(
-        video_frame_si->mailbox(), client_shared_image->mailbox(), 0, 0, 0, 0,
-        video_frame->coded_size().width(), video_frame->coded_size().height());
-
-    // Ensure that |video_frame| not be deleted until the above copy is
-    // completed.
-    SynchronizeVideoFrameRead(video_frame, ri,
-                              raster_context_provider->ContextSupport(),
-                              std::move(src_ri_access));
     gpu::SyncToken sync_token =
-        gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
+        CopyVideoFrameToSharedImage(raster_context_provider, video_frame,
+                                    cache_->texture_backing->GetSharedImage(),
+                                    cache_->texture_backing->sync_token(),
+                                    /*use_visible_rect=*/false);
     cache_->texture_backing->UpdateSyncToken(sync_token);
 
     cache_->coded_size = video_frame->coded_size();
