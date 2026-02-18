@@ -116,6 +116,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/SiteSearchSettingsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/CustomSearchEngineListMediatorUnitTest.java",
   ]
   deps = [
     ":java",

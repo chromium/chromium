@@ -497,7 +497,15 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_SITE_SEARCH_DESCRIPTION" desc="Explanation for 'Site Search' section">
         To search a specific site or part of Chrome, type its shortcut in the address bar, followed by your preferred keyboard shortcut.
       </message>
-
+      <message name="IDS_SITE_SEARCH_LIST_MENU_EDIT" desc="Option in site search list menu. User can click the 'Edit' option to edit the search engine.">
+        Edit
+      </message>
+      <message name="IDS_SITE_SEARCH_LIST_MENU_MAKE_DEFAULT" desc="Option in site search list menu. User can click the 'Make default' option to make the selected option the default search engine.">
+        Make default
+      </message>
+      <message name="IDS_SITE_SEARCH_LIST_MENU_DELETE" desc="Option in site search list menu. User can click the 'Delete' option to remove the search engine.">
+        Delete
+      </message>
 
 
       <!-- Add Message -->

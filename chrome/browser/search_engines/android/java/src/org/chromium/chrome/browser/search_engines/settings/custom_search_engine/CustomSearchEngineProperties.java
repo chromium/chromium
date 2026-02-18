@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -33,11 +34,11 @@ public class CustomSearchEngineProperties {
     static final WritableObjectPropertyKey<Bitmap> ICON = new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<OnClickListener> MENU_CLICK_LISTENER =
+    static final WritableObjectPropertyKey<ListMenuDelegate> MENU_DELEGATE =
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                ADAPTER, CLICK_LISTENER, ICON, MENU_CLICK_LISTENER, NAME, URL,
+                ADAPTER, CLICK_LISTENER, ICON, MENU_DELEGATE, NAME, URL,
             };
 }
