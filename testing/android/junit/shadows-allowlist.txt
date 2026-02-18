@@ -11,10 +11,7 @@
 +org.chromium.base.task.PostTask
 +org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate$ClipDataItemBuilder
 +org.chromium.chrome.browser.multiwindow.MultiInstanceManagerApi31
-+org.chromium.chrome.browser.tab.TabBuilder
-+org.chromium.chrome.browser.tab.TabUtils
 +org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController$Delegate
-+org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory
 +org.chromium.components.embedder_support.util.UrlUtilities
 +org.chromium.components.url_formatter.UrlFormatter
 +org.chromium.ui.InsetsRectProvider$BoundingRectHelper

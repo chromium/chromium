@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -18,6 +19,8 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @NullMarked
 public class TabBuilder {
+    private static @Nullable Tab sTabForTesting;
+
     private final Profile mProfile;
 
     private int mId = Tab.INVALID_TAB_ID;
@@ -177,6 +180,8 @@ public class TabBuilder {
     }
 
     public Tab build() {
+        if (sTabForTesting != null) return sTabForTesting;
+
         assert mLaunchType != null : "TabBuilder#setLaunchType() must be called.";
 
         // Pre-condition check
@@ -299,5 +304,10 @@ public class TabBuilder {
                         initiallyHidden
                                 ? TabCreationState.LIVE_IN_BACKGROUND
                                 : TabCreationState.LIVE_IN_FOREGROUND);
+    }
+
+    public static void setTabForTesting(Tab tab) {
+        sTabForTesting = tab;
+        ResettersForTesting.register(() -> sTabForTesting = null);
     }
 }

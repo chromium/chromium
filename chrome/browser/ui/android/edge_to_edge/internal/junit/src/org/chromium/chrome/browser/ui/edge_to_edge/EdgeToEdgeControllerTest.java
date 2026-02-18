@@ -50,8 +50,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -90,10 +88,7 @@ import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSo
  * {@link EdgeToEdgeControllerFactory}, along with {@link EdgeToEdgeControllerImpl}
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        sdk = VERSION_CODES.R,
-        manifest = Config.NONE,
-        shadows = EdgeToEdgeControllerTest.ShadowEdgeToEdgeControllerFactory.class)
+@Config(sdk = VERSION_CODES.R, manifest = Config.NONE)
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 public class EdgeToEdgeControllerTest {
 
@@ -252,14 +247,6 @@ public class EdgeToEdgeControllerTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private LayoutManager mLayoutManager;
     @Mock private FullscreenManager mFullscreenManager;
-
-    @Implements(EdgeToEdgeControllerFactory.class)
-    static class ShadowEdgeToEdgeControllerFactory extends EdgeToEdgeControllerFactory {
-        @Implementation
-        protected static boolean isGestureNavigationMode(Window window) {
-            return true;
-        }
-    }
 
     @Before
     public void setUp() {

@@ -47,8 +47,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -99,11 +97,7 @@ import java.util.Map;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {
-            SearchActivityUnitTest.ShadowTabBuilder.class,
-        })
+@Config(manifest = Config.NONE)
 @EnableFeatures({
     ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID,
     ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES
@@ -118,16 +112,6 @@ public class SearchActivityUnitTest {
     private static final String HISTOGRAM_SUFFIX_CUSTOM_TAB = ".CustomTab";
     private static final String HISTOGRAM_SUFFIX_LAUNCHER = ".Launcher";
     private static final String HISTOGRAM_SUFFIX_HUB = ".Hub";
-
-    @Implements(TabBuilder.class)
-    public static class ShadowTabBuilder {
-        static Tab sMockTab;
-
-        @Implementation
-        public Tab build() {
-            return sMockTab;
-        }
-    }
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock SearchActivityUtils.TestDelegate mUtils;
@@ -193,7 +177,7 @@ public class SearchActivityUnitTest {
 
         SearchActivityUtils.setDelegateForTesting(mUtils);
         WebContentsFactory.setWebContentsForTesting(mWebContents);
-        ShadowTabBuilder.sMockTab = mTab;
+        TabBuilder.setTabForTesting(mTab);
         RevenueStats.setCustomTabSearchClientHookForTesting(mSetCustomTabSearchClient);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
