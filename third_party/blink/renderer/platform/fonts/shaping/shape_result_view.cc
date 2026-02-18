@@ -200,7 +200,9 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
     new_run->start_index_ += char_index_offset_;
     new_run->width_ = part.width_;
     new_run->num_characters_ = part.num_characters_;
+#if EXPENSIVE_DCHECKS_ARE_ON()
     new_run->CheckConsistency();
+#endif
     new_result->runs_.push_back(new_run);
   }
 

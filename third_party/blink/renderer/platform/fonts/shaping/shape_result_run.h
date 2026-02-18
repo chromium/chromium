@@ -415,13 +415,13 @@ struct PLATFORM_EXPORT ShapeResultRun final
     HeapVector<GlyphOffset> offsets_;
   };
 
+#if DCHECK_IS_ON()
   void CheckConsistency() const {
-#if EXPENSIVE_DCHECKS_ARE_ON()
     for (const HarfBuzzRunGlyphData& glyph : glyph_data_) {
       DCHECK_LT(glyph.character_index, num_characters_);
     }
-#endif
   }
+#endif
 
  private:
   friend class GlyphDataRange;

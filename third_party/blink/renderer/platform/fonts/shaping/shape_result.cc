@@ -1539,7 +1539,9 @@ void ShapeResult::ComputeGlyphPositions(ShapeResultRun* run,
 
   run->width_ = total_advance.ClampNegativeToZero().ToFloat();
   has_vertical_offsets_ |= has_vertical_offsets;
+#if EXPENSIVE_DCHECKS_ARE_ON()
   run->CheckConsistency();
+#endif
 }
 
 void ShapeResult::InsertRun(ShapeResultRun* run,
@@ -1770,6 +1772,8 @@ unsigned ShapeResult::CopyRangeInternal(unsigned run_index,
   DCHECK_EQ(
       target->num_characters_ - target_num_characters_before,
       std::min(end_offset, EndIndex()) - std::max(start_offset, StartIndex()));
+#endif
+#if EXPENSIVE_DCHECKS_ARE_ON()
   target->CheckConsistency();
 #endif
 
