@@ -1581,6 +1581,9 @@ public abstract class ChromeFeatureList {
                     "daily_refresh_threshold_ms",
                     (int) TimeUtils.MILLISECONDS_PER_DAY); // 1 day in milliseconds.
 
+    public static final BooleanCachedFeatureParam sNewTabPageCustomizationV2EnableLogs =
+            newBooleanCachedFeatureParam(NEW_TAB_PAGE_CUSTOMIZATION_V2, "enable_logs", false);
+
     /**
      * Param for the OEMs that need an exception for min versions. Its value should be a comma
      * separated list of integers, and its index should match {@link #sEdgeToEdgeBottomChinOemList}.
@@ -1804,6 +1807,7 @@ public abstract class ChromeFeatureList {
                     sNavBarColorAnimationDisableBottomChinColorAnimation,
                     sNavBarColorAnimationDisableEdgeToEdgeLayoutColorAnimation,
                     sNewTabPageCustomizationV2DailyRefreshThresholdMs,
+                    sNewTabPageCustomizationV2EnableLogs,
                     sNewTabPageCustomizationV2ShowColorPicker,
                     sNewTabPageCustomizationV2ShowLogoAndSearchBox,
                     sNotificationTrampolineImmediateJobDurationMs,
